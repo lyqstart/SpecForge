@@ -642,9 +642,9 @@ function findUnknownSfFiles(userLevelDir: string, manifest: UserLevelManifest): 
 // ============================================================================
 // findOrphanSfFiles — 查找目标目录中不在 release manifest 里的 sf_*/sf-* 残留文件
 // ============================================================================
-function findOrphanSfFiles(
+export function findOrphanSfFiles(
   userLevelDir: string,
-  installFiles: readonly ReleaseInstallFile[],
+  installFiles: readonly Pick<ReleaseInstallFile, "targetPath">[],
 ): string[] {
   const registryPaths = new Set(
     installFiles.map((entry) => posixToNative(entry.targetPath))
@@ -666,6 +666,20 @@ function findOrphanSfFiles(
       if (!fs.statSync(fullPath).isFile()) continue
       const relPath = path.join(prefix, file)
       if (!registryPaths.has(relPath)) {
+        orphans.push(relPath)
+      }
+    }
+  }
+
+  const skillsDir = path.join(userLevelDir, "skills")
+  if (fs.existsSync(skillsDir)) {
+    for (const entry of fs.readdirSync(skillsDir, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue
+      if (!entry.name.startsWith("sf-") && !entry.name.startsWith("sf_")) continue
+
+      const relPath = path.join("skills", entry.name, "SKILL.md")
+      const fullPath = path.join(skillsDir, entry.name, "SKILL.md")
+      if (fs.existsSync(fullPath) && !registryPaths.has(relPath)) {
         orphans.push(relPath)
       }
     }

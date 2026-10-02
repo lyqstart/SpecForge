@@ -121,6 +121,7 @@ export interface HTTPServerDeps {
   toolCallsLogger?: JsonlAppender;
   conversationsLogger?: JsonlAppender;
   llmKernelAdapter?: LLMKernelAdapter;
+  requestShutdown?: () => Promise<void>;
 }
 
 // ── Route Types ──
@@ -1188,11 +1189,22 @@ export class HTTPServer {
   }
 
   private handleAdminStop(_req: http.IncomingMessage, res: http.ServerResponse): void {
+    const requestShutdown = this.deps.requestShutdown;
+    if (!requestShutdown) {
+      this.sendJsonResponse(
+        res,
+        503,
+        this.errorBody('DAEMON_SHUTDOWN_UNAVAILABLE', 'Daemon shutdown owner is not configured'),
+      );
+      return;
+    }
     console.log('[API] admin/stop — initiating graceful shutdown');
-    this.sendJsonResponse(res, 200, this.successBody({ message: 'shutdown initiated' }));
-    this.stop().catch((err: unknown) => {
-      console.error('[ADMIN] Error during admin stop:', err);
+    res.once('finish', () => {
+      void requestShutdown().catch((err: unknown) => {
+        console.error('[ADMIN] Error during daemon shutdown:', err);
+      });
     });
+    this.sendJsonResponse(res, 200, this.successBody({ message: 'shutdown initiated' }));
   }
 
   private async handleIngestRegister(

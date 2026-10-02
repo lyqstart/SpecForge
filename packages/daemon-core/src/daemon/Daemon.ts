@@ -94,6 +94,7 @@ export class Daemon {
       projectManager: this.projectManager,
       recoverySubsystem: this.recoverySubsystem,
       llmKernelAdapter: this.llmKernelAdapter,
+      requestShutdown: () => this.stop(),
       toolDispatcher: new ToolDispatcher({
         stateManager: undefined,
         workflowEngine: this.workflowEngine,

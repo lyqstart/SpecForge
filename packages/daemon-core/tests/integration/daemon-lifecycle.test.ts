@@ -31,6 +31,35 @@ function httpGet(url: string): Promise<{ statusCode: number; body: string }> {
   });
 }
 
+function httpPost(url: string, token: string): Promise<{ statusCode: number; body: string }> {
+  return new Promise((resolve, reject) => {
+    const request = http.request(url, {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${token}`,
+        'content-type': 'application/json',
+      },
+      timeout: 5000,
+    }, (res) => {
+      let body = '';
+      res.on('data', (chunk) => { body += chunk; });
+      res.on('end', () => resolve({ statusCode: res.statusCode ?? 0, body }));
+      res.on('error', reject);
+    });
+    request.on('timeout', () => request.destroy(new Error('HTTP timeout')));
+    request.on('error', reject);
+    request.end('{}');
+  });
+}
+
+async function waitFor(condition: () => boolean, timeoutMs = 5000): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+  while (!condition()) {
+    if (Date.now() >= deadline) throw new Error('Timed out waiting for condition');
+    await new Promise((resolve) => setTimeout(resolve, 25));
+  }
+}
+
 describe('E1 Daemon Lifecycle', () => {
   let daemon: Daemon;
   let config: DaemonConfig;
@@ -83,6 +112,25 @@ describe('E1 Daemon Lifecycle', () => {
 
     await daemon.stop();
 
+    await expect(fs.access(handshakePath)).rejects.toThrow();
+  });
+
+  it('should route authenticated admin stop through the Daemon lifecycle owner', async () => {
+    await daemon.start();
+    const handshakePath = config.getHandshakeFile();
+    const handshake = JSON.parse(await fs.readFile(handshakePath, 'utf-8')) as {
+      port: number;
+      token: string;
+    };
+
+    const response = await httpPost(
+      `http://127.0.0.1:${handshake.port}/api/v1/admin/stop`,
+      handshake.token,
+    );
+
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toMatchObject({ success: true });
+    await waitFor(() => !daemon.isDaemonRunning());
     await expect(fs.access(handshakePath)).rejects.toThrow();
   });
 

@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
-    [string]$RepoRoot = (Split-Path -Parent $PSScriptRoot),
+    [string]$RepoRoot,
+    [string]$BunExecutable,
     [switch]$KeepArtifacts
 )
 
@@ -26,7 +27,7 @@ function Invoke-Installer {
     Write-Host ""
     Write-Host ("=== bun scripts/sf-installer.ts " + ($Arguments -join " ") + " ===")
 
-    & bun (Join-Path $RepoRoot "scripts\sf-installer.ts") @Arguments
+    & $BunExecutable (Join-Path $RepoRoot "scripts\sf-installer.ts") @Arguments
     if ($LASTEXITCODE -ne 0) {
         throw "Installer command failed with exit code ${LASTEXITCODE}: $($Arguments -join ' ')"
     }
@@ -76,12 +77,21 @@ function Restore-EnvironmentVariable {
     }
 }
 
+if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
+    $RepoRoot = Split-Path -Parent $PSScriptRoot
+}
+
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path
 $InstallerPath = Join-Path $RepoRoot "scripts\sf-installer.ts"
 Assert-True (Test-Path -LiteralPath $InstallerPath -PathType Leaf) "Installer not found: $InstallerPath"
 
-$BunCommand = Get-Command bun -ErrorAction Stop
-Write-Host "Bun: $($BunCommand.Source)"
+if ([string]::IsNullOrWhiteSpace($BunExecutable)) {
+    $BunExecutable = (Get-Command bun -ErrorAction Stop).Source
+} else {
+    $BunExecutable = (Resolve-Path -LiteralPath $BunExecutable -ErrorAction Stop).Path
+}
+
+Write-Host "Bun: $BunExecutable"
 Write-Host "Repo: $RepoRoot"
 
 $OriginalOpenCodeConfigDir = $env:OPENCODE_CONFIG_DIR

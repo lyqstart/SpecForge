@@ -29748,6 +29748,166 @@ REPEATED_ERROR_CHECK=PASS
 - ERR1666_STATUS=RECORDED_PENDING_POST_PUSH_CLEAN_BOOTSTRAP
 - REPEATED_ERROR_CHECK=PASS
 
+### ERR-1667：新会话再次按归档前路径读取 Authority Model Recovery
+
+- **事实证据**：本轮按根 `AGENTS.md` 的旧固定路径读取 `docs/implementation/architecture-consistency/authority-model-recovery.md`，PowerShell 返回路径不存在；`rg --files` 随后确认真实文件位于 `docs/archive/implementation/architecture-consistency/authority-model-recovery.md`，ADR-014 明确旧恢复状态已归档。该模式与 ERR-1574、ERR-1596 相同。
+- **影响**：首次调用没有读到历史恢复记录；没有修改文件，也没有把归档材料恢复为当前权威。当前判断仍以 SPS、Authority Registry 与唯一 Project Status 为准。
+- **根因**：`CONFIRMED` 为机械执行已与当前仓库归档状态不一致的入口路径，未先用当前 HEAD 文件清单解析实际位置，也没有在读取前对账 ERR-1574 的已知路径迁移。
+- **纠正与防复发**：当前入口只消费 `AGENTS.md`、SPS、Authority Registry 与 `docs/project-status.md`；需要历史恢复证据时先用 `rg --files` 定位并以 archive 角色读取。旧路径存在性不得作为当前权威完整性的判断依据。
+- **适用经验**：EXP-001、EXP-007、EXP-015、EXP-017、EXP-019、EXP-020、EXP-040、EXP-060、EXP-065、EXP-087。
+- ERR1667_STATUS=CLOSED_ARCHIVED_PATH_LOCATED_AND_READ_AS_HISTORY
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1668：经验门禁章节切片错误模式在本轮再次复发
+
+- **事实证据**：首次提取用不存在的 `^## 三、`/`^## 五、` 边界，返回 `Sections 3 or 5 not found`；发现真实一级标题后，第二次又用 `Select-String -SimpleMatch` 取得多个包含标题文字的行号，数组参与减法导致 `op_Subtraction` 失败。账本已有 ERR-1594、ERR-1603 记录同类标题假设与切片错误。
+- **影响**：两次失败输出均不能作为经验门禁通过证据；失败期间保持只读。随后通过 `rg -n '^# 第(三|四|五)部分'` 固定真实边界 1903/2811/2945，并按不重叠小块完整读取第三、第四部分正文。
+- **根因**：`CONFIRMED` 为没有直接复用已登记的“先发现唯一真实标题，再按已确认行号分块”的稳定流程；第二次虽修正标题层级，仍未保证选择结果唯一。
+- **纠正与防复发**：经验门禁固定先用 anchored `rg` 取得三个唯一边界，再以明确 `Skip/First` 小块读取；每块必须无截断、边界连续且共同覆盖第三和第四部分。禁止用模糊 `SimpleMatch` 结果直接参与索引运算。
+- **适用经验**：EXP-001、EXP-007、EXP-015、EXP-019、EXP-020、EXP-021、EXP-060、EXP-065、EXP-087。
+- ERR1668_STATUS=CLOSED_WITH_ANCHORED_BOUNDARIES_AND_COMPLETE_CHUNKED_READ
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1669：OpenCode 命令不存在后仍无条件执行版本调用
+
+- **事实证据**：`Get-Command opencode -ErrorAction SilentlyContinue` 已输出 `OPENCODE_COMMAND=NOT_FOUND`，但同一 PowerShell 命令随后仍无条件执行 `opencode --version`，产生 CommandNotFoundException 与 exit 1；`npm ls -g opencode-ai --depth=0` 同时返回空树与 exit 1。
+- **影响**：该调用只能证明当前 shell PATH 与当前 npm global prefix 没有可直接解析的 OpenCode，不能证明主机其他 npm prefix、固定路径或用户配置中不存在安装，也不能作为升级前版本证据。
+- **根因**：`CONFIRMED` 为发现分支没有控制后续命令执行，并把“当前入口未发现”与“主机整体不存在”混在同一探针设计中。
+- **纠正与防复发**：版本探针必须先解析命令或明确候选路径；只有入口存在时才调用版本。npm prefix、where/Get-Command、已知安装目录与 manifest 分项取证，任何单项未发现只报告其精确范围。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-038、EXP-060、EXP-065。
+- ERR1669_STATUS=CLOSED_WITH_SCOPED_ENTRY_DISCOVERY_AND_REAL_VERSION_PROBE
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1670：进程快照入口被拒绝访问后无法形成不存在结论
+
+- **事实证据**：`Get-CimInstance Win32_Process` 在当前会话返回“拒绝访问”与 exit 1，没有产生任何可解析进程记录。
+- **影响**：当前没有证据证明 OpenCode、SpecForge 或 specforged 进程存在或不存在；在取得成功且可解析的替代快照前，不得启动、停止、升级或覆盖相关运行现场。
+- **根因**：`CONFIRMED` 为选择了当前权限不可用的 WMI/CIM 查询入口，且未先验证该入口能成功枚举完整进程集合。
+- **纠正与防复发**：改用当前会话可读的 `Get-Process` 完整快照并检查命令成功、字段结构与目标名称；若仍失败则报告 `INSUFFICIENT_EVIDENCE`，不把失败转换为未运行。
+- **适用经验**：EXP-002、EXP-006、EXP-007、EXP-008、EXP-015、EXP-018、EXP-038、EXP-060。
+- ERR1670_STATUS=CLOSED_WITH_PARSEABLE_PROCESS_SNAPSHOT
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1671：真实 OpenCode 配置根已有证据仍误用 APPDATA 路径
+
+- **事实证据**：当前 Project Status 的上一轮一手证据明确记录 OpenCode root 为 `C:/Users/lyq/.config/opencode`；本轮现场探针却自行构造 `%APPDATA%\opencode`，由该错误坐标得到 root、sf-user 与 manifest 均不存在。
+- **影响**：该输出不能描述真实用户级安装状态，也不能支持“当前未安装”或“可安全全新安装”。退役 `~/.specforge` 存在这一独立事实仍有效，但本轮未读取或修改其内容。
+- **根因**：`CONFIRMED` 为忽略已固定的一手主机坐标，以平台习惯推断配置路径，重复了把通用默认替代真实环境证据的错误。
+- **纠正与防复发**：主机验收固定先消费 Project Status 已记录坐标，再用 OpenCode/仓库正式 path resolver 交叉验证；不得从 `%APPDATA%`、`HOME` 或 OS 惯例自行推导产品根目录。
+- **适用经验**：EXP-001、EXP-002、EXP-005、EXP-007、EXP-008、EXP-015、EXP-017、EXP-019、EXP-038、EXP-060、EXP-065。
+- ERR1671_STATUS=CLOSED_WITH_CANONICAL_PATH_RECHECK
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1672：沙箱拒绝用户目录读取后 Test-Path 仍输出伪不存在值
+
+- **事实证据**：对 `C:\Users\lyq\.config\opencode`、`sf-user`、manifest 与 npm package.json 的读取均报告 `Access denied`；PowerShell 的 `Test-Path`/`Get-Content` 错误未终止整个命令，后续格式化仍输出 `Exists=False` 或空版本。与此同时，明确 npm prefix 下的 `opencode.cmd` 与 `node_modules\opencode-ai\package.json` 候选路径被 `Test-Path` 报为存在。
+- **影响**：拒绝访问后的布尔值和空版本均不可采信；当前只能确认候选路径坐标，不能判断真实文件内容、版本、manifest 或用户级部署状态。
+- **根因**：`CONFIRMED` 为没有把路径探针的访问错误设为终止条件并与结果分离，导致环境权限失败被投影成业务上的“不存在”。
+- **纠正与防复发**：用户目录取证必须使用获准的只读访问；每个路径操作设置 `-ErrorAction Stop`，成功后才产生 `EXISTS`/版本字段。拒绝访问统一报告 `INSUFFICIENT_EVIDENCE`，不得返回 false。
+- **适用经验**：EXP-002、EXP-005、EXP-006、EXP-007、EXP-008、EXP-015、EXP-019、EXP-038、EXP-060。
+- ERR1672_STATUS=CLOSED_WITH_APPROVED_READ_ONLY_HOST_PROBE
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1673：Windows rg 检索再次把 glob 当作输入路径并包含不存在目录
+
+- **事实证据**：验收入口检索直接传入 `scripts/*.ts`、`scripts/*.ps1`，Windows `rg` 返回文件名语法错误；同一调用还传入不存在的 `docs/plugins`，返回路径不存在。该模式与 ERR-1595、ERR-1598、ERR-1605 相同。
+- **影响**：README 与其他真实路径命中可作局部线索，但该调用不能证明 scripts 或全部文档消费者已经完整检索。
+- **根因**：`CONFIRMED` 为再次依赖 shell 展开 `*`，并手工猜测目录存在性，没有复用“仓库根输入 + `--glob` 过滤 + `rg --files` 预检”的已登记稳定模式。
+- **纠正与防复发**：后续从仓库根 `.` 检索并使用 `--glob 'scripts/*.ts'`、`--glob 'scripts/*.ps1'` 等过滤；目录范围先由 `rg --files` 证明，不再把通配符或未经确认目录作为路径参数。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-015、EXP-019、EXP-020、EXP-060、EXP-065、EXP-087。
+- ERR1673_STATUS=CLOSED_WITH_REPOSITORY_ROOT_RESCAN
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1674：Windows PowerShell 5 在参数默认值阶段无法使用 PSScriptRoot
+
+- **事实证据**：按 README 执行 `powershell -ExecutionPolicy Bypass -File scripts/run-userlevel-installer-lifecycle-acceptance.ps1` 后，脚本在第 3 行参数默认值 `(Split-Path -Parent $PSScriptRoot)` 失败，错误为 `Path` 是空字符串并退出 1；尚未进入正文、创建 acceptance root 或调用 installer。
+- **影响**：正式隔离安装器生命周期验收没有开始；没有真实用户配置、临时安装或退役根写入。该结果只证明验收入口在 Windows PowerShell 5 参数绑定阶段不可用，不能归因安装器产品行为。
+- **根因**：`CONFIRMED` 为把 `$PSScriptRoot` 用在参数默认值表达式中；当前 Windows PowerShell 执行链在该求值时点尚未提供有效脚本根。
+- **纠正与防复发**：`RepoRoot` 参数改为可空，进入脚本正文后再以已建立的 `$PSScriptRoot` 计算默认值；保留显式 `-RepoRoot` 能力。使用 README 原命令重跑，必须看到 installer 全阶段与最终 PASS 才能关闭。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-010、EXP-011、EXP-015、EXP-019、EXP-020、EXP-065、EXP-074。
+- ERR1674_STATUS=CLOSED_WITH_HARNESS_FIX_AND_ISOLATED_LIFECYCLE_PASS
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1675：隔离验收宿主 PATH 不包含 Bun
+
+- **事实证据**：修复 RepoRoot 参数绑定后原样重跑验收脚本，执行到 `Get-Command bun -ErrorAction Stop` 时返回 CommandNotFoundException 与 exit 1；尚未调用 installer。当前仓库正式测试已使用并验证独立 Bun 1.4.0 可执行文件。
+- **影响**：隔离安装器生命周期仍未开始，没有创建安装现场或修改真实用户配置；不能把工具入口缺失归因为安装器失败。
+- **根因**：`CONFIRMED` 为验收脚本明确要求 `bun` 在当前进程 PATH，而本次 Windows PowerShell 环境未继承已验证 Bun 所在目录。
+- **纠正与防复发**：不把会话临时 Bun 绝对路径写入仓库；仅在验收命令的进程环境中前置已验证 Bun 目录，并让脚本继续通过 `Get-Command bun` 解析。报告必须记录实际 Bun 路径和完整生命周期结果。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-011、EXP-015、EXP-019、EXP-020、EXP-052、EXP-060、EXP-064。
+- ERR1675_STATUS=CLOSED_WITH_EXPLICIT_BUN_EXECUTABLE_AND_LIFECYCLE_PASS
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1676：退役根快照计数输出遗漏 PowerShell 子表达式
+
+- **事实证据**：升级前只读快照成功产生退役根元数据 SHA256 `169eeb45...731c4a` 与 manifest SHA256，但 entry count 字符串写成普通 `@(...)` 文本而非 `$(@(...).Count)` 子表达式，输出未求值的命令字面量。
+- **影响**：退役根快照哈希由已执行的同一内存 JSON 算法产生，可用于前后精确比较；entry count 无效且不进入任何验收结论。没有文件写入。
+- **根因**：`CONFIRMED` 为 PowerShell 插值语法遗漏 `$()`，且摘要字段没有在输出前验证为数值。
+- **纠正与防复发**：本轮不为非必要计数重复读取；升级后使用同一快照函数比较 SHA256。后续结构化证据字段在输出前验证类型，不在双引号字符串中嵌入未经验证的复杂表达式。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-039、EXP-060、EXP-065。
+- ERR1676_STATUS=CLOSED_COUNT_EXCLUDED_HASH_EVIDENCE_RETAINED
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1677：真实升级未清理旧 sf-workflow Skill 目录
+
+- **事实证据**：真实 `upgrade --force` 成功部署 108 个当前文件并清理 22 个旧 Agent/Tool 文件；随后正式 `verify` 返回 exit 1，唯一问题为 10 个不在当前 Manifest 中的 `skills/sf-workflow-*/SKILL.md`。源码显示 `findOrphanSfFiles()` 只扫描 agents/tools/tools-lib/plugins，未扫描 skills；独立 cleanup 脚本又只匹配 `sf-skill-*`。
+- **影响**：真实升级动作已经执行且不可改写为未执行；当前 manifest、NSSM 零残留、无 handshake/目标进程和退役根不变证据均有效，但用户级部署完整性仍失败，不能进入 Daemon/OpenCode E2E。
+- **根因**：`CONFIRMED` 为安装器升级 orphan 发现集合没有覆盖其 verify 已负责检查的 `sf-*`/`sf_*` Skill 消费面，独立 cleanup 的旧命名过滤器也无法补齐 `sf-workflow-*`。
+- **纠正与防复发**：在安装器的事务性 orphan 清理中加入 skills 子目录的 `SKILL.md`，以当前 release registry 为唯一允许集合；增加独立回归证明旧 workflow skill 被事务性删除、非 SpecForge skill 不受影响，再运行定向测试、隔离生命周期、真实升级与同一 verify。
+- **适用经验**：EXP-004、EXP-007、EXP-008、EXP-010、EXP-011、EXP-015、EXP-016、EXP-017、EXP-022、EXP-030、EXP-031、EXP-045、EXP-060、EXP-074、EXP-085、EXP-087。
+- ERR1677_STATUS=CLOSED_WITH_TRANSACTIONAL_ORPHAN_SKILL_CLEANUP_AND_REAL_VERIFY_PASS
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1678：安装器测试调查猜测不存在的文件名
+
+- **事实证据**：消费者清单已由 `rg --files` 返回真实安装器测试路径，但同一批读取仍尝试了不存在的 `tests/unit/installer/sf-installer.test.ts` 与 `installer-upgrade-journal.test.ts`，两个 `Get-Content` 均未形成输出并返回 exit 1。
+- **影响**：这两个调用不能证明 installer orphan 行为已有或缺少测试；生产源码与真实失败证据不受影响。
+- **根因**：`CONFIRMED` 为按概念猜测测试文件名，而没有先消费已返回的真实文件清单，重复了 ERR-1593/1595 的路径假设模式。
+- **纠正与防复发**：后续只读取 `rg --files` 已确认存在的 `cmdInstall.test.ts`、`upgrade.test.ts`、Scope Gate 当前安装器契约测试等明确路径；不存在的概念测试名不得进入覆盖判断。
+- **适用经验**：EXP-001、EXP-007、EXP-015、EXP-019、EXP-020、EXP-060、EXP-065、EXP-087。
+- ERR1678_STATUS=CLOSED_REAL_TEST_PATHS_SELECTED
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1679：跨 owner 定向 Vitest 命令只收集部分请求文件
+
+- **事实证据**：根 Vitest 命令显式请求 installer、Scope Gate 和 scripts 共 4 个文件，摘要只显示 2 files / 20 tests passed，未逐项证明另外两个文件被收集。项目已有根测试角色过滤和 package owner 独立 runner。
+- **影响**：已收集的 20 项通过有效，但不能扩展为 4 个目标文件全部通过；新增 orphan Skill 回归此前独立 1/1 通过仍有效。
+- **根因**：`CONFIRMED` 为再次把不同 owner/config 的测试放入一个根 runner，忽略当前角色选择器可能排除显式路径，属于 ERR-1657 类验证编排错误。
+- **纠正与防复发**：installer/scripts 使用其根正式 config，Scope Gate 从 package 工作目录使用 package runner；每次证据必须包含目标文件名或实际文件计数，不以请求参数代替收集事实。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-010、EXP-011、EXP-015、EXP-020、EXP-055、EXP-060、EXP-074。
+- ERR1679_STATUS=CLOSED_WITH_OWNER_SCOPED_RERUNS
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1680：未经工具清单确认直接调用不存在的 tsc.cmd
+
+- **事实证据**：执行 `.\node_modules\.bin\tsc.cmd -p scripts/tsconfig.installer.json --noEmit` 时 PowerShell 返回命令不存在与 exit 1，TypeScript 检查没有启动。
+- **影响**：没有形成 scripts 类型检查证据，也没有修改文件；测试通过证据不受影响。
+- **根因**：`CONFIRMED` 为根据常见 npm Windows shim 猜测 `.cmd` 后缀，未先读取当前 Bun 安装实际 `.bin` 文件清单。
+- **纠正与防复发**：先用明确目录清单定位 `tsc` 实际入口，再调用；若正式构建已封装脚本类型检查则优先复用正式入口，不猜测 shim 后缀。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-011、EXP-015、EXP-019、EXP-020、EXP-052、EXP-060。
+- ERR1680_STATUS=CLOSED_WITH_ACTUAL_TYPESCRIPT_ENTRY_AND_PASS
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1681：已成功使用的临时 Bun PATH 在后续验收中失效
+
+- **事实证据**：使用与上一轮成功隔离验收相同的进程级 PATH 前缀重跑脚本，`Get-Command bun` 再次返回 CommandNotFoundException；失败发生在 installer 调用前。此前同一绝对路径曾被脚本解析为 Bun 1.4.0 并完成全生命周期。
+- **影响**：补丁后的隔离生命周期尚未运行；真实用户目录和临时安装现场均未被该次调用修改。已通过的定向测试与类型检查不受影响。
+- **根因**：当前证据不足以判断临时 Bun 可执行文件被清理、路径不可访问或子进程环境继承异常，结论为 `INSUFFICIENT_EVIDENCE`。
+- **纠正与防复发**：先只读验证精确文件存在性和可执行版本；若已消失，重新从工作区依赖运行时发现入口，不复用会话记忆。验收脚本后续应接受显式 Bun 路径，避免依赖易变 PATH。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-013、EXP-015、EXP-019、EXP-020、EXP-052、EXP-060、EXP-064。
+- ERR1681_STATUS=CLOSED_WITH_EXPLICIT_BUN_PARAMETER_AND_LIFECYCLE_PASS
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1682：猜测 specforged 帮助参数和不存在的入口文件
+
+- **事实证据**：只读调查尝试读取不存在的 `packages/daemon-core/src/specforged-entry.ts`；随后执行 `release/bin/specforged.exe --help` 返回 `UNSUPPORTED_SPECFORGED_COMMAND: --help` 与 exit 1。真实源码清单显示入口为 `packages/daemon-core/src/specforged.ts`，真实 E2E 为 `scripts/tests/opencode-real-integration-e2e.test.ts`。
+- **影响**：Daemon 没有启动，handshake 与进程现场未改变；该调用不能提供启动参数或帮助契约证据。
+- **根因**：`CONFIRMED` 为根据常见 CLI 习惯假设 `--help`，并按概念猜测入口文件名，没有先读取 release producer 和真实文件清单。
+- **纠正与防复发**：先完整读取 `specforged.ts`、其单元测试和真实 OpenCode E2E；只使用源码 parser 明确支持的参数。二进制探针不得用未声明参数试探生产进程。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-020、EXP-026、EXP-060、EXP-065、EXP-090。
+- ERR1682_STATUS=CLOSED_REAL_ENTRY_AND_E2E_PATHS_IDENTIFIED
+- REPEATED_ERROR_CHECK=PASS
+
 ROOT_TEST_ROLE_CLASSIFICATION_CLOSURE=CONFIRMED
 ROOT_TEST_ROLE_COUNTS=CURRENT_HERMETIC:58;CURRENT_ENVIRONMENTAL:1;MIGRATED_DUPLICATE:14;HISTORICAL_EVIDENCE:110
 FORMAL_ROOT_TEST_RESULT=58_FILES_757_TESTS_PASS
@@ -29761,4 +29921,73 @@ ERR1648_STATUS=CLOSED_WITH_PATH_LEVEL_ROLE_REGISTRY
 ERR1651_STATUS=CLOSED_WITH_VALID_DATE_ARBITRARIES
 ERR1652_STATUS=CLOSED_WITH_SYNCHRONIZED_CONSUMERS
 ERR1654_STATUS=CLOSED_WITH_DETERMINISTIC_EXAMPLES
+REPEATED_ERROR_CHECK=PASS
+
+### ERR-1683：沙箱内直接读取全局 OpenCode 安装目录被拒绝
+
+- **事实证据**：为定位真实 OpenCode native executable，读取 `C:\Users\lyq\AppData\Roaming\npm\opencode.cmd` 并枚举全局 `node_modules/opencode-ai` 时均返回 `Access is denied`；此前只读探针只能证明 wrapper 路径存在。
+- **影响**：尚未启动 OpenCode 或 Daemon，端口、handshake 与用户级运行状态未改变；不能根据 wrapper 的存在猜测 native executable 位置。
+- **根因**：`CONFIRMED` 为当前 workspace sandbox 对全局 npm 安装目录只允许存在性探测、不允许内容读取；这不是 OpenCode 安装失败证据。
+- **纠正与防复发**：使用明确申请的只读主机探针读取 wrapper 和枚举 package 文件，取得准确入口后再启动；全局工具边界不得把沙箱访问拒绝解释为目标文件损坏或缺失。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-020、EXP-038、EXP-060、EXP-065。
+- ERR1683_STATUS=CLOSED_WITH_APPROVED_READ_ONLY_HOST_PROBE
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1684：真实 daemon `admin/stop` 后进程退出但 canonical handshake 残留
+
+- **事实证据**：release `specforged` PID 35372 通过 authenticated `POST /api/v1/admin/stop` 返回成功；轮询确认 PID 已退出，但 `C:\Users\lyq\.config\opencode\sf-user\runtime\handshake.json` 仍存在。
+- **影响**：session create、no-reply system prompt、session read 与 abort 的真实 OpenCode 1.18.34 链路证据有效，但 direct Daemon lifecycle 尚未闭环；残留 handshake 可能使后续客户端读取已经失效的端口和 PID，当前不得宣称真实主机验收完全通过。
+- **根因**：`INSUFFICIENT_EVIDENCE`；待核对 HTTP `admin/stop`、Daemon shutdown handler、HandshakeManager ownership cleanup 与 release entrypoint 的实际调用链。不得通过手工删除 handshake 冒充 graceful cleanup 成功。
+- **纠正与防复发**：保留失败现场并重建停止调用链；若确认 endpoint 只停止 HTTP server，应让受控 admin stop 触发 Daemon-level graceful shutdown 和 owned-handshake cleanup，并增加可观测的生命周期回归，再重建 release binary 后复验真实进程。
+- **适用经验**：EXP-002、EXP-004、EXP-006、EXP-007、EXP-008、EXP-010、EXP-015、EXP-017、EXP-020、EXP-026、EXP-031、EXP-038、EXP-060、EXP-074、EXP-087。
+- ERR1684_STATUS=CLOSED_WITH_DAEMON_OWNED_SHUTDOWN_AND_REAL_PROCESS_PROOF
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1685：Windows `rg` 调查再次传入未展开的 `**` glob 路径
+
+- **事实证据**：shutdown 调用链调查把 `packages/daemon-core/src/**/*.test.ts` 作为位置参数传给 Windows `rg`，返回 `文件名、目录名或卷标语法不正确 (os error 123)`；同一命令中的显式文件和目录仍返回了足以确认 admin-stop 绕过 Daemon.stop 的源码。
+- **影响**：该 glob 对应的测试消费者搜索不完整，不能据此宣称现有回归覆盖；已经直接读取的 `HTTPServer.ts`、`Daemon.ts`、`specforged.ts` 根因证据有效。
+- **根因**：`CONFIRMED` 为重复了 ERR-1673 类 Windows shell glob 假设，没有使用 `rg --glob` 或只传真实目录。
+- **纠正与防复发**：后续消费者搜索只传 `packages/daemon-core/src` 与 `packages/daemon-core/tests` 真实目录，并用 `--glob '*.test.ts'` 限定；先读取实际测试清单再选择修改点。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-020、EXP-060、EXP-065、EXP-087。
+- ERR1685_STATUS=CLOSED_WITH_DIRECTORY_SCOPED_RESCAN
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1686：release candidate ID 未遵守 `working-tree-step*` 格式合同
+
+- **事实证据**：使用 `main-eb1fc830-working-tree-real-host-acceptance` 重建 release manifest 后，正式全量测试仅 Scope Gate 的 3 项 repository integration 失败；三项都要求 `/^main-[0-9a-f]{8}-working-tree-step[0-9a-z]+$/`，其余 Scope Gate 27 文件/131 项、根测试 58 文件/757 项、其余已完成 package 均通过。
+- **影响**：本次正式全量入口 exit 1，不能作为全量 PASS；失败不否定 daemon lifecycle 实现、真实 OpenCode E2E 或其他已通过测试，但 release identity 必须重建后再验证。
+- **根因**：`CONFIRMED` 为生成 manifest 前只检索了 candidateId 必填检查，没有先读取 repository integration 已执行的精确格式合同，错误使用了描述性连字符后缀。
+- **纠正与防复发**：使用 `main-eb1fc830-working-tree-step1684` 重建同一 release surface；先定向重跑 Scope Gate repository consumers，再重跑正式全量入口，最终 precheck 使用完全相同的 candidate ID。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-010、EXP-011、EXP-015、EXP-017、EXP-019、EXP-020、EXP-033、EXP-038、EXP-060、EXP-074、EXP-085。
+- ERR1686_STATUS=CLOSED_WITH_VALID_CANDIDATE_FULL_RERUN_AND_PRECHECK_PASS
+- REPEATED_ERROR_CHECK=PASS
+
+REAL_WINDOWS_ACCEPTANCE_CLOSURE=CONFIRMED
+OPENCODE_VERSION=1.18.34
+ISOLATED_INSTALLER_LIFECYCLE=PASS_INSTALL_VERIFY_UPGRADE_VERIFY_FORCE_UPGRADE_VERIFY_VERSION_UNINSTALL
+REAL_USERLEVEL_UPGRADE=PASS_108_FILES
+REAL_USERLEVEL_VERIFY=PASS_108_FILES
+ORPHAN_SKILL_REGRESSION=PASS_1_TEST
+INSTALLER_SCOPED_REGRESSION=PASS_20_TESTS
+SCOPE_GATE_UPGRADE_TRANSACTION_REGRESSION=PASS_8_TESTS
+INSTALLER_NO_LEGACY_WRITE_REGRESSION=PASS_2_TESTS
+DIRECT_DAEMON_LIFECYCLE_REGRESSION=PASS_7_TESTS
+REAL_OPENCODE_DAEMON_E2E=PASS_SESSION_CREATE_NOREPLY_READ_ABORT_ADMIN_STOP
+REAL_DAEMON_ADMIN_STOP_PROCESS_EXIT=PASS
+REAL_DAEMON_ADMIN_STOP_HANDSHAKE_CLEANUP=PASS
+RETIRED_USER_ROOT_FILE_COUNT_BEFORE=111
+RETIRED_USER_ROOT_FILE_COUNT_AFTER=111
+RETIRED_USER_ROOT_TREE_DIGEST_BEFORE=0f3ff45d969334b0c65569eabb4f737272488f25b9252e3058029bded3825ccc
+RETIRED_USER_ROOT_TREE_DIGEST_AFTER=0f3ff45d969334b0c65569eabb4f737272488f25b9252e3058029bded3825ccc
+FORMAL_ROOT_TEST_RESULT=58_FILES_757_TESTS_PASS
+FORMAL_SCOPE_GATE_RESULT=30_FILES_134_TESTS_PASS
+FORMAL_CLI_RESULT=39_FILES_781_TESTS_PASS
+FORMAL_DAEMON_CORE_RESULT=199_FILES_1732_TESTS_PASS
+FORMAL_FULL_TEST_RESULT=PASS
+FULL_WORKSPACE_BUILD_RESULT=PASS
+CURRENT_RELEASE_RUNTIME_ARTIFACTS_RESULT=PASS_WIN32_X64
+CURRENT_RELEASE_CANDIDATE_ID=main-eb1fc830-working-tree-step1684
+CURRENT_RELEASE_PRECHECK_RESULT=PASS
+GOVERNANCE_DOCUMENT_IMPACT=PROJECT_STATUS_AND_ERROR_LEDGER_ONLY_NO_SPS_OR_ADR_DECISION_CHANGE
 REPEATED_ERROR_CHECK=PASS
