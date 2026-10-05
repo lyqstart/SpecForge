@@ -30375,3 +30375,13 @@ PowerShell 载体输出内部退出码必须使用 `$LASTEXITCODE`（禁止 `$?`
 - **类防护（复用，不新增）**：`EXP-002`、`EXP-007`、`EXP-016`、`EXP-113`、`EXP-200`、`EXP-238`。
 - REUSED_EXP=EXP-002,EXP-007,EXP-016,EXP-113,EXP-200,EXP-238
 - ERR1723_STATUS=CLOSED_RETRY_CONFIRMED_REMOTE_MAIN_750D4EED
+
+## ERR-1724：FIX3 本地 main 切换被 Codex 沙箱拒绝创建 Git index lock
+
+- **发生时间**：2026-10-05
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / GIT_METADATA_PERMISSION_BOUNDARY`。
+- **事实证据**：在 `feature/execution-continuity-protocol@30bff61c` 执行 `git switch main` 时，Git 返回 `Unable to create 'D:/code/SpecForge/.git/index.lock': Permission denied`，退出码 1；后续只读核验确认当前分支和 HEAD 未变化、暂存区为空且 `.git/index.lock` 不存在。
+- **纠正与防复发**：分支切换、合并等需要写入 `.git` 元数据的动作必须使用经用户授权的提升权限；失败后先核验锁文件和分支未漂移，再只重试原动作，不删除未知锁文件、不绕过 Git 元数据保护。
+- **类防护（复用，不新增）**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-016`、`EXP-018`。
+- REUSED_EXP=EXP-002,EXP-007,EXP-008,EXP-016,EXP-018
+- ERR1724_STATUS=OPEN_PENDING_ESCALATED_GIT_SWITCH_RETRY
