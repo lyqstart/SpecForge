@@ -39,6 +39,9 @@ SPS-1.0
 | docs/product-specification/authority-registry.md | 权威登记与文件角色 | REGISTRY ONLY |
 | docs/adr/** | 架构决策记录；必须与当前产品规格一致 | NO |
 | docs/project-status.md | 唯一当前执行状态与下一合法动作；不承载产品决定 | NO |
+| docs/rule/specforge-execution-mode-and-evidence-protocol.md | 执行与证据规则（外部执行模式、恢复链、证据协议）；不是产品规格 | NO（EXECUTION & EVIDENCE RULE） |
+| docs/rule/specforge-active-development-rules.md | 当前活动开发规则（新会话必须完整读取）；经验规则唯一当前载体 | NO（DEVELOPMENT RULE） |
+| docs/rule/specforge-development-error-ledger-and-experience.md | 开发错误台账：历史错误、审计与经验演化证据；不再要求每会话全文读取，按任务关键词定向检索 | NO（HISTORICAL EVIDENCE + TARGETED SEARCH） |
 | docs/design/SpecForge架构一致性治理最终实施方案.md | 架构一致性与契约治理的从属技术合同 | NO |
 | docs/archive/** | 旧规格、旧标准、旧设计、实施记录、报告、审计与 Kiro 材料的统一历史归档 | NO |
 | docs/design/**（除上列从属合同外） | 当前不得新增并行设计权威；新增设计必须先登记角色 | NO |
@@ -72,10 +75,12 @@ SPS-1.0
 | AR-DEC-02 | 旧规格、旧设计、旧标准、实施文件、报告和审计统一进入 docs/archive/**，不再散布为并行当前目录 |
 | AR-DEC-03 | 仓库根 .kiro 退役；可复用内容必须进入当前权威或实现合同，剩余材料归档至 docs/archive/kiro/** |
 | AR-DEC-04 | 根 AGENTS.md 是新会话稳定入口；scripts/project-session-bootstrap.mjs 是只读恢复器；docs/project-status.md 是唯一当前执行状态文件 |
+| AR-DEC-05 | SpecForge 开发只有两种外部执行模式：CODEX_DIRECT 与 WORKBUDDY_COORDINATED；执行与证据规则的唯一依据为 docs/rule/specforge-execution-mode-and-evidence-protocol.md（执行与证据规则，不是产品规格）；WORKBUDDY_COORDINATED 下 WorkBuddy 自述不能替代 Codex 独立审核 |
 | VR-DEC-01 | 当前 SpecForge 开启新的产品版本纪元，首个正式产品版本为 1.0.0；旧版本号只保留历史证据，不表达兼容或产品谱系承诺 |
 | VR-DEC-02 | 新产品 Git Tag 使用 `specforge-v<semver>`；既有 `v*` Tag 保留为历史，不删除、不改写 |
 | VR-DEC-03 | 产品版本与 schema、协议、工作流格式等技术合同版本独立演进；不得因产品版本重排而机械修改技术合同版本 |
 | VR-DEC-04 | 当前产品与发布消费者中的 V6/V3.5 品牌和发布身份收敛到新纪元；ADR、迁移脚本、Derived-From、旧测试与报告中的版本引用作为历史证据保留，禁止全仓机械替换 |
+| AR-DEC-06 | 活动经验规则与历史账本分离：`docs/rule/specforge-active-development-rules.md` 是新会话必须完整读取的当前活动规则；历史错误、审计与经验演化证据完整保留在历史账本中，不再要求全文读取；新会话读取活动规则后，按任务关键词、涉及模块和适用 EXP 对历史账本执行定向检索；新的历史错误继续追加到账本，需要长期执行的新规则必须同时进入活动规则文件 |
 
 ## 5. 解释优先级
 

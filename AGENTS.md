@@ -1,22 +1,47 @@
 # SpecForge 项目协作规则
 
+## 外部执行模式门禁（AR-DEC-05）
+
+对 SpecForge 仓库的任何外部执行会话，必须先声明并遵守两种且仅两种执行模式之一：
+
+```text
+CODEX_DIRECT           # Codex 同时负责规划、执行与验证
+WORKBUDDY_COORDINATED  # Codex=Planner/Auditor；WorkBuddy=Executor/Evidence Producer；用户=转交与产品决策
+```
+
+模式判定与证据要求（RUN_ID、EVIDENCE_ROOT、命令四件套、数字退出码、写入四分类、停点）的唯一依据：
+
+```text
+docs/rule/specforge-execution-mode-and-evidence-protocol.md
+```
+
+任何新会话必须先读取该协议，再运行 Bootstrap；当前模式、RUN_ID、EVIDENCE_ROOT 与停点由 `PROJECT_STATUS_SCHEMA=2` 的 `docs/project-status.md` 提供并由 Bootstrap 校验。最新明确用户指令可切换模式；无明确切换时继承 project-status；阶段中途不得静默切换。WORKBUDDY_COORDINATED 模式下，WorkBuddy 自述不能替代 Codex 独立审核。
+
 ## SpecForge 产品开发经验前置门禁
 
-在分析、设计或修改 SpecForge 的代码、测试、文档、配置、脚本、命令、补丁、安装器、验证流程或 Git 操作前，必须先完整读取：
+在分析、设计或修改 SpecForge 的代码、测试、文档、配置、脚本、命令、补丁、安装器、验证流程或 Git 操作前，必须先完整读取当前活动规则文件：
+
+```text
+docs/rule/specforge-active-development-rules.md
+```
+
+并按任务关键词、涉及模块和适用 EXP 对历史错误账本执行定向检索：
 
 ```text
 docs/rule/specforge-development-error-ledger-and-experience.md
 ```
 
-至少完整阅读第三部分“工程经验总则”和第四部分“修改前强制检查”，并记录：
+历史账本保留历史错误、审计与经验演化证据，不再要求每会话全文读取。记录：
 
 ```text
 EXPERIENCE_FILE_READ=YES
 APPLICABLE_EXPERIENCE_RULES=EXP-...（至少一项）
 REPEATED_ERROR_CHECK=PASS
+ACTIVE_EXPERIENCE_RULES_FILE_READ=YES
+HISTORICAL_LEDGER_SEARCH=关键词及命中 EXP/ERR，或 NONE_WITH_JUSTIFICATION
 ```
 
-无法读取经验文件、没有适用规则或不能完成重复错误检查时，必须 fail closed，不得修改文件或生成写操作命令。
+无法读取活动规则文件、没有适用规则或不能完成重复错误检查时，必须 fail closed，不得修改文件或生成写操作命令。
 
 本门禁只约束 SpecForge 产品自身的直接开发；不得启动 SpecForge 自身的 Work Item、Workflow、Candidate、Gate、User Decision、Merge Runner、Code Permission 或 Close 流程。
 

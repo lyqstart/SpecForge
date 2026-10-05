@@ -10,6 +10,12 @@ export const PROJECT_STATUS_PATH = 'docs/project-status.md';
 export const AUTHORITY_REGISTRY_PATH = 'docs/product-specification/authority-registry.md';
 export const PRODUCT_SPECIFICATION_PATH =
   'docs/product-specification/specforge-product-specification.md';
+export const EXECUTION_PROTOCOL_PATH =
+  'docs/rule/specforge-execution-mode-and-evidence-protocol.md';
+export const ACTIVE_DEVELOPMENT_RULES_PATH =
+  'docs/rule/specforge-active-development-rules.md';
+export const HISTORICAL_LEDGER_PATH =
+  'docs/rule/specforge-development-error-ledger-and-experience.md';
 export const PROJECT_STATUS_START = '<!-- SPECFORGE_PROJECT_STATUS:START -->';
 export const PROJECT_STATUS_END = '<!-- SPECFORGE_PROJECT_STATUS:END -->';
 
@@ -28,6 +34,21 @@ const REQUIRED_STATUS_FIELDS = Object.freeze([
   'REQUIRED_RULES',
   'REQUIRED_VALIDATION',
 ]);
+
+const REQUIRED_EXECUTION_FIELDS = Object.freeze([
+  'EXECUTION_MODE',
+  'EXECUTION_STATE',
+  'EXECUTION_PROTOCOL',
+  'EXECUTION_PLANNER',
+  'EXECUTION_ACTOR',
+  'EXECUTION_AUDITOR',
+  'EXECUTION_RUN_ID',
+  'EXECUTION_EVIDENCE_ROOT',
+  'LAST_EXECUTION_CHECKPOINT',
+  'NEXT_EXECUTION_STOP',
+]);
+
+const EXECUTION_MODES = Object.freeze(['CODEX_DIRECT', 'WORKBUDDY_COORDINATED']);
 
 const LEGACY_ACTIVE_STATUS_PATTERNS = Object.freeze([
   /(^|\/)current-handoff\.md$/i,
@@ -97,8 +118,23 @@ export function validateProjectStatus(fields) {
   for (const field of REQUIRED_STATUS_FIELDS) {
     if (!fields[field]) issues.push(`PROJECT_STATUS_FIELD_MISSING:${field}`);
   }
-  if (fields.PROJECT_STATUS_SCHEMA && fields.PROJECT_STATUS_SCHEMA !== '1') {
+  if (fields.PROJECT_STATUS_SCHEMA && fields.PROJECT_STATUS_SCHEMA !== '2') {
     issues.push(`PROJECT_STATUS_SCHEMA_UNSUPPORTED:${fields.PROJECT_STATUS_SCHEMA}`);
+  }
+  for (const field of REQUIRED_EXECUTION_FIELDS) {
+    if (!fields[field]) issues.push(`EXECUTION_FIELD_MISSING:${field}`);
+  }
+  if (
+    fields.EXECUTION_MODE &&
+    !EXECUTION_MODES.includes(fields.EXECUTION_MODE)
+  ) {
+    issues.push(`EXECUTION_MODE_INVALID:${fields.EXECUTION_MODE}`);
+  }
+  if (
+    fields.EXECUTION_PROTOCOL &&
+    fields.EXECUTION_PROTOCOL !== EXECUTION_PROTOCOL_PATH
+  ) {
+    issues.push(`EXECUTION_PROTOCOL_PATH_INVALID:${fields.EXECUTION_PROTOCOL}`);
   }
   if (
     fields.PROJECT_STATUS_DECLARATION &&
@@ -184,6 +220,19 @@ export function collectBootstrap(repositoryRoot, options = {}) {
     PRODUCT_SPECIFICATION_PATH,
     issues,
   );
+  const executionProtocolContent = readRequiredFile(
+    repositoryRoot,
+    EXECUTION_PROTOCOL_PATH,
+    issues,
+  );
+  const activeDevelopmentRulesContent = readRequiredFile(
+    repositoryRoot,
+    ACTIVE_DEVELOPMENT_RULES_PATH,
+    issues,
+  );
+  if (activeDevelopmentRulesContent && activeDevelopmentRulesContent.trim().length === 0) {
+    issues.push(`ACTIVE_DEVELOPMENT_RULES_EMPTY:${ACTIVE_DEVELOPMENT_RULES_PATH}`);
+  }
 
   let status = {};
   if (statusContent) {
@@ -203,6 +252,12 @@ export function collectBootstrap(repositoryRoot, options = {}) {
     if (!existsSync(path.join(repositoryRoot, requiredRule))) {
       issues.push(`REQUIRED_RULE_MISSING:${requiredRule}`);
     }
+  }
+  if (requiredRules.length > 0 && !requiredRules.includes(ACTIVE_DEVELOPMENT_RULES_PATH)) {
+    issues.push(`ACTIVE_DEVELOPMENT_RULES_NOT_IN_REQUIRED_RULES:${ACTIVE_DEVELOPMENT_RULES_PATH}`);
+  }
+  if (requiredRules.includes(HISTORICAL_LEDGER_PATH)) {
+    issues.push(`HISTORICAL_LEDGER_FULL_READ_REQUIREMENT_FORBIDDEN:${HISTORICAL_LEDGER_PATH}`);
   }
 
   const legacyStatusPaths = findLegacyActiveStatusPaths(trackedPaths);
@@ -227,6 +282,19 @@ export function collectBootstrap(repositoryRoot, options = {}) {
     projectStatusSha256: statusContent ? sha256(statusContent) : '',
     authorityRegistrySha256: registryContent ? sha256(registryContent) : '',
     productSpecificationSha256: specificationContent ? sha256(specificationContent) : '',
+    executionProtocolSha256: executionProtocolContent ? sha256(executionProtocolContent) : '',
+    activeDevelopmentRulesSha256: activeDevelopmentRulesContent ? sha256(activeDevelopmentRulesContent) : '',
+    activeDevelopmentRulesInRequiredRules: requiredRules.includes(ACTIVE_DEVELOPMENT_RULES_PATH),
+    executionMode: status.EXECUTION_MODE ?? '',
+    executionState: status.EXECUTION_STATE ?? '',
+    executionProtocol: status.EXECUTION_PROTOCOL ?? '',
+    executionPlanner: status.EXECUTION_PLANNER ?? '',
+    executionActor: status.EXECUTION_ACTOR ?? '',
+    executionAuditor: status.EXECUTION_AUDITOR ?? '',
+    executionRunId: status.EXECUTION_RUN_ID ?? '',
+    executionEvidenceRoot: status.EXECUTION_EVIDENCE_ROOT ?? '',
+    lastExecutionCheckpoint: status.LAST_EXECUTION_CHECKPOINT ?? '',
+    nextExecutionStop: status.NEXT_EXECUTION_STOP ?? '',
     activeInitiative: status.ACTIVE_INITIATIVE ?? '',
     currentPhase: status.CURRENT_PHASE ?? '',
     lastCompletedCheckpoint: status.LAST_COMPLETED_CHECKPOINT ?? '',
@@ -261,6 +329,18 @@ function printText(receipt) {
   line('PROJECT_STATUS_SHA256', receipt.projectStatusSha256);
   line('AUTHORITY_REGISTRY_SHA256', receipt.authorityRegistrySha256);
   line('PRODUCT_SPECIFICATION_SHA256', receipt.productSpecificationSha256);
+  line('EXECUTION_PROTOCOL_SHA256', receipt.executionProtocolSha256);
+  line('ACTIVE_DEVELOPMENT_RULES_SHA256', receipt.activeDevelopmentRulesSha256);
+  line('EXECUTION_MODE', receipt.executionMode);
+  line('EXECUTION_STATE', receipt.executionState);
+  line('EXECUTION_PROTOCOL', receipt.executionProtocol);
+  line('EXECUTION_PLANNER', receipt.executionPlanner);
+  line('EXECUTION_ACTOR', receipt.executionActor);
+  line('EXECUTION_AUDITOR', receipt.executionAuditor);
+  line('EXECUTION_RUN_ID', receipt.executionRunId);
+  line('EXECUTION_EVIDENCE_ROOT', receipt.executionEvidenceRoot);
+  line('LAST_EXECUTION_CHECKPOINT', receipt.lastExecutionCheckpoint);
+  line('NEXT_EXECUTION_STOP', receipt.nextExecutionStop);
   line('REQUIRED_RULES', receipt.requiredRules.join(';'));
   line('REQUIRED_VALIDATION', receipt.requiredValidation.join(';'));
   line('WARNINGS', receipt.warnings.join(';') || 'NONE');

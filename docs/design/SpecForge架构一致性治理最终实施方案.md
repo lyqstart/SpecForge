@@ -7,6 +7,10 @@
 > `docs/product-specification/authority-registry.md`，不构成产品需求、产品架构或发布范围权威。
 >
 > **AR-DEC-01 / AR-DEC-04 覆盖声明（2026-10-01）**：本文件中把自身称为“产品权威/唯一当前权威”、把 `.kiro` V6 文件称为上游产品权威，或要求以 `current-handoff.md` 恢复新会话的旧表述，均已失效，只保留为规则演进背景。当前产品权威只由 SPS 与 Authority Registry 定义；当前执行状态只由 `docs/project-status.md` 承载；新会话只从根 `AGENTS.md` 调用 `scripts/project-session-bootstrap.mjs` 恢复。
+>
+> **执行模式引用（AR-DEC-05，2026-10-03）**：本治理合同的任何外部执行活动还必须遵守 `docs/rule/specforge-execution-mode-and-evidence-protocol.md`（执行与证据规则）：只有 CODEX_DIRECT 与 WORKBUDDY_COORDINATED 两种外部执行模式；WORKBUDDY_COORDINATED 下的证据目录、命令四件套、数字退出码与强制停点按该协议执行。所有 current-handoff 类旧表达均已失效；当前动态状态只进入 `docs/project-status.md` 与外部 evidence bundle（EVIDENCE_ROOT），本文件不再承载任何会话恢复职责。
+>
+> **经验规则分离（AR-DEC-06，2026-10-05）**：本文件第 2 章中要求每个新会话完整读取历史错误账本的门禁表述，已由 `docs/rule/specforge-active-development-rules.md`（当前活动规则，必须完整读取）与历史账本定向检索（按任务关键词命中 ERR/EXP，输出 HISTORICAL_LEDGER_SEARCH）取代；历史账本保留为演化证据，不再要求全文读取。本文件正文保留为规则演进背景。
 
 ## 1. 文档定位、权威边界与设计原则
 

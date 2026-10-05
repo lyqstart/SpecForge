@@ -1530,11 +1530,14 @@ fresh evidence / architecture review
 5. 旧规格、旧设计、旧标准、实施记录、报告与审计统一保存在 `docs/archive/**`；历史证据不得删除，也不得因为仍被测试读取而恢复为当前权威。
 6. 仓库根不得存在 `.kiro/**`。旧 Kiro 内容统一保存在 `docs/archive/kiro/**`；只有已经明确合并进本规格、登记合同或当前实现的内容才可继续约束产品。
 7. 新会话恢复器必须核验本地/远端 Git 基线、必需文件、唯一状态块、并行状态文件、根 `.kiro` 缺失及工作树变化，并在证据不足或冲突时 fail closed。
+8. 产品负责人裁决（AR-DEC-05，2026-10-03）：SpecForge 开发只有两种外部执行模式——`CODEX_DIRECT`（Codex 同时负责规划、执行与验证）与 `WORKBUDDY_COORDINATED`（Codex=Planner/Auditor，WorkBuddy=Executor/Evidence Producer，用户=消息转交与产品决策）。执行与证据规则的唯一依据是 `docs/rule/specforge-execution-mode-and-evidence-protocol.md`（执行与证据规则，不是产品规格）；该协议规定新会话恢复链（AGENTS.md → bootstrap → REQUIRED_RULES → EXECUTION_MODE → RUN_ID/EVIDENCE_ROOT → LAST_EXECUTION_CHECKPOINT → NEXT_LEGAL_ACTION → STOP_CONDITION）、模式切换纪律（最新明确用户指令可切换；无明确切换时继承 project-status；阶段中途不得静默切换）与证据要求（RUN_ID、EVIDENCE_ROOT、命令四件套、真实 UTC 时间、数字退出码、observer effects、manifest 自校验、强制停点）。WORKBUDDY_COORDINATED 模式下，WorkBuddy 自述不能替代 Codex 独立审核。`docs/project-status.md` 以 `PROJECT_STATUS_SCHEMA=2` 表达当前模式、角色、RUN_ID、EVIDENCE_ROOT 与停点，并由 Bootstrap 校验。
+
+9. 产品负责人裁决（AR-DEC-06，2026-10-05）：活动经验规则与历史账本分离。`docs/rule/specforge-active-development-rules.md` 是新会话必须完整读取的当前活动开发规则（经验规则唯一当前载体）；`docs/rule/specforge-development-error-ledger-and-experience.md` 保留为历史错误、审计与经验演化证据，不再要求每会话全文读取。新会话读取活动规则后，必须按任务关键词、涉及模块和适用 EXP 对历史账本执行定向检索，并输出 `HISTORICAL_LEDGER_SEARCH`（命中清单或 NONE_WITH_JUSTIFICATION）。新的历史错误继续追加到账本；需要长期执行的新规则必须同时进入活动规则文件。Bootstrap 的 REQUIRED_RULES 引用活动规则文件，不得重新引入历史账本全文读取要求。
 
 ---
 
 # Appendix A — 已吸收的产品裁决
 
-SPS-1.0 已吸收 Authority Model Recovery 阶段的 PO-001、D01—D09 与 AR-DEC-01—AR-DEC-04。完整裁决登记见 authority-registry.md。
+SPS-1.0 已吸收 Authority Model Recovery 阶段的 PO-001、D01—D09 与 AR-DEC-01—AR-DEC-06。完整裁决登记见 authority-registry.md。
 
 本 Appendix 只用于可追溯，不建立第二套规则。

@@ -86,4 +86,33 @@ describe('Phase 11 agent guidance authority contract', () => {
       '不得以 `modules`、`declared_modules`、`effective_modules` 替代正式字段',
     ]) expect(orchestrator, token).toContain(token);
   });
+
+  it('persists the dual execution-mode and evidence protocol across authority documents', async () => {
+    const [authority, agents, registry, projectStatus] = await Promise.all([
+      readFile(authorityPath, 'utf8'),
+      readFile(resolve(repoRoot, 'AGENTS.md'), 'utf8'),
+      readFile(resolve(repoRoot, 'docs/product-specification/authority-registry.md'), 'utf8'),
+      readFile(resolve(repoRoot, 'docs/project-status.md'), 'utf8'),
+    ]);
+    expect(authority).toContain('docs/rule/specforge-execution-mode-and-evidence-protocol.md');
+    expect(authority).toContain('CODEX_DIRECT');
+    expect(authority).toContain('WORKBUDDY_COORDINATED');
+    expect(authority).toContain('所有 current-handoff 类旧表达均已失效');
+    expect(agents).toContain('CODEX_DIRECT');
+    expect(agents).toContain('WORKBUDDY_COORDINATED');
+    expect(agents).toContain('docs/rule/specforge-execution-mode-and-evidence-protocol.md');
+    expect(registry.split('AR-DEC-05').length - 1).toBeGreaterThanOrEqual(1);
+    expect(registry).toContain('执行与证据规则，不是产品规格');
+    expect(projectStatus).toContain('PROJECT_STATUS_SCHEMA=2');
+    expect(projectStatus).toContain('EXECUTION_MODE=');
+    expect(projectStatus).toContain('EXECUTION_STATE=');
+    expect(projectStatus).toContain('EXECUTION_PROTOCOL=');
+    expect(projectStatus).toContain('EXECUTION_PLANNER=');
+    expect(projectStatus).toContain('EXECUTION_ACTOR=');
+    expect(projectStatus).toContain('EXECUTION_AUDITOR=');
+    expect(projectStatus).toContain('EXECUTION_RUN_ID=');
+    expect(projectStatus).toContain('EXECUTION_EVIDENCE_ROOT=');
+    expect(projectStatus).toContain('LAST_EXECUTION_CHECKPOINT=');
+    expect(projectStatus).toContain('NEXT_EXECUTION_STOP=');
+  });
 });

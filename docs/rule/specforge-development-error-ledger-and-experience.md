@@ -30281,3 +30281,87 @@ REPEATED_ERROR_CHECK=PASS
 - **适用经验**：EXP-001、EXP-002、EXP-004、EXP-006、EXP-011、EXP-013、EXP-015、EXP-017、EXP-019、EXP-020、EXP-031、EXP-060、EXP-084、EXP-085、EXP-087、EXP-090。
 - ERR1715_STATUS=VERIFIED_1_0_3_PATCH_AWAITING_REAL_DEPLOYMENT
 - REPEATED_ERROR_CHECK=PASS
+
+### ERR-1716：A02 只读取经验账本局部却声明 RULE_GATE=PASS
+
+- **事实证据**：A02 阶段（WB-SF-PILOT-20261003-P0-A02）rule-gate-record.txt 声明 EXPERIENCE_FILE_READ=YES / RULE_GATE=PASS，但实际只快照了经验账本第 1903-2945 行（第三、四部分），未读全文（全文 30283 行）；P1-A01 分块重读后发现账本在 A02 快照区间之后还有 ERR-1713/1714/1715 与大量追加 EXP（编号实际已达 EXP-260，远超 A02 所见）。
+- **影响**：A02 的门禁自述与事实不符；若按其结论继续修改，会漏掉最新登记的错误与防复发规则（包括 ERR-1715 对本次试点直接相关的分类契约约束）。
+- **根因**：门禁只验证“是否读过要求的章节”，未验证“覆盖到 EOF”；把“读取了第三、四部分”当作“完整读取了文件”。
+- **纠正方式**：P1-A01 以 8 个连续分块读满 30283 行并以拼接哈希+行数+EOL 归一化逐字节比对证明完整性；本 ERR 落账。
+- **防复发规则**：EXP-261。
+- ERR1716_STATUS=CLOSED_BY_P1_A01_FULL_READ_AND_THIS_ENTRY
+
+### ERR-1717：A02 把 state.json 游标误判为与事件尾部一致
+
+- **事实证据**：A02 diff-check-record 第 2 项把“state.json lastEventId/lastEventTs 与 events.jsonl 末条一致”标记为 CONFIRMED；P1-A01 复核发现 events.jsonl 末条为 seq 20（eventId 01a0fd98-…、ts 1790961002479），而 A02 当时 state.json 快照的 lastEventId=01a0fd32-…、lastEventTs=1790954360142（属 seq 18 区段）——游标实际滞后两条事件；A02 把“current_state=blocked 与末条 to_state 相同”当成了指针一致的证据。stateVersion=26 与事件数 20 的差异也被附注为“内部计数”而未深究。
+- **影响**：Runtime checkpoint 游标缺陷（state.json 落后 events.jsonl 尾部）被审计误判为一致，延迟了真实 RUNTIME_DEFECT 的确认；该缺陷现已在 project-status NEXT_LEGAL_ACTION 中列为必须先修复项。
+- **根因**：把状态值等价当作指针等价的充分证据；未对 eventId/ts 做逐字段比对。
+- **纠正方式**：P1-A01 project-status 明确记录该缺陷为已确认待修；本 ERR 落账。
+- **防复发规则**：EXP-262。
+- ERR1717_STATUS=OPEN_PENDING_RUNTIME_CURSOR_FIX（StateManager 产品缺陷本体未修复，本条仅登记审计错误；不得写成已解决）
+
+### ERR-1718：PowerShell `$?` 布尔被当作数字退出码 + 证据路径手工重打错误
+
+- **事实证据**：A02 命令 0001 的 result.json 把 inner_exit_code 记为“0（由 __INNER_EXIT_CODE=True + READY→exit(0) 逻辑交叉印证）”——哨兵实际输出 True（pwsh 下 `$?` 是布尔），不是数字；同阶段 EVIDENCE_ROOT 路径在最终回复中系手工重打而非从 handoff.json 复制。
+- **影响**：退出码证据不满足“数字”要求，只能靠逻辑推断兜底；手工重打路径存在抄写错误风险，破坏证据链的机器可核验性。
+- **根因**：跨 shell 语义差异未被显式处理（bash `$?` 数字 vs pwsh `$?` 布尔）；协议未强制“路径必须从 handoff 原样复制”的执行机制。
+- **纠正方式**：P1-A01 命令 0002 起哨兵改用 `$LASTEXITCODE`（数字）；对外返回值由脚本从 handoff.json 程序化读取；执行与证据协议 §4.2/§4.6 明文禁止布尔哨兵与手工重打。
+- **防复发规则**：EXP-263。
+- ERR1718_STATUS=CLOSED_BY_PROTOCOL_AND_P1_A01_PRACTICE
+
+## EXP-261：完整读取大文件必须以覆盖到 EOF 的分块证据证明
+
+声明“已完整读取”任何大文件（经验账本、产品规格等）前，必须记录分块区间、每块 SHA-256、总行数，并以拼接结果与原文（必要时 EOL 归一化）的逐字节比对证明覆盖到 EOF。只读要求的章节而未到 EOF 时，不得声明 RULE_GATE=PASS 或 EXPERIENCE_FILE_READ=YES。
+
+## EXP-262：指针一致性必须逐字段比对，状态等价不能替代指针等价
+
+核验 checkpoint/游标类字段（lastEventId、lastEventTs、monotonicSeq）与日志尾部一致性时，必须对全部标识字段逐字段比对；任何以“状态值相同”推断“指针一致”的结论只能标 CORROBORATED 或 INSUFFICIENT_EVIDENCE，不得标 CONFIRMED。
+
+## EXP-263：跨 shell 退出码哨兵必须输出数字，报告字段必须程序化导出
+
+PowerShell 载体输出内部退出码必须使用 `$LASTEXITCODE`（禁止 `$?` 布尔）；`exit=True` 类布尔哨兵不是退出码证据。对外报告中的 RUN_ID、EVIDENCE_ROOT 等关键字段必须由 handoff/checkpoint JSON 程序化读取原样输出，禁止手工重打。
+
+## ERR-1719：P1-A03 A01 活动规则迁移器把引用命中误当 canonical definition，产生空规则与 ERR 叙事污染
+
+- **发生时间**：2026-10-05
+- **分类**：`SCRIPT_DEFECT / DEFINITION_EXTRACTION_ERROR / TEST_COVERAGE_GAP / EVIDENCE_PROTOCOL_VIOLATION`。
+- **事实证据**：A01 迁移器对 EXP-095..263 采用"同编号最后一次文本命中即为定义"算法。实际账本中同一 EXP 编号存在 Definition（正式规则条目）与 Reference（普通正文引用、索引、`- **EXP-N**：` 列表引用、ERR 状态字段引用）两类命中；部分编号最后一次命中是 Reference 或组合 `## ERR-X / EXP-N` 段中的 ERR 叙事，导致活动规则文件出现无规则语义的空条目和迁移了 ERR 事实的污染条目（278 标题 vs 263 实际定义，15 个重复中含错误选择）。测试仅断言标题数量 263 与唯一性，未验证 section 非空语义、ERR 标题/marker 为零、Definition/Reference 分类正确。
+- **事实证据（证据协议）**：A01 证据包缺失 received-prompt.txt、handoff.json、manifest.sha256、命令四件套目录结构；最终报告把工作树上 12 个文件的实际修改表述为 REPOSITORY_WRITES=NONE（混淆"无 commit/push"与"无仓库写入"）；project-status 未推进到当前运行阶段。
+- **根因**：迁移算法未区分定义与引用；测试断言停留在计数层；证据包按 P1-A02 习惯而非 §4.1 目录合同构建；写入四分类未按 tracked/untracked 拆分报告。
+- **纠正与防复发**：FIX1 重新生成活动规则，采用显式 Definition 格式匹配（五种真实格式），Reference/索引/HTML marker/ERR 状态列表一律不得成为定义；组合 ERR/EXP 段只提取 EXP 标题与规则正文；多候选记录来源与选择理由，真实语义冲突停止返回 AUTHORITY_CONFLICT。测试补强为非空语义+格式分类+禁止 ERR marker+重点样本回归。证据包按 §4.1 完整构建；写入分类按 tracked modified / existing untracked modified / new untracked 分别列示。
+- **类防护（复用，不新增）**：`EXP-007`、`EXP-021`、`EXP-032`、`EXP-033`、`EXP-044`、`EXP-077`、`EXP-087`、`EXP-195`、`EXP-254`、`EXP-261`。
+- REUSED_EXP=EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-077,EXP-087,EXP-195,EXP-254,EXP-261
+- ERR1719_STATUS=CLOSED_BY_P1_A03_FIX1_REGENERATION_AND_TEST_HARDENING
+
+## ERR-1720：P1-A03-FIX1 迁移结果仍含 ERR 状态与 V 编号叙事，测试未禁正文历史事实，证据包再缺过程文件，行数算法多计一行
+
+- **发生时间**：2026-10-05
+- **分类**：`SCRIPT_DEFECT / SEMANTIC_PURITY_GAP / TEST_COVERAGE_GAP / EVIDENCE_PROTOCOL_VIOLATION / LINE_COUNT_DEFECT`。
+- **事实证据**：FIX1 v4-final 迁移器虽消除了 ERR 标题与 HTML marker，但组合段与 BOLD_LIST 提取仍把 ERR 状态行（`ERR-N=...`）、运行状态（`P0_OVERALL_STATUS`、`UNRECORDED_FAILURES=...`）、事故叙事（"本轮验证器失败补录"、V81/V89/V115 等具体执行版本事实）带入活动规则正文。contract 测试只断言标题/marker 为零，未断言正文语义纯度；"正文≥40可见字符"被误用为语义检查替代。FIX1 证据包再次缺失命令四件套、完整逐字提示词、修改前快照和最终 checkpoint 更新。迁移地图把末尾换行符后的空元素误计为第 31212 物理行（正确总行数 31211；EXP-263 源范围应为 31209-31211）。
+- **根因**：提取器逐类修标题泄漏但未建立"历史事实 token 禁止清单"；测试断言层与语义层脱节；证据包按会话习惯而非 §4.1 合同逐文件构建；行数计数使用 split('\n') 未考虑末尾 LF 语义。
+- **纠正与防复发**：FIX2 以显式禁止清单（ERR-[0-9]+、^ERR-N=、P0_OVERALL_STATUS、UNRECORDED_FAILURES=、事故叙事短语、V 编号事实）过滤提取正文；组合段遇下一同级列表项/标题/围栏/状态字段即停；standalone 段剔除尾部状态代码块；行数按"内容行"计（末尾 LF 不产生新行）；测试新增 9 类纯度断言 + map hash 逐条对账；证据包自第一步建立命令四件套与完整提示词。
+- **类防护（复用，不新增）**：`EXP-007`、`EXP-021`、`EXP-032`、`EXP-033`、`EXP-044`、`EXP-077`、`EXP-087`、`EXP-195`、`EXP-254`、`EXP-261`、`EXP-262`。
+- REUSED_EXP=EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-077,EXP-087,EXP-195,EXP-254,EXP-261,EXP-262
+- ERR1720_STATUS=CLOSED_BY_P1_A03_FIX2_PURITY_REGENERATION
+
+## ERR-1721：P1-A03-FIX2 纯度断言漏检具体 V 编号，活动规则标题与持久化测试仍不合格
+
+- **发生时间**：2026-10-05
+- **分类**：`SEMANTIC_PURITY_GAP / GENERATED_DOCUMENT_QUALITY_DEFECT / TEST_COVERAGE_GAP / NONPORTABLE_TEST_FIXTURE / CURRENT_STATUS_DRIFT`。
+- **事实证据**：Codex 对 FIX2 工作树字节独立复核发现，迁移区仍在 EXP-209/EXP-214 保留 `V119`、`V120` 具体执行版本事实；FIX2 测试只枚举 EXP-186 与 EXP-190 的少量 V 编号，未执行迁移区全局 `\bV\d+\b` 检查。活动规则还存在 4 个空 `text` 围栏、EXP-203/205/206/213/216/217/219/223/224/226 共 10 个无语义标题，以及多个由 60 字符截断产生的残缺标题。持久化 contract test 直接读取 `D:/code/_workbuddy-evidence/.../exp-migration-map.json`，在没有该本机证据目录的干净环境中不可运行。`docs/project-status.md` 同时保留“迁移区无 V 编号事实”和“STOP after Codex FIX1 audit”等已失实或过期字段。
+- **根因**：FIX2 以少量样本枚举替代迁移区全局不变量；生成器把正文前 60 字符直接作为标题且允许空标题；审计期 migration map 被错误提升为长期仓库测试的外部绝对路径 fixture；状态投影未从最终审计结论同步更新。
+- **纠正与防复发**：FIX3 对全部迁移区执行具体 V 编号全局拒绝；删除空围栏；为所有规则提供完整、稳定、非截断的语义标题；持久化测试只依赖仓库内当前文件并验证 263 个 source 注释、标题质量和围栏结构，不再依赖 WorkBuddy 外部证据目录；执行模式切换为用户明确授权的 `CODEX_DIRECT` 新阶段并同步唯一 project-status。完成后运行活动规则、Bootstrap、执行模式等全部直接消费者测试以及联网 Bootstrap。
+- **类防护（复用，不新增）**：`EXP-007`、`EXP-021`、`EXP-032`、`EXP-033`、`EXP-044`、`EXP-077`、`EXP-087`、`EXP-195`、`EXP-254`、`EXP-261`。
+- REUSED_EXP=EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-077,EXP-087,EXP-195,EXP-254,EXP-261
+- ERR1721_STATUS=CLOSED_BY_P1_A03_FIX3_AND_67_OF_67_DIRECT_CONSUMER_TESTS
+
+## ERR-1722：FIX3 首次从仓库根调用 Vitest，包内测试未被根配置收集
+
+- **发生时间**：2026-10-05
+- **分类**：`VALIDATION_COMMAND_ERROR / TEST_RUNNER_SCOPE_MISMATCH`。
+- **事实证据**：从仓库根执行 `.\node_modules\.bin\vitest.exe run packages/daemon-core/tests/unit/...` 后，Vitest 4.1.5 返回 `No test files found`，并明确显示根配置 `include: tests/**/*.test.ts`；退出码 1、执行用例数 0，不能形成测试通过或失败结论。
+- **根因**：把包内文件路径作为根级 Vitest filter，未遵守 daemon-core 包自己的测试收集根与配置边界。
+- **纠正与防复发**：改在 `packages/daemon-core` 工作目录调用同一已安装 Vitest，并使用 `tests/unit/...` 相对路径；保留首次非零结果，不重复使用根级入口。
+- **类防护（复用，不新增）**：`EXP-002`、`EXP-007`、`EXP-011`、`EXP-016`、`EXP-117`。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-117
+- ERR1722_STATUS=CLOSED_BY_PACKAGE_LOCAL_RETRY_5_FILES_67_TESTS_PASS
