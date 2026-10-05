@@ -30365,3 +30365,13 @@ PowerShell 载体输出内部退出码必须使用 `$LASTEXITCODE`（禁止 `$?`
 - **类防护（复用，不新增）**：`EXP-002`、`EXP-007`、`EXP-011`、`EXP-016`、`EXP-117`。
 - REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-117
 - ERR1722_STATUS=CLOSED_BY_PACKAGE_LOCAL_RETRY_5_FILES_67_TESTS_PASS
+
+## ERR-1723：FIX3 合并前首次远端 main 复核遭遇 GitHub TLS 握手失败
+
+- **发生时间**：2026-10-05
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / NETWORK_EVIDENCE_GAP`。
+- **事实证据**：实现提交 `e24e4c34` 创建后，首次执行 `git ls-remote origin refs/heads/main` 返回 `schannel: failed to receive handshake, SSL/TLS connection failed`，退出码 1；该命令没有返回 remote ref，因此不能证明远端一致或漂移，也没有仓库写入。
+- **纠正与防复发**：保留本次非零结果；在 merge/push 前重新执行只读 live-ref 核验，只有取得唯一 `refs/heads/main` SHA 且与预期基线一致后才继续。禁止使用前一轮缓存的 remote HEAD 代替当前 live ref。
+- **类防护（复用，不新增）**：`EXP-002`、`EXP-007`、`EXP-016`、`EXP-113`、`EXP-200`、`EXP-238`。
+- REUSED_EXP=EXP-002,EXP-007,EXP-016,EXP-113,EXP-200,EXP-238
+- ERR1723_STATUS=CLOSED_RETRY_CONFIRMED_REMOTE_MAIN_750D4EED
