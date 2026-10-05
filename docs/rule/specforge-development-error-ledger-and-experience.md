@@ -30384,4 +30384,4 @@ PowerShell 载体输出内部退出码必须使用 `$LASTEXITCODE`（禁止 `$?`
 - **纠正与防复发**：分支切换、合并等需要写入 `.git` 元数据的动作必须使用经用户授权的提升权限；失败后先核验锁文件和分支未漂移，再只重试原动作，不删除未知锁文件、不绕过 Git 元数据保护。
 - **类防护（复用，不新增）**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-016`、`EXP-018`。
 - REUSED_EXP=EXP-002,EXP-007,EXP-008,EXP-016,EXP-018
-- ERR1724_STATUS=OPEN_PENDING_ESCALATED_GIT_SWITCH_RETRY
+- ERR1724_STATUS=CLOSED_BY_ESCALATED_SWITCH_AND_FAST_FORWARD_MAIN_TO_CBFD37A4
