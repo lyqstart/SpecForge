@@ -30524,3 +30524,15 @@ PowerShell 载体输出内部退出码必须使用 `$LASTEXITCODE`（禁止 `$?`
 - **类防护（复用，不新增）**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-016`、`EXP-113`、`EXP-262`。
 - REUSED_EXP=EXP-002,EXP-007,EXP-008,EXP-011,EXP-016,EXP-113,EXP-262
 - ERR1735_STATUS=CLOSED_BY_REAL_PATH_ENUMERATION_AND_CONTROLLED_STATE_READ_REQUIRED
+
+## ERR-1736：受控状态读取首次调用被沙箱拒绝访问 handshake，PowerShell 非终止错误又造成外层 exit 0
+
+- **发生时间**：2026-10-06
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / COMMAND_EXIT_CODE_DEFECT / CONTROLLED_TOOL_INVOCATION_FAILURE`。
+- **事实证据**：首次从 Codex 调用用户级 Daemon 的 `sf_state_read` 时，沙箱拒绝读取 `C:\Users\lyq\.config\opencode\sf-user\runtime\handshake.json`；后续请求因没有有效端口而连接失败。PowerShell 默认把这些作为非终止错误继续执行并输出 `null`，外层载体却报告 exit 0。响应不含 Daemon 成功 envelope，不能作为 WI-0001 状态证据；两个仓库均未被该命令写入。
+- **影响**：当前仍未取得权威状态；若只看外层 exit 0 或 `null`，会把执行环境失败误判为工具成功并越过恢复门禁。
+- **根因**：读取用户级受限路径时未预先申请提升权限，命令也未设置 `$ErrorActionPreference='Stop'` 和成功 envelope 断言，导致内部失败没有传播成数字非零退出码。
+- **纠正与防复发**：调用用户级 Daemon 前显式使用授权的提升权限；PowerShell 载体设置 `$ErrorActionPreference='Stop'`，并同时验证 HTTP 成功、响应 `success=true` 与非空 `data`，任一不满足即显式退出非零。首次失败永久保留，不以重试覆盖。
+- **类防护（复用，不新增）**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-016`、`EXP-082`、`EXP-113`。
+- REUSED_EXP=EXP-002,EXP-007,EXP-008,EXP-011,EXP-016,EXP-082,EXP-113
+- ERR1736_STATUS=OPEN_PENDING_ESCALATED_CONTROLLED_STATE_READ
