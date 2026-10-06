@@ -9,6 +9,8 @@ import { cmdInstall, cmdUpgrade } from '../../../scripts/sf-installer';
 
 const candidateRoot = resolve(import.meta.dirname, '../../..');
 const tempRoots: string[] = [];
+const INSTALLER_INTEGRATION_TIMEOUT_MS = 30_000;
+
 afterEach(async () => {
   await Promise.all(tempRoots.splice(0).map((root) => rm(root, { recursive: true, force: true })));
 });
@@ -87,7 +89,7 @@ describe('current repository installer manifest consumption', () => {
     ) as { schema_version: string; files: Record<string, unknown> };
     expect(installedManifest.schema_version).toBe('1.0');
     expect(Object.keys(installedManifest.files)).toHaveLength(release.files.length);
-  });
+  }, INSTALLER_INTEGRATION_TIMEOUT_MS);
 
   it('rolls back earlier replacements when a later current upgrade mutation fails', async () => {
     const tempRoot = await mkdtemp(join(tmpdir(), 'specforge-current-upgrade-failure-'));
@@ -134,5 +136,5 @@ describe('current repository installer manifest consumption', () => {
     await expect(readFile(join(installRoot, 'sf-user', 'upgrade_journal.json'), 'utf8')).rejects.toMatchObject({
       code: 'ENOENT',
     });
-  });
+  }, INSTALLER_INTEGRATION_TIMEOUT_MS);
 });

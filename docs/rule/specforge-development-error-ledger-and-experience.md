@@ -30711,3 +30711,36 @@ PowerShell 载体输出内部退出码必须使用 `$LASTEXITCODE`（禁止 `$?`
 - **纠正与防复发**：保留失败输出，通过独立远端 ref 和完整 Bootstrap 两项成功证据关闭；不得用先前推送成功输出替代最终回读。
 - REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-082,EXP-113
 - ERR1752_STATUS=CLOSED_BY_REMOTE_READBACK_AND_BOOTSTRAP_READY
+
+- ERR1747_STATUS=CLOSED_BY_TWO_TEST_30_SECOND_BUDGET_ISOLATED_3_OF_3_SCOPE_GATE_134_OF_134_AND_FULL_REGRESSION
+
+## ERR-1753：活动规则定向检索把预期无匹配当作命令失败
+
+- **发生时间**：2026-10-07
+- **分类**：`EVIDENCE_COLLECTION_EXIT_CODE_ERROR / EXPECTED_NO_MATCH`。
+- **事实证据**：修改前按超时与备份关键词对活动规则执行一次窄 `rg` 检索，因没有精确短语匹配返回 exit 1；随后以更宽关键词检索并回到已完整读取的活动规则原文，确认适用 `EXP-118` 等规则。首次命令没有仓库写入。
+- **影响与根因**：延迟了适用规则确认，但没有遗漏规则门禁；根因是没有在负向检索中显式区分 `rg` 的“无匹配” exit 1 与执行错误 exit 2。
+- **纠正与防复发**：负向或探索性检索必须显式处理 exit 1，关键规则结论必须回到规则原文，不得把单次关键词无匹配解释为规则不存在。
+- REUSED_EXP=EXP-002,EXP-007,EXP-008,EXP-011,EXP-016,EXP-087
+- ERR1753_STATUS=CLOSED_BY_BROADER_SEARCH_AND_DIRECT_RULE_TEXT_CONFIRMATION
+
+## ERR-1754：未跟踪治理方案备份与可达 Git 历史完全重复并持续制造工作区噪声
+
+- **发生时间**：2026-10-07
+- **分类**：`GOVERNANCE_ARTIFACT_DUPLICATION / RECOVERABLE_UNTRACKED_BACKUP`。
+- **事实证据**：备份文件 SHA-256 为 `0b930c9cddcb16162c11742d680975bbd041d1f76f8d6c4aa147e71620d76578`，raw Git blob 为 `2337410d522c23bf242393371b27fec669ff226f`；当前 `main` 的可达祖先提交 `d1a6cd3cbe3b67be9aa71c172fdeb1c132d03f47` 在同一路径保存完全相同 blob。当前 217 行活动合同与 4462 行归档历史各有独立角色，但该未跟踪备份没有任何独有字节。
+- **影响与根因**：备份长期造成 Bootstrap `WORKTREE_CHANGES_REQUIRE_REVIEW` 警告并增加“活动合同/归档/备份”三份治理方案的认知负担；它是历史工作副本，不是当前权威或独立审计证据。
+- **纠正与防复发**：经产品负责人明确授权，在解析路径、校验 SHA 与历史 blob 后仅以精确字面路径删除；不递归、不改写历史。需要时可从上述提交/blob 按原字节恢复。
+- **验证**：删除后路径不存在且 `git status` 不再出现该未跟踪文件；scope-gate 单文件 3/3、全包 134/134、根级当前 60 文件 767/767、全工作区回归与完整构建均通过。
+- REUSED_EXP=EXP-001,EXP-002,EXP-007,EXP-011,EXP-017,EXP-060,EXP-087,EXP-107,EXP-118
+- ERR1754_STATUS=CLOSED_BY_EXACT_HISTORY_PROOF_AND_AUTHORIZED_LITERAL_PATH_DELETION
+
+## ERR-1755：账本追加补丁再次手工错写 hunk 新行数
+
+- **发生时间**：2026-10-07
+- **分类**：`EVIDENCE_LEDGER_PATCH_DEFECT / REPEATED_MANUAL_LINE_COUNT_ERROR`。
+- **事实证据**：首次生成本次账本尾部追加补丁时把 1 行上下文加 23 行新增误写为新侧 25 行，`git apply --check` 返回 `corrupt patch`、exit 128；检查失败发生在应用前，账本未被修改。
+- **影响与根因**：治理记录追加被延迟；直接重复了 ERR-1744 的手工 hunk 行数错误，说明仅凭目测计数仍不足以执行该经验规则。
+- **纠正与防复发**：按补丁实际物理行重新计算并先执行 `git apply --check`；今后账本尾追加 hunk 行数必须由行计数结果得出，禁止估算。失败补录与业务闭环置于同一经校验追加补丁。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-021,EXP-087
+- ERR1755_STATUS=CLOSED_BY_RECOUNTED_HUNK_AND_PREAPPLY_CHECK
