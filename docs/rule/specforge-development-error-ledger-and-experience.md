@@ -30473,3 +30473,15 @@ PowerShell 载体输出内部退出码必须使用 `$LASTEXITCODE`（禁止 `$?`
 - **类防护（复用，不新增）**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-016`、`EXP-102`、`EXP-113`。
 - REUSED_EXP=EXP-002,EXP-007,EXP-008,EXP-011,EXP-016,EXP-102,EXP-113
 - ERR1731_STATUS=CLOSED_BY_FORMAL_BUILD_AND_FULL_REGRESSION_EXIT_ZERO
+
+## ERR-1732：1.0.5 首次显式 push 无输出超时且远端保持原基线
+
+- **发生时间**：2026-10-06
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / NETWORK_TIMEOUT / EXTERNAL_STATE_UNCERTAINTY`。
+- **事实证据**：本地 `main@729c5970` 与 annotated tag `specforge-v1.0.5` 创建后，执行无 force 的显式 SHA refspec push；命令 124 秒无 stdout/stderr 后由执行器以 exit 124 终止。未把超时解释为未推送；随后独立执行 `git ls-remote origin refs/heads/main refs/tags/specforge-v1.0.5 refs/tags/specforge-v1.0.5^{}` exit 0，确认远端 main 仍为 `e0fd8c5d` 且 1.0.5 标签不存在。
+- **影响**：首次 push 没有改变远端；本地 main 与未发布标签仍完整。远端回读前不得重试，否则可能重复或误判外部写入。
+- **根因**：现有证据只支持网络/执行载体超时，不能进一步确定传输层具体原因；产品源码与 Git 提交内容未受影响。
+- **纠正与防复发**：所有无回执外部写入先用独立只读 API/ref 查询消除不确定性；仅在远端确认保持精确旧基线、目标标签不存在时，才允许重试同一非 force 显式 refspec。首次非零结果永久保留。
+- **类防护（复用，不新增）**：`EXP-002`、`EXP-007`、`EXP-016`、`EXP-082`、`EXP-113`、`EXP-200`、`EXP-238`。
+- REUSED_EXP=EXP-002,EXP-007,EXP-016,EXP-082,EXP-113,EXP-200,EXP-238
+- ERR1732_STATUS=REMOTE_END_STATE_CONFIRMED_UNCHANGED_RETRY_AUTHORIZED
