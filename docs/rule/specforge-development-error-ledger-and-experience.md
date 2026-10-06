@@ -30701,3 +30701,13 @@ PowerShell 载体输出内部退出码必须使用 `$LASTEXITCODE`（禁止 `$?`
 - **纠正与防复发**：需要写 Git 索引的 add/commit 操作直接使用批准的提升边界，并在每次操作后用 cached diff 与 status 核验。
 - REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-087
 - ERR1751_STATUS=CLOSED_BY_ESCALATED_EXACT_PATH_STAGING
+
+## ERR-1752：追加纠正提交推送后的首次最终 Bootstrap 再次遭遇 GitHub TLS 握手失败
+
+- **发生时间**：2026-10-06
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / TRANSIENT_REMOTE_EVIDENCE_GAP`。
+- **事实证据**：纠正提交已成功推送后，首次最终 Bootstrap 报 schannel TLS 握手失败、`REMOTE_HEAD=NOT_CHECKED`、`BOOTSTRAP_STATUS=BLOCKED`。紧接着独立 `git ls-remote` 成功返回远端 main 等于本地纠正提交，随后完整 Bootstrap 返回 READY、ISSUES=NONE。
+- **影响与根因**：第一次最终回读不能证明远端状态；瞬时 TLS 失败没有产生仓库写入，也没有证明代码或治理合同缺陷。
+- **纠正与防复发**：保留失败输出，通过独立远端 ref 和完整 Bootstrap 两项成功证据关闭；不得用先前推送成功输出替代最终回读。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-082,EXP-113
+- ERR1752_STATUS=CLOSED_BY_REMOTE_READBACK_AND_BOOTSTRAP_READY
