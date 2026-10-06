@@ -111,7 +111,8 @@ describe('Gate Attempt project-root input snapshot semantics', () => {
       join(repoRoot, 'docs/rule/specforge-development-error-ledger-and-experience.md'),
       'utf-8',
     );
-    expect(authority).toContain('process.cwd()');
+    expect(authority).toContain('字段级 Schema、工具参数和实现算法必须由版本化源码或专门 Contract');
+    expect(authority).not.toContain('process.cwd()');
     for (const token of ['ERR-187', 'ERR-188', 'EXP-159', 'EXP-160']) {
       expect(ledger).toContain(token);
     }

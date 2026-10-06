@@ -15,19 +15,23 @@ function between(text: string, start: string, end: string): string {
   return text.slice(startIndex, endIndex);
 }
 
-function prompt(text: string): string {
-  return between(
-    text,
-    '<!-- SPECFORGE_NEW_SESSION_PROMPT:START -->',
-    '<!-- SPECFORGE_NEW_SESSION_PROMPT:END -->',
-  );
-}
-
 describe('SpecForge closed-loop governance contract', () => {
-  it('defines one canonical closed-loop rule in pre-change governance', async () => {
+  it('defines one canonical pre-change and closed-loop sequence', async () => {
     const authority = await readFile(authorityPath, 'utf8');
-    expect(authority.split('**GOV-CLOSELOOP-001：**').length - 1).toBe(1);
-    const section = between(authority, '**GOV-CLOSELOOP-001：**', '### 2.3 架构变化必须在同一任务/WI闭环');
+    const pre = between(authority, '**GOV-PRE-001：**', '### 2.3 完整闭环');
+    const closedLoop = between(authority, '**GOV-CLOSELOOP-001：**', '### 2.4 范围变化');
+
+    for (const token of [
+      '目标与逐项完成标准',
+      '实际架构和完整 producer-consumer 链',
+      '首次偏离点与治理归属',
+      '最小完整方案、允许写入范围、测试计划和恢复点',
+      'CONFIRMED',
+      'INSUFFICIENT_EVIDENCE',
+    ]) {
+      expect(pre, token).toContain(token);
+    }
+
     for (const token of [
       '业务 / 治理目标',
       'canonical semantic source / Contract / Schema',
@@ -36,30 +40,18 @@ describe('SpecForge closed-loop governance contract', () => {
       'direct Consumer',
       'Gate / Runtime enforcement',
       'downstream Consumer',
-      '具体代码 / Schema / Agent guidance / Template / Doc 落点',
-      '真实 Producer 原始输出回归',
+      '自动化测试与真实 Producer 回归',
       'GOAL_ID | GUARANTEE | CANONICAL_SOURCE',
       'MODIFICATION_COMPLETE=NO',
     ]) {
-      expect(section, token).toContain(token);
+      expect(closedLoop, token).toContain(token);
     }
   });
 
-  it('requires complete preconclusion and re-freezes scope when the chain grows', async () => {
+  it('re-freezes scope when the discovered consumer chain grows', async () => {
     const authority = await readFile(authorityPath, 'utf8');
-    const pre = between(authority, '**GOV-PRE-001：**', '**GOV-CLOSELOOP-001：**');
-    for (const token of [
-      '最终治理目标（必须可逐项判定 PASS / FAIL）',
-      '当前确认根因',
-      '完整 producer-consumer 链',
-      'canonical semantic source / Contract / Schema',
-      '各治理要求的具体实现落点',
-      '各治理目标的验证方法',
-      '修改后反向验收矩阵',
-    ]) {
-      expect(pre, token).toContain(token);
-    }
-    const scope = between(authority, '**GOV-SCOPE-001：**', '### 2.5 修改后治理闭环');
+    const scope = between(authority, '**GOV-SCOPE-001：**', '### 2.5 修改后验收');
+
     for (const token of [
       'Producer',
       'Parser / Normalizer',
@@ -77,7 +69,8 @@ describe('SpecForge closed-loop governance contract', () => {
 
   it('requires goal-by-goal reverse acceptance after modification', async () => {
     const authority = await readFile(authorityPath, 'utf8');
-    const post = between(authority, '**GOV-POST-001：**', '### 2.6 Fail Closed 与证据不足');
+    const post = between(authority, '**GOV-POST-001：**', '### 2.6 Fail closed 与证据');
+
     for (const token of [
       'POST_CHANGE_GOAL_RECONCILIATION',
       'CANONICAL_SEMANTIC_SOURCE_RECONCILIATION=PASS|FAIL|INSUFFICIENT_EVIDENCE',
@@ -87,31 +80,27 @@ describe('SpecForge closed-loop governance contract', () => {
       'DOWNSTREAM_CONSUMER_RECONCILIATION=PASS|FAIL|INSUFFICIENT_EVIDENCE',
       'REAL_PRODUCER_REGRESSION=PASS|FAIL|NOT_APPLICABLE|INSUFFICIENT_EVIDENCE',
       'PARALLEL_SEMANTIC_SOURCE_AUDIT=PASS|FAIL|INSUFFICIENT_EVIDENCE',
-      'MODIFICATION_COMPLETE=YES',
-      '不能替代治理目标反向验收',
+      'MODIFICATION_COMPLETE=YES|NO',
     ]) {
       expect(post, token).toContain(token);
     }
+    expect(post).toContain('普通测试通过不能替代治理目标验收');
   });
 
-  it('loads closed-loop governance from the fixed new-session prompt and Rule index', async () => {
+  it('loads continuity from AGENTS, Bootstrap and project-status instead of a fixed prompt', async () => {
     const authority = await readFile(authorityPath, 'utf8');
-    const fixedPrompt = prompt(authority);
+    const continuity = between(authority, '**GOV-CONT-001：**', '### 1.3 执行模式与经验规则');
+
     for (const token of [
-      'GOVERNANCE_PRECONCLUSION_CLOSED_LOOP_REQUIRED=YES',
-      'GOVERNANCE_CLOSED_LOOP_RULE=GOV-CLOSELOOP-001',
-      'GOVERNANCE_CLOSED_LOOP_CHAIN=GOAL>FACTS>ROOT_CAUSE>CANONICAL_SOURCE>PRODUCER>NORMALIZER>DIRECT_CONSUMER>GATE_RUNTIME>DOWNSTREAM_CONSUMER>IMPLEMENTATION_LOCATIONS>TESTS>POST_ACCEPTANCE',
-      'GOVERNANCE_PARALLEL_SEMANTIC_SOURCE_ALLOWED=NO',
-      'GOVERNANCE_REQUIREMENT_TO_IMPLEMENTATION_MAPPING_REQUIRED=YES',
-      'GOVERNANCE_WRITE_SCOPE_FREEZE_REQUIRED=YES',
-      'REAL_PRODUCER_REGRESSION_WHEN_APPLICABLE=REQUIRED',
-      'POST_CHANGE_GOAL_RECONCILIATION_REQUIRED=YES',
-      'ORDINARY_TEST_PASS_SUBSTITUTES_GOVERNANCE_ACCEPTANCE=NO',
-      '`GOV-PRE-001 + GOV-CLOSELOOP-001 + GOV-SCOPE-001`',
-      '`GOV-POST-001 + GOV-EVID-001`',
+      'AGENTS.md',
+      'node scripts/project-session-bootstrap.mjs',
+      'REQUIRED_RULES',
+      'docs/project-status.md 的 NEXT_LEGAL_ACTION',
+      'BOOTSTRAP_STATUS=BLOCKED',
+      'fail closed',
     ]) {
-      expect(fixedPrompt, token).toContain(token);
+      expect(continuity, token).toContain(token);
     }
-    expect(authority.split('| `GOV-CLOSELOOP-001` | 2.2 SpecForge 自身开发：修改前治理 |').length - 1).toBe(1);
+    expect(authority).not.toContain('SPECFORGE_NEW_SESSION_PROMPT:START');
   });
 });

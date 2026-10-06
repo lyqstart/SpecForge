@@ -46,7 +46,7 @@ function validatorSection(): string {
   const text = readFileSync(authority, "utf8").replace(/\r\n/g, "\n");
   const start = text.indexOf("**GOV-STAGE-VALIDATOR-001：**");
   const end = text.indexOf(
-    "### 2.10 Delivery、Receipt 与 Delivery Identity",
+    "### 3.2 Gate attempt 与恢复",
     start,
   );
   expect(start).toBeGreaterThanOrEqual(0);

@@ -21,6 +21,10 @@
 | `reports/`, `audit/`, `audits/`, `bootstrap/`, `validation/` | 验证、审计、发布与启动证据 | 保留不可丢失；不能反向决定当前产品 |
 | `proposals/`, `prompts/`, `releases/`, `root/` | 旧提案、交接提示、发布记录与原 docs 根散落文档 | 历史参考，不是当前入口 |
 
+关键快照：
+
+- `design/SpecForge架构一致性治理最终实施方案.full-history-20261006.md`：当前精简合同建立前的完整 4462 行治理实施方案，原始 SHA-256 为 `25861569ced52f8017a68c7c9765c32c376b25afe70568e924db3eed5380b7d8`。
+
 ## 消费者分类
 
 - `REAL_RUNTIME_CONSUMER`：不得读取本目录来决定当前运行行为。

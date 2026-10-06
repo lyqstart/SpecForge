@@ -30554,3 +30554,129 @@ PowerShell 载体输出内部退出码必须使用 `$LASTEXITCODE`（禁止 `$?`
 - ERR1727_STATUS=CLOSED_BY_1_0_5_REAL_DEPLOYMENT_AND_DAEMON_LIFECYCLE_ACCEPTANCE
 - ERR1728_STATUS=CLOSED_BY_1_0_5_DEPLOYMENT_ATTEMPT_0005_FORMAL_PASS_AND_WI0001_POST_MERGE_VERIFICATION
 - REAL_PROJECT_PILOT_STATUS=CLOSED_AND_GIT_MERGED_AT_T1_MAIN_D1E4A66
+
+## ERR-1738：治理方案消费者清点命令把 foreach 语句直接接到管道导致 PowerShell 解析失败
+
+- **发生时间**：2026-10-06
+- **分类**：`EVIDENCE_COLLECTION_COMMAND_ERROR / POWERSHELL_SYNTAX_ERROR`。
+- **事实证据**：为统计治理方案直接消费者测试文件行数而执行的只读 PowerShell 命令，将 `foreach (...) { ... }` 语句直接接到 `| Format-Table`，解析器返回 `An empty pipe element is not allowed`、exit 1。命令在读取目标文件前失败，仓库没有写入。
+- **影响**：消费者清点尚未完成；该失败不能用于判断文件是否存在或测试覆盖范围。
+- **根因**：未将 `foreach` 输出包装为可进入管道的表达式，也没有先以最小命令验证 PowerShell 语法。
+- **纠正与防复发**：重试时使用数组包装 `@(foreach (...) { ... })` 后再格式化，或直接逐行输出；首次失败永久保留，不把语法错误解释为产品或文档缺陷。
+- **类防护（复用，不新增）**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-016`、`EXP-065`。
+- REUSED_EXP=EXP-002,EXP-007,EXP-008,EXP-011,EXP-016,EXP-065
+- ERR1738_STATUS=OPEN_PENDING_CORRECTED_READ_ONLY_CONSUMER_INVENTORY
+- ERR1738_STATUS=CLOSED_BY_ARRAY_WRAPPED_READ_ONLY_INVENTORY_7_FILES
+
+## ERR-1739：治理方案消费者清单沿用了两个已经迁移的测试路径
+
+- **发生时间**：2026-10-06
+- **分类**：`EVIDENCE_COLLECTION_PATH_ERROR / STALE_PATH_ASSUMPTION`。
+- **事实证据**：只读清点成功读取五个目标文件后，对两个旧路径返回不存在、exit 1；`rg --files` 随后证明两文件实际位于 `packages/daemon-core/tests/unit/`。命令没有仓库写入。
+- **影响与根因**：第一次清点没有覆盖这两个消费者；历史记录中的路径被误当成了当前文件位置。
+- **纠正与防复发**：先从当前工作树枚举真实路径，再读取内容；历史报告路径只作线索。
+- REUSED_EXP=EXP-002,EXP-007,EXP-008,EXP-011,EXP-016,EXP-087
+- ERR1739_STATUS=CLOSED_BY_CURRENT_WORKTREE_PATH_ENUMERATION
+
+## ERR-1740：把 ADR 通配符作为字面路径传给 Windows rg 导致组合取证失败
+
+- **发生时间**：2026-10-06
+- **分类**：`EVIDENCE_COLLECTION_COMMAND_ERROR / WINDOWS_GLOB_ASSUMPTION`。
+- **事实证据**：组合只读命令把 `docs/adr/ADR-007*` 和 `ADR-013*` 直接传给 `rg`，Windows 返回文件名语法错误、exit 1；随后以 `rg --files` 获取两个精确路径并完成读取。命令没有仓库写入。
+- **影响与根因**：并行命令组被整体标为失败；错误假设 PowerShell/rg 会按预期展开参数内通配符。
+- **纠正与防复发**：先枚举再传入明确路径；多个独立取证命令不得让一个无效路径遮蔽其他结果。
+- REUSED_EXP=EXP-002,EXP-007,EXP-008,EXP-011,EXP-016,EXP-065
+- ERR1740_STATUS=CLOSED_BY_EXACT_ADR_PATH_ENUMERATION
+
+## ERR-1741：归档移动首次使用 git mv 时沙箱拒绝创建 index.lock
+
+- **发生时间**：2026-10-06
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / GIT_INDEX_WRITE_DENIED`。
+- **事实证据**：`git mv` 返回 `Unable to create .git/index.lock: Permission denied`、exit 128，源文件和目标文件未变化。随后在确认源、目标均位于仓库且目标不存在后，以精确 `Move-Item` 完成工作树移动；移动前后 SHA-256 同为 `25861569...b0b7d8`。
+- **影响与根因**：Git 索引未能直接记录 rename；原因是当前沙箱只读 `.git`，不是仓库冲突。
+- **纠正与防复发**：工作树内授权归档可使用已校验的精确移动，最后由 `git diff --summary` 与哈希验证 rename；不得扩大到递归或未解析路径。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-087,EXP-113
+- ERR1741_STATUS=CLOSED_BY_BOUNDED_MOVE_AND_SHA256_IDENTITY_CHECK
+
+## ERR-1742：治理消费者测试连续三次使用了错误载体或工作目录
+
+- **发生时间**：2026-10-06
+- **分类**：`TEST_INVOCATION_ERROR / ZERO_TEST_EXECUTION / FALSE_SUCCESS_RISK`。
+- **事实证据**：第一次调用不存在的根 `node_modules/.bin/vitest.cmd`，exit 1；第二次 Bun 参数顺序只打印帮助却 exit 0；第三次从仓库根调用 daemon-core Vitest，配置只匹配包内 `tests/**`，报告 `No test files found`、exit 1。三次均未执行断言。改在 `packages/daemon-core` 工作目录调用版本化 `node_modules/.bin/vitest.exe` 后，真实测试启动。
+- **影响与根因**：延迟验证，并暴露“exit 0 不等于目标动作已发生”；未先核对包脚本、二进制位置、配置 include 与工作目录。
+- **纠正与防复发**：测试前同时验证载体存在、工作目录和收集数量；0 tests 或仅帮助输出一律不得计为 PASS。
+- REUSED_EXP=EXP-002,EXP-007,EXP-008,EXP-011,EXP-016,EXP-033,EXP-065
+- ERR1742_STATUS=CLOSED_BY_PACKAGE_LOCAL_VITEST_AND_NONZERO_COLLECTION
+
+## ERR-1743：新治理合同测试把规则定义和合法交叉引用按裸 ID 重复计数
+
+- **发生时间**：2026-10-06
+- **分类**：`TEST_ASSERTION_DEFECT / SEMANTIC_BOUNDARY_ERROR`。
+- **事实证据**：首轮真实定向测试为 84/85，唯一失败称 `GOV-PRE-001` 出现 2 次；检查证明一次是规范定义 `**GOV-PRE-001：**`，一次是 `GOV-SCOPE-001` 中要求重新执行该规则的合法引用。文档没有重复定义。
+- **影响与根因**：测试误报活动合同重复规则；断言统计裸 ID，没有区分定义标记和引用。
+- **纠正与防复发**：只对规范定义标记计数，交叉引用允许重复；修正后同组 10 文件 85/85 通过。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-032,EXP-033,EXP-087
+- ERR1743_STATUS=CLOSED_BY_CANONICAL_DEFINITION_MARKER_ASSERTION_AND_85_OF_85_PASS
+
+## ERR-1744：手写统一补丁的 hunk 新行数小于实际内容导致 ERR-1743 尾部未追加
+
+- **发生时间**：2026-10-06
+- **分类**：`EVIDENCE_LEDGER_PATCH_DEFECT / MANUAL_LINE_COUNT_ERROR`。
+- **事实证据**：用于绕过历史账本非 UTF-8 字节的临时统一补丁把 hunk 声明为 48 行，Git 应用后账本停在 ERR-1743 的“影响与根因”，预期的纠正、复用 EXP 和关闭状态未出现；`git diff` 证明此前只发生尾部追加，既有内容未改写。
+- **影响与根因**：ERR-1743 一度是不完整记录；根因是手工维护 unified diff 行数，没有在应用后立即检查文件 EOF。
+- **纠正与防复发**：由脚本按实际追加文本行数生成 hunk；应用后同时检查 EOF、`git diff --numstat` 和完整新增段落。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-021,EXP-087
+- ERR1744_STATUS=CLOSED_BY_PROGRAMMATIC_HUNK_COUNT_AND_EOF_AUDIT
+
+## ERR-1745：修改后 Bootstrap 两次因 GitHub 网络连接失败而阻断
+
+- **发生时间**：2026-10-06
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / REMOTE_EVIDENCE_GAP`。
+- **事实证据**：沙箱内 Bootstrap 报 `Could not connect to server`，提升后首次重试报 schannel TLS 握手失败，均为 `BOOTSTRAP_STATUS=BLOCKED` 且 `REMOTE_HEAD=NOT_CHECKED`。稍后独立只读 `git ls-remote origin refs/heads/main` 成功返回 `ace758da...`，与本地 HEAD 一致。
+- **影响与根因**：精简合同的本地解析已成功，但当时缺少完整 Bootstrap READY 输出；网络连接失败不是仓库或合同缺陷。
+- **纠正与防复发**：保留两次失败；网络恢复后只读核验 remote ref，再按批准边界重跑完整 Bootstrap，未取得 READY 前不得把该项记为通过。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-082,EXP-113
+- ERR1745_STATUS=REMOTE_REF_RECOVERED_BOOTSTRAP_READY_PENDING
+
+## ERR-1746：完整测试首次运行被 124 秒命令载体上限终止
+
+- **发生时间**：2026-10-06
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / TEST_CARRIER_TIMEOUT`。
+- **事实证据**：官方 `bun run test` 首次执行在 124.1 秒被外层命令超时终止、exit 124，没有正式测试终态。确认无本轮残留 Bun/Vitest 进程后，以 10 分钟上限重跑取得完整结果。
+- **影响与根因**：第一次运行只能视为 `INSUFFICIENT_EVIDENCE`；载体上限短于仓库顺序 workspace 回归耗时。
+- **纠正与防复发**：完整回归使用覆盖预期最坏耗时的上限并等待数字终态；载体超时不得解释为产品测试失败。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-033,EXP-065
+- ERR1746_STATUS=CLOSED_BY_LONGER_CARRIER_AND_COMPLETE_TEST_RESULT
+
+## ERR-1747：scope-gate 两个安装器集成用例在默认 10 秒阈值下稳定超时
+
+- **发生时间**：2026-10-06
+- **分类**：`VALIDATION_HARNESS_TIMING_DEFECT / NONBLOCKING_UNRELATED_REGRESSION`。
+- **事实证据**：完整回归中 root 60 文件 767/767 通过，但 scope-gate 为 132/134；隔离重跑仍有同两个升级/回滚用例在 10000ms 超时。相同文件仅以 `--testTimeout=30000` 运行时 3/3 通过，日志证明安装、升级和故障回滚均完成。该测试不读取本任务修改的文档，且本任务没有修改安装器源码或该测试。
+- **影响与根因**：官方默认全量套件当前不是全绿；现有证据支持测试时间阈值与当前 Windows I/O 时长不匹配，不支持把它归因于治理合同精简。
+- **纠正与防复发**：本任务不静默扩大到安装器测试阈值；保留默认失败与 30 秒诊断通过结果，作为独立待处理验证器问题。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-032,EXP-033,EXP-087
+- ERR1747_STATUS=OPEN_SEPARATE_VALIDATION_HARNESS_TIMEOUT_REVIEW
+
+## ERR-1748：预期“无匹配”的依赖检索作为组合命令末项返回 exit 1
+
+- **发生时间**：2026-10-06
+- **分类**：`EVIDENCE_COLLECTION_EXIT_CODE_ERROR / EXPECTED_NO_MATCH`。
+- **事实证据**：在状态、diff 统计后检索安装器测试是否引用本次变更文档，`rg` 无匹配返回 exit 1，使工具把整个组合命令标为失败；前置只读输出仍有效。重试显式区分 exit 1 后得到 `INSTALLER_TEST_CHANGED_DOC_DEPENDENCIES=NONE`。
+- **影响与根因**：没有仓库写入；未预先把“期望无匹配”映射为成功证据。
+- **纠正与防复发**：负向搜索必须显式处理 rg exit 1，并保留 exit 2/执行错误为失败。
+- REUSED_EXP=EXP-002,EXP-007,EXP-008,EXP-011,EXP-016
+- ERR1748_STATUS=CLOSED_BY_EXPLICIT_NO_MATCH_EXIT_HANDLING
+
+## ERR-1749：远端恢复后的提升 Bootstrap 被审批服务流中断拒绝
+
+- **发生时间**：2026-10-06
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / APPROVAL_SERVICE_FAILURE`。
+- **事实证据**：只读 `git ls-remote` 已成功确认远端 main 后，请求提升运行 Bootstrap；审批返回 `stream disconnected before completion` 并以风险拒绝结束，脚本没有启动，仓库没有写入。
+- **影响与根因**：仍缺修改后的正式 Bootstrap READY 输出；这是审批传输失败，不证明脚本或仓库有风险。
+- **纠正与防复发**：不得旁路或间接重试同一受拒动作；向用户披露后取得明确授权，再执行完整只读 Bootstrap。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-082
+- ERR1749_STATUS=OPEN_PENDING_EXPLICIT_USER_REAUTHORIZATION_FOR_READ_ONLY_BOOTSTRAP
+- ERR1745_STATUS=CLOSED_BY_EXPLICITLY_AUTHORIZED_BOOTSTRAP_READY_LOCAL_REMOTE_ACE758DA
+- ERR1747_STATUS=SEPARATE_FOLLOWUP_APPROVED_BY_USER_NO_SCOPE_EXPANSION_IN_THIS_RUN
+- ERR1749_STATUS=CLOSED_BY_EXPLICIT_USER_REAUTHORIZATION_AND_BOOTSTRAP_READY

@@ -43,6 +43,7 @@ SPS-1.0
 | docs/rule/specforge-active-development-rules.md | 当前活动开发规则（新会话必须完整读取）；经验规则唯一当前载体 | NO（DEVELOPMENT RULE） |
 | docs/rule/specforge-development-error-ledger-and-experience.md | 开发错误台账：历史错误、审计与经验演化证据；不再要求每会话全文读取，按任务关键词定向检索 | NO（HISTORICAL EVIDENCE + TARGETED SEARCH） |
 | docs/design/SpecForge架构一致性治理最终实施方案.md | 架构一致性与契约治理的从属技术合同 | NO |
+| docs/archive/design/SpecForge架构一致性治理最终实施方案.full-history-20261006.md | 2026-10-06 前完整治理实施方案的原样历史快照；只用于追溯规则演进 | NO（HISTORICAL EVIDENCE） |
 | docs/archive/** | 旧规格、旧标准、旧设计、实施记录、报告、审计与 Kiro 材料的统一历史归档 | NO |
 | docs/design/**（除上列从属合同外） | 当前不得新增并行设计权威；新增设计必须先登记角色 | NO |
 | .kiro/** | 根目录禁止存在；历史内容只可位于 docs/archive/kiro/** | FORBIDDEN ROOT |

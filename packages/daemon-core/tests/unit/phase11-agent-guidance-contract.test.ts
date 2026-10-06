@@ -11,15 +11,19 @@ const designPath = resolve(repoRoot, 'setup/userlevel-opencode/agents/sf-design.
 const orchestratorPath = resolve(repoRoot, 'setup/userlevel-opencode/agents/sf-orchestrator.md');
 
 describe('Phase 11 agent guidance authority contract', () => {
-  it('persists explicit OpenCode and WorkBuddy session modes in the unique authority', async () => {
+  it('keeps session continuity in the stable entry and dual execution-mode protocol', async () => {
     const authority = await readFile(authorityPath, 'utf8');
-    expect(authority.split('**GOV-STAGE-AGENT-SESSION-001：**').length - 1).toBe(1);
-    expect(authority.split('| `GOV-STAGE-AGENT-SESSION-001` | 2.8 Stage Execution Contract |').length - 1).toBe(1);
     for (const token of [
-      'OPEN_CODE_SESSION_MODE=CONTINUE_CURRENT_SESSION|START_NEW_SESSION|NOT_APPLICABLE',
-      'WORKBUDDY_SESSION_MODE=CONTINUE_CURRENT_SESSION|START_NEW_SESSION|NOT_APPLICABLE',
-      'OPEN_CODE_TASK=', 'WORKBUDDY_TASK=', 'USER_TASK=', 'CHATGPT_TASK=', 'STOP_CONDITION=',
+      'GOV-CONT-001',
+      'AGENTS.md',
+      'node scripts/project-session-bootstrap.mjs',
+      'docs/project-status.md 的 NEXT_LEGAL_ACTION',
+      'GOV-EXECUTION-MODE-001',
+      'CODEX_DIRECT',
+      'WORKBUDDY_COORDINATED',
+      'docs/rule/specforge-execution-mode-and-evidence-protocol.md',
     ]) expect(authority, token).toContain(token);
+    expect(authority).not.toContain('GOV-STAGE-AGENT-SESSION-001');
   });
 
   it('locks feature workflow to the canonical Impact Scope and Runtime-owned manifest', async () => {
