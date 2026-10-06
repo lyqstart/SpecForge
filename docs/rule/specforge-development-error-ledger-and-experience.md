@@ -30499,3 +30499,14 @@ PowerShell 载体输出内部退出码必须使用 `$LASTEXITCODE`（禁止 `$?`
 - ERR1732_STATUS=CLOSED_BY_REMOTE_READBACK_AND_EXPLICIT_RETRY_SUCCESS
 - ERR1733_STATUS=PARTIAL_INSTALL_CONFIRMED_INSTALLER_RECOVERY_PENDING
 - ERR1733_STATUS=CLOSED_BY_CONTROLLED_STOP_INSTALLER_ROLLBACK_RETRY_AND_1_0_5_LIFECYCLE_ACCEPTANCE
+
+## ERR-1734：部署验收状态提交后的远端 main 复核遭遇 GitHub TLS 握手失败
+
+- **发生时间**：2026-10-06
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / NETWORK_EVIDENCE_GAP`。
+- **事实证据**：本地部署验收状态提交 `046f2633` 创建后，执行 `git ls-remote origin refs/heads/main` 返回 `schannel: failed to receive handshake, SSL/TLS connection failed`，exit 1；命令未返回 remote ref，且只读失败没有远端或仓库写入。本地 HEAD 与受保护备份状态保持不变。
+- **影响**：不能用先前缓存的 `origin/main=80650480` 证明当前远端仍未移动，部署验收状态提交暂不得 push。
+- **纠正与防复发**：保留 TLS 非零结果；重新执行官方远端 ref 只读查询，只有取得唯一 40 位 main SHA 并确认它是本地 HEAD 的直接祖先时才允许显式非 force push。
+- **类防护（复用，不新增）**：`EXP-002`、`EXP-007`、`EXP-016`、`EXP-082`、`EXP-113`、`EXP-200`、`EXP-238`。
+- REUSED_EXP=EXP-002,EXP-007,EXP-016,EXP-082,EXP-113,EXP-200,EXP-238
+- ERR1734_STATUS=REMOTE_REF_EVIDENCE_PENDING_RETRY
