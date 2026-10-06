@@ -16,12 +16,12 @@ describe('current product version contract', () => {
     const identity = await loadProductIdentity(ROOT);
 
     expect(identity).toEqual({
-      version: '1.0.4',
+      version: '1.0.5',
       releaseId: 'specforge-current',
       tagPrefix: 'specforge-v',
       versionEpoch: 1,
     });
-    expect(expectedProductTag(identity)).toBe('specforge-v1.0.4');
+    expect(expectedProductTag(identity)).toBe('specforge-v1.0.5');
   });
 
   it('keeps every current workspace package on the product version', async () => {
@@ -45,7 +45,7 @@ describe('current product version contract', () => {
           }
         }),
     )).filter((version): version is string => version !== undefined);
-    expect(new Set(versions)).toEqual(new Set(['1.0.4']));
+    expect(new Set(versions)).toEqual(new Set(['1.0.5']));
   });
 
   it('projects the same release identity through current authority and release entrypoints', async () => {

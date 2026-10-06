@@ -21,11 +21,20 @@ const { mockDaemonClientConstructor } = vi.hoisted(() => ({
 
 // Mock the DaemonClient module
 vi.mock('../../src/http/DaemonClient', () => ({
-  DaemonClient: mockDaemonClientConstructor,
+  DaemonClient: class DaemonClientMock {
+    constructor(...args: unknown[]) {
+      return mockDaemonClientConstructor(...args);
+    }
+  },
 }));
 
 import { DaemonClient } from '../../src/http/DaemonClient';
-import { addDaemonCommands } from '../../src/commands/daemon';
+import {
+  addDaemonCommands,
+  commandStart,
+  commandStatus,
+  commandStop,
+} from '../../src/commands/daemon-client';
 
 // Get reference to the command functions from the module
 // We'll test through the yargs integration instead
@@ -147,7 +156,7 @@ describe('Command integration - mocked DaemonClient', () => {
       post: vi.fn(),
       get: vi.fn(),
     };
-    (DaemonClient as any).mockImplementation(() => mockClient);
+    mockDaemonClientConstructor.mockImplementation(() => mockClient);
   });
 
   afterEach(() => {
@@ -179,6 +188,62 @@ describe('Command integration - mocked DaemonClient', () => {
     const result = await client.post('/api/daemon/start', { detach: true });
     
     expect(result).toEqual({ success: true });
+  });
+
+  it('uses the current daemon health endpoint for status', async () => {
+    mockClient.get.mockResolvedValue({
+      schema_version: '1.0',
+      status: 'ok',
+      pid: 123,
+      version: '1.0.5',
+      uptimeSec: 5,
+      activeClients: 0,
+      pendingEvents: 0,
+    });
+    const output = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+
+    await commandStatus({} as any, new ModeSwitch(['--json']));
+
+    expect(mockClient.get).toHaveBeenCalledWith('/api/v1/healthz');
+    expect(JSON.parse(String(output.mock.calls[0]?.[0])).status).toBe('ok');
+  });
+
+  it('does not spawn a duplicate daemon when healthz confirms one is running', async () => {
+    mockClient.get.mockResolvedValue({
+      schema_version: '1.0',
+      status: 'ok',
+      pid: 456,
+      version: '1.0.5',
+    });
+    const output = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+
+    await commandStart(
+      { detach: true, bind: '127.0.0.1' } as any,
+      new ModeSwitch(['--json']),
+    );
+
+    expect(mockClient.get).toHaveBeenCalledWith('/api/v1/healthz', {
+      retry: false,
+      timeout: 1000,
+    });
+    expect(JSON.parse(String(output.mock.calls[0]?.[0]))).toMatchObject({
+      success: true,
+      already_running: true,
+      pid: 456,
+    });
+  });
+
+  it('uses the authenticated daemon admin endpoint for stop', async () => {
+    mockClient.post.mockResolvedValue({
+      success: true,
+      data: { message: 'shutdown initiated' },
+    });
+    const output = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+
+    await commandStop({} as any, new ModeSwitch(['--json']));
+
+    expect(mockClient.post).toHaveBeenCalledWith('/api/v1/admin/stop');
+    expect(JSON.parse(String(output.mock.calls[0]?.[0])).success).toBe(true);
   });
 });
 

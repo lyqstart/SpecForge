@@ -11,6 +11,8 @@ import {
   resolveSpecModuleIdentity,
 } from '@specforge/types';
 import { evaluateChangedFilesAuditVerdict } from './changed-files-audit-verdict.js';
+import { readGovernedRegenerableArtifacts } from './regenerable-artifact-governance.js';
+import { readTrustedGitGovernanceProjectWrites } from './git-governance-write-provenance.js';
 import {
   applyGovernanceTraceDelta,
   compareGovernanceTraceEdges,
@@ -2056,6 +2058,24 @@ export async function auditActualGovernanceScope(input: {
   const manifest = await readJson(
     path.join(input.projectRoot, SPEC_DIR, 'project', 'spec_manifest.json'),
   );
+  const governedRegenerableArtifacts = await readGovernedRegenerableArtifacts(
+    input.projectRoot,
+    await Promise.all(
+      actualFiles.map(async changedPath => ({
+        path: changedPath,
+        operation: (await fs.stat(path.join(input.projectRoot, changedPath)).catch(() => null))
+          ? ('modify' as const)
+          : ('delete' as const),
+      })),
+    ),
+  );
+  const governedRegenerablePaths = new Set(
+    governedRegenerableArtifacts.map(entry => slash(entry.path)),
+  );
+  actualFiles = actualFiles.filter(changedPath => !governedRegenerablePaths.has(changedPath));
+  const trustedControlPlanePaths = new Set(
+    readTrustedGitGovernanceProjectWrites(input.projectRoot).map(entry => slash(entry.path)),
+  );
   const violations: string[] = [];
   const actualModules: string[] = [];
 
@@ -2064,6 +2084,9 @@ export async function auditActualGovernanceScope(input: {
   );
   for (const changedPath of actualFiles) {
     if (changedPath === SPEC_DIR || changedPath.startsWith(`${SPEC_DIR}/`)) {
+      continue;
+    }
+    if (trustedControlPlanePaths.has(changedPath)) {
       continue;
     }
     const owners = resolveModuleOwnershipFromManifest(manifest, changedPath);

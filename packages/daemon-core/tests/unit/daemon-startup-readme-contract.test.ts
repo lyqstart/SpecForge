@@ -17,19 +17,19 @@ describe('ERR-167 daemon startup README contract', () => {
       expect(text).toContain('/api/v1/healthz');
     }
 
-    expect(rootReadme).not.toMatch(/^specforge daemon (start|status|stop)$/m);
+    expect(rootReadme).toContain('specforge daemon start --detach');
+    expect(rootReadme).toContain('specforge daemon status');
+    expect(rootReadme).toContain('specforge daemon stop');
     expect(daemonReadme).not.toContain('bun run src/index.ts --detach');
   });
 
-  it('marks CLI daemon lifecycle commands as unsupported placeholders', () => {
+  it('documents CLI daemon lifecycle commands as supported deployment entrypoints', () => {
     const cliReadme = readRepo('packages/cli/README.md');
 
-    expect(cliReadme).toContain(
-      'The current CLI daemon subcommands are legacy client placeholders'
-    );
-    expect(cliReadme).toContain(
-      'Do not use `specforge daemon start`, `specforge daemon status`, `specforge daemon stop`'
-    );
+    expect(cliReadme).toContain('specforge daemon start --detach');
+    expect(cliReadme).toContain('specforge daemon status');
+    expect(cliReadme).toContain('specforge daemon stop');
+    expect(cliReadme).not.toContain('legacy client placeholders');
   });
 
   it('keeps documentation aligned with daemon startup and HTTP routing facts', () => {
@@ -41,8 +41,12 @@ describe('ERR-167 daemon startup README contract', () => {
     expect(daemonEntry).toContain('const daemon = new Daemon()');
     expect(daemonEntry).toContain('await daemon.start()');
 
-    expect(daemonClient).toContain("'/api/daemon/start'");
-    expect(daemonClient).toContain("'/api/daemon/health'");
+    expect(daemonClient).toContain("'specforged.exe'");
+    expect(daemonClient).toContain(".option('detach'");
+    expect(daemonClient).toContain("'/api/v1/healthz'");
+    expect(daemonClient).toContain("'/api/v1/admin/stop'");
+    expect(daemonClient).not.toContain("'/api/daemon/start'");
+    expect(daemonClient).not.toContain("'/api/daemon/health'");
     expect(httpServer).not.toContain("addExactRoute('POST', '/api/daemon/start'");
     expect(httpServer).not.toContain("addExactRoute('GET', '/api/daemon/health'");
     expect(httpServer).toContain("addExactRoute('GET', '/api/v1/healthz'");

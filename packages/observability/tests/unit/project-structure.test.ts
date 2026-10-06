@@ -41,7 +41,7 @@ describe('Project Structure', () => {
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
 
     expect(packageJson.name).toBe('@specforge/observability');
-    expect(packageJson.version).toBe('1.0.4');
+    expect(packageJson.version).toBe('1.0.5');
     expect(packageJson.type).toBe('module');
     expect(packageJson.main).toBe('dist/src/index.js');
     expect(packageJson.types).toBe('dist/src/index.d.ts');

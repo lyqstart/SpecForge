@@ -30398,3 +30398,78 @@ PowerShell 载体输出内部退出码必须使用 `$LASTEXITCODE`（禁止 `$?`
 - REUSED_EXP=EXP-001,EXP-004,EXP-007,EXP-011,EXP-017,EXP-021,EXP-031,EXP-033,EXP-040,EXP-087,EXP-102,EXP-113,EXP-159,EXP-262
 - ERR1717_PRODUCT_DEFECT_STATUS=CLOSED_BY_RUNTIME_CURSOR_FIX_PENDING_REAL_DEPLOYMENT_VERIFICATION
 - ERR1725_STATUS=VERIFIED_IN_REPOSITORY_AWAITING_COMMIT_REAL_DEPLOYMENT_AND_PILOT_RECOVERY
+
+## ERR-1726：最终提交切换后的工作树行尾与发布 Manifest 物理哈希不一致
+
+- **发生时间**：2026-10-06
+- **分类**：`RELEASE_ARTIFACT_HASH_MISMATCH / CHECKOUT_NORMALIZATION_GAP`。
+- **事实证据**：1.0.4 实现提交并切换到 `main@e0fd8c5d` 后，正式 installer upgrade 在任何用户级写入前以 `E_SOURCE_MISSING release_install_set:hash_mismatch:agents/sf-orchestrator.md` 失败。Manifest 记录 SHA-256 `d7c7...`、大小 41220；最终 checkout 工作树字节为 SHA-256 `9151...`、大小 41618，差异精确对应 398 个 LF 被 Windows checkout 物理化为 CRLF。Git 语义状态仍为 clean。按最终 clean `main` 工作树重新生成 candidate `main-e0fd8c5d-working-tree-step1726` 后，precheck、upgrade、verify 均通过，CLI、daemon 与 handshake 均报告 1.0.4。
+- **影响**：首次升级安全失败且未改变现有 1.0.3 安装；重新生成 Manifest 后 1.0.4 成功安装。不可把 Git clean 等同于发布物理字节与先前 Manifest 一致。
+- **根因**：`CONFIRMED` 为发布 Manifest 在最终分支切换前生成，Windows checkout 的行尾规范化改变了被哈希发布文件的物理字节，而发布校验按物理字节执行。
+- **纠正与防复发**：正式发布 Manifest 必须在最终提交、最终分支 checkout 和最终物理工作树形成后生成；生成后到安装前不得再 checkout。installer 保持写入前 hash fail-closed。
+- **类防护（复用，不新增）**：`EXP-001`、`EXP-007`、`EXP-011`、`EXP-017`、`EXP-033`、`EXP-040`、`EXP-087`、`EXP-113`。
+- REUSED_EXP=EXP-001,EXP-007,EXP-011,EXP-017,EXP-033,EXP-040,EXP-087,EXP-113
+- ERR1726_STATUS=CLOSED_BY_FINAL_CHECKOUT_MANIFEST_REGENERATION_AND_1_0_4_ACCEPTANCE
+
+## ERR-1727：CLI 对异步 yargs 命令树执行 parseSync 且 Daemon lifecycle 路由仍指向不存在端点
+
+- **发生时间**：2026-10-06
+- **分类**：`CLI_RUNTIME_DEFECT / ASYNC_DISPATCH_CONTRACT_VIOLATION / HTTP_CONSUMER_DRIFT`。
+- **事实证据**：真实安装的 1.0.4 执行 `specforge daemon status` 与 `--json` 均以 `YError: .parseSync() must not be used with asynchronous builders, handlers, or middleware` 退出。源码 `packages/cli/src/cli.ts` 先调用 `parserWithCommands.parseSync()`，随后又调用 `parse()`；改为单次 `await parse()` 后，真实源码命令继续暴露 `/api/daemon/health` 404，而 Daemon 当前只注册公共 `/api/v1/healthz`、受控 `/api/v1/admin/stop`。旧 start 路由 `/api/daemon/start` 同样不存在且在 Daemon 未运行时逻辑上不可调用。
+- **影响**：1.0.4 CLI 的 Daemon status/start/stop 表面存在但不可可靠使用；受支持的 Windows 直接 Daemon 进程仍可由 operator 启动，因此不阻断 Runtime 本身，但违反 SPS §7.2/§11 的 CLI lifecycle 合同。
+- **根因**：`CONFIRMED` 为 CLI 同时保留同步预解析与异步命令执行两套入口，并保留已退出的 HTTP lifecycle 路由；真实发布验收此前只检查版本，没有执行 status/start/stop 行为。
+- **纠正与防复发**：`--version` 在构建命令树前独立处理；其他命令只执行一次异步 parse。status 消费 `/api/v1/healthz`，stop 消费 `/api/v1/admin/stop`，start 直接启动 user-level `specforged`，不要求一个尚未运行的 Daemon 处理启动请求。增加静态单次解析回归、路由单元测试和真实 `daemon status --json` 验收。
+- **类防护（复用，不新增）**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-011`、`EXP-017`、`EXP-021`、`EXP-031`、`EXP-040`、`EXP-087`。
+- REUSED_EXP=EXP-001,EXP-004,EXP-007,EXP-011,EXP-017,EXP-021,EXP-031,EXP-040,EXP-087
+- ERR1727_STATUS=VERIFIED_IN_SOURCE_AWAITING_1_0_5_RELEASE_ACCEPTANCE
+
+## ERR-1728：可再生产物治理修复遗漏 Formal Version 的实际 Module 范围消费者
+
+- **发生时间**：2026-10-06
+- **分类**：`GOVERNANCE_CONSUMER_GAP / FORMAL_VERSION_GATE_DEFECT / PILOT_RECOVERY_BLOCKER`。
+- **事实证据**：1.0.4 在 `D:\code\t1` 已成功修复 StateManager 游标、应用 `.gitignore` 决策并使 `sf_changed_files_audit` PASS；WI-0001 从 blocked 合法恢复到 `implementation_done`，`npm test` 32/32 通过，结构化 verification report、evidence manifest 与 semantic closure 均验证通过。但 Gate attempt-0004 的 `verification_gate` 与 `formal_version_gate` 仍报告 `ACTUAL_FILE_MODULE_OWNERSHIP_INVALID: .gitignore` 和 `package-lock.json`。一手源码显示二者共同消费 `auditActualGovernanceScope()`，该函数既未读取受控 Git provenance，也未调用可再生产物分类器。
+- **影响**：公开 changed-files audit 可以通过而 Formal Version 仍失败；WI-0001 保持 `implementation_done` 未被错误推进。另有实现尚未提交的 Formal Version 失败是独立且正确的门禁，不属于此 Runtime 缺陷。
+- **根因**：`CONFIRMED` 为 ERR-1725 的消费者枚举覆盖 public audit 与 Close Gate 两处重算，但遗漏 verification/formal-version 共享的 `auditActualGovernanceScope()`；相同治理判断仍存在第三个未收敛消费者。
+- **纠正与防复发**：实际范围审计统一读取当前哈希可信的 Git governance provenance；受控 `.gitignore` 作为正式实现文件保留但免除 Module owner 要求，满足完整五项条件的 governed ignored lockfile 从 Formal Version implementation file set 排除。增加真实 Git ignore/provenance/Module fixture 回归，随后发布 1.0.5 并从原 WI 同一断点重跑审计和 Gate。
+- **类防护（复用，不新增）**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-011`、`EXP-017`、`EXP-021`、`EXP-031`、`EXP-033`、`EXP-040`、`EXP-087`、`EXP-102`、`EXP-113`、`EXP-159`。
+- REUSED_EXP=EXP-001,EXP-004,EXP-007,EXP-011,EXP-017,EXP-021,EXP-031,EXP-033,EXP-040,EXP-087,EXP-102,EXP-113,EXP-159
+- ERR1728_STATUS=VERIFIED_IN_SOURCE_AWAITING_1_0_5_DEPLOYMENT_AND_ORIGINAL_WI_RESUME
+
+- ERR1717_PRODUCT_DEFECT_STATUS=CLOSED_BY_1_0_4_REAL_DEPLOYMENT_AND_T1_CURSOR_REPLAY_VERIFICATION
+- ERR1725_STATUS=CLOSED_BY_1_0_4_REAL_DEPLOYMENT_AND_T1_RECOVERY_TO_IMPLEMENTATION_DONE
+
+## ERR-1729：CLI Daemon lifecycle 源码修复后仍有 README、帮助参数与合同测试消费者漂移
+
+- **发生时间**：2026-10-06
+- **分类**：`GOVERNANCE_CONSUMER_GAP / DOCUMENTATION_CONTRACT_DRIFT / CLI_OPTION_DRIFT`。
+- **事实证据**：SPS §7/§11 已授权 SpecForge CLI 作为 Daemon lifecycle owner，1.0.5 源码也已实现直接启动 `specforged`、查询 `/api/v1/healthz` 和调用 `/api/v1/admin/stop`；但根 README、CLI README 与 `daemon-startup-readme-contract.test.ts` 仍断言这些命令是不可用占位符。同时 HelpSystem 宣传 `specforge daemon start --detach`，实际 yargs command builder 只注册 `--foreground`，帮助入口与执行入口不一致。
+- **影响**：若只发布源码修复，用户会收到互相矛盾的操作说明，`--detach` 也会被帮助系统宣称却无法按文档使用。
+- **根因**：最初消费者枚举只覆盖 CLI dispatch、HTTP route 和行为测试，遗漏 README、HelpSystem 与固定文本合同测试；同一 lifecycle 决策没有一次性对齐全部直接消费者。
+- **纠正与防复发**：统一注册 `--detach/-d` 并映射到 release `specforged` 后台进程；同步根 README、CLI/daemon README 和 README 合同测试；启动前用 healthz 做幂等存活探测，避免重复启动。以全仓静态搜索和完整回归证明旧占位声明退出。
+- **类防护（复用，不新增）**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-021`、`EXP-033`、`EXP-044`、`EXP-054`、`EXP-087`、`EXP-113`。
+- REUSED_EXP=EXP-001,EXP-004,EXP-007,EXP-021,EXP-033,EXP-044,EXP-054,EXP-087,EXP-113
+- ERR1729_STATUS=CLOSED_BY_1_0_5_LIFECYCLE_CONSUMER_CONVERGENCE_AND_FULL_REGRESSION
+
+## ERR-1730：Vitest 4 不接受箭头函数替身作为 DaemonClient 构造器且首轮修正仍调用错误对象
+
+- **发生时间**：2026-10-06
+- **分类**：`TEST_FIXTURE_DEFECT / RUNTIME_SEMANTICS_MISMATCH / RETRY_WITHOUT_COMPLETE_FIX`。
+- **事实证据**：CLI 定向测试首轮 6 项在进入产品断言前失败，错误为 `() => mockClient is not a constructor`；把模块导出改为 class 后，第二轮仍有 6 项在 beforeEach 失败，错误为 `DaemonClient.mockImplementation is not a function`，因为配置点仍指向导出的 class 而不是内部 `vi.fn()`。最终由真实 class constructor 委托给 hoisted mock function，并在 beforeEach 配置该 function，34/34 通过。
+- **影响**：两次失败均为测试装配错误，不能用于判断 CLI 产品实现；第二次失败说明首次纠正没有完整枚举替身生产者与配置消费者。
+- **根因**：沿用旧 Vitest 对可构造 `vi.fn` 的宽松假设；修改导出形态时只修了实例化入口，没有同步 mock 配置入口。
+- **纠正与防复发**：构造器替身必须使用语言级 class/function；修改测试 seam 时同时核对 export、constructor、beforeEach 配置和断言四个消费者；同一命令重跑至 34/34 后才恢复结论。
+- **类防护（复用，不新增）**：`EXP-002`、`EXP-007`、`EXP-011`、`EXP-016`、`EXP-019`、`EXP-113`。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-019,EXP-113
+- ERR1730_STATUS=CLOSED_BY_CLASS_CONSTRUCTOR_SEAM_AND_34_OF_34_CLI_TESTS
+
+## ERR-1731：验证命令未遵守正式拓扑且首次全回归超时预算过短
+
+- **发生时间**：2026-10-06
+- **分类**：`VALIDATION_COMMAND_ERROR / TOOLCHAIN_TOPOLOGY_MISMATCH / EXECUTION_TIMEOUT_ERROR`。
+- **事实证据**：直接从 CLI 包调用根 `node_modules/.bin/tsc.exe -p tsconfig.json --noEmit` 使用 TypeScript 6.0.3，在源码检查前因既有 `moduleResolution=node10` 弃用门禁 TS5107 退出；改用仓库正式包脚本 `bun run build` 后通过。首次全回归又被执行器 5 秒 timeout 以 exit 124 中断；改用异步长任务载体后同一正式 `bun run test` exit 0（root 60 files / 767 tests，workspace 全部通过），随后正式确定性 build exit 0。
+- **影响**：两个非零结果都不能证明产品回归；若把工具入口或载体超时误判为代码失败，会引入无关 tsconfig 修改或虚假阻断。
+- **根因**：单包类型检查没有消费仓库锁定的正式构建拓扑；长任务沿用了短命令 timeout。
+- **纠正与防复发**：TypeScript 验证以包内/根正式 build producer 为准，独立 tsc 仅在工具链版本一致时使用；完整回归使用可继续回收输出的异步载体与足够总时限，timeout 中断必须保留且不得当成测试失败。
+- **类防护（复用，不新增）**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-016`、`EXP-102`、`EXP-113`。
+- REUSED_EXP=EXP-002,EXP-007,EXP-008,EXP-011,EXP-016,EXP-102,EXP-113
+- ERR1731_STATUS=CLOSED_BY_FORMAL_BUILD_AND_FULL_REGRESSION_EXIT_ZERO

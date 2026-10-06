@@ -17,13 +17,15 @@ npm link
 
 ## Usage
 
-The current CLI daemon subcommands are legacy client placeholders, not supported daemon lifecycle entry points. They attempt HTTP calls to an already running daemon and do not spawn the daemon process. Start daemon-core from the repository instead:
+The CLI is the installed deployment and lifecycle entry point for the shared daemon:
 
 ```bash
-bun run packages/daemon-core/src/index.ts
+specforge daemon start --detach
+specforge daemon status
+specforge daemon stop
 ```
 
-Do not use `specforge daemon start`, `specforge daemon status`, `specforge daemon stop`, or `--detach` for the current deployment.
+`start` launches the installed user-level `specforged` executable directly. `status` uses `/api/v1/healthz`, and `stop` uses the authenticated `/api/v1/admin/stop` endpoint. Omit `--detach` to keep the daemon in the foreground. The OpenCode Plugin remains a client and never owns this lifecycle.
 
 ```bash
 # Manage workflows
@@ -57,7 +59,7 @@ The CLI supports two output modes:
 
 ## Commands
 
-- `daemon` - Legacy client placeholders; not supported for daemon process lifecycle
+- `daemon` - Start, stop, and inspect the installed shared daemon
 - `spec` - Manage specs
 - `workflow` - Manage workflows
 - `job` - Query async job status

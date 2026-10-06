@@ -120,7 +120,6 @@ export interface GlobalOptions {
   json: boolean;
   verbose: boolean;
   help: boolean;
-  version: boolean;
   'project-dir'?: string;
   'user-manifest-path'?: string;
 }
@@ -147,12 +146,6 @@ export function parseArgs(argv: string[] = hideBin(process.argv)): Argv<GlobalOp
         type: 'boolean',
         describe: 'Show help',
         alias: 'h',
-        default: false,
-      },
-      version: {
-        type: 'boolean',
-        describe: 'Show version',
-        alias: 'V',
         default: false,
       },
     })
@@ -605,6 +598,22 @@ function addJobCommands(yargsInstance: Argv): Argv {
  * Project initialization and schema decisions are delegated to the Daemon.
  */
 export async function runCli(argv: string[] = hideBin(process.argv)): Promise<void> {
+  // Version is a global, command-independent operation. Handle it before
+  // constructing the command tree so async builders/handlers are never forced
+  // through yargs.parseSync().
+  if (argv.includes('--version') || argv.includes('-V')) {
+    const exitCode = await runVersionCommand({
+      write: (line) => {
+        process.stdout.write(line);
+      },
+      writeErr: (line) => {
+        process.stderr.write(line);
+      },
+    });
+    process.exit(exitCode);
+    return;
+  }
+
   const parser = parseArgs(argv);
   
   // Add all command groups with help system integrated
@@ -630,31 +639,9 @@ export async function runCli(argv: string[] = hideBin(process.argv)): Promise<vo
     )
   );
   
-  // Parse arguments
-  const parsedArgs = parserWithCommands.parseSync();
-  
-  // Handle --version flag (R10.2: ${getCodeVersion()}\n on stdout, exit 0;
-  // diagnostic on stderr + non-zero on failure)
-  if (parsedArgs.version) {
-    runVersionCommand({
-      write: (line) => {
-        process.stdout.write(line);
-      },
-      writeErr: (line) => {
-        process.stderr.write(line);
-      },
-    })
-      .then((exitCode) => process.exit(exitCode))
-      .catch((error) => {
-        const message = error instanceof Error ? error.message : String(error);
-        process.stderr.write(`specforge: failed to determine code version: ${message}\n`);
-        process.exit(1);
-      });
-    return;
-  }
-
-  // Continue with normal command execution
-  parserWithCommands.parse();
+  // Parse exactly once. The command tree contains async builders and handlers,
+  // so the asynchronous yargs API is mandatory.
+  await parserWithCommands.parse();
 }
 
 // Run CLI if executed directly

@@ -35,7 +35,14 @@ See the [API Documentation](./docs/README.md) for detailed information on:
 
 ### Starting the Daemon
 
-From the repository root:
+For an installed release, use the SpecForge CLI:
+
+```bash
+specforge daemon start --detach
+specforge daemon status
+```
+
+For repository development, run the source entry from the repository root:
 
 ```bash
 bun run packages/daemon-core/src/index.ts
@@ -47,7 +54,7 @@ Or from `packages/daemon-core`:
 bun run src/index.ts
 ```
 
-The current implementation runs in the foreground. Keep the terminal open and press `Ctrl+C` to stop it. `--detach` is not implemented, and `--no-foreground` is marked as future support. Use an operating-system service manager to supervise the same foreground command for persistent operation.
+The source entry runs in the foreground. Keep the terminal open and press `Ctrl+C` to stop it. The installed CLI may launch the release `specforged` runtime in the foreground or detach it with `--detach`; stop it with `specforge daemon stop`. The OpenCode Plugin never starts, stops, or replaces the daemon.
 
 A successful startup writes the handshake file and logs `Daemon Core started on port <port>`.
 

@@ -13,6 +13,7 @@ import yargs, { Argv, Arguments } from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import * as fs from 'fs';
 import * as path from 'path';
+import { spawn } from 'node:child_process';
 import { DaemonClient } from '../http/DaemonClient';
 import { ModeSwitch, formatError } from '../mode-switch';
 import { toCliError, DaemonUnreachableError, InvalidInputError } from '../errors';
@@ -64,39 +65,82 @@ function getDaemonClient(): DaemonClient {
 /**
  * Daemon start command
  */
-export function commandStart(
+export async function commandStart(
   argv: Arguments<{
-    foreground: boolean;
+    detach: boolean;
     bind: string;
   }>,
   modeSwitch: ModeSwitch
-): void {
-  const client = getDaemonClient();
-  
+): Promise<void> {
   try {
-    // Call daemon-core /api/daemon/start endpoint
-    const response = client.post<{
-      success: boolean;
-      message: string;
-      pid?: number;
-    }>('/api/daemon/start', {
-      foreground: argv.foreground,
-      bind: argv.bind,
-    });
+    try {
+      const running = await getDaemonClient().get<{
+        status: 'ok' | 'degraded' | 'shutting-down';
+        pid: number;
+        version?: string;
+      }>('/api/v1/healthz', { retry: false, timeout: 1000 });
+      const result = {
+        success: true,
+        already_running: true,
+        message: 'Daemon is already running',
+        pid: running.pid,
+        version: running.version,
+        status: running.status,
+      };
+      if (modeSwitch.isJson()) {
+        console.log(modeSwitch.formatData(result));
+      } else {
+        console.log(modeSwitch.formatSuccess(`${result.message} (PID: ${running.pid})`));
+      }
+      return;
+    } catch {
+      // A missing or stale handshake is not a start failure. The release
+      // executable remains the lifecycle owner and will perform its own lock
+      // and bind checks.
+    }
 
-    response
-      .then((result) => {
-        if (modeSwitch.isJson()) {
-          console.log(modeSwitch.formatData(result));
-        } else {
-          console.log(modeSwitch.formatSuccess(result.message));
-        }
-      })
-      .catch((err) => {
-        const cliError = toCliError(err);
-        console.error(modeSwitch.formatError(cliError));
-        process.exit(1);
-      });
+    const executable = path.join(
+      resolveSpecForgeUserRoot(),
+      'bin',
+      process.platform === 'win32' ? 'specforged.exe' : 'specforged',
+    );
+    if (!fs.existsSync(executable)) {
+      throw new InvalidInputError(`Daemon executable not found: ${executable}`);
+    }
+
+    const detached = argv.detach;
+    const daemonArgs = ['start'];
+    if (!detached) daemonArgs.push('--foreground');
+    if (argv.bind && argv.bind !== '127.0.0.1') {
+      throw new InvalidInputError(
+        'Custom daemon bind addresses must be configured through the daemon deployment configuration.',
+      );
+    }
+    const child = spawn(executable, daemonArgs, {
+      detached,
+      windowsHide: detached,
+      stdio: detached ? 'ignore' : 'inherit',
+    });
+    await new Promise<void>((resolve, reject) => {
+      child.once('spawn', resolve);
+      child.once('error', reject);
+    });
+    if (detached) child.unref();
+    const result = {
+      success: true,
+      message: detached ? 'Daemon process started' : 'Daemon process running in foreground',
+      pid: child.pid,
+      executable,
+    };
+    if (modeSwitch.isJson()) {
+      console.log(modeSwitch.formatData(result));
+    } else {
+      console.log(modeSwitch.formatSuccess(`${result.message} (PID: ${child.pid ?? 'unknown'})`));
+    }
+    if (!detached) {
+      const exitCode = await new Promise<number | null>((resolve) => child.once('close', resolve));
+      if (exitCode !== 0) process.exit(exitCode ?? 1);
+    }
   } catch (err) {
     const cliError = toCliError(err);
     console.error(modeSwitch.formatError(cliError));
@@ -114,34 +158,38 @@ export async function commandStatus(
   const client = getDaemonClient();
   
   try {
-    // Call daemon-core /api/daemon/health endpoint
+    // Current daemon lifecycle contract exposes the public healthz endpoint.
     const health = await client.get<{
-      status: 'healthy' | 'unhealthy' | 'starting' | 'stopped';
+      schema_version: '1.0';
+      status: 'ok' | 'degraded' | 'shutting-down';
+      pid: number;
       version?: string;
-      uptime?: number;
-      message?: string;
-    }>('/api/daemon/health');
+      uptimeSec?: number;
+      activeClients?: number;
+      pendingEvents?: number;
+      lastEventTs?: number | null;
+    }>('/api/v1/healthz');
 
     if (modeSwitch.isJson()) {
       console.log(modeSwitch.formatData(health));
     } else {
       // Human-readable table format
-      const statusEmoji = health.status === 'healthy' ? '✓' : health.status === 'starting' ? '⏳' : '✗';
+      const statusEmoji = health.status === 'ok' ? '✓' : health.status === 'degraded' ? '⏳' : '✗';
       console.log(`${statusEmoji} Daemon Status: ${health.status}`);
+      console.log(`PID: ${health.pid}`);
       
       if (health.version) {
         console.log(`Version: ${health.version}`);
       }
-      if (health.uptime !== undefined) {
-        const uptimeSeconds = Math.floor(health.uptime / 1000);
+      if (health.uptimeSec !== undefined) {
+        const uptimeSeconds = health.uptimeSec;
         const uptimeMinutes = Math.floor(uptimeSeconds / 60);
         const hours = Math.floor(uptimeMinutes / 60);
         const mins = uptimeMinutes % 60;
         console.log(`Uptime: ${hours}h ${mins}m`);
       }
-      if (health.message) {
-        console.log(`Message: ${health.message}`);
-      }
+      if (health.activeClients !== undefined) console.log(`Active clients: ${health.activeClients}`);
+      if (health.pendingEvents !== undefined) console.log(`Pending events: ${health.pendingEvents}`);
     }
   } catch (err) {
     const cliError = toCliError(err);
@@ -160,16 +208,16 @@ export async function commandStop(
   const client = getDaemonClient();
   
   try {
-    // Call daemon-core /api/daemon/stop endpoint
+    // Graceful shutdown is owned by the authenticated daemon admin endpoint.
     const result = await client.post<{
       success: boolean;
-      message: string;
-    }>('/api/daemon/stop');
+      data?: { message?: string };
+    }>('/api/v1/admin/stop');
 
     if (modeSwitch.isJson()) {
       console.log(modeSwitch.formatData(result));
     } else {
-      console.log(modeSwitch.formatSuccess(result.message));
+      console.log(modeSwitch.formatSuccess(result.data?.message ?? 'Daemon shutdown initiated'));
     }
   } catch (err) {
     const cliError = toCliError(err);
@@ -192,11 +240,11 @@ export function addDaemonCommands(yargsInstance: Argv): Argv {
           'Start the daemon',
           (yargsInstance: Argv) => {
             return yargsInstance
-              .option('foreground', {
+              .option('detach', {
                 type: 'boolean',
-                describe: 'Run in foreground (default: true)',
-                alias: 'f',
-                default: true,
+                describe: 'Run in background (detach from terminal)',
+                alias: 'd',
+                default: false,
               })
               .option('bind', {
                 type: 'string',
@@ -204,9 +252,9 @@ export function addDaemonCommands(yargsInstance: Argv): Argv {
                 default: '127.0.0.1',
               });
           },
-          (argv: Arguments) => {
+          async (argv: Arguments) => {
             const modeSwitch = new ModeSwitch(argv);
-            commandStart(argv as any, modeSwitch);
+            await commandStart(argv as any, modeSwitch);
           }
         )
         .command(
@@ -279,11 +327,11 @@ export async function runDaemonCommand(
       'Start the daemon',
       (yargsInstance: Argv) => {
         return yargsInstance
-          .option('foreground', {
+          .option('detach', {
             type: 'boolean',
-            describe: 'Run in foreground (default: true)',
-            alias: 'f',
-            default: true,
+            describe: 'Run in background (detach from terminal)',
+            alias: 'd',
+            default: false,
           })
           .option('bind', {
             type: 'string',
@@ -291,9 +339,9 @@ export async function runDaemonCommand(
             default: '127.0.0.1',
           });
       },
-      (argv: Arguments) => {
+      async (argv: Arguments) => {
         const modeSwitch = new ModeSwitch(argv);
-        commandStart(argv as any, modeSwitch);
+        await commandStart(argv as any, modeSwitch);
       }
     )
     .command(
@@ -318,7 +366,7 @@ export async function runDaemonCommand(
     .help()
     .alias('help', 'h');
 
-  parser.parse();
+  await parser.parse();
 }
 
 // Run if executed directly

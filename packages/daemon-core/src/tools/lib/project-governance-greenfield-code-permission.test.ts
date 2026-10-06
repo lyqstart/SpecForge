@@ -2,11 +2,16 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { tmpdir } from 'node:os';
 import { afterEach, describe, expect, test } from 'vitest';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import {
   auditActualGovernanceScope,
   freezeGovernanceScopeForCodePermission,
   persistGovernanceScope,
 } from './project-governance-v2.js';
+import { recordGitGovernanceProjectWrites } from './git-governance-write-provenance.js';
+
+const execFileAsync = promisify(execFile);
 
 const roots: string[] = [];
 
@@ -160,6 +165,59 @@ describe('greenfield code permission governance scope', () => {
     });
     expect(result.passed).toBe(false);
     expect(result.checks.some(check => !check.passed && check.check_id.startsWith('permission_owner_'))).toBe(true);
+  });
+
+  test('accepts controlled .gitignore and excludes governed ignored lockfiles from formal implementation scope', async () => {
+    const { projectRoot, workItemDir } = await createFixture();
+    await execFileAsync('git', ['init', '-b', 'main'], { cwd: projectRoot });
+    await write(path.join(projectRoot, 'src', 'domain', 'types.ts'), 'export type Id = string;\n');
+    await write(path.join(projectRoot, 'package-lock.json'), '{"lockfileVersion":3}\n');
+    await write(path.join(projectRoot, '.gitignore'), '/package-lock.json\n');
+    await write(
+      path.join(projectRoot, '.specforge', 'project', 'git_ignore_decisions.json'),
+      JSON.stringify({
+        schema_version: 'git_ignore_decisions.v1',
+        updated_at: new Date().toISOString(),
+        decisions: [{
+          path: 'package-lock.json',
+          decision: 'ignore',
+          reason: 'approved regenerable dependency lockfile',
+          artifact_class: 'dependency_lockfile',
+        }],
+      }),
+    );
+    recordGitGovernanceProjectWrites(projectRoot, 'sf_git_ignore_decision_record', [
+      '.gitignore',
+      '.specforge/project/git_ignore_decisions.json',
+    ]);
+    await write(
+      path.join(workItemDir, 'governance_scope.json'),
+      JSON.stringify({
+        schema_version: '1.0',
+        work_item_id: 'WI-0002',
+        active: true,
+        affected_modules: ['DOMAIN'],
+        allowed_write_files: ['src/domain/types.ts'],
+        architecture_refs: ['ARCH-WD-001'],
+        data_model_refs: ['DATA-WD-001'],
+        design_refs: ['DD-DOMAIN-001'],
+        project_contract_refs: [],
+        module_contract_refs: [],
+        project_spec_version: 'PSV-0002',
+        impact_scope_hash: 'test-scope',
+        frozen_at: new Date().toISOString(),
+      }),
+    );
+
+    const audit = await auditActualGovernanceScope({
+      projectRoot,
+      workItemDir,
+      changedFiles: ['src/domain/types.ts', '.gitignore', 'package-lock.json'],
+    });
+
+    expect(audit.passed, audit.violations.join('; ')).toBe(true);
+    expect(audit.actual_modules).toEqual(['DOMAIN']);
+    expect(audit.actual_files).toEqual(['.gitignore', 'src/domain/types.ts']);
   });
 
   test('expands changed Project Contract scope to every formal consumer Module and DD', async () => {
