@@ -30485,3 +30485,17 @@ PowerShell 载体输出内部退出码必须使用 `$LASTEXITCODE`（禁止 `$?`
 - **类防护（复用，不新增）**：`EXP-002`、`EXP-007`、`EXP-016`、`EXP-082`、`EXP-113`、`EXP-200`、`EXP-238`。
 - REUSED_EXP=EXP-002,EXP-007,EXP-016,EXP-082,EXP-113,EXP-200,EXP-238
 - ERR1732_STATUS=REMOTE_END_STATE_CONFIRMED_UNCHANGED_RETRY_AUTHORIZED
+
+## ERR-1733：升级前把 Daemon API 不可达误当作进程已退出，导致 Windows 二进制占用和部分升级
+
+- **发生时间**：2026-10-06
+- **分类**：`DEPLOYMENT_PREFLIGHT_DEFECT / PROCESS_STATE_MISCLASSIFICATION / PARTIAL_UPGRADE_WITH_FAILED_ROLLBACK`。
+- **事实证据**：发布后的首次 1.0.5 `upgrade` 在替换 `sf-user/bin/specforged.exe` 时收到 Windows `EPERM rename`，随后回滚同一路径也因占用失败。只读取证确认 PID 19060 的 `specforged.exe` 自 08:21:36 起一直从用户级安装路径运行；handshake 与 healthz 均报告 1.0.4。失败后 journal 状态为 `failed`：`specforge.exe` mutation 已 applied、`specforged.exe` 仍 planned；安装 Manifest 仍为 1.0.4。二进制实测为 CLI 1.0.5、Daemon 1.0.4，属于已被事务证据精确定界的部分升级。
+- **影响**：用户级安装暂时版本不一致；直接重复 upgrade 或手工覆盖会绕过事务恢复并继续撞击被占用文件。项目仓库与 `D:\code\t1` 未受影响。
+- **根因**：先前源码 CLI status 的一次连接失败被错误提升为 Daemon 已退出结论，未按 EXP-026 以完整进程查询、handshake PID 和健康端点联合证明进程边界；Windows 运行中的 exe 不能原子替换，回滚同样受锁影响。
+- **纠正与防复发**：使用已落盘且哈希匹配候选的 1.0.5 CLI 经 `/api/v1/admin/stop` 优雅停止 1.0.4 Daemon，逐项确认 PID 退出、healthz 不可达和文件可替换；随后让 installer 自身先恢复 failed journal（预期一次显式恢复停点），再执行新的 upgrade，禁止手工编辑 Manifest、journal 或安装文件。以后升级前必须执行完整进程+handshake+health 三证据预检。
+- **类防护（复用，不新增）**：`EXP-001`、`EXP-002`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-017`、`EXP-026`、`EXP-031`、`EXP-040`、`EXP-087`、`EXP-113`。
+- REUSED_EXP=EXP-001,EXP-002,EXP-006,EXP-007,EXP-008,EXP-011,EXP-017,EXP-026,EXP-031,EXP-040,EXP-087,EXP-113
+- ERR1732_STATUS=CLOSED_BY_REMOTE_READBACK_AND_EXPLICIT_RETRY_SUCCESS
+- ERR1733_STATUS=PARTIAL_INSTALL_CONFIRMED_INSTALLER_RECOVERY_PENDING
+- ERR1733_STATUS=CLOSED_BY_CONTROLLED_STOP_INSTALLER_ROLLBACK_RETRY_AND_1_0_5_LIFECYCLE_ACCEPTANCE
