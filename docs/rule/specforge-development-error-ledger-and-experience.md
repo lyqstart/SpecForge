@@ -30680,3 +30680,24 @@ PowerShell 载体输出内部退出码必须使用 `$LASTEXITCODE`（禁止 `$?`
 - ERR1745_STATUS=CLOSED_BY_EXPLICITLY_AUTHORIZED_BOOTSTRAP_READY_LOCAL_REMOTE_ACE758DA
 - ERR1747_STATUS=SEPARATE_FOLLOWUP_APPROVED_BY_USER_NO_SCOPE_EXPANSION_IN_THIS_RUN
 - ERR1749_STATUS=CLOSED_BY_EXPLICIT_USER_REAUTHORIZATION_AND_BOOTSTRAP_READY
+
+## ERR-1750：把提交前 main SHA 写入唯一项目状态导致状态在提交后自失效
+
+- **发生时间**：2026-10-06
+- **分类**：`PROJECT_STATUS_SELF_REFERENCE / POST_PUSH_AUDIT_DEFECT`。
+- **事实证据**：首个治理合同提交推送后，复核发现 `docs/project-status.md` 的 `REQUIRED_VALIDATION` 写入了提交前精确 main SHA；新提交产生后该值不再是当前 HEAD。Bootstrap 虽不把该文本当结构字段，但 AGENTS/SPS 明确禁止状态文件保存会自引用失效的 commit/HEAD 值。
+- **影响与根因**：已推送的首个提交包含一条过期验证描述；根因是把命令输出中的精确 Git 基线复制进动态状态，而没有在提交后按“状态不得引用自身提交”反向检查。
+- **纠正与防复发**：不改写或 force 远端历史；创建追加纠正提交，把精确 SHA 改为“提交前本地与远端 main 已对齐”，随后重新运行状态合同测试、Bootstrap、diff/status 与远端回读。
+- REUSED_EXP=EXP-001,EXP-002,EXP-007,EXP-011,EXP-017,EXP-087,EXP-113
+- ERR1750_STATUS=OPEN_PENDING_ADDITIVE_CORRECTION_COMMIT
+- ERR1750_STATUS=CLOSED_BY_SELF_REFERENCE_REMOVAL_STATUS_TEST_AND_BOOTSTRAP_READY
+
+## ERR-1751：纠正提交首次暂存再次被沙箱拒绝创建 index.lock
+
+- **发生时间**：2026-10-06
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / GIT_INDEX_WRITE_DENIED`。
+- **事实证据**：精确 `git add` 两个纠正文件时返回 `Unable to create .git/index.lock: Permission denied`；随后使用已批准的提升权限对同一精确路径暂存成功。失败命令没有部分暂存或文件内容丢失。
+- **影响与根因**：纠正提交暂存延迟；当前沙箱对 `.git` 仍为只读，与文件内容和仓库冲突无关。
+- **纠正与防复发**：需要写 Git 索引的 add/commit 操作直接使用批准的提升边界，并在每次操作后用 cached diff 与 status 核验。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-087
+- ERR1751_STATUS=CLOSED_BY_ESCALATED_EXACT_PATH_STAGING
