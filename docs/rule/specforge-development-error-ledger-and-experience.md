@@ -30537,3 +30537,15 @@ PowerShell 载体输出内部退出码必须使用 `$LASTEXITCODE`（禁止 `$?`
 - REUSED_EXP=EXP-002,EXP-007,EXP-008,EXP-011,EXP-016,EXP-082,EXP-113
 - ERR1736_STATUS=OPEN_PENDING_ESCALATED_CONTROLLED_STATE_READ
 - ERR1736_STATUS=CLOSED_BY_ESCALATED_HANDSHAKE_ACCESS_AND_AUTHORITATIVE_STATE_READ
+
+## ERR-1737：WI-0001 Close 后未先提交治理证据即运行 Merge Plan，工作树清洁门禁按设计阻断
+
+- **发生时间**：2026-10-06
+- **分类**：`VALIDATION_SEQUENCE_ERROR / GOVERNANCE_CHECKPOINT_OMISSION / GIT_MERGE_GATE_BLOCKED`。
+- **事实证据**：t1 业务实现已提交为 `06f4e21`，verification/formal-version attempt-0005 与 Close Gate 均通过，权威状态为 `closed`。首次 `sf_git_merge_plan` 返回 `can_merge=false`，阻断项为 `WORKTREE_NOT_CLEAN_BEFORE_MERGE` 与 `FORMAL_VERSION_WORKTREE_NOT_CLEAN_BEFORE_GIT_MERGE`。`git status --untracked-files=all` 证明剩余变化全部是未跟踪的 `.specforge/config/**`、`.specforge/project/**` 与当前 `.specforge/work-items/WI-0001/**`；`.specforge/.gitignore` 只排除 runtime/logs/sessions/archive/cas。源码合同测试明确在 Merge Plan 前以独立提交保存当前 WI 的 Formal Version 与 Close 证据。
+- **影响**：正式合并未执行，feature 与 main 均未改变；治理状态和业务提交完整保留。Close 仅证明治理关闭，不等于仓库交付完成。
+- **根因**：直接业务提交正确排除了治理目录，但执行顺序遗漏了 Close 后的官方治理检查点提交，便提前调用 Merge Plan。
+- **纠正与防复发**：先用 `git ls-files --others --exclude-standard -- .specforge` 枚举精确非忽略治理文件，通过官方 `sf_git_checkpoint_commit` 先 dry-run 分类、再在原 WI 分支提交；禁止 `git add .`，禁止提交 runtime 本地状态。工作树 clean 后重新运行 Merge Plan，再由受控 Merge Runner 合并与 post-merge verify。
+- **类防护（复用，不新增）**：`EXP-001`、`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-017`、`EXP-087`、`EXP-104`、`EXP-106`、`EXP-112`。
+- REUSED_EXP=EXP-001,EXP-002,EXP-007,EXP-008,EXP-011,EXP-017,EXP-087,EXP-104,EXP-106,EXP-112
+- ERR1737_STATUS=OPEN_PENDING_CONTROLLED_GOVERNANCE_CHECKPOINT
