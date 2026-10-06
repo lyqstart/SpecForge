@@ -30510,3 +30510,17 @@ PowerShell 载体输出内部退出码必须使用 `$LASTEXITCODE`（禁止 `$?`
 - **类防护（复用，不新增）**：`EXP-002`、`EXP-007`、`EXP-016`、`EXP-082`、`EXP-113`、`EXP-200`、`EXP-238`。
 - REUSED_EXP=EXP-002,EXP-007,EXP-016,EXP-082,EXP-113,EXP-200,EXP-238
 - ERR1734_STATUS=REMOTE_REF_EVIDENCE_PENDING_RETRY
+
+- ERR1734_STATUS=CLOSED_BY_LIVE_REMOTE_MAIN_READBACK_AND_SUCCESSFUL_STATUS_PUSH
+
+## ERR-1735：恢复 t1 时先假设了错误的状态文件路径，并把无匹配的 rg 退出码当成取证路径
+
+- **发生时间**：2026-10-06
+- **分类**：`EVIDENCE_COLLECTION_COMMAND_ERROR / AUTHORITY_PATH_ASSUMPTION / SEARCH_EXIT_CODE_MISINTERPRETATION`。
+- **事实证据**：恢复 `D:\code\t1` 的 WI-0001 前，只读命令先尝试读取不存在的 `.specforge/work-items/WI-0001/state.json` 并以 exit 1 结束；随后两次 `rg` 因默认忽略规则和路径正则假设未命中，同样返回 exit 1。改用 `rg --files --hidden --no-ignore .specforge` 后，实际发现权威投影与事件文件位于 `.specforge/runtime/state.json` 和 `.specforge/runtime/events.jsonl`。这些命令均未写入 t1 或 SpecForge 仓库，也尚未据此作出状态结论。
+- **影响**：延迟了恢复取证；若继续沿用错误路径，可能把“路径不存在/搜索未命中”误报为 Runtime 状态缺失。实际 WI 状态仍必须通过受控 `sf_state_read` 重建，不能由直接读取投影文件替代。
+- **根因**：把历史工作项目录结构印象当作当前 Runtime 权威路径，且未在首次查询前枚举隐藏、被忽略的治理文件；同时没有预先区分 `rg` 的“无匹配”退出码与执行错误。
+- **纠正与防复发**：恢复时先以 `rg --files --hidden --no-ignore .specforge` 枚举真实路径，再读取工具 Schema 并调用受控状态读取；所有搜索命令分别解释 exit 0、exit 1（无匹配）与执行错误，禁止把直接文件存在性提升为权威状态结论。
+- **类防护（复用，不新增）**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-016`、`EXP-113`、`EXP-262`。
+- REUSED_EXP=EXP-002,EXP-007,EXP-008,EXP-011,EXP-016,EXP-113,EXP-262
+- ERR1735_STATUS=CLOSED_BY_REAL_PATH_ENUMERATION_AND_CONTROLLED_STATE_READ_REQUIRED
