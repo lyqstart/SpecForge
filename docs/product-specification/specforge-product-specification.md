@@ -603,6 +603,16 @@ HardStop 是 recoverable safety latch，不是“任务永久结束”。
 - 恢复后重新读取 authoritative state 并从合法 resume point 继续。
 - 只有没有安全恢复路径时才进入 blocked。
 
+## 9.4 Git 忽略、可再生产物与实施范围修订
+
+Git ignore 决定、业务代码写权限和可再生产物排除是三个不同的治理事实，不得互相冒充：
+
+- `git_ignore_decisions.json` 保存产品负责人或用户确认的 track / ignore 决定；`ignore` 决定必须由受控 Tool 同步应用到项目根 `.gitignore`，只记录决定但未生效不构成排除依据。
+- `changed_files_audit` 只有在决定文件与根 `.gitignore` 均有当前哈希来源、目标路径属于已知可再生产物类别、Git 实际判定为 ignored 且文件未被跟踪时，才可把该路径从业务代码范围中排除。
+- dependency lockfile 不默认等于业务代码，也不默认等于可丢弃缓存；必须显式选择 track，或显式选择 governed-ignore。普通源文件、配置和文档不能借 ignore 决定绕过 changed-files audit。
+- 实施中发现新的业务代码路径时，必须通过 `code_permission extend` 在既有 Module / Design / Contract 治理范围内修订 allowed-write scope，并记录原因、增量文件和修订后的完整范围。新增 Module 或扩大上位治理范围仍须回到规格变更链，不能用 permission extension 绕过。
+- 原 Work Item 因上述能力缺口进入 HardStop / blocked 后，修复能力并验证通过时必须恢复原 Work Item 和原证据链，不创建替代 Work Item，也不删除原始 blocked 记录。
+
 ---
 
 # 10. OpenCode Integration

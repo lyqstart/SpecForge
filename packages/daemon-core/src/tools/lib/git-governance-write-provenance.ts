@@ -13,6 +13,7 @@ export const GIT_GOVERNANCE_WRITE_PROVENANCE_SCHEMA =
   GIT_GOVERNANCE_WRITE_PROVENANCE_SCHEMA_VERSION;
 
 export const GIT_GOVERNANCE_PROJECT_METADATA_PATHS = new Set([
+  '.gitignore',
   '.specforge/project/git_policy.json',
   '.specforge/project/git_ignore_decisions.json',
   '.specforge/project/git_adoption_report.md',
@@ -74,6 +75,10 @@ export function assertGitGovernanceWriteProvenanceCurrent(projectRoot: string): 
   const provenance = readProvenance(projectRoot);
   for (const entry of provenance.writes) {
     const relative = normalizeRelative(entry.path);
+    // Root .gitignore is a user-editable projection. A stale projection must
+    // lose trusted-write status, but it must not deadlock the controlled tool
+    // that can re-apply confirmed decisions and refresh that provenance.
+    if (relative === '.gitignore') continue;
     const absolute = path.join(projectRoot, ...relative.split('/'));
     if (!fs.existsSync(absolute) || sha256File(absolute) !== entry.sha256.toLowerCase()) {
       throw new Error(`GIT_GOVERNANCE_PROVENANCE_INVALID: CURRENT_HASH_MISMATCH: ${relative}`);

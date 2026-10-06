@@ -2,7 +2,7 @@ import { tool } from "@opencode-ai/plugin"
 import { daemon } from "./lib/thin-client"
 const TOOL_NAME = "sf_git_ignore_decision_record"
 export default tool({
-  description: "Git 忽略决策记录：把用户对 track/ignore/ask/hard_stop 文件的裁决写入 git_ignore_decisions.json。",
+  description: "Git 忽略决策记录：把用户裁决写入 git_ignore_decisions.json，并把 ignore 决定应用到根 .gitignore 的 SpecForge 托管区块。已知可再生产物只有在决定、实际 ignore、未跟踪三项同时成立时才可从 changed-files audit 排除。",
   args: {
     decisions: tool.schema.array(tool.schema.object({
       path: tool.schema.string().describe("文件路径"),

@@ -9,6 +9,7 @@ const execFileAsync = promisify(execFile);
 
 export type GitFileDecision = 'track' | 'ignore' | 'ask' | 'hard_stop';
 export type GitStatusKind = 'added' | 'modified' | 'deleted' | 'renamed' | 'copied' | 'untracked' | 'unknown';
+export type RegenerableArtifactClass = 'dependency_lockfile';
 
 export interface GitStatusEntry {
   path: string;
@@ -23,6 +24,7 @@ export interface GitIgnoreFinding {
   decision: GitFileDecision;
   reason: string;
   status?: GitStatusKind;
+  artifact_class?: RegenerableArtifactClass;
 }
 
 export interface GitIgnoreAnalysisResult {
@@ -208,7 +210,27 @@ function base(filePath: string): string {
   return path.basename(filePath).toLowerCase();
 }
 
-function classifyGitPath(filePath: string): { decision: GitFileDecision; reason: string } {
+const DEPENDENCY_LOCKFILE_NAMES = new Set([
+  'package-lock.json',
+  'npm-shrinkwrap.json',
+  'yarn.lock',
+  'pnpm-lock.yaml',
+  'bun.lock',
+  'bun.lockb',
+]);
+
+export function classifyRegenerableArtifactPath(
+  filePath: string,
+): RegenerableArtifactClass | null {
+  const normalized = normalizeRelativePath(filePath);
+  return DEPENDENCY_LOCKFILE_NAMES.has(base(normalized)) ? 'dependency_lockfile' : null;
+}
+
+export function classifyGitPath(filePath: string): {
+  decision: GitFileDecision;
+  reason: string;
+  artifact_class?: RegenerableArtifactClass;
+} {
   const p = normalizeRelativePath(filePath);
   const lower = p.toLowerCase();
   const b = base(lower);
@@ -232,6 +254,15 @@ function classifyGitPath(filePath: string): { decision: GitFileDecision; reason:
     return { decision: 'ignore', reason: 'local machine Android SDK path file' };
   }
   if (hasSegment(lower, 'node_modules')) return { decision: 'ignore', reason: 'dependency cache directory' };
+  const artifactClass = classifyRegenerableArtifactPath(lower);
+  if (artifactClass) {
+    return {
+      decision: 'ask',
+      reason:
+        'dependency lockfile must be explicitly tracked or governed as an ignored regenerable artifact',
+      artifact_class: artifactClass,
+    };
+  }
   if (hasSegment(lower, 'target')) return { decision: 'ignore', reason: 'Maven build output directory' };
   if (hasSegment(lower, '.gradle')) return { decision: 'ignore', reason: 'Gradle cache/runtime directory' };
   if (hasSegment(lower, 'dist') || hasSegment(lower, 'coverage') || hasSegment(lower, '.next') || hasSegment(lower, '.nuxt')) {
@@ -267,6 +298,9 @@ export async function analyzeIgnore(projectRoot: string, paths?: string[], write
       decision: classification.decision,
       reason: classification.reason,
       status: entryByPath.get(filePath)?.kind,
+      ...(classification.artifact_class
+        ? { artifact_class: classification.artifact_class }
+        : {}),
     } satisfies GitIgnoreFinding;
   });
   const result: GitIgnoreAnalysisResult = {

@@ -1,6 +1,6 @@
 {
   "name": "@specforge/workflow-runtime",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "schema_version": "1.0",
   "description": "Workflow Runtime module for SpecForge - Implements compositeGate semantics (Property 29)",
   "type": "module",

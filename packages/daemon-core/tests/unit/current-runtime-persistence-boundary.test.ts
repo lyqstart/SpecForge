@@ -74,6 +74,27 @@ describe('current Runtime persistence boundary', () => {
     expect(await exists(join(root, 'events.jsonl'))).toBe(false);
   });
 
+  it('persists the exact WAL tail cursor after a state transition', async () => {
+    const manager = new StateManager(resolver, 'project-root');
+    await manager.initialize();
+
+    await manager.transition('WI-0001', '', 'created', 'test-actor', 'feature_spec');
+
+    const checkpoint = JSON.parse(await readFile(join(root, 'state.json'), 'utf8'));
+    const events = (await readFile(join(root, 'events.jsonl'), 'utf8'))
+      .trim()
+      .split(/\r?\n/)
+      .map(line => JSON.parse(line));
+    const tail = events.at(-1);
+
+    expect(tail.monotonicSeq).toBe(1);
+    expect(checkpoint.lastEventId).toBe(tail.eventId);
+    expect(checkpoint.lastEventTs).toBe(tail.ts);
+    expect(checkpoint.workItems).toEqual([
+      expect.objectContaining({ work_item_id: 'WI-0001', current_state: 'created' }),
+    ]);
+  });
+
   it('fails closed on an existing empty WAL before overwriting Runtime state', async () => {
     await writeFile(join(root, 'events.jsonl'), '');
     const manager = new StateManager(resolver, 'project-root');

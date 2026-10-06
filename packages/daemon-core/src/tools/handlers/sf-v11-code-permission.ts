@@ -273,6 +273,26 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
         };
       }
 
+      const existingAllowedWriteFiles = Array.isArray(workItem.allowed_write_files)
+        ? workItem.allowed_write_files
+        : [];
+      const extensionRequested =
+        action === 'extend' ||
+        action === 'append' ||
+        (workItem.code_change_allowed === true && existingAllowedWriteFiles.length > 0);
+      const revisionReason = String(args['revision_reason'] ?? '').trim();
+      if (extensionRequested && revisionReason.length < 8) {
+        return {
+          success: false,
+          error: 'SCOPE_REVISION_REASON_REQUIRED',
+          hard_stop: false,
+          policy_violation: true,
+          retry_allowed: true,
+          message:
+            'Extending an active allowed-write scope requires revision_reason so the planned-scope change remains auditable.',
+        };
+      }
+
       const forbiddenGovernanceTargets = findForbiddenGovernanceTargets(allowedWriteFiles);
       if (forbiddenGovernanceTargets.length > 0) {
         return {
@@ -318,6 +338,7 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
         workItemDir,
         workItemId,
         allowedWriteFiles: normalized,
+        revisionReason,
       });
 
       let stateAutoAdvance = statePreparation;
@@ -368,6 +389,7 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
         work_item_id: workItemId,
         code_change_allowed: state.code_change_allowed,
         allowed_count: state.allowed_write_files.length,
+        scope_revision: state.scope_revision ?? null,
         state_auto_advance: stateAutoAdvance,
       };
     }

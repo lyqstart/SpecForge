@@ -161,6 +161,12 @@ describe('Fresh-04 Close Gate regressions', () => {
     expect(
       publicSource.match(/readTrustedChangedFilesAuditControlPlaneWrites\(projectRoot\)/g)?.length,
     ).toBe(1);
+    expect(
+      closeSource.match(/readGovernedRegenerableArtifacts\(/g)?.length,
+    ).toBe(2);
+    expect(
+      publicSource.match(/readGovernedRegenerableArtifacts\(/g)?.length,
+    ).toBe(1);
     expect(closeSource).not.toContain('readTrustedGitGovernanceProjectWrites');
     expect(publicSource).not.toContain('readTrustedGitGovernanceProjectWrites');
     expect(publicSource).not.toContain('readTrustedAtomicSpecMergeProjectWrites');

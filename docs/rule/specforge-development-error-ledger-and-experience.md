@@ -30385,3 +30385,16 @@ PowerShell 载体输出内部退出码必须使用 `$LASTEXITCODE`（禁止 `$?`
 - **类防护（复用，不新增）**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-016`、`EXP-018`。
 - REUSED_EXP=EXP-002,EXP-007,EXP-008,EXP-016,EXP-018
 - ERR1724_STATUS=CLOSED_BY_ESCALATED_SWITCH_AND_FAST_FORWARD_MAIN_TO_CBFD37A4
+
+## ERR-1725：Runtime 游标与可再生产物治理首轮实现漏查版本及 Close Gate 消费者
+
+- **发生时间**：2026-10-06
+- **分类**：`RUNTIME_DEFECT / GOVERNANCE_CONSUMER_GAP / VALIDATION_SEQUENCE_ERROR / CONSUMER_SEARCH_GAP`。
+- **事实证据**：`D:\code\t1` 的 `state.json` 保存 eventId `01a0fd32-…`、eventTs `1790954360142`，而 `events.jsonl` 末条 seq 20 保存 eventId `01a0fd98-…`、ts `1790961002479`；源码中 `StateManager.transition()` 在 WAL append 后直接持久化 state，未把刚追加事件的 id/ts 写入内存游标。试点的 `package-lock.json` 已有 ignore 决策但项目根没有 `.gitignore`，`git check-ignore` exit 1，changed-files audit 因该单一文件 out-of-scope 失败。首轮实现后第一次根全量测试又发现 `tests/unit/current-product-version-contract.test.ts` 仍有两项断言保留 `1.0.3`。随后独立消费者审阅发现 `sf-v11-close-gate.ts` 的两处重新审计仍未读取受控可再生产物，因此即使公开 audit 通过，Close Gate 仍会再次阻断。
+- **影响**：ERR-1717 的产品缺陷真实存在；试点 WI-0001 无法在不伪造业务 Module scope 的前提下合法排除可再生 lockfile；若不补齐 Close Gate 消费者，生命周期只能中途通过、最终失败。所有遗漏均在提交、安装和恢复试点前发现，没有写入 `D:\code\t1`。
+- **根因**：Runtime 把业务状态与 checkpoint 游标作为两条独立更新路径；Git ignore 决策只记录偏好而未形成 `.gitignore` 执行投影；changed-files audit 的同一业务判定存在 public audit 与 Close Gate 两类消费者；首轮消费者检索范围没有覆盖根版本合同测试。版本、治理策略和审计结果都属于一源多消费者合同，不能只修首个可见入口。
+- **纠正与防复发**：transition 在 WAL append 成功后、state persist 前同步 eventId/eventTs，并用持久化边界回归逐字段核对尾事件；ignore 工具原子维护决策文件与根 `.gitignore`、记录两者哈希 provenance，audit 仅在“明确 ignore 决策 + 已知可再生类型 + Git 实际忽略 + 未被跟踪 + 两份 provenance 当前有效”同时成立时排除；public audit 与 Close Gate 两处重算统一调用同一解析器；planned-scope 扩展必须记录 revision reason 与前后精确路径。版本升级先全仓搜索所有产品版本消费者，再以完整 root/workspace 回归兜底。
+- **类防护（复用，不新增）**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-011`、`EXP-017`、`EXP-021`、`EXP-031`、`EXP-033`、`EXP-040`、`EXP-087`、`EXP-102`、`EXP-113`、`EXP-159`、`EXP-262`。
+- REUSED_EXP=EXP-001,EXP-004,EXP-007,EXP-011,EXP-017,EXP-021,EXP-031,EXP-033,EXP-040,EXP-087,EXP-102,EXP-113,EXP-159,EXP-262
+- ERR1717_PRODUCT_DEFECT_STATUS=CLOSED_BY_RUNTIME_CURSOR_FIX_PENDING_REAL_DEPLOYMENT_VERIFICATION
+- ERR1725_STATUS=VERIFIED_IN_REPOSITORY_AWAITING_COMMIT_REAL_DEPLOYMENT_AND_PILOT_RECOVERY

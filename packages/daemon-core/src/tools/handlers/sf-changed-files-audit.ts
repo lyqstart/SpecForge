@@ -45,6 +45,7 @@ import {
 } from '../lib/filesystem-diff';
 import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
 import { CHANGED_FILES_AUDIT_CONTRACT_ID } from '../lib/changed-files-audit-verdict.js';
+import { readGovernedRegenerableArtifacts } from '../lib/regenerable-artifact-governance';
 
 type ChangedFile = { path: string; operation: 'create' | 'modify' | 'delete' };
 type AllowedFile = { path: string; operation: string };
@@ -727,11 +728,16 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
 
   const trustedControlPlaneWrites =
     readTrustedChangedFilesAuditControlPlaneWrites(projectRoot);
+  const governedRegenerableArtifacts = await readGovernedRegenerableArtifacts(
+    projectRoot,
+    projectChangedFiles,
+  );
   const auditResult = runChangedFilesAudit(
     projectChangedFiles,
     allowedWriteFiles,
     'agent',
     trustedControlPlaneWrites,
+    governedRegenerableArtifacts,
   );
   const evidenceAvailable = dataSource !== 'none';
   const blockedWriteClassifications = classifyBlockedWriteAttempts(
@@ -778,6 +784,11 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
   const remoteOpsLines = remoteOpsFiles.map(
     f => `- [${f.operation}] ${f.path} → remote_ops_not_project_file_write`
   );
+  const governedRegenerableArtifactLines = governedRegenerableArtifacts.map(
+    artifact =>
+      `- ${artifact.path} → ${artifact.artifact_class} ` +
+      `(decision=${artifact.policy_source}; enforced=${artifact.enforcement_source})`
+  );
 
   const auditMd = [
     '# Changed Files Audit',
@@ -796,6 +807,7 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
     `- Out of scope: ${finalOutOfScope}`,
     `- Violations: ${finalViolations.length}`,
     `- Remote ops entries: ${remoteOpsFiles.length}`,
+    `- Governed regenerable artifacts: ${auditResult.governed_regenerable_artifacts ?? 0}`,
     `- Blocked write attempts: ${blockedWrites.length}`,
     `- Historical/resolved blocked write attempts: ${resolvedBlockedWriteClassifications.length}`,
     `- Authorization-resolved blocked write attempts: ${authorizationResolvedClassifications.length}`,
@@ -804,6 +816,12 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
     '## Remote Ops Entries',
     '',
     ...(remoteOpsLines.length > 0 ? remoteOpsLines : ['None.']),
+    '',
+    '## Governed Regenerable Artifacts',
+    '',
+    ...(governedRegenerableArtifactLines.length > 0
+      ? governedRegenerableArtifactLines
+      : ['None.']),
     '',
     '## Blocked Write Attempts',
     '',
@@ -863,6 +881,7 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
     side_effects: auditResult.side_effects,
     remote_ops_entries: remoteOpsFiles.length,
     remote_ops_files: remoteOpsFiles,
+    governed_regenerable_artifacts: governedRegenerableArtifacts,
     work_item_id: workItemId,
     data_source: dataSource,
     actual_changed_files: auditResult.entries.map(entry => ({

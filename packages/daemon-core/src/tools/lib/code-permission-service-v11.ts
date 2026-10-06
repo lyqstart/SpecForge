@@ -9,11 +9,13 @@ export type WriteOperation = 'create' | 'modify' | 'delete';
 export interface PermissionState {
   code_change_allowed: boolean;
   allowed_write_files: Array<{ path: string; operation: WriteOperation }>;
+  scope_revision?: Record<string, unknown>;
 }
 export interface ReleasePermissionInput {
   workItemDir: string;
   workItemId: string;
   allowedWriteFiles: Array<{ path: string; operation: WriteOperation }>;
+  revisionReason?: string;
 }
 export interface ApplyRevokedPermissionFactsOptions {
   now?: string;
@@ -107,11 +109,17 @@ export function applyRevokedPermissionFacts(
 }
 export async function releaseCodePermission(input: ReleasePermissionInput): Promise<PermissionState> {
   const projectRoot = projectRootFromWorkItemDir(input.workItemDir);
+  const requestedAllowed = normalizePermissionEntries(input.allowedWriteFiles);
   const incomingAllowed = expandAllowedWriteFiles(input.workItemDir, input.allowedWriteFiles);
   try {
     const initial = await readWorkItemMetadata(input.workItemDir, input.workItemId);
     const existingAllowed = initial.code_change_allowed === true && initial.code_permission_revoked !== true
       ? normalizePermissionEntries(initial.allowed_write_files) : [];
+    const releaseMode = existingAllowed.length > 0 ? 'extend' : 'release';
+    const revisionReason = String(input.revisionReason ?? '').trim();
+    if (releaseMode === 'extend' && revisionReason.length < 8) {
+      throw new Error('SCOPE_REVISION_REASON_REQUIRED');
+    }
     const mergedAllowed = dedupePermissionEntries([...existingAllowed, ...incomingAllowed]);
     const frozen = await freezeGovernanceScopeForCodePermission({
       projectRoot,
@@ -124,7 +132,6 @@ export async function releaseCodePermission(input: ReleasePermissionInput): Prom
     }
     await persistGovernanceScope(input.workItemDir, frozen.snapshot);
     const wi = await readWorkItemMetadata(input.workItemDir, input.workItemId);
-    const releaseMode = existingAllowed.length > 0 ? 'extend' : 'release';
     const now = new Date().toISOString();
     wi.code_change_allowed = true;
     wi.code_permission_revoked = false;
@@ -141,11 +148,41 @@ export async function releaseCodePermission(input: ReleasePermissionInput): Prom
     history.push({
       timestamp: now, mode: releaseMode, incoming_count: incomingAllowed.length,
       previous_count: existingAllowed.length, total_count: mergedAllowed.length,
+      incoming_allowed_write_files: incomingAllowed,
+      requested_allowed_write_files: requestedAllowed,
+      effective_allowed_write_files: mergedAllowed,
+      ...(releaseMode === 'extend' ? { revision_reason: revisionReason } : {}),
     });
     wi.allowed_write_files_history = history.length > 20 ? history.slice(-20) : history;
+    let scopeRevision: Record<string, unknown> | undefined;
+    if (releaseMode === 'extend') {
+      const revisions: Array<Record<string, unknown>> = Array.isArray(wi.scope_revision_history)
+        ? wi.scope_revision_history.filter(
+            (entry): entry is Record<string, unknown> =>
+              typeof entry === 'object' && entry !== null && !Array.isArray(entry),
+          )
+        : [];
+      scopeRevision = {
+        schema_version: 'planned-scope-revision/v1',
+        revision_id: `SR-${input.workItemId}-${String(revisions.length + 1).padStart(4, '0')}`,
+        revised_at: now,
+        reason: revisionReason,
+        producer: 'sf_code_permission',
+        previous_allowed_write_files: existingAllowed,
+        added_allowed_write_files: requestedAllowed,
+        effective_allowed_write_files: mergedAllowed,
+        governance_scope: 'governance_scope.json',
+      };
+      revisions.push(scopeRevision);
+      wi.scope_revision_history = revisions;
+    }
     wi.updated_at = now;
     await writeWorkItemMetadata(input.workItemDir, input.workItemId, wi);
-    return { code_change_allowed: true, allowed_write_files: mergedAllowed };
+    return {
+      code_change_allowed: true,
+      allowed_write_files: mergedAllowed,
+      ...(scopeRevision ? { scope_revision: scopeRevision } : {}),
+    };
   } catch (err: any) {
     throw new Error(`Failed to release code permission: ${err.message}`);
   }

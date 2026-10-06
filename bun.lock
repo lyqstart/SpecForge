@@ -25,7 +25,7 @@
     },
     "packages/cli": {
       "name": "@specforge/cli",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "bin": {
         "specforge": "dist/cli.js",
       },
@@ -57,7 +57,7 @@
     },
     "packages/configuration": {
       "name": "@specforge/configuration",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "dependencies": {
         "@specforge/types": "workspace:*",
         "chokidar": "^3.5.3",
@@ -80,7 +80,7 @@
     },
     "packages/daemon-core": {
       "name": "@specforge/daemon-core",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "bin": {
         "specforged": "dist/specforged.js",
       },
@@ -112,7 +112,7 @@
     },
     "packages/host-profile": {
       "name": "@specforge/host-profile",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "dependencies": {
         "@specforge/types": "workspace:*",
         "@specforge/version-unification": "workspace:*",
@@ -124,7 +124,7 @@
     },
     "packages/observability": {
       "name": "@specforge/observability",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "dependencies": {
         "@specforge/types": "workspace:*",
       },
@@ -147,7 +147,7 @@
     },
     "packages/opencode-adapter": {
       "name": "@specforge/opencode-adapter",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "dependencies": {
         "@specforge/types": "workspace:*",
         "zod": "^4.4.3",
@@ -168,7 +168,7 @@
     },
     "packages/permission-engine": {
       "name": "@specforge/permission-engine",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "dependencies": {
         "@specforge/types": "workspace:*",
         "yaml": "^2.9.0",
@@ -192,7 +192,7 @@
     },
     "packages/scope-gate": {
       "name": "@specforge/scope-gate",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "dependencies": {
         "zod": "^4.4.3",
       },
@@ -215,7 +215,7 @@
     },
     "packages/service-management": {
       "name": "@specforge/service-management",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "dependencies": {
         "@specforge/cli": "workspace:*",
         "@specforge/configuration": "workspace:*",
@@ -241,7 +241,7 @@
     },
     "packages/types": {
       "name": "@specforge/types",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "dependencies": {
         "zod": "^3.22.4",
       },
@@ -251,14 +251,14 @@
     },
     "packages/version-unification": {
       "name": "@specforge/version-unification",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "devDependencies": {
         "vitest": "^4.1.5",
       },
     },
     "packages/workflow-runtime": {
       "name": "@specforge/workflow-runtime",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "dependencies": {
         "@specforge/types": "workspace:*",
         "fast-check": "^3.0.0",

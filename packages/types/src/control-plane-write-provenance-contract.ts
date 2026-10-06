@@ -23,6 +23,7 @@ export const AtomicSpecMergeWriteProvenanceSchema = z.object({
 }).strict();
 
 export const GitGovernanceProjectMetadataPathSchema = z.enum([
+  '.gitignore',
   '.specforge/project/git_policy.json',
   '.specforge/project/git_ignore_decisions.json',
   '.specforge/project/git_adoption_report.md',

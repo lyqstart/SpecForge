@@ -443,8 +443,8 @@ Intake → Classification → Impact Analysis → Candidate 准备
 | sf_gate_run | v1.1 统一 Gate Runner（替代旧独立 Gate 工具） |
 | sf_user_decision_record | 记录结构化用户决策到 user_decision.json |
 | sf_merge_run | 合并 Candidate 到正式规格 |
-| sf_code_permission | 释放/撤销代码写入权限 + allowed_write_files |
-| sf_changed_files_audit | 审计实际文件变更 vs allowed_write_files |
+| sf_code_permission | 释放/撤销代码写入权限；以带原因的 extend 修订同治理范围 allowed_write_files |
+| sf_changed_files_audit | 审计实际文件变更 vs allowed_write_files，并校验受控可再生产物排除 |
 | sf_close_gate | WI 关闭前 17 项完整性检查 |
 | sf_state_read | 读取 Work Item 状态（legacy compatibility / 调试） |
 | sf_state_transition | daemon 内部状态流转（legacy compatibility） |

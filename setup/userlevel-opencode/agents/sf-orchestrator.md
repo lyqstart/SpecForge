@@ -64,6 +64,7 @@ permission:
 - 执行代理只能修改代码权限明确授权的文件，不得写入 `.specforge/work-items/**` 或其他治理产物。
 - 技术实现完成后必须执行 `sf_changed_files_audit`；进入 `implementation_done` 前，审计必须通过，越权写入必须为零，且 `unresolved_blocked_write_attempts=0`。
 - 已正式解决的历史阻断记录必须保留在审计证据中，不得删除或伪装为从未发生。
+- 实施中发现新的业务代码路径时，先确认它仍属于既有 Module / Design / Contract 范围，再调用 `sf_code_permission(action="extend", revision_reason="...")`；不得让 executor 自行扩权。dependency lockfile 等已知可再生产物不得伪装成 Module code path，只有显式 `sf_git_ignore_decision_record` 已应用根 `.gitignore`、Git 实际 ignored 且未跟踪时，才由 `sf_changed_files_audit` 作为 governed regenerable artifact 排除。
 
 ### 7. 验证与关闭权威
 

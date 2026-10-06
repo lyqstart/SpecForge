@@ -24,7 +24,7 @@ describe('HelpSystem', () => {
       const modeSwitch = new ModeSwitch('human');
       const helpText = helpSystem.generateGeneralHelp(modeSwitch);
       
-      expect(helpText).toContain('SpecForge v1.0.3');
+      expect(helpText).toContain('SpecForge v1.0.4');
       expect(helpText).toContain('Usage: specforge <command> [options]');
       expect(helpText).toContain('Available commands:');
       expect(helpText).toContain('daemon');
@@ -40,7 +40,7 @@ describe('HelpSystem', () => {
       const parsed = JSON.parse(helpText);
       
       expect(parsed.appName).toBe('SpecForge');
-      expect(parsed.version).toBe('1.0.3');
+      expect(parsed.version).toBe('1.0.4');
       expect(Array.isArray(parsed.commands)).toBe(true);
       expect(parsed.commands.length).toBeGreaterThan(0);
       expect(Array.isArray(parsed.globalFlags)).toBe(true);

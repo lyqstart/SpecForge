@@ -18,6 +18,7 @@ import {
   type ChangedFilesAuditResult,
 } from "../lib/changed-files-audit.js";
 import { readTrustedChangedFilesAuditControlPlaneWrites } from "../lib/changed-files-audit-trusted-writes.js";
+import { readGovernedRegenerableArtifacts } from "../lib/regenerable-artifact-governance.js";
 import {
   applyRevokedPermissionFacts,
   revokeCodePermission,
@@ -518,11 +519,16 @@ async function refreshChangedFilesAuditAfterOperationNormalization(
   const writeGuardSummary = summarizeWriteGuardLog(workItemDir);
   const trustedControlPlaneWrites =
     readTrustedChangedFilesAuditControlPlaneWrites(projectRoot);
+  const governedRegenerableArtifacts = await readGovernedRegenerableArtifacts(
+    projectRoot,
+    actualFiles,
+  );
   const auditResult = runChangedFilesAudit(
     actualFiles,
     allowedWriteFilesForAudit,
     "agent",
     trustedControlPlaneWrites,
+    governedRegenerableArtifacts,
   );
 
   const changedFilesPath = path.join(workItemDir, "changed_files_audit.md");
@@ -936,11 +942,16 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
 
       const trustedControlPlaneWrites =
         readTrustedChangedFilesAuditControlPlaneWrites(projectRoot);
+      const governedRegenerableArtifacts = await readGovernedRegenerableArtifacts(
+        projectRoot,
+        changedFiles,
+      );
       const auditResult = runChangedFilesAudit(
         changedFiles,
         allowedWriteFilesForAudit,
         "agent",
         trustedControlPlaneWrites,
+        governedRegenerableArtifacts,
       );
       result.changed_files_audit = auditResult;
       await fs.writeFile(
@@ -1064,6 +1075,7 @@ function generateChangedFilesAuditMd(
     `## Result: ${audit.passed ? "PASS" : "FAIL"}`,
     `- Data Source: ${dataSource ?? "pre-existing audit file"}`,
     `- Ignored Runtime Files: ${audit.ignored_runtime_files ?? 0}`,
+    `- Governed Regenerable Artifacts: ${audit.governed_regenerable_artifacts ?? 0}`,
     "",
     "## Summary",
     "",
@@ -1082,6 +1094,8 @@ function generateChangedFilesAuditMd(
     for (const entry of entries) {
       const scope = entry.ignored_runtime_path
         ? "ignored_runtime"
+        : entry.governed_regenerable_artifact
+          ? `governed_regenerable:${entry.regenerable_artifact_class ?? "unknown"}`
         : entry.in_allowed_write_files
           ? "in_scope"
           : entry.is_spec_write

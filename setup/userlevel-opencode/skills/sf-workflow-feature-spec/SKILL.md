@@ -58,6 +58,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 - Executor may only modify files explicitly granted by code permission.
 - Executor must not write `.specforge/work-items/**` or governance artifacts.
 - `sf_changed_files_audit` must pass with `blocked_write_attempts=0` and no out-of-scope writes before implementation can complete.
+- A newly discovered business-code path must use `sf_code_permission(action="extend", revision_reason="...")` and remain inside the existing governance scope. A dependency lockfile or other known regenerable artifact must use the governed Git-ignore route; it must not be added to Module code paths merely to satisfy audit.
 
 ### 7. Verification and close gate
 

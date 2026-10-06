@@ -3,6 +3,7 @@ import * as fs from 'node:fs';
 import * as fsp from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import {
   resolveCanonicalCandidateWorkflowPath,
   validateCandidateManifestJson,
@@ -13,6 +14,7 @@ import {
   recordGitGovernanceProjectWrites,
 } from '../../src/tools/lib/git-governance-write-provenance';
 import { gitIgnoreDecisionRecord } from '../../src/tools/lib/git-governance-stage3';
+import { readGovernedRegenerableArtifacts } from '../../src/tools/lib/regenerable-artifact-governance';
 
 describe('Phase 11 Fresh-03 governance regressions', () => {
   const roots: string[] = [];
@@ -109,11 +111,72 @@ describe('Phase 11 Fresh-03 governance regressions', () => {
       decisions: [{ path: '.pytest_cache/', decision: 'ignore', reason: 'generated cache' }],
     });
     expect(result.success).toBe(true);
-    expect(readTrustedGitGovernanceProjectWrites(root)).toEqual([
+    expect(readTrustedGitGovernanceProjectWrites(root)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          path: '.gitignore',
+          producer: 'sf_git_ignore_decision_record',
+        }),
+        expect.objectContaining({
+          path: '.specforge/project/git_ignore_decisions.json',
+          producer: 'sf_git_ignore_decision_record',
+        }),
+      ]),
+    );
+  });
+
+  it('excludes only hash-current, untracked and actively ignored dependency lockfiles', async () => {
+    const root = await fsp.mkdtemp(path.join(os.tmpdir(), 'sf-regenerable-artifact-'));
+    roots.push(root);
+    execFileSync('git', ['init'], { cwd: root, stdio: 'ignore' });
+    await fsp.writeFile(path.join(root, 'package-lock.json'), '{"lockfileVersion":3}\n', 'utf-8');
+
+    const decision = await gitIgnoreDecisionRecord({
+      projectRoot: root,
+      confirmed: true,
+      decisions: [
+        {
+          path: 'package-lock.json',
+          decision: 'ignore',
+          reason: 'product-owner-approved regenerable dependency artifact',
+        },
+      ],
+    });
+    expect(decision.applied_ignore_paths).toEqual(['package-lock.json']);
+    expect(await fsp.readFile(path.join(root, '.gitignore'), 'utf-8')).toContain(
+      '/package-lock.json',
+    );
+
+    const changed = [{ path: 'package-lock.json', operation: 'create' as const }];
+    const governed = await readGovernedRegenerableArtifacts(root, changed);
+    expect(governed).toEqual([
       expect.objectContaining({
-        path: '.specforge/project/git_ignore_decisions.json',
-        producer: 'sf_git_ignore_decision_record',
+        path: 'package-lock.json',
+        artifact_class: 'dependency_lockfile',
       }),
     ]);
+    const accepted = runChangedFilesAudit(changed, [], 'agent', [], governed);
+    expect(accepted.passed).toBe(true);
+    expect(accepted.governed_regenerable_artifacts).toBe(1);
+    expect(accepted.in_scope).toBe(0);
+    expect(accepted.out_of_scope).toBe(0);
+
+    await fsp.appendFile(path.join(root, '.gitignore'), '# untrusted edit\n', 'utf-8');
+    const untrusted = await readGovernedRegenerableArtifacts(root, changed);
+    expect(untrusted).toEqual([]);
+    expect(runChangedFilesAudit(changed, [], 'agent', [], untrusted).passed).toBe(false);
+
+    await gitIgnoreDecisionRecord({
+      projectRoot: root,
+      confirmed: true,
+      decisions: [
+        {
+          path: 'package-lock.json',
+          decision: 'ignore',
+          reason: 're-confirm after user-edited non-managed ignore content',
+        },
+      ],
+    });
+    expect(await readGovernedRegenerableArtifacts(root, changed)).toHaveLength(1);
   });
 });

@@ -1,6 +1,6 @@
 {
   "name": "@specforge/scope-gate",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Current-release evidence and artifact-set validator for SpecForge",
   "type": "module",
   "main": "dist/src/index.js",

@@ -1,6 +1,6 @@
 {
   "name": "@specforge/opencode-adapter",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "OpenCode Adapter module for SpecForge - Implements LLMKernelAdapter interface for OpenCode",
   "type": "commonjs",
   "main": "dist/index.js",

@@ -4,7 +4,7 @@
 >
 > Effective date: 2026-10-01
 >
-> Registry version: 1.4
+> Registry version: 1.5
 >
 > Product owner: SpecForge 产品负责人
 >
@@ -71,6 +71,7 @@ SPS-1.0
 | D09 | 当前不启用完整 v1.3 多视角 Project Spec；只吸收成熟 Core 规则，views/ADR Detail/ATAM/DDD/SRE 等进入 Future Capability Registry |
 | D10 | NSSM 退出当前产品、安装器、发布物与运行依赖；当前 OS service registration 仅支持 Linux `systemd --user`，Windows 保留直接启动独立 Daemon 进程的能力但不提供系统服务注册或开机自启动；任何未来 Windows 服务宿主须重新裁决 |
 | D11 | First-party Thin Plugin 采用唯一用户级全局部署：只安装到 `<OpenCode config>/plugins/`；项目初始化不得生成项目级副本；自动发现入口只暴露一个 Plugin 函数，依赖注入实现放在 `sf-user/lib/` |
+| D12 | Git ignore 决定必须由受控 Tool 落实到根 `.gitignore`；只有“当前哈希来源 + 已知可再生产物 + Git 实际 ignored + 未跟踪”同时成立时 changed-files audit 才可排除。业务代码临时扩界必须走带原因和完整历史的 `code_permission extend`，不得把可再生产物伪装成 Module code path，也不得以 ignore 绕过普通源文件审计 |
 | AR-DEC-01 | 《SpecForge 架构一致性治理最终实施方案》保留为从属技术治理合同，服从 SPS 与 Authority Registry，不再自称产品权威 |
 | AR-DEC-02 | 旧规格、旧设计、旧标准、实施文件、报告和审计统一进入 docs/archive/**，不再散布为并行当前目录 |
 | AR-DEC-03 | 仓库根 .kiro 退役；可复用内容必须进入当前权威或实现合同，剩余材料归档至 docs/archive/kiro/** |

@@ -13,6 +13,7 @@
 
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 import { isSpecForgeRuntimePath, normalizeFsPath } from './filesystem-diff';
+import type { GovernedRegenerableArtifact } from './regenerable-artifact-governance';
 
 export interface ChangedFilesAuditEntry {
   path: string;
@@ -23,6 +24,8 @@ export interface ChangedFilesAuditEntry {
   actor?: string;
   ignored_runtime_path?: boolean;
   trusted_control_plane_write?: boolean;
+  governed_regenerable_artifact?: boolean;
+  regenerable_artifact_class?: GovernedRegenerableArtifact['artifact_class'];
 }
 
 export interface ChangedFilesAuditResult {
@@ -36,6 +39,7 @@ export interface ChangedFilesAuditResult {
   entries: ChangedFilesAuditEntry[];
   ignored_runtime_files?: number;
   trusted_control_plane_files?: number;
+  governed_regenerable_artifacts?: number;
 }
 
 function isProtectedSpecWrite(normalizedPath: string): boolean {
@@ -82,11 +86,13 @@ export function runChangedFilesAudit(
   allowedWriteFiles: Array<{ path: string; operation: string }>,
   actor?: string,
   trustedControlPlaneWrites: Array<{ path: string; producer: string }> = [],
+  governedRegenerableArtifacts: GovernedRegenerableArtifact[] = [],
 ): ChangedFilesAuditResult {
   const entries: ChangedFilesAuditEntry[] = [];
   const violations: string[] = [];
   let ignoredRuntimeFiles = 0;
   let trustedControlPlaneFiles = 0;
+  let governedRegenerableArtifactCount = 0;
   const normalizedTrustedControlPlaneWrites = (trustedControlPlaneWrites ?? [])
     .filter(entry => typeof entry?.path === 'string' && entry.path.length > 0)
     .map(entry => ({ path: entry.path, producer: String(entry.producer ?? 'controlled_runtime') }));
@@ -94,6 +100,8 @@ export function runChangedFilesAudit(
   const normalizedAllowed = (allowedWriteFiles ?? [])
     .filter((f) => typeof f?.path === 'string' && f.path.length > 0)
     .map((f) => ({ path: f.path, operation: String(f.operation ?? 'any') }));
+  const normalizedGovernedRegenerableArtifacts = (governedRegenerableArtifacts ?? [])
+    .filter(entry => typeof entry?.path === 'string' && entry.path.length > 0);
 
   for (const file of changedFiles ?? []) {
     const normalized = normalizeFsPath(file.path).replace(/\\/g, '/');
@@ -125,6 +133,23 @@ export function runChangedFilesAudit(
         is_side_effect: false,
         actor: trustedControlPlaneWrite.producer,
         trusted_control_plane_write: true,
+      });
+      continue;
+    }
+    const governedRegenerableArtifact = normalizedGovernedRegenerableArtifacts.find(entry =>
+      pathMatchesForAudit(normalized, entry.path)
+    );
+    if (governedRegenerableArtifact) {
+      governedRegenerableArtifactCount += 1;
+      entries.push({
+        path: normalized,
+        operation: file.operation,
+        in_allowed_write_files: true,
+        is_spec_write: false,
+        is_side_effect: false,
+        actor: 'sf_git_ignore_decision_record',
+        governed_regenerable_artifact: true,
+        regenerable_artifact_class: governedRegenerableArtifact.artifact_class,
       });
       continue;
     }
@@ -164,7 +189,11 @@ export function runChangedFilesAudit(
     passed: violations.length === 0,
     total_files: (changedFiles ?? []).length,
     in_scope: entries.filter(
-      (e) => e.in_allowed_write_files && !e.ignored_runtime_path && !e.trusted_control_plane_write
+      (e) =>
+        e.in_allowed_write_files &&
+        !e.ignored_runtime_path &&
+        !e.trusted_control_plane_write &&
+        !e.governed_regenerable_artifact
     ).length,
     out_of_scope: entries.filter((e) => !e.in_allowed_write_files && !e.is_spec_write).length,
     spec_writes: entries.filter((e) => e.is_spec_write).length,
@@ -173,5 +202,6 @@ export function runChangedFilesAudit(
     entries,
     ignored_runtime_files: ignoredRuntimeFiles,
     trusted_control_plane_files: trustedControlPlaneFiles,
+    governed_regenerable_artifacts: governedRegenerableArtifactCount,
   };
 }

@@ -236,7 +236,13 @@ export class StateManager {
     // ── Step 4: Append event to WAL (with fsync guarantee) ──
     await this.wal.appendEvent(event);
 
-    // ── Step 5: Update in-memory state ──
+    // ── Step 5: Advance the in-memory WAL cursor and derived state ──
+    // The checkpoint is a projection of the authoritative WAL. Persisting the
+    // new business state with the previous event cursor creates a checkpoint
+    // that looks current by value while being impossible to prove current by
+    // identity (ERR-1717 / EXP-262).
+    this._lastEventId = event.eventId;
+    this._lastEventTs = event.ts;
     this.applyStateTransition(event);
 
     // ── Step 6: Persist checkpoint ──
