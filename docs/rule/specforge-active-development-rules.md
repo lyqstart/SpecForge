@@ -2520,3 +2520,8 @@ Code Permission 的作用域、合并事实、版本控制模式、Git 上下文
 
 handoff 的新鲜度必须以 Runtime 可验证的持久化时间为准，不能信任 Agent 自报 timestamp。`validate_all` 的 `success=false`、`matching=0` 或 invalid 结果必须写入 Runtime 状态并阻断 Candidate seal；只有使用相同期望条件成功重试才能消除该失败，Agent 不得通过解释文本把失败降级为通过。
 <!-- source: ledger view L30862-30864 format H2COLON (purity-filtered) -->
+
+## EXP-275：历史版本控制模式只能由绑定旧证据的追加式恢复记录补齐
+
+历史 Work Item 缺少 `version_control_mode` 时必须 fail closed，不得以当前是否存在 `.git` 推断实施前模式。只有原 governance scope 与 filesystem baseline 的原始字节哈希和时间线、当前无 `git_context`、无 HEAD、零跟踪文件且 Git 身份稳定全部成立时，受控 owner 才能写追加式 filesystem 恢复记录；消费者必须每次重验来源与当前现场，任何漂移立即失效，且恢复不得触发 Git 分支、提交、合并或交付链。
+<!-- source: ledger view L31020-31022 format H2COLON (purity-filtered) -->

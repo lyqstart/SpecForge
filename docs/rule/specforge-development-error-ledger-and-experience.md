@@ -30995,3 +30995,77 @@ handoff 的新鲜度必须以 Runtime 可验证的持久化时间为准，不能
 - ERR1756_STATUS=SECOND_RECOVERY_IMPLEMENTED_DEPLOYED_AND_HEALTHY_REMOTE_MAIN_PUSH_BLOCKED
 - ERR1773_STATUS=CLOSED_BY_GIT_PROTOCOL_V1_EXACT_FAST_FORWARD_AND_BOOTSTRAP_ALIGNMENT
 - ERR1756_STATUS=SECOND_RECOVERY_DELIVERED_INSTALLED_HEALTHY_AND_READY_FOR_T2_AUTHORITATIVE_RESUME
+
+## ERR-1774：版本控制模式冻结修复未覆盖缺少冻结字段的历史 Work Item
+
+- **发生时间**：2026-10-07
+- **分类**：`LEGACY_RECOVERY_GAP / CURRENT_STATE_REINTERPRETATION`。
+- **事实证据**：t2 WI-0001 在实施前不是 Git 项目，其历史 `governance_scope.json` 没有 `version_control_mode`；实施完成后已误执行 `git init`。部署后的 Formal Version 仍以“冻结字段缺失时回退到当前仓库存在性”的逻辑把该 WI 判为 Git 模式，OpenCode 因而提出创建分支和提交 10 个实现文件。用户没有批准该分支并已退出 OpenCode。
+- **影响与根因**：此前修复只保证新 Code Permission 流程会冻结模式，却把历史缺失字段继续交给当前现场推断；这会把被禁止的事后 `git init` 反向合法化，并让已经完成的 filesystem 实施进入错误的 Git 交付链。
+- **纠正与防复发**：缺失字段默认 fail closed；只允许 Code Permission 在 `implementation_done` 下，以原 governance scope、filesystem baseline 的 raw UTF-8 bytes SHA-256、二者早于 `.git/HEAD` 的时间线、无 `git_context`、无 HEAD、零 tracked files 和稳定 Git 身份写入追加式恢复记录。Formal Version 每次消费时重验全部绑定；任何漂移或仓库推进立即失效。不得删除 `.git`，不得创建分支、提交或 merge。
+- REUSED_EXP=EXP-001,EXP-004,EXP-006,EXP-010,EXP-015,EXP-017,EXP-024,EXP-031,EXP-032,EXP-034,EXP-260,EXP-264,EXP-271,EXP-273
+- ERR1768_STATUS=REOPENED_BY_LEGACY_WORK_ITEM_RECOVERY_GAP
+- ERR1774_STATUS=IMPLEMENTED_FOCUSED_REGRESSION_PASS_FULL_VALIDATION_PENDING
+
+## ERR-1775：恢复能力首轮测试调用已从公开注册表移除的内部工具名
+
+- **发生时间**：2026-10-07
+- **分类**：`TEST_ENTRYPOINT_ERROR / PUBLIC_TOOL_CONTRACT_BYPASS`。
+- **事实证据**：新增恢复测试首次用 `getHandler('sf_v11_code_permission')` 调用内部实现名；`tools/index.ts` 在公开别名与 Git guard 注册后会注销内部名，导致 4 项测试中 3 项以 `handler is not a function` 失败，产品恢复逻辑尚未被执行。
+- **影响与根因**：该结果只证明测试入口错误，不能证明产品恢复逻辑失败；测试绕过了正式公开名及其 guard。修正为 `getHandler('sf_code_permission')` 后，恢复逻辑和公开 guard 被真实执行，初始 4/4、补强后 6/6 通过。
+- **纠正与防复发**：Tool 回归必须调用安装后公开名；内部注册名只用于模块装配，不得作为产品合同入口。报告必须区分“工具未调用”与“产品逻辑返回失败”。
+- REUSED_EXP=EXP-002,EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-087,EXP-195,EXP-263
+- ERR1775_STATUS=CLOSED_BY_PUBLIC_TOOL_ENTRYPOINT_AND_6_TESTS_PASS
+
+## EXP-275：历史版本控制模式只能由绑定旧证据的追加式恢复记录补齐
+
+历史 Work Item 缺少 `version_control_mode` 时必须 fail closed，不得以当前是否存在 `.git` 推断实施前模式。只有原 governance scope 与 filesystem baseline 的原始字节哈希和时间线、当前无 `git_context`、无 HEAD、零跟踪文件且 Git 身份稳定全部成立时，受控 owner 才能写追加式 filesystem 恢复记录；消费者必须每次重验来源与当前现场，任何漂移立即失效，且恢复不得触发 Git 分支、提交、合并或交付链。
+
+## ERR-1776：Agent 合同静态测试的新断言忽略了测试读取器会移除反引号
+
+- **发生时间**：2026-10-07
+- **分类**：`TEST_ASSERTION_NORMALIZATION_MISMATCH`。
+- **事实证据**：恢复能力批次 4 个文件 74 项中 73 项通过；唯一失败断言期待 Markdown 文本 `不得调用 \`sf_git_branch_create\``，但同一测试文件的 `normalizeText()` 在断言前显式移除全部反引号。原 Agent 文件包含目标语义，其他恢复、规则和安装一致性测试均通过。
+- **影响与根因**：生产合同没有缺失；新增断言没有遵守测试自身的文本规范化契约。
+- **纠正与防复发**：断言改为规范化后的 `不得调用 sf_git_branch_create`，不修改生产 Agent 文本；静态内容测试新增断言前先读取 shared normalizer。
+- REUSED_EXP=EXP-002,EXP-007,EXP-021,EXP-033,EXP-044,EXP-087,EXP-195
+- ERR1776_STATUS=CLOSED_BY_NORMALIZED_ASSERTION_RERUN_PENDING
+
+## ERR-1777：首轮 daemon 全量回归暴露旧 Formal Version 夹具缺少冻结模式并伴随一项并发超时
+
+- **发生时间**：2026-10-07
+- **分类**：`TEST_FIXTURE_CONTRACT_DRIFT / ISOLATED_TIMEOUT`。
+- **事实证据**：首轮 daemon-core 全量为 205 文件中 203 通过、1816 项中 1813 通过。Section 21 的 2 项失败均在 `buildCompleteWI` 期待 formal_version_gate passed，但该低层夹具没有生成 `governance_scope.json` 和冻结模式；新 fail-closed 检查因此返回 failed。另 1 项 fast-check 属性测试在并发全量中达到 30 秒上限；同文件隔离重跑 9/9、约 2.3 秒通过。
+- **影响与根因**：两项 Formal 失败是正向夹具未随“缺失模式不得再由当前 Git 状态推断”合同升级，不应放宽生产门禁；属性测试没有可复现产品失败证据，只能标为全量并发下的孤立超时。
+- **纠正与防复发**：Section 21 统一完成态夹具增加完整、inactive、明确冻结为 filesystem 的 governance scope；隔离重跑失败文件后再执行 daemon 全量。只有重复超时并有稳定触发证据时才修改属性测试预算或生产代码。
+- REUSED_EXP=EXP-002,EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-087,EXP-139,EXP-195,EXP-273,EXP-275
+- ERR1777_STATUS=FIXTURE_ALIGNED_ISOLATED_TIMEOUT_TEST_9_OF_9_PASS_DAEMON_FULL_RERUN_PENDING
+
+## ERR-1778：根级回归再次绕过当前发布测试选择器而直接收集 legacy tests
+
+- **发生时间**：2026-10-07
+- **分类**：`REPEATED_TEST_ENTRYPOINT_ERROR / LEGACY_SUITE_COLLECTION`。
+- **事实证据**：daemon-core 全量 205/205、1816/1816 通过后，根级首次误执行 `.\\node_modules\\.bin\\vitest.exe run tests`，直接收集了已退出当前发布面的旧 workflow、旧 installer、旧导出和环境测试，形成 390 项级联失败；根 `package.json` 的正式入口明确为 `bun run test` → `scripts/run-root-task.mjs test`，当前根测试由 `run-root-tests.mjs current` 选择。
+- **影响与根因**：这些失败不构成当前产品回归结果，也没有仓库写入；执行者重复忽略 ERR-1771 已记录的 Bun 官方入口纪律。
+- **纠正与防复发**：根级最终结论只接受已核验 Bun 运行 `bun run test` 的完整包清单和数字退出码；裸 `vitest run tests` 明确只可用于已确认仍属 current registry 的定向文件，不得再次作为全量入口。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-033,EXP-044,EXP-065,EXP-087,EXP-195,EXP-263
+- ERR1778_STATUS=OPEN_PENDING_OFFICIAL_BUN_WORKSPACE_RERUN
+
+## ERR-1779：working-tree release manifest 使用了不符合当前发布合同的 Candidate ID
+
+- **发生时间**：2026-10-07
+- **分类**：`RELEASE_IDENTITY_CONTRACT_VIOLATION / OPERATOR_ERROR`。
+- **事实证据**：官方 Bun 回归中根级 current 60/60 文件、772/772 通过，workspace 唯一失败包为 scope-gate。隔离重跑精确证明 3 项失败均因 release manifest 的 candidateId 为 `codex-t2-legacy-filesystem-recovery-a03`，而当前发布合同要求 `main-<8位基线SHA>-working-tree-step<标识>`；没有 hash mismatch 或恢复逻辑失败。隔离命令还从 package workdir 误读了带仓库前缀的 package.json 路径，产生一条独立的只读取证路径错误，不影响测试断言。
+- **影响与根因**：发布实体内容已经重建，但身份命名不合规，Scope Gate 正确拒绝；执行者自行发明 Candidate ID，未先读取测试和 producer 的当前命名合同。
+- **纠正与防复发**：以已核验远端对齐基线 `f23b2cb4` 重建 `main-f23b2cb4-working-tree-step1774` manifest，再隔离及官方全量重跑；最终合并后必须以最终 main SHA 重新生成，不复用 working-tree 身份。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-021,EXP-032,EXP-033,EXP-044,EXP-082,EXP-087,EXP-113,EXP-195
+- ERR1779_STATUS=OPEN_PENDING_COMPLIANT_MANIFEST_REBUILD_AND_RERUN
+
+- ERR1768_STATUS=LEGACY_RECOVERY_IMPLEMENTED_DAEMON_FULL_AND_OFFICIAL_WORKSPACE_REGRESSION_PASS_DEPLOYMENT_PENDING
+- ERR1774_STATUS=IMPLEMENTED_7_OF_7_RECOVERY_MATRIX_DAEMON_FULL_AND_OFFICIAL_WORKSPACE_REGRESSION_PASS_DEPLOYMENT_PENDING
+- ERR1776_STATUS=CLOSED_BY_NORMALIZED_ASSERTION_74_OF_74_PASS
+- ERR1777_STATUS=CLOSED_BY_SECTION21_37_OF_37_DAEMON_FULL_205_FILES_1816_TESTS_PASS
+- ERR1778_STATUS=CLOSED_BY_OFFICIAL_BUN_ROOT_60_FILES_772_TESTS_AND_ALL_WORKSPACES_EXIT_ZERO
+- ERR1779_STATUS=CLOSED_BY_COMPLIANT_WORKING_TREE_MANIFEST_SCOPE_GATE_30_FILES_134_TESTS_AND_OFFICIAL_WORKSPACE_EXIT_ZERO
+- ERR1768_STATUS=LEGACY_RECOVERY_FINAL_DAEMON_205_FILES_1817_TESTS_OFFICIAL_WORKSPACE_AND_PRECHECK_PASS_DEPLOYMENT_PENDING
+- ERR1774_STATUS=LEGACY_RECOVERY_FINAL_7_OF_7_MATRIX_94_OF_94_FOCUSED_DAEMON_1817_AND_OFFICIAL_WORKSPACE_PASS_DEPLOYMENT_PENDING

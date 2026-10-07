@@ -591,6 +591,8 @@ Write Guard 必须覆盖真实写入口，并保证：
 
 Write Guard 是统一写入控制机制，不建立与 Permission Engine 并列的第二权限事实源。
 
+版本控制模式属于 Code Permission 前置冻结事实：已有 Git 项目必须在实施前绑定可验证的分支与基线；非 Git 项目必须冻结为 `filesystem` 并以 filesystem baseline、Changed Files Audit 和 Formal Version 完成闭环。实施开始后出现的 `git init` 不得反向改变该事实。历史 Work Item 若缺少冻结字段，只能在原 governance scope 与 filesystem baseline 的原始字节哈希、时间线以及当前无 HEAD/零跟踪文件仓库现场均可验证时，由受控 Code Permission 工具写入追加式恢复记录；Formal Version 必须重新验证该记录，任何源漂移、Git context、HEAD、tracked file 或仓库身份变化均使恢复失效。该恢复不产生 Git 分支、提交、合并或交付义务。
+
 ## 9.3 HardStop
 
 HardStop 是 recoverable safety latch，不是“任务永久结束”。

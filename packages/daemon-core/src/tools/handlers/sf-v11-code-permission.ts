@@ -22,6 +22,7 @@ import { validateWorkItemId } from '../lib/work-item-id-validator';
 import { guardHardStop, setHardStop } from '../lib/hard-stop-latch';
 import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
 import { evaluateMergeReport } from '@specforge/types';
+import { recoverLegacyFilesystemVersionControlMode } from '../lib/project-governance-v2.js';
 
 async function readJsonIfExists(filePath: string): Promise<any | null> {
   try {
@@ -203,6 +204,10 @@ function normalizedReturnAction(action: string): string {
   return action;
 }
 
+function isLegacyFilesystemRecoveryAction(action: string): boolean {
+  return action === 'recover_legacy_filesystem_mode';
+}
+
 registerHandler('sf_v11_code_permission', async (args, context, deps) => {
   const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
@@ -264,6 +269,48 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
   }
 
   try {
+    if (isLegacyFilesystemRecoveryAction(action)) {
+      if (args['confirm_legacy_filesystem_recovery'] !== true) {
+        return {
+          success: false,
+          error: 'LEGACY_FILESYSTEM_MODE_RECOVERY_CONFIRMATION_REQUIRED',
+          retry_allowed: true,
+        };
+      }
+      const authoritativeState = await readAuthoritativeState({ deps, projectRoot, workItemId });
+      if (authoritativeState.current_state !== 'implementation_done') {
+        return {
+          success: false,
+          error: 'LEGACY_FILESYSTEM_MODE_RECOVERY_REQUIRES_IMPLEMENTATION_DONE',
+          current_state: authoritativeState.current_state,
+          retry_allowed: false,
+        };
+      }
+      const recovery = await recoverLegacyFilesystemVersionControlMode({
+        projectRoot,
+        workItemDir,
+        workItemId,
+        reason: String(args['recovery_reason'] ?? ''),
+      });
+      if (!recovery.success) {
+        return {
+          success: false,
+          error: recovery.error,
+          retry_allowed: false,
+          legacy_filesystem_recovery: recovery,
+        };
+      }
+      return {
+        success: true,
+        action,
+        work_item_id: workItemId,
+        recovered_version_control_mode: 'filesystem',
+        recovery_path: recovery.recovery_path,
+        idempotent: recovery.idempotent === true,
+        next_action: 'rerun_verification_gate_without_git_branch_or_checkpoint_commit',
+      };
+    }
+
     if (isReleaseLikeAction(action)) {
       const allowedWriteFiles = args['allowed_write_files'] as any[];
       if (!allowedWriteFiles || !Array.isArray(allowedWriteFiles) || allowedWriteFiles.length === 0) {

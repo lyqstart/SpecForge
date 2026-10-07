@@ -155,6 +155,30 @@ async function buildCompleteWI(
     workflowPath,
   });
   await initializeClosureFiles(wiDir, wiId, workflowPath, 'PSV-0001');
+  await fs.writeFile(
+    path.join(wiDir, 'governance_scope.json'),
+    JSON.stringify(
+      {
+        schema_version: '1.0',
+        work_item_id: wiId,
+        active: false,
+        affected_modules: [],
+        allowed_write_files: [],
+        architecture_refs: [],
+        data_model_refs: [],
+        design_refs: [],
+        project_contract_refs: [],
+        module_contract_refs: [],
+        project_spec_version: 'PSV-0001',
+        impact_scope_hash: 'section21-acceptance-fixture',
+        frozen_at: new Date().toISOString(),
+        version_control_mode: 'filesystem',
+      },
+      null,
+      2,
+    ) + '\n',
+    'utf-8',
+  );
 
   // Write trigger_result.json with correct workflow_path
   const trigger = generateTriggerResult(wiId, classification, []);

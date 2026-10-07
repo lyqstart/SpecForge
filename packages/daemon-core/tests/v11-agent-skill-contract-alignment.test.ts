@@ -230,6 +230,9 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
 
     const permissionWrapper = read('setup/userlevel-opencode/tools/sf_code_permission.ts');
     expect(permissionWrapper).toContain('allowed_write_files');
+    expect(permissionWrapper).toContain('recover_legacy_filesystem_mode');
+    expect(permissionWrapper).toContain('confirm_legacy_filesystem_recovery');
+    expect(permissionWrapper).toContain('recovery_reason');
 
     const closeWrapper = read('setup/userlevel-opencode/tools/sf_close_gate.ts');
     expect(closeWrapper).toContain('work_item_id');
@@ -272,6 +275,11 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
     const closeGate = read('packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts');
     expect(closeGate).toContain('AUTHORITATIVE_STATE_MISMATCH');
     expect(closeGate).toContain('current_state_not_verification_done');
+
+    const orchestrator = read('setup/userlevel-opencode/agents/sf-orchestrator.md');
+    expect(orchestrator).toContain('recover_legacy_filesystem_mode');
+    expect(orchestrator).toContain('不得调用 sf_git_branch_create');
+    expect(orchestrator).toContain('filesystem 或 legacy-recovered filesystem WI 不进入 Git 交付链');
   });
 
   it('keeps Contract consumer truth-source and manual-review rules aligned in Agents and Skills', () => {

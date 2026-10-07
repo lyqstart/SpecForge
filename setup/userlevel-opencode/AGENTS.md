@@ -61,6 +61,13 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
   Git-governed implementation is eligible only when the current branch matches
   `git_context`, every observed implementation file is committed, and none of
   those files has staged, unstaged, or untracked changes.
+- A legacy Work Item with no frozen version-control mode must fail closed. If
+  Runtime proves that its filesystem baseline and governance scope predate a
+  later unborn/untracked Git repository, only
+  `sf_code_permission(action="recover_legacy_filesystem_mode")` may record the
+  filesystem recovery. Do not create a branch, commit files, or turn the late
+  `git init` into Git Governance. After recovery, rerun verification and keep
+  Git delivery inapplicable for that Work Item.
 - `sf_close_gate` may close only from authoritative `verification_done`.
 - `sf_close_gate` must require `formal_version_gate=passed` for every
   Git/governance-scope Work Item except explicit investigation/rollback paths.

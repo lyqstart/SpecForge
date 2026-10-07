@@ -85,6 +85,23 @@ export interface GovernanceScopeSnapshot {
   git_branch_at_freeze?: string;
 }
 
+export interface VersionControlModeEvidence {
+  valid: boolean;
+  mode: 'git' | 'filesystem' | '';
+  source: 'governance_scope' | 'legacy_filesystem_recovery' | 'missing';
+  legacy_filesystem_recovery_applied: boolean;
+  error?: string;
+  input_files: string[];
+}
+
+export interface LegacyFilesystemModeRecoveryResult {
+  success: boolean;
+  error?: string;
+  recovery_path?: string;
+  record?: Record<string, unknown>;
+  idempotent?: boolean;
+}
+
 export interface ProjectSpecMergeHistoryEvidence {
   work_item_id: string;
   base_spec_version: string;
@@ -2451,6 +2468,7 @@ export function evaluateVersionControlMode(input: {
   gitContextEnabled?: boolean;
   currentRepositoryPresent?: boolean;
   currentRepositoryHead?: string;
+  legacyFilesystemRecoveryApplied?: boolean;
   specMigrationNoCode?: boolean;
   workflowPath?: string;
 }): {
@@ -2461,21 +2479,353 @@ export function evaluateVersionControlMode(input: {
   const frozen = String(input.frozenMode ?? '');
   const currentHasGit = input.currentRepositoryPresent === true ||
     Boolean(String(input.currentRepositoryHead ?? '').trim());
-  const mode: 'git' | 'filesystem' = frozen === 'git' || frozen === 'filesystem'
-    ? frozen
-    : input.gitContextEnabled === true || currentHasGit
+  const frozenModeKnown = frozen === 'git' || frozen === 'filesystem';
+  const unresolvedLegacyImplementationMode =
+    !frozenModeKnown && input.specMigrationNoCode !== true;
+  const mode: 'git' | 'filesystem' = frozenModeKnown
+    ? frozen as 'git' | 'filesystem'
+    : input.specMigrationNoCode === true && (input.gitContextEnabled === true || currentHasGit)
       ? 'git'
       : 'filesystem';
   const gitRequired = input.specMigrationNoCode === true
     ? currentHasGit
-    : mode === 'git' &&
+    : !unresolvedLegacyImplementationMode &&
+      mode === 'git' &&
       input.workflowPath !== 'contract_change_path' &&
       input.workflowPath !== 'rollback_path';
   return {
     mode,
     git_required: gitRequired,
-    stable: frozen !== 'filesystem' || !currentHasGit,
+    stable:
+      !unresolvedLegacyImplementationMode &&
+      (frozen !== 'filesystem' ||
+        !currentHasGit ||
+        (input.legacyFilesystemRecoveryApplied === true &&
+          !String(input.currentRepositoryHead ?? '').trim())),
   };
+}
+
+const LEGACY_FILESYSTEM_MODE_RECOVERY_FILE = 'version_control_mode_recovery.json';
+
+function sameResolvedPath(left: string, right: string): boolean {
+  const a = path.resolve(left);
+  const b = path.resolve(right);
+  return process.platform === 'win32' ? a.toLowerCase() === b.toLowerCase() : a === b;
+}
+
+async function readJsonSource(filePath: string): Promise<{
+  content: string;
+  value: any;
+  sha256: string;
+} | null> {
+  try {
+    const content = await fs.readFile(filePath, 'utf8');
+    return { content, value: JSON.parse(content), sha256: digest(content) };
+  } catch {
+    return null;
+  }
+}
+
+async function writeJsonAtomic(filePath: string, value: unknown): Promise<void> {
+  const temporaryPath = `${filePath}.tmp-${process.pid}-${Date.now()}`;
+  await fs.writeFile(temporaryPath, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
+  await fs.rename(temporaryPath, filePath);
+}
+
+async function currentUnbornRepositoryEvidence(projectRoot: string): Promise<{
+  inspection_valid: boolean;
+  repository_present: boolean;
+  head_commit: string;
+  tracked_files: string[];
+  git_head_mtime_ms: number;
+}> {
+  const repositoryPresent = await gitRepositoryPresent(projectRoot);
+  if (!repositoryPresent) {
+    return {
+      inspection_valid: true,
+      repository_present: false,
+      head_commit: '',
+      tracked_files: [],
+      git_head_mtime_ms: 0,
+    };
+  }
+  const headCommit = await gitHead(projectRoot);
+  let trackedFiles: string[];
+  try {
+    trackedFiles = await gitLines(projectRoot, ['ls-files']);
+  } catch {
+    return {
+      inspection_valid: false,
+      repository_present: true,
+      head_commit: headCommit,
+      tracked_files: [],
+      git_head_mtime_ms: 0,
+    };
+  }
+  let gitHeadMtimeMs: number;
+  try {
+    gitHeadMtimeMs = (await fs.stat(path.join(projectRoot, '.git', 'HEAD'))).mtimeMs;
+  } catch {
+    return {
+      inspection_valid: false,
+      repository_present: true,
+      head_commit: headCommit,
+      tracked_files: trackedFiles,
+      git_head_mtime_ms: 0,
+    };
+  }
+  return {
+    inspection_valid: true,
+    repository_present: true,
+    head_commit: headCommit,
+    tracked_files: trackedFiles,
+    git_head_mtime_ms: gitHeadMtimeMs,
+  };
+}
+
+async function validateLegacyFilesystemRecoveryRecord(input: {
+  projectRoot: string;
+  workItemDir: string;
+  workItemId: string;
+  governanceScopeSource: NonNullable<Awaited<ReturnType<typeof readJsonSource>>>;
+  baselineSource: NonNullable<Awaited<ReturnType<typeof readJsonSource>>>;
+  recovery: any;
+}): Promise<VersionControlModeEvidence> {
+  const recoveryPath = path.join(input.workItemDir, LEGACY_FILESYSTEM_MODE_RECOVERY_FILE);
+  const inputFiles = [
+    path.join(input.workItemDir, 'governance_scope.json'),
+    path.join(input.workItemDir, 'filesystem_baseline.json'),
+    recoveryPath,
+  ];
+  const invalid = (error: string): VersionControlModeEvidence => ({
+    valid: false,
+    mode: '',
+    source: 'missing',
+    legacy_filesystem_recovery_applied: false,
+    error,
+    input_files: inputFiles,
+  });
+  const recovery = input.recovery;
+  if (
+    recovery?.schema_version !== 'legacy-version-control-mode-recovery/v1' ||
+    recovery?.status !== 'applied' ||
+    recovery?.work_item_id !== input.workItemId ||
+    recovery?.recovered_mode !== 'filesystem' ||
+    recovery?.source?.sha256_domain !== 'raw_utf8_file_bytes'
+  ) {
+    return invalid('LEGACY_FILESYSTEM_MODE_RECOVERY_INVALID');
+  }
+  const recoveredAtMs = Date.parse(String(recovery?.recovered_at ?? ''));
+  const frozenAtMs = Date.parse(String(recovery?.source?.governance_scope_frozen_at ?? ''));
+  const baselineAtMs = Date.parse(String(recovery?.source?.filesystem_baseline_timestamp ?? ''));
+  const recordedGitHeadMtimeMs = Number(recovery?.late_git_evidence?.git_head_mtime_ms ?? 0);
+  if (
+    !Number.isFinite(recoveredAtMs) ||
+    !Number.isFinite(frozenAtMs) ||
+    !Number.isFinite(baselineAtMs) ||
+    !Number.isFinite(recordedGitHeadMtimeMs) ||
+    recordedGitHeadMtimeMs <= 0 ||
+    recovery?.late_git_evidence?.repository_present !== true ||
+    recovery?.late_git_evidence?.head_commit !== '' ||
+    !Array.isArray(recovery?.late_git_evidence?.tracked_files) ||
+    recovery.late_git_evidence.tracked_files.length !== 0 ||
+    recovery?.late_git_evidence?.git_context_present !== false ||
+    frozenAtMs > recordedGitHeadMtimeMs ||
+    baselineAtMs > recordedGitHeadMtimeMs ||
+    recoveredAtMs < recordedGitHeadMtimeMs
+  ) {
+    return invalid('LEGACY_FILESYSTEM_MODE_RECOVERY_TIMELINE_INVALID');
+  }
+  if (
+    recovery?.source?.governance_scope_sha256 !== input.governanceScopeSource.sha256 ||
+    recovery?.source?.filesystem_baseline_sha256 !== input.baselineSource.sha256
+  ) {
+    return invalid('LEGACY_FILESYSTEM_MODE_RECOVERY_SOURCE_DRIFT');
+  }
+  if (
+    String(input.governanceScopeSource.value?.work_item_id ?? '') !== input.workItemId ||
+    !sameResolvedPath(String(input.baselineSource.value?.root ?? ''), input.projectRoot) ||
+    recovery?.source?.governance_scope_file !== 'governance_scope.json' ||
+    recovery?.source?.filesystem_baseline_file !== 'filesystem_baseline.json' ||
+    recovery?.source?.governance_scope_frozen_at !==
+      input.governanceScopeSource.value?.frozen_at ||
+    recovery?.source?.filesystem_baseline_timestamp !== input.baselineSource.value?.timestamp
+  ) {
+    return invalid('LEGACY_FILESYSTEM_MODE_RECOVERY_SOURCE_METADATA_MISMATCH');
+  }
+  const gitContext = await readJsonSource(path.join(input.workItemDir, 'git_context.json'));
+  if (gitContext) return invalid('LEGACY_FILESYSTEM_MODE_RECOVERY_GIT_CONTEXT_APPEARED');
+  const currentRepository = await currentUnbornRepositoryEvidence(input.projectRoot);
+  if (!currentRepository.inspection_valid) {
+    return invalid('LEGACY_FILESYSTEM_MODE_GIT_INSPECTION_FAILED');
+  }
+  if (
+    currentRepository.repository_present &&
+    currentRepository.git_head_mtime_ms !== recordedGitHeadMtimeMs
+  ) {
+    return invalid('LEGACY_FILESYSTEM_MODE_RECOVERY_GIT_IDENTITY_CHANGED');
+  }
+  if (
+    currentRepository.repository_present &&
+    (currentRepository.head_commit || currentRepository.tracked_files.length > 0)
+  ) {
+    return invalid('LEGACY_FILESYSTEM_MODE_RECOVERY_GIT_REPOSITORY_ADVANCED');
+  }
+  return {
+    valid: true,
+    mode: 'filesystem',
+    source: 'legacy_filesystem_recovery',
+    legacy_filesystem_recovery_applied: currentRepository.repository_present,
+    input_files: inputFiles,
+  };
+}
+
+export async function resolveVersionControlModeEvidence(input: {
+  projectRoot: string;
+  workItemDir: string;
+  workItemId: string;
+}): Promise<VersionControlModeEvidence> {
+  const governanceScopePath = path.join(input.workItemDir, 'governance_scope.json');
+  const governanceScopeSource = await readJsonSource(governanceScopePath);
+  const mode = String(governanceScopeSource?.value?.version_control_mode ?? '');
+  if (mode === 'git' || mode === 'filesystem') {
+    return {
+      valid: true,
+      mode,
+      source: 'governance_scope',
+      legacy_filesystem_recovery_applied: false,
+      input_files: [governanceScopePath],
+    };
+  }
+  if (!governanceScopeSource) {
+    return {
+      valid: false,
+      mode: '',
+      source: 'missing',
+      legacy_filesystem_recovery_applied: false,
+      error: 'GOVERNANCE_SCOPE_REQUIRED_FOR_VERSION_CONTROL_MODE',
+      input_files: [governanceScopePath],
+    };
+  }
+  const baselinePath = path.join(input.workItemDir, 'filesystem_baseline.json');
+  const baselineSource = await readJsonSource(baselinePath);
+  const recoveryPath = path.join(input.workItemDir, LEGACY_FILESYSTEM_MODE_RECOVERY_FILE);
+  const recoverySource = await readJsonSource(recoveryPath);
+  if (!baselineSource || !recoverySource) {
+    return {
+      valid: false,
+      mode: '',
+      source: 'missing',
+      legacy_filesystem_recovery_applied: false,
+      error: 'LEGACY_VERSION_CONTROL_MODE_RECOVERY_REQUIRED',
+      input_files: [governanceScopePath, baselinePath, recoveryPath],
+    };
+  }
+  return validateLegacyFilesystemRecoveryRecord({
+    ...input,
+    governanceScopeSource,
+    baselineSource,
+    recovery: recoverySource.value,
+  });
+}
+
+export async function recoverLegacyFilesystemVersionControlMode(input: {
+  projectRoot: string;
+  workItemDir: string;
+  workItemId: string;
+  reason: string;
+}): Promise<LegacyFilesystemModeRecoveryResult> {
+  if (input.reason.trim().length < 12) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_RECOVERY_REASON_REQUIRED' };
+  }
+  const governanceScopePath = path.join(input.workItemDir, 'governance_scope.json');
+  const baselinePath = path.join(input.workItemDir, 'filesystem_baseline.json');
+  const recoveryPath = path.join(input.workItemDir, LEGACY_FILESYSTEM_MODE_RECOVERY_FILE);
+  const governanceScopeSource = await readJsonSource(governanceScopePath);
+  const baselineSource = await readJsonSource(baselinePath);
+  if (!governanceScopeSource) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_GOVERNANCE_SCOPE_REQUIRED' };
+  }
+  const existingMode = String(governanceScopeSource.value?.version_control_mode ?? '');
+  if (existingMode === 'git' || existingMode === 'filesystem') {
+    return { success: false, error: 'VERSION_CONTROL_MODE_ALREADY_FROZEN' };
+  }
+  if (String(governanceScopeSource.value?.work_item_id ?? '') !== input.workItemId) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_WORK_ITEM_MISMATCH' };
+  }
+  if (!baselineSource || !Array.isArray(baselineSource.value?.files)) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_BASELINE_REQUIRED' };
+  }
+  if (!sameResolvedPath(String(baselineSource.value?.root ?? ''), input.projectRoot)) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_BASELINE_ROOT_MISMATCH' };
+  }
+  const scopeFrozenMs = Date.parse(String(governanceScopeSource.value?.frozen_at ?? ''));
+  const baselineMs = Date.parse(String(baselineSource.value?.timestamp ?? ''));
+  if (!Number.isFinite(scopeFrozenMs) || !Number.isFinite(baselineMs)) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_SOURCE_TIMESTAMPS_REQUIRED' };
+  }
+  if (await readJsonSource(path.join(input.workItemDir, 'git_context.json'))) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_GIT_CONTEXT_PRESENT' };
+  }
+  const repository = await currentUnbornRepositoryEvidence(input.projectRoot);
+  if (!repository.inspection_valid) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_GIT_INSPECTION_FAILED' };
+  }
+  if (!repository.repository_present) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_LATE_GIT_REPOSITORY_REQUIRED' };
+  }
+  if (repository.head_commit || repository.tracked_files.length > 0) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_REQUIRES_UNBORN_UNTRACKED_GIT' };
+  }
+  if (
+    !repository.git_head_mtime_ms ||
+    Date.now() < repository.git_head_mtime_ms ||
+    scopeFrozenMs > repository.git_head_mtime_ms ||
+    baselineMs > repository.git_head_mtime_ms
+  ) {
+    return { success: false, error: 'LEGACY_FILESYSTEM_MODE_LATE_GIT_TIMELINE_NOT_PROVEN' };
+  }
+
+  const existingRecovery = await readJsonSource(recoveryPath);
+  if (existingRecovery) {
+    const resolved = await validateLegacyFilesystemRecoveryRecord({
+      ...input,
+      governanceScopeSource,
+      baselineSource,
+      recovery: existingRecovery.value,
+    });
+    return resolved.valid
+      ? { success: true, recovery_path: recoveryPath, record: existingRecovery.value, idempotent: true }
+      : { success: false, error: resolved.error };
+  }
+
+  const record = {
+    schema_version: 'legacy-version-control-mode-recovery/v1',
+    status: 'applied',
+    work_item_id: input.workItemId,
+    recovered_mode: 'filesystem',
+    producer: 'sf_code_permission',
+    recovered_at: new Date().toISOString(),
+    reason: input.reason.trim(),
+    source: {
+      sha256_domain: 'raw_utf8_file_bytes',
+      governance_scope_file: 'governance_scope.json',
+      governance_scope_sha256: governanceScopeSource.sha256,
+      governance_scope_frozen_at: governanceScopeSource.value.frozen_at,
+      filesystem_baseline_file: 'filesystem_baseline.json',
+      filesystem_baseline_sha256: baselineSource.sha256,
+      filesystem_baseline_timestamp: baselineSource.value.timestamp,
+    },
+    late_git_evidence: {
+      repository_present: true,
+      head_commit: '',
+      tracked_files: [],
+      git_context_present: false,
+      git_head_mtime_ms: repository.git_head_mtime_ms,
+    },
+  };
+  await writeJsonAtomic(recoveryPath, record);
+  return { success: true, recovery_path: recoveryPath, record, idempotent: false };
 }
 
 export async function inspectFormalGitBinding(input: {
@@ -2704,6 +3054,12 @@ export async function checkFormalVersionEligibility(input: {
   const gitContextPath = path.join(input.workItemDir, 'git_context.json');
   const gitContext = await readJson(gitContextPath);
   const governanceScope = await readJson(path.join(input.workItemDir, 'governance_scope.json'));
+  const versionControlEvidence = await resolveVersionControlModeEvidence({
+    projectRoot: input.projectRoot,
+    workItemDir: input.workItemDir,
+    workItemId: input.workItemId,
+  });
+  inputFiles.push(...versionControlEvidence.input_files);
   const currentRepositoryPresent = await gitRepositoryPresent(
     input.projectRoot,
     gitContext?.git_enabled === true,
@@ -2711,12 +3067,14 @@ export async function checkFormalVersionEligibility(input: {
   const currentRepositoryHead = currentRepositoryPresent
     ? await gitHead(input.projectRoot)
     : '';
-  const frozenVersionControlMode = String(governanceScope?.version_control_mode ?? '');
+  const frozenVersionControlMode = versionControlEvidence.mode;
   const versionControl = evaluateVersionControlMode({
     frozenMode: frozenVersionControlMode,
     gitContextEnabled: gitContext?.git_enabled === true,
     currentRepositoryPresent,
     currentRepositoryHead,
+    legacyFilesystemRecoveryApplied:
+      versionControlEvidence.legacy_filesystem_recovery_applied,
     specMigrationNoCode,
     workflowPath: input.workflowPath,
   });
@@ -2734,10 +3092,19 @@ export async function checkFormalVersionEligibility(input: {
   inputFiles.push(gitContextPath);
   addCheck(
     checks,
+    'formal_version_control_mode_evidence',
+    'Pre-implementation version-control mode is frozen or recovered from bound legacy evidence',
+    specMigrationNoCode || versionControlEvidence.valid,
+    specMigrationNoCode
+      ? 'not_applicable=spec_migration_no_code'
+      : `source=${versionControlEvidence.source}; mode=${versionControlEvidence.mode || 'missing'}; error=${versionControlEvidence.error ?? 'none'}`,
+  );
+  addCheck(
+    checks,
     'formal_repository_mode_stable',
     'Version-control mode remains the mode frozen before implementation',
     versionControl.stable,
-    `frozen=${frozenVersionControlMode || 'legacy'}; effective=${versionControl.mode}; current=${currentRepositoryPresent ? 'git' : 'filesystem'}; head=${currentRepositoryHead || 'unborn'}`,
+    `frozen=${frozenVersionControlMode || 'missing'}; source=${versionControlEvidence.source}; effective=${versionControl.mode}; current=${currentRepositoryPresent ? 'git' : 'filesystem'}; head=${currentRepositoryHead || 'unborn'}; legacy_recovery=${versionControlEvidence.legacy_filesystem_recovery_applied}`,
   );
   const specMigrationProjectSpecGit =
     specMigrationNoCode && gitBinding.enabled && gitBinding.base_commit
