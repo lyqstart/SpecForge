@@ -15,10 +15,19 @@ describe('code permission state ordering regression', () => {
 
     const handlerStart = source.indexOf("registerHandler('sf_v11_code_permission'");
     const handler = source.slice(handlerStart);
-    const releaseIndex = handler.indexOf('const state = await releaseCodePermission');
-    const runningIndex = handler.indexOf("toState: 'implementation_running'", releaseIndex);
-    expect(releaseIndex).toBeGreaterThan(-1);
-    expect(runningIndex).toBeGreaterThan(releaseIndex);
+    const prepareIndex = handler.indexOf('const preparedPermission = await prepareCodePermissionRelease');
+    const statePreflightIndex = handler.indexOf('const preCommitState = await readAuthoritativeState');
+    const commitIndex = handler.indexOf('const state = await commitPreparedCodePermissionRelease');
+    const statePreparationIndex = handler.indexOf('statePreparation = await advanceImplementationStateBeforeCode');
+    const runningIndex = handler.indexOf("toState: 'implementation_running'", statePreparationIndex);
+    expect(prepareIndex).toBeGreaterThan(-1);
+    expect(statePreflightIndex).toBeGreaterThan(prepareIndex);
+    expect(commitIndex).toBeGreaterThan(statePreflightIndex);
+    expect(commitIndex).toBeGreaterThan(prepareIndex);
+    expect(statePreparationIndex).toBeGreaterThan(commitIndex);
+    expect(runningIndex).toBeGreaterThan(statePreparationIndex);
+    const revokeIndex = handler.indexOf('await revokeCodePermission', runningIndex);
+    expect(revokeIndex).toBeGreaterThan(runningIndex);
   });
 
   test('preserves the original filesystem baseline across a recovery release', () => {
@@ -35,5 +44,10 @@ describe('code permission state ordering regression', () => {
     expect(baselineSectionStart).toBeGreaterThan(-1);
     expect(snapshotIndex).toBeGreaterThan(baselineSectionStart);
     expect(saveIndex).toBeGreaterThan(snapshotIndex);
+    const permissionCommitIndex = source.indexOf(
+      'const state = await commitPreparedCodePermissionRelease',
+      saveIndex,
+    );
+    expect(permissionCommitIndex).toBeGreaterThan(saveIndex);
   });
 });

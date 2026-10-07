@@ -34,6 +34,11 @@ async function git(cwd: string, args: string[]): Promise<void> {
   await execFileAsync('git', args, { cwd });
 }
 
+async function gitOutput(cwd: string, args: string[]): Promise<string> {
+  const { stdout } = await execFileAsync('git', args, { cwd });
+  return String(stdout ?? '').trim();
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -75,6 +80,7 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
   let port: number;
   const token = `test-gov-e2e-${Date.now()}`;
   let tempDir: string;
+  let gitBaseCommit: string;
   let httpTestState = 'implementation_ready';
   const workItemId = 'WI-0001';
 
@@ -92,6 +98,7 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
     await git(tempDir, ['config', 'user.email', 'specforge-test@example.invalid']);
     await git(tempDir, ['add', '.specforge/manifest.json']);
     await git(tempDir, ['commit', '-m', 'test: establish HTTP governance baseline']);
+    gitBaseCommit = await gitOutput(tempDir, ['rev-parse', 'HEAD']);
     await git(tempDir, ['switch', '-c', 'feature/work-item-wi-0001']);
 
     // Create a real ToolDispatcher with real handlers
@@ -161,6 +168,13 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
       allowed_write_files: [],
       workflow_path: 'code_only_fast_path',
       updated_at: new Date().toISOString(),
+    }, null, 2) + '\n');
+    await fs.writeFile(path.join(wiDir, 'git_context.json'), JSON.stringify({
+      schema_version: '1.0',
+      work_item_id: workItemId,
+      git_enabled: true,
+      branch_name: 'feature/work-item-wi-0001',
+      base_commit: gitBaseCommit,
     }, null, 2) + '\n');
 
     const permResult = await httpPost(port, token, '/api/v1/tool/invoke', {

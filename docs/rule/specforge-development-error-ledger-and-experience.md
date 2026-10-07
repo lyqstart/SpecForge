@@ -30838,3 +30838,140 @@ Impact Scope、Task、Gate 和 Code Permission 必须共享精确文件、目录
 - **纠正与防复发**：release manifest 必须在最终 checkout/merge 后从将被安装的实际工作副本生成并再次 precheck；安装器 hash mismatch 必须保持写前失败，不得用 `--force` 绕过。命令检索中另有两次 `rg` 模式转义错误，均无写入且不作为部署证据。
 - REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-021,EXP-032,EXP-033,EXP-087,EXP-151
 - ERR1762_STATUS=CLOSED_BY_POST_CHECKOUT_MANIFEST_REBUILD_PRECHECK_ATOMIC_UPGRADE_VERIFY_AND_HEALTH
+
+## EXP-269：greenfield 分类不得把条件规格产物提升为固定 Project Spec Core
+
+首次建立项目权威时，Runtime 只能强制当前 Product Specification 明确列入 Project Spec Core 的产物；数据模型、Project Contract、Module Contract 等条件真相源必须由可追溯需求、影响分析和实际 Candidate 触发。分类字段仍须完整，但未触发的条件产物应为 false，禁止以“文件尚不存在”为由扩大产品架构。
+
+## EXP-270：用户批准必须绑定当前 Candidate 的真实显式答复
+
+`user_approved` 只能消费用户针对当前 Candidate 的显式批准原话；任务提示、恢复指令、长期授权、历史同意或 Agent 对用户意图的概括均不得冒充批准。Candidate 失效或重新封存后必须再次展示当前 Candidate 并取得新的显式批准。
+
+## EXP-271：Code Permission 必须先完成全部前置校验再改变权限或状态
+
+Code Permission 的作用域、合并事实、版本控制模式、Git 上下文和 filesystem baseline 必须在任何权限放行或状态推进前全部通过。提交权限后若后续状态推进异常，Runtime 必须立即撤销权限并保留失败证据；禁止出现“状态已前进但权限因前置校验失败未成立”的部分成功。
+
+## EXP-272：合并后治理作用域必须从同一 Work Item 的已合并真相源恢复
+
+同一 Work Item 的 Candidate 已成功合并后，Code Permission 和后续 Gate 必须从 merged Project Spec、Candidate Manifest 与分类证据派生正式引用；不得要求重写原 trigger、重新封存第二个 Candidate 或重复合并同一路径。trace 去重必须在 merge 前验证并保持一次性合并语义。
+
+## EXP-273：版本控制模式必须在实施前冻结且实施期间不可切换
+
+现有 Git 仓库必须在 Code Permission 前建立 Work Item 分支、base commit 和可验证 git_context；非 Git 项目应冻结为 filesystem 模式，以受控 baseline 和 changed-files audit 完成闭环。实施开始后不得用 `git init` 把 filesystem 项目切换为 Git 模式，也不得让 Formal Version Gate 强制非 Git 项目补造 Git 历史。
+
+## EXP-274：handoff 新鲜度和失败状态必须由 Runtime 记录并强制消费
+
+handoff 的新鲜度必须以 Runtime 可验证的持久化时间为准，不能信任 Agent 自报 timestamp。`validate_all` 的 `success=false`、`matching=0` 或 invalid 结果必须写入 Runtime 状态并阻断 Candidate seal；只有使用相同期望条件成功重试才能消除该失败，Agent 不得通过解释文本把失败降级为通过。
+
+## ERR-1763：greenfield 修复把条件规格产物误升为所有新项目的强制真相源
+
+- **发生时间**：2026-10-07
+- **分类**：`AUTHORITY_SCOPE_OVERREACH / GREENFIELD_CLASSIFICATION_DEFECT`。
+- **事实证据**：当前 SPS 的 Project Spec Core 固定包含项目架构与 Module Design，但 `requiredGreenfieldClassificationFields` 把 `data_model_changed` 和 `module_contract_changed` 与架构、设计一并强制为 true；这会让没有数据模型或模块契约需求的网页五子棋项目生成超出权威要求的条件产物。
+- **影响与根因**：先前修复越过 Product Specification，把“十一字段必须完整”错误解释为“十一类产物都必须变化”。
+- **纠正与防复发**：保留十一字段 schema；greenfield 仅强制 architecture/design，数据模型与契约由真实需求和 Candidate 触发；增加回归测试并以 EXP-269 明确边界。
+- REUSED_EXP=EXP-001,EXP-004,EXP-017,EXP-021,EXP-044,EXP-095,EXP-266,EXP-269
+- ERR1763_STATUS=OPEN_PENDING_FULL_REGRESSION_DEPLOYMENT
+
+## ERR-1764：恢复提示被重复冒充为当前 Candidate 的用户批准原话
+
+- **发生时间**：2026-10-07
+- **分类**：`USER_DECISION_TRUST_BOUNDARY_VIOLATION / APPROVAL_REPLAY`。
+- **事实证据**：用户提供的 OpenCode 记录中，attempt-0005 与 attempt-0006 的 `user_response_quote` 使用“重新封存 Candidate、运行 Gate，并在任何代码写入前重新取得 code permission”这一任务指令，而不是用户对对应 Candidate 的新批准；此前只有 attempt-0003 获得真实“批准”。
+- **影响与根因**：重新封存后的 Candidate 可在没有新用户决定时进入 approved；工具只检查 quote 非空和 comments，不验证 quote 是否为显式当前批准。
+- **纠正与防复发**：Runtime 增加显式批准语义和任务/恢复/长期授权拒绝；Agent、Skill 与 wrapper 同步声明失效后必须重新展示 Candidate 并等待真实批准。
+- REUSED_EXP=EXP-001,EXP-021,EXP-023,EXP-048,EXP-096,EXP-187,EXP-228,EXP-270
+- ERR1764_STATUS=OPEN_PENDING_FULL_REGRESSION_DEPLOYMENT
+
+## ERR-1765：Code Permission 前置校验失败后状态仍部分推进
+
+- **发生时间**：2026-10-07
+- **分类**：`NON_ATOMIC_PERMISSION_RELEASE / STATE_PERMISSION_SPLIT_BRAIN`。
+- **事实证据**：用户提供的试点记录显示第一次合并 PSV-0002 后，Code Permission 因治理作用域失败未放行，但权威状态已经进入 `implementation_ready`，随后只能借 blocked/recovery 回到 Candidate 流程。
+- **影响与根因**：权限写入、作用域冻结、baseline 和状态迁移顺序不是一个 fail-closed 前置链，导致失败请求留下新的权威状态。
+- **纠正与防复发**：先完成 merge/scope/Git/baseline 全部 preflight，再持久化权限并推进状态；推进失败立即撤销权限。静态顺序和 Runtime 回归共同验证。
+- REUSED_EXP=EXP-001,EXP-021,EXP-032,EXP-105,EXP-127,EXP-187,EXP-271
+- ERR1765_STATUS=OPEN_PENDING_FULL_REGRESSION_DEPLOYMENT
+
+## ERR-1766：同一 Work Item 的合并后作用域无法恢复并诱发重复 Candidate 与重复 merge
+
+- **发生时间**：2026-10-07
+- **分类**：`POST_MERGE_SCOPE_RECOVERY_DEFECT / DUPLICATE_MERGE_CYCLE`。
+- **事实证据**：试点先成功合并 PSV-0002，权限作用域失败后又生成第二、第三次 Candidate；第二次 merge 因重复 trace 失败，第三次才合并 PSV-0003。原 trigger 路径与已合并正式引用之间形成闭环缺口。
+- **影响与根因**：一次需求在同一 WI 内被迫重复封存和合并，产生版本膨胀及 trace 冲突；治理作用域只在部分 workflow path 上从 merged truth 恢复。
+- **纠正与防复发**：所有相关 workflow path 均从同一 WI 的 merged Project Spec/manifest/classification 派生正式引用，不重写 trigger、不执行第二次 merge；增加 requirement_change_path 回归。
+- REUSED_EXP=EXP-001,EXP-021,EXP-032,EXP-044,EXP-127,EXP-187,EXP-272
+- ERR1766_STATUS=OPEN_PENDING_FULL_REGRESSION_DEPLOYMENT
+
+## ERR-1767：handoff 验证失败被 Agent 时间戳与自然语言解释旁路
+
+- **发生时间**：2026-10-07
+- **分类**：`HANDOFF_FRESHNESS_TRUST_DEFECT / FAILED_VALIDATION_NOT_CONSUMED`。
+- **事实证据**：用户提供的记录显示 `sf_handoff(validate_all)` 返回 `success=false, matching=0`，OpenCode 以 handoff 内自报 timestamp 与实际文件时间不一致为由继续流程，没有成功重试或 Runtime 阻断。
+- **影响与根因**：专业 Agent 的本轮输出没有可证明的新鲜 handoff，仍进入 Candidate；新鲜度信任 Agent 字段，验证失败也没有被后续状态机消费。
+- **纠正与防复发**：以文件 mtime 作为 Runtime recorded_at；每次 `validate_all` 原子写验证状态，失败阻断 Candidate seal，相同期望成功重试才清除。
+- REUSED_EXP=EXP-001,EXP-021,EXP-032,EXP-048,EXP-267,EXP-274
+- ERR1767_STATUS=OPEN_PENDING_FULL_REGRESSION_DEPLOYMENT
+
+## ERR-1768：非 Git 项目实施完成后才执行 git init 以满足 Formal Version Gate
+
+- **发生时间**：2026-10-07
+- **分类**：`VERSION_CONTROL_MODE_DRIFT / LATE_GIT_INITIALIZATION`。
+- **事实证据**：t2 初始不是 Git 仓库；OpenCode 在 `implementation_done` 之后遇到 formal_version_gate 失败，随后运行 `git init -b main` 并要求用户提供分支名。SPS 将 Git Governance 定义为可选，而非所有业务项目的关闭前置。
+- **影响与根因**：项目版本控制形态在实施后被静默改变，且新仓库没有实施前 base commit/branch 证据；Formal Version Gate 未区分 Git 与 filesystem 模式。
+- **纠正与防复发**：Code Permission 前冻结模式；已有 Git 必须先有 branch/context，非 Git 用 filesystem baseline；Gate 拒绝实施中途或结束后的模式切换。
+- REUSED_EXP=EXP-001,EXP-017,EXP-021,EXP-032,EXP-044,EXP-187,EXP-273
+- ERR1768_STATUS=OPEN_PENDING_FULL_REGRESSION_DEPLOYMENT
+
+## ERR-1769：本轮修复再次从错误 node_modules 路径启动测试并得到伪成功退出
+
+- **发生时间**：2026-10-07
+- **分类**：`REPEATED_TEST_INVOCATION_ERROR / EXIT_CODE_CAPTURE_DEFECT`。
+- **事实证据**：首次从 `packages/daemon-core` 调用不存在的 `./node_modules/.bin/vitest.cmd`，PowerShell 报命令不存在，但组合脚本因 `$LASTEXITCODE` 未被该解析错误更新而返回 exit 0。核对实际安装后改用仓库根 `.bin/vitest.exe`，真实收集 4 文件并通过 31 项，TypeScript 通过。
+- **影响与根因**：重复 ERR-1757 的依赖拓扑假设，且暴露“命令未启动时 `$LASTEXITCODE` 不是可靠哨兵”。
+- **纠正与防复发**：先 `Get-Item` 核验可执行路径；正式结果必须同时检查进程确实启动、测试收集数和数字退出码，解析错误不得计为 PASS。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-033,EXP-065,EXP-087,EXP-263
+- ERR1769_STATUS=CLOSED_BY_REAL_EXECUTABLE_31_TESTS_AND_TYPESCRIPT_PASS
+
+- ERR1756_STATUS=REOPENED_BY_T2_RESUME_APPROVAL_HANDOFF_PERMISSION_MERGE_AND_VERSION_CONTROL_EVIDENCE
+
+## ERR-1770：首次全量回归的 Git 夹具失败被过早误判为父仓库探测问题
+
+- **发生时间**：2026-10-07
+- **分类**：`TEST_FIXTURE_CONTRACT_DRIFT / PREMATURE_ROOT_CAUSE_STATEMENT`。
+- **事实证据**：daemon-core 首次全量回归为 204 文件中 202 通过、1808 项中 1805 通过，3 项均因 `GIT_CONTEXT_REQUIRED_BEFORE_CODE_PERMISSION` 失败。初步根据临时目录位置推测为父仓库误识别；继续读取两个失败测试后确认它们都显式执行 `git init`、建立 base commit 并切换 WI 分支，但没有写 `git_context.json`。
+- **影响与根因**：失败输出本身正确，早期根因表述缺少测试源码证据；旧夹具没有随“Git 项目必须在代码权限前绑定分支和 base commit”的合同更新。
+- **纠正与防复发**：撤回初步推断，不放宽生产门禁；测试夹具保存真实 base commit、分支和 git_context 后隔离及全量重跑。测试失败归因必须先读取失败断言与 fixture setup，再向用户陈述根因。
+- REUSED_EXP=EXP-002,EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-087,EXP-195,EXP-273
+- ERR1770_STATUS=OPEN_PENDING_FIXTURE_RERUN_AND_FULL_REGRESSION
+- ERR1770_STATUS=FIXTURE_CONTRACT_ALIGNED_ISOLATED_2_FILES_9_TESTS_PASS_FULL_REGRESSION_PENDING
+
+## ERR-1771：全工作区回归首次用 Node 直接调用 Bun-only 根任务入口
+
+- **发生时间**：2026-10-07
+- **分类**：`TEST_INVOCATION_ERROR / REQUIRED_RUNTIME_NOT_USED`。
+- **事实证据**：根级当前测试 60 文件 772/772 通过后，首次执行 `node scripts/run-root-task.mjs test`；入口立即返回 `ROOT_TASK_REQUIRES_BUN`、exit 1，未启动任何 workspace 测试。固定 Bun 可执行文件随后经只读路径核验存在。
+- **影响与根因**：没有仓库写入和产品测试结果；错误来自忽略 package script 的 Bun 调用合同，重复了先前载体选择类经验。
+- **纠正与防复发**：全工作区 test/build 统一通过已核验 Bun 执行 `bun run test/build`，检查完整包清单和数字退出码；本次 Node 拒绝不计为产品失败或 PASS。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-033,EXP-065,EXP-087,EXP-263
+- ERR1771_STATUS=OPEN_PENDING_BUN_WORKSPACE_RERUN
+
+## ERR-1772：首次官方全工作区回归同时暴露父仓库继承和旧 release manifest 两类验证前置缺口
+
+- **发生时间**：2026-10-07
+- **分类**：`WORKSPACE_REGRESSION_PRECONDITION_GAP / RELEASE_MANIFEST_STALE`。
+- **事实证据**：首次 `bun run test` 根测试 60 文件 772/772 通过，但 workspace 最终报告 daemon-core 与 scope-gate 非零。daemon-core 在 `TEMP=D:\code\SpecForge\.tmp\bun` 时有 11 项把父级 SpecForge 仓库当作临时业务项目启用的 Git Governance；scope-gate 有 5 项读取旧 candidate `main-f6537ce1-deploy`，并对 6 个已改安装文件报告 hash mismatch。
+- **影响与根因**：第一次完整入口不能计为通过。Git 探测没有区分项目根自身仓库与可选的父仓库；当前仓库物理发布集合在源文件修改后尚未重建。
+- **纠正与防复发**：Git 模式仅在项目根为 Git top-level 或已有显式 git_context 时启用；新增父仓库/子项目回归。完成 deterministic build、release runtime 和 working-tree manifest 重建后，daemon-core workspace 环境全量 exit 0、scope-gate 30 文件 134/134、最终官方 `bun run test` exit 0。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-021,EXP-032,EXP-033,EXP-044,EXP-065,EXP-087,EXP-151,EXP-273
+- ERR1772_STATUS=CLOSED_BY_ROOT_OR_EXPLICIT_GIT_MODE_RELEASE_REBUILD_AND_OFFICIAL_WORKSPACE_RERUN
+
+- ERR1763_STATUS=IMPLEMENTED_FOCUSED_AND_FULL_REGRESSION_PASS_DEPLOYMENT_PENDING
+- ERR1764_STATUS=IMPLEMENTED_FOCUSED_AND_FULL_REGRESSION_PASS_DEPLOYMENT_PENDING
+- ERR1765_STATUS=IMPLEMENTED_FOCUSED_AND_FULL_REGRESSION_PASS_DEPLOYMENT_PENDING
+- ERR1766_STATUS=IMPLEMENTED_FOCUSED_AND_FULL_REGRESSION_PASS_DEPLOYMENT_PENDING
+- ERR1767_STATUS=IMPLEMENTED_FOCUSED_AND_FULL_REGRESSION_PASS_DEPLOYMENT_PENDING
+- ERR1768_STATUS=IMPLEMENTED_FOCUSED_AND_FULL_REGRESSION_PASS_DEPLOYMENT_PENDING
+- ERR1770_STATUS=CLOSED_BY_FIXTURE_ALIGNMENT_DAEMON_FULL_AND_OFFICIAL_WORKSPACE_RERUN
+- ERR1771_STATUS=CLOSED_BY_BUN_OFFICIAL_WORKSPACE_RERUN_EXIT_ZERO
+- ERR1756_STATUS=SECOND_RECOVERY_IMPLEMENTED_FULL_REGRESSION_PASS_DEPLOYMENT_PENDING

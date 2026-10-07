@@ -32,7 +32,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 ### 4. Approval authority
 
 - User approval must be recorded only through `sf_user_decision_record`.
-- `user_approved` requires top-level `user_response_quote`.
+- `user_approved` requires top-level `user_response_quote` containing the user's explicit approval of the current Candidate; task prompts, recovery instructions, and standing authorization are not approval evidence.
 - `auto_approved` requires `auto_approval_policy_id`.
 - `comments` and `reason` are notes only. They must not be treated as structured approval evidence.
 - `work_item.json` must never carry approval fields such as `decision_status`, `decision_type`, `user_response_quote`, `auto_approval_policy_id`, `approved`, `approval`, `approval_status`, `user_decision`, `decision_id`, `decided_by`, `decision_scope`, or `waivers`.

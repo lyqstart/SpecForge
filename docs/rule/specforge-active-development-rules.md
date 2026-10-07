@@ -2478,7 +2478,7 @@ Candidate 进入 sealed 状态后，Candidate 文件、manifest、change classif
 
 ## EXP-266：分类 producer、wrapper、schema、路由和 greenfield 语义必须使用同一字段集合
 
-变更分类的必需字段必须在 Agent 提示、公开 Tool schema、Runtime validator、artifact schema、路由和测试中完全一致。从缺失或占位状态建立首份正式架构、设计、数据模型或模块契约属于对应语义变化，不能因为目标文件尚不存在而填 false。
+变更分类的必需字段必须在 Agent 提示、公开 Tool schema、Runtime validator、artifact schema、路由和测试中完全一致。字段必填不等于对应产物必建；greenfield 只能把当前 Product Specification 要求建立的正式真相源判为变化，条件产物必须由真实需求和 Candidate 内容触发，不能由 Project Init 占位状态统一强制为 true。
 <!-- source: ledger view L30768-30770 format H2COLON (purity-filtered) -->
 
 ## EXP-267：专业 Agent 成功必须以 owner-bound 持久化 handoff 为完成条件
@@ -2490,3 +2490,33 @@ Candidate 进入 sealed 状态后，Candidate 文件、manifest、change classif
 
 Impact Scope、Task、Gate 和 Code Permission 必须共享精确文件、目录前缀与 glob 的覆盖语义，诊断文案必须描述真实谓词。文件快照去重必须使用目标平台解析后的路径身份；Windows 上大小写别名不能形成两个输入或两份证据。
 <!-- source: ledger view L30776-30778 format H2COLON (purity-filtered) -->
+
+## EXP-269：greenfield 分类不得把条件规格产物提升为固定 Project Spec Core
+
+首次建立项目权威时，Runtime 只能强制当前 Product Specification 明确列入 Project Spec Core 的产物；数据模型、Project Contract、Module Contract 等条件真相源必须由可追溯需求、影响分析和实际 Candidate 触发。分类字段仍须完整，但未触发的条件产物应为 false，禁止以“文件尚不存在”为由扩大产品架构。
+<!-- source: ledger view L30842-30844 format H2COLON (purity-filtered) -->
+
+## EXP-270：用户批准必须绑定当前 Candidate 的真实显式答复
+
+`user_approved` 只能消费用户针对当前 Candidate 的显式批准原话；任务提示、恢复指令、长期授权、历史同意或 Agent 对用户意图的概括均不得冒充批准。Candidate 失效或重新封存后必须再次展示当前 Candidate 并取得新的显式批准。
+<!-- source: ledger view L30846-30848 format H2COLON (purity-filtered) -->
+
+## EXP-271：Code Permission 必须先完成全部前置校验再改变权限或状态
+
+Code Permission 的作用域、合并事实、版本控制模式、Git 上下文和 filesystem baseline 必须在任何权限放行或状态推进前全部通过。提交权限后若后续状态推进异常，Runtime 必须立即撤销权限并保留失败证据；禁止出现“状态已前进但权限因前置校验失败未成立”的部分成功。
+<!-- source: ledger view L30850-30852 format H2COLON (purity-filtered) -->
+
+## EXP-272：合并后治理作用域必须从同一 Work Item 的已合并真相源恢复
+
+同一 Work Item 的 Candidate 已成功合并后，Code Permission 和后续 Gate 必须从 merged Project Spec、Candidate Manifest 与分类证据派生正式引用；不得要求重写原 trigger、重新封存第二个 Candidate 或重复合并同一路径。trace 去重必须在 merge 前验证并保持一次性合并语义。
+<!-- source: ledger view L30854-30856 format H2COLON (purity-filtered) -->
+
+## EXP-273：版本控制模式必须在实施前冻结且实施期间不可切换
+
+现有 Git 仓库必须在 Code Permission 前建立 Work Item 分支、base commit 和可验证 git_context；非 Git 项目应冻结为 filesystem 模式，以受控 baseline 和 changed-files audit 完成闭环。实施开始后不得用 `git init` 把 filesystem 项目切换为 Git 模式，也不得让 Formal Version Gate 强制非 Git 项目补造 Git 历史。
+<!-- source: ledger view L30858-30860 format H2COLON (purity-filtered) -->
+
+## EXP-274：handoff 新鲜度和失败状态必须由 Runtime 记录并强制消费
+
+handoff 的新鲜度必须以 Runtime 可验证的持久化时间为准，不能信任 Agent 自报 timestamp。`validate_all` 的 `success=false`、`matching=0` 或 invalid 结果必须写入 Runtime 状态并阻断 Candidate seal；只有使用相同期望条件成功重试才能消除该失败，Agent 不得通过解释文本把失败降级为通过。
+<!-- source: ledger view L30862-30864 format H2COLON (purity-filtered) -->

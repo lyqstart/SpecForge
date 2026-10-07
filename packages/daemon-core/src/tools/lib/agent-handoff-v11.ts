@@ -14,7 +14,7 @@
  * 本模块提供 handoff schema 校验和写入功能。
  */
 
-import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, readdir, stat, rename } from 'node:fs/promises';
 import { join } from 'node:path';
 import { existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -95,6 +95,96 @@ export interface HandoffValidationResult {
   valid: boolean;
   errors: string[];
   warnings: string[];
+}
+
+export interface HandoffValidationFilters {
+  expectedAgent?: string;
+  expectedStage?: string;
+  createdAfter?: string;
+}
+
+interface HandoffValidationStateEntry {
+  key: string;
+  status: 'passed' | 'failed';
+  filters: HandoffValidationFilters;
+  total: number;
+  valid: number;
+  invalid: number;
+  matching: number;
+  error?: string;
+  validated_at: string;
+}
+
+interface HandoffValidationState {
+  schema_version: '1.0';
+  validations: Record<string, HandoffValidationStateEntry>;
+}
+
+const HANDOFF_VALIDATION_STATE_FILE = 'handoff_validation_state.json';
+
+function validationStateKey(filters: HandoffValidationFilters): string {
+  return createHash('sha256')
+    .update(JSON.stringify({
+      expected_agent: filters.expectedAgent ?? null,
+      expected_stage: filters.expectedStage ?? null,
+      created_after: filters.createdAfter ?? null,
+    }))
+    .digest('hex');
+}
+
+async function readHandoffValidationState(wiDir: string): Promise<HandoffValidationState> {
+  try {
+    const parsed = JSON.parse(
+      await readFile(join(wiDir, HANDOFF_VALIDATION_STATE_FILE), 'utf-8'),
+    ) as Partial<HandoffValidationState>;
+    return {
+      schema_version: '1.0',
+      validations: parsed.validations && typeof parsed.validations === 'object'
+        ? parsed.validations
+        : {},
+    };
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    return { schema_version: '1.0', validations: {} };
+  }
+}
+
+export async function recordHandoffValidationState(
+  wiDir: string,
+  filters: HandoffValidationFilters,
+  result: {
+    success: boolean;
+    total: number;
+    valid: number;
+    invalid: number;
+    matching: number;
+    error?: string;
+  },
+): Promise<void> {
+  const state = await readHandoffValidationState(wiDir);
+  const key = validationStateKey(filters);
+  state.validations[key] = {
+    key,
+    status: result.success ? 'passed' : 'failed',
+    filters,
+    total: result.total,
+    valid: result.valid,
+    invalid: result.invalid,
+    matching: result.matching,
+    error: result.error,
+    validated_at: new Date().toISOString(),
+  };
+  const statePath = join(wiDir, HANDOFF_VALIDATION_STATE_FILE);
+  const temporaryPath = `${statePath}.writing-${process.pid}-${Date.now()}`;
+  await writeFile(temporaryPath, JSON.stringify(state, null, 2) + '\n', 'utf-8');
+  await rename(temporaryPath, statePath);
+}
+
+export async function readUnresolvedHandoffValidationFailures(
+  wiDir: string,
+): Promise<HandoffValidationStateEntry[]> {
+  const state = await readHandoffValidationState(wiDir);
+  return Object.values(state.validations).filter(entry => entry.status === 'failed');
 }
 
 /**
@@ -217,7 +307,7 @@ export async function writeHandoff(
  */
 export async function validateAllHandoffs(
   wiDir: string,
-  filters: { expectedAgent?: string; expectedStage?: string; createdAfter?: string } = {},
+  filters: HandoffValidationFilters = {},
 ): Promise<{
   total: number;
   valid: number;
@@ -229,6 +319,7 @@ export async function validateAllHandoffs(
     agent?: string;
     stage?: string;
     timestamp?: string;
+    recorded_at?: string;
     work_item_id?: string;
   }>;
   errors: string[];
@@ -249,6 +340,7 @@ export async function validateAllHandoffs(
     agent?: string;
     stage?: string;
     timestamp?: string;
+    recorded_at?: string;
     work_item_id?: string;
   }> = [];
 
@@ -258,12 +350,14 @@ export async function validateAllHandoffs(
       const raw = await readFile(join(handoffDir, file), 'utf-8');
       const parsed = JSON.parse(raw);
       const result = validateHandoff(parsed);
+      const fileStat = await stat(join(handoffDir, file));
       records.push({
         file,
         valid: result.valid,
         agent: parsed?.agent,
         stage: parsed?.stage,
         timestamp: parsed?.timestamp,
+        recorded_at: fileStat.mtime.toISOString(),
         work_item_id: parsed?.work_item_id,
       });
       if (result.valid) {
@@ -288,7 +382,7 @@ export async function validateAllHandoffs(
     ) return false;
     if (filters.expectedStage && record.stage !== filters.expectedStage) return false;
     if (filters.createdAfter) {
-      const timestampMs = Date.parse(String(record.timestamp ?? ''));
+      const timestampMs = Date.parse(String(record.recorded_at ?? ''));
       if (Number.isNaN(createdAfterMs) || Number.isNaN(timestampMs) || timestampMs < createdAfterMs) {
         return false;
       }

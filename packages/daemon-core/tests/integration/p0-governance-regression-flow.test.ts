@@ -39,6 +39,11 @@ async function git(args: string[]): Promise<void> {
   await execFileAsync('git', args, { cwd: projectRoot });
 }
 
+async function gitOutput(args: string[]): Promise<string> {
+  const { stdout } = await execFileAsync('git', args, { cwd: projectRoot });
+  return String(stdout ?? '').trim();
+}
+
 async function writeJson(filePath: string, value: unknown): Promise<void> {
   await fs.mkdir(path.dirname(filePath), { recursive: true });
   await fs.writeFile(filePath, JSON.stringify(value, null, 2) + '\n', 'utf-8');
@@ -245,6 +250,13 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
     created_at: now,
     updated_at: now,
     created_by: 'sf-orchestrator',
+  });
+  await writeJson(path.join(dir, 'git_context.json'), {
+    schema_version: '1.0',
+    work_item_id: workItemId,
+    git_enabled: true,
+    branch_name: 'feature/p0-governance',
+    base_commit: await gitOutput(['rev-parse', 'main']),
   });
 
   await writeJson(path.join(dir, 'trigger_result.json'), {
@@ -554,9 +566,20 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
     const enableResult = await invoke('sf_code_permission', {
       work_item_id: workItemId,
       action: 'enable',
-      allowed_write_files: [{ path: 'src/index.ts', operation: 'modify' }],
+      allowed_write_files: [{ path: 'src/index.ts', operation: 'create' }],
     });
     expect(enableResult.success).toBe(true);
+
+    await writeText(
+      path.join(projectRoot, 'src', 'index.ts'),
+      'export const governedFeature = true;\n',
+    );
+    await git(['add', '--', 'src/index.ts']);
+    await git(['commit', '-m', 'feat: implement governed fixture']);
+    await writeText(
+      path.join(wiDir(workItemId), 'changed_files_audit.md'),
+      `# Changed Files Audit\n\nContract: changed-files-audit/v1\nWork Item: ${workItemId}\n## Result: PASS\n- Total files: 1\n- In scope: 1\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n\n## Entries\n\n- [create] src/index.ts → in_scope\n`,
+    );
 
     const revokeResult = await invoke('sf_code_permission', {
       work_item_id: workItemId,

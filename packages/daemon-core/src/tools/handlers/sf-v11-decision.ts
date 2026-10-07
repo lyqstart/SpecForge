@@ -192,7 +192,15 @@ function resolveDecisionType(
   return undefined;
 }
 
-function validateUserApprovalBoundary(args: Record<string, unknown>, input: {
+export function isExplicitUserApprovalQuote(value: unknown): boolean {
+  const quote = String(value ?? '').trim();
+  if (!quote) return false;
+  const negative = /(?:不批准|不同意|不确认|拒绝|不要批准|not\s+approved?|do\s+not\s+approve|don't\s+approve|reject)/i;
+  if (negative.test(quote)) return false;
+  return /^(?:我\s*)?(?:批准|同意|确认批准|确认同意)|^(?:i\s+)?(?:approve|approved|agree)(?:[\s,.;:!]|$)/i.test(quote);
+}
+
+export function validateUserApprovalBoundary(args: Record<string, unknown>, input: {
   decisionStatus: UserDecisionStatus;
   decisionType: DecisionType;
 }): { ok: true } | { ok: false; error: string; code: string; remediation: string } {
@@ -213,8 +221,18 @@ function validateUserApprovalBoundary(args: Record<string, unknown>, input: {
       };
     }
 
+    if (!isExplicitUserApprovalQuote(userResponseQuote)) {
+      return {
+        ok: false,
+        error: 'USER_APPROVAL_QUOTE_NOT_EXPLICIT',
+        code: 'USER_APPROVAL_TRUST_BOUNDARY',
+        remediation:
+          'The quoted user message must explicitly approve the current Candidate, for example "批准" or "同意当前候选". A task instruction, recovery request, or standing authorization is not approval.',
+      };
+    }
+
     const forbiddenDelegationPattern =
-      /(on behalf|authorized representative|delegated|explicitly delegated|代替用户|代表用户|授权代表|用户已委派|默认为批准|自动批准)/i;
+      /(on behalf|authorized representative|delegated|explicitly delegated|standing instruction|standing authorization|task request|代替用户|代表用户|授权代表|用户已委派|默认为批准|自动批准|现行授权|当前指令|任务提示|任务请求|泛化同意)/i;
     if (forbiddenDelegationPattern.test(comments) || forbiddenDelegationPattern.test(userResponseQuote)) {
       return {
         ok: false,

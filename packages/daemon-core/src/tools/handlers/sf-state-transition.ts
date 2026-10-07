@@ -32,6 +32,7 @@ import {
   candidateManifestSchemaBlockCode,
   precheckCandidateManifestSchema,
 } from "../lib/candidate-manifest-owner.js";
+import { readUnresolvedHandoffValidationFailures } from "../lib/agent-handoff-v11";
 
 async function readJsonIfExists(filePath: string): Promise<Record<string, any> | null> {
   try {
@@ -594,6 +595,20 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
         code: "CANDIDATE_MANIFEST_STATE_MISMATCH",
         retry_allowed: true,
         state_advanced: false,
+      };
+    }
+    const unresolvedHandoffFailures =
+      await readUnresolvedHandoffValidationFailures(workItemDir);
+    if (unresolvedHandoffFailures.length > 0) {
+      return {
+        success: false,
+        error: "HANDOFF_VALIDATION_UNRESOLVED",
+        code: "HANDOFF_VALIDATION_UNRESOLVED",
+        state_advanced: false,
+        retry_allowed: true,
+        unresolved_handoff_validations: unresolvedHandoffFailures,
+        remediation:
+          "Produce the missing/corrected handoff and rerun sf_handoff(validate_all) with the same expectation before sealing the Candidate.",
       };
     }
     try {

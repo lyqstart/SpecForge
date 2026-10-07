@@ -55,9 +55,7 @@ export async function requiredGreenfieldClassificationFields(
   if (!architecturePlaceholder || !designPlaceholder) return [];
   return [
     'architecture_changed',
-    'data_model_changed',
     'design_changed',
-    'module_contract_changed',
   ];
 }
 

@@ -80,6 +80,9 @@ export interface GovernanceScopeSnapshot {
   project_spec_version: string;
   impact_scope_hash: string;
   frozen_at: string;
+  version_control_mode?: 'git' | 'filesystem';
+  git_head_at_freeze?: string;
+  git_branch_at_freeze?: string;
 }
 
 export interface ProjectSpecMergeHistoryEvidence {
@@ -436,14 +439,19 @@ async function readApprovedTaskFiles(workItemDir: string): Promise<Set<string>> 
   return approved;
 }
 
-function isApprovedMergedArchitectureScope(
+function isApprovedMergedGovernanceScope(
   trigger: any,
   model: ProjectModel,
   workItemId: string,
 ): boolean {
+  const classification = trigger?.classification ?? {};
   return (
-    String(trigger?.workflow_path ?? '') === 'architecture_change_path' &&
-    trigger?.classification?.architecture_changed === true &&
+    [
+      classification.architecture_changed,
+      classification.data_model_changed,
+      classification.design_changed,
+      classification.module_contract_changed,
+    ].some(value => value === true) &&
     String(model.manifest?.last_merged_work_item ?? '') === workItemId
   );
 }
@@ -1654,7 +1662,7 @@ export async function freezeGovernanceScopeForCodePermission(input: {
   const trigger = await readTrigger(input.workItemDir);
   const declaredScope = normalizeImpactScope(trigger?.impact_scope ?? trigger?.impact_summary);
   const scope = expandImpactScopeWithContractConsumers(declaredScope, model);
-  const mergedArchitectureScope = isApprovedMergedArchitectureScope(
+  const mergedGovernanceScope = isApprovedMergedGovernanceScope(
     trigger,
     model,
     input.workItemId,
@@ -1686,6 +1694,42 @@ export async function freezeGovernanceScopeForCodePermission(input: {
     frozen_at: new Date().toISOString(),
   };
   const checks: GovernanceCheck[] = [];
+  const gitContext = await readJson(path.join(input.workItemDir, 'git_context.json'));
+  const repositoryPresent = await gitRepositoryPresent(
+    input.projectRoot,
+    gitContext?.git_enabled === true,
+  );
+  const repositoryHead = repositoryPresent ? await gitHead(input.projectRoot) : '';
+  const repositoryBranch = repositoryPresent ? await gitCurrentBranch(input.projectRoot) : '';
+  const gitBinding = await inspectFormalGitBinding({
+    projectRoot: input.projectRoot,
+    gitContext: repositoryPresent ? gitContext : null,
+    implementationFiles: [],
+  });
+  snapshot.version_control_mode = repositoryPresent ? 'git' : 'filesystem';
+  if (repositoryPresent) {
+    snapshot.git_head_at_freeze = repositoryHead;
+    snapshot.git_branch_at_freeze = repositoryBranch;
+    addCheck(
+      checks,
+      'permission_git_context_prepared',
+      'A Git-backed project has WI branch and base-commit context before Code Permission',
+      gitBinding.enabled &&
+        Boolean(gitBinding.expected_branch) &&
+        gitBinding.branch_name === gitBinding.expected_branch &&
+        Boolean(gitBinding.base_commit) &&
+        gitBinding.base_is_ancestor,
+      `enabled=${gitBinding.enabled}; current=${gitBinding.branch_name || 'missing'}; expected=${gitBinding.expected_branch || 'missing'}; base=${gitBinding.base_commit || 'missing'}`,
+    );
+  } else {
+    addCheck(
+      checks,
+      'permission_filesystem_baseline_mode',
+      'A non-Git project freezes filesystem evidence without fabricating Git history',
+      gitContext?.git_enabled !== true,
+      `git_context_enabled=${gitContext?.git_enabled === true}`,
+    );
+  }
 
   if (!model.active) {
     checks.push({
@@ -1695,7 +1739,17 @@ export async function freezeGovernanceScopeForCodePermission(input: {
       passed: true,
       severity: 'info',
     });
-    return { passed: true, snapshot, checks };
+    const passed = checks.every(check => check.passed);
+    return {
+      passed,
+      error: passed
+        ? undefined
+        : checks.some(check => check.check_id === 'permission_git_context_prepared' && !check.passed)
+          ? 'GIT_CONTEXT_REQUIRED_BEFORE_CODE_PERMISSION'
+          : 'SCOPE_EXPANSION_REQUIRED',
+      snapshot,
+      checks,
+    };
   }
 
   const inferredModules: string[] = [];
@@ -1752,7 +1806,7 @@ export async function freezeGovernanceScopeForCodePermission(input: {
   );
   snapshot.design_refs = unique([
     ...scope.design_refs,
-    ...(scope.design_refs.length === 0 && mergedArchitectureScope ? mergedModuleDesignRefs : []),
+    ...(scope.design_refs.length === 0 && mergedGovernanceScope ? mergedModuleDesignRefs : []),
     ...scope.consumer_design_refs,
   ]);
 
@@ -1829,28 +1883,28 @@ export async function freezeGovernanceScopeForCodePermission(input: {
     [
       'architecture',
       snapshot.architecture_refs,
-      scope.architecture_refs.length > 0 || !mergedArchitectureScope
+      scope.architecture_refs.length > 0 || !mergedGovernanceScope
         ? scope.architecture_refs
         : snapshot.architecture_refs,
     ],
     [
       'data_model',
       snapshot.data_model_refs,
-      scope.data_model_refs.length > 0 || !mergedArchitectureScope
+      scope.data_model_refs.length > 0 || !mergedGovernanceScope
         ? scope.data_model_refs
         : snapshot.data_model_refs,
     ],
     [
       'project_contract',
       snapshot.project_contract_refs,
-      scope.project_contract_refs.length > 0 || !mergedArchitectureScope
+      scope.project_contract_refs.length > 0 || !mergedGovernanceScope
         ? scope.project_contract_refs
         : snapshot.project_contract_refs,
     ],
     [
       'module_contract',
       snapshot.module_contract_refs,
-      scope.module_contract_refs.length > 0 || !mergedArchitectureScope
+      scope.module_contract_refs.length > 0 || !mergedGovernanceScope
         ? scope.module_contract_refs
         : snapshot.module_contract_refs,
     ],
@@ -1909,7 +1963,11 @@ export async function freezeGovernanceScopeForCodePermission(input: {
   const passed = checks.every(check => check.passed);
   return {
     passed,
-    error: passed ? undefined : 'SCOPE_EXPANSION_REQUIRED',
+    error: passed
+      ? undefined
+      : checks.some(check => check.check_id === 'permission_git_context_prepared' && !check.passed)
+        ? 'GIT_CONTEXT_REQUIRED_BEFORE_CODE_PERMISSION'
+        : 'SCOPE_EXPANSION_REQUIRED',
     snapshot,
     checks,
   };
@@ -2236,6 +2294,27 @@ async function gitHead(projectRoot: string): Promise<string> {
   }
 }
 
+export async function gitRepositoryPresent(
+  projectRoot: string,
+  allowExplicitAncestorRepository = false,
+): Promise<boolean> {
+  try {
+    const { stdout } = await execFileAsync(
+      'git',
+      ['rev-parse', '--show-toplevel'],
+      { cwd: projectRoot },
+    );
+    const topLevel = path.resolve(String(stdout ?? '').trim());
+    const requestedRoot = path.resolve(projectRoot);
+    const sameRoot = process.platform === 'win32'
+      ? topLevel.toLowerCase() === requestedRoot.toLowerCase()
+      : topLevel === requestedRoot;
+    return sameRoot || allowExplicitAncestorRepository;
+  } catch {
+    return false;
+  }
+}
+
 async function gitLines(projectRoot: string, args: string[]): Promise<string[]> {
   const { stdout } = await execFileAsync('git', args, {
     cwd: projectRoot,
@@ -2365,6 +2444,38 @@ export interface FormalGitBinding {
   unrecorded_committed_implementation_files: string[];
   missing_from_commit: string[];
   uncommitted_implementation_files: string[];
+}
+
+export function evaluateVersionControlMode(input: {
+  frozenMode?: unknown;
+  gitContextEnabled?: boolean;
+  currentRepositoryPresent?: boolean;
+  currentRepositoryHead?: string;
+  specMigrationNoCode?: boolean;
+  workflowPath?: string;
+}): {
+  mode: 'git' | 'filesystem';
+  git_required: boolean;
+  stable: boolean;
+} {
+  const frozen = String(input.frozenMode ?? '');
+  const currentHasGit = input.currentRepositoryPresent === true ||
+    Boolean(String(input.currentRepositoryHead ?? '').trim());
+  const mode: 'git' | 'filesystem' = frozen === 'git' || frozen === 'filesystem'
+    ? frozen
+    : input.gitContextEnabled === true || currentHasGit
+      ? 'git'
+      : 'filesystem';
+  const gitRequired = input.specMigrationNoCode === true
+    ? currentHasGit
+    : mode === 'git' &&
+      input.workflowPath !== 'contract_change_path' &&
+      input.workflowPath !== 'rollback_path';
+  return {
+    mode,
+    git_required: gitRequired,
+    stable: frozen !== 'filesystem' || !currentHasGit,
+  };
 }
 
 export async function inspectFormalGitBinding(input: {
@@ -2593,14 +2704,23 @@ export async function checkFormalVersionEligibility(input: {
   const gitContextPath = path.join(input.workItemDir, 'git_context.json');
   const gitContext = await readJson(gitContextPath);
   const governanceScope = await readJson(path.join(input.workItemDir, 'governance_scope.json'));
-  const specMigrationGitRequired =
-    specMigrationNoCode && Boolean(await gitHead(input.projectRoot));
-  const gitRequired =
-    specMigrationGitRequired ||
-    (actualScope.active &&
-      !specMigrationNoCode &&
-      input.workflowPath !== 'contract_change_path' &&
-      input.workflowPath !== 'rollback_path');
+  const currentRepositoryPresent = await gitRepositoryPresent(
+    input.projectRoot,
+    gitContext?.git_enabled === true,
+  );
+  const currentRepositoryHead = currentRepositoryPresent
+    ? await gitHead(input.projectRoot)
+    : '';
+  const frozenVersionControlMode = String(governanceScope?.version_control_mode ?? '');
+  const versionControl = evaluateVersionControlMode({
+    frozenMode: frozenVersionControlMode,
+    gitContextEnabled: gitContext?.git_enabled === true,
+    currentRepositoryPresent,
+    currentRepositoryHead,
+    specMigrationNoCode,
+    workflowPath: input.workflowPath,
+  });
+  const gitRequired = versionControl.git_required;
   const expectedImplementation =
     gitRequired &&
     normalizeArray(governanceScope?.allowed_write_files).some(
@@ -2612,6 +2732,13 @@ export async function checkFormalVersionEligibility(input: {
     implementationFiles: actualScope.actual_files,
   });
   inputFiles.push(gitContextPath);
+  addCheck(
+    checks,
+    'formal_repository_mode_stable',
+    'Version-control mode remains the mode frozen before implementation',
+    versionControl.stable,
+    `frozen=${frozenVersionControlMode || 'legacy'}; effective=${versionControl.mode}; current=${currentRepositoryPresent ? 'git' : 'filesystem'}; head=${currentRepositoryHead || 'unborn'}`,
+  );
   const specMigrationProjectSpecGit =
     specMigrationNoCode && gitBinding.enabled && gitBinding.base_commit
       ? await captureSpecMigrationProjectSpecGitDiff(

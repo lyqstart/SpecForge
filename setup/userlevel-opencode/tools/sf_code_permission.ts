@@ -4,7 +4,8 @@ import { daemon } from "./lib/thin-client"
 export default tool({
   description:
     "管理 Work Item 的代码修改权限：enable 释放写权限，extend 在相同治理范围内执行可审计的 planned-scope revision，revoke 撤销，query 查询。" +
-    "enable/extend 必须显式传入 allowed_write_files；extend 还必须传 revision_reason。",
+    "enable/extend 必须显式传入 allowed_write_files；extend 还必须传 revision_reason。" +
+    "所有范围、版本控制模式和文件系统基线检查均在状态推进前完成；非 Git 项目保持 filesystem 模式。",
   args: {
     work_item_id: tool.schema.string().describe("Work Item ID"),
     action: tool.schema

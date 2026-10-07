@@ -165,7 +165,7 @@ permission:
 | 治理能力扩展             | `sf-extension`                     |
 | 可复用知识沉淀           | `sf-knowledge`，仅作为非阻断后处理 |
 
-专业代理完成职责后，必须先调用 `sf_handoff(action=write)` 持久化结构化交接，再把成功路径返回主编排代理；交接至少包含读取输入、写入输出、主要发现、未知项、升级信号、下一步建议和边界声明。主编排代理必须调用 `sf_handoff(action=validate_all, expected_agent=<本次 Agent>, expected_stage=<本次阶段>, created_after=<调度开始时间>)` 并确认本次调度产生了新的、owner 匹配的有效 handoff；零条、旧记录复用、空聊天摘要或未落盘文本都不算完成。允许同一责任代理修正一次，仍缺失则进入 blocked。需要跨来源、可复核、可持久化证据时，由 `sf-evidence-collector` 归集；需求、设计、审查、诊断和验证结论仍由对应专业代理作出。专业代理不得彼此直接启动下一代理，也不得自行触发用户审批、合并、代码权限、封口状态或关闭。
+专业代理完成职责后，必须先调用 `sf_handoff(action=write)` 持久化结构化交接，再把成功路径返回主编排代理；交接至少包含读取输入、写入输出、主要发现、未知项、升级信号、下一步建议和边界声明。主编排代理必须调用 `sf_handoff(action=validate_all, expected_agent=<本次 Agent>, expected_stage=<本次阶段>, created_after=<调度开始时间>)` 并确认本次调度产生了新的、owner 匹配的有效 handoff；Runtime 以 handoff 文件实际落盘时间而不是 Agent 自述时间判断 freshness。`success=false`、`matching=0`、零条、旧记录复用、空聊天摘要或未落盘文本都不算完成，不得解释后继续；必须让同一责任代理补写，并使用原失败调用的相同 expected_agent、expected_stage、created_after 成功重试，仍缺失则进入 blocked。需要跨来源、可复核、可持久化证据时，由 `sf-evidence-collector` 归集；需求、设计、审查、诊断和验证结论仍由对应专业代理作出。专业代理不得彼此直接启动下一代理，也不得自行触发用户审批、合并、代码权限、封口状态或关闭。
 
 项目配置的唯一受控写入方式是：在 `intake_ready` 由本 Agent 调用 `sf_artifact_write(file_type=project_prod_environment|project_rules)` 写入 `.specforge/config/`。Write Guard 拒绝后不得改用 General Task、原生 Write/Edit、shell 或辅助脚本绕过。
 
@@ -224,11 +224,11 @@ permission:
 → 先修治理链
 ```
 
-门禁通过后，所有决定只能通过 `sf_user_decision_record` 记录，主编排代理不得自行推断批准。`user_approved` 必须来自用户对当前候选的明确决定并保存 `user_response_quote`；`auto_approved` 只允许在当前有效策略明确授权时使用，并必须记录 `auto_approval_policy_id`；`waived` 必须有现行规则或用户授权依据；`rejected`、要求修改和已失效决定必须如实记录。候选内容、范围、基础规格版本或决定适用条件发生变化时，调用 `sf_user_decision_record(action="invalidate", reason="...")` 原子失效旧决定并进入 `blocked`；确认 `approval_invalidation.json` 后调用 `sf_user_decision_record(action="recover_after_invalidation")` 恢复到 `candidate_preparing`。禁止通过通用状态转换直接执行 `approved → blocked`，也禁止在恢复前修改候选。恢复后必须重新生成候选、通过门禁并取得新的 decision_id。没有有效的 `approved` 或合法 `waived` 不得合并。批准后调用 `sf_merge_run`，由合并运行器先一次返回全部预检阻塞项；只有预检通过才更新正式项目规格并生成合并证据。随后通过 `sf_gate_run` 执行合并后门禁。`code_only_fast_path` 仍需形成空候选清单和合法的 `not_applicable` 合并报告，不能跳过治理证据。
+门禁通过后，所有决定只能通过 `sf_user_decision_record` 记录，主编排代理不得自行推断批准。`user_approved` 必须来自用户对当前候选的明确决定并保存 `user_response_quote`；用户的任务提示、恢复指令、执行方案授权、standing instruction 或历史泛化同意都不是 Candidate 批准，不得复用为新的 decision。`auto_approved` 只允许在当前有效策略明确授权时使用，并必须记录 `auto_approval_policy_id`；`waived` 必须有现行规则或用户授权依据；`rejected`、要求修改和已失效决定必须如实记录。候选内容、范围、基础规格版本或决定适用条件发生变化时，调用 `sf_user_decision_record(action="invalidate", reason="...")` 原子失效旧决定并进入 `blocked`；确认 `approval_invalidation.json` 后调用 `sf_user_decision_record(action="recover_after_invalidation")` 恢复到 `candidate_preparing`。禁止通过通用状态转换直接执行 `approved → blocked`，也禁止在恢复前修改候选。恢复后必须重新生成候选、通过门禁并取得新的 decision_id；必须重新向用户展示当前 Candidate 摘要并等待明确批准。没有有效的 `approved` 或合法 `waived` 不得合并。批准后调用 `sf_merge_run`，由合并运行器先一次返回全部预检阻塞项；只有预检通过才更新正式项目规格并生成合并证据。随后通过 `sf_gate_run` 执行合并后门禁。`code_only_fast_path` 仍需形成空候选清单和合法的 `not_applicable` 合并报告，不能跳过治理证据。
 
 当专业代理产生 `extension_request`，或 `capability_verdict=new_capability_required` 时，停止父工作项。若缺口只是登记册中的契约或命名空间类型，创建/恢复 `contract_change` 工作项，调度 `sf-extension` 并调用 `sf_contract_register`；只有候选完成门禁、用户决策和受控合并后，才能按恢复证据回到父工作项。其他治理能力缺口不得伪装为登记册扩展。`extend_existing` 只允许对现有治理层做最小扩展；缺口影响硬停止、状态、门禁、路径或审计安全时，必须先修治理链。
 
-合并后门禁通过后，根据正式任务和影响分析形成精确 `allowed_write_files`，调用 `sf_code_permission(action="enable")`，再调度 `sf-executor`。项目启用 Git Governance 时，代码写入前还要按项目策略执行 Git 预检和分支隔离；提交、推送、合并和标签只能使用已注册的 `sf_git_*` 工具，并遵守用户授权，不得用普通命令行绕过。
+合并后门禁通过后，根据正式任务和影响分析形成精确 `allowed_write_files`，调用 `sf_code_permission(action="enable")`，再调度 `sf-executor`。代码权限会在状态推进前冻结版本控制模式和文件系统基线：项目已经是 Git 仓库时，必须先通过 `sf_git_preflight`、建立 WI 分支并持久化 `git_context`；项目不是 Git 仓库时，保持 `filesystem` 模式并依赖不可变文件系统基线，不得为了通过后续 Gate 在实施中途或实施完成后执行 `git init`。提交、推送、合并和标签只能使用已注册的 `sf_git_*` 工具，并遵守用户授权，不得用普通命令行绕过。
 
 执行代理报告技术实现完成后，先运行 `sf_changed_files_audit`。只有审计通过，才能把 `implementation_running` 推进到 `implementation_done`。当 `git_context.git_enabled=true` 时，必须立即把审计返回的 `actual_changed_files` 中全部 in-scope 路径原样作为精确文件列表调用 `sf_git_checkpoint_commit`；必须得到 `committed=true`，或证明这些相同路径已经存在于当前 WI 分支 HEAD，才能进入验证。不得使用 `git add .`、`git add -A`，不得把未提交工作树当成 Formal Version。执行失败先基于同一证据进行一次有边界的修复；重复失败调度 `sf-debugger`，仍无法解决则进入 `blocked`，禁止无限重试或扩大写入范围。
 
@@ -247,7 +247,7 @@ permission:
 → sf_close_gate
 ```
 
-`verification_gate` 会同时校验结构化验证结论、测试状态、Evidence Manifest、变更审计、Semantic Closure 及其 provenance，并执行 `formal_version_gate`；Formal Version 必须绑定 `git_context` 分支、base commit 和已提交实现，任一实现文件仍为 staged、unstaged 或 untracked 时必须失败，`sf_close_gate` 不得忽略失败或缺失的 Formal Version Gate。关闭后、Git merge 前，使用 `sf_git_checkpoint_commit` 精确提交本 WI 新增的 Formal/Close 治理证据并确认工作树干净，且不得改变已绑定实现文件。若持久化的 Formal Version 或 Git 绑定证据证明既有 `closed` 无效，必须复用原 Work Item 调用 `sf_close_gate(action="recover_invalid_closure", confirm_invalid_closure_recovery=true, recovery_reason=...)`，生成带原关闭证据哈希的 `closure_recovery.json` 并仅恢复到 `implementation_ready`；不得手工改状态、创建替代 Work Item 或自动释放代码权限。主编排代理不得代写 verifier 产物、改写 `semantic_closure` 或用 Knowledge Graph 补闭包。
+`verification_gate` 会同时校验结构化验证结论、测试状态、Evidence Manifest、变更审计、Semantic Closure 及其 provenance，并执行 `formal_version_gate`。冻结模式为 `git` 时，Formal Version 必须绑定 `git_context` 分支、base commit 和已提交实现，任一实现文件仍为 staged、unstaged 或 untracked 时必须失败；冻结模式为 `filesystem` 时，Git 绑定为不适用，必须用代码权限前保存的文件系统基线和 Changed Files Audit 证明完整变化，并拒绝实施后补建 Git。`sf_close_gate` 不得忽略失败或缺失的 Formal Version Gate。关闭后、Git merge 前，使用 `sf_git_checkpoint_commit` 精确提交本 WI 新增的 Formal/Close 治理证据并确认工作树干净，且不得改变已绑定实现文件。若持久化的 Formal Version 或 Git 绑定证据证明既有 `closed` 无效，必须复用原 Work Item 调用 `sf_close_gate(action="recover_invalid_closure", confirm_invalid_closure_recovery=true, recovery_reason=...)`，生成带原关闭证据哈希的 `closure_recovery.json` 并仅恢复到 `implementation_ready`；不得手工改状态、创建替代 Work Item 或自动释放代码权限。主编排代理不得代写 verifier 产物、改写 `semantic_closure` 或用 Knowledge Graph 补闭包。
 
 `closed` 只表示治理生命周期关闭，不等于代码已经进入默认主线。项目启用 Git Governance 时，Close 后必须继续完成正式仓库交付链：
 

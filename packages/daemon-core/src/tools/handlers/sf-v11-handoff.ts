@@ -6,6 +6,7 @@ import {
   validateHandoff,
   writeHandoff,
   validateAllHandoffs,
+  recordHandoffValidationState,
 } from '../lib/agent-handoff-v11';
 import type { AgentHandoff } from '../lib/agent-handoff-v11';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
@@ -91,17 +92,23 @@ registerHandler('sf_v11_handoff', async (args, context, _deps) => {
       });
       const hasExpectation = Boolean(expectedAgent || expectedStage || createdAfter);
       const complete = result.invalid === 0 && result.total > 0 && (!hasExpectation || result.matching > 0);
+      const error = complete
+        ? undefined
+        : result.total === 0
+          ? 'HANDOFFS_REQUIRED'
+          : result.invalid > 0
+            ? 'HANDOFF_COLLECTION_INVALID'
+            : 'HANDOFF_EXPECTATION_NOT_MET';
+      await recordHandoffValidationState(
+        wiDir,
+        { expectedAgent, expectedStage, createdAfter },
+        { success: complete, ...result, error },
+      );
       return {
         success: complete,
         action: 'validate_all',
         ...result,
-        error: complete
-          ? undefined
-          : result.total === 0
-            ? 'HANDOFFS_REQUIRED'
-            : result.invalid > 0
-              ? 'HANDOFF_COLLECTION_INVALID'
-              : 'HANDOFF_EXPECTATION_NOT_MET',
+        error,
       };
     }
 

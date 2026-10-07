@@ -11,6 +11,8 @@ import {
   deriveActualChangedFiles,
   extractPassedChangedFilesAuditEntries,
   inspectFormalGitBinding,
+  evaluateVersionControlMode,
+  gitRepositoryPresent,
 } from '../../src/tools/lib/project-governance-v2.js';
 import { evaluateVerificationGateAutoAdvanceEligibility } from '../../src/tools/handlers/sf-v11-gate-run.js';
 import { saveBaseline, takeSnapshot } from '../../src/tools/lib/filesystem-diff.js';
@@ -53,6 +55,67 @@ describe('formal version Git closure regressions', () => {
 
     expect(facts.dataSource).toContain('filesystem_baseline.json');
     expect(facts.changedFiles).toEqual([{ path: 'src/main.ts', operation: 'create' }]);
+  });
+
+  it('keeps non-Git projects on filesystem evidence and rejects late Git initialization', () => {
+    expect(
+      evaluateVersionControlMode({
+        frozenMode: 'filesystem',
+        currentRepositoryPresent: false,
+        currentRepositoryHead: '',
+        workflowPath: 'requirement_change_path',
+      }),
+    ).toEqual({ mode: 'filesystem', git_required: false, stable: true });
+
+    expect(
+      evaluateVersionControlMode({
+        frozenMode: 'filesystem',
+        currentRepositoryPresent: true,
+        currentRepositoryHead: 'deadbeef',
+        workflowPath: 'requirement_change_path',
+      }),
+    ).toEqual({ mode: 'filesystem', git_required: false, stable: false });
+
+    expect(
+      evaluateVersionControlMode({
+        frozenMode: 'git',
+        gitContextEnabled: true,
+        currentRepositoryPresent: true,
+        currentRepositoryHead: 'deadbeef',
+        workflowPath: 'requirement_change_path',
+      }),
+    ).toEqual({ mode: 'git', git_required: true, stable: true });
+
+    expect(
+      evaluateVersionControlMode({
+        frozenMode: 'filesystem',
+        currentRepositoryPresent: true,
+        currentRepositoryHead: '',
+        workflowPath: 'requirement_change_path',
+      }),
+    ).toEqual({ mode: 'filesystem', git_required: false, stable: false });
+  });
+
+  it('does not inherit optional Git Governance from an ancestor repository', async () => {
+    const parent = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-parent-git-'));
+    const child = path.join(parent, 'business-project');
+    try {
+      await git(parent, ['init', '-b', 'main']);
+      await git(parent, ['config', 'user.name', 'SpecForge Test']);
+      await git(parent, ['config', 'user.email', 'specforge-test@example.invalid']);
+      await fs.writeFile(path.join(parent, 'README.md'), '# parent\n');
+      await git(parent, ['add', '--', 'README.md']);
+      await git(parent, ['commit', '-m', 'test: parent baseline']);
+      await fs.mkdir(child);
+
+      expect(await gitRepositoryPresent(child)).toBe(false);
+      expect(await gitRepositoryPresent(child, true)).toBe(true);
+
+      await git(child, ['init', '-b', 'main']);
+      expect(await gitRepositoryPresent(child)).toBe(true);
+    } finally {
+      await fs.rm(parent, { recursive: true, force: true });
+    }
   });
 
   it('fails closed when neither a filesystem baseline nor trusted write facts exist', async () => {

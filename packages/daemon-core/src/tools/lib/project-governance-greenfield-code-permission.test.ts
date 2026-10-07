@@ -155,6 +155,86 @@ describe('greenfield code permission governance scope', () => {
     expect(audit.passed, audit.violations.join('; ')).toBe(true);
   });
 
+  test('derives merged governance refs for a requirement workflow without rewriting trigger_result', async () => {
+    const { projectRoot, workItemDir } = await createFixture();
+    await write(
+      path.join(workItemDir, 'trigger_result.json'),
+      JSON.stringify({
+        workflow_path: 'requirement_change_path',
+        classification: {
+          requirement_changed: true,
+          architecture_changed: true,
+          design_changed: true,
+          data_model_changed: true,
+          module_contract_changed: true,
+        },
+        impact_scope: {
+          affected_modules: ['DOMAIN'],
+          architecture_refs: [],
+          data_model_refs: [],
+          design_refs: [],
+          project_contract_refs: [],
+          module_contract_refs: [],
+          planned_code_paths: ['src/domain/types.ts', 'tests/workdesk.test.ts'],
+        },
+      }),
+    );
+
+    const result = await freezeGovernanceScopeForCodePermission({
+      projectRoot,
+      workItemDir,
+      workItemId: 'WI-0002',
+      allowedWriteFiles: [
+        { path: 'src/domain/types.ts', operation: 'create' },
+        { path: 'tests/workdesk.test.ts', operation: 'create' },
+      ],
+    });
+
+    expect(result.passed, JSON.stringify(result.checks.filter(check => !check.passed))).toBe(true);
+    expect(result.snapshot.design_refs).toEqual(['DD-DOMAIN-001']);
+    expect(result.snapshot.data_model_refs).toEqual(['DATA-WD-001']);
+    expect(result.snapshot.architecture_refs).toEqual(['ARCH-WD-001']);
+  });
+
+  test('requires a prepared WI Git context before Code Permission in an existing repository', async () => {
+    const { projectRoot, workItemDir } = await createFixture();
+    await execFileAsync('git', ['init', '-b', 'main'], { cwd: projectRoot });
+    await execFileAsync('git', ['config', 'user.name', 'SpecForge Test'], { cwd: projectRoot });
+    await execFileAsync('git', ['config', 'user.email', 'specforge-test@example.invalid'], { cwd: projectRoot });
+    await execFileAsync('git', ['add', '--', '.'], { cwd: projectRoot });
+    await execFileAsync('git', ['commit', '-m', 'chore: baseline'], { cwd: projectRoot });
+
+    const withoutContext = await freezeGovernanceScopeForCodePermission({
+      projectRoot,
+      workItemDir,
+      workItemId: 'WI-0002',
+      allowedWriteFiles: [{ path: 'src/domain/types.ts', operation: 'create' }],
+    });
+    expect(withoutContext.passed).toBe(false);
+    expect(withoutContext.error).toBe('GIT_CONTEXT_REQUIRED_BEFORE_CODE_PERMISSION');
+
+    const baseCommit = (await execFileAsync('git', ['rev-parse', 'HEAD'], { cwd: projectRoot })).stdout.trim();
+    await execFileAsync('git', ['switch', '-c', 'feature/domain-wi-0002'], { cwd: projectRoot });
+    await write(
+      path.join(workItemDir, 'git_context.json'),
+      JSON.stringify({
+        git_enabled: true,
+        branch_name: 'feature/domain-wi-0002',
+        base_commit: baseCommit,
+      }),
+    );
+
+    const withContext = await freezeGovernanceScopeForCodePermission({
+      projectRoot,
+      workItemDir,
+      workItemId: 'WI-0002',
+      allowedWriteFiles: [{ path: 'src/domain/types.ts', operation: 'create' }],
+    });
+    expect(withContext.passed, JSON.stringify(withContext.checks.filter(check => !check.passed))).toBe(true);
+    expect(withContext.snapshot.version_control_mode).toBe('git');
+    expect(withContext.snapshot.git_head_at_freeze).toBe(baseCommit);
+  });
+
   test('rejects an unapproved ownerless test file', async () => {
     const { projectRoot, workItemDir } = await createFixture();
     const result = await freezeGovernanceScopeForCodePermission({

@@ -7,14 +7,16 @@ type Payload = Record<string, unknown>
  * 记录用户决策，生成 user_decision.json。
  *
  * Final Governance Alignment 规则：
- * - user_approved 必须由调用方显式传 user_response_quote；
+ * - user_approved 必须由调用方显式传当前 Candidate 的明确批准原话；
+ * - 任务提示、恢复指令和 standing authorization 不是批准证据；
  * - auto_approved 必须由调用方显式传 auto_approval_policy_id；
  * - comments / reason 只是备注，不得伪装结构化字段；
  * - wrapper 只暴露和透传字段，最终强校验由 daemon handler 执行。
  */
 export default tool({
   description:
-    "记录用户决策，生成 user_decision.json。user_approved 必须显式传 user_response_quote；" +
+    "记录用户决策，生成 user_decision.json。user_approved 必须显式传当前 Candidate 的明确批准原话；" +
+    "任务提示、恢复指令或 standing authorization 不得作为批准；" +
     "auto_approved 必须显式传 auto_approval_policy_id；comments/reason 不会被当作结构化审批字段。",
   args: {
     work_item_id: tool.schema.string().describe("Work Item ID"),
@@ -40,7 +42,7 @@ export default tool({
     user_response_quote: tool.schema
       .string()
       .optional()
-      .describe("用户审批原话；decision_type=user_approved 且 decision_status=approved 时必传。"),
+      .describe("用户对当前 Candidate 的明确批准原话；任务提示、恢复指令或历史泛化同意无效。"),
     auto_approval_policy_id: tool.schema
       .string()
       .optional()

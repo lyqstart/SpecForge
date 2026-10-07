@@ -42,6 +42,12 @@ const FOCUS_SAMPLES = [
   'EXP-266',
   'EXP-267',
   'EXP-268',
+  'EXP-269',
+  'EXP-270',
+  'EXP-271',
+  'EXP-272',
+  'EXP-273',
+  'EXP-274',
 ] as const;
 
 /** Split the active rules file into per-EXP sections keyed by heading line. */
@@ -71,18 +77,18 @@ describe('active development rules contract (AR-DEC-06) — structural integrity
   const content = read(activeRulesPath);
   const sections = sectionsOf(content);
 
-  it('covers every EXP rule id from EXP-001 to EXP-268 exactly once (no gaps, no duplicates)', () => {
+  it('covers every EXP rule id from EXP-001 to EXP-274 exactly once (no gaps, no duplicates)', () => {
     const ids = [...content.matchAll(/^## (EXP-\d+)/gm)].map((m) => m[1]);
     const unique = new Set(ids);
-    expect(unique.size).toBe(268);
+    expect(unique.size).toBe(274);
     expect(ids.length).toBe(unique.size);
-    for (let n = 1; n <= 268; n += 1) {
+    for (let n = 1; n <= 274; n += 1) {
       expect(unique.has(`EXP-${String(n).padStart(3, '0')}`)).toBe(true);
     }
   });
 
   it('every EXP section has non-empty semantic rule content (no empty/hollow rules)', () => {
-    expect(sections.size).toBe(268);
+    expect(sections.size).toBe(274);
     for (const [id, body] of sections) {
       const visible = body.replace(/<!--[\s\S]*?-->/g, '').replace(/[#\s*`>-]/g, '');
       expect(
@@ -94,7 +100,7 @@ describe('active development rules contract (AR-DEC-06) — structural integrity
 
   it('every EXP heading has a complete semantic title', () => {
     const headings = [...content.matchAll(/^## (EXP-\d+)(.*)$/gm)];
-    expect(headings).toHaveLength(268);
+    expect(headings).toHaveLength(274);
     for (const [, id, suffix] of headings) {
       expect(suffix, `${id} heading must have a semantic title`).toMatch(/^(?:：|\s+—\s+)\S/);
     }
@@ -135,7 +141,7 @@ describe('active development rules contract — semantic purity (FIX2)', () => {
     expect(content).not.toContain('P0_OVERALL_STATUS');
   });
 
-  it('migrated region (EXP-095..268) contains no UNRECORDED_FAILURES= runtime status', () => {
+  it('migrated region (EXP-095..274) contains no UNRECORDED_FAILURES= runtime status', () => {
     // part34 baseline EXP-060 keeps UNRECORDED_FAILURES=0 as rule-contract output template;
     // the migrated tail region must not carry any runtime occurrences.
     expect(migrated.match(/UNRECORDED_FAILURES\s*=/g) ?? []).toHaveLength(0);

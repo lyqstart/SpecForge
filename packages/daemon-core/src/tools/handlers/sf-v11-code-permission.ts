@@ -8,7 +8,12 @@
  *   silently replacing earlier phase authorizations.
  */
 import { registerHandler } from '../ToolDispatcher';
-import { releaseCodePermission, revokeCodePermission, checkCodePermission } from '../lib/code-permission-service-v11';
+import {
+  prepareCodePermissionRelease,
+  commitPreparedCodePermissionRelease,
+  revokeCodePermission,
+  checkCodePermission,
+} from '../lib/code-permission-service-v11';
 import { takeSnapshot, saveBaseline } from '../lib/filesystem-diff';
 import { readAuthoritativeState, transitionWithEvidence } from '../lib/state-coordinator-v11';
 import * as path from 'node:path';
@@ -309,19 +314,21 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
       }
 
       const workflowFacts = await assertMergeSucceededBeforeCode(workItemDir);
-      const statePreparation = await advanceImplementationStateBeforeCode({
+      const normalized = normalizeAllowedForPolicy(allowedWriteFiles);
+      const preparedPermission = await prepareCodePermissionRelease({
+        workItemDir,
+        workItemId,
+        allowedWriteFiles: normalized,
+        revisionReason,
+      });
+      const preCommitState = await readAuthoritativeState({
         deps,
-        context,
         projectRoot,
         workItemId,
-        workItemDir,
-        workflowPath: workflowFacts.workflowPath,
-        workflowType: workflowFacts.workflowType || workflowTypeFromPath(workflowFacts.workflowPath),
       });
-
       if (
-        (action === 'extend' || action === 'append') &&
-        statePreparation.current_state !== 'implementation_running'
+        preparedPermission.releaseMode === 'extend' &&
+        preCommitState.current_state !== 'implementation_running'
       ) {
         return {
           success: false,
@@ -329,58 +336,77 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
           hard_stop: false,
           policy_violation: true,
           retry_allowed: false,
-          current_state: statePreparation.current_state,
+          current_state: preCommitState.current_state,
         };
       }
-
-      const normalized = normalizeAllowedForPolicy(allowedWriteFiles);
-      const state = await releaseCodePermission({
-        workItemDir,
-        workItemId,
-        allowedWriteFiles: normalized,
-        revisionReason,
-      });
-
-      let stateAutoAdvance = statePreparation;
-      if (statePreparation.current_state === 'implementation_ready') {
-        const runningStep = await transitionWithEvidence({
-          deps,
-          context,
-          projectRoot,
-          workItemId,
-          workItemDir,
-          fromState: 'implementation_ready',
-          toState: 'implementation_running',
-          workflowType:
-            workflowFacts.workflowType || workflowTypeFromPath(workflowFacts.workflowPath),
-          actorRole: 'code_permission_service',
-          evidence: 'code_permission_service released write permission for implementation',
-          transitionContext: { source: 'sf_v11_code_permission' },
-        });
-        stateAutoAdvance = {
-          attempted: true,
-          advanced: true,
-          from_state: statePreparation.from_state,
-          to_state: 'implementation_running',
-          current_state: 'implementation_running',
-          transition_steps: [
-            ...(Array.isArray(statePreparation.transition_steps)
-              ? statePreparation.transition_steps
-              : []),
-            runningStep,
-          ],
+      if (
+        preparedPermission.releaseMode === 'release' &&
+        !['merged', 'post_merge_verified', 'implementation_ready', 'implementation_running']
+          .includes(String(preCommitState.current_state ?? ''))
+      ) {
+        return {
+          success: false,
+          error: 'POST_MERGE_VERIFIED_REQUIRED_BEFORE_CODE_PERMISSION',
+          hard_stop: false,
+          policy_violation: true,
+          retry_allowed: false,
+          current_state: preCommitState.current_state,
         };
       }
 
       try {
         await fs.access(path.join(workItemDir, 'filesystem_baseline.json'));
       } catch {
-        try {
-          const baseline = takeSnapshot(projectRoot);
-          saveBaseline(workItemDir, baseline);
-        } catch {
-          // Non-critical: changed_files_audit can still fall back to write_guard_log.
+        const baseline = takeSnapshot(projectRoot);
+        saveBaseline(workItemDir, baseline);
+      }
+
+      const state = await commitPreparedCodePermissionRelease(preparedPermission);
+      let statePreparation;
+      let stateAutoAdvance;
+      try {
+        statePreparation = await advanceImplementationStateBeforeCode({
+          deps,
+          context,
+          projectRoot,
+          workItemId,
+          workItemDir,
+          workflowPath: workflowFacts.workflowPath,
+          workflowType: workflowFacts.workflowType || workflowTypeFromPath(workflowFacts.workflowPath),
+        });
+        stateAutoAdvance = statePreparation;
+        if (statePreparation.current_state === 'implementation_ready') {
+          const runningStep = await transitionWithEvidence({
+            deps,
+            context,
+            projectRoot,
+            workItemId,
+            workItemDir,
+            fromState: 'implementation_ready',
+            toState: 'implementation_running',
+            workflowType:
+              workflowFacts.workflowType || workflowTypeFromPath(workflowFacts.workflowPath),
+            actorRole: 'code_permission_service',
+            evidence: 'code_permission_service released write permission for implementation',
+            transitionContext: { source: 'sf_v11_code_permission' },
+          });
+          stateAutoAdvance = {
+            attempted: true,
+            advanced: true,
+            from_state: statePreparation.from_state,
+            to_state: 'implementation_running',
+            current_state: 'implementation_running',
+            transition_steps: [
+              ...(Array.isArray(statePreparation.transition_steps)
+                ? statePreparation.transition_steps
+                : []),
+              runningStep,
+            ],
+          };
         }
+      } catch (error) {
+        await revokeCodePermission(workItemDir).catch(() => undefined);
+        throw error;
       }
 
       return {

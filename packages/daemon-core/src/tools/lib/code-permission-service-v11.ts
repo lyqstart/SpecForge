@@ -17,6 +17,16 @@ export interface ReleasePermissionInput {
   allowedWriteFiles: Array<{ path: string; operation: WriteOperation }>;
   revisionReason?: string;
 }
+export interface PreparedPermissionRelease {
+  input: ReleasePermissionInput;
+  requestedAllowed: Array<{ path: string; operation: WriteOperation }>;
+  incomingAllowed: Array<{ path: string; operation: WriteOperation }>;
+  existingAllowed: Array<{ path: string; operation: WriteOperation }>;
+  mergedAllowed: Array<{ path: string; operation: WriteOperation }>;
+  releaseMode: 'release' | 'extend';
+  revisionReason: string;
+  frozen: Awaited<ReturnType<typeof freezeGovernanceScopeForCodePermission>>;
+}
 export interface ApplyRevokedPermissionFactsOptions {
   now?: string;
   recordRevocationEvent?: boolean;
@@ -107,29 +117,56 @@ export function applyRevokedPermissionFacts(
   workItem.updated_at = now;
   return workItem;
 }
-export async function releaseCodePermission(input: ReleasePermissionInput): Promise<PermissionState> {
+export async function prepareCodePermissionRelease(
+  input: ReleasePermissionInput,
+): Promise<PreparedPermissionRelease> {
   const projectRoot = projectRootFromWorkItemDir(input.workItemDir);
   const requestedAllowed = normalizePermissionEntries(input.allowedWriteFiles);
   const incomingAllowed = expandAllowedWriteFiles(input.workItemDir, input.allowedWriteFiles);
+  const initial = await readWorkItemMetadata(input.workItemDir, input.workItemId);
+  const existingAllowed = initial.code_change_allowed === true && initial.code_permission_revoked !== true
+    ? normalizePermissionEntries(initial.allowed_write_files) : [];
+  const releaseMode = existingAllowed.length > 0 ? 'extend' : 'release';
+  const revisionReason = String(input.revisionReason ?? '').trim();
+  if (releaseMode === 'extend' && revisionReason.length < 8) {
+    throw new Error('SCOPE_REVISION_REASON_REQUIRED');
+  }
+  const mergedAllowed = dedupePermissionEntries([...existingAllowed, ...incomingAllowed]);
+  const frozen = await freezeGovernanceScopeForCodePermission({
+    projectRoot,
+    workItemDir: input.workItemDir,
+    workItemId: input.workItemId,
+    allowedWriteFiles: mergedAllowed,
+  });
+  if (!frozen.passed) {
+    throw new Error(`${frozen.error ?? 'SCOPE_EXPANSION_REQUIRED'}: ${frozen.checks.filter(check => !check.passed).map(check => check.description).join('; ')}`);
+  }
+  return {
+    input,
+    requestedAllowed,
+    incomingAllowed,
+    existingAllowed,
+    mergedAllowed,
+    releaseMode,
+    revisionReason,
+    frozen,
+  };
+}
+
+export async function commitPreparedCodePermissionRelease(
+  prepared: PreparedPermissionRelease,
+): Promise<PermissionState> {
+  const {
+    input,
+    requestedAllowed,
+    incomingAllowed,
+    existingAllowed,
+    mergedAllowed,
+    releaseMode,
+    revisionReason,
+    frozen,
+  } = prepared;
   try {
-    const initial = await readWorkItemMetadata(input.workItemDir, input.workItemId);
-    const existingAllowed = initial.code_change_allowed === true && initial.code_permission_revoked !== true
-      ? normalizePermissionEntries(initial.allowed_write_files) : [];
-    const releaseMode = existingAllowed.length > 0 ? 'extend' : 'release';
-    const revisionReason = String(input.revisionReason ?? '').trim();
-    if (releaseMode === 'extend' && revisionReason.length < 8) {
-      throw new Error('SCOPE_REVISION_REASON_REQUIRED');
-    }
-    const mergedAllowed = dedupePermissionEntries([...existingAllowed, ...incomingAllowed]);
-    const frozen = await freezeGovernanceScopeForCodePermission({
-      projectRoot,
-      workItemDir: input.workItemDir,
-      workItemId: input.workItemId,
-      allowedWriteFiles: mergedAllowed,
-    });
-    if (!frozen.passed) {
-      throw new Error(`${frozen.error ?? 'SCOPE_EXPANSION_REQUIRED'}: ${frozen.checks.filter(check => !check.passed).map(check => check.description).join('; ')}`);
-    }
     await persistGovernanceScope(input.workItemDir, frozen.snapshot);
     const wi = await readWorkItemMetadata(input.workItemDir, input.workItemId);
     const now = new Date().toISOString();
@@ -184,6 +221,15 @@ export async function releaseCodePermission(input: ReleasePermissionInput): Prom
       ...(scopeRevision ? { scope_revision: scopeRevision } : {}),
     };
   } catch (err: any) {
+    throw new Error(`Failed to release code permission: ${err.message}`);
+  }
+}
+
+export async function releaseCodePermission(input: ReleasePermissionInput): Promise<PermissionState> {
+  try {
+    return await commitPreparedCodePermissionRelease(await prepareCodePermissionRelease(input));
+  } catch (err: any) {
+    if (String(err?.message ?? '').startsWith('Failed to release code permission:')) throw err;
     throw new Error(`Failed to release code permission: ${err.message}`);
   }
 }

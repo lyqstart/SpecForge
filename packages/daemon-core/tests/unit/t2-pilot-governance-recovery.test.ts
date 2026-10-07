@@ -7,6 +7,14 @@ import { getHandler, type ToolDeps } from '../../src/tools/ToolDispatcher';
 import '../../src/tools/index';
 import { validateChangeClassification } from '../../src/tools/lib/change-classification';
 import { requiredGreenfieldClassificationFields } from '../../src/tools/handlers/sf-v11-work-item-create';
+import {
+  isExplicitUserApprovalQuote,
+  validateUserApprovalBoundary,
+} from '../../src/tools/handlers/sf-v11-decision';
+import {
+  readUnresolvedHandoffValidationFailures,
+  recordHandoffValidationState,
+} from '../../src/tools/lib/agent-handoff-v11';
 
 let projectRoot: string;
 let currentState: string;
@@ -79,6 +87,27 @@ describe('t2 pilot governance recovery contracts', () => {
     expect(validateChangeClassification(classification)).toEqual([]);
   });
 
+  it('rejects task instructions and standing authorization as Candidate approval', () => {
+    expect(isExplicitUserApprovalQuote('批准')).toBe(true);
+    expect(isExplicitUserApprovalQuote('我同意当前候选')).toBe(true);
+    expect(isExplicitUserApprovalQuote('重新封存 Candidate、运行 Gate，并重新取得 code permission。')).toBe(false);
+    expect(isExplicitUserApprovalQuote('不批准')).toBe(false);
+
+    expect(
+      validateUserApprovalBoundary(
+        {
+          user_response_quote: '重新封存 Candidate、运行 Gate，并重新取得 code permission。',
+          comments: 'standing instruction authorizes this repair loop',
+        },
+        { decisionStatus: 'approved', decisionType: 'user_approved' },
+      ),
+    ).toMatchObject({
+      ok: false,
+      error: 'USER_APPROVAL_QUOTE_NOT_EXPLICIT',
+      code: 'USER_APPROVAL_TRUST_BOUNDARY',
+    });
+  });
+
   it('classifies first formal project truth sources as changes', async () => {
     const projectDir = path.join(projectRoot, '.specforge', 'project');
     await writeJson(path.join(projectDir, 'spec_manifest.json'), {
@@ -92,9 +121,7 @@ describe('t2 pilot governance recovery contracts', () => {
     await fs.writeFile(path.join(projectDir, 'modules', 'CORE', 'design.md'), '> TODO: fill\n', 'utf-8');
     expect(await requiredGreenfieldClassificationFields(projectRoot)).toEqual([
       'architecture_changed',
-      'data_model_changed',
       'design_changed',
-      'module_contract_changed',
     ]);
   });
 
@@ -180,6 +207,19 @@ describe('t2 pilot governance recovery contracts', () => {
     );
     expect(validated).toMatchObject({ success: true, total: 1, valid: 1, invalid: 0 });
 
+    const freshlyRecorded = await handler(
+      {
+        action: 'validate_all',
+        work_item_id: 'WI-0001',
+        expected_agent: 'sf-design',
+        expected_stage: 'candidate-design',
+        created_after: new Date(Date.now() - 5_000).toISOString(),
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      deps(),
+    );
+    expect(freshlyRecorded).toMatchObject({ success: true, matching: 1 });
+
     const stale = await handler(
       {
         action: 'validate_all',
@@ -196,6 +236,34 @@ describe('t2 pilot governance recovery contracts', () => {
       matching: 0,
       error: 'HANDOFF_EXPECTATION_NOT_MET',
     });
+    expect(
+      await readUnresolvedHandoffValidationFailures(
+        path.join(projectRoot, '.specforge', 'work-items', 'WI-0001'),
+      ),
+    ).toHaveLength(1);
+
+    const futureRecordedAt = new Date('2026-10-09T00:00:00.000Z');
+    await fs.utimes(written.path, futureRecordedAt, futureRecordedAt);
+    const correctedRetry = await handler(
+      {
+        action: 'validate_all',
+        work_item_id: 'WI-0001',
+        expected_agent: 'sf-design',
+        expected_stage: 'candidate-design',
+        created_after: '2026-10-08T00:00:00.000Z',
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      deps(),
+    );
+    expect(correctedRetry).toMatchObject({
+      success: true,
+      matching: 1,
+    });
+    expect(
+      await readUnresolvedHandoffValidationFailures(
+        path.join(projectRoot, '.specforge', 'work-items', 'WI-0001'),
+      ),
+    ).toHaveLength(0);
   });
 
   it('records protected-path shell denials in both governance and shell audit logs', async () => {
@@ -226,5 +294,43 @@ describe('t2 pilot governance recovery contracts', () => {
       'utf-8',
     );
     expect(JSON.parse(guardLog.trim())).toMatchObject({ allowed: false, tool: 'sf_safe_bash' });
+  });
+
+  it('blocks Candidate sealing while a handoff validation failure is unresolved', async () => {
+    currentState = 'candidate_preparing';
+    const wiDir = path.join(projectRoot, '.specforge', 'work-items', 'WI-0001');
+    await recordHandoffValidationState(
+      wiDir,
+      {
+        expectedAgent: 'sf-design',
+        expectedStage: 'candidate-design',
+        createdAfter: '2026-10-07T00:00:00.000Z',
+      },
+      {
+        success: false,
+        total: 1,
+        valid: 1,
+        invalid: 0,
+        matching: 0,
+        error: 'HANDOFF_EXPECTATION_NOT_MET',
+      },
+    );
+
+    const result = await getHandler('sf_state_transition')!(
+      {
+        work_item_id: 'WI-0001',
+        from_state: 'candidate_preparing',
+        to_state: 'candidate_prepared',
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      deps(),
+    );
+
+    expect(result).toMatchObject({
+      success: false,
+      error: 'HANDOFF_VALIDATION_UNRESOLVED',
+      state_advanced: false,
+      retry_allowed: true,
+    });
   });
 });
