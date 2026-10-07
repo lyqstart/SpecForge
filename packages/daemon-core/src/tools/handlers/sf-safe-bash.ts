@@ -108,6 +108,40 @@ function appendGovernanceBlockedWrite(
   });
 }
 
+function appendRejectedShellHistory(
+  projectRoot: string,
+  command: string,
+  cwd: string | undefined,
+  callerRole: string | undefined,
+  rule: string,
+): void {
+  const logPath = path.join(projectRoot, SPEC_DIR_NAME, 'runtime', 'logs', 'shell-history.jsonl');
+  const entry = {
+    schema_version: '1.0',
+    ts: new Date().toISOString(),
+    command,
+    cwd: cwd ?? projectRoot,
+    shell: null,
+    exitCode: null,
+    durationMs: 0,
+    rejected: true,
+    rule,
+    timeout: false,
+    success: false,
+    stdout_size: 0,
+    stderr_size: 0,
+    truncated_stdout: false,
+    truncated_stderr: false,
+    callerRole: callerRole ?? null,
+  };
+  try {
+    fs.mkdirSync(path.dirname(logPath), { recursive: true });
+    fs.appendFileSync(logPath, JSON.stringify(entry) + '\n', 'utf-8');
+  } catch {
+    // Best-effort observer log; the policy denial remains authoritative.
+  }
+}
+
 function readWorkItem(projectRoot: string, workItemId: string): any | null {
   try {
     return readWorkItemMetadataSync(workItemRoot(projectRoot, workItemId), workItemId);
@@ -204,6 +238,7 @@ function commandMentionsProtectedSpecForgePath(command: string): boolean {
   const text = normalizePathForCompare(command);
   return (
     text.includes('.specforge/project/') ||
+    text.includes('.specforge/config/') ||
     text.includes('.specforge/runtime/') ||
     text.includes('.specforge/work-items/') ||
     text.includes('.specforge/logs/') ||
@@ -353,12 +388,13 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
         reason,
         hardStopRecord?.hard_stop_id
       );
+    appendRejectedShellHistory(baseDir, command, cwd, callerRole, reason);
 
     return {
       success: false,
       error:
         'SPEC_FORGE_PROTECTED_PATH_WRITE_REQUIRES_CONTROLLED_TOOL: sf_safe_bash cannot write protected .specforge paths.\n' +
-        'Use sf_artifact_write for work-item artifacts or sf_merge_run for .specforge/project/**.',
+        'Use sf_artifact_write(file_type=project_prod_environment|project_rules) for .specforge/config during intake_ready, canonical sf_artifact_write types for Work Item artifacts, or sf_merge_run for .specforge/project/**. Never fall back to native file tools, General Task, or helper scripts.',
       hard_stop: hardStopRecord !== null,
       hard_stop_record: hardStopRecord ?? undefined,
       work_item_id: activeWiId ?? undefined,
@@ -415,10 +451,18 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
   });
 
   if (runtimeGuard.checked && !runtimeGuard.allowed) {
+    appendRejectedShellHistory(
+      baseDir,
+      command,
+      cwd,
+      callerRole,
+      'WRITE_GUARD_RUNTIME_BLOCKED',
+    );
     return {
       success: false,
       error:
         'WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\n' +
+        'Use sf_artifact_write(file_type=project_prod_environment|project_rules) for .specforge/config during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\n' +
         'Violations: ' +
         runtimeGuard.violations.join('; '),
       hard_stop: runtimeGuard.hard_stop === true,

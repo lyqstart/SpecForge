@@ -22,12 +22,12 @@ export default tool({
       module_boundary_changed: tool.schema.boolean().describe("模块边界是否变化。"),
       api_contract_changed: tool.schema.boolean().describe("API 契约是否变化。"),
       architecture_changed: tool.schema.boolean().describe("架构是否变化。"),
-      data_model_changed: tool.schema.boolean().optional().describe("数据模型是否变化。"),
-      module_contract_changed: tool.schema.boolean().optional().describe("模块契约是否变化。"),
+      data_model_changed: tool.schema.boolean().describe("数据模型是否变化；从缺失或占位状态建立首份正式数据模型也必须为 true。"),
+      module_contract_changed: tool.schema.boolean().describe("模块契约是否变化；从缺失或占位状态建立首份正式模块契约也必须为 true。"),
       contract_registry_only: tool.schema.boolean().optional().describe("是否仅修改契约注册表。"),
       unknowns: tool.schema.array(tool.schema.string()).describe("尚未确认、必须继续取证的事实；没有时传空数组。"),
     }).describe(
-      "变更事实分类。必须逐项依据用户目标填写；不得传 workflow_path、workflow_type、intent 或 change_type 来覆盖路由。",
+      "变更事实分类。11 个布尔事实字段必须全部填写；创建首份正式架构、数据模型、设计或模块契约也属于对应 changed=true。不得传 workflow_path、workflow_type、intent 或 change_type 来覆盖路由。",
     ),
   },
 

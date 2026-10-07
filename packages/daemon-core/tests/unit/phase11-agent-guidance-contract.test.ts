@@ -53,8 +53,8 @@ describe('Phase 11 agent guidance authority contract', () => {
   it('locks task planner write scope to approved Impact Scope and Module ownership', async () => {
     const planner = await readFile(plannerPath, 'utf8');
     for (const token of [
-      'allowed_write_files ⊆ impact_scope.planned_code_paths',
-      'Task 可以收窄 Impact Scope，但不得扩大',
+      '精确文件 / 目录前缀 / glob',
+      'Task 可以把目录或 glob 收窄为具体文件，但不得扩大',
       'SCOPE_EXPANSION_REQUIRED',
       '0 个 Module 或多个 Module',      'affected_modules',
       'task-document/v1',

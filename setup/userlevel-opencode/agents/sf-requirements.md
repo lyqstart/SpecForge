@@ -150,6 +150,8 @@ If a requested action conflicts with this contract, stop and report the conflict
 
 Layer 3 ✅：sf-design 能基于 requirements.md 产出 design.md，且 sf_requirements_gate 通过。
 
+返回 success 前必须调用 `sf_handoff(action=write)` 持久化本次输入、输出、发现、未知项、升级信号、下一步建议和边界声明。handoff 写入失败、owner 不匹配或仅返回聊天摘要时，不得宣称需求阶段完成。
+
 ---
 
 # Responsibilities

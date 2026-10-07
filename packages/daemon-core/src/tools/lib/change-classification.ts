@@ -11,8 +11,8 @@ export interface ChangeClassification {
   module_boundary_changed: boolean;
   api_contract_changed: boolean;
   architecture_changed: boolean;
-  data_model_changed?: boolean;
-  module_contract_changed?: boolean;
+  data_model_changed: boolean;
+  module_contract_changed: boolean;
   contract_registry_only?: boolean;
   unknowns: string[];
 }
@@ -27,11 +27,11 @@ export const REQUIRED_CHANGE_CLASSIFICATION_BOOLEAN_FIELDS = [
   'module_boundary_changed',
   'api_contract_changed',
   'architecture_changed',
+  'data_model_changed',
+  'module_contract_changed',
 ] as const;
 
 export const OPTIONAL_CHANGE_CLASSIFICATION_BOOLEAN_FIELDS = [
-  'data_model_changed',
-  'module_contract_changed',
   'contract_registry_only',
 ] as const;
 

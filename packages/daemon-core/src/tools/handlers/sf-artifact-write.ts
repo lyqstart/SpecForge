@@ -24,6 +24,7 @@ import {
 } from '../lib/artifact-schema-validation';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
 import {
+  LAYOUT,
   SPEC_DIR_NAME,
   moduleDesign,
   moduleRequirements,
@@ -928,6 +929,15 @@ function normalizeAgentName(value: unknown): string {
 function isExecutorLike(context: any): boolean {
   return normalizeAgentName(context?.agent).includes('executor');
 }
+const PROJECT_CONFIG_ARTIFACT_TYPES = new Map<string, string>([
+  ['project_prod_environment', LAYOUT.configFiles.prodEnv],
+  ['project_rules', LAYOUT.configFiles.projectRules],
+]);
+
+function isPlaceholderProjectConfigContent(content: string): boolean {
+  const normalized = content.trim().toLowerCase();
+  return !normalized || ['todo', 'tbd', 'placeholder', '# todo', '# tbd'].includes(normalized);
+}
 const PROFESSIONAL_ARTIFACT_OWNERS = new Map<string, string>([
   ['requirements', 'sf-requirements'],
   ['candidate_requirements', 'sf-requirements'],
@@ -1013,6 +1023,8 @@ const EXECUTOR_FORBIDDEN_ARTIFACT_TYPES = new Set([
   'candidate_tasks',
   'candidate_trace_delta',
   'candidate_module_trace',
+  'project_prod_environment',
+  'project_rules',
 ]);
 function rejectExecutorGovernanceArtifact(fileType: string, context: any): any | null {
   if (!isExecutorLike(context)) return null;
@@ -1074,6 +1086,58 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
   if (inferredExecutorRejection) return inferredExecutorRejection;
   const inferredOwnershipRejection = rejectProfessionalArtifactOwnership(fileType, context);
   if (inferredOwnershipRejection) return inferredOwnershipRejection;
+  const projectConfigTarget = PROJECT_CONFIG_ARTIFACT_TYPES.get(fileType);
+  if (projectConfigTarget) {
+    const callerAgent = normalizeAgentName(context?.agent) || 'unknown';
+    if (callerAgent !== 'sf-orchestrator') {
+      return {
+        success: false,
+        error: 'PROJECT_CONFIG_OWNER_MISMATCH',
+        hard_stop: false,
+        retry_allowed: true,
+        caller_agent: callerAgent,
+        required_agent: 'sf-orchestrator',
+      };
+    }
+    const state = await readAuthoritativeState({ deps, projectRoot: baseDir, workItemId });
+    if (state.current_state !== 'intake_ready') {
+      return {
+        success: false,
+        error: 'PROJECT_CONFIG_WRITE_STATE_INVALID',
+        hard_stop: false,
+        retry_allowed: false,
+        current_state: state.current_state,
+        required_state: 'intake_ready',
+        message:
+          'Project configuration may only be established during intake_ready. Recover the same Work Item to the legal intake boundary instead of bypassing Write Guard.',
+      };
+    }
+    if (isPlaceholderProjectConfigContent(content)) {
+      return {
+        success: false,
+        error: 'PROJECT_CONFIG_CONTENT_REQUIRED',
+        hard_stop: false,
+        retry_allowed: true,
+      };
+    }
+    const targetPath = path.join(baseDir, SPEC_DIR_NAME, projectConfigTarget);
+    try {
+      fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+      fs.writeFileSync(targetPath, content, 'utf-8');
+      return {
+        success: true,
+        path: path.relative(baseDir, targetPath).replace(/\\/g, '/'),
+        size: Buffer.byteLength(content, 'utf-8'),
+        file_type: fileType,
+        controlled_project_config: true,
+        state_authority: state.source,
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      setHardStop(baseDir, workItemId, `PROJECT_CONFIG_WRITE_FAILED: ${message}`, 'sf_artifact_write');
+      return { success: false, error: `PROJECT_CONFIG_WRITE_FAILED: ${message}`, hard_stop: true };
+    }
+  }
   if (VERIFICATION_INPUT_ARTIFACT_TYPES.has(fileType)) {
     const state = await readAuthoritativeState({
       deps,
@@ -1302,6 +1366,23 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
         message:
           `Candidate artifacts are frozen while WI state is ${state.current_state}. ` +
           'Invalidate the approval and recover to candidate_preparing before editing.',
+      };
+    }
+  }
+  if (['change_classification.md', 'impact_analysis.md', 'trigger_result.json'].includes(targetFilename)) {
+    const state = await readAuthoritativeState({ deps, projectRoot: baseDir, workItemId });
+    const mutableStates = new Set(['impact_analyzing', 'candidate_preparing', 'gates_failed']);
+    if (!state.current_state || !mutableStates.has(state.current_state)) {
+      return {
+        success: false,
+        error: 'CANDIDATE_BASIS_FROZEN',
+        hard_stop: false,
+        retry_allowed: false,
+        current_state: state.current_state,
+        state_authority: state.source,
+        message:
+          'Candidate basis artifacts are sealed outside impact_analyzing, candidate_preparing, or gates_failed. ' +
+          'From candidate_prepared transition to blocked and recover to candidate_preparing before repair; do not invoke a known-invalid Gate merely to reach gates_failed.',
       };
     }
   }

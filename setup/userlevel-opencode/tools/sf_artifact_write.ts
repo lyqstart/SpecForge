@@ -7,6 +7,7 @@ export default tool({
     " 新项目第一次正式功能如果尚无有效 Project Architecture / Project Data Model，sf-design 必须在同一个 Requirement WI 中使用 candidate_architecture、candidate_data_model，并为已声明或受控新增 Module 使用 candidate_module_definition 写入真实 code_paths、使用 candidate_module_contract 建立 Module Contract；不得编造架构、数据模型或代码归属。" +
     " verification_report 必须使用 template=verification_report；daemon 会在写盘前严格校验 sf-verifier Required Output 契约，不会补齐缺失字段或接受 evidence_ref 别名；校验通过后才渲染 Markdown 并保留可机读 fenced JSON。该产物和 evidence_manifest 由 sf-verifier 拥有。" +
     " verification_gate 通过后验证输入被冻结；需要修改时必须先按恢复流程回到 implementation_ready。" +
+    " 项目配置只能由 sf-orchestrator 在 intake_ready 使用 project_prod_environment 或 project_rules 写入 .specforge/config/，不得在 Write Guard 拒绝后改用原生写入。" +
     " file_type=work_item 时内容至少应包含 schema_version、work_item_id、status、workflow_type、workflow_path。",
   args: {
     work_item_id: {
@@ -51,6 +52,8 @@ export default tool({
         "work_log",
         "review_report",
         "agent_run_result",
+        "project_prod_environment",
+        "project_rules",
       ],
     },
     content: {

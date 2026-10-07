@@ -154,7 +154,7 @@ Layer 3 ✅：verification_report.md 含真实命令输出，sf-orchestrator 能
 # 读取配置文件
 
 验证时必须读取：
-- `.specforge/prod-environment.md`（全文）：L9 兼容性测试按生产最低版本跑
+- `.specforge/config/prod-environment.md`（全文）：L9 兼容性测试按生产最低版本跑
 
 ---
 

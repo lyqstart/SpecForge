@@ -374,10 +374,12 @@ describe('Orchestrator governance execution closure', () => {
           business_rule_changed: false,
           user_visible_behavior_changed: true,
           data_semantics_changed: false,
-          design_changed: false,
+          design_changed: true,
           module_boundary_changed: false,
           api_contract_changed: false,
-          architecture_changed: false,
+          architecture_changed: true,
+          data_model_changed: true,
+          module_contract_changed: true,
           unknowns: [],
         },
       },
@@ -494,7 +496,7 @@ describe('Orchestrator governance execution closure', () => {
         }),
       },
       { directory: projectRoot, agent: 'sf-orchestrator' },
-      {} as any
+      auditDeps('impact_analyzing')
     )) as any;
 
     expect(written.success, JSON.stringify(written, null, 2)).toBe(true);
@@ -528,7 +530,7 @@ describe('Orchestrator governance execution closure', () => {
         }),
       },
       { directory: projectRoot, agent: 'sf-orchestrator' },
-      {} as any
+      auditDeps('impact_analyzing')
     )) as any;
 
     expect(migrated.success).toBe(true);
@@ -562,7 +564,7 @@ describe('Orchestrator governance execution closure', () => {
         }),
       },
       { directory: projectRoot, agent: 'sf-orchestrator' },
-      {} as any
+      auditDeps('impact_analyzing')
     )) as any;
 
     expect(conflict.success).toBe(false);
@@ -904,6 +906,8 @@ describe('Orchestrator governance execution closure', () => {
           module_boundary_changed: false,
           api_contract_changed: false,
           architecture_changed: false,
+          data_model_changed: false,
+          module_contract_changed: false,
           unknowns: [],
         },
       },
@@ -923,10 +927,12 @@ describe('Orchestrator governance execution closure', () => {
           business_rule_changed: false,
           user_visible_behavior_changed: true,
           data_semantics_changed: false,
-          design_changed: false,
+          design_changed: true,
           module_boundary_changed: false,
           api_contract_changed: false,
-          architecture_changed: false,
+          architecture_changed: true,
+          data_model_changed: true,
+          module_contract_changed: true,
           unknowns: [],
         },
       },

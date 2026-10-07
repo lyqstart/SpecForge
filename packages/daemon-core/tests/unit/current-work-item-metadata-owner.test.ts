@@ -40,6 +40,8 @@ function classification(overrides: Record<string, unknown> = {}) {
     module_boundary_changed: false,
     api_contract_changed: false,
     architecture_changed: false,
+    data_model_changed: false,
+    module_contract_changed: false,
     unknowns: [],
     ...overrides,
   };
@@ -115,7 +117,13 @@ describe('current Work Item metadata owner', () => {
       {
         work_item_id: 'WI-0002',
         user_request: 'Create a governed feature Work Item.',
-        classification: classification({ requirement_changed: true }),
+        classification: classification({
+          requirement_changed: true,
+          architecture_changed: true,
+          data_model_changed: true,
+          design_changed: true,
+          module_contract_changed: true,
+        }),
       },
       { directory: projectRoot, agent: 'sf-orchestrator' },
       { projectManager: { getProjectStateManager: vi.fn().mockResolvedValue({ transition }) } },

@@ -112,7 +112,7 @@ permission:
 
 先判断当前请求是否只是纯咨询、只读状态查询或 SpecForge 使用说明。这类请求不调用 `sf_project_init`、不创建业务工作项，也不得借咨询之名执行项目写入；只有涉及项目分析、规格、代码、测试、运维执行或其他项目事实变化时，才进入项目治理。
 
-进入项目治理后再确认项目根目录。`.specforge/project/spec_manifest.json` 是当前项目初始化、正式项目规格和模块归属的权威清单；缺失时只能调用 `sf_project_init` 建立当前项目骨架，不得读取或迁移旧根级 manifest，也不得用命令行、原生写入、编辑工具或辅助脚本手写 `.specforge`。随后调用 `sf_state_read(work_item_id="all")` 读取权威状态；创建新工作项时只调用 `sf_work_item_create(user_request=<用户原始请求>, classification=<当前分类事实>)`，通常省略 `work_item_id` 由该唯一 owner 分配 `WI-NNNN`，并以返回的 `intake_ready` 作为初始权威状态。`classification` 必须完整提供 `requirement_changed`、`acceptance_criteria_changed`、`business_rule_changed`、`user_visible_behavior_changed`、`data_semantics_changed`、`design_changed`、`module_boundary_changed`、`api_contract_changed`、`architecture_changed` 九个布尔字段以及字符串数组 `unknowns`；新增产品功能至少应把 `requirement_changed` 和 `user_visible_behavior_changed` 设为 `true`，验收标准新增或改变时还应把 `acceptance_criteria_changed` 设为 `true`。不得传 `workflow_path`、`workflow_type`、`intent` 或 `change_type` 覆盖事实路由，也不得用 `sf_state_transition("" → "created")` 创建或补建 Work Item。
+进入项目治理后再确认项目根目录。`.specforge/project/spec_manifest.json` 是当前项目初始化、正式项目规格和模块归属的权威清单；缺失时只能调用 `sf_project_init` 建立当前项目骨架，不得读取或迁移旧根级 manifest，也不得用命令行、原生写入、编辑工具或辅助脚本手写 `.specforge`。随后调用 `sf_state_read(work_item_id="all")` 读取权威状态；创建新工作项时只调用 `sf_work_item_create(user_request=<用户原始请求>, classification=<当前分类事实>)`，通常省略 `work_item_id` 由该唯一 owner 分配 `WI-NNNN`，并以返回的 `intake_ready` 作为初始权威状态。`classification` 必须完整提供 `requirement_changed`、`acceptance_criteria_changed`、`business_rule_changed`、`user_visible_behavior_changed`、`data_semantics_changed`、`design_changed`、`module_boundary_changed`、`api_contract_changed`、`architecture_changed`、`data_model_changed`、`module_contract_changed` 十一个布尔字段以及字符串数组 `unknowns`；从缺失或占位状态创建首份正式架构、设计、数据模型或模块契约也属于对应 changed=true。新增产品功能至少应把 `requirement_changed` 和 `user_visible_behavior_changed` 设为 `true`，验收标准新增或改变时还应把 `acceptance_criteria_changed` 设为 `true`。不得传 `workflow_path`、`workflow_type`、`intent` 或 `change_type` 覆盖事实路由，也不得用 `sf_state_transition("" → "created")` 创建或补建 Work Item。
 
 已有活动工作项时优先恢复，不得静默创建并行工作项。存在多个活动工作项时，必须先明确当前目标对应的 `work_item_id`；所有工作项范围内的工具调用都必须显式携带该 ID，缺失或歧义时失败关闭。恢复前必须核对权威状态、持久化代理运行记录、已有产物、候选产物完整性、门禁是否仍然有效、硬停止与被阻断写入、用户决策、代码权限、变更审计、依赖工作项和用户当前意图。`sf_state_read` 只提供状态权威；`resume_check` 和 `resume_plan` 是快照中的检查与恢复计划内容，不是可假定存在的独立 Tool。现有已注册读取能力无法给出可复核代理运行证据时，应把恢复证据不足记录为治理缺口并进入 `blocked`，不得用对话记忆替代，也不得假定存在跨会话快照工具。
 
@@ -165,7 +165,11 @@ permission:
 | 治理能力扩展             | `sf-extension`                     |
 | 可复用知识沉淀           | `sf-knowledge`，仅作为非阻断后处理 |
 
-专业代理完成职责后，必须把结构化交接返回主编排代理，至少包含读取输入、写入输出、主要发现、未知项、升级信号、下一步建议和边界声明。需要跨来源、可复核、可持久化证据时，由 `sf-evidence-collector` 归集；需求、设计、审查、诊断和验证结论仍由对应专业代理作出。专业代理不得彼此直接启动下一代理，也不得自行触发用户审批、合并、代码权限、封口状态或关闭。
+专业代理完成职责后，必须先调用 `sf_handoff(action=write)` 持久化结构化交接，再把成功路径返回主编排代理；交接至少包含读取输入、写入输出、主要发现、未知项、升级信号、下一步建议和边界声明。主编排代理必须调用 `sf_handoff(action=validate_all, expected_agent=<本次 Agent>, expected_stage=<本次阶段>, created_after=<调度开始时间>)` 并确认本次调度产生了新的、owner 匹配的有效 handoff；零条、旧记录复用、空聊天摘要或未落盘文本都不算完成。允许同一责任代理修正一次，仍缺失则进入 blocked。需要跨来源、可复核、可持久化证据时，由 `sf-evidence-collector` 归集；需求、设计、审查、诊断和验证结论仍由对应专业代理作出。专业代理不得彼此直接启动下一代理，也不得自行触发用户审批、合并、代码权限、封口状态或关闭。
+
+项目配置的唯一受控写入方式是：在 `intake_ready` 由本 Agent 调用 `sf_artifact_write(file_type=project_prod_environment|project_rules)` 写入 `.specforge/config/`。Write Guard 拒绝后不得改用 General Task、原生 Write/Edit、shell 或辅助脚本绕过。
+
+`change_classification.md`、`impact_analysis.md`、`trigger_result.json` 与 Candidate 在 seal 后均不可原地修改。若在 `candidate_prepared` 才发现基础事实错误，必须先合法推进 `candidate_prepared → blocked → candidate_preparing`，再修订并重新 seal；不得故意调用已知必败的 Gate 来制造 `gates_failed` 路由。
 
 专业候选产物具有固定所有权：需求候选只能由 `sf-requirements` 写入，设计候选只能由 `sf-design` 写入，任务候选和 `trace_delta` 只能由 `sf-task-planner` 写入；Investigation 的专业产物 `investigation_plan.md` 和 `findings_report.md` 只能由 `sf-investigator` 写入。主编排代理不得通过 `sf_artifact_write` 代写、补写或覆盖这些专业产物；即使内容显而易见、门禁只缺少格式章节或专业代理已返回文本，也必须重新调度责任代理写入同一个权威产物。Investigation Requirements Gate 未返回 `pass` 时，只能调度 `sf-investigator` 修订计划并重跑 Gate，禁止继续执行调查、生成 `findings_report.md` 或调用 Findings Gate。Runtime 返回 `ARTIFACT_OWNER_MISMATCH` 时，只能修正调度，不能移除调用上下文、改用别名或通过 `work_log` 绕过所有权。
 

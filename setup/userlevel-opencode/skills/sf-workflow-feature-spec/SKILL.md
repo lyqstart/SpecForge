@@ -200,7 +200,7 @@ Orchestrator 不手工写 `candidate_manifest.json`，不猜 `candidate_path`、
 **执行步骤：**
 1. 调用 `sf_state_read` 确认当前无进行中的同名 Work Item
 2. 与用户对话，确认原始请求和功能描述的关键信息
-3. 只调用 `sf_work_item_create`（user_request=<用户原始请求>, classification=<当前分类事实>）创建新 Work Item；通常省略 work_item_id，由该唯一 owner 分配。classification 必须完整填写九个必需布尔事实字段和字符串数组 unknowns，不得传 workflow_path、workflow_type、intent 或 change_type 覆盖路由
+3. 只调用 `sf_work_item_create`（user_request=<用户原始请求>, classification=<当前分类事实>）创建新 Work Item；通常省略 work_item_id，由该唯一 owner 分配。classification 必须完整填写十一个必需布尔事实字段（含 data_model_changed、module_contract_changed）和字符串数组 unknowns；从缺失或占位状态创建首份正式真相源也属于对应 changed=true。不得传 workflow_path、workflow_type、intent 或 change_type 覆盖路由
 4. 确认返回状态为 `intake_ready`，并只读核对 intake.md 已原样保存用户原始请求；不得再用 `sf_state_transition("" → "created")` 或手工补建目录/metadata
 
 **产物：** `intake.md`、`spec.json`（自动创建）

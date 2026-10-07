@@ -65,6 +65,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/sf_trace_matrix.ts", type: "tool" },
   { path: "tools/sf_verification_gate.ts", type: "tool" },
   { path: "tools/sf_safe_bash.ts", type: "tool" },
+  { path: "tools/sf_handoff.ts", type: "tool" },
 
   // Tool 核心库（24 个）
   { path: "tools/lib/sf_artifact_write_core.ts", type: "tool_lib" },

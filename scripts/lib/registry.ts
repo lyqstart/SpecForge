@@ -64,6 +64,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/sf_close_gate.ts", type: "tool" },
   { path: "tools/sf_hard_stop_resolve.ts", type: "tool" },
   { path: "tools/sf_contract_register.ts", type: "tool" },
+  { path: "tools/sf_handoff.ts", type: "tool" },
 
   // Git Governance tools — stage 1
   { path: "tools/sf_git_preflight.ts", type: "tool" },

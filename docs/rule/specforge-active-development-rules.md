@@ -6,7 +6,7 @@
 >
 > Authority registry: docs/product-specification/authority-registry.md
 >
-> Migration baseline: 历史账本第三/四部分（EXP-001..094 原文，含其自身合同输出字段）与账本追加区显式定义条目（EXP-095..263，经语义纯化：仅保留长期有效、可执行的规则语义；ERR ID、状态行、运行状态、事故叙事与具体执行版本事实只留在历史账本）。每条当前规则以仓库内 source 注释绑定迁移来源；WorkBuddy migration map 只保留为 FIX2 历史审计证据，不是当前规则或持久化测试的外部依赖。
+> Migration baseline: 历史账本第三/四部分（EXP-001..094 原文，含其自身合同输出字段）与账本追加区显式定义条目（EXP-095..268，经语义纯化：仅保留长期有效、可执行的规则语义；ERR ID、状态行、运行状态、事故叙事与具体执行版本事实只留在历史账本）。每条当前规则以仓库内 source 注释绑定迁移来源；WorkBuddy migration map 只保留为 FIX2 历史审计证据，不是当前规则或持久化测试的外部依赖。
 
 ## 角色与读取合同
 
@@ -2465,3 +2465,28 @@ Contract consumer 判断必须直接枚举目标 Contract 的 formal Trace consu
 
 PowerShell 载体输出内部退出码必须使用 `$LASTEXITCODE`（禁止 `$?` 布尔）；`exit=True` 类布尔哨兵不是退出码证据。对外报告中的 RUN_ID、EVIDENCE_ROOT 等关键字段必须由 handoff/checkpoint JSON 程序化读取原样输出，禁止手工重打。
 <!-- source: ledger view L31209-31211 format H2COLON (purity-filtered) -->
+
+## EXP-264：受保护配置必须有受控 producer，拒绝后不得更换写入通道
+
+项目配置、Work Item 产物和正式规格必须分别由声明 owner 的受控 Tool 写入。Write Guard 或受控 Tool 拒绝后，只能修正状态、参数或架构能力；不得改用 General Task、原生 Write/Edit、shell 或辅助脚本完成同一写入。配置路径、Tool 枚举、安装注册表、Agent 指令和回归测试必须作为同一消费者矩阵修改。
+<!-- source: ledger view L30760-30762 format H2COLON (purity-filtered) -->
+
+## EXP-265：Candidate seal 必须同时冻结 Candidate 内容及其分类和影响基础
+
+Candidate 进入 sealed 状态后，Candidate 文件、manifest、change classification、impact analysis 和 trigger result 必须共同不可变。若 seal 后发现基础事实错误，应经合法 blocked/recovery 路径回到 candidate_preparing，重新生成并封存；不得调用调用者已知必败的 Gate 只为制造恢复状态。
+<!-- source: ledger view L30764-30766 format H2COLON (purity-filtered) -->
+
+## EXP-266：分类 producer、wrapper、schema、路由和 greenfield 语义必须使用同一字段集合
+
+变更分类的必需字段必须在 Agent 提示、公开 Tool schema、Runtime validator、artifact schema、路由和测试中完全一致。从缺失或占位状态建立首份正式架构、设计、数据模型或模块契约属于对应语义变化，不能因为目标文件尚不存在而填 false。
+<!-- source: ledger view L30768-30770 format H2COLON (purity-filtered) -->
+
+## EXP-267：专业 Agent 成功必须以 owner-bound 持久化 handoff 为完成条件
+
+专业 Agent 的聊天摘要或空返回不能证明阶段完成。每次成功执行必须通过受控 Tool 持久化包含 inputs、outputs、findings、unknowns、escalations、next step 和 boundary 的 handoff，并验证 work_item_id 与调用 Agent owner；Orchestrator 必须核验本次新记录，缺失时有限重试后阻断。
+<!-- source: ledger view L30772-30774 format H2COLON (purity-filtered) -->
+
+## EXP-268：路径范围判断与文件身份必须由 producer 和 consumer 共享
+
+Impact Scope、Task、Gate 和 Code Permission 必须共享精确文件、目录前缀与 glob 的覆盖语义，诊断文案必须描述真实谓词。文件快照去重必须使用目标平台解析后的路径身份；Windows 上大小写别名不能形成两个输入或两份证据。
+<!-- source: ledger view L30776-30778 format H2COLON (purity-filtered) -->

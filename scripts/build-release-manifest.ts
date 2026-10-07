@@ -4,21 +4,17 @@ import {
   produceReleaseManifest,
   produceRuntimeEntrySurfaceReport,
 } from './lib/release-manifest-producer';
+import { readCliOption } from './lib/cli-option';
 import { loadProductIdentity } from './lib/product-identity';
 
-function option(name: string): string | undefined {
-  const index = process.argv.indexOf(name);
-  const value = index >= 0 ? process.argv[index + 1]?.trim() : undefined;
-  return value || undefined;
-}
-
-const candidateId = option('--candidate-id');
+const args = process.argv.slice(2);
+const candidateId = readCliOption(args, '--candidate-id');
 if (!candidateId) {
   throw new Error('RELEASE_CANDIDATE_ID_REQUIRED: pass --candidate-id <immutable-candidate-id>');
 }
 
 const identity = await loadProductIdentity(process.cwd());
-const requestedReleaseId = option('--release-id');
+const requestedReleaseId = readCliOption(args, '--release-id');
 if (requestedReleaseId && requestedReleaseId !== identity.releaseId) {
   throw new Error(
     `RELEASE_ID_MISMATCH:requested:${requestedReleaseId}:authoritative:${identity.releaseId}`,

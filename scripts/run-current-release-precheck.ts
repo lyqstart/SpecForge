@@ -1,13 +1,12 @@
 #!/usr/bin/env bun
 
 import { runCurrentReleasePrecheck } from './lib/current-release-precheck';
+import { readCliOption } from './lib/cli-option';
 import { loadProductIdentity } from './lib/product-identity';
 
 const args = process.argv.slice(2);
-const candidateArg = args.find((arg) => arg.startsWith('--candidate-id='));
-const releaseArg = args.find((arg) => arg.startsWith('--release-id='));
-const candidateId = candidateArg?.slice('--candidate-id='.length).trim() ?? '';
-const requestedReleaseId = releaseArg?.slice('--release-id='.length).trim() || '';
+const candidateId = readCliOption(args, '--candidate-id') ?? '';
+const requestedReleaseId = readCliOption(args, '--release-id') ?? '';
 
 if (!candidateId) {
   console.error('CURRENT_RELEASE_PRECHECK_CANDIDATE_ID_REQUIRED');

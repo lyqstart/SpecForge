@@ -155,13 +155,15 @@ WI 目录由 daemon 受控工具自动创建。
 Layer 3 ✅：sf-executor 拿到任意 task 都能独立执行，verification_commands 真能机器跑，
 且 sf_tasks_gate 通过。
 
+返回 success 前必须先完成与 Runtime 一致的 Impact Scope 覆盖预检、Module owner 对账与 `trace_delta` 同步，再调用 `sf_handoff(action=write)` 持久化本次输入、输出、发现、未知项、升级信号、下一步和边界。handoff 写入失败或为空时不得返回成功。
+
 ---
 
 # 读取配置文件
 
 在开始拆分之前，必须读取：
-- `.specforge/prod-environment.md`（仅 `runtimes` 段）：verification_command 必须在生产最低版本通过
-- `.specforge/project-rules.md`（全文）：task 的实现必须遵守工程规则
+- `.specforge/config/prod-environment.md`（仅 `runtimes` 段）：verification_command 必须在生产最低版本通过
+- `.specforge/config/project-rules.md`（全文）：task 的实现必须遵守工程规则
 
 ---
 
@@ -441,9 +443,9 @@ Task Planner 在提交 tasks.md 前，必须对每个 task 逐一检查：
 2. **路径相对于项目根**：路径不以 `/` 开头，相对于 Git 仓库根目录
 3. **禁止范围蔓延**：如果一个 task 修改了不在 allowed_write_files 中的文件，verifier 会标记为越界
 4. **task 间不重叠**：并行执行的 task 的 allowed_write_files 不允许有交集
-5. **不得扩大已批准 Impact Scope**：每个 `allowed_write_files` 路径都必须已存在于当前 `impact_scope.planned_code_paths`；Task 可以收窄 Impact Scope，但不得扩大。需要新增路径时返回 `SCOPE_EXPANSION_REQUIRED`，不得先写入 Task 再等待 Code Permission 放行。
+5. **不得扩大已批准 Impact Scope**：每个具体 `allowed_write_files` 路径都必须被当前 `impact_scope.planned_code_paths` 中的精确文件、以 `/` 结尾的目录前缀或 glob 模式覆盖；Task 可以把目录或 glob 收窄为具体文件，但不得扩大。需要新增未覆盖路径时返回 `SCOPE_EXPANSION_REQUIRED`，不得先写入 Task 再等待 Code Permission 放行。
 6. **必须满足 Module 归属**：除 Runtime 明确支持且已进入 Approved Impact Scope 的 cross-module test harness 例外外，每个 Task 写入路径必须通过正式 `code_paths` 唯一映射到一个受影响 Module；0 个 Module 或多个 Module 都必须 BLOCK。
-7. **提交前机器对账**：Task Planner 返回 success 前必须检查 `allowed_write_files ⊆ impact_scope.planned_code_paths`，并确认每个非例外路径的唯一 Module owner 已包含在 `affected_modules`。
+7. **提交前机器对账**：Task Planner 返回 success 前必须按 Runtime 相同的“精确文件 / 目录前缀 / glob”语义检查每个 `allowed_write_files` 均被 `impact_scope.planned_code_paths` 覆盖，并确认每个非例外路径的唯一 Module owner 已包含在 `affected_modules`。
 
 ### task-document/v1 canonical allowed_write_files 渲染
 
@@ -457,7 +459,7 @@ Task Planner 在提交 tasks.md 前，必须对每个 task 逐一检查：
 - 方括号内只能列仓库根相对的具体文件路径，不得使用目录、绝对路径、`..`、`*` 或 `?`。
 - 多行反引号列表仅用于 legacy 只读兼容；Task Planner **不得**继续生成该旧渲染。
 - Runtime 会先把展示层 Markdown 归一化为 `task-document/v1` 语义模型；Candidate Gate 与 Code Permission 必须消费同一份 `allowed_write_files` 语义，不得另造 `files` 字段或第二套解析规则。
-- 提交前必须以真实输出再次验证 `allowed_write_files ⊆ impact_scope.planned_code_paths` 和唯一 Module owner。
+- 提交前必须以真实输出再次验证每个具体 `allowed_write_files` 被 Impact Scope 的精确文件、目录前缀或 glob 覆盖，并验证唯一 Module owner。
 
 ### 常见错误
 

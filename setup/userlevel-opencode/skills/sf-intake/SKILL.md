@@ -169,7 +169,7 @@ intake 阶段不是只记录用户一句话，而是为后续 requirements / des
 ## B0 检查已有配置
 
 ```
-检测 .specforge/prod-environment.md 和 .specforge/project-rules.md：
+检测 .specforge/config/prod-environment.md 和 .specforge/config/project-rules.md：
 
 两个文件都存在：
   展示摘要：
@@ -317,7 +317,9 @@ orchestrator 必须覆盖以下 10 个维度，**一次问完，不分批**：
 - 测试框架选择
 - CI/CD 平台
 
-## B4 生成三份配置文件
+在接受“全部按推荐”或同义回复前，必须先向用户展示并在 `intake.md` 中保存完整的编号决策目录。每项必须在同一条文本中同时写出“字段标签、推荐值、推荐理由”；不得使用只有序号或值、依赖易丢失表头的表格。任何标签或推荐值在可见记录中缺失时，该项仍属于 `unknowns`，不得宣称已确认。
+
+## B4 生成两份配置文件
 
 ```
 基于 B1-B3 的回答：
@@ -328,9 +330,10 @@ orchestrator 必须覆盖以下 10 个维度，**一次问完，不分批**：
 
 2. 填入用户的决策值
 
-3. 写入：
-   - .specforge/prod-environment.md
-   - .specforge/project-rules.md
+3. 只能通过受控工具写入：
+   - `sf_artifact_write(file_type=project_prod_environment)` → `.specforge/config/prod-environment.md`
+   - `sf_artifact_write(file_type=project_rules)` → `.specforge/config/project-rules.md`
+   两次调用都必须携带当前 `work_item_id`，且只能发生在 `intake_ready`。若 Write Guard 或工具拒绝，必须停止并报告；不得改用 General Task、原生 Write/Edit、shell 或辅助脚本。
 
 4. 展示摘要让用户确认：
    "✅ 已生成以下配置：
@@ -362,7 +365,7 @@ orchestrator 必须覆盖以下 10 个维度，**一次问完，不分批**：
 
 ```
 intake 完成后：
-  - 三份配置文件已生成（或已确认沿用）
+  - 两份配置文件已通过受控工具生成（或已确认沿用）
   - 需求信息已收集（B1 的 10 个维度）
   - 写入 .specforge/work-items/{WI-ID}/intake.md
 

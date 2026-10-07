@@ -27,6 +27,40 @@ import {
 } from '../lib/state_machine';
 import * as fs from 'node:fs/promises';
 
+async function isPlaceholder(filePath: string): Promise<boolean> {
+  try {
+    const content = (await fs.readFile(filePath, 'utf-8')).trim();
+    return !content || content.startsWith('> TODO') || content === '# TODO';
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return false;
+    throw error;
+  }
+}
+
+export async function requiredGreenfieldClassificationFields(
+  projectRoot: string,
+): Promise<string[]> {
+  const projectDir = join(projectRoot, '.specforge', 'project');
+  let manifest: Record<string, any>;
+  try {
+    manifest = JSON.parse(await fs.readFile(join(projectDir, 'spec_manifest.json'), 'utf-8'));
+  } catch {
+    return [];
+  }
+  if (manifest.project_spec_version !== 'PSV-0001' || manifest.last_merged_work_item) return [];
+  const defaultModule = String(manifest.default_module ?? 'CORE');
+  const moduleDir = join(projectDir, 'modules', defaultModule);
+  const architecturePlaceholder = await isPlaceholder(join(projectDir, 'architecture.md'));
+  const designPlaceholder = await isPlaceholder(join(moduleDir, 'design.md'));
+  if (!architecturePlaceholder || !designPlaceholder) return [];
+  return [
+    'architecture_changed',
+    'data_model_changed',
+    'design_changed',
+    'module_contract_changed',
+  ];
+}
+
 function isKnownWorkflowType(value: string | undefined): value is WorkflowType {
   return !!value && Object.prototype.hasOwnProperty.call(WORKFLOW_TYPE_TO_PATH, value);
 }
@@ -119,6 +153,21 @@ registerHandler('sf_v11_work_item_create', async (args, context, deps) => {
           error: `INVALID_CHANGE_CLASSIFICATION: ${classificationErrors.join('; ')}`,
           validation_errors: classificationErrors,
           hard_stop: true,
+        };
+      }
+      const greenfieldRequired = await requiredGreenfieldClassificationFields(projectRoot);
+      const missingGreenfieldFacts = greenfieldRequired.filter(
+        field => (classification as unknown as Record<string, unknown>)[field] !== true,
+      );
+      if (classification.requirement_changed === true && missingGreenfieldFacts.length > 0) {
+        return {
+          success: false,
+          code: 'GREENFIELD_CLASSIFICATION_INCOMPLETE',
+          error:
+            'GREENFIELD_CLASSIFICATION_INCOMPLETE: creating first formal truth sources is a semantic change',
+          required_true_fields: missingGreenfieldFacts,
+          hard_stop: false,
+          retry_allowed: true,
         };
       }
     }

@@ -8,10 +8,23 @@ import {
   expectedProductTag,
   loadProductIdentity,
 } from '../../scripts/lib/product-identity';
+import { readCliOption } from '../../scripts/lib/cli-option';
 
 const ROOT = resolve(import.meta.dirname, '../..');
 
 describe('current product version contract', () => {
+  it('accepts both separated and equals syntax for release CLI options', () => {
+    expect(readCliOption(['--candidate-id', 'candidate-a'], '--candidate-id')).toBe('candidate-a');
+    expect(readCliOption(['--candidate-id=candidate-b'], '--candidate-id')).toBe('candidate-b');
+    expect(readCliOption(['--release-id', 'specforge-current'], '--release-id')).toBe(
+      'specforge-current',
+    );
+    expect(readCliOption(['--release-id=specforge-current'], '--release-id')).toBe(
+      'specforge-current',
+    );
+    expect(readCliOption(['--candidate-id', '--release-id=value'], '--candidate-id')).toBeUndefined();
+  });
+
   it('defines the new product epoch from the root package identity', async () => {
     const identity = await loadProductIdentity(ROOT);
 

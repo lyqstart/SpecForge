@@ -132,8 +132,8 @@ Layer 3 ✅：sf-orchestrator 能基于 `sf_contract_register` 的产出（exten
 # 读取配置文件
 
 在开始执行之前，必须读取：
-- `.specforge/prod-environment.md`（仅 `runtimes` 段）：了解当前项目技术栈约束
-- `.specforge/project-rules.md`（全文）：了解项目工程规则中与扩展相关的约束
+- `.specforge/config/prod-environment.md`（仅 `runtimes` 段）：了解当前项目技术栈约束
+- `.specforge/config/project-rules.md`（全文）：了解项目工程规则中与扩展相关的约束
 
 ---
 

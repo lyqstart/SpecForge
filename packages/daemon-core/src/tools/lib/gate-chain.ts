@@ -293,19 +293,30 @@ function resolveGateAttemptInputPath(projectRoot: string, inputPath: string): st
     : path.resolve(projectRoot, inputPath);
 }
 
+export function gateAttemptInputIdentity(
+  projectRoot: string,
+  inputPath: string,
+  platform: NodeJS.Platform = process.platform,
+): string {
+  const resolved = resolveGateAttemptInputPath(projectRoot, inputPath);
+  return platform === 'win32' ? resolved.toLowerCase() : resolved;
+}
+
 export async function buildGateAttemptInputSnapshot(
   projectRoot: string,
   reports: GateReportV11[],
+  platform: NodeJS.Platform = process.platform,
 ): Promise<GateAttemptInputSnapshotEntry[]> {
-  const inputPaths = Array.from(
-    new Set(
-      reports.flatMap(report =>
-        Array.isArray(report.input_files)
-          ? report.input_files.map(value => String(value ?? '').trim()).filter(Boolean)
-          : [],
-      ),
-    ),
-  ).sort();
+  const inputPathByIdentity = new Map<string, string>();
+  for (const inputPath of reports.flatMap(report =>
+    Array.isArray(report.input_files)
+      ? report.input_files.map(value => String(value ?? '').trim()).filter(Boolean)
+      : [],
+  )) {
+    const identity = gateAttemptInputIdentity(projectRoot, inputPath, platform);
+    if (!inputPathByIdentity.has(identity)) inputPathByIdentity.set(identity, inputPath);
+  }
+  const inputPaths = Array.from(inputPathByIdentity.values()).sort();
 
   const snapshot: GateAttemptInputSnapshotEntry[] = [];
   for (const inputPath of inputPaths) {

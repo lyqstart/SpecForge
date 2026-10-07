@@ -2,7 +2,11 @@ import { afterEach, describe, expect, test } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { checkProjectGovernanceConsistency, freezeGovernanceScopeForCodePermission } from './project-governance-v2.js';
+import {
+  checkProjectGovernanceConsistency,
+  freezeGovernanceScopeForCodePermission,
+  isTaskPathCoveredByImpactScope,
+} from './project-governance-v2.js';
 
 const roots: string[] = [];
 
@@ -117,7 +121,7 @@ describe('Candidate Task write scope consistency', () => {
     const result = await checkProjectGovernanceConsistency({ projectRoot, workItemDir, workItemId: 'WI-0001' });
     for (const outsidePath of ['package.json', 'tsconfig.json']) {
       const check = result.checks.find(candidate =>
-        candidate.description === `Task TASK-WI-0001-001 write path is inside approved Impact Scope: ${outsidePath}`);
+        candidate.description === `Task TASK-WI-0001-001 write path must be covered by approved Impact Scope: ${outsidePath}`);
       expect(check?.passed, outsidePath).toBe(false);
     }
   });
@@ -143,6 +147,19 @@ describe('Candidate Task write scope consistency', () => {
       check.check_id.startsWith('task_allowed_write_files_') || check.check_id.startsWith('task_write_'));
     expect(taskChecks.length).toBeGreaterThan(0);
     expect(taskChecks.every(check => check.passed), JSON.stringify(taskChecks, null, 2)).toBe(true);
+  });
+
+  test('shares exact, directory-prefix, and glob coverage semantics', () => {
+    expect(isTaskPathCoveredByImpactScope('src/index.ts', ['src/index.ts'])).toEqual({
+      covered: true,
+      matchedPattern: 'src/index.ts',
+    });
+    expect(isTaskPathCoveredByImpactScope('tests/game.test.ts', ['tests/'])).toEqual({
+      covered: true,
+      matchedPattern: 'tests/',
+    });
+    expect(isTaskPathCoveredByImpactScope('src/ui/board.ts', ['src/**/*.ts']).covered).toBe(true);
+    expect(isTaskPathCoveredByImpactScope('scripts/release.ts', ['src/', 'tests/**']).covered).toBe(false);
   });
 
   test('Code Permission reuses the same canonical Task write scope semantic source', async () => {

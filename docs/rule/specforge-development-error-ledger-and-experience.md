@@ -30744,3 +30744,85 @@ PowerShell 载体输出内部退出码必须使用 `$LASTEXITCODE`（禁止 `$?`
 - **纠正与防复发**：按补丁实际物理行重新计算并先执行 `git apply --check`；今后账本尾追加 hunk 行数必须由行计数结果得出，禁止估算。失败补录与业务闭环置于同一经校验追加补丁。
 - REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-021,EXP-087
 - ERR1755_STATUS=CLOSED_BY_RECOUNTED_HUNK_AND_PREAPPLY_CHECK
+
+## ERR-1756：t2 真实项目试点暴露受控配置、分类、封存、交接和路径语义没有形成同一治理闭环
+
+- **发生时间**：2026-10-07
+- **分类**：`REAL_PROJECT_PILOT / GOVERNANCE_CONTRACT_DRIFT / RUNTIME_ENFORCEMENT_GAP`。
+- **事实证据**：t2 的 WI-0001 权威事件停在 `gates_failed` 且代码权限从未放行；首轮配置 shell 写入被 Write Guard 拒绝后，编排过程改用 General Task/原生文件写入 `.specforge/config/**`；`sf-intake` 和多个专业 Agent 仍引用旧根级配置路径。首次 Work Item 分类生产者只要求九个布尔字段，而 trigger schema 要求十一项，首个 trigger 写入被拒；在 `candidate_prepared` 后又修改 `trigger_result.json`，非法逆向失败后调用已知会失败的 Gate 取得 `gates_failed`。Task 的 `tests/` 范围与 Gate 精确包含语义冲突；`sf_handoff` 已被产品规格列为当前核心工具，但安装注册表没有 wrapper，三个专业 Agent 没有持久化 handoff；Windows Gate 输入同时记录 `CORE`/`core`；失败检查文案仍使用肯定式“inside approved”。
+- **影响**：核心状态机与禁止代码写入有效，但端到端治理只能判定 `PARTIALLY_SUPPORTED`；继续原项目会放大不可审计配置写入、错误 Candidate 基础和不可恢复的代理上下文。
+- **根因**：相同业务概念在 Skill、Agent、wrapper、handler、Gate、安装注册表和运行证据之间没有共享可执行合同；已有 Runtime 能力没有被部署入口和 producer 完整消费。
+- **纠正与防复发**：在同一修复闭环中增加 intake-only 受控配置类型；统一十一项分类并对 Project Init 占位真相源做 greenfield 校验；把 Candidate 及其基础事实限制在可变状态并禁止用已知失败 Gate 路由；部署 owner-bound `sf_handoff`；统一精确文件/目录前缀/glob 覆盖语义；按 Windows 解析路径身份去重 Gate snapshot；把拒绝 shell 同时写入 shell-history；技术决策默认必须以带标签的可见目录持久化。
+- **当前状态**：实现与定向回归已完成，等待全仓、安装和真实部署验证；t2 未被读取或修改，保留原 WI 恢复点。
+- REUSED_EXP=EXP-001,EXP-004,EXP-005,EXP-006,EXP-017,EXP-021,EXP-027,EXP-044,EXP-047,EXP-048,EXP-050,EXP-053,EXP-056,EXP-071,EXP-095,EXP-097,EXP-150,EXP-151,EXP-195,EXP-262
+- ERR1756_STATUS=OPEN_PENDING_FULL_REGRESSION_DEPLOYMENT_AND_T2_RESUME
+
+## EXP-264：受保护配置必须有受控 producer，拒绝后不得更换写入通道
+
+项目配置、Work Item 产物和正式规格必须分别由声明 owner 的受控 Tool 写入。Write Guard 或受控 Tool 拒绝后，只能修正状态、参数或架构能力；不得改用 General Task、原生 Write/Edit、shell 或辅助脚本完成同一写入。配置路径、Tool 枚举、安装注册表、Agent 指令和回归测试必须作为同一消费者矩阵修改。
+
+## EXP-265：Candidate seal 必须同时冻结 Candidate 内容及其分类和影响基础
+
+Candidate 进入 sealed 状态后，Candidate 文件、manifest、change classification、impact analysis 和 trigger result 必须共同不可变。若 seal 后发现基础事实错误，应经合法 blocked/recovery 路径回到 candidate_preparing，重新生成并封存；不得调用调用者已知必败的 Gate 只为制造恢复状态。
+
+## EXP-266：分类 producer、wrapper、schema、路由和 greenfield 语义必须使用同一字段集合
+
+变更分类的必需字段必须在 Agent 提示、公开 Tool schema、Runtime validator、artifact schema、路由和测试中完全一致。从缺失或占位状态建立首份正式架构、设计、数据模型或模块契约属于对应语义变化，不能因为目标文件尚不存在而填 false。
+
+## EXP-267：专业 Agent 成功必须以 owner-bound 持久化 handoff 为完成条件
+
+专业 Agent 的聊天摘要或空返回不能证明阶段完成。每次成功执行必须通过受控 Tool 持久化包含 inputs、outputs、findings、unknowns、escalations、next step 和 boundary 的 handoff，并验证 work_item_id 与调用 Agent owner；Orchestrator 必须核验本次新记录，缺失时有限重试后阻断。
+
+## EXP-268：路径范围判断与文件身份必须由 producer 和 consumer 共享
+
+Impact Scope、Task、Gate 和 Code Permission 必须共享精确文件、目录前缀与 glob 的覆盖语义，诊断文案必须描述真实谓词。文件快照去重必须使用目标平台解析后的路径身份；Windows 上大小写别名不能形成两个输入或两份证据。
+
+## ERR-1757：本轮验证首次使用不可用 Bun/tsc 载体并从错误 Vitest 根目录收集零测试
+
+- **发生时间**：2026-10-07
+- **分类**：`TEST_INVOCATION_ERROR / EXECUTION_ENVIRONMENT_LIMITATION / ZERO_TEST_EXECUTION`。
+- **事实证据**：首次 `bun --cwd ...` 因 Bun 不在 PATH 失败；随后假设 npm 风格 `tsc.cmd` 存在也失败；改用仓库真实 `.bin/tsc.exe` 后编译通过。第一次从仓库根以包内路径调用 Vitest 被根配置过滤，返回 `No test files found`；切换到 `packages/daemon-core` 和包内 `vitest.exe` 后真实收集 5 文件 31 项并全部通过。另一次预期无匹配的 `rg` 未显式处理 exit 1。
+- **影响与根因**：没有产品文件之外的副作用，但延迟验证；根因是没有先核对当前 Windows 安装的可执行文件扩展名、Vitest include 与工作目录，并再次把无匹配 exit 1 当作命令错误。
+- **纠正与防复发**：后续验证固定使用仓库实际 `.exe`，从 owning package 工作目录启动包测试并检查收集数；负向 `rg` 显式处理 exit 1。首次非零与零测试结果保留，不计入 PASS。
+- REUSED_EXP=EXP-002,EXP-007,EXP-008,EXP-011,EXP-016,EXP-033,EXP-065,EXP-087
+- ERR1757_STATUS=CLOSED_BY_REAL_EXECUTABLE_PACKAGE_CWD_AND_NONZERO_TEST_COLLECTION
+
+## ERR-1758：治理闭环首次全量回归暴露旧测试夹具合同漂移和配置保护遗漏
+
+- **发生时间**：2026-10-07
+- **分类**：`REGRESSION_FIXTURE_CONTRACT_DRIFT / TEST_REVEALED_RUNTIME_GAP`。
+- **事实证据**：定向合同测试首次发现 `sf-safe-bash` 尚未把 `.specforge/config/**` 纳入受保护路径，修正后拒绝写入同时进入 write-guard 与 shell-history。daemon-core 首次全量回归另有 5 项失败：四项 Work Item 创建夹具仍使用缺少新增必填字段或把 greenfield 架构、数据模型、设计、模块契约分类为 false 的旧输入；一项 Candidate 基础产物夹具在没有权威状态时写 `trigger_result.json`。生产约束未被削弱；夹具改为十一字段 greenfield 真值和合法 `impact_analyzing` 状态后，相关 2 文件 39/39、daemon-core 全量回归均通过。
+- **影响与根因**：配置目录一度可以被 shell 绕过保护；旧夹具也无法验证新的 producer/schema/状态合同。根因是首次实现没有把受保护配置加入现有 shell 路径集合，且测试数据未同步到新合同。
+- **纠正与防复发**：受控配置路径必须同时进入 Tool owner、Write Guard、shell-history 与测试；新增必填分类或状态门禁时，必须更新所有成功路径夹具，失败路径仍保留非法输入，不得为兼容旧夹具放宽生产约束。
+- REUSED_EXP=EXP-002,EXP-005,EXP-006,EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-087,EXP-195,EXP-264,EXP-265,EXP-266
+- ERR1758_STATUS=CLOSED_BY_RUNTIME_PROTECTION_FIXTURE_REALIGNMENT_AND_FULL_DAEMON_REGRESSION
+
+## ERR-1759：首次全工作区回归的 scope-gate 瞬时非零与隔离命令路径误写
+
+- **发生时间**：2026-10-07
+- **分类**：`TRANSIENT_VALIDATION_FAILURE / TEST_INVOCATION_ERROR`。
+- **事实证据**：首次官方 `bun run test` 的根级 60 文件 771/771 通过，但顺序 workspace 阶段最终报告唯一失败包 `@specforge/scope-gate(exit=1)`；随即从该包真实工作目录隔离重跑为 30 文件 134/134、exit 0，第二次完整官方 `bun run test` 也为 exit 0。隔离命令前置的 `Get-Content packages/scope-gate/package.json` 因工作目录已在该包内而路径重复，产生无关的 path-not-found；测试命令本身仍完整运行并返回数字 0。
+- **影响与根因**：首次完整运行不能计为 PASS，但没有形成稳定产品回归；现有证据支持 Windows 顺序负载下的瞬时时序波动，不足以定位到本次治理代码。路径错误源于把仓库根相对路径用于包工作目录。
+- **纠正与防复发**：保留首次非零，不用隔离绿色覆盖历史；以相同官方入口完整重跑并取得 exit 0。组合只读取证与测试时，路径必须相对实际 workdir，且分别报告每个子命令结果。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-032,EXP-033,EXP-065,EXP-087
+- ERR1759_STATUS=CLOSED_BY_ISOLATED_134_OF_134_AND_COMPLETE_OFFICIAL_RERUN_EXIT_ZERO
+
+## ERR-1760：两个正式发布脚本对 candidate-id 参数采用相反语法
+
+- **发生时间**：2026-10-07
+- **分类**：`RELEASE_CLI_CONTRACT_INCONSISTENCY / TEST_INVOCATION_ERROR`。
+- **事实证据**：`build-release-manifest.ts --candidate-id=codex-t2-pilot-recovery-a01` 返回 `RELEASE_CANDIDATE_ID_REQUIRED`，改为分离参数后成功；`run-current-release-precheck.ts --candidate-id codex-t2-pilot-recovery-a01` 又返回 `CURRENT_RELEASE_PRECHECK_CANDIDATE_ID_REQUIRED`，源码确认它只解析等号形式，改用等号后 precheck passed、producerErrors/inventoryErrors 均为空。
+- **影响与根因**：两次入口校验失败均未生成错误 Candidate 或安装写入，但发布操作容易因记忆另一脚本语法而产生非零。根因是两个相邻正式脚本没有共享 option parser 和参数合同。
+- **纠正与防复发**：保留两次失败；两个入口改用同一 `readCliOption`，同时接受分离与等号语法，并在当前产品版本合同测试中覆盖两种形式及缺值拒绝。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-032,EXP-033,EXP-087
+- ERR1760_STATUS=CLOSED_BY_SHARED_OPTION_PARSER_DUAL_SYNTAX_CONTRACT_TEST_AND_RELEASE_PRECHECK
+
+## ERR-1761：提交前 Bootstrap 首次因沙箱网络不可达而阻断远端核验
+
+- **发生时间**：2026-10-07
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / REMOTE_EVIDENCE_GAP`。
+- **事实证据**：提交前只读 Bootstrap 首次返回 `BOOTSTRAP_STATUS=BLOCKED`、`REMOTE_HEAD=NOT_CHECKED`，GitHub 443 连接失败；相同命令获准联网重跑后返回 `BOOTSTRAP_STATUS=READY`、`ISSUES=NONE`，本地与远端 main 均为 `d01aea1d...`，dirty worktree 仅为已审查的当前修复。
+- **影响与根因**：首次输出不能完成远端漂移门禁，但没有仓库写入，也不证明远端或代码异常；根因是默认沙箱网络限制。
+- **纠正与防复发**：保留首次阻断，联网只读重跑取得完整 READY；提交、合并和推送前仍以最新远端 ref 和 Git 状态复核为准。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-082,EXP-113
+- ERR1761_STATUS=CLOSED_BY_NETWORK_ENABLED_BOOTSTRAP_READY_AND_LOCAL_REMOTE_ALIGNMENT

@@ -482,6 +482,27 @@ function globToRegex(pattern: string): RegExp {
   return new RegExp(`${expression}$`);
 }
 
+export function isTaskPathCoveredByImpactScope(
+  taskPath: string,
+  plannedCodePaths: readonly string[],
+): { covered: boolean; matchedPattern: string | null } {
+  const normalizedTask = slash(String(taskPath ?? '')).replace(/^\.\//, '').replace(/^\/+/, '');
+  if (!normalizedTask || normalizedTask.split('/').includes('..')) {
+    return { covered: false, matchedPattern: null };
+  }
+  for (const rawPattern of plannedCodePaths) {
+    const normalizedPattern = slash(String(rawPattern ?? '')).replace(/^\.\//, '').replace(/^\/+/, '');
+    if (!normalizedPattern || normalizedPattern.split('/').includes('..')) continue;
+    const covered = normalizedPattern.endsWith('/')
+      ? normalizedTask.startsWith(normalizedPattern)
+      : /[*?]/.test(normalizedPattern)
+        ? globToRegex(normalizedPattern).test(normalizedTask)
+        : normalizedTask === normalizedPattern;
+    if (covered) return { covered: true, matchedPattern: rawPattern };
+  }
+  return { covered: false, matchedPattern: null };
+}
+
 export function resolveModuleOwnershipFromManifest(manifest: any, filePath: string): string[] {
   const relative = slash(filePath).replace(/^\/+/, '');
   const owners: string[] = [];
@@ -1245,13 +1266,17 @@ export async function checkProjectGovernanceConsistency(input: {
       );
       for (const taskPath of taskScope.allowed_write_files) {
         const checkKey = digest(`${taskScope.task_id}:${taskPath}`).slice(0, 8);
-        const approvedByImpact = impactScope.planned_code_paths.includes(taskPath);
+        const impactCoverage = isTaskPathCoveredByImpactScope(
+          taskPath,
+          impactScope.planned_code_paths,
+        );
+        const approvedByImpact = impactCoverage.covered;
         addCheck(
           checks,
           `task_write_impact_${checkKey}`,
-          `Task ${taskScope.task_id} write path is inside approved Impact Scope: ${taskPath}`,
+          `Task ${taskScope.task_id} write path must be covered by approved Impact Scope: ${taskPath}`,
           approvedByImpact,
-          `planned=${approvedByImpact}`,
+          `covered=${approvedByImpact}; matched_pattern=${impactCoverage.matchedPattern ?? 'none'}`,
         );
         const owners = resolveModuleOwnershipFromManifest(model.manifest, taskPath);
         const approvedCrossModuleTestHarness =

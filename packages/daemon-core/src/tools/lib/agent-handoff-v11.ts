@@ -14,9 +14,10 @@
  * 本模块提供 handoff schema 校验和写入功能。
  */
 
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 
 // ── Types ──
 
@@ -75,6 +76,18 @@ const HANDOFF_REQUIRED_FIELDS: (keyof AgentHandoff)[] = [
   'next_step_recommendation',
   'boundary_statement',
 ];
+const ESCALATION_TYPES = new Set([
+  'missing_spec', 'conflict', 'out_of_scope', 'permission_denied',
+  'path_violation', 'unknown_change', 'unsafe_operation', 'other',
+]);
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function safeFilenameSegment(value: string): string {
+  return value.trim().toLowerCase().replace(/[^a-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '');
+}
 
 // ── Validation ──
 
@@ -120,9 +133,19 @@ export function validateHandoff(handoff: unknown): HandoffValidationResult {
     'next_step_recommendation', 'boundary_statement',
   ];
   for (const field of stringFields) {
-    if (field in obj && typeof obj[field] !== 'string') {
-      errors.push(`Field ${field} must be a string`);
+    if (field in obj && !isNonEmptyString(obj[field])) {
+      errors.push(`Field ${field} must be a non-empty string`);
     }
+  }
+
+  for (const field of ['inputs_read', 'outputs_written', 'findings', 'unknowns'] as const) {
+    if (Array.isArray(obj[field]) && obj[field].some(value => !isNonEmptyString(value))) {
+      errors.push(`Field ${field} must contain only non-empty strings`);
+    }
+  }
+
+  if (isNonEmptyString(obj.timestamp) && Number.isNaN(Date.parse(obj.timestamp))) {
+    errors.push('Field timestamp must be a valid ISO-8601 timestamp');
   }
 
   // Validate schema_version
@@ -137,10 +160,10 @@ export function validateHandoff(handoff: unknown): HandoffValidationResult {
       if (!sig || typeof sig !== 'object') {
         errors.push(`escalation_signals[${i}] must be an object`);
       } else {
-        if (!sig.type) {
+        if (!isNonEmptyString(sig.type) || !ESCALATION_TYPES.has(sig.type)) {
           errors.push(`escalation_signals[${i}].type is required`);
         }
-        if (!sig.description) {
+        if (!isNonEmptyString(sig.description)) {
           errors.push(`escalation_signals[${i}].description is required`);
         }
       }
@@ -171,11 +194,22 @@ export async function writeHandoff(
   const handoffDir = join(wiDir, 'handoffs');
   await mkdir(handoffDir, { recursive: true });
 
-  const filename = `handoff_${handoff.agent}_${handoff.stage}_${Date.now()}.json`;
-  const filePath = join(handoffDir, filename);
-
-  await writeFile(filePath, JSON.stringify(handoff, null, 2) + '\n', 'utf-8');
-  return filePath;
+  const content = JSON.stringify(handoff, null, 2) + '\n';
+  const digest = createHash('sha256').update(content).digest('hex').slice(0, 12);
+  const agent = safeFilenameSegment(handoff.agent);
+  const stage = safeFilenameSegment(handoff.stage);
+  if (!agent || !stage) throw new Error('HANDOFF_FILENAME_SEGMENT_INVALID');
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    const filename = `handoff_${agent}_${stage}_${Date.now()}_${digest}_${attempt}.json`;
+    const filePath = join(handoffDir, filename);
+    try {
+      await writeFile(filePath, content, { encoding: 'utf-8', flag: 'wx' });
+      return filePath;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
+    }
+  }
+  throw new Error('HANDOFF_WRITE_COLLISION');
 }
 
 /**
@@ -183,20 +217,40 @@ export async function writeHandoff(
  */
 export async function validateAllHandoffs(
   wiDir: string,
-): Promise<{ total: number; valid: number; invalid: number; errors: string[] }> {
+  filters: { expectedAgent?: string; expectedStage?: string; createdAfter?: string } = {},
+): Promise<{
+  total: number;
+  valid: number;
+  invalid: number;
+  matching: number;
+  records: Array<{
+    file: string;
+    valid: boolean;
+    agent?: string;
+    stage?: string;
+    timestamp?: string;
+    work_item_id?: string;
+  }>;
+  errors: string[];
+}> {
   const handoffDir = join(wiDir, 'handoffs');
   if (!existsSync(handoffDir)) {
-    return { total: 0, valid: 0, invalid: 0, errors: [] };
+    return { total: 0, valid: 0, invalid: 0, matching: 0, records: [], errors: [] };
   }
 
-  const entries = await readFile(join(handoffDir, '..'), 'utf-8').catch(() => '');
-  // Simple approach: read handoff dir
-  const { readdir } = await import('node:fs/promises');
   const files = await readdir(handoffDir);
 
   let valid = 0;
   let invalid = 0;
   const allErrors: string[] = [];
+  const records: Array<{
+    file: string;
+    valid: boolean;
+    agent?: string;
+    stage?: string;
+    timestamp?: string;
+    work_item_id?: string;
+  }> = [];
 
   for (const file of files) {
     if (!file.endsWith('.json')) continue;
@@ -204,6 +258,14 @@ export async function validateAllHandoffs(
       const raw = await readFile(join(handoffDir, file), 'utf-8');
       const parsed = JSON.parse(raw);
       const result = validateHandoff(parsed);
+      records.push({
+        file,
+        valid: result.valid,
+        agent: parsed?.agent,
+        stage: parsed?.stage,
+        timestamp: parsed?.timestamp,
+        work_item_id: parsed?.work_item_id,
+      });
       if (result.valid) {
         valid++;
       } else {
@@ -212,9 +274,26 @@ export async function validateAllHandoffs(
       }
     } catch (err: any) {
       invalid++;
+      records.push({ file, valid: false });
       allErrors.push(`${file}: parse error: ${err.message}`);
     }
   }
 
-  return { total: valid + invalid, valid, invalid, errors: allErrors };
+  const createdAfterMs = filters.createdAfter ? Date.parse(filters.createdAfter) : Number.NaN;
+  const matching = records.filter(record => {
+    if (!record.valid) return false;
+    if (
+      filters.expectedAgent &&
+      String(record.agent ?? '').trim().toLowerCase().replace(/_/g, '-') !== filters.expectedAgent
+    ) return false;
+    if (filters.expectedStage && record.stage !== filters.expectedStage) return false;
+    if (filters.createdAfter) {
+      const timestampMs = Date.parse(String(record.timestamp ?? ''));
+      if (Number.isNaN(createdAfterMs) || Number.isNaN(timestampMs) || timestampMs < createdAfterMs) {
+        return false;
+      }
+    }
+    return true;
+  }).length;
+  return { total: valid + invalid, valid, invalid, matching, records, errors: allErrors };
 }

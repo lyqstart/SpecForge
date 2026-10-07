@@ -86,9 +86,36 @@ describe('Candidate / approval / state governance', () => {
     }
     expect(isCandidateFrozenState('candidate_preparing')).toBe(false);
     expect(isCandidateFrozenState('gates_failed')).toBe(false);
+    expect(isCandidateFrozenState('blocked')).toBe(true);
+    expect(isCandidateFrozenState('closed')).toBe(true);
     expect(isCandidateGovernancePath('candidates/project/requirements.md')).toBe(true);
     expect(isCandidateGovernancePath('candidate_manifest.json')).toBe(true);
     expect(isCandidateGovernancePath('gate_summary.md')).toBe(true);
+  });
+
+  it('freezes Candidate basis after seal instead of allowing Gate-driven routing', async () => {
+    currentState = 'candidate_prepared';
+    const workItemId = 'WI-9898';
+    const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
+    await writeJson(path.join(workItemDir, 'work_item.json'), {
+      schema_version: '1.1',
+      work_item_id: workItemId,
+      workflow_type: 'feature_spec',
+      workflow_path: 'requirement_change_path',
+    });
+    const original = JSON.stringify({ sealed: true }) + '\n';
+    await fs.writeFile(path.join(workItemDir, 'trigger_result.json'), original, 'utf-8');
+
+    const result = await invoke('sf_artifact_write', {
+      work_item_id: workItemId,
+      file_type: 'trigger_result',
+      content: JSON.stringify({ sealed: false }),
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe('CANDIDATE_BASIS_FROZEN');
+    expect(result.current_state).toBe('candidate_prepared');
+    expect(await fs.readFile(path.join(workItemDir, 'trigger_result.json'), 'utf-8')).toBe(original);
   });
 
   it('rejects an unknown Candidate Manifest schema without writing it', async () => {

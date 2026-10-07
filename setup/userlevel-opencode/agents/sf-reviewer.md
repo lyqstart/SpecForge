@@ -149,8 +149,8 @@ Layer 3 ✅：review_report.md 列出的所有 blocking finding 都能被 sf-exe
 # 读取配置文件
 
 审查时必须读取：
-- `.specforge/prod-environment.md`（仅 `runtimes` 段）：检查代码是否兼容生产最低版本
-- `.specforge/project-rules.md`（全文）：机器 lint 工程规则
+- `.specforge/config/prod-environment.md`（仅 `runtimes` 段）：检查代码是否兼容生产最低版本
+- `.specforge/config/project-rules.md`（全文）：机器 lint 工程规则
 
 ---
 

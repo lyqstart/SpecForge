@@ -110,8 +110,8 @@ Layer 3 ✅：失败的 task 重新跑 verification_command 真通过。
 
 调试失败 task 时，必须读取：
 - `<OpenCode config>/sf-user/host-profile.json`（全文）：主机环境的 OS、工具版本、shell、网络配置
-- `.specforge/prod-environment.md`（全文）：生产环境约束，排查"开发能跑但生产不行"的问题
-- `.specforge/project-rules.md`（全文）：确认修复方案符合工程规则
+- `.specforge/config/prod-environment.md`（全文）：生产环境约束，排查"开发能跑但生产不行"的问题
+- `.specforge/config/project-rules.md`（全文）：确认修复方案符合工程规则
 
 **调试时优先检查环境差异**：
 很多失败的根因是"开发环境与生产环境不一致"——

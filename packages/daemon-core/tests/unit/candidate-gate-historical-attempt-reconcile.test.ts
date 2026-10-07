@@ -71,6 +71,21 @@ describe('Gate Attempt project-root input snapshot semantics', () => {
     ]);
   });
 
+  it('deduplicates case-only path aliases with Windows filesystem identity', async () => {
+    const projectRoot = await mkdtemp(join(tmpdir(), 'specforge-project-root-win-id-'));
+    roots.push(projectRoot);
+    const snapshot = await buildGateAttemptInputSnapshot(
+      projectRoot,
+      [report([
+        '.specforge/project/modules/CORE/design.md',
+        '.specforge/project/modules/core/design.md',
+      ])],
+      'win32',
+    );
+    expect(snapshot).toHaveLength(1);
+    expect(snapshot[0]?.path).toBe('.specforge/project/modules/CORE/design.md');
+  });
+
   it('wires attempt finalization to projectRoot-aware snapshot capture', async () => {
     const repoRoot = join(import.meta.dirname, '../../../..');
     const chain = await readFile(

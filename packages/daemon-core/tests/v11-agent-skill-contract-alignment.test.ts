@@ -179,6 +179,9 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
 
   it('keeps professional Candidate writers on controlled Tools and Runtime-owned Manifest materialization', () => {
     const design = read('setup/userlevel-opencode/agents/sf-design.md');
+    const requirements = read('setup/userlevel-opencode/agents/sf-requirements.md');
+    const taskPlanner = read('setup/userlevel-opencode/agents/sf-task-planner.md');
+    const orchestrator = read('setup/userlevel-opencode/agents/sf-orchestrator.md');
     const featureSkill = read(
       'setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md'
     );
@@ -191,6 +194,10 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
     expect(featureSkill).not.toContain(
       '主编排代理在正确阶段通过受控写入形成 candidate_manifest.json'
     );
+    for (const professional of [requirements, design, taskPlanner]) {
+      expect(professional).toContain('sf_handoff(action=write)');
+    }
+    expect(orchestrator).toContain('sf_handoff(action=validate_all, expected_agent=');
   });
 
   it('keeps sf-orchestrator on read-only evidence tools in restricted states', () => {
@@ -226,6 +233,11 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
 
     const closeWrapper = read('setup/userlevel-opencode/tools/sf_close_gate.ts');
     expect(closeWrapper).toContain('work_item_id');
+
+    const handoffWrapper = read('setup/userlevel-opencode/tools/sf_handoff.ts');
+    expect(handoffWrapper).toContain('daemon.invokeTool("sf_handoff"');
+    expect(handoffWrapper).toContain('"write"');
+    expect(handoffWrapper).toContain('"validate_all"');
   });
 
   it('keeps daemon handlers aligned with the contract-enforced workflow', () => {
