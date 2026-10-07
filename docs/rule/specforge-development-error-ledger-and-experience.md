@@ -30826,3 +30826,15 @@ Impact Scope、Task、Gate 和 Code Permission 必须共享精确文件、目录
 - **纠正与防复发**：保留首次阻断，联网只读重跑取得完整 READY；提交、合并和推送前仍以最新远端 ref 和 Git 状态复核为准。
 - REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-082,EXP-113
 - ERR1761_STATUS=CLOSED_BY_NETWORK_ENABLED_BOOTSTRAP_READY_AND_LOCAL_REMOTE_ALIGNMENT
+
+- ERR1756_STATUS=CLOSED_BY_FULL_REGRESSION_RELEASE_PRECHECK_MAIN_PUSH_111_FILE_INSTALL_VERIFY_AND_DAEMON_HEALTH
+
+## ERR-1762：提交后工作副本行尾规范化使提交前 release manifest 哈希失效
+
+- **发生时间**：2026-10-07
+- **分类**：`RELEASE_ARTIFACT_PHYSICAL_HASH_DRIFT / SAFE_INSTALL_ABORT`。
+- **事实证据**：`f6537ce1` 推送后首次用户级 `upgrade` 在写入前返回 `E_SOURCE_MISSING`，精确列出 9 个 Agent/Skill Markdown hash mismatch；Git 在暂存/切换 main 时已按 Windows 配置把这些工作副本规范化为 CRLF，而忽略型 release manifest 仍绑定提交前 LF 物理字节。安装器明确报告未写入任何文件。基于 main 当前物理字节重新生成 candidate `main-f6537ce1-deploy` 后，release precheck 通过；重试升级更新 14 个文件、跳过 97 个，installer verify 确认 111 个文件完整；新版 daemon PID 30460 从用户级 `specforged.exe` 启动，CLI 与 healthz 均为 1.0.5。
+- **影响与根因**：daemon 已按计划停止，首次升级安全中止，用户级安装未进入部分写状态；根因是发布清单在最终 Git 行尾转换前生成，物理哈希的生成时点早于最终部署工作副本。
+- **纠正与防复发**：release manifest 必须在最终 checkout/merge 后从将被安装的实际工作副本生成并再次 precheck；安装器 hash mismatch 必须保持写前失败，不得用 `--force` 绕过。命令检索中另有两次 `rg` 模式转义错误，均无写入且不作为部署证据。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-021,EXP-032,EXP-033,EXP-087,EXP-151
+- ERR1762_STATUS=CLOSED_BY_POST_CHECKOUT_MANIFEST_REBUILD_PRECHECK_ATOMIC_UPGRADE_VERIFY_AND_HEALTH
