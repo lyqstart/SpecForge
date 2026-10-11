@@ -20,7 +20,18 @@ describe('ERR-167 daemon startup README contract', () => {
     expect(rootReadme).toContain('specforge daemon start --detach');
     expect(rootReadme).toContain('specforge daemon status');
     expect(rootReadme).toContain('specforge daemon stop');
+    expect(rootReadme).toContain('安装器不静默修改用户 PATH');
     expect(daemonReadme).not.toContain('bun run src/index.ts --detach');
+  });
+
+  it('documents one-time PATH setup instead of requiring absolute lifecycle commands', () => {
+    const installGuide = readRepo('docs/cli/installation-setup.md');
+    const userInstall = readRepo('docs/user/install.md');
+
+    expect(installGuide).toContain("[Environment]::SetEnvironmentVariable('Path'");
+    expect(installGuide).toContain('日常操作统一使用 `specforge`');
+    expect(userInstall).toContain('安装器不会静默修改用户 PATH');
+    expect(userInstall).toContain('specforge daemon restart');
   });
 
   it('documents CLI daemon lifecycle commands as supported deployment entrypoints', () => {

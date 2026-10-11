@@ -2,6 +2,8 @@
 
 > Role: DERIVED OPERATING DOCUMENTATION。
 
+首次安装后若 shell 尚不能解析 `specforge`，先执行 Installer 成功回执给出的一次性 PATH 配置命令；不要把绝对路径当作日常启动方式。
+
 ```bash
 specforge daemon start --detach
 specforge daemon status

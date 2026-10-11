@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.5
+> Product release version: 1.0.6
 >
 > Product version epoch: 1
 >
@@ -713,6 +713,8 @@ Installer 必须：
 - 支持 install / upgrade / verify / uninstall 的清晰边界。
 - 升级使用原子替换或等价不会留下半安装状态的机制。
 - 不创建 ~/.specforge 当前运行树。
+- 安装和升级成功回执必须显示 CLI 二进制目录，并判断当前 shell 能否直接解析 `specforge`；不可解析时必须给出可复制、幂等的一次性 PATH 配置命令。
+- PATH 是用户拥有的环境状态，不属于文件安装事务；Installer 不得静默改写 PATH。用户明确执行配置命令后，正常操作入口必须是短命令 `specforge`，不得要求日常记忆绝对路径。
 
 ## 12.2 安装完整性与版本
 
@@ -731,6 +733,8 @@ Service Management 负责部署层 Daemon/service lifecycle、health check、gra
 它不得让 Thin Plugin 获得共享 Daemon lifecycle ownership。
 
 当前 Service Management 的 OS service lifecycle 范围仅为 Linux `systemd --user`。Windows 上的直接 Daemon 进程启动不等同于 Windows 系统服务管理；当前产品不集成、下载、分发或要求 NSSM。
+
+正式 CLI 生命周期入口为 `specforge daemon start --detach`、`specforge daemon status`、`specforge daemon restart` 和 `specforge daemon stop`。CLI 未进入 PATH 时，安装成功回执与派生安装文档负责提供一次性环境配置；Thin Plugin 仍不得代替 CLI 或 service manager 管理 Daemon。
 
 ## 13.2 Host Profile
 

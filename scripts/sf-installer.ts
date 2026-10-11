@@ -28,6 +28,7 @@ import {
 } from "./lib/release-manifest-producer"
 import { loadProductIdentity } from "./lib/product-identity"
 import { posixToNative } from "./lib/paths"
+import { buildCommandPathGuidance } from "./lib/command-path"
 import type { CLIOptions, UserLevelManifest } from "./lib/types"
 import {
   beginUpgradeJournal,
@@ -185,6 +186,9 @@ function showSuccessSummary(fileCount: number, userLevelDir: string, action: "�
   console.log(`✅ ${action}完成`)
   console.log(`   已部署: ${fileCount} 个共享组件文件`)
   console.log(`   OpenCode 配置根: ${userLevelDir}`)
+  for (const line of buildCommandPathGuidance(userLevelDir)) {
+    console.log(line)
+  }
   console.log(`   提示: 需要重启 OpenCode 才能加载新版 Plugin`)
 }
 

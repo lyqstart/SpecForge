@@ -31264,3 +31264,25 @@ Product Specification 只保存稳定产品规则；Authority Registry 登记每
 - **纠正与防复发**：所有需要写 `.git` 的 add/commit/merge 操作使用已批准的 Git 权限通道；失败输出与有效重跑分别保留，不得把失败命令报告为已暂存。
 - REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-021,EXP-032,EXP-033,EXP-044,EXP-065,EXP-087,EXP-195,EXP-263
 - ERR1797_STATUS=CLOSED_BY_AUTHORIZED_IDENTICAL_GIT_ADD_EXIT_ZERO
+
+### ERR-1798：安装产物存在但 CLI 目录未进入 PATH，派生文档把可发现性责任留给用户猜测
+
+- **发生时间**：2026-10-11
+- **分类**：`INSTALLER_COMMAND_DISCOVERABILITY_CONTRACT_GAP / DERIVED_OPERATING_DOCUMENTATION_GAP`。
+- **事实证据**：远端 `main@4a89df8f3ff697ba90c80837e58ec97aecb394f2` 交付后的只读部署核验确认 `C:\Users\lyq\.config\opencode\sf-user\bin\specforge.exe` 与 `specforged.exe` 均存在，handshake 也证明 1.0.5 daemon 正在运行；但 `Get-Command specforge`、当前进程 PATH 与 Windows 用户 PATH 均不包含该 bin 目录。当前 `docs/cli/installation-setup.md` 只要求用户“确认是否在 PATH”，Installer 成功回执只提示重启 OpenCode，没有给出环境配置方法。
+- **直接证明范围**：`CONFIRMED` 为当前 Windows 安装结果不能通过短命令发现 CLI，且安装器/派生文档没有完成最后一步；这不证明二进制、daemon 或安装 Manifest 损坏。
+- **架构归属**：首次偏离位于 `Installer / Distribution → Derived Operating Documentation`。Daemon lifecycle owner、Thin Plugin 禁止自动启动和 NSSM 退出决定均不变。
+- **纠正与防复发**：SPS 与 Authority Registry 增加 D13：安装/升级成功回执显示 CLI 目录并在当前 shell 不可发现时输出可复制、幂等的一次性 PATH 配置；Installer 不静默修改用户 PATH。增加独立 PATH 解析/提示模块、Windows/POSIX 单元测试和文档合同测试，真实部署再以短命令复核。
+- REUSED_EXP=EXP-001,EXP-004,EXP-007,EXP-017,EXP-021,EXP-023,EXP-025,EXP-026,EXP-032,EXP-033,EXP-040,EXP-044,EXP-060,EXP-087,EXP-098,EXP-103,EXP-195,EXP-218,EXP-227,EXP-241,EXP-251,EXP-252,EXP-254,EXP-259,EXP-261,EXP-276
+- **验证结果**：新增 PATH 模块与版本合同定向测试 11/11 通过，CLI help 16/16、daemon 文档合同 4/4 通过；正式 `bun run build` 与顺序全量 `bun run test` 均通过。真实 1.0.6 安装、用户 PATH 配置与 daemon 重启核验仍待发布阶段执行。
+- ERR1798_STATUS=VALIDATION_PASSED_RELEASE_DEPLOYMENT_PENDING
+
+### ERR-1799：1.0.6 定向验证同时暴露旧 tag 断言与无效 Bun package 启动语法
+
+- **发生时间**：2026-10-11
+- **分类**：`VERSION_TEST_CONSUMER_DRIFT / TEST_ENTRYPOINT_SYNTAX_ERROR`。
+- **事实证据**：根级定向测试真实收集 11 项，PATH 模块 5 项全部通过，版本合同 6 项中唯一失败仍期待 `specforge-v1.0.5`，实际按根版本正确生成 `specforge-v1.0.6`。另外两条 `bun --cwd <package> x vitest ...` 在测试收集前返回 `Script not found "x"`，不能形成 package 测试结论。
+- **纠正与防复发**：版本合同同步到 1.0.6；package 定向验证改用只读枚举后确认存在的 package-local Vitest 可执行入口。命令启动失败与产品断言失败分开保留，不把未执行测试报告为通过。
+- REUSED_EXP=EXP-002,EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-087,EXP-103,EXP-195,EXP-263
+- **验证结果**：更正入口后，CLI help 16/16 与 daemon 文档合同 4/4 均在真实 package-local Vitest 入口下通过；正式顺序全量测试也通过，证明旧 tag 断言和无效命令均已被有效验证替代。
+- ERR1799_STATUS=CLOSED_BY_VALID_ENTRYPOINT_AND_FULL_REGRESSION

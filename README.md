@@ -43,7 +43,7 @@ bun scripts/sf-installer.ts upgrade
 bun scripts/sf-installer.ts uninstall
 ```
 
-`npm -g`、`npx specforge init`、`~/.specforge` 和 NSSM 都不是当前安装合同。安装/升级后重启 OpenCode 以重新加载 Plugin。
+`npm -g`、`npx specforge init`、`~/.specforge` 和 NSSM 都不是当前安装合同。安装器不静默修改用户 PATH；若成功回执提示 `specforge` 尚不可用，先复制其中的一次性配置命令，详见 [CLI 安装与运行配置](docs/cli/installation-setup.md)。安装/升级后重启 OpenCode 以重新加载 Plugin。
 
 ## 启动与停止 daemon
 
