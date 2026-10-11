@@ -31276,6 +31276,8 @@ Product Specification 只保存稳定产品规则；Authority Registry 登记每
 - REUSED_EXP=EXP-001,EXP-004,EXP-007,EXP-017,EXP-021,EXP-023,EXP-025,EXP-026,EXP-032,EXP-033,EXP-040,EXP-044,EXP-060,EXP-087,EXP-098,EXP-103,EXP-195,EXP-218,EXP-227,EXP-241,EXP-251,EXP-252,EXP-254,EXP-259,EXP-261,EXP-276
 - **验证结果**：新增 PATH 模块与版本合同定向测试 11/11 通过，CLI help 16/16、daemon 文档合同 4/4 通过；正式 `bun run build` 与顺序全量 `bun run test` 均通过。真实 1.0.6 安装、用户 PATH 配置与 daemon 重启核验仍待发布阶段执行。
 - ERR1798_STATUS=VALIDATION_PASSED_RELEASE_DEPLOYMENT_PENDING
+- **发布终态**：`main@6915fa44c9c101c169799c28574d0ebb7dfcc10a` 已推送；final-main release precheck 通过；用户级安装升级为 1.0.6，111 个文件完整性校验通过；CLI bin 已幂等写入 Windows 用户 PATH；新 shell 语义下短命令解析到正式安装文件，`specforge --version` 为 1.0.6，daemon PID 存活、handshake 为 1.0.6、CLI/daemon 二进制哈希与发布物一致，`/api/v1/healthz` 返回 `status=ok`。
+- ERR1798_FINAL_STATUS=CLOSED_BY_RELEASE_1_0_6_USER_PATH_SHORT_COMMAND_AND_DAEMON_HEALTH_VERIFICATION
 
 ### ERR-1799：1.0.6 定向验证同时暴露旧 tag 断言与无效 Bun package 启动语法
 
@@ -31286,3 +31288,12 @@ Product Specification 只保存稳定产品规则；Authority Registry 登记每
 - REUSED_EXP=EXP-002,EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-087,EXP-103,EXP-195,EXP-263
 - **验证结果**：更正入口后，CLI help 16/16 与 daemon 文档合同 4/4 均在真实 package-local Vitest 入口下通过；正式顺序全量测试也通过，证明旧 tag 断言和无效命令均已被有效验证替代。
 - ERR1799_STATUS=CLOSED_BY_VALID_ENTRYPOINT_AND_FULL_REGRESSION
+
+### ERR-1800：独立 daemon 健康核验连续两次使用错误路由
+
+- **发生时间**：2026-10-11
+- **分类**：`READ_ONLY_VERIFICATION_ENDPOINT_ERROR / NO_STATE_MUTATION`。
+- **事实证据**：1.0.6 daemon 启动且 `specforge daemon status --json` 已返回 `status=ok` 后，首个独立探测错误请求 `GET /healthz`，收到 `UNAUTHORIZED`；第二个探测在同一错误路径增加认证头，收到 `Route GET /healthz not found`。两次命令均未修改仓库、安装文件、握手或 daemon 状态。
+- **根因与纠正**：执行前没有先核对 `HTTPServer` 与 Service Management 的现行路由合同，混淆了历史说明和当前 `/api/v1/healthz`。读取真实源码后，按公开端点 `GET /api/v1/healthz` 重跑，返回 1.0.6、同一存活 PID 与 `status=ok`；不得把前两次失败报告为健康通过。
+- REUSED_EXP=EXP-002,EXP-007,EXP-017,EXP-021,EXP-032,EXP-033,EXP-044,EXP-060,EXP-087,EXP-195,EXP-263
+- ERR1800_STATUS=CLOSED_BY_SOURCE_VERIFIED_PUBLIC_HEALTH_ENDPOINT
