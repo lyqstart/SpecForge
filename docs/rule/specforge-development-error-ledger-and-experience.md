@@ -31382,6 +31382,16 @@ Product Specification 只保存稳定产品规则；Authority Registry 登记每
 - ERR1806_FINAL_STATUS=CLOSED_BY_ROLE_REGISTRY_VALIDATION_AND_OFFICIAL_FULL_REGRESSION
 - ERR1807_FINAL_STATUS=CLOSED_BY_PLACEHOLDER_AWARE_ACTIVATION_T3_SHAPED_NEGATIVE_REGRESSION_AND_OFFICIAL_FULL_REGRESSION
 
+### ERR-1809：健康端点不可达但失联旧 daemon 仍持有二进制文件锁
+
+- **发生时间**：2026-10-12
+- **分类**：`STALE_DAEMON_PROCESS / WINDOWS_EXECUTABLE_LOCK / UPGRADE_TRANSACTION_RECOVERY`。
+- **事实证据**：1.0.7 首次升级前，已安装 CLI 的 `daemon status --json` 返回 `daemon_unreachable`；但安装器替换 `specforged.exe` 时收到 Windows `EPERM`，并因同一文件锁未能立即回滚。握手记录残留 PID 18956，端口 2927 无监听，普通进程查询没有返回该进程；Windows Restart Manager 对精确二进制路径确认锁持有者仍是 PID 18956、应用名 Bun。终止该失联精确 PID 后，安装器依据原 `upgrade_journal.json` 完成 `rolled_back`，两份二进制恢复为 1.0.6 原哈希；再次运行同一升级入口后成功提交 1.0.7，事务日志清除，111 个文件完整性校验通过。
+- **影响与根因**：`daemon_unreachable` 只证明客户端无法访问健康端点，不能证明 daemon 进程已经退出或 Windows 可执行文件已解锁；首次升级没有破坏安装一致性，但需要完成事务恢复后才能安全重试。
+- **纠正与防复发**：发布升级前必须同时确认 CLI 生命周期结果、握手 PID/端口与目标二进制锁状态；健康不可达且文件仍锁定时，只终止经一手锁归属证据确认的精确旧 PID。升级失败后必须由安装器恢复既有事务，复核旧哈希与 `rolled_back` 状态，再重新运行标准升级；不得删除事务日志、直接覆盖二进制或把部分升级报告为成功。
+- REUSED_EXP=EXP-001,EXP-002,EXP-007,EXP-011,EXP-016,EXP-021,EXP-032,EXP-033,EXP-044,EXP-060,EXP-087,EXP-195,EXP-218,EXP-263,EXP-277
+- ERR1809_STATUS=CLOSED_BY_RESTART_MANAGER_LOCK_ATTRIBUTION_EXACT_PID_TERMINATION_TRANSACTION_ROLLBACK_AND_RELEASE_1_0_7_RETRY
+
 ## EXP-277：正式治理声明失败、重复版本和 Formal Version 内容身份必须对称失败关闭
 
 是否进入 compatibility mode 必须依据“未声明正式治理”，不能依据“严格解析结果为空”；任何已经声明但非法或不完整的正式 Architecture、Data、Module 对象都必须在 Candidate、Code Permission、Verification/Formal Version 与 Close 的全部消费者中失败关闭。Project Spec Core 的重复版本字段必须由 Atomic Spec Merge 原子同步并由 Post-Merge、Formal Version、Close 对称复核。filesystem Formal Version 必须固定实际实现文件集合及逐字节内容指纹，Close 前重新取证；路径范围、mtime、历史 Gate 状态或业务测试绿色均不能替代内容身份。
