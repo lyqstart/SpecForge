@@ -71,6 +71,7 @@ import { evaluateVerificationGovernanceContract } from './verification-governanc
 import { extractStructuredVerificationReport } from './verification-report-contract.js';
 import {
   checkFormalVersionEligibility,
+  inspectProjectSpecCoreVersionCoherence,
   inspectProjectGovernanceContractConsumers,
 } from './project-governance-v2.js';
 import { specMigrationCandidateRequiresTraceDelta } from './spec-migration-trace-contract.js';
@@ -1462,15 +1463,26 @@ registerGate('post_merge_gate', 'hard_gate', true, async ctx => {
     details: mergeReportDetails,
   });
 
-  // 2. spec_manifest 已更新（检查 project 目录存在）
+  // 2. Project Spec Core exists and its duplicated version fields are coherent.
+  const projectDir = path.join(ctx.projectRoot, '.specforge', 'project');
+  const projectDirExists = await fs.stat(projectDir).then(stat => stat.isDirectory()).catch(() => false);
   checks.push({
     check_id: 'post_merge_project_dir',
     description: '.specforge/project/ directory exists',
-    passed: true, // 简化检查，实际需要比较 hash
+    passed: projectDirExists,
+  });
+
+  const coreVersion = await inspectProjectSpecCoreVersionCoherence(ctx.projectRoot);
+  checks.push({
+    check_id: 'post_merge_project_spec_core_version_coherent',
+    description: 'Project Spec Core files agree on the authoritative project_spec_version',
+    passed: coreVersion.passed,
+    details: coreVersion.reason,
   });
 
   return makeReport(ctx.workItemId, 'post_merge_gate', 'hard_gate', true, checks, [
     mergeReportPath,
+    ...coreVersion.input_files,
   ]);
 });
 

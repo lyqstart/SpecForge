@@ -50,6 +50,7 @@ const FOCUS_SAMPLES = [
   'EXP-274',
   'EXP-275',
   'EXP-276',
+  'EXP-277',
 ] as const;
 
 /** Split the active rules file into per-EXP sections keyed by heading line. */
@@ -79,18 +80,18 @@ describe('active development rules contract (AR-DEC-06) — structural integrity
   const content = read(activeRulesPath);
   const sections = sectionsOf(content);
 
-  it('covers every EXP rule id from EXP-001 to EXP-276 exactly once (no gaps, no duplicates)', () => {
+  it('covers every EXP rule id from EXP-001 to EXP-277 exactly once (no gaps, no duplicates)', () => {
     const ids = [...content.matchAll(/^## (EXP-\d+)/gm)].map((m) => m[1]);
     const unique = new Set(ids);
-    expect(unique.size).toBe(276);
+    expect(unique.size).toBe(277);
     expect(ids.length).toBe(unique.size);
-    for (let n = 1; n <= 276; n += 1) {
+    for (let n = 1; n <= 277; n += 1) {
       expect(unique.has(`EXP-${String(n).padStart(3, '0')}`)).toBe(true);
     }
   });
 
   it('every EXP section has non-empty semantic rule content (no empty/hollow rules)', () => {
-    expect(sections.size).toBe(276);
+    expect(sections.size).toBe(277);
     for (const [id, body] of sections) {
       const visible = body.replace(/<!--[\s\S]*?-->/g, '').replace(/[#\s*`>-]/g, '');
       expect(
@@ -102,7 +103,7 @@ describe('active development rules contract (AR-DEC-06) — structural integrity
 
   it('every EXP heading has a complete semantic title', () => {
     const headings = [...content.matchAll(/^## (EXP-\d+)(.*)$/gm)];
-    expect(headings).toHaveLength(276);
+    expect(headings).toHaveLength(277);
     for (const [, id, suffix] of headings) {
       expect(suffix, `${id} heading must have a semantic title`).toMatch(/^(?:：|\s+—\s+)\S/);
     }
@@ -143,7 +144,7 @@ describe('active development rules contract — semantic purity (FIX2)', () => {
     expect(content).not.toContain('P0_OVERALL_STATUS');
   });
 
-  it('migrated region (EXP-095..276) contains no UNRECORDED_FAILURES= runtime status', () => {
+  it('migrated region (EXP-095..277) contains no UNRECORDED_FAILURES= runtime status', () => {
     // part34 baseline EXP-060 keeps UNRECORDED_FAILURES=0 as rule-contract output template;
     // the migrated tail region must not carry any runtime occurrences.
     expect(migrated.match(/UNRECORDED_FAILURES\s*=/g) ?? []).toHaveLength(0);
@@ -219,7 +220,7 @@ describe('active development rules contract — Definition/Reference classificat
   it.each([...FOCUS_SAMPLES])('%s carries rule text with a selected-source comment', (id) => {
     const body = sections.get(id) ?? '';
     expect(body.length, `${id} section must exist`).toBeGreaterThan(0);
-    expect(body).toMatch(/<!-- source: ledger (?:view L\d+-\d+ format \w+(?: \(purity-filtered\))?|view 2026-10-11 EXP-276) -->/);
+    expect(body).toMatch(/<!-- source: ledger (?:view L\d+-\d+ format \w+(?: \(purity-filtered\))?|view 2026-10-11 EXP-276|current EXP-277) -->/);
   });
 });
 

@@ -60,7 +60,7 @@ async function createFixture(): Promise<{ projectRoot: string; workItemDir: stri
   );
   await write(
     path.join(projectDir, 'extension_registry.json'),
-    JSON.stringify({ schema_version: '1.0', contracts: {} }),
+    JSON.stringify({ schema_version: '1.0', project_spec_version: 'PSV-0002', contracts: {} }),
   );
   await write(
     path.join(projectDir, 'modules', 'DOMAIN', 'design.md'),
@@ -128,6 +128,61 @@ afterEach(async () => {
 });
 
 describe('greenfield code permission governance scope', () => {
+  test('rejects malformed formal governance IDs instead of falling back to compatibility mode', async () => {
+    const { projectRoot, workItemDir } = await createFixture();
+    const projectDir = path.join(projectRoot, '.specforge', 'project');
+    await write(path.join(projectDir, 'architecture.md'), '# Architecture\n\n### ARCH-0001 Invalid\n');
+    await write(path.join(projectDir, 'data_model.md'), '# Data Model\n\n### DATA-0001 Invalid\n');
+
+    const result = await freezeGovernanceScopeForCodePermission({
+      projectRoot,
+      workItemDir,
+      workItemId: 'WI-0002',
+      allowedWriteFiles: [{ path: 'src/domain/types.ts', operation: 'create' }],
+    });
+
+    expect(result.passed).toBe(false);
+    expect(result.error).toBe('INVALID_PROJECT_GOVERNANCE');
+    expect(result.snapshot.active).toBe(false);
+    expect(
+      result.checks.some(check => check.check_id === 'formal_governance_complete' && !check.passed),
+    ).toBe(true);
+  });
+
+  test('rejects malformed IDs even when the same formal governance files also contain valid IDs', async () => {
+    const { projectRoot, workItemDir } = await createFixture();
+    const projectDir = path.join(projectRoot, '.specforge', 'project');
+    await write(
+      path.join(projectDir, 'architecture.md'),
+      '# Architecture\n\nARCH-WD-001 is valid, but ARCH-0001 is not.\n',
+    );
+    await write(
+      path.join(projectDir, 'data_model.md'),
+      '# Data Model\n\nDATA-WD-001 is valid, but DATA-0001 is not.\n',
+    );
+    await write(
+      path.join(projectDir, 'modules', 'DOMAIN', 'design.md'),
+      '# Domain Design\n\nDD-DOMAIN-001 is valid, but DD-0001 is not.\n',
+    );
+
+    const result = await freezeGovernanceScopeForCodePermission({
+      projectRoot,
+      workItemDir,
+      workItemId: 'WI-0002',
+      allowedWriteFiles: [{ path: 'src/domain/types.ts', operation: 'create' }],
+    });
+
+    expect(result.snapshot.active).toBe(true);
+    expect(result.passed).toBe(false);
+    expect(result.checks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ check_id: 'architecture_id_format', passed: false }),
+        expect.objectContaining({ check_id: 'data_model_id_format', passed: false }),
+        expect.objectContaining({ check_id: 'module_design_id_format', passed: false }),
+      ]),
+    );
+  });
+
   test('derives merged architecture scope and permits an approved cross-module test harness', async () => {
     const { projectRoot, workItemDir } = await createFixture();
     const result = await freezeGovernanceScopeForCodePermission({
@@ -307,6 +362,7 @@ describe('greenfield code permission governance scope', () => {
       path.join(projectDir, 'extension_registry.json'),
       JSON.stringify({
         schema_version: '1.0',
+        project_spec_version: 'PSV-0002',
         contracts: {
           shared_enums: [
             {

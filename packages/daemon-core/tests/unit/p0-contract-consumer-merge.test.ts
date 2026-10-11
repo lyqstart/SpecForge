@@ -33,6 +33,11 @@ async function approvalArtifacts(root: string, wiDir: string, workItemId: string
     await writeJson(path.join(wiDir, 'gates', `${gate}.json`), { status: 'passed' });
   }
   await fs.mkdir(path.join(root, '.specforge', 'project'), { recursive: true });
+  await writeJson(path.join(root, '.specforge', 'project', 'extension_registry.json'), {
+    schema_version: '1.0',
+    project_spec_version: 'PSV-0001',
+    extensions: [],
+  });
 }
 
 describe('P0 Contract consumer atomic merge', () => {

@@ -33,6 +33,7 @@
         "tests/unit/installer/atomic.test.ts",
         "tests/unit/installer/canonicalize.test.ts",
         "tests/unit/installer/cli_args.test.ts",
+        "tests/unit/installer/command_path.test.ts",
         "tests/unit/installer/cmdInstall.test.ts",
         "tests/unit/installer/cmdVerify.test.ts",
         "tests/unit/installer/commit.test.ts",

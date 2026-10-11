@@ -1,17 +1,19 @@
 /**
- * Regression: a merged extension_registry.json must have its (duplicated)
- * project_spec_version synced to the authoritative spec_manifest version.
+ * Regression: extension_registry.json must have its duplicated
+ * project_spec_version synced on every Project Spec version increment, even
+ * when the registry itself is not a Candidate target.
  *
- * Before the fix, the entry merge copied the candidate verbatim (operation:
- * replace) and candidates carry the stale version they were authored from, so
- * spec_manifest advanced (e.g. PSV-0006) while the registry's own version field
- * stayed behind (e.g. PSV-0001) — a silent truth-source desync.
+ * Before the fix, the merge runner only synchronized the registry when it was
+ * one of the merged entries, so an unrelated Core change advanced
+ * spec_manifest while leaving the registry behind.
  */
 import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { executeMerge } from '../src/tools/lib/merge-runner-v11';
+import { runGate } from '../src/tools/lib/gate-report';
+import '../src/tools/lib/gate-runner-v11';
 
 async function writeJson(filePath: string, value: unknown): Promise<void> {
   await mkdir(dirname(filePath), { recursive: true });
@@ -19,7 +21,7 @@ async function writeJson(filePath: string, value: unknown): Promise<void> {
 }
 
 describe('merge runner — extension_registry.json version sync', () => {
-  it('syncs merged extension_registry.json project_spec_version to the new spec_manifest version', async () => {
+  it('syncs extension_registry.json when another Project Spec Core file is merged', async () => {
     const projectRoot = await mkdtemp(join(tmpdir(), 'sf-merge-registry-version-'));
     const workItemId = 'WI-0001';
     const workItemDir = join(projectRoot, '.specforge', 'work-items', workItemId);
@@ -60,28 +62,11 @@ describe('merge runner — extension_registry.json version sync', () => {
       contracts: { shared_enums: [], invariants: [], public_interfaces: [], extension_points: [] },
     });
 
-    // Candidate carries a STALE version (PSV-0001) + one new contract.
-    await writeJson(join(workItemDir, 'candidates', 'project', 'extension_registry.json'), {
-      schema_version: '1.0',
-      project_spec_version: 'PSV-0001',
-      namespaces: {
-        requirement_types: [],
-        design_types: [],
-        task_types: [],
-        verification_types: [],
-        gate_types: [],
-      },
-      updated_by_work_item: workItemId,
-      updated_at: new Date().toISOString(),
-      contracts: {
-        shared_enums: [
-          { id: 'GpsStatus', owner_module: 'CORE', values: ['success', 'denied'], description: 'x' },
-        ],
-        invariants: [],
-        public_interfaces: [],
-        extension_points: [],
-      },
-    });
+    await writeFile(
+      join(workItemDir, 'candidates', 'project', 'requirements_index.md'),
+      '# Requirements Index\n\n- REQ-CORE-001\n',
+      'utf8',
+    );
 
     await writeJson(join(workItemDir, 'candidate_manifest.json'), {
       schema_version: '1.0',
@@ -91,10 +76,10 @@ describe('merge runner — extension_registry.json version sync', () => {
       merge_required: true,
       entries: [
         {
-          candidate_path: 'candidates/project/extension_registry.json',
-          target_path: '.specforge/project/extension_registry.json',
+          candidate_path: 'candidates/project/requirements_index.md',
+          target_path: '.specforge/project/requirements_index.md',
           operation: 'replace',
-          type: 'extension_registry',
+          type: 'requirements_index',
         },
       ],
     });
@@ -143,7 +128,29 @@ describe('merge runner — extension_registry.json version sync', () => {
     expect(specManifest.project_spec_version).toBe('PSV-0006');
     // The core assertion: registry version no longer drifts behind the manifest.
     expect(registry.project_spec_version).toBe('PSV-0006');
-    // And the merged contract content is intact.
-    expect(registry.contracts.shared_enums[0].id).toBe('GpsStatus');
+    expect(registry.contracts.shared_enums).toEqual([]);
+
+    const postMerge = await runGate('post_merge_gate', {
+      projectRoot,
+      workItemDir,
+      workItemId,
+      workflowPath: 'requirement_change_path',
+    });
+    expect(postMerge.status).toBe('passed');
+
+    registry.project_spec_version = 'PSV-0005';
+    await writeJson(join(projectRoot, '.specforge', 'project', 'extension_registry.json'), registry);
+    const driftedPostMerge = await runGate('post_merge_gate', {
+      projectRoot,
+      workItemDir,
+      workItemId,
+      workflowPath: 'requirement_change_path',
+    });
+    expect(driftedPostMerge.status).toBe('failed');
+    expect(
+      driftedPostMerge.checks.find(
+        check => check.check_id === 'post_merge_project_spec_core_version_coherent',
+      ),
+    ).toMatchObject({ passed: false });
   });
 });

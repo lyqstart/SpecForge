@@ -31297,3 +31297,91 @@ Product Specification 只保存稳定产品规则；Authority Registry 登记每
 - **根因与纠正**：执行前没有先核对 `HTTPServer` 与 Service Management 的现行路由合同，混淆了历史说明和当前 `/api/v1/healthz`。读取真实源码后，按公开端点 `GET /api/v1/healthz` 重跑，返回 1.0.6、同一存活 PID 与 `status=ok`；不得把前两次失败报告为健康通过。
 - REUSED_EXP=EXP-002,EXP-007,EXP-017,EXP-021,EXP-032,EXP-033,EXP-044,EXP-060,EXP-087,EXP-195,EXP-263
 - ERR1800_STATUS=CLOSED_BY_SOURCE_VERIFIED_PUBLIC_HEALTH_ENDPOINT
+
+### ERR-1801：t3 正式治理对象因非法 ID 被解析为空并以 compatibility mode 假通过
+
+- **发生时间**：2026-10-12
+- **分类**：`FORMAL_GOVERNANCE_FALSE_GREEN / ID_VALIDATION_GAP / PROJECT_SPEC_VERSION_DRIFT / FILESYSTEM_FORMAL_VERSION_EVIDENCE_GAP`。
+- **事实证据**：真实项目 `D:\code\t3` 的 Architecture 与 Data Model 分别声明 `ARCH-0001..0007`、`DATA-0001..0009`，不满足当前 `ARCH-<DOMAIN>-<NNN>` / `DATA-<DOMAIN>-<NNN>` 合同；Runtime 因严格提取结果为空写出 `governance_scope.active=false`，Trace Gate 以 compatibility mode 通过，Formal Version 又报告 `actual_modules=none; violations=none`。同一项目的 `spec_manifest.json` 为 `PSV-0002`，`extension_registry.json` 仍为 `PSV-0001`；filesystem Formal Version snapshot 的实现文件与内容指纹为空，但 Close Gate 仍通过。
+- **影响与根因**：业务测试通过和 StateManager `closed` 不能证明架构治理闭环有效。根因不是 compatibility mode 本身，而是 Runtime 把“未建立正式治理”与“正式治理已声明但无法解析”合并为同一分支；Atomic Spec Merge 只在 registry 是 Candidate entry 时同步重复版本；filesystem Formal Version 没有固定最终实现字节，Post-Merge、Formal Version 与 Close 也缺少对称消费者。
+- **纠正与防复发**：Product Specification 明确 ID、compatibility、Core 版本与 filesystem 内容绑定合同；Runtime 记录全部声明 ID 并拒绝非法或不完整的正式治理；Code Permission、Candidate/Trace/Contract、Formal Version 与 Close 对称失败关闭；Atomic Spec Merge 每次版本递增都原子同步 registry；Post-Merge/Formal/Close 共用版本一致性检查；filesystem snapshot 保存实际文件集合与逐字节指纹并在 Close 重算。以 t3 形态的非法 ID、非 registry Candidate 合并、版本漂移和内容漂移建立回归。
+- REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-047,EXP-049,EXP-050,EXP-056,EXP-130,EXP-193,EXP-195,EXP-260,EXP-269,EXP-271,EXP-272,EXP-273,EXP-276
+- ERR1801_STATUS=FIX_APPLIED_VALIDATION_PENDING
+
+### ERR-1802：本轮定向基线再次从根 Vitest 配置调用 package 测试并随后遇到已知沙箱 EPERM
+
+- **发生时间**：2026-10-12
+- **分类**：`REPEATED_TEST_ENTRYPOINT_SCOPE_MISMATCH / EXECUTION_ENVIRONMENT_LIMITATION / ZERO_TEST_EXECUTION`。
+- **事实证据**：首次在仓库根向根 Vitest 传入四个 daemon-core 文件，返回 `No test files found`、exit 1；改到 `packages/daemon-core` 后，四个 suite 又在收集前因沙箱临时目录 rename `EPERM` 全部 0 tests。使用完全相同的 package 工作目录、文件集合和 Vitest 入口在获准的沙箱外重跑，真实收集 4 文件 15 项并全部通过。
+- **影响与根因**：前两次结果均不能作为产品 PASS/FAIL；第一次重复了 ERR-1757/1791 的配置作用域错误，第二次与 ERR-1792 的已知载体限制一致，均未修改产品文件或 t3。
+- **纠正与防复发**：package 测试固定从 owning package 工作目录启动，先核对收集数；只有出现已证实的 EPERM 才以同命令最小提权重跑。保留两次零测试失败，不用后续绿色覆盖。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-021,EXP-032,EXP-033,EXP-044,EXP-065,EXP-087,EXP-195,EXP-263
+- ERR1802_STATUS=CLOSED_BY_IDENTICAL_PACKAGE_SCOPED_BASELINE_4_FILES_15_TESTS_PASS
+
+### ERR-1803：ID 校验函数存在于 owning module 但未从公共 types 入口导出
+
+- **发生时间**：2026-10-12
+- **分类**：`PUBLIC_EXPORT_OMISSION / FOCUSED_TEST_RUNTIME_FAILURE`。
+- **事实证据**：首次运行新增正式治理回归时，daemon-core 通过 `@specforge/types` 导入 `isValidArchitectureId` / `isValidDataModelId`，运行期报 `TypeError: ... is not a function`；源码核验确认函数已在 `id-rules.ts` 定义，但 `packages/types/src/index.ts` 未导出。补齐公共导出、重建 types 后，同组测试进入真实断言并通过。
+- **影响与根因**：失败发生在模块公共表面，不代表 ID 合同错误；根因是实现调用方使用了未被 package 入口暴露的内部能力。
+- **纠正与防复发**：新增 public-index 导出并由 ID 规则测试验证 canonical 与非法样例；跨 package 新依赖必须同时核对定义文件、公共入口和构建产物。
+- REUSED_EXP=EXP-002,EXP-007,EXP-017,EXP-021,EXP-032,EXP-033,EXP-044,EXP-087,EXP-195
+- ERR1803_STATUS=CLOSED_BY_PUBLIC_EXPORT_TYPES_BUILD_AND_FOCUSED_REGRESSION_PASS
+
+### ERR-1804：直接调用 daemon-core tsc 绕过 workspace owning toolchain 产生无效类型失败
+
+- **发生时间**：2026-10-12
+- **分类**：`BUILD_ENTRYPOINT_SCOPE_MISMATCH / INVALID_VALIDATION_RESULT`。
+- **事实证据**：从仓库根直接执行 `tsc -p packages/daemon-core/tsconfig.json` 后，出现大量 Node 类型与 workspace 依赖解析错误；该入口没有按仓库脚本建立 owning package 的完整构建环境。随后执行权威根构建 `bun run build`，全部 workspace package 完成且数字退出码为 0。
+- **影响与根因**：首条命令不能作为代码类型失败结论，也没有产品写入；根因是用裸编译器替代仓库定义的 workspace 构建入口。
+- **纠正与防复发**：构建结论只采用根 `bun run build` 或 package 自身声明的 build script；裸 `tsc -p` 仅在已证明依赖环境等价时使用。
+- REUSED_EXP=EXP-002,EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-087,EXP-195
+- ERR1804_STATUS=CLOSED_BY_OFFICIAL_WORKSPACE_BUILD_EXIT_ZERO
+
+### ERR-1805：门禁收紧后的首轮全量回归暴露旧正式治理夹具不完整
+
+- **发生时间**：2026-10-12
+- **分类**：`TEST_FIXTURE_CONTRACT_DRIFT / EXPECTED_FAIL_CLOSED_REGRESSION`。
+- **事实证据**：daemon-core 首轮全量测试真实执行 206 文件 1833 项，12 文件 28 项失败。失败由三组可复核原因构成：活动规则测试仍把上界写死为 EXP-276；正式 Atomic Merge 夹具只有 `spec_manifest.json`、缺少同版本 `extension_registry.json`；部分手工 Close 夹具写入 passed Formal Version 报告，却没有声明正式 governance/version-control mode 或生成 snapshot。生产代码对已声明但不完整的 Core 正确失败关闭。
+- **影响与根因**：失败证明新合同已击中旧假数据，但旧测试不能据此要求生产门禁回退。Project Spec Core 完全未声明的旧 code-only 场景与“声明了一半”不是同一状态。
+- **纠正与防复发**：活动规则合同升级至 EXP-277；正式治理夹具补齐同版本 registry；Close 只对明确声明 `filesystem` 或 active formal governance 的路径强制 snapshot，完全未声明 Core 的 legacy code-only 场景维持 not-declared 语义。修正后 daemon-core 全量 206 文件 1834 项全部通过。
+- REUSED_EXP=EXP-001,EXP-002,EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-047,EXP-049,EXP-050,EXP-087,EXP-193,EXP-195,EXP-260,EXP-276,EXP-277
+- ERR1805_STATUS=CLOSED_BY_CONTRACT_ACCURATE_FIXTURES_AND_DAEMON_FULL_1834_OF_1834_PASS
+
+### ERR-1806：1.0.6 新增 CLI PATH 测试未登记根测试角色，正式全仓入口在收集前失败
+
+- **发生时间**：2026-10-12
+- **分类**：`ROOT_TEST_ROLE_REGISTRY_DRIFT / ZERO_TEST_EXECUTION`。
+- **事实证据**：本轮首次正式 `bun run test` 在 `run-root-tests.mjs` 的角色登记校验阶段以 `ROOT_TEST_REGISTRY_INVALID` 退出，唯一 missing 为 `tests/unit/installer/command_path.test.ts`，尚未收集任何测试。Git 历史确认该文件由 1.0.6 PATH 交付提交引入；文件只调用纯函数、无主机服务依赖，符合 `CURRENT_HERMETIC` 定义。
+- **影响与根因**：这不是本轮 Runtime 断言失败，但会让正式全仓验证入口永久不可用；根因是新增根测试时遗漏同步下游测试角色登记。
+- **纠正与防复发**：把该文件登记为 `CURRENT_HERMETIC`，先运行 registry validate，再重跑同一正式全仓入口；新增或移动 `tests/**/*.test.ts` 必须把角色登记纳入同一变更。
+- REUSED_EXP=EXP-001,EXP-002,EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-087,EXP-195
+- ERR1806_STATUS=FIX_APPLIED_FULL_VALIDATION_PENDING
+
+### ERR-1807：独立审查把初始化 CORE 占位模块误判为正式治理声明
+
+- **发生时间**：2026-10-12
+- **分类**：`OVERBROAD_GOVERNANCE_ACTIVATION / FULL_REGRESSION_FAILURE`。
+- **事实证据**：为覆盖“不完整 Module 不得降级”的审查假设，曾把 `modules.length > 0` 作为正式治理声明条件。最终全仓测试真实执行至 daemon-core 206 文件 1835 项，其中唯一失败是 `design-governance-live-closure` 的新项目设计阶段由 passed 变成 failed。初始化源码证明每个新项目都会创建 `CORE` 占位条目与空 `module.json`，此时 Architecture/Design 仍为 TODO；该条目不是已完成的正式 Module 治理声明。
+- **影响与根因**：过宽条件会阻断合法新项目的首次 design 流程；根因是没有先对照 Project Init 占位合同就扩大激活语义。
+- **纠正与防复发**：撤回 `modules.length > 0`，恢复以有效 design ID、code path、ARCH/DATA 声明或显式 Data not-applicable 作为正式治理信号；保留 t3 非法 ARCH/DATA 的失败关闭和 snapshot mode 复核。必须用 `design-governance-live-closure` 与 t3-shaped 负向回归同时证明边界。
+- REUSED_EXP=EXP-001,EXP-002,EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-047,EXP-049,EXP-050,EXP-087,EXP-193,EXP-195,EXP-277
+- ERR1807_STATUS=FIX_APPLIED_VALIDATION_PENDING
+
+### ERR-1808：混合 ID 补充回归首次在受限沙箱中再次于 Vitest realpath 阶段中止
+
+- **发生时间**：2026-10-12
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / ZERO_TEST_EXECUTION / REPEATED_KNOWN_CARRIER_FAILURE`。
+- **事实证据**：新增“同一正式治理文档同时存在合法与非法 ID”回归后，从 `packages/daemon-core` 运行两个 owning-package Vitest 文件；受限沙箱在收集前因 `EPERM: operation not permitted, realpath ...vitest/dist/spy.js` 中止，2 个 suite 均未执行。完全相同的命令、文件集合与工作目录在最小范围沙箱外重跑，2 文件 8 项全部通过。
+- **影响与根因**：该非零结果只证明已由 ERR-1792/1802 记录的 Windows 沙箱依赖真实路径限制再次出现，不是产品代码失败；不得用后续绿色覆盖首次失败，也不得再次错误切换测试入口。
+- **纠正与防复发**：保留失败和同命令重跑结论；后续全量测试继续使用已经验证的官方沙箱外载体。产品侧补充混合合法/非法 ARCH、DATA、DD 的共享格式门禁，防止 active formal governance 路径漏检非法声明。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-021,EXP-032,EXP-033,EXP-044,EXP-065,EXP-087,EXP-195,EXP-263,EXP-277
+- ERR1808_STATUS=CLOSED_BY_IDENTICAL_PACKAGE_SCOPED_RERUN_2_FILES_8_TESTS_PASS
+
+- ERR1801_FINAL_STATUS=CLOSED_BY_AUTHORITY_RUNTIME_GATES_1_0_7_BUILD_RELEASE_PRECHECK_AND_FULL_REGRESSION
+- ERR1806_FINAL_STATUS=CLOSED_BY_ROLE_REGISTRY_VALIDATION_AND_OFFICIAL_FULL_REGRESSION
+- ERR1807_FINAL_STATUS=CLOSED_BY_PLACEHOLDER_AWARE_ACTIVATION_T3_SHAPED_NEGATIVE_REGRESSION_AND_OFFICIAL_FULL_REGRESSION
+
+## EXP-277：正式治理声明失败、重复版本和 Formal Version 内容身份必须对称失败关闭
+
+是否进入 compatibility mode 必须依据“未声明正式治理”，不能依据“严格解析结果为空”；任何已经声明但非法或不完整的正式 Architecture、Data、Module 对象都必须在 Candidate、Code Permission、Verification/Formal Version 与 Close 的全部消费者中失败关闭。Project Spec Core 的重复版本字段必须由 Atomic Spec Merge 原子同步并由 Post-Merge、Formal Version、Close 对称复核。filesystem Formal Version 必须固定实际实现文件集合及逐字节内容指纹，Close 前重新取证；路径范围、mtime、历史 Gate 状态或业务测试绿色均不能替代内容身份。

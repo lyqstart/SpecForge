@@ -7,6 +7,8 @@ import {
   ContractRegistrySchema,
   extractModuleFromDdId,
   evaluateMergeReport,
+  isValidArchitectureId,
+  isValidDataModelId,
   isValidDesignDecisionId,
   resolveSpecModuleIdentity,
 } from '@specforge/types';
@@ -141,6 +143,7 @@ type ModuleModel = {
   trace_generated: boolean;
   code_paths: string[];
   design_ids: string[];
+  invalid_design_ids: string[];
   design_text: string;
   contract_entries: ContractEntry[];
 };
@@ -149,6 +152,7 @@ type TraceEdge = GovernanceTraceEdge;
 
 type ProjectModel = {
   active: boolean;
+  governanceDeclared: boolean;
   default_module: string;
   manifest: any;
   manifestPath: string;
@@ -156,6 +160,8 @@ type ProjectModel = {
   dataModelPath: string;
   architectureIds: string[];
   dataModelIds: string[];
+  invalidArchitectureIds: string[];
+  invalidDataModelIds: string[];
   dataModelNotApplicable: boolean;
   modules: ModuleModel[];
   contracts: ContractEntry[];
@@ -231,6 +237,50 @@ function projectSpecVersionNumber(value: unknown): number | null {
   if (!match) return null;
   const parsed = Number(match[1]);
   return Number.isSafeInteger(parsed) ? parsed : null;
+}
+
+export interface ProjectSpecCoreVersionCoherence {
+  passed: boolean;
+  spec_manifest_version: string;
+  extension_registry_version: string;
+  reason: string;
+  input_files: string[];
+}
+
+export async function inspectProjectSpecCoreVersionCoherence(
+  projectRoot: string,
+): Promise<ProjectSpecCoreVersionCoherence> {
+  const manifestPath = path.join(projectRoot, SPEC_DIR, 'project', 'spec_manifest.json');
+  const manifest = await readJson(manifestPath);
+  const registryPath = absolute(
+    projectRoot,
+    String(
+      manifest?.project?.extension_registry ??
+        `${SPEC_DIR}/project/extension_registry.json`,
+    ),
+  );
+  const registry = await readJson(registryPath);
+  const [manifestDeclared, registryDeclared] = await Promise.all([
+    fs.access(manifestPath).then(() => true, () => false),
+    fs.access(registryPath).then(() => true, () => false),
+  ]);
+  const manifestVersion = String(manifest?.project_spec_version ?? '');
+  const registryVersion = String(registry?.project_spec_version ?? '');
+  const manifestValid = projectSpecVersionNumber(manifestVersion) !== null;
+  const registryValid = projectSpecVersionNumber(registryVersion) !== null;
+  const undeclared = !manifestDeclared && !registryDeclared;
+  const passed = undeclared || (manifestValid && registryValid && manifestVersion === registryVersion);
+  return {
+    passed,
+    spec_manifest_version: manifestVersion,
+    extension_registry_version: registryVersion,
+    reason: undeclared
+      ? 'project_spec_core=not_declared'
+      : passed
+        ? `project_spec_version=${manifestVersion}`
+      : `spec_manifest=${manifestVersion || 'missing'}; extension_registry=${registryVersion || 'missing'}`,
+    input_files: unique([manifestPath, registryPath]),
+  };
 }
 
 function mergeReportField(report: string, label: string): string {
@@ -480,6 +530,68 @@ function extractIds(text: string, prefix: 'ARCH' | 'DATA' | 'DD'): string[] {
   );
 }
 
+function extractDeclaredGovernanceIds(text: string, prefix: 'ARCH' | 'DATA' | 'DD'): string[] {
+  return unique(text.match(new RegExp(`\\b${prefix}-[A-Z0-9][A-Z0-9-]*\\b`, 'g')) ?? []);
+}
+
+function governanceIdFormatChecks(model: ProjectModel): GovernanceCheck[] {
+  const invalidDesignIds = unique(
+    model.modules.flatMap(module => module.invalid_design_ids),
+  );
+  return [
+    {
+      check_id: 'architecture_id_format',
+      description: 'Every declared Architecture ID uses ARCH-<DOMAIN>-<NNN>',
+      passed: model.invalidArchitectureIds.length === 0 && model.architectureIds.length > 0,
+      severity: 'error',
+      details: `invalid=${model.invalidArchitectureIds.join(',') || 'none'}; valid=${model.architectureIds.join(',') || 'none'}`,
+    },
+    {
+      check_id: 'data_model_id_format',
+      description: 'Every declared Data ID uses DATA-<DOMAIN>-<NNN>, or the model is explicitly not applicable',
+      passed:
+        model.invalidDataModelIds.length === 0 &&
+        (model.dataModelIds.length > 0 || model.dataModelNotApplicable),
+      severity: 'error',
+      details: `invalid=${model.invalidDataModelIds.join(',') || 'none'}; valid=${model.dataModelIds.join(',') || 'none'}; not_applicable=${model.dataModelNotApplicable}`,
+    },
+    {
+      check_id: 'module_design_id_format',
+      description: 'Every declared Module Design ID uses DD-<DOMAIN>-<NNN>',
+      passed: invalidDesignIds.length === 0,
+      severity: 'error',
+      details: `invalid=${invalidDesignIds.join(',') || 'none'}`,
+    },
+  ];
+}
+
+function inactiveGovernanceChecks(
+  model: ProjectModel,
+  compatibilityCheckId: string,
+  compatibilityDescription: string,
+): GovernanceCheck[] {
+  if (!model.governanceDeclared) {
+    return [{
+      check_id: compatibilityCheckId,
+      description: compatibilityDescription,
+      passed: true,
+      severity: 'info',
+      details: 'governance_active=false; formal_governance_declared=false',
+    }];
+  }
+
+  return [
+    ...governanceIdFormatChecks(model),
+    {
+      check_id: 'formal_governance_complete',
+      description: 'Declared formal Architecture/Data/Module governance is complete and cannot fall back to compatibility mode',
+      passed: false,
+      severity: 'error',
+      details: `architecture=${model.architectureIds.length}; data=${model.dataModelIds.length}; modules=${model.modules.length}`,
+    },
+  ];
+}
+
 function escapeRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -726,6 +838,12 @@ async function loadProjectModel(
     : await readText(dataModelPath);
   const architectureIds = extractIds(architectureText, 'ARCH');
   const dataModelIds = extractIds(dataModelText, 'DATA');
+  const declaredArchitectureIds = extractDeclaredGovernanceIds(architectureText, 'ARCH');
+  const declaredDataModelIds = extractDeclaredGovernanceIds(dataModelText, 'DATA');
+  const invalidArchitectureIds = declaredArchitectureIds.filter(
+    id => !isValidArchitectureId(id),
+  );
+  const invalidDataModelIds = declaredDataModelIds.filter(id => !isValidDataModelId(id));
   const dataModelNotApplicable = /\bDATA_MODEL_NOT_APPLICABLE\b/.test(dataModelText);
 
   const modules: ModuleModel[] = [];
@@ -845,6 +963,8 @@ async function loadProjectModel(
     const moduleTraceText = await readText(tracePath);
     const moduleTraceParse = parseGovernanceTrace(moduleTraceText, tracePath);
 
+    const designIds = extractIds(designText, 'DD');
+    const declaredDesignIds = extractDeclaredGovernanceIds(designText, 'DD');
     modules.push({
       module_code: moduleCode,
       code_paths_declared: codePathsDeclared,
@@ -858,7 +978,8 @@ async function loadProjectModel(
       trace_edges: moduleTraceParse.edges,
       trace_generated: /GENERATED_FROM_PROJECT_TRACE:\s*module projection/i.test(moduleTraceText),
       code_paths: codePaths,
-      design_ids: extractIds(designText, 'DD'),
+      design_ids: designIds,
+      invalid_design_ids: declaredDesignIds.filter(id => !isValidDesignDecisionId(id)),
       design_text: designText,
       contract_entries: internalContracts,
     });
@@ -921,6 +1042,17 @@ async function loadProjectModel(
       (dataModelIds.length > 0 || dataModelNotApplicable) &&
       modules.length > 0,
   );
+  const governanceDeclared = Boolean(
+    declaredArchitectureIds.length > 0 ||
+      declaredDataModelIds.length > 0 ||
+      dataModelNotApplicable ||
+      modules.some(
+        module =>
+          module.design_ids.length > 0 ||
+          module.invalid_design_ids.length > 0 ||
+          module.code_paths.length > 0,
+      ),
+  );
 
   const effectiveManifest =
     manifest && typeof manifest === 'object'
@@ -944,6 +1076,7 @@ async function loadProjectModel(
 
   return {
     active,
+    governanceDeclared,
     default_module: String(manifest?.default_module ?? '').trim().toUpperCase(),
     manifest: effectiveManifest,
     manifestPath,
@@ -951,6 +1084,8 @@ async function loadProjectModel(
     dataModelPath,
     architectureIds,
     dataModelIds,
+    invalidArchitectureIds,
+    invalidDataModelIds,
     dataModelNotApplicable,
     modules,
     contracts,
@@ -1134,16 +1269,22 @@ export async function checkProjectGovernanceConsistency(input: {
   const checks: GovernanceCheck[] = [];
 
   if (!model.active) {
-    addCheck(
-      checks,
-      'project_governance_compatibility_mode',
-      'Architecture/Data/Module governance stays compatibility-safe until formal Project Spec migration establishes Architecture and Data Model truth sources',
-      true,
-      'governance_active=false',
-      'info',
+    checks.push(
+      ...inactiveGovernanceChecks(
+        model,
+        'project_governance_compatibility_mode',
+        'Architecture/Data/Module governance stays compatibility-safe until formal Project Spec migration establishes Architecture and Data Model truth sources',
+      ),
     );
-    return { active: false, passed: true, checks, inputFiles: model.inputFiles };
+    return {
+      active: false,
+      passed: checks.every(check => check.passed),
+      checks,
+      inputFiles: model.inputFiles,
+    };
   }
+
+  checks.push(...governanceIdFormatChecks(model));
 
   addCheck(
     checks,
@@ -1409,20 +1550,20 @@ export async function checkProjectGovernanceContracts(input: {
   const checks: GovernanceCheck[] = [];
 
   if (!model.active) {
+    const inactiveChecks = inactiveGovernanceChecks(
+      model,
+      'module_contract_compatibility_mode',
+      'Module Contract governance waits for formal Project Spec migration',
+    );
     return {
       active: false,
-      passed: true,
-      checks: [
-        {
-          check_id: 'module_contract_compatibility_mode',
-          description: 'Module Contract governance waits for formal Project Spec migration',
-          passed: true,
-          severity: 'info',
-        },
-      ],
+      passed: inactiveChecks.every(check => check.passed),
+      checks: inactiveChecks,
       inputFiles: model.inputFiles,
     };
   }
+
+  checks.push(...governanceIdFormatChecks(model));
 
   for (const [index, issue] of model.trace_issues.entries()) {
     addCheck(
@@ -1550,20 +1691,20 @@ export async function checkProjectGovernanceTrace(input: {
   const checks: GovernanceCheck[] = [];
 
   if (!model.active) {
+    const inactiveChecks = inactiveGovernanceChecks(
+      model,
+      'governance_trace_compatibility_mode',
+      'Governance Trace semantics wait for formal Project Spec migration',
+    );
     return {
       active: false,
-      passed: true,
-      checks: [
-        {
-          check_id: 'governance_trace_compatibility_mode',
-          description: 'Governance Trace semantics wait for formal Project Spec migration',
-          passed: true,
-          severity: 'info',
-        },
-      ],
+      passed: inactiveChecks.every(check => check.passed),
+      checks: inactiveChecks,
       inputFiles: model.inputFiles,
     };
   }
+
+  checks.push(...governanceIdFormatChecks(model));
 
   for (const [index, issue] of model.trace_issues.entries()) {
     addCheck(
@@ -1711,6 +1852,16 @@ export async function freezeGovernanceScopeForCodePermission(input: {
     frozen_at: new Date().toISOString(),
   };
   const checks: GovernanceCheck[] = [];
+  const projectSpecCoreVersion = await inspectProjectSpecCoreVersionCoherence(
+    input.projectRoot,
+  );
+  addCheck(
+    checks,
+    'permission_project_spec_core_version_coherent',
+    'Project Spec Core files agree on the authoritative project_spec_version before Code Permission',
+    projectSpecCoreVersion.passed,
+    projectSpecCoreVersion.reason,
+  );
   const gitContext = await readJson(path.join(input.workItemDir, 'git_context.json'));
   const repositoryPresent = await gitRepositoryPresent(
     input.projectRoot,
@@ -1749,13 +1900,13 @@ export async function freezeGovernanceScopeForCodePermission(input: {
   }
 
   if (!model.active) {
-    checks.push({
-      check_id: 'governance_scope_compatibility_mode',
-      description:
+    checks.push(
+      ...inactiveGovernanceChecks(
+        model,
+        'governance_scope_compatibility_mode',
         'Code Permission governance scope stays compatibility-safe until formal Project Spec migration',
-      passed: true,
-      severity: 'info',
-    });
+      ),
+    );
     const passed = checks.every(check => check.passed);
     return {
       passed,
@@ -1763,11 +1914,15 @@ export async function freezeGovernanceScopeForCodePermission(input: {
         ? undefined
         : checks.some(check => check.check_id === 'permission_git_context_prepared' && !check.passed)
           ? 'GIT_CONTEXT_REQUIRED_BEFORE_CODE_PERMISSION'
-          : 'SCOPE_EXPANSION_REQUIRED',
+          : model.governanceDeclared
+            ? 'INVALID_PROJECT_GOVERNANCE'
+            : 'SCOPE_EXPANSION_REQUIRED',
       snapshot,
       checks,
     };
   }
+
+  checks.push(...governanceIdFormatChecks(model));
 
   const inferredModules: string[] = [];
   for (const allowedPath of allowedPaths) {
@@ -3244,8 +3399,20 @@ export async function checkFormalVersionEligibility(input: {
     addCheck(checks, 'formal_gate_reports_dir', 'Gate report directory exists', false);
   }
 
+  const projectSpecCoreVersion = await inspectProjectSpecCoreVersionCoherence(
+    input.projectRoot,
+  );
+  inputFiles.push(...projectSpecCoreVersion.input_files);
+  addCheck(
+    checks,
+    'formal_project_spec_core_version_coherent',
+    'Project Spec Core files agree on the authoritative project_spec_version',
+    projectSpecCoreVersion.passed,
+    projectSpecCoreVersion.reason,
+  );
+
   const model = await loadProjectModel(input.projectRoot, input.workItemDir, false);
-  if (model.active) {
+  if (model.active || model.governanceDeclared) {
     const consistency = await checkProjectGovernanceConsistency(input);
     const contracts = await checkProjectGovernanceContracts(input);
     const trace = await checkProjectGovernanceTrace(input);
@@ -3288,13 +3455,20 @@ export async function checkFormalVersionEligibility(input: {
   if (passed) {
     const headCommit = gitBinding.head_commit || (await gitHead(input.projectRoot));
     const baseCommit = gitBinding.base_commit || String(gitContext?.base_commit ?? '');
+    const filesystemImplementationFiles = gitBinding.enabled
+      ? []
+      : normalizeFormalImplementationFiles(actualScope.actual_files, input.projectRoot);
+    const implementationFiles = gitBinding.enabled
+      ? gitBinding.committed_implementation_files
+      : filesystemImplementationFiles;
     const snapshot = {
       schema_version: '1.0',
       work_item_id: input.workItemId,
+      version_control_mode: versionControl.mode,
       head_commit: headCommit,
       implementation_commit: gitBinding.enabled ? headCommit : '',
       branch_name: gitBinding.enabled ? gitBinding.branch_name : '',
-      implementation_files: gitBinding.committed_implementation_files,
+      implementation_files: implementationFiles,
       implementation_tree_fingerprint:
         gitBinding.enabled && headCommit
           ? await gitImplementationFingerprint(
@@ -3302,7 +3476,10 @@ export async function checkFormalVersionEligibility(input: {
               headCommit,
               gitBinding.committed_implementation_files,
             )
-          : '',
+          : await fingerprintRepositoryFiles(
+              input.projectRoot,
+              filesystemImplementationFiles,
+            ),
       base_commit: baseCommit,
       diff_fingerprint: baseCommit
         ? await gitDiffFingerprint(input.projectRoot, baseCommit)
@@ -3324,6 +3501,56 @@ export async function checkFormalVersionEligibility(input: {
   };
 }
 
+export async function assertFilesystemFormalVersionSnapshotCurrent(
+  projectRoot: string,
+  workItemId: string,
+): Promise<void> {
+  const workItemDir = path.join(projectRoot, SPEC_DIR, 'work-items', workItemId);
+  const report = await readJson(path.join(workItemDir, 'gates', 'formal_version_gate.json'));
+  if (report?.status !== 'passed') {
+    throw new Error('FORMAL_VERSION_GATE_REQUIRED');
+  }
+
+  const governanceScope = await readJson(path.join(workItemDir, 'governance_scope.json'));
+  const snapshot = await readJson(path.join(workItemDir, 'formal_version_snapshot.json'));
+  const mode = String(
+    snapshot?.version_control_mode ?? governanceScope?.version_control_mode ?? '',
+  );
+  if (!snapshot || typeof snapshot !== 'object') {
+    if (mode === 'filesystem' || governanceScope?.active === true) {
+      throw new Error('FORMAL_VERSION_SNAPSHOT_REQUIRED');
+    }
+    return;
+  }
+  if (!mode && governanceScope?.active === true) {
+    throw new Error('FORMAL_VERSION_SNAPSHOT_VERSION_CONTROL_MODE_REQUIRED');
+  }
+  if (mode !== 'filesystem') return;
+
+  const recordedFiles = normalizeFormalImplementationFiles(
+    normalizeArray(snapshot.implementation_files),
+  );
+  const actualScope = await auditActualGovernanceScope({ projectRoot, workItemDir });
+  const actualFiles = normalizeFormalImplementationFiles(
+    actualScope.actual_files,
+    projectRoot,
+  );
+  const fileSet = compareFormalImplementationFileSets(recordedFiles, actualFiles);
+  if (!fileSet.matches) {
+    throw new Error(
+      `FORMAL_VERSION_FILESYSTEM_FILE_SET_MISMATCH: missing_from_snapshot=${fileSet.missing_from_recorded_files.join(',') || 'none'}; unexpected_in_snapshot=${fileSet.unexpected_recorded_files.join(',') || 'none'}`,
+    );
+  }
+  const expectedFingerprint = String(snapshot.implementation_tree_fingerprint ?? '');
+  if (!expectedFingerprint) {
+    throw new Error('FORMAL_VERSION_FILESYSTEM_FINGERPRINT_REQUIRED');
+  }
+  const currentFingerprint = await fingerprintRepositoryFiles(projectRoot, actualFiles);
+  if (currentFingerprint !== expectedFingerprint) {
+    throw new Error('FORMAL_VERSION_FILESYSTEM_IMPLEMENTATION_CHANGED_AFTER_GATE');
+  }
+}
+
 export async function assertFormalVersionSnapshotForGitMerge(
   projectRoot: string,
   workItemId: string,
@@ -3341,6 +3568,15 @@ export async function assertFormalVersionSnapshotForGitMerge(
   const snapshot = await readJson(path.join(workItemDir, 'formal_version_snapshot.json'));
   if (!snapshot || typeof snapshot !== 'object') {
     throw new Error('FORMAL_VERSION_SNAPSHOT_REQUIRED_BEFORE_GIT_MERGE');
+  }
+
+  const governanceScope = await readJson(path.join(workItemDir, 'governance_scope.json'));
+  const mode = String(
+    snapshot.version_control_mode ?? governanceScope?.version_control_mode ?? '',
+  );
+  if (mode === 'filesystem') {
+    await assertFilesystemFormalVersionSnapshotCurrent(projectRoot, workItemId);
+    return;
   }
 
   if (snapshot.implementation_commit) {
@@ -3406,7 +3642,10 @@ export async function assertFormalVersionSnapshotForGitMerge(
     if (fingerprint !== snapshot.diff_fingerprint) {
       throw new Error('FORMAL_VERSION_DIFF_CHANGED_AFTER_GATE');
     }
+    return;
   }
+
+  throw new Error('FORMAL_VERSION_SNAPSHOT_VERSION_CONTROL_MODE_REQUIRED');
 }
 
 export interface FormalVersionPostMergeVerification {

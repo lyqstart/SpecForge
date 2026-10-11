@@ -36,6 +36,10 @@ import { evaluateChangedFilesAuditVerdict } from './changed-files-audit-verdict.
 import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
 import { evaluateMergeReport } from '@specforge/types';
 import { specMigrationCandidateRequiresTraceDelta } from './spec-migration-trace-contract.js';
+import {
+  assertFilesystemFormalVersionSnapshotCurrent,
+  inspectProjectSpecCoreVersionCoherence,
+} from './project-governance-v2.js';
 
 export interface CloseGateResult {
   report: GateReportV11;
@@ -478,6 +482,37 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
       : 'not_applicable',
   });
 
+  const projectSpecCoreVersion = await inspectProjectSpecCoreVersionCoherence(
+    ctx.projectRoot,
+  );
+  checks.push({
+    check_id: 'close_project_spec_core_version_coherent',
+    description: 'Project Spec Core files agree on the authoritative project_spec_version when declared',
+    passed: projectSpecCoreVersion.passed,
+    severity: projectSpecCoreVersion.passed ? undefined : 'error',
+    details: projectSpecCoreVersion.reason,
+  });
+
+  let filesystemFormalVersionCurrent = true;
+  let filesystemFormalVersionDetails = formalVersionRequired
+    ? 'filesystem Formal Version snapshot is current or not applicable to Git mode'
+    : 'not_applicable';
+  if (formalVersionRequired && formalVersionReport?.status === 'passed') {
+    try {
+      await assertFilesystemFormalVersionSnapshotCurrent(ctx.projectRoot, ctx.workItemId);
+    } catch (error) {
+      filesystemFormalVersionCurrent = false;
+      filesystemFormalVersionDetails = error instanceof Error ? error.message : String(error);
+    }
+  }
+  checks.push({
+    check_id: 'close_filesystem_formal_version_current',
+    description: 'Filesystem implementation file set and content fingerprint still match Formal Version',
+    passed: filesystemFormalVersionCurrent,
+    severity: filesystemFormalVersionCurrent ? undefined : 'error',
+    details: filesystemFormalVersionDetails,
+  });
+
   const changedFilesAuditText = await readText(
     path.join(ctx.workItemDir, 'changed_files_audit.md')
   );
@@ -843,7 +878,12 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
   const inputFiles = [
     ...requiredFiles,
     ...artifactInputFiles,
-    ...(formalVersionRequired ? ['gates/formal_version_gate.json'] : []),
+    ...(formalVersionRequired
+      ? ['gates/formal_version_gate.json', 'formal_version_snapshot.json']
+      : []),
+    ...projectSpecCoreVersion.input_files.map(filePath =>
+      path.relative(ctx.projectRoot, filePath).replace(/\\/g, '/'),
+    ),
   ];
   const report = makeReport(ctx.workItemId, 'close_gate', 'hard_gate', true, checks, inputFiles);
   return { report, allChecksPassed: report.status === 'passed' };

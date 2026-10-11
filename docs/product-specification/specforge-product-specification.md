@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.6
+> Product release version: 1.0.7
 >
 > Product version epoch: 1
 >
@@ -342,6 +342,14 @@ OpenCode 配置根解析顺序：
 
 这些如果未来启用，必须经 Future Capability promotion 重新进入产品规格。
 
+Project Spec Core 的结构与版本必须保持原子一致：
+
+- `spec_manifest.json.project_spec_version` 是当前 Project Spec Version 的权威值；Core 中任何复制该字段的结构化文件都必须在同一次 Atomic Spec Merge 中同步到相同值。
+- `extension_registry.json` 存在时，其 `project_spec_version` 必须与 `spec_manifest.json` 完全一致；Post-Merge Gate、Formal Version Gate 与 Close Gate 必须失败关闭版本缺失或不一致，不能把成功的 merge report 当作一致性的替代证据。
+- Architecture ID 必须使用 `ARCH-<DOMAIN>-<NNN>`，Data ID 必须使用 `DATA-<DOMAIN>-<NNN>`，Module Design ID 必须使用 `DD-<MODULE_CODE>-<NNN>`；其中 `<DOMAIN>` / `<MODULE_CODE>` 必须为 2 至 12 位、以大写字母开头且其余字符只允许大写字母或数字，`<NNN>` 为三位十进制序号。
+- 一旦 Architecture、Data Model、Module Definition 或相应 Candidate 声明了正式治理对象，格式错误、对象缺失或治理闭包不完整必须失败关闭；不得因解析结果为空而降级到 compatibility mode。
+- compatibility mode 只适用于尚未声明或合并正式 Architecture/Data/Module 治理对象的历史项目；它不能用于掩盖已存在但无法解析的正式规格。
+
 ## 4.4 Runtime location abstraction
 
 Personal/local 模式默认将 Project Runtime 放在：
@@ -591,7 +599,7 @@ Write Guard 必须覆盖真实写入口，并保证：
 
 Write Guard 是统一写入控制机制，不建立与 Permission Engine 并列的第二权限事实源。
 
-版本控制模式属于 Code Permission 前置冻结事实：已有 Git 项目必须在实施前绑定可验证的分支与基线；非 Git 项目必须冻结为 `filesystem` 并以 filesystem baseline、Changed Files Audit 和 Formal Version 完成闭环。实施开始后出现的 `git init` 不得反向改变该事实。历史 Work Item 若缺少冻结字段，只能在原 governance scope 与 filesystem baseline 的原始字节哈希、时间线以及当前无 HEAD/零跟踪文件仓库现场均可验证时，由受控 Code Permission 工具写入追加式恢复记录；Formal Version 必须重新验证该记录，任何源漂移、Git context、HEAD、tracked file 或仓库身份变化均使恢复失效。该恢复不产生 Git 分支、提交、合并或交付义务。
+版本控制模式属于 Code Permission 前置冻结事实：已有 Git 项目必须在实施前绑定可验证的分支与基线；非 Git 项目必须冻结为 `filesystem` 并以 filesystem baseline、Changed Files Audit 和 Formal Version 完成闭环。filesystem Formal Version 必须保存经审计的实现文件精确集合及其逐字节内容指纹，Close Gate 必须重新计算文件集合与内容指纹；新增、删除或内容变化均使既有 Formal Version 失效，不得仅凭路径范围、文件大小、mtime 或先前 Gate 状态关闭。实施开始后出现的 `git init` 不得反向改变该事实。历史 Work Item 若缺少冻结字段，只能在原 governance scope 与 filesystem baseline 的原始字节哈希、时间线以及当前无 HEAD/零跟踪文件仓库现场均可验证时，由受控 Code Permission 工具写入追加式恢复记录；Formal Version 必须重新验证该记录，任何源漂移、Git context、HEAD、tracked file 或仓库身份变化均使恢复失效。该恢复不产生 Git 分支、提交、合并或交付义务。
 
 ## 9.3 HardStop
 

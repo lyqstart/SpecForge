@@ -13,6 +13,8 @@ import {
   AC_ID_PATTERN,
   DD_ID_PATTERN,
   TASK_ID_PATTERN,
+  isValidArchitectureId,
+  isValidDataModelId,
   isValidModuleCode,
   isValidWorkItemId,
   isValidRequirementId,
@@ -24,6 +26,15 @@ import {
   extractModuleFromDdId,
   extractWiFromTaskId,
 } from '../src/id-rules';
+
+describe('Project Architecture/Data IDs', () => {
+  it('requires a domain segment in Architecture and Data IDs', () => {
+    expect(isValidArchitectureId('ARCH-CORE-001')).toBe(true);
+    expect(isValidDataModelId('DATA-CORE-001')).toBe(true);
+    expect(isValidArchitectureId('ARCH-0001')).toBe(false);
+    expect(isValidDataModelId('DATA-0001')).toBe(false);
+  });
+});
 
 describe('MODULE_CODE（§3.1）', () => {
   it('accepts valid MODULE_CODE: AUTH', () => {

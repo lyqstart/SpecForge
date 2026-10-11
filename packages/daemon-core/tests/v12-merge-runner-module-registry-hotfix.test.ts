@@ -25,6 +25,11 @@ describe('Project Spec governed module admission', () => {
       project_spec_version: 'PSV-0001',
       modules: [],
     });
+    await writeJson(join(projectRoot, '.specforge', 'project', 'extension_registry.json'), {
+      schema_version: '1.0',
+      project_spec_version: 'PSV-0001',
+      extensions: [],
+    });
 
     await writeJson(
       join(workItemDir, 'candidates', 'project', 'modules', 'TODOS', 'module.candidate.json'),

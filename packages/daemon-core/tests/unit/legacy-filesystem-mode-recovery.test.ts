@@ -8,6 +8,7 @@ import { promisify } from 'node:util';
 import { getHandler, type ToolDeps } from '../../src/tools/ToolDispatcher';
 import '../../src/tools/index';
 import {
+  assertFilesystemFormalVersionSnapshotCurrent,
   checkFormalVersionEligibility,
   evaluateVersionControlMode,
   resolveVersionControlModeEvidence,
@@ -50,6 +51,19 @@ describe('legacy filesystem version-control mode recovery', () => {
     projectRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-legacy-fs-mode-'));
     workItemDir = path.join(projectRoot, '.specforge', 'work-items', 'WI-0001');
     await fs.mkdir(path.join(workItemDir, 'gates'), { recursive: true });
+    await writeJson(path.join(projectRoot, '.specforge', 'project', 'spec_manifest.json'), {
+      schema_version: '1.0',
+      project_spec_version: 'PSV-0002',
+      project: {
+        extension_registry: '.specforge/project/extension_registry.json',
+      },
+      modules: [],
+    });
+    await writeJson(path.join(projectRoot, '.specforge', 'project', 'extension_registry.json'), {
+      schema_version: '1.0',
+      project_spec_version: 'PSV-0002',
+      contracts: {},
+    });
     await writeJson(path.join(workItemDir, 'work_item.json'), {
       schema_version: '1.1',
       work_item_id: 'WI-0001',
@@ -213,6 +227,43 @@ Work Item: WI-0001
       formal.checks.find(check => check.check_id === 'formal_git_context'),
     ).toMatchObject({ passed: true });
     expect(formal.passed).toBe(true);
+    const snapshot = JSON.parse(
+      await fs.readFile(path.join(workItemDir, 'formal_version_snapshot.json'), 'utf8'),
+    );
+    expect(snapshot.version_control_mode).toBe('filesystem');
+    expect(snapshot.implementation_files).toEqual(['src/main.js']);
+    expect(snapshot.implementation_tree_fingerprint).toMatch(/^[a-f0-9]{64}$/);
+
+    await writeJson(path.join(workItemDir, 'gates', 'formal_version_gate.json'), {
+      gate_id: 'formal_version_gate',
+      gate_type: 'hard_gate',
+      status: 'passed',
+    });
+    await expect(
+      assertFilesystemFormalVersionSnapshotCurrent(projectRoot, 'WI-0001'),
+    ).resolves.toBeUndefined();
+
+    const governanceScopePath = path.join(workItemDir, 'governance_scope.json');
+    const governanceScope = JSON.parse(await fs.readFile(governanceScopePath, 'utf8'));
+    const snapshotWithoutMode = { ...snapshot };
+    delete snapshotWithoutMode.version_control_mode;
+    await writeJson(path.join(workItemDir, 'formal_version_snapshot.json'), snapshotWithoutMode);
+    await writeJson(governanceScopePath, {
+      ...governanceScope,
+      active: true,
+      version_control_mode: '',
+    });
+    await expect(
+      assertFilesystemFormalVersionSnapshotCurrent(projectRoot, 'WI-0001'),
+    ).rejects.toThrow('FORMAL_VERSION_SNAPSHOT_VERSION_CONTROL_MODE_REQUIRED');
+    await writeJson(path.join(workItemDir, 'formal_version_snapshot.json'), snapshot);
+    await writeJson(governanceScopePath, governanceScope);
+
+    await fs.writeFile(path.join(projectRoot, 'src', 'main.js'), 'export const ready = false;\n');
+    await expect(
+      assertFilesystemFormalVersionSnapshotCurrent(projectRoot, 'WI-0001'),
+    ).rejects.toThrow('FORMAL_VERSION_FILESYSTEM_IMPLEMENTATION_CHANGED_AFTER_GATE');
+    await fs.writeFile(path.join(projectRoot, 'src', 'main.js'), 'export const ready = true;\n');
 
     const replay = await handler(
       {

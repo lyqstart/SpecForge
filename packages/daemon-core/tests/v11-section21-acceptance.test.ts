@@ -555,6 +555,15 @@ describe('§21.1 Acceptance: requirement_change_path', () => {
       }),
       'utf-8',
     );
+    await fs.writeFile(
+      path.join(projectDir, 'extension_registry.json'),
+      JSON.stringify({
+        schema_version: '1.0',
+        project_spec_version: 'PSV-0001',
+        extensions: [],
+      }),
+      'utf-8',
+    );
     // Create target file in project
     await fs.writeFile(
       path.join(projectDir, 'requirements.md'),

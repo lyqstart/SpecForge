@@ -190,5 +190,58 @@ describe('greenfield pre-merge Project Governance', () => {
     expect(consistency.passed, JSON.stringify(consistency.checks, null, 2)).toBe(true);
     expect(trace.active).toBe(true);
     expect(trace.passed, JSON.stringify(trace.checks, null, 2)).toBe(true);
+
+    await writeText(
+      path.join(candidates, 'project', 'architecture.candidate.md'),
+      '# Architecture\n\nARCH-WD-001 is valid, but ARCH-0001 is not.\n',
+    );
+    await writeText(
+      path.join(candidates, 'project', 'data_model.candidate.md'),
+      '# Data Model\n\nDATA-WD-001 is valid, but DATA-0001 is not.\n',
+    );
+    await writeText(
+      path.join(candidates, 'project', 'modules', 'DOMAIN', 'design.candidate.md'),
+      '# DOMAIN Design\n\nDD-DOMAIN-001 is valid, but DD-0001 is not.\n',
+    );
+
+    const mixedConsistency = await checkProjectGovernanceConsistency(input);
+    const mixedTrace = await checkProjectGovernanceTrace(input);
+    expect(mixedConsistency.active).toBe(true);
+    expect(mixedConsistency.passed).toBe(false);
+    expect(
+      mixedConsistency.checks.find(check => check.check_id === 'architecture_id_format'),
+    ).toMatchObject({ passed: false, severity: 'error' });
+    expect(
+      mixedConsistency.checks.find(check => check.check_id === 'data_model_id_format'),
+    ).toMatchObject({ passed: false, severity: 'error' });
+    expect(
+      mixedConsistency.checks.find(check => check.check_id === 'module_design_id_format'),
+    ).toMatchObject({ passed: false, severity: 'error' });
+    expect(mixedTrace.active).toBe(true);
+    expect(mixedTrace.passed).toBe(false);
+
+    await writeText(
+      path.join(candidates, 'project', 'architecture.candidate.md'),
+      '# Architecture\n\n### ARCH-0001 Invalid missing-domain ID\n',
+    );
+    await writeText(
+      path.join(candidates, 'project', 'data_model.candidate.md'),
+      '# Data Model\n\n### DATA-0001 Invalid missing-domain ID\n',
+    );
+
+    const invalidConsistency = await checkProjectGovernanceConsistency(input);
+    const invalidTrace = await checkProjectGovernanceTrace(input);
+    expect(invalidConsistency.active).toBe(false);
+    expect(invalidConsistency.passed).toBe(false);
+    expect(
+      invalidConsistency.checks.find(check => check.check_id === 'architecture_id_format'),
+    ).toMatchObject({ passed: false, severity: 'error' });
+    expect(
+      invalidConsistency.checks.find(check => check.check_id === 'data_model_id_format'),
+    ).toMatchObject({ passed: false, severity: 'error' });
+    expect(invalidTrace.passed).toBe(false);
+    expect(
+      invalidTrace.checks.some(check => check.check_id === 'governance_trace_compatibility_mode'),
+    ).toBe(false);
   });
 });

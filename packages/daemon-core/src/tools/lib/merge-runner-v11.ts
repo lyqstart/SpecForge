@@ -887,9 +887,16 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
     'project',
     'spec_manifest.json',
   );
+  const extensionRegistryPath = path.join(
+    input.projectRoot,
+    '.specforge',
+    'project',
+    'extension_registry.json',
+  );
   const moduleCodes = await governedModuleCodes(input.projectRoot, entries);
   const transactionTargets = new Set<string>([
     projectSpecManifestPath,
+    extensionRegistryPath,
     ...entries.map(entry => path.resolve(input.projectRoot, entry.target_path)),
     ...moduleCodes.map(moduleCode =>
       path.join(
@@ -993,27 +1000,17 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
       );
       result.spec_manifest_updated = true;
 
-      const mergedExtensionRegistry = result.merged_files.find(
-        entry =>
-          entry.status === 'success' &&
-          entry.target_path.replace(/\\/g, '/').endsWith('project/extension_registry.json'),
-      );
-      if (mergedExtensionRegistry) {
-        const registryAbsPath = path.join(
-          input.projectRoot,
-          '.specforge',
-          'project',
-          'extension_registry.json',
+      const registry = await readJsonFile(extensionRegistryPath);
+      if (!registry || typeof registry !== 'object' || Array.isArray(registry)) {
+        throw new Error('Project Spec Core extension_registry.json is missing or invalid');
+      }
+      if (registry.project_spec_version !== newVersion) {
+        registry.project_spec_version = newVersion;
+        await fs.writeFile(
+          extensionRegistryPath,
+          JSON.stringify(registry, null, 2) + '\n',
+          'utf-8',
         );
-        const registry = await readJsonFile(registryAbsPath);
-        if (registry && typeof registry === 'object' && registry.project_spec_version !== newVersion) {
-          registry.project_spec_version = newVersion;
-          await fs.writeFile(
-            registryAbsPath,
-            JSON.stringify(registry, null, 2) + '\n',
-            'utf-8',
-          );
-        }
       }
     }
 
@@ -1076,6 +1073,7 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
         projectSpecVersion: result.project_spec_version,
         relativePaths: [
           '.specforge/project/spec_manifest.json',
+          '.specforge/project/extension_registry.json',
           ...result.merged_files
             .filter(entry => entry.status === 'success' && entry.operation !== 'delete')
             .map(entry => entry.target_path),

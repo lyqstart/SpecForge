@@ -2,6 +2,7 @@ import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { createHash } from 'node:crypto';
 import { runCloseGate } from '../src/tools/lib/close-gate.js';
 
 describe('Close Gate governance fixes', () => {
@@ -93,6 +94,13 @@ describe('Close Gate governance fixes', () => {
       }),
       'utf-8'
     );
+  }
+
+  function filesystemFingerprint(relativePath: string, content: string): string {
+    const contentHash = createHash('sha256').update(content).digest('hex');
+    return createHash('sha256')
+      .update(`${relativePath}\0file\0${contentHash}`)
+      .digest('hex');
   }
 
   it('does NOT require gate_summary.md as a file', async () => {
@@ -234,5 +242,103 @@ describe('Close Gate governance fixes', () => {
     const blockingCheck = result.report.checks.find(c => c.check_id === 'close_no_blocking_issues');
     expect(blockingCheck).toBeDefined();
     expect((blockingCheck!.details ?? '')).not.toContain('close_gate self-issue');
+  });
+
+  it('revalidates filesystem implementation bytes instead of trusting a stale Formal Version pass', async () => {
+    await writeBaseFiles();
+    await writeUserDecision();
+    const implementation = 'export const ready = true;\n';
+    await mkdir(path.join(projectRoot, 'src'), { recursive: true });
+    await writeFile(path.join(projectRoot, 'src', 'main.js'), implementation, 'utf8');
+    await mkdir(path.join(projectRoot, '.specforge', 'project'), { recursive: true });
+    await writeFile(
+      path.join(projectRoot, '.specforge', 'project', 'spec_manifest.json'),
+      JSON.stringify({
+        schema_version: '1.0',
+        project_spec_version: 'PSV-0002',
+        project: { extension_registry: '.specforge/project/extension_registry.json' },
+        modules: [],
+      }),
+      'utf8',
+    );
+    await writeFile(
+      path.join(projectRoot, '.specforge', 'project', 'extension_registry.json'),
+      JSON.stringify({ schema_version: '1.0', project_spec_version: 'PSV-0002' }),
+      'utf8',
+    );
+    await writeFile(
+      path.join(workItemDir, 'filesystem_baseline.json'),
+      JSON.stringify({
+        schema_version: '2.0',
+        content_hash_algorithm: 'sha256',
+        timestamp: '2026-01-01T00:00:00.000Z',
+        root: projectRoot,
+        files: [],
+      }),
+      'utf8',
+    );
+    await writeFile(
+      path.join(workItemDir, 'governance_scope.json'),
+      JSON.stringify({
+        schema_version: '1.0',
+        work_item_id: 'WI-TEST',
+        active: false,
+        allowed_write_files: ['src/main.js'],
+        affected_modules: [],
+        version_control_mode: 'filesystem',
+      }),
+      'utf8',
+    );
+    await writeFile(
+      path.join(workItemDir, 'gates', 'formal_version_gate.json'),
+      JSON.stringify({ gate_id: 'formal_version_gate', status: 'passed' }),
+      'utf8',
+    );
+    await writeFile(
+      path.join(workItemDir, 'formal_version_snapshot.json'),
+      JSON.stringify({
+        schema_version: '1.0',
+        work_item_id: 'WI-TEST',
+        version_control_mode: 'filesystem',
+        implementation_files: ['src/main.js'],
+        implementation_tree_fingerprint: filesystemFingerprint('src/main.js', implementation),
+      }),
+      'utf8',
+    );
+
+    const current = await runCloseGate({ workItemId: 'WI-TEST', workItemDir, projectRoot } as any);
+    expect(
+      current.report.checks.find(check => check.check_id === 'close_filesystem_formal_version_current'),
+    ).toMatchObject({ passed: true });
+
+    await writeFile(
+      path.join(projectRoot, '.specforge', 'project', 'extension_registry.json'),
+      JSON.stringify({ schema_version: '1.0', project_spec_version: 'PSV-0001' }),
+      'utf8',
+    );
+    const versionDrifted = await runCloseGate({
+      workItemId: 'WI-TEST',
+      workItemDir,
+      projectRoot,
+    } as any);
+    expect(
+      versionDrifted.report.checks.find(
+        check => check.check_id === 'close_project_spec_core_version_coherent',
+      ),
+    ).toMatchObject({ passed: false });
+    await writeFile(
+      path.join(projectRoot, '.specforge', 'project', 'extension_registry.json'),
+      JSON.stringify({ schema_version: '1.0', project_spec_version: 'PSV-0002' }),
+      'utf8',
+    );
+
+    await writeFile(path.join(projectRoot, 'src', 'main.js'), 'export const ready = false;\n', 'utf8');
+    const drifted = await runCloseGate({ workItemId: 'WI-TEST', workItemDir, projectRoot } as any);
+    expect(
+      drifted.report.checks.find(check => check.check_id === 'close_filesystem_formal_version_current'),
+    ).toMatchObject({
+      passed: false,
+      details: 'FORMAL_VERSION_FILESYSTEM_IMPLEMENTATION_CHANGED_AFTER_GATE',
+    });
   });
 });

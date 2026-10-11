@@ -235,6 +235,11 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
       requirements_index: '.specforge/project/requirements_index.md',
     },
   });
+  await writeJson(path.join(projectRoot, '.specforge', 'project', 'extension_registry.json'), {
+    schema_version: '1.0',
+    project_spec_version: 'PSV-0000',
+    extensions: [],
+  });
   await writeText(
     path.join(projectRoot, '.specforge', 'project', 'requirements_index.md'),
     '# Existing Requirements\n'

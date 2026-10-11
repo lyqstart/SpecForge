@@ -197,6 +197,9 @@ TYPE_ENVIRONMENT_SOURCE=VERSIONED_TSCONFIG_AND_DECLARED_DEPENDENCIES
 - `GATE-LATEST-001`：latest 只能投影一个已完成 attempt，不是独立真相源；
 - `GATE-MIGRATION-001`：旧投影只能通过受测迁移读取，不得重写历史 attempt；
 - `GATE-RETRY-STATE-001`：重试必须从 Runtime 权威状态和合法恢复序列继续。
+- `GOVERNANCE-ACTIVATION-001`：compatibility mode 只表示尚未声明正式治理；已声明但 ID 非法或闭包不完整的 Architecture、Data、Module 必须失败关闭。
+- `PROJECT-SPEC-VERSION-001`：Atomic Spec Merge 同步所有 Project Spec Core 重复版本字段，Post-Merge、Formal Version 与 Close 使用同一一致性检查。
+- `FILESYSTEM-FORMAL-VERSION-001`：filesystem 模式的 Formal Version 固定实际实现文件集合与逐字节内容指纹，Close 在状态推进前重新取证并比较。
 
 ### 3.3 责任层与最小完整扩展
 

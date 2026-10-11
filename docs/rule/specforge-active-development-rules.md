@@ -2511,3 +2511,8 @@ handoff 的新鲜度必须以 Runtime 可验证的持久化时间为准，不能
 
 Product Specification 只保存稳定产品规则；Authority Registry 登记每类文档职责；`project-status` 只保存当前恢复点；活动规则只保存持续生效的工程纪律；历史时间线、事故、已关闭 Gap 和过期实施机制进入账本或 `docs/archive/**`。README、用户/CLI 文档、约定、代码、帮助文本、生成器和测试均是下游消费者，必须可追溯到上位权威。测试可以验证归档证据未丢失，但不得用归档正文决定当前产品行为；发现冲突时修改下游并增加“禁止反向权威”的回归。
 <!-- source: ledger view 2026-10-11 EXP-276 -->
+
+## EXP-277：正式治理声明失败、重复版本和 Formal Version 内容身份必须对称失败关闭
+
+是否进入 compatibility mode 必须依据“未声明正式治理”，不能依据“严格解析结果为空”；任何已经声明但非法或不完整的正式 Architecture、Data、Module 对象都必须在 Candidate、Code Permission、Verification/Formal Version 与 Close 的全部消费者中失败关闭。Project Spec Core 的重复版本字段必须由 Atomic Spec Merge 原子同步并由 Post-Merge、Formal Version、Close 对称复核。filesystem Formal Version 必须固定实际实现文件集合及逐字节内容指纹，Close 前重新取证；路径范围、mtime、历史 Gate 状态或业务测试绿色均不能替代内容身份。
+<!-- source: ledger current EXP-277 -->
