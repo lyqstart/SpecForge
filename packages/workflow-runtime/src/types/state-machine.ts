@@ -1,13 +1,11 @@
 /**
- * State Machine Interface — v1.1 标准
+ * State Machine Interface — current executable contract
  *
  * 产品边界：SPS-1.0。当前可执行合同由本模块导出、Runtime 消费者与回归测试固定；归档 v1.1 标准仅作历史证据。
  *
  * 定义：
- * - §5.1 主状态枚举
- * - §5.2 禁止跳转规则
- * - §5.3 状态推进主体
- * - §5.4 恢复机制
+ * `V11` 后缀仅为兼容既有导入名；状态集合必须与 SPS、内置工作流和
+ * daemon-core 的当前状态机保持一致。
  */
 
 import type { GateDefinition } from './gate-definition';
@@ -18,7 +16,7 @@ import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 // ---------------------------------------------------------------------------
 
 /**
- * v1.1 标准 WI 主状态枚举。
+ * 当前 WI 主状态枚举。
  */
 export const WI_STATUSES_V11 = [
   'created',
@@ -32,8 +30,6 @@ export const WI_STATUSES_V11 = [
   'gates_failed',
   'approval_required',
   'approved',
-  'decision_recorded',
-  'merge_not_applicable',
   'merge_ready',
   'merging',
   'merged',

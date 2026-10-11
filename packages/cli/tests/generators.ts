@@ -22,7 +22,6 @@ export const commandNameGenerator = (): fc.Arbitrary<string> => {
       'workflow',
       'job',
       'webhook',
-      'heal',
       'config',
       'version',
       'help'

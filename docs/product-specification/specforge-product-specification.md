@@ -4,17 +4,17 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.0
+> Product release version: 1.0.5
 >
 > Product version epoch: 1
 >
-> Effective date: 2026-09-18
+> Effective date: 2026-10-11
 >
 > Authority registry: docs/product-specification/authority-registry.md
 >
 > Product owner: SpecForge 产品负责人
 >
-> Establishing baseline: main@5204a1611d9a1f02f96da637e6ec1c2acd35a8d0
+> Initial establishing baseline: main@5204a1611d9a1f02f96da637e6ec1c2acd35a8d0
 
 ## 0. 文档性质
 
@@ -1489,26 +1489,16 @@ SpecForge 要被声明为符合 SPS-1.0，至少必须满足：
 
 ---
 
-# 20. 建立本规格时已知的 Conformance Gaps
+# 20. Conformance Gap 管理规则
 
-以下是 SPS-1.0 建立时的已知实现差距，不改变产品裁决：
+Conformance Gap 是“当前实现或派生消费者尚未符合本规格”的工程事实，不是产品需求，也不是本规格的稳定组成部分。
 
-- CG-001【RESOLVED】：canonical user root 与 handshake 已统一为 `<OpenCode config>/sf-user` 和 `runtime/handshake.json`。
-- CG-002【RESOLVED】：Thin Plugin、thin-client、CLI、service-management 的 current user-path consumers 已完成收敛。
-- CG-003【RESOLVED】：Thin Plugin 已移除 Daemon auto-start / spawn 生命周期责任。
-- CG-004【RESOLVED】：`runtime/wal.jsonl` current contract 已退役，统一为 `runtime/events.jsonl`。
-- CG-005【RESOLVED】：D09 deferred multi-view paths 已从 current Layout/API 移出。
-- CG-006【RESOLVED】：current schema validation 已迁入 `@specforge/types/schema-contract`；Migration package 及 current workspace/release surface 已退出。
-- CG-007【RESOLVED】：Multimodal、Self-Healing、Plugin Loader 已无 Git 跟踪源码/package、workspace 或 current release surface；本地忽略的构建残留目录不构成产品模块。
-- CG-008【RESOLVED】：Daemon production instantiation/caller、neutral contract 与 OpenCode HTTP transport 已实现；OpenCode 1.18.34 real binary 已通过 release `specforged` 的 session create、no-reply system prompt、session read 与 abort 端到端验证；产品负责人已批准状态升级为 `ENABLED`。
-- CG-009【RESOLVED】：Distribution Kiro spec 已归档；release CLI 已移除 `specforge init` 注册与 npm-global smoke runner，当前 CLI/installer 帮助不再宣称 `~/.specforge`。不可达的 init/wizard、installation writer、daemon healthcheck、install-source 判断、CLI 专用 lock/filesystem adapter 及旧 distribution 测试均已退出；发布验证器与 schema 单调性检查按独立 build consumer 保留，`version --json` 仅对当前 `sf-user` 下的旧安装记录执行无写入探测。
-- CG-010【RESOLVED】：release precheck / Scope Gate 已直接消费 SPS-1.0 hash-bound release authority projection。
-- CG-011【RESOLVED】：fused standard 与 v1.3 文档已归档并降级；current types、workflow-runtime、daemon governance 源码与 `sf-design` Agent 已统一声明 SPS-1.0 负责产品边界、当前模块/Tool/Gate/schema 与回归测试负责可执行合同，归档 v1.1 仅作历史证据。v11 名称继续作为实现版本标识，不构成权威来源声明。
-- CG-012【RESOLVED】：Workflow Runtime 的生产事件集成只依赖注入的 `IEventBus` port；测试使用包内 port test double，package/dev lock、当前部署文档均不再消费 Daemon。`STATE_ADVANCEMENT_SUBJECTS` 由 Workflow Runtime 单一定义并从包根导出，Daemon 沿合法的 Daemon → Workflow Runtime 方向消费。
-- CG-013【RESOLVED】：Workflow Runtime 内无生产消费者的第二套 WriteGuard、CodePermissionService 与 ChangedFilesAudit 已退出，其专属测试和旧 v11 导出同步移除；Daemon 内无消费者且与 canonical 语义不同的 `evaluatePolicy`、默认规则副本、`command-write-audit`、兼容 `write-policy` barrel、`enforceWritePolicy` adapter 和 `path-policy` re-export 也已退出。Canonical、无副作用的 `decideWritePermission` 现由 Permission Engine 拥有，Permission Engine 不再反向依赖 Daemon；Daemon 保留 `checkWrite` enforcement adapter。Bash Guard 仅保留与授权无关的危险命令安全检查，不再接受测试可注入、生产恒为 allow-all 的第二策略接口；shell 写目标仍由 runtime adapter 送入 canonical decision。`write_guard_authorizations.jsonl` 继续由 Daemon 校验和匹配，但不再在 runtime/canonical decision 前直接执行：本地写目标必须先通过 canonical Write Guard，授权信息只在允许后作为执行审计元数据返回。HTTP 对 Work Item artifact 的直接写入拒绝已下沉到 Permission Engine 的统一决策；HTTP 直写与 expected-file 检查均消费 `checkWrite`，原始 shell 命令扫描复用同一 canonical helper，不再保存第二套正则或错误文案，拒绝结果进入 Write Guard 审计。Shell runtime 的 `implementation_running`、permission-revoked 与 explicit directory-preparation 判断现也由 Permission Engine 统一决策：Daemon 只提供权威状态、解析明确的 `New-Item -ItemType Directory` 目标并执行拒绝、HardStop、授权校验和审计；普通文件 create 不得借用目录祖先规则。无生产者的裸 `tool.invoking` Phase 1 记录式伪授权路径及其 HTTP PermissionEngine 注入面已退出；当前 Plugin 产生的 `opencode.tool.invoking` 只进入 SessionRegistry 观测链，不冒充授权决策。
-- CG-014【RESOLVED】：current handshake consumers 已统一到 `<OpenCode config>/sf-user/runtime/handshake.json`。
+1. 活动 Gap、当前阶段和下一合法动作只记录在 `docs/project-status.md`。
+2. 已解决 Gap 的时间线、证据和详细实现说明进入 Git 与 `docs/archive/**`，不得长期堆积在 Product Specification 中。
+3. 修复已由本规格明确决定的 Gap 不需要重新开启产品范围裁决；只有发现新的产品级冲突时才返回产品负责人。
+4. 代码、README、帮助文本、生成文档和测试均是消费者；任何一项与本规格不一致，都必须作为 Gap 处理。
 
-这些 gap 的后续修改属于“使实现符合产品规格”，不需要重新开启产品范围裁决，除非实际实施发现新的产品级冲突。
+SPS-1.0 建立阶段 CG-001—CG-014 的完整关闭记录保存在 `docs/archive/product-specification/sps-1.0-conformance-gap-history-20261011.md`。
 
 ---
 

@@ -139,13 +139,12 @@ async function demonstrateEventBus() {
     projectId: 'project-123',
     workItemId: 'workitem-999',
     actor: { id: 'agent-3', name: 'Analysis Agent', type: 'agent' },
-    category: 'modality',
-    action: 'modality.adapted',
+    category: 'system',
+    action: 'system.diagnostic_bundle_created',
     payload: {
-      inputType: 'image',
-      outputType: 'text',
-      inputSize: 1024 * 1024, // 1MB
-      analysis: 'Large image analysis result...'.repeat(1000)
+      source: 'verification_gate',
+      size: 1024 * 1024, // 1MB
+      diagnostics: 'Large diagnostic bundle...'.repeat(1000)
     }
   });
   console.log('   ✓ Large payload event emitted in deep mode');

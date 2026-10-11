@@ -56,10 +56,9 @@ describe('Property 30: Event Schema Multi-sync Readiness (PBT)', () => {
     fc.constant('permission'),
     fc.constant('session'),
     fc.constant('tool'),
-    fc.constant('heal'),
-    fc.constant('modality'),
     fc.constant('migration'),
-    fc.constant('system')
+    fc.constant('system'),
+    fc.constant('llm')
   );
   
   /**
@@ -75,10 +74,9 @@ describe('Property 30: Event Schema Multi-sync Readiness (PBT)', () => {
     fc.constant('session.started'),
     fc.constant('session.ended'),
     fc.constant('tool.invoked'),
-    fc.constant('heal.diagnosed'),
-    fc.constant('modality.adapted'),
     fc.constant('migration.started'),
-    fc.constant('system.error')
+    fc.constant('system.error'),
+    fc.constant('llm.requested')
   );
   
   /**

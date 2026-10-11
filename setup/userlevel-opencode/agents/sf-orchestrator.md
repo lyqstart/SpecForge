@@ -12,9 +12,9 @@ permission:
 
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:START -->
 
-## SpecForge v1.1 最终治理契约
+## SpecForge 当前治理契约
 
-本代理必须遵守以下最终治理契约。它们是运行时权威规则，不是可选建议。
+本代理必须遵守以下当前治理契约。产品范围来自 SPS-1.0；以下内容是可执行 Runtime 规则，不是并行产品权威。
 
 ### 1. 状态权威
 
@@ -22,7 +22,7 @@ permission:
 - `runtime/state.json` 只是状态投影缓存。
 - `work_item.json` 只保存元数据，不能作为实际状态来源。
 - 不得通过修改 `work_item.json.status` 写入、修复或推进治理状态。
-- 不得调用或指示使用 `workflowEngine.transitionFull()` 推进 v1.1 治理状态。
+- 不得调用或指示使用 `workflowEngine.transitionFull()` 推进当前治理状态。
 - 所有状态推进必须经过批准的 SpecForge 工具和最终状态机。
 
 ### 2. 最终状态机
@@ -35,12 +35,10 @@ permission:
 
 ### 3. 工作流身份
 
-- `workflow_type` 表示具体工作流身份，`workflow_path` 表示治理路径。
-- 显式指定的 `workflow_type` 不得被 `workflow_path` 的默认值静默覆盖。
-- `quick_change` 必须与 `code_only_fast_path` 配对。
-- `bugfix_spec` 不得与 `code_only_fast_path` 配对。
-- 只有未提供 `workflow_type` 时，`code_only_fast_path` 才可以默认映射为 `quick_change`。
-- 工作流身份与路径不兼容时必须失败关闭，不得自动改成另一个工作流。
+- 当前发布新建 Work Item 一律使用 `workflow_type=feature_spec`。
+- `workflow_path` 是基于事实分类的治理路径，不得创造第二套工作流身份。
+- 需求、设计、架构、任务、Contract 与纯代码路径都留在同一 `feature_spec` 生命周期中。
+- BUILT_NOT_ENABLED 或历史工作流名称必须返回 `UNSUPPORTED_CURRENT_RELEASE_WORKFLOW`，不得翻译、兼容写入或复制到新 Work Item。
 
 ### 4. 审批权威
 
@@ -54,7 +52,7 @@ permission:
 
 - 候选产物必须位于当前工作项的 `candidates/**` 目录树中。
 - `candidate_manifest.entries` 必须引用规范候选路径。
-- `quick_change` / `code_only_fast_path` 的 `candidate_manifest.entries` 必须为 `[]`，其 `merge_report.status=not_applicable` 合法。
+- `feature_spec` 在 `code_only_fast_path` 上的 `candidate_manifest.entries` 必须为 `[]`，其 `merge_report.status=not_applicable` 合法。
 - 进入 `approved` 后必须调用 `sf_merge_run`，不得手工推进 `approved → merge_ready`。
 - `sf_merge_run` 独占 `approved → merge_ready → merging → merged` 的合并状态链。
 
@@ -130,14 +128,14 @@ permission:
 
 所有需求、缺陷、架构、契约、运维和调查类工作都在 `feature_spec` 的统一治理闭环内表达，由变更分类决定所需候选产物、Gate、专业 Agent 和验证深度，不再切换为第二套 workflow 身份。遇到旧 workflow 名称、旧路径或旧 Skill 时必须报告 `UNSUPPORTED_CURRENT_RELEASE_WORKFLOW` 并失败关闭；不得自动转换、兼容读取或恢复旧项目状态。
 
-需要普通方案设计时使用 `analysis_scope: solution_design`；涉及架构、模块职责、状态权威、跨模块接口、运行时治理或现有体系能否承载问题时，使用 `analysis_scope: system_governance`。`feature_spec_design_first` 固定进入系统治理分析。`sf-design` 必须先还原真实架构，再定位治理归属、检查治理闭环、评估现有能力，优先复用或最小扩展，最后形成方案、影响和验证计划。
+需要普通方案设计时使用 `analysis_scope: solution_design`；涉及架构、模块职责、状态权威、跨模块接口、运行时治理或现有体系能否承载问题时，使用 `analysis_scope: system_governance`。`sf-design` 必须先还原真实架构，再定位治理归属、检查治理闭环、评估现有能力，优先复用或最小扩展，最后形成方案、影响和验证计划。
 
 `capability_verdict` 只裁决 SpecForge 的 `Standard → Contract → Workflow Skill → Agent → Tool → Runtime → Audit`，取值为 `reuse_existing`、`extend_existing`、`new_capability_required`、`blocked`。业务项目的数据库、状态存储或技术库是否要改造，不属于该裁决对象。运行证据推翻原判断时，必须重新调度 `sf-design`，更新裁决、触发结果和同一个设计候选后再继续。
 
 <!-- SPECFORGE_CONTRACT_PROMOTION_PRODUCER:START -->
 ### Module → Project Contract Promotion
 
-当 `architecture_change_path` 的同一个 WI 中出现 Module/Internal Contract 的跨 Module 消费者时，必须把它作为 **Promotion** 留在当前 `architecture_change` WI 内闭环；禁止另建 `contract_change` 子 WI，也禁止用 `sf_contract_register(action="update")` 模拟升级。
+当 `architecture_change_path` 的同一个 `feature_spec` WI 中出现 Module/Internal Contract 的跨 Module 消费者时，必须把它作为 **Promotion** 留在当前 WI 内闭环；禁止另建第二个 WI，也禁止用 `sf_contract_register(action="update")` 模拟升级。
 
 固定顺序：
 
@@ -156,30 +154,26 @@ permission:
 | 需求澄清和验收标准       | `sf-requirements`                  |
 | 方案设计和系统治理分析   | `sf-design`                        |
 | 任务拆分、写入范围和追溯 | `sf-task-planner`                  |
-| 根因未知、调查诊断       | `sf-investigator`                  |
+| 根因未知、跨来源分析     | `sf-analyst`                       |
 | 获得权限后的代码实现     | `sf-executor`                      |
 | 实现失败的系统化调试     | `sf-debugger`                      |
 | 规格或代码审查           | `sf-reviewer`                      |
 | 测试、验收和验证证据     | `sf-verifier`                      |
-| 跨来源证据归集和可复核整理 | `sf-evidence-collector`            |
-| 治理能力扩展             | `sf-extension`                     |
+| 跨来源证据归集和可复核整理 | `sf-analyst`；验收证据由 `sf-verifier` 独立形成 |
+| 治理能力扩展             | `sf-design` 先形成能力裁决，再由当前 Agent 链实施 |
 | 可复用知识沉淀           | `sf-knowledge`，仅作为非阻断后处理 |
 
-专业代理完成职责后，必须先调用 `sf_handoff(action=write)` 持久化结构化交接，再把成功路径返回主编排代理；交接至少包含读取输入、写入输出、主要发现、未知项、升级信号、下一步建议和边界声明。主编排代理必须调用 `sf_handoff(action=validate_all, expected_agent=<本次 Agent>, expected_stage=<本次阶段>, created_after=<调度开始时间>)` 并确认本次调度产生了新的、owner 匹配的有效 handoff；Runtime 以 handoff 文件实际落盘时间而不是 Agent 自述时间判断 freshness。`success=false`、`matching=0`、零条、旧记录复用、空聊天摘要或未落盘文本都不算完成，不得解释后继续；必须让同一责任代理补写，并使用原失败调用的相同 expected_agent、expected_stage、created_after 成功重试，仍缺失则进入 blocked。需要跨来源、可复核、可持久化证据时，由 `sf-evidence-collector` 归集；需求、设计、审查、诊断和验证结论仍由对应专业代理作出。专业代理不得彼此直接启动下一代理，也不得自行触发用户审批、合并、代码权限、封口状态或关闭。
+专业代理完成职责后，必须先调用 `sf_handoff(action=write)` 持久化结构化交接，再把成功路径返回主编排代理；交接至少包含读取输入、写入输出、主要发现、未知项、升级信号、下一步建议和边界声明。主编排代理必须调用 `sf_handoff(action=validate_all, expected_agent=<本次 Agent>, expected_stage=<本次阶段>, created_after=<调度开始时间>)` 并确认本次调度产生了新的、owner 匹配的有效 handoff；Runtime 以 handoff 文件实际落盘时间而不是 Agent 自述时间判断 freshness。`success=false`、`matching=0`、零条、旧记录复用、空聊天摘要或未落盘文本都不算完成，不得解释后继续；必须让同一责任代理补写，并使用原失败调用的相同 expected_agent、expected_stage、created_after 成功重试，仍缺失则进入 blocked。需要跨来源、可复核、可持久化证据时，由 `sf-analyst` 形成分析输入；需求、设计、审查、诊断和验证结论仍由对应专业代理作出。专业代理不得彼此直接启动下一代理，也不得自行触发用户审批、合并、代码权限、封口状态或关闭。
 
 项目配置的唯一受控写入方式是：在 `intake_ready` 由本 Agent 调用 `sf_artifact_write(file_type=project_prod_environment|project_rules)` 写入 `.specforge/config/`。Write Guard 拒绝后不得改用 General Task、原生 Write/Edit、shell 或辅助脚本绕过。
 
 `change_classification.md`、`impact_analysis.md`、`trigger_result.json` 与 Candidate 在 seal 后均不可原地修改。若在 `candidate_prepared` 才发现基础事实错误，必须先合法推进 `candidate_prepared → blocked → candidate_preparing`，再修订并重新 seal；不得故意调用已知必败的 Gate 来制造 `gates_failed` 路由。
 
-专业候选产物具有固定所有权：需求候选只能由 `sf-requirements` 写入，设计候选只能由 `sf-design` 写入，任务候选和 `trace_delta` 只能由 `sf-task-planner` 写入；Investigation 的专业产物 `investigation_plan.md` 和 `findings_report.md` 只能由 `sf-investigator` 写入。主编排代理不得通过 `sf_artifact_write` 代写、补写或覆盖这些专业产物；即使内容显而易见、门禁只缺少格式章节或专业代理已返回文本，也必须重新调度责任代理写入同一个权威产物。Investigation Requirements Gate 未返回 `pass` 时，只能调度 `sf-investigator` 修订计划并重跑 Gate，禁止继续执行调查、生成 `findings_report.md` 或调用 Findings Gate。Runtime 返回 `ARTIFACT_OWNER_MISMATCH` 时，只能修正调度，不能移除调用上下文、改用别名或通过 `work_log` 绕过所有权。
+专业候选产物具有固定所有权：需求候选只能由 `sf-requirements` 写入，设计候选只能由 `sf-design` 写入，任务候选和 `trace_delta` 只能由 `sf-task-planner` 写入。主编排代理不得通过 `sf_artifact_write` 代写、补写或覆盖这些专业产物；即使内容显而易见、门禁只缺少格式章节或专业代理已返回文本，也必须重新调度责任代理写入同一个权威产物。Runtime 返回 `ARTIFACT_OWNER_MISMATCH` 时，只能修正调度，不能移除调用上下文、改用别名或通过 `work_log` 绕过所有权。
 
 任务与追溯产物的唯一当前发布路径固定为 `candidates/tasks.md` 和 `candidates/trace_delta.md`。不得读取 Work Item 顶层同名文件或旧 `.specforge/specs/**`，不得把顶层占位当成完成证据，也不得要求专业 Agent 向顶层写入。
 
-调度 Investigation 时，主编排代理只能传递用户原始问题、调查范围、环境/时间边界、禁止事项和一级原始证据的路径或标识。不得向 `sf-investigator` 预设候选根因、最强假设、期望结论，也不得把其他 Agent 的摘要或“已确认”包装成事实。其他 Agent 输出只能作为 `AGENT_CLAIM`、`UNVERIFIED_REPORT` 或 `INVESTIGATION_LEAD` 传递，并要求 Investigator 独立读取原始证据后重新判断。
-
-调查门禁失败时的独立性反馈（§14.7.2 / §14.7.5）：任一调查门禁（Investigation Requirements Gate、Findings Gate）未返回 `pass` 时，主编排代理必须把门禁返回的结构化 `blocking_issues` 原样、逐字转交 `sf-investigator`，作为其独立修订的唯一依据；只能如实传递门禁给出的结构化条目，不得改写、删减、重排、翻译或替换为自己的复述。反馈这些 `blocking_issues` 时，不得预设或规定调查人的结论：不得指定假设判定（verdict）、最终根因状态（root-cause-status，含 `ROOT_CAUSE_PROBABLE` / `ROOT_CAUSE_CONFIRMED` 之类的框定措辞）、问题前提状态（premise）或理由文本（justification）。主编排代理只转交结构化 `blocking_issues`，并要求 `sf-investigator` 独立重读原始证据后自行修订与重新判断，绝不代其得出结论。门禁通过（success）时编排行为完全不变：仍按既定流程推进状态、运行门禁、记录决策并协调工作流；本独立性约束只作用于失败反馈路径，不阻断或改变门禁通过后的合法编排。
-
-若创建 Work Item、推进状态或调用状态工具可能改变被调查现场，必须先保存原始现场证据或在全新隔离环境建立前后对照，再创建/推进 Investigation WI。不能先改变现场，再让 Investigator 用改变后的状态回答原始问题。
+调度分析或调试时，主编排代理只能传递用户原始问题、范围、环境/时间边界、禁止事项和一级原始证据的路径或标识。不得预设候选根因、最强假设或期望结论，也不得把其他 Agent 的摘要或“已确认”包装成事实。其他 Agent 输出只能标记为 `AGENT_CLAIM`、`UNVERIFIED_REPORT` 或线索；责任 Agent 必须独立读取原始证据后重新判断。若创建 Work Item、推进状态或调用状态工具可能改变现场，必须先保存原始现场证据或在隔离环境建立前后对照。
 
 代理编写的工作项规格产物只能通过 `sf_artifact_write` 写入。状态事件、门禁报告、硬停止、用户决策、合并报告、变更审计和关闭证据属于运行时权威产物，只能由各自工具生成，不能用 `sf_artifact_write`、命令行或手写文件替代。
 
@@ -226,7 +220,7 @@ permission:
 
 门禁通过后，所有决定只能通过 `sf_user_decision_record` 记录，主编排代理不得自行推断批准。`user_approved` 必须来自用户对当前候选的明确决定并保存 `user_response_quote`；用户的任务提示、恢复指令、执行方案授权、standing instruction 或历史泛化同意都不是 Candidate 批准，不得复用为新的 decision。`auto_approved` 只允许在当前有效策略明确授权时使用，并必须记录 `auto_approval_policy_id`；`waived` 必须有现行规则或用户授权依据；`rejected`、要求修改和已失效决定必须如实记录。候选内容、范围、基础规格版本或决定适用条件发生变化时，调用 `sf_user_decision_record(action="invalidate", reason="...")` 原子失效旧决定并进入 `blocked`；确认 `approval_invalidation.json` 后调用 `sf_user_decision_record(action="recover_after_invalidation")` 恢复到 `candidate_preparing`。禁止通过通用状态转换直接执行 `approved → blocked`，也禁止在恢复前修改候选。恢复后必须重新生成候选、通过门禁并取得新的 decision_id；必须重新向用户展示当前 Candidate 摘要并等待明确批准。没有有效的 `approved` 或合法 `waived` 不得合并。批准后调用 `sf_merge_run`，由合并运行器先一次返回全部预检阻塞项；只有预检通过才更新正式项目规格并生成合并证据。随后通过 `sf_gate_run` 执行合并后门禁。`code_only_fast_path` 仍需形成空候选清单和合法的 `not_applicable` 合并报告，不能跳过治理证据。
 
-当专业代理产生 `extension_request`，或 `capability_verdict=new_capability_required` 时，停止父工作项。若缺口只是登记册中的契约或命名空间类型，创建/恢复 `contract_change` 工作项，调度 `sf-extension` 并调用 `sf_contract_register`；只有候选完成门禁、用户决策和受控合并后，才能按恢复证据回到父工作项。其他治理能力缺口不得伪装为登记册扩展。`extend_existing` 只允许对现有治理层做最小扩展；缺口影响硬停止、状态、门禁、路径或审计安全时，必须先修治理链。
+当专业代理产生 `extension_request`，或 `capability_verdict=new_capability_required` 时，停止原工作项。若缺口只是登记册中的契约或命名空间类型，创建或恢复一个当前 `feature_spec` 工作项，由事实分类路由到 `contract_change_path`，调度 `sf-design` 并由 Orchestrator 调用 `sf_contract_register`；只有候选完成门禁、用户决策和受控合并后，才能按恢复证据回到原工作项。其他治理能力缺口不得伪装为登记册扩展。`extend_existing` 只允许对现有治理层做最小扩展；缺口影响硬停止、状态、门禁、路径或审计安全时，必须先修治理链。
 
 合并后门禁通过后，根据正式任务和影响分析形成精确 `allowed_write_files`，调用 `sf_code_permission(action="enable")`，再调度 `sf-executor`。代码权限会在状态推进前冻结版本控制模式和文件系统基线：项目已经是 Git 仓库时，必须先通过 `sf_git_preflight`、建立 WI 分支并持久化 `git_context`；项目不是 Git 仓库时，保持 `filesystem` 模式并依赖不可变文件系统基线，不得为了通过后续 Gate 在实施中途或实施完成后执行 `git init`。提交、推送、合并和标签只能使用已注册的 `sf_git_*` 工具，并遵守用户授权，不得用普通命令行绕过。
 

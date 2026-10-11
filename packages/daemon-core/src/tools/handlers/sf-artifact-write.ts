@@ -424,7 +424,7 @@ function normalizeWorkItemJsonArtifact(input: {
       input.parsed.schema_version ?? existing.schema_version ?? WORK_ITEM_METADATA_SCHEMA_VERSION,
     work_item_id: input.parsed.work_item_id ?? existing.work_item_id ?? input.workItemId,
     workflow_type:
-      input.parsed.workflow_type ?? existing.workflow_type ?? input.workflowType ?? 'quick_change',
+      input.parsed.workflow_type ?? existing.workflow_type ?? input.workflowType ?? 'feature_spec',
     workflow_path: input.parsed.workflow_path ?? existing.workflow_path ?? input.workflowPath,
     updated_at: new Date().toISOString(),
   };

@@ -50,7 +50,7 @@ describe('Property 18: Async Command Contract', () => {
    */
   it('**Validates: Requirements 11.1, 11.3, 11.4** - async command returns immediate jobId response', async () => {
     // Test with various command types
-    const commands = ['spec start', 'workflow run', 'heal', 'webhook register', 'daemon restart'];
+    const commands = ['spec start', 'workflow run', 'webhook register', 'daemon restart'];
     
     for (const command of commands) {
       const mockClient = {
@@ -568,7 +568,7 @@ describe('Property 18 PBT: Async Command Contract (100+ iterations)', () => {
           fc.oneof(
             fc.constant('spec start'),
             fc.constant('workflow run'),
-            fc.constant('heal'),
+            fc.constant('job status'),
             fc.constant('daemon restart'),
             fc.string({ minLength: 3, maxLength: 30 })
           ),
@@ -798,7 +798,7 @@ describe('Property 18 PBT: Async Command Contract (100+ iterations)', () => {
             fc.constant('spec start'),
             fc.constant('spec start --template default'),
             fc.constant('workflow run --id wf-123'),
-            fc.constant('heal --item item-456'),
+            fc.constant('job item-456'),
             fc.constant('daemon restart'),
             fc.constant('webhook register --url https://example.com --events "*"'),
             fc.string({ minLength: 3, maxLength: 100 })

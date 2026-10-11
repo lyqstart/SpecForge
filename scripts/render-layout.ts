@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * render-layout.ts — 从 directory-layout.ts 自动生成目录布局文档（v1.1）
+ * render-layout.ts — 从当前 directory-layout.ts 实现合同生成目录布局文档
  *
  * 用法：
  *   bun run scripts/render-layout.ts                  # 生成 docs/conventions/directory-layout.md + 更新 marker
@@ -8,7 +8,7 @@
  *
  * 功能：
  *   1. 读取 packages/types/src/directory-layout.ts 的 LAYOUT / SPEC_DIR_NAME
- *   2. 生成 docs/conventions/directory-layout.md（v1.1 标准）
+ *   2. 生成 docs/conventions/directory-layout.md（当前实现合同的派生说明）
  *   3. 更新目标文件中 <!-- BEGIN: directory-layout --> ... <!-- END: directory-layout --> 之间的内容
  */
 
@@ -30,7 +30,7 @@ interface LayoutConst {
 // ---------------------------------------------------------------------------
 
 /**
- * 通过动态 import 加载 directory-layout.ts 的导出常量（v1.1）。
+ * 通过动态 import 加载 directory-layout.ts 的当前导出常量。
  * bun 支持直接 import TypeScript 文件。
  */
 async function loadLayoutConstants(projectRoot: string): Promise<{
@@ -162,13 +162,13 @@ function makeNestedTableRows(
     .join('\n');
 }
 
-/** 生成完整的 directory-layout.md 内容（v1.1 标准） */
+/** 生成完整的 directory-layout.md 内容（当前实现合同的派生说明） */
 function generateMarkdown(
   SPEC_DIR_NAME: string,
   LAYOUT: LayoutConst,
   sourceContent: string,
 ): string {
-  // ---- v1.1 Active Paths ----
+  // ---- Current active paths ----
 
   // LAYOUT top-level string entries (project, workItems, runtime)
   const activeEntries = Object.entries(LAYOUT)
@@ -206,10 +206,10 @@ function generateMarkdown(
     ? `\n### runtimeFiles 分组\n\n| Key | 路径 | 说明 |\n|-----|------|------|\n${makeNestedTableRows('runtimeFiles', runtimeFiles)}\n`
     : '';
 
-  return `# SpecForge 目录布局（v1.1）
+  return `# SpecForge 当前目录布局
 
 > ⚠️ 本文档由 \`scripts/render-layout.ts\` 从 \`packages/types/src/directory-layout.ts\` 自动生成。
-> 不要手动编辑。
+> 角色：DERIVED REFERENCE，不是产品权威。不要手动编辑；产品边界先由 SPS/已登记 Contract 决定。
 
 ## 项目目录名
 
@@ -217,7 +217,7 @@ function generateMarkdown(
 SPEC_DIR_NAME = '${SPEC_DIR_NAME}'
 \`\`\`
 
-## v1.1 Active Paths (${SPEC_DIR_NAME}/)
+## Current Active Paths (${SPEC_DIR_NAME}/)
 
 ### committed 区（提交到 Git）
 
@@ -289,7 +289,7 @@ async function main(): Promise<void> {
   );
   const sourceContent = fs.readFileSync(sourcePath, 'utf-8');
 
-  // 加载常量（v1.1）
+  // 加载当前实现合同
   const { SPEC_DIR_NAME, LAYOUT } =
     await loadLayoutConstants(projectRoot);
 

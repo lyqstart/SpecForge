@@ -7,13 +7,12 @@
  * - 目录布局与路径服务（directory-layout.ts）
  * - ID 规则（id-rules.ts，§3）
  * - Work Item 核心类型（work-item-types.ts，§4-§13）
- * - Meta Schema（meta-schema.ts）
+ * - 当前 Work Item metadata/schema contract（work-item-metadata-contract.ts / schema-contract.ts）
  */
 
 // ---- 目录布局与路径服务（§1.5 / §1.6）----
 export {
   SPEC_DIR_NAME,
-  SPEC_USER_DIR_NAME,
   LAYOUT,
   legacyPaths,
   type LayoutKey,
@@ -286,29 +285,6 @@ export {
   type EvidenceManifestEntry,
   type EvidenceManifest,
 } from "./work-item-types.js";
-
-// ---- Meta Schema（向后兼容）----
-export {
-  WI_STATUSES as LEGACY_WI_STATUSES,
-  WORKFLOW_PATHS as LEGACY_WORKFLOW_PATHS,
-  MATCH_RESULT_TYPES as LEGACY_MATCH_RESULT_TYPES,
-  WORKFLOW_TYPES,
-  STAGE_TYPES,
-  WorkItemMetaSchema,
-  ModuleCodeSchema,
-  WorkItemIdSchema,
-  RequirementIdSchema,
-  AcceptanceCriteriaIdSchema,
-  DesignDecisionIdSchema,
-  TaskIdSchema,
-  isForbiddenTransition as isLegacyForbiddenTransition,
-  type WIStatus as LegacyWIStatus,
-  type WorkflowPath as LegacyWorkflowPath,
-  type MatchResultType as LegacyMatchResultType,
-  type WorkflowType,
-  type StageType,
-  type WorkItemMeta,
-} from "./meta-schema.js";
 
 // ---- Constants — 常量与枚举（§5-§10）----
 export {

@@ -57,8 +57,9 @@ describe('Design Governance contract alignment', () => {
     );
     expect(agent).toContain('不得看到问题就直接提出新增 Tool、Skill、Router、Agent、模块或治理层');
     expect(agent).toContain('design_delta.md');
-    expect(agent).toContain('refactor_analysis.md');
-    expect(agent).toContain('不得在 Investigation Workflow 中代写、补写或覆盖调查产物');
+    expect(agent).toContain('不得另建 `design_governance_analysis.md`、`architecture_analysis.md` 或其他旁路产物');
+    expect(agent).toContain('旧工作流名称只存在于历史或 BUILT_NOT_ENABLED 实现');
+    expect(agent).not.toContain('refactor_analysis.md');
     for (const heading of governanceHeadings) expect(agent).toContain(heading);
   });
 

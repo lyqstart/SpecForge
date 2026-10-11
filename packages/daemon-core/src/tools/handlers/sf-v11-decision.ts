@@ -170,7 +170,7 @@ function workflowTypeForDecision(workflowPath: string | undefined, workflowType:
   if (requestedWorkflowPath) {
     throw new Error(`UNSUPPORTED_WORKFLOW_PATH_WITHOUT_WORKFLOW_TYPE: ${requestedWorkflowPath}`);
   }
-  return 'quick_change';
+  return 'feature_spec';
 }
 
 function resolveDecisionStatus(args: Record<string, unknown>): UserDecisionStatus | undefined {

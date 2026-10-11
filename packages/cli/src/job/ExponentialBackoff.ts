@@ -241,7 +241,7 @@ export function createSmartPollingStrategy(
   
   if (command.includes('spec') || command.includes('workflow')) {
     jobType = 'long';
-  } else if (command.includes('heal') || command.includes('config')) {
+  } else if (command.includes('config')) {
     jobType = 'medium';
   } else {
     jobType = 'short';

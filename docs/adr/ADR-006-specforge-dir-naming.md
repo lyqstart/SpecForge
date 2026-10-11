@@ -9,6 +9,8 @@
 - **Supersedes**: 无
 - **Superseded by**: 无
 
+> **当前解释（2026-10-11）**：本 ADR 只继续决定项目级治理根使用 `<project>/.specforge/`。其中把用户级运行目录也放在 `~/.specforge`、把旧 `specs/`/`archive/`/CAS 布局写成当前结构的内容，已由 SPS-1.0 §4、ADR-011 和当前 `@specforge/types/directory-layout` 实现合同取代。历史背景和原始决定正文保留，不得据此恢复退役路径。
+
 ---
 
 ## Context

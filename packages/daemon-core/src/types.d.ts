@@ -15,7 +15,7 @@ export interface AgentIdentity {
 /**
  * Event category union type — aligned with @specforge/observability EventCategory.
  */
-export type EventCategory = 'workflow' | 'gate' | 'permission' | 'session' | 'tool' | 'heal' | 'modality' | 'system' | 'llm';
+export type EventCategory = 'workflow' | 'gate' | 'permission' | 'session' | 'tool' | 'system' | 'llm' | 'migration';
 /**
  * Unified Event Schema for SpecForge WAL.
  *

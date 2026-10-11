@@ -1,7 +1,6 @@
 import * as path from 'node:path';
 
 export const SPEC_DIR_NAME = '.specforge' as const;
-export const SPEC_USER_DIR_NAME = '.specforge' as const;
 
 export const LAYOUT = {
   project: 'project',

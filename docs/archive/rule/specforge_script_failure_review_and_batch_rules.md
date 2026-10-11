@@ -1,5 +1,11 @@
 # SpecForge 批处理 / PowerShell 修复包错误复盘与后续强制规则
 
+> Status: HISTORICAL_EVIDENCE_ONLY
+>
+> Archived: 2026-10-11
+>
+> 这是特定历史阶段的事故复盘与批次操作规则，不是当前活动开发规则。当前规则只由 `docs/rule/specforge-active-development-rules.md` 承载；本文件不得被 Bootstrap、测试或执行器作为现行合同消费。
+
 版本：v1.1  
 日期：2026-06-21  
 适用范围：以后所有涉及批处理、PowerShell、修复包、热修包、自动补丁脚本、部署脚本的对话与交付。

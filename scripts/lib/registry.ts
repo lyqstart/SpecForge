@@ -55,7 +55,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/sf_project_init.ts", type: "tool" },
   { path: "tools/sf_semantic_closure_run.ts", type: "tool" },
 
-  // v1.1 governance tools
+  // Current governance tools (some filenames retain implementation-version identifiers)
   { path: "tools/sf_gate_run.ts", type: "tool" },
   { path: "tools/sf_user_decision_record.ts", type: "tool" },
   { path: "tools/sf_merge_run.ts", type: "tool" },

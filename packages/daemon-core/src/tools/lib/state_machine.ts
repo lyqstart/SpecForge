@@ -27,7 +27,7 @@ export type WorkflowType =
   | "architecture_change"
   | "contract_change"
 
-/** workflow_path 是治理路径，不得反向覆盖已兼容的 workflow_type。 */
+/** workflow_path 是治理路径，不得反向创造第二套 current workflow identity。 */
 export type WorkflowPath =
   | "requirement_change_path"
   | "design_change_path"
@@ -53,18 +53,28 @@ export const WORKFLOW_TYPE_TO_PATH: Readonly<Record<WorkflowType, WorkflowPath>>
   contract_change: "contract_change_path",
 }
 
+/** 当前 feature_spec 可以依据事实分类进入的治理路径。 */
+export const CURRENT_FEATURE_SPEC_PATHS: ReadonlySet<WorkflowPath> = new Set([
+  "requirement_change_path",
+  "design_change_path",
+  "architecture_change_path",
+  "task_change_path",
+  "code_only_fast_path",
+  "contract_change_path",
+])
+
 /**
  * 仅当调用方未提供 workflow_type 时才允许使用默认 workflow_type。
  * 禁止把 bugfix_spec + requirement_change_path 静默改成 feature_spec。
  */
 export const WORKFLOW_PATH_DEFAULT_TYPE: Readonly<Partial<Record<WorkflowPath, WorkflowType>>> = {
   requirement_change_path: "feature_spec",
-  design_change_path: "feature_spec_design_first",
-  task_change_path: "refactor",
-  code_only_fast_path: "quick_change",
+  design_change_path: "feature_spec",
+  task_change_path: "feature_spec",
+  code_only_fast_path: "feature_spec",
   spec_migration_path: "spec_migration",
-  architecture_change_path: "architecture_change",
-  contract_change_path: "contract_change",
+  architecture_change_path: "feature_spec",
+  contract_change_path: "feature_spec",
 }
 
 /**
@@ -78,6 +88,9 @@ export function isWorkflowTypeCompatibleWithPath(
 ): workflowType is WorkflowType {
   if (!workflowType || !workflowPath) return false
   if (!(workflowType in WORKFLOW_TYPE_TO_PATH)) return false
+  if (workflowType === "feature_spec" && CURRENT_FEATURE_SPEC_PATHS.has(workflowPath as WorkflowPath)) {
+    return true
+  }
   return WORKFLOW_TYPE_TO_PATH[workflowType as WorkflowType] === workflowPath
 }
 

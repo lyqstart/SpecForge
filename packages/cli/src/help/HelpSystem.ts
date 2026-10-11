@@ -890,51 +890,6 @@ export function createDefaultHelpSystem(): HelpSystem {
         ],
       },
       {
-        name: 'heal',
-        description: 'Heal a work item',
-        async: true,
-        parameters: [
-          {
-            name: 'workItemId',
-            type: 'string',
-            required: true,
-            description: 'Work item ID to heal',
-          },
-          {
-            name: '--wait',
-            type: 'boolean',
-            required: false,
-            description: 'Wait for heal to complete',
-            aliases: ['-w'],
-            default: false,
-          },
-          {
-            name: '--timeout',
-            type: 'number',
-            required: false,
-            description: 'Timeout in seconds for --wait',
-            default: 300,
-          },
-        ],
-        examples: [
-          {
-            description: 'Heal a work item',
-            command: 'specforge heal workitem-12345',
-            output: 'Job created: heal-12345\nUse "specforge job heal-12345" to check status.',
-          },
-          {
-            description: 'Heal and wait for completion',
-            command: 'specforge heal workitem-12345 --wait',
-          },
-        ],
-        troubleshooting: [
-          {
-            problem: 'Heal fails',
-            solution: 'Check if work item exists and is in a healable state. Use `specforge job list` to check status.',
-          },
-        ],
-      },
-      {
         name: 'config',
         description: 'Show or modify CLI configuration',
         examples: [

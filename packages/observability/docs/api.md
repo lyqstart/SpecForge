@@ -641,10 +641,9 @@ type EventCategory =
   | 'permission'
   | 'session'
   | 'tool'
-  | 'heal'
-  | 'modality'
   | 'migration'
-  | 'system';
+  | 'system'
+  | 'llm';
 
 // Event interface (Property 30)
 interface Event {

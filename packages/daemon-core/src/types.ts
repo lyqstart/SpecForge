@@ -23,10 +23,9 @@ export type EventCategory =
   | 'permission'
   | 'session'
   | 'tool'
-  | 'heal'
-  | 'modality'
   | 'system'
-  | 'llm';
+  | 'llm'
+  | 'migration';
 
 /**
  * Unified Event Schema for SpecForge WAL.

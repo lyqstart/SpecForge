@@ -1,10 +1,10 @@
 /**
  * sf-v11-work-item-create — v1.1 Work Item 创建 handler
  *
- * V12:
- * - workflow_type is preserved from classification when available.
- * - workflow_path remains the coarse route.
- * - bugfix_spec must not be silently persisted as feature_spec.
+ * Current release:
+ * - every new Work Item uses the enabled feature_spec identity;
+ * - workflow_path remains the fact-derived governance route;
+ * - built-not-enabled legacy workflow identities are rejected at creation.
  */
 import { join } from 'node:path';
 import { registerHandler } from '../ToolDispatcher';
@@ -19,12 +19,7 @@ import {
   validateChangeClassification,
   type ChangeClassification,
 } from '../lib/change-classification';
-import {
-  WORKFLOW_TYPE_TO_PATH,
-  resolveWorkflowTypeForPath,
-  type WorkflowPath,
-  type WorkflowType,
-} from '../lib/state_machine';
+import { type WorkflowType } from '../lib/state_machine';
 import * as fs from 'node:fs/promises';
 
 async function isPlaceholder(filePath: string): Promise<boolean> {
@@ -59,63 +54,12 @@ export async function requiredGreenfieldClassificationFields(
   ];
 }
 
-function isKnownWorkflowType(value: string | undefined): value is WorkflowType {
-  return !!value && Object.prototype.hasOwnProperty.call(WORKFLOW_TYPE_TO_PATH, value);
-}
-
-function normalizeWorkflowPath(value: string | null | undefined): WorkflowPath | undefined {
-  return value ? (value as WorkflowPath) : undefined;
-}
-
-function workflowCompatibilityError(workflowType: string, workflowPath: string | null | undefined): Error {
-  return new Error(
-    `INCOMPATIBLE_WORKFLOW_TYPE_AND_PATH: workflow_type=${workflowType}; workflow_path=${workflowPath ?? '(none)'}`,
-  );
-}
-
-function resolveExplicitWorkflowType(workflowType: string, workflowPath: string | null | undefined): WorkflowType {
-  if (!isKnownWorkflowType(workflowType)) {
-    throw new Error(`UNKNOWN_WORKFLOW_TYPE: ${workflowType}`);
-  }
-
-  const resolved = resolveWorkflowTypeForPath(normalizeWorkflowPath(workflowPath), workflowType);
-  if (!resolved) {
-    throw workflowCompatibilityError(workflowType, workflowPath);
-  }
-  return resolved;
-}
-
-function resolveDefaultWorkflowType(workflowPath: string | null | undefined): WorkflowType {
-  const resolved = resolveWorkflowTypeForPath(normalizeWorkflowPath(workflowPath));
-  if (resolved) return resolved;
-  if (workflowPath) {
-    throw new Error(`UNSUPPORTED_WORKFLOW_PATH_WITHOUT_WORKFLOW_TYPE: ${workflowPath}`);
+function resolveCurrentWorkflowType(classification: any): WorkflowType {
+  const explicit = classification?.workflow_type ?? classification?.workflowType;
+  if (explicit && String(explicit) !== 'feature_spec') {
+    throw new Error(`UNSUPPORTED_CURRENT_RELEASE_WORKFLOW: ${String(explicit)}`);
   }
   return 'feature_spec';
-}
-
-function inferWorkflowTypeFromClassification(classification: any, workflowPath: string | null): WorkflowType {
-  const explicit = classification?.workflow_type ?? classification?.workflowType;
-  if (explicit) {
-    return resolveExplicitWorkflowType(String(explicit), workflowPath);
-  }
-
-  const intent = String(
-    classification?.intent ??
-      classification?.change_type ??
-      classification?.trigger_type ??
-      classification?.classification ??
-      '',
-  ).toLowerCase();
-
-  if (intent.includes('bug') || intent.includes('fix') || intent.includes('defect')) {
-    return resolveExplicitWorkflowType('bugfix_spec', workflowPath);
-  }
-  if (intent.includes('quick')) {
-    return resolveExplicitWorkflowType('quick_change', workflowPath);
-  }
-
-  return resolveDefaultWorkflowType(workflowPath);
 }
 
 registerHandler('sf_v11_work_item_create', async (args, context, deps) => {
@@ -170,7 +114,7 @@ registerHandler('sf_v11_work_item_create', async (args, context, deps) => {
       }
     }
     const workflowPath = classification ? selectWorkflowPath(classification) : null;
-    const workflowType = inferWorkflowTypeFromClassification(classification, workflowPath);
+    const workflowType = resolveCurrentWorkflowType(classification);
 
     // 1. Create WI directory
     const wiDir = await createWorkItem({
@@ -225,6 +169,14 @@ registerHandler('sf_v11_work_item_create', async (args, context, deps) => {
         error: message,
         code: 'PROJECT_SPEC_VERSION_UNAVAILABLE',
         hard_stop: true,
+      };
+    }
+    if (message.startsWith('UNSUPPORTED_CURRENT_RELEASE_WORKFLOW:')) {
+      return {
+        success: false,
+        error: message,
+        code: 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW',
+        hard_stop: false,
       };
     }
     return { success: false, error: message };

@@ -14,10 +14,10 @@ describe('root test role registry', () => {
     const tracked = listTrackedRootTests();
 
     expect(validateRootTestRoleRegistry(registry, tracked)).toEqual({
-      CURRENT_HERMETIC: 60,
+      CURRENT_HERMETIC: 48,
       CURRENT_ENVIRONMENTAL: 1,
       MIGRATED_DUPLICATE: 14,
-      HISTORICAL_EVIDENCE: 110,
+      HISTORICAL_EVIDENCE: 122,
     });
   });
 

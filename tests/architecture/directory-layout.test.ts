@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import * as path from 'node:path';
 import {
   SPEC_DIR_NAME,
-  SPEC_USER_DIR_NAME,
   LAYOUT,
   legacyPaths,
   resolveProjectPath,
@@ -22,16 +21,15 @@ function np(value: string): string {
   return path.normalize(value);
 }
 
-describe('SpecForge v1.1 directory layout contract', () => {
+describe('SpecForge current project directory layout contract', () => {
   const projectRoot = path.resolve('/repo/project');
   const workItemId = 'WI-0001';
 
   it('keeps the project-level .specforge directory name stable', () => {
     expect(SPEC_DIR_NAME).toBe('.specforge');
-    expect(SPEC_USER_DIR_NAME).toBe('.specforge');
   });
 
-  it('declares the v1.1 project and work item layout keys', () => {
+  it('declares the current project and work item layout keys', () => {
     expect(LAYOUT).toHaveProperty('project');
     expect(LAYOUT).toHaveProperty('config');
     expect(LAYOUT).toHaveProperty('configFiles');
@@ -55,14 +53,14 @@ describe('SpecForge v1.1 directory layout contract', () => {
     expect(Object.prototype.hasOwnProperty.call(LAYOUT, 'manifest')).toBe(false);
   });
 
-  it('resolves v1.1 project-level paths through the canonical Path Service', () => {
+  it('resolves current project-level paths through the canonical Path Service', () => {
     expect(np(resolveProjectPath(projectRoot, 'project'))).toBe(np(path.join(projectRoot, '.specforge', 'project')));
     expect(np(projectSpecManifest(projectRoot))).toBe(np(path.join(projectRoot, '.specforge', 'project', 'spec_manifest.json')));
     expect(np(projectExtensionRegistry(projectRoot))).toBe(np(path.join(projectRoot, '.specforge', 'project', 'extension_registry.json')));
     expect(np(projectRequirementsIndex(projectRoot))).toBe(np(path.join(projectRoot, '.specforge', 'project', 'requirements_index.md')));
   });
 
-  it('resolves v1.1 Work Item transaction paths through canonical helpers', () => {
+  it('resolves current Work Item transaction paths through canonical helpers', () => {
     const wiRoot = path.join(projectRoot, '.specforge', 'work-items', workItemId);
 
     expect(np(workItemRoot(projectRoot, workItemId))).toBe(np(wiRoot));

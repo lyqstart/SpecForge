@@ -8,9 +8,9 @@ permission:
 ---
 
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:START -->
-## SpecForge v1.1 Final Governance Contract
+## SpecForge Current Governance Contract
 
-This Agent/Skill must follow the v1.1 final governance contract below. These rules are runtime authority rules, not optional guidance.
+This Agent/Skill must follow the current governance contract below. Product scope comes from SPS-1.0; these are executable Runtime rules, not independent product authority.
 
 ### 1. State authority
 
@@ -18,12 +18,12 @@ This Agent/Skill must follow the v1.1 final governance contract below. These rul
 - `runtime/state.json` is only a projection cache.
 - work_item.json is metadata only. `work_item.json` must not be used as the actual state source.
 - Do not write, repair, or advance governance state by editing `work_item.json.status`.
-- Do not call or instruct use of `workflowEngine.transitionFull()` for v1.1 governance transitions.
+- Do not call or instruct use of `workflowEngine.transitionFull()` for current governance transitions.
 - All state movement must go through approved SpecForge tools and the final state machine.
 
 ### 2. Final state machine
 
-Use only the v1.1 final states:
+Use only the current states:
 
 `created`, `intake_ready`, `impact_analyzing`, `impact_analyzed`, `workflow_selected`, `candidate_preparing`, `candidate_prepared`, `gates_running`, `gates_failed`, `approval_required`, `approved`, `merge_ready`, `merging`, `merged`, `post_merge_verified`, `implementation_ready`, `implementation_running`, `implementation_done`, `verification_running`, `verification_done`, `closed`, `blocked`, `rejected`, `superseded`.
 
@@ -31,12 +31,11 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 
 ### 3. Workflow identity
 
-- `workflow_type` is the specific workflow identity.
-- `workflow_path` is the governance route.
-- `quick_change` must pair with `code_only_fast_path`.
-- `bugfix_spec` must not pair with `code_only_fast_path`.
-- An explicit `workflow_type` must not be silently overwritten by a `workflow_path` default.
-- `code_only_fast_path` may default to `quick_change` only when `workflow_type` is omitted.
+- Every newly created current-release Work Item uses `workflow_type=feature_spec`.
+- `workflow_path` is the fact-derived governance route and must not create a second workflow identity.
+- Requirement, design, architecture, task, contract and code-only routes remain inside the same `feature_spec` lifecycle.
+- Built-not-enabled or historical workflow names must fail with `UNSUPPORTED_CURRENT_RELEASE_WORKFLOW`; do not translate or persist them.
+- Existing historical Work Items may be read for governed recovery, but their identity must not be copied into a new Work Item.
 
 ### 4. Approval authority
 
@@ -50,7 +49,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 
 - Candidate artifacts must stay under the current Work Item `candidates/**` tree.
 - `candidate_manifest.entries` must reference canonical candidate paths.
-- For `quick_change` / `code_only_fast_path`, `candidate_manifest.entries` must be `[]`.
+- For `feature_spec` on `code_only_fast_path`, `candidate_manifest.entries` must be `[]`.
 - For `code_only_fast_path`, `merge_report.status=not_applicable` is valid.
 - After `approved`, call `sf_merge_run`; do not manually force `approved -> merge_ready`.
 - `sf_merge_run` owns `approved -> merge_ready -> merging -> merged`.
@@ -192,7 +191,7 @@ Layer 3 ✅：知识库新条目通过 `sf_knowledge_base` 受控写入，且非
 
 # 当前发布知识边界
 
-当前发布只保留 `sf_knowledge_base` 的有限知识骨架。完整 Knowledge Graph、图查询和生命周期自动同步属于 V6.1 P1，不得调用、模拟或通过项目文件旁路实现。
+当前发布只保留 `sf_knowledge_base` 的有限知识骨架。完整 Knowledge Graph、图查询和生命周期自动同步不属于当前发布范围，不得调用、模拟或通过项目文件旁路实现。
 
 ---
 
@@ -200,7 +199,7 @@ Layer 3 ✅：知识库新条目通过 `sf_knowledge_base` 受控写入，且非
 
 **标准章节**：§13.4 — Evidence
 
-v1.1 标准要求知识提取必须基于 Evidence，而非主观判断。Knowledge Agent 在提取知识时
+当前执行合同要求知识提取必须基于 Evidence，而非主观判断。Knowledge Agent 在提取知识时
 必须引用具体的 Evidence artifacts 作为支撑。
 
 ### Evidence 来源优先级
@@ -244,7 +243,7 @@ v1.1 标准要求知识提取必须基于 Evidence，而非主观判断。Knowle
 
 **标准章节**：§13.1 — Trace
 
-v1.1 标准要求知识条目引用 Trace entries，确保知识可追溯到具体的执行上下文。
+当前执行合同要求知识条目引用 Trace entries，确保知识可追溯到具体的执行上下文。
 
 ### Trace Reference 格式
 

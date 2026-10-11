@@ -445,7 +445,7 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
 
   const resolvedWorkflowType = resolvedWorkflow.workflowType;
   const effectiveWorkflowType =
-    resolvedWorkflowType || existingWorkflowFacts.workflowType || "quick_change";
+    resolvedWorkflowType || existingWorkflowFacts.workflowType || "feature_spec";
   const useV11 =
     (args["use_v11_state_machine"] as boolean) ||
     !!inheritedWorkflowPath ||

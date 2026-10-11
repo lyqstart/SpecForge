@@ -169,21 +169,17 @@ function workflowTypeFromPath(workflowPath: string): string {
     case 'requirement_change_path':
       return 'feature_spec';
     case 'design_change_path':
-      return 'design_change';
     case 'architecture_change_path':
-      return 'architecture_change';
     case 'task_change_path':
-      return 'task_change';
     case 'code_only_fast_path':
-      return 'quick_change';
+    case 'contract_change_path':
+      return 'feature_spec';
     case 'spec_migration_path':
       return 'spec_migration';
-    case 'contract_change_path':
-      return 'contract_change';
     case 'rollback_path':
       return 'rollback';
     default:
-      return 'quick_change';
+      return 'feature_spec';
   }
 }
 

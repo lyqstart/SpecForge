@@ -70,7 +70,7 @@ export async function createWorkItem(input: CreateWorkItemInput): Promise<string
   const workItemJson: WorkItemMetadata = {
     schema_version: WORK_ITEM_METADATA_SCHEMA_VERSION,
     work_item_id: input.workItemId,
-    workflow_type: input.workflowType ?? 'quick_change',
+    workflow_type: input.workflowType ?? 'feature_spec',
     workflow_path: input.workflowPath ?? null,
     code_change_allowed: false,
     allowed_write_files: [],

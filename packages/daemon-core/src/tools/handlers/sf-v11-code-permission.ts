@@ -45,17 +45,13 @@ function workflowTypeFromPath(workflowPath: string | undefined): string {
     case 'requirement_change_path':
       return 'feature_spec';
     case 'design_change_path':
-      return 'design_change';
     case 'architecture_change_path':
-      return 'architecture_change';
     case 'task_change_path':
-      return 'task_change';
     case 'code_only_fast_path':
-      return 'quick_change';
+    case 'contract_change_path':
+      return 'feature_spec';
     case 'spec_migration_path':
       return 'spec_migration';
-    case 'contract_change_path':
-      return 'contract_change';
     case 'rollback_path':
       return 'rollback';
     default:
@@ -73,7 +69,7 @@ async function assertMergeSucceededBeforeCode(workItemDir: string): Promise<{
   const workflowType = String(workItem?.workflow_type ?? workflowTypeFromPath(workflowPath));
 
   if (workflowPath === 'code_only_fast_path') {
-    return { workflowPath, workflowType: 'quick_change', mergeReportStatus: 'not_applicable' };
+    return { workflowPath, workflowType, mergeReportStatus: 'not_applicable' };
   }
 
   const mergeReport = await readTextIfExists(path.join(workItemDir, 'merge_report.md'));

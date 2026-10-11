@@ -4,6 +4,8 @@
 - Date: 2026-07-27
 - Scope: SpecForge installer / upgrade / verify / uninstall
 
+> **当前解释（2026-10-11）**：路径中的 `C:\Users\luo` 只是当时 Windows 现场示例，不是产品常量。唯一通用合同是 `<OpenCode config>/specforge-manifest.json`；配置根按当前安装器路径解析规则计算。
+
 ## 决策
 
 Windows 当前用户环境下，SpecForge 用户级 Manifest 的唯一正式位置为：

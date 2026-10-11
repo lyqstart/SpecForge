@@ -220,13 +220,14 @@ describe('t2 pilot governance recovery contracts', () => {
     );
     expect(freshlyRecorded).toMatchObject({ success: true, matching: 1 });
 
+    const validationCutoff = new Date(Date.now() + 60_000);
     const stale = await handler(
       {
         action: 'validate_all',
         work_item_id: 'WI-0001',
         expected_agent: 'sf-design',
         expected_stage: 'candidate-design',
-        created_after: '2026-10-08T00:00:00.000Z',
+        created_after: validationCutoff.toISOString(),
       },
       { directory: projectRoot, agent: 'sf-orchestrator' },
       deps(),
@@ -242,7 +243,7 @@ describe('t2 pilot governance recovery contracts', () => {
       ),
     ).toHaveLength(1);
 
-    const futureRecordedAt = new Date('2026-10-09T00:00:00.000Z');
+    const futureRecordedAt = new Date(validationCutoff.getTime() + 60_000);
     await fs.utimes(written.path, futureRecordedAt, futureRecordedAt);
     const correctedRetry = await handler(
       {
@@ -250,7 +251,7 @@ describe('t2 pilot governance recovery contracts', () => {
         work_item_id: 'WI-0001',
         expected_agent: 'sf-design',
         expected_stage: 'candidate-design',
-        created_after: '2026-10-08T00:00:00.000Z',
+        created_after: validationCutoff.toISOString(),
       },
       { directory: projectRoot, agent: 'sf-orchestrator' },
       deps(),

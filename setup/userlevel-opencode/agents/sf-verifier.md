@@ -11,9 +11,9 @@ permission:
 ---
 
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:START -->
-## SpecForge v1.1 Final Governance Contract
+## SpecForge Current Governance Contract
 
-This Agent/Skill must follow the v1.1 final governance contract below. These rules are runtime authority rules, not optional guidance.
+This Agent/Skill must follow the current governance contract below. Product scope comes from SPS-1.0; these are executable Runtime rules, not independent product authority.
 
 ### 1. State authority
 
@@ -21,12 +21,12 @@ This Agent/Skill must follow the v1.1 final governance contract below. These rul
 - `runtime/state.json` is only a projection cache.
 - work_item.json is metadata only. `work_item.json` must not be used as the actual state source.
 - Do not write, repair, or advance governance state by editing `work_item.json.status`.
-- Do not call or instruct use of `workflowEngine.transitionFull()` for v1.1 governance transitions.
+- Do not call or instruct use of `workflowEngine.transitionFull()` for current governance transitions.
 - All state movement must go through approved SpecForge tools and the final state machine.
 
 ### 2. Final state machine
 
-Use only the v1.1 final states:
+Use only the current states:
 
 `created`, `intake_ready`, `impact_analyzing`, `impact_analyzed`, `workflow_selected`, `candidate_preparing`, `candidate_prepared`, `gates_running`, `gates_failed`, `approval_required`, `approved`, `merge_ready`, `merging`, `merged`, `post_merge_verified`, `implementation_ready`, `implementation_running`, `implementation_done`, `verification_running`, `verification_done`, `closed`, `blocked`, `rejected`, `superseded`.
 
@@ -34,12 +34,11 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 
 ### 3. Workflow identity
 
-- `workflow_type` is the specific workflow identity.
-- `workflow_path` is the governance route.
-- `quick_change` must pair with `code_only_fast_path`.
-- `bugfix_spec` must not pair with `code_only_fast_path`.
-- An explicit `workflow_type` must not be silently overwritten by a `workflow_path` default.
-- `code_only_fast_path` may default to `quick_change` only when `workflow_type` is omitted.
+- Every newly created current-release Work Item uses `workflow_type=feature_spec`.
+- `workflow_path` is the fact-derived governance route and must not create a second workflow identity.
+- Requirement, design, architecture, task, contract and code-only routes remain inside the same `feature_spec` lifecycle.
+- Built-not-enabled or historical workflow names must fail with `UNSUPPORTED_CURRENT_RELEASE_WORKFLOW`; do not translate or persist them.
+- Existing historical Work Items may be read for governed recovery, but their identity must not be copied into a new Work Item.
 
 ### 4. Approval authority
 
@@ -53,7 +52,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 
 - Candidate artifacts must stay under the current Work Item `candidates/**` tree.
 - `candidate_manifest.entries` must reference canonical candidate paths.
-- For `quick_change` / `code_only_fast_path`, `candidate_manifest.entries` must be `[]`.
+- For `feature_spec` on `code_only_fast_path`, `candidate_manifest.entries` must be `[]`.
 - For `code_only_fast_path`, `merge_report.status=not_applicable` is valid.
 - After `approved`, call `sf_merge_run`; do not manually force `approved -> merge_ready`.
 - `sf_merge_run` owns `approved -> merge_ready -> merging -> merged`.
@@ -158,7 +157,7 @@ Layer 3 ✅：verification_report.md 含真实命令输出，sf-orchestrator 能
 
 ---
 
-## Extension Registry 前置检查（v1.1 强制）
+## Extension Registry 前置检查（当前合同）
 
 在开始验证之前，必须：
 
@@ -170,20 +169,9 @@ Layer 3 ✅：verification_report.md 含真实命令输出，sf-orchestrator 能
 
 ---
 
-# 测试矩阵（按工作流类型）
+# 测试矩阵（按变更事实与风险）
 
-| 测试层 | quick_change | bugfix_spec | feature_spec | refactor | ops_task |
-|---|---|---|---|---|---|
-| **L1 单元测试** | - | 必跑 | 必跑 | 必跑 | - |
-| **L2 集成测试** | - | 必跑 | 必跑 | 必跑 | - |
-| **L3 属性测试 PBT** | - | - | 推荐 | - | - |
-| **L4 端到端 E2E** | 必跑 | 必跑 | 必跑 | 必跑 | 必跑 |
-| **L5 冒烟测试** | 必跑 | - | - | - | 必跑 |
-| **L6 回归测试** | - | 必跑 | 必跑 | **必跑** | - |
-| **L7 性能测试** | - | - | 推荐（有性能 REQ 时） | - | - |
-| **L8 安全测试** | - | - | 推荐（有安全 REQ 时） | - | 推荐 |
-| **L9 兼容性测试** | - | - | 必跑 | - | - |
-| **L10 UAT（人工）** | - | - | 推荐 | - | - |
+所有当前 Work Item 都是 `feature_spec`；验证深度由变更事实、风险、受影响层级和验收标准决定，而不是旧 workflow 名称决定。代码修改通常要求 L1 单元、L2 集成和 L6 回归；用户可见主链要求 L4 E2E；部署/运维变化要求 L5 冒烟；出现性能、安全或兼容性要求时分别增加 L7、L8、L9；需要用户业务判断时增加 L10 UAT。`code_only_fast_path` 也必须验证变更点和不变行为，不能因为路径较短而省略必要回归。
 
 **L9 兼容性测试**：在 prod-environment.md 的生产最低版本跑一遍。
 例如生产 Python 3.8：`docker run --rm -v $(pwd):/app python:3.8-slim bash -c "cd /app && pip install -r requirements.txt && python -m pytest"`
@@ -192,11 +180,11 @@ Layer 3 ✅：verification_report.md 含真实命令输出，sf-orchestrator 能
 
 ---
 
-# 验证强度匹配变更规模
+# 验证强度匹配变更风险
 
-- **quick_change**（改 1-2 行代码）：只检查 4-6 项核心断言，toolcalls ≤ 10
-- **bugfix_spec**（修复 bug）：检查修复点 + 不变行为 + 回归，toolcalls ≤ 20
-- **feature_spec**（新功能）：全面验证，toolcalls ≤ 25
+- **code-only、低风险**：验证目标断言、不变行为和受影响回归。
+- **缺陷修复**：验证复现、修复点、不变行为和回归。
+- **需求、架构、Contract 或部署变化**：按 Acceptance Criteria 完整验证，并覆盖跨模块、端到端和发布消费者。
 
 ---
 
@@ -236,7 +224,7 @@ Get-ChildItem -Path .specforge -Recurse -Directory -ErrorAction SilentlyContinue
 ```
 
 > ⚠️ 如果验证场景需要 daemon 重启或 installer reconcile，向 Orchestrator 报告
-> `blocked`，由 Orchestrator 决定是否调度 ops_task。Verifier 不得自行执行这些操作。
+> `blocked`，由 Orchestrator 根据当前受控能力和用户授权决定恢复路径。Verifier 不得自行执行这些操作。
 
 #### Step 3：关键不变性断言
 
@@ -408,58 +396,6 @@ Runtime 负责把结构化 Verification JSON 渲染为 Markdown，并保留机�
 
 ---
 
-## spec_migration 专用 Required Output（强制 workflow-specific 分支）
-
-当 `workflow_type=spec_migration` / `workflow_path=spec_migration_path` 时，本节**替代**
-下方通用实现型 `semantic_closure` 示例。不得把通用 OUT → REQ → DD → TASK 链套到迁移工作流。
-
-必须返回：
-```json
-{
-  "semantic_closure": {
-    "schema_version": "1.0",
-    "closure_profile": "spec_migration",
-    "workflow_type": "spec_migration",
-    "work_item_id": "<WI-ID>",
-    "outcomes": [],
-    "requirements": [],
-    "design_decisions": [],
-    "tasks": [],
-    "evidence": [
-      {
-        "id": "EV-...",
-        "status": "passed",
-        "level": "L3 | L4 | L5",
-        "evidence_type": "behavioral | integration | e2e",
-        "supports": ["<真实 governance claim target>"]
-      }
-    ],
-    "project_integration": {
-      "required": true,
-      "status": "merged"
-    },
-    "spec_migration": {
-      "project_spec_version": "PSV-...",
-      "atomic_spec_merge_status": "success | passed | merged",
-      "post_merge_gate_status": "passed",
-      "changed_files_audit_status": "passed",
-      "verification_status": "passed",
-      "trace_contract_status": "passed"
-    }
-  }
-}
-```
-
-Evidence 同步契约：
-1. 先根据实际验证结果冻结**一份最终 evidence set**；
-2. `evidence_manifest.entries` 与 `semantic_closure.evidence` 中相同 `id` 的
-   `id/status/level/evidence_type/supports` 五个字段必须逐条完全一致；
-3. spec_migration 的 `supports` 使用实际治理 claim target，不得为了满足通用模板伪造
-   `OUT-*` / `REQ-*` / `TASK-*`；
-4. 写入 `evidence_manifest` 后，在返回最终 Verification JSON 前重新核对上述五字段；
-5. 任一不一致时 `conclusion` 不得为 `pass`，不得把不一致留给 Verification Gate 才发现。
-
----
 # Required Output
 
 向 Orchestrator 返回**验证 JSON 对象**：
@@ -552,9 +488,9 @@ Orchestrator 只负责把其中的 `semantic_closure` 原样传给 `sf_semantic_
 
 ---
 
-# v1.1 Verification Pipeline Concepts
+# 当前 Verification Pipeline 合同
 
-> 本节定义 v1.1 标准中与验证流程直接相关的概念。Verifier 必须理解从
+> 本节解释当前验证流程合同。Verifier 必须理解从
 > Trace entry 到 Verification Report、Evidence Manifest、再到 Close Gate
 > 的完整链路。
 
@@ -815,7 +751,7 @@ Evidence 必须同时登记在 evidence_manifest 中，且 status、level、type
 
 - 发现越界写入 → 整体验证结果为 **blocked**（不是 fail，因为问题不在验证本身）
 - 在 `summary` 中明确说明哪个 TASK 修改了哪些越界文件
-- 推荐 Orchestrator 执行 `root_cause_investigation` 或退回 `tasks` 修正合同
+- 推荐 Orchestrator 调度 `sf-analyst` / `sf-debugger` 独立取证，或退回任务阶段修正合同
 
 ---
 # Architecture / Data / Contract / Scope 验证规则

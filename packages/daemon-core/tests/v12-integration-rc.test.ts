@@ -12,7 +12,7 @@ function expectRepoFile(relativePath: string): string {
   return readFileSync(full, 'utf8');
 }
 
-describe('v1.2 integration RC hardening', () => {
+describe('current implementation boundary with preserved v1.2 evidence', () => {
   it('keeps the current control plane free of duplicate Project Registry and local write-guard owners', () => {
     expect(existsSync(join(repoRoot, 'packages/daemon-core/src/project/ProjectSpecStore.ts'))).toBe(false);
     expect(existsSync(join(repoRoot, 'packages/daemon-core/src/tools/lib/write-guard-preflight-v12.ts'))).toBe(false);
@@ -28,12 +28,15 @@ describe('v1.2 integration RC hardening', () => {
     expectRepoFile('setup/userlevel-opencode/tools/sf_contract_register.ts');
   });
 
-  it('preserves v1.2 design evidence while current disposition owns implementation scope', () => {
+  it('preserves v1.2 design and disposition files strictly as historical evidence', () => {
     const matrix = expectRepoFile('docs/archive/design/specforge-v1.2-acceptance-matrix.md');
     const projectSpec = expectRepoFile('docs/archive/design/specforge-v1.2-project-spec-architecture.md');
     const extension = expectRepoFile('docs/archive/design/specforge-v1.2-extension-subflow-design.md');
-    const currentDisposition = expectRepoFile(
+    const historicalDisposition = expectRepoFile(
       'docs/archive/implementation/architecture-consistency/current-release-module-and-change-disposition-matrix.md',
+    );
+    const authorityRegistry = expectRepoFile(
+      'docs/product-specification/authority-registry.md',
     );
 
     expect(matrix).toContain('PSA-P1');
@@ -41,7 +44,10 @@ describe('v1.2 integration RC hardening', () => {
     expect(matrix).toContain('EXT-N2');
     expect(projectSpec).toContain('.specforge/project/**');
     expect(extension).toContain('extension_registry.json');
-    expect(currentDisposition).toMatch(/sf_write_guard_preflight[^\n]*`REMOVE`/);
+    expect(historicalDisposition).toContain('sf_write_guard_preflight');
+    expect(authorityRegistry).toContain(
+      '测试若读取归档文件，只能验证历史证据未丢失，不能据此约束当前产品行为',
+    );
   });
 
   it('keeps the v1.2 slice reports present as release evidence', () => {

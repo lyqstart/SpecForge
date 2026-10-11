@@ -41,7 +41,6 @@ specforge webhook list
 specforge job <job-id>
 
 # Utilities
-specforge heal <work-item-id>
 specforge config
 
 # Options
@@ -64,7 +63,6 @@ The CLI supports two output modes:
 - `workflow` - Manage workflows
 - `job` - Query async job status
 - `webhook` - Manage webhooks
-- `heal` - Trigger self-healing
 - `config` - Show configuration
 
 ## Complete Removal Including User Data

@@ -37,7 +37,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
     platformExecutable: true,
   },
 
-  // Agent 定义（9 个 + 公共骨架）
+  // Agent 定义（10 个 + 公共骨架）
   { path: "agents/sf-orchestrator.md", type: "agent" },
   { path: "agents/sf-requirements.md", type: "agent" },
   { path: "agents/sf-design.md", type: "agent" },
@@ -50,7 +50,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "agents/sf-analyst.md", type: "agent" },
   { path: "agents/_AGENT_BASE.md", type: "agent" },  // 公共骨架（供参考）
 
-  // Custom Tools（16 个）
+  // 当前 Tool 源镜像；部署清单的唯一 owner 是 scripts/lib/registry.ts
   { path: "tools/sf_artifact_write.ts", type: "tool" },
   { path: "tools/sf_batch_verify.ts", type: "tool" },
   { path: "tools/sf_design_gate.ts", type: "tool" },
@@ -93,7 +93,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/lib/sf_safe_bash_executor.ts", type: "tool_lib" },
   { path: "tools/lib/sf_safe_bash_rules.ts", type: "tool_lib" },
   { path: "tools/lib/sf_safe_bash_types.ts", type: "tool_lib" },
-  { path: "tools/lib/thin-client.ts", type: "tool_lib" },  // V6 Thin Plugin HTTP 客户端
+  { path: "tools/lib/thin-client.ts", type: "tool_lib" },  // Thin Plugin HTTP 客户端
 
   // Plugin（1 个 — 统一 Plugin，替代原来的 5 个 + daemon-spawn 已删除）
   {
@@ -119,7 +119,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
     sourcePath: "configs/workflows/builtin/feature_spec.json",
   },
 
-  // Skills（16 个目录的 SKILL.md）
+  // Skill 源镜像；部署清单的唯一 owner 是 scripts/lib/registry.ts
   { path: "skills/sf-workflow-feature-spec/SKILL.md", type: "skill" },
   { path: "skills/superpowers-brainstorming/SKILL.md", type: "skill" },
   { path: "skills/superpowers-code-review/SKILL.md", type: "skill" },
@@ -206,7 +206,7 @@ export function resolveRegistryReleaseItemIds(
 /**
  * 内置 SpecForge Agent 定义
  *
- * 以 SHARED_COMPONENT_REGISTRY 中 9 个 Agent 为准，固定生成 user-level 配置。
+ * 以 SHARED_COMPONENT_REGISTRY 中 10 个 Agent 为准，固定生成 user-level 配置。
  * prompt 路径使用相对于 User_Level_Directory 的引用。
  */
 export const SPECFORGE_AGENT_DEFINITIONS: Record<string, AgentConfig> = {

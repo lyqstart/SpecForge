@@ -2,13 +2,13 @@
 
 > Status: ACTIVE / AUTHORITY_REGISTRY
 >
-> Effective date: 2026-10-01
+> Effective date: 2026-10-11
 >
-> Registry version: 1.5
+> Registry version: 1.6
 >
 > Product owner: SpecForge 产品负责人
 >
-> Establishing baseline: main@5204a1611d9a1f02f96da637e6ec1c2acd35a8d0
+> Initial establishing baseline: main@5204a1611d9a1f02f96da637e6ec1c2acd35a8d0
 
 ## 1. 唯一产品权威
 
@@ -44,6 +44,9 @@ SPS-1.0
 | docs/rule/specforge-development-error-ledger-and-experience.md | 开发错误台账：历史错误、审计与经验演化证据；不再要求每会话全文读取，按任务关键词定向检索 | NO（HISTORICAL EVIDENCE + TARGETED SEARCH） |
 | docs/design/SpecForge架构一致性治理最终实施方案.md | 架构一致性与契约治理的从属技术合同 | NO |
 | docs/archive/design/SpecForge架构一致性治理最终实施方案.full-history-20261006.md | 2026-10-06 前完整治理实施方案的原样历史快照；只用于追溯规则演进 | NO（HISTORICAL EVIDENCE） |
+| docs/conventions/** | 当前实现合同的派生说明；必须可追溯到 SPS、已登记 Contract 或真实代码，不得独立定义产品 | NO（DERIVED REFERENCE） |
+| docs/user/**, docs/cli/** | 面向用户和运维者的当前版本使用说明；必须与已发布入口、安装器和运行合同一致 | NO（DERIVED OPERATING DOCUMENTATION） |
+| docs/engineering-lessons/** | 工程经验的主题化索引或说明；活动规则仍只由 active-development-rules 承载 | NO（REFERENCE） |
 | docs/archive/** | 旧规格、旧标准、旧设计、实施记录、报告、审计与 Kiro 材料的统一历史归档 | NO |
 | docs/design/**（除上列从属合同外） | 当前不得新增并行设计权威；新增设计必须先登记角色 | NO |
 | .kiro/** | 根目录禁止存在；历史内容只可位于 docs/archive/kiro/** | FORBIDDEN ROOT |
@@ -53,6 +56,8 @@ SPS-1.0
 | README / prompts | 导航或使用说明 | NO |
 
 `docs/archive/**` 中的文件必须保持可追溯，但不得作为当前需求、设计或执行状态输入。测试若读取归档文件，只能验证历史证据未丢失，不能据此约束当前产品行为。
+
+`docs/rule/` 只允许保存本 Registry 已登记的当前规则文件。事故专用规则、已完成阶段脚本规则和其他不再持续约束开发的材料必须进入 `docs/archive/rule/**`，不得以活动目录位置暗示当前效力。
 
 ## 4. 当前产品负责人裁决
 

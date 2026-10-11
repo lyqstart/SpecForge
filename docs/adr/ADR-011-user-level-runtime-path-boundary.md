@@ -4,6 +4,8 @@
 - Date: 2026-07-27
 - Scope: user-level runtime paths, daemon, host profile, CLI/service management, migration
 
+> **当前解释（2026-10-11）**：本 ADR 的当前有效决定是用户级根统一为 `<OpenCode config>/sf-user/`、项目级根继续为 `<project>/.specforge/`、`~/.specforge` 不得作为当前写入目标。正文中的机器专属绝对路径只作历史现场示例；子目录集合以 SPS-1.0 和 `@specforge/types/user-level-paths` 为准。
+
 ## 决策
 
 项目级治理目录继续使用：

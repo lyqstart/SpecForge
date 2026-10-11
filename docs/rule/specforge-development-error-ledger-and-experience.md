@@ -31072,3 +31072,195 @@ handoff 的新鲜度必须以 Runtime 可验证的持久化时间为准，不能
 - ERR1768_STATUS=CLOSED_BY_E3FCC8CD_REMOTE_MAIN_FINAL_RELEASE_PRECHECK_111_FILE_INSTALL_HASH_ALIGNMENT_AND_DAEMON_HEALTH
 - ERR1774_STATUS=CLOSED_BY_CONTROLLED_RECOVERY_IMPLEMENTATION_FULL_REGRESSION_REMOTE_MAIN_DELIVERY_AND_USERLEVEL_DEPLOYMENT
 - ERR1779_STATUS=CLOSED_BY_FINAL_MAIN_SHA_CANDIDATE_MAIN_E3FCC8CD_WORKING_TREE_STEP1774_AND_RELEASE_PRECHECK_PASS
+
+## ERR-1780：唯一产品权威建立后，活动规则、派生文档、CLI 与测试仍保留旧权威语义
+
+- **发生时间**：2026-10-11
+- **分类**：`AUTHORITY_CONSUMER_DRIFT / DOCUMENT_ROLE_VIOLATION / OUT_OF_SCOPE_CLI_SURFACE`。
+- **事实证据**：内容级审计确认：活动规则 EXP-197/199/201/206/213 仍要求已经由 AR-DEC-04/05/06 退役的 raw-ref、exact-authority、ZIP/CMD Bootstrap 机制；`docs/conventions/**`、`docs/user/**`、`docs/cli/**` 仍描述旧 `.specforge` 用户根、`_meta.json` 与多工作流；`@specforge/types` 仍导出旧 meta schema 和 `.specforge` 用户根；CLI 仍注册并展示 SPS D07 明确排除的 `heal`；两项当前测试从 `docs/archive/**` 正文反向约束现行产品行为；`project-status` 仍停在用户已完成的 t2 恢复之前。
+- **影响与根因**：Authority Recovery 完成了上位规格和主要运行链，却没有对所有派生文档、生成器、帮助系统、无生产消费者的旧导出和归档测试实施持续的角色登记与反向消费者门禁。文件标题和目录位置被当作职责判断，内容与真实消费者没有一起审计。
+- **纠正与防复发**：Authority Registry 显式登记 conventions/user/CLI/engineering-lessons；SPS 只保留稳定 Gap 管理规则并归档关闭历史；活动规则改用当前仓库 Bootstrap 语义；旧事故专用规则归档；派生文档、ADR 当前解释、类型与 CLI surface 对齐；当前测试不得从归档正文建立产品断言，并新增文档角色/禁止反向权威回归。
+- REUSED_EXP=EXP-001,EXP-004,EXP-007,EXP-017,EXP-021,EXP-023,EXP-025,EXP-026,EXP-032,EXP-033,EXP-040,EXP-044,EXP-060,EXP-087,EXP-098,EXP-103,EXP-195,EXP-218,EXP-227,EXP-241,EXP-251,EXP-252,EXP-254,EXP-259,EXP-261
+- ERR1780_STATUS=IMPLEMENTATION_IN_PROGRESS
+
+## EXP-276：文档角色必须登记，当前消费者不得从历史材料反向建立产品合同
+
+Product Specification 只保存稳定产品规则；Authority Registry 登记每类文档职责；`project-status` 只保存当前恢复点；活动规则只保存持续生效的工程纪律；历史时间线、事故、已关闭 Gap 和过期实施机制进入账本或 `docs/archive/**`。README、用户/CLI 文档、约定、代码、帮助文本、生成器和测试均是下游消费者，必须可追溯到上位权威。测试可以验证归档证据未丢失，但不得用归档正文决定当前产品行为；发现冲突时修改下游并增加“禁止反向权威”的回归。
+
+### ERR-1781：全仓构建被 host-profile 测试 mock 的隐式 any 阻断
+
+- **发生时间**：2026-10-11
+- **分类**：`STRICT_TYPESCRIPT_TEST_MOCK_DRIFT`。
+- **事实证据**：文档权威与消费者收敛后的官方 `bun run build` 在 `@specforge/host-profile` 停止；`src/scanner.test.ts` 的 `importOriginal` 参数触发 `TS7006`，其无类型函数上的泛型调用继续触发 `TS2347`。
+- **影响与根因**：测试文件属于 package `tsconfig` 的严格编译范围，但 mock factory 参数依赖当前 Vitest 类型解析未能提供的上下文类型；产品运行逻辑未进入构建。
+- **纠正与防复发**：为 `importOriginal` 补充返回 `node:os` 模块的函数类型并移除无效泛型调用；不改变 mock 行为。修复后必须从官方全仓构建入口重跑，不得只跳过该 package。
+- REUSED_EXP=EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-103
+- ERR1781_STATUS=FIX_APPLIED_FULL_BUILD_RERUN_PENDING
+
+### ERR-1782：OpenCode Adapter 使用 Fetch API 但严格构建未加载 DOM 类型库
+
+- **发生时间**：2026-10-11
+- **分类**：`TYPESCRIPT_RUNTIME_API_LIB_OMISSION`。
+- **事实证据**：ERR-1781 修复后，官方全仓构建继续到 `@specforge/opencode-adapter`；`OpenCodeHttpRuntimeClient.ts` 与 `ThinPluginClient.ts` 对 `Response.ok/status/statusText/text/json` 的全部访问被 TypeScript 报为不存在。
+- **影响与根因**：该 package 的 `tsconfig` 只声明 `ES2022`，但生产源码明确使用标准 Fetch API；缺少 `DOM` / `DOM.Iterable` 类型库使 `typeof fetch` 和 `Response` 合同不完整。该失败在本轮业务变更前已潜伏，但由完整构建首次证实。
+- **纠正与防复发**：在该 package 的编译 `lib` 中显式加入 `DOM` 与 `DOM.Iterable`，保持运行代码不变；随后从官方全仓构建入口重跑。
+- REUSED_EXP=EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-103
+- ERR1782_STATUS=FIX_APPLIED_FULL_BUILD_RERUN_PENDING
+
+### ERR-1783：Daemon Core 严格构建重复暴露 Fetch 类型库和 mock 参数类型缺口
+
+- **发生时间**：2026-10-11
+- **分类**：`TYPESCRIPT_RUNTIME_API_LIB_OMISSION / STRICT_TEST_MOCK_DRIFT`。
+- **事实证据**：ERR-1782 修复后，官方构建完成此前全部 package，在 `@specforge/daemon-core` 报告 `HTTPServer.test.ts` 的 `Response.status/json` 不存在，并报告 `getSession(sessionId)` 参数为隐式 `any`。
+- **影响与根因**：Daemon package 与 OpenCode Adapter 一样使用标准 Fetch API，却只声明 `ES2022` 编译库；同时纳入严格构建的 HTTP 测试 mock 未显式绑定接口参数类型。
+- **纠正与防复发**：Daemon `tsconfig` 同步声明 `DOM` / `DOM.Iterable`，测试回调补 `sessionId: string`；不改变 HTTP Runtime 行为。继续从官方全仓构建入口验证。
+- REUSED_EXP=EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-103
+- ERR1783_STATUS=FIX_APPLIED_FULL_BUILD_RERUN_PENDING
+
+### ERR-1784：权威消费者收敛后的首轮全仓测试暴露派生发布与测试夹具漂移
+
+- **发生时间**：2026-10-11
+- **分类**：`DERIVED_RELEASE_PROJECTION_STALE / CURRENT_TEST_CONTRACT_DRIFT / TIME_DEPENDENT_FIXTURE`。
+- **事实证据**：沙箱外官方 `bun run test` 的根级 current 48 文件 720 项通过；scope-gate 的 3 项安装器测试报告当前 Agent/Skill/AGENTS 与旧 release manifest 哈希不一致，角色登记测试仍写死旧计数 60/1/14/110；daemon-core 的设计治理测试仍要求已退役 `refactor_analysis.md`，handoff 测试以固定 2026-10-08 时间判断“未来”记录，在当前日期 2026-10-11 反而匹配成功。除这些消费者外，已完成包均通过。
+- **影响与根因**：源合同已经收敛，但发布清单、派生计数断言、旧工作流断言和依赖墙钟的夹具没有同时更新；这验证了 ERR-1780 所述“下游消费者必须与权威一起审计”。
+- **纠正与防复发**：以当前角色注册表更新精确计数；设计合同测试改为断言唯一 `feature_spec` 及禁止旁路产物；handoff freshness 使用相对当前时间的 cutoff 和受控 mtime；完成源变更后由正式 producer 重建 release runtime/manifest，再定向及官方全量重跑。
+- REUSED_EXP=EXP-002,EXP-007,EXP-021,EXP-023,EXP-026,EXP-032,EXP-033,EXP-040,EXP-044,EXP-087,EXP-195,EXP-276
+- ERR1784_STATUS=FIX_APPLIED_RELEASE_REBUILD_AND_FULL_RERUN_PENDING
+
+### ERR-1785：发布 Runtime 生成器在受限沙箱中因工作目录解析失败而中止
+
+- **发生时间**：2026-10-11
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / RELEASE_BUILD_CARRIER_FAILURE`。
+- **事实证据**：首次运行正式 `scripts/build-release-runtime-artifacts.ts` 时，Bun 在受限沙箱内以 `EBADF resolving root directory packages/cli/src` 退出；未产生可接受的发布构建结论。使用同一仓库、同一 producer、同一参数在沙箱外重跑后退出码为 0，随后 release precheck 通过。
+- **影响与根因**：失败发生在执行载体解析工作目录阶段，不是 TypeScript 源码、发布清单或产品 Runtime 的失败；如果只保留成功重跑会掩盖载体限制。
+- **纠正与防复发**：记录原始失败，并仅对已证实的沙箱环境限制使用最小范围的沙箱外执行；不得改用旁路生成器或把失败命令改写成成功。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-033,EXP-065,EXP-087,EXP-263
+- ERR1785_STATUS=CLOSED_BY_SAME_PRODUCER_OUTSIDE_SANDBOX_AND_RELEASE_PRECHECK_PASS
+
+### ERR-1786：删除已退役忽略产物前的只读 PowerShell 清单命令存在管道语法错误
+
+- **发生时间**：2026-10-11
+- **分类**：`VERIFICATION_COMMAND_SYNTAX_ERROR / NO_SIDE_EFFECT_FAILURE`。
+- **事实证据**：用于在删除 `packages/types/dist/meta-schema.js` 与 `.d.ts` 前输出路径、边界和文件信息的首条 PowerShell 命令因空管道元素触发 ParserError；该命令在删除动作前失败，没有修改文件。修正为先由 `foreach` 构建 `$rows` 后重新执行，只读核验通过，随后才按两个已解析的精确路径删除；最终完整构建没有重建这些文件。
+- **影响与根因**：错误只影响首轮取证命令，未产生仓库副作用；根因是把语句块直接放在管道位置而未形成可枚举表达式。
+- **纠正与防复发**：破坏性动作前的目标核验与动作保持分离；PowerShell 复合枚举先赋值再输出，失败时不得继续沿用未核验目标。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-021,EXP-033,EXP-044,EXP-087
+- ERR1786_STATUS=CLOSED_BY_CORRECTED_READ_ONLY_INVENTORY_EXACT_PATH_DELETE_AND_BUILD_NON_RECREATION
+
+### ERR-1787：仓库级 lint 入口因既有配置和依赖漂移不能形成有效质量门禁
+
+- **发生时间**：2026-10-11
+- **分类**：`REPOSITORY_LINT_INFRASTRUCTURE_DRIFT / INSUFFICIENT_VALIDATION_CAPABILITY`。
+- **事实证据**：文档权威收敛完成后运行正式 `bun run lint`，根任务退出码为 1。多个 package 在本次未修改文件上分别报告缺少 ESLint 配置、缺少 `@eslint/js`、ESLint 8/9 配置格式分裂、typescript-eslint 与 TypeScript API 不兼容，以及大量既有 Prettier 差异；daemon-core 单包报告 6724 项，错误覆盖大量本次未修改源文件。相同工作树的正式 `bun run build` 与 `bun run test` 均退出 0。
+- **影响与根因**：当前 lint 不能区分本轮增量缺陷与仓库既有债务，因而不能作为本轮变更的可用阻断门禁；但这不等于 lint 已通过，也不证明所报告问题都无价值。修复需要统一全仓 ESLint major、配置继承、插件版本和格式化基线，属于独立横切工程，不应通过本轮自动修复数千文件来伪装收敛。
+- **纠正与防复发**：本轮如实标记 lint 为 `BLOCKED_BY_BASELINE_INFRASTRUCTURE`，以 `git diff --check`、严格 TypeScript 全量构建、正式顺序全量测试和定向合同测试作为已执行验证；后续必须建立独立、可审计的 lint 基线修复批次后才能把 lint 恢复为阻断门禁。
+- REUSED_EXP=EXP-001,EXP-002,EXP-007,EXP-021,EXP-023,EXP-032,EXP-033,EXP-044,EXP-087,EXP-195
+- ERR1787_STATUS=OPEN_SEPARATE_CROSS_CUTTING_LINT_INFRASTRUCTURE_REPAIR_REQUIRED
+
+- ERR1780_STATUS=IMPLEMENTED_DOCUMENT_ROLE_CONTRACT_ARCHIVE_BOUNDARY_CLI_TYPES_RUNTIME_AND_TEST_CONSUMERS_ALIGNED_FULL_BUILD_AND_OFFICIAL_WORKSPACE_REGRESSION_PASS_DELIVERY_PENDING
+- ERR1781_STATUS=CLOSED_BY_STRICT_TYPESCRIPT_BUILD_PASS
+- ERR1782_STATUS=CLOSED_BY_STRICT_TYPESCRIPT_BUILD_PASS
+- ERR1783_STATUS=CLOSED_BY_STRICT_TYPESCRIPT_BUILD_PASS
+- ERR1784_STATUS=CLOSED_BY_RELEASE_RUNTIME_MANIFEST_REBUILD_PRECHECK_AND_OFFICIAL_WORKSPACE_REGRESSION_PASS
+
+### ERR-1788：派生工作流与生命周期文档首轮改写仍偏离可执行状态机
+
+- **发生时间**：2026-10-11
+- **分类**：`DERIVED_DOCUMENT_CONTRACT_DRIFT / INDEPENDENT_DIFF_AUDIT_FINDING`。
+- **事实证据**：独立内容复核发现 `docs/conventions/workflow-types.md` 只列出 `requirement_change_path`，遗漏状态机当前支持的其余五条 `feature_spec` 路径；`wi-lifecycle.md` 把不存在的 `decision_recorded` 和报告字段值 `not_applicable` 写成 workflow state。源码 `CURRENT_FEATURE_SPEC_PATHS` 与 `FINAL_STATES` 直接证明两处偏差。
+- **影响与根因**：文件虽然已正确标注为派生文档，但首轮重写仍凭摘要人工转述，没有逐项绑定可执行常量；这会继续误导用户和 Agent。
+- **纠正与防复发**：文档改为列出六条当前路径，生命周期严格使用状态机终态并解释 `not_applicable` 只是报告字段；文档角色合同测试直接遍历 `CURRENT_FEATURE_SPEC_PATHS` 与 `FINAL_STATES`，避免再次手工复制不完整列表。
+- REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-023,EXP-026,EXP-033,EXP-044,EXP-087,EXP-195,EXP-276
+- ERR1788_STATUS=CLOSED_BY_EXECUTABLE_CONSTANT_BOUND_DOCUMENT_CONTRACT_TEST
+
+### ERR-1789：内容审计的首条 ripgrep 正则缺少闭合括号
+
+- **发生时间**：2026-10-11
+- **分类**：`READ_ONLY_VERIFICATION_COMMAND_SYNTAX_ERROR / NO_SIDE_EFFECT_FAILURE`。
+- **事实证据**：用于定位 lifecycle 事件类别的首条 `rg` 正则返回 `regex parse error: unclosed group`；命令只读且在产生搜索结果前失败。随后改用 `rg -F` 精确字面搜索并取得可复核结果。
+- **影响与根因**：没有文件写入或产品执行影响；失败仅证明首条搜索表达式无效，不能支撑内容结论。
+- **纠正与防复发**：固定标识检索优先使用 `rg -F`；只有确需模式匹配时才使用正则，并把失败命令与有效重跑分开记录。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-033,EXP-044,EXP-087
+- ERR1789_STATUS=CLOSED_BY_FIXED_STRING_RERUN
+
+### ERR-1790：Observability 公开事件类别继续暴露已退出当前产品的能力
+
+- **发生时间**：2026-10-11
+- **分类**：`PUBLIC_TYPE_SURFACE_DRIFT / BUILT_NOT_ENABLED_CAPABILITY_LEAK`。
+- **事实证据**：源码与消费者审计确认 `@specforge/observability` 的 `EventCategory`、校验器、API 文档、示例和属性测试仍公开 `heal`、`modality`；daemon-core 镜像类型也公开两者。全仓当前源码没有这两类生产事件发射器。SPS D07 将 Self-Healing 与 Multimodal 明确列为 `BUILT_NOT_ENABLED`。`migration` 则仍被安装/升级失败诊断场景消费，表示版本或数据迁移事件，不等于已退出的 Migration 工作流。
+- **影响与根因**：已退役能力仍以公共类型合同形式对调用者可见，且 observability 与 daemon 的镜像类型对 `migration` 又不一致；这使“模块不在当前产品”与开发 API 互相矛盾。
+- **纠正与防复发**：从当前事件类别、校验器、示例、文档和测试删除 `heal`、`modality`；保留真实诊断所需 `migration`，并同步 daemon 镜像类型。文档角色合同新增负向断言，要求两处类型、校验器和 API 文档均不再出现退役类别且继续包含 `migration`。
+- REUSED_EXP=EXP-001,EXP-007,EXP-017,EXP-021,EXP-023,EXP-026,EXP-032,EXP-033,EXP-040,EXP-044,EXP-087,EXP-195,EXP-276
+- ERR1790_STATUS=FIX_APPLIED_VALIDATION_PENDING
+
+### ERR-1791：跨 package 定向测试首轮错误复用根 Vitest 收集规则
+
+- **发生时间**：2026-10-11
+- **分类**：`TEST_ENTRYPOINT_SCOPE_MISMATCH / ZERO_TESTS_EXECUTED`。
+- **事实证据**：首条定向命令从仓库根传入两个 Observability 文件和一个 daemon-core 文件，但根 Vitest 配置只收集 `tests/**/*.test.ts` 与 `tests/**/*.property.test.ts`，返回 `No test files found`、退出码 1；没有测试被执行。
+- **影响与根因**：该输出不能作为通过或失败结论；执行者把 workspace package 内路径误交给根配置。
+- **纠正与防复发**：分别从对应 package 工作目录执行同一测试文件，让各 package 使用自身 Vitest 版本和配置；后续仍以正式 `bun run test` 作为全仓结论。
+- REUSED_EXP=EXP-002,EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-087,EXP-195
+- ERR1791_STATUS=CLOSED_BY_PACKAGE_SCOPED_ENTRYPOINTS
+
+### ERR-1792：受限沙箱阻止 Vitest realpath 解析依赖目录
+
+- **发生时间**：2026-10-11
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / ZERO_TESTS_EXECUTED`。
+- **事实证据**：修正 package 工作目录后，两条 Vitest 命令在受限沙箱中均于收集前因 `EPERM: operation not permitted, realpath ...vitest/dist/spy.js` 中止，报告 `no tests`；使用完全相同的命令与工作目录在沙箱外重跑后，Observability 2 文件 22 项、文档角色合同 1 文件 10 项全部通过。
+- **影响与根因**：失败发生在 Vite/Vitest 解析 Bun 依赖缓存真实路径阶段，不是产品代码或断言失败。
+- **纠正与防复发**：只有出现该已证实的载体错误时才使用最小范围沙箱外重跑，必须保留零测试失败输出，且不得把重跑改成更弱入口。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-033,EXP-065,EXP-087,EXP-263
+- ERR1792_STATUS=CLOSED_BY_IDENTICAL_COMMANDS_OUTSIDE_SANDBOX_32_OF_32_PASS
+
+- ERR1790_STATUS=CLOSED_BY_FOCUSED_32_OF_32_STRICT_BUILD_AND_OFFICIAL_SEQUENTIAL_WORKSPACE_REGRESSION_PASS
+
+### ERR-1793：状态引用取证命令在 PowerShell 中被未转义双引号提前终止
+
+- **发生时间**：2026-10-11
+- **分类**：`READ_ONLY_VERIFICATION_COMMAND_QUOTING_ERROR / NO_SIDE_EFFECT_FAILURE`。
+- **事实证据**：用于搜索 `currentStatus/rollbackTarget/targetState` 是否赋值旧状态的首条 `rg` 命令把包含 `['\"]` 的模式放进 PowerShell 双引号上下文，shell 将 `?:decision_recorded` 解释为命令并失败；没有完成搜索，也没有文件写入。改用多个单引号包裹的 `rg -e` 模式后命令退出 1 且无匹配，证明指定赋值范围未命中。
+- **影响与根因**：首条失败不能支撑状态消费者判断；根因是跨 JavaScript、PowerShell 与 ripgrep 三层引号边界未收敛。
+- **纠正与防复发**：PowerShell 中的正则参数使用单引号字面量或拆成多个 `-e`；失败命令与有效重跑分别记录。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-033,EXP-044,EXP-087
+- ERR1793_STATUS=CLOSED_BY_SINGLE_QUOTED_MULTI_PATTERN_RERUN
+
+### ERR-1794：workflow-runtime 兼容导出仍把两个已退出状态声明为当前枚举
+
+- **发生时间**：2026-10-11
+- **分类**：`EXECUTABLE_TYPE_CONTRACT_DRIFT / LEGACY_NAME_CURRENT_SEMANTICS_CONFUSION`。
+- **事实证据**：SPS 状态机、`configs/workflows/builtin/feature_spec.json`、`@specforge/types` 和 daemon-core `FINAL_STATES` 均从 `approved` 进入 `merge_ready` 或 `implementation_ready`，没有 `decision_recorded`、`merge_not_applicable` 状态；但 workflow-runtime `WI_STATUSES_V11` 仍列出两者，并在文件头称其为当前可执行合同。真实源码消费者只使用该模块的禁止跳转判断和恢复类型，没有对这两个旧值的赋值命中。
+- **影响与根因**：公共类型层继续向调用者宣告不存在的状态，派生文档即使对齐 daemon 也会与另一个代码合同冲突；`V11` 兼容导出名被误当成必须保留旧语义。
+- **纠正与防复发**：保留导出名以避免无关导入破坏，但枚举内容与当前 SPS/内置工作流/daemon 状态机一致，删除两个旧状态；文档角色合同增加源码级负向断言。
+- REUSED_EXP=EXP-001,EXP-007,EXP-017,EXP-021,EXP-023,EXP-026,EXP-032,EXP-033,EXP-040,EXP-044,EXP-087,EXP-195,EXP-276
+- ERR1794_STATUS=CLOSED_BY_CURRENT_STATE_ENUM_ALIGNMENT_STRICT_BUILD_AND_WORKFLOW_RUNTIME_69_FILES_1516_TESTS_PASS
+
+### ERR-1795：clean build 没有删除无源码的旧 dist 文件，扫描仍命中 Kiro 权威路径
+
+- **发生时间**：2026-10-11
+- **分类**：`STALE_IGNORED_BUILD_ARTIFACT / RETIRED_AUTHORITY_REFERENCE`。
+- **事实证据**：全仓构建成功后，四个被 `dist/` ignore 的旧文件仍存在：CLI 的 `scope-gate-bridge.js/.d.ts` 与 version-unification 的 `migrate-manifest-command.js/.d.ts`；它们修改时间早于本轮构建、对应源码均不存在，内容继续引用 `.kiro/specs/**`。当前 release manifest 不包含这些文件。
+- **影响与根因**：它们不进入当前发布集合，但会污染本地代码审计并可能被人工误用；package 构建没有先 clean，已删除源码的旧输出不会自动消失。
+- **纠正与防复发**：在记录精确绝对路径、大小和 ignore 来源后删除四个无源码派生产物；重新构建并验证不重现，同时保持归档历史不变。
+- REUSED_EXP=EXP-001,EXP-007,EXP-011,EXP-017,EXP-021,EXP-023,EXP-026,EXP-033,EXP-040,EXP-044,EXP-087,EXP-195,EXP-276
+- ERR1795_STATUS=CLOSED_BY_EXACT_DELETE_STRICT_BUILD_NON_RECREATION_AND_RELEASE_EXCLUSION_VERIFICATION
+
+### ERR-1796：CLI 包级 README 漏过首轮现役消费者扫描
+
+- **发生时间**：2026-10-11
+- **分类**：`DERIVED_DOCUMENT_CONSUMER_OMISSION / RETIRED_COMMAND_ADVERTISEMENT`。
+- **事实证据**：提交前独立退役术语扫描发现 `packages/cli/README.md` 仍在 Usage 与 Commands 两处展示 `specforge heal`；正式 CLI 注册、HelpSystem、根 README、用户文档和命令参考已经删除该命令，SPS D07 也明确 Self-Healing 不属于当前产品。
+- **影响与根因**：包级 README 是当前开发者文档消费者，却未被首轮以 `docs/cli/**` 为主的文档清单覆盖；若直接提交，会继续向 CLI 维护者宣告不存在的命令。
+- **纠正与防复发**：删除包级 README 的两处 `heal` 宣传，并在最终扫描中把 `packages/**/README.md` 纳入当前消费者范围；历史 fixture 与账本命中继续作为证据保留。
+- REUSED_EXP=EXP-001,EXP-007,EXP-017,EXP-021,EXP-023,EXP-026,EXP-032,EXP-033,EXP-040,EXP-044,EXP-087,EXP-195,EXP-276
+- ERR1796_STATUS=CLOSED_BY_PACKAGE_README_ALIGNMENT_DOCUMENT_ROLE_CONTRACT_10_OF_10_AND_CURRENT_CONSUMER_SCAN
+
+### ERR-1797：受限执行环境阻止 Git 创建暂存锁文件
+
+- **发生时间**：2026-10-11
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / ZERO_GIT_MUTATION`。
+- **事实证据**：提交前精确执行 `git add -- README.md docs packages scripts setup tests` 时，Git 在创建 `D:/code/SpecForge/.git/index.lock` 前返回 `Permission denied`、退出码 1；当前环境只授予 `.git` 只读访问，命令没有产生暂存结果。
+- **影响与根因**：失败只说明默认沙箱不能写 Git index，不构成 diff、测试或提交内容缺陷；继续前必须确认 status 未变化，并通过受控 Git 写入授权重跑同一精确命令。
+- **纠正与防复发**：所有需要写 `.git` 的 add/commit/merge 操作使用已批准的 Git 权限通道；失败输出与有效重跑分别保留，不得把失败命令报告为已暂存。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-021,EXP-032,EXP-033,EXP-044,EXP-065,EXP-087,EXP-195,EXP-263
+- ERR1797_STATUS=CLOSED_BY_AUTHORIZED_IDENTICAL_GIT_ADD_EXIT_ZERO

@@ -8,9 +8,9 @@ permission:
 ---
 
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:START -->
-## SpecForge v1.1 Final Governance Contract
+## SpecForge 当前治理契约
 
-These rules are runtime authority rules, not optional guidance.
+产品范围来自 SPS-1.0；以下规则是本 Agent 必须遵守的可执行 Runtime 合同，不是并行产品权威。
 
 ### 1. State authority
 
@@ -22,7 +22,8 @@ These rules are runtime authority rules, not optional guidance.
 
 ### 2. Workflow and approval authority
 
-- `workflow_type` is the specific workflow identity; `workflow_path` is the governance route.
+- New Work Items always use `workflow_type=feature_spec`; `workflow_path` is the fact-derived governance route inside that lifecycle.
+- Historical or BUILT_NOT_ENABLED workflow names must fail closed with `UNSUPPORTED_CURRENT_RELEASE_WORKFLOW`.
 - User approval must be recorded only through `sf_user_decision_record`.
 - Notes, comments, reasons, Agent statements and historical approval do not constitute current structured approval evidence.
 - Candidate and merge artifacts remain under the current Work Item governance path and must not be written by this read-only Agent.

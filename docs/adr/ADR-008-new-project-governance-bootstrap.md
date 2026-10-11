@@ -5,6 +5,8 @@
 - 基线：`e2075f7883e3460312e26c60f7202d7d825cc50c`
 - 影响范围：ADR-007 与《SpecForge架构一致性治理最终实施方案》中 Phase 11 / Phase 12 的执行定义
 
+> **当前解释（2026-10-11）**：本 ADR 继续决定 SpecForge 不以自身 Work Item 自举开发、旧项目兼容不属于当前目标，以及新项目必须通过真实治理链完成首次闭环。正文中的 Phase 11/12 执行进度、临时状态和当时文件清单属于历史实施记录；当前工作流、产物和下一动作由 SPS-1.0、当前实现合同与 `docs/project-status.md` 决定。
+
 ## 1. 决策背景
 
 SpecForge 产品本身不使用 SpecForge / OpenCode 自治理开发。SpecForge 由外部开发工具直接维护，因此不存在“SpecForge 用 SpecForge 开发自己”或“SpecForge 自身 Project Spec 迁移”的产品目标。

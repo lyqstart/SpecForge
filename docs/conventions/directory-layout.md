@@ -1,7 +1,7 @@
-# SpecForge 目录布局（v1.1）
+# SpecForge 当前目录布局
 
 > ⚠️ 本文档由 `scripts/render-layout.ts` 从 `packages/types/src/directory-layout.ts` 自动生成。
-> 不要手动编辑。
+> 角色：DERIVED REFERENCE，不是产品权威。不要手动编辑；产品边界先由 SPS/已登记 Contract 决定。
 
 ## 项目目录名
 
@@ -9,7 +9,7 @@
 SPEC_DIR_NAME = '.specforge'
 ```
 
-## v1.1 Active Paths (.specforge/)
+## Current Active Paths (.specforge/)
 
 ### committed 区（提交到 Git）
 
@@ -89,7 +89,7 @@ SPEC_DIR_NAME = '.specforge'
 
 | Key | 路径 | 说明 |
 |-----|------|------|
-| runtimeFiles.events | `runtime/events.jsonl` | authoritative workflow event log |
+| runtimeFiles.events | `runtime/events.jsonl` | — |
 | runtimeFiles.state | `runtime/state.json` | — |
 | runtimeFiles.checkpoints | `runtime/checkpoints` | — |
 | runtimeFiles.logs | `runtime/logs` | — |

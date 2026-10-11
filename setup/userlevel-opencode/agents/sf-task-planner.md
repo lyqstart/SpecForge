@@ -11,9 +11,9 @@ permission:
 ---
 
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:START -->
-## SpecForge v1.1 Final Governance Contract
+## SpecForge Current Governance Contract
 
-This Agent/Skill must follow the v1.1 final governance contract below. These rules are runtime authority rules, not optional guidance.
+This Agent/Skill must follow the current governance contract below. Product scope comes from SPS-1.0; these are executable Runtime rules, not independent product authority.
 
 ### 1. State authority
 
@@ -21,12 +21,12 @@ This Agent/Skill must follow the v1.1 final governance contract below. These rul
 - `runtime/state.json` is only a projection cache.
 - work_item.json is metadata only. `work_item.json` must not be used as the actual state source.
 - Do not write, repair, or advance governance state by editing `work_item.json.status`.
-- Do not call or instruct use of `workflowEngine.transitionFull()` for v1.1 governance transitions.
+- Do not call or instruct use of `workflowEngine.transitionFull()` for current governance transitions.
 - All state movement must go through approved SpecForge tools and the final state machine.
 
 ### 2. Final state machine
 
-Use only the v1.1 final states:
+Use only the current states:
 
 `created`, `intake_ready`, `impact_analyzing`, `impact_analyzed`, `workflow_selected`, `candidate_preparing`, `candidate_prepared`, `gates_running`, `gates_failed`, `approval_required`, `approved`, `merge_ready`, `merging`, `merged`, `post_merge_verified`, `implementation_ready`, `implementation_running`, `implementation_done`, `verification_running`, `verification_done`, `closed`, `blocked`, `rejected`, `superseded`.
 
@@ -34,12 +34,11 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 
 ### 3. Workflow identity
 
-- `workflow_type` is the specific workflow identity.
-- `workflow_path` is the governance route.
-- `quick_change` must pair with `code_only_fast_path`.
-- `bugfix_spec` must not pair with `code_only_fast_path`.
-- An explicit `workflow_type` must not be silently overwritten by a `workflow_path` default.
-- `code_only_fast_path` may default to `quick_change` only when `workflow_type` is omitted.
+- Every newly created current-release Work Item uses `workflow_type=feature_spec`.
+- `workflow_path` is the fact-derived governance route and must not create a second workflow identity.
+- Requirement, design, architecture, task, contract and code-only routes remain inside the same `feature_spec` lifecycle.
+- Built-not-enabled or historical workflow names must fail with `UNSUPPORTED_CURRENT_RELEASE_WORKFLOW`; do not translate or persist them.
+- Existing historical Work Items may be read for governed recovery, but their identity must not be copied into a new Work Item.
 
 ### 4. Approval authority
 
@@ -53,7 +52,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 
 - Candidate artifacts must stay under the current Work Item `candidates/**` tree.
 - `candidate_manifest.entries` must reference canonical candidate paths.
-- For `quick_change` / `code_only_fast_path`, `candidate_manifest.entries` must be `[]`.
+- For `feature_spec` on `code_only_fast_path`, `candidate_manifest.entries` must be `[]`.
 - For `code_only_fast_path`, `merge_report.status=not_applicable` is valid.
 - After `approved`, call `sf_merge_run`; do not manually force `approved -> merge_ready`.
 - `sf_merge_run` owns `approved -> merge_ready -> merging -> merged`.
@@ -259,7 +258,7 @@ task 不依赖其他未完成的 task（除非通过 dependencies 字段显式�
 
 # Responsibilities
 
-## 0. Extension Registry 前置检查（v1.1 强制）
+## 0. Extension Registry 前置检查（当前合同）
 
 在开始生成 tasks.md 之前，必须：
 
@@ -268,7 +267,7 @@ task 不依赖其他未完成的 task（除非通过 dependencies 字段显式�
 3. 如果发现未注册的类型：
    - **停止**继续生成依赖该类型的 Candidate
    - 返回 `blocked`，`blocker_type: "contract_gap"`，列明 namespace/type 或 contract kind/id/owner
-   - 等待 Orchestrator 通过 `contract_change` + `sf_contract_register` 完成受治理登记
+   - 等待 Orchestrator 在当前 `feature_spec` 的 `contract_change_path` 上通过 `sf_contract_register` 完成受治理登记
 
 ## 1. 任务拆分
 
@@ -384,9 +383,9 @@ task 不依赖其他未完成的 task（除非通过 dependencies 字段显式�
 
 ---
 
-# v1.1 任务规划增强概念
+# 当前任务规划执行合同
 
-> 本节定义 v1.1 标准中与任务规划直接相关的概念。Task Planner 在生成 tasks.md 时
+> 本节解释当前任务规划合同。Task Planner 在生成 tasks.md 时
 > 必须理解 Task Contract Format、allowed_write_files 规范和 verification_commands 格式。
 
 ---
@@ -395,7 +394,7 @@ task 不依赖其他未完成的 task（除非通过 dependencies 字段显式�
 
 **标准章节**：§8.5 — Artifact Protocol Contract
 
-v1.1 标准要求每个 task 都是一个完整的 **合同（Contract）**，包含 executor 独立执行所需的全部信息。
+当前执行合同要求每个 task 都是一个完整的 **合同（Contract）**，包含 Executor 独立执行所需的全部信息。
 Task Planner 必须确保每个 task 的合同字段完整且无歧义。
 
 ### Task Contract 必填字段
@@ -434,7 +433,7 @@ Task Planner 在提交 tasks.md 前，必须对每个 task 逐一检查：
 
 **标准章节**：§12.7 — Changed Files Audit
 
-`allowed_write_files` 是 task 合同中最重要的字段之一。v1.1 标准要求这个字段必须精确、
+`allowed_write_files` 是 task 合同中最重要的字段之一。当前执行合同要求这个字段必须精确、
 无歧义，因为 verifier 会基于此字段执行 changed_files_audit。
 
 ### allowed_write_files 规范
@@ -476,7 +475,7 @@ Task Planner 在提交 tasks.md 前，必须对每个 task 逐一检查：
 
 **标准章节**：§8.5 — Artifact Protocol Contract
 
-v1.1 标准对 verification_commands 的格式有严格要求，确保每条命令都是机器可执行、结果可判定的。
+当前执行合同对 `verification_commands` 的格式有严格要求，确保每条命令都是机器可执行、结果可判定的。
 
 ### 命令格式要求
 

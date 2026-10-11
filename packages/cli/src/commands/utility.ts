@@ -2,7 +2,6 @@
  * Utility Commands
  * 
  * Provides miscellaneous utility commands:
- * - heal: Trigger self-healing for a work item
  * - config: Show current CLI configuration
  * - version: Show CLI version
  * 
@@ -13,9 +12,7 @@ import yargs, { Argv, Arguments } from 'yargs';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { DaemonClient } from '../http/DaemonClient';
 import { ModeSwitch, formatError } from '../mode-switch';
-import { toCliError } from '../errors';
 import { resolveSpecForgeHandshakePath, resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
 import { getCodeVersion } from '@specforge/version-unification';
 /**
@@ -38,35 +35,6 @@ function getHandshakePath(): string {
  */
 function getConfigDir(): string {
   return resolveSpecForgeUserRoot();
-}
-
-/**
- * Read handshake file and create client
- */
-function getDaemonClient(): DaemonClient {
-  const handshakePath = getHandshakePath();
-  
-  // Default values
-  let port = 3847;
-  let token = '';
-  let host = '127.0.0.1';
-  
-  if (fs.existsSync(handshakePath)) {
-    try {
-      const handshake = JSON.parse(fs.readFileSync(handshakePath, 'utf-8'));
-      port = handshake.port;
-      token = handshake.token;
-      host = handshake.bound_to === '0.0.0.0' ? '127.0.0.1' : handshake.bound_to;
-    } catch {
-      // Use defaults if handshake file is invalid
-    }
-  }
-
-  return new DaemonClient({
-    host,
-    port,
-    token,
-  });
 }
 
 /**
@@ -128,55 +96,6 @@ export function getCliConfig(): {
 }
 
 /**
- * Heal command - trigger self-healing for a work item
- */
-export async function commandHeal(
-  argv: Arguments<{ workItemId: string }>,
-  modeSwitch: ModeSwitch
-): Promise<void> {
-  const client = getDaemonClient();
-  const workItemId = argv.workItemId;
-  
-  try {
-    // Call self-healing API
-    const response = await client.post<{
-      success: boolean;
-      message: string;
-      healingId?: string;
-    }>('/api/heal', {
-      workItemId,
-    });
-
-    if (modeSwitch.isJson()) {
-      console.log(modeSwitch.formatData({
-        workItemId,
-        healingId: response.healingId,
-        success: response.success,
-        message: response.message,
-      }));
-    } else {
-      if (response.success) {
-        console.log(modeSwitch.formatSuccess(response.message));
-        if (response.healingId) {
-          console.log(`Healing ID: ${response.healingId}`);
-          console.log(`\nUse "specforge job ${response.healingId}" to monitor progress.`);
-        }
-      } else {
-        console.log(modeSwitch.formatError({
-          name: 'HealingFailed',
-          message: response.message,
-        }));
-        process.exit(1);
-      }
-    }
-  } catch (err) {
-    const cliError = toCliError(err);
-    console.error(modeSwitch.formatError(cliError));
-    process.exit(1);
-  }
-}
-
-/**
  * Config command - show current configuration
  */
 export function commandConfig(
@@ -235,23 +154,6 @@ export function commandVersion(
 export function addUtilityCommands(yargsInstance: Argv): Argv {
   return yargsInstance
     .command(
-      'heal <workItemId>',
-      'Trigger self-healing for a work item',
-      (yargsInstance: Argv) => {
-        return yargsInstance
-          .positional('workItemId', {
-            type: 'string',
-            describe: 'Work item ID to heal',
-            demandOption: true,
-          });
-      },
-      (argv: Arguments) => {
-        const args = argv.json ? ['--json'] : [];
-        const modeSwitch = new ModeSwitch(args);
-        commandHeal(argv as Arguments<{ workItemId: string }>, modeSwitch);
-      }
-    )
-    .command(
       'config',
       'Show current CLI configuration',
       () => {},
@@ -289,23 +191,6 @@ export async function runUtilityCommand(
       },
     })
     .command(
-      'heal <workItemId>',
-      'Trigger self-healing for a work item',
-      (yargsInstance: Argv) => {
-        return yargsInstance
-          .positional('workItemId', {
-            type: 'string',
-            describe: 'Work item ID to heal',
-            demandOption: true,
-          });
-      },
-      (argv: Arguments) => {
-        const args = argv.json ? ['--json'] : [];
-        const modeSwitch = new ModeSwitch(args);
-        commandHeal(argv as Arguments<{ workItemId: string }>, modeSwitch);
-      }
-    )
-    .command(
       'config',
       'Show current CLI configuration',
       () => {},
@@ -325,7 +210,7 @@ export async function runUtilityCommand(
         commandVersion(argv, modeSwitch);
       }
     )
-    .demandCommand(1, 'Specify a subcommand: heal, config, or version')
+    .demandCommand(1, 'Specify a subcommand: config or version')
     .help()
     .alias('help', 'h');
 

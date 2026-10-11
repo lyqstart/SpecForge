@@ -7,7 +7,6 @@ const ROOT = resolve(import.meta.dirname, '../../..');
 const CURRENT_CONSUMERS = [
   'packages/types/src/index.ts',
   'packages/types/src/directory-layout.ts',
-  'packages/types/src/meta-schema.ts',
   'packages/workflow-runtime/src/types/gate-definition.ts',
   'packages/workflow-runtime/src/types/state-machine.ts',
   'packages/daemon-core/src/tools/lib/gate-runner-v11.ts',

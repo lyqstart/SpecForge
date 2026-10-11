@@ -1,7 +1,7 @@
 /**
  * directory-layout.ts — SpecForge 项目目录布局的单一真相源（Single Source of Truth），属于实现合同
  *
- * 产品边界：SPS-1.0。当前可执行合同由本模块导出、Runtime 消费者与回归测试固定；归档 v1.1 标准仅作历史证据。
+ * 产品边界：SPS-1.0。当前可执行合同由本模块导出、Runtime 消费者与回归测试固定；归档旧标准仅作历史证据。
  *
  * 本模块定义 SpecForge 项目根目录下 `.specforge/` 目录的全部子路径常量，
  * 并提供 Path Service（路径服务）和 Path Policy（路径策略）。
@@ -33,11 +33,11 @@ import * as path from "node:path";
 export const SPEC_DIR_NAME = ".specforge" as const;
 
 // ---------------------------------------------------------------------------
-// LAYOUT — `.specforge/` 下各子路径的权威字典（v1.1 标准）
+// LAYOUT — `.specforge/` 下各子路径的当前实现合同
 // ---------------------------------------------------------------------------
 
 /**
- * `.specforge/` 目录下各子路径的权威字典（v1.1 标准）。
+ * `.specforge/` 目录下各子路径的当前实现合同。
  *
  * 顶层分区：
  * - **config**：当前项目配置（committed）
@@ -805,12 +805,3 @@ export function isWorkItemPath(inputPath: string): boolean {
   const normalized = inputPath.replace(/\\/g, "/");
   return normalized.startsWith(".specforge/work-items/");
 }
-
-// ---------------------------------------------------------------------------
-// SPEC_USER_DIR_NAME — 用户主目录下 SpecForge 目录的权威名称
-// ---------------------------------------------------------------------------
-
-/**
- * SpecForge 用户级数据目录名。
- */
-export const SPEC_USER_DIR_NAME = ".specforge" as const;

@@ -1,22 +1,14 @@
-# SpecForge 快速开始
+# 快速开始
 
-## 1. 启动 Daemon
+> Role: DERIVED OPERATING DOCUMENTATION。
+
 ```bash
-cd <project-root>
-npx specforge daemon start
+specforge daemon start --detach
+specforge daemon status
+cd <你的项目>
+opencode
 ```
 
-## 2. 开始 Work Item
-Work Item 通过 OpenCode 中的 sf-orchestrator 创建：
-- 系统创建 `.specforge/work-items/<WI-ID>/work_item.json`
-- 设置 `workflow_path` 和 `allowed_write_files`
+在 OpenCode 中切换到 `sf-orchestrator`，直接描述业务目标。Orchestrator 会先初始化 `.specforge/project/`（若尚未初始化），读取 Runtime 权威状态，再创建或恢复同一个 Work Item。
 
-## 3. 编写代码
-只能修改 `allowed_write_files` 中声明的文件。
-
-## 4. 关闭 Work Item
-close_gate 基于文件证据判断：
-- `evidence/evidence_manifest.json` 存在
-- `verification_report.md` 存在
-- `trace_delta.md` 存在
-- `changed_files_audit.json` status=passed
+不要让 Plugin 启动 daemon，不要手工编辑 `.specforge`，也不要先为非 Git 项目执行 `git init`。版本控制模式会在实施前按真实现场冻结：已有 Git 项目走 Git 治理；无 Git 项目走 filesystem 模式。

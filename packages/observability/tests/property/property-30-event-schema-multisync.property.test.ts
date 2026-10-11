@@ -53,10 +53,9 @@ const categoryArbitrary: fc.Arbitrary<EventCategory> = fc.oneof(
   fc.constant('permission'),
   fc.constant('session'),
   fc.constant('tool'),
-  fc.constant('heal'),
-  fc.constant('modality'),
   fc.constant('migration'),
-  fc.constant('system')
+  fc.constant('system'),
+  fc.constant('llm')
 );
 
 /**
@@ -72,10 +71,9 @@ const actionArbitrary = fc.oneof(
   fc.constant('session.started'),
   fc.constant('session.ended'),
   fc.constant('tool.invoked'),
-  fc.constant('heal.diagnosed'),
-  fc.constant('modality.adapted'),
   fc.constant('migration.started'),
-  fc.constant('system.error')
+  fc.constant('system.error'),
+  fc.constant('llm.requested')
 );
 
 /**

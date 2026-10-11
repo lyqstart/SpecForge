@@ -35,10 +35,9 @@ export type EventCategory =
   | 'permission'
   | 'session'
   | 'tool'
-  | 'heal'
-  | 'modality'
   | 'system'
-  | 'llm' | 'migration';
+  | 'llm'
+  | 'migration';
 
 /**
  * Event interface (Property 30: Multi-sync Readiness)

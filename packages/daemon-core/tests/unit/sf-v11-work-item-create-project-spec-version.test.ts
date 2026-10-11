@@ -92,6 +92,50 @@ describe('sf_v11_work_item_create - authoritative Project Spec version binding',
       ),
     );
     expect(candidateManifest.base_spec_version).toBe('PSV-0002');
+    const workItem = JSON.parse(
+      await fs.readFile(
+        path.join(projectRoot, '.specforge', 'work-items', 'WI-0003', 'work_item.json'),
+        'utf-8',
+      ),
+    );
+    expect(workItem.workflow_type).toBe('feature_spec');
+  });
+
+  it('rejects built-not-enabled workflow identities before creating a WI directory', async () => {
+    await writeAuthoritativeManifest(projectRoot, 'PSV-0002');
+    const { deps, transition } = makeDeps();
+    const classification = {
+      requirement_changed: true,
+      acceptance_criteria_changed: true,
+      business_rule_changed: false,
+      user_visible_behavior_changed: true,
+      data_semantics_changed: false,
+      design_changed: false,
+      module_boundary_changed: false,
+      api_contract_changed: false,
+      architecture_changed: false,
+      data_model_changed: false,
+      module_contract_changed: false,
+      unknowns: [],
+      workflow_type: 'bugfix_spec',
+    };
+
+    const result = await handler(
+      {
+        work_item_id: 'WI-0005',
+        user_request: 'Must use the current workflow identity.',
+        classification,
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      deps,
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.code).toBe('UNSUPPORTED_CURRENT_RELEASE_WORKFLOW');
+    expect(transition).not.toHaveBeenCalled();
+    await expect(
+      fs.access(path.join(projectRoot, '.specforge', 'work-items', 'WI-0005')),
+    ).rejects.toBeTruthy();
   });
 
   it('hard-stops before creating a WI directory when spec authority is unavailable', async () => {

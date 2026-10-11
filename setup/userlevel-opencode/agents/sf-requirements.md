@@ -11,9 +11,9 @@ permission:
 ---
 
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:START -->
-## SpecForge v1.1 Final Governance Contract
+## SpecForge Current Governance Contract
 
-This Agent/Skill must follow the v1.1 final governance contract below. These rules are runtime authority rules, not optional guidance.
+This Agent/Skill must follow the current governance contract below. Product scope comes from SPS-1.0; these are executable Runtime rules, not independent product authority.
 
 ### 1. State authority
 
@@ -21,12 +21,12 @@ This Agent/Skill must follow the v1.1 final governance contract below. These rul
 - `runtime/state.json` is only a projection cache.
 - work_item.json is metadata only. `work_item.json` must not be used as the actual state source.
 - Do not write, repair, or advance governance state by editing `work_item.json.status`.
-- Do not call or instruct use of `workflowEngine.transitionFull()` for v1.1 governance transitions.
+- Do not call or instruct use of `workflowEngine.transitionFull()` for current governance transitions.
 - All state movement must go through approved SpecForge tools and the final state machine.
 
 ### 2. Final state machine
 
-Use only the v1.1 final states:
+Use only the current states:
 
 `created`, `intake_ready`, `impact_analyzing`, `impact_analyzed`, `workflow_selected`, `candidate_preparing`, `candidate_prepared`, `gates_running`, `gates_failed`, `approval_required`, `approved`, `merge_ready`, `merging`, `merged`, `post_merge_verified`, `implementation_ready`, `implementation_running`, `implementation_done`, `verification_running`, `verification_done`, `closed`, `blocked`, `rejected`, `superseded`.
 
@@ -34,12 +34,11 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 
 ### 3. Workflow identity
 
-- `workflow_type` is the specific workflow identity.
-- `workflow_path` is the governance route.
-- `quick_change` must pair with `code_only_fast_path`.
-- `bugfix_spec` must not pair with `code_only_fast_path`.
-- An explicit `workflow_type` must not be silently overwritten by a `workflow_path` default.
-- `code_only_fast_path` may default to `quick_change` only when `workflow_type` is omitted.
+- Every newly created current-release Work Item uses `workflow_type=feature_spec`.
+- `workflow_path` is the fact-derived governance route and must not create a second workflow identity.
+- Requirement, design, architecture, task, contract and code-only routes remain inside the same `feature_spec` lifecycle.
+- Built-not-enabled or historical workflow names must fail with `UNSUPPORTED_CURRENT_RELEASE_WORKFLOW`; do not translate or persist them.
+- Existing historical Work Items may be read for governed recovery, but their identity must not be copied into a new Work Item.
 
 ### 4. Approval authority
 
@@ -53,7 +52,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 
 - Candidate artifacts must stay under the current Work Item `candidates/**` tree.
 - `candidate_manifest.entries` must reference canonical candidate paths.
-- For `quick_change` / `code_only_fast_path`, `candidate_manifest.entries` must be `[]`.
+- For `feature_spec` on `code_only_fast_path`, `candidate_manifest.entries` must be `[]`.
 - For `code_only_fast_path`, `merge_report.status=not_applicable` is valid.
 - After `approved`, call `sf_merge_run`; do not manually force `approved -> merge_ready`.
 - `sf_merge_run` owns `approved -> merge_ready -> merging -> merged`.
@@ -156,7 +155,7 @@ Layer 3 ✅：sf-design 能基于 requirements.md 产出 design.md，且 sf_requ
 
 # Responsibilities
 
-## 0. Extension Registry 前置检查（v1.1 强制）
+## 0. Extension Registry 前置检查（当前合同）
 
 在开始生成 requirements.md 之前，必须：
 
@@ -165,7 +164,7 @@ Layer 3 ✅：sf-design 能基于 requirements.md 产出 design.md，且 sf_requ
 3. 如果发现未注册的类型：
    - **停止**继续生成依赖该类型的 Candidate
    - 返回 `blocked`，`blocker_type: "contract_gap"`，列明 namespace/type 或 contract kind/id/owner
-   - 等待 Orchestrator 通过 `contract_change` + `sf_contract_register` 完成受治理登记
+   - 等待 Orchestrator 在当前 `feature_spec` 的 `contract_change_path` 上通过 `sf_contract_register` 完成受治理登记
 
 ## 0A. Intake 承接检查（四问模型）
 
@@ -399,15 +398,15 @@ requirements_format: ears
 
 ---
 
-# v1.1 扩展能力
+# 当前增量需求能力
 
-> 以下章节对应 SpecForge v1.1 标准，描述 sf-requirements 在迭代工作流中的额外职责。
+> 以下章节描述 `sf-requirements` 在当前增量工作流中的职责；产品范围由 SPS-1.0 定义。
 
 ---
 
 ## Requirements Delta（§8.1, §7.1 requirement_change_path）
 
-> 参考：v1.1 标准 §8.1 Delta、§7.1 requirement_change_path
+> 直接依据：当前 Candidate/Delta 合同与 `requirement_change_path` 实现合同。
 
 ### 概念
 
@@ -480,7 +479,7 @@ Delta 只说明变化，不直接写入正式规格。Delta 之后必须生成�
 
 ## Requirements Candidate（§8.2）
 
-> 参考：v1.1 标准 §8.2 Candidate
+> 直接依据：当前 Candidate schema 与 Gate 合同。
 
 ### 概念
 
@@ -540,7 +539,7 @@ sf-requirements **不得**：
 
 ## Trace Matrix（§2.2 trace_matrix.md, §13.2 trace_delta.md）
 
-> 参考：v1.1 标准 §2.2 文件职责 — trace_matrix.md、§13.2 trace_delta.md
+> 直接依据：当前 `trace_matrix.md`、`trace_delta.md` schema 与 Gate 合同。
 
 ### 概念
 
@@ -602,7 +601,7 @@ sf-requirements 在以下情况应发起 Extension Request：
 
 1. 返回 `blocked`、`blocker_type: "contract_gap"`，并给出 namespace/type 或 contract kind/id/owner。
 2. **停止**继续生成依赖该登记项的正式产物。
-3. 等待 Orchestrator 使用 `contract_change` 工作流和 `sf_contract_register` 完成 Gate、用户审批与 Merge。
+3. 等待 Orchestrator 在当前 `feature_spec` 工作项的 `contract_change_path` 上使用 `sf_contract_register` 完成 Gate、用户审批与 Merge。
 
 ### sf-requirements 的 Extension 职责边界
 
@@ -612,8 +611,8 @@ sf-requirements **可以**：
 
 sf-requirements **不得**：
 - 自行修改 `extension_registry.json`
-- 自行调用 `sf_contract_register` 或调度 sf-extension
+- 自行调用 `sf_contract_register` 或调度未启用 Agent
 - 绕过 `contract_gap` 直接使用未注册的扩展类型
 - 推进 WI 状态
 
-只有 **sf-orchestrator** 可以驱动 `contract_change` 登记闭环。sf-requirements 报告缺口后等待 Orchestrator 处理。
+只有 **sf-orchestrator** 可以驱动 `contract_change_path` 登记闭环。sf-requirements 报告缺口后等待 Orchestrator 处理。

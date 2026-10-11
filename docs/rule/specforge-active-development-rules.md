@@ -143,7 +143,7 @@ Project Spec Version、状态、路径和 Contract ID 等权威值不能用“�
 
 补丁、应用脚本、验证脚本、Manifest、校验值和说明不是独立文件，而是同一发布单元。伴生产物只能由最终主产物字节派生；任何成员变化都必须使整个发布单元失效并重新生成、重新交叉验证，禁止局部更新。
 
-面向用户交付时，同一轮必须封装为一个可下载的完整压缩包。应用和验证可以分步执行，但不得拆成多次下载；包内必须同时包含 `patch/`、所需脚本、Manifest 和说明。
+只有交付渠道明确采用离线压缩包时，才要求同一轮封装为一个可下载的完整压缩包，并同时包含补丁、所需脚本、Manifest 和说明。仓库内直接开发、普通 Git 交付或已经由当前执行协议定义的证据目录，不得被强制转换成 ZIP/CMD 交付。
 <!-- source: ledger Part3/4 verbatim (audited), view L1903-2944 -->
 
 ## EXP-024：迁移必须区分源状态契约与目标状态契约
@@ -168,7 +168,7 @@ Project Spec Version、状态、路径和 Contract ID 等权威值不能用“�
 
 ## EXP-028：交付入口必须从第一步就可观察
 
-用户执行的一键 CMD 是发布单元的一部分，不是包外临时说明。下载文件检查、解压、入口定位和包内程序启动都必须有阶段证据；任何一步失败都必须输出标准失败区块。只有包内脚本有反馈而包外启动链静默，仍属于不可验证交付。
+当交付合同明确包含一键 CMD 时，CMD 是发布单元的一部分，不是包外临时说明。下载文件检查、解压、入口定位和包内程序启动都必须有阶段证据；任何一步失败都必须输出标准失败区块。未采用 CMD 的仓库内开发、Git 交付和当前执行协议不适用该载体要求，但仍必须保证其真实入口从第一步可观察。
 <!-- source: ledger Part3/4 verbatim (audited), view L1903-2944 -->
 
 ## EXP-029：测试必须遵守真实阶段顺序并使用正式编排入口
@@ -333,7 +333,7 @@ Classification回答“本WI哪些语义发生变化”，Candidate Phase回答�
 补丁包、状态文档和生成脚本不得依赖编辑器或字符串拼接自然形成正确文件结尾。每个生成文本文件必须在封包前规范化为 `content.rstrip("\r\n") + "\n"`，并验证文件以一个且仅一个LF结束：`endswith(b"\n")` 为真、`endswith(b"\n\n")` 为假。该检查必须早于完整测试和 `git diff --check`，避免在长验证链末端才发现纯格式阻断。
 <!-- source: ledger Part3/4 verbatim (audited), view L1903-2944 -->
 
-## EXP-060：每轮修改必须先补录全部既往失败，再重读最新版经验并执行重复错误检查
+## EXP-060：每轮修改必须先补录全部既往失败，再读取活动规则、定向检索历史账本并执行重复错误检查
 
 每一轮调查、设计、修改、脚本生成、打包、安装或验证开始前，必须先盘点上一轮及历史尚未登记的全部失败。固定顺序：
 
@@ -341,7 +341,8 @@ Classification回答“本WI哪些语义发生变化”，Candidate Phase回答�
 失败盘点
 → 每个失败补录ERR、根因、影响、正确做法、EXP类防护和状态
 → UNRECORDED_FAILURES=0
-→ 重新读取补录后的最新版经验台账
+→ 完整读取最新版活动规则文件
+→ 按任务关键词、涉及模块和适用 EXP 定向检索历史账本
 → 映射APPLICABLE_EXPERIENCE_RULES
 → REPEATED_ERROR_CHECK=PASS
 → 固定基线和范围
@@ -354,7 +355,9 @@ Classification回答“本WI哪些语义发生变化”，Candidate Phase回答�
 PRIOR_FAILURE_RECONCILIATION=PASS
 BACKFILLED_ERROR_IDS=ERR-...或NONE
 UNRECORDED_FAILURES=0
+ACTIVE_EXPERIENCE_RULES_FILE_READ=YES
 EXPERIENCE_FILE_READ=YES
+HISTORICAL_LEDGER_SEARCH=关键词及命中 EXP/ERR，或 NONE_WITH_JUSTIFICATION
 APPLICABLE_EXPERIENCE_RULES=EXP-...
 REPEATED_ERROR_CHECK=PASS
 BASELINE_EVIDENCE=...
@@ -2026,17 +2029,10 @@ Contract consumer 判断必须直接枚举目标 Contract 的 formal Trace consu
   7. Recovery validator 自身继续执行 `GOV-STAGE-VALIDATOR-001`，不能回退到自然语言字符串检查。
 <!-- source: ledger view L5013-5036 format COMBINED (purity-filtered) -->
 
-## EXP-197 — 新会话必须先固定 live branch ref，再读取 exact-commit authority
+## EXP-197 — 新会话必须通过仓库 Bootstrap 固定 Git 基线与当前权威入口
 
-- **EXP-197**：
-  1. 新会话第一真相不是 raw branch 内容，而是 live branch ref；
-  2. 固定 `AUTHORITY_HEAD` 后必须读取 exact-commit authority，避免 branch raw/HTML 缓存；
-  3. `AUTHORITY_HEAD` 与 authority file last-modifying commit 分开证明；
-  4. last receipt 只能证明 last-confirmed，不等于 current live remote；
-  5. 无 live ref 证据时只能请求只读 `git ls-remote`，不得用网页结果降级继续；
-  6. Bootstrap Root-of-Trust 的最小规则必须直接写入固定新会话提示词，避免依赖尚未可靠读取的 authority；
-  7. 上一轮有 ZIP+CMD 却缺少 receipt 时必须标记 `MISSING_LAST_EXECUTION_RECEIPT`；
-  8. Authority Bootstrap 通过后才进入 PRECONCLUSION / Stage Input / Recovery Acceptance。
+- **EXP-197**：新会话以仓库根 `AGENTS.md` 为稳定入口，先运行 `scripts/project-session-bootstrap.mjs`，由它核验本地与远端 main、工作树分类、唯一 `docs/project-status.md` 和 `REQUIRED_RULES`。Bootstrap 未返回 READY 时 fail closed；不得恢复已退役的 raw branch、exact-commit authority、ZIP/CMD 或 handoff bootstrap 链。
+<!-- current interpretation: AR-DEC-04/06 and EXP-276 -->
 <!-- source: ledger view L5037-5059 format COMBINED (purity-filtered) -->
 
 ## EXP-198 — 包生成器自身必须先通过语法验收，失败产物不得视为已生成
@@ -2048,16 +2044,10 @@ Contract consumer 判断必须直接枚举目标 Contract 的 formal Trace consu
   4. 只有 ZIP reopen、manifest/hash、runner/verifier compile 全部通过后才允许发布。
 <!-- source: ledger view L5060-5073 format COMBINED (purity-filtered) -->
 
-## EXP-199 — Bootstrap Fail Closed 已生效，但失败路径输出、阶段边界和取证包验收仍未闭环
+## EXP-199 — 当前 Bootstrap 失败必须输出可诊断问题并保持只读
 
-- **EXP-199**：
-  1. Bootstrap PASS 与 FAIL 都必须输出完整结构；失败不能用一句 `AUTHORITY_BOOTSTRAP_ACCEPTED=NO` 代替；
-  2. Fail Closed 期间必须执行 `AUTHORITY_BOOTSTRAP_PHASE_ACCESS_AUDIT=PASS_NO_HANDOFF_OR_RECOVERY_READ`；
-  3. Bootstrap 失败时唯一下一动作固定为 `ACQUIRE_LIVE_BRANCH_REF_ONLY`；
-  4. 只读取证包只能执行 `git ls-remote`，不得读取任何项目仓库；
-  5. 只读取证包仍必须完整执行 Artifact Acceptance + Validator Self Check，局部 build/zip 检查不能替代；
-  6. 失败路径自身先 `AUTHORITY_BOOTSTRAP_FAILURE_ACCEPTED=YES`，取证包再 `ARTIFACT_ACCEPTED=YES`，之后才允许发布 ZIP+CMD；
-  7. 用户返回 live ref 后重新 Bootstrap，禁止复用失败回合提前读取的 handoff/Recovery 内容。
+- **EXP-199**：Bootstrap READY 与 BLOCKED 都必须输出结构化状态、具体 issue/warning、Git 基线、工作树摘要、必需规则和下一合法动作。BLOCKED 后只能执行解除所报阻断所需的只读取证；不得提前读取旧 handoff、修改仓库或用外部压缩包替代当前 Bootstrap。
+<!-- current interpretation: AR-DEC-04/05/06 and EXP-276 -->
 <!-- source: ledger view L5074-5096 format COMBINED (purity-filtered) -->
 
 ## EXP-200 — 助手侧 live Git DNS 不可用时只能使用 last-confirmed exact authority 设计，并把 live preflight 下沉到用户 runner
@@ -2069,9 +2059,10 @@ Contract consumer 判断必须直接枚举目标 Contract 的 formal Trace consu
   4. exact-commit GitHub 内容可以证明“该 commit 的规则内容”，不能证明“该 commit 仍是当前 branch head”。
 <!-- source: ledger view L5097-5110 format COMBINED (purity-filtered) -->
 
-## EXP-201 — Bootstrap 失败路径仍被缩写，并直接发布裸 git ls-remote CMD
+## EXP-201 — Bootstrap 的远端核验必须使用真实 Git 证据且不得伪造成功
 
-- **EXP-201**：固定失败模板；`RAW_CMD_ALLOWED=NO`；本地取证只能 `ONE_ACCEPTED_ZIP_PLUS_ONE_CMD`；ZIP 完整 Artifact Acceptance 必须先于 CMD。
+- **EXP-201**：远端 main 核验必须来自真实 `git ls-remote` 或 Bootstrap 等价证据，保留数字退出码并区分网络不可用、远端 ref 漂移和本地执行环境限制。不能取得远端事实时结论为 `INSUFFICIENT_EVIDENCE` 或 BLOCKED；不得用网页、缓存、旧回执或 ZIP/CMD 包装伪造 live remote 已核验。
+<!-- current interpretation: AR-DEC-04/05 and EXP-276 -->
 <!-- source: ledger view L5111-5119 format COMBINED (purity-filtered) -->
 
 ## EXP-202：固定模板必须按同一结构字段集合逐项对账
@@ -2102,15 +2093,10 @@ Contract consumer 判断必须直接枚举目标 Contract 的 formal Trace consu
   4. 生成器解析失败时保持同一未发布 Delivery ID，不把失败产物当成已经生成的版本。
 <!-- source: ledger view L5154-5167 format COMBINED (purity-filtered) -->
 
-## EXP-206：所有 pre-authority 行为必须由单一 Bootstrap Envelope 合同承载
+## EXP-206：所有 pre-authority 行为必须由单一仓库 Bootstrap 合同承载
 
-- **EXP-206**：
-  1. 建立单一 `GOV-STAGE-BOOTSTRAP-ENVELOPE-001`，集中承载所有 pre-authority 行为；
-  2. Delivery Identity、Artifact Acceptance、Validator、receipt presence/consumption、failure、success transition 必须全部进入固定 prompt；
-  3. 新增任何 pre-authority 规则时必须原子更新 authority inventory、fixed prompt、consumer test；
-  4. Bootstrap evidence ZIP 的 Artifact Contract 必须显式包含 `GOV-STAGE-DELIVERY-IDENTITY-001`；
-  5. Receipt 使用四态 `PRESENT_VALID / PRESENT_INVALID / NONE_ALLOWED / MISSING_REQUIRED`，禁止仅凭自然语言推断；
-  6. consumer test 必须检查 prompt section 内真实字段，不能因为字段在 authority 其他章节存在就放行。
+- **EXP-206**：仓库级 pre-authority 行为只由 `AGENTS.md → scripts/project-session-bootstrap.mjs → docs/project-status.md → REQUIRED_RULES` 承载。新增恢复前置规则时必须原子更新入口、Bootstrap 实现、状态 Schema 和消费者测试；提示词、历史报告、ZIP 或旧 handoff 不得建立并行 envelope。
+<!-- current interpretation: AR-DEC-04/05/06 and EXP-276 -->
 <!-- source: ledger view L5168-5184 format COMBINED (purity-filtered) -->
 
 ## EXP-207：Marker 迁移必须按稳定边界替换并验证 Recovery Rule
@@ -2143,15 +2129,10 @@ Contract consumer 判断必须直接枚举目标 Contract 的 formal Trace consu
 - **EXP-212**：助手侧工具运行时附加 warmup stderr 必须与目标 verifier 的 exit code、stdout contract 和 artifact evidence 分离判断；只记录为环境异常，不伪装成 SpecForge 产品缺陷；若目标进程 exit code 非零或验证字段不完整，则仍按正式失败处理。
 <!-- source: ledger view L5235-5243 format COMBINED (purity-filtered) -->
 
-## EXP-213：Bootstrap 必须按固定阶段状态机执行并审计顺序
+## EXP-213：Bootstrap 必须先完成只读事实核验，再允许恢复当前动作
 
-- **EXP-213**：
-  1. Bootstrap 增加 `RECEIPT_AUDIT → PRETOOL_GUARD → LIVE_REF_ONLY → EXACT_AUTHORITY_ONLY → FAILURE/SUCCESS → SELF_CHECK → RECOVERY` 固定状态机；
-  2. `MISSING_REQUIRED/PRESENT_INVALID` 在工具调用前直接停止，不执行 live ref；
-  3. 每个阶段输出 `BOOTSTRAP_ALLOWED_TOOL_CLASS`；
-  4. 任一越权读取永久使本回合 `BOOTSTRAP_EXECUTION_ORDER_AUDIT=FAIL`，禁止用后补字段恢复；
-  5. 每个 Bootstrap 回合结束必须输出完整 Envelope Self Check；
-  6. consumer test 同时验证字段存在与文本顺序：Receipt/Pre-tool Guard 必须位于 live-ref 和 Recovery 之前。
+- **EXP-213**：Bootstrap 必须先读取并校验本地仓库、远端 main、状态 Schema、规则存在性、并行状态文件、根 `.kiro` 缺失和工作树分类，最后才输出 READY 与 `NEXT_LEGAL_ACTION`。任一 blocking issue 都必须保持只读并停止恢复动作；后补文字不能把同一回合的越权执行改写为 PASS。
+<!-- current interpretation: AR-DEC-04/05/06 and EXP-276 -->
 <!-- source: ledger view L5244-5260 format COMBINED (purity-filtered) -->
 
 ## EXP-214：Bootstrap 回归必须验证结构状态与有序执行
@@ -2525,3 +2506,8 @@ handoff 的新鲜度必须以 Runtime 可验证的持久化时间为准，不能
 
 历史 Work Item 缺少 `version_control_mode` 时必须 fail closed，不得以当前是否存在 `.git` 推断实施前模式。只有原 governance scope 与 filesystem baseline 的原始字节哈希和时间线、当前无 `git_context`、无 HEAD、零跟踪文件且 Git 身份稳定全部成立时，受控 owner 才能写追加式 filesystem 恢复记录；消费者必须每次重验来源与当前现场，任何漂移立即失效，且恢复不得触发 Git 分支、提交、合并或交付链。
 <!-- source: ledger view L31020-31022 format H2COLON (purity-filtered) -->
+
+## EXP-276：文档角色必须登记，当前消费者不得从历史材料反向建立产品合同
+
+Product Specification 只保存稳定产品规则；Authority Registry 登记每类文档职责；`project-status` 只保存当前恢复点；活动规则只保存持续生效的工程纪律；历史时间线、事故、已关闭 Gap 和过期实施机制进入账本或 `docs/archive/**`。README、用户/CLI 文档、约定、代码、帮助文本、生成器和测试均是下游消费者，必须可追溯到上位权威。测试可以验证归档证据未丢失，但不得用归档正文决定当前产品行为；发现冲突时修改下游并增加“禁止反向权威”的回归。
+<!-- source: ledger view 2026-10-11 EXP-276 -->

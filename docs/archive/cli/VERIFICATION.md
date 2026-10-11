@@ -1,5 +1,11 @@
 # CLI Command Reference Documentation - Verification Report
 
+> Status: HISTORICAL_EVIDENCE_ONLY
+>
+> Archived: 2026-10-11
+>
+> 本报告记录旧 CLI 文档的一次历史验证，不是当前命令合同。当前使用说明见 `docs/cli/command-reference.md` 与 `docs/cli/installation-setup.md`。
+
 **Date**: 2026-05-16  
 **Task**: 10.1 Command reference documentation  
 **Status**: ✅ COMPLETED

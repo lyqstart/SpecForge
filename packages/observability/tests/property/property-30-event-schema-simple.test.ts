@@ -25,7 +25,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
   const generateTestData = (): Omit<Event, 'eventId' | 'ts' | 'monotonicSeq' | 'schema_version'> => {
     const categories: EventCategory[] = [
       'workflow', 'gate', 'permission', 'session', 'tool',
-      'heal', 'modality', 'migration', 'system'
+      'migration', 'system', 'llm'
     ];
     
     const data: Omit<Event, 'eventId' | 'ts' | 'monotonicSeq' | 'schema_version'> = {

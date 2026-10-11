@@ -93,7 +93,7 @@ describe('LLM Kernel production HTTP boundary', () => {
       version: 'test',
       compatibleKernelRange: '>=1.14.0 <2.0.0',
       spawnAgent: vi.fn(async () => ({ sessionId: 'oc-session-1' })),
-      getSession: vi.fn(async (sessionId) => ({
+      getSession: vi.fn(async (sessionId: string) => ({
         sessionId,
         status: 'active' as const,
         createdAt: new Date(0),

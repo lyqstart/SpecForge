@@ -1,14 +1,22 @@
 # 恢复与回滚
 
-## Daemon 不可达
-- 写入自动被阻断（fail-closed）
-- 重启 daemon：`npx specforge daemon start`
-- 客户端自动重连
+> Role: DERIVED OPERATING DOCUMENTATION。
 
-## Work Item 异常
-- 检查：`.specforge/work-items/<WI-ID>/work_item.json`
-- 查看状态日志
+Daemon 不可用时：
 
-## 安装损坏
-- 重新执行：`npx sf-installer install --force`
-- 不会影响项目数据（只更新 sf-user 目录）
+```bash
+specforge daemon status
+specforge daemon stop
+specforge daemon start --detach
+specforge daemon status
+```
+
+安装损坏时先只读验证：
+
+```bash
+bun scripts/sf-installer.ts verify
+```
+
+确认需要修复后执行 `upgrade`；只有明确接受覆盖用户改动时才使用 `upgrade --force`。安装器负责自身原子回滚，不能用手工复制替代。
+
+业务 Work Item 失败、blocked 或 HardStop 时，重新打开 OpenCode，要求 `sf-orchestrator` 读取 `sf_state_read` 后从权威断点继续。同一事项不得新建替代 Work Item，不得手工修改 `state.json`、`events.jsonl` 或治理产物。
