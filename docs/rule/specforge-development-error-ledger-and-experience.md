@@ -31405,7 +31405,8 @@ Product Specification 只保存稳定产品规则；Authority Registry 登记每
 - **纠正与防复发**：新增独立的 invalid-merged-spec recovery 合同：先证明当前正式 Project Spec 仍由原 WI Merge 产生且共享正式校验失败，再不可变归档旧代治理证据、失效旧审批，以专用补偿事件回到 `candidate_preparing`；标准 `closed` 终态、普通 recovery 和 post-merge decision guard 均保持不变。增加拒绝矩阵、t3-shaped 恢复、generation archive 与同 WI 新代闭环测试。
 - REUSED_EXP=EXP-001,EXP-004,EXP-006,EXP-007,EXP-010,EXP-015,EXP-017,EXP-021,EXP-029,EXP-031,EXP-032,EXP-044,EXP-047,EXP-124,EXP-130,EXP-146,EXP-150,EXP-154,EXP-158,EXP-187,EXP-193,EXP-241,EXP-265,EXP-270,EXP-272,EXP-277,EXP-278
 - **验证证据**：专用 action、证据归档 owner、StateManager 补偿边和恢复后同 WI 全生命周期已由 5 个定向文件 111 项测试覆盖；12 个工作区 strict build 通过；最终正式顺序全量回归以退出码 0 完成（root 49/725、Scope Gate 30/134、daemon-core 207/1846 及其余工作区全部通过）；`main-3e3e7c07-working-tree-step1814` 的 111 文件正式发布预检通过。
-- ERR1810_STATUS=VALIDATED_AWAITING_COMMIT_INSTALL_AND_DAEMON_VERIFICATION
+- **发布与部署闭环**：修复以 `542cabde75921a5fe01e2bae983ac196c5310774` 提交，快进合并并推送到 `origin/main`；最终 canonical Candidate `main-542cabde-working-tree-step1815` 的 111 文件发布预检通过。官方 Installer 正常升级 4 个变化文件、跳过 107 个未变文件并完成 111/111 完整性校验。已安装 CLI 返回 1.0.8；已安装与 release 的 `specforge.exe` SHA-256 同为 `6f41edb7243e688ac2e30c56e2fe29a0c3c6468177ebe3690b8dcd1f218a4e12`，`specforged.exe` 同为 `8463b1ed75b17f0e329bd2e0df8223844a99c3f827efd030fcb9b38ecb0042cc`。新 daemon PID 37292 从正式安装路径运行，CLI status、handshake 和认证 healthz 均为 1.0.8 / ok；整个产品修复阶段未修改 `D:\code\t3`。
+- ERR1810_STATUS=CLOSED_BY_RELEASE_1_0_8_MAIN_PUSH_INSTALL_INTEGRITY_AND_DAEMON_HEALTH_PASS
 
 ### ERR-1811：定向基线测试经 PowerShell bun shim 启动时未进入测试框架
 
