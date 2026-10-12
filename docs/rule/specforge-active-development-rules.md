@@ -2516,3 +2516,8 @@ Product Specification 只保存稳定产品规则；Authority Registry 登记每
 
 是否进入 compatibility mode 必须依据“未声明正式治理”，不能依据“严格解析结果为空”；任何已经声明但非法或不完整的正式 Architecture、Data、Module 对象都必须在 Candidate、Code Permission、Verification/Formal Version 与 Close 的全部消费者中失败关闭。Project Spec Core 的重复版本字段必须由 Atomic Spec Merge 原子同步并由 Post-Merge、Formal Version、Close 对称复核。filesystem Formal Version 必须固定实际实现文件集合及逐字节内容指纹，Close 前重新取证；路径范围、mtime、历史 Gate 状态或业务测试绿色均不能替代内容身份。
 <!-- source: ledger current EXP-277 -->
+
+## EXP-278：终态补偿恢复必须回到首次可修复责任层并冻结旧代证据
+
+发现终态结果无效时，恢复目标必须由首次失效责任层决定：实现或 Formal Version 证据无效回到 `implementation_ready`；已经合并的正式 Project Spec 本身无效则回到 `candidate_preparing`。两类恢复必须使用不同显式动作和不同证明合同，不得用较浅恢复制造不可达后续步骤。任何成功 Merge 后的规格级恢复都必须在状态变化前不可变归档旧代 Candidate、Gate、Decision、Merge、Verification、Close 字节及逐文件哈希，失效旧审批并保留代码权限撤销；普通状态表仍禁止 `closed → any`，补偿边只能由专用 owner 依据当前规格归属、新鲜度和无效性证据执行。恢复后必须建立新 generation，重新 Candidate、Gate、显式用户批准、Atomic Spec Merge、Verification / Formal Version 与 Close。
+<!-- source: ledger current EXP-278 -->

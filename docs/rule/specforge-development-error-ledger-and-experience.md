@@ -31395,3 +31395,62 @@ Product Specification 只保存稳定产品规则；Authority Registry 登记每
 ## EXP-277：正式治理声明失败、重复版本和 Formal Version 内容身份必须对称失败关闭
 
 是否进入 compatibility mode 必须依据“未声明正式治理”，不能依据“严格解析结果为空”；任何已经声明但非法或不完整的正式 Architecture、Data、Module 对象都必须在 Candidate、Code Permission、Verification/Formal Version 与 Close 的全部消费者中失败关闭。Project Spec Core 的重复版本字段必须由 Atomic Spec Merge 原子同步并由 Post-Merge、Formal Version、Close 对称复核。filesystem Formal Version 必须固定实际实现文件集合及逐字节内容指纹，Close 前重新取证；路径范围、mtime、历史 Gate 状态或业务测试绿色均不能替代内容身份。
+
+### ERR-1810：旧无效关闭恢复停在 implementation_ready，无法修复已合并的无效 Project Spec
+
+- **发生时间**：2026-10-12
+- **分类**：`RUNTIME_CAPABILITY_GAP / INVALID_MERGED_SPEC_RECOVERY / UNREACHABLE_CANDIDATE_REPAIR`。
+- **事实证据**：1.0.7 的 `sf_close_gate(action=recover_invalid_closure)` 只证明 Formal Version / Git binding 无效并执行 `closed → implementation_ready`；Candidate freeze 仅在 `candidate_preparing` / `gates_failed` 可写；成功 Merge 后通用 `sf_user_decision_record(action=invalidate)` 明确返回 `USER_DECISION_INVALIDATE_FORBIDDEN_AFTER_MERGE_SUCCESS`。因此真实 t3 虽可证明已关闭规格无效，却没有合法路径修改 Candidate、取得新审批并再次 Atomic Spec Merge。
+- **影响与根因**：把“实现证据无效”与“已经合并的正式规格本身无效”合并为同一补偿恢复模型，导致返回点晚于首次可修复责任层；若照旧方案执行，WI 会停在 `implementation_ready` 且 Candidate 继续冻结。`spec_migration` 及其 Tool 已被 SPS 分类为 BUILT_NOT_ENABLED / LEGACY_ONLY，不能作为当前替代能力。
+- **纠正与防复发**：新增独立的 invalid-merged-spec recovery 合同：先证明当前正式 Project Spec 仍由原 WI Merge 产生且共享正式校验失败，再不可变归档旧代治理证据、失效旧审批，以专用补偿事件回到 `candidate_preparing`；标准 `closed` 终态、普通 recovery 和 post-merge decision guard 均保持不变。增加拒绝矩阵、t3-shaped 恢复、generation archive 与同 WI 新代闭环测试。
+- REUSED_EXP=EXP-001,EXP-004,EXP-006,EXP-007,EXP-010,EXP-015,EXP-017,EXP-021,EXP-029,EXP-031,EXP-032,EXP-044,EXP-047,EXP-124,EXP-130,EXP-146,EXP-150,EXP-154,EXP-158,EXP-187,EXP-193,EXP-241,EXP-265,EXP-270,EXP-272,EXP-277,EXP-278
+- **验证证据**：专用 action、证据归档 owner、StateManager 补偿边和恢复后同 WI 全生命周期已由 5 个定向文件 111 项测试覆盖；12 个工作区 strict build 通过；最终正式顺序全量回归以退出码 0 完成（root 49/725、Scope Gate 30/134、daemon-core 207/1846 及其余工作区全部通过）；`main-3e3e7c07-working-tree-step1814` 的 111 文件正式发布预检通过。
+- ERR1810_STATUS=VALIDATED_AWAITING_COMMIT_INSTALL_AND_DAEMON_VERIFICATION
+
+### ERR-1811：定向基线测试经 PowerShell bun shim 启动时未进入测试框架
+
+- **发生时间**：2026-10-12
+- **分类**：`TEST_CARRIER_FAILURE / ZERO_TEST_EXECUTION / REPEATED_ENVIRONMENT_CLASS`。
+- **事实证据**：在 `packages/daemon-core` 使用 PowerShell 解析到的 `C:\Users\lyq\AppData\Roaming\npm\bun.ps1` 执行三个定向测试文件，进程在 Vitest 收集前返回 `error loading current directory` / `CouldntReadCurrentDirectory`，没有测试数量或断言结果。改用已验证的原生 Bun 1.4.0 后能够启动 Vitest，但受限执行环境对 `node_modules/.bun/**/vitest/dist/spy.js` 的 `realpath` 返回 `EPERM`，三个测试文件仍为 0 收集、3 个 unhandled errors；这同样只是载体失败，必须保持命令、工作目录和测试集合不变，在允许读取依赖真实路径的执行环境重跑。
+- **影响与根因**：该结果不能证明产品测试通过或失败；属于 ERR-1802/1808 已知的 Windows 测试载体类别，本轮不得把后续原生 Bun 结果覆盖为“首次即通过”。
+- **纠正与防复发**：保持 owning package 工作目录和测试集合不变，改用仓库已经验证的原生 Bun 可执行入口重跑；先确认真实收集数，再把结果用于修改前 A/B 基线。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-021,EXP-032,EXP-044,EXP-060,EXP-087,EXP-117,EXP-195,EXP-263
+- **闭环证据**：保持 `packages/daemon-core` 工作目录与三个测试文件不变，在允许读取依赖真实路径的执行环境使用同一原生 Bun 1.4.0 命令重跑，Vitest 实际收集并通过 3 个文件、35 个测试；补偿恢复实现经逐轮审计加固后最终定向验证通过 5 个文件、111 个测试，daemon-core TypeScript 构建与根 12 工作区 strict build 均通过。
+- ERR1811_STATUS=CLOSED_WITH_ESCALATED_NATIVE_BUN_BASELINE_3_FILES_35_TESTS
+
+### ERR-1812：无效合并规格恢复实现后的首轮全量回归命中陈旧发布清单哈希
+
+- **发生时间**：2026-10-12
+- **分类**：`PRE_RELEASE_MANIFEST_STALE / EXPECTED_RELEASE_SET_HASH_MISMATCH / THREE_TEST_FAILURES`。
+- **事实证据**：1.0.8 实现完成后的正式顺序全量 `bun run test` 已真实执行；根测试 49 文件 725 项、daemon-core 207 文件 1845 项以及除 Scope Gate 外的其他工作区均通过。Scope Gate 的 `current-repository-installer-manifest-consumption.integration.test.ts` 有 3 项失败，原始错误均为当前 release install set 与本轮已修改用户级安装文件之间的哈希不一致：`agents/sf-orchestrator.md` 和 `tools/sf_close_gate.ts`。测试总入口最终以 `@specforge/scope-gate(exit=1)` 退出。
+- **影响与根因**：这次非零结果证明发布清单仍绑定修改前字节，不能作为 1.0.8 发布候选；它没有证明补偿恢复 Runtime、拒绝矩阵或 daemon-core 行为失败。根因是正式 release runtime artifacts / manifest 尚未在源码和安装模板修改后重建。
+- **纠正与防复发**：使用官方 `build-release-runtime-artifacts.ts` 与 `build-release-manifest.ts --candidate-id <id>` 重建完整发布集合，不手改单项哈希；先重跑失败的 Scope Gate 文件，再重跑正式顺序全量测试。首次失败及第二次结果必须分别保留，只有两层验证均通过后才可进入 release precheck、提交、安装与 daemon 验证。
+- REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-060,EXP-087,EXP-117,EXP-190,EXP-193,EXP-195,EXP-241,EXP-263,EXP-278
+- **重建后闭环证据**：官方 producer 重建发布运行时与 canonical Candidate 清单后，原失败文件真实执行 3 项并全部通过，证明两个修改文件的 install-set 哈希、隔离安装、升级和失败回滚重新一致；第二轮正式顺序全量 `bun run test` 随后以退出码 0 完成：根 49 文件 725 项、Scope Gate 30 文件 134 项、daemon-core 207 文件 1845 项及全部其他工作区均通过。审计加固新增 1 项 daemon-core 测试并重建二进制后，最终正式顺序全量回归再次以退出码 0 完成：daemon-core 207 文件 1846 项，其他计数与结果保持全绿；step1814 发布预检通过。
+- ERR1812_STATUS=CLOSED_BY_OFFICIAL_RELEASE_REBUILD_FOCUSED_3_OF_3_AND_FULL_REGRESSION_PASS
+
+### ERR-1813：重建发布清单时使用描述性 Candidate ID，不符合当前 working-tree 身份格式
+
+- **发生时间**：2026-10-12
+- **分类**：`RELEASE_CANDIDATE_ID_CONTRACT_MISMATCH / FOCUSED_TEST_FAILURE`。
+- **事实证据**：发布运行时和清单重建均退出 0，原先 3 个哈希失败消失；随后定向重跑 `current-repository-installer-manifest-consumption.integration.test.ts`，3 项中安装升级与失败回滚 2 项通过，唯一失败明确指出清单中的 `codex-t3-invalid-merged-spec-recovery-1.0.8-a01` 不匹配当前合同 `^main-[0-9a-f]{8}-working-tree-step[0-9a-z]+$`。
+- **影响与根因**：清单内容哈希已经对齐，但 Candidate 身份还不是仓库当前认可的 main 基线 working-tree 形式，因此该清单仍不能进入发布预检。根因是生成时自行选择了描述性 ID，没有先核对真实消费者的格式断言。
+- **纠正与防复发**：保持同一源码与运行时产物，使用已核验的远端 main 基线短 SHA 和单调步骤生成 `main-<sha8>-working-tree-step<id>`，再重跑同一 3 项测试；不得放宽测试正则或手改清单。
+- REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-060,EXP-087,EXP-126,EXP-190,EXP-193,EXP-195,EXP-241,EXP-263
+- **闭环证据**：以 `main-3e3e7c07-working-tree-step1813` 重建清单后，同一文件 3/3 通过；没有修改测试正则或绕过 Candidate 身份校验。审计加固后的最终清单继续使用合同格式 `main-3e3e7c07-working-tree-step1814`，正式发布预检通过。
+- ERR1813_STATUS=CLOSED_BY_CANONICAL_CANDIDATE_ID_AND_FOCUSED_3_OF_3_PASS
+
+### ERR-1814：提交前 staged diff 检查发现新文件末尾多余空白行
+
+- **发生时间**：2026-10-12
+- **分类**：`PRE_COMMIT_DIFF_CHECK / TRAILING_BLANK_LINE / TWO_FILES`。
+- **事实证据**：精确暂存 31 个已审计文件后，首次 `git diff --cached --check` 以退出码 1 返回；唯一两项为 `invalid-merged-spec-closure-recovery.ts:528` 与 `invalid-merged-spec-closure-recovery.test.ts:451` 的 `new blank line at EOF`。
+- **影响与根因**：不影响已完成的构建、测试或发布预检，但提交候选不满足仓库格式门禁；原因是两个新增文件末尾各保留了一个额外空行。
+- **纠正与防复发**：保留首次失败，精确删除两个多余空白行，重新暂存同一文件并重跑 staged diff 检查；不得跳过或把首次失败改写为通过。
+- REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-044,EXP-060,EXP-087
+- **闭环证据**：精确删除两个多余空白行并重新暂存后，同一 `git diff --cached --check` 以退出码 0 完成；其余 31 文件 staged 范围未改变。
+- ERR1814_STATUS=CLOSED_BY_EXACT_EOL_FIX_AND_STAGED_DIFF_CHECK_PASS
+
+## EXP-278：终态补偿恢复必须回到首次可修复责任层并冻结旧代证据
+
+发现终态结果无效时，恢复目标必须由首次失效责任层决定：实现或 Formal Version 证据无效回到 `implementation_ready`；已经合并的正式 Project Spec 本身无效则回到 `candidate_preparing`。两类恢复必须使用不同显式动作和不同证明合同，不得用较浅恢复制造不可达后续步骤。任何成功 Merge 后的规格级恢复都必须在状态变化前不可变归档旧代 Candidate、Gate、Decision、Merge、Verification、Close 字节及逐文件哈希，失效旧审批并保留代码权限撤销；普通状态表仍禁止 `closed → any`，补偿边只能由专用 owner 依据当前规格归属、新鲜度和无效性证据执行。恢复后必须建立新 generation，重新 Candidate、Gate、显式用户批准、Atomic Spec Merge、Verification / Formal Version 与 Close。

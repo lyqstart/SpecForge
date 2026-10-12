@@ -18,6 +18,7 @@ import { isSealTransition, getSealTransition } from '@specforge/types/seal-trans
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 import { validateCurrentCandidateManifestValue } from '@specforge/types';
 import { validateSemanticClosureProvenance } from './semantic-closure-provenance';
+import { verifyInvalidMergedSpecRecoveryAuthorization } from './invalid-merged-spec-closure-recovery.js';
 
 export type AuthoritativeStateRead = {
   current_state: string | null;
@@ -417,6 +418,85 @@ export async function recoverInvalidClosureWithEvidence(input: {
       previousState: 'closed',
       currentState: 'implementation_ready',
       timestamp: new Date().toISOString(),
+    },
+  };
+}
+
+export async function recoverInvalidMergedSpecClosureWithEvidence(input: {
+  deps: any;
+  projectRoot: string;
+  workItemId: string;
+  workItemDir: string;
+  workflowType: string;
+  evidence: string;
+  invalidityReasons: string[];
+  generationId: string;
+}): Promise<TransitionWithEvidenceResult> {
+  if (!input.deps?.projectManager) {
+    throw new Error(
+      'STATE_COORDINATOR_INVALID_MERGED_SPEC_RECOVERY_FAILED: ProjectManager not available',
+    );
+  }
+  if (input.invalidityReasons.length === 0) {
+    throw new Error(
+      'STATE_COORDINATOR_INVALID_MERGED_SPEC_RECOVERY_FAILED: at least one verified invalidity reason is required',
+    );
+  }
+
+  const recovery = await verifyInvalidMergedSpecRecoveryAuthorization({
+    projectRoot: input.projectRoot,
+    workItemDir: input.workItemDir,
+    workItemId: input.workItemId,
+  });
+  if (String(recovery.archive?.generation_id ?? '') !== input.generationId) {
+    throw new Error(
+      'STATE_COORDINATOR_INVALID_MERGED_SPEC_RECOVERY_FAILED: recovery generation mismatch',
+    );
+  }
+
+  const projectSm = await input.deps.projectManager.getProjectStateManager(input.projectRoot);
+  if (typeof projectSm?.rebuildFromEventsFile === 'function') {
+    await projectSm.rebuildFromEventsFile();
+  }
+  const current = normalizeState(await projectSm.getState(input.workItemId));
+  if (current !== 'closed') {
+    throw new Error(
+      `STATE_COORDINATOR_INVALID_MERGED_SPEC_RECOVERY_FAILED: expected authoritative state closed, got ${current ?? 'null'}`,
+    );
+  }
+
+  const transitionResult = await projectSm.transition(
+    input.workItemId,
+    'closed',
+    'candidate_preparing',
+    ACTOR_ROLES.closeGate,
+    input.workflowType,
+    {
+      evidence: input.evidence,
+      transition_context: {
+        source: 'invalid_merged_spec_closure_recovery',
+        recovery_record: 'invalid_merged_spec_closure_recovery.json',
+        archive_generation: input.generationId,
+        archive_manifest: recovery.archive.manifest_path,
+        archive_manifest_sha256: recovery.archive.manifest_sha256,
+        invalidity_reasons: input.invalidityReasons,
+        compensating_transition: true,
+      },
+    },
+  );
+
+  return {
+    attempted: true,
+    advanced: true,
+    from_state: 'closed',
+    to_state: 'candidate_preparing',
+    evidence: input.evidence,
+    transition_result: {
+      source: 'StateManager',
+      workItemId: input.workItemId,
+      previousState: 'closed',
+      currentState: 'candidate_preparing',
+      timestamp: String(transitionResult?.timestamp ?? new Date().toISOString()),
     },
   };
 }

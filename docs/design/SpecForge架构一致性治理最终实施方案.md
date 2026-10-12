@@ -200,6 +200,7 @@ TYPE_ENVIRONMENT_SOURCE=VERSIONED_TSCONFIG_AND_DECLARED_DEPENDENCIES
 - `GOVERNANCE-ACTIVATION-001`：compatibility mode 只表示尚未声明正式治理；已声明但 ID 非法或闭包不完整的 Architecture、Data、Module 必须失败关闭。
 - `PROJECT-SPEC-VERSION-001`：Atomic Spec Merge 同步所有 Project Spec Core 重复版本字段，Post-Merge、Formal Version 与 Close 使用同一一致性检查。
 - `FILESYSTEM-FORMAL-VERSION-001`：filesystem 模式的 Formal Version 固定实际实现文件集合与逐字节内容指纹，Close 在状态推进前重新取证并比较。
+- `INVALID-MERGED-SPEC-RECOVERY-001`：已成功 Merge 并关闭的原 WI，只有在当前正式 Project Spec 仍精确归属于该次 Merge 且共享正式校验直接证明规格本身无效时，Close owner 才能在状态变化前以不可变 generation archive 冻结旧代全部治理证据、原子失效旧审批，并通过专用补偿事件执行 `closed → candidate_preparing`。普通状态表继续禁止 `closed → any`；普通实现证据恢复、通用审批失效与已退出 current release 的 spec_migration 均不得替代本合同。新一代必须重新 Candidate、Gate、显式用户批准、Atomic Spec Merge、Verification / Formal Version 与 Close。
 
 ### 3.3 责任层与最小完整扩展
 

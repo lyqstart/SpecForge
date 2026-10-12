@@ -42,6 +42,7 @@ import {
 import {
   readAuthoritativeState,
   recoverInvalidClosureWithEvidence,
+  recoverInvalidMergedSpecClosureWithEvidence,
   transitionWithEvidence,
 } from "../lib/state-coordinator-v11.js";
 import {
@@ -55,7 +56,14 @@ import {
 import {
   precheckUserDecisionSchema,
   userDecisionSchemaBlockCode,
+  invalidateUserDecision,
 } from "../lib/user-decision-recorder-v11.js";
+import {
+  archiveInvalidMergedSpecGeneration,
+  proveInvalidMergedSpecClosure,
+  restoreFileAtomically,
+  writeInvalidMergedSpecRecoveryRecord,
+} from "../lib/invalid-merged-spec-closure-recovery.js";
 import {
   assertFormalVersionSnapshotForGitMerge,
   auditActualGovernanceScope,
@@ -310,6 +318,233 @@ async function recoverInvalidClosure(input: {
     recovery_record: recoveryPath,
     invalidity_reasons: invalidityReasons,
     code_permission_remains_revoked: input.workItem.code_change_allowed !== true,
+  };
+}
+
+async function recoverInvalidMergedSpecClosure(input: {
+  args: Record<string, unknown>;
+  context: any;
+  deps: any;
+  projectRoot: string;
+  workItemId: string;
+  workItemDir: string;
+  workItem: Record<string, any>;
+}): Promise<any> {
+  if (input.args["confirm_invalid_merged_spec_recovery"] !== true) {
+    return {
+      success: false,
+      error:
+        "INVALID_MERGED_SPEC_RECOVERY_CONFIRMATION_REQUIRED: set confirm_invalid_merged_spec_recovery=true",
+    };
+  }
+  const reason = String(input.args["recovery_reason"] ?? "").trim();
+  if (reason.length < 10) {
+    return {
+      success: false,
+      error:
+        "INVALID_MERGED_SPEC_RECOVERY_REASON_REQUIRED: provide a specific recovery_reason",
+    };
+  }
+
+  const state = await readAuthoritativeState({
+    deps: input.deps,
+    projectRoot: input.projectRoot,
+    workItemId: input.workItemId,
+  });
+  if (state.current_state !== "closed") {
+    return {
+      success: false,
+      error: `INVALID_MERGED_SPEC_RECOVERY_STATE_MISMATCH: expected closed, got '${state.current_state ?? "N/A"}'`,
+    };
+  }
+
+  let proof;
+  try {
+    proof = await proveInvalidMergedSpecClosure(input);
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+
+  let archive;
+  try {
+    archive = await archiveInvalidMergedSpecGeneration({
+      projectRoot: input.projectRoot,
+      workItemDir: input.workItemDir,
+      workItemId: input.workItemId,
+      proof,
+    });
+  } catch (error) {
+    return {
+      success: false,
+      error: `INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_FAILED: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    };
+  }
+
+  const decisionPath = path.join(input.workItemDir, "user_decision.json");
+  const decisionBefore = await fs.readFile(decisionPath);
+  let decisionInvalidation: Awaited<ReturnType<typeof invalidateUserDecision>>;
+  try {
+    decisionInvalidation = await invalidateUserDecision(
+      input.workItemDir,
+      `Invalid merged Project Spec recovery ${archive.generation_id}: ${reason}`,
+    );
+  } catch (error) {
+    const failedRecord = {
+      schema_version: "1.0",
+      work_item_id: input.workItemId,
+      recovery_action: "closed_to_candidate_preparing",
+      status: "failed",
+      reason,
+      failed_at: new Date().toISOString(),
+      failure: `decision_invalidation_failed: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+      proof,
+      archive: {
+        generation_id: archive.generation_id,
+        manifest_path: archive.manifest_relative_path,
+        manifest_sha256: archive.manifest_sha256,
+        file_count: archive.files.length,
+      },
+    };
+    await writeInvalidMergedSpecRecoveryRecord(input.workItemDir, failedRecord)
+      .catch(() => undefined);
+    return {
+      success: false,
+      error: `INVALID_MERGED_SPEC_RECOVERY_DECISION_INVALIDATION_FAILED: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+      archive_generation: archive.generation_id,
+      archive_manifest: archive.manifest_relative_path,
+    };
+  }
+
+  const recoveryRecord: Record<string, any> = {
+    schema_version: "1.0",
+    work_item_id: input.workItemId,
+    recovery_action: "closed_to_candidate_preparing",
+    status: "authorized",
+    reason,
+    proof,
+    archive: {
+      generation_id: archive.generation_id,
+      manifest_path: archive.manifest_relative_path,
+      manifest_sha256: archive.manifest_sha256,
+      file_count: archive.files.length,
+    },
+    decision_invalidation: {
+      previous_decision_status: decisionInvalidation.before.decision_status,
+      decision_status: decisionInvalidation.after.decision_status,
+      invalidated_at: decisionInvalidation.after.invalidated_at,
+      decision_before_sha256: createHash("sha256").update(decisionBefore).digest("hex"),
+      decision_after_sha256: await hashFileIfPresent(decisionPath),
+    },
+    permission_state: {
+      code_change_allowed: input.workItem.code_change_allowed === true,
+      code_permission_revoked: input.workItem.code_permission_revoked === true,
+    },
+    authorized_by: String(input.context?.agent ?? "close_gate"),
+    authorized_at: new Date().toISOString(),
+  };
+
+  let recoveryPath: string;
+  try {
+    recoveryPath = await writeInvalidMergedSpecRecoveryRecord(
+      input.workItemDir,
+      recoveryRecord,
+    );
+  } catch (error) {
+    await restoreFileAtomically(decisionPath, decisionBefore);
+    return {
+      success: false,
+      error: `INVALID_MERGED_SPEC_RECOVERY_RECORD_FAILED: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+      archive_generation: archive.generation_id,
+      decision_rolled_back: true,
+    };
+  }
+
+  let transition;
+  try {
+    transition = await recoverInvalidMergedSpecClosureWithEvidence({
+      deps: input.deps,
+      projectRoot: input.projectRoot,
+      workItemId: input.workItemId,
+      workItemDir: input.workItemDir,
+      workflowType:
+        String(input.workItem.workflow_type ?? "") ||
+        workflowTypeFromPath(input.workItem.workflow_path),
+      evidence: `Merged Project Spec invalidated: ${proof.invalidity_reasons.join("; ")}`,
+      invalidityReasons: proof.invalidity_reasons,
+      generationId: archive.generation_id,
+    });
+  } catch (error) {
+    await restoreFileAtomically(decisionPath, decisionBefore);
+    recoveryRecord.status = "failed";
+    recoveryRecord.failed_at = new Date().toISOString();
+    recoveryRecord.failure = error instanceof Error ? error.message : String(error);
+    recoveryRecord.decision_rolled_back = true;
+    await writeInvalidMergedSpecRecoveryRecord(input.workItemDir, recoveryRecord)
+      .catch(() => undefined);
+    return {
+      success: false,
+      error: `INVALID_MERGED_SPEC_RECOVERY_TRANSITION_FAILED: ${recoveryRecord.failure}`,
+      recovery_record: recoveryPath,
+      archive_generation: archive.generation_id,
+      decision_rolled_back: true,
+    };
+  }
+
+  recoveryRecord.status = "applied";
+  recoveryRecord.applied_at = new Date().toISOString();
+  recoveryRecord.transition = {
+    from_state: "closed",
+    to_state: "candidate_preparing",
+    actor: "close_gate",
+  };
+  let recoveryRecordStatus = "applied";
+  let recoveryRecordFinalizeWarning: string | undefined;
+  try {
+    await writeInvalidMergedSpecRecoveryRecord(input.workItemDir, recoveryRecord);
+  } catch (error) {
+    // The StateManager event is authoritative and already binds the authorized
+    // recovery record plus archive hash. Do not misreport the committed state
+    // transition as failed merely because this post-event status enrichment
+    // could not replace the existing authorized record.
+    recoveryRecordStatus = "authorized";
+    recoveryRecordFinalizeWarning =
+      `INVALID_MERGED_SPEC_RECOVERY_RECORD_FINALIZE_FAILED: ${
+        error instanceof Error ? error.message : String(error)
+      }`;
+  }
+
+  return {
+    success: true,
+    action: "recover_invalid_merged_spec_closure",
+    work_item_id: input.workItemId,
+    authoritative_state_used: true,
+    state_advanced: true,
+    state_auto_advance: transition,
+    recovery_record: recoveryPath,
+    archive_generation: archive.generation_id,
+    archive_manifest: archive.manifest_relative_path,
+    archive_manifest_sha256: archive.manifest_sha256,
+    archived_file_count: archive.files.length,
+    invalidity_reasons: proof.invalidity_reasons,
+    prior_decision_invalidated: true,
+    code_permission_remains_revoked: true,
+    recovery_record_status: recoveryRecordStatus,
+    ...(recoveryRecordFinalizeWarning
+      ? { recovery_record_finalize_warning: recoveryRecordFinalizeWarning }
+      : {}),
+    next_legal_action:
+      "Regenerate the Candidate from the current Project Spec version, rerun Gates, obtain a new explicit user decision, then rerun Atomic Spec Merge, Verification, Formal Version, and Close.",
   };
 }
 
@@ -746,6 +981,17 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
 
     if (String(args["action"] ?? "close") === "recover_invalid_closure") {
       return recoverInvalidClosure({
+        args,
+        context,
+        deps,
+        projectRoot,
+        workItemId,
+        workItemDir,
+        workItem,
+      });
+    }
+    if (String(args["action"] ?? "close") === "recover_invalid_merged_spec_closure") {
+      return recoverInvalidMergedSpecClosure({
         args,
         context,
         deps,

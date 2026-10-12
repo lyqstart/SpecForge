@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.7
+> Product release version: 1.0.8
 >
 > Product version epoch: 1
 >
@@ -495,6 +495,21 @@ Candidate
 ~~~
 
 不得由 Agent、CLI、脚本或普通文件写入工具直接编辑正式 Project Spec 以绕过链路。
+
+## 6.5 已合并无效 Project Spec 的补偿恢复
+
+普通 `closed` 状态保持终态，普通状态入口不得从 `closed` 跳出。只有当同一 Work Item 的成功 Atomic Spec Merge 已进入正式 Project Spec，且 Runtime 能以当前 Project Spec、原 Candidate、原 User Decision、原 Merge Report 和原 Close 证据直接证明“当前正式规格仍由该次 Merge 产生并且规格本身无效”时，Close owner 才能执行专用补偿恢复。
+
+专用恢复必须满足：
+
+1. 只允许原 Work Item 的权威状态为 `closed`，原 Close Gate 与 Merge Report 均为成功，原 User Decision 仍能绑定原 Candidate；
+2. 当前 `spec_manifest.last_merged_work_item` 与 Project Spec Version 必须仍对应原 Merge 结果；若后续 Work Item 已改变正式 Project Spec，恢复必须失败关闭；
+3. 无效性必须来自当前正式 Project Spec 的共享正式校验，例如 Project Spec Core 版本不一致、已声明 Architecture/Data/Module ID 非法或治理闭包、Contract、Trace 不完整；实现证据或环境问题仍使用普通 `recover_invalid_closure`，不得混用；
+4. 首次状态变化前，必须把旧代 Candidate、Candidate Manifest、Gate、User Decision、Merge、Verification、Formal Version、Close 及关联治理证据复制到不可变 generation archive，并生成逐文件路径、大小与 SHA-256 Manifest；
+5. 旧 User Decision 必须在同一补偿事务中失效，代码权限继续保持撤销；归档或失效失败时不得推进状态；
+6. 受控补偿事件只允许 `closed → candidate_preparing`，且不得把该边加入普通状态转移表；恢复记录必须绑定旧代证据 Manifest、无效性检查结果、原 Merge 版本和操作者明确确认；
+7. 恢复后必须使用当前 Project Spec Version 重新生成 Candidate，重新执行适用 Gate，重新取得针对新 Candidate 的显式用户批准，再执行新的 Atomic Spec Merge、Verification / Formal Version 与 Close；原审批、原 Gate 和原 Merge 不得作为新代通过证据；
+8. 必须复用原 Work Item，保留原状态事件、失败、HardStop、Merge 和 Close 历史；不得手改 `.specforge` 真相源、删除旧证据或创建替代 Work Item。
 
 ---
 
