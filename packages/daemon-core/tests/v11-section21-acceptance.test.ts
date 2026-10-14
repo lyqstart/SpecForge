@@ -31,6 +31,7 @@ import type { SemanticClosureManifest } from '../src/tools/lib/semantic-closure-
 import { captureSemanticClosureProvenance } from '../src/tools/lib/semantic-closure-provenance';
 import { isValidV11Transition, isForbiddenTransition } from '../src/tools/lib/state-machine-v11';
 import { renderVerificationReport } from '../src/tools/lib/sf_artifact_write_core';
+import { readCurrentProjectSpecBinding } from '../src/tools/lib/candidate-generation-integrity';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -147,6 +148,29 @@ async function buildCompleteWI(
     deferPostMergeGates?: boolean;
   },
 ): Promise<string> {
+  await fs.writeFile(
+    path.join(projectDir, 'spec_manifest.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      project_spec_version: 'PSV-0001',
+      project: {
+        requirements: '.specforge/project/requirements.md',
+        trace_matrix: '.specforge/project/trace_matrix.md',
+        extension_registry: '.specforge/project/extension_registry.json',
+      },
+    }, null, 2) + '\n',
+    'utf-8',
+  );
+  await fs.writeFile(
+    path.join(projectDir, 'extension_registry.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      project_spec_version: 'PSV-0001',
+      extensions: [],
+    }, null, 2) + '\n',
+    'utf-8',
+  );
+  const projectSpecBinding = await readCurrentProjectSpecBinding(projectRoot);
   const wiDir = await createWorkItem({
     projectRoot,
     workItemId: wiId,
@@ -236,6 +260,7 @@ async function buildCompleteWI(
         work_item_id: wiId,
         workflow_path: workflowPath,
         base_spec_version: 'PSV-0001',
+        project_spec_precondition_sha256: projectSpecBinding.sha256,
         merge_required: workflowPath !== 'code_only_fast_path',
         entries: manifestEntries,
       },
@@ -345,7 +370,7 @@ async function buildCompleteWI(
   // Run gates and generate gate_summary
   const ctx: GateContext = { workItemId: wiId, workItemDir: wiDir, projectRoot };
   const gateResult = await runRequiredGates(
-    ['entry_gate', 'workflow_selection_gate', 'gate_summary_gate'],
+    ['entry_gate', 'workflow_selection_gate', 'candidate_manifest_gate', 'gate_summary_gate'],
     ctx,
   );
 
@@ -381,7 +406,7 @@ async function buildCompleteWI(
   expect(decision.decision_status).toBe('approved');
 
   // Release code permission if specified
-  if (extra?.allowedWriteFiles) {
+  if (extra?.allowedWriteFiles && !extra.deferPostMergeGates) {
     await releaseCodePermission({
       workItemDir: wiDir,
       workItemId: wiId,
@@ -390,7 +415,9 @@ async function buildCompleteWI(
   }
 
   // Revoke code permission (close_gate requires this)
-  await revokeCodePermission(wiDir);
+  if (!extra?.deferPostMergeGates) {
+    await revokeCodePermission(wiDir);
+  }
 
   await fs.writeFile(
     path.join(wiDir, 'changed_files_audit.md'),
@@ -542,28 +569,8 @@ describe('§21.1 Acceptance: requirement_change_path', () => {
 
     const ctx: GateContext = { workItemId: wiId, workItemDir: wiDir, projectRoot };
 
-    // Step: Run merge (copy candidate to project)
-    // Create spec_manifest.json in project dir
-    await fs.writeFile(
-      path.join(projectDir, 'spec_manifest.json'),
-      JSON.stringify({
-        project_spec_version: 'PSV-0001',
-        project: {
-          requirements: '.specforge/project/requirements.md',
-          trace_matrix: '.specforge/project/trace_matrix.md',
-        },
-      }),
-      'utf-8',
-    );
-    await fs.writeFile(
-      path.join(projectDir, 'extension_registry.json'),
-      JSON.stringify({
-        schema_version: '1.0',
-        project_spec_version: 'PSV-0001',
-        extensions: [],
-      }),
-      'utf-8',
-    );
+    // Step: Run merge (copy candidate to project). Project Spec binding was
+    // established before Candidate Gate and must not be rewritten afterward.
     // Create target file in project
     await fs.writeFile(
       path.join(projectDir, 'requirements.md'),
@@ -599,6 +606,7 @@ describe('§21.1 Acceptance: requirement_change_path', () => {
     expect(
       postMergeGates.reports.find(report => report.gate_id === 'formal_version_gate')?.status,
     ).toBe('passed');
+    await revokeCodePermission(wiDir);
 
     // Verify the merged file exists
     const mergedContent = await fs.readFile(path.join(projectDir, 'requirements.md'), 'utf-8');

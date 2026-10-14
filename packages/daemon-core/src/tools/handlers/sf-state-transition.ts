@@ -33,6 +33,7 @@ import {
   precheckCandidateManifestSchema,
 } from "../lib/candidate-manifest-owner.js";
 import { readUnresolvedHandoffValidationFailures } from "../lib/agent-handoff-v11";
+import { readCurrentProjectSpecBinding } from "../lib/candidate-generation-integrity.js";
 
 async function readJsonIfExists(filePath: string): Promise<Record<string, any> | null> {
   try {
@@ -271,9 +272,12 @@ async function materializeCandidateManifestBeforePreparedTransition(
     manifest.workflow_path,
     trigger.workflow_path,
   );
+  const projectSpecBinding = await readCurrentProjectSpecBinding(projectRoot);
   const manifestForMaterialization = {
     ...manifest,
     workflow_path: canonicalWorkflowPath,
+    base_spec_version: projectSpecBinding.version,
+    project_spec_precondition_sha256: projectSpecBinding.sha256,
   };
   const materialized = materializeCandidateManifestEntries(
     manifestForMaterialization,

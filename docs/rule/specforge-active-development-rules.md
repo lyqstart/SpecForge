@@ -2521,3 +2521,8 @@ Product Specification 只保存稳定产品规则；Authority Registry 登记每
 
 发现终态结果无效时，恢复目标必须由首次失效责任层决定：实现或 Formal Version 证据无效回到 `implementation_ready`；已经合并的正式 Project Spec 本身无效则回到 `candidate_preparing`。两类恢复必须使用不同显式动作和不同证明合同，不得用较浅恢复制造不可达后续步骤。任何成功 Merge 后的规格级恢复都必须在状态变化前不可变归档旧代 Candidate、Gate、Decision、Merge、Verification、Close 字节及逐文件哈希，失效旧审批并保留代码权限撤销；普通状态表仍禁止 `closed → any`，补偿边只能由专用 owner 依据当前规格归属、新鲜度和无效性证据执行。恢复后必须建立新 generation，重新 Candidate、Gate、显式用户批准、Atomic Spec Merge、Verification / Formal Version 与 Close。
 <!-- source: ledger current EXP-278 -->
+
+## EXP-279：代际治理证据必须共同绑定同一 Candidate 与 Project Spec 基线
+
+Candidate seal、Gate Attempt、Gate Summary、User Decision 与 Merge 必须共同绑定同一代 Candidate 内容、分类/影响/触发依据及当前 Project Spec Version/Manifest 字节身份。Gate 的声明输入不得缩小 seal 集，历史 Gate 不得进入当前摘要，调用者不得提供或默认基线版本。Requirements 中出现的正式 REQ 标识必须有唯一正文与验收标准；索引或下游引用不能替代需求定义。发现代际漂移时必须在审批或正式写入前失败关闭，并通过合法恢复重新生成证据。
+<!-- source: ledger current EXP-279 -->

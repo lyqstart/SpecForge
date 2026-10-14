@@ -40,6 +40,7 @@ import {
   verifyProjectGovernanceAfterImplementation,
   type GovernanceCheckResult,
 } from './project-governance-v2.js';
+import { candidateSealInputPaths } from './candidate-generation-integrity.js';
 interface GateMeta {
   gateId: GateIdV11;
   gateType: GateStrictness;
@@ -238,34 +239,6 @@ async function writeGateReport(
   await fs.writeFile(path.join(gatesDir, `${report.gate_id}.json`), serialized, 'utf-8');
   await writeExclusive(path.join(attempt.gatesPath, `${report.gate_id}.json`), serialized);
 }
-async function latestGateReports(
-  ctx: GateContext,
-  currentReports: GateReportV11[],
-): Promise<GateReportV11[]> {
-  const byId = new Map<string, GateReportV11>();
-  const gatesDir = path.join(ctx.workItemDir, 'gates');
-  try {
-    for (const name of await fs.readdir(gatesDir)) {
-      if (!name.endsWith('.json') || name === 'close_gate.json') continue;
-      const reportValidation = validateCurrentGateReportValue(
-        await readValidatedGateAttemptJson(path.join(gatesDir, name)),
-      );
-      if (!reportValidation.value) {
-        throw new Error(
-          `GATE_LATEST_SCHEMA_BLOCKED: file=${name}; ${reportValidation.errors.join('; ')}`,
-        );
-      }
-      byId.set(reportValidation.value.gate_id, reportValidation.value);
-    }
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
-    // The current run may be creating the first Gate reports.
-  }
-  for (const report of currentReports) byId.set(report.gate_id, report);
-  return Array.from(byId.values()).sort((left, right) =>
-    left.gate_id.localeCompare(right.gate_id),
-  );
-}
 async function writeGateSummary(
   ctx: GateContext,
   reports: GateReportV11[],
@@ -275,7 +248,9 @@ async function writeGateSummary(
   summaryContent: string;
   summaryReports: GateReportV11[];
 }> {
-  const summaryReports = await latestGateReports(ctx, reports);
+  const summaryReports = [...reports].sort((left, right) =>
+    left.gate_id.localeCompare(right.gate_id),
+  );
   const summaryStatus = computeGateSummaryStatus(summaryReports);
   const summaryPath = path.join(ctx.workItemDir, 'gate_summary.md');
   const summaryContent = generateGateSummaryMd(
@@ -306,13 +281,15 @@ export async function buildGateAttemptInputSnapshot(
   projectRoot: string,
   reports: GateReportV11[],
   platform: NodeJS.Platform = process.platform,
+  additionalInputPaths: string[] = [],
 ): Promise<GateAttemptInputSnapshotEntry[]> {
   const inputPathByIdentity = new Map<string, string>();
-  for (const inputPath of reports.flatMap(report =>
+  const declaredInputPaths = reports.flatMap(report =>
     Array.isArray(report.input_files)
       ? report.input_files.map(value => String(value ?? '').trim()).filter(Boolean)
       : [],
-  )) {
+  );
+  for (const inputPath of [...declaredInputPaths, ...additionalInputPaths]) {
     const identity = gateAttemptInputIdentity(projectRoot, inputPath, platform);
     if (!inputPathByIdentity.has(identity)) inputPathByIdentity.set(identity, inputPath);
   }
@@ -374,7 +351,13 @@ async function finalizeGateAttempt(input: {
   summaryContent: string;
   summaryReports: GateReportV11[];
 }): Promise<void> {
-  const inputSnapshot = await buildGateAttemptInputSnapshot(input.ctx.projectRoot, input.summaryReports);
+  const sealInputPaths = await candidateSealInputPaths(input.ctx.workItemDir);
+  const inputSnapshot = await buildGateAttemptInputSnapshot(
+    input.ctx.projectRoot,
+    input.summaryReports,
+    process.platform,
+    sealInputPaths,
+  );
   await writeExclusiveJson(path.join(input.attempt.attemptPath, 'input-snapshot.json'), {
     schema_version: '1.0',
     attempt_id: input.attempt.attemptId,

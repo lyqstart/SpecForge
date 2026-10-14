@@ -16,8 +16,8 @@ import * as os from 'node:os';
 import { authorContractCandidate } from '../../src/tools/lib/contract-authoring';
 import { validateCandidateManifestJson } from '../../src/tools/lib/artifact-schema-validation';
 import { inferManifestEntries } from '../../src/tools/lib/governance-invariants-v11';
-import { recordUserDecision } from '../../src/tools/lib/user-decision-recorder-v11';
 import { executeMerge } from '../../src/tools/lib/merge-runner-v11';
+import { approveSealedCandidateFixture } from '../helpers/candidate-generation-fixture';
 
 describe('contract-authoring', () => {
   let projectRoot: string;
@@ -275,21 +275,11 @@ describe('contract-authoring', () => {
     });
     expect(authored.success).toBe(true);
 
-    await fs.writeFile(
-      path.join(wiDir(), 'gate_summary.md'),
-      '# Gate Summary\n\nOverall Status: passed\n'
-    );
-    await recordUserDecision({
+    await approveSealedCandidateFixture({
+      projectRoot,
       workItemDir: wiDir(),
       workItemId,
       workflowPath: 'contract_change_path',
-      baseSpecVersion: 'PSV-0001',
-      candidateManifestPath: 'candidate_manifest.json',
-      gateSummaryPath: 'gate_summary.md',
-      decisionStatus: 'approved',
-      decisionType: 'user_approved',
-      decidedBy: 'test-user',
-      decisionScope: 'full',
     });
 
     const merged = await executeMerge({

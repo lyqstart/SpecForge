@@ -114,12 +114,14 @@ async function readMergeReportSuccess(workItemDir: string): Promise<{
 async function readWorkflowFacts(workItemDir: string): Promise<{
   workflowPath?: string;
   workflowType?: string;
+  baseSpecVersion?: string;
 }> {
   const candidateManifest = await readJsonIfExists(path.join(workItemDir, 'candidate_manifest.json'));
   if (candidateManifest?.workflow_path || candidateManifest?.workflow_type) {
     return {
       workflowPath: candidateManifest.workflow_path,
       workflowType: candidateManifest.workflow_type,
+      baseSpecVersion: candidateManifest.base_spec_version,
     };
   }
   const triggerResult = await readJsonIfExists(path.join(workItemDir, 'trigger_result.json'));
@@ -469,6 +471,15 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
     if (!decisionStatus || !decisionType) {
       return { success: false, error: 'decision_status and decision_type are required' };
     }
+    if (Object.prototype.hasOwnProperty.call(args, 'base_spec_version')) {
+      return {
+        success: false,
+        error: 'CALLER_SUPPLIED_BASE_SPEC_VERSION_FORBIDDEN',
+        code: 'CALLER_SUPPLIED_BASE_SPEC_VERSION_FORBIDDEN',
+        remediation:
+          'Remove base_spec_version. User Decision Recorder reads the sealed Candidate Manifest baseline.',
+      };
+    }
 
     const boundary = validateUserApprovalBoundary(args as Record<string, unknown>, {
       decisionStatus,
@@ -527,7 +538,7 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
       workItemDir,
       workItemId,
       workflowPath,
-      baseSpecVersion: (args['base_spec_version'] as string) || 'PSV-0001',
+      baseSpecVersion: String(workflowFacts.baseSpecVersion ?? ''),
       candidateManifestPath: 'candidate_manifest.json',
       gateSummaryPath: 'gate_summary.md',
       decisionStatus,

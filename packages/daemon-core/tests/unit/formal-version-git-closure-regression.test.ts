@@ -282,7 +282,7 @@ describe('formal version Git closure regressions', () => {
     ).rejects.toThrow('formal_version_gate must pass');
   });
 
-  it('rebuilding gate_summary preserves current Gate reports and removes summary self-dependency', async () => {
+  it('rebuilding gate_summary binds only the current immutable Gate Attempt', async () => {
     const report = (gateId: string) => ({
       schema_version: '1.0',
       work_item_id: 'WI-0002',
@@ -324,8 +324,8 @@ describe('formal version Git closure regressions', () => {
     });
 
     const summary = await fs.readFile(path.join(workItemDir, 'gate_summary.md'), 'utf-8');
-    expect(summary).toContain('### verification_gate');
-    expect(summary).toContain('### formal_version_gate');
+    expect(summary).not.toContain('### verification_gate');
+    expect(summary).not.toContain('### formal_version_gate');
     expect(summary).toContain('### gate_summary_gate');
   });
 

@@ -75,6 +75,7 @@ import {
   inspectProjectGovernanceContractConsumers,
 } from './project-governance-v2.js';
 import { specMigrationCandidateRequiresTraceDelta } from './spec-migration-trace-contract.js';
+import { validateCandidateProjectSpecBinding } from './candidate-generation-integrity.js';
 
 function projectSpecRepairPlanPath(workItemDir: string): string {
   return path.join(workItemDir, 'project_spec_repair_plan.json');
@@ -603,6 +604,7 @@ function isEvidenceOnlyCandidateManifest(manifest: Record<string, unknown>): boo
 registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
   const checks: GateReportCheck[] = [];
   const manifestPath = workItemCandidateManifest(ctx.projectRoot, ctx.workItemId);
+  const inputFiles = [manifestPath];
   let manifest: any = null;
   try {
     const content = await fs.readFile(manifestPath, 'utf-8');
@@ -611,6 +613,22 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
       check_id: 'manifest_parse',
       description: 'candidate_manifest.json is valid JSON',
       passed: true,
+    });
+
+    const projectSpecBinding = await validateCandidateProjectSpecBinding({
+      projectRoot: ctx.projectRoot,
+      manifest,
+    });
+    if (projectSpecBinding.binding) {
+      inputFiles.push(projectSpecBinding.binding.manifestPath);
+    }
+    checks.push({
+      check_id: 'manifest_current_project_spec_binding',
+      description:
+        'candidate_manifest base_spec_version and project_spec_precondition_sha256 bind the current Project Spec Manifest bytes',
+      passed: projectSpecBinding.valid,
+      severity: projectSpecBinding.valid ? undefined : 'error',
+      details: projectSpecBinding.errors.join('; '),
     });
 
     const entries = manifest.entries ?? [];
@@ -884,7 +902,7 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
     });
   }
   return makeReport(ctx.workItemId, 'candidate_manifest_gate', 'hard_gate', true, checks, [
-    manifestPath,
+    ...inputFiles,
   ]);
 }); /** * §9.2 path_policy_gate — 路径策略检查
  */

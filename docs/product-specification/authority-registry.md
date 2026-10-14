@@ -4,7 +4,7 @@
 >
 > Effective date: 2026-10-11
 >
-> Registry version: 1.8
+> Registry version: 1.9
 >
 > Product owner: SpecForge 产品负责人
 >
@@ -80,6 +80,7 @@ SPS-1.0
 | D12 | Git ignore 决定必须由受控 Tool 落实到根 `.gitignore`；只有“当前哈希来源 + 已知可再生产物 + Git 实际 ignored + 未跟踪”同时成立时 changed-files audit 才可排除。业务代码临时扩界必须走带原因和完整历史的 `code_permission extend`，不得把可再生产物伪装成 Module code path，也不得以 ignore 绕过普通源文件审计 |
 | D13 | 正式 Daemon 生命周期由短命令 `specforge daemon ...` 操作；Installer 安装/升级回执必须暴露 CLI 目录和一次性、幂等的 PATH 配置方法，但不得静默改写用户 PATH。绝对路径只用于诊断与首次环境配置，不是日常操作入口 |
 | D14 | 已成功 Atomic Spec Merge 并进入 `closed` 的原 Work Item，若当前正式 Project Spec 可由 Runtime 一手证据证明仍由该次 Merge 产生且规格本身无效，必须通过专用补偿恢复原子归档旧代 Candidate/Gate/Decision/Merge/Verification/Close 证据、失效旧审批，并仅以受控事件返回 `candidate_preparing`；不得复用普通 `recover_invalid_closure`、不得放宽 `closed` 终态、不得在成功 Merge 后调用通用审批失效、不得创建替代 Work Item或手改真相源。恢复后必须重新生成 Candidate、重新通过 Gate、取得新的显式用户批准、重新 Atomic Spec Merge、Verification/Formal Version 与 Close。 |
+| D15 | 每一代进入 Gate/审批/Merge 的 Candidate 必须在 seal 时由 Runtime 重新绑定当前正式 Project Spec Version 与 `spec_manifest.json` 原始字节哈希；同一 Gate Attempt 必须不可变封存该代全部 Candidate、Manifest、分类、影响与触发依据，Gate Summary 只描述本次 Attempt 的报告；审批和 Merge 必须验证当前 Candidate 集与该次通过 Attempt、当前 Project Spec 基线完全一致。Requirements Gate 必须拒绝仅在索引、表格或引用中声明而没有正式需求正文与验收标准的 REQ。任一绑定或正文完整性不成立时必须在审批或写入正式规格前失败关闭，并经合法恢复回到 `candidate_preparing` 重新生成，不得继承旧代通过证据。 |
 | AR-DEC-01 | 《SpecForge 架构一致性治理最终实施方案》保留为从属技术治理合同，服从 SPS 与 Authority Registry，不再自称产品权威 |
 | AR-DEC-02 | 旧规格、旧设计、旧标准、实施文件、报告和审计统一进入 docs/archive/**，不再散布为并行当前目录 |
 | AR-DEC-03 | 仓库根 .kiro 退役；可复用内容必须进入当前权威或实现合同，剩余材料归档至 docs/archive/kiro/** |

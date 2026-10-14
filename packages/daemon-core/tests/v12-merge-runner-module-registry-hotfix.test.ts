@@ -1,8 +1,13 @@
+import { createHash } from 'node:crypto';
 import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { executeMerge } from '../src/tools/lib/merge-runner-v11';
+import { candidateSealInputPaths } from '../src/tools/lib/candidate-generation-integrity';
+import { buildGateAttemptInputSnapshot } from '../src/tools/lib/gate-chain';
+import type { GateReportV11 } from '../src/tools/lib/gate-runner-v11';
+import { recordUserDecision } from '../src/tools/lib/user-decision-recorder-v11';
 
 async function writeJson(filePath: string, value: unknown): Promise<void> {
   await mkdir(dirname(filePath), { recursive: true });
@@ -20,7 +25,8 @@ describe('Project Spec governed module admission', () => {
     await mkdir(join(workItemDir, 'candidates'), { recursive: true });
     await mkdir(join(workItemDir, 'gates'), { recursive: true });
 
-    await writeJson(join(projectRoot, '.specforge', 'project', 'spec_manifest.json'), {
+    const specManifestPath = join(projectRoot, '.specforge', 'project', 'spec_manifest.json');
+    await writeJson(specManifestPath, {
       schema_version: '1.0',
       project_spec_version: 'PSV-0001',
       modules: [],
@@ -75,6 +81,8 @@ describe('Project Spec governed module admission', () => {
       workflow_type: 'feature_spec',
       workflow_path: 'architecture_change_path',
       base_spec_version: 'PSV-0001',
+      project_spec_precondition_sha256:
+        'sha256:' + createHash('sha256').update(await readFile(specManifestPath)).digest('hex'),
       merge_required: true,
       entries: [
         {
@@ -119,19 +127,76 @@ describe('Project Spec governed module admission', () => {
       work_item_id: workItemId,
       workflow_path: 'architecture_change_path',
     });
-    await writeJson(join(workItemDir, 'user_decision.json'), {
-      work_item_id: workItemId,
-      workflow_path: 'architecture_change_path',
-      decision_status: 'approved',
-      decision_type: 'user_approved',
-      decided_by: 'tls ofn',
-      user_response_quote: '批准',
-    });
+    await writeFile(join(workItemDir, 'change_classification.md'), '# Classification\n', 'utf8');
+    await writeFile(join(workItemDir, 'impact_analysis.md'), '# Impact\n', 'utf8');
 
-    await writeFile(join(workItemDir, 'gate_summary.md'), 'Overall Status: passed\n', 'utf8');
+    const gateSummary = 'Overall Status: passed\n';
+    await writeFile(join(workItemDir, 'gate_summary.md'), gateSummary, 'utf8');
     for (const gate of ['required_files_gate', 'candidate_manifest_gate', 'path_policy_gate']) {
       await writeJson(join(workItemDir, 'gates', gate + '.json'), { status: 'passed' });
     }
+
+    const attemptId = 'attempt-0001';
+    const attemptPath = join(workItemDir, 'gate_attempts', attemptId);
+    await mkdir(join(attemptPath, 'gates'), { recursive: true });
+    const report: GateReportV11 = {
+      schema_version: '1.0',
+      work_item_id: workItemId,
+      gate_id: 'candidate_manifest_gate',
+      gate_type: 'hard_gate',
+      required: true,
+      status: 'passed',
+      input_files: [],
+      checks: [{ check_id: 'ok', description: 'ok', passed: true }],
+      blocking_issues: [],
+      warnings: [],
+      waiver_allowed: false,
+      waiver_required: false,
+      waiver_ids: [],
+      started_at: '2026-10-15T00:00:00.000Z',
+      finished_at: '2026-10-15T00:00:01.000Z',
+      runner: 'gate_runner',
+    };
+    const snapshot = await buildGateAttemptInputSnapshot(
+      projectRoot,
+      [report],
+      process.platform,
+      await candidateSealInputPaths(workItemDir),
+    );
+    await writeFile(join(attemptPath, 'gate_summary.md'), gateSummary, 'utf8');
+    await writeJson(join(attemptPath, 'attempt-result.json'), {
+      schema_version: '1.0',
+      attempt_id: attemptId,
+      work_item_id: workItemId,
+      source: 'gate_run',
+      started_at: '2026-10-15T00:00:00.000Z',
+      completed_at: '2026-10-15T00:00:01.000Z',
+      requested_gate_ids: ['candidate_manifest_gate'],
+      current_report_gate_ids: ['candidate_manifest_gate'],
+      summary_report_gate_ids: ['candidate_manifest_gate'],
+      summary_status: 'passed',
+      input_snapshot: 'input-snapshot.json',
+    });
+    await writeJson(join(attemptPath, 'input-snapshot.json'), {
+      schema_version: '1.0',
+      attempt_id: attemptId,
+      work_item_id: workItemId,
+      captured_at: '2026-10-15T00:00:01.000Z',
+      inputs: snapshot,
+    });
+    await recordUserDecision({
+      workItemDir,
+      workItemId,
+      workflowPath: 'architecture_change_path',
+      baseSpecVersion: 'PSV-0001',
+      candidateManifestPath: 'candidate_manifest.json',
+      gateSummaryPath: 'gate_summary.md',
+      decisionStatus: 'approved',
+      decisionType: 'user_approved',
+      decidedBy: 'user',
+      decisionScope: 'full',
+      userResponseQuote: '批准',
+    });
 
     const result = await executeMerge({
       projectRoot,

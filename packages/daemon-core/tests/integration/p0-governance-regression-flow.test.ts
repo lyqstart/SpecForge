@@ -18,6 +18,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { ToolDispatcher, type ToolDeps } from '../../src/tools/ToolDispatcher';
 import { renderVerificationReport } from '../../src/tools/lib/sf_artifact_write_core';
+import { sealPassingCandidateAttemptFixture } from '../helpers/candidate-generation-fixture';
 import '../../src/tools/index';
 
 const execFileAsync = promisify(execFile);
@@ -336,7 +337,7 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
     work_item_id: workItemId,
     workflow_path: workflowPath,
     candidate_phase: 'requirements',
-    base_spec_version: 'PSV-0001',
+    base_spec_version: 'PSV-0000',
     merge_required: true,
     entries: [
       {
@@ -368,6 +369,10 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
     ],
   });
 
+  if (gateSummaryStatus === 'passed') {
+    await sealPassingCandidateAttemptFixture({ projectRoot, workItemDir: dir, workItemId });
+  }
+
   await setRuntimeState(workItemId, state, workflowPath);
   return dir;
 }
@@ -379,7 +384,6 @@ async function approveFixture(workItemId: string): Promise<any> {
     decision_status: 'approved',
     decision_type: 'user_approved',
     decision_scope: 'full',
-    base_spec_version: 'PSV-0000',
     user_response_quote: '同意',
   });
 }

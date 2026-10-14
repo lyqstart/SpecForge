@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.8
+> Product release version: 1.0.9
 >
 > Product version epoch: 1
 >
@@ -495,6 +495,15 @@ Candidate
 ~~~
 
 不得由 Agent、CLI、脚本或普通文件写入工具直接编辑正式 Project Spec 以绕过链路。
+
+每一代 Candidate 的完整性合同如下：
+
+1. `candidate_preparing → candidate_prepared` 是 Candidate seal 边界。Runtime 必须在首次写入冻结后 Manifest 之前读取当前 `.specforge/project/spec_manifest.json`，把其中 `project_spec_version` 写入 `candidate_manifest.base_spec_version`，并把该文件原始字节的 SHA-256 写入 `project_spec_precondition_sha256`；缺失、格式非法或读写失败必须在状态推进前失败关闭。
+2. 每个 Gate Attempt 必须以不可覆盖证据封存本代 `candidate_manifest.json`、`candidates/**` 全部文件、`change_classification.md`、`impact_analysis.md` 和 `trigger_result.json` 的逐文件内容身份。Gate 自报 `input_files` 只能补充，不能缩小这一固定 seal 集。
+3. `gate_summary.md` 只汇总生成它的当前 Gate Attempt；不得把旧阶段、旧代或未在本 Attempt 执行的历史 Gate 报告合并为当前通过结论。
+4. User Decision Recorder 必须验证当前 seal 集与最近一次适用且通过的 Candidate Gate Attempt 快照一致，并从 Candidate Manifest 读取 `base_spec_version`；调用者不得提供或默认产品规格基线。Merge Runner 必须再次执行相同绑定校验，并验证 `base_spec_version` 与当前 Project Spec Version、`project_spec_precondition_sha256` 与当前 `spec_manifest.json` 原始字节哈希一致。
+5. Requirements Gate 必须把 Requirements Candidate 中出现的正式 `REQ-*` 标识与正式需求章节一一对应；每个标识必须有唯一正文、可验证验收标准和非空语义内容。仅在摘要表、索引、Trace、Design 或 Tasks 中出现不能建立需求。
+6. seal 后发现以上任一事实错误时，必须保留失败证据并经受控恢复回到 `candidate_preparing`，重新生成本代 Candidate、Gate 与显式批准；不得修改 sealed 文件、复用旧 Gate/审批，或运行调用者已知必败的 Gate 只为制造恢复状态。
 
 ## 6.5 已合并无效 Project Spec 的补偿恢复
 

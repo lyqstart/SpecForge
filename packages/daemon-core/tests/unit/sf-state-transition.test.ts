@@ -716,7 +716,7 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
         work_item_id: "WI-0004",
         workflow_type: "architecture_change",
         workflow_path: "architecture_change_path",
-        base_spec_version: "PSV-0002",
+        base_spec_version: "PSV-0001",
         merge_required: true,
         entries: [
           {
@@ -781,6 +781,12 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
       ),
     );
     expect(manifest.base_spec_version).toBe("PSV-0002");
+    const projectManifestBytes = await fs.readFile(
+      path.join(tempDir, ".specforge", "project", "spec_manifest.json"),
+    );
+    expect(manifest.project_spec_precondition_sha256).toBe(
+      `sha256:${createHash("sha256").update(projectManifestBytes).digest("hex")}`,
+    );
     expect(manifest.entries.map((entry: any) => entry.type)).toEqual([
       "extension_registry",
       "architecture",
@@ -887,6 +893,35 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
     expect(result.error).toContain("CANDIDATE_MANIFEST_REQUIRED_ENTRY_MISSING");
     expect(result.state_advanced).toBe(false);
     expect(smTransition).not.toHaveBeenCalled();
+  });
+  it("fails before changing the Candidate Manifest when current Project Spec binding is unavailable", async () => {
+    await writeCandidateContext();
+    const manifestPath = path.join(
+      wiDirFor(tempDir, "WI-0004"),
+      "candidate_manifest.json",
+    );
+    const before = await fs.readFile(manifestPath, "utf-8");
+    await fs.rm(
+      path.join(tempDir, ".specforge", "project", "spec_manifest.json"),
+    );
+    const { deps, smTransition } = makeStateManagerDeps({ currentState: "candidate_preparing" });
+
+    const result = await handler(
+      {
+        work_item_id: "WI-0004",
+        from_state: "candidate_preparing",
+        to_state: "candidate_prepared",
+        workflow_type: "architecture_change",
+        workflow_path: "architecture_change_path",
+      },
+      { directory: tempDir, agent: "sf-orchestrator" },
+      deps,
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain("PROJECT_SPEC_BINDING_UNAVAILABLE");
+    expect(smTransition).not.toHaveBeenCalled();
+    expect(await fs.readFile(manifestPath, "utf-8")).toBe(before);
   });
   it("rejects a missing authoritative state before changing the Manifest", async () => {
     await writeCandidateContext();

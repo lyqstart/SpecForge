@@ -14,6 +14,7 @@ import { describe, expect, it } from 'vitest';
 import { executeMerge } from '../src/tools/lib/merge-runner-v11';
 import { runGate } from '../src/tools/lib/gate-report';
 import '../src/tools/lib/gate-runner-v11';
+import { approveSealedCandidateFixture } from './helpers/candidate-generation-fixture';
 
 async function writeJson(filePath: string, value: unknown): Promise<void> {
   await mkdir(dirname(filePath), { recursive: true });
@@ -93,19 +94,12 @@ describe('merge runner — extension_registry.json version sync', () => {
       work_item_id: workItemId,
       workflow_path: 'requirement_change_path',
     });
-    await writeJson(join(workItemDir, 'user_decision.json'), {
-      work_item_id: workItemId,
-      workflow_path: 'requirement_change_path',
-      decision_status: 'approved',
-      decision_type: 'user_approved',
-      decided_by: 'human user',
-      user_response_quote: '批准',
+    await approveSealedCandidateFixture({
+      projectRoot,
+      workItemDir,
+      workItemId,
+      workflowPath: 'requirement_change_path',
     });
-
-    await writeFile(join(workItemDir, 'gate_summary.md'), 'Overall Status: passed\n', 'utf8');
-    for (const gate of ['required_files_gate', 'candidate_manifest_gate', 'path_policy_gate']) {
-      await writeJson(join(workItemDir, 'gates', gate + '.json'), { status: 'passed' });
-    }
 
     const result = await executeMerge({
       projectRoot,

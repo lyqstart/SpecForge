@@ -3,6 +3,7 @@ import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { executeMerge } from '../../src/tools/lib/merge-runner-v11';
+import { approveSealedCandidateFixture } from '../helpers/candidate-generation-fixture';
 
 async function writeJson(filePath: string, value: unknown): Promise<void> {
   await fs.mkdir(path.dirname(filePath), { recursive: true });
@@ -19,19 +20,6 @@ async function approvalArtifacts(root: string, wiDir: string, workItemId: string
     work_item_id: workItemId,
     workflow_path: 'requirement_change_path',
   });
-  await writeJson(path.join(wiDir, 'user_decision.json'), {
-    work_item_id: workItemId,
-    workflow_path: 'requirement_change_path',
-    decision_status: 'approved',
-    decision_type: 'user_approved',
-    decided_by: 'human user',
-    user_response_quote: '批准',
-  });
-  await fs.mkdir(path.join(wiDir, 'gates'), { recursive: true });
-  await fs.writeFile(path.join(wiDir, 'gate_summary.md'), 'Overall Status: passed\n');
-  for (const gate of ['required_files_gate', 'candidate_manifest_gate', 'path_policy_gate']) {
-    await writeJson(path.join(wiDir, 'gates', `${gate}.json`), { status: 'passed' });
-  }
   await fs.mkdir(path.join(root, '.specforge', 'project'), { recursive: true });
   await writeJson(path.join(root, '.specforge', 'project', 'extension_registry.json'), {
     schema_version: '1.0',
@@ -138,6 +126,7 @@ describe('P0 Contract consumer atomic merge', () => {
       ],
     });
 
+    await approveSealedCandidateFixture({ projectRoot: root, workItemDir: wiDir, workItemId, workflowPath: 'requirement_change_path' });
     const result = await executeMerge({
       projectRoot: root,
       workItemId,
@@ -243,6 +232,7 @@ describe('P0 Contract consumer atomic merge', () => {
       ],
     });
 
+    await approveSealedCandidateFixture({ projectRoot: root, workItemDir: wiDir, workItemId, workflowPath: 'requirement_change_path' });
     const result = await executeMerge({
       projectRoot: root,
       workItemId,
@@ -303,6 +293,7 @@ describe('P0 Contract consumer atomic merge', () => {
       ],
     });
 
+    await approveSealedCandidateFixture({ projectRoot: root, workItemDir: wiDir, workItemId, workflowPath: 'requirement_change_path' });
     const result = await executeMerge({
       projectRoot: root,
       workItemId,
@@ -363,6 +354,7 @@ describe('P0 Contract consumer atomic merge', () => {
       ],
     });
 
+    await approveSealedCandidateFixture({ projectRoot: root, workItemDir: wiDir, workItemId, workflowPath: 'requirement_change_path' });
     const result = await executeMerge({
       projectRoot: root,
       workItemId,
@@ -419,6 +411,7 @@ describe('P0 Contract consumer atomic merge', () => {
       ],
     });
 
+    await approveSealedCandidateFixture({ projectRoot: root, workItemDir: wiDir, workItemId, workflowPath: 'requirement_change_path' });
     const result = await executeMerge({
       projectRoot: root,
       workItemId,
@@ -476,6 +469,7 @@ describe('P0 Contract consumer atomic merge', () => {
       ],
     });
 
+    await approveSealedCandidateFixture({ projectRoot: root, workItemDir: wiDir, workItemId, workflowPath: 'requirement_change_path' });
     const result = await executeMerge({
       projectRoot: root,
       workItemId,

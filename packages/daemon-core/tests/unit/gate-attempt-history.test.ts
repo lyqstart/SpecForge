@@ -142,6 +142,11 @@ describe('Gate Attempt immutable evidence', () => {
       '',
     ].join('\n');
     await writeFile(join(gatesDir, 'entry_gate.json'), legacyJson, 'utf-8');
+    await writeFile(
+      join(gatesDir, 'post_merge_gate.json'),
+      JSON.stringify({ ...legacyReport, gate_id: 'post_merge_gate' }, null, 2),
+      'utf-8',
+    );
     await writeFile(join(ctx.workItemDir, 'gate_summary.md'), legacySummary, 'utf-8');
 
     const current = await runRequiredGates(['entry_gate'], ctx);
@@ -158,6 +163,10 @@ describe('Gate Attempt immutable evidence', () => {
     expect(await readFile(join(currentDir, 'gate_summary.md'), 'utf-8')).not.toBe(
       legacySummary,
     );
+    expect(await readFile(join(currentDir, 'gate_summary.md'), 'utf-8')).not.toContain(
+      'post_merge_gate',
+    );
+    expect(currentResult.summary_report_gate_ids).toEqual(['entry_gate']);
   });
 
   it('blocks an unknown existing attempt schema before creating or updating evidence', async () => {

@@ -1,0 +1,273 @@
+import { createHash } from 'node:crypto';
+import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, describe, expect, it } from 'vitest';
+
+import {
+  candidateSealInputPaths,
+  readCurrentProjectSpecBinding,
+  validateCandidateProjectSpecBinding,
+  validatePassingCandidateGateAttempt,
+} from '../../src/tools/lib/candidate-generation-integrity';
+import { buildGateAttemptInputSnapshot } from '../../src/tools/lib/gate-chain';
+import type { GateReportV11 } from '../../src/tools/lib/gate-runner-v11';
+import { validateDecisionRecordPreconditions } from '../../src/tools/lib/governance-invariants-v11';
+import { validateFormalRequirementBodies } from '../../src/tools/lib/sf_requirements_gate_core';
+
+const roots: string[] = [];
+
+function hash(bytes: string | Buffer): string {
+  return `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
+}
+
+function passedCandidateManifestReport(workItemId: string): GateReportV11 {
+  return {
+    schema_version: '1.0',
+    work_item_id: workItemId,
+    gate_id: 'candidate_manifest_gate',
+    gate_type: 'hard_gate',
+    required: true,
+    status: 'passed',
+    input_files: [],
+    checks: [{ check_id: 'ok', description: 'ok', passed: true }],
+    blocking_issues: [],
+    warnings: [],
+    waiver_allowed: false,
+    waiver_required: false,
+    waiver_ids: [],
+    started_at: '2026-10-15T00:00:00.000Z',
+    finished_at: '2026-10-15T00:00:01.000Z',
+    runner: 'gate_runner',
+  };
+}
+
+async function makeProject(): Promise<{
+  projectRoot: string;
+  workItemDir: string;
+  specManifestBytes: Buffer;
+}> {
+  const projectRoot = await mkdtemp(join(tmpdir(), 'specforge-generation-integrity-'));
+  roots.push(projectRoot);
+  const projectDir = join(projectRoot, '.specforge', 'project');
+  const workItemDir = join(projectRoot, '.specforge', 'work-items', 'WI-0001');
+  await mkdir(join(workItemDir, 'candidates', 'project', 'modules', 'CORE'), { recursive: true });
+  await mkdir(projectDir, { recursive: true });
+  const specManifestBytes = Buffer.from(
+    JSON.stringify({ schema_version: '1.0', project_spec_version: 'PSV-0002' }, null, 2) + '\n',
+  );
+  await writeFile(join(projectDir, 'spec_manifest.json'), specManifestBytes);
+  await writeFile(
+    join(workItemDir, 'candidate_manifest.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      work_item_id: 'WI-0001',
+      workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0002',
+      project_spec_precondition_sha256: hash(specManifestBytes),
+      merge_required: true,
+      entries: [{
+        type: 'requirements',
+        candidate_path: 'candidates/project/modules/CORE/requirements.candidate.md',
+        target_path: '.specforge/project/modules/CORE/requirements.md',
+        operation: 'replace',
+      }],
+    }, null, 2) + '\n',
+  );
+  await writeFile(join(workItemDir, 'change_classification.md'), '# Classification\n');
+  await writeFile(join(workItemDir, 'impact_analysis.md'), '# Impact\n');
+  await writeFile(join(workItemDir, 'trigger_result.json'), '{}\n');
+  await writeFile(
+    join(workItemDir, 'candidates', 'project', 'modules', 'CORE', 'requirements.candidate.md'),
+    '# Requirements\n',
+  );
+  return { projectRoot, workItemDir, specManifestBytes };
+}
+
+async function writePassingAttempt(input: {
+  projectRoot: string;
+  workItemDir: string;
+  omitCandidateFile?: boolean;
+}): Promise<string> {
+  const attemptId = 'attempt-0001';
+  const attemptPath = join(input.workItemDir, 'gate_attempts', attemptId);
+  await mkdir(join(attemptPath, 'gates'), { recursive: true });
+  const summary = '# Gate Summary\n\nWork Item: WI-0001\nOverall Status: passed\n';
+  await writeFile(join(input.workItemDir, 'gate_summary.md'), summary);
+  await writeFile(join(attemptPath, 'gate_summary.md'), summary);
+  const report = passedCandidateManifestReport('WI-0001');
+  const sealPaths = await candidateSealInputPaths(input.workItemDir);
+  const candidatePath = join(
+    input.workItemDir,
+    'candidates',
+    'project',
+    'modules',
+    'CORE',
+    'requirements.candidate.md',
+  );
+  const effectiveSealPaths = input.omitCandidateFile
+    ? sealPaths.filter(value => value !== candidatePath)
+    : sealPaths;
+  const snapshot = await buildGateAttemptInputSnapshot(
+    input.projectRoot,
+    [report],
+    process.platform,
+    effectiveSealPaths,
+  );
+  await writeFile(
+    join(attemptPath, 'attempt-result.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      attempt_id: attemptId,
+      work_item_id: 'WI-0001',
+      source: 'gate_run',
+      started_at: '2026-10-15T00:00:00.000Z',
+      completed_at: '2026-10-15T00:00:01.000Z',
+      requested_gate_ids: ['candidate_manifest_gate'],
+      current_report_gate_ids: ['candidate_manifest_gate'],
+      summary_report_gate_ids: ['candidate_manifest_gate'],
+      summary_status: 'passed',
+      input_snapshot: 'input-snapshot.json',
+    }, null, 2),
+  );
+  await writeFile(
+    join(attemptPath, 'input-snapshot.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      attempt_id: attemptId,
+      work_item_id: 'WI-0001',
+      captured_at: '2026-10-15T00:00:01.000Z',
+      inputs: snapshot,
+    }, null, 2),
+  );
+  return hash(summary);
+}
+
+afterEach(async () => {
+  await Promise.all(roots.splice(0).map(root => rm(root, { recursive: true, force: true })));
+});
+
+describe('Candidate generation integrity', () => {
+  it('binds Candidate baseline to current Project Spec version and raw bytes', async () => {
+    const { projectRoot, specManifestBytes } = await makeProject();
+    const binding = await readCurrentProjectSpecBinding(projectRoot);
+    expect(binding.version).toBe('PSV-0002');
+    expect(binding.sha256).toBe(hash(specManifestBytes));
+
+    const stale = await validateCandidateProjectSpecBinding({
+      projectRoot,
+      manifest: {
+        base_spec_version: 'PSV-0001',
+        project_spec_precondition_sha256: hash(specManifestBytes),
+      },
+    });
+    expect(stale.valid).toBe(false);
+    expect(stale.errors.join('\n')).toContain('CANDIDATE_BASE_SPEC_VERSION_STALE');
+  });
+
+  it('accepts a passing Attempt only when every sealed Candidate input is snapshotted and fresh', async () => {
+    const { projectRoot, workItemDir } = await makeProject();
+    const gateSummaryHash = await writePassingAttempt({ projectRoot, workItemDir });
+    const valid = await validatePassingCandidateGateAttempt({
+      projectRoot,
+      workItemDir,
+      gateSummaryHash,
+      requireLatestAttempt: true,
+    });
+    expect(valid).toEqual({ valid: true, errors: [], attemptId: 'attempt-0001' });
+
+    await writeFile(
+      join(workItemDir, 'candidates', 'project', 'modules', 'CORE', 'requirements.candidate.md'),
+      '# Changed after Gate\n',
+    );
+    const stale = await validatePassingCandidateGateAttempt({
+      projectRoot,
+      workItemDir,
+      gateSummaryHash,
+      requireLatestAttempt: true,
+    });
+    expect(stale.valid).toBe(false);
+    expect(stale.errors.join('\n')).toContain('GATE_ATTEMPT_INPUT_HASH_CHANGED');
+  });
+
+  it('rejects a passing Attempt whose snapshot omits one Candidate file', async () => {
+    const { projectRoot, workItemDir } = await makeProject();
+    const gateSummaryHash = await writePassingAttempt({
+      projectRoot,
+      workItemDir,
+      omitCandidateFile: true,
+    });
+    const result = await validatePassingCandidateGateAttempt({
+      projectRoot,
+      workItemDir,
+      gateSummaryHash,
+      requireLatestAttempt: true,
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.join('\n')).toContain('GATE_ATTEMPT_CANDIDATE_SEAL_INPUT_MISSING');
+  });
+
+  it('allows approval preconditions only when the latest passing Attempt binds the complete current generation', async () => {
+    const { projectRoot, workItemDir } = await makeProject();
+    await writePassingAttempt({ projectRoot, workItemDir });
+    const valid = await validateDecisionRecordPreconditions({
+      projectRoot,
+      workItemDir,
+      workItemId: 'WI-0001',
+      requestedWorkflowPath: 'requirement_change_path',
+      decisionStatus: 'approved',
+      decisionType: 'user_approved',
+      decidedBy: 'user',
+      currentState: 'approval_required',
+    });
+    expect(valid.valid).toBe(true);
+
+    const manifestPath = join(workItemDir, 'candidate_manifest.json');
+    const manifest = JSON.parse(await readFile(manifestPath, 'utf-8'));
+    manifest.base_spec_version = 'PSV-0001';
+    await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
+    const stale = await validateDecisionRecordPreconditions({
+      projectRoot,
+      workItemDir,
+      workItemId: 'WI-0001',
+      requestedWorkflowPath: 'requirement_change_path',
+      decisionStatus: 'approved',
+      decisionType: 'user_approved',
+      decidedBy: 'user',
+      currentState: 'approval_required',
+    });
+    expect(stale.valid).toBe(false);
+    expect(stale.errors.join('\n')).toContain('CANDIDATE_BASE_SPEC_VERSION_STALE');
+  });
+
+  it('rejects indexed REQ identifiers without unique bodies and acceptance criteria', () => {
+    const incomplete = `# Requirements
+
+| ID | Summary |
+| --- | --- |
+| REQ-CORE-0001 | board |
+| REQ-CORE-0002 | undo |
+
+## REQ-CORE-0001 Board
+
+User Story: render the board.
+
+### Acceptance Criteria
+
+- The board is visible.
+`;
+    expect(validateFormalRequirementBodies(incomplete)).toEqual([
+      'REQ-CORE-0002: formal requirement body missing',
+    ]);
+
+    const missingAcceptance = `# Requirements
+
+## REQ-CORE-0001 Board
+
+User Story: render the board.
+`;
+    expect(validateFormalRequirementBodies(missingAcceptance)).toEqual([
+      'REQ-CORE-0001: acceptance criteria missing from formal requirement body',
+    ]);
+  });
+});

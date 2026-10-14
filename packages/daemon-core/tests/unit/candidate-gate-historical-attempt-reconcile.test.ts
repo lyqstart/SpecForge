@@ -93,8 +93,9 @@ describe('Gate Attempt project-root input snapshot semantics', () => {
       'utf-8',
     );
     expect(chain).toContain(
-      'buildGateAttemptInputSnapshot(input.ctx.projectRoot, input.summaryReports)',
+      'const sealInputPaths = await candidateSealInputPaths(input.ctx.workItemDir)',
     );
+    expect(chain).toContain('sealInputPaths,');
     expect(chain).toContain(
       'const resolvedInputPath = resolveGateAttemptInputPath(projectRoot, inputPath);',
     );

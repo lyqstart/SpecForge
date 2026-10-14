@@ -16,6 +16,7 @@ import '../src/tools/handlers/sf-changed-files-audit.js';
 import { getHandler } from '../src/tools/ToolDispatcher.js';
 import { getRequiredGates } from '../src/tools/lib/required-gates.js';
 import { ensureProjectInit } from '../src/tools/lib/sf_project_init_core.js';
+import { readCurrentProjectSpecBinding } from '../src/tools/lib/candidate-generation-integrity.js';
 
 function completeClassification(overrides: Record<string, unknown> = {}): Record<string, unknown> {
   return {
@@ -126,6 +127,7 @@ async function writeDeclaredCoreManifest(projectRoot: string): Promise<void> {
 
 async function writeBaseWorkItem(projectRoot: string, workItemId: string): Promise<void> {
   await writeDeclaredCoreManifest(projectRoot);
+  const projectSpecBinding = await readCurrentProjectSpecBinding(projectRoot);
   const wiDir = workItemRoot(projectRoot, workItemId);
   await mkdir(wiDir, { recursive: true });
   await writeFile(
@@ -184,6 +186,7 @@ async function writeBaseWorkItem(projectRoot: string, workItemId: string): Promi
       workflow_type: 'feature_spec_design_first',
       workflow_path: 'design_change_path',
       base_spec_version: 'PSV-0001',
+      project_spec_precondition_sha256: projectSpecBinding.sha256,
       merge_required: true,
       entries: [],
     }, null, 2),
@@ -265,6 +268,7 @@ describe('Design Governance live closure', () => {
           workflow_path: 'design_change_path',
           candidate_phase: 'design',
           base_spec_version: 'PSV-0001',
+          project_spec_precondition_sha256: (await readCurrentProjectSpecBinding(projectRoot)).sha256,
           merge_required: true,
           entries: [
             {
@@ -402,6 +406,7 @@ describe('Design Governance live closure', () => {
           workflow_type: 'feature_spec_design_first',
           candidate_phase: 'design',
           base_spec_version: 'PSV-0001',
+          project_spec_precondition_sha256: (await readCurrentProjectSpecBinding(projectRoot)).sha256,
           merge_required: true,
           entries: [
             {
@@ -442,8 +447,17 @@ describe('Design Governance live closure', () => {
       state.deps
     );
 
+    const candidateManifestReport = JSON.parse(
+      await readFile(
+        path.join(workItemRoot(projectRoot, workItemId), 'gates', 'candidate_manifest_gate.json'),
+        'utf8',
+      ),
+    );
     expect((result as any).success).toBe(true);
-    expect((result as any).summary_status).toBe('passed');
+    expect(
+      (result as any).summary_status,
+      JSON.stringify({ result, candidateManifestReport }, null, 2),
+    ).toBe('passed');
     expect((result as any).candidate_phase).toBe('design');
     expect((result as any).normalized_gate_ids).toContain('trace_gate');
     expect((result as any).reports).toContainEqual(

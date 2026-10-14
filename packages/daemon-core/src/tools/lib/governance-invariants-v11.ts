@@ -21,6 +21,10 @@ import {
   workItemSpecArtifactReadCandidates,
   type WorkItemSpecArtifactKind,
 } from '@specforge/types/directory-layout';
+import {
+  validateCandidateProjectSpecBinding,
+  validatePassingCandidateGateAttempt,
+} from './candidate-generation-integrity.js';
 
 export type GovernanceValidationResult = {
   valid: boolean;
@@ -987,6 +991,11 @@ async function validateCandidateManifest(
   const workflowPath = manifest.workflow_path;
   if (!VALID_WORKFLOW_PATHS.has(String(workflowPath)))
     errors.push(`candidate_manifest.workflow_path invalid: ${workflowPath ?? 'missing'}`);
+  const projectSpecBinding = await validateCandidateProjectSpecBinding({
+    projectRoot,
+    manifest,
+  });
+  errors.push(...projectSpecBinding.errors);
   const entries = Array.isArray(manifest.entries) ? manifest.entries : [];
   const inferred = inferManifestEntries(manifest, workItemDir);
   if (workflowPath !== 'code_only_fast_path') {
@@ -1102,6 +1111,14 @@ export async function validateDecisionRecordPreconditions(input: {
         `user_decision_record requires approval_required state for ${workflowPath}, current=${facts.currentState ?? 'missing'}`
       );
     await validateGatePassed(input.workItemDir, errors);
+    const gateSummaryHash = await computeFileHash(path.join(input.workItemDir, 'gate_summary.md'));
+    const gateAttemptBinding = await validatePassingCandidateGateAttempt({
+      projectRoot: input.projectRoot,
+      workItemDir: input.workItemDir,
+      gateSummaryHash,
+      requireLatestAttempt: true,
+    });
+    errors.push(...gateAttemptBinding.errors);
     if (
       input.decisionStatus === 'approved' &&
       input.decisionType === 'user_approved' &&
@@ -1185,6 +1202,22 @@ export async function validateApprovedUserDecisionForMerge(input: {
     errors.push(
       'user_decision.candidate_hash does not match current candidates/ content; candidate changed after approval'
     );
+  if (decision?.base_spec_version !== facts.manifest?.base_spec_version) {
+    errors.push(
+      `user_decision.base_spec_version must equal candidate_manifest.base_spec_version: ${String(decision?.base_spec_version ?? 'missing')} != ${String(facts.manifest?.base_spec_version ?? 'missing')}`,
+    );
+  }
+  if (typeof decision?.gate_summary_hash === 'string' && decision.gate_summary_hash) {
+    const gateAttemptBinding = await validatePassingCandidateGateAttempt({
+      projectRoot: input.projectRoot,
+      workItemDir: input.workItemDir,
+      gateSummaryHash: decision.gate_summary_hash,
+      requireLatestAttempt: false,
+    });
+    errors.push(...gateAttemptBinding.errors);
+  } else {
+    errors.push('user_decision.gate_summary_hash is required to bind a passing Gate Attempt');
+  }
 
   return {
     valid: errors.length === 0,

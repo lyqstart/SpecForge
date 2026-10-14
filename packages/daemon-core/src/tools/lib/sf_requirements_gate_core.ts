@@ -485,6 +485,10 @@ async function existingRequirementsGateCheck(
       blockingIssues.push(`${label}: 缺少术语表（"术语表" / "Glossary"）`);
     }
 
+    for (const issue of validateFormalRequirementBodies(content)) {
+      blockingIssues.push(`${label}: ${issue}`);
+    }
+
     const strategyResults = parseAllVerificationStrategies(content);
     for (const [reqId, result] of strategyResults) {
       for (const error of result.errors) blockingIssues.push(`${label}: ${reqId}: ${error}`);
@@ -553,6 +557,63 @@ export function hasAcceptanceCriteria(content: string): boolean {
 export function hasGlossary(content: string): boolean {
   const patterns = [/术语表/i, /glossary/i];
   return patterns.some(pattern => pattern.test(content));
+}
+
+/**
+ * A formal REQ identifier is a definition only when it owns a unique Markdown
+ * section with substantive content and acceptance criteria. Tables, indexes,
+ * Trace, Design and Tasks may reference an ID but cannot create a requirement.
+ */
+export function validateFormalRequirementBodies(content: string): string[] {
+  const declaredIds = Array.from(
+    new Set(Array.from(content.matchAll(/\bREQ-[A-Z0-9][A-Z0-9_-]*\b/g), match => match[0])),
+  ).sort();
+  if (declaredIds.length === 0) return [];
+
+  const headings = Array.from(
+    content.matchAll(/^(#{2,6})\s+(?:Requirement\s+)?(REQ-[A-Z0-9][A-Z0-9_-]*)\b[^\r\n]*$/gim),
+    match => ({
+      id: match[2].toUpperCase(),
+      level: match[1].length,
+      start: match.index ?? 0,
+      bodyStart: (match.index ?? 0) + match[0].length,
+    }),
+  );
+  const definitions = new Map<string, typeof headings>();
+  for (const heading of headings) {
+    const existing = definitions.get(heading.id) ?? [];
+    existing.push(heading);
+    definitions.set(heading.id, existing);
+  }
+
+  const issues: string[] = [];
+  for (const id of declaredIds) {
+    const matches = definitions.get(id) ?? [];
+    if (matches.length === 0) {
+      issues.push(`${id}: formal requirement body missing`);
+      continue;
+    }
+    if (matches.length > 1) {
+      issues.push(`${id}: formal requirement body must be unique, found ${matches.length}`);
+      continue;
+    }
+    const heading = matches[0];
+    const nextHeading = headings.find(
+      candidate => candidate.start > heading.start && candidate.level <= heading.level,
+    );
+    const body = content.slice(heading.bodyStart, nextHeading?.start ?? content.length).trim();
+    const semanticBody = body
+      .replace(/^#{1,6}\s+.*$/gm, '')
+      .replace(/^\s*[-*]\s*(?:验收标准|Acceptance Criteria)\s*[:：]?\s*$/gim, '')
+      .trim();
+    if (!semanticBody) {
+      issues.push(`${id}: formal requirement body is empty`);
+    }
+    if (!/(?:验收标准|Acceptance Criteria)/i.test(body)) {
+      issues.push(`${id}: acceptance criteria missing from formal requirement body`);
+    }
+  }
+  return issues;
 }
 
 // ============================================================

@@ -37,7 +37,6 @@ export default tool({
       .optional()
       .describe("v1.1 决策类型"),
     workflow_path: tool.schema.string().optional().describe("workflow_path，用于记录决策范围"),
-    base_spec_version: tool.schema.string().optional().describe("base spec version，用于决策哈希校验"),
     decision_scope: tool.schema.string().optional().describe("决策范围，默认 full"),
     user_response_quote: tool.schema
       .string()

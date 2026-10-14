@@ -31455,3 +31455,72 @@ Product Specification 只保存稳定产品规则；Authority Registry 登记每
 ## EXP-278：终态补偿恢复必须回到首次可修复责任层并冻结旧代证据
 
 发现终态结果无效时，恢复目标必须由首次失效责任层决定：实现或 Formal Version 证据无效回到 `implementation_ready`；已经合并的正式 Project Spec 本身无效则回到 `candidate_preparing`。两类恢复必须使用不同显式动作和不同证明合同，不得用较浅恢复制造不可达后续步骤。任何成功 Merge 后的规格级恢复都必须在状态变化前不可变归档旧代 Candidate、Gate、Decision、Merge、Verification、Close 字节及逐文件哈希，失效旧审批并保留代码权限撤销；普通状态表仍禁止 `closed → any`，补偿边只能由专用 owner 依据当前规格归属、新鲜度和无效性证据执行。恢复后必须建立新 generation，重新 Candidate、Gate、显式用户批准、Atomic Spec Merge、Verification / Formal Version 与 Close。
+
+### ERR-1815：无效规格恢复后的新代 Candidate 未与当前 Project Spec 和本次 Gate Attempt 完整绑定
+
+- **发生时间**：2026-10-15
+- **分类**：`CANDIDATE_GENERATION_INTEGRITY / BASELINE_STALE / GATE_EVIDENCE_INCOMPLETE / REQUIREMENTS_BODY_MISSING`。
+- **事实证据**：真实 t3 的 WI-0001 经受控无效合并规格恢复后已到 `approval_required`，当前正式 Project Spec 为 `PSV-0002`，但冻结后的 `candidate_manifest.base_spec_version` 仍为 `PSV-0001`；User Decision Recorder 仍接受调用参数并默认 `PSV-0001`，审批与 Merge 前置校验未强制比较 Candidate/Decision 基线与当前 Project Spec Version。当前 Gate Attempt 的 `input-snapshot.json` 仅采集 Gate 自报 `input_files`，遗漏部分 Candidate 文件；根 `gate_summary.md` 通过扫描 `gates/*.json` 混入旧阶段报告。Requirements Candidate 的摘要表声明 `REQ-CORE-0013` 至 `REQ-CORE-0015`，正文只定义至 `REQ-CORE-0012`，而 Requirements Gate 仍通过。
+- **影响与根因**：无效规格恢复虽然回到了正确责任层，但新一代的 seal、Gate、审批和 Merge 没有共同证明“这是以当前正式规格为基线、经过本次 Gate 完整验证的同一 Candidate”；下游 Design/Tasks 可以实现没有用户需求正文的功能。根因分别位于 Candidate seal owner、Gate Attempt/Summary producer、Decision/Merge invariant 和 Requirements Gate 内容完整性检查，而不是 t3 业务项目或 Executor。
+- **纠正与防复发**：Candidate seal 原子绑定当前 PSV 与 Manifest 原始字节哈希；Gate Attempt 无条件封存完整 seal 集且 Summary 仅包含本 Attempt；Decision/Merge 对当前基线和通过快照双重校验；Requirements Gate 拒绝无唯一正文及验收标准的 REQ。增加 producer、consumer、恢复、负向与真实 t3 形态回归，发布后从同一 WI 的合法断点恢复，不复用旧 Gate 或审批。
+- REUSED_EXP=EXP-005,EXP-006,EXP-015,EXP-017,EXP-021,EXP-029,EXP-044,EXP-049,EXP-060,EXP-087,EXP-146,EXP-157,EXP-186,EXP-193,EXP-265,EXP-270,EXP-278
+- ERR1815_STATUS=OPEN
+
+## EXP-279：代际治理证据必须共同绑定同一 Candidate 与 Project Spec 基线
+
+Candidate seal、Gate Attempt、Gate Summary、User Decision 与 Merge 必须共同绑定同一代 Candidate 内容、分类/影响/触发依据及当前 Project Spec Version/Manifest 字节身份。Gate 的声明输入不得缩小 seal 集，历史 Gate 不得进入当前摘要，调用者不得提供或默认基线版本。Requirements 中出现的正式 REQ 标识必须有唯一正文与验收标准；索引或下游引用不能替代需求定义。发现代际漂移时必须在审批或正式写入前失败关闭，并通过合法恢复重新生成证据。
+
+### ERR-1816：Candidate seal 共享 helper 首轮构建命中 readdir 重载类型误推断
+
+- **发生时间**：2026-10-15
+- **分类**：`TYPESCRIPT_BUILD_FAILURE / NODE_FS_OVERLOAD_INFERENCE / TWO_ERRORS`。
+- **事实证据**：在 `packages/daemon-core` 使用已验证原生 Bun 1.4.0 执行 `bun run build`，TypeScript 实际运行并返回退出码 1；唯一两项错误位于新文件 `candidate-generation-integrity.ts` 的递归目录读取：把 `Awaited<ReturnType<typeof fs.readdir>>` 推断成 `Dirent<NonSharedBuffer>[]`，与显式字符串路径调用返回的 `Dirent<string>[]` 不兼容，且 `entry.name` 被误推断为 Buffer。
+- **影响与根因**：本轮候选无法进入测试；没有证明 Candidate 完整性逻辑错误。根因是对 Node 多重重载函数使用通用 `ReturnType`，丢失了调用点的 `encoding`/字符串泛型。
+- **纠正与防复发**：把目录项显式声明为 `Dirent[]` 并保持 `readdir(..., { withFileTypes: true })` 的字符串路径合同，随后用完全相同的 package build 入口重跑；首次非零结果保留。
+- REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-044,EXP-060,EXP-087
+- **闭环证据**：修正 `Dirent[]` 类型后，同一 daemon-core TypeScript 构建入口多次以退出码 0 完成；最终 daemon-core 全量 208 文件 1852 项通过。
+- ERR1816_STATUS=CLOSED_BY_SAME_BUILD_PASS_AND_DAEMON_FULL_1852_OF_1852_PASS
+
+### ERR-1817：Candidate 完整性定向测试在沙箱 realpath 阶段零收集
+
+- **发生时间**：2026-10-15
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / VITEST_REALPATH_EPERM / ZERO_TESTS_EXECUTED`。
+- **事实证据**：在 `packages/daemon-core` 以已验证原生 Bun 1.4.0 启动 4 个指定测试文件，Vitest 已启动但 4 个 worker 均在收集前因 `EPERM: operation not permitted, realpath ...vitest/dist/spy.js` 中止；输出明确为 `Tests no tests`、4 个 unhandled errors、退出码 1。
+- **影响与根因**：本次非零不能证明产品断言通过或失败；属于 ERR-1792/1811 已证实的受限环境依赖真实路径限制。
+- **纠正与防复发**：保持完全相同的 Bun、package 工作目录和 4 文件集合，仅在允许读取依赖真实路径的环境重跑；必须以真实收集数和断言结果形成结论，首次零收集失败保留。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-021,EXP-032,EXP-044,EXP-060,EXP-087,EXP-195,EXP-263
+- **闭环证据**：保持原生 Bun、owning package 与测试集合，在允许读取依赖真实路径的执行环境重跑，首轮 4 文件 45 项、后续相关集合及最终 daemon-core 全量 208 文件 1852 项均真实收集并通过。
+- ERR1817_STATUS=CLOSED_BY_ESCALATED_NATIVE_BUN_REAL_COLLECTION_AND_DAEMON_FULL_PASS
+
+### ERR-1818：新模块 Merge Runner 回归夹具未生成新代 Gate Attempt 绑定
+
+- **发生时间**：2026-10-15
+- **分类**：`TEST_FIXTURE_CONTRACT_DRIFT / MERGE_PREFLIGHT_EXPECTED_REJECTION / ONE_FAILURE`。
+- **事实证据**：审批、Merge 与治理闭环 5 文件真实收集 66 项，其中 65 项通过；唯一失败为 `v12-merge-runner-module-registry-hotfix.test.ts` 仍期望直接构造旧式 Candidate/User Decision 后 Merge 成功。新 Runtime 在 Project Spec/Attempt 完整性前置校验返回失败，因此测试在 `expect(result.success).toBe(true)` 处失败。
+- **影响与根因**：该夹具不能再证明合法新模块 Merge；根因是测试未通过 Candidate seal/Gate Attempt producer 建立 `project_spec_precondition_sha256` 与完整 `input-snapshot.json`，不是应放宽生产校验的兼容理由。
+- **纠正与防复发**：升级夹具以当前 spec_manifest 原始字节哈希、完整 seal 集、不可变通过 Attempt 和绑定其摘要的 User Decision 作为输入，再重跑原 5 文件集合；另保留缺失 Attempt 的负向断言。
+- REUSED_EXP=EXP-001,EXP-006,EXP-007,EXP-015,EXP-017,EXP-021,EXP-029,EXP-032,EXP-044,EXP-060,EXP-087,EXP-146,EXP-193,EXP-265,EXP-279
+- **闭环证据**：夹具补齐当前 Project Spec 原始字节绑定、完整 seal、通过 Attempt 与真实 User Decision 后，原 5 文件 66 项通过；统一当前合同夹具后的最终 daemon-core 全量 208 文件 1852 项通过。
+- ERR1818_STATUS=CLOSED_BY_CURRENT_CONTRACT_FIXTURE_AND_DAEMON_FULL_PASS
+
+### ERR-1819：Candidate 完整性首轮 daemon-core 全量回归暴露旧夹具与旧 Gate Summary 断言漂移
+
+- **发生时间**：2026-10-15
+- **分类**：`FULL_REGRESSION_FAILURE / TEST_FIXTURE_CONTRACT_DRIFT / STALE_GATE_SUMMARY_EXPECTATION / NINETEEN_FAILURES`。
+- **事实证据**：在 `packages/daemon-core` 使用已验证原生 Bun 1.4.0 执行全量 `bun run test`，真实收集 208 个测试文件、1852 项测试；200 个文件 1833 项通过，8 个文件 19 项失败。失败包含：旧 Candidate/Decision/Merge 夹具缺当前 Project Spec 绑定或不可变 Gate Attempt，调用方仍传 `base_spec_version`；活动规则计数仍写死 EXP-278；以及一个旧测试仍要求新 Attempt 的 `gate_summary` 扫描并带入先前 `verification_gate`、`formal_version_gate` 报告。
+- **影响与根因**：新基线、Attempt 和 Attempt-local Summary 约束正确拒绝旧假数据与历史报告混入，不得据此放宽生产校验；当前候选仍因测试合同未同步而不能发布。
+- **纠正与防复发**：建立统一测试辅助器，使用当前 Project Spec 原始字节身份、完整 Candidate seal、不可变通过 Attempt 和绑定后的 User Decision，而不是继续手写不完整 JSON；删除 Tool 调用方基线参数，活动规则测试升级至 EXP-279，旧 Summary 测试改为明确拒绝带入其他 Attempt 的报告。修正后先重跑 8 个失败文件，再重跑 daemon-core 全量。
+- REUSED_EXP=EXP-001,EXP-006,EXP-007,EXP-015,EXP-017,EXP-021,EXP-029,EXP-032,EXP-044,EXP-060,EXP-087,EXP-146,EXP-157,EXP-186,EXP-193,EXP-195,EXP-265,EXP-279
+- **闭环证据**：8 个原失败文件精确重跑 143 项时仅剩 2 项，取得具体 Gate/Close 一手错误后补齐 hash 绑定与权限撤销事实，末两文件 46/46 通过；随后 daemon-core 全量 208 文件 1852 项全部通过，未放宽任何生产治理约束。
+- ERR1819_STATUS=CLOSED_BY_CONTRACT_ACCURATE_FIXTURES_FOCUSED_PASS_AND_DAEMON_FULL_1852_OF_1852_PASS
+
+### ERR-1820：精确暂存清单误用 Git 默认转义路径作为中文文件的 pathspec
+
+- **发生时间**：2026-10-15
+- **分类**：`PRE_COMMIT_STAGING_FAILURE / GIT_QUOTEPATH / ZERO_FILES_STAGED`。
+- **事实证据**：提交前使用 `git diff --name-only` 生成精确暂存数组时，Git 默认把中文设计文件路径输出为带双引号的八进制转义文本；PowerShell 将该文本原样传给 `git add --`，Git 返回 `pathspec ... did not match any files`，退出码非零。紧随其后的 `git status --short` 证明全部 46 个候选文件仍未暂存，没有形成部分 staged 状态。
+- **影响与根因**：产品文件和已完成验证均未改变；根因是把面向终端展示的 quotePath 输出错误地当成可逆机器路径，而不是暂存范围错误。
+- **纠正与防复发**：保持同一精确范围，改用 `git -c core.quotepath=false diff --name-only` 取得真实 Unicode 路径，再执行暂存；随后必须复核 staged name list、stat、`git diff --cached --check` 与状态，首次失败不得覆盖。
+- REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-044,EXP-060,EXP-087
+- **闭环证据**：使用 `core.quotepath=false` 的真实路径清单后，46 个精确候选文件全部暂存；staged name list、统计与 `git diff --cached --check` 均通过，`bun.lock` 的无内容工作树状态未进入提交候选。
+- ERR1820_STATUS=CLOSED_BY_UNICODE_PATH_STAGING_AND_STAGED_DIFF_CHECK_PASS
