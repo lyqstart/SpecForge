@@ -31464,7 +31464,8 @@ Product Specification 只保存稳定产品规则；Authority Registry 登记每
 - **影响与根因**：无效规格恢复虽然回到了正确责任层，但新一代的 seal、Gate、审批和 Merge 没有共同证明“这是以当前正式规格为基线、经过本次 Gate 完整验证的同一 Candidate”；下游 Design/Tasks 可以实现没有用户需求正文的功能。根因分别位于 Candidate seal owner、Gate Attempt/Summary producer、Decision/Merge invariant 和 Requirements Gate 内容完整性检查，而不是 t3 业务项目或 Executor。
 - **纠正与防复发**：Candidate seal 原子绑定当前 PSV 与 Manifest 原始字节哈希；Gate Attempt 无条件封存完整 seal 集且 Summary 仅包含本 Attempt；Decision/Merge 对当前基线和通过快照双重校验；Requirements Gate 拒绝无唯一正文及验收标准的 REQ。增加 producer、consumer、恢复、负向与真实 t3 形态回归，发布后从同一 WI 的合法断点恢复，不复用旧 Gate 或审批。
 - REUSED_EXP=EXP-005,EXP-006,EXP-015,EXP-017,EXP-021,EXP-029,EXP-044,EXP-049,EXP-060,EXP-087,EXP-146,EXP-157,EXP-186,EXP-193,EXP-265,EXP-270,EXP-278
-- ERR1815_STATUS=OPEN
+- **发布与部署闭环**：修复以 `006021d5c5e7f9357e19235aa294dfeb01bd59ca` 提交，快进合并并推送到 `origin/main`；canonical Candidate `main-006021d5-working-tree-step1820` 的 111 文件正式预检零错误。官方 Installer 正常升级 4 个变化文件、保留 107 个未变文件并完成 111/111 校验。已安装 CLI 返回 1.0.9；已安装与 release 的 `specforge.exe` SHA-256 同为 `cd7844a05766e18381ccf91652b83b56ab8215a4edeccfa021403ac0c03598a4`，`specforged.exe` 同为 `477dd2af5edca5d197dfede31d785a669e9881768644f894390582c3901df7fa`。新 daemon PID 17692 从正式安装路径运行，CLI status 与认证 healthz 均为 1.0.9 / ok；整个产品修复阶段未修改 `D:\code\t3`。
+- ERR1815_STATUS=CLOSED_BY_D15_SPS_1_0_9_RUNTIME_TEST_RELEASE_INSTALL_AND_DAEMON_VERIFICATION
 
 ## EXP-279：代际治理证据必须共同绑定同一 Candidate 与 Project Spec 基线
 
@@ -31524,3 +31525,35 @@ Candidate seal、Gate Attempt、Gate Summary、User Decision 与 Merge 必须共
 - REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-044,EXP-060,EXP-087
 - **闭环证据**：使用 `core.quotepath=false` 的真实路径清单后，46 个精确候选文件全部暂存；staged name list、统计与 `git diff --cached --check` 均通过，`bun.lock` 的无内容工作树状态未进入提交候选。
 - ERR1820_STATUS=CLOSED_BY_UNICODE_PATH_STAGING_AND_STAGED_DIFF_CHECK_PASS
+
+### ERR-1821：canonical 发布清单首次调用命中全局 Bun 当前目录载体故障
+
+- **发生时间**：2026-10-15
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / BUN_WRAPPER_CURRENT_DIRECTORY / ZERO_SCRIPT_EXECUTION`。
+- **事实证据**：产品提交推送后以全局 `bun.ps1` 依次调用正式 manifest producer 与 precheck；Bun 在任何脚本输出前立即返回 `error loading current directory` / `CouldntReadCurrentDirectory`，退出码非零。发布清单仍保持此前 precommit candidate id，证明 canonical producer 未执行。
+- **影响与根因**：该结果不能证明 manifest 或 precheck 通过/失败，也未改变用户级安装；失败发生在全局 Bun wrapper/runtime 读取 cwd 的载体层。
+- **纠正与防复发**：使用本轮已完成 build、daemon-core 全量与正式全仓测试的同一原生 Bun 1.4.0 可执行文件，从同一仓库 cwd 重跑完全相同的 manifest 与 precheck 脚本；必须取得 producer 输出、candidate id 与零错误预检结果。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-021,EXP-032,EXP-044,EXP-087,EXP-195,EXP-263
+- **闭环证据**：使用同一原生 Bun 1.4.0 从仓库根重跑后，manifest producer 生成 canonical Candidate `main-006021d5-working-tree-step1820`，正式 111 文件发布预检以 `passed=true`、零 authority/inventory/incomplete error 完成。
+- ERR1821_STATUS=CLOSED_BY_NATIVE_BUN_CANONICAL_MANIFEST_AND_OFFICIAL_PRECHECK_PASS
+
+### ERR-1822：detach 启动后零等待 status 与受限观察范围产生 daemon 假阴性
+
+- **发生时间**：2026-10-15
+- **分类**：`RUNTIME_VERIFICATION_TIMING / OBSERVER_SCOPE_LIMITATION / FALSE_NEGATIVE`。
+- **事实证据**：安装 1.0.9 后，`specforge daemon start --detach` 成功返回 PID 17692，紧随其后的零等待 `status --json` 尚不可达。之后在受限执行范围内查询进程和 localhost 仍无结果；但主机权限范围复核直接证明 PID 17692 存活、路径为正式安装的 `sf-user/bin/specforged.exe`，CLI status 与使用 handshake token 的认证 healthz 均返回 `status=ok`、`version=1.0.9`。前台诊断收到 `Another Daemon instance is already running`，也与活动 PID 一致。
+- **影响与根因**：首次 status 只证明 detach 返回时服务尚未就绪；受限范围结果只证明观察边界，二者都不能推出 daemon 退出。没有证据表明 1.0.9 Runtime 或安装失败。
+- **纠正与防复发**：发布验证必须在主机权限范围等待并读取正式 status/handshake/认证 healthz，再核对 PID 与可执行路径；不得把 spawn 成功等同于 ready，也不得把沙箱不可见等同于进程不存在。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-021,EXP-032,EXP-044,EXP-060,EXP-087,EXP-195,EXP-263
+- ERR1822_STATUS=CLOSED_BY_HOST_SCOPE_PROCESS_STATUS_HANDSHAKE_AND_AUTHENTICATED_HEALTH_CONFIRMATION
+
+### ERR-1823：部署收口提交前远端复核遇到 DNS 不可用
+
+- **发生时间**：2026-10-15
+- **分类**：`EXTERNAL_NETWORK_FAILURE / GIT_REMOTE_VERIFICATION / NO_REMOTE_WRITE`。
+- **事实证据**：产品提交 `006021d5` 已成功推送并确认远端一致，完成安装与 daemon 验证后，在第二笔部署收口提交前执行 `git ls-remote origin refs/heads/main`，Git 返回 `Could not resolve host: github.com`。该命令是只读操作，没有远端写入；本地仅存在待提交的 project-status/账本收口和无内容 `bun.lock` 状态。
+- **影响与根因**：当前不能据此确认第二笔提交前远端仍停在 `006021d5`，也不能声称部署收口证据已经推送；产品代码、用户级 1.0.9 安装和运行中的 daemon 不受影响。根因位于外部 DNS/网络可达性，不是仓库内容。
+- **纠正与防复发**：保持本地精确范围不变，在网络恢复后重试 `ls-remote`；只有远端仍为预期基线时才提交并推送部署收口，随后再次核验远端 SHA。
+- REUSED_EXP=EXP-002,EXP-007,EXP-021,EXP-032,EXP-044,EXP-087
+- **闭环证据**：在不改变本地候选范围的前提下重试成功，`origin/main` 仍精确为 `006021d5c5e7f9357e19235aa294dfeb01bd59ca`，具备提交并推送部署收口的前置条件。
+- ERR1823_STATUS=CLOSED_BY_REMOTE_MAIN_RETRY_AND_EXPECTED_BASE_CONFIRMATION
