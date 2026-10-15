@@ -31573,3 +31573,54 @@ Candidate seal、Gate Attempt、Gate Summary、User Decision 与 Merge 必须共
 ## EXP-280：Candidate 必须绑定真实实现快照并使用可精确解析的统一需求身份
 
 Candidate 字节完整性不能替代内容事实完整性。进入候选编制时必须由 Runtime 从机器可读 Impact Scope 生成实际文件存在性与哈希快照，专业 Candidate 绑定同一 snapshot，seal 复算并拒绝漂移或与现有文件相反的 greenfield/new-file/implementation-missing 声明；Agent 的旧影响分析和聊天自述不能覆盖一手文件事实。当前代 REQ 定义必须使用统一三位 canonical ID，所有 Design/Tasks/Trace 引用必须逐字解析到唯一需求正文；不同位宽、短号映射和说明性别名不得建立同一性。
+
+### ERR-1825：Windows Candidate 路径大小写别名被重复计为两份需求定义
+
+- **发生时间**：2026-10-15
+- **分类**：`RUNTIME_PATH_IDENTITY_DEFECT / WINDOWS_CASE_ALIAS / FALSE_GATE_FAILURE`。
+- **事实证据**：t3 `WI-0001` 的 `attempt-0011` 中 9 个 Gate 通过，`workflow_specific_gate` 唯一失败并报告 24 项问题。其中 12 项 `REQUIREMENT_DEFINITION_DUPLICATE` 同时列出 `candidates/project/modules/CORE/requirements.candidate.md` 与 `candidates/project/modules/core/requirements.candidate.md`；Windows 文件系统枚举只存在一个物理 `CORE` 目录，对两个别名读取所得 SHA-256 相同。源码链确认 `resolveWorkItemSpecArtifacts()` 先加入 Manifest 与目录枚举得到的 `CORE` 路径，再加入 `workItemSpecArtifactReadCandidates()` 默认生成的 `core` 兼容路径，最后只用区分大小写的 `Set<string>` 对 `path.resolve()` 字符串去重。其余 12 项 `REQUIREMENT_REFERENCE_NONCANONICAL` 直接来自根 `requirements_delta.md` 中真实存在的 `REQ-CORE-0001..0012`，不是本缺陷造成的假阳性。
+- **影响与根因**：共享 Candidate 解析器被 Requirements、Design、Tasks、Trace、Semantic Closure、Verification 与 Close 等消费者复用，故 Windows 路径身份缺陷会让同一物理文件形成两个输入和两份证据。首次偏离位于 Runtime 的共享文件身份层，违反 EXP-268；业务项目中非规范 REQ 引用仍必须由原 Gate 失败关闭。
+- **纠正与防复发**：建立共享的目标平台 resolved-path identity；Windows 对路径身份执行大小写折叠，其他平台保持大小写敏感，并让 Candidate seal 与两个 Candidate artifact resolver 共同消费。增加平台语义单元测试、Windows `CORE/core` 集成回归以及真实非规范 REQ 保持失败的组合回归；完成正式全量、发布、安装和 daemon 验证后，才允许从 t3 原 WI 的合法恢复点重建新代 Candidate。
+- REUSED_EXP=EXP-001,EXP-004,EXP-005,EXP-006,EXP-007,EXP-010,EXP-015,EXP-017,EXP-021,EXP-029,EXP-031,EXP-032,EXP-033,EXP-044,EXP-047,EXP-049,EXP-060,EXP-087,EXP-117,EXP-146,EXP-157,EXP-159,EXP-193,EXP-195,EXP-241,EXP-265,EXP-268,EXP-270,EXP-274,EXP-278,EXP-279,EXP-280
+- **产品修复验证**：新增共享路径身份函数，并让 Candidate seal、冻结/兼容 artifact resolver、Gate Attempt snapshot lookup、Git root 比较和 Merge path containment 使用相同的平台语义。平台单元测试、t3 形状组合回归和 Windows Manifest 别名回归均通过；真实 `REQ-CORE-0001` 仍被报告为 `REQUIREMENT_REFERENCE_NONCANONICAL`。定向文件 10/10、五文件回归 27/27、daemon-core 209 文件 1863 项、正式顺序全 workspace 回归、strict build、三组 release typecheck、workflow sync、diff check 与 111 文件正式 release precheck 全部通过。
+- ERR1825_STATUS=PRODUCT_FIX_VALIDATED_PENDING_COMMIT_INSTALL_AND_T3_REGENERATION
+
+### ERR-1826：本轮只读取证与建分支遇到命令语法、沙箱和网络载体失败
+
+- **发生时间**：2026-10-15
+- **分类**：`AUDIT_COMMAND_FAILURE / EXECUTION_ENVIRONMENT_LIMITATION / NO_PRODUCT_WRITE`。
+- **事实证据**：两次内联 PowerShell `foreach` 管道在 ParserError 前退出；Node `realpathSync.native` 对 t3 路径受沙箱限制返回 `EPERM`；首次普通权限创建产品分支因 `.git` lock 权限失败，最小提权后同一分支创建成功；Bootstrap 的远端检查因沙箱 DNS 不可用而 BLOCKED，独立主机范围 `git ls-remote` 随后确认 `origin/main` 与本地 HEAD 同为 `2e1d68e97249b3acfbe70f2234fe0e648d07e1fd`；`Get-CimInstance` 被拒绝后，允许范围内的精确 PID 查询与 CLI status 共同确认旧 daemon 当前不可达。上述失败均未修改 t3 或产品文件，不能用来判定产品 Gate 行为。
+- **影响与根因**：失败只影响取证载体和命令表达，不改变已由文件系统、Git、Gate Attempt 与源码交叉确认的产品缺陷。`realpath` 失败不能作为路径别名结论，DNS 失败不能作为远端漂移结论，首次分支失败也不能被后续成功隐去。
+- **纠正与防复发**：保留所有失败，使用简单的只读 PowerShell 分段命令、现有文件枚举与哈希代替受限 realpath；远端事实使用最小主机范围 `ls-remote`；Git 元数据写入只在明确产品分支操作时最小提权；daemon 状态继续由安装清单、精确 PID、CLI status/health 的可用证据组合判断。
+- REUSED_EXP=EXP-002,EXP-007,EXP-008,EXP-011,EXP-016,EXP-019,EXP-021,EXP-032,EXP-033,EXP-044,EXP-060,EXP-065,EXP-082,EXP-087,EXP-193,EXP-195,EXP-263
+- ERR1826_STATUS=CLOSED_BY_SAFE_READ_ONLY_FALLBACK_REMOTE_HEAD_CONFIRMATION_AND_EXACT_BRANCH_CREATION
+
+### ERR-1827：定向回归在受限 Windows 沙箱的 Vitest realpath 阶段零收集中止
+
+- **发生时间**：2026-10-15
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / ZERO_TEST_EXECUTION / REPEATED_KNOWN_CARRIER_FAILURE`。
+- **事实证据**：在 `packages/daemon-core` 以原生 Bun 1.4.0 运行 `tests/unit/candidate-generation-integrity.test.ts`，Vitest 在收集前对 `node_modules/.bun/.../vitest/dist/spy.js` 执行 realpath 时收到 `EPERM`；输出明确为 1 个 Test File、no tests、1 unhandled error。保持命令、工作目录与测试文件完全不变，在允许读取依赖真实路径的执行范围重跑后，初版实际收集并通过 1 个文件 9 项测试；补入冻结 Manifest 别名回归后同一文件 10 项全部通过，同轮 daemon-core TypeScript build 退出码为 0。
+- **影响与根因**：首次非零只重复 ERR-1792/1802/1808/1811 的已知测试载体限制，不能作为产品断言失败，也不能被后续绿色描述成“首次即通过”。
+- **纠正与防复发**：保留零收集和同命令重跑两份结果；后续 Vitest 验证继续使用已经验证的原生 Bun 与最小主机范围，并分别报告收集数、测试数和退出码。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-021,EXP-032,EXP-033,EXP-044,EXP-060,EXP-065,EXP-087,EXP-117,EXP-193,EXP-195,EXP-263
+- ERR1827_STATUS=CLOSED_BY_ESCALATED_NATIVE_BUN_RERUN_AND_FINAL_1_FILE_10_TESTS_PASS
+
+### ERR-1828：提交前补充合同测试再次被受限 Vitest 临时目录阻断
+
+- **发生时间**：2026-10-15
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / VITEST_TEMP_RENAME_EPERM / ZERO_TEST_EXECUTION`。
+- **事实证据**：提交前从仓库根补跑项目状态、产品版本与 Candidate 合同测试时，Vitest 在任何测试收集前对沙箱临时目录执行 rename 收到 `EPERM`；输出为 1 个失败 Test File、0 tests。保持相同原生 Bun 与根级命令在主机范围重跑后，根 current-product-version 合同真实收集 1 文件 6 项并通过；另外两个 daemon-core 合同必须在 owning package 运行，随后真实收集 2 文件 15 项并通过。
+- **影响与根因**：首次失败只证明沙箱临时目录载体不可用，不能证明合同断言失败；根命令只收集根测试也不能冒充包内测试执行。
+- **纠正与防复发**：保留零收集失败；在允许使用真实临时目录的范围运行相同根合同，并在 daemon-core owning package 精确运行其余两个文件，分别报告真实文件数与测试数。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-021,EXP-032,EXP-033,EXP-044,EXP-060,EXP-087,EXP-117,EXP-195,EXP-263
+- ERR1828_STATUS=CLOSED_BY_ESCALATED_ROOT_1_FILE_6_TESTS_AND_DAEMON_2_FILES_15_TESTS_PASS
+
+### ERR-1829：提交前显式暂存首次无法创建 Git index lock
+
+- **发生时间**：2026-10-15
+- **分类**：`GIT_METADATA_PERMISSION / PRE_COMMIT_STAGING / ZERO_INDEX_WRITE`。
+- **事实证据**：提交前使用 28 文件显式 pathspec 执行 `git add -- ...`，Git 因无法创建 `.git/index.lock` 返回 Permission denied，退出码 1；没有任何文件进入 staged。保持相同分支和完全相同显式清单，在允许写入 Git 元数据的最小范围重跑后退出码 0。
+- **影响与根因**：首次失败只影响 Git index 写入载体，不改变工作树内容、测试结果或远端状态；不得改用 `git add .` 绕过。
+- **纠正与防复发**：仅为已审核的显式 pathspec 取得最小 Git 元数据权限，随后复核 staged 文件数、路径、diff check 和未暂存状态。
+- REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-044,EXP-060,EXP-087
+- ERR1829_STATUS=CLOSED_BY_IDENTICAL_EXPLICIT_28_FILE_STAGING_RETRY

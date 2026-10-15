@@ -43,6 +43,7 @@ import {
   recordAtomicSpecMergeProjectWrites,
 } from './atomic-spec-merge-write-provenance.js';
 import { validateModuleDefinitionCandidateJson } from './artifact-schema-validation.js';
+import { isSameOrDescendantResolvedPath } from './path-identity.js';
 
 export interface MergeInput {
   projectRoot: string;
@@ -135,9 +136,7 @@ function isNoProjectSpecMerge(manifest: any): boolean {
 }
 
 function isSubPath(child: string, parent: string): boolean {
-  const c = path.resolve(child).toLowerCase();
-  const p = path.resolve(parent).toLowerCase();
-  return c === p || c.startsWith(p + path.sep.toLowerCase()) || c.startsWith(p + '/');
+  return isSameOrDescendantResolvedPath(child, parent);
 }
 
 function normalizeEntryForMerge(entry: ManifestEntry): ManifestEntry {

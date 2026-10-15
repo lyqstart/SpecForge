@@ -12,13 +12,22 @@ import {
 } from '../../src/tools/lib/candidate-generation-integrity';
 import { buildGateAttemptInputSnapshot } from '../../src/tools/lib/gate-chain';
 import type { GateReportV11 } from '../../src/tools/lib/gate-runner-v11';
-import { validateDecisionRecordPreconditions } from '../../src/tools/lib/governance-invariants-v11';
+import {
+  resolveFrozenManifestArtifacts,
+  resolveWorkItemSpecArtifacts,
+  validateDecisionRecordPreconditions,
+} from '../../src/tools/lib/governance-invariants-v11';
 import { validateFormalRequirementBodies } from '../../src/tools/lib/sf_requirements_gate_core';
 import {
   materializeImplementationBaseline,
   validateImplementationTruthBeforeSeal,
 } from '../../src/tools/lib/implementation-baseline';
 import { validateCandidateRequirementReferences } from '../../src/tools/lib/candidate-requirement-reference-integrity';
+import {
+  deduplicateResolvedPaths,
+  isSameOrDescendantResolvedPath,
+  resolvedPathIdentity,
+} from '../../src/tools/lib/path-identity';
 
 const roots: string[] = [];
 
@@ -166,6 +175,86 @@ afterEach(async () => {
 });
 
 describe('Candidate generation integrity', () => {
+  it('uses target-platform resolved path identity without weakening POSIX case semantics', () => {
+    const upper = join('fixture', 'project', 'modules', 'CORE', 'requirements.candidate.md');
+    const lower = join('fixture', 'project', 'modules', 'core', 'requirements.candidate.md');
+
+    expect(resolvedPathIdentity(upper, 'win32')).toBe(resolvedPathIdentity(lower, 'win32'));
+    expect(deduplicateResolvedPaths([upper, lower], 'win32')).toHaveLength(1);
+    expect(isSameOrDescendantResolvedPath(upper, join('fixture', 'PROJECT'), 'win32')).toBe(true);
+
+    expect(resolvedPathIdentity(upper, 'linux')).not.toBe(resolvedPathIdentity(lower, 'linux'));
+    expect(deduplicateResolvedPaths([upper, lower], 'linux')).toHaveLength(2);
+    expect(isSameOrDescendantResolvedPath(upper, join('fixture', 'PROJECT'), 'linux')).toBe(false);
+  });
+
+  it('counts a Windows CORE/core Candidate alias once while preserving real noncanonical REQ failures', async () => {
+    const { projectRoot, workItemDir } = await makeProject();
+    const requirementsPath = join(
+      workItemDir,
+      'candidates',
+      'project',
+      'modules',
+      'CORE',
+      'requirements.candidate.md',
+    );
+    await writeFile(
+      requirementsPath,
+      [
+        '# Requirements',
+        '## REQ-CORE-001 Board',
+        'User Story: render a board.',
+        '### Acceptance Criteria',
+        '- board visible',
+        '',
+      ].join('\n'),
+    );
+    await writeFile(
+      join(workItemDir, 'requirements_delta.md'),
+      '# Delta\n\nReferences the noncanonical identifier REQ-CORE-0001.\n',
+    );
+
+    const artifacts = await resolveWorkItemSpecArtifacts({
+      projectRoot,
+      workItemId: 'WI-0001',
+      kind: 'requirements',
+    });
+    expect(artifacts).toHaveLength(1);
+    expect(artifacts[0].path).toBe(requirementsPath);
+
+    const result = await validateCandidateRequirementReferences({
+      workItemDir,
+      requirementArtifacts: artifacts,
+    });
+    expect(result.errors.join('\n')).not.toContain('REQUIREMENT_DEFINITION_DUPLICATE');
+    expect(result.errors.join('\n')).toContain('REQUIREMENT_REFERENCE_NONCANONICAL');
+    expect(result.errors.join('\n')).toContain('REQ-CORE-0001');
+  });
+
+  it.runIf(process.platform === 'win32')(
+    'deduplicates case aliases declared twice by a frozen Windows Candidate Manifest',
+    async () => {
+      const { projectRoot, workItemDir } = await makeProject();
+      const manifestPath = join(workItemDir, 'candidate_manifest.json');
+      const manifest = JSON.parse(await readFile(manifestPath, 'utf-8'));
+      manifest.entries.push({
+        ...manifest.entries[0],
+        candidate_path: 'candidates/project/modules/core/requirements.candidate.md',
+      });
+      await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
+
+      const artifacts = await resolveFrozenManifestArtifacts({
+        projectRoot,
+        workItemId: 'WI-0001',
+        artifactTypes: ['requirements'],
+      });
+      expect(artifacts).toHaveLength(1);
+      expect(artifacts[0].path.replace(/\\/g, '/')).toContain(
+        'candidates/project/modules/CORE/requirements.candidate.md',
+      );
+    },
+  );
+
   it('binds Candidate baseline to current Project Spec version and raw bytes', async () => {
     const { projectRoot, specManifestBytes } = await makeProject();
     const binding = await readCurrentProjectSpecBinding(projectRoot);

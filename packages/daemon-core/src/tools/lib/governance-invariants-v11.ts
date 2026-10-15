@@ -25,6 +25,10 @@ import {
   validateCandidateProjectSpecBinding,
   validatePassingCandidateGateAttempt,
 } from './candidate-generation-integrity.js';
+import {
+  isSameOrDescendantResolvedPath,
+  resolvedPathIdentity,
+} from './path-identity.js';
 
 export type GovernanceValidationResult = {
   valid: boolean;
@@ -148,8 +152,9 @@ export async function resolveFrozenManifestArtifacts(input: {
     }
 
     const normalizedAbsolutePath = path.resolve(absolutePath);
-    if (seen.has(normalizedAbsolutePath)) continue;
-    seen.add(normalizedAbsolutePath);
+    const identity = resolvedPathIdentity(normalizedAbsolutePath);
+    if (seen.has(identity)) continue;
+    seen.add(identity);
 
     try {
       resolved.push({
@@ -278,8 +283,9 @@ export async function resolveWorkItemSpecArtifacts(input: {
   const seen = new Set<string>();
   for (const candidatePath of candidates) {
     const absolutePath = path.resolve(candidatePath);
-    if (seen.has(absolutePath)) continue;
-    seen.add(absolutePath);
+    const identity = resolvedPathIdentity(absolutePath);
+    if (seen.has(identity)) continue;
+    seen.add(identity);
     try {
       resolved.push({ path: absolutePath, content: await fs.readFile(absolutePath, 'utf-8') });
     } catch (err: unknown) {
@@ -290,9 +296,10 @@ export async function resolveWorkItemSpecArtifacts(input: {
   }
 
   // Canonical Candidate files are the only current-release authority.
-  const canonicalRoot =
-    path.resolve(workItemCandidatesRoot(input.projectRoot, input.workItemId)) + path.sep;
-  const canonical = resolved.filter(artifact => artifact.path.startsWith(canonicalRoot));
+  const canonicalRoot = path.resolve(workItemCandidatesRoot(input.projectRoot, input.workItemId));
+  const canonical = resolved.filter(artifact =>
+    isSameOrDescendantResolvedPath(artifact.path, canonicalRoot)
+  );
   return canonical;
 }
 

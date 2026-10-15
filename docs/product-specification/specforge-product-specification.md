@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.10
+> Product release version: 1.0.11
 >
 > Product version epoch: 1
 >
@@ -508,6 +508,7 @@ Candidate
 8. Architecture、Design 与 Tasks Candidate 必须绑定同一 `implementation_baseline_id`。在 `candidate_preparing → candidate_prepared` 前，Runtime 必须复算基线并拒绝 snapshot 漂移；只要 planned scope 中有真实文件，Candidate basis 或专业 Candidate 中的 `all_files_new=true`、greenfield、新建文件、实现不存在等相反声明都必须失败关闭。修复必须更新真实 basis 与 Candidate，不得删除业务文件来迎合旧分析。
 9. `implementation_baseline.json` 属于固定 Candidate seal 集，Gate Attempt、Decision 与 Merge 必须像其他 seal 输入一样验证其存在性与字节身份。基线不能替代 Agent 对真实代码、入口、调用链、行为与测试的阅读，只提供可复核的最低事实边界。
 10. 当前代 Requirement 定义只允许 `REQ-<MODULE_CODE>-<NNN>` 三位序号；`REQ-N` 仅用于历史只读兼容。Requirements Gate 必须拒绝非规范位宽；Workflow Gate 必须枚举 Design、Tasks、Trace 和 Delta 中的每个规范形态 REQ token，并要求逐字解析到本代权威 Requirements 的唯一正文。不同位宽、短号、范围说明或“canonical 映射”不得视为相同 ID。
+11. Candidate seal、冻结 Manifest 读取、兼容发现和所有 Gate 消费者必须使用同一个目标平台 resolved-path identity。Windows 上仅大小写不同但解析到同一文件的路径只能形成一个输入、一个哈希和一个定义 owner；POSIX 平台继续把大小写不同的路径视为不同身份。去重必须保留首个权威路径拼写，不得用删除文件、放宽重复定义 Gate 或忽略真实非规范引用来消除冲突。
 
 ## 6.5 已合并无效 Project Spec 的补偿恢复
 

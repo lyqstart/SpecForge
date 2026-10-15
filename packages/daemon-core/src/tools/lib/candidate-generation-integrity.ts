@@ -7,6 +7,7 @@ import {
   validateCurrentGateAttemptInputSnapshotValue,
   validateCurrentGateAttemptResultValue,
 } from '@specforge/types';
+import { deduplicateResolvedPaths, resolvedPathIdentity } from './path-identity.js';
 
 const PROJECT_SPEC_VERSION_PATTERN = /^PSV-[0-9]{4,}$/;
 
@@ -116,12 +117,7 @@ export async function candidateSealInputPaths(workItemDir: string): Promise<stri
     'trigger_result.json',
   ].map(name => path.join(workItemDir, name));
   const candidates = await walkFiles(path.join(workItemDir, 'candidates'));
-  return Array.from(new Set([...fixed, ...candidates].map(value => path.resolve(value)))).sort();
-}
-
-function inputIdentity(value: string): string {
-  const resolved = path.resolve(value);
-  return process.platform === 'win32' ? resolved.toLowerCase() : resolved;
+  return deduplicateResolvedPaths([...fixed, ...candidates]).sort();
 }
 
 function resolveSnapshotPath(projectRoot: string, snapshotPath: string): string {
@@ -273,7 +269,7 @@ export async function validatePassingCandidateGateAttempt(input: {
 
   const snapshotByIdentity = new Map(
     snapshot.inputs.map(entry => [
-      inputIdentity(resolveSnapshotPath(input.projectRoot, entry.path)),
+      resolvedPathIdentity(resolveSnapshotPath(input.projectRoot, entry.path)),
       entry,
     ]),
   );
@@ -281,7 +277,7 @@ export async function validatePassingCandidateGateAttempt(input: {
     await validateSnapshotEntry({ projectRoot: input.projectRoot, entry, errors });
   }
   for (const sealPath of await candidateSealInputPaths(input.workItemDir)) {
-    const entry = snapshotByIdentity.get(inputIdentity(sealPath));
+    const entry = snapshotByIdentity.get(resolvedPathIdentity(sealPath));
     if (!entry || entry.exists !== true || entry.kind !== 'file') {
       errors.push(
         `GATE_ATTEMPT_CANDIDATE_SEAL_INPUT_MISSING: ${path.relative(input.projectRoot, sealPath).replace(/\\/g, '/')}`,

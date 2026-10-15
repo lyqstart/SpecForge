@@ -39,6 +39,7 @@ import {
   workItemTraceDelta,
 } from '@specforge/types/directory-layout';
 import { validateTaskArtifactContract } from './sf_markdown_verification_parser.js';
+import { sameResolvedPath } from './path-identity.js';
 
 const execFileAsync = promisify(execFile);
 const SPEC_DIR = '.specforge';
@@ -2478,10 +2479,7 @@ export async function gitRepositoryPresent(
     );
     const topLevel = path.resolve(String(stdout ?? '').trim());
     const requestedRoot = path.resolve(projectRoot);
-    const sameRoot = process.platform === 'win32'
-      ? topLevel.toLowerCase() === requestedRoot.toLowerCase()
-      : topLevel === requestedRoot;
-    return sameRoot || allowExplicitAncestorRepository;
+    return sameResolvedPath(topLevel, requestedRoot) || allowExplicitAncestorRepository;
   } catch {
     return false;
   }
@@ -2661,12 +2659,6 @@ export function evaluateVersionControlMode(input: {
 }
 
 const LEGACY_FILESYSTEM_MODE_RECOVERY_FILE = 'version_control_mode_recovery.json';
-
-function sameResolvedPath(left: string, right: string): boolean {
-  const a = path.resolve(left);
-  const b = path.resolve(right);
-  return process.platform === 'win32' ? a.toLowerCase() === b.toLowerCase() : a === b;
-}
 
 async function readJsonSource(filePath: string): Promise<{
   content: string;
