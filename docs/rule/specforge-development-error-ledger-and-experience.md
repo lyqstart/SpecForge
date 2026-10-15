@@ -31567,7 +31567,8 @@ Candidate seal、Gate Attempt、Gate Summary、User Decision 与 Merge 必须共
 - **纠正与防复发**：Runtime 在进入 `candidate_preparing` 时生成 planned-code implementation baseline，Architecture/Design/Tasks 绑定 snapshot，seal 复算并拒绝漂移和事实矛盾，Gate Attempt 固定封存 baseline；Requirements Gate 使用集中三位 ID 规则，Workflow Gate 对 Design/Tasks/Trace 全部 REQ token 做 exact-set resolution。更新 SPS、Authority Registry、治理设计、Agent/Workflow、负向测试与安装部署消费者后，才从同一 t3 WI 的合法恢复点生成新代 Candidate。
 - REUSED_EXP=EXP-001,EXP-005,EXP-006,EXP-017,EXP-021,EXP-029,EXP-044,EXP-047,EXP-049,EXP-146,EXP-157,EXP-186,EXP-193,EXP-265,EXP-270,EXP-278,EXP-279
 - **产品修复验证**：Runtime 已在 `candidate_preparing` 入口写入并在 seal 前复验 `implementation_baseline.json`；Candidate 固定封存该基线并拒绝 missing/stale binding 与 existing-file/greenfield/new-file 矛盾；Requirements Gate 只接受集中定义的三位 canonical ID；Workflow Gate 对 Design/Tasks/Trace 的每个 REQ token 做 exact-set resolution。相关产品权威、Agent/Workflow、活动规则与负向回归已同步。focused suite、daemon-core 209/1860、root current 49/725、重建发布清单后的 scope-gate 30/134、strict build、三组 release typecheck、workflow sync 与正式 release precheck 均通过。
-- ERR1824_STATUS=PRODUCT_FIX_VERIFIED_PENDING_1_0_10_DEPLOYMENT_AND_T3_CANDIDATE_REGENERATION
+- **发布闭环**：产品提交 `40f354c37a2dcd1b673b46ed3ca045fb9b6c5b2b` 已快进到本地 `main`、推送并与 `origin/main` 对齐；canonical Candidate `main-40f354c3-working-tree-step1824` 通过正式预检。官方 Installer 升级并验证 111/111 文件，安装的 CLI/daemon SHA-256 与 release 精确一致；detached direct daemon PID 20304 从用户级安装路径运行，CLI status 与 authenticated `/api/v1/healthz` 均返回 `1.0.10 / ok`。t3 未在产品修复阶段修改，仍需下一独立恢复阶段用同一 WI 生成新代 Candidate 才能完成业务侧验证。
+- ERR1824_STATUS=PRODUCT_FIX_DEPLOYED_PENDING_T3_CANDIDATE_REGENERATION
 
 ## EXP-280：Candidate 必须绑定真实实现快照并使用可精确解析的统一需求身份
 
