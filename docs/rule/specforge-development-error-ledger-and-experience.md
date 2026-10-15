@@ -31583,7 +31583,8 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - **纠正与防复发**：建立共享的目标平台 resolved-path identity；Windows 对路径身份执行大小写折叠，其他平台保持大小写敏感，并让 Candidate seal 与两个 Candidate artifact resolver 共同消费。增加平台语义单元测试、Windows `CORE/core` 集成回归以及真实非规范 REQ 保持失败的组合回归；完成正式全量、发布、安装和 daemon 验证后，才允许从 t3 原 WI 的合法恢复点重建新代 Candidate。
 - REUSED_EXP=EXP-001,EXP-004,EXP-005,EXP-006,EXP-007,EXP-010,EXP-015,EXP-017,EXP-021,EXP-029,EXP-031,EXP-032,EXP-033,EXP-044,EXP-047,EXP-049,EXP-060,EXP-087,EXP-117,EXP-146,EXP-157,EXP-159,EXP-193,EXP-195,EXP-241,EXP-265,EXP-268,EXP-270,EXP-274,EXP-278,EXP-279,EXP-280
 - **产品修复验证**：新增共享路径身份函数，并让 Candidate seal、冻结/兼容 artifact resolver、Gate Attempt snapshot lookup、Git root 比较和 Merge path containment 使用相同的平台语义。平台单元测试、t3 形状组合回归和 Windows Manifest 别名回归均通过；真实 `REQ-CORE-0001` 仍被报告为 `REQUIREMENT_REFERENCE_NONCANONICAL`。定向文件 10/10、五文件回归 27/27、daemon-core 209 文件 1863 项、正式顺序全 workspace 回归、strict build、三组 release typecheck、workflow sync、diff check 与 111 文件正式 release precheck 全部通过。
-- ERR1825_STATUS=PRODUCT_FIX_VALIDATED_PENDING_COMMIT_INSTALL_AND_T3_REGENERATION
+- **发布闭环**：产品提交 `9ad3063f87b72e36432ac86682f51511b9cbe034` 已 fast-forward 到本地 `main`、推送并与 `origin/main` 对齐；canonical Candidate `main-9ad3063f-working-tree-step1830` 通过正式预检。官方 Installer 在释放经证实的旧 daemon 文件锁并完成事务回滚后升级并验证 111/111 文件；已安装 CLI/daemon SHA-256 与 release 精确一致。detached direct daemon PID 28848 从用户级安装路径运行，CLI status、handshake 与 authenticated health 均返回 `1.0.11 / ok`。t3 在产品修复阶段未修改，仍需独立恢复阶段从原 WI 生成新代 Candidate 验证业务闭环。
+- ERR1825_STATUS=PRODUCT_FIX_DEPLOYED_PENDING_T3_CANDIDATE_REGENERATION
 
 ### ERR-1826：本轮只读取证与建分支遇到命令语法、沙箱和网络载体失败
 
@@ -31624,3 +31625,23 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - **纠正与防复发**：仅为已审核的显式 pathspec 取得最小 Git 元数据权限，随后复核 staged 文件数、路径、diff check 和未暂存状态。
 - REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-044,EXP-060,EXP-087
 - ERR1829_STATUS=CLOSED_BY_IDENTICAL_EXPLICIT_28_FILE_STAGING_RETRY
+
+### ERR-1830：正式提交后的 release runtime producer 在受限载体解析 CLI 根目录失败
+
+- **发生时间**：2026-10-15
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / RELEASE_PRODUCER_ROOT_RESOLUTION / ZERO_CANONICAL_REBUILD`。
+- **事实证据**：产品提交 `9ad3063f` 推送后，以本轮已验证的原生 Bun 1.4.0 运行官方 runtime artifact producer，首次在解析 `packages/cli/src` 根目录时返回 `EBADF`，没有完成 canonical 二进制重建。保持相同仓库、Bun 与 producer，在主机范围重跑后成功生成 CLI/daemon，SHA-256 分别为 `45156a9c95056964d8c099ab8880fd6ad0568d640ad27684e2317ef4d4f687da` 与 `11752015f7b1bf258fa6d4d409de14f17bb8848aa3d0ce0818c9d1b9238f1b12`。
+- **影响与根因**：首次失败发生在载体路径解析层，不能证明源码编译失败，也不能冒充正式发布产物已经生成。
+- **纠正与防复发**：保留首次失败；仅以同 producer 的成功输出、canonical manifest 和正式 precheck 作为发布依据。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-021,EXP-032,EXP-044,EXP-087,EXP-195,EXP-263
+- ERR1830_STATUS=CLOSED_BY_IDENTICAL_HOST_SCOPE_RUNTIME_PRODUCER_AND_CANONICAL_PRECHECK_PASS
+
+### ERR-1831：1.0.11 首次升级被仍存活的 1.0.10 daemon 文件锁阻断并进入事务恢复
+
+- **发生时间**：2026-10-15
+- **分类**：`STALE_DAEMON_PROCESS / WINDOWS_EXECUTABLE_LOCK / UPGRADE_TRANSACTION_RECOVERY`。
+- **事实证据**：首次官方升级已替换 CLI，但替换 `specforged.exe` 时收到 Windows `EPERM`，同一文件锁使即时回滚也失败；journal 记录 transaction `4bd617ef-6af4-4624-8773-b2361b534590` 为 failed。handshake 与主机进程一手证据确认 PID 20304 仍从正式用户级 `specforged.exe` 运行，CLI status 为 1.0.10/ok，直接证明其是锁来源。通过正式 CLI 停止精确 PID 后，下一次 Installer 调用把事务收敛到 `rolled_back` 并恢复两份 1.0.10 原哈希；再次调用同一 upgrade 后成功替换 2 个文件，跳过 109 个未变文件，verify 111/111 通过。
+- **影响与根因**：失败期间安装短暂处于新 CLI/旧 daemon 的部分事务状态，但 journal、备份和回滚保持可恢复；根因不是本次路径身份产品修复，而是升级前仅把 daemon 视为不可达、未复核残留 PID/锁。
+- **纠正与防复发**：升级前必须同时核验 CLI status、handshake PID 与进程路径；活动旧 daemon 必须通过正式 CLI 停止并确认 PID 退出。失败事务必须让官方 Installer 先回滚，再启动新事务；禁止删除 journal、手工覆盖锁定二进制或使用 `--force` 掩盖。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-021,EXP-032,EXP-044,EXP-060,EXP-087,EXP-195,EXP-263,EXP-274
+- ERR1831_STATUS=CLOSED_BY_EXACT_OLD_DAEMON_STOP_TRANSACTION_ROLLBACK_NEW_UPGRADE_VERIFY_AND_LIVE_1_0_11
