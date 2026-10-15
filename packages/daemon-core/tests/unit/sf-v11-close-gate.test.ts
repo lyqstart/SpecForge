@@ -8,6 +8,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as os from 'node:os';
+import { createHash } from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 
@@ -579,6 +580,50 @@ describe('sf_close_gate handler', () => {
     expect(recovery.status).toBe('applied');
     expect(recovery.invalidity_reasons).toContain('formal_version_gate_status=failed');
     expect(recovery.prior_evidence.close_gate_sha256).toMatch(/^[a-f0-9]{64}$/);
+  });
+
+  it('recovers evidence-only invalid closure while Formal Version remains valid and archives prior bytes', async () => {
+    const workItemId = 'wi-evidence-only-recovery';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    const code = Buffer.from('export const value = 1;\n');
+    await fs.mkdir(path.join(tmpDir, 'src'), { recursive: true });
+    await fs.writeFile(path.join(tmpDir, 'src', 'main.ts'), code);
+    const codeHash = createHash('sha256').update(code).digest('hex');
+    const fingerprint = createHash('sha256').update(`src/main.ts\0file\0${codeHash}`).digest('hex');
+    await fs.writeFile(path.join(wiDir, 'formal_version_snapshot.json'), JSON.stringify({
+      version_control_mode: 'filesystem', implementation_files: ['src/main.ts'],
+      implementation_tree_fingerprint: fingerprint,
+    }));
+    await fs.writeFile(path.join(wiDir, 'gates', 'close_gate.json'),
+      JSON.stringify({ gate_id: 'close_gate', status: 'passed' }));
+    const reportBefore = await fs.readFile(path.join(wiDir, 'verification_report.md'));
+    await fs.writeFile(path.join(wiDir, 'verification_report.md'),
+      '```json\n{"timestamp":"2026-10-15T08:20:00Z"}\n```\n');
+    const manifest = {
+      schema_version: '1.0', work_item_id: workItemId,
+      timestamp: '2026-10-15T08:18:00Z',
+      entries: [{ evidence_id: 'EV-1', type: 'other', status: 'passed', level: 'L5',
+        evidence_type: 'manual_acceptance', path: `.specforge/work-items/${workItemId}/verification_report.md` }],
+    };
+    await fs.writeFile(path.join(wiDir, 'evidence', 'evidence_manifest.json'), JSON.stringify(manifest));
+    const deps = createMockDeps('closed');
+    const result = await getHandler('sf_close_gate')!({
+      work_item_id: workItemId, action: 'recover_invalid_closure',
+      recovery_reason: 'Manual acceptance points to the report itself, not raw browser evidence.',
+      confirm_invalid_closure_recovery: true,
+    }, { directory: tmpDir, agent: 'sf-orchestrator' }, deps as any);
+    expect((result as any).success, JSON.stringify(result)).toBe(true);
+    expect((result as any).invalidity_reasons).toContain(
+      'verification_evidence_invalid=manual_acceptance_source_self_referential_or_outside:EV-1',
+    );
+    expect((result as any).invalidity_reasons.some((reason: string) => reason.startsWith('formal_'))).toBe(false);
+    const record = JSON.parse(await fs.readFile(path.join(wiDir, 'closure_recovery.json'), 'utf-8'));
+    expect(record.prior_evidence.generation_archive.manifest_sha256).toMatch(/^[a-f0-9]{64}$/);
+    const archivedReport = await fs.readFile(path.join(wiDir,
+      path.dirname(record.prior_evidence.generation_archive.manifest_path), 'verification_report.md'));
+    expect(archivedReport.equals(reportBefore)).toBe(false);
+    expect(archivedReport.toString()).toContain('2026-10-15T08:20:00Z');
+    expect(deps.__transitions.at(-1)?.toState).toBe('implementation_ready');
   });
 
   it('recovers a passed prior closure when the Formal Version snapshot omits committed code', async () => {

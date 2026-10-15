@@ -4,7 +4,7 @@
 >
 > Effective date: 2026-10-11
 >
-> Registry version: 1.9
+> Registry version: 1.10
 >
 > Product owner: SpecForge 产品负责人
 >
@@ -82,6 +82,7 @@ SPS-1.0
 | D14 | 已成功 Atomic Spec Merge 并进入 `closed` 的原 Work Item，若当前正式 Project Spec 可由 Runtime 一手证据证明仍由该次 Merge 产生且规格本身无效，必须通过专用补偿恢复原子归档旧代 Candidate/Gate/Decision/Merge/Verification/Close 证据、失效旧审批，并仅以受控事件返回 `candidate_preparing`；不得复用普通 `recover_invalid_closure`、不得放宽 `closed` 终态、不得在成功 Merge 后调用通用审批失效、不得创建替代 Work Item或手改真相源。恢复后必须重新生成 Candidate、重新通过 Gate、取得新的显式用户批准、重新 Atomic Spec Merge、Verification/Formal Version 与 Close。 |
 | D15 | 每一代进入 Gate/审批/Merge 的 Candidate 必须在 seal 时由 Runtime 重新绑定当前正式 Project Spec Version 与 `spec_manifest.json` 原始字节哈希；同一 Gate Attempt 必须不可变封存该代全部 Candidate、Manifest、分类、影响与触发依据，Gate Summary 只描述本次 Attempt 的报告；审批和 Merge 必须验证当前 Candidate 集与该次通过 Attempt、当前 Project Spec 基线完全一致。Requirements Gate 必须拒绝仅在索引、表格或引用中声明而没有正式需求正文与验收标准的 REQ。任一绑定或正文完整性不成立时必须在审批或写入正式规格前失败关闭，并经合法恢复回到 `candidate_preparing` 重新生成，不得继承旧代通过证据。 |
 | D16 | Candidate 不能只证明“这些字节被封存”，还必须证明“这些字节基于当前真实实现”。Runtime 在每次进入 `candidate_preparing` 时必须从 `trigger_result.impact_scope.planned_code_paths` 生成只读 implementation baseline，记录真实文件存在性、大小和 SHA-256；Architecture、Design、Tasks 必须绑定同一 snapshot，seal 必须拒绝基线漂移以及与现有文件冲突的 greenfield/new-file/implementation-missing 声明，并把 baseline 纳入 Gate Attempt seal。当前代 Requirement 定义只允许 `REQ-<MODULE_CODE>-<NNN>`，Design、Tasks、Trace 中每个 REQ 引用必须逐字解析到当前权威 Requirements 的唯一正文；“短号映射”、不同位宽或说明性别名不能建立同一性。Candidate seal、Gate 与下游消费者必须共享目标平台解析后的文件身份；Windows 大小写别名只能形成一个输入和一个证据 owner，其他平台保持其大小写语义。 |
+| D17 | Verification 与 Close 必须共同校验验证证据的来源、内容身份和时间：L5 人工验收不得以报告自身或 Agent 自述作原始证据，声明时间不得晚于 Runtime/原 Close 时点。原 WI 已关闭而该共享判据直接证明实现或验证证据无效时，普通 Close 补偿恢复须先不可变归档原代证据并取得明确确认，仅受控返回 `implementation_ready`；保留原合并规格、用户 Candidate 决定、状态事件和代码权限撤销事实。规格本身无效仍使用 D14 专用路径。 |
 | AR-DEC-01 | 《SpecForge 架构一致性治理最终实施方案》保留为从属技术治理合同，服从 SPS 与 Authority Registry，不再自称产品权威 |
 | AR-DEC-02 | 旧规格、旧设计、旧标准、实施文件、报告和审计统一进入 docs/archive/**，不再散布为并行当前目录 |
 | AR-DEC-03 | 仓库根 .kiro 退役；可复用内容必须进入当前权威或实现合同，剩余材料归档至 docs/archive/kiro/** |

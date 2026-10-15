@@ -25,6 +25,7 @@ import {
   validateVerificationReportContract,
   VERIFICATION_REPORT_CONTRACT_ID,
 } from './verification-report-contract.js';
+import { inspectVerificationEvidenceIntegrity } from './verification-evidence-integrity.js';
 
 export { extractStructuredVerificationReport } from './verification-report-contract.js';
 
@@ -223,6 +224,18 @@ export async function evaluateVerificationGovernanceContract(input: {
     : await readJson<SemanticClosureManifest>(closurePath);
 
   const checks: GateReportCheck[] = [];
+  const integrity = await inspectVerificationEvidenceIntegrity({
+    projectRoot: path.resolve(input.workItemDir, '..', '..', '..'),
+    workItemDir: input.workItemDir,
+    workItemId: evidenceWorkItemId,
+  });
+  checks.push({
+    check_id: 'verification_evidence_source_and_time_integrity',
+    description: 'manual acceptance has independent content-bound evidence and declared times do not exceed runtime time',
+    passed: integrity.invalidity_reasons.length === 0,
+    severity: integrity.invalidity_reasons.length === 0 ? undefined : 'error',
+    details: integrity.invalidity_reasons.join('; ') || undefined,
+  });
   checks.push({
     check_id: 'evidence_manifest_schema_current',
     description: 'evidence_manifest uses the current owner schema',

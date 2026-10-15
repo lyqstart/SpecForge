@@ -578,7 +578,7 @@ Verification report 中的 `evidence_refs` 必须与 `evidence_manifest.json` �
 
 ```json
 {
-  "schema_version": "1.1",
+  "schema_version": "1.0",
   "work_item_id": "<WI-xxx>",
   "entries": [
     {
@@ -604,6 +604,10 @@ Verification report 中的 `evidence_refs` 必须与 `evidence_manifest.json` �
 其中 `id`、`status`、`level`、`evidence_type`、`supports` 是 Semantic Closure 对账
 字段，必须与 `semantic_closure.evidence` 中同 ID 条目一致；其余字段描述原始证据
 的存储和采集信息。
+
+当前 Runtime 的 `evidence_manifest` schema 为 `1.0`。`L5/manual_acceptance`
+标记为通过时，先用 `sf_artifact_write(file_type="verification_evidence", artifact_name=..., content=..., content_encoding="utf8"|"base64")` 保存不可覆盖的原始操作记录或截图，再把返回的 `path` 与 `sha256` 写入清单；不得指向验证报告/清单自身，不得把 Agent 浏览器测试写成
+“用户原话确认”。报告与清单的声明时间必须是实际生成时间，未来时间会被 Gate 拒绝。
 
 ### 生成与验证流程
 

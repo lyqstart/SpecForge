@@ -9,6 +9,7 @@
  */
 import path from 'path';
 import * as fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import { registerHandler } from '../ToolDispatcher';
 import { renderVerificationReport, writeArtifact } from '../lib/sf_artifact_write_core';
 import {
@@ -958,6 +959,7 @@ const PROFESSIONAL_ARTIFACT_OWNERS = new Map<string, string>([
   ['findings_report', 'sf-investigator'],
   ['verification_report', 'sf-verifier'],
   ['evidence_manifest', 'sf-verifier'],
+  ['verification_evidence', 'sf-verifier'],
 ]);
 const VERIFICATION_INPUT_ARTIFACT_TYPES = new Set(['verification_report', 'evidence_manifest']);
 const CONTROL_TOOL_OWNED_ARTIFACT_TYPES = new Set(['merge_report']);
@@ -1014,6 +1016,7 @@ const EXECUTOR_FORBIDDEN_ARTIFACT_TYPES = new Set([
   'merge_report',
   'verification_report',
   'evidence_manifest',
+  'verification_evidence',
   'candidate_requirements',
   'candidate_architecture',
   'candidate_data_model',
@@ -1086,6 +1089,47 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
   if (inferredExecutorRejection) return inferredExecutorRejection;
   const inferredOwnershipRejection = rejectProfessionalArtifactOwnership(fileType, context);
   if (inferredOwnershipRejection) return inferredOwnershipRejection;
+  if (fileType === 'verification_evidence') {
+    const state = await readAuthoritativeState({ deps, projectRoot: baseDir, workItemId });
+    if (!['implementation_ready', 'implementation_done', 'verification_running'].includes(
+      String(state.current_state ?? ''),
+    )) {
+      return { success: false, error: 'VERIFICATION_EVIDENCE_STATE_FROZEN',
+        current_state: state.current_state, retry_allowed: false };
+    }
+    const name = String(args['artifact_name'] ?? '');
+    if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,100}\.(?:jsonl|txt|png|webp|jpg|jpeg)$/.test(name)) {
+      return { success: false, error: 'VERIFICATION_EVIDENCE_NAME_INVALID', retry_allowed: true };
+    }
+    const encoding = String(args['content_encoding'] ?? 'utf8');
+    if (!['utf8', 'base64'].includes(encoding) ||
+        (encoding === 'base64' && (!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(content) ||
+          Buffer.from(content, 'base64').toString('base64') !== content))) {
+      return { success: false, error: 'VERIFICATION_EVIDENCE_ENCODING_INVALID', retry_allowed: true };
+    }
+    const bytes = Buffer.from(content, encoding as BufferEncoding);
+    if (bytes.byteLength === 0 || bytes.byteLength > 10 * 1024 * 1024) {
+      return { success: false, error: 'VERIFICATION_EVIDENCE_SIZE_INVALID', retry_allowed: true };
+    }
+    const evidenceDir = path.join(metadataWorkItemDir, 'evidence', 'source');
+    const target = path.join(evidenceDir, name);
+    try {
+      fs.mkdirSync(evidenceDir, { recursive: true });
+      fs.writeFileSync(target, bytes, { flag: 'wx' });
+    } catch (error: any) {
+      if (error?.code === 'EEXIST') {
+        return { success: false, error: 'VERIFICATION_EVIDENCE_ALREADY_EXISTS', retry_allowed: true };
+      }
+      setHardStop(baseDir, workItemId, `VERIFICATION_EVIDENCE_WRITE_FAILED: ${error?.message ?? String(error)}`, 'sf_artifact_write');
+      return { success: false, error: 'VERIFICATION_EVIDENCE_WRITE_FAILED', hard_stop: true };
+    }
+    return { success: true, file_type: fileType,
+      path: path.relative(baseDir, target).replace(/\\/g, '/'),
+      size: bytes.byteLength,
+      sha256: createHash('sha256').update(bytes).digest('hex'),
+      recorded_at: new Date().toISOString(),
+      controlled_artifact: true, immutable: true };
+  }
   const projectConfigTarget = PROJECT_CONFIG_ARTIFACT_TYPES.get(fileType);
   if (projectConfigTarget) {
     const callerAgent = normalizeAgentName(context?.agent) || 'unknown';

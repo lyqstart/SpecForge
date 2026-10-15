@@ -8,6 +8,7 @@
  */
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+import { createHash } from 'node:crypto';
 import {
   WI_STATUSES_V11,
   isForbiddenTransition,
@@ -376,6 +377,46 @@ export async function recoverInvalidClosureWithEvidence(input: {
     throw new Error(
       'STATE_COORDINATOR_CLOSURE_RECOVERY_FAILED: authorized closure_recovery.json is required',
     );
+  }
+  const archive = recovery?.prior_evidence?.generation_archive;
+  const manifestRelative = String(archive?.manifest_path ?? '').replace(/\\/g, '/');
+  if (!/^recovery_generations\/invalid-closure-[0-9a-f-]+\/manifest\.json$/.test(manifestRelative) ||
+      !/^[0-9a-f]{64}$/.test(String(archive?.manifest_sha256 ?? ''))) {
+    throw new Error('STATE_COORDINATOR_CLOSURE_RECOVERY_FAILED: immutable generation archive is required');
+  }
+  const archiveManifestPath = path.join(input.workItemDir, manifestRelative);
+  const archiveManifestStat = await fs.lstat(archiveManifestPath);
+  if (!archiveManifestStat.isFile() || archiveManifestStat.isSymbolicLink()) {
+    throw new Error('STATE_COORDINATOR_CLOSURE_RECOVERY_FAILED: generation archive manifest is not a regular file');
+  }
+  const archiveManifest = await fs.readFile(archiveManifestPath);
+  if (createHash('sha256').update(archiveManifest).digest('hex') !== archive.manifest_sha256) {
+    throw new Error('STATE_COORDINATOR_CLOSURE_RECOVERY_FAILED: generation archive manifest drift');
+  }
+  let archived: { generation_id?: string; files?: Array<{ path: string; size: number; sha256: string }> };
+  try { archived = JSON.parse(archiveManifest.toString('utf-8')); }
+  catch { throw new Error('STATE_COORDINATOR_CLOSURE_RECOVERY_FAILED: generation archive manifest invalid'); }
+  if (archived.generation_id !== archive.generation_id ||
+      !Array.isArray(archived.files) ||
+      !archived.files.some(file => file.path === 'gates/close_gate.json')) {
+    throw new Error('STATE_COORDINATOR_CLOSURE_RECOVERY_FAILED: generation archive identity invalid');
+  }
+  const archiveRoot = path.dirname(path.join(input.workItemDir, manifestRelative));
+  for (const file of archived.files) {
+    const relative = String(file.path ?? '').replace(/\\/g, '/');
+    if (!relative || relative.startsWith('/') || relative.split('/').includes('..')) {
+      throw new Error('STATE_COORDINATOR_CLOSURE_RECOVERY_FAILED: generation archive file path invalid');
+    }
+    const archivedPath = path.join(archiveRoot, relative);
+    const archivedStat = await fs.lstat(archivedPath);
+    if (!archivedStat.isFile() || archivedStat.isSymbolicLink()) {
+      throw new Error('STATE_COORDINATOR_CLOSURE_RECOVERY_FAILED: generation archive file is not regular');
+    }
+    const bytes = await fs.readFile(archivedPath);
+    if (bytes.byteLength !== file.size ||
+        createHash('sha256').update(bytes).digest('hex') !== file.sha256) {
+      throw new Error('STATE_COORDINATOR_CLOSURE_RECOVERY_FAILED: generation archive file drift');
+    }
   }
 
   const projectSm = await input.deps.projectManager.getProjectStateManager(input.projectRoot);

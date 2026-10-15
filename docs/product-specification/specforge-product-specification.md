@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.11
+> Product release version: 1.0.12
 >
 > Product version epoch: 1
 >
@@ -524,6 +524,12 @@ Candidate
 6. 受控补偿事件只允许 `closed → candidate_preparing`，且不得把该边加入普通状态转移表；恢复记录必须绑定旧代证据 Manifest、无效性检查结果、原 Merge 版本和操作者明确确认；
 7. 恢复后必须使用当前 Project Spec Version 重新生成 Candidate，重新执行适用 Gate，重新取得针对新 Candidate 的显式用户批准，再执行新的 Atomic Spec Merge、Verification / Formal Version 与 Close；原审批、原 Gate 和原 Merge 不得作为新代通过证据；
 8. 必须复用原 Work Item，保留原状态事件、失败、HardStop、Merge 和 Close 历史；不得手改 `.specforge` 真相源、删除旧证据或创建替代 Work Item。
+
+## 6.6 验证证据完整性与已关闭 Work Item 的普通补偿恢复
+
+Verification Gate 与 Close Gate 必须使用同一证据完整性判据。报告及 Evidence Manifest 中声明的时间不得晚于 Runtime 执行时点；对已关闭 WI 的复核必须与原 StateManager Close 事件时间对照，不能以事后观察时间使原先的未来时间变为有效。`L5/manual_acceptance` 的通过结论必须指向独立、可读取、非符号链接的原始证据文件，登记其 SHA-256 并在 Gate 时复算；Verifier 可以通过受控 `sf_artifact_write(file_type=verification_evidence)` 以不可覆盖文件名保存原始文本记录或图片字节，Runtime 返回内容哈希与记录时间，再由 Evidence Manifest 引用。仅指向 `verification_report.md`、`evidence_manifest.json` 或自然语言自述不能证明实际浏览器操作或用户验收。机器测试与代码字节同一性不能替代原始人工验收事实。用户验收的归属必须与浏览器操作员的技术测试分开记录，不得把 Agent 自测写成用户原话。
+
+当原 WI 已是 `closed`，而同一完整性判据或既有 Formal Version 判据直接证明原关闭所依赖的实现／验证证据无效时，Close owner 在用户明确确认后可以执行普通 `recover_invalid_closure`。恢复前必须以不可变 generation archive 保存将被覆盖的原 Verification、Evidence Manifest、Semantic Closure、Gate、Formal Version 与既有恢复记录，记录逐文件大小、SHA-256 和归档 Manifest 哈希；恢复记录绑定原 Close 证据、具体失败判据、原 StateManager Close 时点和归档身份。仅以受控补偿事件执行 `closed → implementation_ready`，代码权限保持撤销，保留原 Candidate、Merge、User Decision 与全部历史事件。恢复后由相应 owner 重新取证、生成验证报告与证据清单、刷新语义闭包、重跑 Verification/Formal Version Gate，再执行 Close。普通状态入口仍禁止从 `closed` 跳出；规格本身无效时必须使用 §6.5 的独立路径，不得混用。
 
 ---
 

@@ -31645,3 +31645,17 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - **纠正与防复发**：升级前必须同时核验 CLI status、handshake PID 与进程路径；活动旧 daemon 必须通过正式 CLI 停止并确认 PID 退出。失败事务必须让官方 Installer 先回滚，再启动新事务；禁止删除 journal、手工覆盖锁定二进制或使用 `--force` 掩盖。
 - REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-021,EXP-032,EXP-044,EXP-060,EXP-087,EXP-195,EXP-263,EXP-274
 - ERR1831_STATUS=CLOSED_BY_EXACT_OLD_DAEMON_STOP_TRANSACTION_ROLLBACK_NEW_UPGRADE_VERIFY_AND_LIVE_1_0_11
+
+### ERR-1832：t3 已关闭 WI 的人工验收证据自引用且声明时间晚于关闭
+
+- **发生时间**：2026-10-15
+- **分类**：`VERIFICATION_EVIDENCE_PROVENANCE_DEFECT / CLOSED_RECOVERY_CAPABILITY_GAP`。
+- **一手证据**：t3 `WI-0001` 的 StateManager seq64 为 `verification_done → closed`，时间 2026-10-15T07:48:37Z；九条 `L5/manual_acceptance` 的 `path` 全部指向 `verification_report.md` 自身，没有独立 Chrome/Edge 操作记录；用户明确表示没有原先声称的验收记录。`evidence_manifest.json.timestamp=08:18Z`、报告结构化 `timestamp=08:20Z` 均晚于 Close。41 项机器测试和 7 文件哈希复核仍通过，但只证明机器行为及文件身份。
+- **首次偏离与影响**：Verifier 把未经证实的 10 月 11 日用户双浏览器验收写为已通过；Verification/Close 只检查证据 ID 注册、状态与语义闭包，不验证人工原始来源及时间。普通 `recover_invalid_closure` 只识别 Formal Version/Git，无证据层恢复路径；旧关闭不能直接改写，原 WI 无法合法补验。
+- **纠正方向**：产品规格登记来源与时间共同判据；Runtime 复用它于 Verification、Close 和普通关闭恢复。恢复前不可变归档旧代，保留原 Candidate、Merge、批准及 StateManager 历史；重跑真实浏览器验收并区分操作者技术测试与用户亲自验收。
+- REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-044,EXP-060,EXP-124,EXP-278,EXP-279,EXP-280
+- ERR1832_STATUS=OPEN_PENDING_REGRESSION_DEPLOYMENT_AND_T3_REVALIDATION
+
+## EXP-281：人工验收声明必须绑定独立原始证据与真实时间
+
+人工验收的自然语言结论、验证报告自引用、代码字节同一性及机器测试只能分别证明其自身，不能相互冒充。Verification 与 Close 必须复用来源与时间完整性判据；L5 人工验收要有独立原始文件和当前 SHA-256，Agent 浏览器测试不得写成用户亲自验收。已关闭 WI 的声明时间必须与原 StateManager Close 事件比较，不能用事后时钟使未来时间合法化。若旧证据经同一判据证明无效，先不可变归档旧代，再按首次失效责任层恢复原 WI，不删除历史或手改真相源。

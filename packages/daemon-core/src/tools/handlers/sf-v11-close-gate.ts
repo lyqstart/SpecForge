@@ -73,6 +73,8 @@ import * as path from "node:path";
 import * as fs from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { CHANGED_FILES_AUDIT_CONTRACT_ID } from "../lib/changed-files-audit-verdict.js";
+import { inspectVerificationEvidenceIntegrity } from '../lib/verification-evidence-integrity.js';
+import { archiveInvalidClosureEvidence } from '../lib/invalid-closure-recovery-archive.js';
 
 interface FilesystemDiffSummary {
   baseline_timestamp?: string;
@@ -163,6 +165,11 @@ async function recoverInvalidClosure(input: {
       error: `INVALID_CLOSURE_RECOVERY_STATE_MISMATCH: expected closed, got '${state.current_state ?? "N/A"}'`,
     };
   }
+  if (input.workItem.code_change_allowed === true ||
+      input.workItem.code_permission_revoked !== true) {
+    return { success: false,
+      error: 'INVALID_CLOSURE_RECOVERY_PERMISSION_STATE_INVALID: code permission must remain revoked' };
+  }
 
   const closeGatePath = path.join(input.workItemDir, "gates", "close_gate.json");
   const formalGatePath = path.join(input.workItemDir, "gates", "formal_version_gate.json");
@@ -178,6 +185,15 @@ async function recoverInvalidClosure(input: {
   }
 
   const invalidityReasons: string[] = [];
+  const evidenceIntegrity = await inspectVerificationEvidenceIntegrity({
+    projectRoot: input.projectRoot,
+    workItemDir: input.workItemDir,
+    workItemId: input.workItemId,
+    closed: true,
+  });
+  invalidityReasons.push(...evidenceIntegrity.invalidity_reasons.map(reason =>
+    `verification_evidence_invalid=${reason}`,
+  ));
   let formalSnapshotValidationError: string | null = null;
   if (formalGate?.status !== "passed") {
     invalidityReasons.push(
@@ -256,8 +272,21 @@ async function recoverInvalidClosure(input: {
     return {
       success: false,
       error:
-        "INVALID_CLOSURE_RECOVERY_NOT_PROVEN: formal version and Git binding evidence do not prove the prior closure invalid",
+        "INVALID_CLOSURE_RECOVERY_NOT_PROVEN: formal version, Git binding and verification evidence do not prove the prior closure invalid",
     };
+  }
+
+  const archive = await archiveInvalidClosureEvidence(input.workItemDir);
+  const archiveManifest = await readJsonFile(path.join(input.workItemDir, archive.manifest_path));
+  const archivedFiles = Array.isArray(archiveManifest?.files) ? archiveManifest.files : [];
+  const archivedHash = (relative: string): string | null =>
+    String(archivedFiles.find((file: any) => file.path === relative)?.sha256 ?? '') || null;
+  if (archivedHash('gates/close_gate.json') !== await hashFileIfPresent(closeGatePath) ||
+      archivedHash('verification_report.md') !== evidenceIntegrity.report_sha256 ||
+      archivedHash('evidence/evidence_manifest.json') !== evidenceIntegrity.manifest_sha256) {
+    return { success: false,
+      error: 'INVALID_CLOSURE_RECOVERY_EVIDENCE_DRIFT_DURING_ARCHIVE',
+      generation_archive: archive };
   }
 
   const recoveryRecord = {
@@ -275,6 +304,8 @@ async function recoverInvalidClosure(input: {
       formal_version_snapshot_sha256: await hashFileIfPresent(formalSnapshotPath),
       formal_version_snapshot_validation_error: formalSnapshotValidationError,
       git_binding: gitBinding,
+      verification_evidence_integrity: evidenceIntegrity,
+      generation_archive: archive,
     },
     permission_state: {
       code_change_allowed: input.workItem.code_change_allowed === true,

@@ -33,6 +33,7 @@ import {
 import { validateSemanticClosure, type SemanticClosureManifest } from './semantic-closure-core.js';
 import { validateSemanticClosureProvenance } from './semantic-closure-provenance.js';
 import { evaluateChangedFilesAuditVerdict } from './changed-files-audit-verdict.js';
+import { inspectVerificationEvidenceIntegrity } from './verification-evidence-integrity.js';
 import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
 import { evaluateMergeReport } from '@specforge/types';
 import { specMigrationCandidateRequiresTraceDelta } from './spec-migration-trace-contract.js';
@@ -739,6 +740,19 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
       severity: hasEntries ? undefined : 'error',
     });
   }
+
+  const evidenceIntegrity = await inspectVerificationEvidenceIntegrity({
+    projectRoot: ctx.projectRoot,
+    workItemDir: ctx.workItemDir,
+    workItemId: ctx.workItemId,
+  });
+  checks.push({
+    check_id: 'close_verification_evidence_source_and_time_integrity',
+    description: 'verification evidence source and declared time remain valid at Close',
+    passed: evidenceIntegrity.invalidity_reasons.length === 0,
+    severity: evidenceIntegrity.invalidity_reasons.length === 0 ? undefined : 'error',
+    details: evidenceIntegrity.invalidity_reasons.join('; ') || undefined,
+  });
 
   if (!contractWorkflow) {
     const semanticManifest = await readJson<SemanticClosureManifest>(

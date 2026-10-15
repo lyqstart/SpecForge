@@ -2531,3 +2531,8 @@ Candidate seal、Gate Attempt、Gate Summary、User Decision 与 Merge 必须共
 
 Candidate 字节完整性不能替代内容事实完整性。进入候选编制时必须由 Runtime 从机器可读 Impact Scope 生成实际文件存在性与哈希快照，专业 Candidate 绑定同一 snapshot，seal 复算并拒绝漂移或与现有文件相反的 greenfield/new-file/implementation-missing 声明；Agent 的旧影响分析和聊天自述不能覆盖一手文件事实。当前代 REQ 定义必须使用统一三位 canonical ID，所有 Design/Tasks/Trace 引用必须逐字解析到唯一需求正文；不同位宽、短号映射和说明性别名不得建立同一性。
 <!-- source: ledger current EXP-280 -->
+
+## EXP-281：人工验收声明必须绑定独立原始证据与真实时间
+
+人工验收的自然语言结论、验证报告自引用、代码字节同一性及机器测试只能分别证明其自身，不能相互冒充。Verification 与 Close 必须复用来源与时间完整性判据；L5 人工验收要有独立原始文件和当前 SHA-256，Agent 浏览器测试不得写成用户亲自验收。已关闭 WI 的声明时间必须与原 StateManager Close 事件比较，不能用事后时钟使未来时间合法化。若旧证据经同一判据证明无效，先不可变归档旧代，再按首次失效责任层恢复原 WI，不删除历史或手改真相源。
+<!-- source: ledger current EXP-281 -->

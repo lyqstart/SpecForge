@@ -282,6 +282,22 @@ describe('verification governance contract', () => {
     ).toMatchObject({ passed: false, details: 'SCHEMA_VERSION_MISMATCH' });
   });
 
+  it('makes verification_gate reject a self-referential L5 manual acceptance claim', async () => {
+    const evidencePath = path.join(workItemDir, 'evidence', 'evidence_manifest.json');
+    const manifest = JSON.parse(await fs.readFile(evidencePath, 'utf-8'));
+    manifest.entries[0].evidence_type = 'manual_acceptance';
+    manifest.entries[0].path = `.specforge/work-items/${workItemId}/verification_report.md`;
+    await fs.writeFile(evidencePath, JSON.stringify(manifest));
+    const result = await runGate('verification_gate', {
+      workItemId, workItemDir, projectRoot, workflowType: 'quick_change',
+      workflowPath: 'code_only_fast_path',
+    });
+    expect(result.status).toBe('failed');
+    expect(result.checks.find(check =>
+      check.check_id === 'verification_evidence_source_and_time_integrity')?.details
+    ).toContain('manual_acceptance_source_self_referential_or_outside:EV-1');
+  });
+
   it('makes the active verification gate fail when semantic closure is missing', async () => {
     await fs.rm(path.join(workItemDir, '.semantic_closure.json'));
     const report = await runGate('verification_gate', {

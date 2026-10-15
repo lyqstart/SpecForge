@@ -12,7 +12,7 @@ export default tool({
       .enum(["close", "recover_invalid_closure", "recover_invalid_merged_spec_closure"])
       .optional()
       .describe(
-        "默认 close。实现或 Formal Version 证据无效使用 recover_invalid_closure 回到 implementation_ready；" +
+        "默认 close。实现、Formal Version 或验证证据由 Runtime 判据证明无效时，使用 recover_invalid_closure 归档旧证据并回到 implementation_ready；" +
         "已合并的正式 Project Spec 本身无效使用 recover_invalid_merged_spec_closure 归档旧代并回到 candidate_preparing。",
       ),
     recovery_reason: tool.schema

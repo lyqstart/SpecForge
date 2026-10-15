@@ -6,7 +6,7 @@ export default tool({
     " JSON 产物的 content 必须是 JSON 字符串；如果上层传入对象，daemon 会尽量序列化，但 Agent 应优先使用 JSON.stringify 后的字符串。" +
     " 新项目第一次正式功能如果尚无有效 Project Architecture / Project Data Model，sf-design 必须在同一个 Requirement WI 中使用 candidate_architecture、candidate_data_model，并为已声明或受控新增 Module 使用 candidate_module_definition 写入真实 code_paths、使用 candidate_module_contract 建立 Module Contract；不得编造架构、数据模型或代码归属。" +
     " verification_report 必须使用 template=verification_report；daemon 会在写盘前严格校验 sf-verifier Required Output 契约，不会补齐缺失字段或接受 evidence_ref 别名；校验通过后才渲染 Markdown 并保留可机读 fenced JSON。该产物和 evidence_manifest 由 sf-verifier 拥有。" +
-    " verification_gate 通过后验证输入被冻结；需要修改时必须先按恢复流程回到 implementation_ready。" +
+    " verification_evidence 由 sf-verifier 在验证前以唯一 artifact_name 受控写入 evidence/source，返回 Runtime SHA-256 与真实 recorded_at；验证清单必须引用该独立文件。verification_gate 通过后验证输入被冻结；需要修改时必须先按恢复流程回到 implementation_ready。" +
     " 项目配置只能由 sf-orchestrator 在 intake_ready 使用 project_prod_environment 或 project_rules 写入 .specforge/config/，不得在 Write Guard 拒绝后改用原生写入。" +
     " file_type=work_item 时内容至少应包含 schema_version、work_item_id、status、workflow_type、workflow_path。",
   args: {
@@ -49,6 +49,7 @@ export default tool({
         "merge_report",
         "verification_report",
         "evidence_manifest",
+        "verification_evidence",
         "work_log",
         "review_report",
         "agent_run_result",
@@ -60,6 +61,15 @@ export default tool({
       description:
         "文件内容。JSON artifact 必须传合法 JSON 字符串；不要传 JavaScript 对象字面量。work_item JSON 至少包含 schema_version、work_item_id、status、workflow_type、workflow_path。",
       type: "string",
+    },
+    artifact_name: {
+      description: "verification_evidence 专用：不可覆盖的原始证据文件名（txt/jsonl/png/jpg/webp），禁止路径分隔符。",
+      type: "string",
+    },
+    content_encoding: {
+      description: "verification_evidence 专用：utf8 或 base64；图片须使用 base64。",
+      type: "string",
+      enum: ["utf8", "base64"],
     },
     run_id: {
       description: "Run ID（work_log 和 agent_run_result 时必填）",
