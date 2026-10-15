@@ -31654,7 +31654,17 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - **首次偏离与影响**：Verifier 把未经证实的 10 月 11 日用户双浏览器验收写为已通过；Verification/Close 只检查证据 ID 注册、状态与语义闭包，不验证人工原始来源及时间。普通 `recover_invalid_closure` 只识别 Formal Version/Git，无证据层恢复路径；旧关闭不能直接改写，原 WI 无法合法补验。
 - **纠正方向**：产品规格登记来源与时间共同判据；Runtime 复用它于 Verification、Close 和普通关闭恢复。恢复前不可变归档旧代，保留原 Candidate、Merge、批准及 StateManager 历史；重跑真实浏览器验收并区分操作者技术测试与用户亲自验收。
 - REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-044,EXP-060,EXP-124,EXP-278,EXP-279,EXP-280
-- ERR1832_STATUS=OPEN_PENDING_REGRESSION_DEPLOYMENT_AND_T3_REVALIDATION
+- ERR1832_STATUS=OPEN_PENDING_REAL_BROWSER_EVIDENCE_AND_RUNTIME_GATE_CLOSE
+
+### ERR-1833：沙箱进程假阴性使 1.0.12 首次升级再次撞上旧 daemon 文件锁
+
+- **发生时间**：2026-10-15
+- **分类**：`SANDBOX_OBSERVABILITY_FALSE_NEGATIVE / STALE_DAEMON_LOCK / INSTALLER_TRANSACTION_RECOVERY`。
+- **一手证据**：沙箱中的 `specforge daemon status --json` 返回不可达，`Get-Process -Name specforged` 无输出；然而主机范围 `Get-CimInstance Win32_Process` 确认 PID 28848 的可执行路径为正式用户级 `specforged.exe`，主机范围正式 CLI 同时报告 1.0.11/ok。首次 1.0.12 官方升级在替换该 exe 时 `EPERM`，journal 事务 `dfc1514f-813e-439b-b94f-9c32e907a889` 进入 failed，即时回滚也被同一锁阻断。正式 CLI 停止 PID 28848 后，安装器下一次调用把事务恢复为 `rolled_back`，两份二进制恢复原 1.0.11 哈希；再运行官方 upgrade 成功，verify 111/111，新安装二进制与正式产物 SHA-256 均相等，daemon PID 31000 从正式路径报告 1.0.12/ok。
+- **根因与影响**：重复 ERR-1831 的旧 daemon 文件锁，新增的关键失误是把受限沙箱内不可见的进程／回环视图当作主机无进程结论。升级中间态由安装器 journal、备份与回滚收敛；没有删除 journal、手工覆盖文件或使用 `--force`。
+- **防复发**：用户级部署前必须在安装器同一主机可见范围内交叉核验握手 PID、正式 CLI status 和进程路径；沙箱的“未发现”不能证明主机进程不存在。旧 daemon 必须由正式 CLI 停止且精确 PID 退出后才能升级；失败事务只能由安装器先恢复。
+- REUSED_EXP=EXP-002,EXP-007,EXP-021,EXP-032,EXP-044,EXP-060,EXP-274,EXP-281
+- ERR1833_STATUS=CLOSED_BY_HOST_SCOPE_PROCESS_PROOF_OFFICIAL_STOP_TRANSACTION_ROLLBACK_UPGRADE_VERIFY_AND_LIVE_1_0_12
 
 ## EXP-281：人工验收声明必须绑定独立原始证据与真实时间
 
