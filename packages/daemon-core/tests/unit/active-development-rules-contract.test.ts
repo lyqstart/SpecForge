@@ -81,18 +81,18 @@ describe('active development rules contract (AR-DEC-06) — structural integrity
   const content = read(activeRulesPath);
   const sections = sectionsOf(content);
 
-  it('covers every EXP rule id from EXP-001 to EXP-279 exactly once (no gaps, no duplicates)', () => {
+  it('covers every EXP rule id from EXP-001 to EXP-280 exactly once (no gaps, no duplicates)', () => {
     const ids = [...content.matchAll(/^## (EXP-\d+)/gm)].map((m) => m[1]);
     const unique = new Set(ids);
-    expect(unique.size).toBe(279);
+    expect(unique.size).toBe(280);
     expect(ids.length).toBe(unique.size);
-    for (let n = 1; n <= 279; n += 1) {
+    for (let n = 1; n <= 280; n += 1) {
       expect(unique.has(`EXP-${String(n).padStart(3, '0')}`)).toBe(true);
     }
   });
 
   it('every EXP section has non-empty semantic rule content (no empty/hollow rules)', () => {
-    expect(sections.size).toBe(279);
+    expect(sections.size).toBe(280);
     for (const [id, body] of sections) {
       const visible = body.replace(/<!--[\s\S]*?-->/g, '').replace(/[#\s*`>-]/g, '');
       expect(
@@ -104,7 +104,7 @@ describe('active development rules contract (AR-DEC-06) — structural integrity
 
   it('every EXP heading has a complete semantic title', () => {
     const headings = [...content.matchAll(/^## (EXP-\d+)(.*)$/gm)];
-    expect(headings).toHaveLength(279);
+    expect(headings).toHaveLength(280);
     for (const [, id, suffix] of headings) {
       expect(suffix, `${id} heading must have a semantic title`).toMatch(/^(?:：|\s+—\s+)\S/);
     }

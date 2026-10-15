@@ -17,6 +17,7 @@ import { buildTolerantHeaderRegex } from './sf_section_matcher';
 import { resolveRequirementsPath, checkEarsCompliance } from './sf_ears_parser';
 import { FILE_SIZE_LIMIT } from './sf_ears_types';
 import type { GateResult, GateModeSpec } from './sf_gate_types';
+import { isValidRequirementId } from '@specforge/types';
 
 export type { GateResult } from './sf_gate_types';
 export type { GateModeSpec } from './sf_gate_types';
@@ -587,6 +588,11 @@ export function validateFormalRequirementBodies(content: string): string[] {
   }
 
   const issues: string[] = [];
+  for (const id of declaredIds) {
+    if (!isValidRequirementId(id)) {
+      issues.push(`${id}: requirement ID must use canonical REQ-<MODULE_CODE>-<NNN> format`);
+    }
+  }
   for (const id of declaredIds) {
     const matches = definitions.get(id) ?? [];
     if (matches.length === 0) {

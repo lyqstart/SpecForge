@@ -170,6 +170,8 @@ Layer 3 ✅：sf-design 能基于 requirements.md 产出 design.md，且 sf_requ
 
 在需求澄清前，先从 intake.md / trigger_result / change_classification / impact_analysis 中抽取以下内容：
 
+处于 `candidate_preparing` 时，还必须读取 Runtime-owned `implementation_baseline.json`。若其实际存在性与旧 impact/trigger 中的 greenfield、`all_files_new` 或“无现有代码”叙述冲突，必须在当前可写窗口修正本人所有的 Candidate basis 后再生成需求候选；不得用历史影响分析覆盖一手文件事实。所有新需求正文只能使用 `REQ-<MODULE_CODE>-<NNN>` 三位序号，且下游引用必须逐字相同。
+
 - 用户明确目标；
 - 用户明确事实；
 - 未知项；

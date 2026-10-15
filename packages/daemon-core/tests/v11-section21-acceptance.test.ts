@@ -32,6 +32,7 @@ import { captureSemanticClosureProvenance } from '../src/tools/lib/semantic-clos
 import { isValidV11Transition, isForbiddenTransition } from '../src/tools/lib/state-machine-v11';
 import { renderVerificationReport } from '../src/tools/lib/sf_artifact_write_core';
 import { readCurrentProjectSpecBinding } from '../src/tools/lib/candidate-generation-integrity';
+import { materializeImplementationBaseline } from '../src/tools/lib/implementation-baseline';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -207,6 +208,7 @@ async function buildCompleteWI(
   // Write trigger_result.json with correct workflow_path
   const trigger = generateTriggerResult(wiId, classification, []);
   await fs.writeFile(path.join(wiDir, 'trigger_result.json'), JSON.stringify(trigger, null, 2), 'utf-8');
+  await materializeImplementationBaseline(projectRoot, wiId);
 
   // Update classification and impact analysis
   await fs.writeFile(

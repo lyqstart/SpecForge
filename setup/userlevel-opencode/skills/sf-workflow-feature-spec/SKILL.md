@@ -238,6 +238,7 @@ Orchestrator 不手工写 `candidate_manifest.json`，不猜 `candidate_path`、
 
 1. 调用 `sf_state_read` 确认当前状态为 `workflow_selected`
 2. 调用 `sf_state_transition`（from_state="workflow_selected"，to_state="candidate_preparing"，evidence="starting candidate preparation"）
+3. 重读 Runtime 落盘的 `implementation_baseline.json`，核对返回的 `snapshot_id`、planned paths、现有文件哈希与旧 Candidate basis；发生冲突时先由原 owner 修正 `impact_analysis.md` / `trigger_result.json`，再调度专业 Candidate。
 
 #### Step 4.2：生成 Requirements
 
@@ -279,7 +280,7 @@ Orchestrator 不手工写 `candidate_manifest.json`，不猜 `candidate_path`、
 
 #### Step 4.5：由 Runtime 物化 candidate_manifest.json
 
-所有专业 Candidate 完成后，Orchestrator 直接调用正式 `sf_state_transition(candidate_preparing → candidate_prepared)`；该封口转换由 Runtime 根据正式 Classification、实际 Candidate 和规范路径最终物化 `candidate_manifest.json`。
+所有专业 Candidate 完成后，Orchestrator 直接调用正式 `sf_state_transition(candidate_preparing → candidate_prepared)`；该封口转换先校验 Runtime-owned implementation baseline 未漂移、Architecture/Design/Tasks 都绑定同一 `snapshot_id`、没有与现有代码冲突的 greenfield/new-file 声明，再由 Runtime 根据正式 Classification、实际 Candidate 和规范路径最终物化 `candidate_manifest.json`。
 
 Orchestrator 随后只读最终 `candidate_manifest.json`，确认 required candidate types、candidate_path、target_path 与实际 Candidate 一致；不得手工创建或覆盖 manifest。
 
@@ -555,8 +556,9 @@ Preflight 必须确认：
 3. tasks candidate 已存在
 4. trace_delta.md 已存在
 5. candidate_manifest.json 已由 Runtime 在 `candidate_preparing → candidate_prepared` 封口转换中物化
-6. Runtime 根据正式 Classification 与实际 Candidate 纳入全部 required candidate types；Agent 不维护固定四类清单
-7. Orchestrator 只读验收 manifest 中每个 candidate_path / target_path 与实际 Candidate 一致
+6. implementation_baseline.json 由 Runtime 在进入 `candidate_preparing` 时物化，Architecture/Design/Tasks 已绑定其 snapshot_id，且不存在实现事实冲突；本代全部 REQ 定义和引用均为可精确解析的三位 canonical ID
+7. Runtime 根据正式 Classification 与实际 Candidate 纳入全部 required candidate types；Agent 不维护固定四类清单
+8. Orchestrator 只读验收 manifest 中每个 candidate_path / target_path 与实际 Candidate 一致
 ```
 
 ## 二、禁止旧行为

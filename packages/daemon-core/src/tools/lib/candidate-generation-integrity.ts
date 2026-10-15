@@ -112,6 +112,7 @@ export async function candidateSealInputPaths(workItemDir: string): Promise<stri
     'candidate_manifest.json',
     'change_classification.md',
     'impact_analysis.md',
+    'implementation_baseline.json',
     'trigger_result.json',
   ].map(name => path.join(workItemDir, name));
   const candidates = await walkFiles(path.join(workItemDir, 'candidates'));

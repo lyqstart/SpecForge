@@ -21,6 +21,7 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import * as os from "node:os";
 import { captureSemanticClosureProvenance } from "../../src/tools/lib/semantic-closure-provenance";
+import { materializeImplementationBaseline } from "../../src/tools/lib/implementation-baseline";
 
 /**
  * Build a deps object whose ProjectManager returns a StateManager with a
@@ -224,6 +225,82 @@ describe("sf_state_transition - StateManager authority and transition contract",
     expect(result.workflow_engine_transition_full_used).toBe(false);
     expect(smTransition).toHaveBeenCalledTimes(1);
     expect(transitionFull).not.toHaveBeenCalled();
+  });
+
+  it("materializes the real implementation baseline before entering candidate_preparing", async () => {
+    const workItemDir = wiDirFor(tempDir, "WI-0001");
+    await fs.mkdir(path.join(tempDir, "src"), { recursive: true });
+    await fs.writeFile(path.join(tempDir, "src", "main.ts"), "export const current = true;\n");
+    await fs.writeFile(
+      path.join(workItemDir, "trigger_result.json"),
+      JSON.stringify({
+        schema_version: "1.0",
+        work_item_id: "WI-0001",
+        workflow_type: "feature_spec",
+        workflow_path: "requirement_change_path",
+        impact_scope: { planned_code_paths: ["src/main.ts", "src/new.ts"] },
+      }),
+    );
+    const { deps, smTransition } = makeStateManagerDeps({ currentState: "workflow_selected" });
+
+    const result = await handler(
+      {
+        work_item_id: "WI-0001",
+        from_state: "workflow_selected",
+        to_state: "candidate_preparing",
+        workflow_type: "feature_spec",
+        workflow_path: "requirement_change_path",
+      },
+      { directory: tempDir },
+      deps,
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.implementation_baseline_materialization).toMatchObject({
+      planned_code_paths: ["src/main.ts", "src/new.ts"],
+      current_file_count: 1,
+      all_planned_paths_missing: false,
+    });
+    const baseline = JSON.parse(
+      await fs.readFile(path.join(workItemDir, "implementation_baseline.json"), "utf-8"),
+    );
+    expect(baseline.entries[0].matched_files[0].path).toBe("src/main.ts");
+    expect(smTransition).toHaveBeenCalledTimes(1);
+  });
+
+  it("rolls back a newly materialized implementation baseline when StateManager rejects entry", async () => {
+    const workItemDir = wiDirFor(tempDir, "WI-0002");
+    await fs.writeFile(
+      path.join(workItemDir, "trigger_result.json"),
+      JSON.stringify({
+        schema_version: "1.0",
+        work_item_id: "WI-0002",
+        workflow_type: "feature_spec",
+        workflow_path: "requirement_change_path",
+        impact_scope: { planned_code_paths: ["src/new.ts"] },
+      }),
+    );
+    const { deps } = makeStateManagerDeps({
+      currentState: "workflow_selected",
+      transitionError: new Error("transition rejected"),
+    });
+
+    const result = await handler(
+      {
+        work_item_id: "WI-0002",
+        from_state: "workflow_selected",
+        to_state: "candidate_preparing",
+        workflow_type: "feature_spec",
+        workflow_path: "requirement_change_path",
+      },
+      { directory: tempDir },
+      deps,
+    );
+
+    expect(result.success).toBe(false);
+    await expect(
+      fs.access(path.join(workItemDir, "implementation_baseline.json")),
+    ).rejects.toBeTruthy();
   });
 
   it("passes correct from/to/workItemId to StateManager.transition", async () => {
@@ -707,8 +784,12 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
           project_contract_changed: options?.projectContractChanged === true,
           api_contract_changed: options?.projectContractChanged !== true,
         },
+         impact_scope: {
+           planned_code_paths: [],
+         },
       }),
     );
+    await materializeImplementationBaseline(tempDir, "WI-0004");
     await fs.writeFile(
       path.join(wiDir, "candidate_manifest.json"),
       JSON.stringify({

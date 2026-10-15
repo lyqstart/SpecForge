@@ -34,6 +34,12 @@ import {
 } from "../lib/candidate-manifest-owner.js";
 import { readUnresolvedHandoffValidationFailures } from "../lib/agent-handoff-v11";
 import { readCurrentProjectSpecBinding } from "../lib/candidate-generation-integrity.js";
+import {
+  materializeImplementationBaseline,
+  restoreImplementationBaseline,
+  validateImplementationTruthBeforeSeal,
+  type ImplementationBaselineWrite,
+} from "../lib/implementation-baseline.js";
 
 async function readJsonIfExists(filePath: string): Promise<Record<string, any> | null> {
   try {
@@ -572,6 +578,23 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
   }
 
   const workItemDir = join(projectPath, SPEC_DIR_NAME, "work-items", workItemId);
+  let implementationBaselineMaterialization: ImplementationBaselineWrite | undefined;
+  if (toState === "candidate_preparing" && fromState !== "candidate_preparing") {
+    try {
+      implementationBaselineMaterialization =
+        await materializeImplementationBaseline(projectPath, workItemId);
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+        code: "IMPLEMENTATION_BASELINE_MATERIALIZATION_FAILED",
+        retry_allowed: true,
+        state_advanced: false,
+        remediation:
+          "Repair trigger_result.impact_scope.planned_code_paths or the planned project paths, then retry entering candidate_preparing. Do not hand-write implementation_baseline.json.",
+      };
+    }
+  }
   let candidateManifestMaterialization:
     | {
         manifest_path: string;
@@ -613,6 +636,23 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
         unresolved_handoff_validations: unresolvedHandoffFailures,
         remediation:
           "Produce the missing/corrected handoff and rerun sf_handoff(validate_all) with the same expectation before sealing the Candidate.",
+      };
+    }
+    const implementationTruth = await validateImplementationTruthBeforeSeal({
+      projectRoot: projectPath,
+      workItemId,
+    });
+    if (!implementationTruth.valid) {
+      return {
+        success: false,
+        error: "CANDIDATE_IMPLEMENTATION_TRUTH_INVALID",
+        code: "CANDIDATE_IMPLEMENTATION_TRUTH_INVALID",
+        state_advanced: false,
+        retry_allowed: true,
+        blocking_issues: implementationTruth.errors,
+        input_files: implementationTruth.input_files,
+        remediation:
+          "Regenerate Candidate basis, Design and Tasks from Runtime-owned implementation_baseline.json, bind every architecture/design/tasks document to its snapshot_id, and retry candidate_preparing -> candidate_prepared.",
       };
     }
     try {
@@ -708,6 +748,22 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
+    if (implementationBaselineMaterialization) {
+      try {
+        await restoreImplementationBaseline(implementationBaselineMaterialization);
+      } catch (rollbackError) {
+        return {
+          success: false,
+          error:
+            `IMPLEMENTATION_BASELINE_ROLLBACK_FAILED: ${
+              rollbackError instanceof Error ? rollbackError.message : String(rollbackError)
+            }; original transition error: ${message}`,
+          code: "IMPLEMENTATION_BASELINE_ROLLBACK_FAILED",
+          hard_stop: true,
+          state_advanced: false,
+        };
+      }
+    }
     if (candidateManifestMaterialization) {
       const rollbackErrors: string[] = [];
       try {
@@ -777,6 +833,18 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
     state_authority: "StateManager",
     workflow_engine_transition_full_used: false,
     candidate_manifest_materialization: publicCandidateManifestMaterialization,
+    implementation_baseline_materialization: implementationBaselineMaterialization
+      ? {
+          path: implementationBaselineMaterialization.path,
+          snapshot_id: implementationBaselineMaterialization.baseline.snapshot_id,
+          planned_code_paths:
+            implementationBaselineMaterialization.baseline.planned_code_paths,
+          current_file_count:
+            implementationBaselineMaterialization.baseline.current_file_count,
+          all_planned_paths_missing:
+            implementationBaselineMaterialization.baseline.all_planned_paths_missing,
+        }
+      : undefined,
     transition_result: transitionResult.transition_result,
   };
 });

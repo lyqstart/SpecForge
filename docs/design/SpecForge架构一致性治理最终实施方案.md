@@ -202,6 +202,7 @@ TYPE_ENVIRONMENT_SOURCE=VERSIONED_TSCONFIG_AND_DECLARED_DEPENDENCIES
 - `FILESYSTEM-FORMAL-VERSION-001`：filesystem 模式的 Formal Version 固定实际实现文件集合与逐字节内容指纹，Close 在状态推进前重新取证并比较。
 - `INVALID-MERGED-SPEC-RECOVERY-001`：已成功 Merge 并关闭的原 WI，只有在当前正式 Project Spec 仍精确归属于该次 Merge 且共享正式校验直接证明规格本身无效时，Close owner 才能在状态变化前以不可变 generation archive 冻结旧代全部治理证据、原子失效旧审批，并通过专用补偿事件执行 `closed → candidate_preparing`。普通状态表继续禁止 `closed → any`；普通实现证据恢复、通用审批失效与已退出 current release 的 spec_migration 均不得替代本合同。新一代必须重新 Candidate、Gate、显式用户批准、Atomic Spec Merge、Verification / Formal Version 与 Close。
 - `CANDIDATE-GENERATION-INTEGRITY-001`：Candidate seal 的原子事务必须在写入前读取当前 Project Spec Manifest，并把当前 PSV 与 Manifest 原始字节哈希绑定到 Candidate Manifest；每个 Gate Attempt 固定封存本代 Candidate seal 集，当前 Gate Summary 只投影本 Attempt。Decision 与 Merge 共同复核“当前 seal 集 = 通过 Attempt 快照 = 当前 Project Spec 基线”，Requirements Gate 同时验证每个正式 REQ 标识拥有唯一、非空且含验收标准的需求正文。任何差异在审批或 Project Spec 写入前失败关闭，修复只能经合法恢复重建新代证据。
+- `CANDIDATE-RUNTIME-TRUTH-001`：进入 `candidate_preparing` 的 Runtime 事务必须从机器可读 Impact Scope 生成 implementation baseline；专业 Candidate 绑定其稳定 snapshot，seal 前复算并拒绝漂移、缺失绑定和与真实文件存在性相反的 greenfield/new-file/implementation-missing 声明。baseline 进入固定 Gate Attempt seal，不能由 Agent 手写。Requirements、Design、Tasks、Trace 的 REQ 身份使用同一三位 canonical 规则；Gate 必须逐 token 精确解析，不能依靠不同位宽的短号映射。
 
 ### 3.3 责任层与最小完整扩展
 

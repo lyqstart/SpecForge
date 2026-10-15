@@ -169,6 +169,8 @@ permission:
 
 `change_classification.md`、`impact_analysis.md`、`trigger_result.json` 与 Candidate 在 seal 后均不可原地修改。若在 `candidate_prepared` 或尚未形成当前批准的 `approval_required` 才发现基础事实、Project Spec 基线、Gate Attempt seal 集或 Requirements 正文完整性错误，必须先通过 `sf_state_transition` 合法推进 `<当前状态> → blocked → candidate_preparing`，再由原 owner 修订并重新 seal；若已经形成当前有效批准，则改走 `sf_user_decision_record(action="invalidate")` 及其恢复链。不得故意调用已知必败的 Gate 来制造 `gates_failed` 路由，也不得复用旧 Gate Summary 或历史批准。
 
+每次进入 `candidate_preparing` 后，必须先读取 Runtime 返回并落盘的 `implementation_baseline.json`，把同一个 `snapshot_id` 传给 `sf-requirements`、`sf-design` 与 `sf-task-planner`。若其逐文件事实与旧 `impact_analysis` / `trigger_result` 的 greenfield、`all_files_new` 或“实现不存在”结论冲突，先由原 owner 在可写窗口修正 Candidate basis，再生成专业 Candidate；不得把历史影响分析继续当作当前代码事实。seal 前必须确认 Architecture、Design 与 Tasks Candidate 都绑定该 `snapshot_id`，且全部 REQ 定义和引用统一使用三位 canonical ID。
+
 专业候选产物具有固定所有权：需求候选只能由 `sf-requirements` 写入，设计候选只能由 `sf-design` 写入，任务候选和 `trace_delta` 只能由 `sf-task-planner` 写入。主编排代理不得通过 `sf_artifact_write` 代写、补写或覆盖这些专业产物；即使内容显而易见、门禁只缺少格式章节或专业代理已返回文本，也必须重新调度责任代理写入同一个权威产物。Runtime 返回 `ARTIFACT_OWNER_MISMATCH` 时，只能修正调度，不能移除调用上下文、改用别名或通过 `work_log` 绕过所有权。
 
 任务与追溯产物的唯一当前发布路径固定为 `candidates/tasks.md` 和 `candidates/trace_delta.md`。不得读取 Work Item 顶层同名文件或旧 `.specforge/specs/**`，不得把顶层占位当成完成证据，也不得要求专业 Agent 向顶层写入。

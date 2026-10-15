@@ -78,6 +78,19 @@ export async function sealPassingCandidateAttemptFixture(input: {
     path.join(input.workItemDir, 'trigger_result.json'),
     JSON.stringify({ work_item_id: input.workItemId }) + '\n',
   );
+  await ensureFile(
+    path.join(input.workItemDir, 'implementation_baseline.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      work_item_id: input.workItemId,
+      captured_at: '2026-10-15T00:00:00.000Z',
+      snapshot_id: sha256('fixture implementation baseline'),
+      planned_code_paths: [],
+      current_file_count: 0,
+      all_planned_paths_missing: true,
+      entries: [],
+    }, null, 2) + '\n',
+  );
 
   const attemptsRoot = path.join(input.workItemDir, 'gate_attempts');
   let existing: string[] = [];

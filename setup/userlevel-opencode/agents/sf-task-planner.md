@@ -199,6 +199,8 @@ Layer 3 ✅：sf-executor 拿到任意 task 都能独立执行，verification_co
 
 ## T2A：当前实现上下文原则
 
+Task Planner 必须先读取当前 Work Item 根的 Runtime-owned `implementation_baseline.json`，并在 Tasks Candidate 顶部写入 `implementation_baseline_id: <snapshot_id>`。`Current Implementation`、任务-文件映射和 create/modify 操作必须与基线逐文件一致；基线显示文件存在时，禁止标记为“新建”、`none`、`missing` 或“目标文件不存在”。基线与输入文档冲突时必须返回 blocked finding，不能选择更旧的叙述。
+
 修改已有功能或已有模块时，每个相关 task 的 context_block 必须说明当前实现位置和现状：
 
 ```markdown

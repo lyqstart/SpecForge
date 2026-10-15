@@ -2526,3 +2526,8 @@ Product Specification 只保存稳定产品规则；Authority Registry 登记每
 
 Candidate seal、Gate Attempt、Gate Summary、User Decision 与 Merge 必须共同绑定同一代 Candidate 内容、分类/影响/触发依据及当前 Project Spec Version/Manifest 字节身份。Gate 的声明输入不得缩小 seal 集，历史 Gate 不得进入当前摘要，调用者不得提供或默认基线版本。Requirements 中出现的正式 REQ 标识必须有唯一正文与验收标准；索引或下游引用不能替代需求定义。发现代际漂移时必须在审批或正式写入前失败关闭，并通过合法恢复重新生成证据。
 <!-- source: ledger current EXP-279 -->
+
+## EXP-280：Candidate 必须绑定真实实现快照并使用可精确解析的统一需求身份
+
+Candidate 字节完整性不能替代内容事实完整性。进入候选编制时必须由 Runtime 从机器可读 Impact Scope 生成实际文件存在性与哈希快照，专业 Candidate 绑定同一 snapshot，seal 复算并拒绝漂移或与现有文件相反的 greenfield/new-file/implementation-missing 声明；Agent 的旧影响分析和聊天自述不能覆盖一手文件事实。当前代 REQ 定义必须使用统一三位 canonical ID，所有 Design/Tasks/Trace 引用必须逐字解析到唯一需求正文；不同位宽、短号映射和说明性别名不得建立同一性。
+<!-- source: ledger current EXP-280 -->

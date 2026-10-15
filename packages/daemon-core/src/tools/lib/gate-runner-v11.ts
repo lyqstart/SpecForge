@@ -59,7 +59,7 @@ import {
 } from './artifact-schema-validation.js';
 import { checkDesignGate } from './sf_design_gate_core.js';
 import { checkRequirementsGate } from './sf_requirements_gate_core.js';
-import { checkTasksGate } from './sf_tasks_gate_core.js';
+import { checkTasksGate, resolveTaskRequirementArtifacts } from './sf_tasks_gate_core.js';
 import type { GateResult } from './sf_gate_types.js';
 import {
   normalizeProjectSpecTargetPath,
@@ -76,6 +76,7 @@ import {
 } from './project-governance-v2.js';
 import { specMigrationCandidateRequiresTraceDelta } from './spec-migration-trace-contract.js';
 import { validateCandidateProjectSpecBinding } from './candidate-generation-integrity.js';
+import { validateCandidateRequirementReferences } from './candidate-requirement-reference-integrity.js';
 
 function projectSpecRepairPlanPath(workItemDir: string): string {
   return path.join(workItemDir, 'project_spec_repair_plan.json');
@@ -1933,6 +1934,20 @@ async function runWorkflowSpecificGate(ctx: GateContext): Promise<GateResult> {
       details['task_candidate_paths'] = stageDetails?.['task_candidate_paths'];
     }
   }
+  const requirementResolution = await resolveTaskRequirementArtifacts(
+    ctx.projectRoot,
+    ctx.workItemId,
+  );
+  const referenceIntegrity = await validateCandidateRequirementReferences({
+    workItemDir: ctx.workItemDir,
+    requirementArtifacts: requirementResolution.artifacts,
+  });
+  blockingIssues.push(...referenceIntegrity.errors);
+  details['requirement_reference_integrity'] = {
+    valid: referenceIntegrity.valid,
+    declared_requirement_ids: referenceIntegrity.declared_requirement_ids,
+    input_files: referenceIntegrity.input_files,
+  };
   return {
     status: blocked ? 'blocked' : blockingIssues.length > 0 ? 'fail' : 'pass',
     blocking_issues: blockingIssues,

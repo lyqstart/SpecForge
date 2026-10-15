@@ -14,6 +14,11 @@ import { buildGateAttemptInputSnapshot } from '../../src/tools/lib/gate-chain';
 import type { GateReportV11 } from '../../src/tools/lib/gate-runner-v11';
 import { validateDecisionRecordPreconditions } from '../../src/tools/lib/governance-invariants-v11';
 import { validateFormalRequirementBodies } from '../../src/tools/lib/sf_requirements_gate_core';
+import {
+  materializeImplementationBaseline,
+  validateImplementationTruthBeforeSeal,
+} from '../../src/tools/lib/implementation-baseline';
+import { validateCandidateRequirementReferences } from '../../src/tools/lib/candidate-requirement-reference-integrity';
 
 const roots: string[] = [];
 
@@ -77,6 +82,19 @@ async function makeProject(): Promise<{
   await writeFile(join(workItemDir, 'change_classification.md'), '# Classification\n');
   await writeFile(join(workItemDir, 'impact_analysis.md'), '# Impact\n');
   await writeFile(join(workItemDir, 'trigger_result.json'), '{}\n');
+  await writeFile(
+    join(workItemDir, 'implementation_baseline.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      work_item_id: 'WI-0001',
+      captured_at: '2026-10-15T00:00:00.000Z',
+      snapshot_id: hash('empty implementation baseline'),
+      planned_code_paths: [],
+      current_file_count: 0,
+      all_planned_paths_missing: true,
+      entries: [],
+    }, null, 2) + '\n',
+  );
   await writeFile(
     join(workItemDir, 'candidates', 'project', 'modules', 'CORE', 'requirements.candidate.md'),
     '# Requirements\n',
@@ -257,6 +275,8 @@ User Story: render the board.
 - The board is visible.
 `;
     expect(validateFormalRequirementBodies(incomplete)).toEqual([
+      'REQ-CORE-0001: requirement ID must use canonical REQ-<MODULE_CODE>-<NNN> format',
+      'REQ-CORE-0002: requirement ID must use canonical REQ-<MODULE_CODE>-<NNN> format',
       'REQ-CORE-0002: formal requirement body missing',
     ]);
 
@@ -267,7 +287,108 @@ User Story: render the board.
 User Story: render the board.
 `;
     expect(validateFormalRequirementBodies(missingAcceptance)).toEqual([
+      'REQ-CORE-0001: requirement ID must use canonical REQ-<MODULE_CODE>-<NNN> format',
       'REQ-CORE-0001: acceptance criteria missing from formal requirement body',
     ]);
+  });
+
+  it('captures the real planned implementation and rejects stale greenfield Candidate claims', async () => {
+    const projectRoot = await mkdtemp(join(tmpdir(), 'sf-implementation-baseline-'));
+    roots.push(projectRoot);
+    const workItemDir = join(projectRoot, '.specforge', 'work-items', 'WI-0001');
+    await mkdir(join(workItemDir, 'candidates'), { recursive: true });
+    await mkdir(join(projectRoot, 'src'), { recursive: true });
+    await writeFile(join(projectRoot, 'src', 'main.ts'), 'export const value = 1;\n');
+    await writeFile(
+      join(workItemDir, 'trigger_result.json'),
+      JSON.stringify({
+        impact_scope: { planned_code_paths: ['src/main.ts', 'src/new.ts'] },
+      }),
+    );
+    await writeFile(
+      join(workItemDir, 'impact_analysis.md'),
+      '# Impact\n\n```json\n{"all_files_new":true}\n```\n',
+    );
+
+    const materialized = await materializeImplementationBaseline(projectRoot, 'WI-0001');
+    expect(materialized.baseline.current_file_count).toBe(1);
+    expect(materialized.baseline.entries[0].matched_files[0].path).toBe('src/main.ts');
+    await writeFile(
+      join(workItemDir, 'candidates', 'design.candidate.md'),
+      `implementation_baseline_id: ${materialized.baseline.snapshot_id}\n\n当前业务实现不存在。\n`,
+    );
+    await writeFile(
+      join(workItemDir, 'candidates', 'tasks.md'),
+      `implementation_baseline_id: ${materialized.baseline.snapshot_id}\n\n- **Current Implementation**: none\n`,
+    );
+
+    const invalid = await validateImplementationTruthBeforeSeal({ projectRoot, workItemId: 'WI-0001' });
+    expect(invalid.valid).toBe(false);
+    expect(invalid.errors.join('\n')).toContain('IMPLEMENTATION_BASELINE_CONTRADICTION');
+    expect(invalid.errors.join('\n')).toContain('all_files_new');
+
+    await writeFile(
+      join(workItemDir, 'impact_analysis.md'),
+      '# Impact\n\n```json\n{"all_files_new":false}\n```\n',
+    );
+    await writeFile(
+      join(workItemDir, 'candidates', 'design.candidate.md'),
+      `implementation_baseline_id: ${materialized.baseline.snapshot_id}\n\n现有入口位于 src/main.ts。\n`,
+    );
+    await writeFile(
+      join(workItemDir, 'candidates', 'tasks.md'),
+      `implementation_baseline_id: ${materialized.baseline.snapshot_id}\n\n- **Current Implementation**: src/main.ts 已存在，执行修改。\n`,
+    );
+    expect(
+      await validateImplementationTruthBeforeSeal({ projectRoot, workItemId: 'WI-0001' }),
+    ).toMatchObject({ valid: true, errors: [] });
+
+    await writeFile(join(projectRoot, 'src', 'main.ts'), 'export const value = 2;\n');
+    const stale = await validateImplementationTruthBeforeSeal({ projectRoot, workItemId: 'WI-0001' });
+    expect(stale.valid).toBe(false);
+    expect(stale.errors.join('\n')).toContain('IMPLEMENTATION_BASELINE_STALE');
+  });
+
+  it('requires every Candidate REQ reference to resolve exactly to a canonical definition', async () => {
+    const projectRoot = await mkdtemp(join(tmpdir(), 'sf-requirement-reference-'));
+    roots.push(projectRoot);
+    const workItemDir = join(projectRoot, '.specforge', 'work-items', 'WI-0001');
+    const candidatesDir = join(workItemDir, 'candidates');
+    await mkdir(candidatesDir, { recursive: true });
+    const requirementsPath = join(candidatesDir, 'requirements.candidate.md');
+    const requirementsContent = [
+      '# Requirements',
+      '## REQ-CORE-001 Board',
+      'User Story: board.',
+      '### Acceptance Criteria',
+      '- board visible',
+      '',
+    ].join('\n');
+    await writeFile(requirementsPath, requirementsContent);
+    await writeFile(
+      join(candidatesDir, 'design.candidate.md'),
+      '# Design\n\nRefs: REQ-CORE-001, REQ-CORE-002, REQ-CORE-0001\n',
+    );
+
+    const invalid = await validateCandidateRequirementReferences({
+      workItemDir,
+      requirementArtifacts: [{ path: requirementsPath, content: requirementsContent }],
+    });
+    expect(invalid.valid).toBe(false);
+    expect(invalid.errors.join('\n')).toContain('REQUIREMENT_REFERENCE_UNRESOLVED');
+    expect(invalid.errors.join('\n')).toContain('REQ-CORE-002');
+    expect(invalid.errors.join('\n')).toContain('REQUIREMENT_REFERENCE_NONCANONICAL');
+    expect(invalid.errors.join('\n')).toContain('REQ-CORE-0001');
+
+    await writeFile(
+      join(candidatesDir, 'design.candidate.md'),
+      '# Design\n\nRefs: REQ-CORE-001\n',
+    );
+    expect(
+      await validateCandidateRequirementReferences({
+        workItemDir,
+        requirementArtifacts: [{ path: requirementsPath, content: requirementsContent }],
+      }),
+    ).toMatchObject({ valid: true, errors: [], declared_requirement_ids: ['REQ-CORE-001'] });
   });
 });

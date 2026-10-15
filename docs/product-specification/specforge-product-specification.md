@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.9
+> Product release version: 1.0.10
 >
 > Product version epoch: 1
 >
@@ -504,6 +504,10 @@ Candidate
 4. User Decision Recorder 必须验证当前 seal 集与最近一次适用且通过的 Candidate Gate Attempt 快照一致，并从 Candidate Manifest 读取 `base_spec_version`；调用者不得提供或默认产品规格基线。Merge Runner 必须再次执行相同绑定校验，并验证 `base_spec_version` 与当前 Project Spec Version、`project_spec_precondition_sha256` 与当前 `spec_manifest.json` 原始字节哈希一致。
 5. Requirements Gate 必须把 Requirements Candidate 中出现的正式 `REQ-*` 标识与正式需求章节一一对应；每个标识必须有唯一正文、可验证验收标准和非空语义内容。仅在摘要表、索引、Trace、Design 或 Tasks 中出现不能建立需求。
 6. seal 后发现以上任一事实错误时，必须保留失败证据并经受控恢复回到 `candidate_preparing`，重新生成本代 Candidate、Gate 与显式批准；不得修改 sealed 文件、复用旧 Gate/审批，或运行调用者已知必败的 Gate 只为制造恢复状态。
+7. Runtime 每次进入 `candidate_preparing` 时，必须读取 `trigger_result.impact_scope.planned_code_paths` 并生成 Work Item 根的 `implementation_baseline.json`。该文件是 Runtime-owned 当前实现快照，至少记录规范化 scope、每个匹配文件的相对路径、大小、SHA-256、总文件数与稳定 `snapshot_id`；Agent 不得写入或替代它。
+8. Architecture、Design 与 Tasks Candidate 必须绑定同一 `implementation_baseline_id`。在 `candidate_preparing → candidate_prepared` 前，Runtime 必须复算基线并拒绝 snapshot 漂移；只要 planned scope 中有真实文件，Candidate basis 或专业 Candidate 中的 `all_files_new=true`、greenfield、新建文件、实现不存在等相反声明都必须失败关闭。修复必须更新真实 basis 与 Candidate，不得删除业务文件来迎合旧分析。
+9. `implementation_baseline.json` 属于固定 Candidate seal 集，Gate Attempt、Decision 与 Merge 必须像其他 seal 输入一样验证其存在性与字节身份。基线不能替代 Agent 对真实代码、入口、调用链、行为与测试的阅读，只提供可复核的最低事实边界。
+10. 当前代 Requirement 定义只允许 `REQ-<MODULE_CODE>-<NNN>` 三位序号；`REQ-N` 仅用于历史只读兼容。Requirements Gate 必须拒绝非规范位宽；Workflow Gate 必须枚举 Design、Tasks、Trace 和 Delta 中的每个规范形态 REQ token，并要求逐字解析到本代权威 Requirements 的唯一正文。不同位宽、短号、范围说明或“canonical 映射”不得视为相同 ID。
 
 ## 6.5 已合并无效 Project Spec 的补偿恢复
 

@@ -297,8 +297,8 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
   await writeText(path.join(dir, 'intake.md'), '# Intake\nAdd a governed feature.\n');
   await writeText(path.join(dir, 'change_classification.md'), '# Change Classification\nrequirement_change_path\n');
   await writeText(path.join(dir, 'impact_analysis.md'), '# Impact Analysis\nProject spec changes required.\n');
-  await writeText(path.join(dir, 'tasks.md'), '# Tasks\n- [x] Implement governed feature\n\nallowed_write_files:\n- src/index.ts\n');
-  await writeText(path.join(dir, 'trace_delta.md'), '# Trace Delta\nREQ-001 -> TASK-001\n');
+  await writeText(path.join(dir, 'tasks.md'), '# Tasks\n- [x] Implement governed feature (REQ-CORE-001)\n\nallowed_write_files:\n- src/index.ts\n');
+  await writeText(path.join(dir, 'trace_delta.md'), '# Trace Delta\nREQ-CORE-001 -> TASK-001\n');
   await writeText(path.join(dir, 'verification_report.md'), '# Verification Report\nEvidence reviewed and pass.\n');
   await writeText(path.join(dir, 'changed_files_audit.md'), `# Changed Files Audit\n\nContract: changed-files-audit/v1\nWork Item: ${workItemId}\n## Result: PASS\n- Total files: 0\n- In scope: 0\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n`);
   await writeText(path.join(dir, 'gate_summary.md'), makeGateSummary(workItemId, gateSummaryStatus));
@@ -312,7 +312,7 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
       '',
       '作为项目维护者，我希望受治理的功能变更经过完整审批，以便发布结果可追溯。',
       '',
-      '### REQ-001 Governed feature approval',
+      '### REQ-CORE-001 Governed feature approval',
       '',
       '#### Acceptance Criteria',
       '',
@@ -326,11 +326,11 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
   );
   await writeText(
     path.join(dir, 'candidates', 'tasks.md'),
-    '# Tasks\n\n- [x] TASK-001: Implement the governed feature.\n'
+    '# Tasks\n\n- [x] TASK-001: Implement the governed feature.\n  - Refs: REQ-CORE-001\n'
   );
   await writeText(
     path.join(dir, 'candidates', 'trace_delta.md'),
-    '# Trace Delta\n\nOUT-1 -> REQ-001 -> DD-1 -> TASK-001 -> EV-1\n'
+    '# Trace Delta\n\nOUT-1 -> REQ-CORE-001 -> DD-1 -> TASK-001 -> EV-1\n'
   );
   await writeJson(path.join(dir, 'candidate_manifest.json'), {
     schema_version: '1.0',
@@ -364,7 +364,7 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
         hash: 'sha256:fixture',
         created_at: '2026-09-04T00:00:00.000Z',
         status: 'passed',
-        supports: ['OUT-1', 'REQ-001', 'DD-1', 'TASK-001'],
+        supports: ['OUT-1', 'REQ-CORE-001', 'DD-1', 'TASK-001'],
       },
     ],
   });
@@ -482,7 +482,13 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
     });
 
     expect(result.success).toBe(true);
-    expect(result.summary_status, JSON.stringify(result, null, 2)).toBe('passed');
+    const workflowGate = await readJsonIfExists(
+      path.join(wiDir(workItemId), 'gates', 'workflow_specific_gate.json'),
+    );
+    expect(
+      result.summary_status,
+      JSON.stringify({ result, workflow_gate: workflowGate }, null, 2),
+    ).toBe('passed');
     expect(result.state_auto_advance?.advanced).toBe(true);
     expect(result.state_auto_advance?.from_state).toBe('gates_running');
     expect(result.state_auto_advance?.to_state).toBe('approval_required');
@@ -631,7 +637,7 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
           { command: 'p0-governance-regression', status: 'pass', output_summary: 'passed' },
         ],
         acceptance_criteria: [
-          { req_id: 'REQ-001', name: 'governed lifecycle', status: 'pass', evidence: 'EV-1' },
+          { req_id: 'REQ-CORE-001', name: 'governed lifecycle', status: 'pass', evidence: 'EV-1' },
         ],
         e2e_tests: [{ name: 'P0 lifecycle', status: 'pass', evidence: 'EV-1' }],
         side_effects: 'none',

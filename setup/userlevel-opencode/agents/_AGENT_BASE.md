@@ -302,6 +302,10 @@ tasks.md 引用了 DD-AUTH-003 → design.md 里必须有 `### DD-AUTH-003`。
 
 **判定**：所有 `refs` 中的规范 `REQ-<MODULE_CODE>-<NNN>` / `DD-<MODULE_CODE>-<NNN>` 必须在对应文档中存在；`REQ-N` / `DD-N` 只允许历史读取兼容。
 
+当前代 Candidate 禁止创建或引用 `REQ-<MODULE_CODE>-<NNNN>` 等非三位序号。需求正文、Design、Task 与 Trace 中出现的每一个 REQ 引用都必须逐字解析到本代权威 Requirements 的唯一正文；不得用“编号映射”“短号”“canonical 直接使用”等说明把不相同的 ID 视为同一个需求。
+
+进入 `candidate_preparing` 时，Runtime 会在 Work Item 根生成只读 `implementation_baseline.json`。任何参与 Candidate 的 Agent 必须先读取其 `snapshot_id`、`planned_code_paths` 与逐文件存在性/哈希；不得依据旧 `impact_analysis`、历史 Candidate、记忆或文件标题声称代码不存在。Architecture、Design 与 Tasks Candidate 必须各自写入一行 `implementation_baseline_id: <snapshot_id>`；若真实文件已存在，必须按修改现有实现规划，不得写“绿地”“全部新建”“Current Implementation: 无/none”或等价表述。
+
 ## D6：同一概念禁止多名
 
 同一个业务概念在同一文档中只用一个名字。

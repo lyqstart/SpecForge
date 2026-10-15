@@ -169,6 +169,8 @@ analysis_scope: system_governance
 
 必须先读取能够证明当前实际架构的代码、目录、配置、项目级规格、运行证据和既有治理产物。README、旧报告或记忆只能作为线索，不能替代当前事实。
 
+还必须读取当前 Work Item 根的 Runtime-owned `implementation_baseline.json`，逐项核对 `planned_code_paths` 的存在性、哈希和实际内容。在 Architecture 与 Design Candidate 顶部写入 `implementation_baseline_id: <snapshot_id>`。只要基线记录了现有文件，就不得写“源代码不存在”“业务实现不存在”“绿地新建”或等价结论；必须以真实入口、组件、行为和测试为基础描述本次差量。
+
 必须按以下顺序分析：
 
 ```text

@@ -129,6 +129,16 @@ describe('Project Spec governed module admission', () => {
     });
     await writeFile(join(workItemDir, 'change_classification.md'), '# Classification\n', 'utf8');
     await writeFile(join(workItemDir, 'impact_analysis.md'), '# Impact\n', 'utf8');
+    await writeJson(join(workItemDir, 'implementation_baseline.json'), {
+      schema_version: '1.0',
+      work_item_id: workItemId,
+      captured_at: '2026-10-15T00:00:00.000Z',
+      snapshot_id: 'sha256:' + createHash('sha256').update('empty implementation baseline').digest('hex'),
+      planned_code_paths: [],
+      current_file_count: 0,
+      all_planned_paths_missing: true,
+      entries: [],
+    });
 
     const gateSummary = 'Overall Status: passed\n';
     await writeFile(join(workItemDir, 'gate_summary.md'), gateSummary, 'utf8');

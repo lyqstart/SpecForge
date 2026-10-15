@@ -31557,3 +31557,18 @@ Candidate seal、Gate Attempt、Gate Summary、User Decision 与 Merge 必须共
 - REUSED_EXP=EXP-002,EXP-007,EXP-021,EXP-032,EXP-044,EXP-087
 - **闭环证据**：在不改变本地候选范围的前提下重试成功，`origin/main` 仍精确为 `006021d5c5e7f9357e19235aa294dfeb01bd59ca`，具备提交并推送部署收口的前置条件。
 - ERR1823_STATUS=CLOSED_BY_REMOTE_MAIN_RETRY_AND_EXPECTED_BASE_CONFIRMATION
+
+### ERR-1824：完整 Candidate seal 仍允许虚假绿地事实与分裂的 REQ 身份通过
+
+- **发生时间**：2026-10-15
+- **分类**：`CANDIDATE_CONTENT_TRUTH_GAP / REQUIREMENT_IDENTITY_SPLIT / FALSE_GATE_PASS`。
+- **事实证据**：t3 `WI-0001` 的 `attempt-0010` 已完整封存 Candidate、classification、impact、trigger 与当前 Project Spec，并有 10/10 Gate 通过；但仓库中 `index.html`、`css/style.css`、`js/*.js` 与测试文件真实存在，Candidate 仍声明 `all_files_new=true`、绿地新建、`Current Implementation: 无`。正式 Requirements 标题使用 `REQ-CORE-0001..0012`，Tasks/Trace 则使用 `REQ-CORE-001..012` 并声称 canonical 直接一致。Requirements Agent 合同与集中 ID 规则实际只允许三位序号，但 Requirements Gate 的宽松 token 正则接受四位定义，跨产物 Gate 又没有逐字解析每个 REQ 引用，因此错误 Candidate 到达 `approval_required`。
+- **影响与根因**：用户若批准，会把已有实现当成待新建实现，覆盖真实差量并继续传播已明确排除的旧功能；需求、设计、任务和追溯也没有共同引用同一需求身份。根因分别位于 Runtime 缺少当前实现一手快照、Agent 未绑定快照、seal 只验证字节而不验证事实、Requirements ID 校验未消费集中规则、跨产物引用未做精确集合解析；不属于 t3 Executor 或用户操作错误。
+- **纠正与防复发**：Runtime 在进入 `candidate_preparing` 时生成 planned-code implementation baseline，Architecture/Design/Tasks 绑定 snapshot，seal 复算并拒绝漂移和事实矛盾，Gate Attempt 固定封存 baseline；Requirements Gate 使用集中三位 ID 规则，Workflow Gate 对 Design/Tasks/Trace 全部 REQ token 做 exact-set resolution。更新 SPS、Authority Registry、治理设计、Agent/Workflow、负向测试与安装部署消费者后，才从同一 t3 WI 的合法恢复点生成新代 Candidate。
+- REUSED_EXP=EXP-001,EXP-005,EXP-006,EXP-017,EXP-021,EXP-029,EXP-044,EXP-047,EXP-049,EXP-146,EXP-157,EXP-186,EXP-193,EXP-265,EXP-270,EXP-278,EXP-279
+- **产品修复验证**：Runtime 已在 `candidate_preparing` 入口写入并在 seal 前复验 `implementation_baseline.json`；Candidate 固定封存该基线并拒绝 missing/stale binding 与 existing-file/greenfield/new-file 矛盾；Requirements Gate 只接受集中定义的三位 canonical ID；Workflow Gate 对 Design/Tasks/Trace 的每个 REQ token 做 exact-set resolution。相关产品权威、Agent/Workflow、活动规则与负向回归已同步。focused suite、daemon-core 209/1860、root current 49/725、重建发布清单后的 scope-gate 30/134、strict build、三组 release typecheck、workflow sync 与正式 release precheck 均通过。
+- ERR1824_STATUS=PRODUCT_FIX_VERIFIED_PENDING_1_0_10_DEPLOYMENT_AND_T3_CANDIDATE_REGENERATION
+
+## EXP-280：Candidate 必须绑定真实实现快照并使用可精确解析的统一需求身份
+
+Candidate 字节完整性不能替代内容事实完整性。进入候选编制时必须由 Runtime 从机器可读 Impact Scope 生成实际文件存在性与哈希快照，专业 Candidate 绑定同一 snapshot，seal 复算并拒绝漂移或与现有文件相反的 greenfield/new-file/implementation-missing 声明；Agent 的旧影响分析和聊天自述不能覆盖一手文件事实。当前代 REQ 定义必须使用统一三位 canonical ID，所有 Design/Tasks/Trace 引用必须逐字解析到唯一需求正文；不同位宽、短号映射和说明性别名不得建立同一性。
