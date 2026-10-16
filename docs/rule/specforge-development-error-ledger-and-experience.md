@@ -31688,7 +31688,8 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - **影响与处置**：用户不能通过正式 CLI 使用跨平台重启入口。应在正式命令树实现受控停机、确认退出、启动及健康核验，并补测试；不得把 systemd 专用实现冒充 Windows 入口。
 - REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-044,EXP-060,EXP-087,EXP-117。
 - **代码验证**：正式 CLI 注册 restart；旧 PID 退出、新握手 PID 与启动 PID 及 health 均为成功条件，旧进程未退出则不启动替代。定向 20 项 daemon 命令测试、完整 CLI 788 项、正式 workspace build 均通过；真实已安装进程验证待发布阶段。
-- ERR1835_STATUS=CODE_FIXED_PENDING_INSTALLED_LIFECYCLE_PROOF
+- **发布验证**：提交 `96648e830c6d646feb6dc55e11e522ca9c2b7335` 的 1.0.13 release precheck 通过，安装器 verify 111/111。已安装 CLI 执行真实 restart 返回旧 PID 34804 → 新 PID 23040；随后独立 status 为 1.0.13/ok，主机进程路径是正式 `sf-user/bin/specforged.exe`，旧 PID 已退出。
+- ERR1835_STATUS=CLOSED_BY_INSTALLED_1_0_13_RESTART_AND_HEALTH_PROOF
 
 ### ERR-1836：企业模式项目目录的 32 位哈希发生真实路径碰撞
 
@@ -31698,7 +31699,8 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - **影响与处置**：两个项目可共享 `events.jsonl` 和状态目录，违反 SPS 每 Project Context 独立权威状态。改用平台规范化路径的稳定强摘要，增加碰撞回归；旧短键目录不能无证据地当作新项目状态迁移。
 - REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-044,EXP-060,EXP-087,EXP-268。
 - **代码验证**：目录键改为平台规范化绝对路径的 SHA-256，旧短键目录存在时拒绝无归属自动迁移；碰撞路径分离与旧数据 fail-closed 测试通过，daemon-core 1872 项正式顺序回归通过。
-- ERR1836_STATUS=CODE_FIXED_PENDING_RELEASE_PRECHECK
+- **发布验证**：相同提交绑定的 release precheck 通过，官方安装器 1.0.13 升级和 111/111 verify 通过；未声称在真实 POSIX/企业项目上迁移旧短键数据。
+- ERR1836_STATUS=CLOSED_BY_RELEASED_COLLISION_REGRESSION_WITH_LEGACY_FAIL_CLOSED
 
 ### ERR-1837：Candidate Manifest 物化在 POSIX 也折叠路径大小写
 
@@ -31708,7 +31710,8 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - **影响与处置**：POSIX 中 `CORE` 与 `core` 两个不同文件可能被合并。复用平台路径身份语义，Windows 仍折叠、POSIX 保留，并覆盖 Manifest 物化回归。
 - REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-044,EXP-060,EXP-087,EXP-268。
 - **代码验证**：物化流程复用 resolved-path identity，POSIX 保留大小写、Windows 折叠；平台回归与 daemon-core 1872 项正式顺序回归通过。
-- ERR1837_STATUS=CODE_FIXED_PENDING_RELEASE_PRECHECK
+- **发布验证**：相同提交绑定的 release precheck 通过，正式顺序 workspace regression 中 daemon-core 1872/1872 通过；跨平台身份断言用显式目标平台测试缝验证，未声称本机执行了 Linux 端到端试点。
+- ERR1837_STATUS=CLOSED_BY_CROSS_PLATFORM_CONTRACT_AND_RELEASE_PRECHECK
 
 ### ERR-1838：正式 CLI 暴露当前 Daemon 不支持的路由命令
 
@@ -31718,7 +31721,8 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - **影响与处置**：帮助及正式命令入口误导用户。当前规格未定义这些路由的完整合同，先从当前正式入口与帮助撤下，保留历史源码；如未来产品决策纳入，再以完整 Daemon 合同与 E2E 恢复。
 - REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-044,EXP-060,EXP-087,EXP-117。
 - **代码验证**：正式解析器和帮助撤下无路由命令组，仍保留历史源码；实际编译 CLI 对 `workflow list` 返回严格未知命令，help 不再列出旧组，完整 CLI 788 项回归通过。
-- ERR1838_STATUS=CODE_FIXED_PENDING_RELEASE_PRECHECK
+- **发布验证**：已安装 1.0.13 CLI 与正式 release 二进制 SHA-256 相等，release precheck 与 installer verify 111/111 通过；编译 CLI 帮助仅列出当前正式命令，旧 workflow 命令被严格解析器拒绝。
+- ERR1838_STATUS=CLOSED_BY_RELEASED_CLI_REGISTRY_AND_HELP_CONTRACT
 
 ### ERR-1839：定向验证首次被 Bun 当前目录载体错误阻断
 
@@ -31777,4 +31781,5 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - **一手证据**：官方 `build:release-runtimes` 已生成 1.0.13 两份二进制；随后 `bun run build:release-manifest` 因未提供 `--candidate-id` 返回 `RELEASE_CANDIDATE_ID_REQUIRED`，未产生正式发布清单。脚本源码明确要求该参数，precheck 同样绑定 Candidate ID。
 - **影响与处置**：错误是命令缺少发布身份，不是清单内容验证失败。先完成代码与治理差异审核、精确提交形成不可变 Git 基线，再以该提交绑定的 Candidate ID 生成清单并运行正式 precheck；不得用临时字符串冒充不可变身份。
 - REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-060,EXP-087,EXP-193。
-- ERR1844_STATUS=OPEN_PENDING_COMMIT_BOUND_CANDIDATE
+- **复核结果**：精确提交 `96648e830c6d646feb6dc55e11e522ca9c2b7335` 后，以 `commit-96648e830c6d646feb6dc55e11e522ca9c2b7335` 生成完整 release manifest；正式 precheck 退出 0、authority/inventory/evidence errors 全空。首次缺参失败未被掩盖。
+- ERR1844_STATUS=CLOSED_BY_COMMIT_BOUND_MANIFEST_AND_PRECHECK
