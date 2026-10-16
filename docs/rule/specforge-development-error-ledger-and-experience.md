@@ -31793,4 +31793,13 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 调试记录：首次严格构建存在删除模拟逻辑后的未用导入；旧测试断言推测能力或占位成功、部分夹具缺权威 owner；二轮发现客户端遗漏 reason，已修正。完整回归还发现安装清单仍绑定旧模板字节，须重新构建并以实际提交生成；Permission 边界测试绑定旧局部实现字面，随共同 owner 调用链调整。不得忽略这些失败或宣称是全部既有问题。
 - 工具事件：一次补丁锚点失配未写入；Python 启动器输出路径诊断但退出 0，读取目标确认修改已生效；后续结构改写使用 Node。只读输出截断不算全文证据。
 - REUSED_EXP=EXP-004,EXP-010,EXP-015,EXP-016,EXP-017,EXP-025,EXP-031,EXP-032,EXP-282。
-- ERR1845_STATUS=SOURCE_REPAIR_UNDER_FINAL_VALIDATION
+- ERR1845_STATUS=CLOSED_BY_6806_TESTS_AND_VERIFIED_1_0_14_DAEMON_DEPLOYMENT;OPENCODE_HOST_ACCEPTANCE_NOT_CLAIMED
+
+### ERR-1846：Windows 运行中的后台二进制阻止升级与回滚
+
+- 发生时间：2026-10-16；同六项修复 RUN_ID。
+- 原始证据：specforge-six-user-upgrade.log 退出 1；目标 specforged.exe 正由旧 PID 23040 运行，rename 返回 EPERM，回滚再次遇到同一文件占用。
+- 责任归属：外部部署执行顺序。不能把在隔离目录的安装测试当成运行中 Windows 文件可替换的证明。
+- 恢复：正式 CLI 认证停止，确认旧 PID 退出；正式安装器事务回滚后退出 12，检查 journal=rolled_back 并校验旧安装 111/111，再升级成功（退出 0、4 更新/107 跳过）；启动新 PID 5148，健康检查 1.0.14/ok、安装 111/111，与 release 哈希一致。
+- 类防护：EXP-283；现有安装器事务恢复/回滚回归和本次真实 Windows 失败—恢复—重试证据共同验证；禁止手动删除日志或强行覆盖占用文件。
+- ERR1846_STATUS=CLOSED_BY_OFFICIAL_STOP_ROLLBACK_RETRY_START_AND_IDENTITY_CHECK
