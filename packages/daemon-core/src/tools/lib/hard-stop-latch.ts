@@ -177,13 +177,16 @@ export function checkHardStop(projectRoot: string, workItemId: string): HardStop
   return { blocked: true, record: wiRecord };
 }
 
+export function isHardStopRecoveryTool(toolName: string): boolean {
+  return ALLOWED_TOOLS_WHEN_BLOCKED.has(normalizeToolName(toolName));
+}
+
 export function guardHardStop(
   projectRoot: string,
   workItemId: string,
   toolName: string
 ): HardStopGuardResult {
-  const normalizedTool = normalizeToolName(toolName);
-  if (ALLOWED_TOOLS_WHEN_BLOCKED.has(normalizedTool) || ALLOWED_TOOLS_WHEN_BLOCKED.has(toolName)) {
+  if (isHardStopRecoveryTool(toolName)) {
     return { allowed: true };
   }
 

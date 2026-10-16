@@ -64,7 +64,8 @@ describe('current SpecForge Thin Plugin', () => {
     expect(setup.messages.some((message) => message.includes('reconnecting'))).toBe(true);
     expect(setup.messages.some((message) => message.includes('connection recovered'))).toBe(true);
     expect(hooks).not.toHaveProperty('tool');
-    expect(hooks).not.toHaveProperty('tool.execute.before');
+    expect(hooks['tool.execute.before']).toBeTypeOf('function');
+    await expect(hooks['tool.execute.before']({ tool: 'write' }, { args: {} })).rejects.toThrow('WRITE_GUARD_UNAVAILABLE');
     expect(hooks).not.toHaveProperty('tool.execute.after');
   });
 

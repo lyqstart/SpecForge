@@ -1,0 +1,48 @@
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { tmpdir } from 'node:os';
+import { ProjectManager } from '../../src/project/ProjectManager';
+import { EventBus } from '../../src/event-bus/EventBus';
+import { PersonalPathResolver, EnterprisePathResolver } from '../../src/daemon/path-resolver';
+import { StateManager } from '../../src/state/StateManager';
+import { readAuthoritativeWorkItems } from '../../src/tools/lib/authoritative-work-items';
+const roots: string[] = [];
+afterEach(() => { vi.unstubAllEnvs(); roots.splice(0).forEach(root => fs.rmSync(root, { recursive: true, force: true })); });
+describe('persisted configuration activation boundary', () => {
+  it.each(['personal', 'enterprise'])('rebuilds %s state from actual events, ignoring a stale checkpoint', async mode => {
+    const root = fs.mkdtempSync(path.join(tmpdir(), 'sf-state-authority-')); roots.push(root);
+    vi.stubEnv('OPENCODE_CONFIG_DIR', path.join(root, 'user'));
+    const resolver = mode === 'personal' ? new PersonalPathResolver() : new EnterprisePathResolver();
+    const manager = new StateManager(resolver, root);
+    await manager.initialize();
+    await manager.transition('WI-0001', '', 'created');
+    const checkpoint = JSON.parse(fs.readFileSync(resolver.resolveStatePath(root), 'utf8'));
+    checkpoint.workItems[0].current_state = 'implementation_running';
+    fs.writeFileSync(resolver.resolveStatePath(root), JSON.stringify(checkpoint));
+    const result = await readAuthoritativeWorkItems({ projectManager: { getProjectStateManager: async () => manager } }, root);
+    expect(result[0].current_state).toBe('created');
+    expect(fs.readFileSync(resolver.resolveEventsPath(root), 'utf8')).not.toContain('implementation_running');
+  });
+  it('rejects changes during active work, including after daemon recreation; accepts after closure', async () => {
+    const root = fs.mkdtempSync(path.join(tmpdir(), 'sf-config-boundary-')); roots.push(root);
+    vi.stubEnv('OPENCODE_CONFIG_DIR', path.join(root, 'user')); vi.stubEnv('SPECFORGE_CONFIG_OVERRIDES', '');
+    const file = path.join(root, '.specforge/config/project.json'); fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, JSON.stringify({ schema_version: '1.0', timeoutMs: 1234 }));
+    const create = () => new ProjectManager(new EventBus(), new PersonalPathResolver(), undefined as any);
+    const manager = create();
+    expect((await manager.getProjectConfiguration(root)).merged.timeoutMs).toBe(1234);
+    const restarted = create();
+    const state = { rebuildState: vi.fn(async () => {}), listWorkItems: () => [{ current_state: 'implementation_running' }] };
+    vi.spyOn(restarted, 'getProjectStateManager').mockResolvedValue(state as any);
+    fs.writeFileSync(file, JSON.stringify({ schema_version: '1.0', timeoutMs: 9999 }));
+    await expect(restarted.getProjectConfiguration(root)).rejects.toThrow('CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK');
+    state.listWorkItems = () => [{ current_state: 'closed' }];
+    expect((await restarted.getProjectConfiguration(root)).merged.timeoutMs).toBe(9999);
+    const record = fs.readFileSync(path.join(root, '.specforge/runtime/configuration-activation.json'), 'utf8');
+    expect(JSON.parse(record).sha256).toMatch(/^[a-f0-9]{64}$/);
+    expect(record).not.toContain('timeoutMs');
+    fs.writeFileSync(path.join(root, '.specforge/runtime/configuration-activation.json'), 'null');
+    await expect(restarted.getProjectConfiguration(root)).rejects.toThrow('CONFIGURATION_ACTIVATION_CORRUPT');
+  });
+});

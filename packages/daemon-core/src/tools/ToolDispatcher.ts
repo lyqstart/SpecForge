@@ -10,7 +10,8 @@
 import { resolveToolPermission, extractActor, extractEnableRBAC } from './lib/tool-permissions';
 import { recordDaemonObservation } from '../observability/observability-recorder';
 import { createSfTraceId, getTraceIdFromContext } from '../observability/trace';
-import { guardHardStop } from './lib/hard-stop-latch';
+import { guardHardStop, isHardStopRecoveryTool } from './lib/hard-stop-latch';
+import { readAuthoritativeWorkItems } from './lib/authoritative-work-items';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
@@ -31,6 +32,7 @@ export interface ToolInvokeRequest {
 }
 
 export interface ToolDeps {
+  acceptedConfiguration?: import('@specforge/configuration').MergedConfig;
   stateManager: any;
   workflowEngine: any;
   projectManager: any;
@@ -142,21 +144,20 @@ const TERMINAL_WORK_ITEM_STATES = new Set(['closed', 'rejected', 'superseded']);
 interface HardStopContext {
   resolvedWorkItemId?: string;
   activeWorkItemIds: string[];
+  unavailable?: boolean;
 }
 
-function resolveHardStopContext(
+async function resolveHardStopContext(
   projectRoot: string,
-  explicitWorkItemId: string | undefined
-): HardStopContext {
+  explicitWorkItemId: string | undefined,
+  deps: ToolDeps
+): Promise<HardStopContext> {
   if (explicitWorkItemId) {
     return { resolvedWorkItemId: explicitWorkItemId, activeWorkItemIds: [] };
   }
 
   try {
-    const runtimeState = JSON.parse(
-      fs.readFileSync(path.join(projectRoot, SPEC_DIR_NAME, 'runtime', 'state.json'), 'utf8')
-    );
-    const activeWorkItemIds = (Array.isArray(runtimeState?.workItems) ? runtimeState.workItems : [])
+    const activeWorkItemIds = (await readAuthoritativeWorkItems(deps, projectRoot))
       .filter((item: any) => typeof item?.work_item_id === 'string')
       .filter(
         (item: any) =>
@@ -169,7 +170,7 @@ function resolveHardStopContext(
       activeWorkItemIds,
     };
   } catch {
-    return { activeWorkItemIds: [] };
+    return { activeWorkItemIds: [], unavailable: true };
   }
 }
 
@@ -283,7 +284,12 @@ export class ToolDispatcher {
 
     const projectRoot = resolveProjectRoot(ctx);
 
-    const hardStopContext = resolveHardStopContext(projectRoot, work_item_id);
+    let acceptedConfiguration = this.deps.acceptedConfiguration;
+    if (this.deps.projectManager?.getProjectConfiguration) {
+      try { acceptedConfiguration = await this.deps.projectManager.getProjectConfiguration(projectRoot); }
+      catch (error) { return { success: false, error: error instanceof Error ? error.message : 'CONFIGURATION_ACCEPTANCE_FAILED' }; }
+    }
+    const hardStopContext = await resolveHardStopContext(projectRoot, work_item_id, this.deps);
 
     // Project-scoped HardStop is independent of WI resolution and must be
     // enforced even when no active WI exists or several WIs are active.
@@ -314,6 +320,9 @@ export class ToolDispatcher {
     // A work-item-scoped HardStop must not be bypassed merely because several
     // active WIs make implicit context resolution ambiguous. The caller can
     // still operate on an unrelated WI by passing that WI explicitly.
+    if (hardStopContext.unavailable && !isHardStopRecoveryTool(req.tool)) {
+      return { success: false, denied: true, error: 'AUTHORITATIVE_STATE_UNAVAILABLE' };
+    }
     if (!work_item_id && hardStopContext.activeWorkItemIds.length > 1) {
       const blockedWorkItemIds = hardStopContext.activeWorkItemIds.filter(
         activeWorkItemId => !guardHardStop(projectRoot, activeWorkItemId, req.tool).allowed
@@ -372,7 +381,7 @@ export class ToolDispatcher {
     }
 
     try {
-      const result = await handler(req.args, { ...(ctx ?? {}), trace_id }, this.deps);
+      const result = await handler(req.args, { ...(ctx ?? {}), trace_id }, { ...this.deps, acceptedConfiguration });
       recordDaemonObservation({
         context: ctx,
         category: 'dispatcher',

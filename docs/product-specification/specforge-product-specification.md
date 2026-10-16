@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.13
+> Product release version: 1.0.14
 >
 > Product version epoch: 1
 >
@@ -412,6 +412,8 @@ builtin
 
 配置 reload 不得使已经运行的 Work Item 在中途随机切换治理规则。Runtime 必须对活动 Work Item 使用稳定 configuration snapshot 或等价 activation boundary。
 
+Daemon 的 ProjectManager 负责配置 acceptance：首次接入建立当前有效配置的激活边界，之后在项目 Runtime 目录保存 `configuration-activation.json`（schema `1.0`，仅配置内容 SHA-256，不保存凭据）。活动 Work Item 存在时，配置变化必须拒绝生效，恢复已接受的配置后可继续；Daemon 重启不得绕过该检查。没有活动 Work Item 时才可接受新配置。该首次接入记录不证明历史执行曾使用这份配置。CLI 服务设置也必须读取用户层；显式 CLI 参数优先。受信运行覆盖使用 `SPECFORGE_CONFIG_OVERRIDES` JSON 对象；缺失可选用户配置与配置损坏必须区分。
+
 ---
 
 # 6. Work Item 与治理生命周期
@@ -585,6 +587,8 @@ Daemon 启动成功后在：
 
 当前本机通信采用 loopback HTTP，事件流使用 SSE；客户端必须通过受控 authentication 访问。
 
+HTTP 成功必须代表对应 owner 已完成真实操作：状态读取进入项目 StateManager，状态推进进入受控 Dispatcher，会话列表来自 SessionRegistry。缺失 owner、拒绝的状态推进及未实现的旧 event-query/CAS/escaped-write 路由不得返回成功或伪造事件 ID；旧路由明确返回 unavailable/unsupported。此要求不新增公开 CAS 或查询产品能力。
+
 如果 Daemon 不可用：
 
 - Thin Plugin 必须报告连接失败。
@@ -632,6 +636,7 @@ Write Guard 必须覆盖真实写入口，并保证：
 - 未授权文件拒绝写入。
 - 治理真相源不能由普通 executor 直接写。
 - shell/safe-bash 等替代路径不能绕过 Write Guard。
+- Thin Plugin 必须在 OpenCode `tool.execute.before` 等待 Daemon 裁决；无法取得明确 allow 必须拒绝执行。原生 edit/write 的路径、操作及活动任务状态由 Daemon 校验，调用者不得自报受控 owner 角色。原生任意 shell、无法完整识别的 patch 和未知写工具必须转到受控工具，不能凭声明目标文件或命令文本猜测放行。
 - changed_files_audit 必须证明最终变化不超范围。
 
 Write Guard 是统一写入控制机制，不建立与 Permission Engine 并列的第二权限事实源。
@@ -702,6 +707,7 @@ Daemon
 - prompt delivery
 - event subscription/translation
 - capability discovery
+- capability discovery 必须读取 OpenCode 已连接 provider 的实际模型字段；未知模型、服务不可用或响应不完整必须明确失败，不得根据模型名称编造上下文长度、视觉或工具能力。
 - OpenCode compatibility/version isolation
 
 OpenCode-specific type 不得泄漏到 Daemon core contract、Project Spec 或 workflow state。
@@ -805,6 +811,7 @@ Observability 为 Runtime 提供中立事件、日志、诊断和策略 Contract
 - Observability 不建立第二套 authoritative workflow WAL。
 - 日志和诊断可以引用状态事实，但不能通过日志内容反向推进状态。
 - sensitive token/credential 不得写入普通日志。
+- 配置日志只记录安全的结构信息；原始配置值、嵌套对象和可能包含输入片段的解析错误不得直接进入日志。
 - Gate、Permission、HardStop、Tool 和 lifecycle 重要拒绝应有可审计事件。
 
 ---

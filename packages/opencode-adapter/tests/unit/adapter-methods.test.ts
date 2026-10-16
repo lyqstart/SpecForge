@@ -473,107 +473,10 @@ describe('OpenCodeAdapter.subscribeEvents (unit)', () => {
 // ===========================================================================
 
 describe('OpenCodeAdapter.getCapabilities (unit)', () => {
-  let adapter: OpenCodeAdapter;
-
-  beforeEach(() => { adapter = makeAdapter(); });
-
-  it('returns default capabilities for empty model string', async () => {
-    const caps = await adapter.getCapabilities('');
-    expect(caps.streaming).toBe(true);
-    expect(caps.maxContextLength).toBe(128000);
-    expect(caps.tools).toBe(true);
-    expect(caps.vision).toBe(true);
-    expect(caps.functionCalling).toBe(true);
-    expect(caps.outputFormats).toContain('text');
-  });
-
-  it('returns default capabilities for undefined model', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const caps = await adapter.getCapabilities(undefined as any);
-    expect(caps).toBeDefined();
-    expect(caps.streaming).toBe(true);
-  });
-
-  it('returns capabilities for GPT-4 (128k context)', async () => {
-    const caps = await adapter.getCapabilities('gpt-4');
-    expect(caps.maxContextLength).toBe(128000);
-    expect(caps.functionCalling).toBe(true);
-  });
-
-  it('returns capabilities for GPT-3.5 (16k context)', async () => {
-    const caps = await adapter.getCapabilities('gpt-3.5-turbo');
-    expect(caps.maxContextLength).toBe(16385);
-  });
-
-  it('returns capabilities for Claude (200k context, vision)', async () => {
-    const caps = await adapter.getCapabilities('claude-3-5-sonnet');
-    expect(caps.maxContextLength).toBe(200000);
-    expect(caps.vision).toBe(true);
-  });
-
-  it('returns capabilities for Gemini (1M context)', async () => {
-    const caps = await adapter.getCapabilities('gemini-pro');
-    expect(caps.maxContextLength).toBe(1000000);
-  });
-
-  it('always includes text in outputFormats', async () => {
-    const caps = await adapter.getCapabilities('any-model');
-    expect(caps.outputFormats).toContain('text');
-  });
-
-  it('returns all required ModelCapabilities fields', async () => {
-    const caps = await adapter.getCapabilities('test-model');
-    expect(caps).toHaveProperty('streaming');
-    expect(caps).toHaveProperty('maxContextLength');
-    expect(caps).toHaveProperty('tools');
-    expect(caps).toHaveProperty('vision');
-    expect(caps).toHaveProperty('functionCalling');
-    expect(caps).toHaveProperty('outputFormats');
-  });
-
-  it('returns correct types for all fields', async () => {
-    const caps = await adapter.getCapabilities('test-model');
-    expect(typeof caps.streaming).toBe('boolean');
-    expect(typeof caps.maxContextLength).toBe('number');
-    expect(typeof caps.tools).toBe('boolean');
-    expect(typeof caps.vision).toBe('boolean');
-    expect(typeof caps.functionCalling).toBe('boolean');
-    expect(Array.isArray(caps.outputFormats)).toBe(true);
-  });
-
-  it('caches capabilities for the same model', async () => {
-    const caps1 = await adapter.getCapabilities('cached-model');
-    const caps2 = await adapter.getCapabilities('cached-model');
-    expect(caps1).toEqual(caps2);
-  });
-
-  it('clearCapabilitiesCache clears specific model', async () => {
-    await adapter.getCapabilities('model-x');
-    adapter.clearCapabilitiesCache('model-x');
-    // Should still work after clearing
-    const caps = await adapter.getCapabilities('model-x');
-    expect(caps).toBeDefined();
-  });
-
-  it('clearCapabilitiesCache() with no arg clears all', async () => {
-    await adapter.getCapabilities('m1');
-    await adapter.getCapabilities('m2');
-    adapter.clearCapabilitiesCache();
-    const caps = await adapter.getCapabilities('m1');
-    expect(caps).toBeDefined();
-  });
-
-  it('never throws for any input', async () => {
-    await expect(adapter.getCapabilities('')).resolves.toBeDefined();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await expect(adapter.getCapabilities(null as any)).resolves.toBeDefined();
-    await expect(adapter.getCapabilities('a'.repeat(1000))).resolves.toBeDefined();
+  it.each(['', null, 'gpt-4', 'claude-3-5-sonnet', 'gemini-pro'])('requires discovery instead of deriving capabilities from %s', async model => {
+    await expect(makeAdapter().getCapabilities(model as string)).rejects.toThrow('CAPABILITY_DISCOVERY_UNAVAILABLE');
   });
 });
-
-// ===========================================================================
-// checkVersionCompatibility (adapter-level integration)
-// ===========================================================================
 
 describe('OpenCodeAdapter.checkVersionCompatibility (unit)', () => {
   it('returns compatible=true for version in range', () => {

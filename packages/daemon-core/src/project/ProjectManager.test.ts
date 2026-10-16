@@ -111,6 +111,8 @@ describe('ProjectManager', () => {
       createMockStateManager(),
       projectSchemaPrecheck,
     );
+    // Registration unit isolation; acceptance has independent real-filesystem tests.
+    vi.spyOn(manager, 'getProjectConfiguration').mockResolvedValue({} as any);
   });
 
   // -----------------------------------------------------------------------

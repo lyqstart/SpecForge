@@ -376,7 +376,6 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
     expect(postCloseWrite.json?.success).toBe(true);
     expect(postCloseWrite.json?.data?.allowed).toBe(false);
     // After close, WI is no longer "active" — Write Guard blocks with "no active WI" or "closed"
-    const violation = postCloseWrite.json?.data?.violations?.[0] ?? '';
-    expect(violation.includes('closed') || violation.includes('no active WI')).toBe(true);
+    expect(postCloseWrite.json?.data?.reason).toBe('UNAMBIGUOUS_ACTIVE_WORK_ITEM_REQUIRED');
   });
 });

@@ -23,7 +23,7 @@ describe('current repository installer manifest consumption', () => {
     const releaseIdentity = JSON.parse(
       await readFile(join(candidateRoot, 'release', 'release-manifest.json'), 'utf8'),
     ) as { candidateId: string };
-    expect(releaseIdentity.candidateId).toMatch(/^main-[0-9a-f]{8}-working-tree-step[0-9a-z]+$/);
+    expect(releaseIdentity.candidateId).toMatch(/^commit-[0-9a-f]{40}$/);
 
     const release = await loadVerifiedReleaseInstallSet({
       candidateRoot,

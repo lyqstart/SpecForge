@@ -19,10 +19,8 @@ import {
   DEFAULT_ADAPTER_CONFIG,
   SessionStatus,
   OpenCodeEvent,
-  OpenCodeModelCapabilities,
 } from './types';
 
-import type { CapabilityDiscoveryResult } from './translators/CapabilityTranslator';
 import { VersionChecker } from './version/VersionChecker';
 import { EventTranslator } from './translators/EventTranslator';
 import { CapabilityTranslator } from './translators/CapabilityTranslator';
@@ -1017,7 +1015,7 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
    * Get model capabilities
    *
    * Queries the OpenCode model capabilities and translates them to
-   * Daemon ModelCapabilities format. Results are cached for performance.
+   * Daemon ModelCapabilities format. Only a live runtime response is accepted.
    *
    * @param model - Model identifier (e.g., "gpt-4", "claude-3")
    * @returns Promise resolving to ModelCapabilities
@@ -1025,120 +1023,11 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
    * Requirements: 1.1, 3.1
    */
   async getCapabilities(model: string): Promise<ModelCapabilities> {
-    // Validate model parameter
-    if (!model || model.trim().length === 0) {
-      // Return default capabilities for empty/undefined model
-      return this.capabilityTranslator.getDefaultCapabilities();
+    if (!model?.trim() || !this.runtimeClient?.getModelCapabilities) {
+      throw new Error('CAPABILITY_DISCOVERY_UNAVAILABLE');
     }
-
-    // Try to discover capabilities from OpenCode
-    // In production, this would query OpenCode for actual capabilities
-    const discoveryResult = await this.discoverModelCapabilities(model);
-
-    if (discoveryResult.success && discoveryResult.capabilities) {
-      return discoveryResult.capabilities;
-    }
-
-    // Fall back to default capabilities if discovery fails
-    return this.capabilityTranslator.getDefaultCapabilities();
-  }
-
-  /**
-   * Discover model capabilities from OpenCode
-   * In production, this would query OpenCode via Thin Plugin
-   *
-   * @param model - Model identifier
-   * @returns Capability discovery result
-   */
-  private async discoverModelCapabilities(model: string): Promise<CapabilityDiscoveryResult> {
-    // In production, this would:
-    // 1. Query OpenCode via Thin Plugin API
-    // 2. Get model capabilities from OpenCode
-    // 3. Translate using capabilityTranslator.translate()
-
-    // For now, simulate capability discovery based on model name
-    // This can be replaced with actual OpenCode API calls in production
-    
-    // Check if there's cached data from the session
-    const session = this.findSessionByModel(model);
-    if (session && session.capabilities) {
-      return {
-        success: true,
-        capabilities: session.capabilities,
-      };
-    }
-
-    // Generate mock capabilities based on model family
-    const mockCapabilities = this.generateMockCapabilities(model);
-    
-    return this.capabilityTranslator.discoverCapabilities(model, mockCapabilities);
-  }
-
-  /**
-   * Find a session by model name
-   */
-  private findSessionByModel(model: string): SessionRecord | undefined {
-    for (const session of this.sessions.values()) {
-      if (session.model === model) {
-        return session;
-      }
-    }
-    return undefined;
-  }
-
-  /**
-   * Generate mock capabilities for a model (for testing/development)
-   * In production, this would be replaced with actual OpenCode API calls
-   *
-   * @param model - Model identifier
-   * @returns OpenCode model capabilities
-   */
-  private generateMockCapabilities(model: string): OpenCodeModelCapabilities {
-    const lowerModel = model.toLowerCase();
-    
-    // Default capabilities
-    const baseCapabilities: OpenCodeModelCapabilities = {
-      provider: this.detectProvider(model),
-      model: model,
-      features: {
-        streaming: true,
-        vision: lowerModel.includes('vision') || lowerModel.includes('4v') || lowerModel.includes('claude'),
-        function_calling: true,
-        json_output: true,
-      },
-      context_window: 128000,
-      tools: ['read_file', 'fs_write', 'execute_pwsh', 'grep_search', 'list_directory'],
-    };
-
-    // Adjust based on model family
-    if (lowerModel.includes('gpt-4') || lowerModel.includes('gpt4')) {
-      baseCapabilities.context_window = 128000;
-      baseCapabilities.features.vision = lowerModel.includes('vision') || lowerModel.includes('4v');
-    } else if (lowerModel.includes('gpt-3.5') || lowerModel.includes('gpt3.5')) {
-      baseCapabilities.context_window = 16385;
-      baseCapabilities.features.vision = false;
-    } else if (lowerModel.includes('claude')) {
-      baseCapabilities.context_window = 200000;
-      baseCapabilities.features.vision = true;
-    } else if (lowerModel.includes('gemini')) {
-      baseCapabilities.context_window = 1000000;
-      baseCapabilities.features.vision = true;
-    }
-
-    return baseCapabilities;
-  }
-
-  /**
-   * Detect provider from model name
-   */
-  private detectProvider(model: string): string {
-    const lowerModel = model.toLowerCase();
-    if (lowerModel.includes('gpt')) return 'openai';
-    if (lowerModel.includes('claude')) return 'anthropic';
-    if (lowerModel.includes('gemini')) return 'google';
-    if (lowerModel.includes('mistral')) return 'mistral';
-    if (lowerModel.includes('llama')) return 'meta';
-    return 'unknown';
+    const actual = await this.runtimeClient.getModelCapabilities(model);
+    return this.capabilityTranslator.translate(actual);
   }
 
   /**

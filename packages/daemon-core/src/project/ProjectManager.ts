@@ -10,6 +10,7 @@ import { IPathResolver } from '../daemon/path-resolver';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import type { SchemaDescriptorPrecheckResult } from '@specforge/types/schema-contract';
 import { precheckProjectRegistrationSchemas } from './project-schema-descriptors';
+import { loadAcceptedConfigSync, type MergedConfig } from '@specforge/configuration';
 
 export interface ProjectContext {
   projectId: string;
@@ -38,6 +39,41 @@ export type ProjectSchemaPrecheck = (
 ) => Promise<SchemaDescriptorPrecheckResult>;
 
 export class ProjectManager {
+  private configurationActivations = new Map<string, Promise<MergedConfig>>();
+
+  /** Serialize acceptance per project; a changed config cannot affect active work. */
+  async getProjectConfiguration(projectPath: string): Promise<MergedConfig> {
+    const prior = this.configurationActivations.get(projectPath);
+    const next = (prior ? prior.catch(() => undefined) : Promise.resolve()).then(async () => {
+      const config = loadAcceptedConfigSync({ projectPath });
+      const sha256 = crypto.createHash('sha256').update(JSON.stringify(config.merged)).digest('hex');
+      const file = path.join(this.pathResolver.resolveProjectRuntimeDir(projectPath), 'configuration-activation.json');
+      let previous: { schema_version: string; sha256: string } | undefined;
+      try {
+        previous = JSON.parse(await fs.readFile(file, 'utf8'));
+        if (!previous || typeof previous !== 'object' || Array.isArray(previous)) throw new Error('CONFIGURATION_ACTIVATION_CORRUPT');
+      }
+      catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw new Error('CONFIGURATION_ACTIVATION_CORRUPT'); }
+      if (previous && (previous.schema_version !== '1.0' || !/^[a-f0-9]{64}$/.test(previous.sha256))) throw new Error('CONFIGURATION_ACTIVATION_CORRUPT');
+      if (previous && previous.sha256 !== sha256) {
+        const sm = await this.getProjectStateManager(projectPath);
+        await sm.rebuildState();
+        if (sm.listWorkItems().some(item => !['closed', 'rejected', 'superseded'].includes(item.current_state))) {
+          throw new Error('CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK: restore the accepted configuration before continuing');
+        }
+      }
+      if (!previous || previous.sha256 !== sha256) {
+        await fs.mkdir(path.dirname(file), { recursive: true });
+        const temporary = `${file}.${crypto.randomUUID()}.tmp`;
+        await fs.writeFile(temporary, JSON.stringify({ schema_version: '1.0', sha256 }) + '\n', { flag: 'wx' });
+        try { await fs.rename(temporary, file); }
+        finally { await fs.rm(temporary, { force: true }); }
+      }
+      return config;
+    });
+    this.configurationActivations.set(projectPath, next);
+    return structuredClone(await next);
+  }
   private eventBus: EventBus;
   private pathResolver: IPathResolver;
   private daemonStateManager: StateManager;
@@ -123,6 +159,7 @@ export class ProjectManager {
     }
 
     // Authoritative current manifest exists → normal registration.
+    await this.getProjectConfiguration(projectPath);
     const projectId = existing?.projectId ?? this.generateProjectId(projectPath);
     const dataDir = this.pathResolver.resolveProjectRuntimeDir(projectPath);
 

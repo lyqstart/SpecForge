@@ -589,6 +589,23 @@ export class ReconnectingDaemonClient implements Disposable {
   /** Project path stored after successful register() */
   private registeredProjectPath: string | null = null;
 
+  async checkNativeTool(projectPath: string, tool: string, args: Record<string, unknown>): Promise<void> {
+    if (this.disposed) throw new Error('WRITE_GUARD_UNAVAILABLE');
+    const handshake = await readHandshake(this.options.handshakePath);
+    if (!handshake) throw new Error('WRITE_GUARD_UNAVAILABLE: daemon handshake missing');
+    const response = await fetch(`${this.options.healthzUrl}:${handshake.port}/api/v1/v11/write-guard/native`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${handshake.token}` },
+      body: JSON.stringify({ projectPath, tool, args }),
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!response.ok) throw new Error(`WRITE_GUARD_UNAVAILABLE: HTTP ${response.status}`);
+    const result = await response.json();
+    if (result?.success !== true || result?.data?.allowed !== true) {
+      throw new Error(`WRITE_GUARD_DENIED: ${result?.data?.reason ?? 'authorization unavailable'}`);
+    }
+  }
+
   /**
    * Check if a write operation is allowed.
    * Fails closed: if daemon is unreachable, throws (write is blocked).
@@ -619,14 +636,14 @@ export class ReconnectingDaemonClient implements Disposable {
       throw new Error(`[SF WriteGuard] Daemon returned HTTP ${response.status} — fail closed`);
     }
 
-    const body = await response.json() as { success: boolean; data?: { allowed: boolean; violations: string[] }; error?: { message: string } };
+    const body = await response.json() as { success: boolean; data?: { allowed: boolean; reason?: string; violations?: string[] }; error?: { message: string } };
     if (!body.success || !body.data) {
       throw new Error(`[SF WriteGuard] Daemon error: ${body.error?.message ?? 'unknown'}`);
     }
 
     return {
       allowed: body.data.allowed,
-      reason: body.data.violations?.[0],
+      reason: body.data.reason ?? body.data.violations?.[0],
       violations: body.data.violations,
     };
   }

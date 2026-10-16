@@ -96,8 +96,8 @@ describe('v1.1 Full Daemon Startup Write Guard E2E', () => {
       // We expect a valid response — NOT 404 or method not found
       expect(result).toBeDefined();
       expect(result.allowed).toBe(false); // no active WI
-      expect(result.violations).toBeDefined();
-      expect(result.violations!.some((v: string) => v.includes('no active WI'))).toBe(true);
+      expect(result.reason).toBeDefined();
+      expect(result.reason).toContain('UNAMBIGUOUS_ACTIVE_WORK_ITEM_REQUIRED');
     });
 
     it('bashGuard reaches daemon and returns response', async () => {
@@ -109,7 +109,7 @@ describe('v1.1 Full Daemon Startup Write Guard E2E', () => {
 
       expect(result).toBeDefined();
       expect(result.allowed).toBe(false); // no active WI
-      expect(result.reason).toContain('no active WI');
+      expect(result.reason).toContain('NATIVE_SHELL_REQUIRES_CONTROLLED_EXECUTION');
     });
 
     it('changedFilesAudit reaches daemon and returns response', async () => {
@@ -150,6 +150,8 @@ describe('v1.1 Full Daemon Startup Write Guard E2E', () => {
   describe('S2: allowed_write_files match → allowed', () => {
     it('daemon reads real work_item.json and allows write', async () => {
       const projectDir = join(tempDir, 'project-s2');
+      mkdirSync(join(projectDir, 'src'), { recursive: true });
+      writeFileSync(join(projectDir, 'src/app.ts'), 'original');
       const wiDir = join(projectDir, '.specforge', 'work-items', 'WI-FULL-001');
       mkdirSync(wiDir, { recursive: true });
 

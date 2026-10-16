@@ -87,6 +87,8 @@ async function fileExists(p: string): Promise<boolean> {
 }
 
 async function initializeCurrentProject(projectPath: string): Promise<void> {
+  await fs.mkdir(path.join(projectPath, '.specforge/config'), { recursive: true });
+  await fs.writeFile(path.join(projectPath, '.specforge/config/project.json'), JSON.stringify({ schema_version: '1.0' }));
   const projectSpecDir = path.join(projectPath, '.specforge', 'project');
   await fs.mkdir(projectSpecDir, { recursive: true });
   await fs.writeFile(

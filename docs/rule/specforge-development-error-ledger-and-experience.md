@@ -31783,3 +31783,14 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-060,EXP-087,EXP-193。
 - **复核结果**：精确提交 `96648e830c6d646feb6dc55e11e522ca9c2b7335` 后，以 `commit-96648e830c6d646feb6dc55e11e522ca9c2b7335` 生成完整 release manifest；正式 precheck 退出 0、authority/inventory/evidence errors 全空。首次缺参失败未被掩盖。
 - ERR1844_STATUS=CLOSED_BY_COMMIT_BOUND_MANIFEST_AND_PRECHECK
+
+### ERR-1845：规格要求存在，但生产入口缺少实际接线或返回假成功
+
+- 发生时间：2026-10-16；本次 RUN_ID=CODEX-SF-20261016-SIX-CONFORMANCE-FIXES-A01。
+- 一手基线：ddba4ef407a53061cd00578e126015fa1ca06b2e。Thin Plugin 无写前拦截；shell/Dispatcher 使用状态投影；配置库未被生产消费；模型能力由名称推测；HTTP 占位返回成功；配置日志输出值。
+- 根因归属：部署模板、Daemon 状态/配置 owner、Adapter、HTTP handler 与 configuration logger。属于生产消费者未闭环，不能只改 Agent 提示词。
+- 类防护：EXP-282；新增 accepted-config-regression、real-capability-discovery、six-conformance-boundaries、configuration-activation-boundary 独立回归；已覆盖真实 HTTP 到部署客户端及事件重建。最终执行结果和交付身份以本次 archive 证据与 Git 为准。
+- 调试记录：首次严格构建存在删除模拟逻辑后的未用导入；旧测试断言推测能力或占位成功、部分夹具缺权威 owner；二轮发现客户端遗漏 reason，已修正。完整回归还发现安装清单仍绑定旧模板字节，须重新构建并以实际提交生成；Permission 边界测试绑定旧局部实现字面，随共同 owner 调用链调整。不得忽略这些失败或宣称是全部既有问题。
+- 工具事件：一次补丁锚点失配未写入；Python 启动器输出路径诊断但退出 0，读取目标确认修改已生效；后续结构改写使用 Node。只读输出截断不算全文证据。
+- REUSED_EXP=EXP-004,EXP-010,EXP-015,EXP-016,EXP-017,EXP-025,EXP-031,EXP-032,EXP-282。
+- ERR1845_STATUS=SOURCE_REPAIR_UNDER_FINAL_VALIDATION

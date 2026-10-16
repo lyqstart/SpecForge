@@ -1,3 +1,4 @@
+import { authoritativeStateFixture } from './helpers/authoritative-state-fixture';
 import { existsSync, readFileSync } from 'node:fs';
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -290,7 +291,7 @@ describe('Orchestrator governance execution closure', () => {
     });
     setHardStop(projectRoot, workItemId, 'TEST_HARD_STOP', 'test');
 
-    const dispatcher = new ToolDispatcher({} as any);
+    const dispatcher = new ToolDispatcher(authoritativeStateFixture({ 'WI-0001': 'candidate_preparing' }));
     const result = (await dispatcher.dispatch({
       tool: 'sf_test_governance_write',
       args: {},
@@ -315,7 +316,7 @@ describe('Orchestrator governance execution closure', () => {
     });
     setHardStop(projectRoot, 'WI-0001', 'TEST_MULTI_WI_HARD_STOP', 'test');
 
-    const dispatcher = new ToolDispatcher({} as any);
+    const dispatcher = new ToolDispatcher(authoritativeStateFixture({ 'WI-0001': 'candidate_preparing', 'WI-0002': 'implementation_ready' }));
     const ambiguous = (await dispatcher.dispatch({
       tool: 'sf_test_multi_wi_write',
       args: {},
@@ -1130,7 +1131,7 @@ describe('Orchestrator governance execution closure', () => {
     const blocked = (await getHandler('sf_safe_bash')!(
       { command: 'Set-Content .specforge/project/spec_manifest.json "{}"' },
       { directory: projectRoot, agent: 'sf-orchestrator' },
-      {} as any
+      authoritativeStateFixture({ 'WI-0001': 'candidate_preparing' })
     )) as any;
 
     expect(blocked.success).toBe(false);

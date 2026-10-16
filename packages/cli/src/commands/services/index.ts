@@ -1,3 +1,4 @@
+import { loadAcceptedConfigSync } from '@specforge/configuration';
 /**
  * Service Management Commands
  *
@@ -35,10 +36,6 @@ import type {
   ServiceOperationJsonPayload,
 } from '@specforge/service-management';
 import {
-  DEFAULT_CONFIG,
-  mergeConfigLayers,
-  loadBuiltinConfig,
-  loadUserConfig,
   createConfigAccess,
   ConfigAccess,
 } from '@specforge/configuration';
@@ -71,37 +68,11 @@ function getHandshakePath(): string {
 }
 
 /**
- * Cached config access instance
- */
-let configAccessInstance: ConfigAccess | null = null;
-
-/**
  * Get configuration access instance
- * Loads configuration from default layers (builtin + user)
+ * Accepts builtin, user and trusted runtime overrides for service commands
  */
 function getConfigAccess(): ConfigAccess {
-  if (configAccessInstance) {
-    return configAccessInstance;
-  }
-
-  // Synchronously load just the built-in config for CLI commands
-  // This provides the defaults from DEFAULT_CONFIG
-  const builtinConfig = DEFAULT_CONFIG;
-  const layers = [
-    {
-      type: 'builtin' as const,
-      path: undefined,
-      timestamp: Date.now(),
-      data: builtinConfig,
-      schemaVersion: '1.0',
-    },
-  ];
-
-  // Merge with defaults
-  const merged = mergeConfigLayers(layers);
-  configAccessInstance = createConfigAccess(merged);
-
-  return configAccessInstance;
+  return createConfigAccess(loadAcceptedConfigSync());
 }
 
 /**

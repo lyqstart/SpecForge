@@ -24,7 +24,7 @@ describe('current repository release manifest and runtime entry surfaces', () =>
     const candidateId = (JSON.parse(read('release/release-manifest.json')) as {
       candidateId: string;
     }).candidateId;
-    expect(candidateId).toMatch(/^main-[0-9a-f]{8}-working-tree-step[0-9a-z]+$/);
+    expect(candidateId).toMatch(/^commit-[0-9a-f]{40}$/);
     const authority = projectReleaseAuthority({
       releaseId,
       productSpecification: { path: productSpecPath, content: read(productSpecPath) },

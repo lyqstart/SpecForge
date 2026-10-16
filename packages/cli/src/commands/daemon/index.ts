@@ -1,3 +1,4 @@
+import { loadAcceptedConfigSync } from '@specforge/configuration';
 /**
  * Daemon Commands
  * 
@@ -23,40 +24,15 @@ import { handleRestart } from './restart';
 import { handleStatus } from './status';
 import { ModeSwitch } from '../../mode-switch';
 import {
-  DEFAULT_CONFIG,
-  mergeConfigLayers,
   createConfigAccess,
   ConfigAccess,
 } from '@specforge/configuration';
 
 /**
- * Cached config access instance
- */
-let configAccessInstance: ConfigAccess | null = null;
-
-/**
  * Get configuration access instance
  */
 function getConfigAccess(): ConfigAccess {
-  if (configAccessInstance) {
-    return configAccessInstance;
-  }
-
-  const builtinConfig = DEFAULT_CONFIG;
-  const layers = [
-    {
-      type: 'builtin' as const,
-      path: undefined,
-      timestamp: Date.now(),
-      data: builtinConfig,
-      schemaVersion: '1.0',
-    },
-  ];
-
-  const merged = mergeConfigLayers(layers);
-  configAccessInstance = createConfigAccess(merged);
-
-  return configAccessInstance;
+  return createConfigAccess(loadAcceptedConfigSync());
 }
 
 /**

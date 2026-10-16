@@ -401,11 +401,11 @@ describe('Error Handling / OpenCode Communication Errors', () => {
     expect(second.done).toBe(true);
   });
 
-  it('getCapabilities never throws and falls back to defaults on bad input', async () => {
-    await expect(adapter.getCapabilities('')).resolves.toBeDefined();
+  it('getCapabilities rejects unavailable discovery on bad input', async () => {
+    await expect(adapter.getCapabilities('')).rejects.toThrow('CAPABILITY_DISCOVERY_UNAVAILABLE');
     await expect(
       adapter.getCapabilities(null as unknown as string)
-    ).resolves.toBeDefined();
+    ).rejects.toThrow('CAPABILITY_DISCOVERY_UNAVAILABLE');
   });
 });
 

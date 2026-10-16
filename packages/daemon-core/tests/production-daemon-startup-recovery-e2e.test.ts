@@ -75,9 +75,7 @@ describe('WI-2: Production Daemon Startup & Recovery E2E', () => {
       const projectDir = join(tempDir, 'proj');
       mkdirSync(join(projectDir, '.specforge', 'project'), { recursive: true });
       (client as any).registeredProjectPath = projectDir;
-      const result = await client.checkWrite('src/app.ts', 'agent');
-      expect(result).toBeDefined();
-      expect(result.allowed).toBe(false); // no active WI
+      await expect(client.checkWrite('src/app.ts', 'agent')).rejects.toThrow('HTTP 503');
     });
 
     it('all 4 client methods callable', async () => {
@@ -125,8 +123,7 @@ describe('WI-2: Production Daemon Startup & Recovery E2E', () => {
       const projectDir = join(tempDir, 'proj2');
       mkdirSync(join(projectDir, '.specforge', 'project'), { recursive: true });
       (c2 as any).registeredProjectPath = projectDir;
-      const before = await c2.checkWrite('src/x.ts', 'agent');
-      expect(before.allowed).toBe(false);
+      await expect(c2.checkWrite('src/x.ts', 'agent')).rejects.toThrow('HTTP 503');
       
       // Stop server
       await server2.stop();

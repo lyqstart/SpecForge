@@ -433,26 +433,8 @@ describe('Integration: Error Handling and Recovery', () => {
   });
 
   describe('capability errors', () => {
-    it('should handle getCapabilities for unknown model', async () => {
-      // Unknown model should return fallback capabilities
-      const caps = await adapter.getCapabilities('unknown-model-xyz');
-      expect(caps).toBeDefined();
-      expect(typeof caps.streaming).toBe('boolean');
-      expect(typeof caps.maxContextLength).toBe('number');
-      expect(typeof caps.tools).toBe('boolean');
-    });
-
-    it('should handle getCapabilities for empty model string', async () => {
-      const caps = await adapter.getCapabilities('');
-      expect(caps).toBeDefined();
-      expect(typeof caps.streaming).toBe('boolean');
-    });
-
-    it('should return consistent capabilities for same model', async () => {
-      const caps1 = await adapter.getCapabilities('gpt-4');
-      const caps2 = await adapter.getCapabilities('gpt-4');
-
-      expect(caps1).toEqual(caps2);
+    it.each(['unknown-model-xyz', '', 'gpt-4'])('does not invent capabilities when transport is absent: %s', async model => {
+      await expect(adapter.getCapabilities(model)).rejects.toThrow('CAPABILITY_DISCOVERY_UNAVAILABLE');
     });
   });
 });

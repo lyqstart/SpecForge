@@ -102,9 +102,9 @@ describe('E1 API Endpoints', () => {
 
     it('should accept requests with valid token', async () => {
       const res = await httpRequest(makeOptions(port, 'POST', '/api/v1/state/read', token, 'application/json'), '{"workItemId":"WI-001"}');
-      expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(400);
       const parsed = JSON.parse(res.body);
-      expect(parsed.success).toBe(true);
+      expect(parsed.success).toBe(false);
     });
   });
 
@@ -114,9 +114,9 @@ describe('E1 API Endpoints', () => {
         makeOptions(port, 'POST', '/api/v1/state/read', token, 'application/json'),
         '{"workItemId":"WI-001"}',
       );
-      expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(400);
       const parsed = JSON.parse(res.body);
-      expect(parsed.success).toBe(true);
+      expect(parsed.success).toBe(false);
     });
 
     it('should handle state/transition', async () => {
@@ -124,9 +124,9 @@ describe('E1 API Endpoints', () => {
         makeOptions(port, 'POST', '/api/v1/state/transition', token, 'application/json'),
         '{"workItemId":"WI-001","fromState":"","toState":"created"}',
       );
-      expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(400);
       const parsed = JSON.parse(res.body);
-      expect(parsed.success).toBe(true);
+      expect(parsed.success).toBe(false);
     });
   });
 
@@ -136,10 +136,10 @@ describe('E1 API Endpoints', () => {
         makeOptions(port, 'POST', '/api/v1/event/log', token, 'application/json'),
         '{"projectId":"test","category":"state","action":"test.event","payload":{}}',
       );
-      expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(503);
       const parsed = JSON.parse(res.body);
-      expect(parsed.success).toBe(true);
-      expect(parsed.data.eventId).toBeDefined();
+      expect(parsed.success).toBe(false);
+      expect(parsed.error.code).toBe('EVENT_LOGGER_UNAVAILABLE');
     });
 
     it('should handle event/query', async () => {
@@ -147,9 +147,9 @@ describe('E1 API Endpoints', () => {
         makeOptions(port, 'POST', '/api/v1/event/query', token, 'application/json'),
         '{"projectId":"test"}',
       );
-      expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(501);
       const parsed = JSON.parse(res.body);
-      expect(parsed.success).toBe(true);
+      expect(parsed.success).toBe(false);
     });
   });
 
@@ -159,18 +159,18 @@ describe('E1 API Endpoints', () => {
         makeOptions(port, 'POST', '/api/v1/cas/store', token, 'application/json'),
         '{"data":"hello world"}',
       );
-      expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(501);
       const parsed = JSON.parse(res.body);
-      expect(parsed.success).toBe(true);
+      expect(parsed.success).toBe(false);
     });
 
     it('should handle cas/retrieve', async () => {
       const res = await httpRequest(
         makeOptions(port, 'GET', '/api/v1/cas/retrieve?hash=abc123', token),
       );
-      expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(501);
       const parsed = JSON.parse(res.body);
-      expect(parsed.success).toBe(true);
+      expect(parsed.success).toBe(false);
     });
   });
 

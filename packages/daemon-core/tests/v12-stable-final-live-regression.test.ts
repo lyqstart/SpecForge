@@ -50,6 +50,7 @@ describe('v1.2 stable final live acceptance regressions', () => {
       workItemId: 'WI-0001',
       command,
       tool: 'sf_safe_bash',
+      authoritativeState: 'implementation_running',
     });
     expect(result.checked).toBe(true);
     expect(result.allowed).toBe(true);
@@ -74,6 +75,7 @@ describe('v1.2 stable final live acceptance regressions', () => {
       workItemId: 'WI-0001',
       command: 'Set-Content -Path src -Value bad',
       tool: 'sf_safe_bash',
+      authoritativeState: 'implementation_running',
     });
 
     expect(result.allowed).toBe(false);
@@ -92,6 +94,7 @@ describe('v1.2 stable final live acceptance regressions', () => {
       workItemId: 'WI-0001',
       command: 'Set-Content -Path src\\todos\\stable-native-write-authorized.md -Value bad',
       tool: 'sf_safe_bash',
+      authoritativeState: 'implementation_ready',
     });
 
     expect(result.allowed).toBe(false);
@@ -104,7 +107,7 @@ describe('v1.2 stable final live acceptance regressions', () => {
     const root = makeProject();
     setHardStop(root, 'WI-0001', 'WI-A blocked', 'sf_safe_bash');
     const command = 'New-Item -ItemType Directory -Force -Path src\\todos | Out-Null; Set-Content -Path src\\todos\\stable-wib-allowed.md -Value ok -Encoding UTF8';
-    const selected = findActiveWorkItemIdForWrite(root, {}, command);
+    const selected = findActiveWorkItemIdForWrite(root, {}, command, [{ work_item_id: 'WI-0001', current_state: 'implementation_running' }, { work_item_id: 'WI-0002', current_state: 'implementation_running' }]);
     expect(selected).toBe('WI-0002');
   });
   it('keeps native write logging and HardStop persistence out of the thin plugin', () => {

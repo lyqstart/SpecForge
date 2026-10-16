@@ -164,24 +164,6 @@ function toProjectRelative(projectRoot: string, cwd: string | undefined, targetP
   return { relative: normalizeSlashes(rel) };
 }
 
-function readRuntimeState(projectRoot: string): any | null {
-  try {
-    const statePath = path.join(projectRoot, SPEC_DIR_NAME, 'runtime', 'state.json');
-    return JSON.parse(fs.readFileSync(statePath, 'utf-8'));
-  } catch {
-    return null;
-  }
-}
-
-function authoritativeWorkItemState(projectRoot: string, workItemId: string): string | null {
-  const state = readRuntimeState(projectRoot);
-  const items = Array.isArray(state?.workItems) ? state.workItems : [];
-  const match = items.find((item: any) => item?.work_item_id === workItemId);
-  return typeof match?.current_state === 'string' && match.current_state.length > 0
-    ? match.current_state
-    : null;
-}
-
 function workItemDir(projectRoot: string, workItemId: string): string {
   return path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId);
 }
@@ -197,6 +179,7 @@ export function enforceRuntimeWriteGuardForShell(input: {
   cwd?: string;
   callerRole?: string;
   tool?: string;
+  authoritativeState?: string | null;
 }): RuntimeWriteGuardResult {
   const targets = extractShellWriteTargets(input.command);
   if (targets.length === 0) return { checked: false, allowed: true, targets: [], violations: [] };
@@ -219,7 +202,10 @@ export function enforceRuntimeWriteGuardForShell(input: {
   }
 
   const actor = isKnownActorRole(input.callerRole) ? input.callerRole : ACTOR_ROLES.agent;
-  const currentState = authoritativeWorkItemState(input.projectRoot, input.workItemId);
+  const currentState = input.authoritativeState;
+  if (!currentState) {
+    return { checked: true, allowed: false, targets, violations: ['AUTHORITATIVE_STATE_UNAVAILABLE'], hard_stop: false };
+  }
   const allViolations: string[] = [];
   const normalizedTargets: RuntimeWriteTarget[] = [];
 

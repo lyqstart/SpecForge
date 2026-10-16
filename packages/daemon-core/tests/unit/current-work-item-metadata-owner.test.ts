@@ -1,3 +1,4 @@
+import { authoritativeStateFixture } from '../helpers/authoritative-state-fixture';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
@@ -574,7 +575,7 @@ describe('current Work Item metadata owner', () => {
         command: 'Set-Content -Path src/current.ts -Value value',
       },
       { directory: projectRoot, agent: 'sf-executor' },
-      {},
+      authoritativeStateFixture({ 'WI-0016': 'implementation_running' }),
     );
 
     expect(result.success).toBe(false);
@@ -697,15 +698,15 @@ describe('current Work Item metadata owner', () => {
     };
 
     const check = await invoke('handleV11WriteGuardCheck', { targetPath: 'src/current.ts' });
-    expect(check.data.allowed).toBe(false);
-    expect(check.data.violations[0]).toContain('WORK_ITEM_METADATA_INVALID: WI-0019');
+    expect(check.success).toBe(false);
+    expect(check.error.code).toBe('WRITE_GUARD_UNAVAILABLE');
 
     const bash = await invoke('handleV11WriteGuardBash', {
       command: 'Set-Content -Path src/current.ts -Value value',
       expectedFiles: ['src/current.ts'],
     });
     expect(bash.data.allowed).toBe(false);
-    expect(bash.data.violations[0]).toContain('WORK_ITEM_METADATA_INVALID: WI-0019');
+    expect(bash.data.reason).toContain('NATIVE_SHELL_REQUIRES_CONTROLLED_EXECUTION');
 
     const audit = await invoke('handleV11WriteGuardAudit', {
       changedFiles: [{ path: 'src/current.ts', operation: 'modify' }],

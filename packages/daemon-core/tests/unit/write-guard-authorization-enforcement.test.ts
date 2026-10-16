@@ -1,3 +1,4 @@
+import { authoritativeStateFixture } from '../helpers/authoritative-state-fixture';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -74,7 +75,7 @@ describe('sf_safe_bash write-guard authorization enforcement', () => {
         work_item_id: 'WI-0001',
       },
       { directory: root, agent: 'agent' },
-      {},
+      authoritativeStateFixture({ 'WI-0001': 'implementation_running' }),
     );
 
     expect(result.success).toBe(false);
@@ -108,7 +109,7 @@ describe('sf_safe_bash write-guard authorization enforcement', () => {
         cwd: path.join(root, 'does-not-exist'),
       },
       { directory: root, agent: 'agent' },
-      {},
+      authoritativeStateFixture({ 'WI-0001': 'implementation_running' }),
     );
 
     expect(result.write_guard_authorized).toBe(true);

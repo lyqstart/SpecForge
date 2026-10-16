@@ -3,6 +3,8 @@
  *
  * This client never starts or stops either OpenCode or the SpecForge Daemon.
  */
+import type { OpenCodeModelCapabilities } from '../types';
+
 export interface OpenCodeRuntimeSession {
   id: string;
   createdAt?: Date;
@@ -19,6 +21,7 @@ export interface OpenCodeRuntimePrompt {
 }
 
 export interface OpenCodeRuntimeClient {
+  getModelCapabilities?(model: string): Promise<OpenCodeModelCapabilities>;
   getVersion(): Promise<string>;
   createSession(input: { title: string; directory?: string }): Promise<OpenCodeRuntimeSession>;
   getSession(sessionId: string, directory?: string): Promise<OpenCodeRuntimeSession | null>;
@@ -61,6 +64,35 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
       throw new OpenCodeRuntimeError('OpenCode health response is missing healthy/version fields');
     }
     return value['version'];
+  }
+
+  async getModelCapabilities(model: string): Promise<OpenCodeModelCapabilities> {
+    const identity = this.parseModel(model);
+    if (!identity) throw new OpenCodeRuntimeError('CAPABILITY_MODEL_ID_REQUIRED: use provider/model');
+    const body = this.unwrap(await this.requestJson('GET', '/provider'));
+    if (!this.isRecord(body) || !Array.isArray(body['all']) || !Array.isArray(body['connected'])) {
+      throw new OpenCodeRuntimeError('CAPABILITY_RESPONSE_INVALID');
+    }
+    if (!body['connected'].includes(identity.providerID)) throw new OpenCodeRuntimeError('CAPABILITY_PROVIDER_NOT_CONNECTED');
+    const provider = body['all'].find(value => this.isRecord(value) && value['id'] === identity.providerID);
+    const models = this.isRecord(provider) && this.isRecord(provider['models']) ? provider['models'] : undefined;
+    const entry = models?.[identity.modelID];
+    if (!this.isRecord(entry)) throw new OpenCodeRuntimeError('CAPABILITY_MODEL_NOT_FOUND');
+    const capabilities = entry['capabilities'];
+    const limit = entry['limit'];
+    if (!this.isRecord(capabilities) || !this.isRecord(capabilities['input']) ||
+        typeof capabilities['toolcall'] !== 'boolean' || typeof capabilities['input']['image'] !== 'boolean' ||
+        !this.isRecord(limit) || typeof limit['context'] !== 'number' || !Number.isSafeInteger(limit['context']) || limit['context'] <= 0) {
+      throw new OpenCodeRuntimeError('CAPABILITY_RESPONSE_INVALID');
+    }
+    return {
+      provider: identity.providerID, model: identity.modelID,
+      context_window: limit['context'],
+      features: { streaming: true, vision: capabilities['input']['image'],
+        function_calling: capabilities['toolcall'], json_output: false },
+      // The API reports tool calling, not a fabricated list of filesystem tools.
+      tools: capabilities['toolcall'] ? ['function_calling'] : [],
+    };
   }
 
   async createSession(input: { title: string; directory?: string }): Promise<OpenCodeRuntimeSession> {

@@ -17,7 +17,15 @@ const baseConfigSchema: ZodObject<{ [key: string]: any }> = z.object({
   logLevel: z.enum(['debug', 'info', 'warn', 'error']).optional(),
   cacheEnabled: z.boolean().optional(),
   maxCacheSize: z.number().optional(),
-  timeoutMs: z.number().optional(),
+  timeoutMs: z.number().positive().optional(),
+  service_management: z.object({
+    schema_version: z.literal('1.0').optional(),
+    auto_enable_at_boot: z.boolean().optional(),
+    stop_timeout_sec: z.number().positive().optional(),
+    plugin_reconnect_max_sec: z.number().positive().optional(),
+    plugin_reconnect_initial_sec: z.number().positive().optional(),
+    plugin_reconnect_backoff_factor: z.number().positive().optional(),
+  }).optional(),
   hotReload: z
     .object({
       enabled: z.boolean().optional(),
@@ -98,7 +106,7 @@ export function validateConfig(
 
   try {
     schema.schema.parse(data)
-    return { valid: true, errors, warnings, schemaVersion: configVersion }
+    return { valid: errors.length === 0, errors, warnings, schemaVersion: configVersion }
   } catch (err) {
     if (err instanceof ZodError) {
       const zodErrors = err as ZodError<{ [key: string]: any }>

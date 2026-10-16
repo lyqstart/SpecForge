@@ -28,14 +28,14 @@ import { WAL } from '../wal/WAL';
 import { ToolDispatcher } from '../tools';
 import { WALWriteError } from '../session/SessionRegistry';
 import { ensureProjectInit } from '../tools/lib/sf_project_init_core';
-import { checkWrite, performChangedFilesAudit, type WriteGuardContext } from '../tools/lib/write-guard-v11';
-import { appendWriteGuardLog } from '../tools/lib/write-guard-log';
+import { performChangedFilesAudit, type WriteGuardContext } from '../tools/lib/write-guard-v11';
 import { isCandidateFrozenState } from '../tools/lib/candidate-freeze-v11';
 import { JsonlAppender } from '../logs/JsonlAppender';
 import * as path from 'path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
-import { decideWorkItemArtifactWriteBoundary } from '@specforge/permission-engine';
 import { readWorkItemMetadata } from '../tools/lib/work-item-metadata';
+import { checkNativeTool } from '../tools/lib/native-write-boundary';
+import { readAuthoritativeWorkItems } from '../tools/lib/authoritative-work-items';
 import type { LLMKernelAdapter, UserMessage } from '@specforge/types/llm-kernel-contract';
 
 interface HTTPWriteGuardContext extends WriteGuardContext {
@@ -323,6 +323,18 @@ export class HTTPServer {
     this.addExactRoute('POST', '/api/v1/v11/verification', this.handleV11Verification.bind(this));
 
     // v1.1 Write Guard routes
+    this.addExactRoute('POST', '/api/v1/v11/write-guard/native', async (_req, res, body) => {
+      try {
+        const request = JSON.parse(body);
+        if (typeof request.projectPath !== 'string' || typeof request.tool !== 'string' || !request.args || typeof request.args !== 'object') {
+          this.sendJsonResponse(res, 400, this.errorBody('INVALID_NATIVE_TOOL_REQUEST', 'projectPath/tool/args required'));
+          return;
+        }
+        this.sendJsonResponse(res, 200, this.successBody(await checkNativeTool(this.deps, request.projectPath, request.tool, request.args)));
+      } catch {
+        this.sendJsonResponse(res, 503, this.errorBody('WRITE_GUARD_UNAVAILABLE', 'Native tool authorization failed'));
+      }
+    });
     this.addExactRoute('POST', '/api/v1/v11/write-guard/check', this.handleV11WriteGuardCheck.bind(this));
     this.addExactRoute('POST', '/api/v1/v11/write-guard/bash', this.handleV11WriteGuardBash.bind(this));
     this.addExactRoute('POST', '/api/v1/v11/write-guard/changed-files-audit', this.handleV11WriteGuardAudit.bind(this));
@@ -851,11 +863,7 @@ export class HTTPServer {
   }
 
   private handleApiEndpoint(req: http.IncomingMessage, res: http.ServerResponse, body: string, match: RouteMatch): void {
-    this.sendJsonResponse(res, 200, this.successBody({
-      message: `API endpoint ${req.method} ${match.pathname} is registered`,
-      path: match.pathname,
-      params: match.params,
-    }));
+    this.sendJsonResponse(res, 404, this.errorBody('NOT_FOUND', 'No implemented API route matches this request'));
   }
 
   private async handleStateRead(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
@@ -869,20 +877,24 @@ export class HTTPServer {
 
     const wid = request.workItemId;
 
-    if (!this.deps.stateManager) {
-      this.sendJsonResponse(res, 200, this.successBody({ message: 'state/read (no stateManager)', workItemId: wid ?? null }));
-      return;
-    }
-
     try {
+      const projectPath = (request as any).projectPath;
+      const manager = typeof projectPath === 'string' && path.isAbsolute(projectPath)
+        ? await this.deps.projectManager?.getProjectStateManager(projectPath)
+        : undefined;
+      if (!manager) {
+        this.sendJsonResponse(res, 400, this.errorBody('PROJECT_CONTEXT_REQUIRED', 'Provide an absolute projectPath'));
+        return;
+      }
+      await manager.rebuildState?.();
       if (wid === 'all') {
-        const all = await (this.deps.stateManager as any).getAllStates();
+        const all = await manager.getAllStates();
         return this.sendJsonResponse(res, 200, this.successBody({ workItems: all }));
       }
       if (!wid) {
         return this.sendJsonResponse(res, 400, this.errorBody('MISSING_FIELDS', 'workItemId required'));
       }
-      const state = await (this.deps.stateManager as any).getState(wid);
+      const state = await manager.getState(wid);
       if (!state) {
         return this.sendJsonResponse(res, 404, this.errorBody('NOT_FOUND', `${wid} not found`));
       }
@@ -909,24 +921,22 @@ export class HTTPServer {
       return;
     }
 
-    if (!this.deps.workflowEngine) {
-      this.sendJsonResponse(res, 200, this.successBody({
-        message: 'state/transition (no workflowEngine)',
-        workItemId, fromState, toState,
-      }));
+    if (!this.deps.toolDispatcher || typeof (request as any).projectPath !== 'string' || !path.isAbsolute((request as any).projectPath)) {
+      this.sendJsonResponse(res, 400, this.errorBody('PROJECT_CONTEXT_REQUIRED', 'Controlled state transitions require projectPath and ToolDispatcher'));
       return;
     }
 
     try {
-      const result = await (this.deps.workflowEngine as any).transitionFull({
-        workItemId,
-        fromState,
-        toState,
-        evidence: (request as any).evidence ?? '',
-        workflowType: request.workflowType,
-        transitionContext: (request as any).transitionContext,
-        actor: null,
+      const result = await this.deps.toolDispatcher.dispatch({
+        tool: 'sf_state_transition',
+        args: { work_item_id: workItemId, from_state: fromState, to_state: toState,
+          evidence: (request as any).evidence ?? '', workflow_type: request.workflowType },
+        context: { directory: (request as any).projectPath, agent: 'agent' },
       });
+      if (!result || (result as any).success !== true) {
+        this.sendJsonResponse(res, 409, this.errorBody('TRANSITION_REJECTED', 'Controlled transition did not succeed'));
+        return;
+      }
       this.sendJsonResponse(res, 200, this.successBody(result));
     } catch (err) {
       this.sendJsonResponse(res, 409, this.errorBody('TRANSITION_REJECTED', (err as Error).message));
@@ -948,7 +958,7 @@ export class HTTPServer {
     }
 
     if (!this.deps.eventLogger) {
-      this.sendJsonResponse(res, 200, this.successBody({ message: 'event/log (no eventLogger)', eventId: this.generateEventId() }));
+      this.sendJsonResponse(res, 503, this.errorBody('EVENT_LOGGER_UNAVAILABLE', 'Event was not recorded'));
       return;
     }
 
@@ -991,36 +1001,28 @@ export class HTTPServer {
       return;
     }
     console.log(`[API] event/query projectId=${request.projectId ?? '(all)'} action=${request.action ?? '(all)'}`);
-    this.sendJsonResponse(res, 200, this.successBody({
-      message: 'event/query placeholder',
-      events: [],
-    }));
+    this.sendJsonResponse(res, 501, this.errorBody('EVENT_QUERY_UNSUPPORTED', 'Use the project event owner; this legacy query endpoint is not implemented'));
   }
 
   private handleCasStore(_req: http.IncomingMessage, res: http.ServerResponse, body: string): void {
     console.log(`[API] cas/store bodyLength=${body.length}`);
-    this.sendJsonResponse(res, 200, this.successBody({
-      message: 'cas/store placeholder',
-      contentSize: body.length,
-    }));
+    this.sendJsonResponse(res, 501, this.errorBody('CAS_API_UNSUPPORTED', 'No content was stored'));
   }
 
   private handleCasRetrieve(req: http.IncomingMessage, res: http.ServerResponse): void {
     const url = new URL(req.url ?? '/', `http://localhost:${this.port ?? 0}`);
     const hash = url.searchParams.get('hash') ?? '';
     console.log(`[API] cas/retrieve hash=${hash || '(not provided)'}`);
-    this.sendJsonResponse(res, 200, this.successBody({
-      message: 'cas/retrieve placeholder',
-      hash,
-    }));
+    this.sendJsonResponse(res, 501, this.errorBody('CAS_API_UNSUPPORTED', 'No content was retrieved'));
   }
 
   private handleSessionList(_req: http.IncomingMessage, res: http.ServerResponse): void {
     console.log('[API] session/list');
-    this.sendJsonResponse(res, 200, this.successBody({
-      message: 'session/list placeholder',
-      sessions: [],
-    }));
+    if (!this.deps.sessionRegistry?.listSessions) {
+      this.sendJsonResponse(res, 503, this.errorBody('SESSION_REGISTRY_UNAVAILABLE', 'Session list is unavailable'));
+      return;
+    }
+    this.sendJsonResponse(res, 200, this.successBody({ sessions: this.deps.sessionRegistry.listSessions() }));
   }
 
   private async handleKernelSessionSpawn(
@@ -1896,125 +1898,22 @@ export class HTTPServer {
   // ── v1.1 Write Guard Routes ──────────────────────────────────────────────────
 
   private async handleV11WriteGuardCheck(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
-    let request: { targetPath?: string; callerRole?: string; projectPath?: string; context?: Record<string, unknown> };
     try {
-      request = JSON.parse(body);
+      const request = JSON.parse(body);
+      if (typeof request.projectPath !== 'string' || typeof request.targetPath !== 'string') {
+        this.sendJsonResponse(res, 400, this.errorBody('MISSING_PARAMS', 'projectPath and targetPath required'));
+        return;
+      }
+      const result = await checkNativeTool(this.deps, request.projectPath, 'write', { filePath: request.targetPath });
+      this.sendJsonResponse(res, 200, this.successBody(result));
     } catch {
-      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON body'));
-      return;
+      this.sendJsonResponse(res, 503, this.errorBody('WRITE_GUARD_UNAVAILABLE', 'Write was not authorized'));
     }
-
-    const { targetPath, callerRole, projectPath, context } = request;
-    if (!targetPath) {
-      this.sendJsonResponse(res, 400, this.errorBody('MISSING_PARAMS', 'targetPath required'));
-      return;
-    }
-
-    // Determine project path from request body or registered project
-    const resolvedProjectPath = projectPath ?? (context as any)?.projectPath ?? this.getRegisteredProjectPath();
-    if (!resolvedProjectPath) {
-      this.sendJsonResponse(res, 200, this.successBody({ allowed: false, violations: ['no project registered'] }));
-      return;
-    }
-
-    const wiCtx = await this.loadWriteGuardContext(resolvedProjectPath, callerRole ?? 'agent');
-
-    if (wiCtx.metadata_error) {
-      this.sendJsonResponse(res, 200, this.successBody({
-        allowed: false,
-        reason: wiCtx.metadata_error,
-        violations: [wiCtx.metadata_error],
-      }));
-      return;
-    }
-
-    const result = checkWrite(wiCtx, targetPath, 'modify');
-
-    // Append to Write Guard log for factual audit trail
-    if (wiCtx.workItem) {
-      const wiDir = path.join(resolvedProjectPath, SPEC_DIR_NAME, 'work-items', wiCtx.workItem.work_item_id);
-      appendWriteGuardLog(wiDir, {
-        timestamp: new Date().toISOString(),
-        path: targetPath,
-        operation: 'modify',
-        actor: callerRole ?? 'agent',
-        allowed: result.allowed,
-        violations: result.violations,
-      });
-    }
-
-    this.sendJsonResponse(res, 200, this.successBody(result));
   }
 
-  private async handleV11WriteGuardBash(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
-    let request: { command?: string; expectedFiles?: string[]; projectPath?: string; context?: any };
-    try {
-      request = JSON.parse(body);
-    } catch {
-      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON body'));
-      return;
-    }
-
-    const { command, expectedFiles, projectPath, context } = request;
-    const resolvedProjectPath = projectPath ?? context?.projectPath ?? this.getRegisteredProjectPath();
-
-    if (!resolvedProjectPath) {
-      this.sendJsonResponse(res, 200, this.successBody({ allowed: false, reason: 'no project registered' }));
-      return;
-    }
-
-    // For bash guard: check each expected file
-    const wiCtx = await this.loadWriteGuardContext(resolvedProjectPath, 'agent');
-
-    if (wiCtx.metadata_error) {
-      this.sendJsonResponse(res, 200, this.successBody({
-        allowed: false,
-        reason: wiCtx.metadata_error,
-        violations: [wiCtx.metadata_error],
-      }));
-      return;
-    }
-
-    if (!wiCtx.hasActiveWI) {
-      this.sendJsonResponse(res, 200, this.successBody({ allowed: false, reason: 'no active WI — call sf_code_permission enable first' }));
-      return;
-    }
-
-    const commandBoundary = command
-      ? decideWorkItemArtifactWriteBoundary(command)
-      : null;
-    if (commandBoundary) {
-      this.sendJsonResponse(res, 200, this.successBody(commandBoundary));
-      return;
-    }
-
-    // If expected files declared, check each
-    if (expectedFiles && expectedFiles.length > 0) {
-      for (const file of expectedFiles) {
-        const result = checkWrite(wiCtx, file, 'modify');
-
-        // Log to Write Guard log
-        if (wiCtx.workItem) {
-          const wiDir = path.join(resolvedProjectPath, SPEC_DIR_NAME, 'work-items', wiCtx.workItem.work_item_id);
-          appendWriteGuardLog(wiDir, {
-            timestamp: new Date().toISOString(),
-            path: file,
-            operation: 'modify',
-            actor: 'agent',
-            allowed: result.allowed,
-            violations: result.violations,
-            command,
-          });
-        }
-
-        if (!result.allowed) {
-          this.sendJsonResponse(res, 200, this.successBody({ allowed: false, reason: result.violations[0] }));
-          return;
-        }
-      }
-    }
-
-    this.sendJsonResponse(res, 200, this.successBody({ allowed: true, reason: 'bash_allowed' }));
+  private async handleV11WriteGuardBash(_req: http.IncomingMessage, res: http.ServerResponse, _body: string): Promise<void> {
+    this.sendJsonResponse(res, 200, this.successBody({ allowed: false,
+      reason: 'NATIVE_SHELL_REQUIRES_CONTROLLED_EXECUTION: use sf_safe_bash; declared filenames cannot constrain arbitrary shell writes' }));
   }
 
   private async handleV11WriteGuardAudit(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
@@ -2026,9 +1925,9 @@ export class HTTPServer {
       return;
     }
 
-    const resolvedProjectPath = request.projectPath ?? this.getRegisteredProjectPath();
-    if (!resolvedProjectPath) {
-      this.sendJsonResponse(res, 200, this.successBody({ passed: true, escapedWrites: [] }));
+    const resolvedProjectPath = request.projectPath;
+    if (typeof resolvedProjectPath !== 'string' || !path.isAbsolute(resolvedProjectPath)) {
+      this.sendJsonResponse(res, 400, this.errorBody('PROJECT_CONTEXT_REQUIRED', 'Audit was not performed'));
       return;
     }
 
@@ -2068,80 +1967,28 @@ export class HTTPServer {
       return;
     }
 
-    // Record the escaped write incident (acknowledge receipt)
-    this.sendJsonResponse(res, 200, this.successBody({ recorded: true, timestamp: request.timestamp ?? new Date().toISOString() }));
+    this.sendJsonResponse(res, 501, this.errorBody('ESCAPED_WRITE_API_UNSUPPORTED', 'Incident was not persisted; use the governed audit tool'));
   }
 
-  // Helper: load WriteGuardContext from project filesystem
+  // The audit consumes the same state owner as native authorization.
   private async loadWriteGuardContext(projectPath: string, callerRole: string): Promise<HTTPWriteGuardContext> {
-    const fs = require('node:fs');
-    const pathModule = require('node:path');
-
-    const workItemsDir = pathModule.join(projectPath, '.specforge', 'work-items');
-    let activeWI: WriteGuardContext['workItem'] | undefined;
-    let hasActiveWI = false;
-
     try {
-      const stateManager = await this.deps.projectManager?.getProjectStateManager?.(projectPath);
-      await stateManager?.rebuildFromEventsFile?.();
-      const dirs = fs.readdirSync(workItemsDir).sort();
-      for (const dir of dirs) {
-        try {
-          const authoritative = await stateManager?.getState?.(dir);
-          const currentState =
-            typeof authoritative === 'string'
-              ? authoritative
-              : authoritative?.current_state ??
-                authoritative?.currentState ??
-                authoritative?.status ??
-                authoritative?.state;
-          if (!currentState) continue;
-          if (currentState !== 'closed' && currentState !== 'rejected' && currentState !== 'superseded') {
-            let wi: Awaited<ReturnType<typeof readWorkItemMetadata>>;
-            try {
-              wi = await readWorkItemMetadata(pathModule.join(workItemsDir, dir), dir);
-            } catch (error) {
-              return {
-                hasActiveWI: false,
-                workItem: undefined,
-                callerRole: callerRole as any,
-                isFrozen: true,
-                metadata_error: error instanceof Error ? error.message : String(error),
-                metadata_work_item_id: dir,
-              };
-            }
-            hasActiveWI = true;
-            activeWI = {
-              work_item_id: dir,
-              status: currentState,
-              code_change_allowed: wi.code_change_allowed === true,
-              code_permission_revoked: wi.code_permission_revoked === true,
-              allowed_write_files: Array.isArray(wi.allowed_write_files) ? wi.allowed_write_files as any : [],
-              workflow_path: typeof wi.workflow_path === 'string' ? wi.workflow_path : null,
-            };
-            break;
-          }
-        } catch { continue; }
-      }
-    } catch { /* no work-items dir */ }
-
-    return {
-      hasActiveWI,
-      workItem: activeWI,
-      callerRole: callerRole as any,
-      isFrozen: isCandidateFrozenState(activeWI?.status),
-    };
-  }
-
-  // Helper: get the registered project path (first registered project)
-  private getRegisteredProjectPath(): string | null {
-    // Try to get from session registry
-    if (this.deps.sessionRegistry) {
-      try {
-        const projects = (this.deps.sessionRegistry as any).getRegisteredProjects?.() ?? [];
-        if (projects.length > 0) return projects[0];
-      } catch { /* ignore */ }
+      const active = (await readAuthoritativeWorkItems(this.deps, projectPath))
+        .filter(item => !['closed', 'rejected', 'superseded'].includes(item.current_state));
+      if (active.length !== 1) throw new Error('UNAMBIGUOUS_ACTIVE_WORK_ITEM_REQUIRED');
+      const state = active[0];
+      const wi = await readWorkItemMetadata(path.join(projectPath, '.specforge', 'work-items', state.work_item_id), state.work_item_id);
+      return {
+        hasActiveWI: true, callerRole: callerRole as any, isFrozen: isCandidateFrozenState(state.current_state),
+        workItem: { work_item_id: state.work_item_id, status: state.current_state,
+          code_change_allowed: wi.code_change_allowed === true, code_permission_revoked: wi.code_permission_revoked === true,
+          allowed_write_files: Array.isArray(wi.allowed_write_files) ? wi.allowed_write_files as any : [],
+          workflow_path: typeof wi.workflow_path === 'string' ? wi.workflow_path : null },
+      };
+    } catch (error) {
+      return { hasActiveWI: false, callerRole: callerRole as any, isFrozen: true,
+        metadata_error: error instanceof Error ? error.message : 'AUTHORITATIVE_STATE_UNAVAILABLE' };
     }
-    return null;
   }
+
 }

@@ -227,7 +227,7 @@ describe('Integration: End-to-end session lifecycle', () => {
     adapter.unsubscribeEvents(spawnB.sessionId);
   });
 
-  it('exposes capabilities consistent with the model used to spawn the session', async () => {
+  it('does not treat a spawned session model name as capability evidence', async () => {
     const intent = 'lifecycle-caps';
     adapter.registerSpawnIntent(intent, 'sf-orchestrator');
     const { sessionId } = await adapter.spawnAgent({
@@ -236,18 +236,9 @@ describe('Integration: End-to-end session lifecycle', () => {
       model: 'claude-3-5-sonnet',
     });
 
-    const caps = await adapter.getCapabilities('claude-3-5-sonnet');
-    expect(caps).toBeDefined();
-    // ModelCapabilities is the Daemon-neutral shape — assert on its public fields.
-    expect(typeof caps.streaming).toBe('boolean');
-    expect(typeof caps.maxContextLength).toBe('number');
-    expect(caps.maxContextLength).toBeGreaterThan(0);
-    expect(typeof caps.tools).toBe('boolean');
-
-    // Default fallback when the model is empty.
-    const fallback = await adapter.getCapabilities('');
-    expect(fallback).toBeDefined();
-    expect(typeof fallback.streaming).toBe('boolean');
+    // A session model name is not capability evidence without a runtime query.
+    await expect(adapter.getCapabilities('claude-3-5-sonnet')).rejects.toThrow('CAPABILITY_DISCOVERY_UNAVAILABLE');
+    await expect(adapter.getCapabilities('')).rejects.toThrow('CAPABILITY_DISCOVERY_UNAVAILABLE');
 
     await adapter.cancelSession(sessionId, 'done');
   });

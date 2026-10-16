@@ -52,6 +52,7 @@ describe('v1.2 hard_stop scope regression', () => {
       root,
       {},
       'powershell -Command "Set-Content -Path \'src/todos/allowed.md\' -Value \'ok\'"',
+      [{ work_item_id: 'WI-0001', current_state: 'created' }, { work_item_id: 'WI-0002', current_state: 'implementation_running' }],
     );
 
     expect(selected).toBe('WI-0002');

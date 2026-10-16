@@ -13,7 +13,7 @@ const candidateId = (JSON.parse(
 
 describe('current repository formal release precheck', () => {
   it('uses SPS-1.0 and passes once deferred packages are absent from current release surfaces', async () => {
-    expect(candidateId).toMatch(/^main-[0-9a-f]{8}-working-tree-step[0-9a-z]+$/);
+    expect(candidateId).toMatch(/^commit-[0-9a-f]{40}$/);
     const outcome = await runCurrentReleasePrecheck({ candidateRoot, releaseId, candidateId });
 
     expect(outcome.producerErrors).toEqual([]);

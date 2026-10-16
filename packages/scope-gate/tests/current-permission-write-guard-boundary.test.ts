@@ -53,8 +53,11 @@ describe('current Permission and Write Guard ownership boundary', () => {
     expect(daemonWriteGuard).toContain(
       'return decideWritePermission(ctx, targetPath, operation, targetDetails);',
     );
-    expect(daemonHttp).toContain('const result = checkWrite(wiCtx, targetPath');
-    expect(daemonHttp).toContain('decideWorkItemArtifactWriteBoundary(command)');
+    const nativeBoundary = readFileSync(resolve(ROOT, 'packages/daemon-core/src/tools/lib/native-write-boundary.ts'), 'utf8');
+    expect(daemonHttp).toContain('checkNativeTool(this.deps,');
+    expect(nativeBoundary).toContain("from './write-guard-v11'");
+    expect(nativeBoundary).toContain('const result = checkWrite(');
+    expect(daemonHttp).toContain('NATIVE_SHELL_REQUIRES_CONTROLLED_EXECUTION');
     expect(daemonHttp).not.toContain('const wiArtifactPattern =');
     expect(daemonHttp).not.toContain("case 'tool.invoking':");
     expect(daemonHttp).not.toContain('handleToolInvoking(');

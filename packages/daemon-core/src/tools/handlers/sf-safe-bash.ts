@@ -1,4 +1,5 @@
 import { registerHandler } from '../ToolDispatcher';
+import { readAuthoritativeWorkItems } from '../lib/authoritative-work-items';
 import { safeBashExecute } from '../lib/sf_safe_bash_core';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 import { checkHardStop, setHardStop } from '../lib/hard-stop-latch';
@@ -68,20 +69,16 @@ function toProjectRelative(
   return normalizeSlashes(rel);
 }
 
-function readRuntimeWorkItems(projectRoot: string): any[] {
-  const state = readJsonIfExists(path.join(projectRoot, SPEC_DIR_NAME, 'runtime', 'state.json'));
-  return Array.isArray(state?.workItems) ? state.workItems : [];
-}
-
 const TERMINAL_WI_STATES = new Set(['closed', 'rejected', 'superseded']);
 
 function findSingleActiveWorkItemIdForGovernance(
   projectRoot: string,
-  args: Record<string, unknown>
+  args: Record<string, unknown>,
+  authoritativeItems: any[]
 ): string | null {
   const explicit = args['work_item_id'] ?? args['workItemId'] ?? args['wi'];
   if (isValidWorkItemId(explicit)) return explicit;
-  const active = readRuntimeWorkItems(projectRoot)
+  const active = authoritativeItems
     .filter(item => isValidWorkItemId(item?.work_item_id))
     .filter(item => !TERMINAL_WI_STATES.has(String(item?.current_state ?? item?.status ?? '')))
     .sort(sortByFreshest);
@@ -193,7 +190,8 @@ function filterDirectoryPreparationTargets(targets: string[]): string[] {
 export function findActiveWorkItemIdForWrite(
   projectRoot: string,
   args: Record<string, unknown>,
-  command: string
+  command: string,
+  authoritativeItems: any[] = []
 ): string | null {
   const explicit = args['work_item_id'] ?? args['workItemId'] ?? args['wi'];
   if (isValidWorkItemId(explicit)) return explicit;
@@ -205,7 +203,7 @@ export function findActiveWorkItemIdForWrite(
       .filter((value): value is string => typeof value === 'string')
   );
 
-  const running = readRuntimeWorkItems(projectRoot)
+  const running = authoritativeItems
     .filter(
       item =>
         item?.current_state === 'implementation_running' ||
@@ -349,17 +347,22 @@ async function executeSafe(
 }
 
 registerHandler('sf_safe_bash', async (args, context, _deps) => {
+  args = { timeoutMs: _deps.acceptedConfiguration?.merged.timeoutMs, ...args };
   const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const callerRole = extractCallerRole((context as Record<string, unknown> | undefined)?.agent);
   const command = (args['command'] as string) ?? '';
   const cwd = args['cwd'] as string | undefined;
+
+  let authoritativeItems: any[];
+  try { authoritativeItems = await readAuthoritativeWorkItems(_deps, baseDir); }
+  catch { return { success: false, error: 'AUTHORITATIVE_STATE_UNAVAILABLE', policy_violation: true }; }
 
   if (commandMentionsProtectedSpecForgePath(command)) {
     const access = classifyProtectedSpecForgePathBashAccess(command);
     if (access === 'read')
       return executeSafe(args as Record<string, unknown>, baseDir, command, cwd, callerRole);
 
-    const activeWiId = findSingleActiveWorkItemIdForGovernance(baseDir, args);
+    const activeWiId = findSingleActiveWorkItemIdForGovernance(baseDir, args, authoritativeItems);
     const reason = 'SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN';
     const hardStopRecord = activeWiId
       ? setHardStop(baseDir, activeWiId, reason, 'sf_safe_bash', 'work_item', {
@@ -411,7 +414,8 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
   const activeWiId = findActiveWorkItemIdForWrite(
     baseDir,
     args as Record<string, unknown>,
-    command
+    command,
+    authoritativeItems
   );
   if (activeWiId) {
     try {
@@ -448,6 +452,7 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
     cwd,
     callerRole,
     tool: 'sf_safe_bash',
+    authoritativeState: authoritativeItems.find(item => item.work_item_id === activeWiId)?.current_state,
   });
 
   if (runtimeGuard.checked && !runtimeGuard.allowed) {
