@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.12
+> Product release version: 1.0.13
 >
 > Product version epoch: 1
 >
@@ -363,6 +363,8 @@ Personal/local 模式默认将 Project Runtime 放在：
 ~~~text
 <OpenCode config>/sf-user/projects/<stable-project-key>/
 ~~~
+
+`stable-project-key` 必须由目标平台上的规范化绝对项目路径确定；不同项目路径不得因短哈希碰撞共享 WAL 或状态。发现旧式短键目录但无法证明其归属时，必须停止自动读写与迁移，保留历史数据并要求受控恢复，不得静默建立第二个当前状态源。
 
 无论物理位置如何，逻辑文件名和状态语义相同：
 
@@ -727,6 +729,8 @@ CLI 可以承担：
 - Daemon status/start/stop 等由部署层授权的 lifecycle command
 - health/doctor/diagnostic command
 - workflow/project operations through Daemon contract
+
+当前正式 CLI 只发布与现行 Daemon/部署合同一致的命令。依赖未注册 `/jobs`、`/api/specs`、`/api/webhooks` 或 `/api/plugins` 路由的历史命令组不得出现在正式解析器或帮助中；未来发布须先定义、实现并端到端验证完整 Daemon 合同。
 
 CLI 不得：
 

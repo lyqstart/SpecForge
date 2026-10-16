@@ -34,6 +34,7 @@ import {
   commandStart,
   commandStatus,
   commandStop,
+  restartDaemonLifecycle,
 } from '../../src/commands/daemon-client';
 
 // Get reference to the command functions from the module
@@ -257,5 +258,53 @@ describe('yargs daemon command structure', () => {
     
     // The parser should have command metadata
     expect(parser).toBeDefined();
+  });
+});
+
+describe('verified daemon restart lifecycle', () => {
+  const previous = { pid: 101, port: 3847, token: 'token', bound_to: '127.0.0.1' as const };
+  const current = { ...previous, pid: 202, token: 'new-token' };
+
+  it('waits for old exit and verifies the replacement before reporting success', async () => {
+    const steps: string[] = [];
+    const result = await restartDaemonLifecycle({
+      readHandshake: vi.fn().mockReturnValueOnce(previous).mockReturnValueOnce(current),
+      getHealth: async handshake => {
+        steps.push(`health:${handshake.pid}`);
+        return { pid: handshake.pid, status: 'ok', version: '1.0.13' };
+      },
+      requestStop: async () => { steps.push('stop'); return { success: true }; },
+      isAlive: () => { steps.push('old-exited'); return false; },
+      launch: async () => { steps.push('launch'); return 202; },
+      pause: async () => undefined,
+    });
+    expect(steps).toEqual(['health:101', 'stop', 'old-exited', 'launch', 'health:202']);
+    expect(result).toEqual({ previous_pid: 101, pid: 202, version: '1.0.13' });
+  });
+
+  it('never launches when the old process did not exit', async () => {
+    const launch = vi.fn();
+    await expect(restartDaemonLifecycle({
+      readHandshake: () => previous,
+      getHealth: async () => ({ pid: 101, status: 'ok' }),
+      requestStop: async () => ({ success: true }),
+      isAlive: () => true,
+      launch,
+      pause: async () => undefined,
+    })).rejects.toThrow(/did not exit/);
+    expect(launch).not.toHaveBeenCalled();
+  });
+
+  it('refuses a stale handshake before requesting stop', async () => {
+    const requestStop = vi.fn();
+    await expect(restartDaemonLifecycle({
+      readHandshake: () => previous,
+      getHealth: async () => ({ pid: 999, status: 'ok' }),
+      requestStop,
+      isAlive: () => false,
+      launch: async () => 202,
+      pause: async () => undefined,
+    })).rejects.toThrow(/do not agree/);
+    expect(requestStop).not.toHaveBeenCalled();
   });
 });

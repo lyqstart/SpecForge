@@ -5,6 +5,8 @@
  * enterprise modes.
  */
 import * as path from 'path';
+import * as fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import { SPEC_DIR_NAME, resolveProjectPath } from '@specforge/types/directory-layout';
 import {
   resolveOpenCodeConfigRoot,
@@ -101,7 +103,7 @@ function validateProjectPath(projectPath: string): void {
 // Hash helper
 // ---------------------------------------------------------------------------
 
-function hashPath(projectPath: string): string {
+function legacyHashPath(projectPath: string): string {
   let hash = 0;
   for (let i = 0; i < projectPath.length; i++) {
     const char = projectPath.charCodeAt(i);
@@ -109,6 +111,22 @@ function hashPath(projectPath: string): string {
     hash = hash & hash;
   }
   return Math.abs(hash).toString(16).padStart(8, '0');
+}
+
+function stableProjectKey(projectPath: string): string {
+  const resolved = path.resolve(projectPath);
+  const identity = process.platform === 'win32' ? resolved.toLowerCase() : resolved;
+  return createHash('sha256').update(identity, 'utf8').digest('hex');
+}
+
+function legacyRuntimeExists(location: string): boolean {
+  try {
+    fs.statSync(location);
+    return true;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return false;
+    throw error;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -174,15 +192,25 @@ export class PersonalPathResolver implements IPathResolver {
  * EnterprisePathResolver
  *
  * Project runtime data is centralized under:
- *   <OpenCode config>/sf-user/projects/<hash>/
+ *   <OpenCode config>/sf-user/projects/<sha256 of resolved project identity>/
  *
  * User-home ~/.specforge is legacy read-only and is never a current write target.
  */
 export class EnterprisePathResolver implements IPathResolver {
+  constructor(private readonly hasLegacyRuntime: (location: string) => boolean = legacyRuntimeExists) {}
+
   resolveProjectRuntimeDir(projectPath: string): string {
     validateProjectPath(projectPath);
-    const hash = hashPath(projectPath);
-    return resolveSpecForgeUserPath('projects', hash);
+    // The old 32-bit key is not a project identity: distinct paths can share
+    // its WAL. Never silently open a fresh state while old evidence exists.
+    const legacyDir = resolveSpecForgeUserPath('projects', legacyHashPath(projectPath));
+    if (this.hasLegacyRuntime(legacyDir)) {
+      throw new InvalidProjectPath(
+        projectPath,
+        `legacy enterprise runtime exists at ${legacyDir}; ownership cannot be verified for automatic migration`,
+      );
+    }
+    return resolveSpecForgeUserPath('projects', stableProjectKey(projectPath));
   }
 
   resolveStatePath(projectPath: string): string {

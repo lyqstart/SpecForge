@@ -31669,3 +31669,112 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 ## EXP-281：人工验收声明必须绑定独立原始证据与真实时间
 
 人工验收的自然语言结论、验证报告自引用、代码字节同一性及机器测试只能分别证明其自身，不能相互冒充。Verification 与 Close 必须复用来源与时间完整性判据；L5 人工验收要有独立原始文件和当前 SHA-256，Agent 浏览器测试不得写成用户亲自验收。已关闭 WI 的声明时间必须与原 StateManager Close 事件比较，不能用事后时钟使未来时间合法化。若旧证据经同一判据证明无效，先不可变归档旧代，再按首次失效责任层恢复原 WI，不删除历史或手改真相源。
+
+### ERR-1834：修复分支首次创建被受限 Git 元数据权限拒绝
+
+- **发生时间**：2026-10-16。
+- **分类**：`GIT_METADATA_PERMISSION / ZERO_BRANCH_WRITE`。
+- **一手证据**：`git switch -c codex/spec-conformance-repair` 无法创建 `.git/refs/heads/codex/spec-conformance-repair.lock`，返回 Permission denied；修改前 `git status --short --branch` 为 `main...origin/main`，工作树清洁。
+- **影响与处置**：这只证明执行环境拒绝 Git 元数据写入，不证明产品分支或代码有缺陷。补录后仅以同一明确分支名、最小 Git 权限重试，复核 HEAD 与工作树；不得以源码写入绕过分支纪律。
+- REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-044,EXP-060,EXP-087。
+- **复核结果**：相同分支名在允许写入 Git 元数据的最小范围成功创建，`codex/spec-conformance-repair` 承载本轮变更。
+- ERR1834_STATUS=CLOSED_BY_EXACT_BRANCH_RETRY
+
+### ERR-1835：正式 CLI 缺失规格要求的 daemon restart
+
+- **发生时间**：2026-10-16。
+- **分类**：`SPS_CLI_LIFECYCLE_GAP`。
+- **一手证据**：SPS §13.1 明定 `specforge daemon restart`；正式 `packages/cli/src/cli.ts` 注册 `daemon-client.ts`，其中仅注册 start、stop、status 与未实现的 config；另一个含 restart 的 systemd 命令目录未由正式入口导入。
+- **影响与处置**：用户不能通过正式 CLI 使用跨平台重启入口。应在正式命令树实现受控停机、确认退出、启动及健康核验，并补测试；不得把 systemd 专用实现冒充 Windows 入口。
+- REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-044,EXP-060,EXP-087,EXP-117。
+- **代码验证**：正式 CLI 注册 restart；旧 PID 退出、新握手 PID 与启动 PID 及 health 均为成功条件，旧进程未退出则不启动替代。定向 20 项 daemon 命令测试、完整 CLI 788 项、正式 workspace build 均通过；真实已安装进程验证待发布阶段。
+- ERR1835_STATUS=CODE_FIXED_PENDING_INSTALLED_LIFECYCLE_PROOF
+
+### ERR-1836：企业模式项目目录的 32 位哈希发生真实路径碰撞
+
+- **发生时间**：2026-10-16。
+- **分类**：`ENTERPRISE_PROJECT_STATE_ISOLATION_DEFECT`。
+- **一手证据**：`EnterprisePathResolver` 的 `hashPath` 使用 32 位 Java 字符串哈希；`D:/code/Aa` 与 `D:/code/BB` 计算同一目录键。ProjectManager 与 StateManager 共用该解析器，后者事件流按目录读写且不作项目身份过滤。
+- **影响与处置**：两个项目可共享 `events.jsonl` 和状态目录，违反 SPS 每 Project Context 独立权威状态。改用平台规范化路径的稳定强摘要，增加碰撞回归；旧短键目录不能无证据地当作新项目状态迁移。
+- REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-044,EXP-060,EXP-087,EXP-268。
+- **代码验证**：目录键改为平台规范化绝对路径的 SHA-256，旧短键目录存在时拒绝无归属自动迁移；碰撞路径分离与旧数据 fail-closed 测试通过，daemon-core 1872 项正式顺序回归通过。
+- ERR1836_STATUS=CODE_FIXED_PENDING_RELEASE_PRECHECK
+
+### ERR-1837：Candidate Manifest 物化在 POSIX 也折叠路径大小写
+
+- **发生时间**：2026-10-16。
+- **分类**：`POSIX_PATH_IDENTITY_DEFECT`。
+- **一手证据**：SPS §6.4(11) 规定 POSIX 路径大小写敏感；`materializeCandidateManifestEntries` 与 `candidateEntryKey` 对候选和目标路径无条件 `toLowerCase()`，并用折叠键做冲突与去重。
+- **影响与处置**：POSIX 中 `CORE` 与 `core` 两个不同文件可能被合并。复用平台路径身份语义，Windows 仍折叠、POSIX 保留，并覆盖 Manifest 物化回归。
+- REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-044,EXP-060,EXP-087,EXP-268。
+- **代码验证**：物化流程复用 resolved-path identity，POSIX 保留大小写、Windows 折叠；平台回归与 daemon-core 1872 项正式顺序回归通过。
+- ERR1837_STATUS=CODE_FIXED_PENDING_RELEASE_PRECHECK
+
+### ERR-1838：正式 CLI 暴露当前 Daemon 不支持的路由命令
+
+- **发生时间**：2026-10-16。
+- **分类**：`CLI_DAEMON_CONTRACT_CONFLICT / FALSE_PUBLIC_CAPABILITY`。
+- **一手证据**：正式 CLI 注册 workflow/job/spec/webhook/plugin 等命令，调用 `/jobs`、`/api/specs`、`/api/webhooks` 或 `/api/plugins`；当前 `HTTPServer` 路由表不提供这些路径并对未知路由返回 404。相关单元测试以 mock 客户端验证局部命令，不证明正式 CLI 到 Daemon 的端到端能力。
+- **影响与处置**：帮助及正式命令入口误导用户。当前规格未定义这些路由的完整合同，先从当前正式入口与帮助撤下，保留历史源码；如未来产品决策纳入，再以完整 Daemon 合同与 E2E 恢复。
+- REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-044,EXP-060,EXP-087,EXP-117。
+- **代码验证**：正式解析器和帮助撤下无路由命令组，仍保留历史源码；实际编译 CLI 对 `workflow list` 返回严格未知命令，help 不再列出旧组，完整 CLI 788 项回归通过。
+- ERR1838_STATUS=CODE_FIXED_PENDING_RELEASE_PRECHECK
+
+### ERR-1839：定向验证首次被 Bun 当前目录载体错误阻断
+
+- **发生时间**：2026-10-16。
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / ZERO_BUILD_EXECUTION`。
+- **一手证据**：在存在且 PowerShell `Get-Location` 可读取的 `packages/cli` 目录运行 `bun run build`，Bun 1.3.14 在加载当前目录阶段返回 `CouldntReadCurrentDirectory`，退出码 1，TypeScript 尚未执行。只读取证中另有 PowerShell 命令表达错误（`Select-Object -Tail`、Windows 路径字面 glob）、一次以 `--` 开头的 `rg` 模式被当选项、一次扫描不存在的 `packages/daemon/src` 路径；已改用直接 `rg`、`-e` 和精确存在路径完成同一取证。编译 CLI 后尝试未受文档支持的 `specforge help daemon` 被严格解析器拒绝，按当前文档改用 `specforge daemon --help` 成功。
+- **影响与处置**：首次失败不能证明代码构建失败，也不能计为测试结果。先固定该输出，改用包内 TypeScript 可执行文件或允许读取真实工作目录的最小主机范围，再分别报告实际收集/编译结果。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-021,EXP-032,EXP-033,EXP-044,EXP-060,EXP-087,EXP-195,EXP-263。
+- **复核结果**：包内 TypeScript `--noEmit`、正式 `bun run build` 均退出 0；首次 Bun 错误仍保留为载体失败。
+- ERR1839_STATUS=CLOSED_BY_PACKAGE_TYPECHECK_AND_OFFICIAL_BUILD
+
+### ERR-1840：根依赖 TypeScript 版本与 CLI 包配置不匹配
+
+- **发生时间**：2026-10-16。
+- **分类**：`VALIDATION_TOOLCHAIN_MISMATCH / ZERO_TYPECHECK_EXECUTION`。
+- **一手证据**：根 `node_modules/typescript/bin/tsc -p packages/cli/tsconfig.json --noEmit` 返回 TS5107：CLI 的 `moduleResolution=node10` 在根 TypeScript 6 中需要 `ignoreDeprecations=6.0`；该包另有自己的 TypeScript 可执行文件。
+- **影响与处置**：失败发生于编译选项解析，不能判断本轮源码类型正确性。使用 CLI 包锁定的 TypeScript 验证，不为适配错误的根编译器修改产品配置。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-021,EXP-032,EXP-033,EXP-044,EXP-060,EXP-087,EXP-195。
+- **复核结果**：CLI 包自带 TypeScript `--noEmit` 退出 0，正式 workspace build 亦通过；未修改 tsconfig 迁就根版本。
+- ERR1840_STATUS=CLOSED_BY_PACKAGE_OWNED_TYPECHECK
+
+### ERR-1841：CLI 定向 Vitest 在受限 realpath 阶段零收集
+
+- **发生时间**：2026-10-16。
+- **分类**：`EXECUTION_ENVIRONMENT_LIMITATION / VITEST_REALPATH_EPERM / ZERO_TEST_EXECUTION`。
+- **一手证据**：在 `packages/cli` 运行包内 `node node_modules/vitest/vitest.mjs run tests/commands/daemon.test.ts tests/help-system.test.ts`，Vitest 对根 `.bun/vitest/.../spy.js` 的 realpath 返回 EPERM；报告 `Test Files no tests / Tests no tests`。同轮包内 TypeScript `--noEmit` 已退出 0。
+- **影响与处置**：该失败不证明任何产品断言失败。保留零收集输出，以相同命令在允许依赖真实路径的最小主机范围重跑，并记录真实文件/测试数。
+- REUSED_EXP=EXP-002,EXP-007,EXP-011,EXP-016,EXP-021,EXP-032,EXP-033,EXP-044,EXP-060,EXP-087,EXP-117,EXP-195,EXP-263。
+- **复核结果**：相同 CLI 定向测试在主机范围真实收集 2 文件 36 项；修正下述独立测试断言后为 36/36，随后最终定向 3 文件 38/38。
+- ERR1841_STATUS=CLOSED_BY_HOST_SCOPE_COLLECTION_AND_PASS
+
+### ERR-1842：帮助系统新测试误把概要 JSON 当作命令详情 JSON
+
+- **发生时间**：2026-10-16。
+- **分类**：`TEST_CONSUMER_CONTRACT_MISMATCH / ONE_ASSERTION_FAILURE`。
+- **一手证据**：主机范围相同 CLI 测试真实收集 2 文件 36 项，35 通过、1 失败；`help-system.test.ts:51` 对 `generateGeneralHelp()` 的 `daemonCommand.subcommands.map` 访问 undefined。生产 `generateGeneralHelp()` 的 JSON 合同只返回命令 name/description/async，子命令属于 `generateCommandHelp('daemon')` 的详情合同。
+- **影响与处置**：这是新增测试读取了错误的帮助层级，不证明 daemon 命令缺失；应保留概要的发布组断言，并在命令详情返回值断言四个子命令。
+- REUSED_EXP=EXP-007,EXP-021,EXP-022,EXP-032,EXP-033,EXP-044,EXP-060,EXP-074,EXP-087。
+- **复核结果**：把子命令断言移入 `generateCommandHelp('daemon')` 的详情测试，保留概要发布组检查；定向 36/36、最终 38/38 通过。
+- ERR1842_STATUS=CLOSED_BY_CORRECT_HELP_CONTRACT_ASSERTION
+
+### ERR-1843：全量 CLI 测试的一项墙钟性能断言超过阈值
+
+- **发生时间**：2026-10-16。
+- **分类**：`PERFORMANCE_ASSERTION_FAILURE / CAUSE_UNDETERMINED`。
+- **一手证据**：主机范围完整 CLI Vitest 收集 40 文件 788 项，39 文件 787 项通过；`performance-validation.test.ts:152` 的 human-readable output formatting 实测 80.446ms，超过既有 50ms 阈值。变更未触及该格式化实现。
+- **影响与处置**：当前不能把该失败称作环境波动，也不能宣称全量 CLI 通过。保留原始数值，单独重跑同一性能文件并检查是否可重复；若重复，应调查生产者或阈值合同，不能只调宽阈值。
+- REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-060,EXP-074,EXP-087。
+- **复核结果**：相同性能文件隔离重跑 21/21，目标测量 12.60ms；再跑完整 CLI 为 40 文件 788/788，正式顺序 workspace 中 CLI 同样 788/788。原始 80.446ms 仍是有效首轮失败；只证实未重复，不据此断言具体抖动根因，阈值未变。
+- ERR1843_STATUS=CLOSED_AS_NOT_REPRODUCED_WITH_ORIGINAL_FAILURE_RETAINED
+
+### ERR-1844：发布清单生成首次遗漏必需的不可变 Candidate ID
+
+- **发生时间**：2026-10-16。
+- **分类**：`RELEASE_COMMAND_INPUT_ERROR / ZERO_MANIFEST_PRODUCTION`。
+- **一手证据**：官方 `build:release-runtimes` 已生成 1.0.13 两份二进制；随后 `bun run build:release-manifest` 因未提供 `--candidate-id` 返回 `RELEASE_CANDIDATE_ID_REQUIRED`，未产生正式发布清单。脚本源码明确要求该参数，precheck 同样绑定 Candidate ID。
+- **影响与处置**：错误是命令缺少发布身份，不是清单内容验证失败。先完成代码与治理差异审核、精确提交形成不可变 Git 基线，再以该提交绑定的 Candidate ID 生成清单并运行正式 precheck；不得用临时字符串冒充不可变身份。
+- REUSED_EXP=EXP-001,EXP-007,EXP-021,EXP-032,EXP-033,EXP-044,EXP-060,EXP-087,EXP-193。
+- ERR1844_STATUS=OPEN_PENDING_COMMIT_BOUND_CANDIDATE

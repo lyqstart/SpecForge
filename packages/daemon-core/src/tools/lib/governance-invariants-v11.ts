@@ -440,10 +440,6 @@ function classificationRequiresRequirementsCandidate(
   );
 }
 
-function candidateEntryKey(entry: ManifestEntry): string {
-  return `${normalizeSlash(entry.candidate_path).toLowerCase()}=>${normalizeSlash(entry.target_path).toLowerCase()}`;
-}
-
 function canonicalExplicitManifestEntriesForMaterialization(manifest: any): ManifestEntry[] {
   const rawEntries = Array.isArray(manifest?.entries) ? manifest.entries : [];
   const entries: ManifestEntry[] = [];
@@ -613,7 +609,8 @@ function moduleDefinitionCandidateHasGovernedCodePathDelta(
 export function materializeCandidateManifestEntries(
   manifest: any,
   workItemDir: string,
-  classificationValue: unknown
+  classificationValue: unknown,
+  platform: NodeJS.Platform = process.platform,
 ): CandidateManifestMaterializationResult {
   if (!isClassificationObject(classificationValue)) {
     throw new Error(
@@ -624,14 +621,20 @@ export function materializeCandidateManifestEntries(
   const explicit = canonicalExplicitManifestEntriesForMaterialization(manifest);
   const discovered = listCanonicalCandidateFiles(workItemDir);
   const selected: ManifestEntry[] = [];
+  const selectedKeys = new Set<string>();
   const candidateToTarget = new Map<string, string>();
   const targetToCandidate = new Map<string, string>();
+  const projectRoot = path.resolve(workItemDir, '..', '..', '..');
+  const candidateIdentity = (candidatePath: string): string =>
+    resolvedPathIdentity(path.resolve(workItemDir, normalizeSlash(candidatePath)), platform);
+  const targetIdentity = (targetPath: string): string =>
+    resolvedPathIdentity(path.resolve(projectRoot, normalizeSlash(targetPath)), platform);
 
   const appendEntry = (entry: ManifestEntry): void => {
     const candidatePath = normalizeSlash(entry.candidate_path);
     const targetPath = normalizeSlash(entry.target_path);
-    const candidateKey = candidatePath.toLowerCase();
-    const targetKey = targetPath.toLowerCase();
+    const candidateKey = candidateIdentity(candidatePath);
+    const targetKey = targetIdentity(targetPath);
     const existingTarget = candidateToTarget.get(candidateKey);
     const existingCandidate = targetToCandidate.get(targetKey);
     if (existingTarget && existingTarget !== targetKey) {
@@ -646,12 +649,9 @@ export function materializeCandidateManifestEntries(
     }
     candidateToTarget.set(candidateKey, targetKey);
     targetToCandidate.set(targetKey, candidateKey);
-    const key = candidateEntryKey({
-      ...entry,
-      candidate_path: candidatePath,
-      target_path: targetPath,
-    });
-    if (selected.some(existing => candidateEntryKey(existing) === key)) return;
+    const key = `${candidateKey}=>${targetKey}`;
+    if (selectedKeys.has(key)) return;
+    selectedKeys.add(key);
     selected.push({
       ...entry,
       candidate_path: candidatePath,
@@ -670,7 +670,7 @@ export function materializeCandidateManifestEntries(
       .filter(entry =>
         moduleDefinitionCandidateHasGovernedCodePathDelta(workItemDir, entry)
       )
-      .map(entry => normalizeSlash(entry.candidate_path).toLowerCase())
+      .map(entry => candidateIdentity(entry.candidate_path))
   );
   const moduleDefinitionRequired =
     moduleBoundaryChanged || governedModuleDefinitionCandidates.size > 0;
@@ -720,11 +720,11 @@ export function materializeCandidateManifestEntries(
     }
   };
   const discoveredByCandidate = new Map(
-    discovered.map(entry => [normalizeSlash(entry.candidate_path).toLowerCase(), entry])
+    discovered.map(entry => [candidateIdentity(entry.candidate_path), entry])
   );
   for (const entry of explicit) {
     const discoveredEntry = discoveredByCandidate.get(
-      normalizeSlash(entry.candidate_path).toLowerCase()
+      candidateIdentity(entry.candidate_path)
     );
     const effectiveEntry: ManifestEntry = {
       ...entry,
@@ -733,7 +733,7 @@ export function materializeCandidateManifestEntries(
     };
     const effectiveType = String(effectiveEntry.type ?? '').trim();
     if (effectiveType === 'module_definition' && !moduleBoundaryChanged) {
-      const candidateKey = normalizeSlash(effectiveEntry.candidate_path).toLowerCase();
+      const candidateKey = candidateIdentity(effectiveEntry.candidate_path);
       if (!governedModuleDefinitionCandidates.has(candidateKey)) continue;
     }
     if (knownMaterializedTypes.has(effectiveType) && !includeType(effectiveType)) {
@@ -747,7 +747,7 @@ export function materializeCandidateManifestEntries(
     (entry.type !== 'module_definition' ||
       moduleBoundaryChanged ||
       governedModuleDefinitionCandidates.has(
-        normalizeSlash(entry.candidate_path).toLowerCase()
+        candidateIdentity(entry.candidate_path)
       ));
 
   for (const entry of discovered) {
@@ -783,10 +783,10 @@ export function materializeCandidateManifestEntries(
     'project_contract_changed=true, api_contract_changed=true or contract_registry_only=true'
   );
 
-  const selectedPaths = new Set(selected.map(entry => normalizeSlash(entry.candidate_path)));
+  const selectedPaths = new Set(selected.map(entry => candidateIdentity(entry.candidate_path)));
   const ignoredCandidatePaths = discovered
     .map(entry => normalizeSlash(entry.candidate_path))
-    .filter(candidatePath => !selectedPaths.has(candidatePath))
+    .filter(candidatePath => !selectedPaths.has(candidateIdentity(candidatePath)))
     .sort();
 
   return {

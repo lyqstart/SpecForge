@@ -11,8 +11,7 @@ bun install
 # Build the CLI
 bun run build
 
-# Link for local development
-npm link
+# The official user-level installer owns the released CLI and daemon binaries.
 ```
 
 ## Usage
@@ -22,24 +21,13 @@ The CLI is the installed deployment and lifecycle entry point for the shared dae
 ```bash
 specforge daemon start --detach
 specforge daemon status
+specforge daemon restart
 specforge daemon stop
 ```
 
-`start` launches the installed user-level `specforged` executable directly. `status` uses `/api/v1/healthz`, and `stop` uses the authenticated `/api/v1/admin/stop` endpoint. Omit `--detach` to keep the daemon in the foreground. The OpenCode Plugin remains a client and never owns this lifecycle.
+`start` launches the installed user-level `specforged` executable directly. `status` uses `/api/v1/healthz`; `stop` uses the authenticated `/api/v1/admin/stop` endpoint. `restart` waits for the old PID to exit and verifies the new PID's handshake and health before reporting success. Omit `--detach` to keep the daemon in the foreground. The OpenCode Plugin remains a client and never owns this lifecycle.
 
 ```bash
-# Manage workflows
-specforge spec start --template my-template
-specforge workflow status <id>
-specforge workflow list
-
-# Manage webhooks
-specforge webhook register --url https://example.com/webhook --events "gate.*,permission.denied"
-specforge webhook list
-
-# Job management
-specforge job <job-id>
-
 # Utilities
 specforge config
 
@@ -58,24 +46,17 @@ The CLI supports two output modes:
 
 ## Commands
 
-- `daemon` - Start, stop, and inspect the installed shared daemon
-- `spec` - Manage specs
-- `workflow` - Manage workflows
-- `job` - Query async job status
-- `webhook` - Manage webhooks
+- `daemon` - Start, stop, restart, and inspect the installed shared daemon
 - `config` - Show configuration
+- `doctor` - Inspect local installation and project status
+- `services` - Manage supported OS services (Linux `systemd --user` registration only)
+- `opencode-server` - Manage the OpenCode Server service
 
-## Complete Removal Including User Data
+Historical `spec`, `workflow`, `job`, `webhook`, and third-party `plugin` command modules are not registered in the released CLI: their required Daemon routes are not part of the current contract.
 
-To completely remove SpecForge including all user data, run the following commands in order:
+## Uninstall
 
-1. npm uninstall -g @specforge/cli
-2. rm -rf ~/.config/opencode/sf-user/
-
-For Windows PowerShell, use:
-
-1. npm uninstall -g @specforge/cli
-2. Remove-Item -Recurse -Force $env:USERPROFILE\.config\opencode\sf-user
+Use the official user-level installer's `uninstall` operation. It owns the release manifest and preserves user data according to its uninstall contract; npm-global removal and manual recursive deletion are not current deployment procedures.
 
 ## Development
 

@@ -4,6 +4,7 @@
  * Provides commands to manage the SpecForge daemon:
  * - start: Start the daemon (foreground mode by default)
  * - status: Check daemon health/status
+ * - restart: Gracefully stop and restart the installed daemon
  * - stop: Stop the daemon
  * 
  * @packageDocumentation
@@ -16,7 +17,7 @@ import * as path from 'path';
 import { spawn } from 'node:child_process';
 import { DaemonClient } from '../http/DaemonClient';
 import { ModeSwitch, formatError } from '../mode-switch';
-import { toCliError, DaemonUnreachableError, InvalidInputError } from '../errors';
+import { toCliError, InvalidInputError } from '../errors';
 import { resolveSpecForgeHandshakePath, resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
 /**
  * Runtime directory path under the canonical SpecForge user root
@@ -60,6 +61,137 @@ function getDaemonClient(): DaemonClient {
     port,
     token,
   });
+}
+
+type DaemonHandshake = {
+  pid: number;
+  port: number;
+  token: string;
+  bound_to: '127.0.0.1' | '0.0.0.0';
+};
+
+function readVerifiedHandshake(): DaemonHandshake {
+  let value: unknown;
+  try {
+    value = JSON.parse(fs.readFileSync(getHandshakePath(), 'utf-8'));
+  } catch {
+    throw new InvalidInputError('A valid daemon handshake is required for restart. Run daemon status first.');
+  }
+  const handshake = value as Partial<DaemonHandshake>;
+  if (
+    !handshake || !Number.isSafeInteger(handshake.pid) || Number(handshake.pid) <= 0 ||
+    !Number.isInteger(handshake.port) || Number(handshake.port) <= 0 ||
+    typeof handshake.token !== 'string' || handshake.token.length === 0 ||
+    !['127.0.0.1', '0.0.0.0'].includes(String(handshake.bound_to))
+  ) {
+    throw new InvalidInputError('Daemon handshake is incomplete; refusing an unverified restart.');
+  }
+  return handshake as DaemonHandshake;
+}
+
+function clientForHandshake(handshake: DaemonHandshake): DaemonClient {
+  return new DaemonClient({ host: '127.0.0.1', port: handshake.port, token: handshake.token });
+}
+
+function isProcessAlive(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    return (error as NodeJS.ErrnoException).code !== 'ESRCH';
+  }
+}
+
+async function launchInstalledDaemon(): Promise<number | undefined> {
+  const executable = path.join(
+    resolveSpecForgeUserRoot(), 'bin', process.platform === 'win32' ? 'specforged.exe' : 'specforged',
+  );
+  if (!fs.existsSync(executable)) {
+    throw new InvalidInputError(`Daemon executable not found: ${executable}`);
+  }
+  const child = spawn(executable, ['start'], { detached: true, windowsHide: true, stdio: 'ignore' });
+  await new Promise<void>((resolve, reject) => {
+    child.once('spawn', resolve);
+    child.once('error', reject);
+  });
+  child.unref();
+  return child.pid;
+}
+
+export type RestartLifecycleOperations = {
+  readHandshake: () => DaemonHandshake;
+  getHealth: (handshake: DaemonHandshake) => Promise<{ pid: number; status: string; version?: string }>;
+  requestStop: (handshake: DaemonHandshake) => Promise<{ success: boolean }>;
+  isAlive: (pid: number) => boolean;
+  launch: () => Promise<number | undefined>;
+  pause: () => Promise<void>;
+};
+
+/** A completed restart requires old-process exit and new-process health. */
+export async function restartDaemonLifecycle(operations: RestartLifecycleOperations): Promise<{
+  previous_pid: number;
+  pid: number;
+  version?: string;
+}> {
+  const previous = operations.readHandshake();
+  const previousHealth = await operations.getHealth(previous);
+  if (previousHealth.pid !== previous.pid || previousHealth.status === 'shutting-down') {
+    throw new InvalidInputError('Daemon handshake and live process do not agree; restart refused.');
+  }
+  const stopped = await operations.requestStop(previous);
+  if (stopped.success !== true) {
+    throw new InvalidInputError('Daemon did not accept the authenticated stop request.');
+  }
+  let exited = false;
+  for (let attempt = 0; attempt < 120; attempt += 1) {
+    if (!operations.isAlive(previous.pid)) {
+      exited = true;
+      break;
+    }
+    await operations.pause();
+  }
+  if (!exited) {
+    throw new InvalidInputError(`Daemon PID ${previous.pid} did not exit; replacement was not started.`);
+  }
+  const launchedPid = await operations.launch();
+  if (!Number.isSafeInteger(launchedPid) || Number(launchedPid) <= 0) {
+    throw new InvalidInputError('Replacement daemon launch returned no verifiable PID.');
+  }
+  for (let attempt = 0; attempt < 120; attempt += 1) {
+    try {
+      const current = operations.readHandshake();
+      if (current.pid === launchedPid && current.pid !== previous.pid) {
+        const health = await operations.getHealth(current);
+        if (health.pid === current.pid && health.status === 'ok') {
+          return { previous_pid: previous.pid, pid: current.pid, version: health.version };
+        }
+      }
+    } catch {
+      // The new daemon may not have written its handshake or opened the port yet.
+    }
+    await operations.pause();
+  }
+  throw new InvalidInputError('Replacement daemon did not pass handshake and health checks.');
+}
+
+export async function commandRestart(_argv: Arguments, modeSwitch: ModeSwitch): Promise<void> {
+  try {
+    const result = await restartDaemonLifecycle({
+      readHandshake: readVerifiedHandshake,
+      getHealth: handshake => clientForHandshake(handshake).get('/api/v1/healthz', {
+        retry: false, timeout: 1000,
+      }),
+      requestStop: handshake => clientForHandshake(handshake).post('/api/v1/admin/stop'),
+      isAlive: isProcessAlive,
+      launch: launchInstalledDaemon,
+      pause: () => new Promise(resolve => setTimeout(resolve, 250)),
+    });
+    if (modeSwitch.isJson()) console.log(modeSwitch.formatData({ success: true, ...result }));
+    else console.log(modeSwitch.formatSuccess(`Daemon restarted (PID: ${result.pid})`));
+  } catch (error) {
+    console.error(modeSwitch.formatError(toCliError(error)));
+    process.exitCode = 1;
+  }
 }
 
 /**
@@ -276,33 +408,14 @@ export function addDaemonCommands(yargsInstance: Argv): Argv {
           }
         )
         .command(
-          'config',
-          'Configure daemon settings',
-          (yargsInstance: Argv) => {
-            return yargsInstance
-              .option('bind', {
-                type: 'string',
-                describe: 'Bind address',
-              })
-              .option('require-auth', {
-                type: 'boolean',
-                describe: 'Require authentication',
-                default: true,
-              });
-          },
+          'restart',
+          'Restart the installed daemon and verify health',
+          () => {},
           async (argv: Arguments) => {
-            // TODO: Implement daemon config
-            const modeSwitch = new ModeSwitch(argv);
-            if (modeSwitch.isJson()) {
-              console.log(modeSwitch.formatData({ 
-                message: 'Config command not yet implemented' 
-              }));
-            } else {
-              console.log('Config command not yet implemented');
-            }
+            await commandRestart(argv, new ModeSwitch(argv));
           }
         )
-        .demandCommand(1, 'Specify a daemon subcommand (start, stop, status, config)');
+        .demandCommand(1, 'Specify a daemon subcommand (start, stop, status, restart)');
     }
   );
 }
@@ -362,7 +475,15 @@ export async function runDaemonCommand(
         await commandStatus(argv, modeSwitch);
       }
     )
-    .demandCommand(1, 'Specify a subcommand: start, stop, or status')
+    .command(
+      'restart',
+      'Restart the installed daemon and verify health',
+      () => {},
+      async (argv: Arguments) => {
+        await commandRestart(argv, new ModeSwitch(argv));
+      }
+    )
+    .demandCommand(1, 'Specify a subcommand: start, stop, status, or restart')
     .help()
     .alias('help', 'h');
 

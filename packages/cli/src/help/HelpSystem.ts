@@ -513,6 +513,11 @@ export function createDefaultHelpSystem(): HelpSystem {
             ],
           },
           {
+            name: 'restart',
+            description: 'Restart the installed daemon and verify health',
+            examples: [{ description: 'Restart daemon', command: 'specforge daemon restart' }],
+          },
+          {
             name: 'config',
             description: 'Configure daemon settings',
             parameters: [
@@ -916,5 +921,27 @@ export function createDefaultHelpSystem(): HelpSystem {
     ],
   };
 
+  // Retain legacy help definitions as historical source, but the released
+  // parser must never advertise routes that the current daemon does not own.
+  config.commands = config.commands.filter(command =>
+    ['daemon', 'config', 'version'].includes(command.name)
+  );
+  const daemon = config.commands.find(command => command.name === 'daemon');
+  if (daemon?.subcommands) {
+    daemon.subcommands = daemon.subcommands.filter(subcommand =>
+      ['start', 'stop', 'status', 'restart'].includes(subcommand.name)
+    );
+    const startHelp = daemon.subcommands.find(subcommand => subcommand.name === 'start');
+    if (startHelp) {
+      startHelp.examples = startHelp.examples?.filter(example =>
+        !example.command.includes('--bind 0.0.0.0')
+      );
+    }
+  }
+  config.commands.push(
+    { name: 'doctor', description: 'Inspect local SpecForge installation and project status' },
+    { name: 'services', description: 'Manage supported OS services' },
+    { name: 'opencode-server', description: 'Manage the OpenCode Server service' },
+  );
   return new HelpSystem(config);
 }

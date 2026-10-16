@@ -321,33 +321,28 @@ describe('InvalidProjectPath validation', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Enterprise path hash is backward-compatible
+// Enterprise project identities must not share state
 // ---------------------------------------------------------------------------
 describe('EnterprisePathResolver hash stability', () => {
-  it('matches the legacy hash algorithm used in WAL/StateManager', () => {
-    // Legacy algorithm (from WAL.hashPath):
-    function legacyHash(p: string): string {
-      let hash = 0;
-      for (let i = 0; i < p.length; i++) {
-        const char = p.charCodeAt(i);
-        hash = (hash << 5) - hash + char;
-        hash = hash & hash;
-      }
-      return Math.abs(hash).toString(16).padStart(8, '0');
-    }
+  it('separates two distinct project paths that collide in the old 32-bit hash', () => {
+    const resolver = new EnterprisePathResolver(() => false);
+    const a = resolver.resolveProjectRuntimeDir('D:/code/Aa');
+    const b = resolver.resolveProjectRuntimeDir('D:/code/BB');
+    expect(a).not.toBe(b);
+    expect(path.basename(a)).toMatch(/^[a-f0-9]{64}$/);
+    expect(path.basename(b)).toMatch(/^[a-f0-9]{64}$/);
+  });
 
-    const resolver = new EnterprisePathResolver();
-    const testPaths = [
-      '/home/user/project-a',
-      'C:\\Users\\user\\project-b',
-      '/opt/app',
-    ];
+  it('uses one identity for resolved path aliases', () => {
+    const resolver = new EnterprisePathResolver(() => false);
+    expect(resolver.resolveProjectRuntimeDir('./sample/../sample'))
+      .toBe(resolver.resolveProjectRuntimeDir('./sample'));
+  });
 
-    for (const tp of testPaths) {
-      const dir = resolver.resolveProjectRuntimeDir(tp);
-      const expected = resolveSpecForgeUserPath('projects', legacyHash(tp));
-      expect(dir).toBe(expected);
-    }
+  it('fails closed when legacy runtime evidence exists', () => {
+    const resolver = new EnterprisePathResolver(() => true);
+    expect(() => resolver.resolveProjectRuntimeDir('D:/code/Aa'))
+      .toThrow(/ownership cannot be verified for automatic migration/);
   });
 });
 

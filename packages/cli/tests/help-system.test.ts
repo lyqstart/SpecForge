@@ -24,7 +24,7 @@ describe('HelpSystem', () => {
       const modeSwitch = new ModeSwitch('human');
       const helpText = helpSystem.generateGeneralHelp(modeSwitch);
       
-      expect(helpText).toContain('SpecForge v1.0.12');
+      expect(helpText).toContain('SpecForge v1.0.13');
       expect(helpText).toContain('Usage: specforge <command> [options]');
       expect(helpText).toContain('Available commands:');
       expect(helpText).toContain('daemon');
@@ -40,7 +40,7 @@ describe('HelpSystem', () => {
       const parsed = JSON.parse(helpText);
       
       expect(parsed.appName).toBe('SpecForge');
-      expect(parsed.version).toBe('1.0.12');
+      expect(parsed.version).toBe('1.0.13');
       expect(Array.isArray(parsed.commands)).toBe(true);
       expect(parsed.commands.length).toBeGreaterThan(0);
       expect(Array.isArray(parsed.globalFlags)).toBe(true);
@@ -48,6 +48,10 @@ describe('HelpSystem', () => {
       const daemonCommand = parsed.commands.find((cmd: any) => cmd.name === 'daemon');
       expect(daemonCommand).toBeDefined();
       expect(daemonCommand.description).toBe('Manage the SpecForge daemon');
+      const publishedNames = parsed.commands.map((command: any) => command.name);
+      for (const unsupported of ['spec', 'workflow', 'job', 'webhook', 'plugin']) {
+        expect(publishedNames).not.toContain(unsupported);
+      }
     });
   });
 
@@ -75,6 +79,8 @@ describe('HelpSystem', () => {
       expect(parsed.description).toBe('Manage the SpecForge daemon');
       expect(Array.isArray(parsed.subcommands)).toBe(true);
       expect(parsed.subcommands.length).toBeGreaterThan(0);
+      expect(parsed.subcommands.map((subcommand: any) => subcommand.name))
+        .toEqual(['start', 'stop', 'status', 'restart']);
       expect(Array.isArray(parsed.examples)).toBe(true);
       expect(Array.isArray(parsed.troubleshooting)).toBe(true);
     });

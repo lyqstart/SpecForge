@@ -52,6 +52,7 @@ bun scripts/sf-installer.ts uninstall
 ```bash
 specforge daemon start --detach
 specforge daemon status
+specforge daemon restart
 specforge daemon stop
 ```
 

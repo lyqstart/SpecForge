@@ -83,6 +83,21 @@ describe('Runtime Candidate Manifest materialization', () => {
     await writeFile(target, relative.endsWith('.json') ? '{}\n' : '# Candidate\n', 'utf-8');
   }
 
+  it('keeps case-distinct POSIX candidates while deduplicating Windows aliases', () => {
+    const entries = ['CORE', 'core'].map(moduleId => ({
+      candidate_path: `candidates/project/modules/${moduleId}/requirements.candidate.md`,
+      target_path: `.specforge/project/modules/${moduleId}/requirements.md`,
+      type: 'requirements',
+      operation: 'replace',
+    }));
+    const manifest = { workflow_path: 'code_only_fast_path', entries };
+    const classification = { requirement_changed: true };
+    expect(materializeCandidateManifestEntries(manifest, 'unused-wi-dir', classification, 'linux').entries)
+      .toHaveLength(2);
+    expect(materializeCandidateManifestEntries(manifest, 'unused-wi-dir', classification, 'win32').entries)
+      .toHaveLength(1);
+  });
+
   it('merges explicit Project Contract with only Classification-required canonical Candidates', async () => {
     const workItemDir = await mkdtemp(path.join(tmpdir(), 'sf-manifest-materialize-'));
     tempRoots.push(workItemDir);

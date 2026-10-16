@@ -7,11 +7,13 @@
 ```bash
 specforge daemon start --detach
 specforge daemon status
+specforge daemon restart
 specforge daemon stop
 ```
 
 - `start --detach` 直接启动 `<OpenCode config>/sf-user/bin/specforged`，不依赖已经运行的 daemon。
 - `status` 请求 `/api/v1/healthz`。
+- `restart` 通过认证端点请求优雅停机，确认原 PID 退出后启动已安装的 daemon，并核验新握手与健康状态；任一步失败均不报告成功。
 - `stop` 请求 `/api/v1/admin/stop`，执行受控优雅停止。
 - Plugin 不拥有 daemon 生命周期。
 
@@ -29,10 +31,10 @@ specforge --help
 
 ## 其他命令组
 
-当前 CLI 源码还提供 daemon-backed 的 `spec`、`workflow`、`job`、`webhook`、`plugin` 和 `opencode-server` 命令组，以及 Linux `systemd --user` 的 `services` 管理入口。使用前先执行对应帮助并确认 daemon 可用：
+当前正式 CLI 提供 `opencode-server` 和 `services` 命令组；后者的 OS service 注册仅支持 Linux `systemd --user`。源码中保留的 `spec`、`workflow`、`job`、`webhook`、`plugin` 历史命令不在当前正式命令树中，因为现行 Daemon 尚未提供其所需路由。使用正式命令前可查看帮助：
 
 ```bash
-specforge help <command>
+specforge <command> --help
 ```
 
 这些 CLI 命令不能绕过 OpenCode/Runtime 的 Work Item、权限、Gate 或状态权威。Windows 当前不提供系统服务注册或开机自启动；使用 `daemon start --detach`。

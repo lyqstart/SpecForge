@@ -31,10 +31,7 @@ import { toCliError } from './errors';
 import { addHelpCommands, handleUnknownCommand } from './commands/help';
 import { addDaemonCommands } from './commands/daemon-client';
 import { addOpenCodeServerCommands } from './commands/opencode-server';
-import { addWebhookCommands } from './commands/webhook';
 import { addUtilityCommands } from './commands/utility';
-import { addSpecCommands } from './commands/spec';
-import { addPluginCommands } from './commands/plugin';
 import { addServicesCommands } from './commands/services';
 import { runVersionCommand } from './commands/version';
 import { runDoctorCommand } from './commands/doctor';
@@ -616,23 +613,15 @@ export async function runCli(argv: string[] = hideBin(process.argv)): Promise<vo
 
   const parser = parseArgs(argv);
   
-  // Add all command groups with help system integrated
+  // The current daemon has no /jobs, /api/specs, /api/webhooks, or /api/plugins
+  // routes. Keep those historical command modules out of the released parser
+  // until their runtime contracts and end-to-end tests exist.
   const parserWithCommands = addHelpCommands(
     addServicesCommands(
       addOpenCodeServerCommands(
         addDaemonCommands(
           addDoctorCommands(
-            addSpecCommands(
-              addPluginCommands(
-                addWorkflowCommands(
-                  addJobCommands(
-                    addWebhookCommands(
-                      addUtilityCommands(parser)
-                    )
-                  )
-                )
-              )
-            )
+            addUtilityCommands(parser)
           )
         )
       )
