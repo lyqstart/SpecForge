@@ -31843,3 +31843,32 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 自动请求记录原来按字段名猜测秘密，无法保护字符串中的配置正文、任意字段名与解析片段。配置工具请求/结果在 userlevel、Daemon recorder 和嵌套工具事件中固定省略正文，仅保留调用结构；配置库原有结构化日志白名单保留。
 - 验证记录区分显式测试输入与自动日志；非空 userlevel/daemon 日志扫描已通过专项测试，真实安装后验收仍需完成，不以此冒充真实 OpenCode 宿主。
 - REUSED_EXP=EXP-007,EXP-282。
+
+### ERR-1852：模型转交浏览器原始记录改变字节，归档哈希校验阻止误通过
+
+- 发生时间：2026-10-19（Asia/Shanghai）；RUN_ID=CODEX-SF-20261018-SIX-COMPLETION-A01。源记录 4390 字节、SHA256 dd0531e087e055ec71253f3737326d5e218141898854d6f3e3c4ff9576d0d683；受控副本 browser-20261018.txt 为 4340 字节、SHA256 c03dd985f05cb462e3ed6d592c062e39ec5f5cbd9b2fa5f9bc516f47202758d8。
+- 一手证据：.tmp/six-completion/050-dispatch-progress.stdout.txt、056-verifier-evidence-check.stdout.txt、browser-transcription-failure.json。Orchestrator 转交文本已非原始字节；Verifier 提交参数也有差异；工具落盘字节与 Verifier 的 content 参数完全一致。因此责任在 Agent 证据转录，而非文件写入工具改变内容。
+- 防误判已生效：Verifier 对比 Runtime 返回哈希后判定 blocked；独立审查同样拒绝接受该副本。失败副本不可覆盖，Node 31/31 的原始工具输出由程序直接提取保留，不能用模型摘要代替。
+- 后续处置：使用源文件直接生成的 Base64 经已有 verification_evidence 入口另存，仍须原始 SHA256 完全相等才能进入正式验证；在该校验成功前不宣称归档修复完成，不以更换编码降低证明要求。
+- REUSED_EXP=EXP-007,EXP-281,EXP-282。ERR1852_STATUS=IDENTIFIED_ACCEPTANCE_BLOCKED_PENDING_EXACT_EVIDENCE。
+- 后续取证：058 的附件单行被 Read 截断，未写入；062 分块 Base64 在 Agent 转交中仍发生重复/缺字，Verifier 自检失败并未生成第二份原始证据。失败报告保存在 .tmp/six-completion/failed-browser-generation，原始 Node 输出未改写。
+- 现有能力复核：SPS 的 verification_evidence 保存方式为可选；现行 evidence_manifest owner 合同允许独立原件路径，强制项目内源文件检查专用于 L5/manual_acceptance。本次始终是 Codex 浏览器技术 e2e 测试，不是用户人工验收，不得为规避检查更改事实分类。065 对原封存包的原始 JSON 和两张截图重新复算 SHA256，三者匹配原清单；066 拟由专业 owner 直接引用已封存原件，避免任何模型字节转抄，仍需完整 Gate 与独立审核。
+- 066 已由正式 owner 写入原件引用；原件真实性核验通过，整体报告仍被 attempt-0007 拒绝，原因见 ERR-1853。不得把原件核验成功混同于整个验收完成。
+
+### ERR-1853：验证报告的时间、原件引用及证据映射与实际记录不一致
+
+- 2026-10-19（Asia/Shanghai），原项目 WI-0001 的 verification_gate attempt-0007 失败。证据：该 Gate 原始 JSON、.tmp/six-completion/068-reference-verifier-progress.stdout.txt、failed-reference-generation/。
+- CONFIRMED：清单多项 timestamp=2026-10-19T02:30:00.000Z，晚于当时真实 UTC；两个已被合法原件引用替代的历史传输自检失败仍列作当前 required tests；semantic closure 与 manifest supports 映射不一致；MCONTRACT-CORE-001 对 test/app.test.js 缺少结构化专业审阅。Gate 正确拒绝，未推进状态。
+- 独立检查另发现 EV-0001 的 path 仍指向前代 Node 文本，而 description 引用本轮真实调用和新 stdout 哈希。已由程序从实际 sf_safe_bash 返回值提取本轮 stdout/stderr/数字退出码/时间，封存至 D:/code/sf-acceptance-six-evidence/completion-20261018-A01/node-original；不可把旧路径当本轮原文。
+- 责任层：专业 Agent 报告生产与引用，而非已经通过的实际测试。修正应由正式 owner 使用真实 UTC、准确原件路径/哈希和事实支持范围更新，不修改 Gate 放宽要求，不删除失败历史。代码合同必须实际阅读审查后填写，不能填空式声称通过。
+- Codex 已停止自己本轮 CLI 进程以先纠正审查结果，共享 daemon 未停止。拟执行的070报告修正被自动审批拒绝（新增 Node 元数据的特定外发授权不足），未执行；等待明确授权，原 WI 仍为 verification_running。
+- REUSED_EXP=EXP-007,EXP-281,EXP-282,EXP-284。ERR1853_STATUS=OPEN_FORMAL_REPORT_CORRECTION_PENDING。
+
+- 后续：用户明确批准 Node 测试元数据外发，070 已执行；专业报告修正了 Node 来源、UTC 和代码审阅。Codex 独立回查正式 requirements.md:196~212 / design.md:165~174 / candidates/tasks.md 后发现旧闭包业务语义错配：REQ-CORE-006 实为存储语义，却引用 WriteGuard、审计、HardStop 作为满足证据；TASK/DD 关系也未按正式定义。070 于 2026-10-18T17:43:09.086Z 被主动暂停，未让此错误进入关闭。
+- 原始错误代保留在 .tmp/six-completion/failed-semantic-mapping-generation/，真实专业会话导出 073。责任仍为 Agent 语义映射生产：结构互相一致不等于业务含义正确。074 要求 owner 从正式 REQ/DD/TASK 原文重建；存储需求由现有 Node AC-020~023 证据支持，治理探针不能替代业务证据。此次停点为验证通过后、正式关闭前，须经 Codex 独立业务语义审核。
+
+- 074 的业务映射修正经独立 078 审计通过；attempt-0008 verification/formal gates 通过并推进 verification_done。独立文件审查仍发现 EV-0001 path 指旧输出、sha256 指 result.json；Agent 总结声称身份正确与实际文件不符，未采信。079 仅要求正式 owner 修正为已经封存的 stdout 精确路径与 598fe6e2...8945a 哈希，再重验；关闭仍未放行。failed-node-pointer-generation 保留本代文件。
+
+- 最终闭环：079 经正式状态恢复修正 EV-0001 stdout path/hash，attempt-0009 verification/formal gates 通过；082/083 独立核验原件、真实UTC、审计绑定及正式 REQ/DD/TASK 映射通过。084 正式撤销权限与 close_gate 36/36，原 WI 于 2026-10-18T17:55:05.207Z closed；实际原生 write prt_150276d25001mSihtHrGrcu6XZ 被拒绝，exists=false，状态仍 closed。089 关闭后独立检查通过；完整证据见本 RUN_ID final-review。
+- ERR1850_FINAL=controlled configuration installed-client/daemon consumption and restart recovery passed; ERR1851_FINAL=nonempty installed userlevel/daemon automatic logs verified with zero new test marker leaks; full suite 6830/6830 and 112/112 installed hashes passed.
+- ERR1852_STATUS=CLOSED_BY_VERIFIED_SEALED_ORIGINAL_REFERENCES_WITH_FAILED_TRANSCRIPTIONS_PRESERVED。ERR1853_STATUS=CLOSED_BY_OWNER_CORRECTION_AND_INDEPENDENT_SOURCE_SEMANTIC_HASH_REVIEW。结构Gate通过不能替代证据内容和业务语义的独立审查。
