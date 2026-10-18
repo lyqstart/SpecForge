@@ -75,6 +75,7 @@ import { createHash } from "node:crypto";
 import { CHANGED_FILES_AUDIT_CONTRACT_ID } from "../lib/changed-files-audit-verdict.js";
 import { inspectVerificationEvidenceIntegrity } from '../lib/verification-evidence-integrity.js';
 import { archiveInvalidClosureEvidence } from '../lib/invalid-closure-recovery-archive.js';
+import { bindWriteGuardAudit, inspectClosedWriteGuardAudit, inspectWriteGuardAuditBinding, readWriteGuardAuditBinding } from '../lib/write-guard-audit-binding.js';
 
 interface FilesystemDiffSummary {
   baseline_timestamp?: string;
@@ -194,6 +195,8 @@ async function recoverInvalidClosure(input: {
   invalidityReasons.push(...evidenceIntegrity.invalidity_reasons.map(reason =>
     `verification_evidence_invalid=${reason}`,
   ));
+  const guardAuditOmission = inspectClosedWriteGuardAudit(input.workItemDir, evidenceIntegrity.close_event_at);
+  if (guardAuditOmission) invalidityReasons.push(guardAuditOmission.reason);
   let formalSnapshotValidationError: string | null = null;
   if (formalGate?.status !== "passed") {
     invalidityReasons.push(
@@ -283,7 +286,11 @@ async function recoverInvalidClosure(input: {
     String(archivedFiles.find((file: any) => file.path === relative)?.sha256 ?? '') || null;
   if (archivedHash('gates/close_gate.json') !== await hashFileIfPresent(closeGatePath) ||
       archivedHash('verification_report.md') !== evidenceIntegrity.report_sha256 ||
-      archivedHash('evidence/evidence_manifest.json') !== evidenceIntegrity.manifest_sha256) {
+      archivedHash('evidence/evidence_manifest.json') !== evidenceIntegrity.manifest_sha256 ||
+      (guardAuditOmission && (archivedHash('changed_files_audit.md') !== guardAuditOmission.audit_sha256 ||
+        archivedHash('write_guard_log.jsonl') !== guardAuditOmission.log_sha256 ||
+        guardAuditOmission.audit_sha256 !== await hashFileIfPresent(path.join(input.workItemDir, 'changed_files_audit.md')) ||
+        guardAuditOmission.log_sha256 !== await hashFileIfPresent(path.join(input.workItemDir, 'write_guard_log.jsonl'))))) {
     return { success: false,
       error: 'INVALID_CLOSURE_RECOVERY_EVIDENCE_DRIFT_DURING_ARCHIVE',
       generation_archive: archive };
@@ -305,6 +312,7 @@ async function recoverInvalidClosure(input: {
       formal_version_snapshot_validation_error: formalSnapshotValidationError,
       git_binding: gitBinding,
       verification_evidence_integrity: evidenceIntegrity,
+      write_guard_audit_omission: guardAuditOmission,
       generation_archive: archive,
     },
     permission_state: {
@@ -623,85 +631,6 @@ function summarizeFilesystemDiff(
   };
 }
 
-function normalizePathForCompare(value: string): string {
-  return String(value ?? "").replace(/\\/g, "/").replace(/\/+/g, "/").toLowerCase();
-}
-
-function pathVariantsForCompare(projectRoot: string, value: string): string[] {
-  const raw = String(value ?? "");
-  const slash = raw.replace(/\\/g, "/").replace(/\/+/g, "/");
-  const variants = new Set<string>();
-  variants.add(normalizePathForCompare(slash));
-  try {
-    const relative = path.relative(projectRoot, raw).replace(/\\/g, "/");
-    if (relative && !relative.startsWith("..")) variants.add(normalizePathForCompare(relative));
-  } catch {
-    // ignore
-  }
-  try {
-    const absolute = path.resolve(projectRoot, raw).replace(/\\/g, "/");
-    variants.add(normalizePathForCompare(absolute));
-  } catch {
-    // ignore
-  }
-  return Array.from(variants);
-}
-
-async function normalizeWriteGuardOperationsFromDiff(
-  projectRoot: string,
-  workItemDir: string,
-  diff: FilesystemDiffResult,
-): Promise<void> {
-  const logPath = path.join(workItemDir, "write_guard_log.jsonl");
-  let content = "";
-  try {
-    content = await fs.readFile(logPath, "utf-8");
-  } catch {
-    return;
-  }
-
-  const created = new Set<string>();
-  const modified = new Set<string>();
-  const deleted = new Set<string>();
-
-  for (const p of diff.created ?? []) {
-    for (const v of pathVariantsForCompare(projectRoot, p)) created.add(v);
-  }
-  for (const p of diff.modified ?? []) {
-    for (const v of pathVariantsForCompare(projectRoot, p)) modified.add(v);
-  }
-  for (const p of diff.deleted ?? []) {
-    for (const v of pathVariantsForCompare(projectRoot, p)) deleted.add(v);
-  }
-
-  let changed = false;
-  const out: string[] = [];
-
-  for (const line of content.split(/\r?\n/)) {
-    if (!line.trim()) continue;
-    try {
-      const entry = JSON.parse(line);
-      const variants = pathVariantsForCompare(projectRoot, String(entry.path ?? ""));
-      const oldOperation = entry.operation;
-      if (variants.some((v) => created.has(v))) {
-        entry.operation = "create";
-      } else if (variants.some((v) => deleted.has(v))) {
-        entry.operation = "delete";
-      } else if (variants.some((v) => modified.has(v))) {
-        entry.operation = "modify";
-      }
-      if (entry.operation !== oldOperation) changed = true;
-      out.push(JSON.stringify(entry));
-    } catch {
-      out.push(line);
-    }
-  }
-
-  if (changed) {
-    await fs.writeFile(logPath, out.join("\n") + "\n", "utf-8");
-  }
-}
-
 function expandAllowedWriteFilesForAudit(
   projectRoot: string,
   allowedWriteFiles: Array<{ path: string; operation: string }>,
@@ -745,7 +674,7 @@ function expandAllowedWriteFilesForAudit(
   return Array.from(out.values());
 }
 
-async function refreshChangedFilesAuditAfterOperationNormalization(
+async function refreshChangedFilesAuditFromCurrentFacts(
   projectRoot: string,
   workItemDir: string,
   workItemId: string,
@@ -753,6 +682,7 @@ async function refreshChangedFilesAuditAfterOperationNormalization(
   filesystemDiff?: FilesystemDiffResult | null,
   preserveExistingPassedReport = false,
 ): Promise<ChangedFilesAuditResult | null> {
+  const auditInputBinding = readWriteGuardAuditBinding(projectRoot, workItemDir);
   const factualFiles = getFactualChangedFiles(workItemDir);
   const actualFiles =
     factualFiles.length > 0
@@ -804,7 +734,7 @@ async function refreshChangedFilesAuditAfterOperationNormalization(
   const changedFilesPath = path.join(workItemDir, "changed_files_audit.md");
   const auditDataSource =
     factualFiles.length > 0
-      ? `write_guard_log.jsonl (${writeGuardSummary.totalEntries} entries, ${factualFiles.length} allowed writes, refreshed after operation normalization, allowed_write_files_snapshot + factual allowed writes)`
+      ? `write_guard_log.jsonl (${writeGuardSummary.totalEntries} entries, ${factualFiles.length} allowed writes, allowed_write_files_snapshot + factual allowed writes)`
       : `filesystem_baseline.json (${actualFiles.length} observed project changes, allowed_write_files_snapshot policy)`;
 
   // Verification Gate binds semantic-closure provenance to the exact bytes of
@@ -821,6 +751,7 @@ async function refreshChangedFilesAuditAfterOperationNormalization(
         auditResult,
         auditDataSource,
         writeGuardSummary.blockedWrites.length,
+        projectRoot, workItemDir, auditInputBinding.sha256,
       ),
       "utf-8",
     );
@@ -1199,6 +1130,7 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
     }
 
     if (!auditAlreadyExists) {
+      const auditInputBinding = readWriteGuardAuditBinding(projectRoot, workItemDir);
       const updatedWi = await readWorkItemMetadata(workItemDir, workItemId);
       const factualFiles = getFactualChangedFiles(workItemDir);
       const writeGuardSummary = summarizeWriteGuardLog(workItemDir);
@@ -1238,6 +1170,7 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
           auditResult,
           auditDataSource,
           writeGuardSummary.blockedWrites.length,
+          projectRoot, workItemDir, auditInputBinding.sha256,
         ),
         "utf-8",
       );
@@ -1253,8 +1186,8 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
       filesystemDiff = fullDiff;
       const diffEvidencePath = await saveFilesystemDiffEvidence(workItemDir, fullDiff);
 
-      await normalizeWriteGuardOperationsFromDiff(projectRoot, workItemDir, fullDiff);
-      const refreshedAudit = await refreshChangedFilesAuditAfterOperationNormalization(
+      // Guard history is append-only. Normalize the observed filesystem diff, never old decisions.
+      const refreshedAudit = await refreshChangedFilesAuditFromCurrentFacts(
         projectRoot,
         workItemDir,
         workItemId,
@@ -1270,7 +1203,7 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
       );
     }
 
-    const finalAuditRefresh = await refreshChangedFilesAuditAfterOperationNormalization(
+    const finalAuditRefresh = await refreshChangedFilesAuditFromCurrentFacts(
       projectRoot,
       workItemDir,
       workItemId,
@@ -1309,6 +1242,10 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
       };
     }
 
+    const finalAuditBinding = inspectWriteGuardAuditBinding(projectRoot, workItemDir,
+      await fs.readFile(changedFilesPath, 'utf-8'));
+    if (!finalAuditBinding.passed) return { ...result, error: finalAuditBinding.reason };
+
     await fs.writeFile(
       path.join(workItemDir, "close_gate.md"),
       generateCloseGateEvidenceMd(workItemId, closeGateResult, result.filesystem_diff),
@@ -1338,8 +1275,11 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
 function generateChangedFilesAuditMd(
   workItemId: string,
   audit: ChangedFilesAuditResult,
-  dataSource?: string,
+  dataSource: string | undefined,
   blockedWriteAttempts = 0,
+  projectRoot: string,
+  workItemDir: string,
+  expectedBinding: string,
 ): string {
   const violations = Array.isArray(audit.violations) ? audit.violations : [];
   const entries = Array.isArray(audit.entries) ? audit.entries : [];
@@ -1387,7 +1327,7 @@ function generateChangedFilesAuditMd(
     lines.push("## Violations", "", ...violations.map((v) => `- ${v}`), "");
   }
 
-  return lines.join("\n");
+  return bindWriteGuardAudit(lines.join("\n"), projectRoot, workItemDir, expectedBinding);
 }
 
 function generateCloseGateEvidenceMd(

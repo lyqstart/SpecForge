@@ -31803,3 +31803,19 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 恢复：正式 CLI 认证停止，确认旧 PID 退出；正式安装器事务回滚后退出 12，检查 journal=rolled_back 并校验旧安装 111/111，再升级成功（退出 0、4 更新/107 跳过）；启动新 PID 5148，健康检查 1.0.14/ok、安装 111/111，与 release 哈希一致。
 - 类防护：EXP-283；现有安装器事务恢复/回滚回归和本次真实 Windows 失败—恢复—重试证据共同验证；禁止手动删除日志或强行覆盖占用文件。
 - ERR1846_STATUS=CLOSED_BY_OFFICIAL_STOP_ROLLBACK_RETRY_START_AND_IDENTITY_CHECK
+
+### ERR-1847：独立 HTTP 初始化入口被通用原生守护误拒绝
+
+- 发生时间：2026-10-18 审核六项验收；原始会话 ses_eb81d8f1cffee3W1ZbjU3AmHdc / prt_147f1ae4f001IglSG2fRow0oHT。`sf_project_init` 得到 NATIVE_TOOL_REQUIRES_CONTROLLED_EXECUTION。
+- 根因：native boundary 只认可 ToolDispatcher handler；正式 Project Init 使用独立 POST /api/v1/project/ensure，因此被遗漏。属于 Tool registry / Permission enforcement 接线缺陷。
+- 修复：HTTP 路由与写前检查共享精确工具注册表；未知 sf_* 和原生 shell 仍拒绝。回归用真实 loopback HTTP 完成守护检查和幂等初始化，不冒充实际 OpenCode 会话。
+- REUSED_EXP=EXP-264,EXP-282,EXP-284。验证与交付证据：docs/archive/2026-10-18-acceptance-guard-audit-repair.md。
+
+### ERR-1848：审计后新增拒绝仍被旧 PASS 关闭，且关闭会重写守护历史
+
+- 一手证据：六项验收 snapshot 的 audit 在 08:05:33.913Z 记录 11 条/0 拒绝；08:06:01.125Z 新增保护标记拒绝；08:24:01.363Z Close 仍通过。完整证据封存于 D:/code/sf-acceptance-six-evidence/review-20261018-A01。
+- 根因：Close 使用 Work Item 投影的 violation 和旧审计；重算仅关注文件差异，未绑定守护/处置原始来源；normalizer 还依据最终差异改写历史操作。责任属 Audit / Verification / Close 消费合同。
+- 修复：审计原始来源绑定与共享新鲜度检查；移除历史日志改写；未处置拒绝建立 HardStop，由正式 resolver 放弃被拒行为后重审；按原 Close 时点证明漏审并先归档后补偿恢复。
+- 测试首轮 64/65：旧 positive fixture 先产报告再补守护记录；改为同代绑定及重建验证来源，新增晚到拒绝、历史恢复断言。首轮 5/5 与后续完整处理器 27/27 均退出 0；最终全量结果见 archive。
+- 工具事件：一次 CRLF 补丁锚点不匹配（零写入）；猜测路径/通配符读失败已由 rg 清单纠正；输出截断未计作完整读取。
+- REUSED_EXP=EXP-004,EXP-007,EXP-017,EXP-031,EXP-032,EXP-264,EXP-281,EXP-284。

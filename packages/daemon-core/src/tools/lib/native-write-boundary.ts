@@ -7,12 +7,13 @@ import { checkWrite } from './write-guard-v11';
 import { isCandidateFrozenState } from './candidate-freeze-v11';
 import { checkHardStop } from './hard-stop-latch';
 import { appendWriteGuardLog } from './write-guard-log';
+import { isControlledHttpTool } from './controlled-http-tools';
 
 const NON_WRITING_TOOLS = new Set(['read', 'glob', 'grep', 'list', 'webfetch', 'websearch', 'codesearch', 'todowrite', 'todoread', 'question', 'task', 'skill', 'lsp']);
 
 /** Native transport boundary. All file permission decisions stay with Permission Engine. */
 export async function checkNativeTool(deps: any, projectRoot: string, tool: string, args: Record<string, unknown>) {
-  if (NON_WRITING_TOOLS.has(tool) || (tool.startsWith('sf_') && getHandler(tool))) return { allowed: true };
+  if (NON_WRITING_TOOLS.has(tool) || isControlledHttpTool(tool) || (tool.startsWith('sf_') && getHandler(tool))) return { allowed: true };
   // An arbitrary program can write anywhere; a declared file list is not proof.
   // Route shells/patches/unknown tools through controlled execution, never guess.
   if (!['edit', 'write'].includes(tool)) {

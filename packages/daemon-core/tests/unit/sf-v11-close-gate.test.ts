@@ -29,6 +29,7 @@ import {
   revokeCodePermission,
 } from '../../src/tools/lib/code-permission-service-v11.js';
 import { recordUserDecision } from '../../src/tools/lib/user-decision-recorder-v11.js';
+import { bindWriteGuardAudit } from '../../src/tools/lib/write-guard-audit-binding.js';
 
 function semanticClosure(workItemId: string): SemanticClosureManifest {
   return {
@@ -456,6 +457,10 @@ describe('sf_close_gate handler', () => {
       }) + '\n'
     );
     const auditPath = path.join(wiDir, 'changed_files_audit.md');
+    await fs.writeFile(auditPath, bindWriteGuardAudit(await fs.readFile(auditPath, 'utf-8'), tmpDir, wiDir));
+    const closure = semanticClosure(workItemId);
+    closure.provenance = await captureSemanticClosureProvenance({ workItemDir: wiDir, source: 'test_fixture', manifest: closure });
+    await fs.writeFile(path.join(wiDir, '.semantic_closure.json'), JSON.stringify(closure));
     const auditBeforeClose = await fs.readFile(auditPath, 'utf-8');
 
     const handler = getHandler('sf_close_gate')!;
@@ -468,6 +473,58 @@ describe('sf_close_gate handler', () => {
     expect((result as any).success, JSON.stringify(result, null, 2)).toBe(true);
     expect((result as any).changed_files_audit?.passed).toBe(true);
     expect(await fs.readFile(auditPath, 'utf-8')).toBe(auditBeforeClose);
+  });
+
+  it('refuses a previously verified close after a new denied write, preserving the audit and raw log', async () => {
+    const workItemId = 'wi-close-late-denial';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    const auditPath = path.join(wiDir, 'changed_files_audit.md');
+    const auditBefore = await fs.readFile(auditPath, 'utf-8');
+    const log = JSON.stringify({ timestamp: new Date().toISOString(), path: 'protected.txt',
+      operation: 'modify', actor: 'sf-executor', allowed: false, violations: ['outside scope'], tool: 'write' }) + '\n';
+    await fs.writeFile(path.join(wiDir, 'write_guard_log.jsonl'), log);
+    const deps = createMockDeps();
+    const result: any = await getHandler('sf_close_gate')!({ work_item_id: workItemId }, { directory: tmpDir }, deps as any);
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('close_write_guard_audit_current');
+    expect(deps.__transitions).toEqual([]);
+    expect(await fs.readFile(auditPath, 'utf-8')).toBe(auditBefore);
+    expect(await fs.readFile(path.join(wiDir, 'write_guard_log.jsonl'), 'utf-8')).toBe(log);
+  });
+
+  it('recovers a closure proven to omit an earlier denial, with immutable guard evidence and revoked permission', async () => {
+    const workItemId = 'wi-omitted-denial-recovery';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    const code = Buffer.from('export const value = 1;\n');
+    await fs.mkdir(path.join(tmpDir, 'src'), { recursive: true });
+    await fs.writeFile(path.join(tmpDir, 'src', 'main.ts'), code);
+    const hash = createHash('sha256').update(code).digest('hex');
+    await fs.writeFile(path.join(wiDir, 'formal_version_snapshot.json'), JSON.stringify({
+      version_control_mode: 'filesystem', implementation_files: ['src/main.ts'],
+      implementation_tree_fingerprint: createHash('sha256').update(`src/main.ts\0file\0${hash}`).digest('hex'),
+    }));
+    await fs.writeFile(path.join(wiDir, 'gates/close_gate.json'), JSON.stringify({ gate_id: 'close_gate', status: 'passed' }));
+    const closeTime = Date.now() + 1000;
+    await fs.mkdir(path.join(tmpDir, '.specforge/runtime'), { recursive: true });
+    await fs.writeFile(path.join(tmpDir, '.specforge/runtime/events.jsonl'), JSON.stringify({ projectId: workItemId,
+      action: 'state.transition', ts: closeTime, payload: { from_state: 'verification_done', to_state: 'closed' } }) + '\n');
+    const log = JSON.stringify({ timestamp: new Date(closeTime - 1000).toISOString(), path: 'protected.txt',
+      operation: 'modify', allowed: false, violations: ['outside scope'], actor: 'sf-executor', tool: 'write' }) + '\n';
+    await fs.writeFile(path.join(wiDir, 'write_guard_log.jsonl'), log);
+    const auditBefore = await fs.readFile(path.join(wiDir, 'changed_files_audit.md'));
+    const deps = createMockDeps('closed');
+    const result: any = await getHandler('sf_close_gate')!({ work_item_id: workItemId, action: 'recover_invalid_closure',
+      confirm_invalid_closure_recovery: true, recovery_reason: 'The original audit omitted a denial before the authoritative Close event.'
+    }, { directory: tmpDir, agent: 'sf-orchestrator' }, deps as any);
+    expect(result.success, JSON.stringify(result)).toBe(true);
+    expect(result.invalidity_reasons).toEqual(['WRITE_GUARD_AUDIT_OMITTED_PRE_CLOSE_DENIALS: reported=0, factual=1']);
+    const record = JSON.parse(await fs.readFile(path.join(wiDir, 'closure_recovery.json'), 'utf-8'));
+    const archiveDir = path.join(wiDir, path.dirname(record.prior_evidence.generation_archive.manifest_path));
+    expect(await fs.readFile(path.join(archiveDir, 'write_guard_log.jsonl'), 'utf-8')).toBe(log);
+    expect((await fs.readFile(path.join(archiveDir, 'changed_files_audit.md'))).equals(auditBefore)).toBe(true);
+    expect(record.prior_evidence.write_guard_audit_omission.close_event_at).toBe(new Date(closeTime).toISOString());
+    expect(deps.__transitions.at(-1)?.toState).toBe('implementation_ready');
+    expect(JSON.parse(await fs.readFile(path.join(wiDir, 'work_item.json'), 'utf-8')).code_permission_revoked).toBe(true);
   });
 
   it('persists and blocks on a newly failing recomputed audit', async () => {

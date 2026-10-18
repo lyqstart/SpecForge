@@ -20,6 +20,7 @@ import {
 } from './semantic-closure-core.js';
 import { validateSemanticClosureProvenance } from './semantic-closure-provenance.js';
 import { evaluateChangedFilesAuditVerdict } from './changed-files-audit-verdict.js';
+import { inspectWriteGuardAuditBinding } from './write-guard-audit-binding.js';
 import {
   extractStructuredVerificationReport,
   validateVerificationReportContract,
@@ -331,6 +332,8 @@ export async function evaluateVerificationGovernanceContract(input: {
     severity: sideEffectsDeclared ? undefined : 'error',
   });
 
+  const guardAuditBinding = inspectWriteGuardAuditBinding(path.resolve(input.workItemDir, '..', '..', '..'), input.workItemDir, auditText);
+  checks.push({ check_id: 'verification_write_guard_audit_current', description: 'Changed Files Audit covers current Write Guard and resolution evidence', passed: guardAuditBinding.passed, severity: guardAuditBinding.passed ? undefined : 'error', details: guardAuditBinding.reason });
   const auditVerdict = evaluateChangedFilesAuditVerdict(auditText ?? '', {
     expectedWorkItemId: evidenceWorkItemId,
   });

@@ -33,6 +33,7 @@ import {
 import { validateSemanticClosure, type SemanticClosureManifest } from './semantic-closure-core.js';
 import { validateSemanticClosureProvenance } from './semantic-closure-provenance.js';
 import { evaluateChangedFilesAuditVerdict } from './changed-files-audit-verdict.js';
+import { inspectWriteGuardAuditBinding } from './write-guard-audit-binding.js';
 import { inspectVerificationEvidenceIntegrity } from './verification-evidence-integrity.js';
 import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
 import { evaluateMergeReport } from '@specforge/types';
@@ -517,7 +518,9 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
   const changedFilesAuditText = await readText(
     path.join(ctx.workItemDir, 'changed_files_audit.md')
   );
-  const noCodeAuditAccepted = isNoCodeAuditAccepted(changedFilesAuditText, wi);
+  const guardAuditBinding = inspectWriteGuardAuditBinding(ctx.projectRoot, ctx.workItemDir, changedFilesAuditText);
+  checks.push({ check_id: 'close_write_guard_audit_current', description: 'Changed Files Audit covers the current Write Guard and resolution evidence', passed: guardAuditBinding.passed, severity: guardAuditBinding.passed ? undefined : 'error', details: guardAuditBinding.reason });
+  const noCodeAuditAccepted = guardAuditBinding.passed && isNoCodeAuditAccepted(changedFilesAuditText, wi);
 
   try {
     const vr = await fs.readFile(path.join(ctx.workItemDir, 'verification_report.md'), 'utf-8');

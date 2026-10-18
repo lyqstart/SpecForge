@@ -29,6 +29,9 @@ import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 
 // Import close gate handler
 import '../../src/tools/handlers/sf-v11-close-gate.js';
+import '../../src/tools/handlers/sf-changed-files-audit.js';
+import '../../src/tools/handlers/sf-hard-stop-resolve.js';
+import { resolveAuditProbes } from '../helpers/resolve-audit-probes.js';
 import { getHandler } from '../../src/tools/ToolDispatcher.js';
 import { captureSemanticClosureProvenance } from '../../src/tools/lib/semantic-closure-provenance.js';
 import { recordUserDecision } from '../../src/tools/lib/user-decision-recorder-v11.js';
@@ -669,7 +672,7 @@ describe('D. Daemon-level E2E — code_only_fast_path lifecycle', () => {
 
     // Blocked write attempt
     const w3 = checkWrite(writeCtx, 'src/unauthorized.ts', 'create');
-    appendWriteGuardLog(wiDir, { timestamp: 'T3', path: 'src/unauthorized.ts', operation: 'create', actor: 'agent', allowed: w3.allowed, violations: w3.violations });
+    appendWriteGuardLog(wiDir, { timestamp: new Date().toISOString(), path: 'src/unauthorized.ts', operation: 'create', actor: 'agent', allowed: w3.allowed, violations: w3.violations });
     expect(w3.allowed).toBe(false);
 
     // --- Phase 3: Generate evidence files ---
@@ -713,7 +716,8 @@ describe('D. Daemon-level E2E — code_only_fast_path lifecycle', () => {
       path.join(wiDir, 'gates', 'formal_version_gate.json'),
       JSON.stringify({ gate_id: 'formal_version_gate', status: 'passed' }),
     );
-    await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), changedFilesAudit(workItemId, ['src/main.ts', 'src/helper.ts']));
+    await resolveAuditProbes(workItemId, (tool, args) => getHandler(tool)!(args,
+      { directory: tmpDir, agent: 'sf-orchestrator' }, createMockDeps('implementation_running')) as Promise<any>);
     await fs.writeFile(path.join(wiDir, 'verification_report.md'), '# Verification\nAll evidence reviewed.');
     await fs.writeFile(path.join(wiDir, 'merge_report.md'), `# Merge Report\n\nContract: merge-report/v1\nWork Item: ${workItemId}\nStatus: not_applicable\n\n## Summary\n- Total entries: 0\n- Successful: 0\n- Failed: 0\n`);
     await fs.writeFile(path.join(wiDir, 'evidence', 'evidence_manifest.json'), JSON.stringify({ schema_version: '1.0', work_item_id: workItemId, entries: [{ evidence_id: 'EV-1', type: 'log', path: 'test.log' }] }));

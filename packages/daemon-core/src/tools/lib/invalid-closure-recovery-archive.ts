@@ -11,6 +11,9 @@ const INPUTS = [
   'gates/close_gate.json',
   'formal_version_snapshot.json',
   'closure_recovery.json',
+  'changed_files_audit.md',
+  'write_guard_log.jsonl',
+  'hard_stop_resolution.jsonl',
 ] as const;
 
 export async function archiveInvalidClosureEvidence(workItemDir: string): Promise<{

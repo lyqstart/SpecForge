@@ -34,6 +34,7 @@ export type BlockedWriteClassificationStatus =
   | 'unresolved_blocked_attempt';
 
 export interface BlockedWriteAttemptLike {
+  timestamp?: string;
   path?: string;
   operation?: string;
   tool?: string;
@@ -79,6 +80,10 @@ function resolutionMatchesBlockedPath(
   resolution: HardStopResolutionLogEntry
 ): boolean {
   if (!isAuditResolvingResolutionType(resolution.resolution_type)) return false;
+  // A resolution explains past attempts; it is not authorization for a later retry.
+  if (blocked.timestamp && (!Number.isFinite(Date.parse(blocked.timestamp)) ||
+      !Number.isFinite(Date.parse(resolution.resolved_at)) ||
+      Date.parse(blocked.timestamp) > Date.parse(resolution.resolved_at))) return false;
 
   const blockedHardStopId = String(blocked.hard_stop_id ?? '').trim();
   const resolutionHardStopId = String(

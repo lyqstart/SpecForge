@@ -18,6 +18,7 @@
 import { join } from 'node:path';
 import * as fs from 'node:fs/promises';
 import { registerHandler } from '../ToolDispatcher';
+import { bindWriteGuardAudit, readWriteGuardAuditBinding } from '../lib/write-guard-audit-binding';
 import { runChangedFilesAudit, normalizeAuditPath } from '../lib/changed-files-audit';
 import {
   blockedWriteClassificationToViolation,
@@ -387,6 +388,7 @@ async function writeNoCodeAudit(input: {
   actualChangedFiles: unknown;
   activeCodePermissionHardStop: boolean;
 }) {
+  const auditInputBinding = readWriteGuardAuditBinding(input.projectRoot, input.workItemDir);
   const { changedFiles, dataSource, writeGuardSummary } = changedFilesFromFacts({
     projectRoot: input.projectRoot,
     workItemDir: input.workItemDir,
@@ -546,7 +548,8 @@ async function writeNoCodeAudit(input: {
     '',
   ].join('\n');
 
-  await fs.writeFile(join(input.workItemDir, 'changed_files_audit.md'), auditMd, 'utf-8');
+  await fs.writeFile(join(input.workItemDir, 'changed_files_audit.md'), bindWriteGuardAudit(auditMd, input.projectRoot, input.workItemDir, auditInputBinding.sha256), 'utf-8');
+  if (unresolvedBlockedWriteViolations.length) setHardStop(input.projectRoot, input.workItemId, unresolvedBlockedWriteViolations.join('; '), 'sf_changed_files_audit');
 
   let clearedCodePermissionHardStop = false;
   if (passed && input.activeCodePermissionHardStop) {
@@ -574,6 +577,7 @@ async function writeNoCodeAudit(input: {
     blocked_write_attempts: blockedWrites.length,
     resolved_blocked_write_attempts: resolvedBlockedWriteClassifications.length,
     unresolved_blocked_write_attempts: unresolvedBlockedWriteClassifications.length,
+    hard_stop: checkHardStop(input.projectRoot, input.workItemId).blocked,
     cleared_code_permission_hard_stop: clearedCodePermissionHardStop,
     audit_path: join(input.workItemDir, 'changed_files_audit.md'),
   };
@@ -709,6 +713,7 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
     }
   }
 
+  const auditInputBinding = readWriteGuardAuditBinding(projectRoot, workItemDir);
   const { changedFiles, dataSource, writeGuardSummary } = changedFilesFromFacts({
     projectRoot,
     workItemDir,
@@ -855,7 +860,8 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
   ].join('\n');
 
   try {
-    await fs.writeFile(join(workItemDir, 'changed_files_audit.md'), auditMd, 'utf-8');
+    await fs.writeFile(join(workItemDir, 'changed_files_audit.md'), bindWriteGuardAudit(auditMd, projectRoot, workItemDir, auditInputBinding.sha256), 'utf-8');
+    if (unresolvedBlockedWriteViolations.length) setHardStop(projectRoot, workItemId, unresolvedBlockedWriteViolations.join('; '), 'sf_changed_files_audit');
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     setHardStop(
@@ -893,6 +899,7 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
     resolved_blocked_write_attempts: resolvedBlockedWriteClassifications.length,
     authorization_resolved_blocked_write_attempts: authorizationResolvedClassifications.length,
     unresolved_blocked_write_attempts: unresolvedBlockedWriteClassifications.length,
+    hard_stop: checkHardStop(projectRoot, workItemId).blocked,
     hard_stop_resolutions: hardStopResolutions.length,
     write_guard_authorizations: writeGuardAuthorizations.length,
     blocked_write_classifications: blockedWriteClassifications,

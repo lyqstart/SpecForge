@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.14
+> Product release version: 1.0.15
 >
 > Product version epoch: 1
 >
@@ -533,7 +533,7 @@ Candidate
 
 Verification Gate 与 Close Gate 必须使用同一证据完整性判据。报告及 Evidence Manifest 中声明的时间不得晚于 Runtime 执行时点；对已关闭 WI 的复核必须与原 StateManager Close 事件时间对照，不能以事后观察时间使原先的未来时间变为有效。`L5/manual_acceptance` 的通过结论必须指向独立、可读取、非符号链接的原始证据文件，登记其 SHA-256 并在 Gate 时复算；Verifier 可以通过受控 `sf_artifact_write(file_type=verification_evidence)` 以不可覆盖文件名保存原始文本记录或图片字节，Runtime 返回内容哈希与记录时间，再由 Evidence Manifest 引用。仅指向 `verification_report.md`、`evidence_manifest.json` 或自然语言自述不能证明实际浏览器操作或用户验收。机器测试与代码字节同一性不能替代原始人工验收事实。用户验收的归属必须与浏览器操作员的技术测试分开记录，不得把 Agent 自测写成用户原话。
 
-当原 WI 已是 `closed`，而同一完整性判据或既有 Formal Version 判据直接证明原关闭所依赖的实现／验证证据无效时，Close owner 在用户明确确认后可以执行普通 `recover_invalid_closure`。恢复前必须以不可变 generation archive 保存将被覆盖的原 Verification、Evidence Manifest、Semantic Closure、Gate、Formal Version 与既有恢复记录，记录逐文件大小、SHA-256 和归档 Manifest 哈希；恢复记录绑定原 Close 证据、具体失败判据、原 StateManager Close 时点和归档身份。仅以受控补偿事件执行 `closed → implementation_ready`，代码权限保持撤销，保留原 Candidate、Merge、User Decision 与全部历史事件。恢复后由相应 owner 重新取证、生成验证报告与证据清单、刷新语义闭包、重跑 Verification/Formal Version Gate，再执行 Close。普通状态入口仍禁止从 `closed` 跳出；规格本身无效时必须使用 §6.5 的独立路径，不得混用。
+当原 WI 已是 `closed`，而同一完整性判据或既有 Formal Version 判据直接证明原关闭所依赖的实现／验证证据无效时，Close owner 在用户明确确认后可以执行普通 `recover_invalid_closure`。恢复前必须以不可变 generation archive 保存将被覆盖的原 Verification、Evidence Manifest、Semantic Closure、Gate、Formal Version 与既有恢复记录，记录逐文件大小、SHA-256 和归档 Manifest 哈希；恢复记录绑定原 Close 证据、具体失败判据、原 StateManager Close 时点和归档身份。若原始 Close 事件之前的守护拒绝数大于原审计报告记录数，该原始时间线与字节身份可证明漏审；必须一并归档原 Changed Files Audit、Write Guard 和 resolution。仅缺新引入的绑定字段、事后新增拒绝或证据不可读取均不能单独证明原关闭无效。仅以受控补偿事件执行 `closed → implementation_ready`，代码权限保持撤销，保留原 Candidate、Merge、User Decision 与全部历史事件。恢复后由相应 owner 重新取证、生成验证报告与证据清单、刷新语义闭包、重跑 Verification/Formal Version Gate，再执行 Close。普通状态入口仍禁止从 `closed` 跳出；规格本身无效时必须使用 §6.5 的独立路径，不得混用。
 
 ---
 
@@ -640,6 +640,10 @@ Write Guard 必须覆盖真实写入口，并保证：
 - changed_files_audit 必须证明最终变化不超范围。
 
 Write Guard 是统一写入控制机制，不建立与 Permission Engine 并列的第二权限事实源。
+
+原生工具写前检查必须识别全部正式受控入口，包括经独立 HTTP owner 执行的 `sf_project_init`；只能按精确注册名识别，不得放行任意 `sf_*` 名称。初始化仍由 Project Init owner 保证范围和幂等性。
+
+Changed Files Audit 必须绑定本次读取的 Write Guard、HardStop resolution 与 write authorization 原始证据身份；Verification 与 Close 复用同一新鲜度检查。审计后出现任何新记录或证据变化，旧 PASS 立即失效，必须重新审计并验证。尚未处理的拒绝应由审计 owner 建立可恢复 HardStop，经正式 resolution 后重新审计，保留原始拒绝与处置原因，不扩大代码权限。关闭流程不得改写历史守护日志的操作类型或计数来适配最终文件差异。历史无守护来源的报告可兼容；存在来源却未绑定的报告需重做。
 
 版本控制模式属于 Code Permission 前置冻结事实：已有 Git 项目必须在实施前绑定可验证的分支与基线；非 Git 项目必须冻结为 `filesystem` 并以 filesystem baseline、Changed Files Audit 和 Formal Version 完成闭环。filesystem Formal Version 必须保存经审计的实现文件精确集合及其逐字节内容指纹，Close Gate 必须重新计算文件集合与内容指纹；新增、删除或内容变化均使既有 Formal Version 失效，不得仅凭路径范围、文件大小、mtime 或先前 Gate 状态关闭。实施开始后出现的 `git init` 不得反向改变该事实。历史 Work Item 若缺少冻结字段，只能在原 governance scope 与 filesystem baseline 的原始字节哈希、时间线以及当前无 HEAD/零跟踪文件仓库现场均可验证时，由受控 Code Permission 工具写入追加式恢复记录；Formal Version 必须重新验证该记录，任何源漂移、Git context、HEAD、tracked file 或仓库身份变化均使恢复失效。该恢复不产生 Git 分支、提交、合并或交付义务。
 

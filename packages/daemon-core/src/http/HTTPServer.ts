@@ -28,6 +28,7 @@ import { WAL } from '../wal/WAL';
 import { ToolDispatcher } from '../tools';
 import { WALWriteError } from '../session/SessionRegistry';
 import { ensureProjectInit } from '../tools/lib/sf_project_init_core';
+import { CONTROLLED_HTTP_TOOLS } from '../tools/lib/controlled-http-tools';
 import { performChangedFilesAudit, type WriteGuardContext } from '../tools/lib/write-guard-v11';
 import { isCandidateFrozenState } from '../tools/lib/candidate-freeze-v11';
 import { JsonlAppender } from '../logs/JsonlAppender';
@@ -309,7 +310,7 @@ export class HTTPServer {
     this.addExactRoute('POST', '/api/v1/ingest/event', this.handleIngestEvent.bind(this));
 
     // Project lifecycle
-    this.addExactRoute('POST', '/api/v1/project/ensure', this.handleProjectEnsure.bind(this));
+    this.addExactRoute(CONTROLLED_HTTP_TOOLS.sf_project_init.method, CONTROLLED_HTTP_TOOLS.sf_project_init.path, this.handleProjectEnsure.bind(this));
 
     // v1.1 API routes — Work Item lifecycle
     this.addExactRoute('POST', '/api/v1/v11/work-item/create', this.handleV11WorkItemCreate.bind(this));

@@ -1080,7 +1080,7 @@ describe('Orchestrator governance execution closure', () => {
     await writeFile(
       path.join(wiDir, 'write_guard_log.jsonl'),
       `${JSON.stringify({
-        timestamp: new Date().toISOString(),
+        timestamp: hardStop.created_at,
         path: `.specforge/work-items/${workItemId}/`,
         operation: 'modify',
         actor: 'sf-design',
