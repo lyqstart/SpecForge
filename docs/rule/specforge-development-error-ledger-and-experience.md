@@ -31906,3 +31906,9 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 修复审计器使用路径集合，并以新 attempt 的独立目录保留重试快照；023 的原始异常与部分快照保留。归属证据工具，复用 EXP-007/077/129。不得将审计脚本失败误报为产品缺陷或审计通过。
 
 - 本阶段最终对账：ERR1854_STATUS=CLOSED_BY_CONSUMER_GUARD_AND_INSTALLED_REVIEW；ERR1856_STATUS=CLOSED_BY_COMPLETE_PATH_RESOLVER_FIXTURES；ERR1857_STATUS=CLOSED_BY_COMMIT_BOUND_MANIFEST_AND_134_CASE_PACKAGE_RERUN；ERR1858_STATUS=CLOSED_BY_DEDUPLICATED_ATTEMPT_SNAPSHOTS。证据见 docs/archive/2026-10-19-config-activation-loss-evidence/final-review.json；所有原始失败保留。
+
+### ERR-1859：Git 默认换行转换影响封存证据字节
+
+- 最终 Git blob 独立复核发现 55 个日志/源快照的原始 CRLF 字节在暂存时被规范化，工作区原件与已封存 SHA256 仍正确。
+- 已为本轮证据目录添加精确 -text 属性，按原件重新暂存；逐项确认全部 293 个证据文件的 Git blob 等于工作区原始字节，291 个 manifest 成员 SHA256 再次通过。
+- 不重写原始证据或旧失败记录。复用 EXP-007/023/032/260；验证回执为 docs/archive/2026-10-19-config-activation-evidence-git-verification.json。ERR1859_STATUS=CLOSED_BY_BYTE_EXACT_GIT_VERIFICATION。
