@@ -1,0 +1,9 @@
+{
+  "cwd": "D:/code/SpecForge",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-10-19-config-activation-loss-evidence/installed-review.cjs",
+    "after"
+  ],
+  "started": "2026-10-18T19:04:36.060Z"
+}

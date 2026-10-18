@@ -1,0 +1,11 @@
+{
+  "cwd": "D:/code/SpecForge",
+  "executable": "C:/Users/lyq/.config/opencode/sf-user/bin/specforge.exe",
+  "args": [
+    "daemon",
+    "start",
+    "--detach",
+    "--json"
+  ],
+  "started": "2026-10-18T19:04:29.384Z"
+}

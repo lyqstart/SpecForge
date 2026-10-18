@@ -1,0 +1,22 @@
+node:fs:622
+  return binding.open(
+                 ^
+
+Error: EEXIST: file already exists, open 'D:\code\SpecForge\docs\archive\2026-10-19-config-activation-loss-evidence\source-snapshots\after\packages\daemon-core\tests\unit\configuration-activation-loss.test.ts'
+    at Object.openSync (node:fs:622:18)
+    at Object.writeFileSync (node:fs:2497:35)
+    at Object.<anonymous> (D:\code\SpecForge\docs\archive\2026-10-19-config-activation-loss-evidence\audit.cjs:45:63)
+    at Module._compile (node:internal/modules/cjs/loader:1872:14)
+    at Object..js (node:internal/modules/cjs/loader:2003:10)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4075,
+  code: 'EEXIST',
+  syscall: 'open',
+  path: 'D:\\code\\SpecForge\\docs\\archive\\2026-10-19-config-activation-loss-evidence\\source-snapshots\\after\\packages\\daemon-core\\tests\\unit\\configuration-activation-loss.test.ts'
+}
+
+Node.js v24.19.0

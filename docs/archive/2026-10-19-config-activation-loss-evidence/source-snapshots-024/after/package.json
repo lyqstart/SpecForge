@@ -1,0 +1,59 @@
+{
+  "name": "specforge",
+  "version": "1.0.17",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "node scripts/run-root-task.mjs build",
+    "test": "node scripts/run-root-task.mjs test",
+    "test:root": "node scripts/run-root-tests.mjs current",
+    "test:root:environmental": "node scripts/run-root-tests.mjs environmental",
+    "test:root:registry": "node scripts/run-root-tests.mjs validate",
+    "lint": "node scripts/run-root-task.mjs lint",
+    "clean": "bun run --filter './packages/*' clean",
+    "render-workflows": "node scripts/run-root-task.mjs render-workflows",
+    "check-workflows": "node scripts/run-root-task.mjs check-workflows",
+    "lint:layout": "bun scripts/lint/check-hardcoded-paths.ts",
+    "typecheck:validator-contract": "tsc --noEmit -p scripts/tsconfig.validation-contract.json",
+    "typecheck:release-owner-snapshot": "tsc --noEmit -p scripts/tsconfig.release-owner-snapshot.json",
+    "typecheck:installer": "tsc --noEmit -p scripts/tsconfig.installer.json",
+    "build:release-runtimes": "bun scripts/build-release-runtime-artifacts.ts",
+    "build:release-manifest": "bun scripts/build-release-manifest.ts",
+    "precheck:release": "bun scripts/run-current-release-precheck.ts",
+    "bootstrap:project": "node scripts/project-session-bootstrap.mjs",
+    "test:project-bootstrap": "bun --cwd packages/daemon-core run test -- tests/unit/project-session-bootstrap.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "@types/proper-lockfile": "^4.1.4",
+    "@typescript-eslint/eslint-plugin": "^8.59.2",
+    "@typescript-eslint/parser": "^8.59.3",
+    "@vitest/coverage-v8": "4.1.5",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "fast-check": "^4.8.0",
+    "globals": "^17.6.0",
+    "proper-lockfile": "^4.1.2",
+    "typescript": "^6.0.3",
+    "vitest": "4.1.5"
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
+  },
+  "specforgeRelease": {
+    "releaseId": "specforge-current",
+    "tagPrefix": "specforge-v",
+    "versionEpoch": 1,
+    "cleanBuildFiles": [
+      { "id": "runtime:specforge", "path": "release/bin/specforge.exe" },
+      { "id": "runtime:specforged", "path": "release/bin/specforged.exe" },
+      { "id": "plugin:sf_specforge", "path": "setup/userlevel-opencode/plugins/sf_specforge.ts" },
+      { "id": "release:installer", "path": "scripts/sf-installer.ts" },
+      { "id": "release:release-manifest", "path": "release/release-manifest.json" }
+    ]
+  },
+  "schema_version": "1.0"
+}

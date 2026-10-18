@@ -1,0 +1,124 @@
+{
+  "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-activation-http-review-xoSH6G",
+  "finished": "2026-10-18T18:51:35.233Z",
+  "exit_code": 0,
+  "records": [
+    {
+      "start": {
+        "pid": 35040,
+        "port": 2942
+      },
+      "utc": "2026-10-18T18:51:34.629Z"
+    },
+    {
+      "label": "normal accepted configuration",
+      "utc": "2026-10-18T18:51:34.673Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": true,
+          "rebuilt_from_events": true,
+          "work_items": {
+            "WI-0001": {
+              "work_item_id": "WI-0001",
+              "workflow_type": "feature_spec",
+              "current_state": "created",
+              "created_at": 1792349494541,
+              "updated_at": 1792349494541
+            }
+          }
+        },
+        "requestId": "zfwgyat6w3mve6m171",
+        "timestamp": 1792349494669
+      }
+    },
+    {
+      "label": "missing record, unchanged config, existing process",
+      "utc": "2026-10-18T18:51:34.680Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": false,
+          "error": "CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK: restore the accepted configuration before continuing"
+        },
+        "requestId": "zrmalbcoshkmve6m17d",
+        "timestamp": 1792349494681
+      }
+    },
+    {
+      "label": "missing record, changed config, existing process",
+      "utc": "2026-10-18T18:51:34.698Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": false,
+          "error": "CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK: restore the accepted configuration before continuing"
+        },
+        "requestId": "cyurw7axyk5mve6m17u",
+        "timestamp": 1792349494698
+      }
+    },
+    {
+      "stopped": 35040,
+      "code": null,
+      "signal": "SIGTERM"
+    },
+    {
+      "start": {
+        "pid": 49384,
+        "port": 2945
+      },
+      "utc": "2026-10-18T18:51:35.159Z"
+    },
+    {
+      "label": "missing record, changed config, restarted process",
+      "utc": "2026-10-18T18:51:35.202Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": false,
+          "error": "CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK: restore the accepted configuration before continuing"
+        },
+        "requestId": "uxp0l6ag1fmve6m1lt",
+        "timestamp": 1792349495201
+      }
+    },
+    {
+      "label": "original evidence and configuration restored",
+      "utc": "2026-10-18T18:51:35.212Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": true,
+          "rebuilt_from_events": true,
+          "work_items": {
+            "WI-0001": {
+              "work_item_id": "WI-0001",
+              "workflow_type": "feature_spec",
+              "current_state": "created",
+              "created_at": 1792349494541,
+              "updated_at": 1792349494541
+            }
+          }
+        },
+        "requestId": "opuxsonjgdkmve6m1m4",
+        "timestamp": 1792349495212
+      }
+    },
+    {
+      "verdict": "PASS",
+      "source": "fresh processes loading built dist via real HTTP",
+      "original_activation_sha256": "8e31ee0676495a5a76f5d3e8f53343d879c2170ee4d0b6711a2991196376cb98"
+    },
+    {
+      "stopped": 49384,
+      "code": null,
+      "signal": "SIGTERM"
+    }
+  ]
+}

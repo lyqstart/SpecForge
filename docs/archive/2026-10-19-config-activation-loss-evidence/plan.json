@@ -1,0 +1,30 @@
+{
+  "mode": "CODEX_DIRECT",
+  "run_id": "CODEX-SF-20261019-CONFIG-ACTIVATION-LOSS-A01",
+  "attempt_id": "A01",
+  "baseline": "37ec3a78ed335d4d1bbd4a2a9bedef7b06546d61",
+  "time": "2026-10-18T18:48:37.783Z",
+  "request": "修复第3项遗漏，补齐记录丢失、重启和正常读取配置测试，保留原始记录，独立审查。",
+  "classification": "CONFIRMED/RUNTIME_DEFECT",
+  "owner": "Runtime / ProjectManager acceptance",
+  "plan": [
+    "Add failing real-state consumer regressions",
+    "Reject missing activation with active work before activation write",
+    "Run exact regression, package and build checks",
+    "Audit raw output and diff independently"
+  ],
+  "write_classes": {
+    "TRUTH_SOURCE_WRITES": "SpecForge project-status only; no business project changes",
+    "REPOSITORY_TRACKED_WRITES": "ProjectManager; regression and fixture; active rules and ledger; archive evidence; project-status",
+    "RUNTIME_OBSERVER_WRITES": "isolated temporary projects and build/test caches",
+    "EXTERNAL_EVIDENCE_WRITES": "docs/archive/2026-10-19-config-activation-loss-evidence"
+  },
+  "gate": {
+    "EXPERIENCE_FILE_READ": "YES",
+    "ACTIVE_EXPERIENCE_RULES_FILE_READ": "YES",
+    "APPLICABLE_EXPERIENCE_RULES": "EXP-004,006,007,010,031,282",
+    "HISTORICAL_LEDGER_SEARCH": "configuration activation / ERR-1850,1851 / EXP-282,284",
+    "REPEATED_ERROR_CHECK": "PASS"
+  },
+  "stop": "AFTER_FIX_TESTS_AND_INDEPENDENT_REVIEW"
+}

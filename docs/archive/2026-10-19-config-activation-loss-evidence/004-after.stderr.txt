@@ -1,0 +1,11 @@
+$ vitest run tests/unit/configuration-activation-loss.test.ts tests/unit/configuration-activation-boundary.test.ts tests/unit/project-config-owner.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+stderr | tests/unit/project-config-owner.test.ts > controlled runtime project configuration owner > rejects invalid candidate without document changes: {"apiKey":"fake"}
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/unit/project-config-owner.test.ts > controlled runtime project configuration owner > rejects invalid candidate without document changes: {"provider":{"api_key":"fake"}}
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/unit/project-config-owner.test.ts > controlled runtime project configuration owner > rejects invalid candidate without document changes: {"providers":[{"accessToken":"fake"}]}
+[Config] WARN Sensitive field protection violation {}
+

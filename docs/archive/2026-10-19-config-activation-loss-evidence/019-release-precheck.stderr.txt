@@ -1,0 +1,1 @@
+$ bun scripts/run-current-release-precheck.ts --candidate-id "CODEX-SF-20261019-CONFIG-ACTIVATION-LOSS-A01"

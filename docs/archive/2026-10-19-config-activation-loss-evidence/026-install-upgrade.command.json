@@ -1,0 +1,9 @@
+{
+  "cwd": "D:/code/SpecForge",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/sf-installer.ts",
+    "upgrade"
+  ],
+  "started": "2026-10-18T19:04:16.540Z"
+}

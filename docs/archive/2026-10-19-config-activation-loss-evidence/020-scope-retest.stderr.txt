@@ -1,0 +1,71 @@
+$ vitest run "--maxWorkers=1" "--minWorkers=1"
+stderr | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > rolls back earlier replacements when a later current upgrade mutation fails
+  ⚠️ 升级失败，尝试回滚...
+
+stderr | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > rolls back earlier replacements when a later current upgrade mutation fails
+  ✅ 回滚完成
+
+stderr | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > rolls back earlier replacements when a later current upgrade mutation fails
+<empty line>
+stderr | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > rolls back earlier replacements when a later current upgrade mutation fails
+<empty line>
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/current-repository-formal-release-precheck.integration.test.ts > current repository formal release precheck > uses SPS-1.0 and passes once deferred packages are absent from current release surfaces
+AssertionError: expected 'CODEX-SF-20261019-CONFIG-ACTIVATION-L…' to match /^commit-[0-9a-f]{40}$/
+
+- Expected: 
+/^commit-[0-9a-f]{40}$/
+
++ Received: 
+"CODEX-SF-20261019-CONFIG-ACTIVATION-LOSS-A01"
+
+ ❯ tests/current-repository-formal-release-precheck.integration.test.ts:16:25
+     14| describe('current repository formal release precheck', () => {
+     15|   it('uses SPS-1.0 and passes once deferred packages are absent from c…
+     16|     expect(candidateId).toMatch(/^commit-[0-9a-f]{40}$/);
+       |                         ^
+     17|     const outcome = await runCurrentReleasePrecheck({ candidateRoot, r…
+     18| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > installs exactly the verified physical release set into an isolated SpecForge root
+AssertionError: expected 'CODEX-SF-20261019-CONFIG-ACTIVATION-L…' to match /^commit-[0-9a-f]{40}$/
+
+- Expected: 
+/^commit-[0-9a-f]{40}$/
+
++ Received: 
+"CODEX-SF-20261019-CONFIG-ACTIVATION-LOSS-A01"
+
+ ❯ tests/current-repository-installer-manifest-consumption.integration.test.ts:26:41
+     24|       await readFile(join(candidateRoot, 'release', 'release-manifest.…
+     25|     ) as { candidateId: string };
+     26|     expect(releaseIdentity.candidateId).toMatch(/^commit-[0-9a-f]{40}$…
+       |                                         ^
+     27| 
+     28|     const release = await loadVerifiedReleaseInstallSet({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/current-repository-release-manifest-runtime.integration.test.ts > current repository release manifest and runtime entry surfaces > keeps release manifest and runtime entries aligned after deferred packages exit the workspace
+AssertionError: expected 'CODEX-SF-20261019-CONFIG-ACTIVATION-L…' to match /^commit-[0-9a-f]{40}$/
+
+- Expected: 
+/^commit-[0-9a-f]{40}$/
+
++ Received: 
+"CODEX-SF-20261019-CONFIG-ACTIVATION-LOSS-A01"
+
+ ❯ tests/current-repository-release-manifest-runtime.integration.test.ts:27:25
+     25|       candidateId: string;
+     26|     }).candidateId;
+     27|     expect(candidateId).toMatch(/^commit-[0-9a-f]{40}$/);
+       |                         ^
+     28|     const authority = projectReleaseAuthority({
+     29|       releaseId,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+error: script "test" exited with code 1

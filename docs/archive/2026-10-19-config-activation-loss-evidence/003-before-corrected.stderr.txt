@@ -1,0 +1,310 @@
+$ vitest run tests/unit/configuration-activation-loss.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > personal, recreated=false: rejects missing record with active work and timeout 2000
+ FAIL  tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > personal, recreated=false: rejects missing record with active work and timeout 10000
+ FAIL  tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > personal, recreated=true: rejects missing record with active work and timeout 2000
+ FAIL  tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > personal, recreated=true: rejects missing record with active work and timeout 10000
+ FAIL  tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > enterprise, recreated=false: rejects missing record with active work and timeout 2000
+ FAIL  tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > enterprise, recreated=false: rejects missing record with active work and timeout 10000
+ FAIL  tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > enterprise, recreated=true: rejects missing record with active work and timeout 2000
+ FAIL  tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > enterprise, recreated=true: rejects missing record with active work and timeout 10000
+AssertionError: promise resolved "{ layers: [ { …(4) }, …(3) ], …(3) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "layers": [
++     {
++       "data": {
++         "cacheEnabled": true,
++         "hotReload": {
++           "debounceMs": 100,
++           "enabled": true,
++           "watchPaths": [],
++         },
++         "logLevel": "info",
++         "maxCacheSize": 1000,
++         "sensitiveFields": [
++           "apiKeys",
++           "tokens",
++           "secrets",
++           "credentials",
++           "passwords",
++           "auth",
++           "bearerTokens",
++           "providerCredentials",
++         ],
++         "service_management": {
++           "auto_enable_at_boot": true,
++           "plugin_reconnect_backoff_factor": 2,
++           "plugin_reconnect_initial_sec": 1,
++           "plugin_reconnect_max_sec": 60,
++           "schema_version": "1.0",
++           "stop_timeout_sec": 10,
++         },
++         "timeoutMs": 30000,
++       },
++       "schemaVersion": "1.0",
++       "timestamp": 0,
++       "type": "builtin",
++     },
++     {
++       "data": {},
++       "schemaVersion": "1.0",
++       "timestamp": 0,
++       "type": "user",
++     },
++     {
++       "data": {
++         "schema_version": "1.0",
++         "timeoutMs": 2000,
++       },
++       "schemaVersion": "1.0",
++       "timestamp": 0,
++       "type": "project",
++     },
++     {
++       "data": {},
++       "schemaVersion": "1.0",
++       "timestamp": 0,
++       "type": "runtime",
++     },
++   ],
++   "merged": {
++     "cacheEnabled": true,
++     "hotReload": {
++       "debounceMs": 100,
++       "enabled": true,
++       "watchPaths": [],
++     },
++     "logLevel": "info",
++     "maxCacheSize": 1000,
++     "schema_version": "1.0",
++     "sensitiveFields": [
++       "apiKeys",
++       "tokens",
++       "secrets",
++       "credentials",
++       "passwords",
++       "auth",
++       "bearerTokens",
++       "providerCredentials",
++     ],
++     "service_management": {
++       "auto_enable_at_boot": true,
++       "plugin_reconnect_backoff_factor": 2,
++       "plugin_reconnect_initial_sec": 1,
++       "plugin_reconnect_max_sec": 60,
++       "schema_version": "1.0",
++       "stop_timeout_sec": 10,
++     },
++     "timeoutMs": 2000,
++   },
++   "metadata": {
++     "mergedAt": 0,
++     "schemaVersion": "1.0",
++     "sensitiveFields": [
++       "apiKeys",
++       "tokens",
++       "secrets",
++       "credentials",
++       "passwords",
++       "auth",
++       "bearerTokens",
++       "providerCredentials",
++     ],
++     "validationErrors": [],
++   },
++   "sources": {
++     "cacheEnabled": "builtin",
++     "hotReload": "builtin",
++     "logLevel": "builtin",
++     "maxCacheSize": "builtin",
++     "schema_version": "project",
++     "sensitiveFields": "builtin",
++     "service_management": "builtin",
++     "timeoutMs": "project",
++   },
+  }
+
+ ❯ tests/unit/configuration-activation-loss.test.ts:44:64
+     42|         const consumer = restart ? f.create() : original;
+     43|         for (let attempt = 0; attempt < 2; attempt++) {
+     44|           await expect(consumer.getProjectConfiguration(f.root)).rejec…
+       |                                                                ^
+     45|           expect(fs.existsSync(f.activation)).toBe(false);
+     46|         }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > does not trust a stale empty state projection when activation is missing
+AssertionError: promise resolved "{ layers: [ { …(4) }, …(3) ], …(3) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "layers": [
++     {
++       "data": {
++         "cacheEnabled": true,
++         "hotReload": {
++           "debounceMs": 100,
++           "enabled": true,
++           "watchPaths": [],
++         },
++         "logLevel": "info",
++         "maxCacheSize": 1000,
++         "sensitiveFields": [
++           "apiKeys",
++           "tokens",
++           "secrets",
++           "credentials",
++           "passwords",
++           "auth",
++           "bearerTokens",
++           "providerCredentials",
++         ],
++         "service_management": {
++           "auto_enable_at_boot": true,
++           "plugin_reconnect_backoff_factor": 2,
++           "plugin_reconnect_initial_sec": 1,
++           "plugin_reconnect_max_sec": 60,
++           "schema_version": "1.0",
++           "stop_timeout_sec": 10,
++         },
++         "timeoutMs": 30000,
++       },
++       "schemaVersion": "1.0",
++       "timestamp": 0,
++       "type": "builtin",
++     },
++     {
++       "data": {},
++       "schemaVersion": "1.0",
++       "timestamp": 0,
++       "type": "user",
++     },
++     {
++       "data": {
++         "schema_version": "1.0",
++         "timeoutMs": 2000,
++       },
++       "schemaVersion": "1.0",
++       "timestamp": 0,
++       "type": "project",
++     },
++     {
++       "data": {},
++       "schemaVersion": "1.0",
++       "timestamp": 0,
++       "type": "runtime",
++     },
++   ],
++   "merged": {
++     "cacheEnabled": true,
++     "hotReload": {
++       "debounceMs": 100,
++       "enabled": true,
++       "watchPaths": [],
++     },
++     "logLevel": "info",
++     "maxCacheSize": 1000,
++     "schema_version": "1.0",
++     "sensitiveFields": [
++       "apiKeys",
++       "tokens",
++       "secrets",
++       "credentials",
++       "passwords",
++       "auth",
++       "bearerTokens",
++       "providerCredentials",
++     ],
++     "service_management": {
++       "auto_enable_at_boot": true,
++       "plugin_reconnect_backoff_factor": 2,
++       "plugin_reconnect_initial_sec": 1,
++       "plugin_reconnect_max_sec": 60,
++       "schema_version": "1.0",
++       "stop_timeout_sec": 10,
++     },
++     "timeoutMs": 2000,
++   },
++   "metadata": {
++     "mergedAt": 0,
++     "schemaVersion": "1.0",
++     "sensitiveFields": [
++       "apiKeys",
++       "tokens",
++       "secrets",
++       "credentials",
++       "passwords",
++       "auth",
++       "bearerTokens",
++       "providerCredentials",
++     ],
++     "validationErrors": [],
++   },
++   "sources": {
++     "cacheEnabled": "builtin",
++     "hotReload": "builtin",
++     "logLevel": "builtin",
++     "maxCacheSize": "builtin",
++     "schema_version": "project",
++     "sensitiveFields": "builtin",
++     "service_management": "builtin",
++     "timeoutMs": "project",
++   },
+  }
+
+ ❯ tests/unit/configuration-activation-loss.test.ts:87:60
+     85|     fs.writeFileSync(f.resolver.resolveStatePath(f.root), JSON.stringi…
+     86|     fs.unlinkSync(f.activation);
+     87|     await expect(f.create().getProjectConfiguration(f.root)).rejects.t…
+       |                                                            ^
+     88|     expect(fs.existsSync(f.activation)).toBe(false);
+     89|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > blocks ordinary dispatch and native writes before consumers can execute
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/unit/configuration-activation-loss.test.ts:99:28
+     97|     const deps = { projectManager: manager } as any;
+     98|     const result: any = await new ToolDispatcher(deps).dispatch({ tool…
+     99|     expect(result.success).toBe(false);
+       |                            ^
+    100|     expect(result.error).toContain('CONFIGURATION_CHANGE_BLOCKED_ACTIV…
+    101|     await expect(checkNativeTool(deps, f.root, 'write', { filePath: pa…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > rejects missing activation after actual process exit and fresh process startup
+AssertionError: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+ ❯ tests/unit/configuration-activation-loss.test.ts:125:29
+    123|     const restarted = run('read');
+    124|     expect(restarted.pid).not.toBe(first.pid);
+    125|     expect(restarted.error).toContain('CONFIGURATION_CHANGE_BLOCKED_AC…
+       |                             ^
+    126|     expect(restarted.activationExists).toBe(false);
+    127|     expect(restarted.states).toEqual(['created']);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+error: script "test" exited with code 1

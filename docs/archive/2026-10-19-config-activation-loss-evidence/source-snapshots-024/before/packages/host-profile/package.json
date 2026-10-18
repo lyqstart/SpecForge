@@ -1,0 +1,27 @@
+{
+  "name": "@specforge/host-profile",
+  "version": "1.0.16",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@specforge/types": "workspace:*",
+    "@specforge/version-unification": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "vitest": "^4.1.5"
+  }
+}

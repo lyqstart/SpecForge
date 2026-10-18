@@ -1,0 +1,132 @@
+[
+  {
+    "file": "docs/product-specification/specforge-product-specification.md",
+    "before": "2c7110e5a83ffd1f5678523464392a41842c9e0c87998c7f3e6457e27270e1bc",
+    "after": "f74cc2e4c21ab83a6fd7c8761dfe60408ae86826c22dd954a466a567e48c5401"
+  },
+  {
+    "file": "docs/project-status.md",
+    "before": "f4a242876b0224bdacc3415390861c386870bb827defc6b4c14cd6b12085aeb7",
+    "after": "163cb4496793034240384f672766b3b4bd3f15843beb2e95103a49e0a08ed52c"
+  },
+  {
+    "file": "docs/rule/specforge-active-development-rules.md",
+    "before": "ff0e38254bbeb4cd683f71ce3854f655271ad93f65a06be6375e46fa7724bce0",
+    "after": "ad74d9cfe96165029e31e4151585403cf36b5fb46c37eb61a722fb4dded0659a"
+  },
+  {
+    "file": "docs/rule/specforge-development-error-ledger-and-experience.md",
+    "before": "ABSENT",
+    "after": "f46ecf7c91b7189ae18242cd73246e3a708aa278803b53948a365ccee12dd287"
+  },
+  {
+    "file": "package.json",
+    "before": "6bd56cf1e29d74aad0a8536f9c121a682a0e6dbcc396e34aed708e1a2e76e466",
+    "after": "65429d4e2091041082a219a35e3fa6dd932a1eb4b9bf9550e7fd35cb75dda14b"
+  },
+  {
+    "file": "packages/cli/package.json",
+    "before": "b9b7eb142957ebb961116cc92728c7474186fa4c34cf1dc6bf93ea5617ec41cf",
+    "after": "4348a2d201476f63f43d7165b0231fbadade5f03157fb1f126c12db195f0d344"
+  },
+  {
+    "file": "packages/cli/tests/help-system.test.ts",
+    "before": "2ffa5bcf5d2f9704a8f9af98df6cf7af5f1d42bde389312b82aac878493a4cf5",
+    "after": "68188e225a6a2c33ff247846b47b6ab633d38b7c359dc9d909e653999a31043b"
+  },
+  {
+    "file": "packages/configuration/package.json",
+    "before": "54c938455b66e41c1ebea3ecbaa9094c2e869e2bad762a8430a1241b7256f325",
+    "after": "5f6e1e88637874e706aa2a030596978a5b40bfaaffc4580233b2ea9cbc61f0e1"
+  },
+  {
+    "file": "packages/daemon-core/package.json",
+    "before": "c0d9ff9814155bd6a99f9858d9687503c2cde121c53fbadb94f25f9ff05aedf8",
+    "after": "d04077d53d61945b21dc3085f275290c17f3e00293676ead1dab1b41105facbb"
+  },
+  {
+    "file": "packages/daemon-core/src/project/ProjectManager.ts",
+    "before": "6b0b69957d7dc718073e33d2a96df1d2af0bf151a06b2a0d0ea83acb8e34178d",
+    "after": "fce18fbe7e2cfff6d53ff71861c1d1b8c0b6ffb516303fa622cc7955131014ac"
+  },
+  {
+    "file": "packages/daemon-core/tests/unit/current-project-layout-boundary.test.ts",
+    "before": "387c007b397a6ba25fd8a831058694350ddf50efc6b854e741d64002a0a70359",
+    "after": "544b8b7a0317d7c87212e877f41620a0aa0c4e9bcd1d96c39eb9229020c9c37c"
+  },
+  {
+    "file": "packages/daemon-core/tests/unit/current-project-module-schema-boundary.test.ts",
+    "before": "a26ac72f73c887769a48d2992c1fcf8426a62b2ccfa6e4125c9fe46b2dac97d3",
+    "after": "9584ae81b9913f4de0444596ab8b23aa18c14524272eccc6ff7bb48effb7da6b"
+  },
+  {
+    "file": "packages/host-profile/package.json",
+    "before": "ee603843046e207837e01d24968355e3d2db11cfbbe96b92e1d90eb37b113e3b",
+    "after": "4f79f5753e0325e95ff19ca6f71fac6f81c854b66fa45646dae94af2a9e1490a"
+  },
+  {
+    "file": "packages/observability/package.json",
+    "before": "f50c57cf9d7d3ba5a01cbe5f14a029b939aeb023988118084f0e6f897d298ed8",
+    "after": "c13d78517075f7e86a41ba1fde6e42f8839fea98ec309030a26a79419fc53a10"
+  },
+  {
+    "file": "packages/observability/tests/unit/project-structure.test.ts",
+    "before": "98b80063d4bf9c8acc43badd08bd10300a8160359e91026635e0d4c54cc0850e",
+    "after": "0ba7f8a8d22e87d5bb9f793b6bb7de350b78d5ee84e101e86baa9bec7fad46a5"
+  },
+  {
+    "file": "packages/opencode-adapter/package.json",
+    "before": "eaf03c4c1b810c22bcbf59afc7619f27709c6714c3d50e307439d7718e36f7de",
+    "after": "7bf1a048c3be671c5e48c6d64101fa73072fc65cce307248a6f4290d274d8e55"
+  },
+  {
+    "file": "packages/permission-engine/package.json",
+    "before": "af4acbd483e9e84d87b428177cd044b9b6eb07c1949308209a65b47de4d85632",
+    "after": "2940a700ad5b48b93beb9c53be1d8ae315887cd9dd94106219d4536729e59d6e"
+  },
+  {
+    "file": "packages/scope-gate/package.json",
+    "before": "dd28089a04fee332b5dbb9af744ab0d4c568a4fcdff699d1c909bd2fa1c46352",
+    "after": "12ed3edf77e4a08c253a2e8769b3807e812074fc29ffed7654a850a5d070eda9"
+  },
+  {
+    "file": "packages/service-management/package.json",
+    "before": "ca5d1b7ffc05e6ce9de658721de47830e4e6238cf47da436dd0923ea08276e9d",
+    "after": "11144ee7c9f611e3c92e9938ee890def1944330c5948e67776dfe8e44cfd0f82"
+  },
+  {
+    "file": "packages/types/package.json",
+    "before": "65ed21a52b6b5bb4bab99626b8ecdb52c6c9b601522035366c819d61be87c703",
+    "after": "3520bc0895ac05d11860ee05fa63698bedb506a7b4c6786b1ba05483e04d0fb3"
+  },
+  {
+    "file": "packages/version-unification/package.json",
+    "before": "4da3da84651a8e972c9c57eb088d75a69db0342f9bd1eed125df4c549a88eb81",
+    "after": "4296ab9d0e0c831a84340abf7e2321e4d24b92d1cf50a0f6b553b19c3f3132a4"
+  },
+  {
+    "file": "packages/workflow-runtime/package.json",
+    "before": "0d493e18e79f7370a01cb32dd0f2bb74538ab9ac45136c309bd636f3b7b88309",
+    "after": "46480adbbebe2649312e88db8e7e29e417e5a3d3536aaef395e341e119d89cde"
+  },
+  {
+    "file": "scripts/package.json",
+    "before": "606a7b8ed99d81601b38f938791206c912fd6b02f923b40692db0e02394416b9",
+    "after": "5f70c8f2e082701bb144218ffe88cb1e9501e52cc46c05aa35b2457eb500c725"
+  },
+  {
+    "file": "tests/unit/current-product-version-contract.test.ts",
+    "before": "971b0f9f79f7de4a8b7da3027b131539764cdf40c9bf6fc2e0c43b5e9017fc06",
+    "after": "1c65b563aa452565fa9f64e0fe5fe3c532818af84255ce4b19096a6d10187c91"
+  },
+  {
+    "file": "packages/daemon-core/tests/unit/configuration-activation-loss.test.ts",
+    "before": "ABSENT",
+    "after": "1c04072ad03316dc1f7bf21be3dc2dad9f7b69e645fc8e42f4cec7b2502d27e7"
+  },
+  {
+    "file": "packages/daemon-core/tests/fixtures/configuration-activation-process.ts",
+    "before": "ABSENT",
+    "after": "f29ecbc030d77337e0bc03c140133112b99a643eea22bcdc68d158df6d98c39d"
+  }
+]

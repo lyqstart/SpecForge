@@ -1,0 +1,8 @@
+{
+  "cwd": "D:/code/SpecForge",
+  "executable": "D:/code/SpecForge/release/bin/specforge.exe",
+  "args": [
+    "--version"
+  ],
+  "started": "2026-10-18T18:58:22.503Z"
+}

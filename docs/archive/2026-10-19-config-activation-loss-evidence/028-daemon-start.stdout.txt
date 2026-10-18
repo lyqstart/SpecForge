@@ -1,0 +1,1 @@
+{"success":true,"message":"Daemon process started","pid":41628,"executable":"C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforged.exe"}

@@ -1,0 +1,16 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const cp = require('node:child_process');
+const root = __dirname;
+const [id, cwd, executable, ...args] = process.argv.slice(2);
+const prefix = path.join(root, id);
+const started = new Date().toISOString();
+fs.writeFileSync(prefix + '.command.json', JSON.stringify({ cwd, executable, args, started }, null, 2) + '\n', { flag: 'wx' });
+const stdout = fs.openSync(prefix + '.stdout.txt', 'wx');
+const stderr = fs.openSync(prefix + '.stderr.txt', 'wx');
+const result = cp.spawnSync(executable, args, { cwd, stdio: ['ignore', stdout, stderr], windowsHide: true });
+fs.closeSync(stdout); fs.closeSync(stderr);
+const receipt = { started, finished: new Date().toISOString(), exit_code: result.status, signal: result.signal, error: result.error?.message };
+fs.writeFileSync(prefix + '.result.json', JSON.stringify(receipt, null, 2) + '\n', { flag: 'wx' });
+console.log(JSON.stringify({ id, ...receipt }));
+process.exitCode = result.status ?? 1;

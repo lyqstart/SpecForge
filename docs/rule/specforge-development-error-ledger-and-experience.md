@@ -31899,3 +31899,10 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 正确顺序为 build → runtime build → manifest/precheck → 安装集成回归；刷新清单后重跑完整 scope-gate 包，再按逐测试集合对账全套结果。复用 EXP-023/077/102，不修改安装校验，不覆盖 016 日志。
 
 - ERR1857 补充：019 的临时 RUN_ID candidate 虽通过发布生产者，但 020 的三个集成消费者要求 commit-<真实40位提交>，因此拒绝临时身份。必须先保存真实候选实现提交，再生成 commit-bound manifest 并重跑完整 scope-gate；不得用旧提交或伪造 SHA 通过身份测试。
+
+### ERR-1858：审计快照路径集合未去重
+
+- 023 先通过原始测试及 HTTP 结果断言，生成源码快照时因新测试已进入候选提交、同时仍在显式新增清单中重复出现而触发 EEXIST，未生成成功审计报告。
+- 修复审计器使用路径集合，并以新 attempt 的独立目录保留重试快照；023 的原始异常与部分快照保留。归属证据工具，复用 EXP-007/077/129。不得将审计脚本失败误报为产品缺陷或审计通过。
+
+- 本阶段最终对账：ERR1854_STATUS=CLOSED_BY_CONSUMER_GUARD_AND_INSTALLED_REVIEW；ERR1856_STATUS=CLOSED_BY_COMPLETE_PATH_RESOLVER_FIXTURES；ERR1857_STATUS=CLOSED_BY_COMMIT_BOUND_MANIFEST_AND_134_CASE_PACKAGE_RERUN；ERR1858_STATUS=CLOSED_BY_DEDUPLICATED_ATTEMPT_SNAPSHOTS。证据见 docs/archive/2026-10-19-config-activation-loss-evidence/final-review.json；所有原始失败保留。

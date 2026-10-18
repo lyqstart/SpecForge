@@ -1,0 +1,577 @@
+diff --git a/docs/product-specification/specforge-product-specification.md b/docs/product-specification/specforge-product-specification.md
+index eec098ad..f4f198bb 100644
+--- a/docs/product-specification/specforge-product-specification.md
++++ b/docs/product-specification/specforge-product-specification.md
+@@ -4,7 +4,7 @@
+ >
+ > Specification ID: SPS-1.0
+ >
+-> Product release version: 1.0.16
++> Product release version: 1.0.17
+ >
+ > Product version epoch: 1
+ >
+diff --git a/docs/project-status.md b/docs/project-status.md
+index 904956df..29b833a2 100644
+--- a/docs/project-status.md
++++ b/docs/project-status.md
+@@ -9,23 +9,23 @@
+ <!-- SPECFORGE_PROJECT_STATUS:START -->
+ PROJECT_STATUS_SCHEMA=2
+ PROJECT_STATUS_DECLARATION=ACTIVE
+-ACTIVE_INITIATIVE=SIX_ACCEPTANCE_COMPLETION
+-OBJECTIVE=Complete the user-approved six-item repair and acceptance plan with controlled configuration, raw evidence, original WI recovery and browser verification.
+-CURRENT_PHASE=SIX_ACCEPTANCE_VALIDATED_DELIVERY
++ACTIVE_INITIATIVE=CONFIGURATION_ACTIVATION_LOSS_REPAIR
++OBJECTIVE=Repair missing activation record acceptance bypass with original regression evidence and independent review.
++CURRENT_PHASE=CANDIDATE_VALIDATED_PENDING_RELEASE_IDENTITY
+ OWNER_DECISIONS=AR-DEC-01:APPROVED;AR-DEC-02:APPROVED_WITH_ARCHIVE_CONSOLIDATION;AR-DEC-03:APPROVED_WITH_KIRO_RETIREMENT;AR-DEC-04:APPROVED_WITH_SINGLE_PROJECT_STATUS;AR-DEC-05:ONLY_TWO_EXTERNAL_EXECUTION_MODES_CODEX_DIRECT_AND_WORKBUDDY_COORDINATED;AR-DEC-06:ACTIVE_RULES_SEPARATED_FROM_HISTORICAL_LEDGER;D05:OPENCODE_ADAPTER_ENABLED;D10:NSSM_REMOVED_WINDOWS_DIRECT_DAEMON_ONLY;D11:GLOBAL_ONLY_THIN_PLUGIN_SINGLE_EXPORT;VR-DEC-01:NEW_EPOCH_1_0_0;VR-DEC-02:TAG_PREFIX_SPECFORGE_V;VR-DEC-03:INDEPENDENT_CONTRACT_VERSIONS;VR-DEC-04:ACTIVE_REFERENCES_CONVERGE_HISTORY_PRESERVED
+ EXECUTION_MODE=CODEX_DIRECT
+-EXECUTION_STATE=COMPLETED
++EXECUTION_STATE=IN_PROGRESS
+ EXECUTION_PROTOCOL=docs/rule/specforge-execution-mode-and-evidence-protocol.md
+ EXECUTION_PLANNER=CODEX
+ EXECUTION_ACTOR=CODEX
+ EXECUTION_AUDITOR=CODEX
+-EXECUTION_RUN_ID=CODEX-SF-20261018-SIX-COMPLETION-A01
+-EXECUTION_EVIDENCE_ROOT=D:\code\sf-acceptance-six-evidence\completion-20261018-A01
+-LAST_EXECUTION_CHECKPOINT=1.0.16 candidate 7e155945a138c026697ef31ff6ac4a2a8d2241a7 built and installed; 6830/6830 full regression tests, three typechecks, release precheck, and 112/112 installed file hashes passed. Original WI-0001 recovered through official owner, verified by actual OpenCode native probes and Node 31/31 plus Codex browser B1-B5. Agent report transcription, timestamps, semantic mappings and Node pointer errors were corrected through professional owners; failed generations retained. Independent audits 082/083/089 passed. Verification/formal attempt-0009 passed. Actual close event 2026-10-18T17:55:05.207Z; post-close native write prt_150276d25001mSihtHrGrcu6XZ denied, target absent, state remains closed. All 22 technical cases and 5 browser cases passed with evidence levels stated. Final delivery and seal receipts: EVIDENCE_ROOT/final-review.
+-NEXT_EXECUTION_STOP=AFTER_SIX_ACCEPTANCE_COMPLETION_REVIEW_OR_ACTUAL_GOVERNANCE_BLOCKER
+-LAST_COMPLETED_CHECKPOINT=Six-item acceptance completed on original sf-acceptance-six/WI-0001. Final independent summary: D:/code/sf-acceptance-six-evidence/completion-20261018-A01/final-review/acceptance-summary.json. Payload identity remains commit-7e155945; subsequent source commits only test/records. Historical failed reports and original recovery generation preserved.
++EXECUTION_RUN_ID=CODEX-SF-20261019-CONFIG-ACTIVATION-LOSS-A01
++EXECUTION_EVIDENCE_ROOT=D:/code/SpecForge/docs/archive/2026-10-19-config-activation-loss-evidence
++LAST_EXECUTION_CHECKPOINT=Configuration owner fix and 16 new regression cases implemented. 014 targeted 39/39, workspace build, three typechecks and independent compiled HTTP restart review passed. Full regression and release identity validation pending; failed attempts retained.
++NEXT_EXECUTION_STOP=AFTER_FIX_TESTS_AND_INDEPENDENT_REVIEW
++LAST_COMPLETED_CHECKPOINT=Source configuration-loss protection and independent compiled HTTP review passed; no installed upgrade yet.
+ CURRENT_BLOCKER=NONE
+-NEXT_LEGAL_ACTION=Read final-review acceptance-summary.json, delivery.json and seal-receipt.json; verify local/remote main and clean worktree via Bootstrap before any new authorized task. Six-item original acceptance is complete; do not rerun successful tests, reopen WI-0001 or resume t2/t3 without a new task.
++NEXT_LEGAL_ACTION=Bind the actual candidate source commit to release manifest, finish full regression/package rerun and independent review, then upgrade and verify installed consumer. Original business WI remains closed.
+ ALLOWED_SCOPE=AGENTS.md;README.md;.gitattributes;.gitignore;package.json;bun.lock;docs/project-status.md;docs/product-specification/**;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/archive/**;docs/adr/**;docs/cli/**;docs/conventions/**;docs/user/**;docs/plugins/**;docs/tools/**;docs/engineering-lessons/**;docs/rule/**;scripts/**;setup/**;packages/**/package.json;packages/service-management/src/**;packages/configuration/src/**;packages/opencode-adapter/src/**;packages/permission-engine/src/**;packages/daemon-core/src/**;packages/cli/src/**;packages/types/src/**;packages/observability/src/**;packages/observability/examples/**;packages/workflow-runtime/src/types/state-machine.ts;packages/**/README.md;packages/**/DEVELOPMENT.md;packages/**/docs/**;packages/**/src/**/*.md;packages/**/tests/**;tests/**
+ PROHIBITED=Deleting ADR ERR audit or report evidence;creating another active handoff current-status or recovery-status file;modifying D:\code\t3 outside a separately authorized controlled recovery phase;reading or modifying D:\code\t2 during SpecForge repair;creating a SpecForge Work Item for SpecForge product self-development;using archive evidence as a current product contract
+ REQUIRED_RULES=docs/rule/specforge-active-development-rules.md;docs/product-specification/authority-registry.md;docs/product-specification/specforge-product-specification.md;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/rule/specforge-execution-mode-and-evidence-protocol.md
+diff --git a/docs/rule/specforge-active-development-rules.md b/docs/rule/specforge-active-development-rules.md
+index 87751257..18a9a9fd 100644
+--- a/docs/rule/specforge-active-development-rules.md
++++ b/docs/rule/specforge-active-development-rules.md
+@@ -2542,6 +2542,8 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制
+ 库内存在能力不代表产品入口已接通。写前许可必须在实际工具执行前等待 owner 结果；状态必须从事件 owner 重建而非读投影；配置 acceptance 必须有实际消费者和跨重启稳定边界；外部能力必须取自真实接口字段。缺失依赖、未实现接口和被拒绝操作不得伪装成功，客户端必须保留拒绝原因。配置日志仅允许受限结构字段，禁止原始值、任意字段名和解析片段。回归同时覆盖合法操作、拒绝后零业务写入、旧投影与真实事件冲突，以及真实 HTTP 传输到部署模板；模拟服务不能冒充真实外部产品验收。
+ <!-- source: ledger current EXP-282 -->
+ 
++配置 acceptance 回归必须从正常消费入口覆盖激活记录缺失，分别验证同进程、真实进程重启、配置未变/已变、活动任务/无活动任务。缺失证据不得被当作首次接入的证明；拒绝后不得补写激活身份。管理入口的拒绝测试不能替代消费入口覆盖。
++
+ ## EXP-283：Windows 替换运行时二进制前必须完成受控停机
+ 
+ 升级前先验证新发布载荷与当前安装身份，记录真实旧 PID/健康状态；使用正式 CLI 正常停止并确认进程退出后，才能替换 Windows 可执行文件。文件占用导致升级或回滚失败时，保留事务与备份，由官方恢复入口完成回滚，校验恢复结果再重试；禁止删除 journal、手工改 manifest 或强行覆盖。升级后须独立核验新进程版本、安装哈希和旧进程退出，不能只看安装回执。
+diff --git a/docs/rule/specforge-development-error-ledger-and-experience.md b/docs/rule/specforge-development-error-ledger-and-experience.md
+index b19e96a9..07139451 100644
+--- a/docs/rule/specforge-development-error-ledger-and-experience.md
++++ b/docs/rule/specforge-development-error-ledger-and-experience.md
+@@ -31872,3 +31872,35 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制
+ - 最终闭环：079 经正式状态恢复修正 EV-0001 stdout path/hash，attempt-0009 verification/formal gates 通过；082/083 独立核验原件、真实UTC、审计绑定及正式 REQ/DD/TASK 映射通过。084 正式撤销权限与 close_gate 36/36，原 WI 于 2026-10-18T17:55:05.207Z closed；实际原生 write prt_150276d25001mSihtHrGrcu6XZ 被拒绝，exists=false，状态仍 closed。089 关闭后独立检查通过；完整证据见本 RUN_ID final-review。
+ - ERR1850_FINAL=controlled configuration installed-client/daemon consumption and restart recovery passed; ERR1851_FINAL=nonempty installed userlevel/daemon automatic logs verified with zero new test marker leaks; full suite 6830/6830 and 112/112 installed hashes passed.
+ - ERR1852_STATUS=CLOSED_BY_VERIFIED_SEALED_ORIGINAL_REFERENCES_WITH_FAILED_TRANSCRIPTIONS_PRESERVED。ERR1853_STATUS=CLOSED_BY_OWNER_CORRECTION_AND_INDEPENDENT_SOURCE_SEMANTIC_HASH_REVIEW。结构Gate通过不能替代证据内容和业务语义的独立审查。
++
++### ERR-1854：配置激活记录丢失使正常消费入口绕过活动任务保护
++
++- CONFIRMED：原始独立复现见 docs/archive/2026-10-19-config-activation-loss-evidence/original-review-result.json。记录存在时从 2000 改成 10000 被拒绝；移走记录并重建 ProjectManager 后，created 状态仍存在却接受 10000 并补写记录。
++- 根因：getProjectConfiguration 仅在 previous 存在且 hash 变化时重建活动任务状态；ENOENT 被当作允许首次激活。管理入口的 missing-activation 测试不能覆盖实际消费入口。责任层 Runtime / ProjectManager。
++- 正确做法：缺失和变更激活身份都先查事件权威状态；活动任务时拒绝，不补造历史身份；无活动任务才允许首次激活。复用 EXP-004/006/007/010/031/282，补充真实状态、正常读取、进程重启及拒绝零激活写入回归。
++- ERR1854_STATUS=IDENTIFIED；原验收证据不覆盖、不删除，原业务 WI 不重开。
++
++### ERR-1855：本轮验证载体与夹具问题单独归因
++
++- Git 新分支首次因沙箱不能创建 ref lock 被拒；提升权限后成功。001-before 的 Bun 在沙箱中报 CouldntReadCurrentDirectory；002 使用相同命令提升权限后实际收集 13 个测试，失败不是产品加载失败。
++- 002 的普通读取测试遗漏 handler 注册，报 Unknown tool；改用正式 tools 聚合入口后，003 的 11 个失败均复现 acceptance 漏洞（另 2 个正常对照通过）。最初 native 检查参数形状在源码审查中修正，未作为产品根因。
++- 部分只读大文件输出截断已分块补读；PowerShell 路径通配交给 rg 导致的读取失败改用 rg 的 -g 参数，未用于产品结论。失败日志不覆盖。类防护 EXP-007/008/010/117；后续修复验证 004 为 29/29。
++- ERR1855_STATUS=CLOSED_BY_CLASSIFIED_CARRIER_AND_FIXTURE_CORRECTION。
++
++### ERR-1856：首次配置 acceptance 读取事件后暴露不完整路径夹具
++
++- 006 全量回归最终有两个同类失败：current-project-module-schema-boundary 与 current-project-layout-boundary 的合法注册正例：pathResolver.resolveEventsPath is not a function。该夹具将只有两个方法的对象强转为 IPathResolver，无法支持真实 StateManager；非法模块前置拒绝的其余 6 例通过。
++- 修复测试消费者为完整 PersonalPathResolver，仅覆盖隔离 runtime/daemon 路径；保留真实配置 acceptance 和事件读取，不 mock 掉新保护。责任 TEST_FIXTURE_DRIFT，复用 EXP-022/031/074。原始 006 stdout/stderr/result 保留，后续以完整定向回归及 daemon 包回归核验。
++- 011 localhost 查询被沙箱 EACCES 拒绝，012 提升权限后同一只读查询证明旧部署 1.0.16 的 112 文件一致；归为载体权限，未误报服务故障。
++
++### ERR-1857：重建发布二进制后未先刷新清单导致安装集成拒绝
++
++- 017 生成 1.0.17 二进制后，016 的 scope-gate 安装集成读取旧 release-manifest，三个用例均报 specforge.exe/specforged.exe hash_mismatch。原始失败属于执行顺序，安装器正确拒绝不一致载荷。
++- 正确顺序为 build → runtime build → manifest/precheck → 安装集成回归；刷新清单后重跑完整 scope-gate 包，再按逐测试集合对账全套结果。复用 EXP-023/077/102，不修改安装校验，不覆盖 016 日志。
++
++- ERR1857 补充：019 的临时 RUN_ID candidate 虽通过发布生产者，但 020 的三个集成消费者要求 commit-<真实40位提交>，因此拒绝临时身份。必须先保存真实候选实现提交，再生成 commit-bound manifest 并重跑完整 scope-gate；不得用旧提交或伪造 SHA 通过身份测试。
++
++### ERR-1858：审计快照路径集合未去重
++
++- 023 先通过原始测试及 HTTP 结果断言，生成源码快照时因新测试已进入候选提交、同时仍在显式新增清单中重复出现而触发 EEXIST，未生成成功审计报告。
++- 修复审计器使用路径集合，并以新 attempt 的独立目录保留重试快照；023 的原始异常与部分快照保留。归属证据工具，复用 EXP-007/077/129。不得将审计脚本失败误报为产品缺陷或审计通过。
+diff --git a/package.json b/package.json
+index 8c9889eb..37b879bf 100644
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "specforge",
+-  "version": "1.0.16",
++  "version": "1.0.17",
+   "private": true,
+   "workspaces": [
+     "packages/*"
+diff --git a/packages/cli/package.json b/packages/cli/package.json
+index 957b770e..96ba2f64 100644
+--- a/packages/cli/package.json
++++ b/packages/cli/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/cli",
+-  "version": "1.0.16",
++  "version": "1.0.17",
+   "description": "Command Line Interface for SpecForge",
+   "main": "dist/cli.js",
+   "types": "dist/cli.d.ts",
+diff --git a/packages/cli/tests/help-system.test.ts b/packages/cli/tests/help-system.test.ts
+index 3ea71960..f8cc2e06 100644
+--- a/packages/cli/tests/help-system.test.ts
++++ b/packages/cli/tests/help-system.test.ts
+@@ -24,7 +24,7 @@ describe('HelpSystem', () => {
+       const modeSwitch = new ModeSwitch('human');
+       const helpText = helpSystem.generateGeneralHelp(modeSwitch);
+       
+-      expect(helpText).toContain('SpecForge v1.0.16');
++      expect(helpText).toContain('SpecForge v1.0.17');
+       expect(helpText).toContain('Usage: specforge <command> [options]');
+       expect(helpText).toContain('Available commands:');
+       expect(helpText).toContain('daemon');
+@@ -40,7 +40,7 @@ describe('HelpSystem', () => {
+       const parsed = JSON.parse(helpText);
+       
+       expect(parsed.appName).toBe('SpecForge');
+-      expect(parsed.version).toBe('1.0.16');
++      expect(parsed.version).toBe('1.0.17');
+       expect(Array.isArray(parsed.commands)).toBe(true);
+       expect(parsed.commands.length).toBeGreaterThan(0);
+       expect(Array.isArray(parsed.globalFlags)).toBe(true);
+diff --git a/packages/configuration/package.json b/packages/configuration/package.json
+index f0d7abe0..4a5efc87 100644
+--- a/packages/configuration/package.json
++++ b/packages/configuration/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/configuration",
+-  "version": "1.0.16",
++  "version": "1.0.17",
+   "description": "Configuration subsystem for SpecForge",
+   "main": "dist/index.js",
+   "types": "dist/index.d.ts",
+diff --git a/packages/daemon-core/package.json b/packages/daemon-core/package.json
+index 926f4f29..c54a17ec 100644
+--- a/packages/daemon-core/package.json
++++ b/packages/daemon-core/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/daemon-core",
+-  "version": "1.0.16",
++  "version": "1.0.17",
+   "description": "Daemon Core module for SpecForge - Central process and Single Source of Truth",
+   "main": "dist/index.js",
+   "types": "dist/index.d.ts",
+diff --git a/packages/daemon-core/src/project/ProjectManager.ts b/packages/daemon-core/src/project/ProjectManager.ts
+index a5d00cbf..5786290d 100644
+--- a/packages/daemon-core/src/project/ProjectManager.ts
++++ b/packages/daemon-core/src/project/ProjectManager.ts
+@@ -63,7 +63,9 @@ export class ProjectManager {
+       }
+       catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw new Error('CONFIGURATION_ACTIVATION_CORRUPT'); }
+       if (previous && (previous.schema_version !== '1.0' || !/^[a-f0-9]{64}$/.test(previous.sha256))) throw new Error('CONFIGURATION_ACTIVATION_CORRUPT');
+-      if (previous && previous.sha256 !== sha256) {
++      // Missing acceptance evidence is not proof of first use. Rebuild from
++      // events before creating a new identity, including after process restart.
++      if (!previous || previous.sha256 !== sha256) {
+         const sm = await this.getProjectStateManager(projectPath);
+         await sm.rebuildState();
+         if (sm.listWorkItems().some(item => !['closed', 'rejected', 'superseded'].includes(item.current_state))) {
+diff --git a/packages/daemon-core/tests/fixtures/configuration-activation-process.ts b/packages/daemon-core/tests/fixtures/configuration-activation-process.ts
+new file mode 100644
+index 00000000..7e2bb728
+--- /dev/null
++++ b/packages/daemon-core/tests/fixtures/configuration-activation-process.ts
+@@ -0,0 +1,19 @@
++import * as fs from 'node:fs';
++import * as path from 'node:path';
++import { ProjectManager } from '../../src/project/ProjectManager';
++import { EventBus } from '../../src/event-bus/EventBus';
++import { PersonalPathResolver } from '../../src/daemon/path-resolver';
++
++const [root, action] = process.argv.slice(2);
++process.env.OPENCODE_CONFIG_DIR = path.join(root, 'user');
++delete process.env.SPECFORGE_CONFIG_OVERRIDES;
++const manager = new ProjectManager(new EventBus(), new PersonalPathResolver(), undefined as any);
++const result: Record<string, unknown> = { pid: process.pid, action, utc: new Date().toISOString() };
++try { result.timeoutMs = (await manager.getProjectConfiguration(root)).merged.timeoutMs; }
++catch (error) { result.error = String(error); }
++const state = await manager.getProjectStateManager(root);
++if (action === 'initialize-active') await state.transition('WI-0001', '', 'created');
++await state.rebuildState();
++result.states = state.listWorkItems().map(item => item.current_state);
++result.activationExists = fs.existsSync(path.join(root, '.specforge/runtime/configuration-activation.json'));
++console.log('ACTIVATION_RESULT=' + JSON.stringify(result));
+diff --git a/packages/daemon-core/tests/unit/configuration-activation-loss.test.ts b/packages/daemon-core/tests/unit/configuration-activation-loss.test.ts
+new file mode 100644
+index 00000000..0ceafa64
+--- /dev/null
++++ b/packages/daemon-core/tests/unit/configuration-activation-loss.test.ts
+@@ -0,0 +1,140 @@
++import { afterEach, describe, expect, it, vi } from 'vitest';
++import * as fs from 'node:fs';
++import * as path from 'node:path';
++import { tmpdir } from 'node:os';
++import { spawnSync } from 'node:child_process';
++import { fileURLToPath } from 'node:url';
++import { ProjectManager } from '../../src/project/ProjectManager';
++import { EventBus } from '../../src/event-bus/EventBus';
++import { PersonalPathResolver, EnterprisePathResolver } from '../../src/daemon/path-resolver';
++import { ToolDispatcher } from '../../src/tools';
++import { checkNativeTool } from '../../src/tools/lib/native-write-boundary';
++
++const roots: string[] = [];
++afterEach(() => {
++  vi.unstubAllEnvs();
++  for (const root of roots.splice(0)) fs.rmSync(root, { recursive: true, force: true });
++});
++function fixture(mode = 'personal') {
++  const root = fs.mkdtempSync(path.join(tmpdir(), 'sf-activation-loss-')); roots.push(root);
++  vi.stubEnv('OPENCODE_CONFIG_DIR', path.join(root, 'user'));
++  vi.stubEnv('SPECFORGE_CONFIG_OVERRIDES', '');
++  const file = path.join(root, '.specforge/config/project.json');
++  fs.mkdirSync(path.dirname(file), { recursive: true });
++  const write = (timeoutMs: number) => fs.writeFileSync(file, JSON.stringify({ schema_version: '1.0', timeoutMs }));
++  write(2000);
++  const resolver = mode === 'personal' ? new PersonalPathResolver() : new EnterprisePathResolver();
++  const create = () => new ProjectManager(new EventBus(), resolver, undefined as any);
++  return { root, file, write, create, resolver, activation: path.join(resolver.resolveProjectRuntimeDir(root), 'configuration-activation.json') };
++}
++
++describe('missing configuration activation at the actual consumer', () => {
++  for (const mode of ['personal', 'enterprise']) {
++    for (const restart of [false, true]) {
++      it.each([2000, 10000])(`${mode}, recreated=${restart}: rejects missing record with active work and timeout %i`, async timeout => {
++        const f = fixture(mode); const original = f.create();
++        await original.getProjectConfiguration(f.root);
++        const accepted = fs.readFileSync(f.activation);
++        const state = await original.getProjectStateManager(f.root);
++        await state.transition('WI-0001', '', 'created');
++        const events = fs.readFileSync(f.resolver.resolveEventsPath(f.root));
++        fs.unlinkSync(f.activation); f.write(timeout);
++        const consumer = restart ? f.create() : original;
++        for (let attempt = 0; attempt < 2; attempt++) {
++          await expect(consumer.getProjectConfiguration(f.root)).rejects.toThrow('CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK');
++          expect(fs.existsSync(f.activation)).toBe(false);
++        }
++        expect(fs.readFileSync(f.resolver.resolveEventsPath(f.root))).toEqual(events);
++        expect(JSON.parse(fs.readFileSync(f.file, 'utf8')).timeoutMs).toBe(timeout);
++        // Isolated fixture recovery: put back the exact previously captured evidence.
++        // This is not a product recovery API or permission to fabricate a new identity.
++        fs.writeFileSync(f.activation, accepted); f.write(2000);
++        expect((await consumer.getProjectConfiguration(f.root)).merged.timeoutMs).toBe(2000);
++        expect(fs.readFileSync(f.activation)).toEqual(accepted);
++      });
++    }
++  }
++
++  it('accepts first use and changed configuration without active work, including recreation', async () => {
++    const f = fixture();
++    expect((await f.create().getProjectConfiguration(f.root)).merged.timeoutMs).toBe(2000);
++    fs.unlinkSync(f.activation); f.write(10000);
++    expect((await f.create().getProjectConfiguration(f.root)).merged.timeoutMs).toBe(10000);
++    expect(fs.existsSync(f.activation)).toBe(true);
++  });
++
++  it('reads unchanged accepted configuration during active work without rewriting its identity', async () => {
++    const f = fixture(); const manager = f.create();
++    await manager.getProjectConfiguration(f.root);
++    const state = await manager.getProjectStateManager(f.root);
++    await state.transition('WI-0001', '', 'created');
++    const original = fs.readFileSync(f.activation);
++    for (const reader of [manager, f.create()]) {
++      expect((await reader.getProjectConfiguration(f.root)).merged.timeoutMs).toBe(2000);
++      expect(fs.readFileSync(f.activation)).toEqual(original);
++    }
++  });
++
++  it.each(['closed', 'rejected', 'superseded'])('allows missing-record acceptance when all events are terminal (%s)', async terminal => {
++    const f = fixture(); const manager = f.create();
++    await manager.getProjectConfiguration(f.root);
++    const state = await manager.getProjectStateManager(f.root);
++    // StateManager event fixture, not an invocation of a business Close/Gate workflow.
++    await state.transition('WI-0001', '', 'created');
++    await state.transition('WI-0001', 'created', terminal);
++    fs.unlinkSync(f.activation); f.write(10000);
++    expect((await f.create().getProjectConfiguration(f.root)).merged.timeoutMs).toBe(10000);
++  });
++
++  it('does not trust a stale empty state projection when activation is missing', async () => {
++    const f = fixture(); const manager = f.create();
++    await manager.getProjectConfiguration(f.root);
++    const state = await manager.getProjectStateManager(f.root);
++    await state.transition('WI-0001', '', 'created');
++    const projection = JSON.parse(fs.readFileSync(f.resolver.resolveStatePath(f.root), 'utf8'));
++    projection.workItems = [];
++    fs.writeFileSync(f.resolver.resolveStatePath(f.root), JSON.stringify(projection));
++    fs.unlinkSync(f.activation);
++    await expect(f.create().getProjectConfiguration(f.root)).rejects.toThrow('CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK');
++    expect(fs.existsSync(f.activation)).toBe(false);
++  });
++
++  it('blocks ordinary dispatch and native writes before consumers can execute', async () => {
++    const f = fixture(); const manager = f.create();
++    await manager.getProjectConfiguration(f.root);
++    const state = await manager.getProjectStateManager(f.root);
++    await state.transition('WI-0001', '', 'created');
++    fs.unlinkSync(f.activation); f.write(10000);
++    const deps = { projectManager: manager } as any;
++    const result: any = await new ToolDispatcher(deps).dispatch({ tool: 'sf_state_read', args: { work_item_id: 'all' }, context: { directory: f.root } });
++    expect(result.success).toBe(false);
++    expect(result.error).toContain('CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK');
++    await expect(checkNativeTool(deps, f.root, 'write', { filePath: path.join(f.root, 'must-not-exist.txt') })).rejects.toThrow('CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK');
++    expect(fs.existsSync(f.activation)).toBe(false);
++    expect(fs.existsSync(path.join(f.root, 'must-not-exist.txt'))).toBe(false);
++  });
++
++  it('rejects missing activation after actual process exit and fresh process startup', () => {
++    const f = fixture();
++    const bun = process.env.npm_execpath;
++    expect(bun).toMatch(/bun(?:\.exe)?$/i);
++    const script = fileURLToPath(new URL('../fixtures/configuration-activation-process.ts', import.meta.url));
++    const run = (action: string) => {
++      const child = spawnSync(bun!, [script, f.root, action], { encoding: 'utf8', windowsHide: true });
++      expect(child.error).toBeUndefined();
++      expect(child.status, child.stderr).toBe(0);
++      const line = child.stdout.split(/\r?\n/).find(line => line.startsWith('ACTIVATION_RESULT='));
++      expect(line).toBeDefined();
++      console.log(line);
++      return JSON.parse(line!.slice('ACTIVATION_RESULT='.length));
++    };
++    const first = run('initialize-active');
++    expect(first.timeoutMs).toBe(2000);
++    fs.unlinkSync(f.activation); f.write(10000);
++    const restarted = run('read');
++    expect(restarted.pid).not.toBe(first.pid);
++    expect(restarted.error).toContain('CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK');
++    expect(restarted.activationExists).toBe(false);
++    expect(restarted.states).toEqual(['created']);
++  });
++});
+diff --git a/packages/daemon-core/tests/unit/current-project-layout-boundary.test.ts b/packages/daemon-core/tests/unit/current-project-layout-boundary.test.ts
+index 87d571e5..686b03c8 100644
+--- a/packages/daemon-core/tests/unit/current-project-layout-boundary.test.ts
++++ b/packages/daemon-core/tests/unit/current-project-layout-boundary.test.ts
+@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
+ 
+ import { ProjectManager } from '../../src/project/ProjectManager';
+ import { EventBus } from '../../src/event-bus/EventBus';
+-import type { IPathResolver } from '../../src/daemon/path-resolver';
++import { PersonalPathResolver } from '../../src/daemon/path-resolver';
+ import type { StateManager } from '../../src/state/StateManager';
+ 
+ async function exists(filePath: string): Promise<boolean> {
+@@ -29,10 +29,9 @@ describe('current project layout boundary', () => {
+   beforeEach(async () => {
+     root = await mkdtemp(join(tmpdir(), 'specforge-current-project-'));
+     runtimeRoot = await mkdtemp(join(tmpdir(), 'specforge-current-runtime-'));
+-    const pathResolver = {
+-      resolveProjectRuntimeDir: () => join(runtimeRoot, 'runtime'),
+-      resolveDaemonJsonPath: () => join(runtimeRoot, 'daemon.json'),
+-    } as IPathResolver;
++    const pathResolver = new PersonalPathResolver();
++    pathResolver.resolveProjectRuntimeDir = () => join(runtimeRoot, 'runtime');
++    pathResolver.resolveDaemonJsonPath = () => join(runtimeRoot, 'daemon.json');
+     manager = new ProjectManager(
+       new EventBus(),
+       pathResolver,
+diff --git a/packages/daemon-core/tests/unit/current-project-module-schema-boundary.test.ts b/packages/daemon-core/tests/unit/current-project-module-schema-boundary.test.ts
+index c6dd9d3f..aec29c03 100644
+--- a/packages/daemon-core/tests/unit/current-project-module-schema-boundary.test.ts
++++ b/packages/daemon-core/tests/unit/current-project-module-schema-boundary.test.ts
+@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
+ 
+ import { ProjectManager } from '../../src/project/ProjectManager';
+ import { EventBus } from '../../src/event-bus/EventBus';
+-import type { IPathResolver } from '../../src/daemon/path-resolver';
++import { PersonalPathResolver } from '../../src/daemon/path-resolver';
+ import type { StateManager } from '../../src/state/StateManager';
+ 
+ type ModuleFixture = {
+@@ -26,10 +26,11 @@ describe('current project module schema boundary', () => {
+   beforeEach(async () => {
+     root = await mkdtemp(join(tmpdir(), 'specforge-current-modules-'));
+     runtimeRoot = await mkdtemp(join(tmpdir(), 'specforge-current-modules-runtime-'));
+-    const pathResolver = {
+-      resolveProjectRuntimeDir: () => join(runtimeRoot, 'runtime'),
+-      resolveDaemonJsonPath: () => join(runtimeRoot, 'daemon.json'),
+-    } as IPathResolver;
++    // Keep the full production path contract: first configuration acceptance
++    // now reads authoritative events before establishing its identity.
++    const pathResolver = new PersonalPathResolver();
++    pathResolver.resolveProjectRuntimeDir = () => join(runtimeRoot, 'runtime');
++    pathResolver.resolveDaemonJsonPath = () => join(runtimeRoot, 'daemon.json');
+     manager = new ProjectManager(new EventBus(), pathResolver, {} as StateManager);
+   });
+ 
+diff --git a/packages/host-profile/package.json b/packages/host-profile/package.json
+index 801759d4..5ed843dc 100644
+--- a/packages/host-profile/package.json
++++ b/packages/host-profile/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/host-profile",
+-  "version": "1.0.16",
++  "version": "1.0.17",
+   "private": true,
+   "type": "module",
+   "main": "dist/index.js",
+diff --git a/packages/observability/package.json b/packages/observability/package.json
+index a0a872c8..20a06cd6 100644
+--- a/packages/observability/package.json
++++ b/packages/observability/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/observability",
+-  "version": "1.0.16",
++  "version": "1.0.17",
+   "description": "SpecForge current-release observability types and policy contract",
+   "type": "module",
+   "main": "dist/src/index.js",
+diff --git a/packages/observability/tests/unit/project-structure.test.ts b/packages/observability/tests/unit/project-structure.test.ts
+index 0eca4a58..1ca416e7 100644
+--- a/packages/observability/tests/unit/project-structure.test.ts
++++ b/packages/observability/tests/unit/project-structure.test.ts
+@@ -41,7 +41,7 @@ describe('Project Structure', () => {
+     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+ 
+     expect(packageJson.name).toBe('@specforge/observability');
+-    expect(packageJson.version).toBe('1.0.16');
++    expect(packageJson.version).toBe('1.0.17');
+     expect(packageJson.type).toBe('module');
+     expect(packageJson.main).toBe('dist/src/index.js');
+     expect(packageJson.types).toBe('dist/src/index.d.ts');
+diff --git a/packages/opencode-adapter/package.json b/packages/opencode-adapter/package.json
+index 287ff0d0..43307318 100644
+--- a/packages/opencode-adapter/package.json
++++ b/packages/opencode-adapter/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/opencode-adapter",
+-  "version": "1.0.16",
++  "version": "1.0.17",
+   "description": "OpenCode Adapter module for SpecForge - Implements LLMKernelAdapter interface for OpenCode",
+   "type": "commonjs",
+   "main": "dist/index.js",
+diff --git a/packages/permission-engine/package.json b/packages/permission-engine/package.json
+index bb45173b..159744ec 100644
+--- a/packages/permission-engine/package.json
++++ b/packages/permission-engine/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/permission-engine",
+-  "version": "1.0.16",
++  "version": "1.0.17",
+   "description": "Permission Engine module for SpecForge - Fine-grained access control and authorization",
+   "type": "module",
+   "main": "dist/src/index.js",
+diff --git a/packages/scope-gate/package.json b/packages/scope-gate/package.json
+index d5983d83..2c1e0821 100644
+--- a/packages/scope-gate/package.json
++++ b/packages/scope-gate/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/scope-gate",
+-  "version": "1.0.16",
++  "version": "1.0.17",
+   "description": "Current-release evidence and artifact-set validator for SpecForge",
+   "type": "module",
+   "main": "dist/src/index.js",
+diff --git a/packages/service-management/package.json b/packages/service-management/package.json
+index 299db0fc..4f574809 100644
+--- a/packages/service-management/package.json
++++ b/packages/service-management/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/service-management",
+-  "version": "1.0.16",
++  "version": "1.0.17",
+   "description": "Service Management subsystem for SpecForge - OS service lifecycle management",
+   "main": "dist/index.js",
+   "types": "dist/index.d.ts",
+diff --git a/packages/types/package.json b/packages/types/package.json
+index 74ec0ec9..8bd24222 100644
+--- a/packages/types/package.json
++++ b/packages/types/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/types",
+-  "version": "1.0.16",
++  "version": "1.0.17",
+   "description": "Shared TypeScript types for SpecForge modules",
+   "type": "module",
+   "main": "dist/index.js",
+diff --git a/packages/version-unification/package.json b/packages/version-unification/package.json
+index e932a933..9bbb127b 100644
+--- a/packages/version-unification/package.json
++++ b/packages/version-unification/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/version-unification",
+-  "version": "1.0.16",
++  "version": "1.0.17",
+   "private": true,
+   "type": "module",
+   "main": "dist/index.js",
+diff --git a/packages/workflow-runtime/package.json b/packages/workflow-runtime/package.json
+index 7200ef98..2700947b 100644
+--- a/packages/workflow-runtime/package.json
++++ b/packages/workflow-runtime/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/workflow-runtime",
+-  "version": "1.0.16",
++  "version": "1.0.17",
+   "schema_version": "1.0",
+   "description": "Workflow Runtime module for SpecForge - Implements compositeGate semantics (Property 29)",
+   "type": "module",
+diff --git a/scripts/package.json b/scripts/package.json
+index 86db8265..6535dd1c 100644
+--- a/scripts/package.json
++++ b/scripts/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "specforge-installer-scripts",
+-  "version": "1.0.16",
++  "version": "1.0.17",
+   "private": true,
+   "description": "SpecForge current-release installer and reconciliation libraries.",
+   "type": "module",
+diff --git a/tests/unit/current-product-version-contract.test.ts b/tests/unit/current-product-version-contract.test.ts
+index 21460faa..11c25b24 100644
+--- a/tests/unit/current-product-version-contract.test.ts
++++ b/tests/unit/current-product-version-contract.test.ts
+@@ -29,12 +29,12 @@ describe('current product version contract', () => {
+     const identity = await loadProductIdentity(ROOT);
+ 
+     expect(identity).toEqual({
+-      version: '1.0.16',
++      version: '1.0.17',
+       releaseId: 'specforge-current',
+       tagPrefix: 'specforge-v',
+       versionEpoch: 1,
+     });
+-    expect(expectedProductTag(identity)).toBe('specforge-v1.0.16');
++    expect(expectedProductTag(identity)).toBe('specforge-v1.0.17');
+   });
+ 
+   it('keeps every current workspace package on the product version', async () => {
+@@ -58,7 +58,7 @@ describe('current product version contract', () => {
+           }
+         }),
+     )).filter((version): version is string => version !== undefined);
+-    expect(new Set(versions)).toEqual(new Set(['1.0.16']));
++    expect(new Set(versions)).toEqual(new Set(['1.0.17']));
+   });
+ 
+   it('projects the same release identity through current authority and release entrypoints', async () => {

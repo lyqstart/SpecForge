@@ -1,0 +1,13 @@
+{
+  "cwd": "D:/code/SpecForge/packages/daemon-core",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/configuration-activation-loss.test.ts",
+    "tests/unit/configuration-activation-boundary.test.ts",
+    "tests/unit/project-config-owner.test.ts"
+  ],
+  "started": "2026-10-18T18:49:55.477Z"
+}

@@ -1,0 +1,81 @@
+{
+  "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-installed-activation-loss-J0ikrG",
+  "utc": "2026-10-18T19:04:39.864Z",
+  "exit_code": 0,
+  "records": [
+    {
+      "fixture_exit_code": 0,
+      "stdout": "[Config] DEBUG Validating configuration layer {\n  layer: \"builtin\",\n  schemaVersion: \"1.0\",\n}\n[Config] DEBUG Validating configuration layer {\n  layer: \"user\",\n  schemaVersion: \"1.0\",\n}\n[Config] DEBUG Validating configuration layer {\n  layer: \"project\",\n  schemaVersion: \"1.0\",\n}\n[Config] DEBUG Validating configuration layer {\n  layer: \"runtime\",\n  schemaVersion: \"1.0\",\n}\n[Config] DEBUG Starting configuration merge {\n  layerCount: 4,\n}\n[Config] DEBUG Merging layer {\n  layer: \"builtin\",\n}\n[Config] DEBUG Merging layer {\n  layer: \"user\",\n}\n[Config] DEBUG Merging layer {\n  layer: \"project\",\n}\n[Config] DEBUG Merging layer {\n  layer: \"runtime\",\n}\n[Config] INFO Configuration merge completed {\n  keyCount: 8,\n  layerCount: 4,\n  validationErrors: 0,\n}\nACTIVATION_RESULT={\"pid\":13632,\"action\":\"initialize-active\",\"utc\":\"2026-10-18T19:04:39.717Z\",\"timeoutMs\":2000,\"states\":[\"created\"],\"activationExists\":true}\n",
+      "stderr": ""
+    },
+    {
+      "pid": 41628,
+      "health": {
+        "success": true,
+        "data": {
+          "status": "ok",
+          "service": "daemon-core",
+          "version": "1.0.17",
+          "uptime": 9
+        },
+        "requestId": "zv67ut2r02fmve72v0g",
+        "timestamp": 1792350279808
+      }
+    },
+    {
+      "label": "normal active configuration",
+      "utc": "2026-10-18T19:04:39.847Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": true,
+          "rebuilt_from_events": true,
+          "work_items": {
+            "WI-0001": {
+              "work_item_id": "WI-0001",
+              "workflow_type": "feature_spec",
+              "current_state": "created",
+              "created_at": 1792350279751,
+              "updated_at": 1792350279751
+            }
+          }
+        },
+        "requestId": "hh72lac8qkgmve72v1i",
+        "timestamp": 1792350279846
+      }
+    },
+    {
+      "label": "lost record unchanged configuration",
+      "utc": "2026-10-18T19:04:39.855Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": false,
+          "error": "CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK: restore the accepted configuration before continuing"
+        },
+        "requestId": "xjy8rqj3719mve72v1q",
+        "timestamp": 1792350279854
+      }
+    },
+    {
+      "label": "lost record changed configuration",
+      "utc": "2026-10-18T19:04:39.863Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": false,
+          "error": "CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK: restore the accepted configuration before continuing"
+        },
+        "requestId": "21rvrpq5sy8mve72v1y",
+        "timestamp": 1792350279862
+      }
+    },
+    {
+      "verdict": "PASS",
+      "activationRecreated": false
+    }
+  ]
+}

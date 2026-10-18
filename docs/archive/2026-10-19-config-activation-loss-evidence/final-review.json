@@ -1,0 +1,19 @@
+{
+  "utc": "2026-10-18T19:05:16.639Z",
+  "verdict": "PASS",
+  "scope": "Item 3 missing configuration activation record",
+  "candidate": "commit-2ee9dc4ad00d409155890eefa76ecd547d36c7a2",
+  "version": "1.0.17",
+  "old_pid": 39776,
+  "new_pid": 41628,
+  "installed_files": 112,
+  "regression_total_after_package_rerun": 6846,
+  "new_regression_cases": 16,
+  "targeted_tests": 39,
+  "full_run_exit_code": 1,
+  "scope_gate_rerun_exit_code": 0,
+  "compiled_http_restart": "PASS",
+  "installed_consumer": "PASS",
+  "original_wi_state": "closed",
+  "limitations": "Full regression plus complete scope-gate package rerun, not a single zero-exit full command. Fault injection uses isolated fixtures. Restoring captured activation bytes in tests is not a new public recovery API. Original business WI was not reopened."
+}
