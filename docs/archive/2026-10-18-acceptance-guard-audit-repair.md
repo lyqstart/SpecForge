@@ -44,3 +44,21 @@ EXTERNAL_EVIDENCE_WRITES：当前无新增外部证据；原验收证据未覆�
 完整验证、提交和实际安装证据将在完成后追加；当前不宣称交付完成或六项验收全通过。
 
 首轮 Daemon 全量 1895/1897、退出 1：两个旧完整流程夹具在真实拒绝后手写零拒绝 PASS，已改为实际 Audit → HardStop resolution → Audit 工具链，定向 26/26 通过。第二轮 1896/1897、退出 1：历史拒绝去重测试错误使用事后写入时间作为原拒绝时间，改用原 HardStop.created_at；新增回归明确要求 resolution 不能覆盖之后的同路径新拒绝。全部原始失败日志保留。严格构建、三项发布类型检查和工作流同步均退出 0，具体 UTC 与输出在 check-*.result.json/log。
+
+## 最终验证与交付
+
+CONFIRMED：源码提交 1e47b08a5ee761f4ed6f927508468802a903a535；38 个文件的原始/当前字节、diff 和逐文件哈希已封存在 .tmp/acceptance-fix/source-review-01.json.gz，其 SHA-256 为 249e32a6272acb287e9f5f522428970b79bb350a24f44471f0af8f00994f2c4e，封存后复算一致。全量验证后已快进 main 并推送 origin/main，无 PR。
+
+官方完整测试于 2026-10-18T08:35:42.6635325Z 开始、2026-10-18T08:42:29.5802384Z 完成，退出 0；共 6813/6813 通过。各组计数：725、2、197、226、2、47、375、903、134、1516、789、1897，依次为 root、version-unification、configuration、service-management、host-profile、observability、permission-engine、opencode-adapter、scope-gate、workflow-runtime、CLI、daemon-core。严格构建、三项发布类型检查、工作流检查、运行程序生成、提交绑定 release manifest 与 precheck 均退出 0。
+
+CONFIRMED：升级前实际 1.0.14 PID 36576 对 sf_project_init 的写前检查拒绝；官方停止后旧 PID 退出。官方安装器仅更新两个二进制，109 个文件无变化；最终 verify 111/111。长期后台 PID 11640、端口 5594，独立 health=ok/1.0.15。两份安装 SHA-256 与 release 清单逐字相等，详见 user-runtime-after.json。插件字节未变，未声称本次完成新的 OpenCode 模型会话验收。
+
+CONFIRMED：已安装二进制的实际 HTTP 回归通过，原拒绝的初始化现在允许，初始化幂等，未知工具和原生 shell 仍拒绝，未知路由 404、CAS 占位 501。将封存的 1051 文件验收快照逐字复制并逐文件核验至隔离目录，再用真实 HTTP ToolDispatcher 恢复 WI-0001：识别原关闭前漏审拒绝 → 不可变归档 → 补偿事件回到 implementation_ready → 审计失败并 HardStop → 正式放弃违规动作的 resolution → 新审计通过；原守护日志字节不变，代码权限保持撤销。此项不冒充原业务项目重验收。原项目 4 个业务文件及 events、work_item、write_guard_log、changed_files_audit 共 8 个文件前后哈希不变。原始请求/响应、临时夹具路径和哈希在 installed-after.json，未包含认证令牌。
+
+执行纠正：首次启动遗漏 --detach，按正式 CLI 的默认前台模式持续运行（PID 2196），不是后台故障。该进程完成上述功能测试后通过正式 stop 退出，载体真实退出 0；随后使用 daemon start --detach --json 启动长期进程并重新核验 health、初始化及文件。保留前台日志与停止记录，未把“启动声明”冒充独立验证；一次提前读取尚未生成的结果文件失败也保留为执行诊断。
+
+写入分类补充：正式 installer/CLI 仅更新用户级两个二进制、事务备份/manifest、handshake 和运行日志；测试产生 .tmp 初始化夹具及系统 TEMP 的验收快照副本，副本内治理写入均经正式工具；原验收项目状态及原始证据不被修改，t2/t3 未操作。
+
+记录入口：.tmp/acceptance-fix/verification-summary.json 与全部原始 *.log、*.result.json、installed-*.json。另将该目录和本报告复制至 D:/code/sf-acceptance-six-evidence/repair-20261018-A01，生成逐文件 SHA-256 清单并自校验。外部副本只是封存证据，不是当前状态入口。
+
+仍未证明：六项真实 OpenCode 验收整体通过。配置层级/稳定激活、日志秘密处理、外部真实模型能力及浏览器等缺口必须用正确入口补测；原错误 PASS 不沿用。原已关闭业务 WI 没有被自动重开。

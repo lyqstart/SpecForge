@@ -31819,3 +31819,13 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 测试首轮 64/65：旧 positive fixture 先产报告再补守护记录；改为同代绑定及重建验证来源，新增晚到拒绝、历史恢复断言。首轮 5/5 与后续完整处理器 27/27 均退出 0；最终全量结果见 archive。
 - 工具事件：一次 CRLF 补丁锚点不匹配（零写入）；猜测路径/通配符读失败已由 rg 清单纠正；输出截断未计作完整读取。
 - REUSED_EXP=EXP-004,EXP-007,EXP-017,EXP-031,EXP-032,EXP-264,EXP-281,EXP-284。
+
+- ERR1847_FINAL=1.0.14 real installed init denial reproduced; 1.0.15 same request allowed; 6813 official tests passed; 111 installed files verified.
+- ERR1848_FINAL=1.0.15 installed runtime recovered sealed acceptance copy, preserved old evidence and log bytes, re-audited after formal resolution with permissions revoked; original business project hashes unchanged.
+
+### ERR-1849：把默认前台 daemon start 用作长期后台启动
+
+- 发生时间：2026-10-18；执行命令为 specforge daemon start --json，未加正式 --detach 参数，故载体等待前台 daemon，结果文件未生成时提前读取失败。实际 1.0.15 PID 2196 的 health 与功能回归正常；此现象不属于产品启动缺陷。
+- 根据实际 daemon-client.ts 的入口确认默认前台语义；通过官方 stop 正常退出，载体真实退出 0；随后 daemon start --detach --json 退出 0，新 PID 11640 的 health、初始化检查及安装哈希独立通过。
+- 责任层：执行命令选择；复用 EXP-007/017/032/283，不修改产品默认语义。两次启动和停止日志保留。
+- ERR1849_STATUS=CLOSED_BY_OFFICIAL_DETACHED_START_AND_INDEPENDENT_RUNTIME_CHECK
