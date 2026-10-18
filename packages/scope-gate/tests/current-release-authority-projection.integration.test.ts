@@ -23,9 +23,14 @@ describe('current release authority projection', () => {
     expect(result.ok, result.errors.join('\n')).toBe(true);
     expect(result.document?.complete).toBe(true);
     expect(result.document?.sources.map((source) => source.path)).toEqual([productSpecPath]);
-    expect(result.document?.items).toHaveLength(172);
+    const authorityBlock = read(productSpecPath).split('<!-- SPECFORGE_RELEASE_AUTHORITY_ITEMS:START -->')[1]
+      .split('<!-- SPECFORGE_RELEASE_AUTHORITY_ITEMS:END -->')[0];
+    const authority = JSON.parse(authorityBlock.match(/```json\s*([\s\S]*?)```/)![1]);
+    const expectedIds = authority.itemGroups.flatMap((group: { ids: string[] }) => group.ids).sort();
+    expect(result.document?.items.map(item => item.id).sort()).toEqual(expectedIds);
 
     const byId = new Map(result.document?.items.map((item) => [item.id, item]));
+    expect(byId.get('tool:sf_project_config')?.classification).toBe('CURRENT_RELEASE_CORE');
     expect(byId.get('@specforge/daemon-core')?.classification).toBe('CURRENT_RELEASE_CORE');
     expect(byId.get('@specforge/opencode-adapter')?.classification).toBe('CURRENT_RELEASE_CORE');
     expect(byId.get('workflow:feature_spec')?.classification).toBe('CURRENT_RELEASE_SUPPORTING');
