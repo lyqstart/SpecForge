@@ -1,6 +1,6 @@
 {
   "name": "specforge-installer-scripts",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "private": true,
   "description": "SpecForge current-release installer and reconciliation libraries.",
   "type": "module",

@@ -63,7 +63,9 @@ export class ProjectManager {
       }
       catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw new Error('CONFIGURATION_ACTIVATION_CORRUPT'); }
       if (previous && (previous.schema_version !== '1.0' || !/^[a-f0-9]{64}$/.test(previous.sha256))) throw new Error('CONFIGURATION_ACTIVATION_CORRUPT');
-      if (previous && previous.sha256 !== sha256) {
+      // Missing acceptance evidence is not proof of first use. Rebuild from
+      // events before creating a new identity, including after process restart.
+      if (!previous || previous.sha256 !== sha256) {
         const sm = await this.getProjectStateManager(projectPath);
         await sm.rebuildState();
         if (sm.listWorkItems().some(item => !['closed', 'rejected', 'superseded'].includes(item.current_state))) {

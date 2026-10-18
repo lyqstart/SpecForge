@@ -31872,3 +31872,30 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 最终闭环：079 经正式状态恢复修正 EV-0001 stdout path/hash，attempt-0009 verification/formal gates 通过；082/083 独立核验原件、真实UTC、审计绑定及正式 REQ/DD/TASK 映射通过。084 正式撤销权限与 close_gate 36/36，原 WI 于 2026-10-18T17:55:05.207Z closed；实际原生 write prt_150276d25001mSihtHrGrcu6XZ 被拒绝，exists=false，状态仍 closed。089 关闭后独立检查通过；完整证据见本 RUN_ID final-review。
 - ERR1850_FINAL=controlled configuration installed-client/daemon consumption and restart recovery passed; ERR1851_FINAL=nonempty installed userlevel/daemon automatic logs verified with zero new test marker leaks; full suite 6830/6830 and 112/112 installed hashes passed.
 - ERR1852_STATUS=CLOSED_BY_VERIFIED_SEALED_ORIGINAL_REFERENCES_WITH_FAILED_TRANSCRIPTIONS_PRESERVED。ERR1853_STATUS=CLOSED_BY_OWNER_CORRECTION_AND_INDEPENDENT_SOURCE_SEMANTIC_HASH_REVIEW。结构Gate通过不能替代证据内容和业务语义的独立审查。
+
+### ERR-1854：配置激活记录丢失使正常消费入口绕过活动任务保护
+
+- CONFIRMED：原始独立复现见 docs/archive/2026-10-19-config-activation-loss-evidence/original-review-result.json。记录存在时从 2000 改成 10000 被拒绝；移走记录并重建 ProjectManager 后，created 状态仍存在却接受 10000 并补写记录。
+- 根因：getProjectConfiguration 仅在 previous 存在且 hash 变化时重建活动任务状态；ENOENT 被当作允许首次激活。管理入口的 missing-activation 测试不能覆盖实际消费入口。责任层 Runtime / ProjectManager。
+- 正确做法：缺失和变更激活身份都先查事件权威状态；活动任务时拒绝，不补造历史身份；无活动任务才允许首次激活。复用 EXP-004/006/007/010/031/282，补充真实状态、正常读取、进程重启及拒绝零激活写入回归。
+- ERR1854_STATUS=IDENTIFIED；原验收证据不覆盖、不删除，原业务 WI 不重开。
+
+### ERR-1855：本轮验证载体与夹具问题单独归因
+
+- Git 新分支首次因沙箱不能创建 ref lock 被拒；提升权限后成功。001-before 的 Bun 在沙箱中报 CouldntReadCurrentDirectory；002 使用相同命令提升权限后实际收集 13 个测试，失败不是产品加载失败。
+- 002 的普通读取测试遗漏 handler 注册，报 Unknown tool；改用正式 tools 聚合入口后，003 的 11 个失败均复现 acceptance 漏洞（另 2 个正常对照通过）。最初 native 检查参数形状在源码审查中修正，未作为产品根因。
+- 部分只读大文件输出截断已分块补读；PowerShell 路径通配交给 rg 导致的读取失败改用 rg 的 -g 参数，未用于产品结论。失败日志不覆盖。类防护 EXP-007/008/010/117；后续修复验证 004 为 29/29。
+- ERR1855_STATUS=CLOSED_BY_CLASSIFIED_CARRIER_AND_FIXTURE_CORRECTION。
+
+### ERR-1856：首次配置 acceptance 读取事件后暴露不完整路径夹具
+
+- 006 全量回归最终有两个同类失败：current-project-module-schema-boundary 与 current-project-layout-boundary 的合法注册正例：pathResolver.resolveEventsPath is not a function。该夹具将只有两个方法的对象强转为 IPathResolver，无法支持真实 StateManager；非法模块前置拒绝的其余 6 例通过。
+- 修复测试消费者为完整 PersonalPathResolver，仅覆盖隔离 runtime/daemon 路径；保留真实配置 acceptance 和事件读取，不 mock 掉新保护。责任 TEST_FIXTURE_DRIFT，复用 EXP-022/031/074。原始 006 stdout/stderr/result 保留，后续以完整定向回归及 daemon 包回归核验。
+- 011 localhost 查询被沙箱 EACCES 拒绝，012 提升权限后同一只读查询证明旧部署 1.0.16 的 112 文件一致；归为载体权限，未误报服务故障。
+
+### ERR-1857：重建发布二进制后未先刷新清单导致安装集成拒绝
+
+- 017 生成 1.0.17 二进制后，016 的 scope-gate 安装集成读取旧 release-manifest，三个用例均报 specforge.exe/specforged.exe hash_mismatch。原始失败属于执行顺序，安装器正确拒绝不一致载荷。
+- 正确顺序为 build → runtime build → manifest/precheck → 安装集成回归；刷新清单后重跑完整 scope-gate 包，再按逐测试集合对账全套结果。复用 EXP-023/077/102，不修改安装校验，不覆盖 016 日志。
+
+- ERR1857 补充：019 的临时 RUN_ID candidate 虽通过发布生产者，但 020 的三个集成消费者要求 commit-<真实40位提交>，因此拒绝临时身份。必须先保存真实候选实现提交，再生成 commit-bound manifest 并重跑完整 scope-gate；不得用旧提交或伪造 SHA 通过身份测试。

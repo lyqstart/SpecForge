@@ -1,6 +1,6 @@
 {
   "name": "@specforge/permission-engine",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "Permission Engine module for SpecForge - Fine-grained access control and authorization",
   "type": "module",
   "main": "dist/src/index.js",

@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 
 import { ProjectManager } from '../../src/project/ProjectManager';
 import { EventBus } from '../../src/event-bus/EventBus';
-import type { IPathResolver } from '../../src/daemon/path-resolver';
+import { PersonalPathResolver } from '../../src/daemon/path-resolver';
 import type { StateManager } from '../../src/state/StateManager';
 
 type ModuleFixture = {
@@ -26,10 +26,11 @@ describe('current project module schema boundary', () => {
   beforeEach(async () => {
     root = await mkdtemp(join(tmpdir(), 'specforge-current-modules-'));
     runtimeRoot = await mkdtemp(join(tmpdir(), 'specforge-current-modules-runtime-'));
-    const pathResolver = {
-      resolveProjectRuntimeDir: () => join(runtimeRoot, 'runtime'),
-      resolveDaemonJsonPath: () => join(runtimeRoot, 'daemon.json'),
-    } as IPathResolver;
+    // Keep the full production path contract: first configuration acceptance
+    // now reads authoritative events before establishing its identity.
+    const pathResolver = new PersonalPathResolver();
+    pathResolver.resolveProjectRuntimeDir = () => join(runtimeRoot, 'runtime');
+    pathResolver.resolveDaemonJsonPath = () => join(runtimeRoot, 'daemon.json');
     manager = new ProjectManager(new EventBus(), pathResolver, {} as StateManager);
   });
 

@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.16
+> Product release version: 1.0.17
 >
 > Product version epoch: 1
 >

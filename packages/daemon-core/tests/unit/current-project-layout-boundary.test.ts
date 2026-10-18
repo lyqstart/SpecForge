@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 
 import { ProjectManager } from '../../src/project/ProjectManager';
 import { EventBus } from '../../src/event-bus/EventBus';
-import type { IPathResolver } from '../../src/daemon/path-resolver';
+import { PersonalPathResolver } from '../../src/daemon/path-resolver';
 import type { StateManager } from '../../src/state/StateManager';
 
 async function exists(filePath: string): Promise<boolean> {
@@ -29,10 +29,9 @@ describe('current project layout boundary', () => {
   beforeEach(async () => {
     root = await mkdtemp(join(tmpdir(), 'specforge-current-project-'));
     runtimeRoot = await mkdtemp(join(tmpdir(), 'specforge-current-runtime-'));
-    const pathResolver = {
-      resolveProjectRuntimeDir: () => join(runtimeRoot, 'runtime'),
-      resolveDaemonJsonPath: () => join(runtimeRoot, 'daemon.json'),
-    } as IPathResolver;
+    const pathResolver = new PersonalPathResolver();
+    pathResolver.resolveProjectRuntimeDir = () => join(runtimeRoot, 'runtime');
+    pathResolver.resolveDaemonJsonPath = () => join(runtimeRoot, 'daemon.json');
     manager = new ProjectManager(
       new EventBus(),
       pathResolver,
