@@ -113,6 +113,10 @@ function writeBySha256(
 export function recordDaemonObservation(
   input: DaemonObservationInput,
 ): string | undefined {
+  if (input.tool_name === 'sf_project_config') input = {
+    ...input, payload: { configuration_payload_omitted: true },
+    error: input.error === undefined ? undefined : { configuration_error_omitted: true }, metadata: undefined,
+  };
   try {
     const projectRoot =
       input.projectRoot ?? resolveProjectRootFromContext(input.context);

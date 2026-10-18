@@ -48,6 +48,9 @@ function isSensitiveField(key: string, sensitiveFields: string[]): boolean {
   const keyParts = key.split('.')
   const firstPart = keyParts[0]
 
+  // Credential aliases are protected at every nesting level, including arrays.
+  if (keyParts.some(part => /^(api[_-]?keys?|tokens?|secrets?|credentials?|passwords?|auth|authorization|bearer[_-]?tokens?|provider[_-]?credentials?|access[_-]?tokens?|refresh[_-]?tokens?|private[_-]?keys?)$/i.test(part))) return true
+
   return sensitiveFields.some((sensitive) => {
     const sensitiveParts = sensitive.split('.')
     return firstPart === sensitiveParts[0]
@@ -69,7 +72,9 @@ function validateSensitiveFieldProtection(
   }
 
   // Check if project layer tries to define any sensitive fields
-  for (const [key] of Object.entries(projectLayer.data)) {
+  const visit = (data: Record<string, unknown>, prefix = ''): void => {
+  for (const [name, value] of Object.entries(data)) {
+    const key = prefix ? `${prefix}.${name}` : name
     if (isSensitiveField(key, sensitiveFields)) {
       const error: ValidationError = {
         field: key,
@@ -79,8 +84,12 @@ function validateSensitiveFieldProtection(
       }
       validationErrors.push(error)
       logger.warn('Sensitive field protection violation', { field: key, path: projectLayer.path })
+    } else if (value && typeof value === 'object') {
+      visit(value as Record<string, unknown>, key)
     }
   }
+  }
+  visit(projectLayer.data)
 
   return validationErrors
 }

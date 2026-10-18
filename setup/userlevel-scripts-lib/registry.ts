@@ -52,6 +52,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
 
   // 当前 Tool 源镜像；部署清单的唯一 owner 是 scripts/lib/registry.ts
   { path: "tools/sf_artifact_write.ts", type: "tool" },
+  { path: "tools/sf_project_config.ts", type: "tool" },
   { path: "tools/sf_batch_verify.ts", type: "tool" },
   { path: "tools/sf_design_gate.ts", type: "tool" },
   { path: "tools/sf_doc_lint.ts", type: "tool" },

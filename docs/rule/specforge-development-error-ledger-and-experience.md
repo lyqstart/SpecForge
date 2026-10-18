@@ -31829,3 +31829,17 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 根据实际 daemon-client.ts 的入口确认默认前台语义；通过官方 stop 正常退出，载体真实退出 0；随后 daemon start --detach --json 退出 0，新 PID 11640 的 health、初始化检查及安装哈希独立通过。
 - 责任层：执行命令选择；复用 EXP-007/017/032/283，不修改产品默认语义。两次启动和停止日志保留。
 - ERR1849_STATUS=CLOSED_BY_OFFICIAL_DETACHED_START_AND_INDEPENDENT_RUNTIME_CHECK
+
+### ERR-1850：运行时项目配置缺少与 acceptance 配套的受控 producer
+
+- RUN_ID=CODEX-SF-20261018-SIX-COMPLETION-A01。源码核对表明 sf_artifact_write 的 project_rules/project_prod_environment 只写 Markdown，ProjectManager 却读取 config/project.json。之前用 per-call timeout 测试不能证明配置消费；用 Markdown 假秘密不能证明 JSON 配置日志行为。
+- 责任层：Contract / Tool Handler / Runtime 配置管理。补充 sf_project_config 的 read/validate/update/restore，绑定当前原始字节哈希并归档旧文档；保持活动任务激活身份与 HardStop，不通过 shell 写真相源。同步规格、发布登记、部署工具和 Agent 指令。
+- 原始验证：.tmp/six-completion/004-config-tests.* 首次 12/13，发现 apiKey 别名未被保护；006-config-tests.* 13/13；012-transport-probe.* 在原项目隔离副本上通过真实子进程/HTTP证明 2 秒超时、10 秒完成，调用未传 timeoutMs，并覆盖重启拒绝漂移和受控恢复。原项目此时未修改。
+- REUSED_EXP=EXP-004,EXP-010,EXP-264,EXP-282。
+
+### ERR-1851：凭据别名及配置自动请求归档保护不足
+
+- 首轮新增回归直接证明 project 层 apiKey 被接受：旧保护只匹配顶层敏感集合；检查合并实现还确认嵌套字段未递归检查。修复常见凭据别名及嵌套对象/数组，受信 user/runtime 层保持合法。
+- 自动请求记录原来按字段名猜测秘密，无法保护字符串中的配置正文、任意字段名与解析片段。配置工具请求/结果在 userlevel、Daemon recorder 和嵌套工具事件中固定省略正文，仅保留调用结构；配置库原有结构化日志白名单保留。
+- 验证记录区分显式测试输入与自动日志；非空 userlevel/daemon 日志扫描已通过专项测试，真实安装后验收仍需完成，不以此冒充真实 OpenCode 宿主。
+- REUSED_EXP=EXP-007,EXP-282。

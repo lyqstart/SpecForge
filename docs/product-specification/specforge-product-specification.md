@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.15
+> Product release version: 1.0.16
 >
 > Product version epoch: 1
 >
@@ -409,6 +409,8 @@ builtin
 - 不允许通过 legacy config path discovery 构造第二套配置来源。
 
 ## 5.2 活动 Work Item 配置稳定性
+
+运行时项目 JSON 的受控 producer 是 `sf_project_config`，owner 为 `sf-orchestrator`，提供 read（文档哈希及有效性，不返回原始值）、validate、update、restore。更新/恢复必须绑定当前文档原始字节 SHA-256，先校验四层合并，再原子替换；替换前不可变保存旧文档，以哈希指定恢复来源。活动任务期间仅允许写回与已接受配置内容身份一致的配置；缺失/损坏激活证据不得借恢复绕过。配置管理与 acceptance 使用同一项目串行边界，配置损坏时该管理入口仍可达，HardStop 边界不放宽。用户级凭据不由项目工具管理。所有自动请求归档与错误日志对配置工具只记录固定结构，不保存原始配置正文、任意字段名或解析片段。
 
 配置 reload 不得使已经运行的 Work Item 在中途随机切换治理规则。Runtime 必须对活动 Work Item 使用稳定 configuration snapshot 或等价 activation boundary。
 
@@ -1173,6 +1175,7 @@ Scope Gate 只能从本块读取 current release classification，并将 source 
         "tool:sf_knowledge_base",
         "tool:sf_merge_run",
         "tool:sf_project_init",
+        "tool:sf_project_config",
         "tool:sf_requirements_gate",
         "tool:sf_safe_bash",
         "tool:sf_semantic_closure_run",

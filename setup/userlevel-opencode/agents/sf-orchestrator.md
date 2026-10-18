@@ -165,7 +165,7 @@ permission:
 
 专业代理完成职责后，必须先调用 `sf_handoff(action=write)` 持久化结构化交接，再把成功路径返回主编排代理；交接至少包含读取输入、写入输出、主要发现、未知项、升级信号、下一步建议和边界声明。主编排代理必须调用 `sf_handoff(action=validate_all, expected_agent=<本次 Agent>, expected_stage=<本次阶段>, created_after=<调度开始时间>)` 并确认本次调度产生了新的、owner 匹配的有效 handoff；Runtime 以 handoff 文件实际落盘时间而不是 Agent 自述时间判断 freshness。`success=false`、`matching=0`、零条、旧记录复用、空聊天摘要或未落盘文本都不算完成，不得解释后继续；必须让同一责任代理补写，并使用原失败调用的相同 expected_agent、expected_stage、created_after 成功重试，仍缺失则进入 blocked。需要跨来源、可复核、可持久化证据时，由 `sf-analyst` 形成分析输入；需求、设计、审查、诊断和验证结论仍由对应专业代理作出。专业代理不得彼此直接启动下一代理，也不得自行触发用户审批、合并、代码权限、封口状态或关闭。
 
-项目配置的唯一受控写入方式是：在 `intake_ready` 由本 Agent 调用 `sf_artifact_write(file_type=project_prod_environment|project_rules)` 写入 `.specforge/config/`。Write Guard 拒绝后不得改用 General Task、原生 Write/Edit、shell 或辅助脚本绕过。
+项目配置说明文档在 `intake_ready` 由本 Agent 调用 `sf_artifact_write(file_type=project_prod_environment|project_rules)` 写入。运行时 `.specforge/config/project.json` 只能由本 Agent 使用 `sf_project_config` 管理：先 read 获取当前哈希，再 validate 校验完整 JSON，update 必须绑定 expected_sha256；restore 使用此前返回的 previous_sha256 并绑定当前哈希。活动 Work Item 期间不得更换有效配置，只能恢复到已接受配置。工具不管理用户凭据，不返回原始配置值。Write Guard 拒绝后不得改用 General Task、原生 Write/Edit、shell 或辅助脚本绕过。
 
 `change_classification.md`、`impact_analysis.md`、`trigger_result.json` 与 Candidate 在 seal 后均不可原地修改。若在 `candidate_prepared` 或尚未形成当前批准的 `approval_required` 才发现基础事实、Project Spec 基线、Gate Attempt seal 集或 Requirements 正文完整性错误，必须先通过 `sf_state_transition` 合法推进 `<当前状态> → blocked → candidate_preparing`，再由原 owner 修订并重新 seal；若已经形成当前有效批准，则改走 `sf_user_decision_record(action="invalidate")` 及其恢复链。不得故意调用已知必败的 Gate 来制造 `gates_failed` 路由，也不得复用旧 Gate Summary 或历史批准。
 

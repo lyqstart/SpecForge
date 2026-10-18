@@ -104,6 +104,9 @@ function redactValue(key: string, value: unknown): unknown {
 }
 
 export function redactSecrets(value: unknown): unknown {
+  if (value && typeof value === 'object' && ((value as any).tool === 'sf_project_config' || (value as any).tool_name === 'sf_project_config')) {
+    return { tool: 'sf_project_config', configuration_payload_omitted: true };
+  }
   if (Array.isArray(value)) return value.map((item) => redactSecrets(item));
   if (value && typeof value === "object") {
     const out: Record<string, unknown> = {};
@@ -568,6 +571,10 @@ function writePayloadBySha256(
 export function recordSfObservation(
   input: SfObservationInput,
 ): string | undefined {
+  if (input.tool_name === 'sf_project_config') input = {
+    ...input, payload: { configuration_payload_omitted: true },
+    error: input.error === undefined ? undefined : { configuration_error_omitted: true }, metadata: undefined,
+  };
   try {
     const projectRoot = resolveProjectRoot({ directory: input.projectRoot });
     const config = loadSfObservabilityConfig(projectRoot);

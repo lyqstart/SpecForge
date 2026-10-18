@@ -397,7 +397,7 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
       success: false,
       error:
         'SPEC_FORGE_PROTECTED_PATH_WRITE_REQUIRES_CONTROLLED_TOOL: sf_safe_bash cannot write protected .specforge paths.\n' +
-        'Use sf_artifact_write(file_type=project_prod_environment|project_rules) for .specforge/config during intake_ready, canonical sf_artifact_write types for Work Item artifacts, or sf_merge_run for .specforge/project/**. Never fall back to native file tools, General Task, or helper scripts.',
+        'Use sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, or sf_merge_run for .specforge/project/**. Never fall back to native file tools, General Task, or helper scripts.',
       hard_stop: hardStopRecord !== null,
       hard_stop_record: hardStopRecord ?? undefined,
       work_item_id: activeWiId ?? undefined,
@@ -467,7 +467,7 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
       success: false,
       error:
         'WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\n' +
-        'Use sf_artifact_write(file_type=project_prod_environment|project_rules) for .specforge/config during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\n' +
+        'Use sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\n' +
         'Violations: ' +
         runtimeGuard.violations.join('; '),
       hard_stop: runtimeGuard.hard_stop === true,

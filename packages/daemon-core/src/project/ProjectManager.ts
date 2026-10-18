@@ -10,7 +10,7 @@ import { IPathResolver } from '../daemon/path-resolver';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import type { SchemaDescriptorPrecheckResult } from '@specforge/types/schema-contract';
 import { precheckProjectRegistrationSchemas } from './project-schema-descriptors';
-import { loadAcceptedConfigSync, type MergedConfig } from '@specforge/configuration';
+import { loadAcceptedConfigSync, parseConfigurationObject, type MergedConfig } from '@specforge/configuration';
 
 export interface ProjectContext {
   projectId: string;
@@ -39,12 +39,20 @@ export type ProjectSchemaPrecheck = (
 ) => Promise<SchemaDescriptorPrecheckResult>;
 
 export class ProjectManager {
-  private configurationActivations = new Map<string, Promise<MergedConfig>>();
+  private configurationActivations = new Map<string, Promise<unknown>>();
+
+  private async serializeConfiguration<T>(projectPath: string, action: () => Promise<T>): Promise<T> {
+    const key = process.platform === 'win32' ? path.resolve(projectPath).toLowerCase() : path.resolve(projectPath);
+    const prior = this.configurationActivations.get(key);
+    const next = (prior ? prior.catch(() => undefined) : Promise.resolve()).then(action);
+    this.configurationActivations.set(key, next);
+    try { return await next; }
+    finally { if (this.configurationActivations.get(key) === next) this.configurationActivations.delete(key); }
+  }
 
   /** Serialize acceptance per project; a changed config cannot affect active work. */
   async getProjectConfiguration(projectPath: string): Promise<MergedConfig> {
-    const prior = this.configurationActivations.get(projectPath);
-    const next = (prior ? prior.catch(() => undefined) : Promise.resolve()).then(async () => {
+    return this.serializeConfiguration(projectPath, async () => {
       const config = loadAcceptedConfigSync({ projectPath });
       const sha256 = crypto.createHash('sha256').update(JSON.stringify(config.merged)).digest('hex');
       const file = path.join(this.pathResolver.resolveProjectRuntimeDir(projectPath), 'configuration-activation.json');
@@ -69,10 +77,77 @@ export class ProjectManager {
         try { await fs.rename(temporary, file); }
         finally { await fs.rm(temporary, { force: true }); }
       }
-      return config;
+      return structuredClone(config);
     });
-    this.configurationActivations.set(projectPath, next);
-    return structuredClone(await next);
+  }
+
+  /** Sole producer for runtime project JSON. Never writes user credentials or WI artifacts. */
+  async manageProjectConfiguration(projectPath: string, args: Record<string, unknown>): Promise<Record<string, unknown>> {
+    return this.serializeConfiguration(projectPath, async () => {
+      if (!path.isAbsolute(projectPath)) throw new Error('CONFIGURATION_PROJECT_REQUIRED');
+      // Controlled ownership does not authorize following a project junction outside its boundary.
+      for (const relative of ['config/project.json', 'runtime/configuration-activation.json', 'runtime/configuration-history']) {
+        let cursor = projectPath;
+        for (const segment of [SPEC_DIR_NAME, ...relative.split('/')]) {
+          cursor = path.join(cursor, segment);
+          try { if ((await fs.lstat(cursor)).isSymbolicLink()) throw new Error('CONFIGURATION_SYMLINK_FORBIDDEN'); }
+          catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error; }
+        }
+      }
+      const action = args.action;
+      if (!['read', 'validate', 'update', 'restore'].includes(String(action))) throw new Error('CONFIGURATION_ACTION_INVALID');
+      const file = path.join(projectPath, SPEC_DIR_NAME, 'config', 'project.json');
+      const current = await fs.readFile(file);
+      const hash = (bytes: string | Buffer) => crypto.createHash('sha256').update(bytes).digest('hex');
+      const currentHash = hash(current);
+      if (action === 'read') {
+        // Even corrupt documents can be identified for compare-and-swap recovery. Never return raw input.
+        let valid = true;
+        try { loadAcceptedConfigSync({ projectPath }); } catch { valid = false; }
+        return { success: true, document_sha256: currentHash, valid };
+      }
+      const history = path.join(this.pathResolver.resolveProjectRuntimeDir(projectPath), 'configuration-history');
+      let content: string;
+      if (action === 'restore') {
+        if (typeof args.restore_sha256 !== 'string' || !/^[a-f0-9]{64}$/.test(args.restore_sha256)) throw new Error('CONFIGURATION_RESTORE_ID_INVALID');
+        const restoredFile = path.join(history, `${args.restore_sha256}.json`);
+        if ((await fs.lstat(restoredFile)).isSymbolicLink()) throw new Error('CONFIGURATION_SYMLINK_FORBIDDEN');
+        content = await fs.readFile(restoredFile, 'utf8');
+        if (hash(content) !== args.restore_sha256) throw new Error('CONFIGURATION_HISTORY_CORRUPT');
+      } else {
+        if (typeof args.content !== 'string' || Buffer.byteLength(args.content) > 65536) throw new Error('CONFIGURATION_CONTENT_INVALID');
+        content = args.content;
+      }
+      const candidate = loadAcceptedConfigSync({ projectPath, projectData: parseConfigurationObject(content) });
+      const effectiveHash = hash(JSON.stringify(candidate.merged));
+      if (action === 'validate') return { success: true, valid: true, document_sha256: hash(content), effective_sha256: effectiveHash };
+      if (args.expected_sha256 !== currentHash) throw new Error('CONFIGURATION_BASELINE_CHANGED');
+      const activationFile = path.join(this.pathResolver.resolveProjectRuntimeDir(projectPath), 'configuration-activation.json');
+      let activation: { schema_version: string; sha256: string } | undefined;
+      try { activation = JSON.parse(await fs.readFile(activationFile, 'utf8')); }
+      catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw new Error('CONFIGURATION_ACTIVATION_CORRUPT'); }
+      if (activation !== undefined && (!activation || activation.schema_version !== '1.0' || !/^[a-f0-9]{64}$/.test(activation.sha256))) throw new Error('CONFIGURATION_ACTIVATION_CORRUPT');
+      const state = await this.getProjectStateManager(projectPath);
+      await state.rebuildState();
+      const active = state.listWorkItems().some(item => !['closed', 'rejected', 'superseded'].includes(item.current_state));
+      if (active && activation?.sha256 !== effectiveHash) throw new Error('CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK');
+      await fs.mkdir(history, { recursive: true });
+      const archive = path.join(history, `${currentHash}.json`);
+      try { await fs.writeFile(archive, current, { flag: 'wx' }); }
+      catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
+        if (hash(await fs.readFile(archive)) !== currentHash) throw new Error('CONFIGURATION_HISTORY_CORRUPT');
+      }
+      // Recheck immediately before rename: stale callers cannot silently overwrite another update.
+      if (hash(await fs.readFile(file)) !== currentHash) throw new Error('CONFIGURATION_BASELINE_CHANGED');
+      const temporary = `${file}.${crypto.randomUUID()}.tmp`;
+      await fs.writeFile(temporary, content, { flag: 'wx' });
+      try { await fs.rename(temporary, file); }
+      finally { await fs.rm(temporary, { force: true }); }
+      // Acceptance remains owned by getProjectConfiguration. No active WI can accept a new hash.
+      // If the process stops here, its next acceptance either records the new boundary or fails closed.
+      return { success: true, document_sha256: hash(content), previous_sha256: currentHash, effective_sha256: effectiveHash, activation: 'validated_pending_acceptance' };
+    });
   }
   private eventBus: EventBus;
   private pathResolver: IPathResolver;

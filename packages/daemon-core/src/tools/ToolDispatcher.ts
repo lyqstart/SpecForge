@@ -285,7 +285,9 @@ export class ToolDispatcher {
     const projectRoot = resolveProjectRoot(ctx);
 
     let acceptedConfiguration = this.deps.acceptedConfiguration;
-    if (this.deps.projectManager?.getProjectConfiguration) {
+    // Configuration repair must remain reachable when the current document is corrupt.
+    // Its owner validates prospective data and enforces the same activation boundary.
+    if (req.tool !== 'sf_project_config' && this.deps.projectManager?.getProjectConfiguration) {
       try { acceptedConfiguration = await this.deps.projectManager.getProjectConfiguration(projectRoot); }
       catch (error) { return { success: false, error: error instanceof Error ? error.message : 'CONFIGURATION_ACCEPTANCE_FAILED' }; }
     }
