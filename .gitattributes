@@ -16,4 +16,4 @@ setup/userlevel-opencode/skills/sf-workflow-*/SKILL.md text eol=lf
 # not reintroduce CRLF-only whitespace noise from Windows authoring tools.
 
 # Sealed raw test outputs and source-byte snapshots must survive Git unchanged.
-docs/archive/2026-10-19-config-activation-loss-evidence/** -text
+docs/archive/2026-10-19-config-activation-loss-evidence/** -text -diff

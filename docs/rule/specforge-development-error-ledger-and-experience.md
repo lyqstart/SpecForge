@@ -31912,3 +31912,8 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 最终 Git blob 独立复核发现 55 个日志/源快照的原始 CRLF 字节在暂存时被规范化，工作区原件与已封存 SHA256 仍正确。
 - 已为本轮证据目录添加精确 -text 属性，按原件重新暂存；逐项确认全部 293 个证据文件的 Git blob 等于工作区原始字节，291 个 manifest 成员 SHA256 再次通过。
 - 不重写原始证据或旧失败记录。复用 EXP-007/023/032/260；验证回执为 docs/archive/2026-10-19-config-activation-evidence-git-verification.json。ERR1859_STATUS=CLOSED_BY_BYTE_EXACT_GIT_VERIFICATION。
+
+### ERR-1860：原始证据的 CRLF 被文本 diff 卫生检查误判
+
+- -text 保真后，git diff --cached --check 将原始日志的 CR 字节报告为尾随空白；顺序命令未依据该非零退出码停止，后续证据提交已经发生。此提交事实不回写为未执行。
+- 对封存原始证据目录同时声明 -diff，使其作为不可改写字节产物审查；产品源文件仍保持原有文本差异检查。后续使用显式退出码门禁验证完整差异，Git 字节验证不放宽。复用 EXP-008/085/123/260；原始日志保持不变。
