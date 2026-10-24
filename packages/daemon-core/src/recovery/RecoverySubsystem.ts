@@ -263,6 +263,7 @@ export class RecoverySubsystem {
     const runtimeWal = this.wal ?? new WAL(this.getEventsPath());
     if (!this.wal) await runtimeWal.initialize();
     const { events: originalEvents } = await runtimeWal.readAllEvents();
+    await this.rebuildFromEvents(originalEvents);
 
     let repairedState: ProjectState;
 
@@ -473,7 +474,9 @@ export class RecoverySubsystem {
    * Load events from events.jsonl
    */
   async loadEvents(): Promise<Event[]> {
-    return (await (this.wal ?? new WAL(this.getEventsPath())).readAllEvents()).events;
+    const { events } = await (this.wal ?? new WAL(this.getEventsPath())).readAllEvents();
+    await this.rebuildFromEvents(events);
+    return events;
   }
 
   /**

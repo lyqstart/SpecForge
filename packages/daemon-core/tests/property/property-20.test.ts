@@ -86,10 +86,13 @@ describe('Property 20: recovery preserves complete history and rejects loss', ()
     expect(result.repairedState.workItems).toEqual(fresh.listWorkItems());
     expect(result.repairedState.lastEventId).toBe(result.repairEvents.at(-1)!.eventId);
   });
-  for(const fault of ['missing','invalid-schema','missing-reference']) it('rejects '+fault+' with zero authority writes',async()=>{
+  for(const fault of ['missing','invalid-schema','missing-reference','invalid-transition']) it('rejects '+fault+' with zero authority writes',async()=>{
     const f=await fixture(fault);
     if(fault==='missing') await fs.unlink(f.events);
     if(fault==='invalid-schema') await fs.appendFile(f.events,'{}\n');
+    if(fault==='invalid-transition') {
+      const wal=f.sm.getWal();await wal.appendEvent(wal.createEvent('WI-1','state','state.transition',{from_state:'intake_ready'}));
+    }
     if(fault==='missing-reference') { f.checkpoint.lastEventId='absent';await fs.writeFile(f.state,JSON.stringify(f.checkpoint)); }
     const state=await fs.readFile(f.state); const events=await fs.readFile(f.events).catch(()=>null);
     await expect(f.recovery.checkConsistency()).rejects.toThrow(/WAL_/);

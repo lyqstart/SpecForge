@@ -309,6 +309,12 @@ export class StateManager {
   async rebuildState(): Promise<ProjectState> {
     const { events } = await this.wal.readAllEvents();
     await this.assertHistoryWitnesses(events);
+    this.assertTransitionHistory(events);
+
+    return this.rebuildValidatedEvents(events);
+  }
+
+  private assertTransitionHistory(events: Event[]): void {
     const replayed = new Map<string, string>();
     for (const event of events) {
       if (event.action !== 'state.transition') continue;
@@ -321,7 +327,9 @@ export class StateManager {
       }
       replayed.set(id, to);
     }
+  }
 
+  private async rebuildValidatedEvents(events: Event[]): Promise<ProjectState> {
     // Track how many events were actually replayed so callers can distinguish
     // "an event log existed and was replayed" from "no event log existed".
     this._lastReplayedEventCount = events.length;
@@ -440,6 +448,7 @@ export class StateManager {
    * @deprecated Use rebuildState() instead.
    */
   async rebuildFromEvents(events: Event[]): Promise<ProjectState> {
+    this.assertTransitionHistory(events);
     if (!events || events.length === 0) {
       return this.buildProjectState();
     }
