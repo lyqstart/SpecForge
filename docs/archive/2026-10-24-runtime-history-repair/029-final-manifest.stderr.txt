@@ -1,0 +1,1 @@
+$ bun scripts/build-release-manifest.ts --candidate-id "commit-aec0dd24e2746e735aded1f095c7a7d852a9615e"

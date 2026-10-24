@@ -1,0 +1,638 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+stdout | tests/unit/wal.test.ts > WAL > rotation — events.jsonl archiving > should trigger rotation when file exceeds WAL_MAX_SIZE
+[WAL] Rotated events.jsonl → C:\Users\lyq\AppData\Local\Temp\wal-test-1792819775069\projects\testhash\events-2026-10-24T05-29-35-088Z.jsonl.bak
+
+stdout | tests/unit/wal.test.ts > WAL > rotation — events.jsonl archiving > should clean up old archives keeping at most 3
+[WAL] Rotated events.jsonl → C:\Users\lyq\AppData\Local\Temp\wal-test-1792819775110\projects\testhash\events-2026-10-24T05-29-35-132Z.jsonl.bak
+
+ ✓ tests/unit/wal.test.ts (22 tests) 294ms
+stdout | tests/unit/six-conformance-boundaries.test.ts > truthful HTTP responses > never reports an unimplemented/missing owner as success: handleEventQuery
+[API] event/query projectId=(all) action=(all)
+
+stdout | tests/unit/six-conformance-boundaries.test.ts > truthful HTTP responses > never reports an unimplemented/missing owner as success: handleCasStore
+[API] cas/store bodyLength=2
+
+stdout | tests/unit/six-conformance-boundaries.test.ts > truthful HTTP responses > never reports an unimplemented/missing owner as success: handleCasRetrieve
+[API] cas/retrieve hash=abc
+
+stdout | tests/unit/six-conformance-boundaries.test.ts > truthful HTTP responses > never reports an unimplemented/missing owner as success: handleSessionList
+[API] session/list
+
+stdout | tests/unit/six-conformance-boundaries.test.ts > truthful HTTP responses > reads the project StateManager and returns registered sessions
+[API] session/list
+
+ ✓ tests/unit/six-conformance-boundaries.test.ts (15 tests) 289ms
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > personal, recreated=false: rejects missing record with active work and timeout 2000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > personal, recreated=false: rejects missing record with active work and timeout 2000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > personal, recreated=false: rejects missing record with active work and timeout 2000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > personal, recreated=false: rejects missing record with active work and timeout 2000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > personal, recreated=false: rejects missing record with active work and timeout 10000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > personal, recreated=false: rejects missing record with active work and timeout 10000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > personal, recreated=false: rejects missing record with active work and timeout 10000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > personal, recreated=false: rejects missing record with active work and timeout 10000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > personal, recreated=true: rejects missing record with active work and timeout 2000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > personal, recreated=true: rejects missing record with active work and timeout 2000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > personal, recreated=true: rejects missing record with active work and timeout 2000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > personal, recreated=true: rejects missing record with active work and timeout 2000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > personal, recreated=true: rejects missing record with active work and timeout 10000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > personal, recreated=true: rejects missing record with active work and timeout 10000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > personal, recreated=true: rejects missing record with active work and timeout 10000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > personal, recreated=true: rejects missing record with active work and timeout 10000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > enterprise, recreated=false: rejects missing record with active work and timeout 2000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > enterprise, recreated=false: rejects missing record with active work and timeout 2000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > enterprise, recreated=false: rejects missing record with active work and timeout 2000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > enterprise, recreated=false: rejects missing record with active work and timeout 2000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > enterprise, recreated=false: rejects missing record with active work and timeout 10000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > enterprise, recreated=false: rejects missing record with active work and timeout 10000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > enterprise, recreated=false: rejects missing record with active work and timeout 10000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > enterprise, recreated=false: rejects missing record with active work and timeout 10000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > enterprise, recreated=true: rejects missing record with active work and timeout 2000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > enterprise, recreated=true: rejects missing record with active work and timeout 2000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > enterprise, recreated=true: rejects missing record with active work and timeout 2000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > enterprise, recreated=true: rejects missing record with active work and timeout 2000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > enterprise, recreated=true: rejects missing record with active work and timeout 10000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > enterprise, recreated=true: rejects missing record with active work and timeout 10000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > enterprise, recreated=true: rejects missing record with active work and timeout 10000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > enterprise, recreated=true: rejects missing record with active work and timeout 10000
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > accepts first use and changed configuration without active work, including recreation
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > accepts first use and changed configuration without active work, including recreation
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > reads unchanged accepted configuration during active work without rewriting its identity
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > reads unchanged accepted configuration during active work without rewriting its identity
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > reads unchanged accepted configuration during active work without rewriting its identity
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > allows missing-record acceptance when all events are terminal (closed)
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > allows missing-record acceptance when all events are terminal (closed)
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > allows missing-record acceptance when all events are terminal (rejected)
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > allows missing-record acceptance when all events are terminal (rejected)
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > allows missing-record acceptance when all events are terminal (superseded)
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > allows missing-record acceptance when all events are terminal (superseded)
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > does not trust a stale empty state projection when activation is missing
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > does not trust a stale empty state projection when activation is missing
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > blocks ordinary dispatch and native writes before consumers can execute
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > blocks ordinary dispatch and native writes before consumers can execute
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > blocks ordinary dispatch and native writes before consumers can execute
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+ ❯ tests/unit/configuration-activation-loss.test.ts (16 tests | 1 failed) 1183ms
+   ✓ missing configuration activation at the actual consumer > personal, recreated=false: rejects missing record with active work and timeout 2000 101ms
+   ✓ missing configuration activation at the actual consumer > personal, recreated=false: rejects missing record with active work and timeout 10000 52ms
+   ✓ missing configuration activation at the actual consumer > personal, recreated=true: rejects missing record with active work and timeout 2000 67ms
+   ✓ missing configuration activation at the actual consumer > personal, recreated=true: rejects missing record with active work and timeout 10000 56ms
+   ✓ missing configuration activation at the actual consumer > enterprise, recreated=false: rejects missing record with active work and timeout 2000 58ms
+   ✓ missing configuration activation at the actual consumer > enterprise, recreated=false: rejects missing record with active work and timeout 10000 52ms
+   ✓ missing configuration activation at the actual consumer > enterprise, recreated=true: rejects missing record with active work and timeout 2000 66ms
+   ✓ missing configuration activation at the actual consumer > enterprise, recreated=true: rejects missing record with active work and timeout 10000 65ms
+   ✓ missing configuration activation at the actual consumer > accepts first use and changed configuration without active work, including recreation 33ms
+   ✓ missing configuration activation at the actual consumer > reads unchanged accepted configuration during active work without rewriting its identity 36ms
+   ✓ missing configuration activation at the actual consumer > allows missing-record acceptance when all events are terminal (closed) 58ms
+   ✓ missing configuration activation at the actual consumer > allows missing-record acceptance when all events are terminal (rejected) 49ms
+   ✓ missing configuration activation at the actual consumer > allows missing-record acceptance when all events are terminal (superseded) 49ms
+   ✓ missing configuration activation at the actual consumer > does not trust a stale empty state projection when activation is missing 44ms
+   ✓ missing configuration activation at the actual consumer > blocks ordinary dispatch and native writes before consumers can execute 41ms
+   × missing configuration activation at the actual consumer > rejects missing activation after actual process exit and fresh process startup 352ms
+     → 3 |  * Configuration constants
+4 |  */
+5 | Object.defineProperty(exports, "__esModule", { value: true });
+6 | exports.CONFIG_SCHEMA_VERSION = exports.CONFIG_LAYER_ORDER = exports.CONFIG_DIRS = exports.CONFIG_FILE_NAMES = exports.SENSITIVE_FIELDS = exports.DEFAULT_CONFIG = void 0;
+7 | const directory_layout_1 = require("@specforge/types/directory-layout");
+8 | const user_level_paths_1 = require("@specforge/types/user-level-paths");
+          ^
+TypeError: require() async module "D:\code\SpecForge\packages\types\dist\user-level-paths.js" is unsupported. use "await import()" instead.
+      at <anonymous> (D:\code\SpecForge\packages\configuration\dist\constants.js:8:7)
+      at <anonymous> (D:\code\SpecForge\packages\configuration\dist\index.js:27:1)
+
+Bun v1.3.14 (Windows x64)
+: expected 1 to be +0 // Object.is equality
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 52 passed (53)
+   Start at  13:29:33
+   Duration  10.45s (transform 6.08s, setup 0ms, collect 13.76s, tests 1.77s, environment 0ms, prepare 2.31s)
+

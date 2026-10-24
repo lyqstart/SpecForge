@@ -1,0 +1,10 @@
+RUN_ID=CODEX-SF-20261024-RUNTIME-HISTORY-REPAIR-A01
+EXECUTION_MODE=CODEX_DIRECT
+Baseline=04a6880c4cf8b8bf69e461cc447effe4058b7297 (live remote verified by Bootstrap)
+Authority=SPS 3.3,5.2,9.2,15,19.7; architecture responsibility=Runtime/State/WAL; classification=RUNTIME_DEFECT.
+Facts=prior sealed probe reproduced missing WAL, rotation history omission, and live invalid-schema omission. Prior 47 evidence members verified unchanged.
+Scope=WAL, StateManager, Runtime schema, affected recovery/evidence readers, focused tests, version/release consumers and development evidence documentation. No real business project changes, no reopening WI, no new product workflow.
+Plan=Read all retained WAL segments through one validated owner reader, never discard history needed for replay, reject incomplete/corrupt/duplicate/out-of-order history before state/activation writes. Preserve old evidence. Check existing checkpoint and live cursor as witnesses of lost history (never reconstruct authoritative state from them). Serialize WAL append/read operations for rotation consistency. Keep new projects and stale-but-valid projections supported.
+Validation=before/after dedicated regressions; normal read and rejection effects; missing/invalid history, repeated rotation, active/closed tasks, same process and new process; HTTP consumers; package/full regression, build/release and installed consumer checks as applicable. Failures classified and original logs retained.
+Known baseline failure=001-baseline: existing process-restart fixture fails before application logic because Bun 1.3.14 rejects require() of built async types module. Investigate toolchain/build artifact mismatch before attributing to product patch. Other test results retained in raw stdout. Initial sandbox Bootstrap DNS failure resolved by same read-only command in host scope. Large rule output truncation repaired by chunk reads. Failed rg wildcard paths yielded no product evidence.
+Stop=after validated fix and independent evidence review; do not claim delivery while any required layer remains unverified.

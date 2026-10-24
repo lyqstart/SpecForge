@@ -1,0 +1,15 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const {spawnSync} = require('node:child_process');
+const [id,cwd,exe,...args] = process.argv.slice(2);
+const root=__dirname;
+const base=path.join(root,id);
+if(fs.existsSync(base+'.result.json') || fs.existsSync(base+'.command.json')) throw Error('EVIDENCE_DIRECTORY_COLLISION');
+const expected = args.includes('upgrade') ? 'Installed user-level SpecForge files, installer journal/backup, local evidence' : args.includes('daemon') ? 'Installed daemon runtime handshake/logs/process state and local evidence' : id.includes('installed-consumer') ? 'Isolated acceptance fixture, installed daemon observer logs and local evidence' : 'Isolated worktree build/test artifacts and local evidence';
+fs.writeFileSync(base+'.command.json',JSON.stringify({cwd,exe,args,purpose:id,start:new Date().toISOString(),expected_writes:expected},null,2));
+const out=fs.openSync(base+'.stdout.txt','wx'),err=fs.openSync(base+'.stderr.txt','wx');
+const result=spawnSync(exe,args,{cwd,env:process.env,windowsHide:true,stdio:['ignore',out,err]});
+fs.closeSync(out);fs.closeSync(err);
+fs.writeFileSync(base+'.result.json',JSON.stringify({end:new Date().toISOString(),inner_exit_code:result.status,carrier_exit_code:result.error?1:0,error:result.error?.message,signal:result.signal},null,2));
+console.log(JSON.stringify({id,exit_code:result.status,error:result.error?.message}));
+process.exitCode=result.status ?? 1;

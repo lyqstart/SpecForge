@@ -1,0 +1,13 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/.tmp/runtime-history-worktree/packages/observability
+
+ ✓ tests/property/property-30-event-schema-multisync.property.test.ts  (13 tests) 114ms
+ ✓ tests/unit/event-schema.test.ts  (21 tests) 9ms
+ ✓ tests/property/property-30-event-schema-simple.test.ts  (9 tests) 9ms
+ ✓ tests/unit/project-structure.test.ts  (4 tests) 5ms
+
+ Test Files  4 passed (4)
+      Tests  47 passed (47)
+   Start at  13:43:36
+   Duration  1.48s (transform 85ms, setup 1ms, collect 291ms, tests 137ms, environment 1ms, prepare 441ms)
+

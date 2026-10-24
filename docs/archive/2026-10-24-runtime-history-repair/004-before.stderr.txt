@@ -1,0 +1,318 @@
+$ vitest run tests/unit/runtime-history-integrity.test.ts tests/unit/configuration-activation-loss.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+stderr | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > allows missing-record acceptance when all events are terminal (closed)
+[StateManager] WARNING: direct StateManager.transition() to critical state 'closed' for 'WI-0001'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\.tmp\runtime-history-worktree\packages\daemon-core\tests\unit\configuration-activation-loss.test.ts:84:17
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/runtime-history-integrity.test.ts > authoritative history integrity at configuration consumer > rejects missing, recreated=false, without replacing state or activation
+ FAIL  tests/unit/runtime-history-integrity.test.ts > authoritative history integrity at configuration consumer > rejects invalid-schema, recreated=false, without replacing state or activation
+ FAIL  tests/unit/runtime-history-integrity.test.ts > authoritative history integrity at configuration consumer > rejects whitespace, recreated=false, without replacing state or activation
+ FAIL  tests/unit/runtime-history-integrity.test.ts > authoritative history integrity at configuration consumer > rejects missing, recreated=true, without replacing state or activation
+AssertionError: promise resolved "{ layers: [ { …(4) }, …(3) ], …(3) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "layers": [
++     {
++       "data": {
++         "cacheEnabled": true,
++         "hotReload": {
++           "debounceMs": 100,
++           "enabled": true,
++           "watchPaths": [],
++         },
++         "logLevel": "info",
++         "maxCacheSize": 1000,
++         "sensitiveFields": [
++           "apiKeys",
++           "tokens",
++           "secrets",
++           "credentials",
++           "passwords",
++           "auth",
++           "bearerTokens",
++           "providerCredentials",
++         ],
++         "service_management": {
++           "auto_enable_at_boot": true,
++           "plugin_reconnect_backoff_factor": 2,
++           "plugin_reconnect_initial_sec": 1,
++           "plugin_reconnect_max_sec": 60,
++           "schema_version": "1.0",
++           "stop_timeout_sec": 10,
++         },
++         "timeoutMs": 30000,
++       },
++       "schemaVersion": "1.0",
++       "timestamp": 0,
++       "type": "builtin",
++     },
++     {
++       "data": {},
++       "schemaVersion": "1.0",
++       "timestamp": 0,
++       "type": "user",
++     },
++     {
++       "data": {
++         "schema_version": "1.0",
++         "timeoutMs": 10000,
++       },
++       "schemaVersion": "1.0",
++       "timestamp": 0,
++       "type": "project",
++     },
++     {
++       "data": {},
++       "schemaVersion": "1.0",
++       "timestamp": 0,
++       "type": "runtime",
++     },
++   ],
++   "merged": {
++     "cacheEnabled": true,
++     "hotReload": {
++       "debounceMs": 100,
++       "enabled": true,
++       "watchPaths": [],
++     },
++     "logLevel": "info",
++     "maxCacheSize": 1000,
++     "schema_version": "1.0",
++     "sensitiveFields": [
++       "apiKeys",
++       "tokens",
++       "secrets",
++       "credentials",
++       "passwords",
++       "auth",
++       "bearerTokens",
++       "providerCredentials",
++     ],
++     "service_management": {
++       "auto_enable_at_boot": true,
++       "plugin_reconnect_backoff_factor": 2,
++       "plugin_reconnect_initial_sec": 1,
++       "plugin_reconnect_max_sec": 60,
++       "schema_version": "1.0",
++       "stop_timeout_sec": 10,
++     },
++     "timeoutMs": 10000,
++   },
++   "metadata": {
++     "mergedAt": 0,
++     "schemaVersion": "1.0",
++     "sensitiveFields": [
++       "apiKeys",
++       "tokens",
++       "secrets",
++       "credentials",
++       "passwords",
++       "auth",
++       "bearerTokens",
++       "providerCredentials",
++     ],
++     "validationErrors": [],
++   },
++   "sources": {
++     "cacheEnabled": "builtin",
++     "hotReload": "builtin",
++     "logLevel": "builtin",
++     "maxCacheSize": "builtin",
++     "schema_version": "project",
++     "sensitiveFields": "builtin",
++     "service_management": "builtin",
++     "timeoutMs": "project",
++   },
+  }
+
+ ❯ tests/unit/runtime-history-integrity.test.ts:33:84
+     31|         else fs.writeFileSync(f.events,fault==='invalid-schema'?'{}\n'…
+     32|         f.write(10000);
+     33|         await expect((restart?f.create():f.manager).getProjectConfigur…
+       |                                                                                    ^
+     34|         expect(fs.readFileSync(f.checkpoint)).toEqual(originalState);
+     35|         expect(fs.readFileSync(f.activation)).toEqual(activation);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  tests/unit/runtime-history-integrity.test.ts > authoritative history integrity at configuration consumer > rejects truncated, recreated=false, without replacing state or activation
+ FAIL  tests/unit/runtime-history-integrity.test.ts > authoritative history integrity at configuration consumer > rejects truncated, recreated=true, without replacing state or activation
+AssertionError: expected [Function] to throw error matching /WAL_|HISTORY_|SCHEMA_/ but got 'CONFIGURATION_CHANGE_BLOCKED_ACTIVE_W…'
+
+- Expected: 
+/WAL_|HISTORY_|SCHEMA_/
+
++ Received: 
+"CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK: restore the accepted configuration before continuing"
+
+ ❯ tests/unit/runtime-history-integrity.test.ts:33:9
+     31|         else fs.writeFileSync(f.events,fault==='invalid-schema'?'{}\n'…
+     32|         f.write(10000);
+     33|         await expect((restart?f.create():f.manager).getProjectConfigur…
+       |         ^
+     34|         expect(fs.readFileSync(f.checkpoint)).toEqual(originalState);
+     35|         expect(fs.readFileSync(f.activation)).toEqual(activation);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  tests/unit/runtime-history-integrity.test.ts > authoritative history integrity at configuration consumer > preserves active task across real rotation, recreated=false
+ FAIL  tests/unit/runtime-history-integrity.test.ts > authoritative history integrity at configuration consumer > preserves active task across real rotation, recreated=true
+AssertionError: promise resolved "{ layers: [ { …(4) }, …(3) ], …(3) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "layers": [
++     {
++       "data": {
++         "cacheEnabled": true,
++         "hotReload": {
++           "debounceMs": 100,
++           "enabled": true,
++           "watchPaths": [],
++         },
++         "logLevel": "info",
++         "maxCacheSize": 1000,
++         "sensitiveFields": [
++           "apiKeys",
++           "tokens",
++           "secrets",
++           "credentials",
++           "passwords",
++           "auth",
++           "bearerTokens",
++           "providerCredentials",
++         ],
++         "service_management": {
++           "auto_enable_at_boot": true,
++           "plugin_reconnect_backoff_factor": 2,
++           "plugin_reconnect_initial_sec": 1,
++           "plugin_reconnect_max_sec": 60,
++           "schema_version": "1.0",
++           "stop_timeout_sec": 10,
++         },
++         "timeoutMs": 30000,
++       },
++       "schemaVersion": "1.0",
++       "timestamp": 0,
++       "type": "builtin",
++     },
++     {
++       "data": {},
++       "schemaVersion": "1.0",
++       "timestamp": 0,
++       "type": "user",
++     },
++     {
++       "data": {
++         "schema_version": "1.0",
++         "timeoutMs": 10000,
++       },
++       "schemaVersion": "1.0",
++       "timestamp": 0,
++       "type": "project",
++     },
++     {
++       "data": {},
++       "schemaVersion": "1.0",
++       "timestamp": 0,
++       "type": "runtime",
++     },
++   ],
++   "merged": {
++     "cacheEnabled": true,
++     "hotReload": {
++       "debounceMs": 100,
++       "enabled": true,
++       "watchPaths": [],
++     },
++     "logLevel": "info",
++     "maxCacheSize": 1000,
++     "schema_version": "1.0",
++     "sensitiveFields": [
++       "apiKeys",
++       "tokens",
++       "secrets",
++       "credentials",
++       "passwords",
++       "auth",
++       "bearerTokens",
++       "providerCredentials",
++     ],
++     "service_management": {
++       "auto_enable_at_boot": true,
++       "plugin_reconnect_backoff_factor": 2,
++       "plugin_reconnect_initial_sec": 1,
++       "plugin_reconnect_max_sec": 60,
++       "schema_version": "1.0",
++       "stop_timeout_sec": 10,
++     },
++     "timeoutMs": 10000,
++   },
++   "metadata": {
++     "mergedAt": 0,
++     "schemaVersion": "1.0",
++     "sensitiveFields": [
++       "apiKeys",
++       "tokens",
++       "secrets",
++       "credentials",
++       "passwords",
++       "auth",
++       "bearerTokens",
++       "providerCredentials",
++     ],
++     "validationErrors": [],
++   },
++   "sources": {
++     "cacheEnabled": "builtin",
++     "hotReload": "builtin",
++     "logLevel": "builtin",
++     "maxCacheSize": "builtin",
++     "schema_version": "project",
++     "sensitiveFields": "builtin",
++     "service_management": "builtin",
++     "timeoutMs": "project",
++   },
+  }
+
+ ❯ tests/unit/runtime-history-integrity.test.ts:45:60
+     43|       const activation=fs.readFileSync(f.activation);f.write(10000);
+     44|       const consumer=restart?f.create():f.manager;
+     45|       await expect(consumer.getProjectConfiguration(f.root)).rejects.t…
+       |                                                            ^
+     46|       expect((await consumer.getProjectStateManager(f.root)).getState(…
+     47|       expect(fs.readFileSync(f.activation)).toEqual(activation);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  tests/unit/runtime-history-integrity.test.ts > authoritative history integrity at configuration consumer > retains all segments after more than three rotations
+AssertionError: expected [ …(3) ] to have a length of 5 but got 3
+
+- Expected
++ Received
+
+- 5
++ 3
+
+ ❯ tests/unit/runtime-history-integrity.test.ts:57:88
+     55|       await wal.appendEvent(wal.createEvent(f.root,'system','after_rot…
+     56|     }
+     57|     expect(fs.readdirSync(path.dirname(f.events)).filter(n=>n.endsWith…
+       |                                                                                        ^
+     58|     const fresh=f.create();expect((await fresh.getProjectConfiguration…
+     59|     expect((await fresh.getProjectStateManager(f.root)).getState('WI-0…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+error: script "test" exited with code 1

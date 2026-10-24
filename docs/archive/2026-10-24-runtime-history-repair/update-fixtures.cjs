@@ -1,0 +1,13 @@
+const fs=require('fs'),p=require('path');
+const root=p.resolve(__dirname,'../runtime-history-worktree');
+function edit(rel,fn){const file=p.join(root,rel);fs.writeFileSync(file,fn(fs.readFileSync(file,'utf8')));}
+edit('packages/daemon-core/tests/property/property-30.test.ts',s=>s.replaceAll("await fs.writeFile(eventsPath, '');","await fs.rm(eventsPath, { force: true });"));
+for(const rel of ['packages/daemon-core/tests/unit/verification-evidence-integrity.test.ts','packages/daemon-core/tests/unit/sf-v11-close-gate.test.ts']){
+ edit(rel,s=>s.replace('JSON.stringify({ projectId: workItemId,',"JSON.stringify({ schema_version: '1.0', eventId: 'close-fixture', monotonicSeq: 1, actor: 'test', category: 'state', projectId: workItemId,"));
+}
+// Strict byte-equivalent templates must not acquire checkout-specific CRLF.
+edit('.gitattributes',s=>s+'\n/templates/.specforge/config/observability.json text eol=lf\n/setup/userlevel-opencode/templates/.specforge/config/observability.json text eol=lf\n');
+for(const rel of ['templates/.specforge/config/observability.json','setup/userlevel-opencode/templates/.specforge/config/observability.json']) edit(rel,s=>s.replaceAll('\r\n','\n'));
+const status=fs.readFileSync(p.resolve(root,'docs/project-status.md'),'utf8').replace(/^ACTIVE_INITIATIVE=.*$/m,'ACTIVE_INITIATIVE=RUNTIME_HISTORY_INTEGRITY_REPAIR').replace(/^OBJECTIVE=.*$/m,'OBJECTIVE=Repair missing, rotated and invalid history acceptance bypass; retain original evidence and independently verify.').replace(/^CURRENT_PHASE=.*$/m,'CURRENT_PHASE=IMPLEMENTATION_AND_REGRESSION').replace(/^EXECUTION_STATE=.*$/m,'EXECUTION_STATE=IN_PROGRESS').replace(/^EXECUTION_RUN_ID=.*$/m,'EXECUTION_RUN_ID=CODEX-SF-20261024-RUNTIME-HISTORY-REPAIR-A01').replace(/^EXECUTION_EVIDENCE_ROOT=.*$/m,'EXECUTION_EVIDENCE_ROOT=D:/code/SpecForge/.tmp/runtime-history-repair-20261024').replace(/^LAST_EXECUTION_CHECKPOINT=.*$/m,'LAST_EXECUTION_CHECKPOINT=Isolated worktree .tmp/runtime-history-worktree at 04a6880 baseline; targeted history regressions passed. Full daemon run 008 failed: 15 failures require classification; no release or installed changes.').replace(/^CURRENT_BLOCKER=.*$/m,'CURRENT_BLOCKER=Full regressions and independent restart/deployment validation incomplete.').replace(/^NEXT_LEGAL_ACTION=.*$/m,'NEXT_LEGAL_ACTION=Continue repair in .tmp/runtime-history-worktree; inspect raw run 008, resolve failures, validate history consumers and restart before merge or release. Do not reopen original business WI.');
+fs.writeFileSync(p.join(root,'docs/project-status.md'),status);
+fs.writeFileSync(p.resolve(root,'../../docs/project-status.md'),status);

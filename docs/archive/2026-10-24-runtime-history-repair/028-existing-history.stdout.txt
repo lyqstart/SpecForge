@@ -1,0 +1,1 @@
+{"utc":"2026-10-24T05:44:09.875Z","method":"read-only raw file parse, no product APIs","event_count":40,"gaps":[],"badTransitions":[],"states":{"WI-0001":"closed"},"hashes":{"events.jsonl":"aab4c7ed4a901db734e2e14031958db9d6a1ab34efeb1dc1569a668ab909bc20"}}

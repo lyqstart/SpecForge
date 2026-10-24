@@ -1,0 +1,12 @@
+{
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/.config/opencode/sf-user/bin/specforge.exe",
+  "args": [
+    "daemon",
+    "stop",
+    "--json"
+  ],
+  "purpose": "044-daemon-stop",
+  "start": "2026-10-24T05:52:20.267Z",
+  "expected_writes": "Installed daemon runtime handshake/logs/process state and local evidence"
+}

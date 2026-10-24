@@ -1,0 +1,11 @@
+{
+  "cwd": "D:/code/SpecForge/.tmp/runtime-history-worktree",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/sf-installer.ts",
+    "upgrade"
+  ],
+  "purpose": "040-install-upgrade",
+  "start": "2026-10-24T05:51:51.706Z",
+  "expected_writes": "Installed user-level SpecForge files, installer journal/backup, local evidence"
+}

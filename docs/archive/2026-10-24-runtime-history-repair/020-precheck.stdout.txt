@@ -1,0 +1,9 @@
+{
+  "passed": false,
+  "producerErrors": [
+    "clean_build:release:release-manifest:missing:release/release-manifest.json"
+  ],
+  "inventoryErrors": [
+    "artifact_surface:clean_build:producer_incomplete"
+  ]
+}

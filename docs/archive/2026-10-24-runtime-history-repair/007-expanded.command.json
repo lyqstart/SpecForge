@@ -1,0 +1,14 @@
+{
+  "cwd": "D:/code/SpecForge/.tmp/runtime-history-worktree/packages/daemon-core",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/runtime-history-integrity.test.ts",
+    "tests/unit/configuration-activation-loss.test.ts",
+    "tests/unit/wal.test.ts"
+  ],
+  "start": "2026-10-24T05:33:49.903Z",
+  "expected_writes": "isolated worktree build/test artifacts and evidence only"
+}

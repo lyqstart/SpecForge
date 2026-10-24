@@ -1,0 +1,9 @@
+{
+  "cwd": "D:/code/SpecForge/.tmp/runtime-history-worktree",
+  "exe": "node",
+  "args": [
+    "D:/code/SpecForge/.tmp/runtime-history-repair-20261024/release-version.cjs"
+  ],
+  "start": "2026-10-24T05:40:08.463Z",
+  "expected_writes": "isolated worktree build/test artifacts and evidence only"
+}

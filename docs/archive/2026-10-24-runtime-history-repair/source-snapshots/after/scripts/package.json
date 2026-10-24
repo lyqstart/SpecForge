@@ -1,0 +1,14 @@
+{
+  "name": "specforge-installer-scripts",
+  "version": "1.0.18",
+  "private": true,
+  "description": "SpecForge current-release installer and reconciliation libraries.",
+  "type": "module",
+  "dependencies": {
+    "zod": "4.1.8"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.5"
+  },
+  "schema_version": "1.0"
+}

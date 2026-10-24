@@ -1,0 +1,256 @@
+{
+  "utc": "2026-10-24T05:51:45.604Z",
+  "status": "PASS",
+  "method": "independent raw HTTP and snapshot parsing; no WAL or StateManager imports",
+  "checks": [
+    {
+      "fault": "missing",
+      "live_and_restart_rejected": true,
+      "activation_unchanged": true,
+      "rejected_history_checkpoint_unchanged": true
+    },
+    {
+      "fault": "invalid-schema",
+      "live_and_restart_rejected": true,
+      "activation_unchanged": true,
+      "rejected_history_checkpoint_unchanged": true
+    },
+    {
+      "fault": "whitespace",
+      "live_and_restart_rejected": true,
+      "activation_unchanged": true,
+      "rejected_history_checkpoint_unchanged": true
+    },
+    {
+      "fault": "truncated",
+      "live_and_restart_rejected": true,
+      "activation_unchanged": true,
+      "rejected_history_checkpoint_unchanged": true
+    },
+    {
+      "fault": "rotation",
+      "live_and_restart_rejected": true,
+      "activation_unchanged": true,
+      "rejected_history_checkpoint_unchanged": false
+    },
+    {
+      "independent_segment_count": 5,
+      "event_count": 8,
+      "states": {
+        "WI-0001": "intake_ready"
+      }
+    }
+  ],
+  "sources": [
+    {
+      "file": ".gitattributes",
+      "working_sha256": "a13abf84acd6ecd3bfa70107d2f49e7fc2f0f11acc832c8fea2050aeedd5aa06",
+      "committed_sha256": "56a8c107d4c43d13fe8d1c4714db30d2d174ef0f7691133ed7066aedbdf025f7"
+    },
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "working_sha256": "d9547b834c9e2ad95c1b7b56cb99db5a2e0c76e30c83c3b9e7253d30c1c72379",
+      "committed_sha256": "fcd8d2843a5f9d9841beeb746c4f2425c19ff89c31c22e938475d57b8f354381"
+    },
+    {
+      "file": "docs/project-status.md",
+      "working_sha256": "52f482749a3bc6dfc30cafde0a597a578e05f20c3d97a83b2be930a642702c13",
+      "committed_sha256": "c9d13f1401deb1f9a4b501ddddb0b70ede3963a5ccc1125d8b3085cf34d9e9e3"
+    },
+    {
+      "file": "docs/rule/specforge-active-development-rules.md",
+      "working_sha256": "36eedd7f035d0f1ea8e0e71dabb1818ebc3481c432efd84a22eea78c632d3fec",
+      "committed_sha256": "bba5738a1d6b0f8cf8071dc0241237edb3ba2aef592dc1081808722eec98f391"
+    },
+    {
+      "file": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "working_sha256": "bad950d55aceb23f7b6598211a814799ac5e3bf072821b5c7921e159eeb39cf3",
+      "committed_sha256": "8c49500ac99253275cfda162d75138fd8617a28fd72685cc33ba7186c67db1b7"
+    },
+    {
+      "file": "package.json",
+      "working_sha256": "8dfedae6e1f0b698426c99c8e621a60b8ac526b215764393932aba48ad216352",
+      "committed_sha256": "5b43623145bb589c54efa532d537c2385634c8e3aa16f7d85d7c38961a3fa34b"
+    },
+    {
+      "file": "packages/cli/package.json",
+      "working_sha256": "6fc59ff55c552067bbb07fb12845040ce90adeb09d7e6f26ea463bf812283175",
+      "committed_sha256": "06b64036615c610efb8d815c98f955fca0bcea9def862bf140b644724fb7fd07"
+    },
+    {
+      "file": "packages/cli/tests/help-system.test.ts",
+      "working_sha256": "110e539140c8ba2487f3e4821b98ed149863ac45ee0540c47d7c9cae7775d39f",
+      "committed_sha256": "110e539140c8ba2487f3e4821b98ed149863ac45ee0540c47d7c9cae7775d39f"
+    },
+    {
+      "file": "packages/configuration/package.json",
+      "working_sha256": "1c6bb6b5739df2823df62eaf2f09759df2d486b8633a169ad1a88bcd8a60aa71",
+      "committed_sha256": "1b9e89da074bf0f63c5d07105c9e025e2877b7d0e8c4800f468864f5fb15f2a8"
+    },
+    {
+      "file": "packages/daemon-core/package.json",
+      "working_sha256": "85155afe3f6a6a36e14949b467d27e4a520468e0a8f81d0c58504ed1dfdbb518",
+      "committed_sha256": "007d3dade383d7ebfd7bfa0bb150909f1e1307f5e06ffd5934ece2d72cf3732c"
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/RecoverySubsystem.ts",
+      "working_sha256": "09af4b19a0cfe62f6bd7918ef87785339e0fb46edf43202136618de1c0bc5e1b",
+      "committed_sha256": "09af4b19a0cfe62f6bd7918ef87785339e0fb46edf43202136618de1c0bc5e1b"
+    },
+    {
+      "file": "packages/daemon-core/src/state/StateManager.ts",
+      "working_sha256": "29984ed4a3729c120e7522d7dcb1aa49ad1961f08f1bd99fcb8d7ea99d95b171",
+      "committed_sha256": "29984ed4a3729c120e7522d7dcb1aa49ad1961f08f1bd99fcb8d7ea99d95b171"
+    },
+    {
+      "file": "packages/daemon-core/src/state/runtime-schema-descriptors.ts",
+      "working_sha256": "89756e142df6cf198caf87b4e3d265e8b94b786f32b35ba80e450b9eba70088b",
+      "committed_sha256": "89756e142df6cf198caf87b4e3d265e8b94b786f32b35ba80e450b9eba70088b"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts",
+      "working_sha256": "fda2e3572799762ad283cff69f1280b3a54b55f7ac020b4ef4c2b1df28377953",
+      "committed_sha256": "fda2e3572799762ad283cff69f1280b3a54b55f7ac020b4ef4c2b1df28377953"
+    },
+    {
+      "file": "packages/daemon-core/src/wal/WAL.ts",
+      "working_sha256": "578471380e8372ba5e216ca04855fb891d0058bfe045ca38b66fb78e335407d1",
+      "committed_sha256": "578471380e8372ba5e216ca04855fb891d0058bfe045ca38b66fb78e335407d1"
+    },
+    {
+      "file": "packages/daemon-core/tests/fixtures/build-process-fixture.ts",
+      "working_sha256": "7ee209a24f8e0ce53d4f2298fb43a7f3c5b0134a7b718692a56241c0d526de75",
+      "committed_sha256": "7ee209a24f8e0ce53d4f2298fb43a7f3c5b0134a7b718692a56241c0d526de75"
+    },
+    {
+      "file": "packages/daemon-core/tests/fixtures/runtime-history-http.ts",
+      "working_sha256": "8dafad1a98ab9e0a7dd6fade5e3b6a459e9f4100a6ce4c8888e3002ee4297d23",
+      "committed_sha256": "8dafad1a98ab9e0a7dd6fade5e3b6a459e9f4100a6ce4c8888e3002ee4297d23"
+    },
+    {
+      "file": "packages/daemon-core/tests/fixtures/runtime-history-process.ts",
+      "working_sha256": "a7acffbc6c21924ba74d98d6fff9e458ce495aef0058758b62f8852a08e4c847",
+      "committed_sha256": "a7acffbc6c21924ba74d98d6fff9e458ce495aef0058758b62f8852a08e4c847"
+    },
+    {
+      "file": "packages/daemon-core/tests/integration/wal-singleton-e2e.test.ts",
+      "working_sha256": "aa1f32fa4108f78c8c74479e68b9738838d10bdae1004cd90608d8382e8ac7e5",
+      "committed_sha256": "aa1f32fa4108f78c8c74479e68b9738838d10bdae1004cd90608d8382e8ac7e5"
+    },
+    {
+      "file": "packages/daemon-core/tests/property/property-20.test.ts",
+      "working_sha256": "649839f182dcdbacf51e6d9cfdf7ae557f3addd1cce0f259eaa1d8acff76b2b8",
+      "committed_sha256": "649839f182dcdbacf51e6d9cfdf7ae557f3addd1cce0f259eaa1d8acff76b2b8"
+    },
+    {
+      "file": "packages/daemon-core/tests/property/property-30.test.ts",
+      "working_sha256": "5bbec8f9ac861c4ead0b1a2386098097f8e9a5b9d890f37b00020ba66542dfe8",
+      "committed_sha256": "5bbec8f9ac861c4ead0b1a2386098097f8e9a5b9d890f37b00020ba66542dfe8"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/configuration-activation-loss.test.ts",
+      "working_sha256": "e1a959efa5a138a195854525e13ef1325db4a71bab6401e3aca8c7e62da9fd0c",
+      "committed_sha256": "e1a959efa5a138a195854525e13ef1325db4a71bab6401e3aca8c7e62da9fd0c"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/recovery-session-replay.test.ts",
+      "working_sha256": "092976a7d9b86fa47a0837fcfab67bfc7c50e4b313c7257cbb7681e65f6b06fd",
+      "committed_sha256": "092976a7d9b86fa47a0837fcfab67bfc7c50e4b313c7257cbb7681e65f6b06fd"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/runtime-history-integrity.test.ts",
+      "working_sha256": "fbdd687d661a0f39ce71285f99724bf01efd229597acfb61c4a9492b7dcea8fe",
+      "committed_sha256": "fbdd687d661a0f39ce71285f99724bf01efd229597acfb61c4a9492b7dcea8fe"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/sf-v11-close-gate.test.ts",
+      "working_sha256": "0513eada7a46407029f0d9cc7ae41aeaa1357b154de3a90d95f91ee7d6e78034",
+      "committed_sha256": "0513eada7a46407029f0d9cc7ae41aeaa1357b154de3a90d95f91ee7d6e78034"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/state-concurrency.test.ts",
+      "working_sha256": "92e13479f887f90cec21201f0a13aff59f3d68e81aa7b05cc329702d33db137a",
+      "committed_sha256": "92e13479f887f90cec21201f0a13aff59f3d68e81aa7b05cc329702d33db137a"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/verification-evidence-integrity.test.ts",
+      "working_sha256": "28a7bc869bb232d94e9cf53b068ec2b02d795cdc315676f2ee08e39f5cf00a2a",
+      "committed_sha256": "28a7bc869bb232d94e9cf53b068ec2b02d795cdc315676f2ee08e39f5cf00a2a"
+    },
+    {
+      "file": "packages/daemon-core/tests/unit/wal.test.ts",
+      "working_sha256": "eba2394bf9c1b84255b6ed8bd1d44352adae7638e9834dc9138af4a631136573",
+      "committed_sha256": "eba2394bf9c1b84255b6ed8bd1d44352adae7638e9834dc9138af4a631136573"
+    },
+    {
+      "file": "packages/host-profile/package.json",
+      "working_sha256": "52efca0c9f8c74644534417c115d6426ba8f39dd878d75e20a8c696961258198",
+      "committed_sha256": "6e6e00e8cff99568b6c94256e2aa7c14c62701b42d5a827123dbfe23c5e88e3e"
+    },
+    {
+      "file": "packages/observability/package.json",
+      "working_sha256": "dd2c328752b8c3520d1b7e74253ba74f08e3aa42b86a87d0999726999b50524d",
+      "committed_sha256": "8d5288e73b0fbd2542deb0287f58ece417ed7012e2a88a272aa3b52b9d87184e"
+    },
+    {
+      "file": "packages/observability/tests/integration/.gitkeep",
+      "working_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "committed_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "file": "packages/observability/tests/unit/project-structure.test.ts",
+      "working_sha256": "f736a9bc6e9d039422f8883dfae2e212bfbc162b368e6af78f9664067e3975e5",
+      "committed_sha256": "f736a9bc6e9d039422f8883dfae2e212bfbc162b368e6af78f9664067e3975e5"
+    },
+    {
+      "file": "packages/opencode-adapter/package.json",
+      "working_sha256": "5dadaf8fa264ed74b90d510550be96cd791265b4b4f785fcad8f4c40a66874e7",
+      "committed_sha256": "b75ad685e454e599cc450c07e11cd906b60088e8142e6ad7926228f837d86490"
+    },
+    {
+      "file": "packages/permission-engine/package.json",
+      "working_sha256": "56de670f4142c5ba20be31962742c3cf2c5d89278b7e39d5ff1795066f2ec074",
+      "committed_sha256": "a01e41c787dbf7cd44be5eed6f25e8ecff20bdd5640fe4a5b890b73c7f903c5a"
+    },
+    {
+      "file": "packages/scope-gate/package.json",
+      "working_sha256": "41a1c6e5ae1d5015409919d2abed83b633f31d7bfc26677082869cde4562531d",
+      "committed_sha256": "8da8e7bee79bf7f9ba1488aec5b90f7f1bb482993fbf6885f7dd64877be718dd"
+    },
+    {
+      "file": "packages/service-management/package.json",
+      "working_sha256": "a8579d7cad6654d926c5c0b464003be664845bd68292e5a7444386eeb485b652",
+      "committed_sha256": "e9b58aaf6dba6c84228e0dcec714af246b3bb3bbe9f7261cacf86dcabe4c57a2"
+    },
+    {
+      "file": "packages/types/package.json",
+      "working_sha256": "cf70a79570cd477092383a554c4530a79d4824d8a737eb1557d8bf8301396266",
+      "committed_sha256": "2f44f717c2f4187d6e710edcd73eb56a3a3d856b7df95190572a21098fc3ed29"
+    },
+    {
+      "file": "packages/version-unification/package.json",
+      "working_sha256": "5b9ae8d7b14337f1dad44881df2e54b3559535dd1bf1ef5d7e0f9b8760e28f53",
+      "committed_sha256": "12b8bd665fabb3f62ee871bd216ee50241d034cae8c7c2fb1172250c1de45fb0"
+    },
+    {
+      "file": "packages/workflow-runtime/package.json",
+      "working_sha256": "e85e21ac150bcbf387b7f57f48f115920fe696d0d473e29b6323687872b72fd7",
+      "committed_sha256": "49e7ef7b389ab2d459513ff2f14bad47b4f8b187875f6bb01588787175d9d125"
+    },
+    {
+      "file": "scripts/package.json",
+      "working_sha256": "5e5ece44faa2068bd9720f4a9a9504ae60134b2f708e3d1ba7edf76ab332c233",
+      "committed_sha256": "cdf66bc3ec8e398e697cfd73410a1e70bc9a53a91e235f2aaefcd628f3e01bc5"
+    },
+    {
+      "file": "tests/unit/current-product-version-contract.test.ts",
+      "working_sha256": "03222a2612d8f4c4340cd99e30df2b915eaf42a73ef0caaa7835d98cfc20cb21",
+      "committed_sha256": "03222a2612d8f4c4340cd99e30df2b915eaf42a73ef0caaa7835d98cfc20cb21"
+    }
+  ],
+  "limits": [
+    "No reconstruction of physically deleted authoritative bytes is claimed.",
+    "All history segments must be retained; storage compaction is not implemented.",
+    "This audit covers the confirmed history defects; it is not a proof of absence of every product defect."
+  ]
+}

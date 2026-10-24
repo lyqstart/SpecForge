@@ -1,0 +1,10 @@
+{
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    "D:/code/SpecForge/.tmp/runtime-history-repair-20261024/final-review.cjs"
+  ],
+  "purpose": "053-final-review",
+  "start": "2026-10-24T05:53:07.124Z",
+  "expected_writes": "Isolated worktree build/test artifacts and local evidence"
+}

@@ -1,0 +1,74 @@
+{
+  "utc": "2026-10-24T05:52:25.786Z",
+  "exit_code": 1,
+  "records": [
+    {
+      "pid": 37488,
+      "health": {
+        "success": true,
+        "data": {
+          "status": "ok",
+          "service": "daemon-core",
+          "version": "1.0.18",
+          "uptime": 2
+        },
+        "requestId": "lrki3qwucwcmvlzf5gl",
+        "timestamp": 1792821145701
+      }
+    },
+    {
+      "label": "installed missing history after actual daemon restart",
+      "utc": "2026-10-24T05:52:25.726Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": false,
+          "error": "WAL_HISTORY_TRUNCATED"
+        },
+        "requestId": "b9zhvkptew7mvlzf5ha",
+        "timestamp": 1792821145726
+      }
+    },
+    {
+      "label": "installed valid history restored",
+      "utc": "2026-10-24T05:52:25.770Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": true,
+          "rebuilt_from_events": true,
+          "work_items": {
+            "WI-0001": {
+              "work_item_id": "WI-0001",
+              "workflow_type": "feature_spec",
+              "current_state": "intake_ready",
+              "created_at": 1792821076798,
+              "updated_at": 1792821076822
+            }
+          }
+        },
+        "requestId": "wdznaeltcsmvlzf5ii",
+        "timestamp": 1792821145770
+      }
+    },
+    {
+      "label": "installed schema invalid live unchanged configuration",
+      "utc": "2026-10-24T05:52:25.786Z",
+      "status": 500,
+      "body": {
+        "success": false,
+        "error": {
+          "code": "TOOL_ERROR",
+          "message": "WAL_EVENT_SCHEMA_INVALID:file=events.jsonl:line=1"
+        },
+        "requestId": "5d0k3lc5uxmvlzf5iy",
+        "timestamp": 1792821145786
+      }
+    },
+    {
+      "failure": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n500 !== 200\n\n    at read (D:\\code\\SpecForge\\.tmp\\runtime-history-repair-20261024\\installed-consumer.cjs:6:450)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async main (D:\\code\\SpecForge\\.tmp\\runtime-history-repair-20261024\\installed-consumer.cjs:17:18)"
+    }
+  ]
+}

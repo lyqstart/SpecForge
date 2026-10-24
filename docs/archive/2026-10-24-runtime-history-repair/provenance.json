@@ -1,0 +1,65 @@
+{
+  "utc": "2026-10-24T05:53:36.925Z",
+  "baseline": "04a6880c4cf8b8bf69e461cc447effe4058b7297",
+  "candidate": "3cb3b959a92c37d120f0bd852a3a862ae9383787",
+  "binaries": [
+    {
+      "name": "specforge.exe",
+      "bytes": 99623936,
+      "sha256": "9754eadca12ccb687201e5c3d06459b0dc024a5c712138ababd1b6fc53a61ce5"
+    },
+    {
+      "name": "specforged.exe",
+      "bytes": 110800384,
+      "sha256": "d98f0f616f849f0411e38afb03092cc6232ef27f0e5a091ff9690c2d3e699b4b"
+    }
+  ],
+  "write_classification": {
+    "TRUTH_SOURCE_WRITES": "No original business project writes. Isolated test fixtures only.",
+    "REPOSITORY_TRACKED_WRITES": [
+      ".gitattributes",
+      "docs/product-specification/specforge-product-specification.md",
+      "docs/project-status.md",
+      "docs/rule/specforge-active-development-rules.md",
+      "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "package.json",
+      "packages/cli/package.json",
+      "packages/cli/tests/help-system.test.ts",
+      "packages/configuration/package.json",
+      "packages/daemon-core/package.json",
+      "packages/daemon-core/src/recovery/RecoverySubsystem.ts",
+      "packages/daemon-core/src/state/StateManager.ts",
+      "packages/daemon-core/src/state/runtime-schema-descriptors.ts",
+      "packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts",
+      "packages/daemon-core/src/wal/WAL.ts",
+      "packages/daemon-core/tests/fixtures/build-process-fixture.ts",
+      "packages/daemon-core/tests/fixtures/runtime-history-http.ts",
+      "packages/daemon-core/tests/fixtures/runtime-history-process.ts",
+      "packages/daemon-core/tests/integration/wal-singleton-e2e.test.ts",
+      "packages/daemon-core/tests/property/property-20.test.ts",
+      "packages/daemon-core/tests/property/property-30.test.ts",
+      "packages/daemon-core/tests/unit/configuration-activation-loss.test.ts",
+      "packages/daemon-core/tests/unit/recovery-session-replay.test.ts",
+      "packages/daemon-core/tests/unit/runtime-history-integrity.test.ts",
+      "packages/daemon-core/tests/unit/sf-v11-close-gate.test.ts",
+      "packages/daemon-core/tests/unit/state-concurrency.test.ts",
+      "packages/daemon-core/tests/unit/verification-evidence-integrity.test.ts",
+      "packages/daemon-core/tests/unit/wal.test.ts",
+      "packages/host-profile/package.json",
+      "packages/observability/package.json",
+      "packages/observability/tests/integration/.gitkeep",
+      "packages/observability/tests/unit/project-structure.test.ts",
+      "packages/opencode-adapter/package.json",
+      "packages/permission-engine/package.json",
+      "packages/scope-gate/package.json",
+      "packages/service-management/package.json",
+      "packages/types/package.json",
+      "packages/version-unification/package.json",
+      "packages/workflow-runtime/package.json",
+      "scripts/package.json",
+      "tests/unit/current-product-version-contract.test.ts"
+    ],
+    "RUNTIME_OBSERVER_WRITES": "Temporary test runtime, installed daemon logs/handshake and installer journal.",
+    "EXTERNAL_EVIDENCE_WRITES": "D:\\code\\SpecForge\\.tmp\\runtime-history-worktree\\docs\\archive\\2026-10-24-runtime-history-repair"
+  }
+}

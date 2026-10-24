@@ -1,0 +1,2 @@
+$ bun scripts/run-current-release-precheck.ts --candidate-id "commit-d9033ef2"
+error: script "precheck:release" exited with code 1

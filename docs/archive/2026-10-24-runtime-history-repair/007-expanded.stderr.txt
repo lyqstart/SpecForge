@@ -1,0 +1,133 @@
+$ vitest run tests/unit/runtime-history-integrity.test.ts tests/unit/configuration-activation-loss.test.ts tests/unit/wal.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+stderr | tests/unit/wal.test.ts > WAL > createEvent > should create event with auto-generated eventId
+[WAL] Unknown category 'test' — event will be written but may not be replayed
+
+stderr | tests/unit/wal.test.ts > WAL > createEvent > should include schema version
+[WAL] Unknown category 'test' — event will be written but may not be replayed
+
+stderr | tests/unit/wal.test.ts > WAL > createEvent category validation > should create event with unknown category (soft warn, still written)
+[WAL] Unknown category 'unknown_cat' — event will be written but may not be replayed
+
+stderr | tests/unit/runtime-history-integrity.test.ts > authoritative history integrity at configuration consumer > preserves a closed task and native denial after rotation and restart
+[StateManager] WARNING: direct StateManager.transition() to critical state 'closed' for 'WI-0001'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\.tmp\runtime-history-worktree\packages\daemon-core\tests\unit\runtime-history-integrity.test.ts:50:29
+
+stderr | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > allows missing-record acceptance when all events are terminal (closed)
+[StateManager] WARNING: direct StateManager.transition() to critical state 'closed' for 'WI-0001'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\.tmp\runtime-history-worktree\packages\daemon-core\tests\unit\configuration-activation-loss.test.ts:84:5
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/wal.test.ts > WAL > readEventsByCategory > should treat events without category field as "state" (backward compat)
+Error: WAL_EVENT_SCHEMA_INVALID:file=events.jsonl:line=1
+ ❯ WAL.readHistory src/wal/WAL.ts:97:51
+     95|         try { parsed = JSON.parse(line); }
+     96|         catch { throw new Error(`WAL_CORRUPT_INPUT:file=${file}:line=$…
+     97|         if (!isCurrentRuntimeEvent(parsed)) throw new Error(`WAL_EVENT…
+       |                                                   ^
+     98|         const event = parsed as Event;
+     99|         if (ids.has(event.eventId)) throw new Error('WAL_DUPLICATE_EVE…
+ ❯ src/wal/WAL.ts:47:26
+ ❯ WAL.serialized src/wal/WAL.ts:30:18
+ ❯ WAL.appendEvent src/wal/WAL.ts:46:5
+ ❯ tests/unit/wal.test.ts:133:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  tests/unit/wal.test.ts > WAL > rotation — events.jsonl archiving > should trigger rotation when file exceeds WAL_MAX_SIZE
+Error: WAL_EVENT_SCHEMA_INVALID:file=events.jsonl:line=1
+ ❯ WAL.readHistory src/wal/WAL.ts:97:51
+     95|         try { parsed = JSON.parse(line); }
+     96|         catch { throw new Error(`WAL_CORRUPT_INPUT:file=${file}:line=$…
+     97|         if (!isCurrentRuntimeEvent(parsed)) throw new Error(`WAL_EVENT…
+       |                                                   ^
+     98|         const event = parsed as Event;
+     99|         if (ids.has(event.eventId)) throw new Error('WAL_DUPLICATE_EVE…
+ ❯ src/wal/WAL.ts:47:26
+ ❯ WAL.serialized src/wal/WAL.ts:30:18
+ ❯ WAL.appendEvent src/wal/WAL.ts:46:5
+ ❯ tests/unit/wal.test.ts:189:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  tests/unit/wal.test.ts > WAL > rotation — events.jsonl archiving > should clean up old archives keeping at most 3
+Error: WAL_CORRUPT_INPUT:file=events-2025-01-01T00-00-00-000Z.jsonl.bak:line=1
+ ❯ WAL.readHistory src/wal/WAL.ts:96:23
+     94|         let parsed: unknown;
+     95|         try { parsed = JSON.parse(line); }
+     96|         catch { throw new Error(`WAL_CORRUPT_INPUT:file=${file}:line=$…
+       |                       ^
+     97|         if (!isCurrentRuntimeEvent(parsed)) throw new Error(`WAL_EVENT…
+     98|         const event = parsed as Event;
+ ❯ src/wal/WAL.ts:47:26
+ ❯ WAL.serialized src/wal/WAL.ts:30:18
+ ❯ WAL.appendEvent src/wal/WAL.ts:46:5
+ ❯ tests/unit/wal.test.ts:225:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  tests/unit/wal.test.ts > WAL > readAllEvents — fail-closed input policy > should reject a corrupted line even when other events are valid
+Error: WAL_CORRUPT_INPUT:file=events.jsonl:line=2
+ ❯ WAL.readHistory src/wal/WAL.ts:96:23
+     94|         let parsed: unknown;
+     95|         try { parsed = JSON.parse(line); }
+     96|         catch { throw new Error(`WAL_CORRUPT_INPUT:file=${file}:line=$…
+       |                       ^
+     97|         if (!isCurrentRuntimeEvent(parsed)) throw new Error(`WAL_EVENT…
+     98|         const event = parsed as Event;
+ ❯ src/wal/WAL.ts:47:26
+ ❯ WAL.serialized src/wal/WAL.ts:30:18
+ ❯ WAL.appendEvent src/wal/WAL.ts:46:5
+ ❯ tests/unit/wal.test.ts:273:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  tests/unit/wal.test.ts > WAL > readAllEvents — fail-closed input policy > should truncate corrupted line content to 100 chars
+AssertionError: expected [Function] to throw error including 'WAL_CORRUPT_INPUT:line=1:content=XXXX…' but got 'WAL_CORRUPT_INPUT:file=events.jsonl:l…'
+
+Expected: "WAL_CORRUPT_INPUT:line=1:content=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+Received: "WAL_CORRUPT_INPUT:file=events.jsonl:line=1"
+
+ ❯ tests/unit/wal.test.ts:286:7
+    284|       await fs.appendFile(eventsPath, longCorrupted + '\n', 'utf-8');
+    285| 
+    286|       await expect(wal.readAllEvents()).rejects.toThrow(
+       |       ^
+    287|         `WAL_CORRUPT_INPUT:line=1:content=${'X'.repeat(100)}`,
+    288|       );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  tests/unit/wal.test.ts > WAL > readAllEvents — fail-closed input policy > should handle all lines corrupted
+AssertionError: expected [Function] to throw error including 'WAL_CORRUPT_INPUT:line=1:content=bad1' but got 'WAL_CORRUPT_INPUT:file=events.jsonl:l…'
+
+Expected: "WAL_CORRUPT_INPUT:line=1:content=bad1"
+Received: "WAL_CORRUPT_INPUT:file=events.jsonl:line=1"
+
+ ❯ tests/unit/wal.test.ts:297:7
+    295|       await fs.appendFile(eventsPath, 'bad2\n', 'utf-8');
+    296| 
+    297|       await expect(wal.readAllEvents()).rejects.toThrow(
+       |       ^
+    298|         'WAL_CORRUPT_INPUT:line=1:content=bad1',
+    299|       );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  tests/unit/wal.test.ts > WAL > readAllEvents — fail-closed input policy > should make getLastEvent fail closed after corrupted lines
+AssertionError: expected [Function] to throw error including 'WAL_CORRUPT_INPUT:line=2:content=CORR…' but got 'WAL_CORRUPT_INPUT:file=events.jsonl:l…'
+
+Expected: "WAL_CORRUPT_INPUT:line=2:content=CORRUPTED"
+Received: "WAL_CORRUPT_INPUT:file=events.jsonl:line=2"
+
+ ❯ tests/unit/wal.test.ts:310:7
+    308|       await fs.appendFile(eventsPath, 'CORRUPTED\n', 'utf-8');
+    309| 
+    310|       await expect(wal.getLastEvent()).rejects.toThrow(
+       |       ^
+    311|         'WAL_CORRUPT_INPUT:line=2:content=CORRUPTED',
+    312|       );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+error: script "test" exited with code 1

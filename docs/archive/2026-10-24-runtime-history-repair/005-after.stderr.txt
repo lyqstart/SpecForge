@@ -1,0 +1,5 @@
+$ vitest run tests/unit/runtime-history-integrity.test.ts tests/unit/configuration-activation-loss.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+stderr | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > allows missing-record acceptance when all events are terminal (closed)
+[StateManager] WARNING: direct StateManager.transition() to critical state 'closed' for 'WI-0001'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\.tmp\runtime-history-worktree\packages\daemon-core\tests\unit\configuration-activation-loss.test.ts:84:5
+

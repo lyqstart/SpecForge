@@ -1,0 +1,11 @@
+{
+  "cwd": "D:/code/SpecForge",
+  "exe": "git",
+  "args": [
+    "ls-remote",
+    "origin",
+    "refs/heads/main"
+  ],
+  "start": "2026-10-24T05:48:11.885Z",
+  "expected_writes": "isolated worktree build/test artifacts and evidence only"
+}

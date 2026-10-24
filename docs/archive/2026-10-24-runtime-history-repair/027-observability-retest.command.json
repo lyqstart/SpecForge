@@ -1,0 +1,13 @@
+{
+  "cwd": "D:/code/SpecForge/.tmp/runtime-history-worktree/packages/observability",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "start": "2026-10-24T05:43:36.371Z",
+  "expected_writes": "isolated worktree build/test artifacts and evidence only"
+}

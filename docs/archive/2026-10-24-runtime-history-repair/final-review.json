@@ -1,0 +1,49 @@
+{
+  "utc": "2026-10-24T05:53:15.104Z",
+  "status": "PASS",
+  "product_version": "1.0.18",
+  "candidate": "3cb3b959a92c37d120f0bd852a3a862ae9383787",
+  "verdict": "Three confirmed history defects repaired; related recovery and close-time consumers aligned. Normal use and true restart verified. No claim that deleted authoritative bytes can be recreated.",
+  "regression": {
+    "raw_full_exit_code": 1,
+    "reason": "Clean checkout lacked tracked tests/integration directory required by observability structure test.",
+    "repair": "Tracked directory placeholder; complete observability suite rerun passed 47/47.",
+    "suite_totals": [
+      729,
+      2,
+      197,
+      226,
+      2,
+      47,
+      375,
+      903,
+      134,
+      1516,
+      789,
+      1949
+    ],
+    "reconciled_case_total": 6870,
+    "daemon": 1950
+  },
+  "installed": {
+    "pid": 37500,
+    "hashes_verified": 112,
+    "failures": []
+  },
+  "original_business_project": "WI-0001 closed; event bytes unchanged",
+  "evidence": [
+    "004-before.stdout.txt",
+    "010-daemon-full.stdout.txt",
+    "023-full-regression.stdout.txt",
+    "027-observability-retest.stdout.txt",
+    "http-audit-final/results.json",
+    "independent-audit-final.json",
+    "installed-consumer-before-restart-r2.json",
+    "installed-consumer-after-restart-r2.json"
+  ],
+  "limits": [
+    "Lost authoritative history is blocked, not guessed or automatically recreated.",
+    "WAL archives are retained; long-term compaction remains out of scope.",
+    "No real model streaming/disconnection or every possible application fault is claimed by these tests."
+  ]
+}

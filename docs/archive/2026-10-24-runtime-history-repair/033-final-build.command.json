@@ -1,0 +1,11 @@
+{
+  "cwd": "D:/code/SpecForge/.tmp/runtime-history-worktree",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "build"
+  ],
+  "purpose": "033-final-build",
+  "start": "2026-10-24T05:50:10.644Z",
+  "expected_writes": "Isolated worktree build/test artifacts and local evidence"
+}

@@ -1,0 +1,60 @@
+{
+  "utc": "2026-10-24T05:52:09.682Z",
+  "exit_code": 0,
+  "records": [
+    {
+      "pid": 36368,
+      "health": {
+        "success": true,
+        "data": {
+          "status": "ok",
+          "service": "daemon-core",
+          "version": "1.0.18",
+          "uptime": 3
+        },
+        "requestId": "bp3ls34ayemvlzet0l",
+        "timestamp": 1792821129573
+      }
+    },
+    {
+      "label": "installed normal active configuration",
+      "utc": "2026-10-24T05:52:09.665Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": true,
+          "rebuilt_from_events": true,
+          "work_items": {
+            "WI-0001": {
+              "work_item_id": "WI-0001",
+              "workflow_type": "feature_spec",
+              "current_state": "intake_ready",
+              "created_at": 1792821076798,
+              "updated_at": 1792821076822
+            }
+          }
+        },
+        "requestId": "bb8x4hld3yrmvlzet34",
+        "timestamp": 1792821129664
+      }
+    },
+    {
+      "label": "installed missing history live",
+      "utc": "2026-10-24T05:52:09.681Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": false,
+          "error": "WAL_HISTORY_MISSING"
+        },
+        "requestId": "8oia55kh1l8mvlzet3k",
+        "timestamp": 1792821129680
+      }
+    },
+    {
+      "verdict": "PASS"
+    }
+  ]
+}

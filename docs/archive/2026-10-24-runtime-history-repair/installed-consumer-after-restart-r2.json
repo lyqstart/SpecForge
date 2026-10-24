@@ -1,0 +1,134 @@
+{
+  "utc": "2026-10-24T05:52:56.500Z",
+  "exit_code": 0,
+  "records": [
+    {
+      "pid": 37500,
+      "health": {
+        "success": true,
+        "data": {
+          "status": "ok",
+          "service": "daemon-core",
+          "version": "1.0.18",
+          "uptime": 2
+        },
+        "requestId": "4h8c9nxhbwhmvlzfsv4",
+        "timestamp": 1792821176032
+      }
+    },
+    {
+      "label": "installed missing history after actual daemon restart",
+      "utc": "2026-10-24T05:52:56.058Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": false,
+          "error": "WAL_HISTORY_TRUNCATED"
+        },
+        "requestId": "3j6prhmytdmmvlzfsvt",
+        "timestamp": 1792821176057
+      }
+    },
+    {
+      "label": "installed valid history restored",
+      "utc": "2026-10-24T05:52:56.097Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": true,
+          "rebuilt_from_events": true,
+          "work_items": {
+            "WI-0001": {
+              "work_item_id": "WI-0001",
+              "workflow_type": "feature_spec",
+              "current_state": "intake_ready",
+              "created_at": 1792821076798,
+              "updated_at": 1792821076822
+            }
+          }
+        },
+        "requestId": "9aj3gawueihmvlzfsww",
+        "timestamp": 1792821176096
+      }
+    },
+    {
+      "label": "installed schema invalid live unchanged configuration",
+      "utc": "2026-10-24T05:52:56.104Z",
+      "status": 500,
+      "body": {
+        "success": false,
+        "error": {
+          "code": "TOOL_ERROR",
+          "message": "WAL_EVENT_SCHEMA_INVALID:file=events.jsonl:line=1"
+        },
+        "requestId": "ep6ywrcllvemvlzfsx3",
+        "timestamp": 1792821176103
+      }
+    },
+    {
+      "label": "installed five archives normal configuration",
+      "utc": "2026-10-24T05:52:56.384Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": true,
+          "rebuilt_from_events": true,
+          "work_items": {
+            "WI-0001": {
+              "work_item_id": "WI-0001",
+              "workflow_type": "feature_spec",
+              "current_state": "intake_ready",
+              "created_at": 1792821076798,
+              "updated_at": 1792821076822
+            }
+          }
+        },
+        "requestId": "p663fft74u8mvlzft4v",
+        "timestamp": 1792821176383
+      }
+    },
+    {
+      "label": "installed five archives changed configuration",
+      "utc": "2026-10-24T05:52:56.419Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": false,
+          "error": "CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK: restore the accepted configuration before continuing"
+        },
+        "requestId": "e1qvp7amwaqmvlzft5u",
+        "timestamp": 1792821176418
+      }
+    },
+    {
+      "label": "installed final valid read",
+      "utc": "2026-10-24T05:52:56.500Z",
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": true,
+          "rebuilt_from_events": true,
+          "work_items": {
+            "WI-0001": {
+              "work_item_id": "WI-0001",
+              "workflow_type": "feature_spec",
+              "current_state": "intake_ready",
+              "created_at": 1792821076798,
+              "updated_at": 1792821076822
+            }
+          }
+        },
+        "requestId": "y42qgnyrmdmvlzft82",
+        "timestamp": 1792821176498
+      }
+    },
+    {
+      "verdict": "PASS"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    "D:/code/SpecForge/.tmp/runtime-history-repair-20261024/installed-consumer.cjs",
+    "before-restart"
+  ],
+  "purpose": "043-installed-consumer-live",
+  "start": "2026-10-24T05:52:09.475Z",
+  "expected_writes": "Isolated acceptance fixture, installed daemon observer logs and local evidence"
+}

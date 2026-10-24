@@ -1,0 +1,10 @@
+{
+  "applicable": "EXP-004,006,007,010,017,031,261,262,282",
+  "mismatches": 0,
+  "run_id": "CODEX-SF-20261024-RUNTIME-HISTORY-REPAIR-A01",
+  "execution_mode": "CODEX_DIRECT",
+  "experience_file_read": "YES",
+  "prior_evidence_files": 47,
+  "repeated_error_check": "PASS",
+  "utc": "2026-10-24T05:29:00.4316762Z"
+}

@@ -1,0 +1,12 @@
+{
+  "cwd": "D:/code/SpecForge/.tmp/runtime-history-worktree",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "build",
+    "packages/daemon-core/tests/fixtures/runtime-history-http.ts",
+    "--target=bun",
+    "--outfile=D:/code/SpecForge/.tmp/runtime-history-repair-20261024/http-fixture-v2.js"
+  ],
+  "start": "2026-10-24T05:39:38.204Z",
+  "expected_writes": "isolated worktree build/test artifacts and evidence only"
+}

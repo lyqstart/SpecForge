@@ -1,0 +1,1905 @@
+diff --git a/.gitattributes b/.gitattributes
+index 96380fdf..c4c5c267 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -17,3 +17,6 @@ setup/userlevel-opencode/skills/sf-workflow-*/SKILL.md text eol=lf
+ 
+ # Sealed raw test outputs and source-byte snapshots must survive Git unchanged.
+ docs/archive/2026-10-19-config-activation-loss-evidence/** -text -diff
++
++/templates/.specforge/config/observability.json text eol=lf
++/setup/userlevel-opencode/templates/.specforge/config/observability.json text eol=lf
+diff --git a/docs/product-specification/specforge-product-specification.md b/docs/product-specification/specforge-product-specification.md
+index f4f198bb..177c4937 100644
+--- a/docs/product-specification/specforge-product-specification.md
++++ b/docs/product-specification/specforge-product-specification.md
+@@ -4,7 +4,7 @@
+ >
+ > Specification ID: SPS-1.0
+ >
+-> Product release version: 1.0.17
++> Product release version: 1.0.18
+ >
+ > Product version epoch: 1
+ >
+@@ -237,6 +237,8 @@ state.json
+ - 不再存在 runtime/wal.jsonl 作为第二事件文件名。
+ - Daemon-global workflow state 已废止；状态必须绑定真实 Project Context。
+ 
++事件归档不得丢弃重放所需的历史。由 WAL owner 轮转产生的 `events-*.jsonl.bak` 是同一追加历史的只读分段，必须与当前 `events.jsonl` 一起按完整顺序验证并重放，不是第二套状态源。不得按固定份数删除仍被重放依赖的段；缺段、重复、损坏或未知结构必须在状态、配置激活或后续事件写入前失败关闭。每次消费都执行结构检查，不能只在启动时校验。已有 checkpoint 或内存游标证明历史曾存在时，事件缺失不能被当作新项目；这些见证只用于拒绝不完整历史，不得用于补造事件。完整历史可以重建丢失或落后的投影。
++
+ ---
+ 
+ # 4. 文件与目录模型
+diff --git a/docs/project-status.md b/docs/project-status.md
+index 5c01a013..86668dfb 100644
+--- a/docs/project-status.md
++++ b/docs/project-status.md
+@@ -9,23 +9,23 @@
+ <!-- SPECFORGE_PROJECT_STATUS:START -->
+ PROJECT_STATUS_SCHEMA=2
+ PROJECT_STATUS_DECLARATION=ACTIVE
+-ACTIVE_INITIATIVE=CONFIGURATION_ACTIVATION_LOSS_REPAIR
+-OBJECTIVE=Repair missing activation record acceptance bypass with original regression evidence and independent review.
+-CURRENT_PHASE=CONFIGURATION_ACTIVATION_LOSS_VALIDATED_DELIVERY
++ACTIVE_INITIATIVE=RUNTIME_HISTORY_INTEGRITY_REPAIR
++OBJECTIVE=Repair missing, rotated and invalid history acceptance bypass; retain original evidence and independently verify.
++CURRENT_PHASE=IMPLEMENTATION_AND_REGRESSION
+ OWNER_DECISIONS=AR-DEC-01:APPROVED;AR-DEC-02:APPROVED_WITH_ARCHIVE_CONSOLIDATION;AR-DEC-03:APPROVED_WITH_KIRO_RETIREMENT;AR-DEC-04:APPROVED_WITH_SINGLE_PROJECT_STATUS;AR-DEC-05:ONLY_TWO_EXTERNAL_EXECUTION_MODES_CODEX_DIRECT_AND_WORKBUDDY_COORDINATED;AR-DEC-06:ACTIVE_RULES_SEPARATED_FROM_HISTORICAL_LEDGER;D05:OPENCODE_ADAPTER_ENABLED;D10:NSSM_REMOVED_WINDOWS_DIRECT_DAEMON_ONLY;D11:GLOBAL_ONLY_THIN_PLUGIN_SINGLE_EXPORT;VR-DEC-01:NEW_EPOCH_1_0_0;VR-DEC-02:TAG_PREFIX_SPECFORGE_V;VR-DEC-03:INDEPENDENT_CONTRACT_VERSIONS;VR-DEC-04:ACTIVE_REFERENCES_CONVERGE_HISTORY_PRESERVED
+ EXECUTION_MODE=CODEX_DIRECT
+-EXECUTION_STATE=COMPLETED
++EXECUTION_STATE=IN_PROGRESS
+ EXECUTION_PROTOCOL=docs/rule/specforge-execution-mode-and-evidence-protocol.md
+ EXECUTION_PLANNER=CODEX
+ EXECUTION_ACTOR=CODEX
+ EXECUTION_AUDITOR=CODEX
+-EXECUTION_RUN_ID=CODEX-SF-20261019-CONFIG-ACTIVATION-LOSS-A01
+-EXECUTION_EVIDENCE_ROOT=D:/code/SpecForge/docs/archive/2026-10-19-config-activation-loss-evidence
+-LAST_EXECUTION_CHECKPOINT=1.0.17 candidate commit-2ee9dc4ad00d409155890eefa76ecd547d36c7a2 installed. 16 new regressions; 39 targeted passed; 6846 regression cases reconciled after complete 134-case scope-gate rerun (full command exit 1 retained). Daemon 1926/1926; workspace build, three typechecks, commit-bound precheck and compiled HTTP restart audit passed. Installed PID 41628, 112/112 file hashes and actual installed consumer rejection verified.
++EXECUTION_RUN_ID=CODEX-SF-20261024-RUNTIME-HISTORY-REPAIR-A01
++EXECUTION_EVIDENCE_ROOT=D:/code/SpecForge/.tmp/runtime-history-repair-20261024
++LAST_EXECUTION_CHECKPOINT=Isolated worktree .tmp/runtime-history-worktree at 04a6880 baseline; targeted history regressions passed. Full daemon run 008 failed: 15 failures require classification; no release or installed changes.
+ NEXT_EXECUTION_STOP=AFTER_FIX_TESTS_AND_INDEPENDENT_REVIEW
+ LAST_COMPLETED_CHECKPOINT=Missing activation acceptance bypass fixed and independently reviewed using raw before/after evidence. Original sf-acceptance-six/WI-0001 remains closed. Evidence and failed attempts preserved under current EVIDENCE_ROOT.
+-CURRENT_BLOCKER=NONE
+-NEXT_LEGAL_ACTION=Read EVIDENCE_ROOT/final-review.json and its original raw records. Configuration-loss repair is complete. Do not reopen original business WI or rerun successful acceptance without a new task.
++CURRENT_BLOCKER=Full regressions and independent restart/deployment validation incomplete.
++NEXT_LEGAL_ACTION=Continue repair in .tmp/runtime-history-worktree; inspect raw run 008, resolve failures, validate history consumers and restart before merge or release. Do not reopen original business WI.
+ ALLOWED_SCOPE=AGENTS.md;README.md;.gitattributes;.gitignore;package.json;bun.lock;docs/project-status.md;docs/product-specification/**;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/archive/**;docs/adr/**;docs/cli/**;docs/conventions/**;docs/user/**;docs/plugins/**;docs/tools/**;docs/engineering-lessons/**;docs/rule/**;scripts/**;setup/**;packages/**/package.json;packages/service-management/src/**;packages/configuration/src/**;packages/opencode-adapter/src/**;packages/permission-engine/src/**;packages/daemon-core/src/**;packages/cli/src/**;packages/types/src/**;packages/observability/src/**;packages/observability/examples/**;packages/workflow-runtime/src/types/state-machine.ts;packages/**/README.md;packages/**/DEVELOPMENT.md;packages/**/docs/**;packages/**/src/**/*.md;packages/**/tests/**;tests/**
+ PROHIBITED=Deleting ADR ERR audit or report evidence;creating another active handoff current-status or recovery-status file;modifying D:\code\t3 outside a separately authorized controlled recovery phase;reading or modifying D:\code\t2 during SpecForge repair;creating a SpecForge Work Item for SpecForge product self-development;using archive evidence as a current product contract
+ REQUIRED_RULES=docs/rule/specforge-active-development-rules.md;docs/product-specification/authority-registry.md;docs/product-specification/specforge-product-specification.md;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/rule/specforge-execution-mode-and-evidence-protocol.md
+diff --git a/docs/rule/specforge-active-development-rules.md b/docs/rule/specforge-active-development-rules.md
+index 18a9a9fd..513fda08 100644
+--- a/docs/rule/specforge-active-development-rules.md
++++ b/docs/rule/specforge-active-development-rules.md
+@@ -2544,6 +2544,8 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制
+ 
+ 配置 acceptance 回归必须从正常消费入口覆盖激活记录缺失，分别验证同进程、真实进程重启、配置未变/已变、活动任务/无活动任务。缺失证据不得被当作首次接入的证明；拒绝后不得补写激活身份。管理入口的拒绝测试不能替代消费入口覆盖。
+ 
++状态保护回归必须验证底层历史完整性：事件缺失、结构非法、历史截断及超过保留阈值的多次归档，均要经过真实状态 owner 与业务消费者验证，并覆盖真实进程重启。归档测试不能只检查文件存在；必须证明活动/关闭任务及配置、写权限判断保持一致。checkpoint 与内存游标只能作为丢失证据的见证，不能替代事件补造权威状态。
++
+ ## EXP-283：Windows 替换运行时二进制前必须完成受控停机
+ 
+ 升级前先验证新发布载荷与当前安装身份，记录真实旧 PID/健康状态；使用正式 CLI 正常停止并确认进程退出后，才能替换 Windows 可执行文件。文件占用导致升级或回滚失败时，保留事务与备份，由官方恢复入口完成回滚，校验恢复结果再重试；禁止删除 journal、手工改 manifest 或强行覆盖。升级后须独立核验新进程版本、安装哈希和旧进程退出，不能只看安装回执。
+diff --git a/docs/rule/specforge-development-error-ledger-and-experience.md b/docs/rule/specforge-development-error-ledger-and-experience.md
+index 652d7e79..27756f71 100644
+--- a/docs/rule/specforge-development-error-ledger-and-experience.md
++++ b/docs/rule/specforge-development-error-ledger-and-experience.md
+@@ -31917,3 +31917,38 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制
+ 
+ - -text 保真后，git diff --cached --check 将原始日志的 CR 字节报告为尾随空白；顺序命令未依据该非零退出码停止，后续证据提交已经发生。此提交事实不回写为未执行。
+ - 对封存原始证据目录同时声明 -diff，使其作为不可改写字节产物审查；产品源文件仍保持原有文本差异检查。后续使用显式退出码门禁验证完整差异，Git 字节验证不放宽。复用 EXP-008/085/123/260；原始日志保持不变。
++
++### ERR-1861：任务事件丢失、归档和运行中坏记录导致配置保护失效
++
++- CONFIRMED：2026-10-19 独立审查的 47 个封存文件在本轮全部哈希一致；004-before 在未修改实现的隔离检出复现 9 项失败，已有激活记录缺失回归 16 项通过。
++- 根因：WAL 缺失被等同全新项目；自动轮转后读取器不消费归档且删除超过三份的历史；运行中只解析 JSON 不验证事件结构。StateManager 随后清空任务，配置消费者错误接受新身份。
++- 责任 Runtime/State/WAL。修复所有历史段的统一读取、完整性校验、持久化/内存游标见证、归档保留与消费者闭环。不得用 checkpoint 反向补造状态；历史不足时明确拒绝。
++- 复用 EXP-004/006/007/010/017/031/262/282；证据 .tmp/runtime-history-repair-20261024，RUN_ID=CODEX-SF-20261024-RUNTIME-HISTORY-REPAIR-A01。
++
++### ERR-1862：修复前构建产物与只读执行环境异常
++
++- 001-baseline 的真实子进程测试在 require() 加载旧 dist 时失败，Bun 报 async module unsupported；全新隔离检出经相同 Bun、锁文件和正式工作区 build 后，004-before 同一旧重启测试通过，归为构建产物环境差异，不计入产品补丁回归。
++- 初次 Bootstrap 因沙箱 DNS 失败；相同只读命令在主机范围确认 main 相同且 clean。大文件输出截断用分块读取补全；PowerShell 路径 glob 和隐藏 .git 查询失败未用于产品判断。桌面托管 worktree 长时间未完成，未对其实施修改；改用仓库内独立 Git worktree，保留工具原始状态。
++- 复用 EXP-007/008/052/102/117/261。原始命令与失败输出不覆盖。
++
++### ERR-1863：旧 WAL 测试仍要求丢弃历史和跳过非法结构
++
++- 007-expanded 新历史完整性测试和既有配置测试通过，但 wal.test.ts 7 项失败。旧夹具使用缺字段事件、损坏归档和重复 ID；旧断言要求最多保留三份归档，或在坏日志后继续 append；四项诊断断言依赖回显原始坏记录。
++- 根据 SPS 3.3/15 和本次实测归档丢状态，修正消费者测试为正式事件生产者、保留完整历史、坏记录拒绝写入及安全错误位置。不能为了旧通过数量恢复删除历史或静默跳过行为。
++- 复用 EXP-022/025/026/074/282。007 的全部失败保留。
++
++### ERR-1864（2026-10-24）：扩大回归暴露恢复旁路和历史测试夹具偏差
++
++- CONFIRMED：原始 008 全量日志为 15 失败，009 为 3 失败；010 为 217 文件、1946 用例全部通过。后续增加并发归档用例，最终数量以最终全量原始输出为准。
++- 根因及责任：RecoverySubsystem.checkConsistency 吞掉任意读取错误，rebuildFromEvents 重建为空 workItems；已改为仅允许不存在的投影，历史错误传播，使用 StateManager 重放任务。关闭证据时间读取也统一读取完整 WAL，无法证明关闭事件时明确拒绝。
++- 测试调整：旧恢复属性测试使用非当前 checkpoint 格式、允许 20% 失败，并把缺失事件当可自动修复；替换为有效缓存落后可恢复、历史缺失零写入拒绝、120 次固定 seed 全部满足的属性测试。WAL 坏记录追加、空文件和未知状态夹具按当前严格合同修正，未降低守卫。
++- 环境：Bun 1.3.14 的源码入口混合 CJS/ESM 子进程加载出现间歇失败；改用与发布相同的 Bun bundle 边界后，真实子进程测试通过。两个 observability 模板受 Windows CRLF 转换影响，增加精确路径 eol=lf 约束。
++- 独立证据：013-http-audit 使用真实 HTTPServer/ToolDispatcher、12 个独立进程，保留每次请求响应、stderr/stdout 和压缩的原始文件快照。丢失、结构错误、空白、尾部截断、多次归档场景覆盖当前进程与重启；正常读取返回真实 intake_ready 任务。
++- 适用：EXP-004/006/007/010/017/031/261/262/282。不得用本记录替代原始日志，不得因缓存可重建而把权威历史缺失解释成空项目。
++
++### ERR-1865（2026-10-24）：最终独立审查补齐恢复入口和干净检出验证
++
++- CONFIRMED：恢复入口此前只验证事件外层结构，可能在缺少目标状态的 state.transition 之后先写 repair 事件。现共享 StateManager 的状态链检查，恢复前先验证，新增 invalid-transition 零写入回归。
++- 原始结果：032-daemon-final 为 217 文件、1950 用例全部通过；033-final-build 覆盖全部工作区。023 全仓回归唯一失败是 observability 干净检出缺 tests/integration 空目录，补受版本控制的占位文件，027 整包 47/47 通过；不能把 023 的退出码 1 改写成 0。
++- 发布取证：首次 020 预检因新检出尚无 release-manifest.json 失败，先生产清单再预检通过；025 安装基线 112 文件哈希一致，但旧健康端口拒绝连接，不能据此声称旧 daemon 在运行。
++- 纪律：保留所有失败和重试。最终安装与重启结果以本阶段最终原始记录为准，尚未执行的步骤不算完成。
+diff --git a/package.json b/package.json
+index 37b879bf..cf60b58d 100644
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "specforge",
+-  "version": "1.0.17",
++  "version": "1.0.18",
+   "private": true,
+   "workspaces": [
+     "packages/*"
+diff --git a/packages/cli/package.json b/packages/cli/package.json
+index 96ba2f64..b08543b3 100644
+--- a/packages/cli/package.json
++++ b/packages/cli/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/cli",
+-  "version": "1.0.17",
++  "version": "1.0.18",
+   "description": "Command Line Interface for SpecForge",
+   "main": "dist/cli.js",
+   "types": "dist/cli.d.ts",
+diff --git a/packages/cli/tests/help-system.test.ts b/packages/cli/tests/help-system.test.ts
+index f8cc2e06..6cd14dd4 100644
+--- a/packages/cli/tests/help-system.test.ts
++++ b/packages/cli/tests/help-system.test.ts
+@@ -24,7 +24,7 @@ describe('HelpSystem', () => {
+       const modeSwitch = new ModeSwitch('human');
+       const helpText = helpSystem.generateGeneralHelp(modeSwitch);
+       
+-      expect(helpText).toContain('SpecForge v1.0.17');
++      expect(helpText).toContain('SpecForge v1.0.18');
+       expect(helpText).toContain('Usage: specforge <command> [options]');
+       expect(helpText).toContain('Available commands:');
+       expect(helpText).toContain('daemon');
+@@ -40,7 +40,7 @@ describe('HelpSystem', () => {
+       const parsed = JSON.parse(helpText);
+       
+       expect(parsed.appName).toBe('SpecForge');
+-      expect(parsed.version).toBe('1.0.17');
++      expect(parsed.version).toBe('1.0.18');
+       expect(Array.isArray(parsed.commands)).toBe(true);
+       expect(parsed.commands.length).toBeGreaterThan(0);
+       expect(Array.isArray(parsed.globalFlags)).toBe(true);
+diff --git a/packages/configuration/package.json b/packages/configuration/package.json
+index 4a5efc87..be3c3da6 100644
+--- a/packages/configuration/package.json
++++ b/packages/configuration/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/configuration",
+-  "version": "1.0.17",
++  "version": "1.0.18",
+   "description": "Configuration subsystem for SpecForge",
+   "main": "dist/index.js",
+   "types": "dist/index.d.ts",
+diff --git a/packages/daemon-core/package.json b/packages/daemon-core/package.json
+index c54a17ec..78dce741 100644
+--- a/packages/daemon-core/package.json
++++ b/packages/daemon-core/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/daemon-core",
+-  "version": "1.0.17",
++  "version": "1.0.18",
+   "description": "Daemon Core module for SpecForge - Central process and Single Source of Truth",
+   "main": "dist/index.js",
+   "types": "dist/index.d.ts",
+diff --git a/packages/daemon-core/src/recovery/RecoverySubsystem.ts b/packages/daemon-core/src/recovery/RecoverySubsystem.ts
+index 8d0831e8..c1aa8a97 100644
+--- a/packages/daemon-core/src/recovery/RecoverySubsystem.ts
++++ b/packages/daemon-core/src/recovery/RecoverySubsystem.ts
+@@ -189,12 +189,6 @@ export class RecoverySubsystem {
+     const issues: ConsistencyIssue[] = [];
+     
+     try {
+-      // Check if events.jsonl exists
+-      await fs.access(this.getEventsPath());
+-      
+-      // Check if state.json exists
+-      await fs.access(this.getStatePath());
+-      
+       // Load events
+       const events = await this.loadEvents();
+       
+@@ -240,7 +234,9 @@ export class RecoverySubsystem {
+       }
+       
+     } catch (error) {
+-      // File doesn't exist, this is OK for initial startup
++      // A missing checkpoint can be rebuilt. Missing/corrupt history must never
++      // be reported as a successful consistency check.
++      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+     }
+ 
+     return {
+@@ -267,6 +263,7 @@ export class RecoverySubsystem {
+     const runtimeWal = this.wal ?? new WAL(this.getEventsPath());
+     if (!this.wal) await runtimeWal.initialize();
+     const { events: originalEvents } = await runtimeWal.readAllEvents();
++    await this.rebuildFromEvents(originalEvents);
+ 
+     let repairedState: ProjectState;
+ 
+@@ -341,20 +338,10 @@ export class RecoverySubsystem {
+       return this.createEmptyState();
+     }
+ 
+-    // Sort events by timestamp to ensure correct order
+-    const sortedEvents = [...events].sort((a, b) => a.ts - b.ts);
+-    
+-    const lastEvent = sortedEvents[sortedEvents.length - 1]!;
+-    
+-    return {
+-      stateVersion: 0,
+-      projectPath: this.projectPath,
+-      schemaVersion: this.schemaVersion,
+-      activeSessions: [],
+-      workItems: [],
+-      lastEventId: lastEvent.eventId,
+-      lastEventTs: lastEvent.ts,
+-    };
++    // Durable insertion order is authoritative. Reuse the task projection;
++    // recovery must not replace real work items with an empty array.
++    const owner = this.stateManager ?? new StateManager(this.pathResolver, this.projectPath);
++    return owner.rebuildFromEvents(events);
+   }
+ 
+   /**
+@@ -487,15 +474,9 @@ export class RecoverySubsystem {
+    * Load events from events.jsonl
+    */
+   async loadEvents(): Promise<Event[]> {
+-    try {
+-      const content = await fs.readFile(this.getEventsPath(), 'utf-8');
+-      return content
+-        .split('\n')
+-        .filter(line => line.trim())
+-        .map(line => JSON.parse(line)) as Event[];
+-    } catch (error) {
+-      return [];
+-    }
++    const { events } = await (this.wal ?? new WAL(this.getEventsPath())).readAllEvents();
++    await this.rebuildFromEvents(events);
++    return events;
+   }
+ 
+   /**
+@@ -506,7 +487,8 @@ export class RecoverySubsystem {
+       const content = await fs.readFile(this.getStatePath(), 'utf-8');
+       return deserializeRuntimeCheckpoint(JSON.parse(content) as unknown);
+     } catch (error) {
+-      return this.createEmptyState();
++      if ((error as NodeJS.ErrnoException).code === 'ENOENT') return this.createEmptyState();
++      throw error;
+     }
+   }
+ 
+diff --git a/packages/daemon-core/src/state/StateManager.ts b/packages/daemon-core/src/state/StateManager.ts
+index 94290d22..a58c1b57 100644
+--- a/packages/daemon-core/src/state/StateManager.ts
++++ b/packages/daemon-core/src/state/StateManager.ts
+@@ -183,6 +183,8 @@ export class StateManager {
+     workflowType: string = DEFAULT_WORKFLOW_TYPE,
+     extraPayload: Record<string, unknown> = {},
+   ): Promise<void> {
++    // Revalidate persisted history even when this owner is already initialized.
++    await this.rebuildState();
+     // ── Dev-only warning: direct transition to CRITICAL_STATE ──
+     if (process.env.NODE_ENV !== 'production' && CRITICAL_STATES.has(toState)) {
+       console.warn(
+@@ -306,7 +308,28 @@ export class StateManager {
+    */
+   async rebuildState(): Promise<ProjectState> {
+     const { events } = await this.wal.readAllEvents();
++    await this.assertHistoryWitnesses(events);
++    this.assertTransitionHistory(events);
++
++    return this.rebuildValidatedEvents(events);
++  }
+ 
++  private assertTransitionHistory(events: Event[]): void {
++    const replayed = new Map<string, string>();
++    for (const event of events) {
++      if (event.action !== 'state.transition') continue;
++      const id = event.payload.work_item_id ?? event.projectId;
++      const from = event.payload.from_state;
++      const to = event.payload.to_state;
++      if (typeof id !== 'string' || !id || typeof to !== 'string' || !this.isValidStateName(to) ||
++          typeof from !== 'string' || from !== (replayed.get(id) ?? '')) {
++        throw new Error('WAL_STATE_TRANSITION_INVALID');
++      }
++      replayed.set(id, to);
++    }
++  }
++
++  private async rebuildValidatedEvents(events: Event[]): Promise<ProjectState> {
+     // Track how many events were actually replayed so callers can distinguish
+     // "an event log existed and was replayed" from "no event log existed".
+     this._lastReplayedEventCount = events.length;
+@@ -318,8 +341,6 @@ export class StateManager {
+     let lastEventTs = 0;
+ 
+     for (const event of events) {
+-      if (!event || !event.eventId) continue;
+-
+       lastEventId = event.eventId;
+       lastEventTs = event.ts ?? 0;
+ 
+@@ -348,6 +369,28 @@ export class StateManager {
+     return state;
+   }
+ 
++  /** Checkpoints are loss witnesses, never a substitute source of task states. */
++  private async assertHistoryWitnesses(events: Event[]): Promise<void> {
++    let checkpoint: ProjectState | null = null;
++    try {
++      const value: unknown = JSON.parse(await fs.readFile(this.statePath, 'utf-8'));
++      if (!RUNTIME_SCHEMA_DESCRIPTORS[0]!.validateCurrent!(value)) throw new Error('WAL_CHECKPOINT_INVALID');
++      checkpoint = value as ProjectState;
++    } catch (error) {
++      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
++    }
++    const byId = new Map(events.map(event => [event.eventId, event]));
++    for (const witness of [checkpoint, this.buildProjectState()]) {
++      if (!witness) continue;
++      if (witness.lastEventId) {
++        const event = byId.get(witness.lastEventId);
++        if (!event || event.ts !== witness.lastEventTs) throw new Error('WAL_HISTORY_TRUNCATED');
++      } else if (witness.workItems.length > 0 && events.length === 0) {
++        throw new Error('WAL_HISTORY_MISSING');
++      }
++    }
++  }
++
+   /**
+    * Rebuild state from WAL events and persist to state.json.
+    * Convenience wrapper around rebuildState() + persistState().
+@@ -405,6 +448,7 @@ export class StateManager {
+    * @deprecated Use rebuildState() instead.
+    */
+   async rebuildFromEvents(events: Event[]): Promise<ProjectState> {
++    this.assertTransitionHistory(events);
+     if (!events || events.length === 0) {
+       return this.buildProjectState();
+     }
+diff --git a/packages/daemon-core/src/state/runtime-schema-descriptors.ts b/packages/daemon-core/src/state/runtime-schema-descriptors.ts
+index b39a9a77..96e04ce6 100644
+--- a/packages/daemon-core/src/state/runtime-schema-descriptors.ts
++++ b/packages/daemon-core/src/state/runtime-schema-descriptors.ts
+@@ -14,7 +14,8 @@ export function isCurrentRuntimeEvent(value: unknown): boolean {
+     && typeof value.eventId === 'string'
+     && value.eventId.length > 0
+     && typeof value.ts === 'number'
+-    && Number.isInteger(value.monotonicSeq)
++    && Number.isFinite(value.ts)
++    && Number.isSafeInteger(value.monotonicSeq)
+     && (value.monotonicSeq as number) > 0
+     && typeof value.projectId === 'string'
+     && value.projectId.length > 0
+@@ -57,7 +58,8 @@ export const RUNTIME_SCHEMA_DESCRIPTORS: readonly PersistentFileSchemaDescriptor
+     validateCurrent: (value: unknown): boolean => {
+       if (!isRecord(value)) return false
+       return (
+-        Number.isInteger(value.stateVersion)
++        value.schema_version === RUNTIME_SCHEMA_VERSION
++        && Number.isInteger(value.stateVersion)
+         && (value.stateVersion as number) >= 0
+         && typeof value.projectPath === 'string'
+         && value.projectPath.length > 0
+diff --git a/packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts b/packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts
+index 3c194740..844486a0 100644
+--- a/packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts
++++ b/packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts
+@@ -2,6 +2,7 @@ import * as fs from 'node:fs/promises';
+ import * as path from 'node:path';
+ import { createHash } from 'node:crypto';
+ import { extractStructuredVerificationReport } from './verification-report-contract.js';
++import { WAL } from '../../wal/WAL.js';
+ 
+ export interface VerificationEvidenceIntegrity {
+   invalidity_reasons: string[];
+@@ -24,16 +25,15 @@ function parseDeclaredTime(value: unknown): number | null {
+ }
+ 
+ async function readCloseEventAt(projectRoot: string, workItemId: string): Promise<string | null> {
+-  let lines: string[];
++  let events;
+   try {
+-    lines = (await fs.readFile(path.join(projectRoot, '.specforge', 'runtime', 'events.jsonl'), 'utf-8')).split(/\r?\n/);
++    events = (await new WAL(path.join(projectRoot, '.specforge', 'runtime', 'events.jsonl')).readAllEvents()).events;
+   } catch {
+     return null;
+   }
+-  for (let index = lines.length - 1; index >= 0; index--) {
+-    if (!lines[index]) continue;
++  for (let index = events.length - 1; index >= 0; index--) {
+     try {
+-      const event = JSON.parse(lines[index]) as Record<string, any>;
++      const event = events[index]!;
+       if (event.projectId !== workItemId || event.action !== 'state.transition' ||
+           event.payload?.to_state !== 'closed') continue;
+       const milliseconds = Number(event.ts);
+@@ -63,6 +63,7 @@ export async function inspectVerificationEvidenceIntegrity(input: {
+     manifest_sha256: manifestBytes ? hash(manifestBytes) : null,
+     close_event_at: input.closed ? await readCloseEventAt(input.projectRoot, input.workItemId) : null,
+   };
++  if (input.closed && !result.close_event_at) reasons.push('authoritative_close_event_unavailable');
+   if (!reportBytes || !manifestBytes) {
+     reasons.push('verification_evidence_missing');
+     return result;
+diff --git a/packages/daemon-core/src/wal/WAL.ts b/packages/daemon-core/src/wal/WAL.ts
+index e9042887..dd784cb2 100644
+--- a/packages/daemon-core/src/wal/WAL.ts
++++ b/packages/daemon-core/src/wal/WAL.ts
+@@ -1,18 +1,13 @@
+-/**
+- * Write-Ahead Log (WAL) implementation
+- * 
+- * Implements events.jsonl file format with append + fsync semantics.
+- * Ensures WAL ordering: events.jsonl fsync before state.json update.
+- */
+-
++/** Authoritative append-only event history, including retained rotation segments. */
+ import * as fs from 'fs/promises';
+ import * as path from 'path';
+ import { v7 as uuidv7 } from 'uuid';
+ import { Event } from '../types';
+-import { isCurrentRuntimeEvent } from '../state/runtime-schema-descriptors';
++import { isCurrentRuntimeEvent, RUNTIME_SCHEMA_DESCRIPTORS } from '../state/runtime-schema-descriptors';
+ 
+-const WAL_MAX_SIZE = 5 * 1024 * 1024; // 5MB threshold
+-const WAL_MAX_ARCHIVE_FILES = 3;       // Keep at most 3 archive files
++const WAL_MAX_SIZE = 5 * 1024 * 1024;
++const ARCHIVE_NAME = /^events-\d{4}-\d\d-\d\dT\d\d-\d\d-\d\d-\d{3}Z(?:-[a-f0-9-]+)?\.jsonl\.bak$/;
++const operations = new Map<string, Promise<unknown>>();
+ 
+ export interface ReadAllEventsResult {
+   events: Event[];
+@@ -20,249 +15,128 @@ export interface ReadAllEventsResult {
+ }
+ 
+ export class WAL {
+-  private eventsPath: string;
+-  private schemaVersion: string = '1.0';
+-  private _lastSeq: number = 0;
+-  private supportedCategories: Set<string>;
+-
+-  constructor(eventsPath: string) {
+-    this.eventsPath = eventsPath;
+-    this.supportedCategories = new Set(['state', 'session', 'system']);
++  private schemaVersion = '1.0';
++  private _lastSeq = 0;
++  private lastObservedId = '';
++  private supportedCategories = new Set(['state', 'session', 'system']);
++  constructor(private eventsPath: string) {}
++
++  private async serialized<T>(action: () => Promise<T>): Promise<T> {
++    const resolved = path.resolve(this.eventsPath);
++    const key = process.platform === 'win32' ? resolved.toLowerCase() : resolved;
++    const previous = operations.get(key) ?? Promise.resolve();
++    const pending = previous.catch(() => undefined).then(action);
++    operations.set(key, pending);
++    try { return await pending; }
++    finally { if (operations.get(key) === pending) operations.delete(key); }
+   }
+ 
+-  /**
+-   * Register a new event category for the WAL.
+-   * Future extensibility point — allows plugins to define custom categories.
+-   */
+-  registerCategory(category: string): void {
+-    this.supportedCategories.add(category);
+-  }
++  registerCategory(category: string): void { this.supportedCategories.add(category); }
+ 
+-  /**
+-   * Initialize WAL directory and file.
+-   * Reads last event from disk to seed the monotonicSeq counter.
+-   */
+   async initialize(): Promise<void> {
+-    const dir = path.dirname(this.eventsPath);
+-    await fs.mkdir(dir, { recursive: true });
+-
+-    try {
+-      await fs.access(this.eventsPath);
+-      // Seed monotonicSeq from last event
+-      const lastEvent = await this.getLastEvent();
+-      if (lastEvent && typeof lastEvent.monotonicSeq === 'number') {
+-        this._lastSeq = lastEvent.monotonicSeq;
+-      }
+-    } catch (error) {
+-      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+-      // A missing WAL is the valid new-project state. The first durable event
+-      // append creates the file; an empty JSONL file is never persisted.
+-    }
++    await this.serialized(async () => {
++      const { events } = await this.readHistory();
++      this._lastSeq = events.at(-1)?.monotonicSeq ?? 0;
++      await fs.mkdir(path.dirname(this.eventsPath), { recursive: true });
++    });
+   }
+ 
+-  /**
+-   * Append an event to the WAL with fsync semantics
+-   * 
+-   * This method ensures that the event is written to disk and fsynced
+-   * before returning, guaranteeing durability.
+-   * WAL ordering: events.jsonl is fsynced BEFORE any state.json update.
+-   */
+   async appendEvent(event: Event): Promise<void> {
+-    if (!isCurrentRuntimeEvent(event)) {
+-      throw new Error('WAL_EVENT_SCHEMA_INVALID');
+-    }
+-    // Serialise to JSONL line
+-    const line = JSON.stringify(event) + '\n';
+-    
+-    // Rotate if WAL file exceeds threshold (non-blocking — failures are silently logged)
+-    await this.rotateIfNeeded();
+-    
+-    // Step 1: Append event to events.jsonl
+-    await fs.appendFile(this.eventsPath, line, 'utf-8');
+-    
+-    // Step 2: fsync to ensure data is flushed to disk
+-    const handle = await fs.open(this.eventsPath, 'a');
+-    try {
+-      await handle.sync();
+-    } finally {
+-      await handle.close();
+-    }
++    if (!isCurrentRuntimeEvent(event)) throw new Error('WAL_EVENT_SCHEMA_INVALID');
++    await this.serialized(async () => {
++      const { events } = await this.readHistory();
++      if (events.some(previous => previous.eventId === event.eventId)) throw new Error('WAL_DUPLICATE_EVENT');
++      // Sequence belongs to durable insertion order, not reservation/caller order.
++      event.monotonicSeq = (events.at(-1)?.monotonicSeq ?? 0) + 1;
++      const line = JSON.stringify(event) + '\n';
++      await this.rotateIfNeeded();
++      await fs.appendFile(this.eventsPath, line, 'utf-8');
++      const handle = await fs.open(this.eventsPath, 'a');
++      try { await handle.sync(); } finally { await handle.close(); }
++      this._lastSeq = Math.max(this._lastSeq, event.monotonicSeq);
++      this.lastObservedId = event.eventId;
++    });
+   }
+ 
+-  /**
+-   * Create a new event with UUIDv7 eventId and monotonically increasing seq number.
+-   * 
+-   * The returned Event conforms to the unified event schema:
+-   * schema_version, eventId, ts, monotonicSeq, projectId, actor, category, action, payload.
+-   * 
+-   * @param projectId - Project or Work Item identifier
+-   * @param category  - Event category for routing (e.g. 'state', 'session', 'system')
+-   * @param action    - Event action verb (e.g. 'state.transition')
+-   * @param payload   - Arbitrary structured payload data
+-   * @param actor     - Actor that triggered the event (default 'system')
+-   * @param source    - Event source (default 'daemon')
+-   */
+-  createEvent(
+-    projectId: string,
+-    category: string,
+-    action: string,
+-    payload: Record<string, unknown>,
+-    actor: string = 'system',
+-    source: 'daemon' | 'client' | 'adapter' = 'daemon'
+-  ): Event {
+-    // Auto-increment monotonicSeq (strictly increasing, never rolls back)
+-    this._lastSeq += 1;
+-
+-    // Soft validation: warn on unknown categories but do NOT block writing
+-    if (!this.supportedCategories.has(category)) {
+-      console.warn(`[WAL] Unknown category '${category}' — event will be written but may not be replayed`);
+-    }
+-
+-    const event: Event = {
+-      schema_version: '1.0',
+-      eventId: uuidv7(),
+-      ts: Date.now(),
+-      monotonicSeq: this._lastSeq,
+-      projectId,
+-      actor,
+-      category,
+-      action,
+-      payload,
+-      // Legacy metadata kept for backward compat
+-      metadata: {
+-        schemaVersion: this.schemaVersion,
+-        source,
+-      },
+-    };
+-
+-    return event;
++  createEvent(projectId: string, category: string, action: string,
++    payload: Record<string, unknown>, actor = 'system',
++    source: 'daemon' | 'client' | 'adapter' = 'daemon'): Event {
++    this._lastSeq++;
++    if (!this.supportedCategories.has(category)) console.warn(`[WAL] Unknown category '${category}' — event will be written but may not be replayed`);
++    return { schema_version: '1.0', eventId: uuidv7(), ts: Date.now(),
++      monotonicSeq: this._lastSeq, projectId, actor, category, action, payload,
++      metadata: { schemaVersion: this.schemaVersion, source } };
+   }
+ 
+-  /**
+-   * Read all events from the WAL in insertion order.
+-   * Returns { events, corruptedLines } — corrupted/invalid lines are skipped
+-   * and reported in corruptedLines for diagnostics.
+-   */
++  /** Every read validates every segment; no malformed record is silently skipped. */
+   async readAllEvents(): Promise<ReadAllEventsResult> {
+-    const events: Event[] = [];
+-    const corruptedLines: Array<{ lineNumber: number; content: string; error: string }> = [];
+-
+-    try {
+-      const content = await fs.readFile(this.eventsPath, 'utf-8');
+-      if (!content) throw new Error('WAL_EMPTY_INPUT');
++    return this.serialized(() => this.readHistory());
++  }
+ 
+-      const lines = content.split('\n').filter(line => line.trim().length > 0);
+-      for (let i = 0; i < lines.length; i++) {
+-        const line = lines[i]!;
+-        try {
+-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+-          events.push(JSON.parse(line) as Event);
+-        } catch (parseError) {
+-          const lineNumber = i + 1;
+-          const truncated = line.substring(0, 100);
+-          throw new Error(
+-            `WAL_CORRUPT_INPUT:line=${lineNumber}:content=${truncated}:` +
+-            (parseError instanceof Error ? parseError.message : String(parseError)),
+-          );
+-        }
++  private async readHistory(): Promise<ReadAllEventsResult> {
++    const dir = path.dirname(this.eventsPath);
++    const names = await fs.readdir(dir).catch((error: NodeJS.ErrnoException) => {
++      if (error.code === 'ENOENT') return [] as string[];
++      throw error;
++    });
++    const archives = names.filter(name => ARCHIVE_NAME.test(name)).sort();
++    const hasCurrent = names.includes(path.basename(this.eventsPath));
++    if (!hasCurrent && (archives.length > 0 || this.lastObservedId)) throw new Error('WAL_HISTORY_MISSING');
++    const events: Event[] = [];
++    const ids = new Set<string>();
++    for (const file of [...archives, ...(hasCurrent ? [path.basename(this.eventsPath)] : [])]) {
++      const bytes = await fs.readFile(path.join(dir, file), 'utf-8');
++      if (!bytes.trim()) throw new Error('WAL_EMPTY_INPUT');
++      const lines = bytes.split('\n');
++      for (let index = 0; index < lines.length; index++) {
++        const line = lines[index]!;
++        if (!line.trim()) continue;
++        let parsed: unknown;
++        try { parsed = JSON.parse(line); }
++        catch { throw new Error(`WAL_CORRUPT_INPUT:file=${file}:line=${index + 1}`); }
++        if (!isCurrentRuntimeEvent(parsed)) throw new Error(`WAL_EVENT_SCHEMA_INVALID:file=${file}:line=${index + 1}`);
++        const event = parsed as Event;
++        if (ids.has(event.eventId)) throw new Error('WAL_DUPLICATE_EVENT');
++        if (event.monotonicSeq !== events.length + 1) throw new Error('WAL_HISTORY_SEQUENCE_INVALID');
++        ids.add(event.eventId);
++        events.push(event);
+       }
++    }
++    if (this.lastObservedId && !ids.has(this.lastObservedId)) throw new Error('WAL_HISTORY_TRUNCATED');
++    // A persisted cursor proves this is not a fresh project, including when
++    // read/append is invoked by recovery or session owners without StateManager.
++    try {
++      const checkpoint = JSON.parse(await fs.readFile(path.join(dir, 'state.json'), 'utf-8'));
++      if (!RUNTIME_SCHEMA_DESCRIPTORS[0]!.validateCurrent!(checkpoint)) throw new Error('WAL_CHECKPOINT_INVALID');
++      if (checkpoint.lastEventId) {
++        const witnessed = events.find(event => event.eventId === checkpoint.lastEventId);
++        if (!witnessed || witnessed.ts !== checkpoint.lastEventTs) throw new Error('WAL_HISTORY_TRUNCATED');
++      } else if (checkpoint.workItems.length > 0 && events.length === 0) throw new Error('WAL_HISTORY_MISSING');
+     } catch (error) {
+-      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+-        return { events, corruptedLines };
+-      }
+-      if (error instanceof Error && error.message.startsWith('WAL_CORRUPT_INPUT:')) {
+-        throw error;
+-      }
+-      if (error instanceof Error && error.message === 'WAL_EMPTY_INPUT') throw error;
+-      throw new Error(
+-        `WAL_READ_FAILED:${error instanceof Error ? error.message : String(error)}`,
+-      );
++      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+     }
+-
+-    return { events, corruptedLines };
++    if (events.length) this.lastObservedId = events.at(-1)!.eventId;
++    return { events, corruptedLines: [] };
+   }
+ 
+-  /**
+-   * Read events from the WAL filtered by category.
+-   * Events without a `category` field default to `'state'` for backward compat.
+-   */
+   async readEventsByCategory(category: string): Promise<Event[]> {
+-    const { events } = await this.readAllEvents();
+-    return events.filter(event => {
+-      const eventCategory = event.category ?? 'state';
+-      return eventCategory === category;
+-    });
+-  }
+-
+-  /**
+-   * Get the last event from the WAL.
+-   * Returns null if the WAL is empty.
+-   */
+-  async getLastEvent(): Promise<Event | null> {
+-    const { events } = await this.readAllEvents();
+-    return events.length > 0 ? events[events.length - 1]! : null;
++    return (await this.readAllEvents()).events.filter(event => event.category === category);
+   }
++  async getLastEvent(): Promise<Event | null> { return (await this.readAllEvents()).events.at(-1) ?? null; }
++  getCurrentSeq(): number { return this._lastSeq; }
++  getEventsPath(): string { return this.eventsPath; }
++  getSchemaVersion(): string { return this.schemaVersion; }
+ 
+-  /**
+-   * Get the current monotonic sequence number (without incrementing).
+-   * Useful for diagnostics and verification.
+-   */
+-  getCurrentSeq(): number {
+-    return this._lastSeq;
+-  }
+-
+-  /**
+-   * Get the path to the events.jsonl file
+-   */
+-  getEventsPath(): string {
+-    return this.eventsPath;
+-  }
+-
+-  /**
+-   * Get the schema version
+-   */
+-  getSchemaVersion(): string {
+-    return this.schemaVersion;
+-  }
+-
+-  /**
+-   * Rotate events.jsonl to an archive file if it exceeds WAL_MAX_SIZE.
+-   * 
+-   * Archives are named events-ISO-8601-timestamp.jsonl.bak.
+-   * Failed rotation is silently logged — event write proceeds regardless.
+-   */
+   private async rotateIfNeeded(): Promise<void> {
+-    try {
+-      const stat = await fs.stat(this.eventsPath);
+-      if (stat.size < WAL_MAX_SIZE) return;
+-    } catch {
+-      return;
+-    }
+-
++    const stat = await fs.stat(this.eventsPath).catch((error: NodeJS.ErrnoException) => {
++      if (error.code === 'ENOENT') return null;
++      throw error;
++    });
++    if (!stat || stat.size < WAL_MAX_SIZE) return;
+     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+-    const archiveName = `events-${timestamp}.jsonl.bak`;
+-    const archiveDir = path.dirname(this.eventsPath);
+-    const archivePath = path.join(archiveDir, archiveName);
+-
++    const archivePath = path.join(path.dirname(this.eventsPath), `events-${timestamp}-${uuidv7()}.jsonl.bak`);
+     await fs.rename(this.eventsPath, archivePath);
+-    await this.cleanupOldArchives();
+-
+-    console.log(`[WAL] Rotated events.jsonl → ${archivePath}`);
+-  }
+-
+-  /**
+-   * Clean up old archive files, keeping at most WAL_MAX_ARCHIVE_FILES.
+-   * Archives are sorted alphabetically; oldest are removed first.
+-   */
+-  private async cleanupOldArchives(): Promise<void> {
+-    const archiveDir = path.dirname(this.eventsPath);
+-    const files = await fs.readdir(archiveDir);
+-    const archives = files
+-      .filter(f => f.startsWith('events-') && f.endsWith('.jsonl.bak'))
+-      .sort();
+-    while (archives.length > WAL_MAX_ARCHIVE_FILES) {
+-      const oldest = archives.shift()!;
+-      await fs.unlink(path.join(archiveDir, oldest)).catch(() => {});
+-    }
++    // Segments are authoritative history, not disposable observability logs.
++    // Retain every segment; interrupted rotation is rejected, never treated as new.
+   }
+ }
+diff --git a/packages/daemon-core/tests/fixtures/build-process-fixture.ts b/packages/daemon-core/tests/fixtures/build-process-fixture.ts
+new file mode 100644
+index 00000000..a0bea606
+--- /dev/null
++++ b/packages/daemon-core/tests/fixtures/build-process-fixture.ts
+@@ -0,0 +1,11 @@
++import { spawnSync } from 'node:child_process';
++import * as path from 'node:path';
++
++/** Exercise an isolated Bun process with the same bundled module boundary as release. */
++export function buildProcessFixture(source: string, root: string): string {
++  const target = path.join(root, 'process-fixture.js');
++  const result = spawnSync(process.env.npm_execpath!, ['build', source, '--target=bun', `--outfile=${target}`],
++    { encoding: 'utf8', windowsHide: true });
++  if (result.error || result.status !== 0) throw new Error(`PROCESS_FIXTURE_BUILD_FAILED:${result.status}:${result.error?.message ?? result.stderr}`);
++  return target;
++}
+diff --git a/packages/daemon-core/tests/fixtures/runtime-history-http.ts b/packages/daemon-core/tests/fixtures/runtime-history-http.ts
+new file mode 100644
+index 00000000..52f48e5c
+--- /dev/null
++++ b/packages/daemon-core/tests/fixtures/runtime-history-http.ts
+@@ -0,0 +1,28 @@
++import path from 'node:path';
++import { ProjectManager } from '../../src/project/ProjectManager';
++import { EventBus } from '../../src/event-bus/EventBus';
++import { PersonalPathResolver } from '../../src/daemon/path-resolver';
++import { HTTPServer } from '../../src/http/HTTPServer';
++import { DaemonConfig } from '../../src/daemon/DaemonConfig';
++import { ToolDispatcher } from '../../src/tools';
++const root = process.argv[2]!;
++process.env.OPENCODE_CONFIG_DIR = path.join(root, 'user');
++delete process.env.SPECFORGE_CONFIG_OVERRIDES;
++const manager = new ProjectManager(new EventBus(), new PersonalPathResolver(), undefined as any);
++if (process.argv.includes('--initial')) {
++  await manager.getProjectConfiguration(root);
++  const state = await manager.getProjectStateManager(root);
++  await state.transition('WI-0001', '', 'created');
++  await state.transition('WI-0001', 'created', 'intake_ready');
++}
++if (process.argv.includes('--rotate')) {
++  const state = await manager.getProjectStateManager(root), wal = state.getWal();
++  for (let i=0;i<5;i++) await wal.appendEvent(wal.createEvent(root,'system','padding',{data:'x'.repeat(5*1024*1024)}));
++  await wal.appendEvent(wal.createEvent(root,'system','after_rotation',{}));
++}
++const deps: any = {config: new DaemonConfig([]), projectManager: manager};
++deps.toolDispatcher = new ToolDispatcher(deps);
++const server = new HTTPServer(deps);
++server.setToken('isolated-history-test-token');
++const address = await server.start();
++console.log('READY='+JSON.stringify({pid:process.pid,port:address.port,utc:new Date().toISOString()}));
+diff --git a/packages/daemon-core/tests/fixtures/runtime-history-process.ts b/packages/daemon-core/tests/fixtures/runtime-history-process.ts
+new file mode 100644
+index 00000000..8a371485
+--- /dev/null
++++ b/packages/daemon-core/tests/fixtures/runtime-history-process.ts
+@@ -0,0 +1,15 @@
++import * as path from 'node:path';
++import { ProjectManager } from '../../src/project/ProjectManager';
++import { EventBus } from '../../src/event-bus/EventBus';
++import { PersonalPathResolver } from '../../src/daemon/path-resolver';
++const root=process.argv[2]!;
++process.env.OPENCODE_CONFIG_DIR=path.join(root,'user');
++delete process.env.SPECFORGE_CONFIG_OVERRIDES;
++const manager=new ProjectManager(new EventBus(),new PersonalPathResolver(),undefined as any);
++const result:Record<string,unknown>={pid:process.pid,utc:new Date().toISOString()};
++try {
++  result.timeoutMs=(await manager.getProjectConfiguration(root)).merged.timeoutMs;
++  const state=await manager.getProjectStateManager(root);await state.rebuildState();
++  result.states=state.listWorkItems().map(item=>item.current_state);
++} catch(error) {result.error=String(error);}
++console.log('HISTORY_RESULT='+JSON.stringify(result));
+diff --git a/packages/daemon-core/tests/integration/wal-singleton-e2e.test.ts b/packages/daemon-core/tests/integration/wal-singleton-e2e.test.ts
+index f48e0c14..663c632b 100644
+--- a/packages/daemon-core/tests/integration/wal-singleton-e2e.test.ts
++++ b/packages/daemon-core/tests/integration/wal-singleton-e2e.test.ts
+@@ -623,7 +623,9 @@ describe('T5: RecoverySubsystem with injected WAL + StateManager', () => {
+       from_state: 'intake_ready',
+       to_state: 'impact_analyzing',
+     });
+-    await wal.appendEvent(e2);
++    const beforeRejectedAppend = await fs.readFile(eventsPath);
++    await expect(wal.appendEvent(e2)).rejects.toThrow('WAL_CORRUPT_INPUT');
++    expect(await fs.readFile(eventsPath)).toEqual(beforeRejectedAppend);
+ 
+     // Current runtime schema precheck must reject a corrupted authority before
+     // StateManager replays or rewrites any events.
+diff --git a/packages/daemon-core/tests/property/property-20.test.ts b/packages/daemon-core/tests/property/property-20.test.ts
+index 4fea1c83..7976bd37 100644
+--- a/packages/daemon-core/tests/property/property-20.test.ts
++++ b/packages/daemon-core/tests/property/property-20.test.ts
+@@ -63,344 +63,50 @@ class PropertyPathResolver implements IPathResolver {
+   resolveDaemonEventsPath(): string { return path.join(this.root, 'daemon', 'events.jsonl'); }
+ }
+ 
+-describe('Property 20: Recovery Consistency Repair', () => {
+-  // Use unique project paths for each test to avoid interference
+-  const testProjectPath1 = 'test-project-path-recovery-1';  // for test 20.1
+-  const testProjectPath2 = 'test-project-path-recovery-2';  // for test 20.2
+-  const testProjectPath3 = 'test-project-path-recovery-3';  // for test 20.3
+-  const testProjectPath4 = 'test-project-path-recovery-4';  // for test 20.4
+-  const testProjectPathPBT = 'test-project-path-recovery-pbt'; // for test 20.5
+-
+-  let testProjectPath: string;
+-  let testRoot: string;
+-  let pathResolver: PropertyPathResolver;
+-
+-  beforeEach(async () => {
+-    testRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'specforge-property20-'));
+-    pathResolver = new PropertyPathResolver(testRoot);
+-    // Default to PBT path
+-    testProjectPath = testProjectPathPBT;
+-  });
+-
+-  afterEach(async () => {
+-    await fs.rm(testRoot, { recursive: true, force: true });
+-  });
+-
+-  /**
+-   * Property 20.1: Repair produces consistent state
+-   */
+-  it('should validate repair produces consistent state', async () => {
+-    // Use dedicated project path
+-    testProjectPath = testProjectPath1;
+-    
+-    const recoverySubsystem = new RecoverySubsystem(pathResolver, testProjectPath);
+-    const stateManager = new StateManager(pathResolver, testProjectPath);
+-    
+-    await recoverySubsystem.initialize();
+-    await stateManager.initialize();
+-
+-    const events: Event[] = [
+-      { eventId: 'evt-001', ts: 1000, projectId: testProjectPath, action: 'test.event', payload: {}, metadata: { schemaVersion: '1.0', source: 'daemon' } },
+-      { eventId: 'evt-002', ts: 2000, projectId: testProjectPath, action: 'test.event', payload: {}, metadata: { schemaVersion: '1.0', source: 'daemon' } },
+-      { eventId: 'evt-003', ts: 3000, projectId: testProjectPath, action: 'test.event', payload: {}, metadata: { schemaVersion: '1.0', source: 'daemon' } },
+-    ];
+-
+-    for (const event of events) {
+-      await stateManager.appendEvent(currentEvent(event));
+-    }
+-
+-    const inconsistentState: ProjectState = {
+-      projectPath: testProjectPath,
+-      schemaVersion: '1.0',
+-      activeSessions: [],
+-      workItems: [],
+-      lastEventId: 'evt-001',
+-      lastEventTs: 1000,
+-    };
+-
+-    const statePath = pathResolver.resolveStatePath(testProjectPath);
+-    await fs.mkdir(path.dirname(statePath), { recursive: true });
+-    await fs.writeFile(statePath, JSON.stringify(inconsistentState));
+-
+-    const consistencyResult = await recoverySubsystem.checkConsistency();
+-    expect(consistencyResult.isValid).toBe(false);
+-    
+-    const repairResult = await recoverySubsystem.repairInconsistency(consistencyResult);
+-    expect(repairResult.success).toBe(true);
+-    
+-    const lastRepairEvent = repairResult.repairEvents.at(-1)!;
+-    expect(repairResult.repairedState.lastEventId).toBe(lastRepairEvent.eventId);
+-    expect(repairResult.repairedState.lastEventTs).toBe(lastRepairEvent.ts);
+-
+-    // File-level assertion: verify events.jsonl on disk has all events after repair
+-    const diskEventsPath20_1 = pathResolver.resolveEventsPath(testProjectPath);
+-    expect(fsSync.existsSync(diskEventsPath20_1)).toBe(true);
+-    const diskContent = await fs.readFile(diskEventsPath20_1, 'utf-8');
+-    expect(diskContent).toContain('evt-003');
+-    expect(diskContent).toContain('recovery.repaired');
+-  });
+-
+-  /**
+-   * Property 20.2: rebuild(events) == s' after repair
+-   */
+-  it('should validate rebuild(events) == s\' after repair', async () => {
+-    // Use dedicated project path
+-    testProjectPath = testProjectPath2;
+-    
+-    const recoverySubsystem = new RecoverySubsystem(pathResolver, testProjectPath);
+-    const stateManager = new StateManager(pathResolver, testProjectPath);
+-    
+-    await recoverySubsystem.initialize();
+-    await stateManager.initialize();
+-
+-    const events: Event[] = [
+-      { eventId: 'evt-A', ts: 1000, projectId: testProjectPath, action: 'test.event', payload: { data: 'test1' }, metadata: { schemaVersion: '1.0', source: 'daemon' } },
+-      { eventId: 'evt-B', ts: 2000, projectId: testProjectPath, action: 'test.event', payload: { data: 'test2' }, metadata: { schemaVersion: '1.0', source: 'daemon' } },
+-    ];
+-
+-    for (const event of events) {
+-      await stateManager.appendEvent(currentEvent(event));
+-    }
+-
+-    const corruptedState: ProjectState = {
+-      projectPath: testProjectPath,
+-      schemaVersion: '1.0',
+-      activeSessions: [],
+-      workItems: [],
+-      lastEventId: 'evt-A',
+-      lastEventTs: 1000,
+-    };
+-
+-    const statePath = pathResolver.resolveStatePath(testProjectPath);
+-    await fs.mkdir(path.dirname(statePath), { recursive: true });
+-    await fs.writeFile(statePath, JSON.stringify(corruptedState));
+-
+-    const consistencyResult = await recoverySubsystem.checkConsistency();
+-    const repairResult = await recoverySubsystem.repairInconsistency(consistencyResult);
+-
+-    const lastRepairEvent = repairResult.repairEvents.at(-1)!;
+-    expect(repairResult.repairedState.lastEventId).toBe(lastRepairEvent.eventId);
+-    expect(repairResult.repairedState.lastEventTs).toBe(lastRepairEvent.ts);
+-  });
+-
+-  /**
+-   * Property 20.3: Repair event recorded with correct path
+-   */
+-  it('should validate repair event is recorded', async () => {
+-    // Use dedicated project path
+-    testProjectPath = testProjectPath3;
+-    
+-    const recoverySubsystem = new RecoverySubsystem(pathResolver, testProjectPath);
+-    const stateManager = new StateManager(pathResolver, testProjectPath);
+-    
+-    await recoverySubsystem.initialize();
+-    await stateManager.initialize();
+-
+-    const events: Event[] = [
+-      { eventId: 'evt-X', ts: 1000, projectId: testProjectPath, action: 'test.event', payload: {}, metadata: { schemaVersion: '1.0', source: 'daemon' } },
+-      { eventId: 'evt-Y', ts: 2000, projectId: testProjectPath, action: 'test.event', payload: {}, metadata: { schemaVersion: '1.0', source: 'daemon' } },
+-    ];
+-
+-    for (const event of events) {
+-      await stateManager.appendEvent(currentEvent(event));
+-    }
+-
+-    const inconsistentState: ProjectState = {
+-      projectPath: testProjectPath,
+-      schemaVersion: '1.0',
+-      activeSessions: [],
+-      workItems: [],
+-      lastEventId: 'nonexistent-event',
+-      lastEventTs: 0,
+-    };
+-
+-    const statePath = pathResolver.resolveStatePath(testProjectPath);
+-    await fs.mkdir(path.dirname(statePath), { recursive: true });
+-    await fs.writeFile(statePath, JSON.stringify(inconsistentState));
+-
+-    const consistencyResult = await recoverySubsystem.checkConsistency();
+-    const repairResult = await recoverySubsystem.repairInconsistency(consistencyResult);
+-
+-    expect(repairResult.repairEvents.length).toBeGreaterThan(0);
+-    
+-    for (const event of repairResult.repairEvents) {
+-      expect(event.action).toBe('recovery.repaired');
+-    }
+-
+-    // File-level assertion: verify events.jsonl contains recovery.repaired on disk
+-    const diskEventsPath20_3 = pathResolver.resolveEventsPath(testProjectPath);
+-    expect(fsSync.existsSync(diskEventsPath20_3)).toBe(true);
+-    const repairDiskContent = await fs.readFile(diskEventsPath20_3, 'utf-8');
+-    expect(repairDiskContent).toContain('recovery.repaired');
++describe('Property 20: recovery preserves complete history and rejects loss', () => {
++  let root: string;
++  let resolver: PropertyPathResolver;
++  beforeEach(async () => { root = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-recovery-history-')); resolver = new PropertyPathResolver(root); });
++  afterEach(async () => { await fs.rm(root, {recursive:true, force:true}); });
++  async function fixture(id: string) {
++    const sm = new StateManager(resolver,id); await sm.initialize();
++    await sm.transition('WI-1','','created');
++    const checkpoint = JSON.parse(await fs.readFile(resolver.resolveStatePath(id),'utf8'));
++    await sm.transition('WI-1','created','intake_ready');
++    return {sm, checkpoint, recovery:new RecoverySubsystem(resolver,id), events:resolver.resolveEventsPath(id), state:resolver.resolveStatePath(id)};
++  }
++  it('repairs a stale checkpoint and records a durable repair without losing the work item', async () => {
++    const f=await fixture('stale');
++    await fs.writeFile(f.state,JSON.stringify(f.checkpoint));
++    const check=await f.recovery.checkConsistency(); expect(check.isValid).toBe(false);
++    const result=await f.recovery.repairInconsistency(check); expect(result.success).toBe(true);
++    expect(result.repairEvents.length).toBeGreaterThan(0);
++    const fresh=new StateManager(resolver,'stale');await fresh.initialize();
++    expect(fresh.getState('WI-1')?.current_state).toBe('intake_ready');
++    expect(result.repairedState.workItems).toEqual(fresh.listWorkItems());
++    expect(result.repairedState.lastEventId).toBe(result.repairEvents.at(-1)!.eventId);
+   });
+-
+-  /**
+-   * Property 20.4: Multiple inconsistency types can be repaired
+-   */
+-  it('should repair multiple inconsistency types', async () => {
+-    // Use dedicated project path
+-    testProjectPath = testProjectPath4;
+-    
+-    const recoverySubsystem = new RecoverySubsystem(pathResolver, testProjectPath);
+-    const stateManager = new StateManager(pathResolver, testProjectPath);
+-    
+-    await recoverySubsystem.initialize();
+-    await stateManager.initialize();
+-
+-    const events: Event[] = [
+-      { eventId: 'event-a', ts: 3000, projectId: testProjectPath, action: 'test.event', payload: {}, metadata: { schemaVersion: '1.0', source: 'daemon' } },
+-      { eventId: 'event-b', ts: 1000, projectId: testProjectPath, action: 'test.event', payload: {}, metadata: { schemaVersion: '1.0', source: 'daemon' } },
+-      { eventId: 'event-c', ts: 2000, projectId: testProjectPath, action: 'test.event', payload: {}, metadata: { schemaVersion: '1.0', source: 'daemon' } },
+-    ];
+-
+-    for (const event of events) {
+-      await stateManager.appendEvent(currentEvent(event));
++  for(const fault of ['missing','invalid-schema','missing-reference','invalid-transition']) it('rejects '+fault+' with zero authority writes',async()=>{
++    const f=await fixture(fault);
++    if(fault==='missing') await fs.unlink(f.events);
++    if(fault==='invalid-schema') await fs.appendFile(f.events,'{}\n');
++    if(fault==='invalid-transition') {
++      const wal=f.sm.getWal();await wal.appendEvent(wal.createEvent('WI-1','state','state.transition',{from_state:'intake_ready'}));
+     }
+-
+-    const mismatchedState: ProjectState = {
+-      projectPath: testProjectPath,
+-      schemaVersion: '1.0',
+-      activeSessions: [],
+-      workItems: [],
+-      lastEventId: 'wrong-event-id',
+-      lastEventTs: 9999,
+-    };
+-
+-    const statePath = pathResolver.resolveStatePath(testProjectPath);
+-    await fs.mkdir(path.dirname(statePath), { recursive: true });
+-    await fs.writeFile(statePath, JSON.stringify(mismatchedState));
+-
+-    const consistencyResult = await recoverySubsystem.checkConsistency();
+-    expect(consistencyResult.isValid).toBe(false);
+-    
+-    const repairResult = await recoverySubsystem.repairInconsistency(consistencyResult);
+-    expect(repairResult.success).toBe(true);
+-
+-    const loadedState = await recoverySubsystem.loadState();
+-    expect(loadedState.lastEventId).toBe(repairResult.repairEvents.at(-1)!.eventId);
++    if(fault==='missing-reference') { f.checkpoint.lastEventId='absent';await fs.writeFile(f.state,JSON.stringify(f.checkpoint)); }
++    const state=await fs.readFile(f.state); const events=await fs.readFile(f.events).catch(()=>null);
++    await expect(f.recovery.checkConsistency()).rejects.toThrow(/WAL_/);
++    await expect(f.recovery.repairInconsistency({isValid:false,issues:[{type:'missing_event',description:'fixture'}]})).rejects.toThrow(/WAL_/);
++    expect(await fs.readFile(f.state)).toEqual(state);expect(await fs.readFile(f.events).catch(()=>null)).toEqual(events);
+   });
+-
+-  /**
+-   * Property 20.5: Fast-check based property test (≥100 iterations)
+-   */
+-  it('should pass property-based test: repair consistency (≥100 iter)', async () => {
+-    // Use dedicated project path for PBT
+-    testProjectPath = testProjectPathPBT;
+-    
+-    let globalCounter = 0;
+-    const testCases = fc.sample(
+-      fc.record({
+-        eventCount: fc.integer({ min: 1, max: 20 }),
+-        baseTs: fc.integer({ min: 1000, max: 1000000 }),
+-        createInconsistency: fc.boolean(),
+-        inconsistencyType: fc.oneof(
+-          fc.constant('state_mismatch'),
+-          fc.constant('missing_event'),
+-          fc.constant('out_of_order')
+-        ),
+-      }),
+-      120
+-    ).map(tc => {
+-      const eventIds = Array.from({ length: tc.eventCount }, (_, i) => 
+-        `evt-${globalCounter++}-${i.toString().padStart(3, '0')}`
+-      );
+-      return { ...tc, eventIds };
+-    });
+-
+-    let passed = 0;
+-    let failed = 0;
+-
+-    for (const tc of testCases) {
+-      try {
+-        const testRecovery = new RecoverySubsystem(pathResolver, testProjectPath);
+-        const testStateManager = new StateManager(pathResolver, testProjectPath);
+-        
+-        const eventsPath = pathResolver.resolveEventsPath(testProjectPath);
+-        const statePath = pathResolver.resolveStatePath(testProjectPath);
+-
+-        if (eventsPath) await fs.mkdir(path.dirname(eventsPath), { recursive: true });
+-        
+-        try { if (eventsPath) await fs.unlink(eventsPath); } catch {}
+-        try { if (statePath) await fs.unlink(statePath); } catch {}
+-
+-        await testRecovery.initialize();
+-        await testStateManager.initialize();
+-
+-        const events: Event[] = tc.eventIds.map((eventId, i) => ({
+-          eventId,
+-          ts: tc.baseTs + i * 100,
+-          projectId: testProjectPath,
+-          action: 'test.event',
+-          payload: { index: i },
+-          metadata: { schemaVersion: '1.0', source: 'daemon' as const },
+-        }));
+-
+-        for (const event of events) {
+-          await testStateManager.appendEvent(currentEvent(event));
+-        }
+-
+-        if (tc.createInconsistency) {
+-          let inconsistentState: ProjectState;
+-
+-          if (tc.inconsistencyType === 'state_mismatch') {
+-            inconsistentState = {
+-              projectPath: testProjectPath,
+-              schemaVersion: '1.0',
+-              activeSessions: [],
+-              workItems: [],
+-              lastEventId: 'nonexistent-event-id',
+-              lastEventTs: 0,
+-            };
+-          } else if (tc.inconsistencyType === 'missing_event') {
+-            inconsistentState = {
+-              projectPath: testProjectPath,
+-              schemaVersion: '1.0',
+-              activeSessions: [],
+-              workItems: [],
+-              lastEventId: '',
+-              lastEventTs: 0,
+-            };
+-          } else {
+-            inconsistentState = {
+-              projectPath: testProjectPath,
+-              schemaVersion: '1.0',
+-              activeSessions: [],
+-              workItems: [],
+-              lastEventId: events[0].eventId,
+-              lastEventTs: events[0].ts,
+-            };
+-          }
+-
+-          await fs.mkdir(path.dirname(statePath), { recursive: true });
+-          await fs.writeFile(statePath, JSON.stringify(inconsistentState));
+-        }
+-
+-        const consistencyResult = await testRecovery.checkConsistency();
+-
+-        if (tc.createInconsistency) {
+-          expect(consistencyResult.isValid).toBe(false);
+-        }
+-
+-        const repairResult = await testRecovery.repairInconsistency(consistencyResult);
+-        expect(repairResult.success).toBe(true);
+-
+-        const originalLastEvent = events[events.length - 1];
+-        const expectedLastEvent = repairResult.repairEvents.at(-1) ?? originalLastEvent;
+-        expect(repairResult.repairedState.lastEventId).toBe(expectedLastEvent.eventId);
+-        expect(repairResult.repairedState.lastEventTs).toBe(expectedLastEvent.ts);
+-
+-        if (!consistencyResult.isValid) {
+-          expect(repairResult.repairEvents.length).toBeGreaterThan(0);
+-        }
+-
+-        passed++;
+-      } catch (error) {
+-        failed++;
+-        console.error('Iteration failed:', error);
+-      }
+-    }
+-
+-    expect(passed).toBeGreaterThan(testCases.length * 0.80);
+-    expect(failed).toBeLessThan(testCases.length * 0.20);
+-  }, 60000);
++  it('replays every generated complete history; no tolerated failures',async()=>{
++    await fc.assert(fc.asyncProperty(fc.integer({min:1,max:12}),fc.boolean(),async(count,dropCheckpoint)=>{
++      const id='property-'+Math.random(); const sm=new StateManager(resolver,id);await sm.initialize();
++      for(let i=0;i<count;i++) await sm.transition('WI-'+i,'','created');
++      if(dropCheckpoint) await fs.unlink(resolver.resolveStatePath(id));
++      const fresh=new StateManager(resolver,id);await fresh.initialize();
++      expect(fresh.listWorkItems()).toEqual(sm.listWorkItems());
++      expect((await new RecoverySubsystem(resolver,id).checkConsistency()).isValid).toBe(true);
++    }),{numRuns:120,seed:20261024});
++  },60000);
+ });
+diff --git a/packages/daemon-core/tests/property/property-30.test.ts b/packages/daemon-core/tests/property/property-30.test.ts
+index a1547747..403fc224 100644
+--- a/packages/daemon-core/tests/property/property-30.test.ts
++++ b/packages/daemon-core/tests/property/property-30.test.ts
+@@ -186,7 +186,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
+ 
+     // Clear existing events from previous tests
+     const eventsPath = wal.getEventsPath();
+-    await fs.writeFile(eventsPath, '');
++    await fs.rm(eventsPath, { force: true });
+ 
+     const events: Event[] = [];
+     for (let i = 0; i < 10; i++) {
+@@ -237,7 +237,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
+ 
+     // Clear existing events from previous tests
+     const eventsPath = wal.getEventsPath();
+-    await fs.writeFile(eventsPath, '');
++    await fs.rm(eventsPath, { force: true });
+ 
+     const projectA = 'project-a';
+     const projectB = 'project-b';
+diff --git a/packages/daemon-core/tests/unit/configuration-activation-loss.test.ts b/packages/daemon-core/tests/unit/configuration-activation-loss.test.ts
+index 0ceafa64..dff9b937 100644
+--- a/packages/daemon-core/tests/unit/configuration-activation-loss.test.ts
++++ b/packages/daemon-core/tests/unit/configuration-activation-loss.test.ts
+@@ -1,3 +1,4 @@
++import { buildProcessFixture } from '../fixtures/build-process-fixture';
+ import { afterEach, describe, expect, it, vi } from 'vitest';
+ import * as fs from 'node:fs';
+ import * as path from 'node:path';
+@@ -118,7 +119,7 @@ describe('missing configuration activation at the actual consumer', () => {
+     const f = fixture();
+     const bun = process.env.npm_execpath;
+     expect(bun).toMatch(/bun(?:\.exe)?$/i);
+-    const script = fileURLToPath(new URL('../fixtures/configuration-activation-process.ts', import.meta.url));
++    const script = buildProcessFixture(fileURLToPath(new URL('../fixtures/configuration-activation-process.ts', import.meta.url)), f.root);
+     const run = (action: string) => {
+       const child = spawnSync(bun!, [script, f.root, action], { encoding: 'utf8', windowsHide: true });
+       expect(child.error).toBeUndefined();
+diff --git a/packages/daemon-core/tests/unit/recovery-session-replay.test.ts b/packages/daemon-core/tests/unit/recovery-session-replay.test.ts
+index 74cae000..9b6596d2 100644
+--- a/packages/daemon-core/tests/unit/recovery-session-replay.test.ts
++++ b/packages/daemon-core/tests/unit/recovery-session-replay.test.ts
+@@ -184,7 +184,7 @@ describe('RecoverySubsystem + SessionRegistry startupReplay integration', () =>
+     const e1 = wal.createEvent('WI-003', 'state', 'state.transition', {
+       work_item_id: 'WI-003',
+       from_state: '',
+-      to_state: 'intake',
++      to_state: 'intake_ready',
+     });
+     await wal.appendEvent(e1);
+ 
+diff --git a/packages/daemon-core/tests/unit/runtime-history-integrity.test.ts b/packages/daemon-core/tests/unit/runtime-history-integrity.test.ts
+new file mode 100644
+index 00000000..9c49be21
+--- /dev/null
++++ b/packages/daemon-core/tests/unit/runtime-history-integrity.test.ts
+@@ -0,0 +1,129 @@
++import { buildProcessFixture } from '../fixtures/build-process-fixture';
++import { describe, it, expect, afterEach, vi } from 'vitest';
++import * as fs from 'node:fs';
++import * as path from 'node:path';
++import * as os from 'node:os';
++import { spawnSync } from 'node:child_process';
++import { fileURLToPath } from 'node:url';
++import { ProjectManager } from '../../src/project/ProjectManager';
++import { EventBus } from '../../src/event-bus/EventBus';
++import { PersonalPathResolver } from '../../src/daemon/path-resolver';
++import { checkNativeTool } from '../../src/tools/lib/native-write-boundary';
++
++const roots:string[]=[];
++afterEach(()=>{vi.unstubAllEnvs();for(const root of roots.splice(0))fs.rmSync(root,{recursive:true,force:true});});
++async function fixture() {
++  const root=fs.mkdtempSync(path.join(os.tmpdir(),'sf-history-integrity-'));roots.push(root);
++  vi.stubEnv('OPENCODE_CONFIG_DIR',path.join(root,'user'));vi.stubEnv('SPECFORGE_CONFIG_OVERRIDES','');
++  const config=path.join(root,'.specforge/config/project.json');fs.mkdirSync(path.dirname(config),{recursive:true});
++  const write=(timeoutMs:number)=>fs.writeFileSync(config,JSON.stringify({schema_version:'1.0',timeoutMs}));write(2000);
++  const resolver=new PersonalPathResolver();
++  const create=()=>new ProjectManager(new EventBus(),resolver,undefined as any);
++  const manager=create();await manager.getProjectConfiguration(root);
++  const state=await manager.getProjectStateManager(root);await state.transition('WI-0001','','created');
++  return {root,config,write,create,manager,state,events:resolver.resolveEventsPath(root),checkpoint:resolver.resolveStatePath(root),activation:path.join(resolver.resolveProjectRuntimeDir(root),'configuration-activation.json')};
++}
++describe('authoritative history integrity at configuration consumer',()=>{
++  for(const fault of ['missing','invalid-schema','rotation']) {
++    it(`validates ${fault} in a real fresh child process and preserves original evidence`,async()=>{
++      const f=await fixture();const wal=f.state.getWal();
++      if(fault==='missing')fs.unlinkSync(f.events);
++      else if(fault==='invalid-schema')fs.writeFileSync(f.events,'{}\n');
++      else {
++        await wal.appendEvent(wal.createEvent(f.root,'system','padding',{data:'x'.repeat(5*1024*1024)}));
++        await wal.appendEvent(wal.createEvent(f.root,'system','after_rotation',{}));
++      }
++      const originalState=fs.readFileSync(f.checkpoint),originalActivation=fs.readFileSync(f.activation);
++      f.write(10000);
++      const script = buildProcessFixture(fileURLToPath(new URL('../fixtures/runtime-history-process.ts',import.meta.url)), f.root);
++      const child=spawnSync(process.env.npm_execpath!,[script,f.root],{encoding:'utf8',windowsHide:true});
++      expect(child.error).toBeUndefined();expect(child.status,child.stderr).toBe(0);
++      const line=child.stdout.split(/\r?\n/).find(row=>row.startsWith('HISTORY_RESULT='));
++      expect(line).toBeDefined();console.log(line);
++      const result=JSON.parse(line!.slice('HISTORY_RESULT='.length));expect(result.pid).not.toBe(process.pid);
++      expect(result.error).toMatch(fault==='rotation'?/CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK/:/WAL_|SCHEMA_/);
++      expect(fs.readFileSync(f.activation)).toEqual(originalActivation);
++      // Successful replay on restart may refresh a checkpoint; rejected history must not.
++      if(fault!=='rotation') expect(fs.readFileSync(f.checkpoint)).toEqual(originalState);
++    });
++  }
++  it('preserves a closed task and native denial after rotation and restart',async()=>{
++    const f=await fixture();await f.state.transition('WI-0001','created','closed');
++    const wal=f.state.getWal();
++    await wal.appendEvent(wal.createEvent(f.root,'system','padding',{data:'x'.repeat(5*1024*1024)}));
++    await wal.appendEvent(wal.createEvent(f.root,'system','after_rotation',{}));
++    const fresh=f.create();const state=await fresh.getProjectStateManager(f.root);
++    expect(state.getState('WI-0001')?.current_state).toBe('closed');
++    expect((await checkNativeTool({projectManager:fresh},f.root,'write',{filePath:path.join(f.root,'denied.txt')})).allowed).toBe(false);
++    expect(fs.existsSync(path.join(f.root,'denied.txt'))).toBe(false);
++    f.write(10000);expect((await fresh.getProjectConfiguration(f.root)).merged.timeoutMs).toBe(10000);
++  });
++  for(const fault of ['missing-first','corrupt-archive','duplicate-current']) {
++    it(`rejects ${fault} rather than replaying a partial history`,async()=>{
++      const f=await fixture();const wal=f.state.getWal();
++      await wal.appendEvent(wal.createEvent(f.root,'system','padding',{data:'x'.repeat(5*1024*1024)}));
++      await wal.appendEvent(wal.createEvent(f.root,'system','after_rotation',{}));
++      const dir=path.dirname(f.events),archive=path.join(dir,fs.readdirSync(dir).find(n=>n.endsWith('.jsonl.bak'))!);
++      if(fault==='missing-first') fs.unlinkSync(archive);
++      else if(fault==='corrupt-archive') fs.writeFileSync(archive,'{}\n');
++      else fs.appendFileSync(f.events,fs.readFileSync(f.events));
++      const originalState=fs.readFileSync(f.checkpoint);f.write(10000);
++      await expect(f.create().getProjectConfiguration(f.root)).rejects.toThrow(/WAL_/);
++      expect(fs.readFileSync(f.checkpoint)).toEqual(originalState);
++    });
++  }
++  it('does not silently ignore a schema-valid but invalid state transition',async()=>{
++    const f=await fixture();const wal=f.state.getWal();
++    await wal.appendEvent(wal.createEvent('WI-0001','state','state.transition',{from_state:'created'}));
++    const originalState=fs.readFileSync(f.checkpoint);f.write(10000);
++    await expect(f.manager.getProjectConfiguration(f.root)).rejects.toThrow('WAL_STATE_TRANSITION_INVALID');
++    expect(f.state.getState('WI-0001')?.current_state).toBe('created');
++    expect(fs.readFileSync(f.checkpoint)).toEqual(originalState);
++  });
++  for(const restart of [false,true]) {
++    for(const fault of ['missing','invalid-schema','whitespace','truncated'] as const) {
++      it(`rejects ${fault}, recreated=${restart}, without replacing state or activation`,async()=>{
++        const f=await fixture();
++        const originalEvents=fs.readFileSync(f.events);
++        if(fault==='truncated') await f.state.transition('WI-0001','created','intake_ready');
++        const originalState=fs.readFileSync(f.checkpoint), activation=fs.readFileSync(f.activation);
++        if(fault==='missing') fs.unlinkSync(f.events);
++        else fs.writeFileSync(f.events,fault==='invalid-schema'?'{}\n':fault==='whitespace'?' \n':originalEvents);
++        f.write(10000);
++        await expect((restart?f.create():f.manager).getProjectConfiguration(f.root)).rejects.toThrow(/WAL_|HISTORY_|SCHEMA_/);
++        expect(fs.readFileSync(f.checkpoint)).toEqual(originalState);
++        expect(fs.readFileSync(f.activation)).toEqual(activation);
++        expect(f.state.listWorkItems()).toHaveLength(1);
++      });
++    }
++    it(`preserves active task across real rotation, recreated=${restart}`,async()=>{
++      const f=await fixture(); const wal=f.state.getWal();
++      await wal.appendEvent(wal.createEvent(f.root,'system','padding',{data:'x'.repeat(5*1024*1024)}));
++      await wal.appendEvent(wal.createEvent(f.root,'system','after_rotation',{}));
++      const activation=fs.readFileSync(f.activation);f.write(10000);
++      const consumer=restart?f.create():f.manager;
++      await expect(consumer.getProjectConfiguration(f.root)).rejects.toThrow('CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK');
++      expect((await consumer.getProjectStateManager(f.root)).getState('WI-0001')?.current_state).toBe('created');
++      expect(fs.readFileSync(f.activation)).toEqual(activation);
++      f.write(2000);expect((await consumer.getProjectConfiguration(f.root)).merged.timeoutMs).toBe(2000);
++    });
++  }
++  it('retains all segments after more than three rotations',async()=>{
++    const f=await fixture();const wal=f.state.getWal();
++    for(let i=0;i<5;i++) {
++      await wal.appendEvent(wal.createEvent(f.root,'system','padding',{data:'x'.repeat(5*1024*1024)}));
++      await wal.appendEvent(wal.createEvent(f.root,'system','after_rotation',{i}));
++    }
++    expect(fs.readdirSync(path.dirname(f.events)).filter(n=>n.endsWith('.jsonl.bak'))).toHaveLength(5);
++    const fresh=f.create();expect((await fresh.getProjectConfiguration(f.root)).merged.timeoutMs).toBe(2000);
++    expect((await fresh.getProjectStateManager(f.root)).getState('WI-0001')?.current_state).toBe('created');
++  });
++  it('allows unchanged configuration and valid replay before and after recreation',async()=>{
++    const f=await fixture();
++    for(const consumer of [f.manager,f.create()]) {
++      expect((await consumer.getProjectConfiguration(f.root)).merged.timeoutMs).toBe(2000);
++      const state=await consumer.getProjectStateManager(f.root);await state.rebuildState();
++      expect(state.getState('WI-0001')?.current_state).toBe('created');
++    }
++  });
++});
+diff --git a/packages/daemon-core/tests/unit/sf-v11-close-gate.test.ts b/packages/daemon-core/tests/unit/sf-v11-close-gate.test.ts
+index 8b24b426..568336d7 100644
+--- a/packages/daemon-core/tests/unit/sf-v11-close-gate.test.ts
++++ b/packages/daemon-core/tests/unit/sf-v11-close-gate.test.ts
+@@ -506,7 +506,7 @@ describe('sf_close_gate handler', () => {
+     await fs.writeFile(path.join(wiDir, 'gates/close_gate.json'), JSON.stringify({ gate_id: 'close_gate', status: 'passed' }));
+     const closeTime = Date.now() + 1000;
+     await fs.mkdir(path.join(tmpDir, '.specforge/runtime'), { recursive: true });
+-    await fs.writeFile(path.join(tmpDir, '.specforge/runtime/events.jsonl'), JSON.stringify({ projectId: workItemId,
++    await fs.writeFile(path.join(tmpDir, '.specforge/runtime/events.jsonl'), JSON.stringify({ schema_version: '1.0', eventId: 'close-fixture', monotonicSeq: 1, actor: 'test', category: 'state', projectId: workItemId,
+       action: 'state.transition', ts: closeTime, payload: { from_state: 'verification_done', to_state: 'closed' } }) + '\n');
+     const log = JSON.stringify({ timestamp: new Date(closeTime - 1000).toISOString(), path: 'protected.txt',
+       operation: 'modify', allowed: false, violations: ['outside scope'], actor: 'sf-executor', tool: 'write' }) + '\n';
+diff --git a/packages/daemon-core/tests/unit/state-concurrency.test.ts b/packages/daemon-core/tests/unit/state-concurrency.test.ts
+index 79074229..008e2280 100644
+--- a/packages/daemon-core/tests/unit/state-concurrency.test.ts
++++ b/packages/daemon-core/tests/unit/state-concurrency.test.ts
+@@ -119,7 +119,7 @@ describe('StateManager concurrency — C2 / CP-2 version lock', () => {
+ 
+     // Simulate external overwrite: write state.json with a much higher version
+     const statePath = (sm as any).statePath as string;
+-    const forgedState = { ...before, stateVersion: 999 };
++    const forgedState = { ...before, schema_version: '1.0', stateVersion: 999 };
+     await fs.writeFile(statePath, JSON.stringify(forgedState, null, 2), 'utf-8');
+ 
+     // Next transition should detect conflict (disk = 999 vs mem) → rebuild → retry → succeed
+@@ -142,7 +142,7 @@ describe('StateManager concurrency — C2 / CP-2 version lock', () => {
+     for (let i = 0; i < 10; i++) {
+       // Write forged versions directly to disk without reading current state into memory,
+       // so the in-memory _stateVersion remains stale and a conflict is detected.
+-      const forged = makeProjectState({ stateVersion: 10000 + i });
++      const forged = { ...makeProjectState({ stateVersion: 10000 + i }), schema_version: '1.0' };
+       await fs.writeFile(statePath, JSON.stringify(forged, null, 2), 'utf-8');
+     }
+ 
+diff --git a/packages/daemon-core/tests/unit/verification-evidence-integrity.test.ts b/packages/daemon-core/tests/unit/verification-evidence-integrity.test.ts
+index 9f466c61..51a7d699 100644
+--- a/packages/daemon-core/tests/unit/verification-evidence-integrity.test.ts
++++ b/packages/daemon-core/tests/unit/verification-evidence-integrity.test.ts
+@@ -4,6 +4,7 @@ import * as os from 'node:os';
+ import * as path from 'node:path';
+ import { createHash } from 'node:crypto';
+ import { inspectVerificationEvidenceIntegrity } from '../../src/tools/lib/verification-evidence-integrity.js';
++import { WAL } from '../../src/wal/WAL';
+ 
+ describe('verification evidence integrity', () => {
+   let projectRoot: string;
+@@ -18,7 +19,7 @@ describe('verification evidence integrity', () => {
+     await fs.writeFile(path.join(workItemDir, 'verification_report.md'),
+       '```json\n{"timestamp":"2026-10-15T08:20:00Z"}\n```\n');
+     await fs.writeFile(path.join(projectRoot, '.specforge', 'runtime', 'events.jsonl'),
+-      JSON.stringify({ projectId: workItemId, action: 'state.transition', ts: Date.parse('2026-10-15T07:48:37Z'), payload: { to_state: 'closed' } }) + '\n');
++      JSON.stringify({ schema_version: '1.0', eventId: 'close-fixture', monotonicSeq: 1, actor: 'test', category: 'state', projectId: workItemId, action: 'state.transition', ts: Date.parse('2026-10-15T07:48:37Z'), payload: { to_state: 'closed' } }) + '\n');
+   });
+   afterEach(async () => { await fs.rm(projectRoot, { recursive: true, force: true }); });
+ 
+@@ -64,4 +65,19 @@ describe('verification evidence integrity', () => {
+     await fs.writeFile(path.join(workItemDir, 'evidence', 'browser.txt'), 'drift');
+     expect((await inspect(true)).invalidity_reasons).toContain('manual_acceptance_source_hash_mismatch:EV-101');
+   });
++
++  it('finds the authoritative close time in a retained rotation segment', async () => {
++    const wal = new WAL(path.join(projectRoot, '.specforge/runtime/events.jsonl'));
++    await wal.initialize();
++    await wal.appendEvent(wal.createEvent(projectRoot,'system','padding',{data:'x'.repeat(5*1024*1024)}));
++    await wal.appendEvent(wal.createEvent(projectRoot,'system','after_rotation',{}));
++    expect((await inspect(true)).close_event_at).toBe('2026-10-15T07:48:37.000Z');
++  });
++
++  it('does not accept an unverifiable close time when history is malformed', async () => {
++    await fs.appendFile(path.join(projectRoot,'.specforge/runtime/events.jsonl'),'{}\n');
++    const result = await inspect(true);
++    expect(result.close_event_at).toBeNull();
++    expect(result.invalidity_reasons).toContain('authoritative_close_event_unavailable');
++  });
+ });
+diff --git a/packages/daemon-core/tests/unit/wal.test.ts b/packages/daemon-core/tests/unit/wal.test.ts
+index 913733c1..9c28afe9 100644
+--- a/packages/daemon-core/tests/unit/wal.test.ts
++++ b/packages/daemon-core/tests/unit/wal.test.ts
+@@ -112,7 +112,7 @@ describe('WAL', () => {
+       expect(sessionEvents[0]!.category).toBe('session');
+     });
+ 
+-    it('should treat events without category field as "state" (backward compat)', async () => {
++    it('rejects unsupported legacy events before appending or reading', async () => {
+       await wal.initialize();
+       // Manually write a legacy event without category field
+       const legacyEvent = {
+@@ -130,16 +130,10 @@ describe('WAL', () => {
+ 
+       // Also write a modern event with category
+       const modernEvent = wal.createEvent('p1', 'session', 'session.activated', {});
+-      await wal.appendEvent(modernEvent);
+-
+-      const stateEvents = await wal.readEventsByCategory('state');
+-      expect(stateEvents).toHaveLength(1);
+-      // Legacy event has no category field — defaults to 'state'
+-      expect(stateEvents[0]!.eventId).toBe('legacy-1');
+-
+-      const sessionEvents = await wal.readEventsByCategory('session');
+-      expect(sessionEvents).toHaveLength(1);
+-      expect(sessionEvents[0]!.eventId).toBe(modernEvent.eventId);
++      const original = await fs.readFile(wal.getEventsPath());
++      await expect(wal.appendEvent(modernEvent)).rejects.toThrow('WAL_EVENT_SCHEMA_INVALID');
++      await expect(wal.readEventsByCategory('state')).rejects.toThrow('WAL_EVENT_SCHEMA_INVALID');
++      expect(await fs.readFile(wal.getEventsPath())).toEqual(original);
+     });
+ 
+     it('should return empty array for category with no matching events', async () => {
+@@ -177,12 +171,8 @@ describe('WAL', () => {
+       const eventsPath = wal.getEventsPath();
+       const eventsDir = path.dirname(eventsPath);
+ 
+-      // Manually write a large events.jsonl to trigger rotation
+-      const bigLine = JSON.stringify({ eventId: 'big', ts: Date.now(), category: 'state', action: 'fill', payload: { data: 'X'.repeat(1024 * 1024) } }) + '\n';
+-      // Write ~5.5MB (6 iterations of ~1MB each)
+-      for (let i = 0; i < 6; i++) {
+-        await fs.appendFile(eventsPath, bigLine, 'utf-8');
+-      }
++      const first = wal.createEvent('p1', 'system', 'fill', { data: 'X'.repeat(5 * 1024 * 1024) });
++      await wal.appendEvent(first);
+ 
+       // Now append one more event — this should trigger rotation
+       const event = wal.createEvent('p1', 'state', 'state.transition', { after: 'rotate' });
+@@ -192,7 +182,7 @@ describe('WAL', () => {
+       const files = await fs.readdir(eventsDir);
+       const archives = files.filter(f => f.startsWith('events-') && f.endsWith('.jsonl.bak'));
+       expect(archives.length).toBeGreaterThanOrEqual(1);
+-      expect(archives[0]!).toMatch(/^events-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z\.jsonl\.bak$/);
++      expect(archives[0]!).toMatch(/^events-.*\.jsonl\.bak$/);
+ 
+       // Verify events.jsonl still exists and contains the rotated event
+       const stat = await fs.stat(eventsPath);
+@@ -201,44 +191,32 @@ describe('WAL', () => {
+       // Verify archived file has the old content
+       const archivePath = path.join(eventsDir, archives[0]!);
+       const archiveContent = await fs.readFile(archivePath, 'utf-8');
+-      expect(archiveContent).toContain('"eventId":"big"');
++      expect(archiveContent).toContain(first.eventId);
++      expect((await wal.readAllEvents()).events.map(item => item.eventId)).toEqual([first.eventId, event.eventId]);
+     });
+ 
+-    it('should clean up old archives keeping at most 3', async () => {
++    it('retains every history segment beyond three rotations', async () => {
+       await wal.initialize();
+       const eventsPath = wal.getEventsPath();
+       const eventsDir = path.dirname(eventsPath);
+ 
+-      // Create 5 fake archive files
++      const ids: string[] = [];
+       for (let i = 0; i < 5; i++) {
+-        const archiveName = `events-2025-01-${String(i + 1).padStart(2, '0')}T00-00-00-000Z.jsonl.bak`;
+-        await fs.writeFile(path.join(eventsDir, archiveName), `archive-${i}\n`, 'utf-8');
+-      }
+-
+-      // Trigger rotation (write large file + append)
+-      const bigLine = JSON.stringify({ eventId: 'cleanup', ts: Date.now(), category: 'state', action: 'fill', payload: { data: 'Y'.repeat(1024 * 1024) } }) + '\n';
+-      for (let i = 0; i < 6; i++) {
+-        await fs.appendFile(eventsPath, bigLine, 'utf-8');
++        const fill = wal.createEvent('p1', 'system', 'fill', { data: 'Y'.repeat(5 * 1024 * 1024) });
++        await wal.appendEvent(fill); ids.push(fill.eventId);
++        const next = wal.createEvent('p1', 'system', 'after_rotation', {});
++        await wal.appendEvent(next); ids.push(next.eventId);
+       }
+-
+-      const event = wal.createEvent('p1', 'state', 'state.transition', {});
+-      await wal.appendEvent(event);
+-
+-      // Verify at most 3 archive files remain
+-      await new Promise(resolve => setTimeout(resolve, 100)); // Small delay for filesystem
+       const files = await fs.readdir(eventsDir);
+       const archives = files.filter(f => f.startsWith('events-') && f.endsWith('.jsonl.bak'));
+-      expect(archives.length).toBeLessThanOrEqual(3);
++      expect(archives).toHaveLength(5);
++      expect((await new WAL(eventsPath).readAllEvents()).events.map(item => item.eventId)).toEqual(ids);
+     });
+ 
+-    it('should not break event write when rotation fails', async () => {
++    it('writes a normal event without rotating below the threshold', async () => {
+       await wal.initialize();
+       const eventsPath = wal.getEventsPath();
+ 
+-      // Remove read permissions from directory to make stat fail
+-      // (on Windows this won't work the same way, but the code catches errors)
+-      // We rely on the try-catch in rotateIfNeeded
+-
+       // Normal append should still work
+       const event = wal.createEvent('p1', 'state', 'state.transition', { safe: true });
+       await wal.appendEvent(event);
+@@ -270,21 +248,23 @@ describe('WAL', () => {
+       await fs.appendFile(eventsPath, 'THIS IS NOT JSON\n', 'utf-8');
+ 
+       const e2 = wal.createEvent('p1', 'state', 'state.transition', { from: 'b', to: 'c' });
+-      await wal.appendEvent(e2);
++      const original = await fs.readFile(eventsPath);
++      await expect(wal.appendEvent(e2)).rejects.toThrow('WAL_CORRUPT_INPUT');
++      expect(await fs.readFile(eventsPath)).toEqual(original);
+ 
+       await expect(wal.readAllEvents()).rejects.toThrow(
+-        'WAL_CORRUPT_INPUT:line=2:content=THIS IS NOT JSON',
++        'WAL_CORRUPT_INPUT:file=events.jsonl:line=2',
+       );
+     });
+ 
+-    it('should truncate corrupted line content to 100 chars', async () => {
++    it('reports the corrupt location without echoing raw input', async () => {
+       await wal.initialize();
+       const longCorrupted = 'X'.repeat(200);
+       const eventsPath = wal.getEventsPath();
+       await fs.appendFile(eventsPath, longCorrupted + '\n', 'utf-8');
+ 
+       await expect(wal.readAllEvents()).rejects.toThrow(
+-        `WAL_CORRUPT_INPUT:line=1:content=${'X'.repeat(100)}`,
++        'WAL_CORRUPT_INPUT:file=events.jsonl:line=1',
+       );
+     });
+ 
+@@ -295,7 +275,7 @@ describe('WAL', () => {
+       await fs.appendFile(eventsPath, 'bad2\n', 'utf-8');
+ 
+       await expect(wal.readAllEvents()).rejects.toThrow(
+-        'WAL_CORRUPT_INPUT:line=1:content=bad1',
++        'WAL_CORRUPT_INPUT:file=events.jsonl:line=1',
+       );
+     });
+ 
+@@ -308,10 +288,25 @@ describe('WAL', () => {
+       await fs.appendFile(eventsPath, 'CORRUPTED\n', 'utf-8');
+ 
+       await expect(wal.getLastEvent()).rejects.toThrow(
+-        'WAL_CORRUPT_INPUT:line=2:content=CORRUPTED',
++        'WAL_CORRUPT_INPUT:file=events.jsonl:line=2',
+       );
+     });
+ 
++    it('serializes multiple owners and readers across rotation without losing events', async () => {
++      await wal.initialize();
++      await wal.appendEvent(wal.createEvent('p1', 'system', 'padding', {data:'x'.repeat(5*1024*1024)}));
++      const other = new WAL(wal.getEventsPath()); await other.initialize();
++      const pending = Array.from({length:12}, (_,i) => {
++        const owner = i % 2 ? other : wal;
++        return owner.appendEvent(owner.createEvent('p1','system','concurrent',{i}));
++      });
++      await Promise.all([...pending, wal.readAllEvents(), other.readAllEvents()]);
++      const {events} = await new WAL(wal.getEventsPath()).readAllEvents();
++      expect(events).toHaveLength(13);
++      expect(events.map(e=>e.monotonicSeq)).toEqual(Array.from({length:13},(_,i)=>i+1));
++      expect(new Set(events.slice(1).map(e=>e.payload.i)).size).toBe(12);
++    });
++
+     it('should return ReadAllEventsResult type with both fields', async () => {
+       await wal.initialize();
+       const result: ReadAllEventsResult = await wal.readAllEvents();
+diff --git a/packages/host-profile/package.json b/packages/host-profile/package.json
+index 5ed843dc..63bf3025 100644
+--- a/packages/host-profile/package.json
++++ b/packages/host-profile/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/host-profile",
+-  "version": "1.0.17",
++  "version": "1.0.18",
+   "private": true,
+   "type": "module",
+   "main": "dist/index.js",
+diff --git a/packages/observability/package.json b/packages/observability/package.json
+index 20a06cd6..30d8beb2 100644
+--- a/packages/observability/package.json
++++ b/packages/observability/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/observability",
+-  "version": "1.0.17",
++  "version": "1.0.18",
+   "description": "SpecForge current-release observability types and policy contract",
+   "type": "module",
+   "main": "dist/src/index.js",
+diff --git a/packages/observability/tests/integration/.gitkeep b/packages/observability/tests/integration/.gitkeep
+new file mode 100644
+index 00000000..8b137891
+--- /dev/null
++++ b/packages/observability/tests/integration/.gitkeep
+@@ -0,0 +1 @@
++
+diff --git a/packages/observability/tests/unit/project-structure.test.ts b/packages/observability/tests/unit/project-structure.test.ts
+index 1ca416e7..24cfc880 100644
+--- a/packages/observability/tests/unit/project-structure.test.ts
++++ b/packages/observability/tests/unit/project-structure.test.ts
+@@ -41,7 +41,7 @@ describe('Project Structure', () => {
+     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+ 
+     expect(packageJson.name).toBe('@specforge/observability');
+-    expect(packageJson.version).toBe('1.0.17');
++    expect(packageJson.version).toBe('1.0.18');
+     expect(packageJson.type).toBe('module');
+     expect(packageJson.main).toBe('dist/src/index.js');
+     expect(packageJson.types).toBe('dist/src/index.d.ts');
+diff --git a/packages/opencode-adapter/package.json b/packages/opencode-adapter/package.json
+index 43307318..1df0baf6 100644
+--- a/packages/opencode-adapter/package.json
++++ b/packages/opencode-adapter/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/opencode-adapter",
+-  "version": "1.0.17",
++  "version": "1.0.18",
+   "description": "OpenCode Adapter module for SpecForge - Implements LLMKernelAdapter interface for OpenCode",
+   "type": "commonjs",
+   "main": "dist/index.js",
+diff --git a/packages/permission-engine/package.json b/packages/permission-engine/package.json
+index 159744ec..60405b85 100644
+--- a/packages/permission-engine/package.json
++++ b/packages/permission-engine/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/permission-engine",
+-  "version": "1.0.17",
++  "version": "1.0.18",
+   "description": "Permission Engine module for SpecForge - Fine-grained access control and authorization",
+   "type": "module",
+   "main": "dist/src/index.js",
+diff --git a/packages/scope-gate/package.json b/packages/scope-gate/package.json
+index 2c1e0821..ebf9b2d9 100644
+--- a/packages/scope-gate/package.json
++++ b/packages/scope-gate/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/scope-gate",
+-  "version": "1.0.17",
++  "version": "1.0.18",
+   "description": "Current-release evidence and artifact-set validator for SpecForge",
+   "type": "module",
+   "main": "dist/src/index.js",
+diff --git a/packages/service-management/package.json b/packages/service-management/package.json
+index 4f574809..7bc50940 100644
+--- a/packages/service-management/package.json
++++ b/packages/service-management/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/service-management",
+-  "version": "1.0.17",
++  "version": "1.0.18",
+   "description": "Service Management subsystem for SpecForge - OS service lifecycle management",
+   "main": "dist/index.js",
+   "types": "dist/index.d.ts",
+diff --git a/packages/types/package.json b/packages/types/package.json
+index 8bd24222..e59465ab 100644
+--- a/packages/types/package.json
++++ b/packages/types/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/types",
+-  "version": "1.0.17",
++  "version": "1.0.18",
+   "description": "Shared TypeScript types for SpecForge modules",
+   "type": "module",
+   "main": "dist/index.js",
+diff --git a/packages/version-unification/package.json b/packages/version-unification/package.json
+index 9bbb127b..0d2deb65 100644
+--- a/packages/version-unification/package.json
++++ b/packages/version-unification/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/version-unification",
+-  "version": "1.0.17",
++  "version": "1.0.18",
+   "private": true,
+   "type": "module",
+   "main": "dist/index.js",
+diff --git a/packages/workflow-runtime/package.json b/packages/workflow-runtime/package.json
+index 2700947b..77102df3 100644
+--- a/packages/workflow-runtime/package.json
++++ b/packages/workflow-runtime/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/workflow-runtime",
+-  "version": "1.0.17",
++  "version": "1.0.18",
+   "schema_version": "1.0",
+   "description": "Workflow Runtime module for SpecForge - Implements compositeGate semantics (Property 29)",
+   "type": "module",
+diff --git a/scripts/package.json b/scripts/package.json
+index 6535dd1c..1ca73854 100644
+--- a/scripts/package.json
++++ b/scripts/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "specforge-installer-scripts",
+-  "version": "1.0.17",
++  "version": "1.0.18",
+   "private": true,
+   "description": "SpecForge current-release installer and reconciliation libraries.",
+   "type": "module",
+diff --git a/tests/unit/current-product-version-contract.test.ts b/tests/unit/current-product-version-contract.test.ts
+index 11c25b24..e09c4b25 100644
+--- a/tests/unit/current-product-version-contract.test.ts
++++ b/tests/unit/current-product-version-contract.test.ts
+@@ -29,12 +29,12 @@ describe('current product version contract', () => {
+     const identity = await loadProductIdentity(ROOT);
+ 
+     expect(identity).toEqual({
+-      version: '1.0.17',
++      version: '1.0.18',
+       releaseId: 'specforge-current',
+       tagPrefix: 'specforge-v',
+       versionEpoch: 1,
+     });
+-    expect(expectedProductTag(identity)).toBe('specforge-v1.0.17');
++    expect(expectedProductTag(identity)).toBe('specforge-v1.0.18');
+   });
+ 
+   it('keeps every current workspace package on the product version', async () => {
+@@ -58,7 +58,7 @@ describe('current product version contract', () => {
+           }
+         }),
+     )).filter((version): version is string => version !== undefined);
+-    expect(new Set(versions)).toEqual(new Set(['1.0.17']));
++    expect(new Set(versions)).toEqual(new Set(['1.0.18']));
+   });
+ 
+   it('projects the same release identity through current authority and release entrypoints', async () => {

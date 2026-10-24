@@ -1,0 +1,899 @@
+/**
+ * sf-v11-close-gate.test.ts — Close Gate handler integration test.
+ *
+ * The fixture now includes `.semantic_closure.json` because close_gate requires
+ * semantic OUT -> REQ -> DD -> TASK -> EV closure before it can close.
+ */
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
+import * as os from 'node:os';
+import { createHash } from 'node:crypto';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+
+const execFileAsync = promisify(execFile);
+
+async function git(cwd: string, args: string[]): Promise<string> {
+  const { stdout } = await execFileAsync('git', args, { cwd });
+  return String(stdout ?? '').trim();
+}
+
+// Import handler registration (side-effect)
+import '../../src/tools/handlers/sf-v11-close-gate.js';
+import { getHandler } from '../../src/tools/ToolDispatcher.js';
+import type { SemanticClosureManifest } from '../../src/tools/lib/semantic-closure-core.js';
+import { captureSemanticClosureProvenance } from '../../src/tools/lib/semantic-closure-provenance.js';
+import {
+  applyRevokedPermissionFacts,
+  revokeCodePermission,
+} from '../../src/tools/lib/code-permission-service-v11.js';
+import { recordUserDecision } from '../../src/tools/lib/user-decision-recorder-v11.js';
+import { bindWriteGuardAudit } from '../../src/tools/lib/write-guard-audit-binding.js';
+
+function semanticClosure(workItemId: string): SemanticClosureManifest {
+  return {
+    schema_version: '1.0',
+    work_item_id: workItemId,
+    outcomes: [{ id: 'OUT-1', requirement_refs: ['REQ-1'], required_evidence_refs: ['EV-1'] }],
+    requirements: [
+      {
+        id: 'REQ-1',
+        type: 'MUST',
+        outcome_refs: ['OUT-1'],
+        design_refs: ['DD-1'],
+        task_refs: ['TASK-1'],
+        required_evidence_refs: ['EV-1'],
+      },
+    ],
+    design_decisions: [{ id: 'DD-1', requirement_refs: ['REQ-1'], task_refs: ['TASK-1'] }],
+    tasks: [
+      { id: 'TASK-1', requirement_refs: ['REQ-1'], design_refs: ['DD-1'], evidence_refs: ['EV-1'] },
+    ],
+    evidence: [
+      {
+        id: 'EV-1',
+        status: 'passed',
+        level: 'L5',
+        evidence_type: 'behavioral_e2e',
+        supports: ['OUT-1', 'REQ-1', 'TASK-1'],
+      },
+    ],
+    project_integration: { status: 'not_applicable' },
+  };
+}
+
+type MockStateDeps = {
+  projectManager: {
+    getProjectStateManager: () => Promise<{
+      rebuildFromEventsFile: () => Promise<void>;
+      getState: () => Promise<{ current_state: string }>;
+      transition: (
+        workItemId: string,
+        fromState: string,
+        toState: string,
+        actorRole: string,
+        workflowType: string,
+        payload: unknown
+      ) => Promise<{
+        source: string;
+        workItemId: string;
+        previousState: string;
+        currentState: string;
+        timestamp: string;
+      }>;
+    }>;
+  };
+  __transitions: Array<{
+    fromState: string;
+    toState: string;
+    actorRole: string;
+    workflowType: string;
+  }>;
+};
+
+function createMockDeps(initialState = 'verification_done'): MockStateDeps {
+  let currentState = initialState;
+  const transitions: MockStateDeps['__transitions'] = [];
+
+  return {
+    __transitions: transitions,
+    projectManager: {
+      getProjectStateManager: async () => ({
+        rebuildFromEventsFile: async () => {},
+        getState: async () => ({ current_state: currentState }),
+        transition: async (workItemId, fromState, toState, actorRole, workflowType) => {
+          transitions.push({ fromState, toState, actorRole, workflowType });
+          currentState = toState;
+          return {
+            source: 'StateManager',
+            workItemId,
+            previousState: fromState,
+            currentState: toState,
+            timestamp: new Date().toISOString(),
+          };
+        },
+      }),
+    },
+  };
+}
+
+async function createMinimalWorkItem(
+  projectRoot: string,
+  workItemId: string,
+  opts?: {
+    codeChangeAllowed?: boolean;
+    allowedWriteFiles?: Array<{ path: string; operation: string }>;
+    includeSemanticClosure?: boolean;
+  }
+): Promise<string> {
+  const wiDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
+  await fs.mkdir(wiDir, { recursive: true });
+  await fs.mkdir(path.join(wiDir, 'evidence'), { recursive: true });
+  await fs.mkdir(path.join(wiDir, 'gates'), { recursive: true });
+  await fs.mkdir(path.join(wiDir, 'candidates'), { recursive: true });
+
+  const workItem = {
+    schema_version: '1.1',
+    work_item_id: workItemId,
+    code_change_allowed: opts?.codeChangeAllowed ?? false,
+    code_permission_revoked: !(opts?.codeChangeAllowed ?? false),
+    allowed_write_files: opts?.allowedWriteFiles ?? [],
+    workflow_path: 'code_only_fast_path',
+    actual_changed_files: [{ path: 'src/main.ts', operation: 'modify' }],
+    updated_at: new Date().toISOString(),
+  };
+  await fs.writeFile(path.join(wiDir, 'work_item.json'), JSON.stringify(workItem, null, 2) + '\n');
+
+  await fs.writeFile(path.join(wiDir, 'intake.md'), '# Intake\nMinimal.');
+  await fs.writeFile(path.join(wiDir, 'change_classification.md'), '# CC\ncode_only');
+  await fs.writeFile(path.join(wiDir, 'impact_analysis.md'), '# IA\nLow impact');
+  await fs.writeFile(
+    path.join(wiDir, 'trigger_result.json'),
+    JSON.stringify({
+      work_item_id: workItemId,
+      workflow_path: 'code_only_fast_path',
+      triggered: true,
+      classification: {
+        requirement_changed: false,
+        acceptance_criteria_changed: false,
+        business_rule_changed: false,
+        user_visible_behavior_changed: false,
+        data_semantics_changed: false,
+        design_changed: false,
+        module_boundary_changed: false,
+        api_contract_changed: false,
+        architecture_changed: false,
+        data_model_changed: false,
+        module_contract_changed: false,
+        unknowns: [],
+      },
+      impact_scope: {
+        affected_modules: [],
+        architecture_refs: [],
+        data_model_refs: [],
+        design_refs: [],
+        project_contract_refs: [],
+        module_contract_refs: [],
+        planned_code_paths: ['src/main.ts'],
+      },
+    }) + '\n'
+  );
+  await fs.writeFile(path.join(wiDir, 'tasks.md'), '# Tasks\n- [x] TASK-1 Done');
+  await fs.writeFile(
+    path.join(wiDir, 'candidates', 'tasks.md'),
+    '# Tasks\n- [x] TASK-1 Done',
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'trace_delta.md'),
+    '# Trace\nOUT-1 -> REQ-1 -> DD-1 -> TASK-1 -> EV-1'
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'candidate_manifest.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      work_item_id: workItemId,
+      entries: [],
+      workflow_path: 'code_only_fast_path',
+      base_spec_version: 'PSV-0001',
+      merge_required: false,
+    }) + '\n'
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'gate_summary.md'),
+    '# Gate Summary\n\n- Overall Status: passed\n'
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'gates', 'formal_version_gate.json'),
+    JSON.stringify({ gate_id: 'formal_version_gate', status: 'passed' }) + '\n'
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'verification_report.md'),
+    '# Verification Report\n\nEvidence EV-1 passed.'
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'merge_report.md'),
+    `# Merge Report\n\nContract: merge-report/v1\nWork Item: ${workItemId}\nStatus: not_applicable\n\n## Summary\n- Total entries: 0\n- Successful: 0\n- Failed: 0\n`
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'changed_files_audit.md'),
+    `# Changed Files Audit\n\nContract: changed-files-audit/v1\nWork Item: ${workItemId}\n## Result: PASS\n- Total files: 1\n- In scope: 1\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n`
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'evidence', 'evidence_manifest.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      work_item_id: workItemId,
+      entries: [{
+        evidence_id: 'EV-1',
+        type: 'test_output',
+        path: 'verification_report.md',
+        description: 'Current close-gate behavioral E2E evidence',
+        hash: 'sha256:fixture',
+        created_at: new Date().toISOString(),
+        status: 'passed',
+      }],
+    }) + '\n'
+  );
+  await recordUserDecision({
+    workItemDir: wiDir,
+    workItemId,
+    workflowPath: 'code_only_fast_path',
+    baseSpecVersion: 'PSV-0001',
+    candidateManifestPath: 'candidate_manifest.json',
+    gateSummaryPath: 'gate_summary.md',
+    decisionStatus: 'approved',
+    decisionType: 'user_approved',
+    decidedBy: 'user',
+    decisionScope: 'full',
+    recordedBy: 'sf-orchestrator',
+    userResponseQuote: 'approved current close fixture',
+  });
+
+  if (opts?.includeSemanticClosure !== false) {
+    const closure = semanticClosure(workItemId);
+    closure.provenance = await captureSemanticClosureProvenance({
+      workItemDir: wiDir,
+      source: 'test_fixture',
+      manifest: closure,
+    });
+    await fs.writeFile(
+      path.join(wiDir, '.semantic_closure.json'),
+      JSON.stringify(closure, null, 2) + '\n'
+    );
+  }
+
+  return wiDir;
+}
+
+describe('sf_close_gate handler', () => {
+  let tmpDir: string;
+
+  beforeEach(async () => {
+    tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-close-gate-handler-'));
+  });
+
+  afterEach(async () => {
+    await fs.rm(tmpDir, { recursive: true, force: true });
+  });
+
+  it('should be registered in the handler table', () => {
+    const handler = getHandler('sf_close_gate');
+    expect(handler).toBeDefined();
+  });
+
+  it('should reject when work_item_id is missing', async () => {
+    const handler = getHandler('sf_close_gate')!;
+    const result = await handler({}, { directory: tmpDir }, {} as any);
+    expect((result as any).success).toBe(false);
+    expect((result as any).error).toContain('work_item_id');
+  });
+
+  it('should reject when authoritative state is not verification_done', async () => {
+    const workItemId = 'wi-wrong-state';
+    await createMinimalWorkItem(tmpDir, workItemId);
+    const handler = getHandler('sf_close_gate')!;
+    const result = await handler(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      createMockDeps('implementation_running') as any
+    );
+    expect((result as any).success).toBe(false);
+    expect((result as any).error).toContain('verification_done');
+  });
+
+  it('should revoke code_permission if still active before close checks', async () => {
+    const workItemId = 'wi-revoke-perm';
+    await createMinimalWorkItem(tmpDir, workItemId, {
+      codeChangeAllowed: true,
+      allowedWriteFiles: [{ path: 'src/main.ts', operation: 'modify' }],
+    });
+    const handler = getHandler('sf_close_gate')!;
+    const result = await handler(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      createMockDeps() as any
+    );
+    expect((result as any).code_permission_revoked).toBe(true);
+    const wiPath = path.join(tmpDir, '.specforge', 'work-items', workItemId, 'work_item.json');
+    const wi = JSON.parse(await fs.readFile(wiPath, 'utf-8'));
+    expect(wi.code_change_allowed).toBe(false);
+    expect(wi.allowed_write_files).toEqual([]);
+  });
+
+  it('preserves never-enabled code-permission facts for spec_migration close', async () => {
+    const workItemId = 'wi-spec-migration-permission-na';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    const wiPath = path.join(wiDir, 'work_item.json');
+    const before = JSON.parse(await fs.readFile(wiPath, 'utf-8'));
+    before.workflow_type = 'spec_migration';
+    before.workflow_path = 'spec_migration_path';
+    before.code_change_allowed = false;
+    before.code_permission_revoked = false;
+    delete before.code_permission_revoked_at;
+    before.allowed_write_files = [];
+    delete before.allowed_write_files_snapshot;
+    await fs.writeFile(wiPath, JSON.stringify(before, null, 2) + '\n', 'utf-8');
+
+    const handler = getHandler('sf_close_gate')!;
+    const result = await handler(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      createMockDeps() as any
+    );
+
+    const persisted = JSON.parse(await fs.readFile(wiPath, 'utf-8'));
+    expect((result as any).code_permission_revoked).toBe(false);
+    expect(persisted.code_change_allowed).toBe(false);
+    expect(persisted.code_permission_revoked).toBe(false);
+    expect(persisted.code_permission_revoked_at).toBeUndefined();
+    expect(persisted.allowed_write_files).toEqual([]);
+    expect(persisted.allowed_write_files_snapshot).toBeUndefined();
+  });
+
+  it('should fail close when semantic closure is missing', async () => {
+    const workItemId = 'wi-missing-semantic';
+    await createMinimalWorkItem(tmpDir, workItemId, { includeSemanticClosure: false });
+    const handler = getHandler('sf_close_gate')!;
+    const result = await handler(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      createMockDeps() as any
+    );
+    expect((result as any).success).toBe(false);
+    expect((result as any).error).toContain('close_file__semantic_closure_json');
+  });
+
+  it('rejects an unknown Evidence Manifest schema before Close mutations', async () => {
+    const workItemId = 'wi-evidence-schema-gap';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    const manifestPath = path.join(wiDir, 'evidence', 'evidence_manifest.json');
+    const original = await fs.readFile(manifestPath, 'utf8');
+    await fs.writeFile(manifestPath, original.replace('"1.0"', '"1.1"'), 'utf8');
+    const workItemPath = path.join(wiDir, 'work_item.json');
+    const workItemBefore = await fs.readFile(workItemPath, 'utf8');
+
+    const result = await getHandler('sf_close_gate')!(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      createMockDeps() as any,
+    );
+
+    expect((result as any).success).toBe(false);
+    expect((result as any).error).toBe('EVIDENCE_MANIFEST_SCHEMA_BLOCKED: SCHEMA_VERSION_MISMATCH');
+    await expect(fs.readFile(manifestPath, 'utf8')).resolves.toContain('"1.1"');
+    await expect(fs.readFile(workItemPath, 'utf8')).resolves.toBe(workItemBefore);
+  });
+
+  it('rejects an unknown User Decision schema before Close mutations', async () => {
+    const workItemId = 'wi-close-unknown-decision-schema';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    const decisionPath = path.join(wiDir, 'user_decision.json');
+    const unknown = JSON.parse(await fs.readFile(decisionPath, 'utf8'));
+    unknown.schema_version = '1.1';
+    const original = JSON.stringify(unknown, null, 2) + '\n';
+    await fs.writeFile(decisionPath, original, 'utf8');
+
+    const handler = getHandler('sf_close_gate')!;
+    const result = await handler(
+      { work_item_id: workItemId },
+      { directory: tmpDir, agent: 'sf-orchestrator' },
+      createMockDeps() as any,
+    );
+
+    expect((result as any).success).toBe(false);
+    expect((result as any).error).toBe(
+      'USER_DECISION_SCHEMA_BLOCKED: SCHEMA_VERSION_MISMATCH: user_decision.json',
+    );
+    await expect(fs.readFile(decisionPath, 'utf8')).resolves.toBe(original);
+    await expect(fs.access(path.join(wiDir, 'gates', 'close_gate.json'))).rejects.toBeTruthy();
+  });
+
+  it('should write close_gate evidence on success', async () => {
+    const workItemId = 'wi-close-success';
+    await createMinimalWorkItem(tmpDir, workItemId);
+    const handler = getHandler('sf_close_gate')!;
+    const deps = createMockDeps();
+    const result = await handler({ work_item_id: workItemId }, { directory: tmpDir }, deps as any);
+    expect((result as any).success, JSON.stringify(result, null, 2)).toBe(true);
+
+    const gateJsonPath = path.join(
+      tmpDir,
+      '.specforge',
+      'work-items',
+      workItemId,
+      'gates',
+      'close_gate.json'
+    );
+    const gateJson = JSON.parse(await fs.readFile(gateJsonPath, 'utf-8'));
+    expect(gateJson.status).toBe('passed');
+    expect(gateJson.gate_id).toBe('close_gate');
+    expect(
+      gateJson.checks.some((check: any) => check.check_id === 'close_semantic_closure_valid')
+    ).toBe(true);
+    expect(
+      deps.__transitions.some(t => t.fromState === 'verification_done' && t.toState === 'closed')
+    ).toBe(true);
+
+    const closeMdPath = path.join(tmpDir, '.specforge', 'work-items', workItemId, 'close_gate.md');
+    const closeMd = await fs.readFile(closeMdPath, 'utf-8');
+    expect(closeMd).toContain('Close Gate Evidence');
+    expect(closeMd).toContain(workItemId);
+  });
+
+  it('recomputes an existing passed changed-files audit without invalidating closure provenance', async () => {
+    const workItemId = 'wi-close-preserve-audit';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    await fs.writeFile(
+      path.join(wiDir, 'write_guard_log.jsonl'),
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        path: 'src/main.ts',
+        operation: 'modify',
+        actor: 'sf-executor',
+        allowed: true,
+        violations: [],
+        tool: 'sf_safe_bash',
+      }) + '\n'
+    );
+    const auditPath = path.join(wiDir, 'changed_files_audit.md');
+    await fs.writeFile(auditPath, bindWriteGuardAudit(await fs.readFile(auditPath, 'utf-8'), tmpDir, wiDir));
+    const closure = semanticClosure(workItemId);
+    closure.provenance = await captureSemanticClosureProvenance({ workItemDir: wiDir, source: 'test_fixture', manifest: closure });
+    await fs.writeFile(path.join(wiDir, '.semantic_closure.json'), JSON.stringify(closure));
+    const auditBeforeClose = await fs.readFile(auditPath, 'utf-8');
+
+    const handler = getHandler('sf_close_gate')!;
+    const result = await handler(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      createMockDeps() as any
+    );
+
+    expect((result as any).success, JSON.stringify(result, null, 2)).toBe(true);
+    expect((result as any).changed_files_audit?.passed).toBe(true);
+    expect(await fs.readFile(auditPath, 'utf-8')).toBe(auditBeforeClose);
+  });
+
+  it('refuses a previously verified close after a new denied write, preserving the audit and raw log', async () => {
+    const workItemId = 'wi-close-late-denial';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    const auditPath = path.join(wiDir, 'changed_files_audit.md');
+    const auditBefore = await fs.readFile(auditPath, 'utf-8');
+    const log = JSON.stringify({ timestamp: new Date().toISOString(), path: 'protected.txt',
+      operation: 'modify', actor: 'sf-executor', allowed: false, violations: ['outside scope'], tool: 'write' }) + '\n';
+    await fs.writeFile(path.join(wiDir, 'write_guard_log.jsonl'), log);
+    const deps = createMockDeps();
+    const result: any = await getHandler('sf_close_gate')!({ work_item_id: workItemId }, { directory: tmpDir }, deps as any);
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('close_write_guard_audit_current');
+    expect(deps.__transitions).toEqual([]);
+    expect(await fs.readFile(auditPath, 'utf-8')).toBe(auditBefore);
+    expect(await fs.readFile(path.join(wiDir, 'write_guard_log.jsonl'), 'utf-8')).toBe(log);
+  });
+
+  it('recovers a closure proven to omit an earlier denial, with immutable guard evidence and revoked permission', async () => {
+    const workItemId = 'wi-omitted-denial-recovery';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    const code = Buffer.from('export const value = 1;\n');
+    await fs.mkdir(path.join(tmpDir, 'src'), { recursive: true });
+    await fs.writeFile(path.join(tmpDir, 'src', 'main.ts'), code);
+    const hash = createHash('sha256').update(code).digest('hex');
+    await fs.writeFile(path.join(wiDir, 'formal_version_snapshot.json'), JSON.stringify({
+      version_control_mode: 'filesystem', implementation_files: ['src/main.ts'],
+      implementation_tree_fingerprint: createHash('sha256').update(`src/main.ts\0file\0${hash}`).digest('hex'),
+    }));
+    await fs.writeFile(path.join(wiDir, 'gates/close_gate.json'), JSON.stringify({ gate_id: 'close_gate', status: 'passed' }));
+    const closeTime = Date.now() + 1000;
+    await fs.mkdir(path.join(tmpDir, '.specforge/runtime'), { recursive: true });
+    await fs.writeFile(path.join(tmpDir, '.specforge/runtime/events.jsonl'), JSON.stringify({ schema_version: '1.0', eventId: 'close-fixture', monotonicSeq: 1, actor: 'test', category: 'state', projectId: workItemId,
+      action: 'state.transition', ts: closeTime, payload: { from_state: 'verification_done', to_state: 'closed' } }) + '\n');
+    const log = JSON.stringify({ timestamp: new Date(closeTime - 1000).toISOString(), path: 'protected.txt',
+      operation: 'modify', allowed: false, violations: ['outside scope'], actor: 'sf-executor', tool: 'write' }) + '\n';
+    await fs.writeFile(path.join(wiDir, 'write_guard_log.jsonl'), log);
+    const auditBefore = await fs.readFile(path.join(wiDir, 'changed_files_audit.md'));
+    const deps = createMockDeps('closed');
+    const result: any = await getHandler('sf_close_gate')!({ work_item_id: workItemId, action: 'recover_invalid_closure',
+      confirm_invalid_closure_recovery: true, recovery_reason: 'The original audit omitted a denial before the authoritative Close event.'
+    }, { directory: tmpDir, agent: 'sf-orchestrator' }, deps as any);
+    expect(result.success, JSON.stringify(result)).toBe(true);
+    expect(result.invalidity_reasons).toEqual(['WRITE_GUARD_AUDIT_OMITTED_PRE_CLOSE_DENIALS: reported=0, factual=1']);
+    const record = JSON.parse(await fs.readFile(path.join(wiDir, 'closure_recovery.json'), 'utf-8'));
+    const archiveDir = path.join(wiDir, path.dirname(record.prior_evidence.generation_archive.manifest_path));
+    expect(await fs.readFile(path.join(archiveDir, 'write_guard_log.jsonl'), 'utf-8')).toBe(log);
+    expect((await fs.readFile(path.join(archiveDir, 'changed_files_audit.md'))).equals(auditBefore)).toBe(true);
+    expect(record.prior_evidence.write_guard_audit_omission.close_event_at).toBe(new Date(closeTime).toISOString());
+    expect(deps.__transitions.at(-1)?.toState).toBe('implementation_ready');
+    expect(JSON.parse(await fs.readFile(path.join(wiDir, 'work_item.json'), 'utf-8')).code_permission_revoked).toBe(true);
+  });
+
+  it('persists and blocks on a newly failing recomputed audit', async () => {
+    const workItemId = 'wi-close-new-audit-failure';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    await fs.writeFile(
+      path.join(wiDir, 'write_guard_log.jsonl'),
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        path: '.specforge/project/architecture.md',
+        operation: 'modify',
+        actor: 'sf-executor',
+        allowed: true,
+        violations: [],
+        tool: 'sf_safe_bash',
+      }) + '\n'
+    );
+    const auditPath = path.join(wiDir, 'changed_files_audit.md');
+
+    const handler = getHandler('sf_close_gate')!;
+    const result = await handler(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      createMockDeps() as any
+    );
+
+    expect((result as any).success).toBe(false);
+    expect((result as any).changed_files_audit?.passed).toBe(false);
+    expect(await fs.readFile(auditPath, 'utf-8')).toContain('## Result: FAIL');
+  });
+
+  it('blocks close when a Git-governed Work Item has a failed formal version gate', async () => {
+    const workItemId = 'wi-formal-failed';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    await fs.writeFile(
+      path.join(wiDir, 'git_context.json'),
+      JSON.stringify({
+        schema_version: '1.0',
+        work_item_id: workItemId,
+        git_enabled: true,
+        branch_name: 'feature/formal-failed',
+        base_branch: 'main',
+        base_commit: 'deadbeef',
+      }),
+    );
+    await fs.writeFile(
+      path.join(wiDir, 'gates', 'formal_version_gate.json'),
+      JSON.stringify({ gate_id: 'formal_version_gate', status: 'failed' }),
+    );
+
+    const handler = getHandler('sf_close_gate')!;
+    const result = await handler(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      createMockDeps() as any,
+    );
+
+    expect((result as any).success).toBe(false);
+    expect((result as any).error).toContain('close_formal_version_gate');
+    const closeReport = JSON.parse(
+      await fs.readFile(path.join(wiDir, 'gates', 'close_gate.json'), 'utf-8'),
+    );
+    expect(
+      closeReport.checks.find(
+        (check: { check_id: string }) => check.check_id === 'close_formal_version_gate',
+      )?.passed,
+    ).toBe(false);
+  });
+
+  it('recovers a proven-invalid prior closure through a compensating state event', async () => {
+    const workItemId = 'wi-invalid-close-recovery';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    await fs.writeFile(
+      path.join(wiDir, 'gates', 'close_gate.json'),
+      JSON.stringify({ gate_id: 'close_gate', status: 'passed' }),
+    );
+    await fs.writeFile(
+      path.join(wiDir, 'gates', 'formal_version_gate.json'),
+      JSON.stringify({ gate_id: 'formal_version_gate', status: 'failed' }),
+    );
+
+    const handler = getHandler('sf_close_gate')!;
+    const deps = createMockDeps('closed');
+    const result = await handler(
+      {
+        work_item_id: workItemId,
+        action: 'recover_invalid_closure',
+        recovery_reason: 'Formal Version Gate failed before the prior close event.',
+        confirm_invalid_closure_recovery: true,
+      },
+      { directory: tmpDir, agent: 'sf-orchestrator' },
+      deps as any,
+    );
+
+    expect((result as any).success, JSON.stringify(result, null, 2)).toBe(true);
+    expect((result as any).state_auto_advance.from_state).toBe('closed');
+    expect((result as any).state_auto_advance.to_state).toBe('implementation_ready');
+    expect(
+      deps.__transitions.some(
+        transition =>
+          transition.fromState === 'closed' &&
+          transition.toState === 'implementation_ready' &&
+          transition.actorRole === 'close_gate',
+      ),
+    ).toBe(true);
+
+    const recovery = JSON.parse(
+      await fs.readFile(path.join(wiDir, 'closure_recovery.json'), 'utf-8'),
+    );
+    expect(recovery.status).toBe('applied');
+    expect(recovery.invalidity_reasons).toContain('formal_version_gate_status=failed');
+    expect(recovery.prior_evidence.close_gate_sha256).toMatch(/^[a-f0-9]{64}$/);
+  });
+
+  it('recovers evidence-only invalid closure while Formal Version remains valid and archives prior bytes', async () => {
+    const workItemId = 'wi-evidence-only-recovery';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    const code = Buffer.from('export const value = 1;\n');
+    await fs.mkdir(path.join(tmpDir, 'src'), { recursive: true });
+    await fs.writeFile(path.join(tmpDir, 'src', 'main.ts'), code);
+    const codeHash = createHash('sha256').update(code).digest('hex');
+    const fingerprint = createHash('sha256').update(`src/main.ts\0file\0${codeHash}`).digest('hex');
+    await fs.writeFile(path.join(wiDir, 'formal_version_snapshot.json'), JSON.stringify({
+      version_control_mode: 'filesystem', implementation_files: ['src/main.ts'],
+      implementation_tree_fingerprint: fingerprint,
+    }));
+    await fs.writeFile(path.join(wiDir, 'gates', 'close_gate.json'),
+      JSON.stringify({ gate_id: 'close_gate', status: 'passed' }));
+    const reportBefore = await fs.readFile(path.join(wiDir, 'verification_report.md'));
+    await fs.writeFile(path.join(wiDir, 'verification_report.md'),
+      '```json\n{"timestamp":"2026-10-15T08:20:00Z"}\n```\n');
+    const manifest = {
+      schema_version: '1.0', work_item_id: workItemId,
+      timestamp: '2026-10-15T08:18:00Z',
+      entries: [{ evidence_id: 'EV-1', type: 'other', status: 'passed', level: 'L5',
+        evidence_type: 'manual_acceptance', path: `.specforge/work-items/${workItemId}/verification_report.md` }],
+    };
+    await fs.writeFile(path.join(wiDir, 'evidence', 'evidence_manifest.json'), JSON.stringify(manifest));
+    const deps = createMockDeps('closed');
+    const result = await getHandler('sf_close_gate')!({
+      work_item_id: workItemId, action: 'recover_invalid_closure',
+      recovery_reason: 'Manual acceptance points to the report itself, not raw browser evidence.',
+      confirm_invalid_closure_recovery: true,
+    }, { directory: tmpDir, agent: 'sf-orchestrator' }, deps as any);
+    expect((result as any).success, JSON.stringify(result)).toBe(true);
+    expect((result as any).invalidity_reasons).toContain(
+      'verification_evidence_invalid=manual_acceptance_source_self_referential_or_outside:EV-1',
+    );
+    expect((result as any).invalidity_reasons.some((reason: string) => reason.startsWith('formal_'))).toBe(false);
+    const record = JSON.parse(await fs.readFile(path.join(wiDir, 'closure_recovery.json'), 'utf-8'));
+    expect(record.prior_evidence.generation_archive.manifest_sha256).toMatch(/^[a-f0-9]{64}$/);
+    const archivedReport = await fs.readFile(path.join(wiDir,
+      path.dirname(record.prior_evidence.generation_archive.manifest_path), 'verification_report.md'));
+    expect(archivedReport.equals(reportBefore)).toBe(false);
+    expect(archivedReport.toString()).toContain('2026-10-15T08:20:00Z');
+    expect(deps.__transitions.at(-1)?.toState).toBe('implementation_ready');
+  });
+
+  it('recovers a passed prior closure when the Formal Version snapshot omits committed code', async () => {
+    const workItemId = 'wi-invalid-close-file-set';
+    const featureBranch = 'feature/invalid-close-file-set';
+
+    await git(tmpDir, ['init', '-b', 'main']);
+    await git(tmpDir, ['config', 'user.name', 'SpecForge Test']);
+    await git(tmpDir, ['config', 'user.email', 'specforge-test@example.invalid']);
+    await fs.writeFile(path.join(tmpDir, 'README.md'), '# baseline\n');
+    await git(tmpDir, ['add', '--', 'README.md']);
+    await git(tmpDir, ['commit', '-m', 'chore: baseline']);
+    const baseCommit = await git(tmpDir, ['rev-parse', 'HEAD']);
+    await git(tmpDir, ['switch', '-c', featureBranch]);
+
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    await fs.mkdir(path.join(tmpDir, 'src'), { recursive: true });
+    await fs.writeFile(path.join(tmpDir, 'src', 'main.ts'), 'export const value = 1;\n');
+    await fs.writeFile(
+      path.join(wiDir, 'git_context.json'),
+      JSON.stringify({
+        schema_version: '1.0',
+        work_item_id: workItemId,
+        git_enabled: true,
+        branch_name: featureBranch,
+        base_branch: 'main',
+        base_commit: baseCommit,
+      }, null, 2) + '\n',
+    );
+    await fs.writeFile(
+      path.join(wiDir, 'gates', 'close_gate.json'),
+      JSON.stringify({ gate_id: 'close_gate', status: 'passed' }) + '\n',
+    );
+    await fs.writeFile(
+      path.join(wiDir, 'gates', 'formal_version_gate.json'),
+      JSON.stringify({ gate_id: 'formal_version_gate', status: 'passed' }) + '\n',
+    );
+    await git(tmpDir, ['add', '--', '.']);
+    await git(tmpDir, ['commit', '-m', 'feat: committed implementation']);
+    const implementationCommit = await git(tmpDir, ['rev-parse', 'HEAD']);
+
+    await fs.writeFile(
+      path.join(wiDir, 'formal_version_snapshot.json'),
+      JSON.stringify({
+        schema_version: '1.0',
+        work_item_id: workItemId,
+        branch_name: featureBranch,
+        implementation_commit: implementationCommit,
+        implementation_files: [],
+        implementation_tree_fingerprint:
+          'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+        base_commit: baseCommit,
+        diff_fingerprint: '',
+      }, null, 2) + '\n',
+    );
+    await git(tmpDir, [
+      'add',
+      '--',
+      path.relative(tmpDir, path.join(wiDir, 'formal_version_snapshot.json')).split(path.sep).join('/'),
+    ]);
+    await git(tmpDir, ['commit', '-m', 'chore: persist invalid formal snapshot']);
+
+    const handler = getHandler('sf_close_gate')!;
+    const deps = createMockDeps('closed');
+    const result = await handler(
+      {
+        work_item_id: workItemId,
+        action: 'recover_invalid_closure',
+        recovery_reason:
+          'Formal Version snapshot omitted the committed implementation file proven by Git diff.',
+        confirm_invalid_closure_recovery: true,
+      },
+      { directory: tmpDir, agent: 'sf-orchestrator' },
+      deps as any,
+    );
+
+    expect((result as any).success, JSON.stringify(result, null, 2)).toBe(true);
+    expect((result as any).state_auto_advance.to_state).toBe('implementation_ready');
+    expect(
+      (result as any).invalidity_reasons.some((reason: string) =>
+        reason.startsWith(
+          'formal_version_snapshot_invalid=FORMAL_VERSION_IMPLEMENTATION_FILE_SET_MISMATCH',
+        ),
+      ),
+    ).toBe(true);
+
+    const recovery = JSON.parse(
+      await fs.readFile(path.join(wiDir, 'closure_recovery.json'), 'utf-8'),
+    );
+    expect(recovery.prior_evidence.formal_version_snapshot_sha256).toMatch(
+      /^[a-f0-9]{64}$/,
+    );
+    expect(recovery.prior_evidence.formal_version_snapshot_validation_error).toContain(
+      'missing_from_snapshot=src/main.ts',
+    );
+  });
+
+  it('refuses invalid-closure recovery without explicit confirmation', async () => {
+    const workItemId = 'wi-invalid-close-unconfirmed';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    await fs.writeFile(
+      path.join(wiDir, 'gates', 'close_gate.json'),
+      JSON.stringify({ gate_id: 'close_gate', status: 'passed' }),
+    );
+    await fs.writeFile(
+      path.join(wiDir, 'gates', 'formal_version_gate.json'),
+      JSON.stringify({ gate_id: 'formal_version_gate', status: 'failed' }),
+    );
+
+    const handler = getHandler('sf_close_gate')!;
+    const result = await handler(
+      {
+        work_item_id: workItemId,
+        action: 'recover_invalid_closure',
+        recovery_reason: 'Formal Version Gate failed before the prior close event.',
+      },
+      { directory: tmpDir },
+      createMockDeps('closed') as any,
+    );
+
+    expect((result as any).success).toBe(false);
+    expect((result as any).error).toContain('CONFIRMATION_REQUIRED');
+  });
+
+  it('should fail when required evidence files are missing', async () => {
+    const workItemId = 'wi-missing-evidence';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    await fs.rm(path.join(wiDir, 'verification_report.md'));
+    const handler = getHandler('sf_close_gate')!;
+    const result = await handler(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      createMockDeps() as any
+    );
+    expect((result as any).success).toBe(false);
+    expect((result as any).error).toContain('verification_report.md not found');
+    expect((result as any).code_permission_revoked).toBe(false);
+  });
+
+  it('should still write close_gate.json on failure for diagnostics', async () => {
+    const workItemId = 'wi-fail-evidence';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId, {
+      includeSemanticClosure: false,
+    });
+    const handler = getHandler('sf_close_gate')!;
+    const result = await handler(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      createMockDeps() as any
+    );
+    expect((result as any).success).toBe(false);
+    expect((result as any).evidence_path).toContain('close_gate.json');
+
+    const gateJsonPath = path.join(wiDir, 'gates', 'close_gate.json');
+    const gateJson = JSON.parse(await fs.readFile(gateJsonPath, 'utf-8'));
+    expect(gateJson.status).toBe('failed');
+  });
+
+  it('records the timestamp of the current explicit code-permission revocation event', async () => {
+    const workItemDir = path.join(tmpDir, '.specforge', 'work-items', 'wi-revoke-timestamp');
+    await fs.mkdir(workItemDir, { recursive: true });
+    const priorSnapshot = [{ path: 'src/main.ts', operation: 'modify' }];
+    await fs.writeFile(
+      path.join(workItemDir, 'work_item.json'),
+      JSON.stringify({
+        schema_version: '1.1',
+        work_item_id: 'wi-revoke-timestamp',
+        code_change_allowed: true,
+        code_permission_revoked: false,
+        code_permission_revoked_at: '2000-01-01T00:00:00.000Z',
+        allowed_write_files: [{ path: 'src/main.ts', operation: 'modify' }],
+        allowed_write_files_snapshot: priorSnapshot,
+        updated_at: '2000-01-01T00:00:00.000Z',
+      }, null, 2) + '\n',
+      'utf-8',
+    );
+
+    await revokeCodePermission(workItemDir);
+
+    const workItem = JSON.parse(
+      await fs.readFile(path.join(workItemDir, 'work_item.json'), 'utf-8'),
+    );
+    expect(workItem.code_change_allowed).toBe(false);
+    expect(workItem.code_permission_revoked).toBe(true);
+    expect(workItem.allowed_write_files).toEqual([]);
+    expect(workItem.allowed_write_files_snapshot).toEqual(priorSnapshot);
+    expect(workItem.code_permission_revoked_at).not.toBe('2000-01-01T00:00:00.000Z');
+    expect(workItem.code_permission_revoked_at).toBe(workItem.updated_at);
+  });
+
+  it('preserves the current revoke event while Close synchronizes permission facts', () => {
+    const currentRevocation = '2026-08-06T01:50:12.895Z';
+    const closeSyncTime = '2026-08-06T02:00:00.000Z';
+    const workItem: Record<string, any> = {
+      code_change_allowed: false,
+      code_permission_revoked: true,
+      code_permission_revoked_at: currentRevocation,
+      allowed_write_files: [],
+      allowed_write_files_snapshot: [],
+      updated_at: currentRevocation,
+    };
+
+    applyRevokedPermissionFacts(
+      workItem,
+      [{ path: 'src/main.ts', operation: 'modify' }],
+      { now: closeSyncTime, recordRevocationEvent: false },
+    );
+
+    expect(workItem.code_permission_revoked_at).toBe(currentRevocation);
+    expect(workItem.updated_at).toBe(closeSyncTime);
+    expect(workItem.allowed_write_files_snapshot).toEqual([
+      { path: 'src/main.ts', operation: 'modify' },
+    ]);
+  });
+
+});

@@ -1,0 +1,107 @@
+[
+  {
+    "blocks": [
+      {
+        "start": 1,
+        "sha256": "9057d8c9b662cdcb9248db767ad03c5e8799bfc045299290b107acb37283de2c",
+        "end": 450
+      },
+      {
+        "start": 451,
+        "sha256": "b34d8764d5e9d3352c81ec47295710535f1c7b8c2d28f52f39b1034cfcd8156e",
+        "end": 900
+      },
+      {
+        "start": 901,
+        "sha256": "01d358db61accfa3cb09c5847e3be23bf792f74c0e0a5a596fe59e95cb343b37",
+        "end": 1350
+      },
+      {
+        "start": 1351,
+        "sha256": "8a443104b578335b02c9a3a2698f0016979349eb525d65dd9c56546ba8fd822e",
+        "end": 1800
+      },
+      {
+        "start": 1801,
+        "sha256": "dc764d9009b73d0792601d1674b98a972d40301d260e6b487b2fd3ba78dcf02a",
+        "end": 2250
+      },
+      {
+        "start": 2251,
+        "sha256": "337226541bdc08e331d3f5d40d00a488197d04dacd035f6694185be529a2b796",
+        "end": 2556
+      }
+    ],
+    "path": "docs/rule/specforge-active-development-rules.md",
+    "lines": 2556,
+    "normalized_reassembly_matches": true,
+    "raw_sha256": "ad74d9cfe96165029e31e4151585403cf36b5fb46c37eb61a722fb4dded0659a"
+  },
+  {
+    "blocks": [
+      {
+        "start": 1,
+        "sha256": "a7fd0792958723617462be34244b2ed0cf4675f7cec780fc53c28d09a78baeba",
+        "end": 132
+      }
+    ],
+    "path": "docs/product-specification/authority-registry.md",
+    "lines": 132,
+    "normalized_reassembly_matches": true,
+    "raw_sha256": "5a39b518e51d9a5a7a19a1b0cd247dff53a6f2633311ddd5d0520e5f40571772"
+  },
+  {
+    "blocks": [
+      {
+        "start": 1,
+        "sha256": "991e1bd7630d3b8caa0cb7a4e63503ff6fe0c96bfae34f85f8f4dd2164d9953c",
+        "end": 450
+      },
+      {
+        "start": 451,
+        "sha256": "3129babf3c35500ab11764bd24c61ba52eb7906e1704a8b069aba1a773162233",
+        "end": 900
+      },
+      {
+        "start": 901,
+        "sha256": "bff5f719d780fb72882341b8df52b8f0c5840de2ef1b821cdd224624372be395",
+        "end": 1350
+      },
+      {
+        "start": 1351,
+        "sha256": "b83cd37d34c4f66c268fe2e507dd2ff45d5b23b655aa9442a2c0115c997ad614",
+        "end": 1611
+      }
+    ],
+    "path": "docs/product-specification/specforge-product-specification.md",
+    "lines": 1611,
+    "normalized_reassembly_matches": true,
+    "raw_sha256": "f74cc2e4c21ab83a6fd7c8761dfe60408ae86826c22dd954a466a567e48c5401"
+  },
+  {
+    "blocks": [
+      {
+        "start": 1,
+        "sha256": "dfc554b75aad7873e82d4c097db6f6a801bc86e678c9306d41ecf7e17f7f97cf",
+        "end": 225
+      }
+    ],
+    "path": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+    "lines": 225,
+    "normalized_reassembly_matches": true,
+    "raw_sha256": "d84911ea066dcb7a3fb8a78efb38425a52302f973b5bf032244ba8518fe374de"
+  },
+  {
+    "blocks": [
+      {
+        "start": 1,
+        "sha256": "ad5805c4d203c5f3aba8cf506fff83c7b2aa8bb6a38ea4e871b49c1414895ba7",
+        "end": 183
+      }
+    ],
+    "path": "docs/rule/specforge-execution-mode-and-evidence-protocol.md",
+    "lines": 183,
+    "normalized_reassembly_matches": true,
+    "raw_sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef"
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    "D:/code/SpecForge/.tmp/runtime-history-repair-20261024/independent-audit.cjs",
+    "http-audit-final",
+    "independent-audit-final.json"
+  ],
+  "purpose": "039-independent-final",
+  "start": "2026-10-24T05:51:43.031Z",
+  "expected_writes": "Isolated worktree build/test artifacts and local evidence"
+}

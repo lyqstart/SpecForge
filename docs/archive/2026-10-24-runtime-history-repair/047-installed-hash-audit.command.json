@@ -1,0 +1,11 @@
+{
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    "D:/code/SpecForge/.tmp/runtime-history-repair-20261024/installed-review.cjs",
+    "after"
+  ],
+  "purpose": "047-installed-hash-audit",
+  "start": "2026-10-24T05:52:28.466Z",
+  "expected_writes": "Isolated worktree build/test artifacts and local evidence"
+}

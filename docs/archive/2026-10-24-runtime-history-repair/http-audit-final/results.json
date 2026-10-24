@@ -1,0 +1,660 @@
+{
+  "finished": "2026-10-24T05:51:24.217Z",
+  "exit_code": 0,
+  "records": [
+    {
+      "start": {
+        "pid": 32792,
+        "port": 55527,
+        "utc": "2026-10-24T05:51:16.845Z"
+      }
+    },
+    {
+      "label": "baseline normal",
+      "utc": "2026-10-24T05:51:17.001Z",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\runtime-history-repair-20261024\\http-audit-final\\fixture",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": true,
+          "rebuilt_from_events": true,
+          "work_items": {
+            "WI-0001": {
+              "work_item_id": "WI-0001",
+              "workflow_type": "feature_spec",
+              "current_state": "intake_ready",
+              "created_at": 1792821076798,
+              "updated_at": 1792821076822
+            }
+          }
+        },
+        "requestId": "6252tya8f4dmvlzdog4",
+        "timestamp": 1792821076996
+      }
+    },
+    {
+      "exit": {
+        "pid": 32792,
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-10-24T05:51:17.022Z"
+      }
+    },
+    {
+      "start": {
+        "pid": 23292,
+        "port": 55529,
+        "utc": "2026-10-24T05:51:17.388Z"
+      }
+    },
+    {
+      "label": "missing: normal before fault",
+      "utc": "2026-10-24T05:51:17.553Z",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\runtime-history-repair-20261024\\http-audit-final\\fixture",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": true,
+          "rebuilt_from_events": true,
+          "work_items": {
+            "WI-0001": {
+              "work_item_id": "WI-0001",
+              "workflow_type": "feature_spec",
+              "current_state": "intake_ready",
+              "created_at": 1792821076798,
+              "updated_at": 1792821076822
+            }
+          }
+        },
+        "requestId": "zr6jr5po06pmvlzdovj",
+        "timestamp": 1792821077551
+      }
+    },
+    {
+      "label": "missing: live changed config",
+      "utc": "2026-10-24T05:51:17.565Z",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\runtime-history-repair-20261024\\http-audit-final\\fixture",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": false,
+          "error": "WAL_HISTORY_MISSING"
+        },
+        "requestId": "en39v4giamomvlzdovw",
+        "timestamp": 1792821077564
+      }
+    },
+    {
+      "exit": {
+        "pid": 23292,
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-10-24T05:51:17.587Z"
+      }
+    },
+    {
+      "start": {
+        "pid": 36124,
+        "port": 55540,
+        "utc": "2026-10-24T05:51:17.948Z"
+      }
+    },
+    {
+      "label": "missing: restarted changed config",
+      "utc": "2026-10-24T05:51:18.050Z",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\runtime-history-repair-20261024\\http-audit-final\\fixture",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": false,
+          "error": "WAL_HISTORY_TRUNCATED"
+        },
+        "requestId": "p9qu8rrmtzmvlzdp9d",
+        "timestamp": 1792821078049
+      }
+    },
+    {
+      "exit": {
+        "pid": 36124,
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-10-24T05:51:18.068Z"
+      }
+    },
+    {
+      "start": {
+        "pid": 33972,
+        "port": 55542,
+        "utc": "2026-10-24T05:51:18.419Z"
+      }
+    },
+    {
+      "label": "invalid-schema: normal before fault",
+      "utc": "2026-10-24T05:51:18.558Z",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\runtime-history-repair-20261024\\http-audit-final\\fixture",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": true,
+          "rebuilt_from_events": true,
+          "work_items": {
+            "WI-0001": {
+              "work_item_id": "WI-0001",
+              "workflow_type": "feature_spec",
+              "current_state": "intake_ready",
+              "created_at": 1792821076798,
+              "updated_at": 1792821076822
+            }
+          }
+        },
+        "requestId": "qqgfdcfrn9imvlzdpng",
+        "timestamp": 1792821078556
+      }
+    },
+    {
+      "label": "invalid-schema: live changed config",
+      "utc": "2026-10-24T05:51:18.570Z",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\runtime-history-repair-20261024\\http-audit-final\\fixture",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": false,
+          "error": "WAL_EVENT_SCHEMA_INVALID:file=events.jsonl:line=1"
+        },
+        "requestId": "1q84i2sqdbqmvlzdpnt",
+        "timestamp": 1792821078569
+      }
+    },
+    {
+      "exit": {
+        "pid": 33972,
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-10-24T05:51:18.590Z"
+      }
+    },
+    {
+      "start": {
+        "pid": 9068,
+        "port": 55549,
+        "utc": "2026-10-24T05:51:18.947Z"
+      }
+    },
+    {
+      "label": "invalid-schema: restarted changed config",
+      "utc": "2026-10-24T05:51:19.048Z",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\runtime-history-repair-20261024\\http-audit-final\\fixture",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": false,
+          "error": "RUNTIME_SCHEMA_PRECHECK_BLOCKED:runtime-wal:SCHEMA_ID_MISSING"
+        },
+        "requestId": "jbd3w28la7mvlzdq13",
+        "timestamp": 1792821079047
+      }
+    },
+    {
+      "exit": {
+        "pid": 9068,
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-10-24T05:51:19.066Z"
+      }
+    },
+    {
+      "start": {
+        "pid": 5884,
+        "port": 55559,
+        "utc": "2026-10-24T05:51:19.428Z"
+      }
+    },
+    {
+      "label": "whitespace: normal before fault",
+      "utc": "2026-10-24T05:51:19.552Z",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\runtime-history-repair-20261024\\http-audit-final\\fixture",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": true,
+          "rebuilt_from_events": true,
+          "work_items": {
+            "WI-0001": {
+              "work_item_id": "WI-0001",
+              "workflow_type": "feature_spec",
+              "current_state": "intake_ready",
+              "created_at": 1792821076798,
+              "updated_at": 1792821076822
+            }
+          }
+        },
+        "requestId": "c02plbp9k1pmvlzdqf2",
+        "timestamp": 1792821079550
+      }
+    },
+    {
+      "label": "whitespace: live changed config",
+      "utc": "2026-10-24T05:51:19.573Z",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\runtime-history-repair-20261024\\http-audit-final\\fixture",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": false,
+          "error": "WAL_EMPTY_INPUT"
+        },
+        "requestId": "mxks0s1b2acmvlzdqfo",
+        "timestamp": 1792821079572
+      }
+    },
+    {
+      "exit": {
+        "pid": 5884,
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-10-24T05:51:19.593Z"
+      }
+    },
+    {
+      "start": {
+        "pid": 31456,
+        "port": 55562,
+        "utc": "2026-10-24T05:51:19.973Z"
+      }
+    },
+    {
+      "label": "whitespace: restarted changed config",
+      "utc": "2026-10-24T05:51:20.061Z",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\runtime-history-repair-20261024\\http-audit-final\\fixture",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": false,
+          "error": "RUNTIME_SCHEMA_PRECHECK_BLOCKED:runtime-wal:FILE_PARSE_FAILED"
+        },
+        "requestId": "fgopwhwkndqmvlzdqt7",
+        "timestamp": 1792821080059
+      }
+    },
+    {
+      "exit": {
+        "pid": 31456,
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-10-24T05:51:20.085Z"
+      }
+    },
+    {
+      "start": {
+        "pid": 21924,
+        "port": 55564,
+        "utc": "2026-10-24T05:51:20.483Z"
+      }
+    },
+    {
+      "label": "truncated: normal before fault",
+      "utc": "2026-10-24T05:51:20.574Z",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\runtime-history-repair-20261024\\http-audit-final\\fixture",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": true,
+          "rebuilt_from_events": true,
+          "work_items": {
+            "WI-0001": {
+              "work_item_id": "WI-0001",
+              "workflow_type": "feature_spec",
+              "current_state": "intake_ready",
+              "created_at": 1792821076798,
+              "updated_at": 1792821076822
+            }
+          }
+        },
+        "requestId": "o144nndqgsomvlzdr7h",
+        "timestamp": 1792821080573
+      }
+    },
+    {
+      "label": "truncated: live changed config",
+      "utc": "2026-10-24T05:51:20.619Z",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\runtime-history-repair-20261024\\http-audit-final\\fixture",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": false,
+          "error": "WAL_HISTORY_TRUNCATED"
+        },
+        "requestId": "2nzvwg2380umvlzdr8q",
+        "timestamp": 1792821080618
+      }
+    },
+    {
+      "exit": {
+        "pid": 21924,
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-10-24T05:51:20.639Z"
+      }
+    },
+    {
+      "start": {
+        "pid": 33216,
+        "port": 55569,
+        "utc": "2026-10-24T05:51:21.041Z"
+      }
+    },
+    {
+      "label": "truncated: restarted changed config",
+      "utc": "2026-10-24T05:51:21.114Z",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\runtime-history-repair-20261024\\http-audit-final\\fixture",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": false,
+          "error": "WAL_HISTORY_TRUNCATED"
+        },
+        "requestId": "9tmsj2mxjcmmvlzdrmg",
+        "timestamp": 1792821081112
+      }
+    },
+    {
+      "exit": {
+        "pid": 33216,
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-10-24T05:51:21.134Z"
+      }
+    },
+    {
+      "start": {
+        "pid": 35604,
+        "port": 55579,
+        "utc": "2026-10-24T05:51:21.710Z"
+      }
+    },
+    {
+      "label": "rotation: normal before fault",
+      "utc": "2026-10-24T05:51:21.869Z",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\runtime-history-repair-20261024\\http-audit-final\\fixture",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": true,
+          "rebuilt_from_events": true,
+          "work_items": {
+            "WI-0001": {
+              "work_item_id": "WI-0001",
+              "workflow_type": "feature_spec",
+              "current_state": "intake_ready",
+              "created_at": 1792821076798,
+              "updated_at": 1792821076822
+            }
+          }
+        },
+        "requestId": "wgssbjib0pmvlzds7g",
+        "timestamp": 1792821081868
+      }
+    },
+    {
+      "label": "rotation: live changed config",
+      "utc": "2026-10-24T05:51:22.679Z",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\runtime-history-repair-20261024\\http-audit-final\\fixture",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": false,
+          "error": "CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK: restore the accepted configuration before continuing"
+        },
+        "requestId": "jt8w1f3zdgmvlzdsty",
+        "timestamp": 1792821082678
+      }
+    },
+    {
+      "exit": {
+        "pid": 35604,
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-10-24T05:51:22.696Z"
+      }
+    },
+    {
+      "start": {
+        "pid": 24276,
+        "port": 55584,
+        "utc": "2026-10-24T05:51:23.095Z"
+      }
+    },
+    {
+      "label": "rotation: restarted changed config",
+      "utc": "2026-10-24T05:51:23.268Z",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\runtime-history-repair-20261024\\http-audit-final\\fixture",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": false,
+          "error": "CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK: restore the accepted configuration before continuing"
+        },
+        "requestId": "md7mw246conmvlzdtac",
+        "timestamp": 1792821083268
+      }
+    },
+    {
+      "exit": {
+        "pid": 24276,
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-10-24T05:51:23.690Z"
+      }
+    },
+    {
+      "start": {
+        "pid": 7016,
+        "port": 55590,
+        "utc": "2026-10-24T05:51:24.089Z"
+      }
+    },
+    {
+      "label": "final original configuration and history restored",
+      "utc": "2026-10-24T05:51:24.197Z",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\runtime-history-repair-20261024\\http-audit-final\\fixture",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "success": true,
+          "rebuilt_from_events": true,
+          "work_items": {
+            "WI-0001": {
+              "work_item_id": "WI-0001",
+              "workflow_type": "feature_spec",
+              "current_state": "intake_ready",
+              "created_at": 1792821076798,
+              "updated_at": 1792821076822
+            }
+          }
+        },
+        "requestId": "s6kfa24nn9mvlzdu03",
+        "timestamp": 1792821084195
+      }
+    },
+    {
+      "verdict": "PASS"
+    },
+    {
+      "exit": {
+        "pid": 7016,
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-10-24T05:51:24.217Z"
+      }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "cwd": "D:/code/SpecForge/.tmp/runtime-history-worktree/packages/daemon-core",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test"
+  ],
+  "purpose": "032-daemon-final",
+  "start": "2026-10-24T05:49:41.610Z",
+  "expected_writes": "Isolated worktree build/test artifacts and local evidence"
+}

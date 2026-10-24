@@ -1,0 +1,50 @@
+$ vitest run tests/unit/wal.test.ts tests/unit/configuration-activation-loss.test.ts tests/unit/six-conformance-boundaries.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+stderr | tests/unit/wal.test.ts > WAL > createEvent > should create event with auto-generated eventId
+[WAL] Unknown category 'test' — event will be written but may not be replayed
+
+stderr | tests/unit/wal.test.ts > WAL > createEvent > should include schema version
+[WAL] Unknown category 'test' — event will be written but may not be replayed
+
+stderr | tests/unit/wal.test.ts > WAL > createEvent category validation > should create event with unknown category (soft warn, still written)
+[WAL] Unknown category 'unknown_cat' — event will be written but may not be replayed
+
+stderr | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > allows missing-record acceptance when all events are terminal (closed)
+[StateManager] WARNING: direct StateManager.transition() to critical state 'closed' for 'WI-0001'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\packages\daemon-core\tests\unit\configuration-activation-loss.test.ts:84:17
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > rejects missing activation after actual process exit and fresh process startup
+AssertionError: 3 |  * Configuration constants
+4 |  */
+5 | Object.defineProperty(exports, "__esModule", { value: true });
+6 | exports.CONFIG_SCHEMA_VERSION = exports.CONFIG_LAYER_ORDER = exports.CONFIG_DIRS = exports.CONFIG_FILE_NAMES = exports.SENSITIVE_FIELDS = exports.DEFAULT_CONFIG = void 0;
+7 | const directory_layout_1 = require("@specforge/types/directory-layout");
+8 | const user_level_paths_1 = require("@specforge/types/user-level-paths");
+          ^
+TypeError: require() async module "D:\code\SpecForge\packages\types\dist\user-level-paths.js" is unsupported. use "await import()" instead.
+      at <anonymous> (D:\code\SpecForge\packages\configuration\dist\constants.js:8:7)
+      at <anonymous> (D:\code\SpecForge\packages\configuration\dist\index.js:27:1)
+
+Bun v1.3.14 (Windows x64)
+: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ run tests/unit/configuration-activation-loss.test.ts:125:42
+    123|       const child = spawnSync(bun!, [script, f.root, action], { encodi…
+    124|       expect(child.error).toBeUndefined();
+    125|       expect(child.status, child.stderr).toBe(0);
+       |                                          ^
+    126|       const line = child.stdout.split(/\r?\n/).find(line => line.start…
+    127|       expect(line).toBeDefined();
+ ❯ tests/unit/configuration-activation-loss.test.ts:131:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+error: script "test" exited with code 1
