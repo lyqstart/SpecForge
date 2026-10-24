@@ -17,6 +17,7 @@ import { getHandler } from '../src/tools/ToolDispatcher.js';
 import { getRequiredGates } from '../src/tools/lib/required-gates.js';
 import { ensureProjectInit } from '../src/tools/lib/sf_project_init_core.js';
 import { readCurrentProjectSpecBinding } from '../src/tools/lib/candidate-generation-integrity.js';
+import { materializeImplementationBaseline } from '../src/tools/lib/implementation-baseline.js';
 
 function completeClassification(overrides: Record<string, unknown> = {}): Record<string, unknown> {
   return {
@@ -191,6 +192,7 @@ async function writeBaseWorkItem(projectRoot: string, workItemId: string): Promi
       entries: [],
     }, null, 2),
   );
+  await materializeImplementationBaseline(projectRoot, workItemId);
 }
 
 function mockDeps(initialState = 'gates_running') {
@@ -521,11 +523,14 @@ describe('Design Governance live closure', () => {
     await writeFile(
       workItemCandidateManifest(projectRoot, workItemId),
       JSON.stringify({
-        schema_version: '1.1',
+        schema_version: '1.0',
         work_item_id: workItemId,
         workflow_path: 'design_change_path',
         workflow_type: 'feature_spec_design_first',
         candidate_phase: 'design',
+        merge_required: true,
+        base_spec_version: 'PSV-0001',
+        project_spec_precondition_sha256: (await readCurrentProjectSpecBinding(projectRoot)).sha256,
         entries: [
           {
             candidate_path: 'candidates/project/modules/core/design.candidate.md',
@@ -575,6 +580,7 @@ describe('Design Governance live closure', () => {
         workflow_type: 'feature_spec_design_first',
         workflow_path: 'design_change_path',
         classification: 'architecture_change',
+        impact_scope: { planned_code_paths: [] },
       })
     );
     const designPath = workItemCandidateDesign(projectRoot, workItemId, 'core');
@@ -583,11 +589,14 @@ describe('Design Governance live closure', () => {
     await writeFile(
       workItemCandidateManifest(projectRoot, workItemId),
       JSON.stringify({
-        schema_version: '1.1',
+        schema_version: '1.0',
         work_item_id: workItemId,
         workflow_path: 'design_change_path',
         workflow_type: 'feature_spec_design_first',
         candidate_phase: 'design',
+        merge_required: true,
+        base_spec_version: 'PSV-0001',
+        project_spec_precondition_sha256: (await readCurrentProjectSpecBinding(projectRoot)).sha256,
         entries: [
           {
             candidate_path: 'candidates/project/modules/core/design.candidate.md',

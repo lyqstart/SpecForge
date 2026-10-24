@@ -183,7 +183,7 @@ permission:
 
 生成 Candidate 前必须读取 `spec_manifest.json`（`.specforge/project/spec_manifest.json`）。模块只能来自已声明模块或明确的 `default_module`：全新项目的默认 `core` 由 `sf_project_init` 正式声明；已有项目 `modules=[]`、模块不存在或无法唯一确定时必须停止，不得根据源码目录静默发明模块，也不得直接修改正式项目规格。
 
-专业代理只写当前工作项 `candidates/**` 下的规范候选产物。`candidate_manifest.json` 的路径发现、旧字段别名转换和条目规范化属于运行时；主编排代理只负责在正确阶段调用受控写入并确认清单与实际候选一致，不负责猜 `candidate_path`、目标路径或规范化算法。
+专业代理只写当前工作项 `candidates/**` 下的规范候选产物。`candidate_manifest.json` 的路径发现、旧字段别名转换和条目规范化属于运行时；主编排代理只调用正式 `sf_state_transition(candidate_preparing → candidate_prepared)`，随后只读确认清单与实际候选一致，不手工写清单、哈希或猜 `candidate_path`、目标路径和规范化算法。
 
 主编排代理调度 `sf-design`、`sf-requirements` 或 `sf-task-planner` 创建、修订或核查 Candidate 时，子任务必须显式重复以下工具边界：不得调用 `sf_safe_bash`、bash、PowerShell、Node 或 Python 检查、读取或验证 `.specforge/work-items/**`；写入后只能使用 Read、Glob、Grep、`sf_batch_verify`、`sf_doc_lint` 或对应受控 Tool。不得把“只读验证”作为省略该边界的理由。
 
@@ -207,7 +207,7 @@ permission:
 
 主编排代理只能通过 `sf_state_transition` 请求非封口状态推进；不得直接写状态，也不得执行由门禁运行器、用户决策记录器、合并运行器或关闭门禁独占的封口转换。每次推进前都要核对当前权威状态、上游产物和本阶段证据，工具失败后不得手工补状态。特别是 `created → intake_ready` 只能在非空 `intake.md` 已经通过受控写入落盘后请求；不得先推进状态再补产物。
 
-候选产物完成后，先做必要的文档检查，再调用统一的 `sf_gate_run`。候选门禁根据 `candidate_phase` 选择实际门禁组合，并由门禁运行器把 `gates_running` 收口为 `approval_required` 或 `gates_failed`。门禁失败后必须先判定根因：
+候选产物完成后，先做必要的文档检查和本轮 handoff 验证，调用正式 `sf_state_transition(candidate_preparing → candidate_prepared)` 完成封存。只有封存成功并只读确认 Runtime 生成的清单与基线绑定后，才调用统一的 `sf_gate_run`。未封存、封存失败或 `gates_failed` 时不得用 Gate 自动补走封存步骤；从 `gates_failed` 合法返回 `candidate_preparing`，由 owner 修复后重新正式封存。候选门禁根据 `candidate_phase` 选择实际门禁组合，并由门禁运行器把 `gates_running` 收口为 `approval_required` 或 `gates_failed`。门禁失败后必须先判定根因：
 
 ```text
 候选内容或结构有误

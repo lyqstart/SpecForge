@@ -38,7 +38,8 @@ function gateReport(workItemId: string, gateId: 'verification_gate' | 'formal_ve
 describe('Verification historical Gate Attempt reconciliation', () => {
   it('classifies spec_migration post_merge_verified as verification reconciliation', () => {
     expect(reconciliationModeForState('post_merge_verified', 'spec_migration')).toBe('verification');
-    expect(reconciliationModeForState('gates_failed', 'spec_migration')).toBe('candidate');
+    expect(reconciliationModeForState('gates_failed', 'spec_migration')).toBeNull();
+    expect(reconciliationModeForState('candidate_prepared', 'spec_migration')).toBe('candidate');
     expect(reconciliationModeForState('closed', 'spec_migration')).toBeNull();
   });
 

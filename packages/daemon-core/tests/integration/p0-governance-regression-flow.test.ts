@@ -19,6 +19,7 @@ import { promisify } from 'node:util';
 import { ToolDispatcher, type ToolDeps } from '../../src/tools/ToolDispatcher';
 import { renderVerificationReport } from '../../src/tools/lib/sf_artifact_write_core';
 import { sealPassingCandidateAttemptFixture } from '../helpers/candidate-generation-fixture';
+import { materializeImplementationBaseline } from '../../src/tools/lib/implementation-baseline';
 import '../../src/tools/index';
 
 const execFileAsync = promisify(execFile);
@@ -369,6 +370,7 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
     ],
   });
 
+  await materializeImplementationBaseline(projectRoot, workItemId);
   if (gateSummaryStatus === 'passed') {
     await sealPassingCandidateAttemptFixture({ projectRoot, workItemDir: dir, workItemId });
   }

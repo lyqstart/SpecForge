@@ -29,6 +29,10 @@ import {
   resolveWorkItemSpecArtifacts,
 } from '../lib/governance-invariants-v11';
 import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
+import { validateImplementationTruthBeforeSeal } from '../lib/implementation-baseline.js';
+import { validateCandidateProjectSpecBinding } from '../lib/candidate-generation-integrity.js';
+import { readUnresolvedHandoffValidationFailures } from '../lib/agent-handoff-v11.js';
+import { precheckCandidateManifestSchema, candidateManifestSchemaBlockCode } from '../lib/candidate-manifest-owner.js';
 import {
   precheckUserDecisionSchema,
   userDecisionSchemaBlockCode,
@@ -429,35 +433,29 @@ async function transitionGateState(
 
 export function candidateGateRecoverySequence(
   currentState: string,
-  workflowType: string
+  _workflowType: string
 ): string[] {
-  if (currentState === 'gates_failed') {
-    return [
-      'gates_failed',
-      'candidate_preparing',
-      'candidate_prepared',
-      'gates_running',
-    ];
-  }
+  if (currentState === 'candidate_prepared') return ['candidate_prepared', 'gates_running'];
+  if (currentState === 'gates_running') return ['gates_running'];
+  return [];
+}
 
-  return workflowType === 'contract_change'
-    ? [
-        'created',
-        'intake_ready',
-        'candidate_preparing',
-        'candidate_prepared',
-        'gates_running',
-      ]
-    : [
-        'created',
-        'intake_ready',
-        'impact_analyzing',
-        'impact_analyzed',
-        'workflow_selected',
-        'candidate_preparing',
-        'candidate_prepared',
-        'gates_running',
-      ];
+// All unified Candidate Gate aliases, explicit subsets and historical
+// reconciliation share this preflight. It runs before an Attempt is written.
+async function assertCandidateSealed(projectRoot: string, workItemId: string, currentState: string | null): Promise<void> {
+  if (!currentState || !['candidate_prepared', 'gates_running'].includes(currentState)) {
+    throw new Error(`CANDIDATE_SEAL_REQUIRED: current=${currentState ?? 'missing'}; use the formal sf_state_transition candidate_preparing -> candidate_prepared owner before Candidate gates. Recover gates_failed to candidate_preparing and seal again; do not hand-write manifest or hashes.`);
+  }
+  const dir = workItemRoot(projectRoot, workItemId);
+  const schema = candidateManifestSchemaBlockCode(await precheckCandidateManifestSchema(dir, workItemId));
+  if (schema) throw new Error(`CANDIDATE_SEAL_INVALID: ${schema}`);
+  const manifest = JSON.parse(await fs.readFile(workItemCandidateManifest(projectRoot, workItemId), 'utf8'));
+  const binding = await validateCandidateProjectSpecBinding({ projectRoot, manifest });
+  const truth = await validateImplementationTruthBeforeSeal({ projectRoot, workItemId });
+  const handoffs = await readUnresolvedHandoffValidationFailures(dir);
+  const errors = [...binding.errors, ...truth.errors];
+  if (handoffs.length) errors.push('HANDOFF_VALIDATION_UNRESOLVED');
+  if (errors.length) throw new Error(`CANDIDATE_SEAL_INVALID: ${errors.join('; ')}`);
 }
 
 // GATE_RETRY_STATE_V27
@@ -491,15 +489,8 @@ async function autoAdvanceCandidateState(input: {
 
   const currentState = input.currentState;
   const recoverableGateStates = [
-    'created',
-    'intake_ready',
-    'impact_analyzing',
-    'impact_analyzed',
-    'workflow_selected',
-    'candidate_preparing',
     'candidate_prepared',
     'gates_running',
-    'gates_failed',
   ];
 
   if (!currentState || !recoverableGateStates.includes(currentState)) {
@@ -721,7 +712,7 @@ export function reconciliationModeForState(
 ): 'candidate' | 'verification' | null {
   if (
     currentState &&
-    ['gates_failed', 'candidate_preparing', 'candidate_prepared', 'gates_running'].includes(
+    ['candidate_prepared', 'gates_running'].includes(
       currentState,
     )
   ) {
@@ -1150,6 +1141,9 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
       workflowTypeFromPath(workflowPath);
     const reconcileAttemptId = normalizeReconcileAttemptId(args['reconcile_attempt_id']);
     if (reconcileAttemptId) {
+      if (!isVerificationRecoverableState(currentState, workflowType)) {
+        await assertCandidateSealed(projectRoot, workItemId, currentState);
+      }
       if (
         (Array.isArray(args['gate_ids']) && args['gate_ids'].length > 0) ||
         (typeof args['gate_type'] === 'string' && args['gate_type'].trim().length > 0)
@@ -1234,6 +1228,10 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
       candidatePhase,
       workflowType
     );
+    const unsealedState = !currentState || ['created', 'intake_ready', 'impact_analyzing', 'impact_analyzed', 'workflow_selected', 'candidate_preparing', 'gates_failed'].includes(currentState);
+    if (unsealedState || normalized.gateIds.some(gateId => !POST_CANDIDATE_GATES.has(gateId))) {
+      await assertCandidateSealed(projectRoot, workItemId, currentState);
+    }
     if (normalized.gateIds.some(gateId => gateId === 'merge_ready_gate' || gateId === 'close_gate')) {
       const decisionSchemaPrecheck = await precheckUserDecisionSchema(workItemDir, workItemId);
       const decisionSchemaBlockCode = userDecisionSchemaBlockCode(decisionSchemaPrecheck);

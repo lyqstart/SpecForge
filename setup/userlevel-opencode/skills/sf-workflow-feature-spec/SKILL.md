@@ -122,7 +122,7 @@ Feature Spec 是规格优先工作流，验证强度最高。必须保证用户�
 1. 非 seal 状态可按产物完成事实最多补一次 `sf_state_transition`；失败不得循环。
 2. `gates_running -> approval_required` 不手动推进。Gate 全部通过后，直接展示 Candidate 摘要并请求用户审批。
 3. 用户同意后，只执行 `sf_user_decision_record` 和 `sf_merge_run`；不得因 state.json 显示滞后而循环推进状态。
-4. Candidate 文件必须通过 `sf_artifact_write` 写入 `requirements`、`design`、`tasks` / `candidate_tasks`、`trace_delta`、`candidate_manifest`；不得使用 shell/helper 写 `.specforge`。
+4. 专业 Candidate 文件必须通过 `sf_artifact_write` 写入 `requirements`、`design`、`tasks` / `candidate_tasks`、`trace_delta`；`candidate_manifest` 由 Runtime 在正式封存时生成，Agent 不得手写清单或绑定哈希；不得使用 shell/helper 写 `.specforge`。
 5. Gate 阶段不得创建 placeholder 的 `verification_report`、`merge_report`、`evidence_manifest` 来通过当前阶段。
 6. 每个阶段最多一次自检、一次修正、一次继续；仍失败则报告阻塞事实。
 7. 写权限撤销顺序固定为：实现完成后先运行一次 `sf_changed_files_audit`，再调度 `sf-verifier`，再写入 `verification_report` 与 `evidence_manifest`，最后在 close_gate 前调用 `sf_code_permission revoke`。不得在验证前 revoke。
@@ -286,7 +286,7 @@ Orchestrator 随后只读最终 `candidate_manifest.json`，确认 required cand
 
 #### Step 4.6：流转到 candidate_prepared
 
-调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="candidate_prepared"，evidence="professional candidates complete; Runtime materializes candidate_manifest"）。
+确认 Step 4.5 的正式封存已成功，读取权威状态确认为 `candidate_prepared`；不要重复调用同一次转换。封存失败时保留原始错误，禁止改用 Gate 补走状态或手写清单。
 
 **产物：** 专业 Candidate + Runtime 物化的 `candidate_manifest.json`
 
@@ -546,7 +546,7 @@ Orchestrator 随后只读最终 `candidate_manifest.json`，确认 required cand
 
 ## 一、Gate 前硬条件
 
-在调用 `sf_state_transition(candidate_preparing → candidate_prepared)` 或 `sf_gate_run` 前，必须完成 Candidate Completeness Preflight。
+Preflight 分为封存前与 Gate 前两步。调用 `sf_state_transition(candidate_preparing → candidate_prepared)` 前验证下列第 1–4、6 项；只有封存成功后，才验证 Runtime 生成的第 5、7、8 项并调用 `sf_gate_run`。不得在封存前要求已生成的绑定，也不得手工补清单或哈希。统一 Gate 的别名、单项选择及历史 Attempt 恢复均不能替代正式封存。
 
 Preflight 必须确认：
 

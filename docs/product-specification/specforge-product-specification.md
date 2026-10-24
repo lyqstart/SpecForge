@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.20
+> Product release version: 1.0.21
 >
 > Product version epoch: 1
 >
@@ -540,6 +540,8 @@ Verification Gate 与 Close Gate 必须使用同一证据完整性判据。报�
 当原 WI 已是 `closed`，而同一完整性判据或既有 Formal Version 判据直接证明原关闭所依赖的实现／验证证据无效时，Close owner 在用户明确确认后可以执行普通 `recover_invalid_closure`。恢复前必须以不可变 generation archive 保存将被覆盖的原 Verification、Evidence Manifest、Semantic Closure、Gate、Formal Version 与既有恢复记录，记录逐文件大小、SHA-256 和归档 Manifest 哈希；恢复记录绑定原 Close 证据、具体失败判据、原 StateManager Close 时点和归档身份。若原始 Close 事件之前的守护拒绝数大于原审计报告记录数，该原始时间线与字节身份可证明漏审；必须一并归档原 Changed Files Audit、Write Guard 和 resolution。仅缺新引入的绑定字段、事后新增拒绝或证据不可读取均不能单独证明原关闭无效。仅以受控补偿事件执行 `closed → implementation_ready`，代码权限保持撤销，保留原 Candidate、Merge、User Decision 与全部历史事件。恢复后由相应 owner 重新取证、生成验证报告与证据清单、刷新语义闭包、重跑 Verification/Formal Version Gate，再执行 Close。普通状态入口仍禁止从 `closed` 跳出；规格本身无效时必须使用 §6.5 的独立路径，不得混用。
 
 ---
+
+候选正式检查必须先完成 §6.4 的封存事务。统一 Gate 入口的别名、单项检查、组合检查和历史 Attempt 对账不得从未封存状态自动补走 `candidate_preparing → candidate_prepared`；必须在创建 Attempt 或推进状态前拒绝。`gates_failed` 的内容修复须先合法返回 `candidate_preparing`，再由正式封存 owner 校验并生成绑定。候选事实校验须区分肯定声明与其否定或解释，不能仅因正确说明包含“绿地新建”“实现不存在”等词语便判为矛盾；真实矛盾、内容漂移和绑定缺失继续拒绝。
 
 # 7. Daemon
 

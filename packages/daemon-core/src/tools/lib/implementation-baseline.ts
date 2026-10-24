@@ -308,18 +308,37 @@ async function walkCandidateMarkdown(root: string): Promise<string[]> {
 }
 
 function contradictionLines(content: string, existingScopePaths: string[]): string[] {
-  const patterns = [
-    /all_files_new\s*["']?\s*[:=]\s*true/i,
-    /Current Implementation.{0,120}(?:\bnone\b|\bmissing\b|\babsent\b|does not exist|不存在|无(?:（|\s|$))/i,
-    /(?:当前|现有|业务)\s*(?:源代码|代码|实现).{0,80}(?:不存在|缺失|为空|：无|:\s*none)/i,
-    /绿地(?:项目|新建|\s+all_files_new\s*=\s*true)/i,
-  ];
+  // Inspect individual assertions, not an entire paragraph. Negation applies
+  // only to its own claim: a truthful sentence must not mask a later lie.
+  const negated = (prefix: string) =>
+    /(?:并非|并不是|不是|不属于|非|禁止|不得|不能|无需|没有|\bnot|\bnever|\bno)\s*(?:(?:一个|一次|a|an)\s*)?(?:[「“"']\s*)?$/i.test(prefix);
   const normalizedScopes = existingScopePaths.map(value => value.toLowerCase());
   return content.split(/\r?\n/).filter(line => {
-    if (patterns.some(pattern => pattern.test(line))) return true;
-    const lower = line.toLowerCase();
-    return normalizedScopes.some(scope => lower.includes(scope)) &&
-      /(?:\|\s*新建\s*\||\bnew file\b|\bcreate\b|目标文件不存在)/i.test(line);
+    const plain = line.replace(/\*\*|`/g, '');
+    return plain.split(/[，,；;。]/).some(clause => {
+      if (/all_files_new\s*["']?\s*[:=]\s*true\b/i.test(clause)) return true;
+      for (const match of clause.matchAll(/绿地(?:项目|新建)|\bgreenfield\b/gi)) {
+        if (!negated(clause.slice(0, match.index))) return true;
+      }
+      // Keep the subject and predicate together; do not span unrelated prose
+      // such as “以已知当前实现为差量基础，不存在「当前实现未知」”.
+      const chinese = /(?:当前|现有|业务)\s*(?:业务)?\s*(?:源代码|代码|实现)\s*(?:目前|仍然|仍|尚|是|为|：|:|\s)*(不存在|缺失|为空|无(?:\s|$)|none\b)/gi;
+      for (const match of clause.matchAll(chinese)) {
+        if (!negated(clause.slice(0, match.index))) return true;
+      }
+      const english = /Current Implementation\s*(?::|：|\|)?\s*(?:is\s+)?(none\b|missing\b|absent\b|does not exist|不存在|无(?:\s|$))/gi;
+      for (const match of clause.matchAll(english)) {
+        if (!negated(clause.slice(0, match.index))) return true;
+      }
+      const lower = clause.toLowerCase();
+      if (!normalizedScopes.some(scope => lower.includes(scope))) return false;
+      if (/\|\s*(?:新建|create|new file)\s*\|/i.test(clause)) return true;
+      // A file action must be a declaration, not a method name or a warning.
+      return normalizedScopes.some(scope => {
+        const action = new RegExp(`${escapeRegex(scope)}\\s*[:：]\\s*(?:new file|create|新建|目标文件不存在)(?:\\b|$)`, 'i');
+        return action.test(clause);
+      });
+    });
   });
 }
 
