@@ -1,0 +1,10 @@
+{
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    "D:/code/SpecForge/.tmp/runtime-history-repair-20261024/promote-tested-runtime.cjs"
+  ],
+  "purpose": "060-promote-tested-runtime",
+  "start": "2026-10-24T05:55:41.290Z",
+  "expected_writes": "Isolated worktree build/test artifacts and local evidence"
+}

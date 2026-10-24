@@ -1,0 +1,13 @@
+{
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "precheck:release",
+    "--candidate-id",
+    "commit-3cb3b959a92c37d120f0bd852a3a862ae9383787"
+  ],
+  "purpose": "059-main-precheck",
+  "start": "2026-10-24T05:55:14.372Z",
+  "expected_writes": "Isolated worktree build/test artifacts and local evidence"
+}

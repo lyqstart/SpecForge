@@ -1,0 +1,10 @@
+{
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    "D:/code/SpecForge/.tmp/runtime-history-repair-20261024/post-merge-audit.cjs"
+  ],
+  "purpose": "056-post-merge-audit",
+  "start": "2026-10-24T05:54:45.279Z",
+  "expected_writes": "Isolated worktree build/test artifacts and local evidence"
+}

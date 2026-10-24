@@ -1,0 +1,4 @@
+const fs=require('fs'),path=require('path'),crypto=require('crypto'),assert=require('assert/strict');
+const proof=JSON.parse(fs.readFileSync('docs/archive/2026-10-24-runtime-history-repair/provenance.json'));
+const records=[];for(const e of proof.binaries){const src=path.join('.tmp/runtime-history-worktree/release/bin',e.name),dest=path.join('release/bin',e.name);const bytes=fs.readFileSync(src),hash=b=>crypto.createHash('sha256').update(b).digest('hex');assert.equal(hash(bytes),e.sha256);records.push({file:dest,rebuild_sha256:hash(fs.readFileSync(dest)),tested_sha256:e.sha256});fs.copyFileSync(src,dest);assert.equal(hash(fs.readFileSync(dest)),e.sha256);}
+fs.writeFileSync(path.join(__dirname,'runtime-promotion.json'),JSON.stringify({utc:new Date().toISOString(),reason:'Use exactly the tested and installed candidate bytes; independent main rebuild daemon bytes differ.',records},null,2),{flag:'wx'});console.log(JSON.stringify(records));

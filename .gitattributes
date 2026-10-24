@@ -21,3 +21,4 @@ docs/archive/2026-10-19-config-activation-loss-evidence/** -text -diff
 /templates/.specforge/config/observability.json text eol=lf
 /setup/userlevel-opencode/templates/.specforge/config/observability.json text eol=lf
 /docs/archive/2026-10-24-runtime-history-repair/** -text -diff
+/docs/archive/2026-10-24-runtime-history-delivery/** -text -diff

@@ -1,0 +1,16 @@
+{
+  "utc": "2026-10-24T05:55:42.078Z",
+  "reason": "Use exactly the tested and installed candidate bytes; independent main rebuild daemon bytes differ.",
+  "records": [
+    {
+      "file": "release\\bin\\specforge.exe",
+      "rebuild_sha256": "9754eadca12ccb687201e5c3d06459b0dc024a5c712138ababd1b6fc53a61ce5",
+      "tested_sha256": "9754eadca12ccb687201e5c3d06459b0dc024a5c712138ababd1b6fc53a61ce5"
+    },
+    {
+      "file": "release\\bin\\specforged.exe",
+      "rebuild_sha256": "db5bf5d85a4101fd53c6e65485550f66e65bb47fd6b951a7d50a7cf2316abd97",
+      "tested_sha256": "d98f0f616f849f0411e38afb03092cc6232ef27f0e5a091ff9690c2d3e699b4b"
+    }
+  ]
+}

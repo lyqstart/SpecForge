@@ -1,0 +1,11 @@
+{
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "build"
+  ],
+  "purpose": "055-main-build",
+  "start": "2026-10-24T05:54:21.724Z",
+  "expected_writes": "Isolated worktree build/test artifacts and local evidence"
+}
