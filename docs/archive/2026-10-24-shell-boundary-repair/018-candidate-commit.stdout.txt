@@ -1,0 +1,3 @@
+[codex/shell-boundary-repair cb9f2da9] fix: confine safe-bash to internal read-only operations
+ 38 files changed, 472 insertions(+), 1150 deletions(-)
+ create mode 100644 packages/daemon-core/tests/unit/shell-readonly-boundary.test.ts

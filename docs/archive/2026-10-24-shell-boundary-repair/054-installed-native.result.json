@@ -1,0 +1,16 @@
+{
+  "id": "054-installed-native",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    ".tmp/shell-boundary-repair-20261024/installed-native.ts"
+  ],
+  "purpose": "054-installed-native",
+  "started": "2026-10-24T09:07:20.676Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T09:07:21.256Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_repository_status": ""
+}

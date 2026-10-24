@@ -1,0 +1,19 @@
+{
+  "id": "044-start-new",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/.config/opencode/sf-user/bin/specforge.exe",
+  "args": [
+    "daemon",
+    "start",
+    "--detach",
+    "--json"
+  ],
+  "purpose": "044-start-new",
+  "started": "2026-10-24T09:06:19.236Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T09:06:19.821Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_repository_status": ""
+}

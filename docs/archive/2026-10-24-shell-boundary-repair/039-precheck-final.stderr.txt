@@ -1,0 +1,1 @@
+$ bun scripts/run-current-release-precheck.ts --candidate-id "commit-4fc2e8a978c2537f0207fc348f5d9141efe9177e"

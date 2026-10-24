@@ -1,0 +1,15 @@
+{
+  "id": "035-stage-docs",
+  "cwd": "D:/code/SpecForge",
+  "exe": "git",
+  "args": [
+    "add",
+    "--",
+    "docs/product-specification/specforge-product-specification.md",
+    "docs/rule/specforge-active-development-rules.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md"
+  ],
+  "purpose": "035-stage-docs",
+  "started": "2026-10-24T09:05:20.916Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged"
+}

@@ -1,0 +1,3 @@
+const fs=require('fs');const source='packages/daemon-core/src/tools/lib/sf_safe_bash_executor.ts',target='setup/userlevel-opencode/tools/lib/sf_safe_bash_executor.ts';fs.writeFileSync(target,fs.readFileSync(source));
+fs.appendFileSync('docs/rule/specforge-active-development-rules.md','\n## EXP-285：未知命令效果不得当作只读证明\n\n脚本、解释器、子进程、环境注入及动态加载的文件效果不能由命令文字目标提取证明。无已验证隔离执行能力时必须在启动进程前拒绝，受控只读操作须由内部有限解释器执行；不得因角色、活动任务、报告路径或旧授权放宽。生产与部署库以及验证备用执行器必须共享边界；回归同时覆盖真实文件零副作用、合法读取、复合文本、注入、重启和拒绝日志。\n');
+fs.appendFileSync('docs/rule/specforge-development-error-ledger-and-experience.md','\n### ERR-1879：修改载体的局部失败按断点恢复\n\n- 补丁锚点不完整被apply_patch拒绝且未写入，随后使用精确完整锚点；004前面源码修改已生效，末尾copyFileSync返回UNKNOWN，尚未追加EXP。检查文件后只补同步模板和追加规则，不重复前面变换。原始异常保留，不作为产品测试结果。\n');

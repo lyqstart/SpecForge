@@ -1,0 +1,21 @@
+node:fs:2483
+    return binding.writeFileUtf8(
+                   ^
+
+Error: UNKNOWN: unknown error, open 'D:\code\SpecForge\packages\daemon-core\src\tools\lib\sf_safe_bash_core.ts'
+    at Object.writeFileSync (node:fs:2483:20)
+    at Object.<anonymous> (D:\code\SpecForge\.tmp\shell-boundary-repair-20261024\freeze.cjs:2:137)
+    at Module._compile (node:internal/modules/cjs/loader:1872:14)
+    at Object..js (node:internal/modules/cjs/loader:2003:10)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4094,
+  code: 'UNKNOWN',
+  syscall: 'open',
+  path: 'D:\\code\\SpecForge\\packages\\daemon-core\\src\\tools\\lib\\sf_safe_bash_core.ts'
+}
+
+Node.js v24.19.0

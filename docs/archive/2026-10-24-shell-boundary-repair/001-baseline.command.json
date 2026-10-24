@@ -1,0 +1,11 @@
+{
+  "id": "001-baseline",
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    ".tmp/shell-boundary-repair-20261024/baseline.cjs"
+  ],
+  "purpose": "001-baseline",
+  "started": "2026-10-24T08:50:07.519Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged"
+}

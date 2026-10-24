@@ -1,0 +1,22 @@
+node:fs:3177
+  binding.copyFile(
+          ^
+
+Error: UNKNOWN: unknown error, copyfile 'D:\code\SpecForge\packages\daemon-core\src\tools\lib\sf_safe_bash_executor.ts' -> 'D:\code\SpecForge\setup\userlevel-opencode\tools\lib\sf_safe_bash_executor.ts'
+    at Object.copyFileSync (node:fs:3177:11)
+    at Object.<anonymous> (D:\code\SpecForge\.tmp\shell-boundary-repair-20261024\wire-audit.cjs:13:4)
+    at Module._compile (node:internal/modules/cjs/loader:1872:14)
+    at Object..js (node:internal/modules/cjs/loader:2003:10)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4094,
+  code: 'UNKNOWN',
+  syscall: 'copyfile',
+  path: 'D:\\code\\SpecForge\\packages\\daemon-core\\src\\tools\\lib\\sf_safe_bash_executor.ts',
+  dest: 'D:\\code\\SpecForge\\setup\\userlevel-opencode\\tools\\lib\\sf_safe_bash_executor.ts'
+}
+
+Node.js v24.19.0

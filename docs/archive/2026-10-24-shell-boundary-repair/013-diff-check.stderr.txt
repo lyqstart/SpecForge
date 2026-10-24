@@ -1,0 +1,7 @@
+warning: in the working copy of 'docs/engineering-lessons/universal/shell-command-execution.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/rule/specforge-active-development-rules.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/rule/specforge-development-error-ledger-and-experience.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'setup/userlevel-opencode/agents/sf-executor.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'setup/userlevel-opencode/agents/sf-orchestrator.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'setup/userlevel-opencode/agents/sf-verifier.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'setup/userlevel-opencode/skills/superpowers-engineering-lessons/SKILL.md', LF will be replaced by CRLF the next time Git touches it

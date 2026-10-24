@@ -1,0 +1,14 @@
+const fs=require('fs'),path=require('path'),assert=require('assert/strict');
+function replace(file,old,value){let s=fs.readFileSync(file,'utf8');assert.ok(s.includes(old),file+' missing anchor');fs.writeFileSync(file,s.replace(old,value));}
+const files=['package.json',...fs.readdirSync('packages').map(p=>'packages/'+p+'/package.json').filter(f=>fs.existsSync(f))];
+for(const f of files)replace(f,'"version": "1.0.19"','"version": "1.0.20"');
+for(const f of ['tests/unit/current-product-version-contract.test.ts','packages/observability/tests/unit/project-structure.test.ts','packages/cli/tests/help-system.test.ts']){let s=fs.readFileSync(f,'utf8');assert.ok(s.includes('1.0.19'));fs.writeFileSync(f,s.replaceAll('1.0.19','1.0.20'));}
+const file='setup/userlevel-opencode/tools/sf_safe_bash.ts';let s=fs.readFileSync(file,'utf8');const start=s.indexOf('  description: `'),end=s.indexOf('`,\n  args:',start);assert.ok(start>=0&&end>start);s=s.slice(0,start)+`  description: \`受控只读操作入口（SPS §9.2 / D18）。在 Runtime 内部读取，不启动 Shell 或子进程。
+支持 pwd/Get-Location、echo/Write-Output 字面文字、cat/type/Get-Content 文件、ls/dir/Get-ChildItem 目录、Test-Path、Get-FileHash/sha256sum，以及 sleep/Start-Sleep 的内部等待。
+只接受单条完整的字面参数；不展开变量、管道、重定向或复合语句。读取限制在项目普通文件，治理文件请使用受控 owner。
+当前脚本、解释器、构建、测试、任意外部可执行文件均不可用，env/stdin 参数也拒绝。拒绝不是测试通过，不得改用其他 Shell、辅助脚本或原生 bash 重试。
+返回 success / exitCode / stdout / stderr / rejected / timeout；shell 始终为 null。\``+s.slice(end+1);s=s.replace('要执行的 shell 命令。禁止包含 cd、cat、find、grep、mkdir、heredoc 等（工具会拦截并给出替代建议）。','单条受控只读操作；脚本、构建、测试及复合命令均拒绝。').replace('支持 ~ 解析为 home。','必须位于项目内；不支持 ~ 或外部目录。').replace('超时会 SIGKILL 子进程。','仅限制内部只读操作，不启动子进程。').replace('额外环境变量（合并到当前 env）。','兼容字段；当前提供该字段将拒绝执行。').replace('写入子进程 stdin 的内容。多数命令不需要。','兼容字段；当前提供该字段将拒绝执行。');fs.writeFileSync(file,s);
+replace('setup/userlevel-opencode/agents/sf-verifier.md','- `sf_safe_bash` 只用于执行目标项目自身的测试、构建、lint、类型检查和 CLI\n  冒烟命令，不用于读取治理文件或运行时凭据。','- `sf_safe_bash` 当前只提供 Runtime 内部受控只读操作（SPS §9.2 / D18）。脚本、测试、构建、lint、类型检查和 CLI 外部执行均不可用，不得绕到其他执行器；拒绝必须记为未执行，不能记为验证通过。治理文件与运行时凭据仍不得经此入口读取。');
+replace('packages/daemon-core/tests/unit/semantic-closure-contract-alignment.test.ts',"expect(verifier).toContain('sf_safe_bash` 只用于执行目标项目自身的测试');","expect(verifier).toContain('sf_safe_bash` 当前只提供 Runtime 内部受控只读操作');");
+for(const file of ['setup/userlevel-opencode/agents/sf-executor.md','setup/userlevel-opencode/agents/sf-orchestrator.md','setup/userlevel-opencode/skills/superpowers-engineering-lessons/SKILL.md','docs/engineering-lessons/universal/shell-command-execution.md']){
+let s=fs.readFileSync(file,'utf8');const note='\n> 当前执行范围（SPS §9.2 / D18）：sf_safe_bash 仅执行 Runtime 内部受控只读操作，绝不启动 Shell/子进程。脚本、构建和测试命令当前明确拒绝；不得把拒绝当作验证通过，也不得更换工具绕过。本文下述通用 shell、spawn、编码包装及构建示例不构成当前产品执行能力或操作指令；恢复这些能力须先完成隔离执行架构验收。\n';const front=s.startsWith('---')?s.indexOf('\n---',3)+4:0;assert.ok(front>=0);s=s.slice(0,front)+note+s.slice(front);fs.writeFileSync(file,s);}

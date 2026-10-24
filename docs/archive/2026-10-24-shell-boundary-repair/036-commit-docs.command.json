@@ -1,0 +1,13 @@
+{
+  "id": "036-commit-docs",
+  "cwd": "D:/code/SpecForge",
+  "exe": "git",
+  "args": [
+    "commit",
+    "-m",
+    "docs: align containment release identity and rule provenance"
+  ],
+  "purpose": "036-commit-docs",
+  "started": "2026-10-24T09:05:25.584Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged"
+}

@@ -1,0 +1,17 @@
+{
+  "id": "028-original-business",
+  "cwd": "D:/code/sf-acceptance-six",
+  "exe": "node",
+  "args": [
+    "--test",
+    "test/app.test.js"
+  ],
+  "purpose": "028-original-business",
+  "started": "2026-10-24T08:58:33.107Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T08:58:33.366Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_repository_status": ""
+}

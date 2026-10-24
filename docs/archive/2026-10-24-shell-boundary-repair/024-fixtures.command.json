@@ -1,0 +1,11 @@
+{
+  "id": "024-fixtures",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    ".tmp/shell-boundary-repair-20261024/prepare-fixtures.ts"
+  ],
+  "purpose": "024-fixtures",
+  "started": "2026-10-24T08:57:21.160Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged"
+}

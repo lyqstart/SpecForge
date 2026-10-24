@@ -1,0 +1,11 @@
+{
+  "id": "030-prepare-native",
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    ".tmp/shell-boundary-repair-20261024/prepare-native.cjs"
+  ],
+  "purpose": "030-prepare-native",
+  "started": "2026-10-24T08:59:22.307Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged"
+}

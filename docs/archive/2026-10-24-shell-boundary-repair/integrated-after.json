@@ -1,0 +1,1197 @@
+{
+  "utc": "2026-10-24T09:07:05.305Z",
+  "exit_code": 0,
+  "records": [
+    {
+      "label": "installed health",
+      "started": "2026-10-24T09:06:57.364Z",
+      "finished": "2026-10-24T09:06:57.414Z",
+      "route": "/health",
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"status\":\"ok\",\"service\":\"daemon-core\",\"version\":\"1.0.20\",\"uptime\":6},\"requestId\":\"1h6hohsc2jsmvm6dbem\",\"timestamp\":1792832817406}"
+    },
+    {
+      "pid": 33220,
+      "phase": "after"
+    },
+    {
+      "installed_file_hashes": [
+        {
+          "path": "AGENTS.md",
+          "expected": "6db6ff5fc140809d23f41cd0094cd545b064cb80cadaae0540b6e0e22157cf20",
+          "actual": "6db6ff5fc140809d23f41cd0094cd545b064cb80cadaae0540b6e0e22157cf20"
+        },
+        {
+          "path": "agents/_AGENT_BASE.md",
+          "expected": "54d2b515c26397f1bcc07a120117e44d660d7a3f13fb5a17dd1168bec9aa20ef",
+          "actual": "54d2b515c26397f1bcc07a120117e44d660d7a3f13fb5a17dd1168bec9aa20ef"
+        },
+        {
+          "path": "agents/sf-analyst.md",
+          "expected": "d7d28f830bd7d206c6a73f5f6d6b3accc28a45ca9e83b54f02678decda7bcec1",
+          "actual": "d7d28f830bd7d206c6a73f5f6d6b3accc28a45ca9e83b54f02678decda7bcec1"
+        },
+        {
+          "path": "agents/sf-debugger.md",
+          "expected": "704a5a3a3e62807ba818afbe4ebc9f75a45c9750a4a6f916aa2655a302657967",
+          "actual": "704a5a3a3e62807ba818afbe4ebc9f75a45c9750a4a6f916aa2655a302657967"
+        },
+        {
+          "path": "agents/sf-design.md",
+          "expected": "d657bbfffb91c850d456c12b31b8e6cc22ab4d1c12ee6af2c78fb4c9ecf51fc0",
+          "actual": "d657bbfffb91c850d456c12b31b8e6cc22ab4d1c12ee6af2c78fb4c9ecf51fc0"
+        },
+        {
+          "path": "agents/sf-executor.md",
+          "expected": "415f6a7f386945c79f66b8e825161c03738e93043e80031134399ed30b767fd9",
+          "actual": "415f6a7f386945c79f66b8e825161c03738e93043e80031134399ed30b767fd9"
+        },
+        {
+          "path": "agents/sf-knowledge.md",
+          "expected": "45e8063201dca6458329195288ee7a218bc0c5a21ef3cd7b08f3a9f5bf2a7770",
+          "actual": "45e8063201dca6458329195288ee7a218bc0c5a21ef3cd7b08f3a9f5bf2a7770"
+        },
+        {
+          "path": "agents/sf-orchestrator.md",
+          "expected": "146712b651ff43df7b4feed0b3923e6081020e1eee1d8003d840c91ae19247bd",
+          "actual": "146712b651ff43df7b4feed0b3923e6081020e1eee1d8003d840c91ae19247bd"
+        },
+        {
+          "path": "agents/sf-requirements.md",
+          "expected": "760cfd3c2645122542774fc22a5b2abbf1c683a9f9e774c1259b35c515bc6a77",
+          "actual": "760cfd3c2645122542774fc22a5b2abbf1c683a9f9e774c1259b35c515bc6a77"
+        },
+        {
+          "path": "agents/sf-reviewer.md",
+          "expected": "fff375595ae59e18887f36c3cbf6d6647f3f5ba0cfc67262d6090c60b9798af1",
+          "actual": "fff375595ae59e18887f36c3cbf6d6647f3f5ba0cfc67262d6090c60b9798af1"
+        },
+        {
+          "path": "agents/sf-task-planner.md",
+          "expected": "bca7001985b5ea6b6e38681522d78cadc8bac3a9e3be102925b77aa7a8b2d93f",
+          "actual": "bca7001985b5ea6b6e38681522d78cadc8bac3a9e3be102925b77aa7a8b2d93f"
+        },
+        {
+          "path": "agents/sf-verifier.md",
+          "expected": "f40a39348daac776964052f84e7c38d63ce259372cc41dcbc24ca67b3b5b2837",
+          "actual": "f40a39348daac776964052f84e7c38d63ce259372cc41dcbc24ca67b3b5b2837"
+        },
+        {
+          "path": "plugins/sf_specforge.ts",
+          "expected": "fe4bf0ee410ebb993576e783a6102621dbdabe38d2d5882ed105097449c32b7c",
+          "actual": "fe4bf0ee410ebb993576e783a6102621dbdabe38d2d5882ed105097449c32b7c"
+        },
+        {
+          "path": "sf-user/bin/specforge.exe",
+          "expected": "ccbd1bff136e15e93b2237dae48af61d86257f2de501d4c3b3e393e78d0a8185",
+          "actual": "ccbd1bff136e15e93b2237dae48af61d86257f2de501d4c3b3e393e78d0a8185"
+        },
+        {
+          "path": "sf-user/bin/specforged.exe",
+          "expected": "974e5325728452a40beb9bd31a4041b6b46d2db09817a663fb7c8875a5886612",
+          "actual": "974e5325728452a40beb9bd31a4041b6b46d2db09817a663fb7c8875a5886612"
+        },
+        {
+          "path": "sf-user/lib/sf_plugin_client.ts",
+          "expected": "ded998751004fd597b920180a8cef11a78f5b72c21f6cc4c79f55875bf974c99",
+          "actual": "ded998751004fd597b920180a8cef11a78f5b72c21f6cc4c79f55875bf974c99"
+        },
+        {
+          "path": "sf-user/lib/sf_thin_plugin.ts",
+          "expected": "f7e392aaf2022cb0595c05dc262736f99b3ec3bcf1fc7b804145256f93c7c8c6",
+          "actual": "f7e392aaf2022cb0595c05dc262736f99b3ec3bcf1fc7b804145256f93c7c8c6"
+        },
+        {
+          "path": "sf-user/templates/dev-environment.md",
+          "expected": "3c47cb7ff3b948f7b345b4a82fc919049c1aab8fbb7ae21e57c3c2160277bca9",
+          "actual": "3c47cb7ff3b948f7b345b4a82fc919049c1aab8fbb7ae21e57c3c2160277bca9"
+        },
+        {
+          "path": "sf-user/templates/prod-environment.md",
+          "expected": "731c7120ccb2ad45d1a4a409b18dde9e0b0eea27a30532c3933fce6fe7a5c9b5",
+          "actual": "731c7120ccb2ad45d1a4a409b18dde9e0b0eea27a30532c3933fce6fe7a5c9b5"
+        },
+        {
+          "path": "sf-user/templates/project-rules/_BASE.md",
+          "expected": "632608a6032a060f88f5ba7246d0f13a7ed20f22bf4142e44f15e9c3f9fd241c",
+          "actual": "632608a6032a060f88f5ba7246d0f13a7ed20f22bf4142e44f15e9c3f9fd241c"
+        },
+        {
+          "path": "sf-user/templates/project-rules/databases/mongodb.md",
+          "expected": "74ede6f4630b55845082f117cbefc2eb2197e446773cc6066a3fa73b9ec55fc8",
+          "actual": "74ede6f4630b55845082f117cbefc2eb2197e446773cc6066a3fa73b9ec55fc8"
+        },
+        {
+          "path": "sf-user/templates/project-rules/databases/mysql.md",
+          "expected": "c7667ec7a2dee83d6c76940d6a4ef4909f81a457a25af2852e55c8c4ed4f8c16",
+          "actual": "c7667ec7a2dee83d6c76940d6a4ef4909f81a457a25af2852e55c8c4ed4f8c16"
+        },
+        {
+          "path": "sf-user/templates/project-rules/databases/postgresql.md",
+          "expected": "ffb74bd2b0871c2a3a5876b45bf81b9656d0b47cd0243ef77703b0486711746d",
+          "actual": "ffb74bd2b0871c2a3a5876b45bf81b9656d0b47cd0243ef77703b0486711746d"
+        },
+        {
+          "path": "sf-user/templates/project-rules/databases/redis.md",
+          "expected": "a48b4f7267f7ec554085fa738ec9da3250340981ec7c31228878eb35082e9bd4",
+          "actual": "a48b4f7267f7ec554085fa738ec9da3250340981ec7c31228878eb35082e9bd4"
+        },
+        {
+          "path": "sf-user/templates/project-rules/databases/sqlite.md",
+          "expected": "647e756c9fb46d47c3e692f8648cc3d2af852f63de219650d0a5adcb20ee88b2",
+          "actual": "647e756c9fb46d47c3e692f8648cc3d2af852f63de219650d0a5adcb20ee88b2"
+        },
+        {
+          "path": "sf-user/templates/project-rules/frameworks/fastapi.md",
+          "expected": "d1236dd749688894ebf2e30ea757118884a21f7f7efaeca8545e90b2c72735d6",
+          "actual": "d1236dd749688894ebf2e30ea757118884a21f7f7efaeca8545e90b2c72735d6"
+        },
+        {
+          "path": "sf-user/templates/project-rules/frameworks/react.md",
+          "expected": "0beaeda3e7bb6e376eeacc8c22153c11c4ae159fcfa2441f04725e725aa2582a",
+          "actual": "0beaeda3e7bb6e376eeacc8c22153c11c4ae159fcfa2441f04725e725aa2582a"
+        },
+        {
+          "path": "sf-user/templates/project-rules/frameworks/spring-boot.md",
+          "expected": "8897ec47ecf150160aa39ed19f96f74758e78ceb230429e08e048029e291b02c",
+          "actual": "8897ec47ecf150160aa39ed19f96f74758e78ceb230429e08e048029e291b02c"
+        },
+        {
+          "path": "sf-user/templates/project-rules/frameworks/vue.md",
+          "expected": "d8102a574dca286e9eb9dc7a96e5f615f098ba779bab0baa123dec422fe46ea4",
+          "actual": "d8102a574dca286e9eb9dc7a96e5f615f098ba779bab0baa123dec422fe46ea4"
+        },
+        {
+          "path": "sf-user/templates/project-rules/infra/ci-github-actions.md",
+          "expected": "8f9117ab882051f2ed7dc45e42698bf8b04565c79671bc60f2fdb9de85fbeff8",
+          "actual": "8f9117ab882051f2ed7dc45e42698bf8b04565c79671bc60f2fdb9de85fbeff8"
+        },
+        {
+          "path": "sf-user/templates/project-rules/infra/docker.md",
+          "expected": "033146181d3daf77a3044a198af7215934a35da4c52311ba35a656486083dc88",
+          "actual": "033146181d3daf77a3044a198af7215934a35da4c52311ba35a656486083dc88"
+        },
+        {
+          "path": "sf-user/templates/project-rules/languages/go.md",
+          "expected": "dce2d6a53943ba6df9e866c87fb0c86d141387d0484f62b7831edf550a8c3bed",
+          "actual": "dce2d6a53943ba6df9e866c87fb0c86d141387d0484f62b7831edf550a8c3bed"
+        },
+        {
+          "path": "sf-user/templates/project-rules/languages/java.md",
+          "expected": "02fdbfa4ca01d9e5220213b56aebeae23afe086c3d22b86c3a9d9dffc2a3d88e",
+          "actual": "02fdbfa4ca01d9e5220213b56aebeae23afe086c3d22b86c3a9d9dffc2a3d88e"
+        },
+        {
+          "path": "sf-user/templates/project-rules/languages/nodejs.md",
+          "expected": "984d0ad28863b12d6f81313e09d05afe54844b7099b833eee783bb8e0ee78dda",
+          "actual": "984d0ad28863b12d6f81313e09d05afe54844b7099b833eee783bb8e0ee78dda"
+        },
+        {
+          "path": "sf-user/templates/project-rules/languages/python.md",
+          "expected": "bf601ff0b7ccc41a707746345fa90539bff37539983d36c94d9a29769afa1c3e",
+          "actual": "bf601ff0b7ccc41a707746345fa90539bff37539983d36c94d9a29769afa1c3e"
+        },
+        {
+          "path": "sf-user/templates/README.md",
+          "expected": "d43c88523bb59c81aee8e924e33bf839e140889c4b882ed5ff6ab5d3809e3c64",
+          "actual": "d43c88523bb59c81aee8e924e33bf839e140889c4b882ed5ff6ab5d3809e3c64"
+        },
+        {
+          "path": "sf-user/workflows/builtin/feature_spec.json",
+          "expected": "9a174fdc58174f206387a1d9377e3a155b7e2aa8aa98d81c2785d67c5a87031f",
+          "actual": "9a174fdc58174f206387a1d9377e3a155b7e2aa8aa98d81c2785d67c5a87031f"
+        },
+        {
+          "path": "skills/sf-intake/SKILL.md",
+          "expected": "44d62765426054f3bdf484eec46a79cfb71c8d7789a35e8c1f05e52d866b307e",
+          "actual": "44d62765426054f3bdf484eec46a79cfb71c8d7789a35e8c1f05e52d866b307e"
+        },
+        {
+          "path": "skills/sf-workflow-feature-spec/SKILL.md",
+          "expected": "2e9d0a2d1b040dcf2bfd1fedf6a154056d614100f27792d59ad3f8d773523660",
+          "actual": "2e9d0a2d1b040dcf2bfd1fedf6a154056d614100f27792d59ad3f8d773523660"
+        },
+        {
+          "path": "skills/superpowers-brainstorming/SKILL.md",
+          "expected": "166e7a31c13385b19f4384c3c439805b21460efc98f27d6f9825d4648e4f7942",
+          "actual": "166e7a31c13385b19f4384c3c439805b21460efc98f27d6f9825d4648e4f7942"
+        },
+        {
+          "path": "skills/superpowers-code-review/SKILL.md",
+          "expected": "ccfd870c444096d04d0dd38eb3d766de72d1a0026a469e149b929ba34945b053",
+          "actual": "ccfd870c444096d04d0dd38eb3d766de72d1a0026a469e149b929ba34945b053"
+        },
+        {
+          "path": "skills/superpowers-knowledge-extraction/SKILL.md",
+          "expected": "55039b0daf3a61f9d5a0b3abba2e33b5987083eab601bd5fce2ec4700650d391",
+          "actual": "55039b0daf3a61f9d5a0b3abba2e33b5987083eab601bd5fce2ec4700650d391"
+        },
+        {
+          "path": "skills/superpowers-systematic-debugging/SKILL.md",
+          "expected": "a0b62931801d5b08acb60b042195805f430ef301f01deeb5f2865193a511f6a0",
+          "actual": "a0b62931801d5b08acb60b042195805f430ef301f01deeb5f2865193a511f6a0"
+        },
+        {
+          "path": "skills/superpowers-verification-before-completion/SKILL.md",
+          "expected": "779dee68bd905521b729f0aea43b926b1d6b7a5fe087da9133003e464c3de1a7",
+          "actual": "779dee68bd905521b729f0aea43b926b1d6b7a5fe087da9133003e464c3de1a7"
+        },
+        {
+          "path": "skills/superpowers-writing-plans/SKILL.md",
+          "expected": "a74cade726014388939c0295f173767862a4b28a54053aae044ec32859ab12bf",
+          "actual": "a74cade726014388939c0295f173767862a4b28a54053aae044ec32859ab12bf"
+        },
+        {
+          "path": "tools/lib/sf_artifact_write_core.ts",
+          "expected": "68e3bf8f836cb457c1fe2655b978c53b8b8ae8fd91e5773f5341020778f04b7c",
+          "actual": "68e3bf8f836cb457c1fe2655b978c53b8b8ae8fd91e5773f5341020778f04b7c"
+        },
+        {
+          "path": "tools/lib/sf_batch_verify_core.ts",
+          "expected": "afd1814ca5472274254f75226de078152a04bb97c44a82167da9de5888c8631e",
+          "actual": "afd1814ca5472274254f75226de078152a04bb97c44a82167da9de5888c8631e"
+        },
+        {
+          "path": "tools/lib/sf_design_gate_core.ts",
+          "expected": "bf2a58bcc9c1c349d3b955d81a3708c4c3ef9da3a32a4ae83178f9eb09672a41",
+          "actual": "bf2a58bcc9c1c349d3b955d81a3708c4c3ef9da3a32a4ae83178f9eb09672a41"
+        },
+        {
+          "path": "tools/lib/sf_doc_lint_core.ts",
+          "expected": "1c9b291307fcdc5173195733fd0770a5647c71290b76b34c610fe3d07e69b927",
+          "actual": "1c9b291307fcdc5173195733fd0770a5647c71290b76b34c610fe3d07e69b927"
+        },
+        {
+          "path": "tools/lib/sf_doctor_core.ts",
+          "expected": "6b63fa3217fb6a10d00f5822fe9917cafe2bc7677796e3a27205012058b38227",
+          "actual": "6b63fa3217fb6a10d00f5822fe9917cafe2bc7677796e3a27205012058b38227"
+        },
+        {
+          "path": "tools/lib/sf_ears_parser.ts",
+          "expected": "ad305bf66d5219d28bf891709a1d8152890f23884a1351a50326009009f14c71",
+          "actual": "ad305bf66d5219d28bf891709a1d8152890f23884a1351a50326009009f14c71"
+        },
+        {
+          "path": "tools/lib/sf_ears_types.ts",
+          "expected": "911b5814f97e91fad4d593c60e2e813bce0318371a52d3d2496f508e64a001d4",
+          "actual": "911b5814f97e91fad4d593c60e2e813bce0318371a52d3d2496f508e64a001d4"
+        },
+        {
+          "path": "tools/lib/sf_gate_types.ts",
+          "expected": "d7be1a8542047a21b4d990904c9fa73e7ce31e1f534ba5698b0e195f8c457d88",
+          "actual": "d7be1a8542047a21b4d990904c9fa73e7ce31e1f534ba5698b0e195f8c457d88"
+        },
+        {
+          "path": "tools/lib/sf_knowledge_base_core.ts",
+          "expected": "cbb5f8a8a1938be992779469622eaed122d7eba51777228b87c622e51f67c0c1",
+          "actual": "cbb5f8a8a1938be992779469622eaed122d7eba51777228b87c622e51f67c0c1"
+        },
+        {
+          "path": "tools/lib/sf_markdown_verification_parser.ts",
+          "expected": "35c143f8b5ceaf51cdd1bb855602ef3a4e94cd549b8766632f24c1b2031570b1",
+          "actual": "35c143f8b5ceaf51cdd1bb855602ef3a4e94cd549b8766632f24c1b2031570b1"
+        },
+        {
+          "path": "tools/lib/sf_requirements_gate_core.ts",
+          "expected": "a355228a774d5d0962c9bce889b8575a49b3006bd458ec86829bd96479fd3a68",
+          "actual": "a355228a774d5d0962c9bce889b8575a49b3006bd458ec86829bd96479fd3a68"
+        },
+        {
+          "path": "tools/lib/sf_safe_bash_core.ts",
+          "expected": "79dcc276ffe741b36c3339bd9beee1c16998b71c00b94ef404b77c71696c2950",
+          "actual": "79dcc276ffe741b36c3339bd9beee1c16998b71c00b94ef404b77c71696c2950"
+        },
+        {
+          "path": "tools/lib/sf_safe_bash_executor.ts",
+          "expected": "a32462eef8a42464633ce2061e98fee53fed123dfb69046bd61f18e17ea2cb00",
+          "actual": "a32462eef8a42464633ce2061e98fee53fed123dfb69046bd61f18e17ea2cb00"
+        },
+        {
+          "path": "tools/lib/sf_safe_bash_rules.ts",
+          "expected": "7193424e37496647df91e6e7860462ed5864ffc48ea52816c8052be0515e1d46",
+          "actual": "7193424e37496647df91e6e7860462ed5864ffc48ea52816c8052be0515e1d46"
+        },
+        {
+          "path": "tools/lib/sf_safe_bash_types.ts",
+          "expected": "cd483113079a7d2d79b60b0409e7c1b7486b5dbc3f099bc28a1577d192666d4e",
+          "actual": "cd483113079a7d2d79b60b0409e7c1b7486b5dbc3f099bc28a1577d192666d4e"
+        },
+        {
+          "path": "tools/lib/sf_tasks_gate_core.ts",
+          "expected": "02a7e821adf7c98881bfad81832c1d6d74e8af95ece1064dac17680abf05966c",
+          "actual": "02a7e821adf7c98881bfad81832c1d6d74e8af95ece1064dac17680abf05966c"
+        },
+        {
+          "path": "tools/lib/sf_trace_matrix_core.ts",
+          "expected": "616ddd348bc371fb2ed61cdf731778b11d9f3c1f084018901ae462fbeecdef23",
+          "actual": "616ddd348bc371fb2ed61cdf731778b11d9f3c1f084018901ae462fbeecdef23"
+        },
+        {
+          "path": "tools/lib/sf_verification_gate_core.ts",
+          "expected": "2a6d435bc6d7097951487448d34303b5b0fd8e59da127cf6f9311bec8cfea9d5",
+          "actual": "2a6d435bc6d7097951487448d34303b5b0fd8e59da127cf6f9311bec8cfea9d5"
+        },
+        {
+          "path": "tools/lib/sf_verification_types.ts",
+          "expected": "93e81632fcd7867eb2b5a987d9341b18d31be1a7ab7da5431c8c898f8edca9cc",
+          "actual": "93e81632fcd7867eb2b5a987d9341b18d31be1a7ab7da5431c8c898f8edca9cc"
+        },
+        {
+          "path": "tools/lib/sf_verifier_execution_core.ts",
+          "expected": "e4524e455d5aa8583437cc2c8073bdc3d940eb9c0670c7b8dae13db0c239a890",
+          "actual": "e4524e455d5aa8583437cc2c8073bdc3d940eb9c0670c7b8dae13db0c239a890"
+        },
+        {
+          "path": "tools/lib/sf-observability-config.ts",
+          "expected": "e4051e796895fd5375b3fcfab955b368e7b03e3bd7789684fc17cbb8fd4d10c7",
+          "actual": "e4051e796895fd5375b3fcfab955b368e7b03e3bd7789684fc17cbb8fd4d10c7"
+        },
+        {
+          "path": "tools/lib/sf-observability.ts",
+          "expected": "82a23d21cacf440c93a59e73a088eae24c7043ef86c73efc4ba1051b17a8a658",
+          "actual": "82a23d21cacf440c93a59e73a088eae24c7043ef86c73efc4ba1051b17a8a658"
+        },
+        {
+          "path": "tools/lib/thin-client.ts",
+          "expected": "98b024bc4f13468fbd2b384495f56b75b8b7b4f2264ca521fb1d5b5d556f207d",
+          "actual": "98b024bc4f13468fbd2b384495f56b75b8b7b4f2264ca521fb1d5b5d556f207d"
+        },
+        {
+          "path": "tools/lib/utils.ts",
+          "expected": "962672a8be6806752c24307254baea9a4920ce32ee28344bb84b4ce9dbed6321",
+          "actual": "962672a8be6806752c24307254baea9a4920ce32ee28344bb84b4ce9dbed6321"
+        },
+        {
+          "path": "tools/sf_artifact_write.ts",
+          "expected": "d73c1e6661c9e36f85027a302ded410ca8006df6c3a73dac55cbe4087be69377",
+          "actual": "d73c1e6661c9e36f85027a302ded410ca8006df6c3a73dac55cbe4087be69377"
+        },
+        {
+          "path": "tools/sf_batch_verify.ts",
+          "expected": "0186413da15e23ad804c4abee2fa89ee9e7336aa21940c08f83ba63536ade204",
+          "actual": "0186413da15e23ad804c4abee2fa89ee9e7336aa21940c08f83ba63536ade204"
+        },
+        {
+          "path": "tools/sf_changed_files_audit.ts",
+          "expected": "8f947807651094786e0a772c77a6fe48805fe705122d5a15421036a813926371",
+          "actual": "8f947807651094786e0a772c77a6fe48805fe705122d5a15421036a813926371"
+        },
+        {
+          "path": "tools/sf_close_gate.ts",
+          "expected": "851ae6a9cb1fd840896673f4c7d52eda490f354be556d05749b8dd81608e8e59",
+          "actual": "851ae6a9cb1fd840896673f4c7d52eda490f354be556d05749b8dd81608e8e59"
+        },
+        {
+          "path": "tools/sf_code_permission.ts",
+          "expected": "bb77e2a0163ac2730caf53c40904f112ec719c6db72fc38b15d70abd0d56d440",
+          "actual": "bb77e2a0163ac2730caf53c40904f112ec719c6db72fc38b15d70abd0d56d440"
+        },
+        {
+          "path": "tools/sf_contract_register.ts",
+          "expected": "24022e877f5a08fb1d3be3505981780cca2f7275be8e5375aed560a8ed6a9313",
+          "actual": "24022e877f5a08fb1d3be3505981780cca2f7275be8e5375aed560a8ed6a9313"
+        },
+        {
+          "path": "tools/sf_design_gate.ts",
+          "expected": "e0e845856c9954ccd232453928d409b2d16fcf949f581a5787c0e64169fe97af",
+          "actual": "e0e845856c9954ccd232453928d409b2d16fcf949f581a5787c0e64169fe97af"
+        },
+        {
+          "path": "tools/sf_doc_lint.ts",
+          "expected": "f2330e63b983a53010c738f7ae7ef666ebc1b62752d16a79a06e3c83936331b8",
+          "actual": "f2330e63b983a53010c738f7ae7ef666ebc1b62752d16a79a06e3c83936331b8"
+        },
+        {
+          "path": "tools/sf_doctor.ts",
+          "expected": "358ed45fbb58baa8b285c8f18ef937f100b9123ca59dae54c9b24aaa9978e8fb",
+          "actual": "358ed45fbb58baa8b285c8f18ef937f100b9123ca59dae54c9b24aaa9978e8fb"
+        },
+        {
+          "path": "tools/sf_gate_run.ts",
+          "expected": "d99e06e9d59f72e2128ab147612b828874baf1804fda3c1b9d3bc8a7c713080c",
+          "actual": "d99e06e9d59f72e2128ab147612b828874baf1804fda3c1b9d3bc8a7c713080c"
+        },
+        {
+          "path": "tools/sf_git_agent_lock_acquire.ts",
+          "expected": "04533568832e2de1c12cfedfdc0d509782a05f2fb5917cc68516a791563bae60",
+          "actual": "04533568832e2de1c12cfedfdc0d509782a05f2fb5917cc68516a791563bae60"
+        },
+        {
+          "path": "tools/sf_git_agent_lock_release.ts",
+          "expected": "5551e5156f75ebe38c6cc8c0c6f6c3432722bb9611584a68b54f54234e283a85",
+          "actual": "5551e5156f75ebe38c6cc8c0c6f6c3432722bb9611584a68b54f54234e283a85"
+        },
+        {
+          "path": "tools/sf_git_auth_profile_config.ts",
+          "expected": "29cecf1cb8fcec3186fd0b0c777de231bf86ff32856bbf120432a4b183146ea4",
+          "actual": "29cecf1cb8fcec3186fd0b0c777de231bf86ff32856bbf120432a4b183146ea4"
+        },
+        {
+          "path": "tools/sf_git_branch_create.ts",
+          "expected": "a961988a2f8f79878f613af6db20b1c612083a75c1b860bb3f4ed08825f77e2c",
+          "actual": "a961988a2f8f79878f613af6db20b1c612083a75c1b860bb3f4ed08825f77e2c"
+        },
+        {
+          "path": "tools/sf_git_branch_plan.ts",
+          "expected": "c894564396ffcb34cb3a1a45a9c9530469e949cd7b04e9ba3f50866c1b91bd1d",
+          "actual": "c894564396ffcb34cb3a1a45a9c9530469e949cd7b04e9ba3f50866c1b91bd1d"
+        },
+        {
+          "path": "tools/sf_git_checkpoint_commit.ts",
+          "expected": "3501e067ce34aa94c498d91e8f160d91bd233d4644d83ed08b4192a29cab366f",
+          "actual": "3501e067ce34aa94c498d91e8f160d91bd233d4644d83ed08b4192a29cab366f"
+        },
+        {
+          "path": "tools/sf_git_ignore_analyze.ts",
+          "expected": "bdf635e7c95e08f7473740902a67fc3b547f87718d091966ca4c7a2824748ea4",
+          "actual": "bdf635e7c95e08f7473740902a67fc3b547f87718d091966ca4c7a2824748ea4"
+        },
+        {
+          "path": "tools/sf_git_ignore_decision_record.ts",
+          "expected": "a54b93dbce0a8b35ba7abc6087bbaaba0a969aa6aac1a526b524846c3cc16e64",
+          "actual": "a54b93dbce0a8b35ba7abc6087bbaaba0a969aa6aac1a526b524846c3cc16e64"
+        },
+        {
+          "path": "tools/sf_git_merge_plan.ts",
+          "expected": "67274244eb39bc8f325a214862fa289cbf5b2d5f0e3790e4a5ca28c07cd30a40",
+          "actual": "67274244eb39bc8f325a214862fa289cbf5b2d5f0e3790e4a5ca28c07cd30a40"
+        },
+        {
+          "path": "tools/sf_git_merge_run.ts",
+          "expected": "ea21428c7cf65d5e51cbc7805776af4a1edd6fe848fe53fe56fa7bebc8fcdf8e",
+          "actual": "ea21428c7cf65d5e51cbc7805776af4a1edd6fe848fe53fe56fa7bebc8fcdf8e"
+        },
+        {
+          "path": "tools/sf_git_post_merge_verify.ts",
+          "expected": "149c12161ee858b9a95ec4bc0b372a6953b8af1ae209edf4d628c150a46a9700",
+          "actual": "149c12161ee858b9a95ec4bc0b372a6953b8af1ae209edf4d628c150a46a9700"
+        },
+        {
+          "path": "tools/sf_git_preflight.ts",
+          "expected": "5c37f2edc4f8a4f82b0c64e47b2a210820534f1d8d614bb001a78d5f53c7f074",
+          "actual": "5c37f2edc4f8a4f82b0c64e47b2a210820534f1d8d614bb001a78d5f53c7f074"
+        },
+        {
+          "path": "tools/sf_git_push_branch.ts",
+          "expected": "197d5042e10b3d8ae2a0a7552ad79e7710ea0ff7cb6c619d8b01ecb7ecab5727",
+          "actual": "197d5042e10b3d8ae2a0a7552ad79e7710ea0ff7cb6c619d8b01ecb7ecab5727"
+        },
+        {
+          "path": "tools/sf_git_release_tag_create.ts",
+          "expected": "9481f81a6b596d530d5dc5b6ac7aeddf8461f64b94a1183fa8bd3051cfcf7cd4",
+          "actual": "9481f81a6b596d530d5dc5b6ac7aeddf8461f64b94a1183fa8bd3051cfcf7cd4"
+        },
+        {
+          "path": "tools/sf_git_release_tag_plan.ts",
+          "expected": "e9cca8c9ca1539e939152f7f3e833a9d828d19aff62f3cad9786db7dd76d8670",
+          "actual": "e9cca8c9ca1539e939152f7f3e833a9d828d19aff62f3cad9786db7dd76d8670"
+        },
+        {
+          "path": "tools/sf_git_remote_config.ts",
+          "expected": "92dab204f0123baeaec6fabe55406d1bddbefae2374ebb6aad9cb2249f950e6d",
+          "actual": "92dab204f0123baeaec6fabe55406d1bddbefae2374ebb6aad9cb2249f950e6d"
+        },
+        {
+          "path": "tools/sf_git_remote_probe.ts",
+          "expected": "0fc53817e7a73fa7c66ef5a67449e4902091f32e6e80021ec072056d6b53494b",
+          "actual": "0fc53817e7a73fa7c66ef5a67449e4902091f32e6e80021ec072056d6b53494b"
+        },
+        {
+          "path": "tools/sf_handoff.ts",
+          "expected": "ed0006ffabfe6c924c770ec64c40033519ff32ae839d1caf1bdf10b5ddb3ed75",
+          "actual": "ed0006ffabfe6c924c770ec64c40033519ff32ae839d1caf1bdf10b5ddb3ed75"
+        },
+        {
+          "path": "tools/sf_hard_stop_resolve.ts",
+          "expected": "0eea48ff8f411ea1a7aa68c5d7ea1793c6a9fd8b3f229ac88ba1791e7a335bf2",
+          "actual": "0eea48ff8f411ea1a7aa68c5d7ea1793c6a9fd8b3f229ac88ba1791e7a335bf2"
+        },
+        {
+          "path": "tools/sf_knowledge_base.ts",
+          "expected": "2e087757a7c875ab44f1c9fdcff2bfc512e4a63216de12c68c58fbb68bed0d9b",
+          "actual": "2e087757a7c875ab44f1c9fdcff2bfc512e4a63216de12c68c58fbb68bed0d9b"
+        },
+        {
+          "path": "tools/sf_merge_run.ts",
+          "expected": "ce6e160fdf83df336bf0d48aa9aee9ba7c94db86aac0056d3fc814f68a75f6f2",
+          "actual": "ce6e160fdf83df336bf0d48aa9aee9ba7c94db86aac0056d3fc814f68a75f6f2"
+        },
+        {
+          "path": "tools/sf_project_config.ts",
+          "expected": "b63adf87dee13cccf7fc509070d723f7e6dc6871cb7fc429f67780359fb5e26d",
+          "actual": "b63adf87dee13cccf7fc509070d723f7e6dc6871cb7fc429f67780359fb5e26d"
+        },
+        {
+          "path": "tools/sf_project_init.ts",
+          "expected": "e6787f672a7a62a39ad9168861fb1b490fd148daa1e7c09298df9d8bb6fbc3e8",
+          "actual": "e6787f672a7a62a39ad9168861fb1b490fd148daa1e7c09298df9d8bb6fbc3e8"
+        },
+        {
+          "path": "tools/sf_requirements_gate.ts",
+          "expected": "bb63ca970669d24430253901618815c92b9c2aa7f5cf625d21f986de7a306373",
+          "actual": "bb63ca970669d24430253901618815c92b9c2aa7f5cf625d21f986de7a306373"
+        },
+        {
+          "path": "tools/sf_safe_bash.ts",
+          "expected": "c1b33ea1677cb53bcb4acb984caecbc219d213031f6bb3efba80b2f5b6a488d2",
+          "actual": "c1b33ea1677cb53bcb4acb984caecbc219d213031f6bb3efba80b2f5b6a488d2"
+        },
+        {
+          "path": "tools/sf_semantic_closure_run.ts",
+          "expected": "e56e3900d02cd3a713d4a0dbfac680c0f261bbc79d8c51bbf58e47a6e8dbfa98",
+          "actual": "e56e3900d02cd3a713d4a0dbfac680c0f261bbc79d8c51bbf58e47a6e8dbfa98"
+        },
+        {
+          "path": "tools/sf_state_read.ts",
+          "expected": "e3e7229724dc16d389e30378e3a570529f7a242b68a04dc925f4944779e68281",
+          "actual": "e3e7229724dc16d389e30378e3a570529f7a242b68a04dc925f4944779e68281"
+        },
+        {
+          "path": "tools/sf_state_transition.ts",
+          "expected": "fb44899116e5c9faa4299168e1ed97c066ced7d7f50b89a2f778bc123d7599ae",
+          "actual": "fb44899116e5c9faa4299168e1ed97c066ced7d7f50b89a2f778bc123d7599ae"
+        },
+        {
+          "path": "tools/sf_tasks_gate.ts",
+          "expected": "25790041c27bc9c848277eda4499248b32319917a5661995c89af1f1ec91ae0b",
+          "actual": "25790041c27bc9c848277eda4499248b32319917a5661995c89af1f1ec91ae0b"
+        },
+        {
+          "path": "tools/sf_trace_matrix.ts",
+          "expected": "fa67739bf47b7232195047ba022efe4aa7b925de7f384cd802cd03b528f8188a",
+          "actual": "fa67739bf47b7232195047ba022efe4aa7b925de7f384cd802cd03b528f8188a"
+        },
+        {
+          "path": "tools/sf_user_decision_record.ts",
+          "expected": "6d810d0315420192076ec365516c2fcdce4ff00cd62033f17ba017fb912ae9b1",
+          "actual": "6d810d0315420192076ec365516c2fcdce4ff00cd62033f17ba017fb912ae9b1"
+        },
+        {
+          "path": "tools/sf_verification_gate.ts",
+          "expected": "073f45d6562a4e54495964c47cc09e42d7528a6938a53d66fd1df6660c67dc38",
+          "actual": "073f45d6562a4e54495964c47cc09e42d7528a6938a53d66fd1df6660c67dc38"
+        },
+        {
+          "path": "tools/sf_work_item_create.ts",
+          "expected": "da78786bcb106d9799d3287b244f4543c395ecf3a183a5ccd4cacae20083a207",
+          "actual": "da78786bcb106d9799d3287b244f4543c395ecf3a183a5ccd4cacae20083a207"
+        }
+      ]
+    },
+    {
+      "label": "original project remains closed",
+      "started": "2026-10-24T09:06:57.637Z",
+      "finished": "2026-10-24T09:06:57.692Z",
+      "route": "/api/v1/tool/invoke",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:/code/sf-acceptance-six",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"success\":true,\"rebuilt_from_events\":true,\"work_items\":{\"WI-0001\":{\"work_item_id\":\"WI-0001\",\"workflow_type\":\"feature_spec\",\"current_state\":\"closed\",\"created_at\":1792208444157,\"updated_at\":1792346105207}}},\"requestId\":\"8640adiirxrmvm6dbmk\",\"timestamp\":1792832817692}"
+    },
+    {
+      "label": "original closed project denies writing",
+      "started": "2026-10-24T09:06:57.693Z",
+      "finished": "2026-10-24T09:06:57.715Z",
+      "route": "/api/v1/v11/write-guard/native",
+      "request": {
+        "projectPath": "D:/code/sf-acceptance-six",
+        "tool": "write",
+        "args": {
+          "filePath": "D:\\code\\sf-acceptance-six\\FINAL_ACCEPTANCE_MUST_NOT_EXIST.txt"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"allowed\":false,\"reason\":\"UNAMBIGUOUS_ACTIVE_WORK_ITEM_REQUIRED\"},\"requestId\":\"x2kalulh6cmvm6dbn7\",\"timestamp\":1792832817715}"
+    },
+    {
+      "label": "original valid configuration",
+      "started": "2026-10-24T09:06:57.715Z",
+      "finished": "2026-10-24T09:06:57.737Z",
+      "route": "/api/v1/tool/invoke",
+      "request": {
+        "tool": "sf_project_config",
+        "args": {
+          "action": "read"
+        },
+        "context": {
+          "directory": "D:/code/sf-acceptance-six",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"success\":true,\"document_sha256\":\"ae4485aea4a3ee8a404d95e3b2ed3ea56f3c833d29077aaf8d012276d34a990c\",\"valid\":true},\"requestId\":\"rjysho9398mvm6dbns\",\"timestamp\":1792832817737}"
+    },
+    {
+      "label": "old projection after actual restart",
+      "started": "2026-10-24T09:06:57.739Z",
+      "finished": "2026-10-24T09:06:57.787Z",
+      "route": "/api/v1/tool/invoke",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-projection",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"success\":true,\"rebuilt_from_events\":true,\"work_items\":{\"WI-0001\":{\"work_item_id\":\"WI-0001\",\"workflow_type\":\"feature_spec\",\"current_state\":\"closed\",\"created_at\":1792208444157,\"updated_at\":1792346105207}}},\"requestId\":\"hhwbcqns52qmvm6dbp7\",\"timestamp\":1792832817787}"
+    },
+    {
+      "label": "old projection remains denied after restart",
+      "started": "2026-10-24T09:06:57.787Z",
+      "finished": "2026-10-24T09:06:57.807Z",
+      "route": "/api/v1/v11/write-guard/native",
+      "request": {
+        "projectPath": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-projection",
+        "tool": "write",
+        "args": {
+          "filePath": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-projection\\FINAL_ACCEPTANCE_MUST_NOT_EXIST.txt"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"allowed\":false,\"reason\":\"UNAMBIGUOUS_ACTIVE_WORK_ITEM_REQUIRED\"},\"requestId\":\"6w2q7kvgftdmvm6dbpr\",\"timestamp\":1792832817807}"
+    },
+    {
+      "label": "closed task after five archives and actual restart",
+      "started": "2026-10-24T09:06:57.808Z",
+      "finished": "2026-10-24T09:06:58.022Z",
+      "route": "/api/v1/tool/invoke",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-rotation",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"success\":true,\"rebuilt_from_events\":true,\"work_items\":{\"WI-0001\":{\"work_item_id\":\"WI-0001\",\"workflow_type\":\"feature_spec\",\"current_state\":\"closed\",\"created_at\":1792208444157,\"updated_at\":1792346105207}}},\"requestId\":\"rkro55ntnkfmvm6dbvq\",\"timestamp\":1792832818022}"
+    },
+    {
+      "label": "archived closure denies after restart",
+      "started": "2026-10-24T09:06:58.022Z",
+      "finished": "2026-10-24T09:06:58.105Z",
+      "route": "/api/v1/v11/write-guard/native",
+      "request": {
+        "projectPath": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-rotation",
+        "tool": "write",
+        "args": {
+          "filePath": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-rotation\\FINAL_ACCEPTANCE_MUST_NOT_EXIST.txt"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"allowed\":false,\"reason\":\"UNAMBIGUOUS_ACTIVE_WORK_ITEM_REQUIRED\"},\"requestId\":\"lgog7zus9q8mvm6dby1\",\"timestamp\":1792832818105}"
+    },
+    {
+      "label": "activation-loss normal consumer rejects",
+      "started": "2026-10-24T09:06:58.106Z",
+      "finished": "2026-10-24T09:06:58.142Z",
+      "route": "/api/v1/tool/invoke",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\activation-loss",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"CONFIGURATION_CHANGE_BLOCKED_ACTIVE_WORK: restore the accepted configuration before continuing\"},\"requestId\":\"rq66i00ubcmvm6dbz2\",\"timestamp\":1792832818142}"
+    },
+    {
+      "label": "activation-loss native write also rejects",
+      "started": "2026-10-24T09:06:58.143Z",
+      "finished": "2026-10-24T09:06:58.163Z",
+      "route": "/api/v1/v11/write-guard/native",
+      "request": {
+        "projectPath": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\activation-loss",
+        "tool": "write",
+        "args": {
+          "filePath": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\activation-loss\\FINAL_ACCEPTANCE_MUST_NOT_EXIST.txt"
+        }
+      },
+      "status": 503,
+      "response": "{\"success\":false,\"error\":{\"code\":\"WRITE_GUARD_UNAVAILABLE\",\"message\":\"Native tool authorization failed\"},\"requestId\":\"awtdbxm04hqmvm6dbzn\",\"timestamp\":1792832818163}"
+    },
+    {
+      "projectionBefore": {
+        "stateVersion": 50,
+        "projectPath": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\activation-loss",
+        "activeSessions": [],
+        "workItems": [
+          {
+            "work_item_id": "WI-0001",
+            "workflow_type": "feature_spec",
+            "current_state": "closed",
+            "created_at": 1792208444157,
+            "updated_at": 1792346105207
+          },
+          {
+            "work_item_id": "WI-TEST",
+            "workflow_type": "feature_spec",
+            "current_state": "created",
+            "created_at": 1792832242144,
+            "updated_at": 1792832242144
+          }
+        ],
+        "lastEventId": "01a16d21-01e0-774f-a124-66ae990f2f43",
+        "lastEventTs": 1792832242144,
+        "schema_version": "1.0"
+      },
+      "projectionAfter": {
+        "stateVersion": 51,
+        "projectPath": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\activation-loss",
+        "activeSessions": [],
+        "workItems": [
+          {
+            "work_item_id": "WI-0001",
+            "workflow_type": "feature_spec",
+            "current_state": "closed",
+            "created_at": 1792208444157,
+            "updated_at": 1792346105207
+          },
+          {
+            "work_item_id": "WI-TEST",
+            "workflow_type": "feature_spec",
+            "current_state": "created",
+            "created_at": 1792832242144,
+            "updated_at": 1792832242144
+          }
+        ],
+        "lastEventId": "01a16d21-01e0-774f-a124-66ae990f2f43",
+        "lastEventTs": 1792832242144,
+        "schema_version": "1.0"
+      }
+    },
+    {
+      "name": "activation-loss",
+      "rejection_preserved": {
+        "events.jsonl": "32eb6f280c88e887f735587fb489f12e39f4ddf31dbaa450b38b24e1ebcab62e",
+        "state.json": "5919be968158910e8c662f69ad5aa363338a3a2da9d22c6bf4bf8b58a92fdcfa",
+        "configuration-activation.json": null
+      }
+    },
+    {
+      "label": "history-loss normal consumer rejects",
+      "started": "2026-10-24T09:06:58.165Z",
+      "finished": "2026-10-24T09:06:58.187Z",
+      "route": "/api/v1/tool/invoke",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\history-loss",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 500,
+      "response": "{\"success\":false,\"error\":{\"code\":\"TOOL_ERROR\",\"message\":\"WAL_HISTORY_TRUNCATED\"},\"requestId\":\"tjll02zgyvmvm6dc0a\",\"timestamp\":1792832818186}"
+    },
+    {
+      "label": "history-loss native write also rejects",
+      "started": "2026-10-24T09:06:58.187Z",
+      "finished": "2026-10-24T09:06:58.212Z",
+      "route": "/api/v1/v11/write-guard/native",
+      "request": {
+        "projectPath": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\history-loss",
+        "tool": "write",
+        "args": {
+          "filePath": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\history-loss\\FINAL_ACCEPTANCE_MUST_NOT_EXIST.txt"
+        }
+      },
+      "status": 503,
+      "response": "{\"success\":false,\"error\":{\"code\":\"WRITE_GUARD_UNAVAILABLE\",\"message\":\"Native tool authorization failed\"},\"requestId\":\"awa094997lfmvm6dc10\",\"timestamp\":1792832818212}"
+    },
+    {
+      "name": "history-loss",
+      "rejection_preserved": {
+        "events.jsonl": null,
+        "state.json": "0ab7c6a2ae31bafef0f3ced2519f8e9b088e568365283ce42de6f2eb2a0df0f2",
+        "configuration-activation.json": "eb6d41a7482af98edb658fe79b632c99719d3b6c1584e228f10dd6df56274604"
+      }
+    },
+    {
+      "label": "history-corrupt normal consumer rejects",
+      "started": "2026-10-24T09:06:58.213Z",
+      "finished": "2026-10-24T09:06:58.233Z",
+      "route": "/api/v1/tool/invoke",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\history-corrupt",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 500,
+      "response": "{\"success\":false,\"error\":{\"code\":\"TOOL_ERROR\",\"message\":\"RUNTIME_SCHEMA_PRECHECK_BLOCKED:runtime-wal:SCHEMA_ID_MISSING\"},\"requestId\":\"epoi5vhfuwmvm6dc1l\",\"timestamp\":1792832818233}"
+    },
+    {
+      "label": "history-corrupt native write also rejects",
+      "started": "2026-10-24T09:06:58.233Z",
+      "finished": "2026-10-24T09:06:58.255Z",
+      "route": "/api/v1/v11/write-guard/native",
+      "request": {
+        "projectPath": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\history-corrupt",
+        "tool": "write",
+        "args": {
+          "filePath": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\history-corrupt\\FINAL_ACCEPTANCE_MUST_NOT_EXIST.txt"
+        }
+      },
+      "status": 503,
+      "response": "{\"success\":false,\"error\":{\"code\":\"WRITE_GUARD_UNAVAILABLE\",\"message\":\"Native tool authorization failed\"},\"requestId\":\"d25v0srguhpmvm6dc27\",\"timestamp\":1792832818255}"
+    },
+    {
+      "name": "history-corrupt",
+      "rejection_preserved": {
+        "events.jsonl": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+        "state.json": "6f6bc43126c2447079863b2bd907606a4cd5e7cf52e0954f7d35957977121bb8",
+        "configuration-activation.json": "eb6d41a7482af98edb658fe79b632c99719d3b6c1584e228f10dd6df56274604"
+      }
+    },
+    {
+      "label": "config-corrupt normal consumer rejects",
+      "started": "2026-10-24T09:06:58.256Z",
+      "finished": "2026-10-24T09:06:58.263Z",
+      "route": "/api/v1/tool/invoke",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\config-corrupt",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"CONFIGURATION_INVALID_OBJECT\"},\"requestId\":\"ekgbkvviqq6mvm6dc2f\",\"timestamp\":1792832818263}"
+    },
+    {
+      "label": "config-corrupt native write also rejects",
+      "started": "2026-10-24T09:06:58.264Z",
+      "finished": "2026-10-24T09:06:58.287Z",
+      "route": "/api/v1/v11/write-guard/native",
+      "request": {
+        "projectPath": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\config-corrupt",
+        "tool": "write",
+        "args": {
+          "filePath": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\config-corrupt\\FINAL_ACCEPTANCE_MUST_NOT_EXIST.txt"
+        }
+      },
+      "status": 503,
+      "response": "{\"success\":false,\"error\":{\"code\":\"WRITE_GUARD_UNAVAILABLE\",\"message\":\"Native tool authorization failed\"},\"requestId\":\"da982e5ej7qmvm6dc33\",\"timestamp\":1792832818287}"
+    },
+    {
+      "name": "config-corrupt",
+      "rejection_preserved": {
+        "events.jsonl": "15ea4e8842d0d3abebab5b81a98e6fb2d1ba03f1775ac88c7262ab8a9fcee7ac",
+        "state.json": "861511414d627df3688ec0208e9baca50f6591e7f19ab00c0b6b490010246ebe",
+        "configuration-activation.json": "eb6d41a7482af98edb658fe79b632c99719d3b6c1584e228f10dd6df56274604"
+      }
+    },
+    {
+      "label": "activation-loss exact isolated fault bytes restored",
+      "started": "2026-10-24T09:06:58.289Z",
+      "finished": "2026-10-24T09:06:58.322Z",
+      "route": "/api/v1/tool/invoke",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\activation-loss",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"success\":true,\"rebuilt_from_events\":true,\"work_items\":{\"WI-0001\":{\"work_item_id\":\"WI-0001\",\"workflow_type\":\"feature_spec\",\"current_state\":\"closed\",\"created_at\":1792208444157,\"updated_at\":1792346105207},\"WI-TEST\":{\"work_item_id\":\"WI-TEST\",\"workflow_type\":\"feature_spec\",\"current_state\":\"created\",\"created_at\":1792832242144,\"updated_at\":1792832242144}}},\"requestId\":\"3l6s5mvlc1fmvm6dc42\",\"timestamp\":1792832818322}"
+    },
+    {
+      "label": "history-loss exact isolated fault bytes restored",
+      "started": "2026-10-24T09:06:58.323Z",
+      "finished": "2026-10-24T09:06:58.379Z",
+      "route": "/api/v1/tool/invoke",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\history-loss",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"success\":true,\"rebuilt_from_events\":true,\"work_items\":{\"WI-0001\":{\"work_item_id\":\"WI-0001\",\"workflow_type\":\"feature_spec\",\"current_state\":\"closed\",\"created_at\":1792208444157,\"updated_at\":1792346105207},\"WI-TEST\":{\"work_item_id\":\"WI-TEST\",\"workflow_type\":\"feature_spec\",\"current_state\":\"created\",\"created_at\":1792832242318,\"updated_at\":1792832242318}}},\"requestId\":\"jcf67n95kpmvm6dc5n\",\"timestamp\":1792832818379}"
+    },
+    {
+      "label": "history-corrupt exact isolated fault bytes restored",
+      "started": "2026-10-24T09:06:58.380Z",
+      "finished": "2026-10-24T09:06:58.442Z",
+      "route": "/api/v1/tool/invoke",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\history-corrupt",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"success\":true,\"rebuilt_from_events\":true,\"work_items\":{\"WI-0001\":{\"work_item_id\":\"WI-0001\",\"workflow_type\":\"feature_spec\",\"current_state\":\"closed\",\"created_at\":1792208444157,\"updated_at\":1792346105207},\"WI-TEST\":{\"work_item_id\":\"WI-TEST\",\"workflow_type\":\"feature_spec\",\"current_state\":\"created\",\"created_at\":1792832242490,\"updated_at\":1792832242490}}},\"requestId\":\"3ff03rhx1x9mvm6dc7e\",\"timestamp\":1792832818442}"
+    },
+    {
+      "label": "corrupt configuration recovery through official owner",
+      "started": "2026-10-24T09:06:58.443Z",
+      "finished": "2026-10-24T09:06:58.496Z",
+      "route": "/api/v1/tool/invoke",
+      "request": {
+        "tool": "sf_project_config",
+        "args": {
+          "action": "update",
+          "content": "{\n  \"schema_version\": \"1.0\"\n}\n",
+          "expected_sha256": "06606b847bbf59ca9931f2d23b330acc534a3560802e7aa195d6f381523aaddd"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\config-corrupt",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"success\":true,\"document_sha256\":\"ae4485aea4a3ee8a404d95e3b2ed3ea56f3c833d29077aaf8d012276d34a990c\",\"previous_sha256\":\"06606b847bbf59ca9931f2d23b330acc534a3560802e7aa195d6f381523aaddd\",\"effective_sha256\":\"a808687e4b57d085d374d291f0a3592149b3a45d434f959272f749170e6a9fc2\",\"activation\":\"validated_pending_acceptance\"},\"requestId\":\"pi9c0e60u0fmvm6dc8v\",\"timestamp\":1792832818495}"
+    },
+    {
+      "label": "valid configuration after official recovery",
+      "started": "2026-10-24T09:06:58.496Z",
+      "finished": "2026-10-24T09:06:58.529Z",
+      "route": "/api/v1/tool/invoke",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\config-corrupt",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"success\":true,\"rebuilt_from_events\":true,\"work_items\":{\"WI-0001\":{\"work_item_id\":\"WI-0001\",\"workflow_type\":\"feature_spec\",\"current_state\":\"closed\",\"created_at\":1792208444157,\"updated_at\":1792346105207},\"WI-TEST\":{\"work_item_id\":\"WI-TEST\",\"workflow_type\":\"feature_spec\",\"current_state\":\"created\",\"created_at\":1792832242654,\"updated_at\":1792832242654}}},\"requestId\":\"49hb5zidjo7mvm6dc9s\",\"timestamp\":1792832818528}"
+    },
+    {
+      "label": "closed project accepts timeout 2000",
+      "started": "2026-10-24T09:06:58.529Z",
+      "finished": "2026-10-24T09:06:58.672Z",
+      "route": "/api/v1/tool/invoke",
+      "request": {
+        "tool": "sf_project_config",
+        "args": {
+          "action": "update",
+          "content": "{\"schema_version\":\"1.0\",\"timeoutMs\":2000}",
+          "expected_sha256": "ae4485aea4a3ee8a404d95e3b2ed3ea56f3c833d29077aaf8d012276d34a990c"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-rotation",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"success\":true,\"document_sha256\":\"36ca36e49410501a14e977d712459941c37c8561070f2a3e2d1c49d608ebfb04\",\"previous_sha256\":\"ae4485aea4a3ee8a404d95e3b2ed3ea56f3c833d29077aaf8d012276d34a990c\",\"effective_sha256\":\"e8978f26eea7596970dde7f9c06a1474f19c42546a846f6c060b748942c8abf2\",\"activation\":\"validated_pending_acceptance\"},\"requestId\":\"lg6mp2e4vtmvm6dcds\",\"timestamp\":1792832818672}"
+    },
+    {
+      "label": "actual config timeout consumption 2000",
+      "started": "2026-10-24T09:06:58.672Z",
+      "finished": "2026-10-24T09:07:00.908Z",
+      "route": "/api/v1/tool/invoke",
+      "request": {
+        "tool": "sf_safe_bash",
+        "args": {
+          "command": "Start-Sleep -Milliseconds 3500",
+          "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-rotation"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-rotation",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"success\":false,\"exitCode\":null,\"stdout\":\"\",\"stderr\":\"\",\"durationMs\":2021,\"command\":\"Start-Sleep -Milliseconds 3500\",\"cwd\":\"D:\\\\code\\\\SpecForge\\\\.tmp\\\\shell-boundary-repair-20261024\\\\fixtures\\\\closed-rotation\",\"shell\":null,\"rejected\":false,\"timeout\":true,\"timeoutMs\":2000,\"hint\":\"Internal read operation timed out; no process was started.\"},\"requestId\":\"kjqidzqmeaemvm6de3w\",\"timestamp\":1792832820908}"
+    },
+    {
+      "label": "configuration change must not revive code permission",
+      "started": "2026-10-24T09:07:00.908Z",
+      "finished": "2026-10-24T09:07:00.996Z",
+      "route": "/api/v1/v11/write-guard/native",
+      "request": {
+        "projectPath": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-rotation",
+        "tool": "write",
+        "args": {
+          "filePath": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-rotation\\FINAL_ACCEPTANCE_MUST_NOT_EXIST.txt"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"allowed\":false,\"reason\":\"UNAMBIGUOUS_ACTIVE_WORK_ITEM_REQUIRED\"},\"requestId\":\"cl49tou20iqmvm6de6c\",\"timestamp\":1792832820996}"
+    },
+    {
+      "label": "closed project accepts timeout 10000",
+      "started": "2026-10-24T09:07:00.997Z",
+      "finished": "2026-10-24T09:07:01.140Z",
+      "route": "/api/v1/tool/invoke",
+      "request": {
+        "tool": "sf_project_config",
+        "args": {
+          "action": "update",
+          "content": "{\"schema_version\":\"1.0\",\"timeoutMs\":10000}",
+          "expected_sha256": "36ca36e49410501a14e977d712459941c37c8561070f2a3e2d1c49d608ebfb04"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-rotation",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"success\":true,\"document_sha256\":\"414f99832c5d95e0c3e1bc3a1840516a0ea0b8d0118774393383b3593b4771ea\",\"previous_sha256\":\"36ca36e49410501a14e977d712459941c37c8561070f2a3e2d1c49d608ebfb04\",\"effective_sha256\":\"0a96299ffa6be18a830a7922a6021dd6d4fe06fd447ca4da369e85213a07f3f9\",\"activation\":\"validated_pending_acceptance\"},\"requestId\":\"9dyvg15p3zgmvm6deac\",\"timestamp\":1792832821140}"
+    },
+    {
+      "label": "actual config timeout consumption 10000",
+      "started": "2026-10-24T09:07:01.140Z",
+      "finished": "2026-10-24T09:07:04.853Z",
+      "route": "/api/v1/tool/invoke",
+      "request": {
+        "tool": "sf_safe_bash",
+        "args": {
+          "command": "Start-Sleep -Milliseconds 3500",
+          "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-rotation"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-rotation",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"success\":true,\"exitCode\":0,\"stdout\":\"\",\"stderr\":\"\",\"durationMs\":3514,\"command\":\"Start-Sleep -Milliseconds 3500\",\"cwd\":\"D:\\\\code\\\\SpecForge\\\\.tmp\\\\shell-boundary-repair-20261024\\\\fixtures\\\\closed-rotation\",\"shell\":null,\"rejected\":false,\"timeout\":false,\"hint\":\"Executed internally; no shell or child process started.\"},\"requestId\":\"d9uq8edpuymmvm6dh5g\",\"timestamp\":1792832824852}"
+    },
+    {
+      "label": "configuration change must not revive code permission",
+      "started": "2026-10-24T09:07:04.853Z",
+      "finished": "2026-10-24T09:07:04.945Z",
+      "route": "/api/v1/v11/write-guard/native",
+      "request": {
+        "projectPath": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-rotation",
+        "tool": "write",
+        "args": {
+          "filePath": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-rotation\\FINAL_ACCEPTANCE_MUST_NOT_EXIST.txt"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"allowed\":false,\"reason\":\"UNAMBIGUOUS_ACTIVE_WORK_ITEM_REQUIRED\"},\"requestId\":\"6evczr3qv55mvm6dh80\",\"timestamp\":1792832824944}"
+    },
+    {
+      "label": "restore accepted config via archived identity",
+      "started": "2026-10-24T09:07:04.946Z",
+      "finished": "2026-10-24T09:07:05.081Z",
+      "route": "/api/v1/tool/invoke",
+      "request": {
+        "tool": "sf_project_config",
+        "args": {
+          "action": "restore",
+          "restore_sha256": "ae4485aea4a3ee8a404d95e3b2ed3ea56f3c833d29077aaf8d012276d34a990c",
+          "expected_sha256": "414f99832c5d95e0c3e1bc3a1840516a0ea0b8d0118774393383b3593b4771ea"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-rotation",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"success\":true,\"document_sha256\":\"ae4485aea4a3ee8a404d95e3b2ed3ea56f3c833d29077aaf8d012276d34a990c\",\"previous_sha256\":\"414f99832c5d95e0c3e1bc3a1840516a0ea0b8d0118774393383b3593b4771ea\",\"effective_sha256\":\"a808687e4b57d085d374d291f0a3592149b3a45d434f959272f749170e6a9fc2\",\"activation\":\"validated_pending_acceptance\"},\"requestId\":\"kzfindy0ewpmvm6dhbt\",\"timestamp\":1792832825081}"
+    },
+    {
+      "label": "closed rotation final restored state",
+      "started": "2026-10-24T09:07:05.081Z",
+      "finished": "2026-10-24T09:07:05.214Z",
+      "route": "/api/v1/tool/invoke",
+      "request": {
+        "tool": "sf_state_read",
+        "args": {
+          "work_item_id": "all"
+        },
+        "context": {
+          "directory": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-rotation",
+          "agent": "sf-orchestrator"
+        }
+      },
+      "status": 200,
+      "response": "{\"success\":true,\"data\":{\"success\":true,\"rebuilt_from_events\":true,\"work_items\":{\"WI-0001\":{\"work_item_id\":\"WI-0001\",\"workflow_type\":\"feature_spec\",\"current_state\":\"closed\",\"created_at\":1792208444157,\"updated_at\":1792346105207}}},\"requestId\":\"ihp60uz0jjmvm6dhfi\",\"timestamp\":1792832825214}"
+    },
+    {
+      "label": "unsupported request fails honestly",
+      "started": "2026-10-24T09:07:05.214Z",
+      "finished": "2026-10-24T09:07:05.234Z",
+      "route": "/unknown-final",
+      "request": {},
+      "status": 404,
+      "response": "{\"success\":false,\"error\":{\"code\":\"NOT_FOUND\",\"message\":\"Route GET /unknown-final not found\"},\"requestId\":\"vsxki624m2bmvm6dhg1\",\"timestamp\":1792832825233}"
+    },
+    {
+      "label": "unsupported request fails honestly",
+      "started": "2026-10-24T09:07:05.234Z",
+      "finished": "2026-10-24T09:07:05.251Z",
+      "route": "/api/v1/cas/store",
+      "request": {
+        "content": "FINAL_CAS_NO_WRITE"
+      },
+      "status": 501,
+      "response": "{\"success\":false,\"error\":{\"code\":\"CAS_API_UNSUPPORTED\",\"message\":\"No content was stored\"},\"requestId\":\"n6waappn9plmvm6dhgj\",\"timestamp\":1792832825251}"
+    },
+    {
+      "label": "unsupported request fails honestly",
+      "started": "2026-10-24T09:07:05.251Z",
+      "finished": "2026-10-24T09:07:05.262Z",
+      "route": "/api/v1/cas/retrieve?hash=missing",
+      "request": {},
+      "status": 501,
+      "response": "{\"success\":false,\"error\":{\"code\":\"CAS_API_UNSUPPORTED\",\"message\":\"No content was retrieved\"},\"requestId\":\"djpl19mlp3mvm6dhgu\",\"timestamp\":1792832825262}"
+    },
+    {
+      "label": "closed task transition rejected",
+      "started": "2026-10-24T09:07:05.264Z",
+      "finished": "2026-10-24T09:07:05.303Z",
+      "route": "/api/v1/state/transition",
+      "request": {
+        "projectPath": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-projection",
+        "workItemId": "WI-0001",
+        "fromState": "closed",
+        "toState": "created"
+      },
+      "status": 409,
+      "response": "{\"success\":false,\"error\":{\"code\":\"TRANSITION_REJECTED\",\"message\":\"Controlled transition did not succeed\"},\"requestId\":\"7d5rd3kfyh4mvm6dhhz\",\"timestamp\":1792832825303}"
+    },
+    {
+      "verdict": "PASS"
+    }
+  ]
+}

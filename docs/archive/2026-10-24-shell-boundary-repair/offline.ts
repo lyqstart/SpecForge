@@ -1,0 +1,6 @@
+import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';
+import {ReconnectingDaemonClient} from 'C:/Users/lyq/.config/opencode/sf-user/lib/sf_plugin_client.ts';
+import {createSpecForgeThinPlugin} from 'C:/Users/lyq/.config/opencode/sf-user/lib/sf_thin_plugin.ts';
+const root='D:/code/sf-acceptance-six',client=new ReconnectingDaemonClient({handshakePath:'C:/Users/lyq/.config/opencode/sf-user/runtime/handshake.json'}),target=path.join(root,'FINAL_ACCEPTANCE_MUST_NOT_EXIST.txt');
+const hook=await createSpecForgeThinPlugin({directory:root},{client:{register:async()=>({sessionId:'acceptance',projectId:'acceptance',mode:'personal'}),postEvent:async()=>({ok:true,dropped:false,reason:'success'}),checkNativeTool:client.checkNativeTool.bind(client)},notify:()=>{}});let error='';try{await hook['tool.execute.before']({tool:'write'},{args:{filePath:target}})}catch(e){error=String(e)}finally{client.dispose();}
+const result={utc:new Date().toISOString(),error,target_exists:fs.existsSync(target),scope:'actual installed plugin/client; offline rejection before host write; no generated OpenCode call'};fs.writeFileSync(path.join(import.meta.dir,'offline-result.json'),JSON.stringify(result,null,2),{flag:'wx'});assert.ok(error);assert.equal(result.target_exists,false);console.log(JSON.stringify(result));

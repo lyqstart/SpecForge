@@ -1,0 +1,18 @@
+{
+  "id": "018-candidate-commit",
+  "cwd": "D:/code/SpecForge",
+  "exe": "git",
+  "args": [
+    "commit",
+    "-m",
+    "fix: confine safe-bash to internal read-only operations"
+  ],
+  "purpose": "018-candidate-commit",
+  "started": "2026-10-24T08:56:26.284Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T08:56:26.483Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_repository_status": ""
+}

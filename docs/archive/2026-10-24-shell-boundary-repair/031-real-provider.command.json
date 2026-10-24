@@ -1,0 +1,11 @@
+{
+  "id": "031-real-provider",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    ".tmp/shell-boundary-repair-20261024/real-provider.ts"
+  ],
+  "purpose": "031-real-provider",
+  "started": "2026-10-24T08:59:43.729Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged"
+}

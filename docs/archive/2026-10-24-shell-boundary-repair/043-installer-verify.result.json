@@ -1,0 +1,17 @@
+{
+  "id": "043-installer-verify",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/sf-installer.ts",
+    "verify"
+  ],
+  "purpose": "043-installer-verify",
+  "started": "2026-10-24T09:06:11.814Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T09:06:12.211Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_repository_status": ""
+}

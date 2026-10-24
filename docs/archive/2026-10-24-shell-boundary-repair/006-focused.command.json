@@ -1,0 +1,14 @@
+{
+  "id": "006-focused",
+  "cwd": "D:/code/SpecForge/packages/daemon-core",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/shell-readonly-boundary.test.ts"
+  ],
+  "purpose": "006-focused",
+  "started": "2026-10-24T08:53:16.569Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged"
+}

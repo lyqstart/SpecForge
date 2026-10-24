@@ -1,0 +1,1 @@
+Copied independent original acceptance fixtures; changed only expected product version and replaced now-unavailable arbitrary program with internal wait for config timeout consumption. All state/fault/hash assertions retained.

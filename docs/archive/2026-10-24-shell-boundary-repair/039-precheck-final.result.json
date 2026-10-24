@@ -1,0 +1,19 @@
+{
+  "id": "039-precheck-final",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "precheck:release",
+    "--candidate-id",
+    "commit-4fc2e8a978c2537f0207fc348f5d9141efe9177e"
+  ],
+  "purpose": "039-precheck-final",
+  "started": "2026-10-24T09:05:45.155Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T09:05:46.648Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_repository_status": ""
+}

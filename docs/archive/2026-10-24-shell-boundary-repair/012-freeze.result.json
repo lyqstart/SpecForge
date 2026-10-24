@@ -1,0 +1,16 @@
+{
+  "id": "012-freeze",
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    ".tmp/shell-boundary-repair-20261024/freeze.cjs"
+  ],
+  "purpose": "012-freeze",
+  "started": "2026-10-24T08:55:52.725Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T08:55:52.796Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 1,
+  "signal": null,
+  "observed_repository_status": " M docs/engineering-lessons/universal/shell-command-execution.md\n M docs/product-specification/authority-registry.md\n M docs/product-specification/specforge-product-specification.md\n M docs/project-status.md\n M docs/rule/specforge-active-development-rules.md\n M docs/rule/specforge-development-error-ledger-and-experience.md\n M package.json\n M packages/cli/package.json\n M packages/cli/tests/help-system.test.ts\n M packages/configuration/package.json\n M packages/daemon-core/package.json\n M packages/daemon-core/src/tools/handlers/sf-safe-bash.ts\n M packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts\n M packages/daemon-core/src/tools/lib/sf_safe_bash_executor.ts\n M packages/daemon-core/src/tools/lib/write-guard-runtime-v12.ts\n M packages/daemon-core/tests/hard-stop-recovery-protocol.test.ts\n M packages/daemon-core/tests/unit/semantic-closure-contract-alignment.test.ts\n M packages/daemon-core/tests/unit/sf-safe-bash-windows-invocation.test.ts\n M packages/host-profile/package.json\n M packages/observability/package.json\n M packages/observability/tests/unit/project-structure.test.ts\n M packages/opencode-adapter/package.json\n M packages/permission-engine/package.json\n M packages/scope-gate/package.json\n M packages/service-management/package.json\n M packages/types/package.json\n M packages/version-unification/package.json\n M packages/workflow-runtime/package.json\n M setup/userlevel-opencode/agents/sf-executor.md\n M setup/userlevel-opencode/agents/sf-orchestrator.md\n M setup/userlevel-opencode/agents/sf-verifier.md\n M setup/userlevel-opencode/skills/superpowers-engineering-lessons/SKILL.md\n M setup/userlevel-opencode/tools/lib/sf_safe_bash_core.ts\n M setup/userlevel-opencode/tools/lib/sf_safe_bash_executor.ts\n M setup/userlevel-opencode/tools/lib/sf_verifier_execution_core.ts\n M setup/userlevel-opencode/tools/sf_safe_bash.ts\n M tests/unit/current-product-version-contract.test.ts\n?? packages/daemon-core/tests/unit/shell-readonly-boundary.test.ts\n"
+}

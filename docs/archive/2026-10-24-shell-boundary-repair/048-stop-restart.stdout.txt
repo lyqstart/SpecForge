@@ -1,0 +1,1 @@
+{"success":true,"data":{"message":"shutdown initiated"},"requestId":"yrbzys2ae5mvm6cynq","timestamp":1792832800886}

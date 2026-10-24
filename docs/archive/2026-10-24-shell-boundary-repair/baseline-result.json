@@ -1,0 +1,192 @@
+{
+  "utc": "2026-10-24T08:50:10.763Z",
+  "pid": 36648,
+  "root": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixture",
+  "records": [
+    {
+      "start": "2026-10-24T08:50:07.567Z",
+      "end": "2026-10-24T08:50:07.688Z",
+      "tool": "sf_state_read",
+      "args": {
+        "work_item_id": "all"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"rebuilt_from_events\":true,\"work_items\":{\"WI-0001\":{\"work_item_id\":\"WI-0001\",\"workflow_type\":\"feature_spec\",\"current_state\":\"closed\",\"created_at\":1792208444157,\"updated_at\":1792346105207}}},\"requestId\":\"nbp9albo1gnmvm5roap\",\"timestamp\":1792831807681}"
+    },
+    {
+      "start": "2026-10-24T08:50:07.688Z",
+      "end": "2026-10-24T08:50:08.295Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "node -e \"require('fs').writeFileSync('inline-sentinel.txt','ISOLATED_INLINE')\"",
+        "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixture"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"exitCode\":0,\"stdout\":\"\",\"stderr\":\"\",\"durationMs\":587,\"command\":\"$OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::InputEncoding = [System.Text.Encoding]::UTF8; node -e \\\"require('fs').writeFileSync('inline-sentinel.txt','ISOLATED_INLINE')\\\"\",\"cwd\":\"D:\\\\code\\\\SpecForge\\\\.tmp\\\\shell-boundary-repair-20261024\\\\fixture\",\"shell\":\"pwsh\",\"rejected\":false,\"timeout\":false},\"requestId\":\"37zf40v13mqmvm5rorq\",\"timestamp\":1792831808294}"
+    },
+    {
+      "command": "node -e \"require('fs').writeFileSync('inline-sentinel.txt','ISOLATED_INLINE')\"",
+      "target": "inline-sentinel.txt",
+      "actual": "ISOLATED_INLINE",
+      "result": {
+        "success": true,
+        "data": {
+          "success": true,
+          "exitCode": 0,
+          "stdout": "",
+          "stderr": "",
+          "durationMs": 587,
+          "command": "$OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::InputEncoding = [System.Text.Encoding]::UTF8; node -e \"require('fs').writeFileSync('inline-sentinel.txt','ISOLATED_INLINE')\"",
+          "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixture",
+          "shell": "pwsh",
+          "rejected": false,
+          "timeout": false
+        },
+        "requestId": "37zf40v13mqmvm5rorq",
+        "timestamp": 1792831808294
+      }
+    },
+    {
+      "start": "2026-10-24T08:50:08.297Z",
+      "end": "2026-10-24T08:50:08.836Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "node boundary-script.cjs",
+        "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixture"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"exitCode\":0,\"stdout\":\"\",\"stderr\":\"\",\"durationMs\":503,\"command\":\"$OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::InputEncoding = [System.Text.Encoding]::UTF8; node boundary-script.cjs\",\"cwd\":\"D:\\\\code\\\\SpecForge\\\\.tmp\\\\shell-boundary-repair-20261024\\\\fixture\",\"shell\":\"pwsh\",\"rejected\":false,\"timeout\":false},\"requestId\":\"wxydi3lic1mvm5rp6q\",\"timestamp\":1792831808834}"
+    },
+    {
+      "command": "node boundary-script.cjs",
+      "target": "script-sentinel.txt",
+      "actual": "ISOLATED_SCRIPT",
+      "result": {
+        "success": true,
+        "data": {
+          "success": true,
+          "exitCode": 0,
+          "stdout": "",
+          "stderr": "",
+          "durationMs": 503,
+          "command": "$OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::InputEncoding = [System.Text.Encoding]::UTF8; node boundary-script.cjs",
+          "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixture",
+          "shell": "pwsh",
+          "rejected": false,
+          "timeout": false
+        },
+        "requestId": "wxydi3lic1mvm5rp6q",
+        "timestamp": 1792831808834
+      }
+    },
+    {
+      "start": "2026-10-24T08:50:08.838Z",
+      "end": "2026-10-24T08:50:09.431Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "node boundary-child.cjs",
+        "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixture"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"exitCode\":0,\"stdout\":\"\",\"stderr\":\"\",\"durationMs\":574,\"command\":\"$OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::InputEncoding = [System.Text.Encoding]::UTF8; node boundary-child.cjs\",\"cwd\":\"D:\\\\code\\\\SpecForge\\\\.tmp\\\\shell-boundary-repair-20261024\\\\fixture\",\"shell\":\"pwsh\",\"rejected\":false,\"timeout\":false},\"requestId\":\"peplcyq24gcmvm5rpna\",\"timestamp\":1792831809430}"
+    },
+    {
+      "command": "node boundary-child.cjs",
+      "target": "child-sentinel.txt",
+      "actual": "ISOLATED_CHILD",
+      "result": {
+        "success": true,
+        "data": {
+          "success": true,
+          "exitCode": 0,
+          "stdout": "",
+          "stderr": "",
+          "durationMs": 574,
+          "command": "$OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::InputEncoding = [System.Text.Encoding]::UTF8; node boundary-child.cjs",
+          "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixture",
+          "shell": "pwsh",
+          "rejected": false,
+          "timeout": false
+        },
+        "requestId": "peplcyq24gcmvm5rpna",
+        "timestamp": 1792831809430
+      }
+    },
+    {
+      "start": "2026-10-24T08:50:09.432Z",
+      "end": "2026-10-24T08:50:10.168Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "echo READ_ONLY_CONTROL",
+        "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixture"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"exitCode\":0,\"stdout\":\"READ_ONLY_CONTROL\\r\\n\",\"stderr\":\"\",\"durationMs\":707,\"command\":\"$OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::InputEncoding = [System.Text.Encoding]::UTF8; echo READ_ONLY_CONTROL\",\"cwd\":\"D:\\\\code\\\\SpecForge\\\\.tmp\\\\shell-boundary-repair-20261024\\\\fixture\",\"shell\":\"pwsh\",\"rejected\":false,\"timeout\":false},\"requestId\":\"khfpsau4t8mvm5rq7r\",\"timestamp\":1792831810167}"
+    },
+    {
+      "command": "echo READ_ONLY_CONTROL",
+      "target": null,
+      "actual": null,
+      "result": {
+        "success": true,
+        "data": {
+          "success": true,
+          "exitCode": 0,
+          "stdout": "READ_ONLY_CONTROL\r\n",
+          "stderr": "",
+          "durationMs": 707,
+          "command": "$OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::InputEncoding = [System.Text.Encoding]::UTF8; echo READ_ONLY_CONTROL",
+          "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixture",
+          "shell": "pwsh",
+          "rejected": false,
+          "timeout": false
+        },
+        "requestId": "khfpsau4t8mvm5rq7r",
+        "timestamp": 1792831810167
+      }
+    },
+    {
+      "start": "2026-10-24T08:50:10.168Z",
+      "end": "2026-10-24T08:50:10.748Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "Get-Location",
+        "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixture"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"exitCode\":0,\"stdout\":\"\\r\\nPath\\r\\n----\\r\\nD:\\\\code\\\\SpecForge\\\\.tmp\\\\shell-boundary-repair-20261024\\\\fixture\\r\\n\\r\\n\",\"stderr\":\"\",\"durationMs\":557,\"command\":\"$OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::InputEncoding = [System.Text.Encoding]::UTF8; Get-Location\",\"cwd\":\"D:\\\\code\\\\SpecForge\\\\.tmp\\\\shell-boundary-repair-20261024\\\\fixture\",\"shell\":\"pwsh\",\"rejected\":false,\"timeout\":false},\"requestId\":\"d8h9kdujpu9mvm5rqnv\",\"timestamp\":1792831810747}"
+    },
+    {
+      "command": "Get-Location",
+      "target": null,
+      "actual": null,
+      "result": {
+        "success": true,
+        "data": {
+          "success": true,
+          "exitCode": 0,
+          "stdout": "\r\nPath\r\n----\r\nD:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixture\r\n\r\n",
+          "stderr": "",
+          "durationMs": 557,
+          "command": "$OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::InputEncoding = [System.Text.Encoding]::UTF8; Get-Location",
+          "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixture",
+          "shell": "pwsh",
+          "rejected": false,
+          "timeout": false
+        },
+        "requestId": "d8h9kdujpu9mvm5rqnv",
+        "timestamp": 1792831810747
+      }
+    },
+    {
+      "start": "2026-10-24T08:50:10.748Z",
+      "end": "2026-10-24T08:50:10.763Z",
+      "tool": "sf_state_read",
+      "args": {
+        "work_item_id": "all"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"rebuilt_from_events\":true,\"work_items\":{\"WI-0001\":{\"work_item_id\":\"WI-0001\",\"workflow_type\":\"feature_spec\",\"current_state\":\"closed\",\"created_at\":1792208444157,\"updated_at\":1792346105207}}},\"requestId\":\"1c69csnkdftmvm5rqo9\",\"timestamp\":1792831810761}"
+    }
+  ]
+}

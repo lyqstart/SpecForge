@@ -1,0 +1,77 @@
+{
+  "utc": "2026-10-24T09:07:21.238Z",
+  "records": [
+    {
+      "utc": "2026-10-24T09:07:20.862Z",
+      "pid": 33220,
+      "health": {
+        "success": true,
+        "data": {
+          "status": "ok",
+          "service": "daemon-core",
+          "version": "1.0.20",
+          "uptime": 29
+        },
+        "requestId": "2mz8hq401tmmvm6dti3",
+        "timestamp": 1792832840859
+      }
+    },
+    {
+      "case": "active authorized shell denial",
+      "command": "node active-writer.cjs",
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\\nViolations: SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor\",\"hard_stop\":false,\"policy_violation\":true,\"retry_allowed\":false,\"blocked_command\":\"node active-writer.cjs\",\"write_guard_targets\":[]},\"requestId\":\"g1njfkw4bi7mvm6dtok\",\"timestamp\":1792832841092}"
+    },
+    {
+      "case": "active authorized shell denial",
+      "command": "node active-child.cjs",
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\\nViolations: SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor\",\"hard_stop\":false,\"policy_violation\":true,\"retry_allowed\":false,\"blocked_command\":\"node active-child.cjs\",\"write_guard_targets\":[]},\"requestId\":\"pa4rg8yr0eemvm6dtpb\",\"timestamp\":1792832841119}"
+    },
+    {
+      "utc": "2026-10-24T09:07:21.138Z",
+      "location": "outside",
+      "tool": "edit",
+      "error": "Error: WRITE_GUARD_DENIED: WRITE_HARDLINK_FORBIDDEN",
+      "nlink": 2,
+      "target": "PROTECTED",
+      "alias": "PROTECTED"
+    },
+    {
+      "utc": "2026-10-24T09:07:21.157Z",
+      "location": "outside",
+      "tool": "write",
+      "error": "Error: WRITE_GUARD_DENIED: WRITE_HARDLINK_FORBIDDEN",
+      "nlink": 2,
+      "target": "PROTECTED",
+      "alias": "PROTECTED"
+    },
+    {
+      "utc": "2026-10-24T09:07:21.167Z",
+      "location": "inside",
+      "tool": "edit",
+      "error": "Error: WRITE_GUARD_DENIED: WRITE_HARDLINK_FORBIDDEN",
+      "nlink": 2,
+      "target": "PROTECTED",
+      "alias": "PROTECTED"
+    },
+    {
+      "utc": "2026-10-24T09:07:21.180Z",
+      "location": "inside",
+      "tool": "write",
+      "error": "Error: WRITE_GUARD_DENIED: WRITE_HARDLINK_FORBIDDEN",
+      "nlink": 2,
+      "target": "PROTECTED",
+      "alias": "PROTECTED"
+    },
+    {
+      "case": "ordinary edit and create",
+      "target": "MODIFIED",
+      "newFile": "MODIFIED"
+    },
+    {
+      "guardLog": "{\"timestamp\":\"2026-10-24T09:07:21.134Z\",\"path\":\"allowed.txt\",\"operation\":\"modify\",\"actor\":\"agent\",\"allowed\":false,\"violations\":[\"WRITE_HARDLINK_FORBIDDEN\"],\"tool\":\"edit\"}\n{\"timestamp\":\"2026-10-24T09:07:21.154Z\",\"path\":\"allowed.txt\",\"operation\":\"modify\",\"actor\":\"agent\",\"allowed\":false,\"violations\":[\"WRITE_HARDLINK_FORBIDDEN\"],\"tool\":\"write\"}\n{\"timestamp\":\"2026-10-24T09:07:21.165Z\",\"path\":\"allowed.txt\",\"operation\":\"modify\",\"actor\":\"agent\",\"allowed\":false,\"violations\":[\"WRITE_HARDLINK_FORBIDDEN\"],\"tool\":\"edit\"}\n{\"timestamp\":\"2026-10-24T09:07:21.177Z\",\"path\":\"allowed.txt\",\"operation\":\"modify\",\"actor\":\"agent\",\"allowed\":false,\"violations\":[\"WRITE_HARDLINK_FORBIDDEN\"],\"tool\":\"write\"}\n{\"timestamp\":\"2026-10-24T09:07:21.193Z\",\"path\":\"allowed.txt\",\"operation\":\"modify\",\"actor\":\"agent\",\"allowed\":true,\"violations\":[],\"tool\":\"edit\"}\n{\"timestamp\":\"2026-10-24T09:07:21.220Z\",\"path\":\"new.txt\",\"operation\":\"create\",\"actor\":\"agent\",\"allowed\":true,\"violations\":[],\"tool\":\"write\"}\n"
+    }
+  ],
+  "exit_code": 0
+}

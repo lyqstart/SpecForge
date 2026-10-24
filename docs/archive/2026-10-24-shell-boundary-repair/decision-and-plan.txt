@@ -1,0 +1,7 @@
+User decision: 先安全封堵：保留受控只读操作，无法隔离的脚本、构建和测试命令明确拒绝；不宣称这些执行功能可用。
+CONFIRMED baseline installed inline/script/child writes on closed original-project copy.
+RUNTIME_DEFECT: command-text target extraction is not a complete effects boundary; handler/core/template executor use ambient shell.
+Plan: in-process finite read interpreter shared byte-for-byte in daemon/template; no process starts or fallback; all caller text and injected env/stdin denied outside the grammar. Historical verifier fallback uses same boundary. Preserve state/HardStop checks and refusal logs; audit read results. SPS/registry D18, tool/agent docs and package release consumers synchronized.
+Validation: baseline effects then denial zero file writes for scripts/interpreters/children/compound commands/env/stdin/protected/report paths, active and closed state, both libraries, real installed HTTP, restart and six original issues. Positive reads/hash/list/text/timeouts; full regression/build/release/install and independent raw-byte review. Original project authority unchanged.
+Writes: product source/tests/deployment/docs/version; evidence and isolated fixture truth; runtime observer logs only on original.
+Stop: after final independent six-item review; no claim generic build/test available.

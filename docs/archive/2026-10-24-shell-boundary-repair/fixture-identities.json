@@ -1,0 +1,121 @@
+{
+  "utc": "2026-10-24T08:57:22.812Z",
+  "scope": "Original authoritative/business bytes copied; prior observation/session logs excluded. WI-TEST is an isolated StateManager test fixture, not a new business work item.",
+  "records": [
+    {
+      "name": "closed-projection",
+      "root": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-projection",
+      "originalWI": {
+        "work_item_id": "WI-0001",
+        "workflow_type": "feature_spec",
+        "current_state": "closed",
+        "created_at": 1792208444157,
+        "updated_at": 1792346105207
+      },
+      "testWI": null,
+      "archives": 0
+    },
+    {
+      "name": "closed-rotation",
+      "root": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-rotation",
+      "originalWI": {
+        "work_item_id": "WI-0001",
+        "workflow_type": "feature_spec",
+        "current_state": "closed",
+        "created_at": 1792208444157,
+        "updated_at": 1792346105207
+      },
+      "testWI": null,
+      "archives": 5
+    },
+    {
+      "name": "activation-loss",
+      "root": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\activation-loss",
+      "originalWI": {
+        "work_item_id": "WI-0001",
+        "workflow_type": "feature_spec",
+        "current_state": "closed",
+        "created_at": 1792208444157,
+        "updated_at": 1792346105207
+      },
+      "testWI": {
+        "work_item_id": "WI-TEST",
+        "workflow_type": "feature_spec",
+        "current_state": "created",
+        "created_at": 1792832242144,
+        "updated_at": 1792832242144
+      },
+      "archives": 0
+    },
+    {
+      "name": "history-loss",
+      "root": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\history-loss",
+      "originalWI": {
+        "work_item_id": "WI-0001",
+        "workflow_type": "feature_spec",
+        "current_state": "closed",
+        "created_at": 1792208444157,
+        "updated_at": 1792346105207
+      },
+      "testWI": {
+        "work_item_id": "WI-TEST",
+        "workflow_type": "feature_spec",
+        "current_state": "created",
+        "created_at": 1792832242318,
+        "updated_at": 1792832242318
+      },
+      "archives": 0
+    },
+    {
+      "name": "history-corrupt",
+      "root": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\history-corrupt",
+      "originalWI": {
+        "work_item_id": "WI-0001",
+        "workflow_type": "feature_spec",
+        "current_state": "closed",
+        "created_at": 1792208444157,
+        "updated_at": 1792346105207
+      },
+      "testWI": {
+        "work_item_id": "WI-TEST",
+        "workflow_type": "feature_spec",
+        "current_state": "created",
+        "created_at": 1792832242490,
+        "updated_at": 1792832242490
+      },
+      "archives": 0
+    },
+    {
+      "name": "config-corrupt",
+      "root": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\config-corrupt",
+      "originalWI": {
+        "work_item_id": "WI-0001",
+        "workflow_type": "feature_spec",
+        "current_state": "closed",
+        "created_at": 1792208444157,
+        "updated_at": 1792346105207
+      },
+      "testWI": {
+        "work_item_id": "WI-TEST",
+        "workflow_type": "feature_spec",
+        "current_state": "created",
+        "created_at": 1792832242654,
+        "updated_at": 1792832242654
+      },
+      "archives": 0
+    },
+    {
+      "name": "privacy",
+      "root": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\privacy",
+      "originalWI": {
+        "work_item_id": "WI-0001",
+        "workflow_type": "feature_spec",
+        "current_state": "closed",
+        "created_at": 1792208444157,
+        "updated_at": 1792346105207
+      },
+      "testWI": null,
+      "archives": 0
+    }
+  ]
+}

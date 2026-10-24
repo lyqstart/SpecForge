@@ -1,0 +1,308 @@
+{
+  "utc": "2026-10-24T09:06:29.365Z",
+  "pid": 21644,
+  "phase": "first",
+  "root": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-projection",
+  "exit_code": 0,
+  "records": [
+    {
+      "started": "2026-10-24T09:06:28.521Z",
+      "finished": "2026-10-24T09:06:28.624Z",
+      "tool": "sf_state_read",
+      "args": {
+        "work_item_id": "all"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"rebuilt_from_events\":true,\"work_items\":{\"WI-0001\":{\"work_item_id\":\"WI-0001\",\"workflow_type\":\"feature_spec\",\"current_state\":\"closed\",\"created_at\":1792208444157,\"updated_at\":1792346105207}}},\"requestId\":\"yamtfxqlcphmvm6cp6x\",\"timestamp\":1792832788617}"
+    },
+    {
+      "started": "2026-10-24T09:06:28.627Z",
+      "finished": "2026-10-24T09:06:28.666Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "node -e \"require('fs').writeFileSync('SHELL_first_MUST_NOT_EXIST.txt','BAD')\"",
+        "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-projection"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\\nViolations: SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor\",\"hard_stop\":false,\"policy_violation\":true,\"retry_allowed\":false,\"blocked_command\":\"node -e \\\"require('fs').writeFileSync('SHELL_first_MUST_NOT_EXIST.txt','BAD')\\\"\",\"write_guard_targets\":[]},\"requestId\":\"9jseht5r8dsmvm6cp89\",\"timestamp\":1792832788665}"
+    },
+    {
+      "case": "node -e \"require('fs').writeFileSync('SHELL_first_MUST_NOT_EXIST.txt','BAD')\"",
+      "targetExists": false,
+      "inputHash": "6489099dc94f6092e0ddd88403f7a94cdc0fcfd03319bdf65616a979f123de1b"
+    },
+    {
+      "started": "2026-10-24T09:06:28.669Z",
+      "finished": "2026-10-24T09:06:28.707Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "node boundary-write.cjs SHELL_first_MUST_NOT_EXIST.txt",
+        "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-projection"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\\nViolations: SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor\",\"hard_stop\":false,\"policy_violation\":true,\"retry_allowed\":false,\"blocked_command\":\"node boundary-write.cjs SHELL_first_MUST_NOT_EXIST.txt\",\"write_guard_targets\":[]},\"requestId\":\"3b1qxuqroeomvm6cp9e\",\"timestamp\":1792832788706}"
+    },
+    {
+      "case": "node boundary-write.cjs SHELL_first_MUST_NOT_EXIST.txt",
+      "targetExists": false,
+      "inputHash": "6489099dc94f6092e0ddd88403f7a94cdc0fcfd03319bdf65616a979f123de1b"
+    },
+    {
+      "started": "2026-10-24T09:06:28.709Z",
+      "finished": "2026-10-24T09:06:28.753Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "node boundary-child.cjs SHELL_first_MUST_NOT_EXIST.txt",
+        "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-projection"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\\nViolations: SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor\",\"hard_stop\":false,\"policy_violation\":true,\"retry_allowed\":false,\"blocked_command\":\"node boundary-child.cjs SHELL_first_MUST_NOT_EXIST.txt\",\"write_guard_targets\":[]},\"requestId\":\"1zz6g2jglq7mvm6cpao\",\"timestamp\":1792832788752}"
+    },
+    {
+      "case": "node boundary-child.cjs SHELL_first_MUST_NOT_EXIST.txt",
+      "targetExists": false,
+      "inputHash": "6489099dc94f6092e0ddd88403f7a94cdc0fcfd03319bdf65616a979f123de1b"
+    },
+    {
+      "started": "2026-10-24T09:06:28.755Z",
+      "finished": "2026-10-24T09:06:28.800Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "python -c \"open('SHELL_first_MUST_NOT_EXIST.txt','w').write('BAD')\"",
+        "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-projection"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\\nViolations: SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor\",\"hard_stop\":false,\"policy_violation\":true,\"retry_allowed\":false,\"blocked_command\":\"python -c \\\"open('SHELL_first_MUST_NOT_EXIST.txt','w').write('BAD')\\\"\",\"write_guard_targets\":[]},\"requestId\":\"hxjidwvymcdmvm6cpbz\",\"timestamp\":1792832788799}"
+    },
+    {
+      "case": "python -c \"open('SHELL_first_MUST_NOT_EXIST.txt','w').write('BAD')\"",
+      "targetExists": false,
+      "inputHash": "6489099dc94f6092e0ddd88403f7a94cdc0fcfd03319bdf65616a979f123de1b"
+    },
+    {
+      "started": "2026-10-24T09:06:28.802Z",
+      "finished": "2026-10-24T09:06:28.829Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "pwsh -File boundary.ps1 SHELL_first_MUST_NOT_EXIST.txt",
+        "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-projection"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\\nViolations: SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor\",\"hard_stop\":false,\"policy_violation\":true,\"retry_allowed\":false,\"blocked_command\":\"pwsh -File boundary.ps1 SHELL_first_MUST_NOT_EXIST.txt\",\"write_guard_targets\":[]},\"requestId\":\"9rpfe8l7c7dmvm6cpcs\",\"timestamp\":1792832788828}"
+    },
+    {
+      "case": "pwsh -File boundary.ps1 SHELL_first_MUST_NOT_EXIST.txt",
+      "targetExists": false,
+      "inputHash": "6489099dc94f6092e0ddd88403f7a94cdc0fcfd03319bdf65616a979f123de1b"
+    },
+    {
+      "started": "2026-10-24T09:06:28.831Z",
+      "finished": "2026-10-24T09:06:28.865Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "cmd /c \"echo BAD > SHELL_first_MUST_NOT_EXIST.txt\"",
+        "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-projection"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\\nViolations: no active work_item_id for shell write command\",\"hard_stop\":false,\"policy_violation\":true,\"retry_allowed\":false,\"blocked_command\":\"cmd /c \\\"echo BAD > SHELL_first_MUST_NOT_EXIST.txt\\\"\",\"write_guard_targets\":[{\"path\":\"SHELL_first_MUST_NOT_EXIST.txt\",\"operation\":\"modify\"}]},\"requestId\":\"w1y07y7t00qmvm6cpds\",\"timestamp\":1792832788864}"
+    },
+    {
+      "case": "cmd /c \"echo BAD > SHELL_first_MUST_NOT_EXIST.txt\"",
+      "targetExists": false,
+      "inputHash": "6489099dc94f6092e0ddd88403f7a94cdc0fcfd03319bdf65616a979f123de1b"
+    },
+    {
+      "started": "2026-10-24T09:06:28.867Z",
+      "finished": "2026-10-24T09:06:28.890Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "bun test",
+        "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-projection"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\\nViolations: SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor\",\"hard_stop\":false,\"policy_violation\":true,\"retry_allowed\":false,\"blocked_command\":\"bun test\",\"write_guard_targets\":[]},\"requestId\":\"2wseqmgb2qqmvm6cpei\",\"timestamp\":1792832788890}"
+    },
+    {
+      "case": "bun test",
+      "targetExists": false,
+      "inputHash": "6489099dc94f6092e0ddd88403f7a94cdc0fcfd03319bdf65616a979f123de1b"
+    },
+    {
+      "started": "2026-10-24T09:06:28.892Z",
+      "finished": "2026-10-24T09:06:28.922Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "npm run build",
+        "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-projection"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\\nViolations: SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor\",\"hard_stop\":false,\"policy_violation\":true,\"retry_allowed\":false,\"blocked_command\":\"npm run build\",\"write_guard_targets\":[]},\"requestId\":\"0p4htwm2pemmvm6cpfd\",\"timestamp\":1792832788921}"
+    },
+    {
+      "case": "npm run build",
+      "targetExists": false,
+      "inputHash": "6489099dc94f6092e0ddd88403f7a94cdc0fcfd03319bdf65616a979f123de1b"
+    },
+    {
+      "started": "2026-10-24T09:06:28.924Z",
+      "finished": "2026-10-24T09:06:28.955Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "git status",
+        "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-projection"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\\nViolations: SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor\",\"hard_stop\":false,\"policy_violation\":true,\"retry_allowed\":false,\"blocked_command\":\"git status\",\"write_guard_targets\":[]},\"requestId\":\"9kj74u1jqxbmvm6cpga\",\"timestamp\":1792832788954}"
+    },
+    {
+      "case": "git status",
+      "targetExists": false,
+      "inputHash": "6489099dc94f6092e0ddd88403f7a94cdc0fcfd03319bdf65616a979f123de1b"
+    },
+    {
+      "started": "2026-10-24T09:06:28.956Z",
+      "finished": "2026-10-24T09:06:29.001Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "unknown_writer SHELL_first_MUST_NOT_EXIST.txt",
+        "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-projection"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\\nViolations: SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor\",\"hard_stop\":false,\"policy_violation\":true,\"retry_allowed\":false,\"blocked_command\":\"unknown_writer SHELL_first_MUST_NOT_EXIST.txt\",\"write_guard_targets\":[]},\"requestId\":\"rhk1b3h3ua8mvm6cphk\",\"timestamp\":1792832789000}"
+    },
+    {
+      "case": "unknown_writer SHELL_first_MUST_NOT_EXIST.txt",
+      "targetExists": false,
+      "inputHash": "6489099dc94f6092e0ddd88403f7a94cdc0fcfd03319bdf65616a979f123de1b"
+    },
+    {
+      "started": "2026-10-24T09:06:29.002Z",
+      "finished": "2026-10-24T09:06:29.026Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "echo harmless; node boundary-write.cjs SHELL_first_MUST_NOT_EXIST.txt",
+        "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-projection"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\\nViolations: SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor\",\"hard_stop\":false,\"policy_violation\":true,\"retry_allowed\":false,\"blocked_command\":\"echo harmless; node boundary-write.cjs SHELL_first_MUST_NOT_EXIST.txt\",\"write_guard_targets\":[]},\"requestId\":\"36iuahs4469mvm6cpia\",\"timestamp\":1792832789026}"
+    },
+    {
+      "case": "echo harmless; node boundary-write.cjs SHELL_first_MUST_NOT_EXIST.txt",
+      "targetExists": false,
+      "inputHash": "6489099dc94f6092e0ddd88403f7a94cdc0fcfd03319bdf65616a979f123de1b"
+    },
+    {
+      "started": "2026-10-24T09:06:29.029Z",
+      "finished": "2026-10-24T09:06:29.062Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "echo harmless | node boundary-write.cjs SHELL_first_MUST_NOT_EXIST.txt",
+        "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-projection"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\\nViolations: SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor\",\"hard_stop\":false,\"policy_violation\":true,\"retry_allowed\":false,\"blocked_command\":\"echo harmless | node boundary-write.cjs SHELL_first_MUST_NOT_EXIST.txt\",\"write_guard_targets\":[]},\"requestId\":\"1hhzcaqs6aljmvm6cpj9\",\"timestamp\":1792832789061}"
+    },
+    {
+      "case": "echo harmless | node boundary-write.cjs SHELL_first_MUST_NOT_EXIST.txt",
+      "targetExists": false,
+      "inputHash": "6489099dc94f6092e0ddd88403f7a94cdc0fcfd03319bdf65616a979f123de1b"
+    },
+    {
+      "started": "2026-10-24T09:06:29.063Z",
+      "finished": "2026-10-24T09:06:29.093Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "echo BAD > .specforge/reports/result.txt; node boundary-child.cjs SHELL_first_MUST_NOT_EXIST.txt",
+        "cwd": "D:\\code\\SpecForge\\.tmp\\shell-boundary-repair-20261024\\fixtures\\closed-projection"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"exitCode\":null,\"stdout\":\"\",\"stderr\":\"\",\"durationMs\":0,\"command\":\"echo BAD > .specforge/reports/result.txt; node boundary-child.cjs SHELL_first_MUST_NOT_EXIST.txt\",\"cwd\":\"D:\\\\code\\\\SpecForge\\\\.tmp\\\\shell-boundary-repair-20261024\\\\fixtures\\\\closed-projection\",\"shell\":null,\"rejected\":true,\"timeout\":false,\"rule\":\"SHELL_EXECUTION_UNAVAILABLE\",\"suggestion\":\"No isolated external executor is available. Only internal read operations are supported: pwd/Get-Location; echo/Write-Output literal; cat/type/Get-Content file; ls/dir/Get-ChildItem directory; Test-Path path; Get-FileHash/sha256sum file; sleep seconds/Start-Sleep -Milliseconds number. Scripts, builds and tests were NOT executed. Do not retry via another shell or helper.\"},\"requestId\":\"dybu1rt5887mvm6cpk5\",\"timestamp\":1792832789093}"
+    },
+    {
+      "case": "echo BAD > .specforge/reports/result.txt; node boundary-child.cjs SHELL_first_MUST_NOT_EXIST.txt",
+      "targetExists": false,
+      "inputHash": "6489099dc94f6092e0ddd88403f7a94cdc0fcfd03319bdf65616a979f123de1b"
+    },
+    {
+      "started": "2026-10-24T09:06:29.095Z",
+      "finished": "2026-10-24T09:06:29.126Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "echo safe",
+        "env": {
+          "NODE_OPTIONS": "--require ./boundary-write.cjs"
+        }
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"exitCode\":null,\"stdout\":\"\",\"stderr\":\"\",\"durationMs\":0,\"command\":\"echo safe\",\"cwd\":\"D:\\\\code\\\\SpecForge\\\\.tmp\\\\shell-boundary-repair-20261024\\\\fixtures\\\\closed-projection\",\"shell\":null,\"rejected\":true,\"timeout\":false,\"rule\":\"SHELL_EXECUTION_UNAVAILABLE\",\"suggestion\":\"No isolated external executor is available. Only internal read operations are supported: pwd/Get-Location; echo/Write-Output literal; cat/type/Get-Content file; ls/dir/Get-ChildItem directory; Test-Path path; Get-FileHash/sha256sum file; sleep seconds/Start-Sleep -Milliseconds number. Scripts, builds and tests were NOT executed. Do not retry via another shell or helper.\"},\"requestId\":\"o4ay09x0homvm6cpl1\",\"timestamp\":1792832789125}"
+    },
+    {
+      "started": "2026-10-24T09:06:29.126Z",
+      "finished": "2026-10-24T09:06:29.157Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "echo safe",
+        "stdin": "node boundary-child.cjs SHELL_first_MUST_NOT_EXIST.txt"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"exitCode\":null,\"stdout\":\"\",\"stderr\":\"\",\"durationMs\":0,\"command\":\"echo safe\",\"cwd\":\"D:\\\\code\\\\SpecForge\\\\.tmp\\\\shell-boundary-repair-20261024\\\\fixtures\\\\closed-projection\",\"shell\":null,\"rejected\":true,\"timeout\":false,\"rule\":\"SHELL_EXECUTION_UNAVAILABLE\",\"suggestion\":\"No isolated external executor is available. Only internal read operations are supported: pwd/Get-Location; echo/Write-Output literal; cat/type/Get-Content file; ls/dir/Get-ChildItem directory; Test-Path path; Get-FileHash/sha256sum file; sleep seconds/Start-Sleep -Milliseconds number. Scripts, builds and tests were NOT executed. Do not retry via another shell or helper.\"},\"requestId\":\"b4cf5pwu26amvm6cplx\",\"timestamp\":1792832789157}"
+    },
+    {
+      "started": "2026-10-24T09:06:29.157Z",
+      "finished": "2026-10-24T09:06:29.201Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "echo READ_OK"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"exitCode\":0,\"stdout\":\"READ_OK\\n\",\"stderr\":\"\",\"durationMs\":2,\"command\":\"echo READ_OK\",\"cwd\":\"D:\\\\code\\\\SpecForge\\\\.tmp\\\\shell-boundary-repair-20261024\\\\fixtures\\\\closed-projection\",\"shell\":null,\"rejected\":false,\"timeout\":false,\"hint\":\"Executed internally; no shell or child process started.\"},\"requestId\":\"lhumkxb7ukmmvm6cpn4\",\"timestamp\":1792832789200}"
+    },
+    {
+      "started": "2026-10-24T09:06:29.201Z",
+      "finished": "2026-10-24T09:06:29.257Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "Get-Content BOUNDARY_READ_INPUT.txt"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"exitCode\":0,\"stdout\":\"真正的只读内容\\n\",\"stderr\":\"\",\"durationMs\":19,\"command\":\"Get-Content BOUNDARY_READ_INPUT.txt\",\"cwd\":\"D:\\\\code\\\\SpecForge\\\\.tmp\\\\shell-boundary-repair-20261024\\\\fixtures\\\\closed-projection\",\"shell\":null,\"rejected\":false,\"timeout\":false,\"hint\":\"Executed internally; no shell or child process started.\"},\"requestId\":\"875eg7yc4oamvm6cpoo\",\"timestamp\":1792832789256}"
+    },
+    {
+      "started": "2026-10-24T09:06:29.257Z",
+      "finished": "2026-10-24T09:06:29.298Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "Get-FileHash BOUNDARY_READ_INPUT.txt"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"exitCode\":0,\"stdout\":\"6489099dc94f6092e0ddd88403f7a94cdc0fcfd03319bdf65616a979f123de1b\\n\",\"stderr\":\"\",\"durationMs\":2,\"command\":\"Get-FileHash BOUNDARY_READ_INPUT.txt\",\"cwd\":\"D:\\\\code\\\\SpecForge\\\\.tmp\\\\shell-boundary-repair-20261024\\\\fixtures\\\\closed-projection\",\"shell\":null,\"rejected\":false,\"timeout\":false,\"hint\":\"Executed internally; no shell or child process started.\"},\"requestId\":\"zmgh301jllmvm6cppu\",\"timestamp\":1792832789298}"
+    },
+    {
+      "started": "2026-10-24T09:06:29.298Z",
+      "finished": "2026-10-24T09:06:29.335Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "Test-Path absent-boundary-file.txt"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"exitCode\":0,\"stdout\":\"false\\n\",\"stderr\":\"\",\"durationMs\":2,\"command\":\"Test-Path absent-boundary-file.txt\",\"cwd\":\"D:\\\\code\\\\SpecForge\\\\.tmp\\\\shell-boundary-repair-20261024\\\\fixtures\\\\closed-projection\",\"shell\":null,\"rejected\":false,\"timeout\":false,\"hint\":\"Executed internally; no shell or child process started.\"},\"requestId\":\"mfkz42pfgzsmvm6cpqu\",\"timestamp\":1792832789334}"
+    },
+    {
+      "started": "2026-10-24T09:06:29.335Z",
+      "finished": "2026-10-24T09:06:29.364Z",
+      "tool": "sf_state_read",
+      "args": {
+        "work_item_id": "all"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"rebuilt_from_events\":true,\"work_items\":{\"WI-0001\":{\"work_item_id\":\"WI-0001\",\"workflow_type\":\"feature_spec\",\"current_state\":\"closed\",\"created_at\":1792208444157,\"updated_at\":1792346105207}}},\"requestId\":\"yme7nj1s0mrmvm6cpro\",\"timestamp\":1792832789364}"
+    },
+    {
+      "auditEntries": 19,
+      "denied": 15,
+      "allowed": 4,
+      "targetExists": false,
+      "inputHash": "6489099dc94f6092e0ddd88403f7a94cdc0fcfd03319bdf65616a979f123de1b"
+    }
+  ]
+}

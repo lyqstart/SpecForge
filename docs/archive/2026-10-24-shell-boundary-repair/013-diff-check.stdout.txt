@@ -1,0 +1,2 @@
+packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts:99: new blank line at EOF.
+setup/userlevel-opencode/tools/lib/sf_safe_bash_core.ts:195: new blank line at EOF.
