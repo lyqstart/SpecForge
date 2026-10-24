@@ -313,10 +313,10 @@ Orchestrator 随后只读最终 `candidate_manifest.json`，确认 required cand
 
 **执行步骤：**
 1. 读取 `sf_gate_run` 返回的 blocking_issues
-2. 针对失败的 Candidate 重新调度对应子 Agent 修复
-3. 调用 `sf_state_transition`（from_state="gates_failed"，to_state="candidate_preparing"，evidence="re-entering candidate preparation to fix: <issues>"）
-4. 重复阶段 4 中对应的 Step（仅修复失败项），重新生成 candidate_manifest.json
-5. 回到阶段 5 重新执行 Gate
+2. 先调用 `sf_state_transition`（from_state="gates_failed"，to_state="candidate_preparing"，evidence="re-entering candidate preparation to fix: <issues>"），成功后才能修改 Candidate
+3. 针对失败的 Candidate 重新调度对应专业 Agent 修复，保留原始失败 Attempt 并重新完成受影响的 handoff
+4. 重复阶段 4 中对应的 Step，正式执行 `candidate_preparing → candidate_prepared`，由 Runtime 重新物化 candidate_manifest.json 及绑定；Agent 不得手工生成
+5. 确认封存成功后回到阶段 5，以新 Attempt 重新执行 Gate；不能直接在 gates_failed 运行 Gate 或对账旧 Attempt 来恢复状态
 
 ### 阶段 6：approval_required（用户审批）
 
@@ -325,7 +325,7 @@ Orchestrator 随后只读最终 `candidate_manifest.json`，确认 required cand
 **执行步骤：**
 1. 调用 `sf_state_read` 确认当前状态为 `approval_required`
 2. 向用户展示 Candidate 摘要（requirements、design、tasks 的关键内容）
-3. **调用 `sf_user_decision_record`**（work_item_id=<id>, decision_type="candidate_approval"）
+3. 停止并等待用户针对本代候选的明确决定；只有收到真实用户回复后，才按该回复调用 `sf_user_decision_record`。展示摘要、用户要求恢复验收或历史批准都不能代替本代批准。
    - 记录用户的决定：approve / reject / request_changes
 4. 根据用户决定路由：
    - **approve** → 调用 `sf_state_transition`（from_state="approval_required"，to_state="approved"，evidence="user approved candidates"）
