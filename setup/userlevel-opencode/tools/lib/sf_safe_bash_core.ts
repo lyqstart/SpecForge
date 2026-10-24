@@ -17,7 +17,7 @@ import * as fs from "node:fs/promises"
 import { existsSync, readFileSync, statSync } from "node:fs"
 import type { SafeBashArgs, SafeBashResult } from "./sf_safe_bash_types"
 import { applyRules } from "./sf_safe_bash_rules"
-import { executeCommand, resolveCwd } from "./sf_safe_bash_executor"
+import { executeCommand, resolveCwd, appendShellAudit } from "./sf_safe_bash_executor"
 
 const SPEC_DIR_NAME = '.specforge' as const;
 
@@ -186,141 +186,9 @@ function readReferencedScriptForGovernanceV21(command: string, cwd: string): str
   }
 }
 
-export async function safeBashExecute(
-  args: SafeBashArgs,
-  baseDir: string
-): Promise<SafeBashResult> {
-  let profile = await loadHostProfile()
-  if (!profile) {
-    profile = buildDefaultProfile()
-  }
-
-  const preRuleGovernanceViolationV21 = findSpecForgeGovernanceViolationV21(args.command, args.stdin)
-  if (preRuleGovernanceViolationV21) {
-    return buildGovernanceRejectedResultV21(args, preRuleGovernanceViolationV21)
-  }
-
-  const ruleResult = applyRules(args.command, profile)
-  if (ruleResult.kind === "reject") {
-    const r = ruleResult.rejection
-    return {
-      success: false,
-      exitCode: null,
-      stdout: "",
-      stderr: "",
-      durationMs: 0,
-      command: args.command,
-      originalCommand: args.command,
-      cwd: null,
-      shell: null,
-      rejected: true,
-      timeout: false,
-      rule: r.rule,
-      suggestion: r.suggestion,
-      hint: r.hint,
-    }
-  }
-
-  let effectiveCommand = args.command
-  let rewriteHint: string | undefined
-  let rewriteRule: string | undefined
-  if (ruleResult.kind === "rewrite") {
-    effectiveCommand = ruleResult.rewrite.rewrittenCommand
-    rewriteHint = ruleResult.rewrite.explanation
-    rewriteRule = ruleResult.rewrite.rule
-    if (ruleResult.rewrite.adjustedTimeoutMs && !args.timeoutMs) {
-      args = { ...args, timeoutMs: ruleResult.rewrite.adjustedTimeoutMs }
-    }
-  }
-
-  const homeDir = profile.user.home_dir
-  const { cwd: resolvedCwd, reason: cwdReason } = resolveCwd(args.cwd, baseDir, homeDir)
-  if (!resolvedCwd) {
-    return {
-      success: false,
-      exitCode: null,
-      stdout: "",
-      stderr: "",
-      durationMs: 0,
-      command: args.command,
-      cwd: null,
-      shell: null,
-      rejected: true,
-      timeout: false,
-      rule: "invalid-cwd",
-      suggestion: cwdReason || "cwd 无效",
-    }
-  }
-
-  let timeoutMs = args.timeoutMs ?? DEFAULT_TIMEOUT_MS
-  if (timeoutMs < MIN_TIMEOUT_MS) timeoutMs = MIN_TIMEOUT_MS
-  if (timeoutMs > MAX_TIMEOUT_MS) timeoutMs = MAX_TIMEOUT_MS
-
-  const outputLimit = args.outputLimit ?? DEFAULT_OUTPUT_LIMIT
-  const scriptProbeV21 = readReferencedScriptForGovernanceV21(effectiveCommand, resolvedCwd)
-  const postCwdGovernanceViolationV21 = findSpecForgeGovernanceViolationV21(effectiveCommand, [args.stdin ?? "", scriptProbeV21].join("\n"))
-  if (postCwdGovernanceViolationV21) {
-    return buildGovernanceRejectedResultV21(args, postCwdGovernanceViolationV21)
-  }
-
-  const result = await executeCommand({
-    command: effectiveCommand,
-    cwd: resolvedCwd,
-    timeoutMs,
-    env: args.env,
-    stdin: args.stdin,
-    outputLimit,
-    profile,
-  })
-
-  if (rewriteHint) {
-    result.hint = result.hint
-      ? `${rewriteHint}\n\n${result.hint}`
-      : rewriteHint
-    result.originalCommand = args.command
-  }
-
-  writeAuditLog(args, result, profile).catch(err => {
-    console.warn(`[sf_safe_bash] 审计日志写入失败：${err.message}`)
-  })
-
-  return result
-}
-
-async function writeAuditLog(
-  args: SafeBashArgs,
-  result: SafeBashResult,
-  profile: HostProfile
-): Promise<void> {
-  const projectLogDir = path.join(process.cwd(), SPEC_DIR_NAME, 'runtime', 'logs')
-  const userLogDir = profile.specforge.logs_dir
-  let logDir: string
-
-  try {
-    await fs.mkdir(projectLogDir, { recursive: true })
-    logDir = projectLogDir
-  } catch {
-    logDir = userLogDir
-    await fs.mkdir(logDir, { recursive: true })
-  }
-
-  const logFile = path.join(logDir, "shell-history.jsonl")
-  const entry = {
-    schema_version: "1.0",
-    ts: new Date().toISOString(),
-    command: args.command,
-    cwd: result.cwd,
-    shell: result.shell,
-    exitCode: result.exitCode,
-    durationMs: result.durationMs,
-    rejected: result.rejected,
-    rule: result.rule || null,
-    timeout: result.timeout,
-    success: result.success,
-    stdout_size: result.stdout.length,
-    stderr_size: result.stderr.length,
-    truncated_stdout: result.truncated?.stdout ?? false,
-    truncated_stderr: result.truncated?.stderr ?? false,
-  }
-  await fs.appendFile(logFile, JSON.stringify(entry) + "\n", "utf-8")
+export async function safeBashExecute(args: SafeBashArgs, baseDir: string): Promise<SafeBashResult> {
+  const result = await executeCommand({command: args.command, cwd: path.resolve(baseDir, args.cwd ?? '.'), projectRoot: baseDir,
+    timeoutMs: args.timeoutMs ?? 60000, outputLimit: args.outputLimit ?? 4096, env: args.env, stdin: args.stdin});
+  appendShellAudit(baseDir, {schema_version:'1.0',ts:new Date().toISOString(), command:args.command, cwd:result.cwd, shell:null, exitCode:result.exitCode, durationMs:result.durationMs, rejected:result.rejected, rule:result.rule??null, timeout:result.timeout,success:result.success,stdout_size:result.stdout.length,stderr_size:result.stderr.length,callerRole:args.callerRole??null});
+  return result;
 }

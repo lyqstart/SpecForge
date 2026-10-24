@@ -2,6 +2,8 @@
 name: superpowers-engineering-lessons
 description: 工程经验库自动注入 — 把团队踩过的坑结构化注入所有 Agent，避免重复犯错
 ---
+> 当前执行范围（SPS §9.2 / D18）：sf_safe_bash 仅执行 Runtime 内部受控只读操作，绝不启动 Shell/子进程。脚本、构建和测试命令当前明确拒绝；不得把拒绝当作验证通过，也不得更换工具绕过。本文下述通用 shell、spawn、编码包装及构建示例不构成当前产品执行能力或操作指令；恢复这些能力须先完成隔离执行架构验收。
+
 
 <!-- AUTO-GENERATED — 不要手动编辑，运行 `bun run scripts/lessons/render-opencode-skill.ts` 重新生成 -->
 <!-- 源：docs/engineering-lessons/ — 改源文件再 rerun 适配器 -->

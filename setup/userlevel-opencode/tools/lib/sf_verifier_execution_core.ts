@@ -12,7 +12,7 @@
 
 import { writeFile, rename, unlink } from "node:fs/promises"
 import { join } from "node:path"
-import { exec } from "node:child_process"
+import { executeCommand as executeReadOnlyCommand } from "./sf_safe_bash_executor"
 import { parseTaskVerification } from "./sf_markdown_verification_parser"
 import { getTaskSections } from "./sf_doc_lint_core"
 import { logErrorToFile } from "./utils"
@@ -183,48 +183,9 @@ export async function executeCommand(cmd: CollectedCommand): Promise<Verificatio
  * Resolves even on non-zero exit codes (collect-all strategy).
  * Rejects only when the command cannot be spawned at all.
  */
-function execPromise(command: string): Promise<{ stdout: string; stderr: string; exitCode: number }> {
-  return new Promise((resolve, reject) => {
-    const child = exec(command, { timeout: 120_000 }, (error, stdout, stderr) => {
-      if (error && error.code === "ERR_CHILD_PROCESS_STDIO_MAXBUFFER") {
-        // Buffer overflow — treat as failed but still record
-        resolve({
-          stdout: stdout ?? "",
-          stderr: (stderr ?? "") + "\n[output truncated: buffer overflow]",
-          exitCode: 1,
-        })
-        return
-      }
-
-      if (error && (error as NodeJS.ErrnoException).code === "ENOENT") {
-        // Command not found — cannot start
-        reject(new Error(`Command not found or cannot be started: ${command}`))
-        return
-      }
-
-      if (error && error.killed) {
-        // Timeout — treat as failed
-        resolve({
-          stdout: stdout ?? "",
-          stderr: (stderr ?? "") + "\n[command timed out]",
-          exitCode: 124,
-        })
-        return
-      }
-
-      // Normal completion (including non-zero exit codes)
-      resolve({
-        stdout: stdout ?? "",
-        stderr: stderr ?? "",
-        exitCode: error ? (error.code as number ?? 1) : 0,
-      })
-    })
-
-    // Handle spawn errors (e.g., shell not available)
-    child.on("error", (err) => {
-      reject(err)
-    })
-  })
+async function execPromise(command: string): Promise<{ stdout: string; stderr: string; exitCode: number }> {
+  const result = await executeReadOnlyCommand({command, cwd: process.cwd(), timeoutMs: 120000, outputLimit: 65536});
+  return {stdout: result.stdout, stderr: result.stderr || result.suggestion || result.rule || '', exitCode: result.exitCode ?? (result.timeout ? 124 : -1)};
 }
 
 // ============================================================

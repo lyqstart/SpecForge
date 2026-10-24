@@ -1,350 +1,140 @@
-/**
- * sf_safe_bash 执行器
- *
- * 负责把规则审过的命令真正 spawn 出去，带 OS 级 hard timeout、
- * UTF-8 编码注入、stdout/stderr 分离、截断保护。
- *
- * 设计原则（来自 lessons-injected）：
- * - A1: Promise.race 超时 timer 必须清理
- * - C1: 内层 timeout 比外层短，必返回结构化结果
- * - X3: hard timeout 是兜底，必返回让 agent 不死等
- */
+/** SPS §9.2 / D18: closed set of in-process read operations. Never a shell. */
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { createHash } from 'node:crypto';
+import type { SafeBashResult } from './sf_safe_bash_types';
+import type { HostProfile } from './sf_safe_bash_core';
 
-import { spawn } from "node:child_process"
-import * as path from "node:path"
-import { existsSync } from "node:fs"
-import type { SafeBashResult } from "./sf_safe_bash_types"
-import type { HostProfile } from "./sf_safe_bash_core"
+export const SHELL_EXECUTION_UNAVAILABLE = 'SHELL_EXECUTION_UNAVAILABLE';
+export const READ_ONLY_COMMANDS = 'pwd/Get-Location; echo/Write-Output literal; cat/type/Get-Content file; ls/dir/Get-ChildItem directory; Test-Path path; Get-FileHash/sha256sum file; sleep seconds/Start-Sleep -Milliseconds number';
+type Operation = { kind: 'pwd' | 'echo' | 'read' | 'list' | 'exists' | 'hash' | 'wait'; value: string };
 
-/** 默认输出截断（4 KB） */
-const DEFAULT_OUTPUT_LIMIT = 4096
+// Quotes group literal arguments only. No expansion, escapes, operators or wrappers.
+export function parseReadOnlyCommand(command: string): Operation | null {
+  if (typeof command !== 'string' || command.length > 32768 || /[\x00-\x1f\x7f$`%;&|<>(){}]/.test(command)) return null;
+  const tokens: string[] = [];
+  const re = /\s*(?:"([^"\r\n]*)"|'([^'\r\n]*)'|([^\s"']+))/gy;
+  let offset = 0;
+  while (offset < command.length && command.slice(offset).trim()) {
+    re.lastIndex = offset;
+    const m = re.exec(command);
+    if (!m || (re.lastIndex < command.length && !/\s/.test(command[re.lastIndex]!))) return null;
+    tokens.push(m[1] ?? m[2] ?? m[3]!); offset = re.lastIndex;
+  }
+  const name = tokens.shift()?.toLowerCase();
+  if (['pwd', 'get-location'].includes(name ?? '') && !tokens.length) return { kind: 'pwd', value: '' };
+  if (['echo', 'write-output'].includes(name ?? '')) return { kind: 'echo', value: tokens.join(' ') };
+  if (name === 'sleep' && tokens.length === 1 && /^\d+(?:\.\d+)?$/.test(tokens[0]!)) return { kind: 'wait', value: String(Number(tokens[0]) * 1000) };
+  if (name === 'start-sleep' && tokens.length === 2 && tokens[0]?.toLowerCase() === '-milliseconds' && /^\d+$/.test(tokens[1]!)) return { kind: 'wait', value: tokens[1]! };
+  if (['get-content', 'get-childitem', 'test-path', 'get-filehash'].includes(name ?? '') && ['-literalpath', '-path'].includes(tokens[0]?.toLowerCase() ?? '')) tokens.shift();
+  if (['ls', 'dir', 'get-childitem'].includes(name ?? '') && tokens.length <= 1) return { kind: 'list', value: tokens[0] ?? '.' };
+  if (tokens.length !== 1 || !tokens[0] || tokens[0].startsWith('-')) return null;
+  const kinds: Record<string, Operation['kind']> = { cat: 'read', type: 'read', 'get-content': 'read', 'test-path': 'exists', 'get-filehash': 'hash', sha256sum: 'hash' };
+  return name && Object.hasOwn(kinds, name) ? { kind: kinds[name]!, value: tokens[0] } : null;
+}
 
 export interface ExecuteOptions {
-  command: string
-  cwd: string
-  timeoutMs: number
-  env?: Record<string, string>
-  stdin?: string
-  outputLimit: number
-  profile: HostProfile
+  command: string; cwd: string; projectRoot?: string; timeoutMs: number;
+  env?: Record<string, string>; stdin?: string; outputLimit: number; profile?: HostProfile;
 }
 
-/**
- * 真正执行命令
- *
- * 流程：
- *   1. 选择 shell（根据 host_profile.shell_rules.preferred_shell）
- *   2. 构造 shell 命令（含编码注入）
- *   3. spawn 子进程
- *   4. 双层超时（race：进程退出 vs SIGKILL）
- *   5. 截断 stdout/stderr
- *   6. 返回结构化结果
- */
+/** Fixed observer sink; never follow linked directories/files into business files. */
+export function appendShellAudit(projectRoot: string, entry: Record<string, unknown>): void {
+  try {
+    let dir = fs.realpathSync(projectRoot);
+    for (const part of ['.specforge', 'runtime', 'logs']) {
+      dir = path.join(dir, part);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+      const st = fs.lstatSync(dir);
+      if (st.isSymbolicLink() || !st.isDirectory()) return;
+    }
+    const file = path.join(dir, 'shell-history.jsonl');
+    if (fs.existsSync(file)) {
+      const st = fs.lstatSync(file);
+      if (st.isSymbolicLink() || !st.isFile() || st.nlink !== 1) return;
+    }
+    const fd = fs.openSync(file, fs.constants.O_WRONLY | fs.constants.O_APPEND | fs.constants.O_CREAT | (fs.constants.O_NOFOLLOW ?? 0));
+    try { const st = fs.fstatSync(fd); if (st.isFile() && st.nlink === 1) fs.writeSync(fd, JSON.stringify(entry) + '\n'); }
+    finally { fs.closeSync(fd); }
+  } catch { /* Observer failure never turns a refused command into an allowed one. */ }
+}
+
+// Compatibility query only: no executable invocation can be obtained.
+export function buildShellInvocation(command: string, _profile: HostProfile, _platform: NodeJS.Platform) {
+  return { shell: null, shellPath: null, shellArgs: [] as string[], finalCommand: command };
+}
+
+function boundedPath(root: string, cwd: string, input: string, allowMissing = false): string {
+  const base = fs.realpathSync(root), target = path.resolve(cwd, input), relative = path.relative(base, target);
+  if (relative === '..' || relative.startsWith('..' + path.sep) || path.isAbsolute(relative)) throw new Error('READ_PATH_OUTSIDE_PROJECT');
+  const parts = relative.split(path.sep);
+  if (parts.some(p => ['.specforge', '.git', 'sf-user'].includes(p.toLowerCase())) || parts.some(p => p.includes(':'))) throw new Error('READ_PATH_REQUIRES_CONTROLLED_OWNER');
+  let current = base;
+  for (const part of parts) {
+    if (!part) continue;
+    current = path.join(current, part);
+    try { if (fs.lstatSync(current).isSymbolicLink()) throw new Error('READ_LINK_FORBIDDEN'); }
+    catch (e) { if (allowMissing && (e as NodeJS.ErrnoException).code === 'ENOENT') return target; throw e; }
+  }
+  return target;
+}
+
+export function resolveCwd(cwd: string | undefined, baseDir: string, _homeDir: string): { cwd: string | null; reason?: string } {
+  try {
+    const target = boundedPath(baseDir, fs.realpathSync(baseDir), cwd ?? '.');
+    if (!fs.statSync(target).isDirectory()) throw new Error('READ_CWD_NOT_DIRECTORY');
+    return { cwd: target };
+  } catch (e) { return { cwd: null, reason: (e as Error).message }; }
+}
+
 export async function executeCommand(opts: ExecuteOptions): Promise<SafeBashResult> {
-  const startTime = Date.now()
-  const platform = opts.profile.os.platform
-  const preferredShell = opts.profile.shell_rules.preferred_shell
-
-  // ── Step 1: 选择 shell + 构造调用参数 ──
-  const { shell, shellPath, shellArgs, finalCommand } = buildShellInvocation(
-    opts.command,
-    opts.profile,
-    platform as NodeJS.Platform
-  )
-
-  if (!shellPath) {
-    return {
-      success: false,
-      exitCode: null,
-      stdout: "",
-      stderr: "",
-      durationMs: 0,
-      command: opts.command,
-      cwd: opts.cwd,
-      shell: null,
-      rejected: true,
-      timeout: false,
-      rule: "no-shell-available",
-      suggestion: `当前机器未探测到可用 shell。请运行 'bun run scripts/scan-host-profile.ts --force' 重新扫描，或手动安装 ${platform === "win32" ? "pwsh / powershell" : "bash / zsh"}。`,
-    }
-  }
-
-  // ── Step 2: 准备环境变量 ──
-  const env: NodeJS.ProcessEnv = {
-    ...process.env,
-    ...opts.env,
-  }
-
-  // POSIX 系统额外设置 LC_ALL / LANG（如果用户没明确传）
-  if (platform !== "win32") {
-    if (!env.LC_ALL && !opts.env?.LC_ALL) env.LC_ALL = "C.UTF-8"
-    if (!env.LANG && !opts.env?.LANG) env.LANG = "C.UTF-8"
-  }
-
-  // ── Step 3: spawn + 超时 race ──
-  return new Promise<SafeBashResult>(resolve => {
-    let stdout = ""
-    let stderr = ""
-    let stdoutBytes = 0
-    let stderrBytes = 0
-    let truncatedStdout = false
-    let truncatedStderr = false
-    let timer: NodeJS.Timeout | null = null
-    let resolved = false
-    let timedOut = false
-
-    const finalize = () => {
-      if (resolved) return
-      resolved = true
-      if (timer) {
-        clearTimeout(timer)
-        timer = null
-      }
-
-      const exitCode = (child as any)._exitCode ?? null
-      const durationMs = Date.now() - startTime
-      const success = !timedOut && exitCode === 0
-
-      const result: SafeBashResult = {
-        success,
-        exitCode,
-        stdout,
-        stderr,
-        durationMs,
-        command: finalCommand,
-        cwd: opts.cwd,
-        shell,
-        rejected: false,
-        timeout: timedOut,
-      }
-
-      if (truncatedStdout || truncatedStderr) {
-        result.truncated = { stdout: truncatedStdout, stderr: truncatedStderr }
-      }
-
-      if (timedOut) {
-        result.timeoutMs = opts.timeoutMs
-        result.hint = `命令在 ${opts.timeoutMs}ms 内未完成已被 SIGKILL 强制终止。可能原因：(1) 异步资源泄漏导致进程不退出 (2) 死锁 (3) 网络请求挂起。建议：检查测试代码资源管理；如果是 bun test，工具应该已经自动包装 Start-Job。`
-      } else if (!success) {
-        result.hint = buildFailureHint(exitCode, stderr)
-      }
-
-      resolve(result)
-    }
-
-    let child: ReturnType<typeof spawn> | null = null
-    try {
-      child = spawn(shellPath, shellArgs, {
-        cwd: opts.cwd,
-        env,
-        windowsHide: true,
-        shell: false,
-        // 显式分离 stdio，便于精细控制
-        stdio: opts.stdin !== undefined ? ["pipe", "pipe", "pipe"] : ["ignore", "pipe", "pipe"],
-      })
-    } catch (err) {
-      finalize()
-      resolve({
-        success: false,
-        exitCode: null,
-        stdout: "",
-        stderr: "",
-        durationMs: Date.now() - startTime,
-        command: finalCommand,
-        cwd: opts.cwd,
-        shell,
-        rejected: true,
-        timeout: false,
-        rule: "spawn-error",
-        suggestion: `spawn ${shellPath} 失败：${(err as Error).message}。这通常是 host-profile 过期，请运行 'bun run scripts/scan-host-profile.ts --force'。`,
-      })
-      return
-    }
-
-    // 写入 stdin（如有）
-    if (opts.stdin !== undefined && child.stdin) {
-      child.stdin.write(opts.stdin)
-      child.stdin.end()
-    }
-
-    // 收集 stdout（按字符串字节计数 + 截断）
-    child.stdout?.on("data", (data: Buffer) => {
-      const chunk = data.toString("utf-8")
-      if (stdoutBytes + chunk.length <= opts.outputLimit) {
-        stdout += chunk
-        stdoutBytes += chunk.length
-      } else if (!truncatedStdout) {
-        const remaining = opts.outputLimit - stdoutBytes
-        if (remaining > 0) {
-          stdout += chunk.slice(0, remaining)
+  const started = Date.now();
+  const base: SafeBashResult = { success: false, exitCode: null, stdout: '', stderr: '', durationMs: 0, command: opts.command, cwd: opts.cwd, shell: null, rejected: true, timeout: false };
+  const operation = parseReadOnlyCommand(opts.command);
+  if (!operation || opts.env !== undefined || opts.stdin !== undefined) return { ...base, rule: SHELL_EXECUTION_UNAVAILABLE, suggestion: `No isolated external executor is available. Only internal read operations are supported: ${READ_ONLY_COMMANDS}. Scripts, builds and tests were NOT executed. Do not retry via another shell or helper.` };
+  if (!Number.isSafeInteger(opts.timeoutMs) || opts.timeoutMs < 1 || opts.timeoutMs > 600000 || !Number.isSafeInteger(opts.outputLimit) || opts.outputLimit < 1 || opts.outputLimit > 1048576) return { ...base, rule: 'INVALID_READ_OPTIONS' };
+  const timedOut = (): SafeBashResult => ({ ...base, rejected: false, timeout: true, timeoutMs: opts.timeoutMs, durationMs: Date.now() - started, hint: 'Internal read operation timed out; no process was started.' });
+  try {
+    const root = fs.realpathSync(opts.projectRoot ?? opts.cwd);
+    const cwd = boundedPath(root, root, opts.cwd);
+    if (!fs.statSync(cwd).isDirectory()) throw new Error('READ_CWD_NOT_DIRECTORY');
+    let output = '', truncated = false;
+    if (operation.kind === 'pwd') output = cwd + '\n';
+    else if (operation.kind === 'echo') output = operation.value + '\n';
+    else if (operation.kind === 'wait') {
+      const ms = Number(operation.value);
+      if (!Number.isFinite(ms) || ms > 600000) return { ...base, rule: 'INVALID_READ_WAIT' };
+      await new Promise(resolve => setTimeout(resolve, Math.min(ms, opts.timeoutMs)));
+      if (ms >= opts.timeoutMs) return timedOut();
+    } else {
+      const target = boundedPath(root, cwd, operation.value, operation.kind === 'exists');
+      if (operation.kind === 'exists') output = String(fs.existsSync(target)) + '\n';
+      else if (operation.kind === 'list') {
+        const dir = await fs.promises.opendir(target);
+        for await (const entry of dir) {
+          if (Date.now() - started >= opts.timeoutMs) return timedOut();
+          output += entry.name + (entry.isDirectory() ? '/' : '') + '\n';
+          if (output.length > opts.outputLimit) { truncated = true; break; }
         }
-        truncatedStdout = true
+      } else {
+        const handle = await fs.promises.open(target, fs.constants.O_RDONLY | (fs.constants.O_NOFOLLOW ?? 0));
+        try {
+          const stat = await handle.stat();
+          if (!stat.isFile() || stat.nlink !== 1) throw new Error('READ_NON_REGULAR_OR_ALIASED_FILE');
+          const digest = createHash('sha256'), decoder = new TextDecoder(), buffer = Buffer.alloc(65536);
+          while (true) {
+            if (Date.now() - started >= opts.timeoutMs) return timedOut();
+            const { bytesRead } = await handle.read(buffer, 0, buffer.length, null);
+            if (!bytesRead) break;
+            if (operation.kind === 'hash') digest.update(buffer.subarray(0, bytesRead));
+            else { output += decoder.decode(buffer.subarray(0, bytesRead), { stream: true }); if (output.length > opts.outputLimit) { truncated = true; break; } }
+          }
+          if (operation.kind === 'hash') output = digest.digest('hex') + '\n';
+          else output += decoder.decode();
+        } finally { await handle.close(); }
       }
-    })
-
-    child.stderr?.on("data", (data: Buffer) => {
-      const chunk = data.toString("utf-8")
-      if (stderrBytes + chunk.length <= opts.outputLimit) {
-        stderr += chunk
-        stderrBytes += chunk.length
-      } else if (!truncatedStderr) {
-        const remaining = opts.outputLimit - stderrBytes
-        if (remaining > 0) {
-          stderr += chunk.slice(0, remaining)
-        }
-        truncatedStderr = true
-      }
-    })
-
-    child.on("error", err => {
-      // spawn 异步错误（如 ENOENT）
-      ;(child as any)._exitCode = null
-      stderr += `\n[spawn error] ${err.message}`
-      finalize()
-    })
-
-    child.on("exit", code => {
-      ;(child as any)._exitCode = code
-      finalize()
-    })
-
-    // 设置 OS 级 hard timeout
-    timer = setTimeout(() => {
-      try {
-        child.kill("SIGKILL")
-      } catch {
-        // 进程可能已退出，忽略
-      }
-      timedOut = true
-      ;(child as any)._exitCode = null
-      // 给一点时间让进程真死，然后 finalize
-      setTimeout(finalize, 100)
-    }, opts.timeoutMs)
-  })
-}
-
-/**
- * 根据 host profile 选择 shell + 构造调用参数
- */
-export function buildShellInvocation(
-  command: string,
-  profile: HostProfile,
-  platform: NodeJS.Platform
-): {
-  shell: string | null
-  shellPath: string | null
-  shellArgs: string[]
-  finalCommand: string
-} {
-  const preferredShell = profile.shell_rules.preferred_shell
-  if (!preferredShell) {
-    return { shell: null, shellPath: null, shellArgs: [], finalCommand: command }
-  }
-
-  const shellInfo = profile.shells.find(s => s.name === preferredShell && s.available)
-  if (!shellInfo || !shellInfo.path) {
-    return { shell: null, shellPath: null, shellArgs: [], finalCommand: command }
-  }
-
-  // 编码设置前缀（按需注入）
-  const encodingPrefix = profile.shell_rules.encoding_setup_command
-  const finalCommand = encodingPrefix
-    ? preferredShell === "cmd"
-      ? `${encodingPrefix} && ${command}`
-      : `${encodingPrefix}; ${command}`
-    : command
-
-  let shellArgs: string[]
-  switch (preferredShell) {
-    case "pwsh":
-    case "powershell":
-      shellArgs = ["-NoProfile", "-NonInteractive", "-Command", finalCommand]
-      break
-    case "cmd":
-      shellArgs = ["/c", finalCommand]
-      break
-    case "bash":
-    case "zsh":
-    case "sh":
-    case "dash":
-    case "fish":
-      shellArgs = ["-c", finalCommand]
-      break
-    default:
-      shellArgs = ["-c", finalCommand]
-  }
-
-  return {
-    shell: preferredShell,
-    shellPath: shellInfo.path,
-    shellArgs,
-    finalCommand,
-  }
-}
-
-/**
- * 根据 exitCode 和 stderr 构造排错提示
- */
-function buildFailureHint(exitCode: number | null, stderr: string): string | undefined {
-  if (exitCode === null) return undefined
-
-  switch (exitCode) {
-    case 1:
-      return "命令以退出码 1 失败。看 stderr 中的错误信息决定下一步。"
-    case 2:
-      return "退出码 2 通常代表参数误用。检查命令语法或工具的 --help。"
-    case 124:
-      return "退出码 124 = Linux timeout 命令触发。原命令运行时间超过限制。"
-    case 126:
-    case 127:
-      return `退出码 ${exitCode} = 命令找不到。检查工具是否在 PATH 中（用 'bun run scripts/scan-host-profile.ts --show' 看可用工具）。`
-    case 130:
-      return "退出码 130 = SIGINT (Ctrl+C 中断)。"
-    case 137:
-      return "退出码 137 = SIGKILL (被强制终止)。可能是内存超限或外层超时触发。"
-    default:
-      if (stderr.toLowerCase().includes("not recognized") || stderr.toLowerCase().includes("not found")) {
-        return `命令找不到。检查 host-profile 中的可用工具列表。`
-      }
-      if (stderr.toLowerCase().includes("permission denied")) {
-        return "权限不足。检查文件权限或考虑用 --install-root 指定不同位置。"
-      }
-      return undefined
-  }
-}
-
-/**
- * 解析 cwd
- *
- * - 绝对路径直接用
- * - 相对路径相对于 baseDir（通常是仓库根）
- * - `~` 替换为 home
- * - 目录不存在返回 null（调用方处理为 reject）
- */
-export function resolveCwd(
-  cwd: string | undefined,
-  baseDir: string,
-  homeDir: string
-): { cwd: string | null; reason?: string } {
-  let resolved: string
-
-  if (!cwd) {
-    resolved = baseDir
-  } else if (cwd.startsWith("~")) {
-    resolved = path.join(homeDir, cwd.slice(1).replace(/^[/\\]/, ""))
-  } else if (path.isAbsolute(cwd)) {
-    resolved = cwd
-  } else {
-    resolved = path.resolve(baseDir, cwd)
-  }
-
-  // 验证目录存在
-  if (!existsSync(resolved)) {
-    return {
-      cwd: null,
-      reason: `工作目录不存在：${resolved}（原始输入：${cwd ?? "(默认)"}）`,
     }
-  }
-
-  return { cwd: resolved }
+    truncated ||= output.length > opts.outputLimit;
+    return { ...base, success: true, rejected: false, exitCode: 0, stdout: output.slice(0, opts.outputLimit), durationMs: Date.now() - started, hint: 'Executed internally; no shell or child process started.', ...(truncated ? { truncated: { stdout: true, stderr: false } } : {}) };
+  } catch (e) { return { ...base, rejected: false, exitCode: 1, stderr: (e as Error).message, durationMs: Date.now() - started }; }
 }

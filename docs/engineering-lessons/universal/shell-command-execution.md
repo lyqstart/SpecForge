@@ -8,6 +8,8 @@ created: 2026-05-19
 updated: 2026-05-19
 related: [host-environment-detection, async-resource-lifecycle, kiro-execute-pwsh-constraints]
 ---
+> 当前执行范围（SPS §9.2 / D18）：sf_safe_bash 仅执行 Runtime 内部受控只读操作，绝不启动 Shell/子进程。脚本、构建和测试命令当前明确拒绝；不得把拒绝当作验证通过，也不得更换工具绕过。本文下述通用 shell、spawn、编码包装及构建示例不构成当前产品执行能力或操作指令；恢复这些能力须先完成隔离执行架构验收。
+
 
 # Shell 命令执行规范（跨平台 + 安全 + 可观测）
 

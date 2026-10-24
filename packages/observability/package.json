@@ -1,6 +1,6 @@
 {
   "name": "@specforge/observability",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "SpecForge current-release observability types and policy contract",
   "type": "module",
   "main": "dist/src/index.js",

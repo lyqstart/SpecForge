@@ -1,3 +1,4 @@
+import { appendShellAudit, parseReadOnlyCommand } from '../lib/sf_safe_bash_executor';
 import { registerHandler } from '../ToolDispatcher';
 import { readAuthoritativeWorkItems } from '../lib/authoritative-work-items';
 import { safeBashExecute } from '../lib/sf_safe_bash_core';
@@ -105,38 +106,8 @@ function appendGovernanceBlockedWrite(
   });
 }
 
-function appendRejectedShellHistory(
-  projectRoot: string,
-  command: string,
-  cwd: string | undefined,
-  callerRole: string | undefined,
-  rule: string,
-): void {
-  const logPath = path.join(projectRoot, SPEC_DIR_NAME, 'runtime', 'logs', 'shell-history.jsonl');
-  const entry = {
-    schema_version: '1.0',
-    ts: new Date().toISOString(),
-    command,
-    cwd: cwd ?? projectRoot,
-    shell: null,
-    exitCode: null,
-    durationMs: 0,
-    rejected: true,
-    rule,
-    timeout: false,
-    success: false,
-    stdout_size: 0,
-    stderr_size: 0,
-    truncated_stdout: false,
-    truncated_stderr: false,
-    callerRole: callerRole ?? null,
-  };
-  try {
-    fs.mkdirSync(path.dirname(logPath), { recursive: true });
-    fs.appendFileSync(logPath, JSON.stringify(entry) + '\n', 'utf-8');
-  } catch {
-    // Best-effort observer log; the policy denial remains authoritative.
-  }
+function appendRejectedShellHistory(projectRoot: string, command: string, cwd: string | undefined, callerRole: string | undefined, rule: string): void {
+  appendShellAudit(projectRoot, {schema_version:'1.0',ts:new Date().toISOString(),command,cwd:cwd??projectRoot,shell:null,exitCode:null,durationMs:0,rejected:true,rule,timeout:false,success:false,stdout_size:0,stderr_size:0,callerRole:callerRole??null});
 }
 
 function readWorkItem(projectRoot: string, workItemId: string): any | null {
@@ -258,31 +229,7 @@ function commandMentionsSensitiveSpecForgeRuntimeSecret(command: string): boolea
   );
 }
 
-function commandHasReadOnlyShellProbe(command: string): boolean {
-  const normalized = command.trim().toLowerCase();
-  const directRead =
-    /(?:^|[;&|]\s*)(get-content|gc|type|cat|dir|ls|gci|get-childitem|get-item|test-path|resolve-path|get-filehash|select-string|findstr)\b/.test(
-      normalized
-    ) ||
-    /(?:^|[;&|]\s*)certutil\s+-hashfile\b/.test(normalized) ||
-    /(?:^|[;&|]\s*)(sha256sum|shasum|fciv)\b/.test(normalized) ||
-    /(?:^|[;&|]\s*)git\s+(status|diff|log|show|branch|remote|tag)\b/.test(normalized) ||
-    /(?:^|[;&|]\s*)echo\b/.test(normalized);
-
-  if (directRead) return true;
-
-  // Windows OpenCode commonly wraps a read-only probe inside
-  // `powershell -Command "..."`. Detect the nested cmdlet only after write
-  // targets and write-like commands have already been ruled out by the caller.
-  const powershellWrapper = /(?:^|\s)(?:powershell|pwsh)(?:\.exe)?\s+-(?:command|c)\b/.test(
-    normalized
-  );
-  if (!powershellWrapper) return false;
-
-  return /\b(get-content|gc|get-childitem|gci|get-item|test-path|resolve-path|get-filehash|select-string|measure-object|format-list|format-table)\b/.test(
-    normalized
-  );
-}
+function commandHasReadOnlyShellProbe(command: string): boolean { return parseReadOnlyCommand(command) !== null; }
 
 export function classifyProtectedSpecForgePathBashAccess(command: string): ShellAccessKind {
   if (commandMentionsSensitiveSpecForgeRuntimeSecret(command)) return 'unknown';

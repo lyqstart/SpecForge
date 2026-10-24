@@ -39,10 +39,11 @@ describe('Recoverable HardStop protocol', () => {
     await rm(projectRoot, { recursive: true, force: true });
   });
 
-  it('recognizes a nested PowerShell Get-Content probe as read-only', () => {
+  it('does not treat a nested interpreter probe as proven read-only', () => {
     const command =
       "powershell -Command \"[byte[]](Get-Content -Path 'D:\\project\\.specforge\\work-items\\WI-0001\\investigation_plan.md' -Encoding Byte -TotalCount 10) -join ','\"";
-    expect(classifyProtectedSpecForgePathBashAccess(command)).toBe('read');
+    expect(classifyProtectedSpecForgePathBashAccess(command)).toBe('unknown');
+    expect(classifyProtectedSpecForgePathBashAccess('Get-Content file.txt')).toBe('read');
 
     const writeCommand =
       'powershell -Command "Get-Content .specforge/work-items/WI-0001/a.md; Set-Content .specforge/work-items/WI-0001/a.md bad"';

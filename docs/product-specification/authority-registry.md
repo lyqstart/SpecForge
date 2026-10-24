@@ -65,6 +65,7 @@ SPS-1.0
 
 | ID | 裁决 |
 |---|---|
+| D18 | 命令写入漏洞修复先采用安全封堵：保留 Runtime 内部受控只读操作，无法隔离的脚本、解释器、子进程、构建和测试命令明确拒绝，不宣称这些执行功能可用。对应 SPS §9.2；任何角色、活动任务或已有授权不得绕过此边界。 |
 | PO-001 | Migration 模块退出当前产品；schema validation 保留为文件 owner / contract 责任，不等同 Migration |
 | D01 | events.jsonl 是持久化工作流状态事实源；state.json 是可重建 checkpoint/projection |
 | D02 | Daemon 是独立共享服务；生命周期由部署环境、CLI 或 service manager 管理；Thin Plugin 不启动/停止/重启 Daemon |

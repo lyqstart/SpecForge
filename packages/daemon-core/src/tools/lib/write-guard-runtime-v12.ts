@@ -1,3 +1,4 @@
+import { parseReadOnlyCommand } from './sf_safe_bash_executor';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { ACTOR_ROLES, type ActorRole } from '@specforge/types/actor-roles';
@@ -182,7 +183,10 @@ export function enforceRuntimeWriteGuardForShell(input: {
   authoritativeState?: string | null;
 }): RuntimeWriteGuardResult {
   const targets = extractShellWriteTargets(input.command);
-  if (targets.length === 0) return { checked: false, allowed: true, targets: [], violations: [] };
+  if (targets.length === 0) {
+    const readOnly = parseReadOnlyCommand(input.command) !== null;
+    return { checked: true, allowed: readOnly, targets: [], violations: readOnly ? [] : ['SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor'] };
+  }
 
   if (!input.workItemId) {
     return { checked: true, allowed: false, targets, violations: ['no active work_item_id for shell write command'], hard_stop: false };

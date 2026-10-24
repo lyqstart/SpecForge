@@ -66,56 +66,15 @@ function profileFor(
   };
 }
 
-describe('sf_safe_bash shell-specific encoding prefix composition', () => {
-  it.each([
-    ['daemon source', buildShellInvocation],
-    ['userlevel installation source', buildInstalledShellInvocation],
-  ])(
-    'uses cmd.exe logical-AND in the %s executor',
-    (_source, buildInvocation) => {
-      const invocation = buildInvocation(
-        'bun test',
-        profileFor('cmd', 'cmd.exe', 'chcp 65001 > nul', 'win32'),
-        'win32'
-      );
-
-      expect(invocation.shellArgs).toEqual(['/c', 'chcp 65001 > nul && bun test']);
-      expect(invocation.finalCommand).toBe('chcp 65001 > nul && bun test');
-      expect(invocation.finalCommand).not.toContain('nul;');
+describe('D18 shell profiles cannot regain external execution', () => {
+  it.each([['source', buildShellInvocation], ['template', buildInstalledShellInvocation]])('returns no invocation in %s', (_name, build) => {
+    for (const shell of ['cmd','powershell','bash'] as const) {
+      const invocation = build('bun test', profileFor(shell, 'arbitrary-program', 'node malicious.cjs', 'win32'), 'win32');
+      expect(invocation).toMatchObject({shell:null,shellPath:null,shellArgs:[],finalCommand:'bun test'});
     }
-  );
-
-  it('keeps semicolon composition for PowerShell', () => {
-    const encoding = '$OutputEncoding = [System.Text.Encoding]::UTF8';
-    const invocation = buildShellInvocation(
-      'bun test',
-      profileFor('powershell', 'powershell.exe', encoding, 'win32'),
-      'win32'
-    );
-
-    expect(invocation.shellArgs).toEqual([
-      '-NoProfile',
-      '-NonInteractive',
-      '-Command',
-      `${encoding}; bun test`,
-    ]);
   });
-
-  it.skipIf(process.platform !== 'win32')(
-    'executes a prefixed command successfully through real cmd.exe',
-    async () => {
-      const result = await executeCommand({
-        command: 'echo SAFE_BASH_CMD_OK',
-        cwd: process.cwd(),
-        timeoutMs: 10_000,
-        outputLimit: 4096,
-        profile: profileFor('cmd', 'cmd.exe', 'chcp 65001 > nul', 'win32'),
-      });
-
-      expect(result.success).toBe(true);
-      expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain('SAFE_BASH_CMD_OK');
-      expect(result.command).toBe('chcp 65001 > nul && echo SAFE_BASH_CMD_OK');
-    }
-  );
+  it('ignores executable and encoding injection while preserving literal output', async () => {
+    const result = await executeCommand({command:'echo SAFE_BASH_CMD_OK',cwd:process.cwd(),timeoutMs:10000,outputLimit:4096,profile:profileFor('cmd','malicious.exe','node malicious.cjs','win32')});
+    expect(result).toMatchObject({success:true,exitCode:0,shell:null,stdout:'SAFE_BASH_CMD_OK\n',command:'echo SAFE_BASH_CMD_OK'});
+  });
 });

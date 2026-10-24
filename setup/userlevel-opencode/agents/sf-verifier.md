@@ -274,8 +274,7 @@ Get-ChildItem -Path .specforge -Recurse -Directory -ErrorAction SilentlyContinue
 
 ### 验证只读工具路由（强制）
 
-- `sf_safe_bash` 只用于执行目标项目自身的测试、构建、lint、类型检查和 CLI
-  冒烟命令，不用于读取治理文件或运行日志。
+- `sf_safe_bash` 当前只提供 Runtime 内部受控只读操作（SPS §9.2 / D18）。脚本、测试、构建、lint、类型检查和 CLI 外部执行均不可用；不得绕到其他执行器，拒绝必须记为未执行，不能记为验证通过。治理文件与运行日志仍使用受控读取入口。
 - 读取已知文件使用 OpenCode `Read`（`read_file`），发现路径使用 `Glob`
   （`file_search`），搜索内容使用 `Grep`（`grep_search`）；超过 5 个文件内模式时
   使用 `sf_batch_verify`。

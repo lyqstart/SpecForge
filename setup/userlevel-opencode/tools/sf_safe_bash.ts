@@ -2,39 +2,31 @@ import { tool } from "@opencode-ai/plugin"
 import { daemon } from "./lib/thin-client"
 
 export default tool({
-  description: `执行 shell 命令的安全入口。所有需要运行命令行的场景必须使用本工具，OpenCode 内置的 bash 工具已禁用。
-
-工具会自动：
-- 选择正确的 shell（Windows 优先 pwsh > powershell > cmd；Unix 优先 bash > zsh）
-- 注入 UTF-8 编码设置（解决 Windows 中文乱码）
-- 拦截危险命令（rm -rf /、sudo、curl|sh 等）
-- 拒绝 cd 命令（请用 cwd 参数）
-- 拒绝 cat/find/grep/mkdir（请用 read_file/file_search/grep_search/fs_write）
-- 强制 OS 级 timeout（默认 60s，超时 SIGKILL 必返回）
-- 截断超长输出到 4KB
-
-返回 JSON 含字段：success / exitCode / stdout / stderr / durationMs / hint。
-失败时看 hint 决定下一步；rejected=true 时按 suggestion 调整后重试。`,
+  description: `受控只读操作入口（SPS §9.2 / D18）。在 Runtime 内部读取，不启动 Shell 或子进程。
+支持 pwd/Get-Location、echo/Write-Output 字面文字、cat/type/Get-Content 文件、ls/dir/Get-ChildItem 目录、Test-Path、Get-FileHash/sha256sum，以及 sleep/Start-Sleep 的内部等待。
+只接受单条完整的字面参数；不展开变量、管道、重定向或复合语句。读取限制在项目普通文件，治理文件请使用受控 owner。
+当前脚本、解释器、构建、测试、任意外部可执行文件均不可用，env/stdin 参数也拒绝。拒绝不是测试通过，不得改用其他 Shell、辅助脚本或原生 bash 重试。
+返回 success / exitCode / stdout / stderr / rejected / timeout；shell 始终为 null。`,
   args: {
     command: tool.schema
       .string()
-      .describe("要执行的 shell 命令。禁止包含 cd、cat、find、grep、mkdir、heredoc 等（工具会拦截并给出替代建议）。"),
+      .describe("单条受控只读操作；脚本、构建、测试及复合命令均拒绝。"),
     cwd: tool.schema
       .string()
       .optional()
-      .describe("工作目录。绝对路径或相对仓库根的路径。支持 ~ 解析为 home。不传则用当前目录。"),
+      .describe("工作目录。绝对路径或相对仓库根的路径。必须位于项目内；不支持 ~ 或外部目录。不传则用当前目录。"),
     timeoutMs: tool.schema
       .number()
       .optional()
-      .describe("命令超时（毫秒），默认 60000，最小 1000，最大 600000。超时会 SIGKILL 子进程。"),
+      .describe("命令超时（毫秒），默认 60000，最小 1，最大 600000。仅限制内部只读操作，不启动子进程。"),
     env: tool.schema
       .record(tool.schema.string(), tool.schema.string())
       .optional()
-      .describe("额外环境变量（合并到当前 env）。"),
+      .describe("兼容字段；当前提供该字段将拒绝执行。"),
     stdin: tool.schema
       .string()
       .optional()
-      .describe("写入子进程 stdin 的内容。多数命令不需要。"),
+      .describe("兼容字段；当前提供该字段将拒绝执行。"),
     outputLimit: tool.schema
       .number()
       .optional()

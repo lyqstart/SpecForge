@@ -45,7 +45,7 @@ describe('semantic closure contract alignment', () => {
   it('routes verifier governance reads away from sf_safe_bash', () => {
     const verifier = read('setup/userlevel-opencode/agents/sf-verifier.md');
     expect(verifier).toContain('验证只读工具路由（强制）');
-    expect(verifier).toContain('sf_safe_bash` 只用于执行目标项目自身的测试');
+    expect(verifier).toContain('sf_safe_bash` 当前只提供 Runtime 内部受控只读操作');
     expect(verifier).toContain('读取已知文件使用 OpenCode `Read`');
     expect(verifier).toContain('发现路径使用 `Glob`');
     expect(verifier).toContain('搜索内容使用 `Grep`');
