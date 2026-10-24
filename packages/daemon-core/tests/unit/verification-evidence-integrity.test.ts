@@ -4,6 +4,7 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import { createHash } from 'node:crypto';
 import { inspectVerificationEvidenceIntegrity } from '../../src/tools/lib/verification-evidence-integrity.js';
+import { WAL } from '../../src/wal/WAL';
 
 describe('verification evidence integrity', () => {
   let projectRoot: string;
@@ -63,5 +64,20 @@ describe('verification evidence integrity', () => {
     expect((await inspect(true)).invalidity_reasons).toEqual([]);
     await fs.writeFile(path.join(workItemDir, 'evidence', 'browser.txt'), 'drift');
     expect((await inspect(true)).invalidity_reasons).toContain('manual_acceptance_source_hash_mismatch:EV-101');
+  });
+
+  it('finds the authoritative close time in a retained rotation segment', async () => {
+    const wal = new WAL(path.join(projectRoot, '.specforge/runtime/events.jsonl'));
+    await wal.initialize();
+    await wal.appendEvent(wal.createEvent(projectRoot,'system','padding',{data:'x'.repeat(5*1024*1024)}));
+    await wal.appendEvent(wal.createEvent(projectRoot,'system','after_rotation',{}));
+    expect((await inspect(true)).close_event_at).toBe('2026-10-15T07:48:37.000Z');
+  });
+
+  it('does not accept an unverifiable close time when history is malformed', async () => {
+    await fs.appendFile(path.join(projectRoot,'.specforge/runtime/events.jsonl'),'{}\n');
+    const result = await inspect(true);
+    expect(result.close_event_at).toBeNull();
+    expect(result.invalidity_reasons).toContain('authoritative_close_event_unavailable');
   });
 });
