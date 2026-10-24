@@ -1,0 +1,1 @@
+{"total_tests":7061,"original_files":2213,"review":"D:\\code\\SpecForge\\docs\\archive\\2026-10-24-candidate-seal-repair\\review.txt"}

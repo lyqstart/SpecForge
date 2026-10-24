@@ -1,0 +1,18 @@
+{
+  "id": "030-commit-version-test",
+  "cwd": "D:/code/SpecForge",
+  "exe": "git",
+  "args": [
+    "commit",
+    "-m",
+    "test: align root product contract with 1.0.21"
+  ],
+  "purpose": "030-commit-version-test",
+  "started": "2026-10-24T13:57:56.761Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T13:57:56.921Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_repository_status": ""
+}

@@ -1,0 +1,204 @@
+{
+  "time": "2026-10-24T13:22:16.557Z",
+  "mode": "CODEX_DIRECT",
+  "run_id": "CODEX-SF-20261024-CANDIDATE-SEAL-A01",
+  "baseline": "ddf03cb48ec53631eca8eb9a4249456556f323f7",
+  "EXPERIENCE_FILE_READ": "YES",
+  "ACTIVE_EXPERIENCE_RULES_FILE_READ": "YES",
+  "APPLICABLE_EXPERIENCE_RULES": [
+    "EXP-004",
+    "EXP-006",
+    "EXP-029",
+    "EXP-031",
+    "EXP-047",
+    "EXP-060",
+    "EXP-195",
+    "EXP-261",
+    "EXP-280",
+    "EXP-283",
+    "EXP-285"
+  ],
+  "HISTORICAL_LEDGER_SEARCH": "candidate_prepared / implementation baseline / EXP-029/047/280; historical manifest freeze and real baseline defects",
+  "REPEATED_ERROR_CHECK": "PASS",
+  "known_preparation_failures": [
+    "Output truncation during source discovery; targeted follow-up reads required",
+    "Guessed sf-gate-run.ts and gate-runner.ts paths missing; use rg file discovery"
+  ],
+  "rules": [
+    {
+      "file": "docs/rule/specforge-active-development-rules.md",
+      "sha256": "5e909297aea5835babd19e694655cc2db586502517d1102e980a1d91ffd448c0",
+      "lines": 2564,
+      "chunks": [
+        {
+          "start": 1,
+          "end": 200,
+          "sha256": "c1940b86917317af675de7616a44e7318264282ccce06013ed2d1cda19d52953"
+        },
+        {
+          "start": 201,
+          "end": 400,
+          "sha256": "fe7ad823bba6a3ab163e9f3c79e7866f5e3d9fa36f5ca403088d3c9f7655eff9"
+        },
+        {
+          "start": 401,
+          "end": 600,
+          "sha256": "04ca8fa9d6cdbd1bf61376a36a9afe142cd986c8069c7d04f5deb45a34ff5711"
+        },
+        {
+          "start": 601,
+          "end": 800,
+          "sha256": "08700e526b8bf502c3c72e1566054b66c0fdad600345970575ca038877f78096"
+        },
+        {
+          "start": 801,
+          "end": 1000,
+          "sha256": "9b3be1aa69943aeb745dab60c00f7f01280b29df871e625dbedd7a241a091427"
+        },
+        {
+          "start": 1001,
+          "end": 1200,
+          "sha256": "b70f980a27568d4105713859be3df38dac6da83fbdd6e52ef283fb531321bf24"
+        },
+        {
+          "start": 1201,
+          "end": 1400,
+          "sha256": "c7cd143ac784abc93d9237b1ed192af0a0746090b3b1e5c7a5efaf180e6bfe81"
+        },
+        {
+          "start": 1401,
+          "end": 1600,
+          "sha256": "e7dd31e2477dd84fd26fc0bcc3f3bb8de7270043e8b1b4dab650df99d4a4efbb"
+        },
+        {
+          "start": 1601,
+          "end": 1800,
+          "sha256": "c7d97f4e689da5286a3c7a295dfc87cc234596c72998b5c88abbd85b7707dce2"
+        },
+        {
+          "start": 1801,
+          "end": 2000,
+          "sha256": "e003452391631182625e077778e06504be744304417d7ac6b0cf110d1faf67ed"
+        },
+        {
+          "start": 2001,
+          "end": 2200,
+          "sha256": "08f851dd497f43a62029e4e32009f94a2b210252a4a59c4121d8155db852fed1"
+        },
+        {
+          "start": 2201,
+          "end": 2400,
+          "sha256": "5efbc270a17ea333dc9767355aae2511fa3d407be7d84b286378376198a7b23b"
+        },
+        {
+          "start": 2401,
+          "end": 2564,
+          "sha256": "3b97021cb43d7485d23456951df578b29a95957ebe3595075b0914b53bd84cb4"
+        }
+      ],
+      "roundtrip": true,
+      "provenance": "Same conversation full content reads, including re-reads of truncated spans; unchanged hashes verified by Bootstrap before this repair"
+    },
+    {
+      "file": "docs/product-specification/authority-registry.md",
+      "sha256": "4a9200b69214f1f9ff57e3b6f779dda354d6b3dc21703c8062759b67cc30ede8",
+      "lines": 134,
+      "chunks": [
+        {
+          "start": 1,
+          "end": 134,
+          "sha256": "4a9200b69214f1f9ff57e3b6f779dda354d6b3dc21703c8062759b67cc30ede8"
+        }
+      ],
+      "roundtrip": true,
+      "provenance": "Same conversation full content reads, including re-reads of truncated spans; unchanged hashes verified by Bootstrap before this repair"
+    },
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "sha256": "f22c8fcac705f12bf9bee7e635bf3d6917559862fec4c47d7d8f5bfc9d70c614",
+      "lines": 1619,
+      "chunks": [
+        {
+          "start": 1,
+          "end": 200,
+          "sha256": "18316760f8e46bfb1a7990aaad225df485c86999d9d30d9519e912b26410678c"
+        },
+        {
+          "start": 201,
+          "end": 400,
+          "sha256": "f6022d9f3dd38ad269dca42792eb88e58fd6c0ad7ac314fd3365ae1977f78089"
+        },
+        {
+          "start": 401,
+          "end": 600,
+          "sha256": "6267eecba0a1a48690b49c0e978fb562a7ede4598b6a372121dccb5258bdd71d"
+        },
+        {
+          "start": 601,
+          "end": 800,
+          "sha256": "7e5afc7f68d541af6f104252b0616cd32cac26496855a90cea154be1a0b6ca0b"
+        },
+        {
+          "start": 801,
+          "end": 1000,
+          "sha256": "1ee0ef28ba3345051a3d540bb1f8297908dfa374ab02a4e485acedac2459a945"
+        },
+        {
+          "start": 1001,
+          "end": 1200,
+          "sha256": "562dc5295cac2e4a6d607e0a6fb4554f9aba31a34f98a8e96dd666503641bdb5"
+        },
+        {
+          "start": 1201,
+          "end": 1400,
+          "sha256": "10b2f9f59130f334fdf08f6201721770a693aac59532be437c21f5bef4bab1bb"
+        },
+        {
+          "start": 1401,
+          "end": 1600,
+          "sha256": "0bcf238a7201345167d54ef17cea74e0b5e093610615d9eba84ae8a3a7d3b251"
+        },
+        {
+          "start": 1601,
+          "end": 1619,
+          "sha256": "d50abd23fe37cd5e54a790959a65690927669015b21b877345ed51686ddf9461"
+        }
+      ],
+      "roundtrip": true,
+      "provenance": "Same conversation full content reads, including re-reads of truncated spans; unchanged hashes verified by Bootstrap before this repair"
+    },
+    {
+      "file": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "sha256": "d84911ea066dcb7a3fb8a78efb38425a52302f973b5bf032244ba8518fe374de",
+      "lines": 224,
+      "chunks": [
+        {
+          "start": 1,
+          "end": 200,
+          "sha256": "cfa23aceeb8da999fe640308a4b9bd0b482cb09cb6236c7edc249c58a5e415bb"
+        },
+        {
+          "start": 201,
+          "end": 224,
+          "sha256": "89073b12f094f55a555a9b643a8b0a8667b125fb0fb793e8116529b514ec11a9"
+        }
+      ],
+      "roundtrip": true,
+      "provenance": "Same conversation full content reads, including re-reads of truncated spans; unchanged hashes verified by Bootstrap before this repair"
+    },
+    {
+      "file": "docs/rule/specforge-execution-mode-and-evidence-protocol.md",
+      "sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef",
+      "lines": 182,
+      "chunks": [
+        {
+          "start": 1,
+          "end": 182,
+          "sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef"
+        }
+      ],
+      "roundtrip": true,
+      "provenance": "Same conversation full content reads, including re-reads of truncated spans; unchanged hashes verified by Bootstrap before this repair"
+    }
+  ]
+}

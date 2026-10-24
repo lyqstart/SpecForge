@@ -1,0 +1,17 @@
+{
+  "id": "032-final-full-regression",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test"
+  ],
+  "purpose": "032-final-full-regression",
+  "started": "2026-10-24T13:58:13.945Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T14:04:42.006Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_repository_status": "?? docs/archive/2026-10-24-candidate-seal-repair/\n"
+}

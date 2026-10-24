@@ -1,0 +1,17 @@
+{
+  "id": "027-final-full-regression",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test"
+  ],
+  "purpose": "027-final-full-regression",
+  "started": "2026-10-24T13:56:59.116Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T13:57:25.363Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 1,
+  "signal": null,
+  "observed_repository_status": ""
+}

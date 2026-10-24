@@ -1,0 +1,20 @@
+$ vitest run tests/unit/candidate-seal-boundary.test.ts tests/unit/candidate-generation-integrity.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/candidate-seal-boundary.test.ts > candidate gates cannot perform the seal owner transaction > allows sealed direct checks, preserves their independent attempt and does not approve
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/unit/candidate-seal-boundary.test.ts:85:73
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+error: script "test" exited with code 1

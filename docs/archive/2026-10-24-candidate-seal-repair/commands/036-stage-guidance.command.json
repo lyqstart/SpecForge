@@ -1,0 +1,13 @@
+{
+  "id": "036-stage-guidance",
+  "cwd": "D:/code/SpecForge",
+  "exe": "git",
+  "args": [
+    "add",
+    "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md"
+  ],
+  "purpose": "036-stage-guidance",
+  "started": "2026-10-24T14:00:38.292Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged"
+}

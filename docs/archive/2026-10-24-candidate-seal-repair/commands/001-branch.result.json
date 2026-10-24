@@ -1,0 +1,18 @@
+{
+  "id": "001-branch",
+  "cwd": "D:/code/SpecForge",
+  "exe": "git",
+  "args": [
+    "switch",
+    "-c",
+    "codex/candidate-seal-repair"
+  ],
+  "purpose": "001-branch",
+  "started": "2026-10-24T13:22:50.659Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T13:22:50.706Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_repository_status": ""
+}

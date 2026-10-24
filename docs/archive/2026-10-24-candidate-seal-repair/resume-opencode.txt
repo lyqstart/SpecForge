@@ -1,0 +1,15 @@
+继续原验收项目 D:\code\sf-acceptance-six 的 WI-0002。本次授权只包括恢复候选准备、修正候选自身的问题、正式封存和 Candidate Gate；到 approval_required 必须停下，展示候选并等我明确批准。这段话不构成对任何候选的批准。
+
+先只读核验：使用 sf_doctor 和权威状态读取，确认实际连接的 SpecForge daemon 为 1.0.21，并加载本轮更新后的 sf-orchestrator 与 feature_spec 工作流说明。读取 WI-0002 的 StateManager 状态、候选、实现基线、历史 Gate、HardStop 及解除记录、handoff。若仍是旧运行版本、工具/说明未更新，或状态与停点不符，停止并报告证据，不猜测、不补写状态。原停点应为 candidate_preparing；WI-0001 应保持 closed。
+
+保留全部旧记录：attempt-0001、attempt-0002、gate_summary 的历史证据、HS-1792839413501 及解除记录、handoff 和原始工具结果。不得删除失败记录、创建替代 WI、手工写入 candidate_manifest、implementation_baseline、哈希、状态或批准记录。不得把候选内容修正说成已经实现了业务代码。
+
+本轮产品侧已修复两项：正确的否定式基线说明不再被误判；统一 Gate 不再自动代替正式封存。原项目完整副本的实际试验还发现候选文档存在 DD-001、DD-002、DD-003、DD-006、DD-007 等设计编号，未遵循 DD-<DOMAIN>-<NNN> 格式，导致规格一致性、契约和追踪三项检查失败。该结论只来自副本，先核对原候选和当前编号合同再处理。若确认存在，当前处于 candidate_preparing 时，通过相应专业角色和受控产物工具修正编号及所有对应引用，保留原语义、原需求范围和修改前后证据，不要删除检查项来凑通过。重新完成受影响的真实 handoff，并验证 handoff 完整性。不要为了得到失败态，运行已知必败的 Gate。
+
+候选和交接准备完整后，调用正式 sf_state_transition 执行 candidate_preparing → candidate_prepared。由 Runtime 在这个边界自动生成封存清单、正式规格版本绑定与原始字节哈希；你只能读取核对，不能自行计算并填入来代替 Runtime。封存失败则保留原始返回并按根因处理，不调用 Gate 来绕过。
+
+确认权威状态为 candidate_prepared、清单与实现基线绑定有效后，再调用统一 Candidate Gate，生成新的独立 Attempt；如果历史仍只有两次，应产生 attempt-0003。不得复用此前失败 Attempt，不得把单项通过当整体通过。若 Gate 失败，保留全部新旧记录；候选错误只能按合法恢复路径返回 candidate_preparing，修正、重新交接和正式封存后再检查。若是产品缺陷或没有合法恢复路径，停止并报告，不改 SpecForge 产品源码，不绕过 HardStop。
+
+只有本代完整 Candidate Gate 通过且权威状态到达 approval_required，才向我展示：具体业务变化、涉及文件、验收标准、风险与未测项，然后停止。不得记录用户批准，不得执行 Merge、开启代码权限、实现代码或关闭 WI-0002。Node 测试、浏览器测试及其他尚未执行的验收项一律标记未测。当前 D18 仍禁止无法隔离的脚本、构建和测试命令，不要用原生命令或其他工具绕过。
+
+最后给我原始工具调用/返回的证据索引、实际版本和 PID、状态变化、新旧 Attempt 编号、真实失败原因、候选修正及 handoff 记录、证据保存路径，以及当前唯一下一步。不要只报告“通过了多少项”。

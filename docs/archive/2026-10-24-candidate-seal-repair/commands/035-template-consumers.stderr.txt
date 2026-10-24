@@ -1,0 +1,2 @@
+$ vitest run "tests/unit/v11-agent-skill-contract-alignment.test.ts" tests/unit/candidate-runtime-truth-contract.test.ts tests/candidate-approval-state-governance.test.ts "tests/unit/phase11-agent-guidance-contract.test.ts"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m

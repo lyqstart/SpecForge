@@ -1,0 +1,1 @@
+{"phase":"final","dest":"D:\\code\\SpecForge\\docs\\archive\\2026-10-24-candidate-seal-repair","commands":52}

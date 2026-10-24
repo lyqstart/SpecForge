@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.1",
+  "work_item_id": "WI-0002",
+  "workflow_type": "feature_spec",
+  "workflow_path": "requirement_change_path",
+  "code_change_allowed": false,
+  "allowed_write_files": [],
+  "created_at": "2026-10-24T10:25:50.862Z",
+  "updated_at": "2026-10-24T10:25:50.862Z",
+  "created_by": "sf-orchestrator"
+}

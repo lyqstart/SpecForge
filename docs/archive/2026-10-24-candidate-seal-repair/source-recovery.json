@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-24T13:52:25.920Z",
+  "exit": 1,
+  "records": [
+    {
+      "failure": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ {\n+   created_at: 1792837550878,\n+   current_state: 'candidate_preparing',\n+   updated_at: 1792839550947,\n+   work_item_id: 'WI-0002',\n+   workflow_type: 'feature_spec'\n+ }\n- 'candidate_preparing'\n\n    at main (D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\source-recovery.ts:15:196)\n    at processTicksAndRejections (native:7:39)"
+    }
+  ]
+}

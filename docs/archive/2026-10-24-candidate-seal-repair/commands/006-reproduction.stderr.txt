@@ -1,0 +1,75 @@
+$ vitest run tests/unit/candidate-seal-boundary.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 13 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/candidate-seal-boundary.test.ts > affirmative implementation facts > accepts a truthful statement: 本设计基于 PSV-0002 既有实现演进，非绿地新建。
+ FAIL  tests/unit/candidate-seal-boundary.test.ts > affirmative implementation facts > accepts a truthful statement: > 基线声明：current_file_count=4、all_planned_paths_missing=false，app.js 为既有实现。以已知当前实现为差量基础，不存在「当前实现未知」，无需 design_blocked。
+ FAIL  tests/unit/candidate-seal-boundary.test.ts > affirmative implementation facts > accepts a truthful statement: 本项目不是绿地项目。
+ FAIL  tests/unit/candidate-seal-boundary.test.ts > affirmative implementation facts > accepts a truthful statement: Current Implementation: not missing; existing app.js is retained.
+ FAIL  tests/unit/candidate-seal-boundary.test.ts > affirmative implementation facts > accepts a truthful statement: app.js: do not create a new file
+AssertionError: expected { valid: false, …(3) } to match object { valid: true, errors: [] }
+(10 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "errors": [],
+-   "valid": true,
++   "errors": [
++     "IMPLEMENTATION_BASELINE_CONTRADICTION: C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-seal-boundary-7oIUAn\\.specforge\\work-items\\WI-0001\\candidates\\design.candidate.md: 本设计基于 PSV-0002 既有实现演进，非绿地新建。",
++   ],
++   "valid": false,
+  }
+
+ ❯ tests/unit/candidate-seal-boundary.test.ts:48:100
+     46|   ])('accepts a truthful statement: %s',async text=>{
+     47|     const f=await fixture();await f.design(text);
+     48|     expect(await validateImplementationTruthBeforeSeal({projectRoot:f.…
+       |                                                                                                    ^
+     49|   });
+     50|   it.each([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/13]⎯
+
+ FAIL  tests/unit/candidate-seal-boundary.test.ts > candidate gates cannot perform the seal owner transaction > rejects state created before any attempt/file/state write
+ FAIL  tests/unit/candidate-seal-boundary.test.ts > candidate gates cannot perform the seal owner transaction > rejects state intake_ready before any attempt/file/state write
+ FAIL  tests/unit/candidate-seal-boundary.test.ts > candidate gates cannot perform the seal owner transaction > rejects state impact_analyzing before any attempt/file/state write
+ FAIL  tests/unit/candidate-seal-boundary.test.ts > candidate gates cannot perform the seal owner transaction > rejects state workflow_selected before any attempt/file/state write
+ FAIL  tests/unit/candidate-seal-boundary.test.ts > candidate gates cannot perform the seal owner transaction > rejects state candidate_preparing before any attempt/file/state write
+ FAIL  tests/unit/candidate-seal-boundary.test.ts > candidate gates cannot perform the seal owner transaction > rejects state gates_failed before any attempt/file/state write
+ FAIL  tests/unit/candidate-seal-boundary.test.ts > candidate gates cannot perform the seal owner transaction > rejects state closed before any attempt/file/state write
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/unit/candidate-seal-boundary.test.ts:72:54
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/13]⎯
+
+ FAIL  tests/unit/candidate-seal-boundary.test.ts > candidate gates cannot perform the seal owner transaction > rejects a forged prepared state without manifest binding and creates no attempt
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/unit/candidate-seal-boundary.test.ts:78:73
+     76|   it('rejects a forged prepared state without manifest binding and cre…
+     77|     const f=await fixture();f.setState('candidate_prepared');const bef…
+     78|     const r=await f.invoke({gate_ids:['entry_gate']});expect(r.success…
+       |                                                                         ^
+     79|     expect(await snapshot(f.root)).toEqual(before);
+     80|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/13]⎯
+
+error: script "test" exited with code 1

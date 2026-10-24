@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0002",
+  "gate_id": "workflow_specific_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "passed",
+  "input_files": [
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\project\\modules\\CORE\\design.candidate.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\project\\modules\\CORE\\requirements.candidate.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\tasks.md"
+  ],
+  "checks": [
+    {
+      "check_id": "workflow_specific_gate_pass",
+      "description": "workflow_specific_gate passed",
+      "passed": true
+    }
+  ],
+  "blocking_issues": [],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-10-24T14:05:40.751Z",
+  "finished_at": "2026-10-24T14:05:40.751Z",
+  "runner": "gate_runner"
+}

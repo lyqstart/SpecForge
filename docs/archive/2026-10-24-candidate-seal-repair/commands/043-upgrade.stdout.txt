@@ -1,0 +1,12 @@
+🔄 正在升级 SpecForge 共享组件...
+   目标目录: C:\Users\lyq\.config\opencode
+
+   已升级: 6 个文件
+   已跳过: 106 个文件（无变化）
+
+✅ 升级完成
+   已部署: 6 个共享组件文件
+   OpenCode 配置根: C:\Users\lyq\.config\opencode
+   CLI 命令目录: C:\Users\lyq\.config\opencode\sf-user\bin
+   CLI 可用: 当前 shell 可直接运行 specforge
+   提示: 需要重启 OpenCode 才能加载新版 Plugin

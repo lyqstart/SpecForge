@@ -1,0 +1,17 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/.tmp/candidate-seal-worktree/packages/daemon-core
+
+ ✓ tests/unit/candidate-gate-historical-attempt-reconcile.test.ts (6 tests) 59ms
+ ✓ tests/unit/candidate-generation-integrity.test.ts (10 tests) 416ms
+ ✓ tests/unit/candidate-gate-retry-state-recovery.test.ts (12 tests) 9ms
+ ❯ tests/unit/verification-gate-historical-attempt-reconcile.test.ts (2 tests | 1 failed) 74ms
+   × Verification historical Gate Attempt reconciliation > classifies spec_migration post_merge_verified as verification reconciliation 14ms
+     → expected null to be 'candidate' // Object.is equality
+   ✓ Verification historical Gate Attempt reconciliation > reuses the latest passed Verification + Formal Version attempt without running gates again 58ms
+ ✓ tests/unit/candidate-seal-boundary.test.ts (26 tests) 1694ms
+
+ Test Files  1 failed | 4 passed (5)
+      Tests  1 failed | 55 passed (56)
+   Start at  21:51:14
+   Duration  5.21s (transform 2.08s, setup 0ms, collect 10.07s, tests 2.25s, environment 2ms, prepare 1.29s)
+

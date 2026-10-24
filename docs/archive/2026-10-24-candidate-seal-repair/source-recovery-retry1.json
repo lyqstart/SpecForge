@@ -1,0 +1,350 @@
+{
+  "utc": "2026-10-24T13:53:24.802Z",
+  "exit": 0,
+  "records": [
+    {
+      "tool": "sf_v11_gate_run",
+      "args": {
+        "candidate_phase": "full"
+      },
+      "start": "2026-10-24T13:53:19.199Z",
+      "end": "2026-10-24T13:53:19.220Z",
+      "result": {
+        "success": false,
+        "error": "CANDIDATE_SEAL_REQUIRED: current=candidate_preparing; use the formal sf_state_transition candidate_preparing -> candidate_prepared owner before Candidate gates. Recover gates_failed to candidate_preparing and seal again; do not hand-write manifest or hashes.",
+        "work_item_id": "WI-0002"
+      }
+    },
+    {
+      "tool": "sf_state_transition",
+      "args": {
+        "from_state": "candidate_preparing",
+        "to_state": "candidate_prepared",
+        "evidence": "isolated exact-copy recovery test; no approval"
+      },
+      "start": "2026-10-24T13:53:20.595Z",
+      "end": "2026-10-24T13:53:20.673Z",
+      "result": {
+        "success": true,
+        "work_item_id": "WI-0002",
+        "workflow_type": "feature_spec",
+        "workflow_path": "requirement_change_path",
+        "state_authority": "StateManager",
+        "workflow_engine_transition_full_used": false,
+        "candidate_manifest_materialization": {
+          "manifest_path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\source-fixture-retry1\\.specforge\\work-items\\WI-0002\\candidate_manifest.json",
+          "entry_count": 5,
+          "required_candidate_types": [
+            "data_model",
+            "requirements",
+            "design",
+            "module_contract"
+          ],
+          "ignored_candidate_paths": [],
+          "repair_plan_binding_updated": false
+        },
+        "transition_result": {
+          "source": "StateManager",
+          "workItemId": "WI-0002",
+          "previousState": "candidate_preparing",
+          "currentState": "candidate_prepared",
+          "timestamp": "2026-10-24T13:53:20.670Z"
+        }
+      }
+    },
+    {
+      "manifest": {
+        "schema_version": "1.0",
+        "work_item_id": "WI-0002",
+        "workflow_type": "feature_spec",
+        "workflow_path": "requirement_change_path",
+        "base_spec_version": "PSV-0002",
+        "merge_required": true,
+        "entries": [
+          {
+            "candidate_path": "candidates/project/data_model.candidate.md",
+            "target_path": ".specforge/project/data_model.md",
+            "operation": "replace",
+            "type": "data_model",
+            "inferred": false,
+            "normalized": true
+          },
+          {
+            "candidate_path": "candidates/project/modules/CORE/requirements.candidate.md",
+            "target_path": ".specforge/project/modules/CORE/requirements.md",
+            "operation": "replace",
+            "type": "requirements",
+            "module_id": "CORE",
+            "inferred": false,
+            "normalized": true
+          },
+          {
+            "candidate_path": "candidates/project/modules/CORE/design.candidate.md",
+            "target_path": ".specforge/project/modules/CORE/design.md",
+            "operation": "replace",
+            "type": "design",
+            "module_id": "CORE",
+            "inferred": false,
+            "normalized": true
+          },
+          {
+            "candidate_path": "candidates/project/modules/CORE/contracts.candidate.json",
+            "target_path": ".specforge/project/modules/CORE/contracts.json",
+            "operation": "replace",
+            "type": "module_contract",
+            "module_id": "CORE",
+            "inferred": false,
+            "normalized": true
+          },
+          {
+            "candidate_path": "candidates/trace_delta.md",
+            "target_path": ".specforge/project/trace_matrix.md",
+            "operation": "replace",
+            "type": "trace_delta",
+            "inferred": false,
+            "normalized": true
+          }
+        ],
+        "project_spec_precondition_sha256": "sha256:2da35a93649cb1cd6519a89c29316e83d9119fd963fcd1dd281e9eb7e0dfa7f8"
+      }
+    },
+    {
+      "recreated_owner_state": "candidate_prepared"
+    },
+    {
+      "tool": "sf_v11_gate_run",
+      "args": {
+        "candidate_phase": "full"
+      },
+      "start": "2026-10-24T13:53:20.692Z",
+      "end": "2026-10-24T13:53:21.077Z",
+      "result": {
+        "success": true,
+        "work_item_id": "WI-0002",
+        "workflow_path": "requirement_change_path",
+        "workflow_type": "feature_spec",
+        "workflow_type_source": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\source-fixture-retry1\\.specforge\\work-items\\WI-0002\\trigger_result.json",
+        "candidate_phase": "full",
+        "candidate_phase_source": "artifact_inference",
+        "workflow_path_source": ".specforge/work-items/WI-0002/trigger_result.json",
+        "authoritative_state_before_gate": "candidate_prepared",
+        "requested_gate_ids": [],
+        "requested_gate_type": null,
+        "normalized_gate_ids": [
+          "entry_gate",
+          "workflow_selection_gate",
+          "schema_gate",
+          "required_files_gate",
+          "candidate_manifest_gate",
+          "path_policy_gate",
+          "spec_consistency_gate",
+          "contract_integrity_gate",
+          "trace_gate",
+          "workflow_specific_gate"
+        ],
+        "aliases_used": [
+          "candidate"
+        ],
+        "summary_status": "failed",
+        "summary_path": ".specforge/work-items/WI-0002/gate_summary.md",
+        "gate_attempt_id": "attempt-0003",
+        "gate_attempt_path": ".specforge/work-items/WI-0002/gate_attempts/attempt-0003",
+        "gate_count": 10,
+        "passed": 7,
+        "failed": 3,
+        "state_auto_advance": {
+          "attempted": true,
+          "advanced": true,
+          "from_state": "candidate_prepared",
+          "to_state": "gates_failed",
+          "workflow_type": "feature_spec",
+          "evidence": "gate_runner auto-advance after required candidate gates coverage: summary_status=failed",
+          "transition_steps": [
+            {
+              "attempted": true,
+              "advanced": true,
+              "from_state": "candidate_prepared",
+              "to_state": "gates_running",
+              "evidence": "gate_runner auto-advance after required candidate gates coverage: summary_status=failed | state authority recovery step candidate_prepared->gates_running",
+              "transition_result": {
+                "source": "StateManager",
+                "workItemId": "WI-0002",
+                "previousState": "candidate_prepared",
+                "currentState": "gates_running",
+                "timestamp": "2026-10-24T13:53:21.054Z"
+              }
+            },
+            {
+              "attempted": true,
+              "advanced": true,
+              "from_state": "gates_running",
+              "to_state": "gates_failed",
+              "evidence": "gate_runner auto-advance after required candidate gates coverage: summary_status=failed | state authority step gates_running->gates_failed",
+              "transition_result": {
+                "source": "StateManager",
+                "workItemId": "WI-0002",
+                "previousState": "gates_running",
+                "currentState": "gates_failed",
+                "timestamp": "2026-10-24T13:53:21.076Z"
+              }
+            }
+          ]
+        },
+        "reports": [
+          {
+            "gate_id": "entry_gate",
+            "status": "passed",
+            "blocking_issues": 0,
+            "warnings": 0
+          },
+          {
+            "gate_id": "workflow_selection_gate",
+            "status": "passed",
+            "blocking_issues": 0,
+            "warnings": 0
+          },
+          {
+            "gate_id": "schema_gate",
+            "status": "passed",
+            "blocking_issues": 0,
+            "warnings": 0
+          },
+          {
+            "gate_id": "required_files_gate",
+            "status": "passed",
+            "blocking_issues": 0,
+            "warnings": 0
+          },
+          {
+            "gate_id": "candidate_manifest_gate",
+            "status": "passed",
+            "blocking_issues": 0,
+            "warnings": 0
+          },
+          {
+            "gate_id": "path_policy_gate",
+            "status": "passed",
+            "blocking_issues": 0,
+            "warnings": 0
+          },
+          {
+            "gate_id": "spec_consistency_gate",
+            "status": "failed",
+            "blocking_issues": 1,
+            "warnings": 0
+          },
+          {
+            "gate_id": "contract_integrity_gate",
+            "status": "failed",
+            "blocking_issues": 1,
+            "warnings": 0
+          },
+          {
+            "gate_id": "trace_gate",
+            "status": "failed",
+            "blocking_issues": 1,
+            "warnings": 0
+          },
+          {
+            "gate_id": "workflow_specific_gate",
+            "status": "passed",
+            "blocking_issues": 0,
+            "warnings": 0
+          }
+        ]
+      }
+    },
+    {
+      "tool": "sf_v11_gate_run",
+      "args": {
+        "candidate_phase": "full"
+      },
+      "start": "2026-10-24T13:53:23.234Z",
+      "end": "2026-10-24T13:53:23.241Z",
+      "result": {
+        "success": false,
+        "error": "CANDIDATE_SEAL_REQUIRED: current=gates_failed; use the formal sf_state_transition candidate_preparing -> candidate_prepared owner before Candidate gates. Recover gates_failed to candidate_preparing and seal again; do not hand-write manifest or hashes.",
+        "work_item_id": "WI-0002"
+      }
+    },
+    {
+      "tool": "sf_state_transition",
+      "args": {
+        "from_state": "gates_failed",
+        "to_state": "candidate_preparing",
+        "evidence": "isolated retry must return to seal owner"
+      },
+      "start": "2026-10-24T13:53:24.707Z",
+      "end": "2026-10-24T13:53:24.733Z",
+      "result": {
+        "success": true,
+        "work_item_id": "WI-0002",
+        "workflow_type": "feature_spec",
+        "workflow_path": "requirement_change_path",
+        "state_authority": "StateManager",
+        "workflow_engine_transition_full_used": false,
+        "implementation_baseline_materialization": {
+          "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\source-fixture-retry1\\.specforge\\work-items\\WI-0002\\implementation_baseline.json",
+          "snapshot_id": "sha256:ea0d3796eb9488dbc86462c62abe9f07631d92224177474dfd99a4bdd8ef1f17",
+          "planned_code_paths": [
+            "app.js",
+            "index.html",
+            "styles.css",
+            "test/app.test.js"
+          ],
+          "current_file_count": 4,
+          "all_planned_paths_missing": false
+        },
+        "transition_result": {
+          "source": "StateManager",
+          "workItemId": "WI-0002",
+          "previousState": "gates_failed",
+          "currentState": "candidate_preparing",
+          "timestamp": "2026-10-24T13:53:24.733Z"
+        }
+      }
+    },
+    {
+      "tool": "sf_state_transition",
+      "args": {
+        "from_state": "candidate_preparing",
+        "to_state": "candidate_prepared",
+        "evidence": "isolated reseal after failed gate"
+      },
+      "start": "2026-10-24T13:53:24.733Z",
+      "end": "2026-10-24T13:53:24.801Z",
+      "result": {
+        "success": true,
+        "work_item_id": "WI-0002",
+        "workflow_type": "feature_spec",
+        "workflow_path": "requirement_change_path",
+        "state_authority": "StateManager",
+        "workflow_engine_transition_full_used": false,
+        "candidate_manifest_materialization": {
+          "manifest_path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\source-fixture-retry1\\.specforge\\work-items\\WI-0002\\candidate_manifest.json",
+          "entry_count": 5,
+          "required_candidate_types": [
+            "data_model",
+            "requirements",
+            "design",
+            "module_contract"
+          ],
+          "ignored_candidate_paths": [],
+          "repair_plan_binding_updated": false
+        },
+        "transition_result": {
+          "source": "StateManager",
+          "workItemId": "WI-0002",
+          "previousState": "candidate_preparing",
+          "currentState": "candidate_prepared",
+          "timestamp": "2026-10-24T13:53:24.801Z"
+        }
+      }
+    },
+    {
+      "verdict": "PASS",
+      "state": "candidate_prepared",
+      "old_attempt_files_preserved": 28
+    }
+  ]
+}

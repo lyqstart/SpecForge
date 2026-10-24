@@ -1,0 +1,109 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/packages/scope-gate
+
+stdout | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > installs exactly the verified physical release set into an isolated SpecForge root
+📦 正在安装 SpecForge 共享组件...
+   OpenCode 配置根: C:\Users\lyq\AppData\Local\Temp\specforge-current-installer-1v4XvH\opencode
+
+
+stdout | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > installs exactly the verified physical release set into an isolated SpecForge root
+
+✅ 安装完成
+   已部署: 112 个共享组件文件
+   OpenCode 配置根: C:\Users\lyq\AppData\Local\Temp\specforge-current-installer-1v4XvH\opencode
+   CLI 命令目录: C:\Users\lyq\AppData\Local\Temp\specforge-current-installer-1v4XvH\opencode\sf-user\bin
+   ⚠ 当前 shell 尚不能直接运行 specforge。请在 PowerShell 执行一次:
+   $sfBin = 'C:\Users\lyq\AppData\Local\Temp\specforge-current-installer-1v4XvH\opencode\sf-user\bin'; $entries = @(([Environment]::GetEnvironmentVariable('Path', 'User') -split ';') | Where-Object { $_ }); if ($entries -notcontains $sfBin) { [Environment]::SetEnvironmentVariable('Path', (($entries + $sfBin) -join ';'), 'User') }; $env:Path = "$sfBin;$env:Path"
+   完成后，新终端可直接运行 specforge；当前 PowerShell 也立即生效。
+   提示: 需要重启 OpenCode 才能加载新版 Plugin
+
+stdout | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > upgrades the isolated current release through the crash-safe transaction owner
+📦 正在安装 SpecForge 共享组件...
+   OpenCode 配置根: C:\Users\lyq\AppData\Local\Temp\specforge-current-upgrade-ogo2yT\opencode
+
+
+stdout | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > upgrades the isolated current release through the crash-safe transaction owner
+
+✅ 安装完成
+   已部署: 112 个共享组件文件
+   OpenCode 配置根: C:\Users\lyq\AppData\Local\Temp\specforge-current-upgrade-ogo2yT\opencode
+   CLI 命令目录: C:\Users\lyq\AppData\Local\Temp\specforge-current-upgrade-ogo2yT\opencode\sf-user\bin
+   ⚠ 当前 shell 尚不能直接运行 specforge。请在 PowerShell 执行一次:
+   $sfBin = 'C:\Users\lyq\AppData\Local\Temp\specforge-current-upgrade-ogo2yT\opencode\sf-user\bin'; $entries = @(([Environment]::GetEnvironmentVariable('Path', 'User') -split ';') | Where-Object { $_ }); if ($entries -notcontains $sfBin) { [Environment]::SetEnvironmentVariable('Path', (($entries + $sfBin) -join ';'), 'User') }; $env:Path = "$sfBin;$env:Path"
+   完成后，新终端可直接运行 specforge；当前 PowerShell 也立即生效。
+   提示: 需要重启 OpenCode 才能加载新版 Plugin
+
+stdout | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > upgrades the isolated current release through the crash-safe transaction owner
+🔄 正在升级 SpecForge 共享组件...
+   目标目录: C:\Users\lyq\AppData\Local\Temp\specforge-current-upgrade-ogo2yT\opencode
+
+
+stdout | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > upgrades the isolated current release through the crash-safe transaction owner
+🧹 清理 1 个旧版本残留文件:
+
+stdout | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > upgrades the isolated current release through the crash-safe transaction owner
+   ✓ 已删除: tools\sf_obsolete.ts
+
+stdout | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > upgrades the isolated current release through the crash-safe transaction owner
+   已升级: 112 个文件
+   已跳过: 0 个文件（无变化）
+
+✅ 升级完成
+   已部署: 112 个共享组件文件
+   OpenCode 配置根: C:\Users\lyq\AppData\Local\Temp\specforge-current-upgrade-ogo2yT\opencode
+   CLI 命令目录: C:\Users\lyq\AppData\Local\Temp\specforge-current-upgrade-ogo2yT\opencode\sf-user\bin
+   ⚠ 当前 shell 尚不能直接运行 specforge。请在 PowerShell 执行一次:
+   $sfBin = 'C:\Users\lyq\AppData\Local\Temp\specforge-current-upgrade-ogo2yT\opencode\sf-user\bin'; $entries = @(([Environment]::GetEnvironmentVariable('Path', 'User') -split ';') | Where-Object { $_ }); if ($entries -notcontains $sfBin) { [Environment]::SetEnvironmentVariable('Path', (($entries + $sfBin) -join ';'), 'User') }; $env:Path = "$sfBin;$env:Path"
+   完成后，新终端可直接运行 specforge；当前 PowerShell 也立即生效。
+   提示: 需要重启 OpenCode 才能加载新版 Plugin
+
+stdout | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > rolls back earlier replacements when a later current upgrade mutation fails
+📦 正在安装 SpecForge 共享组件...
+   OpenCode 配置根: C:\Users\lyq\AppData\Local\Temp\specforge-current-upgrade-failure-IXA9bB\opencode
+
+
+stdout | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > rolls back earlier replacements when a later current upgrade mutation fails
+
+✅ 安装完成
+   已部署: 112 个共享组件文件
+   OpenCode 配置根: C:\Users\lyq\AppData\Local\Temp\specforge-current-upgrade-failure-IXA9bB\opencode
+   CLI 命令目录: C:\Users\lyq\AppData\Local\Temp\specforge-current-upgrade-failure-IXA9bB\opencode\sf-user\bin
+   ⚠ 当前 shell 尚不能直接运行 specforge。请在 PowerShell 执行一次:
+   $sfBin = 'C:\Users\lyq\AppData\Local\Temp\specforge-current-upgrade-failure-IXA9bB\opencode\sf-user\bin'; $entries = @(([Environment]::GetEnvironmentVariable('Path', 'User') -split ';') | Where-Object { $_ }); if ($entries -notcontains $sfBin) { [Environment]::SetEnvironmentVariable('Path', (($entries + $sfBin) -join ';'), 'User') }; $env:Path = "$sfBin;$env:Path"
+   完成后，新终端可直接运行 specforge；当前 PowerShell 也立即生效。
+   提示: 需要重启 OpenCode 才能加载新版 Plugin
+
+stdout | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > rolls back earlier replacements when a later current upgrade mutation fails
+🔄 正在升级 SpecForge 共享组件...
+   目标目录: C:\Users\lyq\AppData\Local\Temp\specforge-current-upgrade-failure-IXA9bB\opencode
+
+
+stdout | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > rolls back earlier replacements when a later current upgrade mutation fails
+<empty line>
+stdout | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > rolls back earlier replacements when a later current upgrade mutation fails
+<empty line>
+stdout | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > rolls back earlier replacements when a later current upgrade mutation fails
+🔄 正在升级 SpecForge 共享组件...
+   目标目录: C:\Users\lyq\AppData\Local\Temp\specforge-current-upgrade-failure-IXA9bB\opencode
+
+
+stdout | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > rolls back earlier replacements when a later current upgrade mutation fails
+   已升级: 112 个文件
+   已跳过: 0 个文件（无变化）
+
+✅ 升级完成
+   已部署: 112 个共享组件文件
+   OpenCode 配置根: C:\Users\lyq\AppData\Local\Temp\specforge-current-upgrade-failure-IXA9bB\opencode
+   CLI 命令目录: C:\Users\lyq\AppData\Local\Temp\specforge-current-upgrade-failure-IXA9bB\opencode\sf-user\bin
+   ⚠ 当前 shell 尚不能直接运行 specforge。请在 PowerShell 执行一次:
+   $sfBin = 'C:\Users\lyq\AppData\Local\Temp\specforge-current-upgrade-failure-IXA9bB\opencode\sf-user\bin'; $entries = @(([Environment]::GetEnvironmentVariable('Path', 'User') -split ';') | Where-Object { $_ }); if ($entries -notcontains $sfBin) { [Environment]::SetEnvironmentVariable('Path', (($entries + $sfBin) -join ';'), 'User') }; $env:Path = "$sfBin;$env:Path"
+   完成后，新终端可直接运行 specforge；当前 PowerShell 也立即生效。
+   提示: 需要重启 OpenCode 才能加载新版 Plugin
+
+ ✓ tests/current-repository-installer-manifest-consumption.integration.test.ts  (3 tests) 15300ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  22:01:03
+   Duration  16.14s (transform 195ms, setup 0ms, collect 264ms, tests 15.30s, environment 0ms, prepare 289ms)
+

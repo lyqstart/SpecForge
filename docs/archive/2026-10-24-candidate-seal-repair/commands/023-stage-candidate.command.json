@@ -1,0 +1,19 @@
+{
+  "id": "023-stage-candidate",
+  "cwd": "D:/code/SpecForge",
+  "exe": "git",
+  "args": [
+    "add",
+    "docs/project-status.md",
+    "docs/product-specification/specforge-product-specification.md",
+    "docs/rule/specforge-active-development-rules.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md",
+    "package.json",
+    "packages",
+    "setup/userlevel-opencode/agents/sf-orchestrator.md",
+    "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md"
+  ],
+  "purpose": "023-stage-candidate",
+  "started": "2026-10-24T13:56:32.411Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged"
+}

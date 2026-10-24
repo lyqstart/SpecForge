@@ -1,0 +1,11 @@
+{
+  "id": "051-independent-audit",
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    ".tmp/candidate-seal-repair-20261024/final-audit.cjs"
+  ],
+  "purpose": "051-independent-audit",
+  "started": "2026-10-24T14:05:49.502Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged"
+}

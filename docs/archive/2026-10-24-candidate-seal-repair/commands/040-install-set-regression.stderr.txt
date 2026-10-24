@@ -1,0 +1,11 @@
+$ vitest run tests/current-repository-installer-manifest-consumption.integration.test.ts
+stderr | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > rolls back earlier replacements when a later current upgrade mutation fails
+  ⚠️ 升级失败，尝试回滚...
+
+stderr | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > rolls back earlier replacements when a later current upgrade mutation fails
+  ✅ 回滚完成
+
+stderr | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > rolls back earlier replacements when a later current upgrade mutation fails
+<empty line>
+stderr | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > rolls back earlier replacements when a later current upgrade mutation fails
+<empty line>

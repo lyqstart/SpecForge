@@ -1,0 +1,38 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/.tmp/candidate-seal-worktree/packages/daemon-core
+
+ ✓ tests/unit/candidate-generation-integrity.test.ts (10 tests) 305ms
+ ❯ tests/unit/candidate-seal-boundary.test.ts (26 tests | 1 failed) 1434ms
+   ✓ affirmative implementation facts > accepts a truthful statement: 本设计基于 PSV-0002 既有实现演进，非绿地新建。 30ms
+   ✓ affirmative implementation facts > accepts a truthful statement: > 基线声明：current_file_count=4、all_planned_paths_missing=false，app.js 为既有实现。以已知当前实现为差量基础，不存在「当前实现未知」，无需 design_blocked。 19ms
+   ✓ affirmative implementation facts > accepts a truthful statement: 本项目不是绿地项目。 20ms
+   ✓ affirmative implementation facts > accepts a truthful statement: Current Implementation: not missing; existing app.js is retained. 18ms
+   ✓ affirmative implementation facts > accepts a truthful statement: app.js | 修改 | createApp 工厂保留 20ms
+   ✓ affirmative implementation facts > accepts a truthful statement: app.js: do not create a new file 28ms
+   ✓ affirmative implementation facts > rejects a real contradiction: 本项目为绿地新建。 30ms
+   ✓ affirmative implementation facts > rejects a real contradiction: 当前业务实现不存在。 26ms
+   ✓ affirmative implementation facts > rejects a real contradiction: 现有代码缺失。 30ms
+   ✓ affirmative implementation facts > rejects a real contradiction: - **Current Implementation**: none 30ms
+   ✓ affirmative implementation facts > rejects a real contradiction: Current Implementation is missing 28ms
+   ✓ affirmative implementation facts > rejects a real contradiction: {"all_files_new":true} 80ms
+   ✓ affirmative implementation facts > rejects a real contradiction: | app.js | 新建 | 28ms
+   ✓ affirmative implementation facts > rejects a real contradiction: app.js: new file 28ms
+   ✓ affirmative implementation facts > rejects a real contradiction: 并非绿地新建；当前实现不存在。 32ms
+   ✓ affirmative implementation facts > rejects a real contradiction: 当前实现存在，但现有代码为空。 32ms
+   ✓ affirmative implementation facts > still rejects binding loss and actual source drift 34ms
+   ✓ candidate gates cannot perform the seal owner transaction > rejects state created before any attempt/file/state write 169ms
+   ✓ candidate gates cannot perform the seal owner transaction > rejects state intake_ready before any attempt/file/state write 139ms
+   ✓ candidate gates cannot perform the seal owner transaction > rejects state impact_analyzing before any attempt/file/state write 98ms
+   ✓ candidate gates cannot perform the seal owner transaction > rejects state workflow_selected before any attempt/file/state write 96ms
+   ✓ candidate gates cannot perform the seal owner transaction > rejects state candidate_preparing before any attempt/file/state write 99ms
+   ✓ candidate gates cannot perform the seal owner transaction > rejects state gates_failed before any attempt/file/state write 111ms
+   ✓ candidate gates cannot perform the seal owner transaction > rejects state closed before any attempt/file/state write 113ms
+   ✓ candidate gates cannot perform the seal owner transaction > rejects a forged prepared state without manifest binding and creates no attempt 44ms
+   × candidate gates cannot perform the seal owner transaction > allows sealed direct checks, preserves their independent attempt and does not approve 49ms
+     → expected false to be true // Object.is equality
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 35 passed (36)
+   Start at  21:47:46
+   Duration  4.43s (transform 1.44s, setup 0ms, collect 3.09s, tests 1.74s, environment 0ms, prepare 442ms)
+

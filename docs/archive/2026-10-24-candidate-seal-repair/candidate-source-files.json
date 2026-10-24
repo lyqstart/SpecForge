@@ -1,0 +1,121 @@
+{
+  "commit": "fe430ab238be52e4e3a03b7676b40ee691bc9b23",
+  "files": [
+    {
+      "path": "docs/product-specification/specforge-product-specification.md",
+      "sha256": "b1bc0c10e23e7dc1eeeed340284ff7b3116c7a657f29e0f58c4abfde7435980d"
+    },
+    {
+      "path": "docs/project-status.md",
+      "sha256": "ff132da5a5781179292515b39834ef0d9e8bf34038924f49020e1917a8a3db16"
+    },
+    {
+      "path": "docs/rule/specforge-active-development-rules.md",
+      "sha256": "7373d423745b5d3db3b9d4892f358a6edd80ad41a9422b7e1fc76e8619425596"
+    },
+    {
+      "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "sha256": "3897c1b912f75e0b409fa85a2c7d8b18d95eb6a82a1fd5826ead8186e0b084b9"
+    },
+    {
+      "path": "package.json",
+      "sha256": "5f327c7d442230692e0801c6f3d53f07d0ee590513828feca5177d2fd890315c"
+    },
+    {
+      "path": "packages/cli/package.json",
+      "sha256": "0dac51e0d8802d7934186e86b39921201ae45d20461b9d0676148fbfbc7bbc95"
+    },
+    {
+      "path": "packages/cli/tests/help-system.test.ts",
+      "sha256": "aee652bac8969ae0c026d0dd44c0c091bd522c561d39c262eeb6a2174c815a6b"
+    },
+    {
+      "path": "packages/configuration/package.json",
+      "sha256": "0c355e3db5d5f4bd3e8c6f7667edcbac697b11286adcde0b3396ea960e637760"
+    },
+    {
+      "path": "packages/daemon-core/package.json",
+      "sha256": "562a04151098c3abe4d984bae8e554936a368052de3b9b59f7d33f18fa29f364"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts",
+      "sha256": "9e09c054c6ecc92e99457ba450a10bf1be56b2a38e5a01d9aa0f25e5279483f7"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/implementation-baseline.ts",
+      "sha256": "332e844f600e8981122c31291969c8661630c14ee0641ca0fca0bf0516f21421"
+    },
+    {
+      "path": "packages/daemon-core/tests/design-governance-live-closure.test.ts",
+      "sha256": "616152db8fe289ba7bd12d8709949b17eb68b9ddfc3118adcb16f494c9a5c5cc"
+    },
+    {
+      "path": "packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts",
+      "sha256": "78dc62e3b611c9bee4c8ce5df9fcfffe0f5f2ae2abb93c521cb42ac0ae903770"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/candidate-gate-retry-state-recovery.test.ts",
+      "sha256": "3b15914ef724da39006a41cf81341c1e68acf1ce77118f0861420a494f859ec6"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/candidate-seal-boundary.test.ts",
+      "sha256": "45149df9a1fe97bc054420b7ce231df2dd3e95c8bc081caa17dafffb2a84d70e"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/verification-gate-historical-attempt-reconcile.test.ts",
+      "sha256": "d457db3ef63020513198a367d3ec47729a347d46e4f85fe5993a2995d52f01b7"
+    },
+    {
+      "path": "packages/host-profile/package.json",
+      "sha256": "afda2322882fec9e9b895e255bbd8f1987eccb5ae28a4befb2e3ed3aba8cdf57"
+    },
+    {
+      "path": "packages/observability/package.json",
+      "sha256": "9599dcfed0764d2d402cc4a43b415422ffa951ae17b12bddb62528626b47f571"
+    },
+    {
+      "path": "packages/observability/tests/unit/project-structure.test.ts",
+      "sha256": "4eb3f46ae5b0f76072c62490e564ec3ca3cd8c34e7259b53c53a356abac5e102"
+    },
+    {
+      "path": "packages/opencode-adapter/package.json",
+      "sha256": "8d0c4a1e4b5af3c7f8bcb9051c3426c6093a462031783e3c318172bad0c8608f"
+    },
+    {
+      "path": "packages/permission-engine/package.json",
+      "sha256": "f4172322570119b97eb1289cce5bb588a21c2582012294390e7fab875303eebe"
+    },
+    {
+      "path": "packages/scope-gate/package.json",
+      "sha256": "144482a2c1852ed07edc630c7b19733604df3e83f80a88297696c048c7553597"
+    },
+    {
+      "path": "packages/service-management/package.json",
+      "sha256": "fd3e2d2389dde6797ad466554f437a80fce79ae9062b90cff6f114280c71ce9f"
+    },
+    {
+      "path": "packages/types/package.json",
+      "sha256": "c39276a03aa80bc6ee34e2c19d6c89ad978591a4d291d409a84170d600301a81"
+    },
+    {
+      "path": "packages/version-unification/package.json",
+      "sha256": "1b0418029916ce8da3e858ddbf6567c1ca0c3349bb8168929cb6bd70c604635b"
+    },
+    {
+      "path": "packages/workflow-runtime/package.json",
+      "sha256": "ea1e514d1b9c80ba9b5e644816467ab7cb4076b8b250089393869e9f75d04980"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-orchestrator.md",
+      "sha256": "483d82306399bc80dd04a838b2a639acec38a36edb46748a6185c5d906339927"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md",
+      "sha256": "48fd8edbee524b7e34477ed2d92780037126b69a3799eb982107e8f06c834dd6"
+    },
+    {
+      "path": "tests/unit/current-product-version-contract.test.ts",
+      "sha256": "6b89d6695993579bbf66c94f77d2c39cf6a77a6ba3668d4be18be9d67923e0f1"
+    }
+  ]
+}

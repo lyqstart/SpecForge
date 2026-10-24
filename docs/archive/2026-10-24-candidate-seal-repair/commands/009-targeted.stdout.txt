@@ -1,0 +1,11 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/.tmp/candidate-seal-worktree/packages/daemon-core
+
+ ✓ tests/unit/candidate-generation-integrity.test.ts (10 tests) 323ms
+ ✓ tests/unit/candidate-seal-boundary.test.ts (26 tests) 1482ms
+
+ Test Files  2 passed (2)
+      Tests  36 passed (36)
+   Start at  21:48:09
+   Duration  4.21s (transform 1.28s, setup 0ms, collect 2.87s, tests 1.81s, environment 0ms, prepare 490ms)
+

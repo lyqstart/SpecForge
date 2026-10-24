@@ -1,0 +1,2 @@
+[codex/candidate-seal-repair fe430ab2] test: align root product contract with 1.0.21
+ 2 files changed, 7 insertions(+), 3 deletions(-)

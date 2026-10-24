@@ -1,0 +1,25 @@
+$ vitest run tests/unit/candidate-seal-boundary.test.ts tests/unit/candidate-generation-integrity.test.ts tests/unit/candidate-gate-retry-state-recovery.test.ts tests/unit/candidate-gate-historical-attempt-reconcile.test.ts tests/unit/verification-gate-historical-attempt-reconcile.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/verification-gate-historical-attempt-reconcile.test.ts > Verification historical Gate Attempt reconciliation > classifies spec_migration post_merge_verified as verification reconciliation
+AssertionError: expected null to be 'candidate' // Object.is equality
+
+- Expected: 
+"candidate"
+
++ Received: 
+null
+
+ ❯ tests/unit/verification-gate-historical-attempt-reconcile.test.ts:41:74
+     39|   it('classifies spec_migration post_merge_verified as verification re…
+     40|     expect(reconciliationModeForState('post_merge_verified', 'spec_mig…
+     41|     expect(reconciliationModeForState('gates_failed', 'spec_migration'…
+       |                                                                          ^
+     42|     expect(reconciliationModeForState('closed', 'spec_migration')).toB…
+     43|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+error: script "test" exited with code 1

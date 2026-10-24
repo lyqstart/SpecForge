@@ -1,0 +1,663 @@
+{
+  "schemaVersion": "1.0",
+  "releaseId": "specforge-current",
+  "candidateId": "commit-b19539bf666f18ff33321e6c7217210b44e9d86d",
+  "manifestPath": "release/release-manifest.json",
+  "releaseManifestReport": {
+    "schemaVersion": "1.0",
+    "releaseId": "specforge-current",
+    "candidateId": "commit-b19539bf666f18ff33321e6c7217210b44e9d86d",
+    "surface": "release_manifest",
+    "producer": "release-manifest-producer",
+    "complete": true,
+    "items": [
+      {
+        "id": "@specforge/cli",
+        "surface": "release_manifest",
+        "path": "packages/cli/dist/cli.js",
+        "sha256": "3ea22d57ee919f36e33e25e0aceab910fa4a0f88ebf4fb691d5a6fbcb9f1c4a4",
+        "dependencies": []
+      },
+      {
+        "id": "@specforge/configuration",
+        "surface": "release_manifest",
+        "path": "packages/configuration/dist/index.js",
+        "sha256": "9bbf61e64de3db0c46c1b311e235d4b8c81283cc900cf68f86f68e0e13e65ed9",
+        "dependencies": []
+      },
+      {
+        "id": "@specforge/daemon-core",
+        "surface": "release_manifest",
+        "path": "packages/daemon-core/dist/index.js",
+        "sha256": "d9128896d2282ba8534a5d4c8e3662fa6d49dd557f5b4688a4781e788d000615",
+        "dependencies": []
+      },
+      {
+        "id": "@specforge/host-profile",
+        "surface": "release_manifest",
+        "path": "packages/host-profile/dist/index.js",
+        "sha256": "45cb4e830d9a9fc4fd1134ba1229fc924a89781bb3cd062fe4a66819a0560151",
+        "dependencies": []
+      },
+      {
+        "id": "@specforge/observability",
+        "surface": "release_manifest",
+        "path": "packages/observability/dist/src/index.js",
+        "sha256": "73450dade26632f32274d8585367d175212442d40add7b1547e2415981a3dae8",
+        "dependencies": []
+      },
+      {
+        "id": "@specforge/opencode-adapter",
+        "surface": "release_manifest",
+        "path": "packages/opencode-adapter/dist/index.js",
+        "sha256": "83606364d3e3055233520c8b491e5e56b02ed82b610ad2f0b526a86873cdeeaa",
+        "dependencies": []
+      },
+      {
+        "id": "@specforge/permission-engine",
+        "surface": "release_manifest",
+        "path": "packages/permission-engine/dist/src/index.js",
+        "sha256": "efdce603c0644cba89a5a7055f3c868896019dc19c90a34120b6aae7cfd36b67",
+        "dependencies": []
+      },
+      {
+        "id": "@specforge/scope-gate",
+        "surface": "release_manifest",
+        "path": "packages/scope-gate/dist/src/index.js",
+        "sha256": "c83154e07dc5b8a433b6e0be3a387fb685e778ef37c7e77e60a5d7c2bf834901",
+        "dependencies": []
+      },
+      {
+        "id": "@specforge/service-management",
+        "surface": "release_manifest",
+        "path": "packages/service-management/dist/index.js",
+        "sha256": "a9250d74cdb9357469b5cc1b84b56c64b9c23e8075ca6bab1e3bc2e172c55709",
+        "dependencies": []
+      },
+      {
+        "id": "@specforge/types",
+        "surface": "release_manifest",
+        "path": "packages/types/dist/index.js",
+        "sha256": "7f0b532101bc157868af904ee42a750b68913b1e69b79c81b2572f8f4db734b8",
+        "dependencies": []
+      },
+      {
+        "id": "@specforge/version-unification",
+        "surface": "release_manifest",
+        "path": "packages/version-unification/dist/index.js",
+        "sha256": "bd03c4966e7e09bd83330e158a7795ec499909848c033bbc4fd3a8c56a61a6e2",
+        "dependencies": []
+      },
+      {
+        "id": "@specforge/workflow-runtime",
+        "surface": "release_manifest",
+        "path": "packages/workflow-runtime/dist/src/index.js",
+        "sha256": "0dcfd2d2a58bce71bd7ff07643e9c3b1f0579169e99eac626a2924cb0825acf5",
+        "dependencies": []
+      },
+      {
+        "id": "agent-template:_AGENT_BASE",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/agents/_AGENT_BASE.md",
+        "sha256": "54d2b515c26397f1bcc07a120117e44d660d7a3f13fb5a17dd1168bec9aa20ef",
+        "dependencies": []
+      },
+      {
+        "id": "agent:sf-analyst",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/agents/sf-analyst.md",
+        "sha256": "d7d28f830bd7d206c6a73f5f6d6b3accc28a45ca9e83b54f02678decda7bcec1",
+        "dependencies": []
+      },
+      {
+        "id": "agent:sf-debugger",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/agents/sf-debugger.md",
+        "sha256": "704a5a3a3e62807ba818afbe4ebc9f75a45c9750a4a6f916aa2655a302657967",
+        "dependencies": []
+      },
+      {
+        "id": "agent:sf-design",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/agents/sf-design.md",
+        "sha256": "d657bbfffb91c850d456c12b31b8e6cc22ab4d1c12ee6af2c78fb4c9ecf51fc0",
+        "dependencies": []
+      },
+      {
+        "id": "agent:sf-executor",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/agents/sf-executor.md",
+        "sha256": "c08f9c1a7f3bd28b1042558d7e6aea537d42aaf43bb06cc40f26821bbb7c154b",
+        "dependencies": []
+      },
+      {
+        "id": "agent:sf-knowledge",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/agents/sf-knowledge.md",
+        "sha256": "45e8063201dca6458329195288ee7a218bc0c5a21ef3cd7b08f3a9f5bf2a7770",
+        "dependencies": []
+      },
+      {
+        "id": "agent:sf-orchestrator",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/agents/sf-orchestrator.md",
+        "sha256": "483d82306399bc80dd04a838b2a639acec38a36edb46748a6185c5d906339927",
+        "dependencies": []
+      },
+      {
+        "id": "agent:sf-requirements",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/agents/sf-requirements.md",
+        "sha256": "760cfd3c2645122542774fc22a5b2abbf1c683a9f9e774c1259b35c515bc6a77",
+        "dependencies": []
+      },
+      {
+        "id": "agent:sf-reviewer",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/agents/sf-reviewer.md",
+        "sha256": "fff375595ae59e18887f36c3cbf6d6647f3f5ba0cfc67262d6090c60b9798af1",
+        "dependencies": []
+      },
+      {
+        "id": "agent:sf-task-planner",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/agents/sf-task-planner.md",
+        "sha256": "bca7001985b5ea6b6e38681522d78cadc8bac3a9e3be102925b77aa7a8b2d93f",
+        "dependencies": []
+      },
+      {
+        "id": "agent:sf-verifier",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/agents/sf-verifier.md",
+        "sha256": "1a4d9211b292fcbf12e78858fae57b2a410da4e95fc8f01184a114d635813520",
+        "dependencies": []
+      },
+      {
+        "id": "plugin:sf_specforge",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/plugins/sf_specforge.ts",
+        "sha256": "fe4bf0ee410ebb993576e783a6102621dbdabe38d2d5882ed105097449c32b7c",
+        "dependencies": []
+      },
+      {
+        "id": "release:installer",
+        "surface": "release_manifest",
+        "path": "scripts/sf-installer.ts",
+        "sha256": "e6c186adbfdb985e3b96518949eeb6d9560c8d5314d35fcc43a8a5279a3da629",
+        "dependencies": []
+      },
+      {
+        "id": "release:release-manifest",
+        "surface": "release_manifest",
+        "path": "release/release-manifest.json",
+        "sha256": "b6605a3e42463f0931d342e24e79904f61e2742e45646e7f241785f2e9f8c9c0",
+        "dependencies": []
+      },
+      {
+        "id": "runtime:current-config",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/AGENTS.md",
+        "sha256": "6db6ff5fc140809d23f41cd0094cd545b064cb80cadaae0540b6e0e22157cf20",
+        "dependencies": []
+      },
+      {
+        "id": "runtime:specforge",
+        "surface": "release_manifest",
+        "path": "release/bin/specforge.exe",
+        "sha256": "791f41665965ea9b1aba24de57b31f62d696c5697021ad68ef37a47610be6b56",
+        "dependencies": []
+      },
+      {
+        "id": "runtime:specforged",
+        "surface": "release_manifest",
+        "path": "release/bin/specforged.exe",
+        "sha256": "9505900e7c260e69c474c3f4b633cf41956a37dae7e988d8a37c0d0f3d244690",
+        "dependencies": []
+      },
+      {
+        "id": "skill:sf-intake",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/skills/sf-intake/SKILL.md",
+        "sha256": "44d62765426054f3bdf484eec46a79cfb71c8d7789a35e8c1f05e52d866b307e",
+        "dependencies": []
+      },
+      {
+        "id": "skill:sf-workflow-feature-spec",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md",
+        "sha256": "55f4682a34a6a13b2dcce2faf2ed913e68a087aa77b45fbc039401246330093b",
+        "dependencies": []
+      },
+      {
+        "id": "skill:superpowers-brainstorming",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/skills/superpowers-brainstorming/SKILL.md",
+        "sha256": "166e7a31c13385b19f4384c3c439805b21460efc98f27d6f9825d4648e4f7942",
+        "dependencies": []
+      },
+      {
+        "id": "skill:superpowers-code-review",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/skills/superpowers-code-review/SKILL.md",
+        "sha256": "ccfd870c444096d04d0dd38eb3d766de72d1a0026a469e149b929ba34945b053",
+        "dependencies": []
+      },
+      {
+        "id": "skill:superpowers-knowledge-extraction",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/skills/superpowers-knowledge-extraction/SKILL.md",
+        "sha256": "55039b0daf3a61f9d5a0b3abba2e33b5987083eab601bd5fce2ec4700650d391",
+        "dependencies": []
+      },
+      {
+        "id": "skill:superpowers-systematic-debugging",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/skills/superpowers-systematic-debugging/SKILL.md",
+        "sha256": "a0b62931801d5b08acb60b042195805f430ef301f01deeb5f2865193a511f6a0",
+        "dependencies": []
+      },
+      {
+        "id": "skill:superpowers-verification-before-completion",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md",
+        "sha256": "779dee68bd905521b729f0aea43b926b1d6b7a5fe087da9133003e464c3de1a7",
+        "dependencies": []
+      },
+      {
+        "id": "skill:superpowers-writing-plans",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/skills/superpowers-writing-plans/SKILL.md",
+        "sha256": "a74cade726014388939c0295f173767862a4b28a54053aae044ec32859ab12bf",
+        "dependencies": []
+      },
+      {
+        "id": "thin-plugin:event-reporting",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/plugins/sf_specforge.ts",
+        "sha256": "fe4bf0ee410ebb993576e783a6102621dbdabe38d2d5882ed105097449c32b7c",
+        "dependencies": []
+      },
+      {
+        "id": "thin-plugin:recovery-display",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/plugins/sf_specforge.ts",
+        "sha256": "fe4bf0ee410ebb993576e783a6102621dbdabe38d2d5882ed105097449c32b7c",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_artifact_write",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_artifact_write.ts",
+        "sha256": "d73c1e6661c9e36f85027a302ded410ca8006df6c3a73dac55cbe4087be69377",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_batch_verify",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_batch_verify.ts",
+        "sha256": "0186413da15e23ad804c4abee2fa89ee9e7336aa21940c08f83ba63536ade204",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_changed_files_audit",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_changed_files_audit.ts",
+        "sha256": "8f947807651094786e0a772c77a6fe48805fe705122d5a15421036a813926371",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_close_gate",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_close_gate.ts",
+        "sha256": "851ae6a9cb1fd840896673f4c7d52eda490f354be556d05749b8dd81608e8e59",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_code_permission",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_code_permission.ts",
+        "sha256": "bb77e2a0163ac2730caf53c40904f112ec719c6db72fc38b15d70abd0d56d440",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_contract_register",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_contract_register.ts",
+        "sha256": "24022e877f5a08fb1d3be3505981780cca2f7275be8e5375aed560a8ed6a9313",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_design_gate",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_design_gate.ts",
+        "sha256": "e0e845856c9954ccd232453928d409b2d16fcf949f581a5787c0e64169fe97af",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_doc_lint",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_doc_lint.ts",
+        "sha256": "f2330e63b983a53010c738f7ae7ef666ebc1b62752d16a79a06e3c83936331b8",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_doctor",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_doctor.ts",
+        "sha256": "358ed45fbb58baa8b285c8f18ef937f100b9123ca59dae54c9b24aaa9978e8fb",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_gate_run",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_gate_run.ts",
+        "sha256": "d99e06e9d59f72e2128ab147612b828874baf1804fda3c1b9d3bc8a7c713080c",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_git_agent_lock_acquire",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_git_agent_lock_acquire.ts",
+        "sha256": "04533568832e2de1c12cfedfdc0d509782a05f2fb5917cc68516a791563bae60",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_git_agent_lock_release",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_git_agent_lock_release.ts",
+        "sha256": "5551e5156f75ebe38c6cc8c0c6f6c3432722bb9611584a68b54f54234e283a85",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_git_auth_profile_config",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_git_auth_profile_config.ts",
+        "sha256": "29cecf1cb8fcec3186fd0b0c777de231bf86ff32856bbf120432a4b183146ea4",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_git_branch_create",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_git_branch_create.ts",
+        "sha256": "a961988a2f8f79878f613af6db20b1c612083a75c1b860bb3f4ed08825f77e2c",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_git_branch_plan",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_git_branch_plan.ts",
+        "sha256": "c894564396ffcb34cb3a1a45a9c9530469e949cd7b04e9ba3f50866c1b91bd1d",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_git_checkpoint_commit",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_git_checkpoint_commit.ts",
+        "sha256": "3501e067ce34aa94c498d91e8f160d91bd233d4644d83ed08b4192a29cab366f",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_git_ignore_analyze",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_git_ignore_analyze.ts",
+        "sha256": "bdf635e7c95e08f7473740902a67fc3b547f87718d091966ca4c7a2824748ea4",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_git_ignore_decision_record",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_git_ignore_decision_record.ts",
+        "sha256": "a54b93dbce0a8b35ba7abc6087bbaaba0a969aa6aac1a526b524846c3cc16e64",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_git_merge_plan",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_git_merge_plan.ts",
+        "sha256": "67274244eb39bc8f325a214862fa289cbf5b2d5f0e3790e4a5ca28c07cd30a40",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_git_merge_run",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_git_merge_run.ts",
+        "sha256": "ea21428c7cf65d5e51cbc7805776af4a1edd6fe848fe53fe56fa7bebc8fcdf8e",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_git_post_merge_verify",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_git_post_merge_verify.ts",
+        "sha256": "149c12161ee858b9a95ec4bc0b372a6953b8af1ae209edf4d628c150a46a9700",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_git_preflight",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_git_preflight.ts",
+        "sha256": "5c37f2edc4f8a4f82b0c64e47b2a210820534f1d8d614bb001a78d5f53c7f074",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_git_push_branch",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_git_push_branch.ts",
+        "sha256": "197d5042e10b3d8ae2a0a7552ad79e7710ea0ff7cb6c619d8b01ecb7ecab5727",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_git_release_tag_create",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_git_release_tag_create.ts",
+        "sha256": "9481f81a6b596d530d5dc5b6ac7aeddf8461f64b94a1183fa8bd3051cfcf7cd4",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_git_release_tag_plan",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_git_release_tag_plan.ts",
+        "sha256": "e9cca8c9ca1539e939152f7f3e833a9d828d19aff62f3cad9786db7dd76d8670",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_git_remote_config",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_git_remote_config.ts",
+        "sha256": "92dab204f0123baeaec6fabe55406d1bddbefae2374ebb6aad9cb2249f950e6d",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_git_remote_probe",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_git_remote_probe.ts",
+        "sha256": "0fc53817e7a73fa7c66ef5a67449e4902091f32e6e80021ec072056d6b53494b",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_handoff",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_handoff.ts",
+        "sha256": "ed0006ffabfe6c924c770ec64c40033519ff32ae839d1caf1bdf10b5ddb3ed75",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_hard_stop_resolve",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_hard_stop_resolve.ts",
+        "sha256": "0eea48ff8f411ea1a7aa68c5d7ea1793c6a9fd8b3f229ac88ba1791e7a335bf2",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_knowledge_base",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_knowledge_base.ts",
+        "sha256": "2e087757a7c875ab44f1c9fdcff2bfc512e4a63216de12c68c58fbb68bed0d9b",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_merge_run",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_merge_run.ts",
+        "sha256": "ce6e160fdf83df336bf0d48aa9aee9ba7c94db86aac0056d3fc814f68a75f6f2",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_project_config",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_project_config.ts",
+        "sha256": "b63adf87dee13cccf7fc509070d723f7e6dc6871cb7fc429f67780359fb5e26d",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_project_init",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_project_init.ts",
+        "sha256": "e6787f672a7a62a39ad9168861fb1b490fd148daa1e7c09298df9d8bb6fbc3e8",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_requirements_gate",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_requirements_gate.ts",
+        "sha256": "bb63ca970669d24430253901618815c92b9c2aa7f5cf625d21f986de7a306373",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_safe_bash",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_safe_bash.ts",
+        "sha256": "c1b33ea1677cb53bcb4acb984caecbc219d213031f6bb3efba80b2f5b6a488d2",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_semantic_closure_run",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_semantic_closure_run.ts",
+        "sha256": "e56e3900d02cd3a713d4a0dbfac680c0f261bbc79d8c51bbf58e47a6e8dbfa98",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_state_read",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_state_read.ts",
+        "sha256": "e3e7229724dc16d389e30378e3a570529f7a242b68a04dc925f4944779e68281",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_state_transition",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_state_transition.ts",
+        "sha256": "fb44899116e5c9faa4299168e1ed97c066ced7d7f50b89a2f778bc123d7599ae",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_tasks_gate",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_tasks_gate.ts",
+        "sha256": "25790041c27bc9c848277eda4499248b32319917a5661995c89af1f1ec91ae0b",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_trace_matrix",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_trace_matrix.ts",
+        "sha256": "fa67739bf47b7232195047ba022efe4aa7b925de7f384cd802cd03b528f8188a",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_user_decision_record",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_user_decision_record.ts",
+        "sha256": "6d810d0315420192076ec365516c2fcdce4ff00cd62033f17ba017fb912ae9b1",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_verification_gate",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_verification_gate.ts",
+        "sha256": "073f45d6562a4e54495964c47cc09e42d7528a6938a53d66fd1df6660c67dc38",
+        "dependencies": []
+      },
+      {
+        "id": "tool:sf_work_item_create",
+        "surface": "release_manifest",
+        "path": "setup/userlevel-opencode/tools/sf_work_item_create.ts",
+        "sha256": "da78786bcb106d9799d3287b244f4543c395ecf3a183a5ccd4cacae20083a207",
+        "dependencies": []
+      },
+      {
+        "id": "workflow:feature_spec",
+        "surface": "release_manifest",
+        "path": "configs/workflows/builtin/feature_spec.json",
+        "sha256": "9a174fdc58174f206387a1d9377e3a155b7e2aa8aa98d81c2785d67c5a87031f",
+        "dependencies": []
+      }
+    ]
+  },
+  "runtimeEntryReport": {
+    "schemaVersion": "1.0",
+    "releaseId": "specforge-current",
+    "candidateId": "commit-b19539bf666f18ff33321e6c7217210b44e9d86d",
+    "surface": "runtime_entry",
+    "producer": "release-runtime-entry-surface-producer",
+    "complete": true,
+    "items": [
+      {
+        "id": "plugin:sf_specforge",
+        "surface": "runtime_entry",
+        "path": "setup/userlevel-opencode/plugins/sf_specforge.ts",
+        "sha256": "fe4bf0ee410ebb993576e783a6102621dbdabe38d2d5882ed105097449c32b7c",
+        "dependencies": []
+      },
+      {
+        "id": "release:installer",
+        "surface": "runtime_entry",
+        "path": "scripts/sf-installer.ts",
+        "sha256": "e6c186adbfdb985e3b96518949eeb6d9560c8d5314d35fcc43a8a5279a3da629",
+        "dependencies": []
+      },
+      {
+        "id": "release:release-manifest",
+        "surface": "runtime_entry",
+        "path": "release/release-manifest.json",
+        "sha256": "b6605a3e42463f0931d342e24e79904f61e2742e45646e7f241785f2e9f8c9c0",
+        "dependencies": []
+      },
+      {
+        "id": "runtime:handshake",
+        "surface": "runtime_entry",
+        "path": "packages/daemon-core/src/daemon/HandshakeManager.ts",
+        "sha256": "cd146ff4e0d1d4a72bb65e4c493815390d33d3dd856a831a164c53ef036c577a",
+        "dependencies": []
+      },
+      {
+        "id": "runtime:specforge",
+        "surface": "runtime_entry",
+        "path": "release/bin/specforge.exe",
+        "sha256": "791f41665965ea9b1aba24de57b31f62d696c5697021ad68ef37a47610be6b56",
+        "dependencies": []
+      },
+      {
+        "id": "runtime:specforged",
+        "surface": "runtime_entry",
+        "path": "release/bin/specforged.exe",
+        "sha256": "9505900e7c260e69c474c3f4b633cf41956a37dae7e988d8a37c0d0f3d244690",
+        "dependencies": []
+      },
+      {
+        "id": "thin-plugin:event-reporting",
+        "surface": "runtime_entry",
+        "path": "setup/userlevel-opencode/plugins/sf_specforge.ts",
+        "sha256": "fe4bf0ee410ebb993576e783a6102621dbdabe38d2d5882ed105097449c32b7c",
+        "dependencies": []
+      },
+      {
+        "id": "thin-plugin:recovery-display",
+        "surface": "runtime_entry",
+        "path": "setup/userlevel-opencode/plugins/sf_specforge.ts",
+        "sha256": "fe4bf0ee410ebb993576e783a6102621dbdabe38d2d5882ed105097449c32b7c",
+        "dependencies": []
+      }
+    ]
+  }
+}

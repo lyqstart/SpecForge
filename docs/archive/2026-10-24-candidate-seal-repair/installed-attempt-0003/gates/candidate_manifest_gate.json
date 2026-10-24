@@ -1,0 +1,187 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0002",
+  "gate_id": "candidate_manifest_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "passed",
+  "input_files": [
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidate_manifest.json",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\spec_manifest.json"
+  ],
+  "checks": [
+    {
+      "check_id": "manifest_parse",
+      "description": "candidate_manifest.json is valid JSON",
+      "passed": true
+    },
+    {
+      "check_id": "manifest_current_project_spec_binding",
+      "description": "candidate_manifest base_spec_version and project_spec_precondition_sha256 bind the current Project Spec Manifest bytes",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check_id": "manifest_entries_array",
+      "description": "entries is an array",
+      "passed": true
+    },
+    {
+      "check_id": "manifest_evidence_only_canonical",
+      "description": "evidence_only manifests declare no project spec change, disable merge, and keep entries empty",
+      "passed": true
+    },
+    {
+      "check_id": "manifest_entries_nonempty_for_spec_merge",
+      "description": "entries is non-empty only when Project Spec merge is required",
+      "passed": true
+    },
+    {
+      "check_id": "manifest_entries_match_governance_inference",
+      "description": "entries match the merge applicability decision and inferManifestEntries() for spec-changing workflows",
+      "passed": true
+    },
+    {
+      "check_id": "manifest_inferred_entries_count",
+      "description": "effective inferred entries count: 5",
+      "passed": true
+    },
+    {
+      "check_id": "module_registry_valid",
+      "description": "spec_manifest.json module identity fields are valid and non-conflicting",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check_id": "entry_0_candidate_path",
+      "description": "Entry 0: candidate_path starts with candidates/",
+      "passed": true
+    },
+    {
+      "check_id": "entry_0_target_path",
+      "description": "Entry 0: target_path in .specforge/project/",
+      "passed": true
+    },
+    {
+      "check_id": "entry_0_target_declared",
+      "description": "Entry 0: target_path is declared or belongs to a governed new module",
+      "passed": true,
+      "details": "Declared targets: .specforge/project/architecture.md, .specforge/project/data_model.md, .specforge/project/decisions.md, .specforge/project/design_index.md, .specforge/project/extension_registry.json, .specforge/project/glossary.md, .specforge/project/modules/CORE/contracts.json, .specforge/project/modules/CORE/design.md, .specforge/project/modules/CORE/module.json, .specforge/project/modules/CORE/requirements.md, .specforge/project/modules/CORE/trace.md, .specforge/project/requirements_index.md, .specforge/project/trace_matrix.md"
+    },
+    {
+      "check_id": "entry_0_candidate_exists",
+      "description": "Entry 0: candidate file exists",
+      "passed": true
+    },
+    {
+      "check_id": "entry_1_candidate_path",
+      "description": "Entry 1: candidate_path starts with candidates/",
+      "passed": true
+    },
+    {
+      "check_id": "entry_1_target_path",
+      "description": "Entry 1: target_path in .specforge/project/",
+      "passed": true
+    },
+    {
+      "check_id": "entry_1_target_declared",
+      "description": "Entry 1: target_path is declared or belongs to a governed new module",
+      "passed": true,
+      "details": "Declared targets: .specforge/project/architecture.md, .specforge/project/data_model.md, .specforge/project/decisions.md, .specforge/project/design_index.md, .specforge/project/extension_registry.json, .specforge/project/glossary.md, .specforge/project/modules/CORE/contracts.json, .specforge/project/modules/CORE/design.md, .specforge/project/modules/CORE/module.json, .specforge/project/modules/CORE/requirements.md, .specforge/project/modules/CORE/trace.md, .specforge/project/requirements_index.md, .specforge/project/trace_matrix.md"
+    },
+    {
+      "check_id": "entry_1_candidate_exists",
+      "description": "Entry 1: candidate file exists",
+      "passed": true
+    },
+    {
+      "check_id": "entry_1_module_declared",
+      "description": "Entry 1: module CORE is declared or introduced by a governed architecture/migration path",
+      "passed": true,
+      "details": "Declared modules: CORE"
+    },
+    {
+      "check_id": "entry_2_candidate_path",
+      "description": "Entry 2: candidate_path starts with candidates/",
+      "passed": true
+    },
+    {
+      "check_id": "entry_2_target_path",
+      "description": "Entry 2: target_path in .specforge/project/",
+      "passed": true
+    },
+    {
+      "check_id": "entry_2_target_declared",
+      "description": "Entry 2: target_path is declared or belongs to a governed new module",
+      "passed": true,
+      "details": "Declared targets: .specforge/project/architecture.md, .specforge/project/data_model.md, .specforge/project/decisions.md, .specforge/project/design_index.md, .specforge/project/extension_registry.json, .specforge/project/glossary.md, .specforge/project/modules/CORE/contracts.json, .specforge/project/modules/CORE/design.md, .specforge/project/modules/CORE/module.json, .specforge/project/modules/CORE/requirements.md, .specforge/project/modules/CORE/trace.md, .specforge/project/requirements_index.md, .specforge/project/trace_matrix.md"
+    },
+    {
+      "check_id": "entry_2_candidate_exists",
+      "description": "Entry 2: candidate file exists",
+      "passed": true
+    },
+    {
+      "check_id": "entry_2_module_declared",
+      "description": "Entry 2: module CORE is declared or introduced by a governed architecture/migration path",
+      "passed": true,
+      "details": "Declared modules: CORE"
+    },
+    {
+      "check_id": "entry_3_candidate_path",
+      "description": "Entry 3: candidate_path starts with candidates/",
+      "passed": true
+    },
+    {
+      "check_id": "entry_3_target_path",
+      "description": "Entry 3: target_path in .specforge/project/",
+      "passed": true
+    },
+    {
+      "check_id": "entry_3_target_declared",
+      "description": "Entry 3: target_path is declared or belongs to a governed new module",
+      "passed": true,
+      "details": "Declared targets: .specforge/project/architecture.md, .specforge/project/data_model.md, .specforge/project/decisions.md, .specforge/project/design_index.md, .specforge/project/extension_registry.json, .specforge/project/glossary.md, .specforge/project/modules/CORE/contracts.json, .specforge/project/modules/CORE/design.md, .specforge/project/modules/CORE/module.json, .specforge/project/modules/CORE/requirements.md, .specforge/project/modules/CORE/trace.md, .specforge/project/requirements_index.md, .specforge/project/trace_matrix.md"
+    },
+    {
+      "check_id": "entry_3_candidate_exists",
+      "description": "Entry 3: candidate file exists",
+      "passed": true
+    },
+    {
+      "check_id": "entry_3_module_declared",
+      "description": "Entry 3: module CORE is declared or introduced by a governed architecture/migration path",
+      "passed": true,
+      "details": "Declared modules: CORE"
+    },
+    {
+      "check_id": "entry_4_candidate_path",
+      "description": "Entry 4: candidate_path starts with candidates/",
+      "passed": true
+    },
+    {
+      "check_id": "entry_4_target_path",
+      "description": "Entry 4: target_path in .specforge/project/",
+      "passed": true
+    },
+    {
+      "check_id": "entry_4_target_declared",
+      "description": "Entry 4: target_path is declared or belongs to a governed new module",
+      "passed": true,
+      "details": "Declared targets: .specforge/project/architecture.md, .specforge/project/data_model.md, .specforge/project/decisions.md, .specforge/project/design_index.md, .specforge/project/extension_registry.json, .specforge/project/glossary.md, .specforge/project/modules/CORE/contracts.json, .specforge/project/modules/CORE/design.md, .specforge/project/modules/CORE/module.json, .specforge/project/modules/CORE/requirements.md, .specforge/project/modules/CORE/trace.md, .specforge/project/requirements_index.md, .specforge/project/trace_matrix.md"
+    },
+    {
+      "check_id": "entry_4_candidate_exists",
+      "description": "Entry 4: candidate file exists",
+      "passed": true
+    }
+  ],
+  "blocking_issues": [],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-10-24T14:05:40.440Z",
+  "finished_at": "2026-10-24T14:05:40.440Z",
+  "runner": "gate_runner"
+}

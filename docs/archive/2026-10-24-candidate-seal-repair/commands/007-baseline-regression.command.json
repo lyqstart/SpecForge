@@ -1,0 +1,12 @@
+{
+  "id": "007-baseline-regression",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test"
+  ],
+  "purpose": "007-baseline-regression",
+  "started": "2026-10-24T13:24:55.507Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged"
+}

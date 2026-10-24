@@ -1,0 +1,9 @@
+RUN_ID=CODEX-SF-20261024-CANDIDATE-SEAL-A01
+EXECUTION_MODE=CODEX_DIRECT
+STOP=Repair verified and deployed; original WI-0002 unchanged; no approval or business transition.
+CONFIRMED: four actual rejection payloads bind correct existing-file statements to contradiction errors. Four business files equal Runtime baseline. Gate runner uses a recovery sequence through candidate_preparing->candidate_prepared without invoking the seal owner; live original events show this sequence after failed gates.
+RESPONSIBILITY: Runtime truth predicate; Gate handler and Agent/Workflow guidance. RUNTIME_DEFECT. Existing canonical seal owner is sufficient; no new business workflow or permission expansion.
+PLAN: clause-local affirmative contradiction recognition with bounded negation; deny candidate Gate execution/reconciliation before canonical seal and validate seal inputs before attempt creation; remove implicit early-state recovery; synchronize deployment guidance. Tests cover real negative statements, affirmative lies, mixed sentences, stale/missing bindings, direct/alias/reconciliation gate calls, rejection zero writes, formal seal success, retries and downstream Gate behavior.
+SOURCE_SCOPE: implementation-baseline.ts, sf-v11-gate-run.ts, related tests, orchestrator/feature skill guidance, product clarification, active rule/ledger, version consumers.
+EVIDENCE: original 2213 files copied byte-for-byte and verified; local full raw copy remains private, no credential-bearing logs published. New command records use UTC, stdout/stderr and numeric exit codes. Retry outputs never overwrite.
+PREPARATION_FAILURES: missing guessed source/test filenames corrected by rg discovery; source output truncation not used as complete read. 004 baseline build failed before execution because sandbox Bun could not read cwd; 005 retries same scope with host access.

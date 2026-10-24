@@ -1,0 +1,3 @@
+[codex/candidate-seal-repair b7dc13a1] fix: require candidate sealing and preserve negated baseline facts
+ 28 files changed, 249 insertions(+), 223 deletions(-)
+ create mode 100644 packages/daemon-core/tests/unit/candidate-seal-boundary.test.ts

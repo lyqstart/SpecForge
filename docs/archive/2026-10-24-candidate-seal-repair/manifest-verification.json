@@ -1,0 +1,10 @@
+{
+  "utc": "2026-10-24T14:07:22.890Z",
+  "files_verified": 285,
+  "manifest_sha256": "a6b4e765748fbc2a6d347d67f4e9f34ec2e174c975ba4f472f99ff889db52032",
+  "self_reference_excluded": [
+    "manifest.sha256",
+    "manifest-verification.json"
+  ],
+  "status": "PASS"
+}

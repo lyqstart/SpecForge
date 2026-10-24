@@ -1,0 +1,14 @@
+{
+  "id": "031-final-release-manifest",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "build:release-manifest",
+    "--candidate-id",
+    "commit-fe430ab238be52e4e3a03b7676b40ee691bc9b23"
+  ],
+  "purpose": "031-final-release-manifest",
+  "started": "2026-10-24T13:58:10.631Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged"
+}

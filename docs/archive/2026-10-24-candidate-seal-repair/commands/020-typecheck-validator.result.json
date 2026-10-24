@@ -1,0 +1,17 @@
+{
+  "id": "020-typecheck-validator",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "typecheck:validator-contract"
+  ],
+  "purpose": "020-typecheck-validator",
+  "started": "2026-10-24T13:56:13.612Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T13:56:14.712Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_repository_status": " M docs/product-specification/specforge-product-specification.md\n M docs/project-status.md\n M docs/rule/specforge-active-development-rules.md\n M docs/rule/specforge-development-error-ledger-and-experience.md\n M package.json\n M packages/cli/package.json\n M packages/cli/tests/help-system.test.ts\n M packages/configuration/package.json\n M packages/daemon-core/package.json\n M packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts\n M packages/daemon-core/src/tools/lib/implementation-baseline.ts\n M packages/daemon-core/tests/design-governance-live-closure.test.ts\n M packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts\n M packages/daemon-core/tests/unit/candidate-gate-retry-state-recovery.test.ts\n M packages/daemon-core/tests/unit/verification-gate-historical-attempt-reconcile.test.ts\n M packages/host-profile/package.json\n M packages/observability/package.json\n M packages/observability/tests/unit/project-structure.test.ts\n M packages/opencode-adapter/package.json\n M packages/permission-engine/package.json\n M packages/scope-gate/package.json\n M packages/service-management/package.json\n M packages/types/package.json\n M packages/version-unification/package.json\n M packages/workflow-runtime/package.json\n M setup/userlevel-opencode/agents/sf-orchestrator.md\n M setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md\n?? packages/daemon-core/tests/unit/candidate-seal-boundary.test.ts\n"
+}

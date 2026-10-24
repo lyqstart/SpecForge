@@ -1,0 +1,18 @@
+{
+  "id": "047-stop-for-restart",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/.config/opencode/sf-user/bin/specforge.exe",
+  "args": [
+    "daemon",
+    "stop",
+    "--json"
+  ],
+  "purpose": "047-stop-for-restart",
+  "started": "2026-10-24T14:05:31.542Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T14:05:31.699Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_repository_status": "?? docs/archive/2026-10-24-candidate-seal-repair/\n"
+}

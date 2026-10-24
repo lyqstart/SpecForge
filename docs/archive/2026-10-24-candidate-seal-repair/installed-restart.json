@@ -1,0 +1,719 @@
+{
+  "utc": "2026-10-24T14:05:41.159Z",
+  "pid": 37316,
+  "phase": "restart",
+  "root": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture",
+  "exit_code": 0,
+  "records": [
+    {
+      "pid": 37316,
+      "health": {
+        "success": true,
+        "data": {
+          "status": "ok",
+          "service": "daemon-core",
+          "version": "1.0.21",
+          "uptime": 2
+        },
+        "requestId": "ud1s42uvq2lmvmh1gan",
+        "timestamp": 1792850739647
+      },
+      "installed_hashes": [
+        {
+          "path": "AGENTS.md",
+          "expected": "6db6ff5fc140809d23f41cd0094cd545b064cb80cadaae0540b6e0e22157cf20",
+          "actual": "6db6ff5fc140809d23f41cd0094cd545b064cb80cadaae0540b6e0e22157cf20"
+        },
+        {
+          "path": "agents/_AGENT_BASE.md",
+          "expected": "54d2b515c26397f1bcc07a120117e44d660d7a3f13fb5a17dd1168bec9aa20ef",
+          "actual": "54d2b515c26397f1bcc07a120117e44d660d7a3f13fb5a17dd1168bec9aa20ef"
+        },
+        {
+          "path": "agents/sf-analyst.md",
+          "expected": "d7d28f830bd7d206c6a73f5f6d6b3accc28a45ca9e83b54f02678decda7bcec1",
+          "actual": "d7d28f830bd7d206c6a73f5f6d6b3accc28a45ca9e83b54f02678decda7bcec1"
+        },
+        {
+          "path": "agents/sf-debugger.md",
+          "expected": "704a5a3a3e62807ba818afbe4ebc9f75a45c9750a4a6f916aa2655a302657967",
+          "actual": "704a5a3a3e62807ba818afbe4ebc9f75a45c9750a4a6f916aa2655a302657967"
+        },
+        {
+          "path": "agents/sf-design.md",
+          "expected": "d657bbfffb91c850d456c12b31b8e6cc22ab4d1c12ee6af2c78fb4c9ecf51fc0",
+          "actual": "d657bbfffb91c850d456c12b31b8e6cc22ab4d1c12ee6af2c78fb4c9ecf51fc0"
+        },
+        {
+          "path": "agents/sf-executor.md",
+          "expected": "c08f9c1a7f3bd28b1042558d7e6aea537d42aaf43bb06cc40f26821bbb7c154b",
+          "actual": "c08f9c1a7f3bd28b1042558d7e6aea537d42aaf43bb06cc40f26821bbb7c154b"
+        },
+        {
+          "path": "agents/sf-knowledge.md",
+          "expected": "45e8063201dca6458329195288ee7a218bc0c5a21ef3cd7b08f3a9f5bf2a7770",
+          "actual": "45e8063201dca6458329195288ee7a218bc0c5a21ef3cd7b08f3a9f5bf2a7770"
+        },
+        {
+          "path": "agents/sf-orchestrator.md",
+          "expected": "483d82306399bc80dd04a838b2a639acec38a36edb46748a6185c5d906339927",
+          "actual": "483d82306399bc80dd04a838b2a639acec38a36edb46748a6185c5d906339927"
+        },
+        {
+          "path": "agents/sf-requirements.md",
+          "expected": "760cfd3c2645122542774fc22a5b2abbf1c683a9f9e774c1259b35c515bc6a77",
+          "actual": "760cfd3c2645122542774fc22a5b2abbf1c683a9f9e774c1259b35c515bc6a77"
+        },
+        {
+          "path": "agents/sf-reviewer.md",
+          "expected": "fff375595ae59e18887f36c3cbf6d6647f3f5ba0cfc67262d6090c60b9798af1",
+          "actual": "fff375595ae59e18887f36c3cbf6d6647f3f5ba0cfc67262d6090c60b9798af1"
+        },
+        {
+          "path": "agents/sf-task-planner.md",
+          "expected": "bca7001985b5ea6b6e38681522d78cadc8bac3a9e3be102925b77aa7a8b2d93f",
+          "actual": "bca7001985b5ea6b6e38681522d78cadc8bac3a9e3be102925b77aa7a8b2d93f"
+        },
+        {
+          "path": "agents/sf-verifier.md",
+          "expected": "1a4d9211b292fcbf12e78858fae57b2a410da4e95fc8f01184a114d635813520",
+          "actual": "1a4d9211b292fcbf12e78858fae57b2a410da4e95fc8f01184a114d635813520"
+        },
+        {
+          "path": "plugins/sf_specforge.ts",
+          "expected": "fe4bf0ee410ebb993576e783a6102621dbdabe38d2d5882ed105097449c32b7c",
+          "actual": "fe4bf0ee410ebb993576e783a6102621dbdabe38d2d5882ed105097449c32b7c"
+        },
+        {
+          "path": "sf-user/bin/specforge.exe",
+          "expected": "791f41665965ea9b1aba24de57b31f62d696c5697021ad68ef37a47610be6b56",
+          "actual": "791f41665965ea9b1aba24de57b31f62d696c5697021ad68ef37a47610be6b56"
+        },
+        {
+          "path": "sf-user/bin/specforged.exe",
+          "expected": "9505900e7c260e69c474c3f4b633cf41956a37dae7e988d8a37c0d0f3d244690",
+          "actual": "9505900e7c260e69c474c3f4b633cf41956a37dae7e988d8a37c0d0f3d244690"
+        },
+        {
+          "path": "sf-user/lib/sf_plugin_client.ts",
+          "expected": "ded998751004fd597b920180a8cef11a78f5b72c21f6cc4c79f55875bf974c99",
+          "actual": "ded998751004fd597b920180a8cef11a78f5b72c21f6cc4c79f55875bf974c99"
+        },
+        {
+          "path": "sf-user/lib/sf_thin_plugin.ts",
+          "expected": "f7e392aaf2022cb0595c05dc262736f99b3ec3bcf1fc7b804145256f93c7c8c6",
+          "actual": "f7e392aaf2022cb0595c05dc262736f99b3ec3bcf1fc7b804145256f93c7c8c6"
+        },
+        {
+          "path": "sf-user/templates/dev-environment.md",
+          "expected": "3c47cb7ff3b948f7b345b4a82fc919049c1aab8fbb7ae21e57c3c2160277bca9",
+          "actual": "3c47cb7ff3b948f7b345b4a82fc919049c1aab8fbb7ae21e57c3c2160277bca9"
+        },
+        {
+          "path": "sf-user/templates/prod-environment.md",
+          "expected": "731c7120ccb2ad45d1a4a409b18dde9e0b0eea27a30532c3933fce6fe7a5c9b5",
+          "actual": "731c7120ccb2ad45d1a4a409b18dde9e0b0eea27a30532c3933fce6fe7a5c9b5"
+        },
+        {
+          "path": "sf-user/templates/project-rules/_BASE.md",
+          "expected": "632608a6032a060f88f5ba7246d0f13a7ed20f22bf4142e44f15e9c3f9fd241c",
+          "actual": "632608a6032a060f88f5ba7246d0f13a7ed20f22bf4142e44f15e9c3f9fd241c"
+        },
+        {
+          "path": "sf-user/templates/project-rules/databases/mongodb.md",
+          "expected": "74ede6f4630b55845082f117cbefc2eb2197e446773cc6066a3fa73b9ec55fc8",
+          "actual": "74ede6f4630b55845082f117cbefc2eb2197e446773cc6066a3fa73b9ec55fc8"
+        },
+        {
+          "path": "sf-user/templates/project-rules/databases/mysql.md",
+          "expected": "c7667ec7a2dee83d6c76940d6a4ef4909f81a457a25af2852e55c8c4ed4f8c16",
+          "actual": "c7667ec7a2dee83d6c76940d6a4ef4909f81a457a25af2852e55c8c4ed4f8c16"
+        },
+        {
+          "path": "sf-user/templates/project-rules/databases/postgresql.md",
+          "expected": "ffb74bd2b0871c2a3a5876b45bf81b9656d0b47cd0243ef77703b0486711746d",
+          "actual": "ffb74bd2b0871c2a3a5876b45bf81b9656d0b47cd0243ef77703b0486711746d"
+        },
+        {
+          "path": "sf-user/templates/project-rules/databases/redis.md",
+          "expected": "a48b4f7267f7ec554085fa738ec9da3250340981ec7c31228878eb35082e9bd4",
+          "actual": "a48b4f7267f7ec554085fa738ec9da3250340981ec7c31228878eb35082e9bd4"
+        },
+        {
+          "path": "sf-user/templates/project-rules/databases/sqlite.md",
+          "expected": "647e756c9fb46d47c3e692f8648cc3d2af852f63de219650d0a5adcb20ee88b2",
+          "actual": "647e756c9fb46d47c3e692f8648cc3d2af852f63de219650d0a5adcb20ee88b2"
+        },
+        {
+          "path": "sf-user/templates/project-rules/frameworks/fastapi.md",
+          "expected": "d1236dd749688894ebf2e30ea757118884a21f7f7efaeca8545e90b2c72735d6",
+          "actual": "d1236dd749688894ebf2e30ea757118884a21f7f7efaeca8545e90b2c72735d6"
+        },
+        {
+          "path": "sf-user/templates/project-rules/frameworks/react.md",
+          "expected": "0beaeda3e7bb6e376eeacc8c22153c11c4ae159fcfa2441f04725e725aa2582a",
+          "actual": "0beaeda3e7bb6e376eeacc8c22153c11c4ae159fcfa2441f04725e725aa2582a"
+        },
+        {
+          "path": "sf-user/templates/project-rules/frameworks/spring-boot.md",
+          "expected": "8897ec47ecf150160aa39ed19f96f74758e78ceb230429e08e048029e291b02c",
+          "actual": "8897ec47ecf150160aa39ed19f96f74758e78ceb230429e08e048029e291b02c"
+        },
+        {
+          "path": "sf-user/templates/project-rules/frameworks/vue.md",
+          "expected": "d8102a574dca286e9eb9dc7a96e5f615f098ba779bab0baa123dec422fe46ea4",
+          "actual": "d8102a574dca286e9eb9dc7a96e5f615f098ba779bab0baa123dec422fe46ea4"
+        },
+        {
+          "path": "sf-user/templates/project-rules/infra/ci-github-actions.md",
+          "expected": "8f9117ab882051f2ed7dc45e42698bf8b04565c79671bc60f2fdb9de85fbeff8",
+          "actual": "8f9117ab882051f2ed7dc45e42698bf8b04565c79671bc60f2fdb9de85fbeff8"
+        },
+        {
+          "path": "sf-user/templates/project-rules/infra/docker.md",
+          "expected": "033146181d3daf77a3044a198af7215934a35da4c52311ba35a656486083dc88",
+          "actual": "033146181d3daf77a3044a198af7215934a35da4c52311ba35a656486083dc88"
+        },
+        {
+          "path": "sf-user/templates/project-rules/languages/go.md",
+          "expected": "dce2d6a53943ba6df9e866c87fb0c86d141387d0484f62b7831edf550a8c3bed",
+          "actual": "dce2d6a53943ba6df9e866c87fb0c86d141387d0484f62b7831edf550a8c3bed"
+        },
+        {
+          "path": "sf-user/templates/project-rules/languages/java.md",
+          "expected": "02fdbfa4ca01d9e5220213b56aebeae23afe086c3d22b86c3a9d9dffc2a3d88e",
+          "actual": "02fdbfa4ca01d9e5220213b56aebeae23afe086c3d22b86c3a9d9dffc2a3d88e"
+        },
+        {
+          "path": "sf-user/templates/project-rules/languages/nodejs.md",
+          "expected": "984d0ad28863b12d6f81313e09d05afe54844b7099b833eee783bb8e0ee78dda",
+          "actual": "984d0ad28863b12d6f81313e09d05afe54844b7099b833eee783bb8e0ee78dda"
+        },
+        {
+          "path": "sf-user/templates/project-rules/languages/python.md",
+          "expected": "bf601ff0b7ccc41a707746345fa90539bff37539983d36c94d9a29769afa1c3e",
+          "actual": "bf601ff0b7ccc41a707746345fa90539bff37539983d36c94d9a29769afa1c3e"
+        },
+        {
+          "path": "sf-user/templates/README.md",
+          "expected": "d43c88523bb59c81aee8e924e33bf839e140889c4b882ed5ff6ab5d3809e3c64",
+          "actual": "d43c88523bb59c81aee8e924e33bf839e140889c4b882ed5ff6ab5d3809e3c64"
+        },
+        {
+          "path": "sf-user/workflows/builtin/feature_spec.json",
+          "expected": "9a174fdc58174f206387a1d9377e3a155b7e2aa8aa98d81c2785d67c5a87031f",
+          "actual": "9a174fdc58174f206387a1d9377e3a155b7e2aa8aa98d81c2785d67c5a87031f"
+        },
+        {
+          "path": "skills/sf-intake/SKILL.md",
+          "expected": "44d62765426054f3bdf484eec46a79cfb71c8d7789a35e8c1f05e52d866b307e",
+          "actual": "44d62765426054f3bdf484eec46a79cfb71c8d7789a35e8c1f05e52d866b307e"
+        },
+        {
+          "path": "skills/sf-workflow-feature-spec/SKILL.md",
+          "expected": "55f4682a34a6a13b2dcce2faf2ed913e68a087aa77b45fbc039401246330093b",
+          "actual": "55f4682a34a6a13b2dcce2faf2ed913e68a087aa77b45fbc039401246330093b"
+        },
+        {
+          "path": "skills/superpowers-brainstorming/SKILL.md",
+          "expected": "166e7a31c13385b19f4384c3c439805b21460efc98f27d6f9825d4648e4f7942",
+          "actual": "166e7a31c13385b19f4384c3c439805b21460efc98f27d6f9825d4648e4f7942"
+        },
+        {
+          "path": "skills/superpowers-code-review/SKILL.md",
+          "expected": "ccfd870c444096d04d0dd38eb3d766de72d1a0026a469e149b929ba34945b053",
+          "actual": "ccfd870c444096d04d0dd38eb3d766de72d1a0026a469e149b929ba34945b053"
+        },
+        {
+          "path": "skills/superpowers-knowledge-extraction/SKILL.md",
+          "expected": "55039b0daf3a61f9d5a0b3abba2e33b5987083eab601bd5fce2ec4700650d391",
+          "actual": "55039b0daf3a61f9d5a0b3abba2e33b5987083eab601bd5fce2ec4700650d391"
+        },
+        {
+          "path": "skills/superpowers-systematic-debugging/SKILL.md",
+          "expected": "a0b62931801d5b08acb60b042195805f430ef301f01deeb5f2865193a511f6a0",
+          "actual": "a0b62931801d5b08acb60b042195805f430ef301f01deeb5f2865193a511f6a0"
+        },
+        {
+          "path": "skills/superpowers-verification-before-completion/SKILL.md",
+          "expected": "779dee68bd905521b729f0aea43b926b1d6b7a5fe087da9133003e464c3de1a7",
+          "actual": "779dee68bd905521b729f0aea43b926b1d6b7a5fe087da9133003e464c3de1a7"
+        },
+        {
+          "path": "skills/superpowers-writing-plans/SKILL.md",
+          "expected": "a74cade726014388939c0295f173767862a4b28a54053aae044ec32859ab12bf",
+          "actual": "a74cade726014388939c0295f173767862a4b28a54053aae044ec32859ab12bf"
+        },
+        {
+          "path": "tools/lib/sf_artifact_write_core.ts",
+          "expected": "68e3bf8f836cb457c1fe2655b978c53b8b8ae8fd91e5773f5341020778f04b7c",
+          "actual": "68e3bf8f836cb457c1fe2655b978c53b8b8ae8fd91e5773f5341020778f04b7c"
+        },
+        {
+          "path": "tools/lib/sf_batch_verify_core.ts",
+          "expected": "afd1814ca5472274254f75226de078152a04bb97c44a82167da9de5888c8631e",
+          "actual": "afd1814ca5472274254f75226de078152a04bb97c44a82167da9de5888c8631e"
+        },
+        {
+          "path": "tools/lib/sf_design_gate_core.ts",
+          "expected": "bf2a58bcc9c1c349d3b955d81a3708c4c3ef9da3a32a4ae83178f9eb09672a41",
+          "actual": "bf2a58bcc9c1c349d3b955d81a3708c4c3ef9da3a32a4ae83178f9eb09672a41"
+        },
+        {
+          "path": "tools/lib/sf_doc_lint_core.ts",
+          "expected": "1c9b291307fcdc5173195733fd0770a5647c71290b76b34c610fe3d07e69b927",
+          "actual": "1c9b291307fcdc5173195733fd0770a5647c71290b76b34c610fe3d07e69b927"
+        },
+        {
+          "path": "tools/lib/sf_doctor_core.ts",
+          "expected": "6b63fa3217fb6a10d00f5822fe9917cafe2bc7677796e3a27205012058b38227",
+          "actual": "6b63fa3217fb6a10d00f5822fe9917cafe2bc7677796e3a27205012058b38227"
+        },
+        {
+          "path": "tools/lib/sf_ears_parser.ts",
+          "expected": "ad305bf66d5219d28bf891709a1d8152890f23884a1351a50326009009f14c71",
+          "actual": "ad305bf66d5219d28bf891709a1d8152890f23884a1351a50326009009f14c71"
+        },
+        {
+          "path": "tools/lib/sf_ears_types.ts",
+          "expected": "911b5814f97e91fad4d593c60e2e813bce0318371a52d3d2496f508e64a001d4",
+          "actual": "911b5814f97e91fad4d593c60e2e813bce0318371a52d3d2496f508e64a001d4"
+        },
+        {
+          "path": "tools/lib/sf_gate_types.ts",
+          "expected": "d7be1a8542047a21b4d990904c9fa73e7ce31e1f534ba5698b0e195f8c457d88",
+          "actual": "d7be1a8542047a21b4d990904c9fa73e7ce31e1f534ba5698b0e195f8c457d88"
+        },
+        {
+          "path": "tools/lib/sf_knowledge_base_core.ts",
+          "expected": "cbb5f8a8a1938be992779469622eaed122d7eba51777228b87c622e51f67c0c1",
+          "actual": "cbb5f8a8a1938be992779469622eaed122d7eba51777228b87c622e51f67c0c1"
+        },
+        {
+          "path": "tools/lib/sf_markdown_verification_parser.ts",
+          "expected": "35c143f8b5ceaf51cdd1bb855602ef3a4e94cd549b8766632f24c1b2031570b1",
+          "actual": "35c143f8b5ceaf51cdd1bb855602ef3a4e94cd549b8766632f24c1b2031570b1"
+        },
+        {
+          "path": "tools/lib/sf_requirements_gate_core.ts",
+          "expected": "a355228a774d5d0962c9bce889b8575a49b3006bd458ec86829bd96479fd3a68",
+          "actual": "a355228a774d5d0962c9bce889b8575a49b3006bd458ec86829bd96479fd3a68"
+        },
+        {
+          "path": "tools/lib/sf_safe_bash_core.ts",
+          "expected": "79dcc276ffe741b36c3339bd9beee1c16998b71c00b94ef404b77c71696c2950",
+          "actual": "79dcc276ffe741b36c3339bd9beee1c16998b71c00b94ef404b77c71696c2950"
+        },
+        {
+          "path": "tools/lib/sf_safe_bash_executor.ts",
+          "expected": "a32462eef8a42464633ce2061e98fee53fed123dfb69046bd61f18e17ea2cb00",
+          "actual": "a32462eef8a42464633ce2061e98fee53fed123dfb69046bd61f18e17ea2cb00"
+        },
+        {
+          "path": "tools/lib/sf_safe_bash_rules.ts",
+          "expected": "7193424e37496647df91e6e7860462ed5864ffc48ea52816c8052be0515e1d46",
+          "actual": "7193424e37496647df91e6e7860462ed5864ffc48ea52816c8052be0515e1d46"
+        },
+        {
+          "path": "tools/lib/sf_safe_bash_types.ts",
+          "expected": "cd483113079a7d2d79b60b0409e7c1b7486b5dbc3f099bc28a1577d192666d4e",
+          "actual": "cd483113079a7d2d79b60b0409e7c1b7486b5dbc3f099bc28a1577d192666d4e"
+        },
+        {
+          "path": "tools/lib/sf_tasks_gate_core.ts",
+          "expected": "02a7e821adf7c98881bfad81832c1d6d74e8af95ece1064dac17680abf05966c",
+          "actual": "02a7e821adf7c98881bfad81832c1d6d74e8af95ece1064dac17680abf05966c"
+        },
+        {
+          "path": "tools/lib/sf_trace_matrix_core.ts",
+          "expected": "616ddd348bc371fb2ed61cdf731778b11d9f3c1f084018901ae462fbeecdef23",
+          "actual": "616ddd348bc371fb2ed61cdf731778b11d9f3c1f084018901ae462fbeecdef23"
+        },
+        {
+          "path": "tools/lib/sf_verification_gate_core.ts",
+          "expected": "2a6d435bc6d7097951487448d34303b5b0fd8e59da127cf6f9311bec8cfea9d5",
+          "actual": "2a6d435bc6d7097951487448d34303b5b0fd8e59da127cf6f9311bec8cfea9d5"
+        },
+        {
+          "path": "tools/lib/sf_verification_types.ts",
+          "expected": "93e81632fcd7867eb2b5a987d9341b18d31be1a7ab7da5431c8c898f8edca9cc",
+          "actual": "93e81632fcd7867eb2b5a987d9341b18d31be1a7ab7da5431c8c898f8edca9cc"
+        },
+        {
+          "path": "tools/lib/sf_verifier_execution_core.ts",
+          "expected": "e4524e455d5aa8583437cc2c8073bdc3d940eb9c0670c7b8dae13db0c239a890",
+          "actual": "e4524e455d5aa8583437cc2c8073bdc3d940eb9c0670c7b8dae13db0c239a890"
+        },
+        {
+          "path": "tools/lib/sf-observability-config.ts",
+          "expected": "e4051e796895fd5375b3fcfab955b368e7b03e3bd7789684fc17cbb8fd4d10c7",
+          "actual": "e4051e796895fd5375b3fcfab955b368e7b03e3bd7789684fc17cbb8fd4d10c7"
+        },
+        {
+          "path": "tools/lib/sf-observability.ts",
+          "expected": "82a23d21cacf440c93a59e73a088eae24c7043ef86c73efc4ba1051b17a8a658",
+          "actual": "82a23d21cacf440c93a59e73a088eae24c7043ef86c73efc4ba1051b17a8a658"
+        },
+        {
+          "path": "tools/lib/thin-client.ts",
+          "expected": "98b024bc4f13468fbd2b384495f56b75b8b7b4f2264ca521fb1d5b5d556f207d",
+          "actual": "98b024bc4f13468fbd2b384495f56b75b8b7b4f2264ca521fb1d5b5d556f207d"
+        },
+        {
+          "path": "tools/lib/utils.ts",
+          "expected": "962672a8be6806752c24307254baea9a4920ce32ee28344bb84b4ce9dbed6321",
+          "actual": "962672a8be6806752c24307254baea9a4920ce32ee28344bb84b4ce9dbed6321"
+        },
+        {
+          "path": "tools/sf_artifact_write.ts",
+          "expected": "d73c1e6661c9e36f85027a302ded410ca8006df6c3a73dac55cbe4087be69377",
+          "actual": "d73c1e6661c9e36f85027a302ded410ca8006df6c3a73dac55cbe4087be69377"
+        },
+        {
+          "path": "tools/sf_batch_verify.ts",
+          "expected": "0186413da15e23ad804c4abee2fa89ee9e7336aa21940c08f83ba63536ade204",
+          "actual": "0186413da15e23ad804c4abee2fa89ee9e7336aa21940c08f83ba63536ade204"
+        },
+        {
+          "path": "tools/sf_changed_files_audit.ts",
+          "expected": "8f947807651094786e0a772c77a6fe48805fe705122d5a15421036a813926371",
+          "actual": "8f947807651094786e0a772c77a6fe48805fe705122d5a15421036a813926371"
+        },
+        {
+          "path": "tools/sf_close_gate.ts",
+          "expected": "851ae6a9cb1fd840896673f4c7d52eda490f354be556d05749b8dd81608e8e59",
+          "actual": "851ae6a9cb1fd840896673f4c7d52eda490f354be556d05749b8dd81608e8e59"
+        },
+        {
+          "path": "tools/sf_code_permission.ts",
+          "expected": "bb77e2a0163ac2730caf53c40904f112ec719c6db72fc38b15d70abd0d56d440",
+          "actual": "bb77e2a0163ac2730caf53c40904f112ec719c6db72fc38b15d70abd0d56d440"
+        },
+        {
+          "path": "tools/sf_contract_register.ts",
+          "expected": "24022e877f5a08fb1d3be3505981780cca2f7275be8e5375aed560a8ed6a9313",
+          "actual": "24022e877f5a08fb1d3be3505981780cca2f7275be8e5375aed560a8ed6a9313"
+        },
+        {
+          "path": "tools/sf_design_gate.ts",
+          "expected": "e0e845856c9954ccd232453928d409b2d16fcf949f581a5787c0e64169fe97af",
+          "actual": "e0e845856c9954ccd232453928d409b2d16fcf949f581a5787c0e64169fe97af"
+        },
+        {
+          "path": "tools/sf_doc_lint.ts",
+          "expected": "f2330e63b983a53010c738f7ae7ef666ebc1b62752d16a79a06e3c83936331b8",
+          "actual": "f2330e63b983a53010c738f7ae7ef666ebc1b62752d16a79a06e3c83936331b8"
+        },
+        {
+          "path": "tools/sf_doctor.ts",
+          "expected": "358ed45fbb58baa8b285c8f18ef937f100b9123ca59dae54c9b24aaa9978e8fb",
+          "actual": "358ed45fbb58baa8b285c8f18ef937f100b9123ca59dae54c9b24aaa9978e8fb"
+        },
+        {
+          "path": "tools/sf_gate_run.ts",
+          "expected": "d99e06e9d59f72e2128ab147612b828874baf1804fda3c1b9d3bc8a7c713080c",
+          "actual": "d99e06e9d59f72e2128ab147612b828874baf1804fda3c1b9d3bc8a7c713080c"
+        },
+        {
+          "path": "tools/sf_git_agent_lock_acquire.ts",
+          "expected": "04533568832e2de1c12cfedfdc0d509782a05f2fb5917cc68516a791563bae60",
+          "actual": "04533568832e2de1c12cfedfdc0d509782a05f2fb5917cc68516a791563bae60"
+        },
+        {
+          "path": "tools/sf_git_agent_lock_release.ts",
+          "expected": "5551e5156f75ebe38c6cc8c0c6f6c3432722bb9611584a68b54f54234e283a85",
+          "actual": "5551e5156f75ebe38c6cc8c0c6f6c3432722bb9611584a68b54f54234e283a85"
+        },
+        {
+          "path": "tools/sf_git_auth_profile_config.ts",
+          "expected": "29cecf1cb8fcec3186fd0b0c777de231bf86ff32856bbf120432a4b183146ea4",
+          "actual": "29cecf1cb8fcec3186fd0b0c777de231bf86ff32856bbf120432a4b183146ea4"
+        },
+        {
+          "path": "tools/sf_git_branch_create.ts",
+          "expected": "a961988a2f8f79878f613af6db20b1c612083a75c1b860bb3f4ed08825f77e2c",
+          "actual": "a961988a2f8f79878f613af6db20b1c612083a75c1b860bb3f4ed08825f77e2c"
+        },
+        {
+          "path": "tools/sf_git_branch_plan.ts",
+          "expected": "c894564396ffcb34cb3a1a45a9c9530469e949cd7b04e9ba3f50866c1b91bd1d",
+          "actual": "c894564396ffcb34cb3a1a45a9c9530469e949cd7b04e9ba3f50866c1b91bd1d"
+        },
+        {
+          "path": "tools/sf_git_checkpoint_commit.ts",
+          "expected": "3501e067ce34aa94c498d91e8f160d91bd233d4644d83ed08b4192a29cab366f",
+          "actual": "3501e067ce34aa94c498d91e8f160d91bd233d4644d83ed08b4192a29cab366f"
+        },
+        {
+          "path": "tools/sf_git_ignore_analyze.ts",
+          "expected": "bdf635e7c95e08f7473740902a67fc3b547f87718d091966ca4c7a2824748ea4",
+          "actual": "bdf635e7c95e08f7473740902a67fc3b547f87718d091966ca4c7a2824748ea4"
+        },
+        {
+          "path": "tools/sf_git_ignore_decision_record.ts",
+          "expected": "a54b93dbce0a8b35ba7abc6087bbaaba0a969aa6aac1a526b524846c3cc16e64",
+          "actual": "a54b93dbce0a8b35ba7abc6087bbaaba0a969aa6aac1a526b524846c3cc16e64"
+        },
+        {
+          "path": "tools/sf_git_merge_plan.ts",
+          "expected": "67274244eb39bc8f325a214862fa289cbf5b2d5f0e3790e4a5ca28c07cd30a40",
+          "actual": "67274244eb39bc8f325a214862fa289cbf5b2d5f0e3790e4a5ca28c07cd30a40"
+        },
+        {
+          "path": "tools/sf_git_merge_run.ts",
+          "expected": "ea21428c7cf65d5e51cbc7805776af4a1edd6fe848fe53fe56fa7bebc8fcdf8e",
+          "actual": "ea21428c7cf65d5e51cbc7805776af4a1edd6fe848fe53fe56fa7bebc8fcdf8e"
+        },
+        {
+          "path": "tools/sf_git_post_merge_verify.ts",
+          "expected": "149c12161ee858b9a95ec4bc0b372a6953b8af1ae209edf4d628c150a46a9700",
+          "actual": "149c12161ee858b9a95ec4bc0b372a6953b8af1ae209edf4d628c150a46a9700"
+        },
+        {
+          "path": "tools/sf_git_preflight.ts",
+          "expected": "5c37f2edc4f8a4f82b0c64e47b2a210820534f1d8d614bb001a78d5f53c7f074",
+          "actual": "5c37f2edc4f8a4f82b0c64e47b2a210820534f1d8d614bb001a78d5f53c7f074"
+        },
+        {
+          "path": "tools/sf_git_push_branch.ts",
+          "expected": "197d5042e10b3d8ae2a0a7552ad79e7710ea0ff7cb6c619d8b01ecb7ecab5727",
+          "actual": "197d5042e10b3d8ae2a0a7552ad79e7710ea0ff7cb6c619d8b01ecb7ecab5727"
+        },
+        {
+          "path": "tools/sf_git_release_tag_create.ts",
+          "expected": "9481f81a6b596d530d5dc5b6ac7aeddf8461f64b94a1183fa8bd3051cfcf7cd4",
+          "actual": "9481f81a6b596d530d5dc5b6ac7aeddf8461f64b94a1183fa8bd3051cfcf7cd4"
+        },
+        {
+          "path": "tools/sf_git_release_tag_plan.ts",
+          "expected": "e9cca8c9ca1539e939152f7f3e833a9d828d19aff62f3cad9786db7dd76d8670",
+          "actual": "e9cca8c9ca1539e939152f7f3e833a9d828d19aff62f3cad9786db7dd76d8670"
+        },
+        {
+          "path": "tools/sf_git_remote_config.ts",
+          "expected": "92dab204f0123baeaec6fabe55406d1bddbefae2374ebb6aad9cb2249f950e6d",
+          "actual": "92dab204f0123baeaec6fabe55406d1bddbefae2374ebb6aad9cb2249f950e6d"
+        },
+        {
+          "path": "tools/sf_git_remote_probe.ts",
+          "expected": "0fc53817e7a73fa7c66ef5a67449e4902091f32e6e80021ec072056d6b53494b",
+          "actual": "0fc53817e7a73fa7c66ef5a67449e4902091f32e6e80021ec072056d6b53494b"
+        },
+        {
+          "path": "tools/sf_handoff.ts",
+          "expected": "ed0006ffabfe6c924c770ec64c40033519ff32ae839d1caf1bdf10b5ddb3ed75",
+          "actual": "ed0006ffabfe6c924c770ec64c40033519ff32ae839d1caf1bdf10b5ddb3ed75"
+        },
+        {
+          "path": "tools/sf_hard_stop_resolve.ts",
+          "expected": "0eea48ff8f411ea1a7aa68c5d7ea1793c6a9fd8b3f229ac88ba1791e7a335bf2",
+          "actual": "0eea48ff8f411ea1a7aa68c5d7ea1793c6a9fd8b3f229ac88ba1791e7a335bf2"
+        },
+        {
+          "path": "tools/sf_knowledge_base.ts",
+          "expected": "2e087757a7c875ab44f1c9fdcff2bfc512e4a63216de12c68c58fbb68bed0d9b",
+          "actual": "2e087757a7c875ab44f1c9fdcff2bfc512e4a63216de12c68c58fbb68bed0d9b"
+        },
+        {
+          "path": "tools/sf_merge_run.ts",
+          "expected": "ce6e160fdf83df336bf0d48aa9aee9ba7c94db86aac0056d3fc814f68a75f6f2",
+          "actual": "ce6e160fdf83df336bf0d48aa9aee9ba7c94db86aac0056d3fc814f68a75f6f2"
+        },
+        {
+          "path": "tools/sf_project_config.ts",
+          "expected": "b63adf87dee13cccf7fc509070d723f7e6dc6871cb7fc429f67780359fb5e26d",
+          "actual": "b63adf87dee13cccf7fc509070d723f7e6dc6871cb7fc429f67780359fb5e26d"
+        },
+        {
+          "path": "tools/sf_project_init.ts",
+          "expected": "e6787f672a7a62a39ad9168861fb1b490fd148daa1e7c09298df9d8bb6fbc3e8",
+          "actual": "e6787f672a7a62a39ad9168861fb1b490fd148daa1e7c09298df9d8bb6fbc3e8"
+        },
+        {
+          "path": "tools/sf_requirements_gate.ts",
+          "expected": "bb63ca970669d24430253901618815c92b9c2aa7f5cf625d21f986de7a306373",
+          "actual": "bb63ca970669d24430253901618815c92b9c2aa7f5cf625d21f986de7a306373"
+        },
+        {
+          "path": "tools/sf_safe_bash.ts",
+          "expected": "c1b33ea1677cb53bcb4acb984caecbc219d213031f6bb3efba80b2f5b6a488d2",
+          "actual": "c1b33ea1677cb53bcb4acb984caecbc219d213031f6bb3efba80b2f5b6a488d2"
+        },
+        {
+          "path": "tools/sf_semantic_closure_run.ts",
+          "expected": "e56e3900d02cd3a713d4a0dbfac680c0f261bbc79d8c51bbf58e47a6e8dbfa98",
+          "actual": "e56e3900d02cd3a713d4a0dbfac680c0f261bbc79d8c51bbf58e47a6e8dbfa98"
+        },
+        {
+          "path": "tools/sf_state_read.ts",
+          "expected": "e3e7229724dc16d389e30378e3a570529f7a242b68a04dc925f4944779e68281",
+          "actual": "e3e7229724dc16d389e30378e3a570529f7a242b68a04dc925f4944779e68281"
+        },
+        {
+          "path": "tools/sf_state_transition.ts",
+          "expected": "fb44899116e5c9faa4299168e1ed97c066ced7d7f50b89a2f778bc123d7599ae",
+          "actual": "fb44899116e5c9faa4299168e1ed97c066ced7d7f50b89a2f778bc123d7599ae"
+        },
+        {
+          "path": "tools/sf_tasks_gate.ts",
+          "expected": "25790041c27bc9c848277eda4499248b32319917a5661995c89af1f1ec91ae0b",
+          "actual": "25790041c27bc9c848277eda4499248b32319917a5661995c89af1f1ec91ae0b"
+        },
+        {
+          "path": "tools/sf_trace_matrix.ts",
+          "expected": "fa67739bf47b7232195047ba022efe4aa7b925de7f384cd802cd03b528f8188a",
+          "actual": "fa67739bf47b7232195047ba022efe4aa7b925de7f384cd802cd03b528f8188a"
+        },
+        {
+          "path": "tools/sf_user_decision_record.ts",
+          "expected": "6d810d0315420192076ec365516c2fcdce4ff00cd62033f17ba017fb912ae9b1",
+          "actual": "6d810d0315420192076ec365516c2fcdce4ff00cd62033f17ba017fb912ae9b1"
+        },
+        {
+          "path": "tools/sf_verification_gate.ts",
+          "expected": "073f45d6562a4e54495964c47cc09e42d7528a6938a53d66fd1df6660c67dc38",
+          "actual": "073f45d6562a4e54495964c47cc09e42d7528a6938a53d66fd1df6660c67dc38"
+        },
+        {
+          "path": "tools/sf_work_item_create.ts",
+          "expected": "da78786bcb106d9799d3287b244f4543c395ecf3a183a5ccd4cacae20083a207",
+          "actual": "da78786bcb106d9799d3287b244f4543c395ecf3a183a5ccd4cacae20083a207"
+        }
+      ]
+    },
+    {
+      "started": "2026-10-24T14:05:39.855Z",
+      "finished": "2026-10-24T14:05:39.893Z",
+      "tool": "sf_state_read",
+      "args": {
+        "work_item_id": "all"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"rebuilt_from_events\":true,\"work_items\":{\"WI-0001\":{\"work_item_id\":\"WI-0001\",\"workflow_type\":\"feature_spec\",\"current_state\":\"closed\",\"created_at\":1792208444157,\"updated_at\":1792346105207},\"WI-0002\":{\"work_item_id\":\"WI-0002\",\"workflow_type\":\"feature_spec\",\"current_state\":\"candidate_prepared\",\"created_at\":1792837550878,\"updated_at\":1792850724021}}},\"requestId\":\"ihqcvom1mwemvmh1ghh\",\"timestamp\":1792850739893}"
+    },
+    {
+      "started": "2026-10-24T14:05:39.915Z",
+      "finished": "2026-10-24T14:05:39.949Z",
+      "tool": "sf_gate_run",
+      "args": {
+        "work_item_id": "WI-0002",
+        "candidate_phase": "full"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"CANDIDATE_SEAL_INVALID: PROJECT_SPEC_PRECONDITION_STALE: candidate=sha256:0000000000000000000000000000000000000000000000000000000000000000; current=sha256:2da35a93649cb1cd6519a89c29316e83d9119fd963fcd1dd281e9eb7e0dfa7f8\",\"work_item_id\":\"WI-0002\"},\"requestId\":\"se13os1wn1mvmh1gj2\",\"timestamp\":1792850739950}"
+    },
+    {
+      "started": "2026-10-24T14:05:39.989Z",
+      "finished": "2026-10-24T14:05:40.807Z",
+      "tool": "sf_gate_run",
+      "args": {
+        "work_item_id": "WI-0002",
+        "candidate_phase": "full"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"work_item_id\":\"WI-0002\",\"workflow_path\":\"requirement_change_path\",\"workflow_type\":\"feature_spec\",\"workflow_type_source\":\"D:\\\\code\\\\SpecForge\\\\.tmp\\\\candidate-seal-repair-20261024\\\\installed-fixture\\\\.specforge\\\\work-items\\\\WI-0002\\\\trigger_result.json\",\"candidate_phase\":\"full\",\"candidate_phase_source\":\"artifact_inference\",\"workflow_path_source\":\".specforge/work-items/WI-0002/trigger_result.json\",\"authoritative_state_before_gate\":\"candidate_prepared\",\"requested_gate_ids\":[],\"requested_gate_type\":null,\"normalized_gate_ids\":[\"entry_gate\",\"workflow_selection_gate\",\"schema_gate\",\"required_files_gate\",\"candidate_manifest_gate\",\"path_policy_gate\",\"spec_consistency_gate\",\"contract_integrity_gate\",\"trace_gate\",\"workflow_specific_gate\"],\"aliases_used\":[\"candidate\"],\"summary_status\":\"failed\",\"summary_path\":\".specforge/work-items/WI-0002/gate_summary.md\",\"gate_attempt_id\":\"attempt-0003\",\"gate_attempt_path\":\".specforge/work-items/WI-0002/gate_attempts/attempt-0003\",\"gate_count\":10,\"passed\":7,\"failed\":3,\"state_auto_advance\":{\"attempted\":true,\"advanced\":true,\"from_state\":\"candidate_prepared\",\"to_state\":\"gates_failed\",\"workflow_type\":\"feature_spec\",\"evidence\":\"gate_runner auto-advance after required candidate gates coverage: summary_status=failed\",\"transition_steps\":[{\"attempted\":true,\"advanced\":true,\"from_state\":\"candidate_prepared\",\"to_state\":\"gates_running\",\"evidence\":\"gate_runner auto-advance after required candidate gates coverage: summary_status=failed | state authority recovery step candidate_prepared->gates_running\",\"transition_result\":{\"source\":\"StateManager\",\"workItemId\":\"WI-0002\",\"previousState\":\"candidate_prepared\",\"currentState\":\"gates_running\",\"timestamp\":\"2026-10-24T14:05:40.788Z\"}},{\"attempted\":true,\"advanced\":true,\"from_state\":\"gates_running\",\"to_state\":\"gates_failed\",\"evidence\":\"gate_runner auto-advance after required candidate gates coverage: summary_status=failed | state authority step gates_running->gates_failed\",\"transition_result\":{\"source\":\"StateManager\",\"workItemId\":\"WI-0002\",\"previousState\":\"gates_running\",\"currentState\":\"gates_failed\",\"timestamp\":\"2026-10-24T14:05:40.802Z\"}}]},\"reports\":[{\"gate_id\":\"entry_gate\",\"status\":\"passed\",\"blocking_issues\":0,\"warnings\":0},{\"gate_id\":\"workflow_selection_gate\",\"status\":\"passed\",\"blocking_issues\":0,\"warnings\":0},{\"gate_id\":\"schema_gate\",\"status\":\"passed\",\"blocking_issues\":0,\"warnings\":0},{\"gate_id\":\"required_files_gate\",\"status\":\"passed\",\"blocking_issues\":0,\"warnings\":0},{\"gate_id\":\"candidate_manifest_gate\",\"status\":\"passed\",\"blocking_issues\":0,\"warnings\":0},{\"gate_id\":\"path_policy_gate\",\"status\":\"passed\",\"blocking_issues\":0,\"warnings\":0},{\"gate_id\":\"spec_consistency_gate\",\"status\":\"failed\",\"blocking_issues\":1,\"warnings\":0},{\"gate_id\":\"contract_integrity_gate\",\"status\":\"failed\",\"blocking_issues\":1,\"warnings\":0},{\"gate_id\":\"trace_gate\",\"status\":\"failed\",\"blocking_issues\":1,\"warnings\":0},{\"gate_id\":\"workflow_specific_gate\",\"status\":\"passed\",\"blocking_issues\":0,\"warnings\":0}]},\"requestId\":\"yxjd6w9byumvmh1h6v\",\"timestamp\":1792850740807}"
+    },
+    {
+      "started": "2026-10-24T14:05:40.807Z",
+      "finished": "2026-10-24T14:05:40.836Z",
+      "tool": "sf_state_read",
+      "args": {
+        "work_item_id": "all"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"rebuilt_from_events\":true,\"work_items\":{\"WI-0001\":{\"work_item_id\":\"WI-0001\",\"workflow_type\":\"feature_spec\",\"current_state\":\"closed\",\"created_at\":1792208444157,\"updated_at\":1792346105207},\"WI-0002\":{\"work_item_id\":\"WI-0002\",\"workflow_type\":\"feature_spec\",\"current_state\":\"gates_failed\",\"created_at\":1792837550878,\"updated_at\":1792850740797}}},\"requestId\":\"gm19p63a1rmvmh1h7o\",\"timestamp\":1792850740836}"
+    },
+    {
+      "started": "2026-10-24T14:05:40.853Z",
+      "finished": "2026-10-24T14:05:40.881Z",
+      "tool": "sf_gate_run",
+      "args": {
+        "work_item_id": "WI-0002",
+        "reconcile_attempt_id": "attempt-0003"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"CANDIDATE_SEAL_REQUIRED: current=gates_failed; use the formal sf_state_transition candidate_preparing -> candidate_prepared owner before Candidate gates. Recover gates_failed to candidate_preparing and seal again; do not hand-write manifest or hashes.\",\"work_item_id\":\"WI-0002\"},\"requestId\":\"b3ukjl4sb6cmvmh1h8x\",\"timestamp\":1792850740881}"
+    },
+    {
+      "started": "2026-10-24T14:05:40.901Z",
+      "finished": "2026-10-24T14:05:40.936Z",
+      "tool": "sf_gate_run",
+      "args": {
+        "work_item_id": "WI-0002",
+        "candidate_phase": "full"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"CANDIDATE_SEAL_REQUIRED: current=gates_failed; use the formal sf_state_transition candidate_preparing -> candidate_prepared owner before Candidate gates. Recover gates_failed to candidate_preparing and seal again; do not hand-write manifest or hashes.\",\"work_item_id\":\"WI-0002\"},\"requestId\":\"k27p1mg0bymvmh1hag\",\"timestamp\":1792850740936}"
+    },
+    {
+      "started": "2026-10-24T14:05:40.946Z",
+      "finished": "2026-10-24T14:05:40.999Z",
+      "tool": "sf_state_transition",
+      "args": {
+        "work_item_id": "WI-0002",
+        "from_state": "gates_failed",
+        "to_state": "candidate_preparing",
+        "evidence": "isolated actual restart recovery through formal owner"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"work_item_id\":\"WI-0002\",\"workflow_type\":\"feature_spec\",\"workflow_path\":\"requirement_change_path\",\"state_authority\":\"StateManager\",\"workflow_engine_transition_full_used\":false,\"implementation_baseline_materialization\":{\"path\":\"D:\\\\code\\\\SpecForge\\\\.tmp\\\\candidate-seal-repair-20261024\\\\installed-fixture\\\\.specforge\\\\work-items\\\\WI-0002\\\\implementation_baseline.json\",\"snapshot_id\":\"sha256:ea0d3796eb9488dbc86462c62abe9f07631d92224177474dfd99a4bdd8ef1f17\",\"planned_code_paths\":[\"app.js\",\"index.html\",\"styles.css\",\"test/app.test.js\"],\"current_file_count\":4,\"all_planned_paths_missing\":false},\"transition_result\":{\"source\":\"StateManager\",\"workItemId\":\"WI-0002\",\"previousState\":\"gates_failed\",\"currentState\":\"candidate_preparing\",\"timestamp\":\"2026-10-24T14:05:40.997Z\"}},\"requestId\":\"3le1i66batomvmh1hc8\",\"timestamp\":1792850741000}"
+    },
+    {
+      "started": "2026-10-24T14:05:40.999Z",
+      "finished": "2026-10-24T14:05:41.063Z",
+      "tool": "sf_state_transition",
+      "args": {
+        "work_item_id": "WI-0002",
+        "from_state": "candidate_preparing",
+        "to_state": "candidate_prepared",
+        "evidence": "isolated actual restart recovery through formal owner"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"work_item_id\":\"WI-0002\",\"workflow_type\":\"feature_spec\",\"workflow_path\":\"requirement_change_path\",\"state_authority\":\"StateManager\",\"workflow_engine_transition_full_used\":false,\"candidate_manifest_materialization\":{\"manifest_path\":\"D:\\\\code\\\\SpecForge\\\\.tmp\\\\candidate-seal-repair-20261024\\\\installed-fixture\\\\.specforge\\\\work-items\\\\WI-0002\\\\candidate_manifest.json\",\"entry_count\":5,\"required_candidate_types\":[\"data_model\",\"requirements\",\"design\",\"module_contract\"],\"ignored_candidate_paths\":[],\"repair_plan_binding_updated\":false},\"transition_result\":{\"source\":\"StateManager\",\"workItemId\":\"WI-0002\",\"previousState\":\"candidate_preparing\",\"currentState\":\"candidate_prepared\",\"timestamp\":\"2026-10-24T14:05:41.061Z\"}},\"requestId\":\"qkvefusealmvmh1hdz\",\"timestamp\":1792850741063}"
+    },
+    {
+      "started": "2026-10-24T14:05:41.063Z",
+      "finished": "2026-10-24T14:05:41.081Z",
+      "tool": "sf_state_read",
+      "args": {
+        "work_item_id": "all"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"rebuilt_from_events\":true,\"work_items\":{\"WI-0001\":{\"work_item_id\":\"WI-0001\",\"workflow_type\":\"feature_spec\",\"current_state\":\"closed\",\"created_at\":1792208444157,\"updated_at\":1792346105207},\"WI-0002\":{\"work_item_id\":\"WI-0002\",\"workflow_type\":\"feature_spec\",\"current_state\":\"candidate_prepared\",\"created_at\":1792837550878,\"updated_at\":1792850741052}}},\"requestId\":\"b6d01rcg4nomvmh1heh\",\"timestamp\":1792850741081}"
+    },
+    {
+      "started": "2026-10-24T14:05:41.081Z",
+      "finished": "2026-10-24T14:05:41.108Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "node -e \"require('fs').writeFileSync('MUST_NOT_BE_WRITTEN.txt','BAD')\""
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\\nViolations: SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor\",\"hard_stop\":false,\"policy_violation\":true,\"retry_allowed\":false,\"blocked_command\":\"node -e \\\"require('fs').writeFileSync('MUST_NOT_BE_WRITTEN.txt','BAD')\\\"\",\"write_guard_targets\":[]},\"requestId\":\"t1yy3rfbticmvmh1hf9\",\"timestamp\":1792850741109}"
+    },
+    {
+      "started": "2026-10-24T14:05:41.108Z",
+      "finished": "2026-10-24T14:05:41.138Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "Get-FileHash app.js"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"exitCode\":0,\"stdout\":\"52bb946e8a0015c6f0bb2e062d9424111865bbe9789bcca387faddd8361e897e\\n\",\"stderr\":\"\",\"durationMs\":8,\"command\":\"Get-FileHash app.js\",\"cwd\":\"D:\\\\code\\\\SpecForge\\\\.tmp\\\\candidate-seal-repair-20261024\\\\installed-fixture\",\"shell\":null,\"rejected\":false,\"timeout\":false,\"hint\":\"Executed internally; no shell or child process started.\"},\"requestId\":\"lkhmcdhk4wjmvmh1hg2\",\"timestamp\":1792850741138}"
+    },
+    {
+      "started": "2026-10-24T14:05:41.138Z",
+      "finished": "2026-10-24T14:05:41.159Z",
+      "tool": "sf_state_read",
+      "args": {
+        "work_item_id": "all"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"rebuilt_from_events\":true,\"work_items\":{\"WI-0001\":{\"work_item_id\":\"WI-0001\",\"workflow_type\":\"feature_spec\",\"current_state\":\"closed\",\"created_at\":1792208444157,\"updated_at\":1792346105207},\"WI-0002\":{\"work_item_id\":\"WI-0002\",\"workflow_type\":\"feature_spec\",\"current_state\":\"candidate_prepared\",\"created_at\":1792837550878,\"updated_at\":1792850741052}}},\"requestId\":\"oyin163zzgimvmh1hgo\",\"timestamp\":1792850741160}"
+    },
+    {
+      "verdict": "PASS",
+      "state": "candidate_prepared"
+    }
+  ]
+}

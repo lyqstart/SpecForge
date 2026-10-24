@@ -1,0 +1,84 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0002",
+  "gate_id": "required_files_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "passed",
+  "input_files": [
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\work_item.json",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\intake.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\change_classification.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\impact_analysis.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\trigger_result.json",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidate_manifest.json",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\project\\modules\\CORE\\design.candidate.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\project\\modules\\CORE\\requirements.candidate.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\tasks.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+  ],
+  "checks": [
+    {
+      "check_id": "file_work_item",
+      "description": "Required file exists: work_item.json",
+      "passed": true
+    },
+    {
+      "check_id": "file_intake",
+      "description": "Required file exists: intake.md",
+      "passed": true
+    },
+    {
+      "check_id": "file_change_classification",
+      "description": "Required file exists: change_classification.md",
+      "passed": true
+    },
+    {
+      "check_id": "file_impact_analysis",
+      "description": "Required file exists: impact_analysis.md",
+      "passed": true
+    },
+    {
+      "check_id": "file_trigger_result",
+      "description": "Required file exists: trigger_result.json",
+      "passed": true
+    },
+    {
+      "check_id": "file_candidate_manifest",
+      "description": "Required file exists: candidate_manifest.json",
+      "passed": true
+    },
+    {
+      "check_id": "candidate_design_exists",
+      "description": "Required design candidate exists for candidate_phase=full",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\project\\modules\\CORE\\design.candidate.md"
+    },
+    {
+      "check_id": "candidate_requirements_exists",
+      "description": "Required requirements candidate exists for candidate_phase=full",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\project\\modules\\CORE\\requirements.candidate.md"
+    },
+    {
+      "check_id": "candidate_tasks_exists",
+      "description": "Required tasks candidate exists for candidate_phase=full",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\tasks.md"
+    },
+    {
+      "check_id": "candidate_trace_delta_exists",
+      "description": "Required trace_delta candidate exists for candidate_phase=full",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    }
+  ],
+  "blocking_issues": [],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-10-24T14:05:40.427Z",
+  "finished_at": "2026-10-24T14:05:40.427Z",
+  "runner": "gate_runner"
+}

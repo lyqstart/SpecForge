@@ -1,0 +1,11 @@
+{
+  "id": "013-source-recovery",
+  "cwd": "D:/code/SpecForge/.tmp/candidate-seal-worktree",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "D:/code/SpecForge/.tmp/candidate-seal-repair-20261024/source-recovery.ts"
+  ],
+  "purpose": "013-source-recovery",
+  "started": "2026-10-24T13:52:24.196Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged"
+}

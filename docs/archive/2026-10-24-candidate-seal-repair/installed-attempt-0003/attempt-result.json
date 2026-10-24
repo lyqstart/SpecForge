@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "attempt_id": "attempt-0003",
+  "work_item_id": "WI-0002",
+  "source": "gate_run",
+  "started_at": "2026-10-24T14:05:40.397Z",
+  "completed_at": "2026-10-24T14:05:40.771Z",
+  "requested_gate_ids": [
+    "entry_gate",
+    "workflow_selection_gate",
+    "schema_gate",
+    "required_files_gate",
+    "candidate_manifest_gate",
+    "path_policy_gate",
+    "spec_consistency_gate",
+    "contract_integrity_gate",
+    "trace_gate",
+    "workflow_specific_gate"
+  ],
+  "current_report_gate_ids": [
+    "entry_gate",
+    "workflow_selection_gate",
+    "schema_gate",
+    "required_files_gate",
+    "candidate_manifest_gate",
+    "path_policy_gate",
+    "spec_consistency_gate",
+    "contract_integrity_gate",
+    "trace_gate",
+    "workflow_specific_gate"
+  ],
+  "summary_report_gate_ids": [
+    "candidate_manifest_gate",
+    "contract_integrity_gate",
+    "entry_gate",
+    "path_policy_gate",
+    "required_files_gate",
+    "schema_gate",
+    "spec_consistency_gate",
+    "trace_gate",
+    "workflow_selection_gate",
+    "workflow_specific_gate"
+  ],
+  "summary_status": "failed",
+  "input_snapshot": "input-snapshot.json"
+}

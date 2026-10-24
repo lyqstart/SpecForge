@@ -1,0 +1,689 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0002",
+  "gate_id": "trace_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "failed",
+  "input_files": [
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\architecture.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\data_model.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\extension_registry.json",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\modules\\CORE\\contracts.json",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\modules\\CORE\\design.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\modules\\CORE\\module.json",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\modules\\CORE\\trace.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\spec_manifest.json",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+  ],
+  "checks": [
+    {
+      "check_id": "architecture_id_format",
+      "description": "Every declared Architecture ID uses ARCH-<DOMAIN>-<NNN>",
+      "passed": true,
+      "severity": "error",
+      "details": "invalid=none; valid=ARCH-CORE-001,ARCH-CORE-002,ARCH-CORE-003,ARCH-CORE-004,ARCH-CORE-005"
+    },
+    {
+      "check_id": "data_model_id_format",
+      "description": "Every declared Data ID uses DATA-<DOMAIN>-<NNN>, or the model is explicitly not applicable",
+      "passed": true,
+      "severity": "error",
+      "details": "invalid=none; valid=DATA-CORE-001,DATA-CORE-002,DATA-CORE-003,DATA-CORE-004,DATA-CORE-005,DATA-CORE-006,DATA-CORE-007,DATA-CORE-008,DATA-CORE-009; not_applicable=false"
+    },
+    {
+      "check_id": "module_design_id_format",
+      "description": "Every declared Module Design ID uses DD-<DOMAIN>-<NNN>",
+      "passed": false,
+      "severity": "error",
+      "details": "invalid=DD-001,DD-002,DD-003,DD-006,DD-007"
+    },
+    {
+      "check_id": "trace_data_DATA-CORE-001",
+      "description": "Data design DATA-CORE-001 is constrained by Project Architecture",
+      "passed": true
+    },
+    {
+      "check_id": "trace_data_DATA-CORE-002",
+      "description": "Data design DATA-CORE-002 is constrained by Project Architecture",
+      "passed": true
+    },
+    {
+      "check_id": "trace_data_DATA-CORE-003",
+      "description": "Data design DATA-CORE-003 is constrained by Project Architecture",
+      "passed": true
+    },
+    {
+      "check_id": "trace_data_DATA-CORE-004",
+      "description": "Data design DATA-CORE-004 is constrained by Project Architecture",
+      "passed": true
+    },
+    {
+      "check_id": "trace_data_DATA-CORE-005",
+      "description": "Data design DATA-CORE-005 is constrained by Project Architecture",
+      "passed": true
+    },
+    {
+      "check_id": "trace_data_DATA-CORE-006",
+      "description": "Data design DATA-CORE-006 is constrained by Project Architecture",
+      "passed": true
+    },
+    {
+      "check_id": "trace_data_DATA-CORE-007",
+      "description": "Data design DATA-CORE-007 is constrained by Project Architecture",
+      "passed": true
+    },
+    {
+      "check_id": "trace_data_DATA-CORE-008",
+      "description": "Data design DATA-CORE-008 is constrained by Project Architecture",
+      "passed": true
+    },
+    {
+      "check_id": "trace_data_DATA-CORE-009",
+      "description": "Data design DATA-CORE-009 is constrained by Project Architecture",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-001",
+      "description": "Module Design DD-CORE-001 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-002",
+      "description": "Module Design DD-CORE-002 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-003",
+      "description": "Module Design DD-CORE-003 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-004",
+      "description": "Module Design DD-CORE-004 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-005",
+      "description": "Module Design DD-CORE-005 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-006",
+      "description": "Module Design DD-CORE-006 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-007",
+      "description": "Module Design DD-CORE-007 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-008",
+      "description": "Module Design DD-CORE-008 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-009",
+      "description": "Module Design DD-CORE-009 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-010",
+      "description": "Module Design DD-CORE-010 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-011",
+      "description": "Module Design DD-CORE-011 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-012",
+      "description": "Module Design DD-CORE-012 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-013",
+      "description": "Module Design DD-CORE-013 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-014",
+      "description": "Module Design DD-CORE-014 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-015",
+      "description": "Module Design DD-CORE-015 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-016",
+      "description": "Module Design DD-CORE-016 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-017",
+      "description": "Module Design DD-CORE-017 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_MCONTRACT-CORE-001_c62300",
+      "description": "Contract MCONTRACT-CORE-001 formally enforces source DD-CORE-002",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_MCONTRACT-CORE-001_c3d9c0",
+      "description": "Contract MCONTRACT-CORE-001 formally enforces source DD-CORE-004",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_MCONTRACT-CORE-002_b74db0",
+      "description": "Contract MCONTRACT-CORE-002 formally enforces source DD-CORE-001",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_MCONTRACT-CORE-003_52bce2",
+      "description": "Contract MCONTRACT-CORE-003 formally enforces source DD-CORE-007",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_MCONTRACT-CORE-004_816fb0",
+      "description": "Contract MCONTRACT-CORE-004 formally enforces source DD-CORE-006",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_MCONTRACT-CORE-005_c62300",
+      "description": "Contract MCONTRACT-CORE-005 formally enforces source DD-CORE-002",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_MCONTRACT-CORE-005_816fb0",
+      "description": "Contract MCONTRACT-CORE-005 formally enforces source DD-CORE-006",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_MCONTRACT-CORE-006_664a7c",
+      "description": "Contract MCONTRACT-CORE-006 formally enforces source DD-CORE-003",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_MCONTRACT-CORE-006_b2436e",
+      "description": "Contract MCONTRACT-CORE-006 formally enforces source DD-CORE-005",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_MCONTRACT-CORE-006_1f3117",
+      "description": "Contract MCONTRACT-CORE-006 formally enforces source DD-CORE-011",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_MCONTRACT-CORE-006_6ee77b",
+      "description": "Contract MCONTRACT-CORE-006 formally enforces source DD-CORE-015",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_MCONTRACT-CORE-007_b4a0cc",
+      "description": "Contract MCONTRACT-CORE-007 formally enforces source DD-CORE-009",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_MCONTRACT-CORE-007_9ddc66",
+      "description": "Contract MCONTRACT-CORE-007 formally enforces source DD-CORE-012",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_MCONTRACT-CORE-007_cdcad3",
+      "description": "Contract MCONTRACT-CORE-007 formally enforces source DD-CORE-013",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_MCONTRACT-CORE-007_f0cdaf",
+      "description": "Contract MCONTRACT-CORE-007 formally enforces source DD-CORE-014",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_MCONTRACT-CORE-007_2d8edf",
+      "description": "Contract MCONTRACT-CORE-007 formally enforces source DD-CORE-016",
+      "passed": true
+    },
+    {
+      "check_id": "trace_relation_0",
+      "description": "DATA-CORE-001 constrained_by ARCH-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_1",
+      "description": "DATA-CORE-001 constrained_by ARCH-CORE-003 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_2",
+      "description": "DATA-CORE-002 constrained_by ARCH-CORE-003 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_3",
+      "description": "DATA-CORE-003 constrained_by ARCH-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_4",
+      "description": "DATA-CORE-003 constrained_by ARCH-CORE-004 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_5",
+      "description": "DATA-CORE-004 constrained_by ARCH-CORE-003 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_6",
+      "description": "DATA-CORE-005 constrained_by ARCH-CORE-005 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_7",
+      "description": "DATA-CORE-006 constrained_by ARCH-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_8",
+      "description": "DATA-CORE-007 constrained_by ARCH-CORE-003 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_9",
+      "description": "DATA-CORE-008 constrained_by ARCH-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_10",
+      "description": "DATA-CORE-009 constrained_by ARCH-CORE-003 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_11",
+      "description": "DD-CORE-001 constrained_by DATA-CORE-004 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_12",
+      "description": "DD-CORE-001 constrained_by DATA-CORE-006 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_13",
+      "description": "DD-CORE-001 constrained_by MCONTRACT-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_14",
+      "description": "DD-CORE-002 constrained_by ARCH-CORE-003 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_15",
+      "description": "DD-CORE-002 constrained_by DATA-CORE-001 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_16",
+      "description": "DD-CORE-002 constrained_by DATA-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_17",
+      "description": "DD-CORE-002 constrained_by MCONTRACT-CORE-001 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_18",
+      "description": "DD-CORE-003 constrained_by ARCH-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_19",
+      "description": "DD-CORE-003 constrained_by MCONTRACT-CORE-006 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_20",
+      "description": "DD-CORE-004 constrained_by ARCH-CORE-003 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_21",
+      "description": "DD-CORE-004 constrained_by DATA-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_22",
+      "description": "DD-CORE-004 constrained_by DATA-CORE-004 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_23",
+      "description": "DD-CORE-004 constrained_by DATA-CORE-007 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_24",
+      "description": "DD-CORE-004 constrained_by MCONTRACT-CORE-001 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_25",
+      "description": "DD-CORE-005 constrained_by ARCH-CORE-001 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_26",
+      "description": "DD-CORE-005 constrained_by ARCH-CORE-004 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_27",
+      "description": "DD-CORE-005 constrained_by MCONTRACT-CORE-006 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_28",
+      "description": "DD-CORE-006 constrained_by ARCH-CORE-005 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_29",
+      "description": "DD-CORE-006 constrained_by MCONTRACT-CORE-004 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_30",
+      "description": "DD-CORE-006 constrained_by MCONTRACT-CORE-005 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_31",
+      "description": "DD-CORE-007 constrained_by ARCH-CORE-005 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_32",
+      "description": "DD-CORE-007 constrained_by MCONTRACT-CORE-003 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_33",
+      "description": "DD-CORE-008 constrained_by ARCH-CORE-005 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_34",
+      "description": "DD-CORE-009 constrained_by DATA-CORE-006 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_35",
+      "description": "DD-CORE-009 constrained_by MCONTRACT-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_36",
+      "description": "DD-CORE-010 constrained_by DATA-CORE-005 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_37",
+      "description": "DD-CORE-010 constrained_by DATA-CORE-006 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_38",
+      "description": "DD-CORE-010 constrained_by DATA-CORE-007 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_39",
+      "description": "DD-CORE-010 constrained_by MCONTRACT-CORE-003 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_40",
+      "description": "DD-CORE-011 constrained_by ARCH-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_41",
+      "description": "DD-CORE-011 constrained_by MCONTRACT-CORE-006 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_42",
+      "description": "DD-CORE-012 constrained_by ARCH-CORE-005 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_43",
+      "description": "DD-CORE-012 constrained_by DATA-CORE-006 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_44",
+      "description": "DD-CORE-013 constrained_by ARCH-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_45",
+      "description": "DD-CORE-013 constrained_by MCONTRACT-CORE-006 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_46",
+      "description": "DD-CORE-014 constrained_by DATA-CORE-006 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_47",
+      "description": "DD-CORE-014 constrained_by DATA-CORE-008 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_48",
+      "description": "DD-CORE-014 constrained_by MCONTRACT-CORE-003 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_49",
+      "description": "DD-CORE-015 constrained_by ARCH-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_50",
+      "description": "DD-CORE-015 constrained_by MCONTRACT-CORE-006 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_51",
+      "description": "DD-CORE-015 constrained_by MCONTRACT-CORE-007 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_52",
+      "description": "DD-CORE-016 constrained_by MCONTRACT-CORE-001 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_53",
+      "description": "DD-CORE-016 constrained_by MCONTRACT-CORE-007 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_54",
+      "description": "DD-CORE-017 constrained_by ARCH-CORE-005 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_55",
+      "description": "MCONTRACT-CORE-001 enforces DD-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_56",
+      "description": "MCONTRACT-CORE-001 enforces DD-CORE-004 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_57",
+      "description": "MCONTRACT-CORE-002 enforces DD-CORE-001 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_58",
+      "description": "MCONTRACT-CORE-003 enforces DD-CORE-007 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_59",
+      "description": "MCONTRACT-CORE-004 enforces DD-CORE-006 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_60",
+      "description": "MCONTRACT-CORE-005 enforces DD-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_61",
+      "description": "MCONTRACT-CORE-005 enforces DD-CORE-006 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_62",
+      "description": "MCONTRACT-CORE-006 enforces DD-CORE-003 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_63",
+      "description": "MCONTRACT-CORE-006 enforces DD-CORE-005 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_64",
+      "description": "MCONTRACT-CORE-006 enforces DD-CORE-011 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_65",
+      "description": "MCONTRACT-CORE-006 enforces DD-CORE-015 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_66",
+      "description": "MCONTRACT-CORE-007 enforces DD-CORE-009 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_67",
+      "description": "MCONTRACT-CORE-007 enforces DD-CORE-012 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_68",
+      "description": "MCONTRACT-CORE-007 enforces DD-CORE-013 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_69",
+      "description": "MCONTRACT-CORE-007 enforces DD-CORE-014 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "trace_relation_70",
+      "description": "MCONTRACT-CORE-007 enforces DD-CORE-016 is semantically legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    }
+  ],
+  "blocking_issues": [
+    "Every declared Module Design ID uses DD-<DOMAIN>-<NNN>"
+  ],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-10-24T14:05:40.711Z",
+  "finished_at": "2026-10-24T14:05:40.711Z",
+  "runner": "gate_runner"
+}

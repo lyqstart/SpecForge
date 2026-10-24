@@ -1,0 +1,12 @@
+{
+  "id": "005-baseline-build-host",
+  "cwd": "D:/code/SpecForge/.tmp/candidate-seal-worktree",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "build"
+  ],
+  "purpose": "005-baseline-build-host",
+  "started": "2026-10-24T13:24:12.372Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged"
+}

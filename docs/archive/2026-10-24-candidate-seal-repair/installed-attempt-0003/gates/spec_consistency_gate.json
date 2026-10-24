@@ -1,0 +1,1359 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0002",
+  "gate_id": "spec_consistency_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "failed",
+  "input_files": [
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\architecture.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\data_model.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\extension_registry.json",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\modules\\CORE\\contracts.json",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\modules\\CORE\\design.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\modules\\CORE\\module.json",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\modules\\CORE\\trace.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\spec_manifest.json",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+  ],
+  "checks": [
+    {
+      "check_id": "spec_consistency_brownfield_skip",
+      "description": "No cross-module contracts registered in extension_registry.json; consistency check skipped (brownfield-safe)",
+      "passed": true
+    },
+    {
+      "check_id": "architecture_id_format",
+      "description": "Every declared Architecture ID uses ARCH-<DOMAIN>-<NNN>",
+      "passed": true,
+      "severity": "error",
+      "details": "invalid=none; valid=ARCH-CORE-001,ARCH-CORE-002,ARCH-CORE-003,ARCH-CORE-004,ARCH-CORE-005"
+    },
+    {
+      "check_id": "data_model_id_format",
+      "description": "Every declared Data ID uses DATA-<DOMAIN>-<NNN>, or the model is explicitly not applicable",
+      "passed": true,
+      "severity": "error",
+      "details": "invalid=none; valid=DATA-CORE-001,DATA-CORE-002,DATA-CORE-003,DATA-CORE-004,DATA-CORE-005,DATA-CORE-006,DATA-CORE-007,DATA-CORE-008,DATA-CORE-009; not_applicable=false"
+    },
+    {
+      "check_id": "module_design_id_format",
+      "description": "Every declared Module Design ID uses DD-<DOMAIN>-<NNN>",
+      "passed": false,
+      "severity": "error",
+      "details": "invalid=DD-001,DD-002,DD-003,DD-006,DD-007"
+    },
+    {
+      "check_id": "architecture_ids_exist",
+      "description": "Formal Project Architecture contains stable ARCH-* IDs",
+      "passed": true
+    },
+    {
+      "check_id": "data_model_declared",
+      "description": "Formal Project Data Model contains DATA-* IDs or explicit DATA_MODEL_NOT_APPLICABLE",
+      "passed": true
+    },
+    {
+      "check_id": "module_CORE_code_paths",
+      "description": "Module CORE declares explicit code_paths in spec_manifest.json",
+      "passed": true
+    },
+    {
+      "check_id": "module_CORE_contracts_path",
+      "description": "Module CORE declares contracts.json in spec_manifest.json",
+      "passed": true
+    },
+    {
+      "check_id": "module_CORE_design_ids",
+      "description": "Module CORE Design contains stable DD-* decisions",
+      "passed": true
+    },
+    {
+      "check_id": "governance_trace_0_endpoints",
+      "description": "DATA-CORE-001 constrained_by ARCH-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_0_shape",
+      "description": "DATA-CORE-001 constrained_by ARCH-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_1_endpoints",
+      "description": "DATA-CORE-001 constrained_by ARCH-CORE-003: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_1_shape",
+      "description": "DATA-CORE-001 constrained_by ARCH-CORE-003: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_2_endpoints",
+      "description": "DATA-CORE-002 constrained_by ARCH-CORE-003: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_2_shape",
+      "description": "DATA-CORE-002 constrained_by ARCH-CORE-003: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_3_endpoints",
+      "description": "DATA-CORE-003 constrained_by ARCH-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_3_shape",
+      "description": "DATA-CORE-003 constrained_by ARCH-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_4_endpoints",
+      "description": "DATA-CORE-003 constrained_by ARCH-CORE-004: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_4_shape",
+      "description": "DATA-CORE-003 constrained_by ARCH-CORE-004: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_5_endpoints",
+      "description": "DATA-CORE-004 constrained_by ARCH-CORE-003: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_5_shape",
+      "description": "DATA-CORE-004 constrained_by ARCH-CORE-003: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_6_endpoints",
+      "description": "DATA-CORE-005 constrained_by ARCH-CORE-005: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_6_shape",
+      "description": "DATA-CORE-005 constrained_by ARCH-CORE-005: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_7_endpoints",
+      "description": "DATA-CORE-006 constrained_by ARCH-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_7_shape",
+      "description": "DATA-CORE-006 constrained_by ARCH-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_8_endpoints",
+      "description": "DATA-CORE-007 constrained_by ARCH-CORE-003: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_8_shape",
+      "description": "DATA-CORE-007 constrained_by ARCH-CORE-003: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_9_endpoints",
+      "description": "DATA-CORE-008 constrained_by ARCH-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_9_shape",
+      "description": "DATA-CORE-008 constrained_by ARCH-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_10_endpoints",
+      "description": "DATA-CORE-009 constrained_by ARCH-CORE-003: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_10_shape",
+      "description": "DATA-CORE-009 constrained_by ARCH-CORE-003: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_11_endpoints",
+      "description": "DD-CORE-001 constrained_by DATA-CORE-004: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_11_shape",
+      "description": "DD-CORE-001 constrained_by DATA-CORE-004: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_12_endpoints",
+      "description": "DD-CORE-001 constrained_by DATA-CORE-006: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_12_shape",
+      "description": "DD-CORE-001 constrained_by DATA-CORE-006: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_13_endpoints",
+      "description": "DD-CORE-001 constrained_by MCONTRACT-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_13_shape",
+      "description": "DD-CORE-001 constrained_by MCONTRACT-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_14_endpoints",
+      "description": "DD-CORE-002 constrained_by ARCH-CORE-003: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_14_shape",
+      "description": "DD-CORE-002 constrained_by ARCH-CORE-003: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_15_endpoints",
+      "description": "DD-CORE-002 constrained_by DATA-CORE-001: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_15_shape",
+      "description": "DD-CORE-002 constrained_by DATA-CORE-001: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_16_endpoints",
+      "description": "DD-CORE-002 constrained_by DATA-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_16_shape",
+      "description": "DD-CORE-002 constrained_by DATA-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_17_endpoints",
+      "description": "DD-CORE-002 constrained_by MCONTRACT-CORE-001: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_17_shape",
+      "description": "DD-CORE-002 constrained_by MCONTRACT-CORE-001: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_18_endpoints",
+      "description": "DD-CORE-003 constrained_by ARCH-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_18_shape",
+      "description": "DD-CORE-003 constrained_by ARCH-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_19_endpoints",
+      "description": "DD-CORE-003 constrained_by MCONTRACT-CORE-006: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_19_shape",
+      "description": "DD-CORE-003 constrained_by MCONTRACT-CORE-006: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_20_endpoints",
+      "description": "DD-CORE-004 constrained_by ARCH-CORE-003: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_20_shape",
+      "description": "DD-CORE-004 constrained_by ARCH-CORE-003: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_21_endpoints",
+      "description": "DD-CORE-004 constrained_by DATA-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_21_shape",
+      "description": "DD-CORE-004 constrained_by DATA-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_22_endpoints",
+      "description": "DD-CORE-004 constrained_by DATA-CORE-004: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_22_shape",
+      "description": "DD-CORE-004 constrained_by DATA-CORE-004: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_23_endpoints",
+      "description": "DD-CORE-004 constrained_by DATA-CORE-007: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_23_shape",
+      "description": "DD-CORE-004 constrained_by DATA-CORE-007: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_24_endpoints",
+      "description": "DD-CORE-004 constrained_by MCONTRACT-CORE-001: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_24_shape",
+      "description": "DD-CORE-004 constrained_by MCONTRACT-CORE-001: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_25_endpoints",
+      "description": "DD-CORE-005 constrained_by ARCH-CORE-001: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_25_shape",
+      "description": "DD-CORE-005 constrained_by ARCH-CORE-001: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_26_endpoints",
+      "description": "DD-CORE-005 constrained_by ARCH-CORE-004: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_26_shape",
+      "description": "DD-CORE-005 constrained_by ARCH-CORE-004: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_27_endpoints",
+      "description": "DD-CORE-005 constrained_by MCONTRACT-CORE-006: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_27_shape",
+      "description": "DD-CORE-005 constrained_by MCONTRACT-CORE-006: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_28_endpoints",
+      "description": "DD-CORE-006 constrained_by ARCH-CORE-005: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_28_shape",
+      "description": "DD-CORE-006 constrained_by ARCH-CORE-005: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_29_endpoints",
+      "description": "DD-CORE-006 constrained_by MCONTRACT-CORE-004: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_29_shape",
+      "description": "DD-CORE-006 constrained_by MCONTRACT-CORE-004: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_30_endpoints",
+      "description": "DD-CORE-006 constrained_by MCONTRACT-CORE-005: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_30_shape",
+      "description": "DD-CORE-006 constrained_by MCONTRACT-CORE-005: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_31_endpoints",
+      "description": "DD-CORE-007 constrained_by ARCH-CORE-005: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_31_shape",
+      "description": "DD-CORE-007 constrained_by ARCH-CORE-005: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_32_endpoints",
+      "description": "DD-CORE-007 constrained_by MCONTRACT-CORE-003: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_32_shape",
+      "description": "DD-CORE-007 constrained_by MCONTRACT-CORE-003: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_33_endpoints",
+      "description": "DD-CORE-008 constrained_by ARCH-CORE-005: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_33_shape",
+      "description": "DD-CORE-008 constrained_by ARCH-CORE-005: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_34_endpoints",
+      "description": "DD-CORE-009 constrained_by DATA-CORE-006: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_34_shape",
+      "description": "DD-CORE-009 constrained_by DATA-CORE-006: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_35_endpoints",
+      "description": "DD-CORE-009 constrained_by MCONTRACT-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_35_shape",
+      "description": "DD-CORE-009 constrained_by MCONTRACT-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_36_endpoints",
+      "description": "DD-CORE-010 constrained_by DATA-CORE-005: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_36_shape",
+      "description": "DD-CORE-010 constrained_by DATA-CORE-005: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_37_endpoints",
+      "description": "DD-CORE-010 constrained_by DATA-CORE-006: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_37_shape",
+      "description": "DD-CORE-010 constrained_by DATA-CORE-006: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_38_endpoints",
+      "description": "DD-CORE-010 constrained_by DATA-CORE-007: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_38_shape",
+      "description": "DD-CORE-010 constrained_by DATA-CORE-007: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_39_endpoints",
+      "description": "DD-CORE-010 constrained_by MCONTRACT-CORE-003: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_39_shape",
+      "description": "DD-CORE-010 constrained_by MCONTRACT-CORE-003: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_40_endpoints",
+      "description": "DD-CORE-011 constrained_by ARCH-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_40_shape",
+      "description": "DD-CORE-011 constrained_by ARCH-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_41_endpoints",
+      "description": "DD-CORE-011 constrained_by MCONTRACT-CORE-006: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_41_shape",
+      "description": "DD-CORE-011 constrained_by MCONTRACT-CORE-006: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_42_endpoints",
+      "description": "DD-CORE-012 constrained_by ARCH-CORE-005: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_42_shape",
+      "description": "DD-CORE-012 constrained_by ARCH-CORE-005: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_43_endpoints",
+      "description": "DD-CORE-012 constrained_by DATA-CORE-006: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_43_shape",
+      "description": "DD-CORE-012 constrained_by DATA-CORE-006: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_44_endpoints",
+      "description": "DD-CORE-013 constrained_by ARCH-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_44_shape",
+      "description": "DD-CORE-013 constrained_by ARCH-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_45_endpoints",
+      "description": "DD-CORE-013 constrained_by MCONTRACT-CORE-006: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_45_shape",
+      "description": "DD-CORE-013 constrained_by MCONTRACT-CORE-006: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_46_endpoints",
+      "description": "DD-CORE-014 constrained_by DATA-CORE-006: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_46_shape",
+      "description": "DD-CORE-014 constrained_by DATA-CORE-006: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_47_endpoints",
+      "description": "DD-CORE-014 constrained_by DATA-CORE-008: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_47_shape",
+      "description": "DD-CORE-014 constrained_by DATA-CORE-008: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_48_endpoints",
+      "description": "DD-CORE-014 constrained_by MCONTRACT-CORE-003: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_48_shape",
+      "description": "DD-CORE-014 constrained_by MCONTRACT-CORE-003: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_49_endpoints",
+      "description": "DD-CORE-015 constrained_by ARCH-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_49_shape",
+      "description": "DD-CORE-015 constrained_by ARCH-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_50_endpoints",
+      "description": "DD-CORE-015 constrained_by MCONTRACT-CORE-006: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_50_shape",
+      "description": "DD-CORE-015 constrained_by MCONTRACT-CORE-006: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_51_endpoints",
+      "description": "DD-CORE-015 constrained_by MCONTRACT-CORE-007: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_51_shape",
+      "description": "DD-CORE-015 constrained_by MCONTRACT-CORE-007: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_52_endpoints",
+      "description": "DD-CORE-016 constrained_by MCONTRACT-CORE-001: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_52_shape",
+      "description": "DD-CORE-016 constrained_by MCONTRACT-CORE-001: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_53_endpoints",
+      "description": "DD-CORE-016 constrained_by MCONTRACT-CORE-007: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_53_shape",
+      "description": "DD-CORE-016 constrained_by MCONTRACT-CORE-007: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_54_endpoints",
+      "description": "DD-CORE-017 constrained_by ARCH-CORE-005: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_54_shape",
+      "description": "DD-CORE-017 constrained_by ARCH-CORE-005: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_55_endpoints",
+      "description": "MCONTRACT-CORE-001 enforces DD-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_55_shape",
+      "description": "MCONTRACT-CORE-001 enforces DD-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_56_endpoints",
+      "description": "MCONTRACT-CORE-001 enforces DD-CORE-004: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_56_shape",
+      "description": "MCONTRACT-CORE-001 enforces DD-CORE-004: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_57_endpoints",
+      "description": "MCONTRACT-CORE-002 enforces DD-CORE-001: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_57_shape",
+      "description": "MCONTRACT-CORE-002 enforces DD-CORE-001: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_58_endpoints",
+      "description": "MCONTRACT-CORE-003 enforces DD-CORE-007: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_58_shape",
+      "description": "MCONTRACT-CORE-003 enforces DD-CORE-007: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_59_endpoints",
+      "description": "MCONTRACT-CORE-004 enforces DD-CORE-006: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_59_shape",
+      "description": "MCONTRACT-CORE-004 enforces DD-CORE-006: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_60_endpoints",
+      "description": "MCONTRACT-CORE-005 enforces DD-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_60_shape",
+      "description": "MCONTRACT-CORE-005 enforces DD-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_61_endpoints",
+      "description": "MCONTRACT-CORE-005 enforces DD-CORE-006: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_61_shape",
+      "description": "MCONTRACT-CORE-005 enforces DD-CORE-006: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_62_endpoints",
+      "description": "MCONTRACT-CORE-006 enforces DD-CORE-003: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_62_shape",
+      "description": "MCONTRACT-CORE-006 enforces DD-CORE-003: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_63_endpoints",
+      "description": "MCONTRACT-CORE-006 enforces DD-CORE-005: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_63_shape",
+      "description": "MCONTRACT-CORE-006 enforces DD-CORE-005: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_64_endpoints",
+      "description": "MCONTRACT-CORE-006 enforces DD-CORE-011: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_64_shape",
+      "description": "MCONTRACT-CORE-006 enforces DD-CORE-011: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_65_endpoints",
+      "description": "MCONTRACT-CORE-006 enforces DD-CORE-015: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_65_shape",
+      "description": "MCONTRACT-CORE-006 enforces DD-CORE-015: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_66_endpoints",
+      "description": "MCONTRACT-CORE-007 enforces DD-CORE-009: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_66_shape",
+      "description": "MCONTRACT-CORE-007 enforces DD-CORE-009: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_67_endpoints",
+      "description": "MCONTRACT-CORE-007 enforces DD-CORE-012: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_67_shape",
+      "description": "MCONTRACT-CORE-007 enforces DD-CORE-012: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_68_endpoints",
+      "description": "MCONTRACT-CORE-007 enforces DD-CORE-013: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_68_shape",
+      "description": "MCONTRACT-CORE-007 enforces DD-CORE-013: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_69_endpoints",
+      "description": "MCONTRACT-CORE-007 enforces DD-CORE-014: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_69_shape",
+      "description": "MCONTRACT-CORE-007 enforces DD-CORE-014: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_70_endpoints",
+      "description": "MCONTRACT-CORE-007 enforces DD-CORE-016: both IDs exist",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "governance_trace_70_shape",
+      "description": "MCONTRACT-CORE-007 enforces DD-CORE-016: relation direction/type is legal",
+      "passed": true,
+      "details": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md"
+    },
+    {
+      "check_id": "impact_scope_contract_consumers_expanded",
+      "description": "Impact Scope is expanded from changed Contracts to every formal DD and Module consumer",
+      "passed": true,
+      "details": "declared_modules=CORE; consumer_modules=CORE; effective_modules=CORE"
+    },
+    {
+      "check_id": "impact_scope_present",
+      "description": "Active governance requires a non-empty machine-readable Impact Scope",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_DATA_CORE_001",
+      "description": "Impact Scope reference exists: DATA-CORE-001",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_DATA_CORE_002",
+      "description": "Impact Scope reference exists: DATA-CORE-002",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_DATA_CORE_003",
+      "description": "Impact Scope reference exists: DATA-CORE-003",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_DATA_CORE_004",
+      "description": "Impact Scope reference exists: DATA-CORE-004",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_DATA_CORE_005",
+      "description": "Impact Scope reference exists: DATA-CORE-005",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_DD_CORE_001",
+      "description": "Impact Scope reference exists: DD-CORE-001",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_DD_CORE_002",
+      "description": "Impact Scope reference exists: DD-CORE-002",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_DD_CORE_003",
+      "description": "Impact Scope reference exists: DD-CORE-003",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_DD_CORE_004",
+      "description": "Impact Scope reference exists: DD-CORE-004",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_DD_CORE_005",
+      "description": "Impact Scope reference exists: DD-CORE-005",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_DD_CORE_006",
+      "description": "Impact Scope reference exists: DD-CORE-006",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_DD_CORE_007",
+      "description": "Impact Scope reference exists: DD-CORE-007",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_DD_CORE_008",
+      "description": "Impact Scope reference exists: DD-CORE-008",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_DD_CORE_009",
+      "description": "Impact Scope reference exists: DD-CORE-009",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_DD_CORE_010",
+      "description": "Impact Scope reference exists: DD-CORE-010",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_DD_CORE_011",
+      "description": "Impact Scope reference exists: DD-CORE-011",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_DD_CORE_013",
+      "description": "Impact Scope reference exists: DD-CORE-013",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_DD_CORE_014",
+      "description": "Impact Scope reference exists: DD-CORE-014",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_DD_CORE_015",
+      "description": "Impact Scope reference exists: DD-CORE-015",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_DD_CORE_016",
+      "description": "Impact Scope reference exists: DD-CORE-016",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_MCONTRACT_CORE_001",
+      "description": "Impact Scope reference exists: MCONTRACT-CORE-001",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_MCONTRACT_CORE_002",
+      "description": "Impact Scope reference exists: MCONTRACT-CORE-002",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_MCONTRACT_CORE_003",
+      "description": "Impact Scope reference exists: MCONTRACT-CORE-003",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_MCONTRACT_CORE_004",
+      "description": "Impact Scope reference exists: MCONTRACT-CORE-004",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_MCONTRACT_CORE_005",
+      "description": "Impact Scope reference exists: MCONTRACT-CORE-005",
+      "passed": true
+    },
+    {
+      "check_id": "impact_ref_MCONTRACT_CORE_006",
+      "description": "Impact Scope reference exists: MCONTRACT-CORE-006",
+      "passed": true
+    },
+    {
+      "check_id": "planned_code_owner_e07d531a",
+      "description": "Planned code path maps to exactly one Module: app.js",
+      "passed": true,
+      "details": "owners=CORE"
+    },
+    {
+      "check_id": "planned_code_scope_e07d531a",
+      "description": "Planned code path owner is declared affected: app.js",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "planned_code_owner_0eb54730",
+      "description": "Planned code path maps to exactly one Module: index.html",
+      "passed": true,
+      "details": "owners=CORE"
+    },
+    {
+      "check_id": "planned_code_scope_0eb54730",
+      "description": "Planned code path owner is declared affected: index.html",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "planned_code_owner_380b7b38",
+      "description": "Planned code path maps to exactly one Module: styles.css",
+      "passed": true,
+      "details": "owners=CORE"
+    },
+    {
+      "check_id": "planned_code_scope_380b7b38",
+      "description": "Planned code path owner is declared affected: styles.css",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "planned_code_owner_9e405491",
+      "description": "Planned code path maps to exactly one Module: test/app.test.js",
+      "passed": true,
+      "details": "owners=CORE"
+    },
+    {
+      "check_id": "planned_code_scope_9e405491",
+      "description": "Planned code path owner is declared affected: test/app.test.js",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "task_allowed_write_files_41527363",
+      "description": "Task TASK-WI-0002-001 declares allowed_write_files",
+      "passed": true
+    },
+    {
+      "check_id": "task_write_impact_b95208c9",
+      "description": "Task TASK-WI-0002-001 write path must be covered by approved Impact Scope: app.js",
+      "passed": true,
+      "details": "covered=true; matched_pattern=app.js"
+    },
+    {
+      "check_id": "task_write_owner_b95208c9",
+      "description": "Task TASK-WI-0002-001 write path maps to exactly one Module or approved cross-module test harness: app.js",
+      "passed": true,
+      "details": "owners=CORE; approved_cross_module_test_harness=false"
+    },
+    {
+      "check_id": "task_write_scope_b95208c9",
+      "description": "Task TASK-WI-0002-001 write path owner is declared affected: app.js",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "task_allowed_write_files_e7264d70",
+      "description": "Task TASK-WI-0002-002 declares allowed_write_files",
+      "passed": true
+    },
+    {
+      "check_id": "task_write_impact_7ea119e9",
+      "description": "Task TASK-WI-0002-002 write path must be covered by approved Impact Scope: app.js",
+      "passed": true,
+      "details": "covered=true; matched_pattern=app.js"
+    },
+    {
+      "check_id": "task_write_owner_7ea119e9",
+      "description": "Task TASK-WI-0002-002 write path maps to exactly one Module or approved cross-module test harness: app.js",
+      "passed": true,
+      "details": "owners=CORE; approved_cross_module_test_harness=false"
+    },
+    {
+      "check_id": "task_write_scope_7ea119e9",
+      "description": "Task TASK-WI-0002-002 write path owner is declared affected: app.js",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "task_allowed_write_files_0f2e5fa4",
+      "description": "Task TASK-WI-0002-003 declares allowed_write_files",
+      "passed": true
+    },
+    {
+      "check_id": "task_write_impact_b10117bd",
+      "description": "Task TASK-WI-0002-003 write path must be covered by approved Impact Scope: app.js",
+      "passed": true,
+      "details": "covered=true; matched_pattern=app.js"
+    },
+    {
+      "check_id": "task_write_owner_b10117bd",
+      "description": "Task TASK-WI-0002-003 write path maps to exactly one Module or approved cross-module test harness: app.js",
+      "passed": true,
+      "details": "owners=CORE; approved_cross_module_test_harness=false"
+    },
+    {
+      "check_id": "task_write_scope_b10117bd",
+      "description": "Task TASK-WI-0002-003 write path owner is declared affected: app.js",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "task_allowed_write_files_8770e0c2",
+      "description": "Task TASK-WI-0002-004 declares allowed_write_files",
+      "passed": true
+    },
+    {
+      "check_id": "task_write_impact_0967e86a",
+      "description": "Task TASK-WI-0002-004 write path must be covered by approved Impact Scope: app.js",
+      "passed": true,
+      "details": "covered=true; matched_pattern=app.js"
+    },
+    {
+      "check_id": "task_write_owner_0967e86a",
+      "description": "Task TASK-WI-0002-004 write path maps to exactly one Module or approved cross-module test harness: app.js",
+      "passed": true,
+      "details": "owners=CORE; approved_cross_module_test_harness=false"
+    },
+    {
+      "check_id": "task_write_scope_0967e86a",
+      "description": "Task TASK-WI-0002-004 write path owner is declared affected: app.js",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "task_allowed_write_files_d00cfdc6",
+      "description": "Task TASK-WI-0002-005 declares allowed_write_files",
+      "passed": true
+    },
+    {
+      "check_id": "task_write_impact_f163aeba",
+      "description": "Task TASK-WI-0002-005 write path must be covered by approved Impact Scope: app.js",
+      "passed": true,
+      "details": "covered=true; matched_pattern=app.js"
+    },
+    {
+      "check_id": "task_write_owner_f163aeba",
+      "description": "Task TASK-WI-0002-005 write path maps to exactly one Module or approved cross-module test harness: app.js",
+      "passed": true,
+      "details": "owners=CORE; approved_cross_module_test_harness=false"
+    },
+    {
+      "check_id": "task_write_scope_f163aeba",
+      "description": "Task TASK-WI-0002-005 write path owner is declared affected: app.js",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "task_allowed_write_files_a32ce86f",
+      "description": "Task TASK-WI-0002-006 declares allowed_write_files",
+      "passed": true
+    },
+    {
+      "check_id": "task_write_impact_3cba78ba",
+      "description": "Task TASK-WI-0002-006 write path must be covered by approved Impact Scope: app.js",
+      "passed": true,
+      "details": "covered=true; matched_pattern=app.js"
+    },
+    {
+      "check_id": "task_write_owner_3cba78ba",
+      "description": "Task TASK-WI-0002-006 write path maps to exactly one Module or approved cross-module test harness: app.js",
+      "passed": true,
+      "details": "owners=CORE; approved_cross_module_test_harness=false"
+    },
+    {
+      "check_id": "task_write_scope_3cba78ba",
+      "description": "Task TASK-WI-0002-006 write path owner is declared affected: app.js",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "task_write_impact_3050ffe7",
+      "description": "Task TASK-WI-0002-006 write path must be covered by approved Impact Scope: index.html",
+      "passed": true,
+      "details": "covered=true; matched_pattern=index.html"
+    },
+    {
+      "check_id": "task_write_owner_3050ffe7",
+      "description": "Task TASK-WI-0002-006 write path maps to exactly one Module or approved cross-module test harness: index.html",
+      "passed": true,
+      "details": "owners=CORE; approved_cross_module_test_harness=false"
+    },
+    {
+      "check_id": "task_write_scope_3050ffe7",
+      "description": "Task TASK-WI-0002-006 write path owner is declared affected: index.html",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "task_write_impact_75195e99",
+      "description": "Task TASK-WI-0002-006 write path must be covered by approved Impact Scope: styles.css",
+      "passed": true,
+      "details": "covered=true; matched_pattern=styles.css"
+    },
+    {
+      "check_id": "task_write_owner_75195e99",
+      "description": "Task TASK-WI-0002-006 write path maps to exactly one Module or approved cross-module test harness: styles.css",
+      "passed": true,
+      "details": "owners=CORE; approved_cross_module_test_harness=false"
+    },
+    {
+      "check_id": "task_write_scope_75195e99",
+      "description": "Task TASK-WI-0002-006 write path owner is declared affected: styles.css",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "task_allowed_write_files_e1c3adfa",
+      "description": "Task TASK-WI-0002-007 declares allowed_write_files",
+      "passed": true
+    },
+    {
+      "check_id": "task_write_impact_db62b409",
+      "description": "Task TASK-WI-0002-007 write path must be covered by approved Impact Scope: app.js",
+      "passed": true,
+      "details": "covered=true; matched_pattern=app.js"
+    },
+    {
+      "check_id": "task_write_owner_db62b409",
+      "description": "Task TASK-WI-0002-007 write path maps to exactly one Module or approved cross-module test harness: app.js",
+      "passed": true,
+      "details": "owners=CORE; approved_cross_module_test_harness=false"
+    },
+    {
+      "check_id": "task_write_scope_db62b409",
+      "description": "Task TASK-WI-0002-007 write path owner is declared affected: app.js",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "task_allowed_write_files_0f440532",
+      "description": "Task TASK-WI-0002-008 declares allowed_write_files",
+      "passed": true
+    },
+    {
+      "check_id": "task_write_impact_fef31a3b",
+      "description": "Task TASK-WI-0002-008 write path must be covered by approved Impact Scope: test/app.test.js",
+      "passed": true,
+      "details": "covered=true; matched_pattern=test/app.test.js"
+    },
+    {
+      "check_id": "task_write_owner_fef31a3b",
+      "description": "Task TASK-WI-0002-008 write path maps to exactly one Module or approved cross-module test harness: test/app.test.js",
+      "passed": true,
+      "details": "owners=CORE; approved_cross_module_test_harness=false"
+    },
+    {
+      "check_id": "task_write_scope_fef31a3b",
+      "description": "Task TASK-WI-0002-008 write path owner is declared affected: test/app.test.js",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "data_model_candidate_required",
+      "description": "data_model_changed requires a Project Data Model Candidate",
+      "passed": true
+    },
+    {
+      "check_id": "design_candidate_required",
+      "description": "design_changed requires at least one Module Design Candidate",
+      "passed": true
+    },
+    {
+      "check_id": "module_contract_candidate_required",
+      "description": "module_contract_changed requires at least one Module Contract Candidate",
+      "passed": true
+    }
+  ],
+  "blocking_issues": [
+    "Every declared Module Design ID uses DD-<DOMAIN>-<NNN>"
+  ],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-10-24T14:05:40.594Z",
+  "finished_at": "2026-10-24T14:05:40.594Z",
+  "runner": "gate_runner"
+}

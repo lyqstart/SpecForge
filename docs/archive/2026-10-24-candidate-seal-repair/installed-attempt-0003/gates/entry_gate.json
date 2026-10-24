@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0002",
+  "gate_id": "entry_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "passed",
+  "input_files": [
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\work_item.json"
+  ],
+  "checks": [
+    {
+      "check_id": "wi_exists",
+      "description": "Work Item work_item.json exists",
+      "passed": true
+    },
+    {
+      "check_id": "wi_id_valid",
+      "description": "Work Item ID format valid: WI-0002",
+      "passed": true
+    }
+  ],
+  "blocking_issues": [],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-10-24T14:05:40.400Z",
+  "finished_at": "2026-10-24T14:05:40.400Z",
+  "runner": "gate_runner"
+}

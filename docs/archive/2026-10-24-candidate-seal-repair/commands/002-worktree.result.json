@@ -1,0 +1,20 @@
+{
+  "id": "002-worktree",
+  "cwd": "D:/code/SpecForge",
+  "exe": "git",
+  "args": [
+    "worktree",
+    "add",
+    "--detach",
+    ".tmp/candidate-seal-worktree",
+    "HEAD"
+  ],
+  "purpose": "002-worktree",
+  "started": "2026-10-24T13:23:25.094Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T13:23:27.834Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_repository_status": ""
+}

@@ -1,0 +1,184 @@
+{
+  "schema_version": "1.0",
+  "attempt_id": "attempt-0003",
+  "work_item_id": "WI-0002",
+  "captured_at": "2026-10-24T14:05:40.770Z",
+  "inputs": [
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\architecture.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "3939c4b47dd5673efb3e772049fe0de1cf75b740aee79b51a868fdb337ea33e7",
+      "size": 15122,
+      "mtime_ms": 1792848138780.4312
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\data_model.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "f6bac332276e6e26cb4971b7db810f38c0c499fb5d1675b6a82e5fd23b3c97bd",
+      "size": 12716,
+      "mtime_ms": 1792848138781.1353
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\extension_registry.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "103bb569c499a205ad995f538d3b5a68308dd059d7c0a5d1dfcd95d07da8af2c",
+      "size": 395,
+      "mtime_ms": 1792848138785.2805
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\modules\\CORE\\contracts.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "6dbb7ac87fac809ab977ad9ef3fb9d0f57b42e4a77442866c71499e4c84e5f52",
+      "size": 5143,
+      "mtime_ms": 1792848138788.7205
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\modules\\CORE\\design.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "48f492854d48d4104cc344d8b4c7177684bda0b030ff77d6ca197c0f7568da4b",
+      "size": 24000,
+      "mtime_ms": 1792848138789.9343
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\modules\\CORE\\module.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "b5427f754e9ea19840c72877693d6019db0d6548e6e185488527be4a5e0a117f",
+      "size": 142,
+      "mtime_ms": 1792848138790.8667
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\modules\\CORE\\trace.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "2750d8aa1620e855b415790a168a142cc9a90a47a0699f19cd89caf4e0570b32",
+      "size": 1770,
+      "mtime_ms": 1792848138791.911
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\spec_manifest.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "2da35a93649cb1cd6519a89c29316e83d9119fd963fcd1dd281e9eb7e0dfa7f8",
+      "size": 1629,
+      "mtime_ms": 1792848138795.2512
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "981aebe3447f671ec80c350021d34bf869a4838fb7d214dad848a474dba31aac",
+      "size": 14698,
+      "mtime_ms": 1792848138795.7993
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidate_manifest.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "0dfc8f25060d3d2d18e4641decee8b3745008ac178bfd34d88497e4870d7e640",
+      "size": 1719,
+      "mtime_ms": 1792850739976.0046
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\project\\data_model.candidate.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "b4a2b782c27a661837feb50558630c088ffa9e01ca259c2788aa64031ab9e33b",
+      "size": 15168,
+      "mtime_ms": 1792848139065.6848
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\project\\modules\\CORE\\contracts.candidate.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "e9113f3de2d88fc34e118fc9f95bfea7c577c5b96f979fc3de0fa79dd6bc3c16",
+      "size": 6881,
+      "mtime_ms": 1792848139066.7007
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\project\\modules\\CORE\\design.candidate.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "934f83af8e5175fcc72bee2354febbe3ac14e8ac2bd6f8b25f5f5be4bf3cb4d8",
+      "size": 30665,
+      "mtime_ms": 1792848139067.6985
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\project\\modules\\CORE\\requirements.candidate.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "6eab9964eb0b7e245d95f78f7364dc56d620de8976954f51ab030fa89f784e9b",
+      "size": 52599,
+      "mtime_ms": 1792848139068.7021
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\tasks.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "08ed753bddb603b77709da2cfa84542e4670d544ac16088f83da4130e6f2ad8a",
+      "size": 25586,
+      "mtime_ms": 1792848139068.7021
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "4e8a460d7381e4f1bd7f90c68d26d77fbebbdfa260963055ba93e884c4a8287d",
+      "size": 14978,
+      "mtime_ms": 1792848139069.6978
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\change_classification.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "eff488bcd4bf620f4fb8000bc799a83a2c70f0ee33a78583fd2d45f16df25fc5",
+      "size": 2086,
+      "mtime_ms": 1792848139071.5544
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\impact_analysis.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "edb115ab56cbc3c17b34df067fe7ea8c43dfc56e32360a7bcd3b38570e4903dc",
+      "size": 2633,
+      "mtime_ms": 1792848139115.6006
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\implementation_baseline.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "749dfa42dfff2553f3bf337862f5a70bd722ddcbd3f7d11cc0e4aac80bdca27a",
+      "size": 1500,
+      "mtime_ms": 1792848139116.1394
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\intake.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "605db98f86ac2282b01849c789642c6ee1c567ec3ca355e3c7a4a2244e2e7d03",
+      "size": 4010,
+      "mtime_ms": 1792848139116.6775
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\trigger_result.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "f034ebb0a9b72e43ed18d6b104792b8798007ffd737f929bd3a848ab95e3aab0",
+      "size": 2180,
+      "mtime_ms": 1792848139117.2195
+    },
+    {
+      "path": "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\work_item.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "0a76d96c84a4a085a13a966d1894dba1fc954c8257dbf613cd01e0ea9ea304f7",
+      "size": 324,
+      "mtime_ms": 1792848139118.4893
+    }
+  ]
+}

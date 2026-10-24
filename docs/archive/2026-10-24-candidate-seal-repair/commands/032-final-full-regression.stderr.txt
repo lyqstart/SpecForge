@@ -1,0 +1,744 @@
+$ node scripts/run-root-task.mjs test
+$ node scripts/run-root-tests.mjs current "--maxWorkers=1"
+$ vitest run "--maxWorkers=1"
+$ vitest run "--maxWorkers=1" "--minWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+stderr | tests/integration.test.ts > Integration: End-to-End Configuration Loading > Error Recovery Scenarios > should fail fast when project config is missing
+[Config] ERROR Failed to load project-level configuration {}
+
+stderr | tests/integration.test.ts > Integration: End-to-End Configuration Loading > Error Recovery Scenarios > should fail with clear error for invalid JSON in project config
+[Config] ERROR Invalid JSON in configuration file {}
+[Config] ERROR Failed to load project-level configuration {}
+
+stderr | tests/integration.test.ts > Integration: End-to-End Configuration Loading > Error Recovery Scenarios > should maintain previous valid config when new config fails to load
+[Config] ERROR Invalid JSON in configuration file {}
+[Config] ERROR Failed to load project-level configuration {}
+
+stderr | tests/integration.test.ts > Integration: End-to-End Configuration Loading > Sensitive Field Protection > should reject project-level override of sensitive fields
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/integration.test.ts > Integration: Hot-Reload with Concurrent Workflows > Concurrent workflow scenarios > should handle multiple workflows starting at different times around reload
+[Config] WARN Hot-reload watcher is not running
+
+stderr | tests/integration.test.ts > Integration: Hot-Reload with Concurrent Workflows > Concurrent workflow scenarios > should handle rapid sequential reloads
+[Config] WARN Hot-reload watcher is not running
+
+stderr | tests/integration.test.ts > Integration: Hot-Reload with Concurrent Workflows > Concurrent workflow scenarios > should handle cache eviction under load
+[Config] WARN Hot-reload watcher is not running
+
+stderr | tests/integration.test.ts > Integration: Hot-Reload with Concurrent Workflows > Concurrent workflow scenarios > should work with file watcher triggered reloads
+[Config] WARN Hot-reload watcher is not running
+
+stderr | tests/integration.test.ts > Integration: Cross-Component Configuration Sharing > Config change propagation > should propagate changes through reload callbacks
+[Config] WARN Hot-reload watcher is not running
+
+stderr | tests/merge-engine.test.ts > merge-engine > merge function > sensitive field protection > should reject project-level override of sensitive fields
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/merge-engine.test.ts > merge-engine > merge function > sensitive field protection > should allow runtime-level override of sensitive fields
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/merge-engine.test.ts > merge-engine > merge function > sensitive field protection > should protect all sensitive fields from project override
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/merge-engine.test.ts > merge-engine > merge function > sensitive field protection > should track validation errors with layer information
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/merge-engine.test.ts > merge-engine > merge function > metadata > should include validation errors in metadata
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/property/property-11.test.ts > Property 11: Configuration Merge Determinism > should handle sensitive field protection deterministically
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/hot-reload.test.ts > hot-reload > HotReloadManager > should handle disabled hot-reload
+[Config] WARN Hot-reload is disabled, cannot reload
+
+stderr | tests/hot-reload.test.ts > hot-reload > HotReloadManager > Activation Boundary > should throw error when no snapshot exists for work item
+[Config] ERROR No snapshot found for work item {}
+
+stderr | tests/config-access.test.ts > config-access > interpolate > should return empty string for missing env var
+[Config] WARN Environment variable not found for interpolation {}
+
+stderr | tests/config-loader.test.ts > config-loader > loadConfigFile > should throw for invalid JSON
+[Config] ERROR Invalid JSON in configuration file {}
+
+stderr | tests/config-loader.test.ts > config-loader > loadProjectConfig > does not accept .specforge.json as a compatibility alias
+[Config] ERROR Failed to load project-level configuration {}
+
+stderr | tests/config-loader.test.ts > config-loader > loadProjectConfig > should throw error for missing project config (no fallback)
+[Config] ERROR Failed to load project-level configuration {}
+
+stderr | tests/config-loader.test.ts > config-loader > loadProjectConfig > should throw error with clear context for missing project config
+[Config] ERROR Failed to load project-level configuration {}
+
+stderr | tests/config-loader.test.ts > config-loader > loadProjectConfig > should throw error for invalid JSON in project config
+[Config] ERROR Invalid JSON in configuration file {}
+[Config] ERROR Failed to load project-level configuration {}
+
+stderr | tests/config-loader.test.ts > loadProjectConfig with valid config > should throw for non-ENOENT errors on project config
+[Config] ERROR Invalid JSON in configuration file {}
+[Config] ERROR Failed to load project-level configuration {}
+
+stderr | tests/config-validator.test.ts > config-validator > validateConfig > should detect schema version mismatch
+[Config] WARN Schema version mismatch {}
+
+stderr | tests/config-merge.test.ts > config-merge > mergeConfigLayers > should reject project-level override of sensitive fields
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/config-merge.test.ts > config-merge > mergeConfigLayers > should allow runtime-level override of sensitive fields
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/config-merge.test.ts > config-merge > mergeConfigLayers > should protect all sensitive fields from project override
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/accepted-config-regression.test.ts > production configuration acceptance > rejects invalid project settings {"tokens":{"key":"secret"}}
+[Config] WARN Sensitive field protection violation {}
+
+$ vitest run "--maxWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+stderr | tests/unit/reconnecting-daemon-client.test.ts > ReconnectingDaemonClient > TASK-2: 客户端错误分类 (PostAttemptResult + isClientError) > 413 响应不触发退避，返回 rejected + dropped
+[specforge] Event rejected by daemon (HTTP 413): sessionId=test-session, type=test.event. Dropping event without retry.
+
+stderr | tests/unit/reconnecting-daemon-client.test.ts > ReconnectingDaemonClient > TASK-2: 客户端错误分类 (PostAttemptResult + isClientError) > 400/401/403/404 响应不触发退避（遍历验证）
+[specforge] Event rejected by daemon (HTTP 400): sessionId=test-session, type=test. Dropping event without retry.
+
+stderr | tests/unit/reconnecting-daemon-client.test.ts > ReconnectingDaemonClient > TASK-2: 客户端错误分类 (PostAttemptResult + isClientError) > 400/401/403/404 响应不触发退避（遍历验证）
+[specforge] Event rejected by daemon (HTTP 401): sessionId=test-session, type=test. Dropping event without retry.
+
+stderr | tests/unit/reconnecting-daemon-client.test.ts > ReconnectingDaemonClient > TASK-2: 客户端错误分类 (PostAttemptResult + isClientError) > 400/401/403/404 响应不触发退避（遍历验证）
+[specforge] Event rejected by daemon (HTTP 403): sessionId=test-session, type=test. Dropping event without retry.
+
+stderr | tests/unit/reconnecting-daemon-client.test.ts > ReconnectingDaemonClient > TASK-2: 客户端错误分类 (PostAttemptResult + isClientError) > 400/401/403/404 响应不触发退避（遍历验证）
+[specforge] Event rejected by daemon (HTTP 404): sessionId=test-session, type=test. Dropping event without retry.
+
+$ vitest run "--maxWorkers=1"
+$ vitest run "--maxWorkers=1" "--minWorkers=1"
+$ vitest run "--maxWorkers=1" "--minWorkers=1"
+stderr | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Configuration Integrity > should validate configuration after engine restart
+Hard rule conflicts detected: [
+  {
+    rule: {
+      id: 'hard-004',
+      description: 'Agent must not bypass Gate checks',
+      condition: [Function: condition],
+      effect: 'deny',
+      priority: 90,
+      layer: 'hard'
+    },
+    conflict: 'Configuration attempts to override hard rule: Agent must not bypass Gate checks'
+  }
+]
+
+stderr | tests/unit/event-logging.test.ts > Permission Engine Event Logging > Hard Rule Conflict Event Logging > should log hard rule conflict event when configuration conflicts
+Hard rule conflicts detected: [
+  {
+    rule: {
+      id: 'hard-004',
+      description: 'Agent must not bypass Gate checks',
+      condition: [Function: condition],
+      effect: 'deny',
+      priority: 90,
+      layer: 'hard'
+    },
+    conflict: 'Configuration attempts to override hard rule: Agent must not bypass Gate checks'
+  }
+]
+
+stderr | tests/unit/event-logging.test.ts > Permission Engine Event Logging > Hard Rule Conflict Event Logging > should log multiple conflict events for multiple conflicts
+Hard rule conflicts detected: [
+  {
+    rule: {
+      id: 'hard-004',
+      description: 'Agent must not bypass Gate checks',
+      condition: [Function: condition],
+      effect: 'deny',
+      priority: 90,
+      layer: 'hard'
+    },
+    conflict: 'Configuration attempts to override hard rule: Agent must not bypass Gate checks'
+  },
+  {
+    rule: {
+      id: 'hard-005',
+      description: 'Agent must not forge verification',
+      condition: [Function: condition],
+      effect: 'deny',
+      priority: 90,
+      layer: 'hard'
+    },
+    conflict: 'Configuration attempts to override hard rule: Agent must not forge verification'
+  }
+]
+
+stderr | tests/unit/plugin-permission-validator.test.ts > PluginPermissionValidator > Edge Cases > should handle invalid manifest gracefully
+Invalid plugin manifest: ZodError: [
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "id"
+    ],
+    "message": "Required"
+  }
+]
+    at Object.get error [as error] (file:///D:/code/SpecForge/node_modules/.bun/zod@3.25.76/node_modules/zod/v3/types.js:39:31)
+    at ZodObject.parse (file:///D:/code/SpecForge/node_modules/.bun/zod@3.25.76/node_modules/zod/v3/types.js:114:22)
+    at PluginPermissionValidator.parseManifest (D:\code\SpecForge\packages\permission-engine\src\services\plugin-permission-validator.ts:185:35)
+    at PluginPermissionValidator.validate (D:\code\SpecForge\packages\permission-engine\src\services\plugin-permission-validator.ts:125:33)
+    at D:\code\SpecForge\packages\permission-engine\tests\unit\plugin-permission-validator.test.ts:240:32
+    at file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:135:14
+    at file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:60:26
+    at runTest (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:781:17)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at runSuite (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:909:15) {
+  issues: [
+    {
+      code: 'invalid_type',
+      expected: 'string',
+      received: 'undefined',
+      path: [Array],
+      message: 'Required'
+    }
+  ],
+  addIssue: [Function (anonymous)],
+  addIssues: [Function (anonymous)]
+}
+
+stderr | tests/unit/permission-engine.test.ts > PermissionEngine > Hard Rule Integration > should detect hard rule conflicts in configuration
+Hard rule conflicts detected: [
+  {
+    rule: {
+      id: 'hard-004',
+      description: 'Agent must not bypass Gate checks',
+      condition: [Function: condition],
+      effect: 'deny',
+      priority: 90,
+      layer: 'hard'
+    },
+    conflict: 'Configuration attempts to override hard rule: Agent must not bypass Gate checks'
+  }
+]
+
+$ vitest run "--maxWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+stderr | tests/sendPrompt.test.ts > OpenCodeAdapter - sendPrompt > sendPrompt - session validation > should reject non-existent session
+[2026-10-24T13:59:24.679Z] [SENDPROMPT] [ERROR] Session not found: non-existent-session-id { sessionId: 'non-existent-session-id' }
+
+stderr | tests/sendPrompt.test.ts > OpenCodeAdapter - sendPrompt > sendPrompt - session validation > should reject non-existent session
+[2026-10-24T13:59:24.679Z] [SENDPROMPT] [ERROR] Session not found: non-existent-session-id { sessionId: 'non-existent-session-id' }
+
+stderr | tests/sendPrompt.test.ts > OpenCodeAdapter - sendPrompt > sendPrompt - session validation > should reject non-existent session
+[2026-10-24T13:59:24.679Z] [SENDPROMPT] [ERROR] Session not found: non-existent-session-id { sessionId: 'non-existent-session-id' }
+
+stderr | tests/sendPrompt.test.ts > OpenCodeAdapter - sendPrompt > sendPrompt - session validation > should reject session that was cancelled
+[2026-10-24T13:59:24.801Z] [SENDPROMPT] [ERROR] Session is not active {
+  sessionId: 'oc-cancel-test-intent-1792850364739-8j0txoe',
+  currentStatus: 'cancelled'
+}
+
+stderr | tests/sendPrompt.test.ts > OpenCodeAdapter - sendPrompt > sendPrompt - session validation > should reject session that was cancelled
+[2026-10-24T13:59:24.801Z] [SENDPROMPT] [ERROR] Session is not active {
+  sessionId: 'oc-cancel-test-intent-1792850364739-8j0txoe',
+  currentStatus: 'cancelled'
+}
+
+stderr | tests/sendPrompt.test.ts > OpenCodeAdapter - sendPrompt > sendPrompt - session validation > should reject session that was cancelled
+[2026-10-24T13:59:24.801Z] [SENDPROMPT] [ERROR] Session is not active {
+  sessionId: 'oc-cancel-test-intent-1792850364739-8j0txoe',
+  currentStatus: 'cancelled'
+}
+
+stderr | tests/sendPrompt.test.ts > OpenCodeAdapter - sendPrompt > sendPrompt - session validation > should reject session in pending status
+[2026-10-24T13:59:24.924Z] [SENDPROMPT] [ERROR] Session is not active {
+  sessionId: 'oc-pending-test-intent-1792850364863-0obvoeo',
+  currentStatus: 'pending'
+}
+
+stderr | tests/sendPrompt.test.ts > OpenCodeAdapter - sendPrompt > sendPrompt - session validation > should reject session in pending status
+[2026-10-24T13:59:24.924Z] [SENDPROMPT] [ERROR] Session is not active {
+  sessionId: 'oc-pending-test-intent-1792850364863-0obvoeo',
+  currentStatus: 'pending'
+}
+
+stderr | tests/sendPrompt.test.ts > OpenCodeAdapter - sendPrompt > sendPrompt - session validation > should reject session in completed status
+[2026-10-24T13:59:25.048Z] [SENDPROMPT] [ERROR] Session is not active {
+  sessionId: 'oc-completed-test-intent-1792850364986-ws7ebzy',
+  currentStatus: 'completed'
+}
+
+stderr | tests/sendPrompt.test.ts > OpenCodeAdapter - sendPrompt > sendPrompt - session validation > should reject session in error status
+[2026-10-24T13:59:25.171Z] [SENDPROMPT] [ERROR] Session is not active {
+  sessionId: 'oc-error-test-intent-1792850365108-d6hs97v',
+  currentStatus: 'error'
+}
+
+stderr | tests/sendPrompt.test.ts > OpenCodeAdapter - sendPrompt > sendPrompt - error codes > should return SESSION_NOT_FOUND for missing session
+[2026-10-24T13:59:25.234Z] [SENDPROMPT] [ERROR] Session not found: invalid-id { sessionId: 'invalid-id' }
+
+stderr | tests/sendPrompt.test.ts > OpenCodeAdapter - sendPrompt > sendPrompt - error codes > should return SESSION_NOT_ACTIVE for inactive session
+[2026-10-24T13:59:25.357Z] [SENDPROMPT] [ERROR] Session is not active {
+  sessionId: 'oc-inactive-test-intent-1792850365295-rw5drkg',
+  currentStatus: 'cancelled'
+}
+
+stderr | tests/sendPrompt.test.ts > OpenCodeAdapter - sendPrompt > sendPrompt - error codes > should include sessionId in error details
+[2026-10-24T13:59:25.482Z] [SENDPROMPT] [ERROR] Session not found: non-existent { sessionId: 'non-existent' }
+
+stderr | tests/sendPrompt.test.ts > OpenCodeAdapter - sendPrompt > sendPrompt - error codes > should include original error in details on delivery failure
+[2026-10-24T13:59:25.546Z] [SENDPROMPT] [ERROR] Failed to deliver prompt: Network error {
+  sessionId: 'oc-test-intent-sendprompt-1792850365482-h11tcoe',
+  error: Error: Network error
+      at D:\code\SpecForge\packages\opencode-adapter\tests\sendPrompt.test.ts:361:28
+      at file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+      at file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+      at file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+      at new Promise (<anonymous>)
+      at runWithTimeout (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+      at runTest (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+      at processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at runSuite (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+      at runSuite (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+}
+
+stderr | tests/unit/adapter-methods.test.ts > OpenCodeAdapter.spawnAgent (unit) > throws VERSION_MISMATCH when detected version is too high
+[2026-10-24T13:59:26.566Z] [COMPATIBILITY] [ERROR] OpenCode version 2.0.0 is not compatible with adapter range >=1.0.0 <1.15.0 { detectedVersion: '2.0.0', requiredRange: '>=1.0.0 <1.15.0' }
+
+stderr | tests/unit/adapter-methods.test.ts > OpenCodeAdapter.spawnAgent (unit) > throws VERSION_MISMATCH when detected version is too low
+[2026-10-24T13:59:26.568Z] [COMPATIBILITY] [ERROR] OpenCode version 1.0.0 is not compatible with adapter range >=1.14.0 <2.0.0 { detectedVersion: '1.0.0', requiredRange: '>=1.14.0 <2.0.0' }
+
+stderr | tests/unit/adapter-methods.test.ts > OpenCodeAdapter.spawnAgent (unit) > cleans up session state on version mismatch (no orphan)
+[2026-10-24T13:59:26.568Z] [COMPATIBILITY] [ERROR] OpenCode version 2.0.0 is not compatible with adapter range >=1.0.0 <1.15.0 { detectedVersion: '2.0.0', requiredRange: '>=1.0.0 <1.15.0' }
+
+stderr | tests/unit/adapter-methods.test.ts > OpenCodeAdapter.spawnAgent (unit) > throws TIMEOUT when communicationTimeout is extremely short
+[2026-10-24T13:59:26.577Z] [SPAWNAGENT] [ERROR] Failed to initialize OpenCode session: Session initialization timed out after 1ms. Operation: startOpenCodeSession. Suggestion: Check if OpenCode is running and accessible via Thin Plugin. {
+  spawnIntentId: 'i',
+  error: SessionInitializationError: Session initialization timed out after 1ms. Operation: startOpenCodeSession. Suggestion: Check if OpenCode is running and accessible via Thin Plugin.
+      at Timeout.<anonymous> (D:\code\SpecForge\packages\opencode-adapter\src\OpenCodeAdapter.ts:447:20)
+      at listOnTimeout (node:internal/timers:635:17)
+      at processTimers (node:internal/timers:571:7) {
+    code: 'TIMEOUT',
+    details: { timeoutMs: 1 }
+  }
+}
+
+stderr | tests/unit/adapter-methods.test.ts > OpenCodeAdapter.sendPrompt (unit) > throws SESSION_NOT_FOUND for unknown session
+[2026-10-24T13:59:27.533Z] [SENDPROMPT] [ERROR] Session not found: ghost { sessionId: 'ghost' }
+
+stderr | tests/unit/adapter-methods.test.ts > OpenCodeAdapter.sendPrompt (unit) > throws SESSION_NOT_ACTIVE for cancelled session
+[2026-10-24T13:59:27.595Z] [SENDPROMPT] [ERROR] Session is not active {
+  sessionId: 'oc-intent-sp-1792850367534-wbqtw72',
+  currentStatus: 'cancelled'
+}
+
+stderr | tests/unit/adapter-methods.test.ts > OpenCodeAdapter.sendPrompt (unit) > throws SESSION_NOT_ACTIVE for pending session
+[2026-10-24T13:59:27.657Z] [SENDPROMPT] [ERROR] Session is not active {
+  sessionId: 'oc-intent-sp-1792850367595-o5zlnt0',
+  currentStatus: 'pending'
+}
+
+stderr | tests/unit/adapter-methods.test.ts > OpenCodeAdapter.sendPrompt (unit) > wraps transport failure as DELIVERY_FAILED
+[2026-10-24T13:59:27.719Z] [SENDPROMPT] [ERROR] Failed to deliver prompt: socket hangup {
+  sessionId: 'oc-intent-sp-1792850367658-7adbzq0',
+  error: Error: socket hangup
+      at D:\code\SpecForge\packages\opencode-adapter\tests\unit\adapter-methods.test.ts:347:25
+      at file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+      at file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+      at file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+      at new Promise (<anonymous>)
+      at runWithTimeout (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+      at runTest (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+      at processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at runSuite (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+      at runSuite (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+}
+
+stderr | tests/unit/adapter-methods.test.ts > OpenCodeAdapter.sendPrompt (unit) > error messages contain no OpenCode-internal tokens (Property 4)
+[2026-10-24T13:59:27.782Z] [SENDPROMPT] [ERROR] Session not found: ghost { sessionId: 'ghost' }
+
+stderr | tests/integration/error-handling.integration.test.ts > Integration: Error Handling and Recovery > session lifecycle errors > should reject sendPrompt for non-existent session
+[2026-10-24T13:59:28.679Z] [SENDPROMPT] [ERROR] Session not found: non-existent-id { sessionId: 'non-existent-id' }
+
+stderr | tests/integration/error-handling.integration.test.ts > Integration: Error Handling and Recovery > session lifecycle errors > should reject sendPrompt for non-existent session
+[2026-10-24T13:59:28.682Z] [SENDPROMPT] [ERROR] Session not found: non-existent-id { sessionId: 'non-existent-id' }
+
+stderr | tests/integration/error-handling.integration.test.ts > Integration: Error Handling and Recovery > session lifecycle errors > should reject sendPrompt for cancelled session
+[2026-10-24T13:59:28.743Z] [SENDPROMPT] [ERROR] Session is not active {
+  sessionId: 'oc-cancel-test-1792850368685-q3gwv36',
+  currentStatus: 'cancelled'
+}
+
+stderr | tests/integration/error-handling.integration.test.ts > Integration: Error Handling and Recovery > session lifecycle errors > should reject sendPrompt for cancelled session
+[2026-10-24T13:59:28.743Z] [SENDPROMPT] [ERROR] Session is not active {
+  sessionId: 'oc-cancel-test-1792850368685-q3gwv36',
+  currentStatus: 'cancelled'
+}
+
+stderr | tests/integration/error-handling.integration.test.ts > Integration: Error Handling and Recovery > concurrent error scenarios > should handle cancel during active operations
+[2026-10-24T13:59:29.191Z] [SENDPROMPT] [ERROR] Session is not active {
+  sessionId: 'oc-cancel-during-ops-1792850369129-pg0s69s',
+  currentStatus: 'cancelled'
+}
+
+stderr | tests/OpenCodeAdapter.test.ts > OpenCodeAdapter > spawnAgent - version compatibility > should reject version outside compatible range - too high
+[2026-10-24T13:59:32.170Z] [COMPATIBILITY] [ERROR] OpenCode version 1.15.0 is not compatible with adapter range >=1.0.0 <1.15.0 { detectedVersion: '1.15.0', requiredRange: '>=1.0.0 <1.15.0' }
+
+stderr | tests/OpenCodeAdapter.test.ts > OpenCodeAdapter > spawnAgent - version compatibility > should reject version outside compatible range - too high
+[2026-10-24T13:59:32.171Z] [COMPATIBILITY] [ERROR] OpenCode version 1.15.0 is not compatible with adapter range >=1.0.0 <1.15.0 { detectedVersion: '1.15.0', requiredRange: '>=1.0.0 <1.15.0' }
+
+stderr | tests/OpenCodeAdapter.test.ts > OpenCodeAdapter > spawnAgent - version compatibility > should provide helpful error message on version mismatch
+[2026-10-24T13:59:32.172Z] [COMPATIBILITY] [ERROR] OpenCode version 2.0.0 is not compatible with adapter range >=1.0.0 <1.15.0 { detectedVersion: '2.0.0', requiredRange: '>=1.0.0 <1.15.0' }
+
+stderr | tests/OpenCodeAdapter.test.ts > OpenCodeAdapter > spawnAgent - version compatibility > should reject version 0.x when range requires >=1.0.0
+[2026-10-24T13:59:32.173Z] [COMPATIBILITY] [ERROR] OpenCode version 0.9.0 is not compatible with adapter range >=1.0.0 <2.0.0 { detectedVersion: '0.9.0', requiredRange: '>=1.0.0 <2.0.0' }
+
+stderr | tests/OpenCodeAdapter.test.ts > OpenCodeAdapter > spawnAgent - version compatibility > should reject version 0.x when range requires >=1.0.0
+[2026-10-24T13:59:32.174Z] [COMPATIBILITY] [ERROR] OpenCode version 0.9.0 is not compatible with adapter range >=1.0.0 <2.0.0 { detectedVersion: '0.9.0', requiredRange: '>=1.0.0 <2.0.0' }
+
+stderr | tests/OpenCodeAdapter.test.ts > OpenCodeAdapter > spawnAgent - error handling > should clean up session on initialization failure
+[2026-10-24T13:59:32.180Z] [SPAWNAGENT] [ERROR] Failed to initialize OpenCode session: Session initialization timed out after 1ms. Operation: startOpenCodeSession. Suggestion: Check if OpenCode is running and accessible via Thin Plugin. {
+  spawnIntentId: 'intent-timeout',
+  error: SessionInitializationError: Session initialization timed out after 1ms. Operation: startOpenCodeSession. Suggestion: Check if OpenCode is running and accessible via Thin Plugin.
+      at Timeout.<anonymous> (D:\code\SpecForge\packages\opencode-adapter\src\OpenCodeAdapter.ts:447:20)
+      at listOnTimeout (node:internal/timers:635:17)
+      at processTimers (node:internal/timers:571:7) {
+    code: 'TIMEOUT',
+    details: { timeoutMs: 1 }
+  }
+}
+
+stderr | tests/compatibility-matrix.test.ts > Compatibility Matrix: Minimum Supported Version > when adapter declares minimum version 1.14.0 > rejects version below minimum by patch
+[2026-10-24T13:59:33.102Z] [COMPATIBILITY] [ERROR] OpenCode version 1.13.99 is not compatible with adapter range >=1.14.0 <2.0.0 { detectedVersion: '1.13.99', requiredRange: '>=1.14.0 <2.0.0' }
+
+stderr | tests/compatibility-matrix.test.ts > Compatibility Matrix: Minimum Supported Version > when adapter declares minimum version 1.14.0 > rejects version below minimum by minor
+[2026-10-24T13:59:33.103Z] [COMPATIBILITY] [ERROR] OpenCode version 1.10.0 is not compatible with adapter range >=1.14.0 <2.0.0 { detectedVersion: '1.10.0', requiredRange: '>=1.14.0 <2.0.0' }
+
+stderr | tests/compatibility-matrix.test.ts > Compatibility Matrix: Minimum Supported Version > when adapter declares minimum version 1.14.0 > rejects major version below minimum
+[2026-10-24T13:59:33.104Z] [COMPATIBILITY] [ERROR] OpenCode version 0.9.0 is not compatible with adapter range >=1.14.0 <2.0.0 { detectedVersion: '0.9.0', requiredRange: '>=1.14.0 <2.0.0' }
+
+stderr | tests/compatibility-matrix.test.ts > Compatibility Matrix: Maximum Supported Version > when adapter declares maximum version 1.14.0 > rejects version at exclusive upper boundary (1.14.0)
+[2026-10-24T13:59:33.226Z] [COMPATIBILITY] [ERROR] OpenCode version 1.14.0 is not compatible with adapter range >=1.0.0 <1.14.0 { detectedVersion: '1.14.0', requiredRange: '>=1.0.0 <1.14.0' }
+
+stderr | tests/compatibility-matrix.test.ts > Compatibility Matrix: Maximum Supported Version > when adapter declares maximum version 1.14.0 > rejects version above maximum by patch
+[2026-10-24T13:59:33.227Z] [COMPATIBILITY] [ERROR] OpenCode version 1.14.1 is not compatible with adapter range >=1.0.0 <1.14.0 { detectedVersion: '1.14.1', requiredRange: '>=1.0.0 <1.14.0' }
+
+stderr | tests/compatibility-matrix.test.ts > Compatibility Matrix: Maximum Supported Version > when adapter declares maximum version 1.14.0 > rejects version above maximum by minor
+[2026-10-24T13:59:33.228Z] [COMPATIBILITY] [ERROR] OpenCode version 1.15.0 is not compatible with adapter range >=1.0.0 <1.14.0 { detectedVersion: '1.15.0', requiredRange: '>=1.0.0 <1.14.0' }
+
+stderr | tests/compatibility-matrix.test.ts > Compatibility Matrix: Maximum Supported Version > when adapter declares maximum version 1.14.0 > rejects major version above maximum
+[2026-10-24T13:59:33.228Z] [COMPATIBILITY] [ERROR] OpenCode version 2.0.0 is not compatible with adapter range >=1.0.0 <1.14.0 { detectedVersion: '2.0.0', requiredRange: '>=1.0.0 <1.14.0' }
+
+stderr | tests/compatibility-matrix.test.ts > Compatibility Matrix: Patch Version Testing > within the same major.minor (1.14.x) > rejects 0.x version when range requires >=1.0.0
+[2026-10-24T13:59:33.408Z] [COMPATIBILITY] [ERROR] OpenCode version 0.14.0 is not compatible with adapter range >=1.14.0 <1.15.0 { detectedVersion: '0.14.0', requiredRange: '>=1.14.0 <1.15.0' }
+
+stderr | tests/compatibility-matrix.test.ts > Compatibility Matrix: Full Range Testing > comprehensive compatibility matrix > one patch below minimum
+[2026-10-24T13:59:33.529Z] [COMPATIBILITY] [ERROR] OpenCode version 1.13.99 is not compatible with adapter range >=1.14.0 <2.0.0 { detectedVersion: '1.13.99', requiredRange: '>=1.14.0 <2.0.0' }
+
+stderr | tests/compatibility-matrix.test.ts > Compatibility Matrix: Full Range Testing > comprehensive compatibility matrix > one minor below minimum
+[2026-10-24T13:59:33.530Z] [COMPATIBILITY] [ERROR] OpenCode version 1.13.0 is not compatible with adapter range >=1.14.0 <2.0.0 { detectedVersion: '1.13.0', requiredRange: '>=1.14.0 <2.0.0' }
+
+stderr | tests/compatibility-matrix.test.ts > Compatibility Matrix: Full Range Testing > comprehensive compatibility matrix > major version below minimum
+[2026-10-24T13:59:33.530Z] [COMPATIBILITY] [ERROR] OpenCode version 0.14.0 is not compatible with adapter range >=1.14.0 <2.0.0 { detectedVersion: '0.14.0', requiredRange: '>=1.14.0 <2.0.0' }
+
+stderr | tests/compatibility-matrix.test.ts > Compatibility Matrix: Full Range Testing > comprehensive compatibility matrix > at maximum exclusive
+[2026-10-24T13:59:33.590Z] [COMPATIBILITY] [ERROR] OpenCode version 1.15.0 is not compatible with adapter range >=1.0.0 <1.15.0 { detectedVersion: '1.15.0', requiredRange: '>=1.0.0 <1.15.0' }
+
+stderr | tests/compatibility-matrix.test.ts > Compatibility Matrix: Full Range Testing > comprehensive compatibility matrix > one above maximum exclusive
+[2026-10-24T13:59:33.591Z] [COMPATIBILITY] [ERROR] OpenCode version 1.15.1 is not compatible with adapter range >=1.0.0 <1.15.0 { detectedVersion: '1.15.1', requiredRange: '>=1.0.0 <1.15.0' }
+
+stderr | tests/compatibility-matrix.test.ts > Compatibility Matrix: Full Range Testing > comprehensive compatibility matrix > below composite range
+[2026-10-24T13:59:33.652Z] [COMPATIBILITY] [ERROR] OpenCode version 1.13.99 is not compatible with adapter range >=1.14.0 <1.16.0 { detectedVersion: '1.13.99', requiredRange: '>=1.14.0 <1.16.0' }
+
+stderr | tests/compatibility-matrix.test.ts > Compatibility Matrix: Full Range Testing > comprehensive compatibility matrix > above composite range
+[2026-10-24T13:59:33.653Z] [COMPATIBILITY] [ERROR] OpenCode version 1.16.0 is not compatible with adapter range >=1.14.0 <1.16.0 { detectedVersion: '1.16.0', requiredRange: '>=1.14.0 <1.16.0' }
+
+stderr | tests/compatibility-matrix.test.ts > Compatibility Matrix: Full Range Testing > comprehensive compatibility matrix > 1.x - only exact major version matching works
+[2026-10-24T13:59:33.653Z] [COMPATIBILITY] [ERROR] OpenCode version 1.0.0 is not compatible with adapter range 1.x { detectedVersion: '1.0.0', requiredRange: '1.x' }
+
+stderr | tests/compatibility-matrix.test.ts > Compatibility Matrix: Full Range Testing > comprehensive compatibility matrix > 1.x - rejects 2.0.0
+[2026-10-24T13:59:33.653Z] [COMPATIBILITY] [ERROR] OpenCode version 2.0.0 is not compatible with adapter range 1.x { detectedVersion: '2.0.0', requiredRange: '1.x' }
+
+stderr | tests/compatibility-matrix.test.ts > Compatibility Matrix: Error Messages > includes detected version in error for too-low version
+[2026-10-24T13:59:33.715Z] [COMPATIBILITY] [ERROR] OpenCode version 1.0.0 is not compatible with adapter range >=1.14.0 <2.0.0 { detectedVersion: '1.0.0', requiredRange: '>=1.14.0 <2.0.0' }
+
+stderr | tests/compatibility-matrix.test.ts > Compatibility Matrix: Error Messages > includes detected version in error for too-high version
+[2026-10-24T13:59:33.716Z] [COMPATIBILITY] [ERROR] OpenCode version 2.0.0 is not compatible with adapter range >=1.0.0 <1.15.0 { detectedVersion: '2.0.0', requiredRange: '>=1.0.0 <1.15.0' }
+
+stderr | tests/compatibility-matrix.test.ts > Compatibility Matrix: Error Messages > includes suggested action in error details
+[2026-10-24T13:59:33.717Z] [COMPATIBILITY] [ERROR] OpenCode version 2.5.0 is not compatible with adapter range >=1.0.0 <2.0.0 { detectedVersion: '2.5.0', requiredRange: '>=1.0.0 <2.0.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > version compatibility matrix > major version above range
+[2026-10-24T13:59:34.338Z] [COMPATIBILITY] [ERROR] OpenCode version 2.0.0 is not compatible with adapter range >=1.0.0 <2.0.0 { detectedVersion: '2.0.0', requiredRange: '>=1.0.0 <2.0.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > version compatibility matrix > major version above range
+[2026-10-24T13:59:34.339Z] [COMPATIBILITY] [ERROR] OpenCode version 2.0.0 is not compatible with adapter range >=1.0.0 <2.0.0 { detectedVersion: '2.0.0', requiredRange: '>=1.0.0 <2.0.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > version compatibility matrix > major version way above range
+[2026-10-24T13:59:34.340Z] [COMPATIBILITY] [ERROR] OpenCode version 3.0.0 is not compatible with adapter range >=1.0.0 <2.0.0 { detectedVersion: '3.0.0', requiredRange: '>=1.0.0 <2.0.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > version compatibility matrix > major version way above range
+[2026-10-24T13:59:34.340Z] [COMPATIBILITY] [ERROR] OpenCode version 3.0.0 is not compatible with adapter range >=1.0.0 <2.0.0 { detectedVersion: '3.0.0', requiredRange: '>=1.0.0 <2.0.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > version compatibility matrix > version below minimum
+[2026-10-24T13:59:34.341Z] [COMPATIBILITY] [ERROR] OpenCode version 0.9.0 is not compatible with adapter range >=1.0.0 <2.0.0 { detectedVersion: '0.9.0', requiredRange: '>=1.0.0 <2.0.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > version compatibility matrix > version below minimum
+[2026-10-24T13:59:34.341Z] [COMPATIBILITY] [ERROR] OpenCode version 0.9.0 is not compatible with adapter range >=1.0.0 <2.0.0 { detectedVersion: '0.9.0', requiredRange: '>=1.0.0 <2.0.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > version compatibility matrix > version way below minimum
+[2026-10-24T13:59:34.341Z] [COMPATIBILITY] [ERROR] OpenCode version 0.1.0 is not compatible with adapter range >=1.0.0 <2.0.0 { detectedVersion: '0.1.0', requiredRange: '>=1.0.0 <2.0.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > version compatibility matrix > version way below minimum
+[2026-10-24T13:59:34.341Z] [COMPATIBILITY] [ERROR] OpenCode version 0.1.0 is not compatible with adapter range >=1.0.0 <2.0.0 { detectedVersion: '0.1.0', requiredRange: '>=1.0.0 <2.0.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > version compatibility matrix > OpenCode v2 in v1 adapter
+[2026-10-24T13:59:34.342Z] [COMPATIBILITY] [ERROR] OpenCode version 2.1.0 is not compatible with adapter range >=1.0.0 <2.0.0 { detectedVersion: '2.1.0', requiredRange: '>=1.0.0 <2.0.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > version compatibility matrix > OpenCode v2 in v1 adapter
+[2026-10-24T13:59:34.342Z] [COMPATIBILITY] [ERROR] OpenCode version 2.1.0 is not compatible with adapter range >=1.0.0 <2.0.0 { detectedVersion: '2.1.0', requiredRange: '>=1.0.0 <2.0.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > version compatibility matrix > OpenCode v1 in v2 adapter
+[2026-10-24T13:59:34.342Z] [COMPATIBILITY] [ERROR] OpenCode version 1.14.0 is not compatible with adapter range >=2.0.0 <3.0.0 { detectedVersion: '1.14.0', requiredRange: '>=2.0.0 <3.0.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > version compatibility matrix > OpenCode v1 in v2 adapter
+[2026-10-24T13:59:34.343Z] [COMPATIBILITY] [ERROR] OpenCode version 1.14.0 is not compatible with adapter range >=2.0.0 <3.0.0 { detectedVersion: '1.14.0', requiredRange: '>=2.0.0 <3.0.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > version compatibility matrix > OpenCode v3 in v2 adapter
+[2026-10-24T13:59:34.343Z] [COMPATIBILITY] [ERROR] OpenCode version 3.0.0 is not compatible with adapter range >=2.0.0 <3.0.0 { detectedVersion: '3.0.0', requiredRange: '>=2.0.0 <3.0.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > version compatibility matrix > OpenCode v3 in v2 adapter
+[2026-10-24T13:59:34.344Z] [COMPATIBILITY] [ERROR] OpenCode version 3.0.0 is not compatible with adapter range >=2.0.0 <3.0.0 { detectedVersion: '3.0.0', requiredRange: '>=2.0.0 <3.0.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > version compatibility matrix > pre-release below range
+[2026-10-24T13:59:34.399Z] [COMPATIBILITY] [ERROR] OpenCode version 0.9.0-alpha.1 is not compatible with adapter range >=1.0.0 <2.0.0 { detectedVersion: '0.9.0-alpha.1', requiredRange: '>=1.0.0 <2.0.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > version compatibility matrix > pre-release below range
+[2026-10-24T13:59:34.400Z] [COMPATIBILITY] [ERROR] OpenCode version 0.9.0-alpha.1 is not compatible with adapter range >=1.0.0 <2.0.0 { detectedVersion: '0.9.0-alpha.1', requiredRange: '>=1.0.0 <2.0.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > upgrade scenario > should handle OpenCode upgrade gracefully
+[2026-10-24T13:59:34.459Z] [COMPATIBILITY] [ERROR] OpenCode version 1.15.0 is not compatible with adapter range >=1.14.0 <1.15.0 { detectedVersion: '1.15.0', requiredRange: '>=1.14.0 <1.15.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > downgrade scenario > should handle OpenCode downgrade gracefully
+[2026-10-24T13:59:34.645Z] [COMPATIBILITY] [ERROR] OpenCode version 0.9.0 is not compatible with adapter range >=1.0.0 <2.0.0 { detectedVersion: '0.9.0', requiredRange: '>=1.0.0 <2.0.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > error propagation > should propagate version mismatch as structured error
+[2026-10-24T13:59:34.646Z] [COMPATIBILITY] [ERROR] OpenCode version 2.0.0 is not compatible with adapter range >=1.0.0 <1.15.0 { detectedVersion: '2.0.0', requiredRange: '>=1.0.0 <1.15.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > error propagation > should include version mismatch event in error details
+[2026-10-24T13:59:34.647Z] [COMPATIBILITY] [ERROR] OpenCode version 3.0.0 is not compatible with adapter range >=1.0.0 <2.0.0 { detectedVersion: '3.0.0', requiredRange: '>=1.0.0 <2.0.0' }
+
+stderr | tests/integration/version-compatibility.integration.test.ts > Integration: Version Compatibility Scenarios > error propagation > should handle unknown version strings gracefully
+[2026-10-24T13:59:34.647Z] [COMPATIBILITY] [ERROR] OpenCode version unknown is not compatible with adapter range >=1.0.0 <2.0.0 { detectedVersion: 'unknown', requiredRange: '>=1.0.0 <2.0.0' }
+
+stderr | tests/unit/error-handling.test.ts > Error Handling / Version Incompatibility > throws SessionInitializationError with VERSION_MISMATCH code when kernel is too new
+[2026-10-24T13:59:35.057Z] [COMPATIBILITY] [ERROR] OpenCode version 2.0.0 is not compatible with adapter range >=1.0.0 <1.15.0 { detectedVersion: '2.0.0', requiredRange: '>=1.0.0 <1.15.0' }
+
+stderr | tests/unit/error-handling.test.ts > Error Handling / Version Incompatibility > throws SessionInitializationError with VERSION_MISMATCH code when kernel is too new
+[2026-10-24T13:59:35.060Z] [COMPATIBILITY] [ERROR] OpenCode version 2.0.0 is not compatible with adapter range >=1.0.0 <1.15.0 { detectedVersion: '2.0.0', requiredRange: '>=1.0.0 <1.15.0' }
+
+stderr | tests/unit/error-handling.test.ts > Error Handling / Version Incompatibility > throws SessionInitializationError when kernel is too old
+[2026-10-24T13:59:35.061Z] [COMPATIBILITY] [ERROR] OpenCode version 1.0.0 is not compatible with adapter range >=1.14.0 <2.0.0 { detectedVersion: '1.0.0', requiredRange: '>=1.14.0 <2.0.0' }
+
+stderr | tests/unit/error-handling.test.ts > Error Handling / Version Incompatibility > cleans up partial session state when version check fails
+[2026-10-24T13:59:35.063Z] [COMPATIBILITY] [ERROR] OpenCode version 2.0.0 is not compatible with adapter range >=1.0.0 <1.15.0 { detectedVersion: '2.0.0', requiredRange: '>=1.0.0 <1.15.0' }
+
+stderr | tests/unit/error-handling.test.ts > Error Handling / OpenCode Communication Errors > sendPrompt to a missing session throws PromptDeliveryError(SESSION_NOT_FOUND)
+[2026-10-24T13:59:35.191Z] [SENDPROMPT] [ERROR] Session not found: does-not-exist { sessionId: 'does-not-exist' }
+
+stderr | tests/unit/error-handling.test.ts > Error Handling / OpenCode Communication Errors > sendPrompt to a cancelled session throws PromptDeliveryError(SESSION_NOT_ACTIVE)
+[2026-10-24T13:59:35.254Z] [SENDPROMPT] [ERROR] Session is not active {
+  sessionId: 'oc-intent-comm-error-1792850375192-fzid4jy',
+  currentStatus: 'cancelled'
+}
+
+stderr | tests/unit/error-handling.test.ts > Error Handling / OpenCode Communication Errors > sendPrompt wraps a transport-layer failure as DELIVERY_FAILED
+[2026-10-24T13:59:35.378Z] [SENDPROMPT] [ERROR] Failed to deliver prompt: socket hangup {
+  sessionId: 'oc-intent-comm-error-1792850375315-87c5zsg',
+  error: Error: socket hangup
+      at D:\code\SpecForge\packages\opencode-adapter\tests\unit\error-handling.test.ts:369:26
+      at file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+      at file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+      at file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+      at new Promise (<anonymous>)
+      at runWithTimeout (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+      at runTest (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+      at processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at runSuite (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+      at runSuite (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@3.2.4/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+}
+
+stderr | tests/integration/session-lifecycle.integration.test.ts > Integration: End-to-end session lifecycle > completes spawn → bind → sendPrompt → events → cancel without leaking concepts
+[2026-10-24T13:59:36.868Z] [SENDPROMPT] [ERROR] Session is not active {
+  sessionId: 'oc-lifecycle-intent-1-1792850376785-qytw73o',
+  currentStatus: 'cancelled'
+}
+
+stderr | tests/integration/session-lifecycle.integration.test.ts > Integration: End-to-end session lifecycle > rejects sendPrompt to an unknown session with SESSION_NOT_FOUND
+[2026-10-24T13:59:36.992Z] [SENDPROMPT] [ERROR] Session not found: does-not-exist { sessionId: 'does-not-exist' }
+
+stderr | tests/integration/session-lifecycle.integration.test.ts > Integration: End-to-end session lifecycle > rejects sendPrompt to an unknown session with SESSION_NOT_FOUND
+[2026-10-24T13:59:36.993Z] [SENDPROMPT] [ERROR] Session not found: does-not-exist { sessionId: 'does-not-exist' }
+
+stderr | tests/DiagnosticsLogger.test.ts > DiagnosticsLogger > Log Levels > should log warn messages
+[2026-10-24T13:59:40.639Z] [TEST] [WARN] Warning message 
+
+stderr | tests/DiagnosticsLogger.test.ts > DiagnosticsLogger > Log Levels > should log error messages
+[2026-10-24T13:59:40.640Z] [TEST] [ERROR] Error message 
+
+stderr | tests/DiagnosticsLogger.test.ts > DiagnosticsLogger > Log Levels > should filter logs based on log level
+[2026-10-24T13:59:40.640Z] [TEST] [WARN] Warning 
+[2026-10-24T13:59:40.640Z] [TEST] [ERROR] Error 
+
+stderr | tests/DiagnosticsLogger.test.ts > DiagnosticsLogger > Translation Logging > should log failed translations with reason
+[2026-10-24T13:59:40.642Z] [TRANSLATION] [WARN] Translation failed: tool OpenCodeToolCall → DaemonToolCall {
+  translationType: 'tool',
+  inputType: 'OpenCodeToolCall',
+  outputType: 'DaemonToolCall',
+  reason: 'Unsupported event type',
+  duration: 5
+}
+
+stderr | tests/DiagnosticsLogger.test.ts > DiagnosticsLogger > Compatibility Warnings > should add version mismatch warnings
+[2026-10-24T13:59:40.646Z] [COMPATIBILITY] [ERROR] Version not compatible { version: '1.0.0' }
+
+stderr | tests/DiagnosticsLogger.test.ts > DiagnosticsLogger > Compatibility Warnings > should add feature unsupported warnings
+[2026-10-24T13:59:40.646Z] [COMPATIBILITY] [WARN] Feature not supported 
+
+stderr | tests/DiagnosticsLogger.test.ts > DiagnosticsLogger > Compatibility Warnings > should filter high severity warnings
+[2026-10-24T13:59:40.647Z] [COMPATIBILITY] [ERROR] V1 
+[2026-10-24T13:59:40.647Z] [COMPATIBILITY] [WARN] V2 
+
+stderr | tests/DiagnosticsLogger.test.ts > DiagnosticsLogger > Compatibility Warnings > should clear compatibility warnings
+[2026-10-24T13:59:40.648Z] [COMPATIBILITY] [ERROR] Test 
+
+stderr | tests/DiagnosticsLogger.test.ts > DiagnosticsLogger > Debug Information > should provide comprehensive debug info
+[2026-10-24T13:59:40.648Z] [COMPATIBILITY] [ERROR] Test 
+
+stderr | tests/DiagnosticsLogger.test.ts > DiagnosticsLogger > Log Management > should clear all logs
+[2026-10-24T13:59:40.650Z] [TEST] [WARN] Msg2 
+
+stderr | tests/DiagnosticsLogger.test.ts > DiagnosticsLogger > Log Management > should clear all diagnostics data
+[2026-10-24T13:59:40.651Z] [COMPATIBILITY] [ERROR] Test 
+
+$ vitest run "--maxWorkers=1" "--minWorkers=1"
+stderr | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > rolls back earlier replacements when a later current upgrade mutation fails
+  ⚠️ 升级失败，尝试回滚...
+
+stderr | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > rolls back earlier replacements when a later current upgrade mutation fails
+  ✅ 回滚完成
+
+stderr | tests/current-repository-installer-manifest-consumption.integration.test.ts > current repository installer manifest consumption > rolls back earlier replacements when a later current upgrade mutation fails
+<empty line>

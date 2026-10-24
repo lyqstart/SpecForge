@@ -1,0 +1,25 @@
+$ vitest run tests/design-governance-live-closure.test.ts "tests/integration/p0-governance-regression-flow.test.ts" tests/unit/candidate-seal-boundary.test.ts tests/unit/verification-gate-historical-attempt-reconcile.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/design-governance-live-closure.test.ts > Design Governance live closure > rejects an incomplete trigger classification through the same sf_gate_run path
+AssertionError: expected undefined to be 'failed' // Object.is equality
+
+- Expected: 
+"failed"
+
++ Received: 
+undefined
+
+ ❯ tests/design-governance-live-closure.test.ts:617:44
+    615|     );
+    616| 
+    617|     expect((result as any).summary_status).toBe('failed');
+       |                                            ^
+    618|     expect((result as any).reports).toContainEqual(
+    619|       expect.objectContaining({ gate_id: 'schema_gate', status: 'faile…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+error: script "test" exited with code 1

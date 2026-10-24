@@ -1,0 +1,18 @@
+{
+  "run_id": "CODEX-SF-20261024-CANDIDATE-SEAL-A01",
+  "mode": "CODEX_DIRECT",
+  "time": "2026-10-24T14:07:01.454Z",
+  "status": "REPAIR_DEPLOYED_ORIGINAL_ACCEPTANCE_NOT_RESUMED",
+  "installed_version": "1.0.21",
+  "candidate_commit": "b19539bf666f18ff33321e6c7217210b44e9d86d",
+  "original_state": "candidate_preparing",
+  "original_writes": 0,
+  "approval": false,
+  "next": "Restart OpenCode and use resume-opencode-final.txt; stop at approval_required for explicit user decision",
+  "writes": {
+    "TRUTH_SOURCE_WRITES": "Product Specification clarification and isolated fixture truth only; original business truth unchanged",
+    "REPOSITORY_TRACKED_WRITES": "Source, tests, deployment guidance, aligned version, ledger, project-status and evidence archive",
+    "RUNTIME_OBSERVER_WRITES": "Installer manifest and backup, daemon handshake/logs; isolated project runtime logs/projection",
+    "EXTERNAL_EVIDENCE_WRITES": "Local original snapshot and new raw command/HTTP evidence"
+  }
+}

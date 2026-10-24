@@ -1,0 +1,19 @@
+{
+  "id": "006-reproduction",
+  "cwd": "D:/code/SpecForge/.tmp/candidate-seal-worktree/packages/daemon-core",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/candidate-seal-boundary.test.ts"
+  ],
+  "purpose": "006-reproduction",
+  "started": "2026-10-24T13:24:53.711Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T13:25:07.162Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 1,
+  "signal": null,
+  "observed_repository_status": ""
+}

@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0002",
+  "captured_at": "2026-10-24T10:59:10.919Z",
+  "snapshot_id": "sha256:ea0d3796eb9488dbc86462c62abe9f07631d92224177474dfd99a4bdd8ef1f17",
+  "planned_code_paths": [
+    "app.js",
+    "index.html",
+    "styles.css",
+    "test/app.test.js"
+  ],
+  "current_file_count": 4,
+  "all_planned_paths_missing": false,
+  "entries": [
+    {
+      "scope_path": "app.js",
+      "scope_kind": "file",
+      "matched_files": [
+        {
+          "path": "app.js",
+          "size": 8539,
+          "sha256": "sha256:52bb946e8a0015c6f0bb2e062d9424111865bbe9789bcca387faddd8361e897e"
+        }
+      ]
+    },
+    {
+      "scope_path": "index.html",
+      "scope_kind": "file",
+      "matched_files": [
+        {
+          "path": "index.html",
+          "size": 577,
+          "sha256": "sha256:9f9bafd3d4267e2065450001b5638ce19ecc3c36b53dede4a9c18fc04e7c91f4"
+        }
+      ]
+    },
+    {
+      "scope_path": "styles.css",
+      "scope_kind": "file",
+      "matched_files": [
+        {
+          "path": "styles.css",
+          "size": 1958,
+          "sha256": "sha256:5f1b28e16f827a70f64d907f4075a0b64549149a928101d3adde0eebbebdcf3c"
+        }
+      ]
+    },
+    {
+      "scope_path": "test/app.test.js",
+      "scope_kind": "file",
+      "matched_files": [
+        {
+          "path": "test/app.test.js",
+          "size": 41568,
+          "sha256": "sha256:1cfb1ea9e21a6d15ef45fb4144e0b7364ec058fdb1a39ee6fada2dfa24236bcd"
+        }
+      ]
+    }
+  ]
+}

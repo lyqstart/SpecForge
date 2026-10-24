@@ -1,0 +1,915 @@
+diff --git a/docs/product-specification/specforge-product-specification.md b/docs/product-specification/specforge-product-specification.md
+index 1578b371..8267e566 100644
+--- a/docs/product-specification/specforge-product-specification.md
++++ b/docs/product-specification/specforge-product-specification.md
+@@ -4,7 +4,7 @@
+ >
+ > Specification ID: SPS-1.0
+ >
+-> Product release version: 1.0.20
++> Product release version: 1.0.21
+ >
+ > Product version epoch: 1
+ >
+@@ -541,6 +541,8 @@ Verification Gate 与 Close Gate 必须使用同一证据完整性判据。报
+ 
+ ---
+ 
++候选正式检查必须先完成 §6.4 的封存事务。统一 Gate 入口的别名、单项检查、组合检查和历史 Attempt 对账不得从未封存状态自动补走 `candidate_preparing → candidate_prepared`；必须在创建 Attempt 或推进状态前拒绝。`gates_failed` 的内容修复须先合法返回 `candidate_preparing`，再由正式封存 owner 校验并生成绑定。候选事实校验须区分肯定声明与其否定或解释，不能仅因正确说明包含“绿地新建”“实现不存在”等词语便判为矛盾；真实矛盾、内容漂移和绑定缺失继续拒绝。
++
+ # 7. Daemon
+ 
+ ## 7.1 角色
+diff --git a/docs/project-status.md b/docs/project-status.md
+index 2a86e1d7..21890325 100644
+--- a/docs/project-status.md
++++ b/docs/project-status.md
+@@ -9,23 +9,23 @@
+ <!-- SPECFORGE_PROJECT_STATUS:START -->
+ PROJECT_STATUS_SCHEMA=2
+ PROJECT_STATUS_DECLARATION=ACTIVE
+-ACTIVE_INITIATIVE=SHELL_WRITE_BOUNDARY_REPAIR
+-OBJECTIVE=Apply approved D18 read-only containment; verify scripts interpreters child processes and six original acceptance issues.
+-CURRENT_PHASE=READ_ONLY_CONTAINMENT_DELIVERED_AND_INDEPENDENTLY_VERIFIED
++ACTIVE_INITIATIVE=CANDIDATE_SEAL_REPAIR
++OBJECTIVE=Repair implementation truth false positives and unified Gate seal bypass; preserve original WI-0002 and deliver verified deployment plus resume prompt.
++CURRENT_PHASE=IMPLEMENTATION_AND_ISOLATED_VERIFICATION
+ OWNER_DECISIONS=AR-DEC-01:APPROVED;AR-DEC-02:APPROVED_WITH_ARCHIVE_CONSOLIDATION;AR-DEC-03:APPROVED_WITH_KIRO_RETIREMENT;AR-DEC-04:APPROVED_WITH_SINGLE_PROJECT_STATUS;AR-DEC-05:ONLY_TWO_EXTERNAL_EXECUTION_MODES_CODEX_DIRECT_AND_WORKBUDDY_COORDINATED;AR-DEC-06:ACTIVE_RULES_SEPARATED_FROM_HISTORICAL_LEDGER;D05:OPENCODE_ADAPTER_ENABLED;D10:NSSM_REMOVED_WINDOWS_DIRECT_DAEMON_ONLY;D11:GLOBAL_ONLY_THIN_PLUGIN_SINGLE_EXPORT;VR-DEC-01:NEW_EPOCH_1_0_0;VR-DEC-02:TAG_PREFIX_SPECFORGE_V;VR-DEC-03:INDEPENDENT_CONTRACT_VERSIONS;VR-DEC-04:ACTIVE_REFERENCES_CONVERGE_HISTORY_PRESERVED;D18:INTERNAL_READ_ONLY_COMMAND_CONTAINMENT
+ EXECUTION_MODE=CODEX_DIRECT
+-EXECUTION_STATE=STOPPED
++EXECUTION_STATE=RUNNING
+ EXECUTION_PROTOCOL=docs/rule/specforge-execution-mode-and-evidence-protocol.md
+ EXECUTION_PLANNER=CODEX
+ EXECUTION_ACTOR=CODEX
+ EXECUTION_AUDITOR=CODEX
+-EXECUTION_RUN_ID=CODEX-SF-20261024-SHELL-BOUNDARY-A01
+-EXECUTION_EVIDENCE_ROOT=D:/code/SpecForge/docs/archive/2026-10-24-shell-boundary-repair
+-LAST_EXECUTION_CHECKPOINT=Installed1.0.20; actual restart denial/read positives and independent raw-evidence six-item review passed within approved D18 scope.
+-NEXT_EXECUTION_STOP=AFTER_REPAIR_DEPLOYMENT_AND_INDEPENDENT_SIX_REVIEW
+-LAST_COMPLETED_CHECKPOINT=Closed command writes blocked by non-spawning internal read interpreter; source/template/verifier synced; raw baseline and corrected regression preserved.
++EXECUTION_RUN_ID=CODEX-SF-20261024-CANDIDATE-SEAL-A01
++EXECUTION_EVIDENCE_ROOT=D:/code/SpecForge/docs/archive/2026-10-24-candidate-seal-repair
++LAST_EXECUTION_CHECKPOINT=Original project 2213 files snapshotted; baseline counterexamples recorded; isolated repair in progress.
++NEXT_EXECUTION_STOP=AFTER_DEPLOYMENT_AND_INDEPENDENT_REVIEW_BEFORE_ORIGINAL_WI_RESUMPTION
++LAST_COMPLETED_CHECKPOINT=Confirmed false-positive baseline parser and Gate auto-advance bypass of the seal owner.
+ CURRENT_BLOCKER=NONE
+-NEXT_LEGAL_ACTION=Use documented D18 restricted read-only mode. General scripts builds and tests remain unavailable until separately approved isolation architecture is implemented and verified.
++NEXT_LEGAL_ACTION=Validate isolated original-project copies, deploy verified repair and provide OpenCode resume prompt; do not advance original WI-0002 or approve candidates.
+ ALLOWED_SCOPE=AGENTS.md;README.md;.gitattributes;.gitignore;package.json;bun.lock;docs/project-status.md;docs/product-specification/**;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/archive/**;docs/adr/**;docs/cli/**;docs/conventions/**;docs/user/**;docs/plugins/**;docs/tools/**;docs/engineering-lessons/**;docs/rule/**;scripts/**;setup/**;packages/**/package.json;packages/service-management/src/**;packages/configuration/src/**;packages/opencode-adapter/src/**;packages/permission-engine/src/**;packages/daemon-core/src/**;packages/cli/src/**;packages/types/src/**;packages/observability/src/**;packages/observability/examples/**;packages/workflow-runtime/src/types/state-machine.ts;packages/**/README.md;packages/**/DEVELOPMENT.md;packages/**/docs/**;packages/**/src/**/*.md;packages/**/tests/**;tests/**
+ PROHIBITED=Deleting ADR ERR audit or report evidence;creating another active handoff current-status or recovery-status file;modifying D:\code\t3 outside a separately authorized controlled recovery phase;reading or modifying D:\code\t2 during SpecForge repair;creating a SpecForge Work Item for SpecForge product self-development;using archive evidence as a current product contract
+ REQUIRED_RULES=docs/rule/specforge-active-development-rules.md;docs/product-specification/authority-registry.md;docs/product-specification/specforge-product-specification.md;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/rule/specforge-execution-mode-and-evidence-protocol.md
+diff --git a/docs/rule/specforge-active-development-rules.md b/docs/rule/specforge-active-development-rules.md
+index 6d1df32d..70b62397 100644
+--- a/docs/rule/specforge-active-development-rules.md
++++ b/docs/rule/specforge-active-development-rules.md
+@@ -2562,3 +2562,8 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制
+ 
+ 脚本、解释器、子进程、环境注入及动态加载的文件效果不能由命令文字目标提取证明。无已验证隔离执行能力时必须在启动进程前拒绝，受控只读操作须由内部有限解释器执行；不得因角色、活动任务、报告路径或旧授权放宽。生产与部署库以及验证备用执行器必须共享边界；回归同时覆盖真实文件零副作用、合法读取、复合文本、注入、重启和拒绝日志。
+ <!-- source: ledger current EXP-285 -->
++
++## EXP-286：封存前置条件不得由下游自动状态序列替代
++
++统一 Gate 的别名、显式子集、混合请求和历史对账都必须在任何 Attempt 写入或状态推进前证明正式封存已成立。失败恢复必须调用封存 owner，不能只重放状态名。自然语言事实检查应在单个声明内区分肯定与否定，正确说明不得误拦，同句其他真实矛盾不得被否定词豁免。回归同时使用真实失败原文、相反事实、混合声明、未封存零副作用、正式封存正例与重启后的恢复入口。
++<!-- source: ledger current EXP-286 -->
+diff --git a/docs/rule/specforge-development-error-ledger-and-experience.md b/docs/rule/specforge-development-error-ledger-and-experience.md
+index 73d20e78..dea3a9aa 100644
+--- a/docs/rule/specforge-development-error-ledger-and-experience.md
++++ b/docs/rule/specforge-development-error-ledger-and-experience.md
+@@ -32043,3 +32043,27 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制
+ - 034完整daemon219文件2089项通过，021其他包均通过且仅文档两项失败，来源差异经056证明为文档。039发布预检、042升级、043安装核验通过；旧进程退出和新安装112个文件哈希均经独立核验。
+ - 046/052真实安装两个PID的命令拒绝与只读正例均成立；054活动且授权的脚本/子进程仍拒绝，硬链接四拒绝及正常编辑/新建均通过。047/051配置/历史异常跨重启仍拒绝，恢复及配置超时消费正确；053配置日志无测试秘密，031真实模型字段语义正确。
+ - 056重新比较原项目1531个基线文件与3132个历史证据成员、源码/部署执行入口和实际文件效果，PASS_APPROVED_READ_ONLY_CONTAINMENT。用户明确选定D18，不能声称通用脚本/构建/测试或完整无人值守开发能力恢复；只读路径不是OS沙箱。封存docs/archive/2026-10-24-shell-boundary-repair。EXP-004/006/007/261/282/283/284/285。
++
++### ERR-1883：否定式基线描述被跨句关键词误判
++
++- 原 WI-0002 工具错误原文与源码复现证明：“非绿地新建”和“不存在「当前实现未知」”被当作实现不存在。基线四个业务文件未漂移。责任 Runtime 的实现事实校验；改为同一断言的主体/谓语与局部否定判断，保留实际不存在、新建与漂移反例。
++- 原项目 2213 文件完整快照保留于本轮本地证据根；006 未修复源码新回归 13 失败，失败输出不覆盖。EXP-004/006/031/280。
++
++### ERR-1884：下游 Gate 自动状态链越过候选封存所有者
++
++- 原始 StateManager 事件中的 gate_runner 从 gates_failed 经 candidate_preparing 自动进入 candidate_prepared；源码未调用正式封存事务。统一 Gate 的别名、显式子集和历史协调均必须先验证权威封存状态与清单绑定；失败恢复先回准备态，经正式所有者重新封存。
++- EXP-286：下游消费者不得用形式合法的状态跳转代替上游所有者负责的校验、物化和绑定事务；失败和重启恢复适用同一边界。
++
++### ERR-1885：隔离回归载体与正向夹具失败保留
++
++- 004 Bun 在隔离工作树沙箱无法读取 cwd；005 同命令主机范围构建成功。008 正向夹具缺少 merge_required，正确触发清单拒绝；修正夹具后009共36项通过。旧重试测试要求自动穿越封存的行为与当前产品契约冲突，改验所有者边界及显式恢复路径。所有原始失败保留，不改写为通过。EXP-004/022/261。
++
++### ERR-1886：封存前置检查暴露旧测试夹具缺口与实际候选编号问题
++
++- 010历史重试测试仍要求 gates_failed 复用旧成功 Attempt；改为只允许正式重新封存后协调。012全包发现四个旧夹具缺实现基线或使用过期清单；补齐合法前置条件，保留模块未声明、分类不完整反例。015分类反例同时缺 planned_code_paths，先被基线拒绝；补齐独立输入后016原设计测试全部通过。
++- 013取证脚本误把 StateManager.getState 返回对象当状态字符串，提前断言失败；014在新副本修正比较后成功完成真实封存、owner重建、attempt-0003、失败拒绝与显式恢复再封存。原历史Attempt逐字节保留。副本Gate三项失败均指向原候选 DD-001 等编号缺模块域；属于尚待受控修正的业务候选，不能声称原项目验收通过。
++- 007未改源码全仓基线仅scope-gate三个当前安装清单测试失败；当前发布产物尚未绑定该提交。保留基线失败，正式候选生成发布清单后须重新全仓验证。EXP-004/006/022/031/286。
++
++### ERR-1887：补丁版本固定值消费者漏同步
++
++- 027全仓入口在root阶段727通过、2失败，原因是根tests版本合同仍固定1.0.20。更新为正式产品1.0.21，保留版本、tag、全部workspace一致性断言；不得以删除检查代替同步。产品代码未因此改变，重新提交发布身份并重跑正式全仓入口。EXP-004/022/087。
+diff --git a/package.json b/package.json
+index ca6c1ce5..fa23cb63 100644
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "specforge",
+-  "version": "1.0.20",
++  "version": "1.0.21",
+   "private": true,
+   "workspaces": [
+     "packages/*"
+diff --git a/packages/cli/package.json b/packages/cli/package.json
+index d008e612..0849d5c3 100644
+--- a/packages/cli/package.json
++++ b/packages/cli/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/cli",
+-  "version": "1.0.20",
++  "version": "1.0.21",
+   "description": "Command Line Interface for SpecForge",
+   "main": "dist/cli.js",
+   "types": "dist/cli.d.ts",
+diff --git a/packages/cli/tests/help-system.test.ts b/packages/cli/tests/help-system.test.ts
+index b29fae9a..0d26c39e 100644
+--- a/packages/cli/tests/help-system.test.ts
++++ b/packages/cli/tests/help-system.test.ts
+@@ -24,7 +24,7 @@ describe('HelpSystem', () => {
+       const modeSwitch = new ModeSwitch('human');
+       const helpText = helpSystem.generateGeneralHelp(modeSwitch);
+       
+-      expect(helpText).toContain('SpecForge v1.0.20');
++      expect(helpText).toContain('SpecForge v1.0.21');
+       expect(helpText).toContain('Usage: specforge <command> [options]');
+       expect(helpText).toContain('Available commands:');
+       expect(helpText).toContain('daemon');
+@@ -40,7 +40,7 @@ describe('HelpSystem', () => {
+       const parsed = JSON.parse(helpText);
+       
+       expect(parsed.appName).toBe('SpecForge');
+-      expect(parsed.version).toBe('1.0.20');
++      expect(parsed.version).toBe('1.0.21');
+       expect(Array.isArray(parsed.commands)).toBe(true);
+       expect(parsed.commands.length).toBeGreaterThan(0);
+       expect(Array.isArray(parsed.globalFlags)).toBe(true);
+diff --git a/packages/configuration/package.json b/packages/configuration/package.json
+index 264dd156..dffbf27e 100644
+--- a/packages/configuration/package.json
++++ b/packages/configuration/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/configuration",
+-  "version": "1.0.20",
++  "version": "1.0.21",
+   "description": "Configuration subsystem for SpecForge",
+   "main": "dist/index.js",
+   "types": "dist/index.d.ts",
+diff --git a/packages/daemon-core/package.json b/packages/daemon-core/package.json
+index 4f3b97e5..7129bb0e 100644
+--- a/packages/daemon-core/package.json
++++ b/packages/daemon-core/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/daemon-core",
+-  "version": "1.0.20",
++  "version": "1.0.21",
+   "description": "Daemon Core module for SpecForge - Central process and Single Source of Truth",
+   "main": "dist/index.js",
+   "types": "dist/index.d.ts",
+diff --git a/packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts b/packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts
+index 449a6d84..ad305ab3 100644
+--- a/packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts
++++ b/packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts
+@@ -29,6 +29,10 @@ import {
+   resolveWorkItemSpecArtifacts,
+ } from '../lib/governance-invariants-v11';
+ import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
++import { validateImplementationTruthBeforeSeal } from '../lib/implementation-baseline.js';
++import { validateCandidateProjectSpecBinding } from '../lib/candidate-generation-integrity.js';
++import { readUnresolvedHandoffValidationFailures } from '../lib/agent-handoff-v11.js';
++import { precheckCandidateManifestSchema, candidateManifestSchemaBlockCode } from '../lib/candidate-manifest-owner.js';
+ import {
+   precheckUserDecisionSchema,
+   userDecisionSchemaBlockCode,
+@@ -429,35 +433,29 @@ async function transitionGateState(
+ 
+ export function candidateGateRecoverySequence(
+   currentState: string,
+-  workflowType: string
++  _workflowType: string
+ ): string[] {
+-  if (currentState === 'gates_failed') {
+-    return [
+-      'gates_failed',
+-      'candidate_preparing',
+-      'candidate_prepared',
+-      'gates_running',
+-    ];
+-  }
++  if (currentState === 'candidate_prepared') return ['candidate_prepared', 'gates_running'];
++  if (currentState === 'gates_running') return ['gates_running'];
++  return [];
++}
+ 
+-  return workflowType === 'contract_change'
+-    ? [
+-        'created',
+-        'intake_ready',
+-        'candidate_preparing',
+-        'candidate_prepared',
+-        'gates_running',
+-      ]
+-    : [
+-        'created',
+-        'intake_ready',
+-        'impact_analyzing',
+-        'impact_analyzed',
+-        'workflow_selected',
+-        'candidate_preparing',
+-        'candidate_prepared',
+-        'gates_running',
+-      ];
++// All unified Candidate Gate aliases, explicit subsets and historical
++// reconciliation share this preflight. It runs before an Attempt is written.
++async function assertCandidateSealed(projectRoot: string, workItemId: string, currentState: string | null): Promise<void> {
++  if (!currentState || !['candidate_prepared', 'gates_running'].includes(currentState)) {
++    throw new Error(`CANDIDATE_SEAL_REQUIRED: current=${currentState ?? 'missing'}; use the formal sf_state_transition candidate_preparing -> candidate_prepared owner before Candidate gates. Recover gates_failed to candidate_preparing and seal again; do not hand-write manifest or hashes.`);
++  }
++  const dir = workItemRoot(projectRoot, workItemId);
++  const schema = candidateManifestSchemaBlockCode(await precheckCandidateManifestSchema(dir, workItemId));
++  if (schema) throw new Error(`CANDIDATE_SEAL_INVALID: ${schema}`);
++  const manifest = JSON.parse(await fs.readFile(workItemCandidateManifest(projectRoot, workItemId), 'utf8'));
++  const binding = await validateCandidateProjectSpecBinding({ projectRoot, manifest });
++  const truth = await validateImplementationTruthBeforeSeal({ projectRoot, workItemId });
++  const handoffs = await readUnresolvedHandoffValidationFailures(dir);
++  const errors = [...binding.errors, ...truth.errors];
++  if (handoffs.length) errors.push('HANDOFF_VALIDATION_UNRESOLVED');
++  if (errors.length) throw new Error(`CANDIDATE_SEAL_INVALID: ${errors.join('; ')}`);
+ }
+ 
+ // GATE_RETRY_STATE_V27
+@@ -491,15 +489,8 @@ async function autoAdvanceCandidateState(input: {
+ 
+   const currentState = input.currentState;
+   const recoverableGateStates = [
+-    'created',
+-    'intake_ready',
+-    'impact_analyzing',
+-    'impact_analyzed',
+-    'workflow_selected',
+-    'candidate_preparing',
+     'candidate_prepared',
+     'gates_running',
+-    'gates_failed',
+   ];
+ 
+   if (!currentState || !recoverableGateStates.includes(currentState)) {
+@@ -721,7 +712,7 @@ export function reconciliationModeForState(
+ ): 'candidate' | 'verification' | null {
+   if (
+     currentState &&
+-    ['gates_failed', 'candidate_preparing', 'candidate_prepared', 'gates_running'].includes(
++    ['candidate_prepared', 'gates_running'].includes(
+       currentState,
+     )
+   ) {
+@@ -1150,6 +1141,9 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
+       workflowTypeFromPath(workflowPath);
+     const reconcileAttemptId = normalizeReconcileAttemptId(args['reconcile_attempt_id']);
+     if (reconcileAttemptId) {
++      if (!isVerificationRecoverableState(currentState, workflowType)) {
++        await assertCandidateSealed(projectRoot, workItemId, currentState);
++      }
+       if (
+         (Array.isArray(args['gate_ids']) && args['gate_ids'].length > 0) ||
+         (typeof args['gate_type'] === 'string' && args['gate_type'].trim().length > 0)
+@@ -1234,6 +1228,10 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
+       candidatePhase,
+       workflowType
+     );
++    const unsealedState = !currentState || ['created', 'intake_ready', 'impact_analyzing', 'impact_analyzed', 'workflow_selected', 'candidate_preparing', 'gates_failed'].includes(currentState);
++    if (unsealedState || normalized.gateIds.some(gateId => !POST_CANDIDATE_GATES.has(gateId))) {
++      await assertCandidateSealed(projectRoot, workItemId, currentState);
++    }
+     if (normalized.gateIds.some(gateId => gateId === 'merge_ready_gate' || gateId === 'close_gate')) {
+       const decisionSchemaPrecheck = await precheckUserDecisionSchema(workItemDir, workItemId);
+       const decisionSchemaBlockCode = userDecisionSchemaBlockCode(decisionSchemaPrecheck);
+diff --git a/packages/daemon-core/src/tools/lib/implementation-baseline.ts b/packages/daemon-core/src/tools/lib/implementation-baseline.ts
+index 16d4eae5..6529c920 100644
+--- a/packages/daemon-core/src/tools/lib/implementation-baseline.ts
++++ b/packages/daemon-core/src/tools/lib/implementation-baseline.ts
+@@ -308,18 +308,37 @@ async function walkCandidateMarkdown(root: string): Promise<string[]> {
+ }
+ 
+ function contradictionLines(content: string, existingScopePaths: string[]): string[] {
+-  const patterns = [
+-    /all_files_new\s*["']?\s*[:=]\s*true/i,
+-    /Current Implementation.{0,120}(?:\bnone\b|\bmissing\b|\babsent\b|does not exist|不存在|无(?:（|\s|$))/i,
+-    /(?:当前|现有|业务)\s*(?:源代码|代码|实现).{0,80}(?:不存在|缺失|为空|：无|:\s*none)/i,
+-    /绿地(?:项目|新建|\s+all_files_new\s*=\s*true)/i,
+-  ];
++  // Inspect individual assertions, not an entire paragraph. Negation applies
++  // only to its own claim: a truthful sentence must not mask a later lie.
++  const negated = (prefix: string) =>
++    /(?:并非|并不是|不是|不属于|非|禁止|不得|不能|无需|没有|\bnot|\bnever|\bno)\s*(?:(?:一个|一次|a|an)\s*)?(?:[「“"']\s*)?$/i.test(prefix);
+   const normalizedScopes = existingScopePaths.map(value => value.toLowerCase());
+   return content.split(/\r?\n/).filter(line => {
+-    if (patterns.some(pattern => pattern.test(line))) return true;
+-    const lower = line.toLowerCase();
+-    return normalizedScopes.some(scope => lower.includes(scope)) &&
+-      /(?:\|\s*新建\s*\||\bnew file\b|\bcreate\b|目标文件不存在)/i.test(line);
++    const plain = line.replace(/\*\*|`/g, '');
++    return plain.split(/[，,；;。]/).some(clause => {
++      if (/all_files_new\s*["']?\s*[:=]\s*true\b/i.test(clause)) return true;
++      for (const match of clause.matchAll(/绿地(?:项目|新建)|\bgreenfield\b/gi)) {
++        if (!negated(clause.slice(0, match.index))) return true;
++      }
++      // Keep the subject and predicate together; do not span unrelated prose
++      // such as “以已知当前实现为差量基础，不存在「当前实现未知」”.
++      const chinese = /(?:当前|现有|业务)\s*(?:业务)?\s*(?:源代码|代码|实现)\s*(?:目前|仍然|仍|尚|是|为|：|:|\s)*(不存在|缺失|为空|无(?:\s|$)|none\b)/gi;
++      for (const match of clause.matchAll(chinese)) {
++        if (!negated(clause.slice(0, match.index))) return true;
++      }
++      const english = /Current Implementation\s*(?::|：|\|)?\s*(?:is\s+)?(none\b|missing\b|absent\b|does not exist|不存在|无(?:\s|$))/gi;
++      for (const match of clause.matchAll(english)) {
++        if (!negated(clause.slice(0, match.index))) return true;
++      }
++      const lower = clause.toLowerCase();
++      if (!normalizedScopes.some(scope => lower.includes(scope))) return false;
++      if (/\|\s*(?:新建|create|new file)\s*\|/i.test(clause)) return true;
++      // A file action must be a declaration, not a method name or a warning.
++      return normalizedScopes.some(scope => {
++        const action = new RegExp(`${escapeRegex(scope)}\\s*[:：]\\s*(?:new file|create|新建|目标文件不存在)(?:\\b|$)`, 'i');
++        return action.test(clause);
++      });
++    });
+   });
+ }
+ 
+diff --git a/packages/daemon-core/tests/design-governance-live-closure.test.ts b/packages/daemon-core/tests/design-governance-live-closure.test.ts
+index 5580e4d6..c21f16ac 100644
+--- a/packages/daemon-core/tests/design-governance-live-closure.test.ts
++++ b/packages/daemon-core/tests/design-governance-live-closure.test.ts
+@@ -17,6 +17,7 @@ import { getHandler } from '../src/tools/ToolDispatcher.js';
+ import { getRequiredGates } from '../src/tools/lib/required-gates.js';
+ import { ensureProjectInit } from '../src/tools/lib/sf_project_init_core.js';
+ import { readCurrentProjectSpecBinding } from '../src/tools/lib/candidate-generation-integrity.js';
++import { materializeImplementationBaseline } from '../src/tools/lib/implementation-baseline.js';
+ 
+ function completeClassification(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+   return {
+@@ -191,6 +192,7 @@ async function writeBaseWorkItem(projectRoot: string, workItemId: string): Promi
+       entries: [],
+     }, null, 2),
+   );
++  await materializeImplementationBaseline(projectRoot, workItemId);
+ }
+ 
+ function mockDeps(initialState = 'gates_running') {
+@@ -521,11 +523,14 @@ describe('Design Governance live closure', () => {
+     await writeFile(
+       workItemCandidateManifest(projectRoot, workItemId),
+       JSON.stringify({
+-        schema_version: '1.1',
++        schema_version: '1.0',
+         work_item_id: workItemId,
+         workflow_path: 'design_change_path',
+         workflow_type: 'feature_spec_design_first',
+         candidate_phase: 'design',
++        merge_required: true,
++        base_spec_version: 'PSV-0001',
++        project_spec_precondition_sha256: (await readCurrentProjectSpecBinding(projectRoot)).sha256,
+         entries: [
+           {
+             candidate_path: 'candidates/project/modules/core/design.candidate.md',
+@@ -575,6 +580,7 @@ describe('Design Governance live closure', () => {
+         workflow_type: 'feature_spec_design_first',
+         workflow_path: 'design_change_path',
+         classification: 'architecture_change',
++        impact_scope: { planned_code_paths: [] },
+       })
+     );
+     const designPath = workItemCandidateDesign(projectRoot, workItemId, 'core');
+@@ -583,11 +589,14 @@ describe('Design Governance live closure', () => {
+     await writeFile(
+       workItemCandidateManifest(projectRoot, workItemId),
+       JSON.stringify({
+-        schema_version: '1.1',
++        schema_version: '1.0',
+         work_item_id: workItemId,
+         workflow_path: 'design_change_path',
+         workflow_type: 'feature_spec_design_first',
+         candidate_phase: 'design',
++        merge_required: true,
++        base_spec_version: 'PSV-0001',
++        project_spec_precondition_sha256: (await readCurrentProjectSpecBinding(projectRoot)).sha256,
+         entries: [
+           {
+             candidate_path: 'candidates/project/modules/core/design.candidate.md',
+diff --git a/packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts b/packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts
+index fbb86b0a..62e24c2f 100644
+--- a/packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts
++++ b/packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts
+@@ -19,6 +19,7 @@ import { promisify } from 'node:util';
+ import { ToolDispatcher, type ToolDeps } from '../../src/tools/ToolDispatcher';
+ import { renderVerificationReport } from '../../src/tools/lib/sf_artifact_write_core';
+ import { sealPassingCandidateAttemptFixture } from '../helpers/candidate-generation-fixture';
++import { materializeImplementationBaseline } from '../../src/tools/lib/implementation-baseline';
+ import '../../src/tools/index';
+ 
+ const execFileAsync = promisify(execFile);
+@@ -369,6 +370,7 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
+     ],
+   });
+ 
++  await materializeImplementationBaseline(projectRoot, workItemId);
+   if (gateSummaryStatus === 'passed') {
+     await sealPassingCandidateAttemptFixture({ projectRoot, workItemDir: dir, workItemId });
+   }
+diff --git a/packages/daemon-core/tests/unit/candidate-gate-retry-state-recovery.test.ts b/packages/daemon-core/tests/unit/candidate-gate-retry-state-recovery.test.ts
+index fb475420..8993330c 100644
+--- a/packages/daemon-core/tests/unit/candidate-gate-retry-state-recovery.test.ts
++++ b/packages/daemon-core/tests/unit/candidate-gate-retry-state-recovery.test.ts
+@@ -1,150 +1,19 @@
+ import { describe, expect, it } from 'vitest';
+-import { readFile } from 'node:fs/promises';
+-import { join } from 'node:path';
+-
+-import {
+-  candidateGateRecoverySequence,
+-} from '../../src/tools/handlers/sf-v11-gate-run';
++import { candidateGateRecoverySequence } from '../../src/tools/handlers/sf-v11-gate-run';
+ import { isValidTransition } from '../../src/tools/lib/state_machine';
+ 
+-describe('Candidate Gate retry state recovery', () => {
+-  it('uses the legal v1.1 chain when current state is gates_failed', () => {
+-    const sequence = candidateGateRecoverySequence(
+-      'gates_failed',
+-      'architecture_change',
+-    );
+-
+-    expect(sequence).toEqual([
+-      'gates_failed',
+-      'candidate_preparing',
+-      'candidate_prepared',
+-      'gates_running',
+-    ]);
+-
+-    for (let index = 0; index < sequence.length - 1; index += 1) {
+-      expect(
+-        isValidTransition(
+-          sequence[index]!,
+-          sequence[index + 1]!,
+-          'architecture_change',
+-        ),
+-      ).toBe(true);
+-    }
+-
+-    expect(
+-      isValidTransition(
+-        'gates_running',
+-        'approval_required',
+-        'architecture_change',
+-      ),
+-    ).toBe(true);
+-    expect(
+-      isValidTransition('gates_running', 'gates_failed', 'architecture_change'),
+-    ).toBe(true);
+-    expect(
+-      isValidTransition(
+-        'gates_failed',
+-        'approval_required',
+-        'architecture_change',
+-      ),
+-    ).toBe(false);
++describe('Candidate Gate owns execution, not Candidate sealing', () => {
++  it.each(['created', 'intake_ready', 'impact_analyzing', 'impact_analyzed', 'workflow_selected', 'candidate_preparing', 'gates_failed', 'closed'])('does not recover %s across the seal transaction', state => {
++    expect(candidateGateRecoverySequence(state, 'architecture_change')).toEqual([]);
+   });
+-
+-  it('preserves existing recovery sequences for normal Candidate states', () => {
+-    expect(
+-      candidateGateRecoverySequence(
+-        'candidate_prepared',
+-        'architecture_change',
+-      ),
+-    ).toEqual([
+-      'created',
+-      'intake_ready',
+-      'impact_analyzing',
+-      'impact_analyzed',
+-      'workflow_selected',
+-      'candidate_preparing',
+-      'candidate_prepared',
+-      'gates_running',
+-    ]);
+-
+-    expect(
+-      candidateGateRecoverySequence(
+-        'candidate_prepared',
+-        'contract_change',
+-      ),
+-    ).toEqual([
+-      'created',
+-      'intake_ready',
+-      'candidate_preparing',
+-      'candidate_prepared',
+-      'gates_running',
+-    ]);
++  it.each(['architecture_change', 'contract_change', 'feature_spec'])('advances only a sealed %s candidate', workflow => {
++    expect(candidateGateRecoverySequence('candidate_prepared', workflow)).toEqual(['candidate_prepared', 'gates_running']);
++    expect(candidateGateRecoverySequence('gates_running', workflow)).toEqual(['gates_running']);
++    expect(isValidTransition('candidate_prepared', 'gates_running', workflow as any)).toBe(true);
+   });
+-
+-  it('wires gates_failed into Candidate Gate auto-advance without changing state_machine', async () => {
+-    const repoRoot = join(import.meta.dirname, '../../../..');
+-    const handler = await readFile(
+-      join(
+-        repoRoot,
+-        'packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts',
+-      ),
+-      'utf-8',
+-    );
+-
+-    expect(handler).toContain("    'gates_failed',");
+-    expect(handler).toContain(
+-      'candidateGateRecoverySequence(currentState, workflowType)',
+-    );
+-    expect(handler).toContain(
+-      "state authority recovery step ' + from + '->' + to",
+-    );
+-  });
+-
+-  it('pins authority and failure-ledger synchronization', async () => {
+-    const repoRoot = join(import.meta.dirname, '../../../..');
+-    const authority = await readFile(
+-      join(
+-        repoRoot,
+-        'docs/design/SpecForge架构一致性治理最终实施方案.md',
+-      ),
+-      'utf-8',
+-    );
+-    const ledger = await readFile(
+-      join(
+-        repoRoot,
+-        'docs/rule/specforge-development-error-ledger-and-experience.md',
+-      ),
+-      'utf-8',
+-    );
+-    const handoff = await readFile(
+-      join(
+-        repoRoot,
+-        'docs/archive/implementation/architecture-consistency/current-handoff.md',
+-      ),
+-      'utf-8',
+-    );
+-    const closure = await readFile(
+-      join(
+-        repoRoot,
+-        'docs/archive/implementation/architecture-consistency/P0-contract-consumer-closure.md',
+-      ),
+-      'utf-8',
+-    );
+-
+-    expect(authority).toContain('GATE-RETRY-STATE-001');
+-    for (const token of [
+-      'ERR-178',
+-      'ERR-179',
+-      'ERR-180',
+-      'ERR-181',
+-      'EXP-150',
+-      'EXP-151',
+-      'EXP-152',
+-      'EXP-153',
+-    ]) {
+-      expect(ledger).toContain(token);
+-    }
+-    expect(handoff).toContain('attempt-0003');
+-    expect(closure).toContain('attempt-0003');
++  it('retains the recovery owner path and rejects a direct approval jump', () => {
++    expect(isValidTransition('gates_failed', 'candidate_preparing', 'architecture_change')).toBe(true);
++    expect(isValidTransition('candidate_preparing', 'candidate_prepared', 'architecture_change')).toBe(true);
++    expect(isValidTransition('gates_failed', 'approval_required', 'architecture_change')).toBe(false);
+   });
+ });
+diff --git a/packages/daemon-core/tests/unit/candidate-seal-boundary.test.ts b/packages/daemon-core/tests/unit/candidate-seal-boundary.test.ts
+new file mode 100644
+index 00000000..08fcedb7
+--- /dev/null
++++ b/packages/daemon-core/tests/unit/candidate-seal-boundary.test.ts
+@@ -0,0 +1,101 @@
++import { afterEach, describe, expect, it } from 'vitest';
++import * as fs from 'node:fs/promises';
++import { tmpdir } from 'node:os';
++import { join } from 'node:path';
++import { createHash } from 'node:crypto';
++import { materializeImplementationBaseline, validateImplementationTruthBeforeSeal } from '../../src/tools/lib/implementation-baseline';
++import { getHandler } from '../../src/tools/ToolDispatcher';
++import '../../src/tools/handlers/sf-v11-gate-run';
++
++const roots: string[] = [];
++afterEach(async () => { for (const root of roots.splice(0)) await fs.rm(root, { recursive: true, force: true }); });
++async function fixture() {
++  const root = await fs.mkdtemp(join(tmpdir(), 'sf-seal-boundary-')); roots.push(root);
++  const wi = join(root, '.specforge/work-items/WI-0001');
++  await fs.mkdir(join(wi, 'candidates'), { recursive: true });
++  await fs.mkdir(join(root, '.specforge/project'), { recursive: true });
++  const put = async (name: string, value: unknown) => fs.writeFile(join(wi, name), typeof value === 'string' ? value : JSON.stringify(value));
++  await fs.writeFile(join(root, 'app.js'), 'existing implementation\n');
++  await fs.writeFile(join(root, '.specforge/project/spec_manifest.json'), JSON.stringify({schema_version:'1.0', project_spec_version:'PSV-0001'}));
++  await put('work_item.json', {schema_version:'1.1', work_item_id:'WI-0001', workflow_type:'feature_spec', workflow_path:'requirement_change_path', code_change_allowed:false, allowed_write_files:[]});
++  await put('trigger_result.json', {workflow_type:'feature_spec', workflow_path:'requirement_change_path', impact_scope:{planned_code_paths:['app.js']}});
++  await put('impact_analysis.md', '# Impact\n');
++  const { baseline } = await materializeImplementationBaseline(root, 'WI-0001');
++  const design = async (text: string) => put('candidates/design.candidate.md', `implementation_baseline_id: ${baseline.snapshot_id}\n${text}\n`);
++  await design('本设计基于既有实现演进。');
++  let state = 'candidate_preparing'; const transitions: string[] = [];
++  const manager = { rebuildState: async()=>{}, getState:()=>state, transition:async(_id:string,from:string,to:string)=>{ if(from!==state)throw Error('state mismatch');transitions.push(`${from}->${to}`);state=to; } };
++  const deps = { projectManager:{getProjectStateManager:async()=>manager} } as any;
++  const invoke = (args: Record<string, unknown>) => getHandler('sf_v11_gate_run')!({work_item_id:'WI-0001',...args},{directory:root,agent:'sf-orchestrator'},deps) as Promise<any>;
++  return {root,wi,put,design,baseline,invoke,transitions,setState:(s:string)=>{state=s;}};
++}
++async function snapshot(dir:string):Promise<Record<string,string>> {
++  const result:Record<string,string>={};
++  async function visit(p:string) { for(const e of await fs.readdir(p,{withFileTypes:true})){const f=join(p,e.name);if(e.isDirectory())await visit(f);else result[f]=createHash('sha256').update(await fs.readFile(f)).digest('hex');} }
++  await visit(dir);return result;
++}
++
++describe('affirmative implementation facts',()=>{
++  it.each([
++    '本设计基于 PSV-0002 既有实现演进，非绿地新建。',
++    '> 基线声明：current_file_count=4、all_planned_paths_missing=false，app.js 为既有实现。以已知当前实现为差量基础，不存在「当前实现未知」，无需 design_blocked。',
++    '本项目不是绿地项目。',
++    '本项目不是一个绿地项目。',
++    'This is not a greenfield project.',
++    'Current Implementation: not missing; existing app.js is retained.',
++    'app.js | 修改 | createApp 工厂保留',
++    'app.js: do not create a new file',
++  ])('accepts a truthful statement: %s',async text=>{
++    const f=await fixture();await f.design(text);
++    expect(await validateImplementationTruthBeforeSeal({projectRoot:f.root,workItemId:'WI-0001'})).toMatchObject({valid:true,errors:[]});
++  });
++  it.each([
++    '本项目为绿地新建。', '当前业务实现不存在。', '现有代码缺失。',
++    '- **Current Implementation**: none', 'Current Implementation is missing',
++    '{"all_files_new":true}', '| app.js | 新建 |', 'app.js: new file',
++    '并非绿地新建；当前实现不存在。', '当前实现存在，但现有代码为空。',
++  ])('rejects a real contradiction: %s',async text=>{
++    const f=await fixture();await f.design(text);
++    const r=await validateImplementationTruthBeforeSeal({projectRoot:f.root,workItemId:'WI-0001'});
++    expect(r.valid).toBe(false);expect(r.errors.join('\n')).toContain('IMPLEMENTATION_BASELINE_CONTRADICTION');
++  });
++  it('still rejects binding loss and actual source drift',async()=>{
++    const f=await fixture();await f.put('candidates/design.candidate.md','本设计不是绿地新建。');
++    expect((await validateImplementationTruthBeforeSeal({projectRoot:f.root,workItemId:'WI-0001'})).errors.join('\n')).toContain('BINDING_INVALID');
++    await f.design('现有实现保留。');await fs.writeFile(join(f.root,'app.js'),'changed');
++    expect((await validateImplementationTruthBeforeSeal({projectRoot:f.root,workItemId:'WI-0001'})).errors.join('\n')).toContain('BASELINE_STALE');
++  });
++});
++
++describe('candidate gates cannot perform the seal owner transaction',()=>{
++  it.each(['created','intake_ready','impact_analyzing','workflow_selected','candidate_preparing','gates_failed','closed'])('rejects state %s before any attempt/file/state write',async state=>{
++    const f=await fixture();f.setState(state);const before=await snapshot(f.root);
++    for(const args of [{candidate_phase:'full'},{gate_type:'requirements'},{gate_ids:['candidate_manifest_gate']},{gate_ids:['entry_gate','verification_gate']},{reconcile_attempt_id:'attempt-0001'},...(state==='closed'?[]:[{gate_ids:['verification_gate']},{gate_type:'post_merge'}])]) {
++      const r=await f.invoke(args);expect(r.success).toBe(false);expect(r.error).toContain('CANDIDATE_SEAL_REQUIRED');
++      expect(await snapshot(f.root)).toEqual(before);expect(f.transitions).toEqual([]);
++    }
++  });
++  it('rejects a forged prepared state without manifest binding and creates no attempt',async()=>{
++    const f=await fixture();f.setState('candidate_prepared');const before=await snapshot(f.root);
++    const r=await f.invoke({gate_ids:['entry_gate']});expect(r.success).toBe(false);expect(r.error).toContain('CANDIDATE_SEAL_INVALID');
++    expect(await snapshot(f.root)).toEqual(before);
++  });
++  it('allows sealed direct checks, preserves their independent attempt and does not approve',async()=>{
++    const f=await fixture();f.setState('candidate_prepared');
++    const manifest=await fs.readFile(join(f.root,'.specforge/project/spec_manifest.json'));
++    await f.put('candidate_manifest.json',{schema_version:'1.0',work_item_id:'WI-0001',workflow_type:'feature_spec',workflow_path:'requirement_change_path',base_spec_version:'PSV-0001',project_spec_precondition_sha256:'sha256:'+createHash('sha256').update(manifest).digest('hex'),merge_required:true,entries:[]});
++    const r=await f.invoke({gate_ids:['entry_gate']});expect(r.success,r.error).toBe(true);expect(r.gate_attempt_id).toBe('attempt-0001');expect(f.transitions).toEqual([]);
++    expect(await fs.readFile(join(f.wi,'gate_attempts/attempt-0001/attempt-result.json'),'utf8')).toContain('entry_gate');
++  });
++  it('rejects stale project binding and changed implementation before any new attempt',async()=>{
++    const f=await fixture();f.setState('candidate_prepared');
++    const manifest={schema_version:'1.0',work_item_id:'WI-0001',workflow_type:'feature_spec',workflow_path:'requirement_change_path',base_spec_version:'PSV-0001',project_spec_precondition_sha256:'sha256:'+createHash('sha256').update(await fs.readFile(join(f.root,'.specforge/project/spec_manifest.json'))).digest('hex'),merge_required:true,entries:[]};
++    await f.put('candidate_manifest.json',manifest);
++    await fs.writeFile(join(f.root,'.specforge/project/spec_manifest.json'),JSON.stringify({schema_version:'1.0',project_spec_version:'PSV-0002'}));
++    let before=await snapshot(f.root);let result=await f.invoke({candidate_phase:'full'});
++    expect(result.success).toBe(false);expect(result.error).toContain('CANDIDATE_SEAL_INVALID');expect(await snapshot(f.root)).toEqual(before);
++    manifest.base_spec_version='PSV-0002';manifest.project_spec_precondition_sha256='sha256:'+createHash('sha256').update(await fs.readFile(join(f.root,'.specforge/project/spec_manifest.json'))).digest('hex');await f.put('candidate_manifest.json',manifest);
++    await fs.writeFile(join(f.root,'app.js'),'different implementation');before=await snapshot(f.root);result=await f.invoke({reconcile_attempt_id:'attempt-0001'});
++    expect(result.success).toBe(false);expect(result.error).toContain('BASELINE_STALE');expect(await snapshot(f.root)).toEqual(before);expect(f.transitions).toEqual([]);
++  });
++});
+diff --git a/packages/daemon-core/tests/unit/verification-gate-historical-attempt-reconcile.test.ts b/packages/daemon-core/tests/unit/verification-gate-historical-attempt-reconcile.test.ts
+index c33f3bf3..844061c8 100644
+--- a/packages/daemon-core/tests/unit/verification-gate-historical-attempt-reconcile.test.ts
++++ b/packages/daemon-core/tests/unit/verification-gate-historical-attempt-reconcile.test.ts
+@@ -38,7 +38,8 @@ function gateReport(workItemId: string, gateId: 'verification_gate' | 'formal_ve
+ describe('Verification historical Gate Attempt reconciliation', () => {
+   it('classifies spec_migration post_merge_verified as verification reconciliation', () => {
+     expect(reconciliationModeForState('post_merge_verified', 'spec_migration')).toBe('verification');
+-    expect(reconciliationModeForState('gates_failed', 'spec_migration')).toBe('candidate');
++    expect(reconciliationModeForState('gates_failed', 'spec_migration')).toBeNull();
++    expect(reconciliationModeForState('candidate_prepared', 'spec_migration')).toBe('candidate');
+     expect(reconciliationModeForState('closed', 'spec_migration')).toBeNull();
+   });
+ 
+diff --git a/packages/host-profile/package.json b/packages/host-profile/package.json
+index 58aac65a..e8c76fbd 100644
+--- a/packages/host-profile/package.json
++++ b/packages/host-profile/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/host-profile",
+-  "version": "1.0.20",
++  "version": "1.0.21",
+   "private": true,
+   "type": "module",
+   "main": "dist/index.js",
+diff --git a/packages/observability/package.json b/packages/observability/package.json
+index 5a78aa77..4ad4b41c 100644
+--- a/packages/observability/package.json
++++ b/packages/observability/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/observability",
+-  "version": "1.0.20",
++  "version": "1.0.21",
+   "description": "SpecForge current-release observability types and policy contract",
+   "type": "module",
+   "main": "dist/src/index.js",
+diff --git a/packages/observability/tests/unit/project-structure.test.ts b/packages/observability/tests/unit/project-structure.test.ts
+index ff40971e..f9d399c6 100644
+--- a/packages/observability/tests/unit/project-structure.test.ts
++++ b/packages/observability/tests/unit/project-structure.test.ts
+@@ -41,7 +41,7 @@ describe('Project Structure', () => {
+     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+ 
+     expect(packageJson.name).toBe('@specforge/observability');
+-    expect(packageJson.version).toBe('1.0.20');
++    expect(packageJson.version).toBe('1.0.21');
+     expect(packageJson.type).toBe('module');
+     expect(packageJson.main).toBe('dist/src/index.js');
+     expect(packageJson.types).toBe('dist/src/index.d.ts');
+diff --git a/packages/opencode-adapter/package.json b/packages/opencode-adapter/package.json
+index 35eaab9d..f3fe8c79 100644
+--- a/packages/opencode-adapter/package.json
++++ b/packages/opencode-adapter/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/opencode-adapter",
+-  "version": "1.0.20",
++  "version": "1.0.21",
+   "description": "OpenCode Adapter module for SpecForge - Implements LLMKernelAdapter interface for OpenCode",
+   "type": "commonjs",
+   "main": "dist/index.js",
+diff --git a/packages/permission-engine/package.json b/packages/permission-engine/package.json
+index d9549c12..5b509f91 100644
+--- a/packages/permission-engine/package.json
++++ b/packages/permission-engine/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/permission-engine",
+-  "version": "1.0.20",
++  "version": "1.0.21",
+   "description": "Permission Engine module for SpecForge - Fine-grained access control and authorization",
+   "type": "module",
+   "main": "dist/src/index.js",
+diff --git a/packages/scope-gate/package.json b/packages/scope-gate/package.json
+index 790988fb..6fabd7c4 100644
+--- a/packages/scope-gate/package.json
++++ b/packages/scope-gate/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/scope-gate",
+-  "version": "1.0.20",
++  "version": "1.0.21",
+   "description": "Current-release evidence and artifact-set validator for SpecForge",
+   "type": "module",
+   "main": "dist/src/index.js",
+diff --git a/packages/service-management/package.json b/packages/service-management/package.json
+index 1f67c574..c112dbe0 100644
+--- a/packages/service-management/package.json
++++ b/packages/service-management/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/service-management",
+-  "version": "1.0.20",
++  "version": "1.0.21",
+   "description": "Service Management subsystem for SpecForge - OS service lifecycle management",
+   "main": "dist/index.js",
+   "types": "dist/index.d.ts",
+diff --git a/packages/types/package.json b/packages/types/package.json
+index 48755924..f718cb23 100644
+--- a/packages/types/package.json
++++ b/packages/types/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/types",
+-  "version": "1.0.20",
++  "version": "1.0.21",
+   "description": "Shared TypeScript types for SpecForge modules",
+   "type": "module",
+   "main": "dist/index.js",
+diff --git a/packages/version-unification/package.json b/packages/version-unification/package.json
+index dc5c8b7b..3ea12b68 100644
+--- a/packages/version-unification/package.json
++++ b/packages/version-unification/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/version-unification",
+-  "version": "1.0.20",
++  "version": "1.0.21",
+   "private": true,
+   "type": "module",
+   "main": "dist/index.js",
+diff --git a/packages/workflow-runtime/package.json b/packages/workflow-runtime/package.json
+index c434ea48..8f3b5e1d 100644
+--- a/packages/workflow-runtime/package.json
++++ b/packages/workflow-runtime/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/workflow-runtime",
+-  "version": "1.0.20",
++  "version": "1.0.21",
+   "schema_version": "1.0",
+   "description": "Workflow Runtime module for SpecForge - Implements compositeGate semantics (Property 29)",
+   "type": "module",
+diff --git a/setup/userlevel-opencode/agents/sf-orchestrator.md b/setup/userlevel-opencode/agents/sf-orchestrator.md
+index a81ab112..dac45488 100644
+--- a/setup/userlevel-opencode/agents/sf-orchestrator.md
++++ b/setup/userlevel-opencode/agents/sf-orchestrator.md
+@@ -183,7 +183,7 @@ permission:
+ 
+ 生成 Candidate 前必须读取 `spec_manifest.json`（`.specforge/project/spec_manifest.json`）。模块只能来自已声明模块或明确的 `default_module`：全新项目的默认 `core` 由 `sf_project_init` 正式声明；已有项目 `modules=[]`、模块不存在或无法唯一确定时必须停止，不得根据源码目录静默发明模块，也不得直接修改正式项目规格。
+ 
+-专业代理只写当前工作项 `candidates/**` 下的规范候选产物。`candidate_manifest.json` 的路径发现、旧字段别名转换和条目规范化属于运行时；主编排代理只负责在正确阶段调用受控写入并确认清单与实际候选一致，不负责猜 `candidate_path`、目标路径或规范化算法。
++专业代理只写当前工作项 `candidates/**` 下的规范候选产物。`candidate_manifest.json` 的路径发现、旧字段别名转换和条目规范化属于运行时；主编排代理只调用正式 `sf_state_transition(candidate_preparing → candidate_prepared)`，随后只读确认清单与实际候选一致，不手工写清单、哈希或猜 `candidate_path`、目标路径和规范化算法。
+ 
+ 主编排代理调度 `sf-design`、`sf-requirements` 或 `sf-task-planner` 创建、修订或核查 Candidate 时，子任务必须显式重复以下工具边界：不得调用 `sf_safe_bash`、bash、PowerShell、Node 或 Python 检查、读取或验证 `.specforge/work-items/**`；写入后只能使用 Read、Glob、Grep、`sf_batch_verify`、`sf_doc_lint` 或对应受控 Tool。不得把“只读验证”作为省略该边界的理由。
+ 
+@@ -207,7 +207,7 @@ permission:
+ 
+ 主编排代理只能通过 `sf_state_transition` 请求非封口状态推进；不得直接写状态，也不得执行由门禁运行器、用户决策记录器、合并运行器或关闭门禁独占的封口转换。每次推进前都要核对当前权威状态、上游产物和本阶段证据，工具失败后不得手工补状态。特别是 `created → intake_ready` 只能在非空 `intake.md` 已经通过受控写入落盘后请求；不得先推进状态再补产物。
+ 
+-候选产物完成后，先做必要的文档检查，再调用统一的 `sf_gate_run`。候选门禁根据 `candidate_phase` 选择实际门禁组合，并由门禁运行器把 `gates_running` 收口为 `approval_required` 或 `gates_failed`。门禁失败后必须先判定根因：
++候选产物完成后，先做必要的文档检查和本轮 handoff 验证，调用正式 `sf_state_transition(candidate_preparing → candidate_prepared)` 完成封存。只有封存成功并只读确认 Runtime 生成的清单与基线绑定后，才调用统一的 `sf_gate_run`。未封存、封存失败或 `gates_failed` 时不得用 Gate 自动补走封存步骤；从 `gates_failed` 合法返回 `candidate_preparing`，由 owner 修复后重新正式封存。候选门禁根据 `candidate_phase` 选择实际门禁组合，并由门禁运行器把 `gates_running` 收口为 `approval_required` 或 `gates_failed`。门禁失败后必须先判定根因：
+ 
+ ```text
+ 候选内容或结构有误
+diff --git a/setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md b/setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md
+index 68366a24..6038ea7f 100644
+--- a/setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md
++++ b/setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md
+@@ -122,7 +122,7 @@ Feature Spec 是规格优先工作流，验证强度最高。必须保证用户
+ 1. 非 seal 状态可按产物完成事实最多补一次 `sf_state_transition`；失败不得循环。
+ 2. `gates_running -> approval_required` 不手动推进。Gate 全部通过后，直接展示 Candidate 摘要并请求用户审批。
+ 3. 用户同意后，只执行 `sf_user_decision_record` 和 `sf_merge_run`；不得因 state.json 显示滞后而循环推进状态。
+-4. Candidate 文件必须通过 `sf_artifact_write` 写入 `requirements`、`design`、`tasks` / `candidate_tasks`、`trace_delta`、`candidate_manifest`；不得使用 shell/helper 写 `.specforge`。
++4. 专业 Candidate 文件必须通过 `sf_artifact_write` 写入 `requirements`、`design`、`tasks` / `candidate_tasks`、`trace_delta`；`candidate_manifest` 由 Runtime 在正式封存时生成，Agent 不得手写清单或绑定哈希；不得使用 shell/helper 写 `.specforge`。
+ 5. Gate 阶段不得创建 placeholder 的 `verification_report`、`merge_report`、`evidence_manifest` 来通过当前阶段。
+ 6. 每个阶段最多一次自检、一次修正、一次继续；仍失败则报告阻塞事实。
+ 7. 写权限撤销顺序固定为：实现完成后先运行一次 `sf_changed_files_audit`，再调度 `sf-verifier`，再写入 `verification_report` 与 `evidence_manifest`，最后在 close_gate 前调用 `sf_code_permission revoke`。不得在验证前 revoke。
+@@ -286,7 +286,7 @@ Orchestrator 随后只读最终 `candidate_manifest.json`，确认 required cand
+ 
+ #### Step 4.6：流转到 candidate_prepared
+ 
+-调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="candidate_prepared"，evidence="professional candidates complete; Runtime materializes candidate_manifest"）。
++确认 Step 4.5 的正式封存已成功，读取权威状态确认为 `candidate_prepared`；不要重复调用同一次转换。封存失败时保留原始错误，禁止改用 Gate 补走状态或手写清单。
+ 
+ **产物：** 专业 Candidate + Runtime 物化的 `candidate_manifest.json`
+ 
+@@ -546,7 +546,7 @@ Orchestrator 随后只读最终 `candidate_manifest.json`，确认 required cand
+ 
+ ## 一、Gate 前硬条件
+ 
+-在调用 `sf_state_transition(candidate_preparing → candidate_prepared)` 或 `sf_gate_run` 前，必须完成 Candidate Completeness Preflight。
++Preflight 分为封存前与 Gate 前两步。调用 `sf_state_transition(candidate_preparing → candidate_prepared)` 前验证下列第 1–4、6 项；只有封存成功后，才验证 Runtime 生成的第 5、7、8 项并调用 `sf_gate_run`。不得在封存前要求已生成的绑定，也不得手工补清单或哈希。统一 Gate 的别名、单项选择及历史 Attempt 恢复均不能替代正式封存。
+ 
+ Preflight 必须确认：
+ 
+diff --git a/tests/unit/current-product-version-contract.test.ts b/tests/unit/current-product-version-contract.test.ts
+index 77423e06..e58f46ea 100644
+--- a/tests/unit/current-product-version-contract.test.ts
++++ b/tests/unit/current-product-version-contract.test.ts
+@@ -29,12 +29,12 @@ describe('current product version contract', () => {
+     const identity = await loadProductIdentity(ROOT);
+ 
+     expect(identity).toEqual({
+-      version: '1.0.20',
++      version: '1.0.21',
+       releaseId: 'specforge-current',
+       tagPrefix: 'specforge-v',
+       versionEpoch: 1,
+     });
+-    expect(expectedProductTag(identity)).toBe('specforge-v1.0.20');
++    expect(expectedProductTag(identity)).toBe('specforge-v1.0.21');
+   });
+ 
+   it('keeps every current workspace package on the product version', async () => {
+@@ -58,7 +58,7 @@ describe('current product version contract', () => {
+           }
+         }),
+     )).filter((version): version is string => version !== undefined);
+-    expect(new Set(versions)).toEqual(new Set(['1.0.20']));
++    expect(new Set(versions)).toEqual(new Set(['1.0.21']));
+   });
+ 
+   it('projects the same release identity through current authority and release entrypoints', async () => {

@@ -1,0 +1,31 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/.tmp/candidate-seal-worktree/packages/daemon-core
+
+ ✓ tests/unit/verification-gate-historical-attempt-reconcile.test.ts (2 tests) 89ms
+ ❯ tests/design-governance-live-closure.test.ts (9 tests | 1 failed) 1205ms
+   ✓ Design Governance live closure > writes design once to the canonical Candidate path and never mirrors work-item design.md 131ms
+   ✓ Design Governance live closure > derives analysis_scope before authoring and rejects a mismatched design before write 43ms
+   ✓ Design Governance live closure > blocks module-scoped Candidates when an existing manifest declares no modules 35ms
+   ✓ Design Governance live closure > recovers an empty module registry through governed init and then writes a CORE Candidate 152ms
+   ✓ Design Governance live closure > runs the real Design Gate through sf_gate_run, uses the design phase profile, and stops at approval_required  323ms
+   ✓ Design Governance live closure > fails candidate_manifest_gate when a module-scoped Candidate is not declared 280ms
+   × Design Governance live closure > rejects an incomplete trigger classification through the same sf_gate_run path 82ms
+     → expected undefined to be 'failed' // Object.is equality
+   ✓ Design Governance live closure > passes no_code_change audit for the approved design-only phase without enabling code permission 94ms
+   ✓ Design Governance live closure > rejects no_code_change once the authoritative state has entered implementation 63ms
+ ✓ tests/unit/candidate-seal-boundary.test.ts (26 tests) 2687ms
+ ✓ tests/integration/p0-governance-regression-flow.test.ts (8 tests) 8113ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > rejects user_approved when Gate failed  664ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > rejects user_approved while gates are still running  661ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > records sf-orchestrator only as recorded_by while decided_by remains user and state advances to approved  723ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > auto-advances gates_running to approval_required after all required gates pass  929ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > rejects code_permission enable before successful merge for spec-changing workflows  676ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > allows code_permission enable only after successful merge for spec-changing workflows  1241ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > forbids invalidating user_decision after merge success  856ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > passes close_gate after verification evidence and revoked code permission even when pre-merge hashes changed after merge  2360ms
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  1 failed | 44 passed (45)
+   Start at  21:53:44
+   Duration  14.26s (transform 4.22s, setup 0ms, collect 14.12s, tests 12.09s, environment 1ms, prepare 1.11s)
+

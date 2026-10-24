@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0002",
+  "gate_id": "path_policy_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "passed",
+  "input_files": [],
+  "checks": [
+    {
+      "check_id": "path_policy_ok",
+      "description": "All paths satisfy Path Policy",
+      "passed": true
+    }
+  ],
+  "blocking_issues": [],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-10-24T14:05:40.443Z",
+  "finished_at": "2026-10-24T14:05:40.443Z",
+  "runner": "gate_runner"
+}

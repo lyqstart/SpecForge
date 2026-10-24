@@ -1,0 +1,462 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0002",
+  "gate_id": "contract_integrity_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "failed",
+  "input_files": [
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\architecture.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\data_model.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\extension_registry.json",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\modules\\CORE\\contracts.json",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\modules\\CORE\\design.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\modules\\CORE\\module.json",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\modules\\CORE\\trace.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\spec_manifest.json",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\project\\trace_matrix.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidate_manifest.json",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\project\\modules\\CORE\\contracts.candidate.json",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidates\\trace_delta.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\change_classification.md",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\trigger_result.json"
+  ],
+  "checks": [
+    {
+      "check_id": "module_contract_core_candidate_confined",
+      "description": "Module Contract candidate for CORE stays within its Work Item",
+      "passed": true
+    },
+    {
+      "check_id": "module_contract_core_candidate_integrity",
+      "description": "Module Contract candidate for CORE has owner, DD provenance, and enforcement metadata",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check_id": "contract_trace_projection_valid",
+      "description": "Prospective Trace is valid before Contract integrity decisions",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check_id": "contract_reverse_dependencies_aligned",
+      "description": "Destructive Contract changes update every formal Trace consumer in the same Work Item",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check_id": "contract_trace_delta_relevant",
+      "description": "Contract integrity is evaluated against the same prospective Trace operations used by merge",
+      "passed": true
+    },
+    {
+      "check_id": "architecture_id_format",
+      "description": "Every declared Architecture ID uses ARCH-<DOMAIN>-<NNN>",
+      "passed": true,
+      "severity": "error",
+      "details": "invalid=none; valid=ARCH-CORE-001,ARCH-CORE-002,ARCH-CORE-003,ARCH-CORE-004,ARCH-CORE-005"
+    },
+    {
+      "check_id": "data_model_id_format",
+      "description": "Every declared Data ID uses DATA-<DOMAIN>-<NNN>, or the model is explicitly not applicable",
+      "passed": true,
+      "severity": "error",
+      "details": "invalid=none; valid=DATA-CORE-001,DATA-CORE-002,DATA-CORE-003,DATA-CORE-004,DATA-CORE-005,DATA-CORE-006,DATA-CORE-007,DATA-CORE-008,DATA-CORE-009; not_applicable=false"
+    },
+    {
+      "check_id": "module_design_id_format",
+      "description": "Every declared Module Design ID uses DD-<DOMAIN>-<NNN>",
+      "passed": false,
+      "severity": "error",
+      "details": "invalid=DD-001,DD-002,DD-003,DD-006,DD-007"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-001_unique_truth_source",
+      "description": "Contract MCONTRACT-CORE-001 has exactly one governance-level definition",
+      "passed": true,
+      "details": "definitions=1"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-002_unique_truth_source",
+      "description": "Contract MCONTRACT-CORE-002 has exactly one governance-level definition",
+      "passed": true,
+      "details": "definitions=1"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-003_unique_truth_source",
+      "description": "Contract MCONTRACT-CORE-003 has exactly one governance-level definition",
+      "passed": true,
+      "details": "definitions=1"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-004_unique_truth_source",
+      "description": "Contract MCONTRACT-CORE-004 has exactly one governance-level definition",
+      "passed": true,
+      "details": "definitions=1"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-005_unique_truth_source",
+      "description": "Contract MCONTRACT-CORE-005 has exactly one governance-level definition",
+      "passed": true,
+      "details": "definitions=1"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-006_unique_truth_source",
+      "description": "Contract MCONTRACT-CORE-006 has exactly one governance-level definition",
+      "passed": true,
+      "details": "definitions=1"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-007_unique_truth_source",
+      "description": "Contract MCONTRACT-CORE-007 has exactly one governance-level definition",
+      "passed": true,
+      "details": "definitions=1"
+    },
+    {
+      "check_id": "module_contract_CORE_exists",
+      "description": "Module CORE has a contracts.json",
+      "passed": true
+    },
+    {
+      "check_id": "module_contract_CORE_valid",
+      "description": "Module CORE contracts.json is valid",
+      "passed": true
+    },
+    {
+      "check_id": "module_contract_CORE_owner",
+      "description": "Module CORE contracts.json owner_module matches its directory Module",
+      "passed": true,
+      "details": "owner_module=CORE"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-001_owner",
+      "description": "Contract MCONTRACT-CORE-001 declares a valid owner Module",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-001_source_refs",
+      "description": "Contract MCONTRACT-CORE-001 declares source_refs",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-001_enforcement",
+      "description": "Contract MCONTRACT-CORE-001 declares machine enforcement",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-001_source_DD_CORE_002",
+      "description": "Contract MCONTRACT-CORE-001 source is legal: DD-CORE-002",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-001_source_DD_CORE_004",
+      "description": "Contract MCONTRACT-CORE-001 source is legal: DD-CORE-004",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-001_consumer_DD-CORE-002",
+      "description": "Contract MCONTRACT-CORE-001 consumer DD-CORE-002 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-001_consumer_DD-CORE-004",
+      "description": "Contract MCONTRACT-CORE-001 consumer DD-CORE-004 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-001_consumer_DD-CORE-016",
+      "description": "Contract MCONTRACT-CORE-001 consumer DD-CORE-016 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-001_internal_boundary",
+      "description": "Internal Contract MCONTRACT-CORE-001 is consumed only inside owner Module CORE",
+      "passed": true,
+      "details": "all consumers are internal"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-002_owner",
+      "description": "Contract MCONTRACT-CORE-002 declares a valid owner Module",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-002_source_refs",
+      "description": "Contract MCONTRACT-CORE-002 declares source_refs",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-002_enforcement",
+      "description": "Contract MCONTRACT-CORE-002 declares machine enforcement",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-002_source_DD_CORE_001",
+      "description": "Contract MCONTRACT-CORE-002 source is legal: DD-CORE-001",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-002_consumer_DD-CORE-001",
+      "description": "Contract MCONTRACT-CORE-002 consumer DD-CORE-001 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-002_consumer_DD-CORE-009",
+      "description": "Contract MCONTRACT-CORE-002 consumer DD-CORE-009 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-002_internal_boundary",
+      "description": "Internal Contract MCONTRACT-CORE-002 is consumed only inside owner Module CORE",
+      "passed": true,
+      "details": "all consumers are internal"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-003_owner",
+      "description": "Contract MCONTRACT-CORE-003 declares a valid owner Module",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-003_source_refs",
+      "description": "Contract MCONTRACT-CORE-003 declares source_refs",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-003_enforcement",
+      "description": "Contract MCONTRACT-CORE-003 declares machine enforcement",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-003_source_DD_CORE_007",
+      "description": "Contract MCONTRACT-CORE-003 source is legal: DD-CORE-007",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-003_consumer_DD-CORE-007",
+      "description": "Contract MCONTRACT-CORE-003 consumer DD-CORE-007 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-003_consumer_DD-CORE-010",
+      "description": "Contract MCONTRACT-CORE-003 consumer DD-CORE-010 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-003_consumer_DD-CORE-014",
+      "description": "Contract MCONTRACT-CORE-003 consumer DD-CORE-014 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-003_internal_boundary",
+      "description": "Internal Contract MCONTRACT-CORE-003 is consumed only inside owner Module CORE",
+      "passed": true,
+      "details": "all consumers are internal"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-004_owner",
+      "description": "Contract MCONTRACT-CORE-004 declares a valid owner Module",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-004_source_refs",
+      "description": "Contract MCONTRACT-CORE-004 declares source_refs",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-004_enforcement",
+      "description": "Contract MCONTRACT-CORE-004 declares machine enforcement",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-004_source_DD_CORE_006",
+      "description": "Contract MCONTRACT-CORE-004 source is legal: DD-CORE-006",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-004_consumer_DD-CORE-006",
+      "description": "Contract MCONTRACT-CORE-004 consumer DD-CORE-006 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-004_internal_boundary",
+      "description": "Internal Contract MCONTRACT-CORE-004 is consumed only inside owner Module CORE",
+      "passed": true,
+      "details": "all consumers are internal"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-005_owner",
+      "description": "Contract MCONTRACT-CORE-005 declares a valid owner Module",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-005_source_refs",
+      "description": "Contract MCONTRACT-CORE-005 declares source_refs",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-005_enforcement",
+      "description": "Contract MCONTRACT-CORE-005 declares machine enforcement",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-005_source_DD_CORE_002",
+      "description": "Contract MCONTRACT-CORE-005 source is legal: DD-CORE-002",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-005_source_DD_CORE_006",
+      "description": "Contract MCONTRACT-CORE-005 source is legal: DD-CORE-006",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-005_consumer_DD-CORE-006",
+      "description": "Contract MCONTRACT-CORE-005 consumer DD-CORE-006 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-005_internal_boundary",
+      "description": "Internal Contract MCONTRACT-CORE-005 is consumed only inside owner Module CORE",
+      "passed": true,
+      "details": "all consumers are internal"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-006_owner",
+      "description": "Contract MCONTRACT-CORE-006 declares a valid owner Module",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-006_source_refs",
+      "description": "Contract MCONTRACT-CORE-006 declares source_refs",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-006_enforcement",
+      "description": "Contract MCONTRACT-CORE-006 declares machine enforcement",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-006_source_DD_CORE_003",
+      "description": "Contract MCONTRACT-CORE-006 source is legal: DD-CORE-003",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-006_source_DD_CORE_005",
+      "description": "Contract MCONTRACT-CORE-006 source is legal: DD-CORE-005",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-006_source_DD_CORE_011",
+      "description": "Contract MCONTRACT-CORE-006 source is legal: DD-CORE-011",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-006_source_DD_CORE_015",
+      "description": "Contract MCONTRACT-CORE-006 source is legal: DD-CORE-015",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-006_consumer_DD-CORE-003",
+      "description": "Contract MCONTRACT-CORE-006 consumer DD-CORE-003 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-006_consumer_DD-CORE-005",
+      "description": "Contract MCONTRACT-CORE-006 consumer DD-CORE-005 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-006_consumer_DD-CORE-011",
+      "description": "Contract MCONTRACT-CORE-006 consumer DD-CORE-011 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-006_consumer_DD-CORE-013",
+      "description": "Contract MCONTRACT-CORE-006 consumer DD-CORE-013 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-006_consumer_DD-CORE-015",
+      "description": "Contract MCONTRACT-CORE-006 consumer DD-CORE-015 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-006_internal_boundary",
+      "description": "Internal Contract MCONTRACT-CORE-006 is consumed only inside owner Module CORE",
+      "passed": true,
+      "details": "all consumers are internal"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-007_owner",
+      "description": "Contract MCONTRACT-CORE-007 declares a valid owner Module",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-007_source_refs",
+      "description": "Contract MCONTRACT-CORE-007 declares source_refs",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-007_enforcement",
+      "description": "Contract MCONTRACT-CORE-007 declares machine enforcement",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-007_source_DD_CORE_009",
+      "description": "Contract MCONTRACT-CORE-007 source is legal: DD-CORE-009",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-007_source_DD_CORE_012",
+      "description": "Contract MCONTRACT-CORE-007 source is legal: DD-CORE-012",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-007_source_DD_CORE_013",
+      "description": "Contract MCONTRACT-CORE-007 source is legal: DD-CORE-013",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-007_source_DD_CORE_014",
+      "description": "Contract MCONTRACT-CORE-007 source is legal: DD-CORE-014",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-007_source_DD_CORE_016",
+      "description": "Contract MCONTRACT-CORE-007 source is legal: DD-CORE-016",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-007_consumer_DD-CORE-015",
+      "description": "Contract MCONTRACT-CORE-007 consumer DD-CORE-015 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-007_consumer_DD-CORE-016",
+      "description": "Contract MCONTRACT-CORE-007 consumer DD-CORE-016 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_MCONTRACT-CORE-007_internal_boundary",
+      "description": "Internal Contract MCONTRACT-CORE-007 is consumed only inside owner Module CORE",
+      "passed": true,
+      "details": "all consumers are internal"
+    }
+  ],
+  "blocking_issues": [
+    "Every declared Module Design ID uses DD-<DOMAIN>-<NNN>"
+  ],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-10-24T14:05:40.692Z",
+  "finished_at": "2026-10-24T14:05:40.692Z",
+  "runner": "gate_runner"
+}

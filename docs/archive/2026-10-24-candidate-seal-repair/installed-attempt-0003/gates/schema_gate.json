@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0002",
+  "gate_id": "schema_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "passed",
+  "input_files": [
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\work_item.json",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\trigger_result.json",
+    "D:\\code\\SpecForge\\.tmp\\candidate-seal-repair-20261024\\installed-fixture\\.specforge\\work-items\\WI-0002\\candidate_manifest.json"
+  ],
+  "checks": [
+    {
+      "check_id": "schema_work_item_json",
+      "description": "work_item.json satisfies the canonical artifact schema",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check_id": "schema_trigger_result_json",
+      "description": "trigger_result.json satisfies the canonical artifact schema",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check_id": "schema_candidate_manifest_json",
+      "description": "candidate_manifest.json satisfies the canonical artifact schema",
+      "passed": true,
+      "details": ""
+    }
+  ],
+  "blocking_issues": [],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-10-24T14:05:40.412Z",
+  "finished_at": "2026-10-24T14:05:40.412Z",
+  "runner": "gate_runner"
+}

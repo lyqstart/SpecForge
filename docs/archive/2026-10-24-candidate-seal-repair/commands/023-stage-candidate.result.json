@@ -1,0 +1,24 @@
+{
+  "id": "023-stage-candidate",
+  "cwd": "D:/code/SpecForge",
+  "exe": "git",
+  "args": [
+    "add",
+    "docs/project-status.md",
+    "docs/product-specification/specforge-product-specification.md",
+    "docs/rule/specforge-active-development-rules.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md",
+    "package.json",
+    "packages",
+    "setup/userlevel-opencode/agents/sf-orchestrator.md",
+    "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md"
+  ],
+  "purpose": "023-stage-candidate",
+  "started": "2026-10-24T13:56:32.411Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T13:56:32.758Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_repository_status": "M  docs/product-specification/specforge-product-specification.md\nM  docs/project-status.md\nM  docs/rule/specforge-active-development-rules.md\nM  docs/rule/specforge-development-error-ledger-and-experience.md\nM  package.json\nM  packages/cli/package.json\nM  packages/cli/tests/help-system.test.ts\nM  packages/configuration/package.json\nM  packages/daemon-core/package.json\nM  packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts\nM  packages/daemon-core/src/tools/lib/implementation-baseline.ts\nM  packages/daemon-core/tests/design-governance-live-closure.test.ts\nM  packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts\nM  packages/daemon-core/tests/unit/candidate-gate-retry-state-recovery.test.ts\nA  packages/daemon-core/tests/unit/candidate-seal-boundary.test.ts\nM  packages/daemon-core/tests/unit/verification-gate-historical-attempt-reconcile.test.ts\nM  packages/host-profile/package.json\nM  packages/observability/package.json\nM  packages/observability/tests/unit/project-structure.test.ts\nM  packages/opencode-adapter/package.json\nM  packages/permission-engine/package.json\nM  packages/scope-gate/package.json\nM  packages/service-management/package.json\nM  packages/types/package.json\nM  packages/version-unification/package.json\nM  packages/workflow-runtime/package.json\nM  setup/userlevel-opencode/agents/sf-orchestrator.md\nM  setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md\n"
+}

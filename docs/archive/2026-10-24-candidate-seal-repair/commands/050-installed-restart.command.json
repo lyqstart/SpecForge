@@ -1,0 +1,12 @@
+{
+  "id": "050-installed-restart",
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    ".tmp/candidate-seal-repair-20261024/installed-acceptance.cjs",
+    "restart"
+  ],
+  "purpose": "050-installed-restart",
+  "started": "2026-10-24T14:05:39.564Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged"
+}

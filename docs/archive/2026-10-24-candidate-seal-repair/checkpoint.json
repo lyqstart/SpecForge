@@ -1,0 +1,6 @@
+{
+  "time": "2026-10-24T14:07:01.454Z",
+  "status": "STOPPED",
+  "stop": "AFTER_DEPLOYMENT_AND_INDEPENDENT_REVIEW_BEFORE_ORIGINAL_WI_RESUMPTION",
+  "next_legal_action": "User restarts OpenCode and supplies final prompt; no approval implied"
+}
