@@ -1,0 +1,11 @@
+{
+  "id": "038-archive",
+  "cwd": "D:/code/SpecForge/.tmp/boundary-capability-worktree",
+  "exe": "node",
+  "args": [
+    "D:/code/SpecForge/.tmp/boundary-capability-repair-20261024/archive.cjs"
+  ],
+  "started": "2026-10-24T08:25:50.661Z",
+  "purpose": "038-archive",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only"
+}

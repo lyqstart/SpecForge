@@ -1,0 +1,1 @@
+{"archive":"D:\\code\\SpecForge\\.tmp\\boundary-capability-worktree\\docs\\archive\\2026-10-24-boundary-capability-repair","members":215,"verified":true}

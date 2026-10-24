@@ -1,0 +1,12 @@
+{
+  "id": "040-main-build",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "build"
+  ],
+  "started": "2026-10-24T08:26:46.318Z",
+  "purpose": "040-main-build",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "042-main-manifest",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "build:release-manifest",
+    "--candidate-id",
+    "commit-eac590c204fa75dcc6ef1d02f199742655fdc895"
+  ],
+  "started": "2026-10-24T08:27:24.968Z",
+  "purpose": "042-main-manifest",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only",
+  "finished": "2026-10-24T08:27:26.059Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_status": ""
+}

@@ -1,0 +1,470 @@
+Updating 93dfe4d6..4ef8eac0
+Fast-forward
+ .gitattributes                                     |   1 +
+ .../.specforge/.gitignore                          | Bin 0 -> 103 bytes
+ .../.specforge/config/observability.json           | Bin 0 -> 52 bytes
+ .../.specforge/config/prod-environment.md          | Bin 0 -> 38 bytes
+ .../.specforge/config/project-rules.md             | Bin 0 -> 38 bytes
+ .../.specforge/config/project.json                 | Bin 0 -> 30 bytes
+ .../.specforge/project/architecture.md             | Bin 0 -> 38 bytes
+ .../.specforge/project/decisions.md                | Bin 0 -> 38 bytes
+ .../.specforge/project/design_index.md             | Bin 0 -> 38 bytes
+ .../.specforge/project/extension_registry.json     | Bin 0 -> 395 bytes
+ .../.specforge/project/glossary.md                 | Bin 0 -> 38 bytes
+ .../.specforge/project/modules/CORE/design.md      | Bin 0 -> 38 bytes
+ .../.specforge/project/modules/CORE/module.json    | Bin 0 -> 77 bytes
+ .../project/modules/CORE/requirements.md           | Bin 0 -> 38 bytes
+ .../.specforge/project/modules/CORE/trace.md       | Bin 0 -> 38 bytes
+ .../.specforge/project/requirements_index.md       | Bin 0 -> 38 bytes
+ .../.specforge/project/spec_manifest.json          | Bin 0 -> 960 bytes
+ .../.specforge/project/trace_matrix.md             | Bin 0 -> 38 bytes
+ .../runtime/configuration-activation.json          | Bin 0 -> 101 bytes
+ .../.specforge/runtime/state.json                  | Bin 0 -> 217 bytes
+ .../001-install.command.json                       | Bin 0 -> 393 bytes
+ .../001-install.result.json                        | Bin 0 -> 528 bytes
+ .../001-install.stderr.txt                         | Bin
+ .../001-install.stdout.txt                         | Bin 0 -> 407 bytes
+ .../002-baseline-build.command.json                | Bin 0 -> 391 bytes
+ .../002-baseline-build.result.json                 | Bin 0 -> 593 bytes
+ .../002-baseline-build.stderr.txt                  | Bin 0 -> 96 bytes
+ .../002-baseline-build.stdout.txt                  | Bin
+ .../003-baseline-build.command.json                | Bin 0 -> 391 bytes
+ .../003-baseline-build.result.json                 | Bin 0 -> 593 bytes
+ .../003-baseline-build.stderr.txt                  | Bin 0 -> 126 bytes
+ .../003-baseline-build.stdout.txt                  | Bin 0 -> 1912 bytes
+ .../004-hardlink-before.command.json               | Bin 0 -> 464 bytes
+ .../004-hardlink-before.result.json                | Bin 0 -> 808 bytes
+ .../004-hardlink-before.stderr.txt                 | Bin 0 -> 1850 bytes
+ .../004-hardlink-before.stdout.txt                 | Bin 0 -> 8529 bytes
+ .../005-capability-before.command.json             | Bin 0 -> 472 bytes
+ .../005-capability-before.result.json              | Bin 0 -> 816 bytes
+ .../005-capability-before.stderr.txt               | Bin 0 -> 4986 bytes
+ .../005-capability-before.stdout.txt               | Bin 0 -> 1705 bytes
+ .../006-hardlink-after.command.json                | Bin 0 -> 515 bytes
+ .../006-hardlink-after.result.json                 | Bin 0 -> 1114 bytes
+ .../006-hardlink-after.stderr.txt                  | Bin 0 -> 256 bytes
+ .../006-hardlink-after.stdout.txt                  | Bin 0 -> 21928 bytes
+ .../007-capability-after.command.json              | Bin 0 -> 559 bytes
+ .../007-capability-after.result.json               | Bin 0 -> 1158 bytes
+ .../007-capability-after.stderr.txt                | Bin 0 -> 4352 bytes
+ .../007-capability-after.stdout.txt                | Bin 0 -> 4650 bytes
+ .../008-adapter-full.command.json                  | Bin 0 -> 412 bytes
+ .../008-adapter-full.result.json                   | Bin 0 -> 1274 bytes
+ .../008-adapter-full.stderr.txt                    | Bin 0 -> 41339 bytes
+ .../008-adapter-full.stdout.txt                    | Bin 0 -> 239212 bytes
+ .../009-daemon-full.command.json                   | Bin 0 -> 405 bytes
+ .../009-daemon-full.result.json                    | Bin 0 -> 1388 bytes
+ .../009-daemon-full.stderr.txt                     | Bin 0 -> 152191 bytes
+ .../009-daemon-full.stdout.txt                     | Bin 0 -> 1045109 bytes
+ .../010-build.command.json                         | Bin 0 -> 373 bytes
+ .../010-build.result.json                          | Bin 0 -> 1356 bytes
+ .../010-build.stderr.txt                           | Bin 0 -> 151 bytes
+ .../010-build.stdout.txt                           | Bin 0 -> 1518 bytes
+ .../011-adapter-full.command.json                  | Bin 0 -> 412 bytes
+ .../011-adapter-full.result.json                   | Bin 0 -> 1395 bytes
+ .../011-adapter-full.stderr.txt                    | Bin 0 -> 36371 bytes
+ .../011-adapter-full.stdout.txt                    | Bin 0 -> 228489 bytes
+ .../012-final-build.command.json                   | Bin 0 -> 385 bytes
+ .../012-final-build.result.json                    | Bin 0 -> 1862 bytes
+ .../012-final-build.stderr.txt                     | Bin 0 -> 126 bytes
+ .../012-final-build.stdout.txt                     | Bin 0 -> 1912 bytes
+ .../013-real-provider.command.json                 | Bin 0 -> 396 bytes
+ .../013-real-provider.result.json                  | Bin 0 -> 531 bytes
+ .../013-real-provider.stderr.txt                   | Bin
+ .../013-real-provider.stdout.txt                   | Bin
+ .../014-independent-hardlink.command.json          | Bin 0 -> 417 bytes
+ .../014-independent-hardlink.result.json           | Bin 0 -> 552 bytes
+ .../014-independent-hardlink.stderr.txt            | Bin
+ .../014-independent-hardlink.stdout.txt            | Bin 0 -> 2944 bytes
+ .../015-full-regression.command.json               | Bin 0 -> 392 bytes
+ .../015-full-regression.result.json                | Bin 0 -> 1869 bytes
+ .../015-full-regression.stderr.txt                 | Bin 0 -> 1723 bytes
+ .../015-full-regression.stdout.txt                 | Bin 0 -> 890 bytes
+ .../016-type-validator.command.json                | Bin 0 -> 414 bytes
+ .../016-type-validator.result.json                 | Bin 0 -> 1891 bytes
+ .../016-type-validator.stderr.txt                  | Bin 0 -> 60 bytes
+ .../016-type-validator.stdout.txt                  | Bin
+ .../017-type-release.command.json                  | Bin 0 -> 414 bytes
+ .../017-type-release.result.json                   | Bin 0 -> 1891 bytes
+ .../017-type-release.stderr.txt                    | Bin 0 -> 63 bytes
+ .../017-type-release.stdout.txt                    | Bin
+ .../018-type-installer.command.json                | Bin 0 -> 405 bytes
+ .../018-type-installer.result.json                 | Bin 0 -> 1882 bytes
+ .../018-type-installer.stderr.txt                  | Bin 0 -> 50 bytes
+ .../018-type-installer.stdout.txt                  | Bin
+ .../019-full-regression.command.json               | Bin 0 -> 392 bytes
+ .../019-full-regression.result.json                | Bin 0 -> 527 bytes
+ .../019-full-regression.stderr.txt                 | Bin 0 -> 531177 bytes
+ .../019-full-regression.stdout.txt                 | Bin 0 -> 2978125 bytes
+ .../020-hardlink-final.command.json                | Bin 0 -> 462 bytes
+ .../020-hardlink-final.result.json                 | Bin 0 -> 2102 bytes
+ .../020-hardlink-final.stderr.txt                  | Bin 0 -> 210 bytes
+ .../020-hardlink-final.stdout.txt                  | Bin 0 -> 24917 bytes
+ .../021-runtime-build.command.json                 | Bin 0 -> 406 bytes
+ .../021-runtime-build.result.json                  | Bin 0 -> 2086 bytes
+ .../021-runtime-build.stderr.txt                   | Bin 0 -> 49 bytes
+ .../021-runtime-build.stdout.txt                   | Bin 0 -> 473 bytes
+ .../022-installed-baseline.command.json            | Bin 0 -> 367 bytes
+ .../022-installed-baseline.result.json             | Bin 0 -> 502 bytes
+ .../022-installed-baseline.stderr.txt              | Bin
+ .../022-installed-baseline.stdout.txt              | Bin 0 -> 62 bytes
+ .../023-manifest.command.json                      | Bin 0 -> 458 bytes
+ .../023-manifest.result.json                       | Bin 0 -> 2138 bytes
+ .../023-manifest.stderr.txt                        | Bin 0 -> 88 bytes
+ .../023-manifest.stdout.txt                        | Bin 0 -> 26020 bytes
+ .../024-scope-boundary.command.json                | Bin 0 -> 471 bytes
+ .../024-scope-boundary.result.json                 | Bin 0 -> 2229 bytes
+ .../024-scope-boundary.stderr.txt                  | Bin 0 -> 67 bytes
+ .../024-scope-boundary.stdout.txt                  | Bin 0 -> 345 bytes
+ .../025-candidate-commit.command.json              | Bin 0 -> 400 bytes
+ .../025-candidate-commit.result.json               | Bin 0 -> 2158 bytes
+ .../025-candidate-commit.stderr.txt                | Bin 0 -> 1120 bytes
+ .../025-candidate-commit.stdout.txt                | Bin
+ .../026-candidate-commit.command.json              | Bin 0 -> 403 bytes
+ .../026-candidate-commit.result.json               | Bin 0 -> 538 bytes
+ .../026-candidate-commit.stderr.txt                | Bin
+ .../026-candidate-commit.stdout.txt                | Bin 0 -> 391 bytes
+ .../027-bound-manifest.command.json                | Bin 0 -> 485 bytes
+ .../027-bound-manifest.result.json                 | Bin 0 -> 620 bytes
+ .../027-bound-manifest.stderr.txt                  | Bin 0 -> 105 bytes
+ .../027-bound-manifest.stdout.txt                  | Bin 0 -> 26065 bytes
+ .../028-scope-full.command.json                    | Bin 0 -> 402 bytes
+ .../028-scope-full.result.json                     | Bin 0 -> 537 bytes
+ .../028-scope-full.stderr.txt                      | Bin 0 -> 960 bytes
+ .../028-scope-full.stdout.txt                      | Bin 0 -> 11169 bytes
+ .../029-precheck.command.json                      | Bin 0 -> 467 bytes
+ .../029-precheck.result.json                       | Bin 0 -> 602 bytes
+ .../029-precheck.stderr.txt                        | Bin 0 -> 111 bytes
+ .../029-precheck.stdout.txt                        | Bin 0 -> 449 bytes
+ .../030-stop-installed.command.json                | Bin 0 -> 401 bytes
+ .../030-stop-installed.result.json                 | Bin 0 -> 536 bytes
+ .../030-stop-installed.stderr.txt                  | Bin
+ .../030-stop-installed.stdout.txt                  | Bin 0 -> 117 bytes
+ .../031-upgrade.command.json                       | Bin 0 -> 399 bytes
+ .../031-upgrade.result.json                        | Bin 0 -> 534 bytes
+ .../031-upgrade.stderr.txt                         | Bin
+ .../031-upgrade.stdout.txt                         | Bin 0 -> 446 bytes
+ .../032-installer-verify.command.json              | Bin 0 -> 416 bytes
+ .../032-installer-verify.result.json               | Bin 0 -> 551 bytes
+ .../032-installer-verify.stderr.txt                | Bin
+ .../032-installer-verify.stdout.txt                | Bin 0 -> 237 bytes
+ .../033-start-installed.command.json               | Bin 0 -> 420 bytes
+ .../033-start-installed.result.json                | Bin 0 -> 555 bytes
+ .../033-start-installed.stderr.txt                 | Bin
+ .../033-start-installed.stdout.txt                 | Bin 0 -> 143 bytes
+ .../034-installed-review.command.json              | Bin 0 -> 414 bytes
+ .../034-installed-review.result.json               | Bin 0 -> 549 bytes
+ .../034-installed-review.stderr.txt                | Bin
+ .../034-installed-review.stdout.txt                | Bin 0 -> 62 bytes
+ .../035-installed-native.command.json              | Bin 0 -> 457 bytes
+ .../035-installed-native.result.json               | Bin 0 -> 592 bytes
+ .../035-installed-native.stderr.txt                | Bin
+ .../035-installed-native.stdout.txt                | Bin 0 -> 750 bytes
+ .../036-independent-review.command.json            | Bin 0 -> 400 bytes
+ .../036-independent-review.result.json             | Bin 0 -> 535 bytes
+ .../036-independent-review.stderr.txt              | Bin 0 -> 951 bytes
+ .../036-independent-review.stdout.txt              | Bin
+ .../037-independent-review.command.json            | Bin 0 -> 403 bytes
+ .../037-independent-review.result.json             | Bin 0 -> 538 bytes
+ .../037-independent-review.stderr.txt              | Bin
+ .../037-independent-review.stdout.txt              | Bin 0 -> 74 bytes
+ .../archive.cjs                                    | Bin 0 -> 4604 bytes
+ .../bump-and-review.cjs                            | Bin 0 -> 1830 bytes
+ .../final-audit-v2.cjs                             | Bin 0 -> 5657 bytes
+ .../final-audit.cjs                                | Bin 0 -> 5557 bytes
+ .../gate.json                                      | Bin 0 -> 1217 bytes
+ .../fixture/.specforge/config/project.json         | Bin 0 -> 24 bytes
+ .../runtime/configuration-activation.json          | Bin 0 -> 101 bytes
+ .../fixture/.specforge/runtime/events.jsonl        | Bin 0 -> 794 bytes
+ .../fixture/.specforge/runtime/state.json          | Bin 0 -> 498 bytes
+ .../.specforge/work-items/WI-0001/work_item.json   | Bin 0 -> 207 bytes
+ .../work-items/WI-0001/write_guard_log.jsonl       | Bin 0 -> 172 bytes
+ .../independent-after/fixture/allowed.txt          | Bin 0 -> 8 bytes
+ .../independent-after/hardlink-result.json         | Bin 0 -> 693 bytes
+ .../independent-after/outside-protected.txt        | Bin 0 -> 8 bytes
+ .../independent-hardlink.ts                        | Bin 0 -> 2656 bytes
+ .../independent-review.json                        | Bin 0 -> 5332 bytes
+ .../installed-after.json                           | Bin 0 -> 28651 bytes
+ .../installed-before.json                          | Bin 0 -> 28508 bytes
+ .../installed-fixture/outside.txt                  | Bin 0 -> 9 bytes
+ .../project/.specforge/config/project.json         | Bin 0 -> 24 bytes
+ .../runtime/configuration-activation.json          | Bin 0 -> 101 bytes
+ .../project/.specforge/runtime/events.jsonl        | Bin 0 -> 794 bytes
+ .../project/.specforge/runtime/state.json          | Bin 0 -> 498 bytes
+ .../.specforge/work-items/WI-0001/work_item.json   | Bin 0 -> 247 bytes
+ .../work-items/WI-0001/write_guard_log.jsonl       | Bin 0 -> 971 bytes
+ .../installed-fixture/project/allowed.txt          | Bin 0 -> 8 bytes
+ .../installed-fixture/project/inside.txt           | Bin 0 -> 9 bytes
+ .../installed-fixture/project/new.txt              | Bin 0 -> 8 bytes
+ .../installed-native-result.json                   | Bin 0 -> 2694 bytes
+ .../installed-native.ts                            | Bin 0 -> 3930 bytes
+ .../installed-review.cjs                           | Bin 0 -> 1485 bytes
+ .../manifest.json                                  | Bin 0 -> 33065 bytes
+ .../2026-10-24-boundary-capability-repair/plan.txt | Bin 0 -> 465 bytes
+ .../prepare.cjs                                    | Bin 0 -> 4200 bytes
+ .../prior-audit-originals.json.gz                  | Bin 0 -> 21080 bytes
+ .../provider-host.stderr.txt                       | Bin
+ .../provider-host.stdout.txt                       | Bin 0 -> 151 bytes
+ .../real-provider-result.json                      | Bin 0 -> 1845 bytes
+ .../real-provider.ts                               | Bin 0 -> 3144 bytes
+ .../rules-read.json                                | Bin 0 -> 4907 bytes
+ .../2026-10-24-boundary-capability-repair/run.cjs  | Bin 0 -> 1160 bytes
+ .../snapshot-commit-v2.cjs                         | Bin 0 -> 1463 bytes
+ .../snapshot-commit.cjs                            | Bin 0 -> 1442 bytes
+ .../source-snapshots.json                          | Bin 0 -> 12501853 bytes
+ .../tracked.diff                                   | Bin 0 -> 43582 bytes
+ .../update-fixtures.cjs                            | Bin 0 -> 3735 bytes
+ .../validated-release-manifest.json                | Bin 0 -> 54631 bytes
+ .../version-consumers.cjs                          | Bin 0 -> 887 bytes
+ ...56\241\346\237\245\347\273\223\346\236\234.txt" | Bin 0 -> 3262 bytes
+ docs/product-specification/authority-registry.md   |   2 +
+ .../specforge-product-specification.md             |   5 +-
+ docs/project-status.md                             |  20 +++----
+ docs/rule/specforge-active-development-rules.md    |   2 +
+ ...orge-development-error-ledger-and-experience.md |  40 +++++++++++++
+ package.json                                       |   2 +-
+ packages/cli/package.json                          |   2 +-
+ packages/cli/tests/help-system.test.ts             |   4 +-
+ packages/configuration/package.json                |   2 +-
+ packages/daemon-core/package.json                  |   2 +-
+ .../src/tools/lib/native-write-boundary.ts         |  12 ++--
+ .../tests/unit/native-hardlink-boundary.test.ts    |  63 ++++++++++++++++++++
+ packages/host-profile/package.json                 |   2 +-
+ packages/observability/package.json                |   2 +-
+ .../tests/unit/project-structure.test.ts           |   2 +-
+ packages/opencode-adapter/README.md                |   7 +++
+ packages/opencode-adapter/package.json             |   2 +-
+ .../src/integration/OpenCodeHttpRuntimeClient.ts   |   6 +-
+ .../src/translators/CapabilityTranslator.ts        |  66 ++++++++++-----------
+ .../tests/CapabilityTranslator.test.ts             |  40 ++++++-------
+ .../tests/capability-evidence-boundary.test.ts     |  55 +++++++++++++++++
+ .../opencode-adapter/tests/getCapabilities.test.ts |   2 +-
+ .../tests/unit/translators.test.ts                 |   8 +--
+ packages/permission-engine/package.json            |   2 +-
+ packages/scope-gate/package.json                   |   2 +-
+ ...current-permission-write-guard-boundary.test.ts |  10 +++-
+ packages/service-management/package.json           |   2 +-
+ packages/types/package.json                        |   2 +-
+ packages/types/src/llm-kernel-contract.ts          |  13 ++--
+ packages/version-unification/package.json          |   2 +-
+ packages/workflow-runtime/package.json             |   2 +-
+ .../unit/current-product-version-contract.test.ts  |   6 +-
+ 249 files changed, 290 insertions(+), 100 deletions(-)
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/.specforge/.gitignore
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/.specforge/config/observability.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/.specforge/config/prod-environment.md
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/.specforge/config/project-rules.md
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/.specforge/config/project.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/.specforge/project/architecture.md
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/.specforge/project/decisions.md
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/.specforge/project/design_index.md
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/.specforge/project/extension_registry.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/.specforge/project/glossary.md
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/.specforge/project/modules/CORE/design.md
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/.specforge/project/modules/CORE/module.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/.specforge/project/modules/CORE/requirements.md
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/.specforge/project/modules/CORE/trace.md
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/.specforge/project/requirements_index.md
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/.specforge/project/spec_manifest.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/.specforge/project/trace_matrix.md
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/.specforge/runtime/configuration-activation.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/.specforge/runtime/state.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/001-install.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/001-install.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/001-install.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/001-install.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/002-baseline-build.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/002-baseline-build.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/002-baseline-build.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/002-baseline-build.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/003-baseline-build.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/003-baseline-build.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/003-baseline-build.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/003-baseline-build.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/004-hardlink-before.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/004-hardlink-before.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/004-hardlink-before.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/004-hardlink-before.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/005-capability-before.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/005-capability-before.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/005-capability-before.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/005-capability-before.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/006-hardlink-after.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/006-hardlink-after.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/006-hardlink-after.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/006-hardlink-after.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/007-capability-after.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/007-capability-after.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/007-capability-after.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/007-capability-after.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/008-adapter-full.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/008-adapter-full.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/008-adapter-full.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/008-adapter-full.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/009-daemon-full.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/009-daemon-full.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/009-daemon-full.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/009-daemon-full.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/010-build.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/010-build.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/010-build.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/010-build.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/011-adapter-full.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/011-adapter-full.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/011-adapter-full.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/011-adapter-full.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/012-final-build.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/012-final-build.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/012-final-build.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/012-final-build.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/013-real-provider.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/013-real-provider.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/013-real-provider.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/013-real-provider.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/014-independent-hardlink.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/014-independent-hardlink.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/014-independent-hardlink.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/014-independent-hardlink.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/015-full-regression.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/015-full-regression.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/015-full-regression.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/015-full-regression.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/016-type-validator.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/016-type-validator.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/016-type-validator.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/016-type-validator.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/017-type-release.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/017-type-release.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/017-type-release.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/017-type-release.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/018-type-installer.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/018-type-installer.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/018-type-installer.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/018-type-installer.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/019-full-regression.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/019-full-regression.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/019-full-regression.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/019-full-regression.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/020-hardlink-final.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/020-hardlink-final.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/020-hardlink-final.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/020-hardlink-final.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/021-runtime-build.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/021-runtime-build.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/021-runtime-build.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/021-runtime-build.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/022-installed-baseline.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/022-installed-baseline.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/022-installed-baseline.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/022-installed-baseline.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/023-manifest.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/023-manifest.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/023-manifest.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/023-manifest.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/024-scope-boundary.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/024-scope-boundary.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/024-scope-boundary.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/024-scope-boundary.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/025-candidate-commit.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/025-candidate-commit.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/025-candidate-commit.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/025-candidate-commit.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/026-candidate-commit.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/026-candidate-commit.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/026-candidate-commit.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/026-candidate-commit.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/027-bound-manifest.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/027-bound-manifest.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/027-bound-manifest.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/027-bound-manifest.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/028-scope-full.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/028-scope-full.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/028-scope-full.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/028-scope-full.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/029-precheck.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/029-precheck.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/029-precheck.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/029-precheck.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/030-stop-installed.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/030-stop-installed.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/030-stop-installed.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/030-stop-installed.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/031-upgrade.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/031-upgrade.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/031-upgrade.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/031-upgrade.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/032-installer-verify.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/032-installer-verify.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/032-installer-verify.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/032-installer-verify.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/033-start-installed.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/033-start-installed.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/033-start-installed.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/033-start-installed.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/034-installed-review.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/034-installed-review.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/034-installed-review.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/034-installed-review.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/035-installed-native.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/035-installed-native.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/035-installed-native.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/035-installed-native.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/036-independent-review.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/036-independent-review.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/036-independent-review.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/036-independent-review.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/037-independent-review.command.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/037-independent-review.result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/037-independent-review.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/037-independent-review.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/archive.cjs
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/bump-and-review.cjs
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/final-audit-v2.cjs
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/final-audit.cjs
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/gate.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/independent-after/fixture/.specforge/config/project.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/independent-after/fixture/.specforge/runtime/configuration-activation.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/independent-after/fixture/.specforge/runtime/events.jsonl
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/independent-after/fixture/.specforge/runtime/state.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/independent-after/fixture/.specforge/work-items/WI-0001/work_item.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/independent-after/fixture/.specforge/work-items/WI-0001/write_guard_log.jsonl
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/independent-after/fixture/allowed.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/independent-after/hardlink-result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/independent-after/outside-protected.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/independent-hardlink.ts
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/independent-review.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/installed-after.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/installed-before.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/installed-fixture/outside.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/installed-fixture/project/.specforge/config/project.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/installed-fixture/project/.specforge/runtime/configuration-activation.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/installed-fixture/project/.specforge/runtime/events.jsonl
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/installed-fixture/project/.specforge/runtime/state.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/installed-fixture/project/.specforge/work-items/WI-0001/work_item.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/installed-fixture/project/.specforge/work-items/WI-0001/write_guard_log.jsonl
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/installed-fixture/project/allowed.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/installed-fixture/project/inside.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/installed-fixture/project/new.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/installed-native-result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/installed-native.ts
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/installed-review.cjs
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/manifest.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/plan.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/prepare.cjs
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/prior-audit-originals.json.gz
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/provider-host.stderr.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/provider-host.stdout.txt
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/real-provider-result.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/real-provider.ts
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/rules-read.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/run.cjs
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/snapshot-commit-v2.cjs
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/snapshot-commit.cjs
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/source-snapshots.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/tracked.diff
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/update-fixtures.cjs
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/validated-release-manifest.json
+ create mode 100644 docs/archive/2026-10-24-boundary-capability-repair/version-consumers.cjs
+ create mode 100644 "docs/archive/2026-10-24-boundary-capability-repair/\345\256\241\346\237\245\347\273\223\346\236\234.txt"
+ create mode 100644 packages/daemon-core/tests/unit/native-hardlink-boundary.test.ts
+ create mode 100644 packages/opencode-adapter/tests/capability-evidence-boundary.test.ts

@@ -1,0 +1,14 @@
+{
+  "id": "043-main-precheck",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "precheck:release",
+    "--candidate-id",
+    "commit-eac590c204fa75dcc6ef1d02f199742655fdc895"
+  ],
+  "started": "2026-10-24T08:27:34.902Z",
+  "purpose": "043-main-precheck",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only"
+}

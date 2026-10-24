@@ -1,0 +1,11 @@
+{
+  "id": "041-main-promote",
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    "D:/code/SpecForge/.tmp/boundary-capability-repair-20261024/verify-and-promote.cjs"
+  ],
+  "started": "2026-10-24T08:27:07.714Z",
+  "purpose": "041-main-promote",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only"
+}
