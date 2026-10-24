@@ -1,0 +1,97 @@
+{
+  "utc": "2026-10-24T08:42:08.953Z",
+  "pid": 36648,
+  "root": "D:\\code\\SpecForge\\.tmp\\final-six-acceptance-20261024\\fixtures\\closed-projection",
+  "records": [
+    {
+      "started": "2026-10-24T08:42:08.171Z",
+      "finished": "2026-10-24T08:42:08.230Z",
+      "tool": "sf_state_read",
+      "args": {
+        "work_item_id": "all"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"rebuilt_from_events\":true,\"work_items\":{\"WI-0001\":{\"work_item_id\":\"WI-0001\",\"workflow_type\":\"feature_spec\",\"current_state\":\"closed\",\"created_at\":1792208444157,\"updated_at\":1792346105207}}},\"requestId\":\"pwqr0s0jroqmvm5hecf\",\"timestamp\":1792831328223}"
+    },
+    {
+      "started": "2026-10-24T08:42:08.230Z",
+      "finished": "2026-10-24T08:42:08.256Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "echo FINAL_SHELL_CONTROL > SHELL_REDIRECT_SENTINEL.txt",
+        "cwd": "D:\\code\\SpecForge\\.tmp\\final-six-acceptance-20261024\\fixtures\\closed-projection"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":false,\"error\":\"WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\\nViolations: no active work_item_id for shell write command\",\"hard_stop\":false,\"policy_violation\":true,\"retry_allowed\":false,\"blocked_command\":\"echo FINAL_SHELL_CONTROL > SHELL_REDIRECT_SENTINEL.txt\",\"write_guard_targets\":[{\"path\":\"SHELL_REDIRECT_SENTINEL.txt\",\"operation\":\"modify\"}]},\"requestId\":\"45ojd8nf9ahmvm5hedb\",\"timestamp\":1792831328255}"
+    },
+    {
+      "name": "SHELL_REDIRECT_SENTINEL.txt",
+      "beforeExists": false,
+      "afterExists": false,
+      "content": null,
+      "result": {
+        "success": true,
+        "data": {
+          "success": false,
+          "error": "WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\nViolations: no active work_item_id for shell write command",
+          "hard_stop": false,
+          "policy_violation": true,
+          "retry_allowed": false,
+          "blocked_command": "echo FINAL_SHELL_CONTROL > SHELL_REDIRECT_SENTINEL.txt",
+          "write_guard_targets": [
+            {
+              "path": "SHELL_REDIRECT_SENTINEL.txt",
+              "operation": "modify"
+            }
+          ]
+        },
+        "requestId": "45ojd8nf9ahmvm5hedb",
+        "timestamp": 1792831328255
+      }
+    },
+    {
+      "started": "2026-10-24T08:42:08.256Z",
+      "finished": "2026-10-24T08:42:08.919Z",
+      "tool": "sf_safe_bash",
+      "args": {
+        "command": "node -e \"require('fs').writeFileSync('SHELL_INLINE_SENTINEL.txt','FINAL_SHELL_ISOLATED_PROBE')\"",
+        "cwd": "D:\\code\\SpecForge\\.tmp\\final-six-acceptance-20261024\\fixtures\\closed-projection"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"exitCode\":0,\"stdout\":\"\",\"stderr\":\"\",\"durationMs\":613,\"command\":\"$OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::InputEncoding = [System.Text.Encoding]::UTF8; node -e \\\"require('fs').writeFileSync('SHELL_INLINE_SENTINEL.txt','FINAL_SHELL_ISOLATED_PROBE')\\\"\",\"cwd\":\"D:\\\\code\\\\SpecForge\\\\.tmp\\\\final-six-acceptance-20261024\\\\fixtures\\\\closed-projection\",\"shell\":\"pwsh\",\"rejected\":false,\"timeout\":false},\"requestId\":\"f4yam3shncrmvm5hevq\",\"timestamp\":1792831328918}"
+    },
+    {
+      "name": "SHELL_INLINE_SENTINEL.txt",
+      "beforeExists": false,
+      "afterExists": true,
+      "content": "FINAL_SHELL_ISOLATED_PROBE",
+      "result": {
+        "success": true,
+        "data": {
+          "success": true,
+          "exitCode": 0,
+          "stdout": "",
+          "stderr": "",
+          "durationMs": 613,
+          "command": "$OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::InputEncoding = [System.Text.Encoding]::UTF8; node -e \"require('fs').writeFileSync('SHELL_INLINE_SENTINEL.txt','FINAL_SHELL_ISOLATED_PROBE')\"",
+          "cwd": "D:\\code\\SpecForge\\.tmp\\final-six-acceptance-20261024\\fixtures\\closed-projection",
+          "shell": "pwsh",
+          "rejected": false,
+          "timeout": false
+        },
+        "requestId": "f4yam3shncrmvm5hevq",
+        "timestamp": 1792831328918
+      }
+    },
+    {
+      "started": "2026-10-24T08:42:08.921Z",
+      "finished": "2026-10-24T08:42:08.953Z",
+      "tool": "sf_state_read",
+      "args": {
+        "work_item_id": "all"
+      },
+      "status": 200,
+      "raw": "{\"success\":true,\"data\":{\"success\":true,\"rebuilt_from_events\":true,\"work_items\":{\"WI-0001\":{\"work_item_id\":\"WI-0001\",\"workflow_type\":\"feature_spec\",\"current_state\":\"closed\",\"created_at\":1792208444157,\"updated_at\":1792346105207}}},\"requestId\":\"6eq70dsy8w8mvm5hewo\",\"timestamp\":1792831328952}"
+    }
+  ]
+}

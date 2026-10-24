@@ -1,0 +1,20 @@
+{
+  "id": "015-audit-recovery",
+  "cwd": "D:/code/SpecForge/packages/daemon-core",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/acceptance-guard-audit-regression.test.ts",
+    "tests/hard-stop-recovery-protocol.test.ts"
+  ],
+  "purpose": "015-audit-recovery",
+  "started": "2026-10-24T08:38:49.406Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T08:38:53.318Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_repository_status": " M docs/project-status.md\n"
+}

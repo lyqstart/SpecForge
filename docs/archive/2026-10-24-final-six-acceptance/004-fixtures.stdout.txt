@@ -1,0 +1,253 @@
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+{"fixtures":7}

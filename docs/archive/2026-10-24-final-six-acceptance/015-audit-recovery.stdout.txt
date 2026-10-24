@@ -1,0 +1,11 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/hard-stop-recovery-protocol.test.ts (10 tests) 160ms
+ ✓ tests/unit/acceptance-guard-audit-regression.test.ts (5 tests) 246ms
+
+ Test Files  2 passed (2)
+      Tests  15 passed (15)
+   Start at  16:38:49
+   Duration  3.23s (transform 1.73s, setup 0ms, collect 3.77s, tests 406ms, environment 0ms, prepare 426ms)
+

@@ -1,0 +1,2662 @@
+{
+  "preclose": false,
+  "recorded_at": "2026-10-24T08:39:19.929Z",
+  "last_transition": {
+    "schema_version": "1.0",
+    "eventId": "01a15027-2577-711c-9a59-d6bbd0abdc74",
+    "ts": 1792346105207,
+    "monotonicSeq": 40,
+    "projectId": "WI-0001",
+    "actor": "close_gate",
+    "category": "state",
+    "action": "state.transition",
+    "payload": {
+      "work_item_id": "WI-0001",
+      "from_state": "verification_done",
+      "to_state": "closed",
+      "workflow_type": "feature_spec",
+      "transitioned_at": 1792346105207,
+      "evidence": "close_gate authoritative recovery step verification_done->closed",
+      "transition_context": {
+        "source": "sf_v11_close_gate",
+        "recovery": true
+      }
+    },
+    "metadata": {
+      "schemaVersion": "1.0",
+      "source": "daemon"
+    }
+  },
+  "closed": true,
+  "integrity": {
+    "invalidity_reasons": [],
+    "report_sha256": "239f0466e891117305423238ba9cab0d4d20940d91d273e28c51d1cdb666c1a8",
+    "manifest_sha256": "28c15297ebea0e1000d17ab243cf0d9880653316ca2b16856ba2a32a498934e3",
+    "close_event_at": "2026-10-18T17:55:05.207Z"
+  },
+  "binding": {
+    "passed": true,
+    "sha256": "82fc1cdd49ea49ea6a5427bdaeedb01a57e33cd8406afac16042aef9423d89fe",
+    "hasEvidence": true,
+    "blocked": 2
+  },
+  "closed_guard_omission": null,
+  "originals": [
+    {
+      "id": "EV-0001-NODE-TESTS",
+      "path": "D:/code/sf-acceptance-six-evidence/completion-20261018-A01/node-original/prt_14ff183c5001DlcZUXEqriJoFi.stdout.txt",
+      "actual": "598fe6e232f47331a4a7a77381f2f9d5e32380eee30e2a34ed80291a6588945a",
+      "declared": [
+        "598fe6e232f47331a4a7a77381f2f9d5e32380eee30e2a34ed80291a6588945a"
+      ],
+      "passed": true
+    },
+    {
+      "id": "EV-0002-BROWSER-E2E",
+      "path": "D:/code/sf-acceptance-six-evidence/completion-20261018-A01/approval-checkpoint/raw/browser-evidence.json",
+      "actual": "dd0531e087e055ec71253f3737326d5e218141898854d6f3e3c4ff9576d0d683",
+      "declared": [
+        "dd0531e087e055ec71253f3737326d5e218141898854d6f3e3c4ff9576d0d683"
+      ],
+      "passed": true
+    },
+    {
+      "id": "EV-0010-BROWSER-COMPLETED-PNG",
+      "path": "D:/code/sf-acceptance-six-evidence/completion-20261018-A01/approval-checkpoint/raw/browser-completed.png",
+      "actual": "4192e40e694e40f24d41d784bd96f90835be6550a0012ffc827beefe22f62b43",
+      "declared": [
+        "4192e40e694e40f24d41d784bd96f90835be6550a0012ffc827beefe22f62b43"
+      ],
+      "passed": true
+    },
+    {
+      "id": "EV-0011-BROWSER-DELETED-PNG",
+      "path": "D:/code/sf-acceptance-six-evidence/completion-20261018-A01/approval-checkpoint/raw/browser-deleted.png",
+      "actual": "d3d30beeed8426073f8060c3afd338d943455b879f9ad2a95b8bd6a760786062",
+      "declared": [
+        "d3d30beeed8426073f8060c3afd338d943455b879f9ad2a95b8bd6a760786062"
+      ],
+      "passed": true
+    }
+  ],
+  "report": {
+    "schema_version": "1.0",
+    "work_item_id": "WI-0001",
+    "workflow_type": "feature_spec",
+    "status": "completed",
+    "conclusion": "pass",
+    "generated_at": "2026-10-18T17:44:56.324Z",
+    "governance_model": {
+      "basis_checked": true,
+      "upstream_coverage_checked": true,
+      "required_evidence_checked": true,
+      "project_integration_checked": true
+    },
+    "required_evidence_results": [
+      {
+        "id": "EVREQ-001-005-A",
+        "supports": [
+          "REQ-CORE-001",
+          "REQ-CORE-002",
+          "REQ-CORE-003",
+          "REQ-CORE-004",
+          "REQ-CORE-005"
+        ],
+        "required_level": "L3",
+        "actual_level": "L3",
+        "status": "pass",
+        "command": "node --test test/app.test.js（引用真实原件：actual_executor=OpenCode sf-verifier session ses_eb0139059ffevffkkox59OrYjF；export_and_auditor=Codex；非本轮重跑）",
+        "observed_result": "exit_code=0, 31/31 pass, 无截断; test_start=2026-10-18T16:56:30.415Z, test_end=2026-10-18T16:56:31.032Z, recorded_at=2026-10-18T17:23:13.168Z; stdout 6019B sha256=598fe6e232f47331a4a7a77381f2f9d5e32380eee30e2a34ed80291a6588945a; stderr 0B sha256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; result.json 568B sha256=f6ef2c1f774c6d92a5752e3f2cb0734cf9fda3332634f0480068acecd2ac68ce"
+      },
+      {
+        "id": "EVREQ-006-A",
+        "supports": [
+          "REQ-CORE-006"
+        ],
+        "required_level": "L3",
+        "actual_level": "L3",
+        "status": "pass",
+        "command": "node --test test/app.test.js（数据契约组 AC-020~023 + CP-CORE-002/006/007，同一原件引用）",
+        "observed_result": "同上原件：31/31 含 AC-020 单键 todo.tasks.v1、AC-021 条目结构、AC-022 变更后一致、AC-023 损坏安全启动，全部 pass"
+      },
+      {
+        "id": "EVREQ-001-005-B",
+        "supports": [
+          "REQ-CORE-001",
+          "REQ-CORE-002",
+          "REQ-CORE-003",
+          "REQ-CORE-004",
+          "REQ-CORE-005"
+        ],
+        "required_level": "L4",
+        "actual_level": "L4",
+        "status": "pass",
+        "command": "Codex 封存包核验（命令065，程序执行，引用）",
+        "observed_result": "verified_at=2026-10-18T17:17:27.594Z, status=PASS, seal_time=2026-10-18T14:23:59.700Z, manifest_sha256=1e463e204bfcfffba5e8b4106aa1d9f5774bf355765252a152a384d200868c45；外部原件 browser-evidence.json 4390B sha256=dd0531e087e055ec71253f3737326d5e218141898854d6f3e3c4ff9576d0d683；真实技术 e2e B1~B5，非用户 UAT"
+      },
+      {
+        "id": "EVREQ-006-B",
+        "supports": [
+          "REQ-CORE-006"
+        ],
+        "required_level": "L4",
+        "actual_level": "L3",
+        "status": "not_executed",
+        "command": "（真实浏览器对 REQ-CORE-006 损坏存储边界实测）",
+        "observed_result": "requirements.md 声明层级 B NOT_RUN 交后续补测；本轮浏览器 e2e 仅覆盖 B1~B5，不声称验证 REQ-CORE-006；AC-020~023 由 Node 层级 A（EV-0001）覆盖，非 blocking（requirements 指定 EVREQ-006-A 为本会话完成证据）"
+      }
+    ],
+    "missing_blocking_evidence": [],
+    "test_matrix": {
+      "L1_unit": "pass",
+      "L2_integration": "pass",
+      "L3_pbt": "not_applicable",
+      "L4_e2e": "pass",
+      "L5_smoke": "pass",
+      "L6_regression": "pass",
+      "L7_performance": "not_applicable",
+      "L8_security": "not_applicable",
+      "L9_compatibility": "pass",
+      "L10_uat": "not_applicable"
+    },
+    "verification_commands": [
+      {
+        "command": "node --test test/app.test.js（引用真实原件：actual_executor=OpenCode sf-verifier session ses_eb0139059ffevffkkox59OrYjF；export_and_auditor=Codex；非本轮重跑）",
+        "status": "pass",
+        "output_summary": "exit_code=0；31/31 pass；无截断；test window 2026-10-18T16:56:30.415Z~16:56:31.032Z；recorded_at=2026-10-18T17:23:13.168Z；stdout 6019B SHA256=598fe6e232f47331a4a7a77381f2f9d5e32380eee30e2a34ed80291a6588945a；stderr 0B SHA256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855；result.json 568B SHA256=f6ef2c1f774c6d92a5752e3f2cb0734cf9fda3332634f0480068acecd2ac68ce（外部原件 D:/code/sf-acceptance-six-evidence/completion-20261018-A01/node-original/prt_14ff183c5001DlcZUXEqriJoFi.*）"
+      },
+      {
+        "command": "Codex 封存包核验（命令065，程序执行，引用）",
+        "status": "pass",
+        "output_summary": "退出码 0；verified_at=2026-10-18T17:17:27.594Z；status=PASS；seal_time=2026-10-18T14:23:59.700Z；manifest_sha256=1e463e204bfcfffba5e8b4106aa1d9f5774bf355765252a152a384d200868c45；外部原件：browser-evidence.json 4390B sha256=dd0531e0…d683；browser-completed.png 13538B sha256=4192e40e…2b43；browser-deleted.png 10712B sha256=d3d30bee…6062；封存发生在任何模型转抄尝试之前"
+      },
+      {
+        "command": "certutil 文件身份对账（引用前序代独立执行）",
+        "status": "pass",
+        "output_summary": "node --version=v24.19.0（与 prod-environment.md 一致，L9）；app.js SHA256=52bb946e8a0015c6f0bb2e062d9424111865bbe9789bcca387faddd8361e897e；test/app.test.js SHA256=1cfb1ea9e21a6d15ef45fb4144e0b7364ec058fdb1a39ee6fada2dfa24236bcd"
+      },
+      {
+        "command": "原生 edit 往返还原（引用 executor 会话原始证据，事件时间 2026-10-18T14:12~14:13Z）",
+        "status": "pass",
+        "output_summary": "hash before/after=52bb946e8a0015c6f0bb2e062d9424111865bbe9789bcca387faddd8361e897e；mid=de21d6df5ad72dff96e7fdb842b5e83404a9e3d5d64b30040b56dbc300ec8936；app.js 当前身份与 before/after 一致"
+      },
+      {
+        "command": "protected-marker 越权写入拒绝探针（引用既有治理证据，HS-1792333107689 @2026-10-18T14:18:27Z）",
+        "status": "pass",
+        "output_summary": "WRITE_GUARD_DENIED: file+operation not in allowed_write_files: protected-marker.txt (modify)；哨兵 SHA256=31020b7ff7c6c4de3844d6602d4bd224a0ab489a16a71ee35153009af8490868 探针前后不变；处置 HS-1792333107689（prohibited_action_replaced/abandon）"
+      },
+      {
+        "command": "sf_changed_files_audit（引用既有治理证据，PASS @2026-10-18T14:19Z 前后）",
+        "status": "pass",
+        "output_summary": "PASS：unresolved=0、out_of_scope=0；实际变更文件唯一解析到 CORE 模块四个计划路径"
+      },
+      {
+        "command": "node -e \"console.log(new Date().toISOString())\"（本轮真实执行，取得报告生成时间）",
+        "status": "pass",
+        "output_summary": "2026-10-18T17:44:56.324Z（真实当前 UTC，本报告与清单 generated_at/登记时间来源）"
+      }
+    ],
+    "acceptance_criteria": [
+      {
+        "req_id": "REQ-CORE-001",
+        "name": "新增任务（B1，AC-001~005：trim 入库、追加、条目三控件、存储包含、顺序）",
+        "status": "pass",
+        "evidence_refs": [
+          "EV-0001-NODE-TESTS",
+          "EV-0002-BROWSER-E2E"
+        ]
+      },
+      {
+        "req_id": "REQ-CORE-002",
+        "name": "勾选完成（B2，AC-006~009：双向切换、完成态可感知、持续呈现、存储同步）",
+        "status": "pass",
+        "evidence_refs": [
+          "EV-0001-NODE-TESTS",
+          "EV-0002-BROWSER-E2E"
+        ]
+      },
+      {
+        "req_id": "REQ-CORE-003",
+        "name": "删除任务（B3，AC-010~013：删除后不呈现、存储不含、空清单、局部性）",
+        "status": "pass",
+        "evidence_refs": [
+          "EV-0001-NODE-TESTS",
+          "EV-0002-BROWSER-E2E"
+        ]
+      },
+      {
+        "req_id": "REQ-CORE-004",
+        "name": "刷新保留（B4，AC-014~016：启动重读、变更后保存、空/缺键安全启动）",
+        "status": "pass",
+        "evidence_refs": [
+          "EV-0001-NODE-TESTS",
+          "EV-0002-BROWSER-E2E"
+        ]
+      },
+      {
+        "req_id": "REQ-CORE-005",
+        "name": "空白拒绝（B5，AC-017~019：空串与纯空白拒绝、零状态变化）",
+        "status": "pass",
+        "evidence_refs": [
+          "EV-0001-NODE-TESTS",
+          "EV-0002-BROWSER-E2E"
+        ]
+      },
+      {
+        "req_id": "REQ-CORE-006",
+        "name": "任务数据持久化语义（AC-020~023：单键 todo.tasks.v1、条目结构、变更后一致、损坏安全启动）",
+        "status": "pass",
+        "evidence_refs": [
+          "EV-0001-NODE-TESTS",
+          "EV-0009-CONTRACT-REVIEW"
+        ]
+      }
+    ],
+    "e2e_tests": [
+      {
+        "name": "浏览器 B1~B5（Codex 外部执行真实浏览器技术 e2e，外部原件引用+程序封存核验，非用户人工 UAT；原始操作 utc 2026-10-18T13:53:48.687Z~13:54:03.029Z；支持 REQ-CORE-001~005，不声称验证 REQ-CORE-006 损坏边界——由 Node EV-0001 覆盖）",
+        "status": "pass",
+        "evidence": "EV-0002-BROWSER-E2E"
+      },
+      {
+        "name": "B1/B2 完成态截图",
+        "status": "pass",
+        "evidence": "EV-0010-BROWSER-COMPLETED-PNG"
+      },
+      {
+        "name": "B3 删除态截图",
+        "status": "pass",
+        "evidence": "EV-0011-BROWSER-DELETED-PNG"
+      }
+    ],
+    "side_effects": "本轮验证零 shell 写入（唯一 shell 为只读 node -e 取 UTC）、未修改业务代码、未重跑 Node/浏览器/探针、未读取项目外路径（外部原件仅按精确身份值登记引用）；仅通过 sf_artifact_write 原子覆盖本 Agent 名下 verification_report 与 evidence_manifest。历史失败记录（保留、不改 PASS、不删除）：①两次 Base64 转输自检失败（attempt1 len=6811 tail=XQ==；attempt2 len=5848≠5856 bytes=4384≠4390 sha256=7fa98c6e…≠dd0531e0…），用户与 Codex 裁决停止转抄路线，由合法外部原件引用替代（EV-0002）；②EV-0008 哈希比对失败（c03dd985…/4340B ≠ dd0531e0…/4390B），无效副本 browser-20261018.txt immutable 保留；③旧 blocked 报告与旧错配闭包历史保留（本代按一手规格重建，非删除历史）。",
+    "contract_reviews": [
+      {
+        "contract_id": "MCONTRACT-CORE-001",
+        "files": [
+          "test/app.test.js"
+        ],
+        "modules": [
+          "CORE"
+        ],
+        "review_method": "manual",
+        "reviewer": "sf-verifier",
+        "conclusion": "pass",
+        "summary": "本轮一手重读 app.js、test/app.test.js 与 .specforge/project/modules/CORE/contracts.json 复核 MCONTRACT-CORE-001（storage_single_key_contract）：app.js 以常量 STORAGE_KEY='todo.tasks.v1' 单键持久化（app.js L19），无第二键；Task={id 非空 string（generateId 唯一）, text trim 后非空, done boolean}（isValidTask L37-47）；push/filter 保序使数组顺序=呈现顺序=添加顺序；addTask/toggleTask/removeTask 每次变更后均调用 saveTasks 全量覆盖（L204/216/230）。消费者 test/app.test.js 含 keys() 断言面并在 AC-020（单键）、AC-021（结构+JSON 序列化）、AC-022/CP-CORE-002（每步变更后一致性）断言该合同，31/31 通过（EV-0001）。消费者唯一映射 CORE 模块，符合合同，结论 pass。",
+        "evidence": "EV-0009-CONTRACT-REVIEW"
+      }
+    ],
+    "summary": "结论 pass（按一手正式规格重建本代报告）。REQ 映射以 requirements.md 为准：REQ-CORE-001 新增 / 002 完成 / 003 删除 / 004 刷新 / 005 空白拒绝 / 006 存储语义（AC-020~023）。当前必需测试=Node 31 项（覆盖全部六条 REQ 含 AC-020~023，actual_executor=OpenCode sf-verifier session ses_eb0139059ffevffkkox59OrYjF，export_and_auditor=Codex，真实原件 prt_14ff183c5001DlcZUXEqriJoFi 外部引用）+ 浏览器 e2e B1~B5（Codex 外部执行，封存核验，支持 REQ-CORE-001~005，不声称验证 REQ-CORE-006）。治理证据（EV-0004/0005/0006/0007）仅在治理检查/历史记录区照实保留，不作为 REQ-CORE-006 或其 OUT 的业务 supports。EVREQ-006-B（浏览器损坏边界）维持 requirements 声明的 NOT_RUN/后续补测，非 blocking。历史失败（两次转输自检、EV-0008、旧 blocked 报告、无效副本）原样保留。全部时间戳为真实 UTC（≤ 2026-10-18T17:44:56.324Z）。",
+    "semantic_closure": {
+      "schema_version": "1.0",
+      "work_item_id": "WI-0001",
+      "workflow_type": "feature_spec",
+      "closure_profile": "full",
+      "outcomes": [
+        {
+          "id": "OUT-CORE-001",
+          "description": "用户可在浏览器与模拟环境添加待办（B1）",
+          "requirement_refs": [
+            "REQ-CORE-001"
+          ],
+          "required_evidence_refs": [
+            "EV-0001-NODE-TESTS",
+            "EV-0002-BROWSER-E2E"
+          ]
+        },
+        {
+          "id": "OUT-CORE-002",
+          "description": "用户可切换待办完成状态且持续呈现（B2）",
+          "requirement_refs": [
+            "REQ-CORE-002"
+          ],
+          "required_evidence_refs": [
+            "EV-0001-NODE-TESTS",
+            "EV-0002-BROWSER-E2E"
+          ]
+        },
+        {
+          "id": "OUT-CORE-003",
+          "description": "用户可删除待办且其余条目保序（B3）",
+          "requirement_refs": [
+            "REQ-CORE-003"
+          ],
+          "required_evidence_refs": [
+            "EV-0001-NODE-TESTS",
+            "EV-0002-BROWSER-E2E"
+          ]
+        },
+        {
+          "id": "OUT-CORE-004",
+          "description": "刷新后任务集合保留（B4）",
+          "requirement_refs": [
+            "REQ-CORE-004"
+          ],
+          "required_evidence_refs": [
+            "EV-0001-NODE-TESTS",
+            "EV-0002-BROWSER-E2E"
+          ]
+        },
+        {
+          "id": "OUT-CORE-005",
+          "description": "空白输入被拒绝且零状态变化（B5）",
+          "requirement_refs": [
+            "REQ-CORE-005"
+          ],
+          "required_evidence_refs": [
+            "EV-0001-NODE-TESTS",
+            "EV-0002-BROWSER-E2E"
+          ]
+        },
+        {
+          "id": "OUT-CORE-006",
+          "description": "任务数据持久化契约成立：单键 todo.tasks.v1、条目结构、变更后一致、损坏安全启动（AC-020~023）",
+          "requirement_refs": [
+            "REQ-CORE-006"
+          ],
+          "required_evidence_refs": [
+            "EV-0001-NODE-TESTS",
+            "EV-0009-CONTRACT-REVIEW"
+          ]
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-CORE-001",
+          "description": "新增任务（AC-001~005）",
+          "type": "MUST",
+          "requirement_type": "MUST",
+          "outcome_refs": [
+            "OUT-CORE-001"
+          ],
+          "design_refs": [
+            "DD-CORE-001",
+            "DD-CORE-002",
+            "DD-CORE-003",
+            "DD-CORE-004",
+            "DD-CORE-005"
+          ],
+          "task_refs": [
+            "TASK-WI-0001-001",
+            "TASK-WI-0001-002",
+            "TASK-WI-0001-003",
+            "TASK-WI-0001-004"
+          ],
+          "required_evidence_refs": [
+            "EV-0001-NODE-TESTS",
+            "EV-0002-BROWSER-E2E"
+          ]
+        },
+        {
+          "id": "REQ-CORE-002",
+          "description": "勾选完成（AC-006~009）",
+          "type": "MUST",
+          "requirement_type": "MUST",
+          "outcome_refs": [
+            "OUT-CORE-002"
+          ],
+          "design_refs": [
+            "DD-CORE-003",
+            "DD-CORE-004"
+          ],
+          "task_refs": [
+            "TASK-WI-0001-001",
+            "TASK-WI-0001-002",
+            "TASK-WI-0001-003",
+            "TASK-WI-0001-005"
+          ],
+          "required_evidence_refs": [
+            "EV-0001-NODE-TESTS",
+            "EV-0002-BROWSER-E2E"
+          ]
+        },
+        {
+          "id": "REQ-CORE-003",
+          "description": "删除任务（AC-010~013）",
+          "type": "MUST",
+          "requirement_type": "MUST",
+          "outcome_refs": [
+            "OUT-CORE-003"
+          ],
+          "design_refs": [
+            "DD-CORE-003",
+            "DD-CORE-004"
+          ],
+          "task_refs": [
+            "TASK-WI-0001-001",
+            "TASK-WI-0001-003",
+            "TASK-WI-0001-005"
+          ],
+          "required_evidence_refs": [
+            "EV-0001-NODE-TESTS",
+            "EV-0002-BROWSER-E2E"
+          ]
+        },
+        {
+          "id": "REQ-CORE-004",
+          "description": "刷新保留（AC-014~016）",
+          "type": "MUST",
+          "requirement_type": "MUST",
+          "outcome_refs": [
+            "OUT-CORE-004"
+          ],
+          "design_refs": [
+            "DD-CORE-004",
+            "DD-CORE-005",
+            "DD-CORE-007"
+          ],
+          "task_refs": [
+            "TASK-WI-0001-001",
+            "TASK-WI-0001-003",
+            "TASK-WI-0001-006"
+          ],
+          "required_evidence_refs": [
+            "EV-0001-NODE-TESTS",
+            "EV-0002-BROWSER-E2E"
+          ]
+        },
+        {
+          "id": "REQ-CORE-005",
+          "description": "空白拒绝（AC-017~019）",
+          "type": "MUST",
+          "requirement_type": "MUST",
+          "outcome_refs": [
+            "OUT-CORE-005"
+          ],
+          "design_refs": [
+            "DD-CORE-001"
+          ],
+          "task_refs": [
+            "TASK-WI-0001-003",
+            "TASK-WI-0001-004"
+          ],
+          "required_evidence_refs": [
+            "EV-0001-NODE-TESTS",
+            "EV-0002-BROWSER-E2E"
+          ]
+        },
+        {
+          "id": "REQ-CORE-006",
+          "description": "任务数据持久化语义（AC-020~023）",
+          "type": "MUST",
+          "requirement_type": "MUST",
+          "outcome_refs": [
+            "OUT-CORE-006"
+          ],
+          "design_refs": [
+            "DD-CORE-002",
+            "DD-CORE-004",
+            "DD-CORE-007"
+          ],
+          "task_refs": [
+            "TASK-WI-0001-003",
+            "TASK-WI-0001-006"
+          ],
+          "required_evidence_refs": [
+            "EV-0001-NODE-TESTS",
+            "EV-0009-CONTRACT-REVIEW"
+          ]
+        }
+      ],
+      "design_decisions": [
+        {
+          "id": "DD-CORE-001",
+          "description": "输入校验：trim 后空拒绝且零状态变化",
+          "requirement_refs": [
+            "REQ-CORE-001",
+            "REQ-CORE-005"
+          ],
+          "task_refs": [
+            "TASK-WI-0001-003",
+            "TASK-WI-0001-004"
+          ]
+        },
+        {
+          "id": "DD-CORE-002",
+          "description": "tasks 内存数组单一真相源与存储同步",
+          "requirement_refs": [
+            "REQ-CORE-001",
+            "REQ-CORE-006"
+          ],
+          "task_refs": [
+            "TASK-WI-0001-003",
+            "TASK-WI-0001-006"
+          ]
+        },
+        {
+          "id": "DD-CORE-003",
+          "description": "全量重渲染与列表容器事件委托",
+          "requirement_refs": [
+            "REQ-CORE-001",
+            "REQ-CORE-002",
+            "REQ-CORE-003"
+          ],
+          "task_refs": [
+            "TASK-WI-0001-003",
+            "TASK-WI-0001-005"
+          ]
+        },
+        {
+          "id": "DD-CORE-004",
+          "description": "持久化时机（变更后保存）与刷新恢复（启动重读）",
+          "requirement_refs": [
+            "REQ-CORE-001",
+            "REQ-CORE-002",
+            "REQ-CORE-003",
+            "REQ-CORE-004",
+            "REQ-CORE-006"
+          ],
+          "task_refs": [
+            "TASK-WI-0001-003",
+            "TASK-WI-0001-005",
+            "TASK-WI-0001-006"
+          ]
+        },
+        {
+          "id": "DD-CORE-005",
+          "description": "页面结构与启动初始化（HTML/CSS/app.js 脚本加载）",
+          "requirement_refs": [
+            "REQ-CORE-001",
+            "REQ-CORE-002",
+            "REQ-CORE-004"
+          ],
+          "task_refs": [
+            "TASK-WI-0001-001",
+            "TASK-WI-0001-002",
+            "TASK-WI-0001-003",
+            "TASK-WI-0001-006"
+          ]
+        },
+        {
+          "id": "DD-CORE-006",
+          "description": "依赖注入与 UMD 双模式加载（结构决策，非行为需求承载）",
+          "requirement_refs": [
+            "REQ-CORE-001",
+            "REQ-CORE-002",
+            "REQ-CORE-003",
+            "REQ-CORE-004",
+            "REQ-CORE-005",
+            "REQ-CORE-006"
+          ],
+          "task_refs": [
+            "TASK-WI-0001-003",
+            "TASK-WI-0001-004"
+          ]
+        },
+        {
+          "id": "DD-CORE-007",
+          "description": "错误处理与安全（损坏降级、写失败捕获、no-op 防御）",
+          "requirement_refs": [
+            "REQ-CORE-004",
+            "REQ-CORE-006"
+          ],
+          "task_refs": [
+            "TASK-WI-0001-003",
+            "TASK-WI-0001-006"
+          ]
+        },
+        {
+          "id": "DD-CORE-008",
+          "description": "测试策略与证据层级（node:test + shim，层级 A/B 划分）",
+          "requirement_refs": [
+            "REQ-CORE-001",
+            "REQ-CORE-002",
+            "REQ-CORE-003",
+            "REQ-CORE-004",
+            "REQ-CORE-005",
+            "REQ-CORE-006"
+          ],
+          "task_refs": [
+            "TASK-WI-0001-004",
+            "TASK-WI-0001-005",
+            "TASK-WI-0001-006"
+          ]
+        }
+      ],
+      "tasks": [
+        {
+          "id": "TASK-WI-0001-001",
+          "description": "创建 index.html 页面静态结构",
+          "requirement_refs": [
+            "REQ-CORE-001",
+            "REQ-CORE-002",
+            "REQ-CORE-003",
+            "REQ-CORE-004"
+          ],
+          "design_refs": [
+            "DD-CORE-005"
+          ],
+          "evidence_refs": [
+            "EV-0002-BROWSER-E2E"
+          ]
+        },
+        {
+          "id": "TASK-WI-0001-002",
+          "description": "创建 styles.css 极简样式（.completed 完成态视觉承载）",
+          "requirement_refs": [
+            "REQ-CORE-001",
+            "REQ-CORE-002"
+          ],
+          "design_refs": [
+            "DD-CORE-005"
+          ],
+          "evidence_refs": [
+            "EV-0002-BROWSER-E2E"
+          ]
+        },
+        {
+          "id": "TASK-WI-0001-003",
+          "description": "实现 app.js 完整应用逻辑（模型+校验+持久化+渲染+事件+错误处理+UMD）",
+          "requirement_refs": [
+            "REQ-CORE-001",
+            "REQ-CORE-002",
+            "REQ-CORE-003",
+            "REQ-CORE-004",
+            "REQ-CORE-005",
+            "REQ-CORE-006"
+          ],
+          "design_refs": [
+            "DD-CORE-001",
+            "DD-CORE-002",
+            "DD-CORE-003",
+            "DD-CORE-004",
+            "DD-CORE-005",
+            "DD-CORE-006",
+            "DD-CORE-007"
+          ],
+          "evidence_refs": [
+            "EV-0001-NODE-TESTS",
+            "EV-0002-BROWSER-E2E",
+            "EV-0003-FILE-HASHES"
+          ]
+        },
+        {
+          "id": "TASK-WI-0001-004",
+          "description": "测试基建 + B1（AC-001~005）+ B5（AC-017~019）+ CP-001/005",
+          "requirement_refs": [
+            "REQ-CORE-001",
+            "REQ-CORE-005"
+          ],
+          "design_refs": [
+            "DD-CORE-001",
+            "DD-CORE-006",
+            "DD-CORE-008"
+          ],
+          "evidence_refs": [
+            "EV-0001-NODE-TESTS"
+          ]
+        },
+        {
+          "id": "TASK-WI-0001-005",
+          "description": "追加 B2（AC-006~009）+ B3（AC-010~013）+ CP-003/004",
+          "requirement_refs": [
+            "REQ-CORE-002",
+            "REQ-CORE-003"
+          ],
+          "design_refs": [
+            "DD-CORE-003",
+            "DD-CORE-004",
+            "DD-CORE-008"
+          ],
+          "evidence_refs": [
+            "EV-0001-NODE-TESTS"
+          ]
+        },
+        {
+          "id": "TASK-WI-0001-006",
+          "description": "追加 B4（AC-014~016）+ 数据契约（AC-020~023）+ CP-002/006/007 + 集成闭环验证",
+          "requirement_refs": [
+            "REQ-CORE-004",
+            "REQ-CORE-006"
+          ],
+          "design_refs": [
+            "DD-CORE-002",
+            "DD-CORE-004",
+            "DD-CORE-005",
+            "DD-CORE-007",
+            "DD-CORE-008"
+          ],
+          "evidence_refs": [
+            "EV-0001-NODE-TESTS"
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "id": "EV-0001-NODE-TESTS",
+          "status": "passed",
+          "level": "L3",
+          "evidence_type": "behavioral",
+          "supports": [
+            "OUT-CORE-001",
+            "OUT-CORE-002",
+            "OUT-CORE-003",
+            "OUT-CORE-004",
+            "OUT-CORE-005",
+            "OUT-CORE-006",
+            "REQ-CORE-001",
+            "REQ-CORE-002",
+            "REQ-CORE-003",
+            "REQ-CORE-004",
+            "REQ-CORE-005",
+            "REQ-CORE-006",
+            "TASK-WI-0001-004",
+            "TASK-WI-0001-005",
+            "TASK-WI-0001-006"
+          ],
+          "description": "Node 测试真实原件：actual_executor=OpenCode sf-verifier session ses_eb0139059ffevffkkox59OrYjF 执行 node --test test/app.test.js，exit_code=0，31/31，无截断；export_and_auditor=Codex；覆盖 AC-001~023 全部六条 REQ（含 AC-020~023 数据契约）"
+        },
+        {
+          "id": "EV-0002-BROWSER-E2E",
+          "status": "passed",
+          "level": "L4",
+          "evidence_type": "e2e",
+          "supports": [
+            "OUT-CORE-001",
+            "OUT-CORE-002",
+            "OUT-CORE-003",
+            "OUT-CORE-004",
+            "OUT-CORE-005",
+            "REQ-CORE-001",
+            "REQ-CORE-002",
+            "REQ-CORE-003",
+            "REQ-CORE-004",
+            "REQ-CORE-005"
+          ],
+          "description": "Codex 外部执行真实浏览器技术 e2e B1~B5（外部原件引用+程序封存核验；非用户 UAT；不声称验证 REQ-CORE-006 存储损坏边界——由 EV-0001 Node 覆盖）"
+        },
+        {
+          "id": "EV-0009-CONTRACT-REVIEW",
+          "status": "passed",
+          "level": "L3",
+          "evidence_type": "integration",
+          "supports": [
+            "OUT-CORE-006",
+            "REQ-CORE-006"
+          ],
+          "description": "MCONTRACT-CORE-001（storage_single_key_contract）人工合同复核（review_method=manual，reviewer=sf-verifier，本轮一手重读 app.js/test/app.test.js/contracts.json）：单键 todo.tasks.v1、Task 结构、顺序保持、每次变更后键内容与内存集合一致；消费者用例 AC-020/021/022/CP-CORE-002 断言且 31/31 通过。结论符合。"
+        },
+        {
+          "id": "EV-0010-BROWSER-COMPLETED-PNG",
+          "status": "passed",
+          "level": "L4",
+          "evidence_type": "e2e",
+          "supports": [
+            "OUT-CORE-001",
+            "OUT-CORE-002",
+            "REQ-CORE-001",
+            "REQ-CORE-002"
+          ],
+          "description": "Codex 浏览器 e2e 完成态截图（外部原件引用，封存核验同命令065）"
+        },
+        {
+          "id": "EV-0011-BROWSER-DELETED-PNG",
+          "status": "passed",
+          "level": "L4",
+          "evidence_type": "e2e",
+          "supports": [
+            "OUT-CORE-003",
+            "REQ-CORE-003"
+          ],
+          "description": "Codex 浏览器 e2e 删除态截图（外部原件引用，封存核验同命令065）"
+        }
+      ],
+      "project_integration": {
+        "required": true,
+        "status": "merged",
+        "refs": [
+          "merge_report.md",
+          "changed_files_audit.md"
+        ]
+      }
+    }
+  },
+  "gate_summary": {
+    "verification_gate": {
+      "status": "passed",
+      "checks": [
+        {
+          "check_id": "verification_report_exists",
+          "description": "verification_report.md exists",
+          "passed": true
+        },
+        {
+          "check_id": "verification_evidence_source_and_time_integrity",
+          "description": "manual acceptance has independent content-bound evidence and declared times do not exceed runtime time",
+          "passed": true
+        },
+        {
+          "check_id": "evidence_manifest_schema_current",
+          "description": "evidence_manifest uses the current owner schema",
+          "passed": true
+        },
+        {
+          "check_id": "verification_report_contract_valid",
+          "description": "verification_report satisfies the shared verification-report/v1 contract",
+          "passed": true
+        },
+        {
+          "check_id": "verification_report_conclusion_pass",
+          "description": "verification_report conclusion is pass",
+          "passed": true,
+          "details": "pass"
+        },
+        {
+          "check_id": "verification_required_tests_complete",
+          "description": "required tests were executed or explicitly marked not_applicable",
+          "passed": true,
+          "details": "statuses=pass,pass,pass,pass,pass,pass,pass,pass,pass,not_applicable,pass,pass,pass,not_applicable,not_applicable,pass,not_applicable"
+        },
+        {
+          "check_id": "verification_acceptance_criteria_passed",
+          "description": "acceptance criteria are present and passed",
+          "passed": true,
+          "details": "statuses=pass,pass,pass,pass,pass,pass"
+        },
+        {
+          "check_id": "verification_e2e_complete",
+          "description": "end-to-end verification passed or is explicitly not_applicable",
+          "passed": true,
+          "details": "statuses=pass,pass,pass"
+        },
+        {
+          "check_id": "verification_evidence_manifest_nonempty",
+          "description": "evidence_manifest exists and has registered entries",
+          "passed": true
+        },
+        {
+          "check_id": "verification_report_claims_have_registered_evidence",
+          "description": "acceptance and end-to-end claims reference registered Evidence",
+          "passed": true
+        },
+        {
+          "check_id": "verification_side_effects_declared",
+          "description": "verification side effects are explicitly declared",
+          "passed": true
+        },
+        {
+          "check_id": "verification_write_guard_audit_current",
+          "description": "Changed Files Audit covers current Write Guard and resolution evidence",
+          "passed": true
+        },
+        {
+          "check_id": "verification_changed_files_audit_passed",
+          "description": "changed_files_audit is complete and passed",
+          "passed": true
+        },
+        {
+          "check_id": "verification_semantic_closure_valid",
+          "description": "semantic closure proves the user outcome to evidence chain",
+          "passed": true
+        },
+        {
+          "check_id": "verification_semantic_closure_provenance_current",
+          "description": "semantic closure is bound to the current verification artifacts",
+          "passed": true
+        },
+        {
+          "check_id": "verification_claims_match_evidence_manifest",
+          "description": "semantic evidence claims match registered Evidence Manifest entries",
+          "passed": true
+        },
+        {
+          "check_id": "evidence_manifest_exists",
+          "description": "evidence/evidence_manifest.json exists and is valid JSON",
+          "passed": true
+        },
+        {
+          "check_id": "code_contract_registry_readable",
+          "description": "Project and Module Contract registries are readable for code reconciliation",
+          "passed": true,
+          "details": ""
+        },
+        {
+          "check_id": "code_contract_ast_coverage",
+          "description": "Changed TypeScript/JavaScript explicit Contract bindings were AST-checked",
+          "passed": true,
+          "details": "checked=app.js, test/app.test.js; machine_contracts=none; manual_review=test/app.test.js"
+        },
+        {
+          "check_id": "code_contract_manual_review_module_0",
+          "description": "Manual-review source test/app.test.js resolves to exactly one owning Module",
+          "passed": true,
+          "details": "owners=CORE"
+        },
+        {
+          "check_id": "code_contract_manual_review_0_MCONTRACT-CORE-001",
+          "description": "Unverified Contract consumer test/app.test.js has structured manual review for MCONTRACT-CORE-001",
+          "passed": true
+        },
+        {
+          "check_id": "code_contract_consumer_module_0",
+          "description": "test/app.test.js resolves to exactly one owning Module",
+          "passed": true,
+          "details": "contract=MCONTRACT-CORE-001"
+        },
+        {
+          "check_id": "code_contract_internal_boundary_0",
+          "description": "Actual consumer CORE respects MCONTRACT-CORE-001 Contract visibility",
+          "passed": true,
+          "details": "level=module; owner=CORE"
+        },
+        {
+          "check_id": "code_contract_trace_reconciliation_0",
+          "description": "Actual Contract consumer CORE/test/app.test.js is declared by formal Trace",
+          "passed": true,
+          "details": "contract=MCONTRACT-CORE-001; verification=textual_unverified"
+        },
+        {
+          "check_id": "architecture_id_format",
+          "description": "Every declared Architecture ID uses ARCH-<DOMAIN>-<NNN>",
+          "passed": true,
+          "severity": "error",
+          "details": "invalid=none; valid=ARCH-CORE-001,ARCH-CORE-002,ARCH-CORE-003,ARCH-CORE-004,ARCH-CORE-005"
+        },
+        {
+          "check_id": "data_model_id_format",
+          "description": "Every declared Data ID uses DATA-<DOMAIN>-<NNN>, or the model is explicitly not applicable",
+          "passed": true,
+          "severity": "error",
+          "details": "invalid=none; valid=DATA-CORE-001,DATA-CORE-002,DATA-CORE-003,DATA-CORE-004,DATA-CORE-005; not_applicable=false"
+        },
+        {
+          "check_id": "module_design_id_format",
+          "description": "Every declared Module Design ID uses DD-<DOMAIN>-<NNN>",
+          "passed": true,
+          "severity": "error",
+          "details": "invalid=none"
+        },
+        {
+          "check_id": "architecture_ids_exist",
+          "description": "Formal Project Architecture contains stable ARCH-* IDs",
+          "passed": true
+        },
+        {
+          "check_id": "data_model_declared",
+          "description": "Formal Project Data Model contains DATA-* IDs or explicit DATA_MODEL_NOT_APPLICABLE",
+          "passed": true
+        },
+        {
+          "check_id": "module_CORE_code_paths",
+          "description": "Module CORE declares explicit code_paths in spec_manifest.json",
+          "passed": true
+        },
+        {
+          "check_id": "module_CORE_contracts_path",
+          "description": "Module CORE declares contracts.json in spec_manifest.json",
+          "passed": true
+        },
+        {
+          "check_id": "module_CORE_design_ids",
+          "description": "Module CORE Design contains stable DD-* decisions",
+          "passed": true
+        },
+        {
+          "check_id": "governance_trace_0_endpoints",
+          "description": "DATA-CORE-001 constrained_by ARCH-CORE-002: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_0_shape",
+          "description": "DATA-CORE-001 constrained_by ARCH-CORE-002: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_1_endpoints",
+          "description": "DATA-CORE-001 constrained_by ARCH-CORE-003: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_1_shape",
+          "description": "DATA-CORE-001 constrained_by ARCH-CORE-003: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_2_endpoints",
+          "description": "DATA-CORE-002 constrained_by ARCH-CORE-003: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_2_shape",
+          "description": "DATA-CORE-002 constrained_by ARCH-CORE-003: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_3_endpoints",
+          "description": "DATA-CORE-003 constrained_by ARCH-CORE-002: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_3_shape",
+          "description": "DATA-CORE-003 constrained_by ARCH-CORE-002: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_4_endpoints",
+          "description": "DATA-CORE-003 constrained_by ARCH-CORE-004: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_4_shape",
+          "description": "DATA-CORE-003 constrained_by ARCH-CORE-004: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_5_endpoints",
+          "description": "DATA-CORE-004 constrained_by ARCH-CORE-003: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_5_shape",
+          "description": "DATA-CORE-004 constrained_by ARCH-CORE-003: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_6_endpoints",
+          "description": "DATA-CORE-005 constrained_by ARCH-CORE-005: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_6_shape",
+          "description": "DATA-CORE-005 constrained_by ARCH-CORE-005: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_7_endpoints",
+          "description": "DD-CORE-001 constrained_by DATA-CORE-004: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_7_shape",
+          "description": "DD-CORE-001 constrained_by DATA-CORE-004: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_8_endpoints",
+          "description": "DD-CORE-001 constrained_by MCONTRACT-CORE-002: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_8_shape",
+          "description": "DD-CORE-001 constrained_by MCONTRACT-CORE-002: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_9_endpoints",
+          "description": "DD-CORE-002 constrained_by ARCH-CORE-003: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_9_shape",
+          "description": "DD-CORE-002 constrained_by ARCH-CORE-003: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_10_endpoints",
+          "description": "DD-CORE-002 constrained_by DATA-CORE-001: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_10_shape",
+          "description": "DD-CORE-002 constrained_by DATA-CORE-001: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_11_endpoints",
+          "description": "DD-CORE-002 constrained_by DATA-CORE-002: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_11_shape",
+          "description": "DD-CORE-002 constrained_by DATA-CORE-002: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_12_endpoints",
+          "description": "DD-CORE-002 constrained_by MCONTRACT-CORE-001: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_12_shape",
+          "description": "DD-CORE-002 constrained_by MCONTRACT-CORE-001: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_13_endpoints",
+          "description": "DD-CORE-003 constrained_by ARCH-CORE-002: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_13_shape",
+          "description": "DD-CORE-003 constrained_by ARCH-CORE-002: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_14_endpoints",
+          "description": "DD-CORE-003 constrained_by MCONTRACT-CORE-006: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_14_shape",
+          "description": "DD-CORE-003 constrained_by MCONTRACT-CORE-006: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_15_endpoints",
+          "description": "DD-CORE-004 constrained_by ARCH-CORE-003: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_15_shape",
+          "description": "DD-CORE-004 constrained_by ARCH-CORE-003: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_16_endpoints",
+          "description": "DD-CORE-004 constrained_by DATA-CORE-002: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_16_shape",
+          "description": "DD-CORE-004 constrained_by DATA-CORE-002: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_17_endpoints",
+          "description": "DD-CORE-004 constrained_by DATA-CORE-004: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_17_shape",
+          "description": "DD-CORE-004 constrained_by DATA-CORE-004: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_18_endpoints",
+          "description": "DD-CORE-004 constrained_by MCONTRACT-CORE-001: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_18_shape",
+          "description": "DD-CORE-004 constrained_by MCONTRACT-CORE-001: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_19_endpoints",
+          "description": "DD-CORE-005 constrained_by ARCH-CORE-001: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_19_shape",
+          "description": "DD-CORE-005 constrained_by ARCH-CORE-001: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_20_endpoints",
+          "description": "DD-CORE-005 constrained_by ARCH-CORE-004: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_20_shape",
+          "description": "DD-CORE-005 constrained_by ARCH-CORE-004: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_21_endpoints",
+          "description": "DD-CORE-005 constrained_by MCONTRACT-CORE-006: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_21_shape",
+          "description": "DD-CORE-005 constrained_by MCONTRACT-CORE-006: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_22_endpoints",
+          "description": "DD-CORE-006 constrained_by ARCH-CORE-005: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_22_shape",
+          "description": "DD-CORE-006 constrained_by ARCH-CORE-005: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_23_endpoints",
+          "description": "DD-CORE-006 constrained_by MCONTRACT-CORE-004: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_23_shape",
+          "description": "DD-CORE-006 constrained_by MCONTRACT-CORE-004: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_24_endpoints",
+          "description": "DD-CORE-006 constrained_by MCONTRACT-CORE-005: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_24_shape",
+          "description": "DD-CORE-006 constrained_by MCONTRACT-CORE-005: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_25_endpoints",
+          "description": "DD-CORE-007 constrained_by ARCH-CORE-005: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_25_shape",
+          "description": "DD-CORE-007 constrained_by ARCH-CORE-005: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_26_endpoints",
+          "description": "DD-CORE-007 constrained_by MCONTRACT-CORE-003: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_26_shape",
+          "description": "DD-CORE-007 constrained_by MCONTRACT-CORE-003: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_27_endpoints",
+          "description": "DD-CORE-008 constrained_by ARCH-CORE-005: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_27_shape",
+          "description": "DD-CORE-008 constrained_by ARCH-CORE-005: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_28_endpoints",
+          "description": "MCONTRACT-CORE-001 enforces DD-CORE-002: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_28_shape",
+          "description": "MCONTRACT-CORE-001 enforces DD-CORE-002: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_29_endpoints",
+          "description": "MCONTRACT-CORE-001 enforces DD-CORE-004: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_29_shape",
+          "description": "MCONTRACT-CORE-001 enforces DD-CORE-004: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_30_endpoints",
+          "description": "MCONTRACT-CORE-002 enforces DD-CORE-001: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_30_shape",
+          "description": "MCONTRACT-CORE-002 enforces DD-CORE-001: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_31_endpoints",
+          "description": "MCONTRACT-CORE-003 enforces DD-CORE-007: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_31_shape",
+          "description": "MCONTRACT-CORE-003 enforces DD-CORE-007: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_32_endpoints",
+          "description": "MCONTRACT-CORE-004 enforces DD-CORE-006: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_32_shape",
+          "description": "MCONTRACT-CORE-004 enforces DD-CORE-006: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_33_endpoints",
+          "description": "MCONTRACT-CORE-005 enforces DD-CORE-002: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_33_shape",
+          "description": "MCONTRACT-CORE-005 enforces DD-CORE-002: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_34_endpoints",
+          "description": "MCONTRACT-CORE-005 enforces DD-CORE-006: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_34_shape",
+          "description": "MCONTRACT-CORE-005 enforces DD-CORE-006: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_35_endpoints",
+          "description": "MCONTRACT-CORE-006 enforces DD-CORE-003: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_35_shape",
+          "description": "MCONTRACT-CORE-006 enforces DD-CORE-003: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_36_endpoints",
+          "description": "MCONTRACT-CORE-006 enforces DD-CORE-005: both IDs exist",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "governance_trace_36_shape",
+          "description": "MCONTRACT-CORE-006 enforces DD-CORE-005: relation direction/type is legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "impact_scope_contract_consumers_expanded",
+          "description": "Impact Scope is expanded from changed Contracts to every formal DD and Module consumer",
+          "passed": true,
+          "details": "declared_modules=CORE; consumer_modules=none; effective_modules=CORE"
+        },
+        {
+          "check_id": "impact_scope_present",
+          "description": "Active governance requires a non-empty machine-readable Impact Scope",
+          "passed": true
+        },
+        {
+          "check_id": "planned_code_owner_e07d531a",
+          "description": "Planned code path maps to exactly one Module: app.js",
+          "passed": true,
+          "details": "owners=CORE"
+        },
+        {
+          "check_id": "planned_code_scope_e07d531a",
+          "description": "Planned code path owner is declared affected: app.js",
+          "passed": true,
+          "details": "owner=CORE"
+        },
+        {
+          "check_id": "planned_code_owner_0eb54730",
+          "description": "Planned code path maps to exactly one Module: index.html",
+          "passed": true,
+          "details": "owners=CORE"
+        },
+        {
+          "check_id": "planned_code_scope_0eb54730",
+          "description": "Planned code path owner is declared affected: index.html",
+          "passed": true,
+          "details": "owner=CORE"
+        },
+        {
+          "check_id": "planned_code_owner_380b7b38",
+          "description": "Planned code path maps to exactly one Module: styles.css",
+          "passed": true,
+          "details": "owners=CORE"
+        },
+        {
+          "check_id": "planned_code_scope_380b7b38",
+          "description": "Planned code path owner is declared affected: styles.css",
+          "passed": true,
+          "details": "owner=CORE"
+        },
+        {
+          "check_id": "planned_code_owner_9e405491",
+          "description": "Planned code path maps to exactly one Module: test/app.test.js",
+          "passed": true,
+          "details": "owners=CORE"
+        },
+        {
+          "check_id": "planned_code_scope_9e405491",
+          "description": "Planned code path owner is declared affected: test/app.test.js",
+          "passed": true,
+          "details": "owner=CORE"
+        },
+        {
+          "check_id": "task_allowed_write_files_fe21e323",
+          "description": "Task TASK-WI-0001-001 declares allowed_write_files",
+          "passed": true
+        },
+        {
+          "check_id": "task_write_impact_fc694be2",
+          "description": "Task TASK-WI-0001-001 write path must be covered by approved Impact Scope: index.html",
+          "passed": true,
+          "details": "covered=true; matched_pattern=index.html"
+        },
+        {
+          "check_id": "task_write_owner_fc694be2",
+          "description": "Task TASK-WI-0001-001 write path maps to exactly one Module or approved cross-module test harness: index.html",
+          "passed": true,
+          "details": "owners=CORE; approved_cross_module_test_harness=false"
+        },
+        {
+          "check_id": "task_write_scope_fc694be2",
+          "description": "Task TASK-WI-0001-001 write path owner is declared affected: index.html",
+          "passed": true,
+          "details": "owner=CORE"
+        },
+        {
+          "check_id": "task_allowed_write_files_b44a55fe",
+          "description": "Task TASK-WI-0001-002 declares allowed_write_files",
+          "passed": true
+        },
+        {
+          "check_id": "task_write_impact_99ab9c2d",
+          "description": "Task TASK-WI-0001-002 write path must be covered by approved Impact Scope: styles.css",
+          "passed": true,
+          "details": "covered=true; matched_pattern=styles.css"
+        },
+        {
+          "check_id": "task_write_owner_99ab9c2d",
+          "description": "Task TASK-WI-0001-002 write path maps to exactly one Module or approved cross-module test harness: styles.css",
+          "passed": true,
+          "details": "owners=CORE; approved_cross_module_test_harness=false"
+        },
+        {
+          "check_id": "task_write_scope_99ab9c2d",
+          "description": "Task TASK-WI-0001-002 write path owner is declared affected: styles.css",
+          "passed": true,
+          "details": "owner=CORE"
+        },
+        {
+          "check_id": "task_allowed_write_files_d077b050",
+          "description": "Task TASK-WI-0001-003 declares allowed_write_files",
+          "passed": true
+        },
+        {
+          "check_id": "task_write_impact_1a76dc27",
+          "description": "Task TASK-WI-0001-003 write path must be covered by approved Impact Scope: app.js",
+          "passed": true,
+          "details": "covered=true; matched_pattern=app.js"
+        },
+        {
+          "check_id": "task_write_owner_1a76dc27",
+          "description": "Task TASK-WI-0001-003 write path maps to exactly one Module or approved cross-module test harness: app.js",
+          "passed": true,
+          "details": "owners=CORE; approved_cross_module_test_harness=false"
+        },
+        {
+          "check_id": "task_write_scope_1a76dc27",
+          "description": "Task TASK-WI-0001-003 write path owner is declared affected: app.js",
+          "passed": true,
+          "details": "owner=CORE"
+        },
+        {
+          "check_id": "task_allowed_write_files_f753a896",
+          "description": "Task TASK-WI-0001-004 declares allowed_write_files",
+          "passed": true
+        },
+        {
+          "check_id": "task_write_impact_489f7277",
+          "description": "Task TASK-WI-0001-004 write path must be covered by approved Impact Scope: test/app.test.js",
+          "passed": true,
+          "details": "covered=true; matched_pattern=test/app.test.js"
+        },
+        {
+          "check_id": "task_write_owner_489f7277",
+          "description": "Task TASK-WI-0001-004 write path maps to exactly one Module or approved cross-module test harness: test/app.test.js",
+          "passed": true,
+          "details": "owners=CORE; approved_cross_module_test_harness=false"
+        },
+        {
+          "check_id": "task_write_scope_489f7277",
+          "description": "Task TASK-WI-0001-004 write path owner is declared affected: test/app.test.js",
+          "passed": true,
+          "details": "owner=CORE"
+        },
+        {
+          "check_id": "task_allowed_write_files_02f652ad",
+          "description": "Task TASK-WI-0001-005 declares allowed_write_files",
+          "passed": true
+        },
+        {
+          "check_id": "task_write_impact_f2d0629d",
+          "description": "Task TASK-WI-0001-005 write path must be covered by approved Impact Scope: test/app.test.js",
+          "passed": true,
+          "details": "covered=true; matched_pattern=test/app.test.js"
+        },
+        {
+          "check_id": "task_write_owner_f2d0629d",
+          "description": "Task TASK-WI-0001-005 write path maps to exactly one Module or approved cross-module test harness: test/app.test.js",
+          "passed": true,
+          "details": "owners=CORE; approved_cross_module_test_harness=false"
+        },
+        {
+          "check_id": "task_write_scope_f2d0629d",
+          "description": "Task TASK-WI-0001-005 write path owner is declared affected: test/app.test.js",
+          "passed": true,
+          "details": "owner=CORE"
+        },
+        {
+          "check_id": "task_allowed_write_files_abe9cafd",
+          "description": "Task TASK-WI-0001-006 declares allowed_write_files",
+          "passed": true
+        },
+        {
+          "check_id": "task_write_impact_dc5ef04e",
+          "description": "Task TASK-WI-0001-006 write path must be covered by approved Impact Scope: test/app.test.js",
+          "passed": true,
+          "details": "covered=true; matched_pattern=test/app.test.js"
+        },
+        {
+          "check_id": "task_write_owner_dc5ef04e",
+          "description": "Task TASK-WI-0001-006 write path maps to exactly one Module or approved cross-module test harness: test/app.test.js",
+          "passed": true,
+          "details": "owners=CORE; approved_cross_module_test_harness=false"
+        },
+        {
+          "check_id": "task_write_scope_dc5ef04e",
+          "description": "Task TASK-WI-0001-006 write path owner is declared affected: test/app.test.js",
+          "passed": true,
+          "details": "owner=CORE"
+        },
+        {
+          "check_id": "architecture_candidate_required",
+          "description": "architecture_changed requires an Architecture Candidate",
+          "passed": true
+        },
+        {
+          "check_id": "data_model_candidate_required",
+          "description": "data_model_changed requires a Project Data Model Candidate",
+          "passed": true
+        },
+        {
+          "check_id": "design_candidate_required",
+          "description": "design_changed requires at least one Module Design Candidate",
+          "passed": true
+        },
+        {
+          "check_id": "module_contract_candidate_required",
+          "description": "module_contract_changed requires at least one Module Contract Candidate",
+          "passed": true
+        },
+        {
+          "check_id": "architecture_id_format",
+          "description": "Every declared Architecture ID uses ARCH-<DOMAIN>-<NNN>",
+          "passed": true,
+          "severity": "error",
+          "details": "invalid=none; valid=ARCH-CORE-001,ARCH-CORE-002,ARCH-CORE-003,ARCH-CORE-004,ARCH-CORE-005"
+        },
+        {
+          "check_id": "data_model_id_format",
+          "description": "Every declared Data ID uses DATA-<DOMAIN>-<NNN>, or the model is explicitly not applicable",
+          "passed": true,
+          "severity": "error",
+          "details": "invalid=none; valid=DATA-CORE-001,DATA-CORE-002,DATA-CORE-003,DATA-CORE-004,DATA-CORE-005; not_applicable=false"
+        },
+        {
+          "check_id": "module_design_id_format",
+          "description": "Every declared Module Design ID uses DD-<DOMAIN>-<NNN>",
+          "passed": true,
+          "severity": "error",
+          "details": "invalid=none"
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-001_unique_truth_source",
+          "description": "Contract MCONTRACT-CORE-001 has exactly one governance-level definition",
+          "passed": true,
+          "details": "definitions=1"
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-002_unique_truth_source",
+          "description": "Contract MCONTRACT-CORE-002 has exactly one governance-level definition",
+          "passed": true,
+          "details": "definitions=1"
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-003_unique_truth_source",
+          "description": "Contract MCONTRACT-CORE-003 has exactly one governance-level definition",
+          "passed": true,
+          "details": "definitions=1"
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-004_unique_truth_source",
+          "description": "Contract MCONTRACT-CORE-004 has exactly one governance-level definition",
+          "passed": true,
+          "details": "definitions=1"
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-005_unique_truth_source",
+          "description": "Contract MCONTRACT-CORE-005 has exactly one governance-level definition",
+          "passed": true,
+          "details": "definitions=1"
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-006_unique_truth_source",
+          "description": "Contract MCONTRACT-CORE-006 has exactly one governance-level definition",
+          "passed": true,
+          "details": "definitions=1"
+        },
+        {
+          "check_id": "module_contract_CORE_exists",
+          "description": "Module CORE has a contracts.json",
+          "passed": true
+        },
+        {
+          "check_id": "module_contract_CORE_valid",
+          "description": "Module CORE contracts.json is valid",
+          "passed": true
+        },
+        {
+          "check_id": "module_contract_CORE_owner",
+          "description": "Module CORE contracts.json owner_module matches its directory Module",
+          "passed": true,
+          "details": "owner_module=CORE"
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-001_owner",
+          "description": "Contract MCONTRACT-CORE-001 declares a valid owner Module",
+          "passed": true,
+          "details": "owner=CORE"
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-001_source_refs",
+          "description": "Contract MCONTRACT-CORE-001 declares source_refs",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-001_enforcement",
+          "description": "Contract MCONTRACT-CORE-001 declares machine enforcement",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-001_source_DD_CORE_002",
+          "description": "Contract MCONTRACT-CORE-001 source is legal: DD-CORE-002",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-001_source_DD_CORE_004",
+          "description": "Contract MCONTRACT-CORE-001 source is legal: DD-CORE-004",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-001_consumer_DD-CORE-002",
+          "description": "Contract MCONTRACT-CORE-001 consumer DD-CORE-002 resolves to Module CORE",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-001_consumer_DD-CORE-004",
+          "description": "Contract MCONTRACT-CORE-001 consumer DD-CORE-004 resolves to Module CORE",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-001_internal_boundary",
+          "description": "Internal Contract MCONTRACT-CORE-001 is consumed only inside owner Module CORE",
+          "passed": true,
+          "details": "all consumers are internal"
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-002_owner",
+          "description": "Contract MCONTRACT-CORE-002 declares a valid owner Module",
+          "passed": true,
+          "details": "owner=CORE"
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-002_source_refs",
+          "description": "Contract MCONTRACT-CORE-002 declares source_refs",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-002_enforcement",
+          "description": "Contract MCONTRACT-CORE-002 declares machine enforcement",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-002_source_DD_CORE_001",
+          "description": "Contract MCONTRACT-CORE-002 source is legal: DD-CORE-001",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-002_consumer_DD-CORE-001",
+          "description": "Contract MCONTRACT-CORE-002 consumer DD-CORE-001 resolves to Module CORE",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-002_internal_boundary",
+          "description": "Internal Contract MCONTRACT-CORE-002 is consumed only inside owner Module CORE",
+          "passed": true,
+          "details": "all consumers are internal"
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-003_owner",
+          "description": "Contract MCONTRACT-CORE-003 declares a valid owner Module",
+          "passed": true,
+          "details": "owner=CORE"
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-003_source_refs",
+          "description": "Contract MCONTRACT-CORE-003 declares source_refs",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-003_enforcement",
+          "description": "Contract MCONTRACT-CORE-003 declares machine enforcement",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-003_source_DD_CORE_007",
+          "description": "Contract MCONTRACT-CORE-003 source is legal: DD-CORE-007",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-003_consumer_DD-CORE-007",
+          "description": "Contract MCONTRACT-CORE-003 consumer DD-CORE-007 resolves to Module CORE",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-003_internal_boundary",
+          "description": "Internal Contract MCONTRACT-CORE-003 is consumed only inside owner Module CORE",
+          "passed": true,
+          "details": "all consumers are internal"
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-004_owner",
+          "description": "Contract MCONTRACT-CORE-004 declares a valid owner Module",
+          "passed": true,
+          "details": "owner=CORE"
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-004_source_refs",
+          "description": "Contract MCONTRACT-CORE-004 declares source_refs",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-004_enforcement",
+          "description": "Contract MCONTRACT-CORE-004 declares machine enforcement",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-004_source_DD_CORE_006",
+          "description": "Contract MCONTRACT-CORE-004 source is legal: DD-CORE-006",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-004_consumer_DD-CORE-006",
+          "description": "Contract MCONTRACT-CORE-004 consumer DD-CORE-006 resolves to Module CORE",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-004_internal_boundary",
+          "description": "Internal Contract MCONTRACT-CORE-004 is consumed only inside owner Module CORE",
+          "passed": true,
+          "details": "all consumers are internal"
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-005_owner",
+          "description": "Contract MCONTRACT-CORE-005 declares a valid owner Module",
+          "passed": true,
+          "details": "owner=CORE"
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-005_source_refs",
+          "description": "Contract MCONTRACT-CORE-005 declares source_refs",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-005_enforcement",
+          "description": "Contract MCONTRACT-CORE-005 declares machine enforcement",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-005_source_DD_CORE_002",
+          "description": "Contract MCONTRACT-CORE-005 source is legal: DD-CORE-002",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-005_source_DD_CORE_006",
+          "description": "Contract MCONTRACT-CORE-005 source is legal: DD-CORE-006",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-005_consumer_DD-CORE-006",
+          "description": "Contract MCONTRACT-CORE-005 consumer DD-CORE-006 resolves to Module CORE",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-005_internal_boundary",
+          "description": "Internal Contract MCONTRACT-CORE-005 is consumed only inside owner Module CORE",
+          "passed": true,
+          "details": "all consumers are internal"
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-006_owner",
+          "description": "Contract MCONTRACT-CORE-006 declares a valid owner Module",
+          "passed": true,
+          "details": "owner=CORE"
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-006_source_refs",
+          "description": "Contract MCONTRACT-CORE-006 declares source_refs",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-006_enforcement",
+          "description": "Contract MCONTRACT-CORE-006 declares machine enforcement",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-006_source_DD_CORE_003",
+          "description": "Contract MCONTRACT-CORE-006 source is legal: DD-CORE-003",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-006_source_DD_CORE_005",
+          "description": "Contract MCONTRACT-CORE-006 source is legal: DD-CORE-005",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-006_consumer_DD-CORE-003",
+          "description": "Contract MCONTRACT-CORE-006 consumer DD-CORE-003 resolves to Module CORE",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-006_consumer_DD-CORE-005",
+          "description": "Contract MCONTRACT-CORE-006 consumer DD-CORE-005 resolves to Module CORE",
+          "passed": true
+        },
+        {
+          "check_id": "contract_MCONTRACT-CORE-006_internal_boundary",
+          "description": "Internal Contract MCONTRACT-CORE-006 is consumed only inside owner Module CORE",
+          "passed": true,
+          "details": "all consumers are internal"
+        },
+        {
+          "check_id": "architecture_id_format",
+          "description": "Every declared Architecture ID uses ARCH-<DOMAIN>-<NNN>",
+          "passed": true,
+          "severity": "error",
+          "details": "invalid=none; valid=ARCH-CORE-001,ARCH-CORE-002,ARCH-CORE-003,ARCH-CORE-004,ARCH-CORE-005"
+        },
+        {
+          "check_id": "data_model_id_format",
+          "description": "Every declared Data ID uses DATA-<DOMAIN>-<NNN>, or the model is explicitly not applicable",
+          "passed": true,
+          "severity": "error",
+          "details": "invalid=none; valid=DATA-CORE-001,DATA-CORE-002,DATA-CORE-003,DATA-CORE-004,DATA-CORE-005; not_applicable=false"
+        },
+        {
+          "check_id": "module_design_id_format",
+          "description": "Every declared Module Design ID uses DD-<DOMAIN>-<NNN>",
+          "passed": true,
+          "severity": "error",
+          "details": "invalid=none"
+        },
+        {
+          "check_id": "trace_data_DATA-CORE-001",
+          "description": "Data design DATA-CORE-001 is constrained by Project Architecture",
+          "passed": true
+        },
+        {
+          "check_id": "trace_data_DATA-CORE-002",
+          "description": "Data design DATA-CORE-002 is constrained by Project Architecture",
+          "passed": true
+        },
+        {
+          "check_id": "trace_data_DATA-CORE-003",
+          "description": "Data design DATA-CORE-003 is constrained by Project Architecture",
+          "passed": true
+        },
+        {
+          "check_id": "trace_data_DATA-CORE-004",
+          "description": "Data design DATA-CORE-004 is constrained by Project Architecture",
+          "passed": true
+        },
+        {
+          "check_id": "trace_data_DATA-CORE-005",
+          "description": "Data design DATA-CORE-005 is constrained by Project Architecture",
+          "passed": true
+        },
+        {
+          "check_id": "trace_dd_DD-CORE-001",
+          "description": "Module Design DD-CORE-001 is constrained by Architecture, Data Model, or a formal Contract",
+          "passed": true
+        },
+        {
+          "check_id": "trace_dd_DD-CORE-002",
+          "description": "Module Design DD-CORE-002 is constrained by Architecture, Data Model, or a formal Contract",
+          "passed": true
+        },
+        {
+          "check_id": "trace_dd_DD-CORE-003",
+          "description": "Module Design DD-CORE-003 is constrained by Architecture, Data Model, or a formal Contract",
+          "passed": true
+        },
+        {
+          "check_id": "trace_dd_DD-CORE-004",
+          "description": "Module Design DD-CORE-004 is constrained by Architecture, Data Model, or a formal Contract",
+          "passed": true
+        },
+        {
+          "check_id": "trace_dd_DD-CORE-005",
+          "description": "Module Design DD-CORE-005 is constrained by Architecture, Data Model, or a formal Contract",
+          "passed": true
+        },
+        {
+          "check_id": "trace_dd_DD-CORE-006",
+          "description": "Module Design DD-CORE-006 is constrained by Architecture, Data Model, or a formal Contract",
+          "passed": true
+        },
+        {
+          "check_id": "trace_dd_DD-CORE-007",
+          "description": "Module Design DD-CORE-007 is constrained by Architecture, Data Model, or a formal Contract",
+          "passed": true
+        },
+        {
+          "check_id": "trace_dd_DD-CORE-008",
+          "description": "Module Design DD-CORE-008 is constrained by Architecture, Data Model, or a formal Contract",
+          "passed": true
+        },
+        {
+          "check_id": "trace_contract_MCONTRACT-CORE-001_c62300",
+          "description": "Contract MCONTRACT-CORE-001 formally enforces source DD-CORE-002",
+          "passed": true
+        },
+        {
+          "check_id": "trace_contract_MCONTRACT-CORE-001_c3d9c0",
+          "description": "Contract MCONTRACT-CORE-001 formally enforces source DD-CORE-004",
+          "passed": true
+        },
+        {
+          "check_id": "trace_contract_MCONTRACT-CORE-002_b74db0",
+          "description": "Contract MCONTRACT-CORE-002 formally enforces source DD-CORE-001",
+          "passed": true
+        },
+        {
+          "check_id": "trace_contract_MCONTRACT-CORE-003_52bce2",
+          "description": "Contract MCONTRACT-CORE-003 formally enforces source DD-CORE-007",
+          "passed": true
+        },
+        {
+          "check_id": "trace_contract_MCONTRACT-CORE-004_816fb0",
+          "description": "Contract MCONTRACT-CORE-004 formally enforces source DD-CORE-006",
+          "passed": true
+        },
+        {
+          "check_id": "trace_contract_MCONTRACT-CORE-005_c62300",
+          "description": "Contract MCONTRACT-CORE-005 formally enforces source DD-CORE-002",
+          "passed": true
+        },
+        {
+          "check_id": "trace_contract_MCONTRACT-CORE-005_816fb0",
+          "description": "Contract MCONTRACT-CORE-005 formally enforces source DD-CORE-006",
+          "passed": true
+        },
+        {
+          "check_id": "trace_contract_MCONTRACT-CORE-006_664a7c",
+          "description": "Contract MCONTRACT-CORE-006 formally enforces source DD-CORE-003",
+          "passed": true
+        },
+        {
+          "check_id": "trace_contract_MCONTRACT-CORE-006_b2436e",
+          "description": "Contract MCONTRACT-CORE-006 formally enforces source DD-CORE-005",
+          "passed": true
+        },
+        {
+          "check_id": "trace_relation_0",
+          "description": "DATA-CORE-001 constrained_by ARCH-CORE-002 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_1",
+          "description": "DATA-CORE-001 constrained_by ARCH-CORE-003 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_2",
+          "description": "DATA-CORE-002 constrained_by ARCH-CORE-003 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_3",
+          "description": "DATA-CORE-003 constrained_by ARCH-CORE-002 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_4",
+          "description": "DATA-CORE-003 constrained_by ARCH-CORE-004 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_5",
+          "description": "DATA-CORE-004 constrained_by ARCH-CORE-003 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_6",
+          "description": "DATA-CORE-005 constrained_by ARCH-CORE-005 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_7",
+          "description": "DD-CORE-001 constrained_by DATA-CORE-004 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_8",
+          "description": "DD-CORE-001 constrained_by MCONTRACT-CORE-002 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_9",
+          "description": "DD-CORE-002 constrained_by ARCH-CORE-003 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_10",
+          "description": "DD-CORE-002 constrained_by DATA-CORE-001 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_11",
+          "description": "DD-CORE-002 constrained_by DATA-CORE-002 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_12",
+          "description": "DD-CORE-002 constrained_by MCONTRACT-CORE-001 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_13",
+          "description": "DD-CORE-003 constrained_by ARCH-CORE-002 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_14",
+          "description": "DD-CORE-003 constrained_by MCONTRACT-CORE-006 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_15",
+          "description": "DD-CORE-004 constrained_by ARCH-CORE-003 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_16",
+          "description": "DD-CORE-004 constrained_by DATA-CORE-002 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_17",
+          "description": "DD-CORE-004 constrained_by DATA-CORE-004 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_18",
+          "description": "DD-CORE-004 constrained_by MCONTRACT-CORE-001 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_19",
+          "description": "DD-CORE-005 constrained_by ARCH-CORE-001 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_20",
+          "description": "DD-CORE-005 constrained_by ARCH-CORE-004 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_21",
+          "description": "DD-CORE-005 constrained_by MCONTRACT-CORE-006 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_22",
+          "description": "DD-CORE-006 constrained_by ARCH-CORE-005 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_23",
+          "description": "DD-CORE-006 constrained_by MCONTRACT-CORE-004 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_24",
+          "description": "DD-CORE-006 constrained_by MCONTRACT-CORE-005 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_25",
+          "description": "DD-CORE-007 constrained_by ARCH-CORE-005 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_26",
+          "description": "DD-CORE-007 constrained_by MCONTRACT-CORE-003 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_27",
+          "description": "DD-CORE-008 constrained_by ARCH-CORE-005 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_28",
+          "description": "MCONTRACT-CORE-001 enforces DD-CORE-002 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_29",
+          "description": "MCONTRACT-CORE-001 enforces DD-CORE-004 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_30",
+          "description": "MCONTRACT-CORE-002 enforces DD-CORE-001 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_31",
+          "description": "MCONTRACT-CORE-003 enforces DD-CORE-007 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_32",
+          "description": "MCONTRACT-CORE-004 enforces DD-CORE-006 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_33",
+          "description": "MCONTRACT-CORE-005 enforces DD-CORE-002 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_34",
+          "description": "MCONTRACT-CORE-005 enforces DD-CORE-006 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_35",
+          "description": "MCONTRACT-CORE-006 enforces DD-CORE-003 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_relation_36",
+          "description": "MCONTRACT-CORE-006 enforces DD-CORE-005 is semantically legal",
+          "passed": true,
+          "details": "D:\\code\\sf-acceptance-six\\.specforge\\project\\trace_matrix.md"
+        },
+        {
+          "check_id": "trace_module_view_CORE",
+          "description": "Module CORE trace.md is a generated projection of the canonical project Trace Matrix",
+          "passed": true,
+          "details": "generated=true; missing=none; unexpected=none"
+        },
+        {
+          "check_id": "actual_scope_audit_passed",
+          "description": "Changed Files Audit passed and actual implementation stays inside approved Module scope",
+          "passed": true,
+          "details": "changed_files_audit=passed; actual_modules=CORE; violations=none"
+        },
+        {
+          "check_id": "project_spec_version_frozen",
+          "description": "Project Spec version equals the Code Permission snapshot or every later version is proven by a successful Atomic Spec Merge chain",
+          "passed": true,
+          "details": "permission=PSV-0002; current=PSV-0002; later_merge_chain=not_needed"
+        }
+      ]
+    },
+    "formal_version_gate": {
+      "status": "passed",
+      "checks": [
+        {
+          "check_id": "formal_verification_gate",
+          "description": "Verification Gate passed",
+          "passed": true
+        },
+        {
+          "check_id": "formal_changed_files_audit",
+          "description": "Changed Files Audit passed",
+          "passed": true
+        },
+        {
+          "check_id": "formal_actual_governance_scope",
+          "description": "Actual implementation files map to exactly one approved Module and do not expand governance scope",
+          "passed": true,
+          "details": "actual_modules=CORE; violations=none"
+        },
+        {
+          "check_id": "formal_version_control_mode_evidence",
+          "description": "Pre-implementation version-control mode is frozen or recovered from bound legacy evidence",
+          "passed": true,
+          "details": "source=governance_scope; mode=filesystem; error=none"
+        },
+        {
+          "check_id": "formal_repository_mode_stable",
+          "description": "Version-control mode remains the mode frozen before implementation",
+          "passed": true,
+          "details": "frozen=filesystem; source=governance_scope; effective=filesystem; current=filesystem; head=unborn; legacy_recovery=false"
+        },
+        {
+          "check_id": "formal_git_context",
+          "description": "Git-enabled implementation is bound to WI branch and base commit",
+          "passed": true,
+          "details": "required=false; enabled=false; branch=missing; base=missing"
+        },
+        {
+          "check_id": "formal_semantic_closure",
+          "description": "Semantic closure evidence exists",
+          "passed": true
+        },
+        {
+          "check_id": "formal_spec_merge",
+          "description": "Formal Spec Candidate merge succeeded",
+          "passed": true
+        },
+        {
+          "check_id": "formal_user_decision",
+          "description": "User Decision is approved/waived",
+          "passed": true
+        },
+        {
+          "check_id": "formal_hard_gate_candidate_manifest_gate_json",
+          "description": "Hard Gate candidate_manifest_gate.json did not fail",
+          "passed": true
+        },
+        {
+          "check_id": "formal_hard_gate_contract_integrity_gate_json",
+          "description": "Hard Gate contract_integrity_gate.json did not fail",
+          "passed": true
+        },
+        {
+          "check_id": "formal_hard_gate_entry_gate_json",
+          "description": "Hard Gate entry_gate.json did not fail",
+          "passed": true
+        },
+        {
+          "check_id": "formal_hard_gate_path_policy_gate_json",
+          "description": "Hard Gate path_policy_gate.json did not fail",
+          "passed": true
+        },
+        {
+          "check_id": "formal_hard_gate_post_merge_gate_json",
+          "description": "Hard Gate post_merge_gate.json did not fail",
+          "passed": true
+        },
+        {
+          "check_id": "formal_hard_gate_required_files_gate_json",
+          "description": "Hard Gate required_files_gate.json did not fail",
+          "passed": true
+        },
+        {
+          "check_id": "formal_hard_gate_schema_gate_json",
+          "description": "Hard Gate schema_gate.json did not fail",
+          "passed": true
+        },
+        {
+          "check_id": "formal_hard_gate_spec_consistency_gate_json",
+          "description": "Hard Gate spec_consistency_gate.json did not fail",
+          "passed": true
+        },
+        {
+          "check_id": "formal_hard_gate_trace_gate_json",
+          "description": "Hard Gate trace_gate.json did not fail",
+          "passed": true
+        },
+        {
+          "check_id": "formal_hard_gate_verification_gate_json",
+          "description": "Hard Gate verification_gate.json did not fail",
+          "passed": true
+        },
+        {
+          "check_id": "formal_hard_gate_workflow_selection_gate_json",
+          "description": "Hard Gate workflow_selection_gate.json did not fail",
+          "passed": true
+        },
+        {
+          "check_id": "formal_hard_gate_workflow_specific_gate_json",
+          "description": "Hard Gate workflow_specific_gate.json did not fail",
+          "passed": true
+        },
+        {
+          "check_id": "formal_project_spec_core_version_coherent",
+          "description": "Project Spec Core files agree on the authoritative project_spec_version",
+          "passed": true,
+          "details": "project_spec_version=PSV-0002"
+        },
+        {
+          "check_id": "formal_project_consistency",
+          "description": "Project Architecture/Data/Design consistency is valid",
+          "passed": true
+        },
+        {
+          "check_id": "formal_contract_integrity",
+          "description": "Project/Module Contract integrity is valid",
+          "passed": true
+        },
+        {
+          "check_id": "formal_trace_integrity",
+          "description": "Governance Trace is valid",
+          "passed": true
+        },
+        {
+          "check_id": "formal_governance_scope_frozen",
+          "description": "Implementation has a frozen governance scope",
+          "passed": true
+        }
+      ]
+    },
+    "close_gate": {
+      "status": "passed",
+      "checks": [
+        {
+          "check_id": "close_file_work_item_json",
+          "description": "Required file exists: work_item.json",
+          "passed": true
+        },
+        {
+          "check_id": "close_file_intake_md",
+          "description": "Required file exists: intake.md",
+          "passed": true
+        },
+        {
+          "check_id": "close_file_trigger_result_json",
+          "description": "Required file exists: trigger_result.json",
+          "passed": true
+        },
+        {
+          "check_id": "close_file_change_classification_md",
+          "description": "Required file exists: change_classification.md",
+          "passed": true
+        },
+        {
+          "check_id": "close_file_impact_analysis_md",
+          "description": "Required file exists: impact_analysis.md",
+          "passed": true
+        },
+        {
+          "check_id": "close_file_candidate_manifest_json",
+          "description": "Required file exists: candidate_manifest.json",
+          "passed": true
+        },
+        {
+          "check_id": "close_file_verification_report_md",
+          "description": "Required file exists: verification_report.md",
+          "passed": true
+        },
+        {
+          "check_id": "close_file_merge_report_md",
+          "description": "Required file exists: merge_report.md",
+          "passed": true
+        },
+        {
+          "check_id": "close_file_changed_files_audit_md",
+          "description": "Required file exists: changed_files_audit.md",
+          "passed": true
+        },
+        {
+          "check_id": "close_file_evidence_evidence_manifest_json",
+          "description": "Required file exists: evidence/evidence_manifest.json",
+          "passed": true
+        },
+        {
+          "check_id": "close_file__semantic_closure_json",
+          "description": "Required file exists: .semantic_closure.json",
+          "passed": true
+        },
+        {
+          "check_id": "close_artifact_tasks_authoritative",
+          "description": "Authoritative tasks artifact is present (Candidate first; authored legacy fallback only)",
+          "passed": true,
+          "details": "path=.specforge/work-items/WI-0001/candidates/tasks.md"
+        },
+        {
+          "check_id": "close_artifact_trace_delta_authoritative",
+          "description": "Authoritative trace_delta artifact is present (Candidate first; authored legacy fallback only)",
+          "passed": true,
+          "details": "path=.specforge/work-items/WI-0001/candidates/trace_delta.md"
+        },
+        {
+          "check_id": "close_formal_version_gate",
+          "description": "Formal Version Gate passed before Close",
+          "passed": true,
+          "details": "status=passed"
+        },
+        {
+          "check_id": "close_project_spec_core_version_coherent",
+          "description": "Project Spec Core files agree on the authoritative project_spec_version when declared",
+          "passed": true,
+          "details": "project_spec_version=PSV-0002"
+        },
+        {
+          "check_id": "close_filesystem_formal_version_current",
+          "description": "Filesystem implementation file set and content fingerprint still match Formal Version",
+          "passed": true,
+          "details": "filesystem Formal Version snapshot is current or not applicable to Git mode"
+        },
+        {
+          "check_id": "close_write_guard_audit_current",
+          "description": "Changed Files Audit covers the current Write Guard and resolution evidence",
+          "passed": true
+        },
+        {
+          "check_id": "close_verification_nonempty",
+          "description": "verification_report is not empty",
+          "passed": true
+        },
+        {
+          "check_id": "close_verification_refs_evidence",
+          "description": "verification_report references Evidence (§13.3)",
+          "passed": true
+        },
+        {
+          "check_id": "close_user_decision_valid",
+          "description": "User Decision is approved or waived (§10)",
+          "passed": true
+        },
+        {
+          "check_id": "close_user_decision_semantic_valid",
+          "description": "User Decision is semantically valid: actor, workflow_path, Gate hash, manifest hash, candidate hash",
+          "passed": true
+        },
+        {
+          "check_id": "close_workflow_path_valid",
+          "description": "workflow_path is valid (§6.4)",
+          "passed": true,
+          "details": "effective_workflow_path=requirement_change_path; work_item.workflow_path=requirement_change_path; ctx.workflow_path=requirement_change_path"
+        },
+        {
+          "check_id": "close_code_permission_revoked",
+          "description": "code_permission is revoked by daemon fact source (§12)",
+          "passed": true
+        },
+        {
+          "check_id": "close_allowed_write_empty",
+          "description": "allowed_write_files is empty (§15.2.13-14)",
+          "passed": true
+        },
+        {
+          "check_id": "close_no_write_guard_violations",
+          "description": "No unresolved Write Guard violations (§15.2.12)",
+          "passed": true
+        },
+        {
+          "check_id": "close_resume_plan_no_pending",
+          "description": "No resume_plan present (not applicable)",
+          "passed": true
+        },
+        {
+          "check_id": "close_trace_delta_valid",
+          "description": "authoritative trace_delta is not empty or a lifecycle placeholder (§13.1)",
+          "passed": true,
+          "details": "path=.specforge/work-items/WI-0001/candidates/trace_delta.md"
+        },
+        {
+          "check_id": "close_evidence_manifest_has_entries",
+          "description": "evidence_manifest has entries (§13.4)",
+          "passed": true
+        },
+        {
+          "check_id": "close_verification_evidence_source_and_time_integrity",
+          "description": "verification evidence source and declared time remain valid at Close",
+          "passed": true
+        },
+        {
+          "check_id": "close_semantic_closure_valid",
+          "description": "Semantic closure proves OUT -> REQ -> DD -> TASK -> EV",
+          "passed": true,
+          "details": ""
+        },
+        {
+          "check_id": "close_semantic_closure_provenance_current",
+          "description": "semantic closure is bound to the current verification artifacts",
+          "passed": true
+        },
+        {
+          "check_id": "close_merge_report_valid",
+          "description": "merge_report satisfies its current contract and belongs to this Work Item (§11)",
+          "passed": true,
+          "details": "status=success"
+        },
+        {
+          "check_id": "close_changed_files_audit_passed",
+          "description": "changed_files_audit passed (§15.2)",
+          "passed": true
+        },
+        {
+          "check_id": "close_post_merge_gate",
+          "description": "post_merge_gate passed or not_applicable (§15.2)",
+          "passed": true,
+          "details": "status=passed"
+        },
+        {
+          "check_id": "close_no_blocking_issues",
+          "description": "No unresolved blocking issues from gates/*.json (§15.2)",
+          "passed": true
+        },
+        {
+          "check_id": "close_waiver_follow_up",
+          "description": "No waivers requiring follow-up",
+          "passed": true,
+          "details": "waiver_ids=[]; waiver_used=false"
+        },
+        {
+          "check_id": "close_extension_request_resolved",
+          "description": "No extension_request.json present (not applicable)",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "after_close_target_exists": false,
+  "note": "Post-close native call must also be independently verified from exported OpenCode tool records; target absence alone is insufficient."
+}

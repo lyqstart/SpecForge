@@ -1,0 +1,12 @@
+{
+  "id": "010-integrated-restart",
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    ".tmp/final-six-acceptance-20261024/integrated-v2.cjs",
+    "after"
+  ],
+  "purpose": "010-integrated-restart",
+  "started": "2026-10-24T08:37:34.375Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged"
+}

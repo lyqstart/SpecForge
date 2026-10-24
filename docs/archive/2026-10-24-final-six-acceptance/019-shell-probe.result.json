@@ -1,0 +1,16 @@
+{
+  "id": "019-shell-probe",
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    ".tmp/final-six-acceptance-20261024/shell-probe.cjs"
+  ],
+  "purpose": "019-shell-probe",
+  "started": "2026-10-24T08:42:08.118Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T08:42:08.977Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_repository_status": " M docs/project-status.md\n"
+}

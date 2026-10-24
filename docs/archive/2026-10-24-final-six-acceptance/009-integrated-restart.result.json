@@ -1,0 +1,17 @@
+{
+  "id": "009-integrated-restart",
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    ".tmp/final-six-acceptance-20261024/integrated.cjs",
+    "after"
+  ],
+  "purpose": "009-integrated-restart",
+  "started": "2026-10-24T08:37:09.734Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T08:37:10.428Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 1,
+  "signal": null,
+  "observed_repository_status": " M docs/project-status.md\n"
+}

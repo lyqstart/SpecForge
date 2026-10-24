@@ -1,0 +1,17 @@
+{
+  "id": "002-original-node",
+  "cwd": "D:/code/sf-acceptance-six",
+  "exe": "node",
+  "args": [
+    "--test",
+    "test/app.test.js"
+  ],
+  "purpose": "002-original-node",
+  "started": "2026-10-24T08:35:18.675Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T08:35:18.876Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_repository_status": " M docs/project-status.md\n"
+}

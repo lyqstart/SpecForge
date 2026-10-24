@@ -1,0 +1,1 @@
+const fs=require('fs'),path=require('path');const source=fs.readFileSync('D:/code/sf-acceptance-six-evidence/completion-20261018-A01/final-review/raw/final-governance-audit.ts','utf8');if(!source.includes('../../packages/daemon-core'))throw Error('IMPORT_NOT_FOUND');fs.writeFileSync(path.join(__dirname,'original-governance.ts'),source,{flag:'wx'});

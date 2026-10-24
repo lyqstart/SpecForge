@@ -1,0 +1,11 @@
+{
+  "id": "001-prepare",
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    ".tmp/final-six-acceptance-20261024/prepare.cjs"
+  ],
+  "purpose": "001-prepare",
+  "started": "2026-10-24T08:35:07.783Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged"
+}

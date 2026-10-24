@@ -1,0 +1,13 @@
+const fs=require('fs'),path=require('path');
+let s=fs.readFileSync(path.join(__dirname,'independent-review-v2.cjs'),'utf8');
+s=s.replace(" const result={utc:",` const probe=local('shell-probe-result.json');
+ const controls=probe.records.filter(r=>r.name);assert.equal(controls.length,2);
+ assert.equal(controls[0].afterExists,false);assert.equal(controls[0].result.data.success,false);
+ assert.equal(controls[1].afterExists,true);assert.equal(controls[1].result.data.exitCode,0);
+ assert.equal(fs.readFileSync(path.join(probe.root,controls[1].name),'utf8'),'FINAL_SHELL_ISOLATED_PROBE');
+ for(const r of probe.records.filter(r=>r.tool==='sf_state_read'))assert.equal(JSON.parse(r.raw).data.work_items['WI-0001'].current_state,'closed');
+ const result={utc:`);
+s=s.replace("status:'PASS_WITH_EXPLICIT_SCOPE'","status:'FAIL_CONFIRMED_SHELL_WRITE_BOUNDARY_GAP'");
+s=s.replace("findings:[]","supersedes:'independent-review.json was an intermediate review before the shell counterexample',findings:[{id:'FINAL-SIX-001',severity:'HIGH',confidence:'CONFIRMED',affectedItems:[1,2],evidence:'shell-probe-result.json',responsibility:'Tool Handler / Permission / Write Guard',rootCause:'An unrecognized shell write target is treated as allowed before checking work-item write authorization; sf_safe_bash executes the command.',observed:'Installed 1.0.19 after real restart: closed WI-0001; redirect denied; Node inline write creates the sentinel and returns success; state still closed.',scope:'Only a new sentinel in the isolated original-project copy; no claim of other arbitrary paths being tested.'}]");
+s=s.replace("'independent-review.json'),JSON.stringify(result","'final-independent-review.json'),JSON.stringify(result");
+fs.writeFileSync(path.join(__dirname,'independent-review-v3.cjs'),s,{flag:'wx'});

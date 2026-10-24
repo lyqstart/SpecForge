@@ -1,0 +1,18 @@
+{
+  "id": "006-stop",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/.config/opencode/sf-user/bin/specforge.exe",
+  "args": [
+    "daemon",
+    "stop",
+    "--json"
+  ],
+  "purpose": "006-stop",
+  "started": "2026-10-24T08:36:57.389Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T08:36:57.568Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_repository_status": " M docs/project-status.md\n"
+}

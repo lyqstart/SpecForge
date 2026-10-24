@@ -1,0 +1,204 @@
+{
+  "utc": "2026-10-24T08:35:09.339Z",
+  "run_id": "CODEX-SF-20261024-FINAL-SIX-A01",
+  "attempt_id": "A01-01",
+  "mode": "CODEX_DIRECT",
+  "baseline": "85307a8d859d7c92c8303809c86985eb74d34427",
+  "EXPERIENCE_FILE_READ": "YES",
+  "ACTIVE_EXPERIENCE_RULES_FILE_READ": "YES",
+  "APPLICABLE_EXPERIENCE_RULES": [
+    "EXP-004",
+    "EXP-006",
+    "EXP-007",
+    "EXP-017",
+    "EXP-031",
+    "EXP-125",
+    "EXP-261",
+    "EXP-282",
+    "EXP-284"
+  ],
+  "HISTORICAL_LEDGER_SEARCH": "six acceptance, recovery, hardlink, config, log; ERR-1845..1875",
+  "REPEATED_ERROR_CHECK": "PASS",
+  "PRIOR_FAILURE_RECONCILIATION": "PASS",
+  "UNRECORDED_FAILURES": 0,
+  "read": [
+    {
+      "file": "docs/rule/specforge-active-development-rules.md",
+      "totalLines": 2559,
+      "sha256": "bd4223965d28d24b09483eadbd996b148cf8945859195e75745ba2ae9c60a41a",
+      "chunks": [
+        {
+          "start": 1,
+          "end": 200,
+          "sha256": "c1940b86917317af675de7616a44e7318264282ccce06013ed2d1cda19d52953"
+        },
+        {
+          "start": 201,
+          "end": 400,
+          "sha256": "fe7ad823bba6a3ab163e9f3c79e7866f5e3d9fa36f5ca403088d3c9f7655eff9"
+        },
+        {
+          "start": 401,
+          "end": 600,
+          "sha256": "04ca8fa9d6cdbd1bf61376a36a9afe142cd986c8069c7d04f5deb45a34ff5711"
+        },
+        {
+          "start": 601,
+          "end": 800,
+          "sha256": "08700e526b8bf502c3c72e1566054b66c0fdad600345970575ca038877f78096"
+        },
+        {
+          "start": 801,
+          "end": 1000,
+          "sha256": "9b3be1aa69943aeb745dab60c00f7f01280b29df871e625dbedd7a241a091427"
+        },
+        {
+          "start": 1001,
+          "end": 1200,
+          "sha256": "b70f980a27568d4105713859be3df38dac6da83fbdd6e52ef283fb531321bf24"
+        },
+        {
+          "start": 1201,
+          "end": 1400,
+          "sha256": "c7cd143ac784abc93d9237b1ed192af0a0746090b3b1e5c7a5efaf180e6bfe81"
+        },
+        {
+          "start": 1401,
+          "end": 1600,
+          "sha256": "e7dd31e2477dd84fd26fc0bcc3f3bb8de7270043e8b1b4dab650df99d4a4efbb"
+        },
+        {
+          "start": 1601,
+          "end": 1800,
+          "sha256": "c7d97f4e689da5286a3c7a295dfc87cc234596c72998b5c88abbd85b7707dce2"
+        },
+        {
+          "start": 1801,
+          "end": 2000,
+          "sha256": "e003452391631182625e077778e06504be744304417d7ac6b0cf110d1faf67ed"
+        },
+        {
+          "start": 2001,
+          "end": 2200,
+          "sha256": "08f851dd497f43a62029e4e32009f94a2b210252a4a59c4121d8155db852fed1"
+        },
+        {
+          "start": 2201,
+          "end": 2400,
+          "sha256": "5efbc270a17ea333dc9767355aae2511fa3d407be7d84b286378376198a7b23b"
+        },
+        {
+          "start": 2401,
+          "end": 2559,
+          "sha256": "21dd36dd46b85458169f2037c30773223931c56594030b019ffcf23e99c41d53"
+        }
+      ],
+      "roundtrip": true
+    },
+    {
+      "file": "docs/product-specification/authority-registry.md",
+      "totalLines": 133,
+      "sha256": "4073ab17a5faacd4d294e5190eb4a6262df7273b56b742aadf0c97df35e6be7b",
+      "chunks": [
+        {
+          "start": 1,
+          "end": 133,
+          "sha256": "4073ab17a5faacd4d294e5190eb4a6262df7273b56b742aadf0c97df35e6be7b"
+        }
+      ],
+      "roundtrip": true
+    },
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "totalLines": 1615,
+      "sha256": "700c9fa2040be55535918ea31ae1b32f602ed9184a4e451d93a5983a56d9277d",
+      "chunks": [
+        {
+          "start": 1,
+          "end": 200,
+          "sha256": "3ad77f69f369f89558c6d983580061c335dd1830677d1d0f4905f28c6e59bf21"
+        },
+        {
+          "start": 201,
+          "end": 400,
+          "sha256": "f6022d9f3dd38ad269dca42792eb88e58fd6c0ad7ac314fd3365ae1977f78089"
+        },
+        {
+          "start": 401,
+          "end": 600,
+          "sha256": "6267eecba0a1a48690b49c0e978fb562a7ede4598b6a372121dccb5258bdd71d"
+        },
+        {
+          "start": 601,
+          "end": 800,
+          "sha256": "3a2f9d116df83cdb21e8ad871081de7cf726b6c159da04311a8602baaa2accdd"
+        },
+        {
+          "start": 801,
+          "end": 1000,
+          "sha256": "088fef3fa735e0baf196bb77bf93ec6e91d2b64d30695ec4854af80a27644259"
+        },
+        {
+          "start": 1001,
+          "end": 1200,
+          "sha256": "6d7de16a6eb268713e3ccf1ef20cbef376aedb4a08de6b404e875b65f0d78c9a"
+        },
+        {
+          "start": 1201,
+          "end": 1400,
+          "sha256": "3d5336164d41514dedd7a76afbcc244cd2502d61951890f77452b2d4764185c0"
+        },
+        {
+          "start": 1401,
+          "end": 1600,
+          "sha256": "aedececd8ad79b649700db231b018123d338c49391d9c9c49c491b7ebdc751fd"
+        },
+        {
+          "start": 1601,
+          "end": 1615,
+          "sha256": "16bd71c5bd01e04cbebb2c35c657b49b62d629256e211fb04bbfd24359cf43a4"
+        }
+      ],
+      "roundtrip": true
+    },
+    {
+      "file": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "totalLines": 224,
+      "sha256": "d84911ea066dcb7a3fb8a78efb38425a52302f973b5bf032244ba8518fe374de",
+      "chunks": [
+        {
+          "start": 1,
+          "end": 200,
+          "sha256": "cfa23aceeb8da999fe640308a4b9bd0b482cb09cb6236c7edc249c58a5e415bb"
+        },
+        {
+          "start": 201,
+          "end": 224,
+          "sha256": "89073b12f094f55a555a9b643a8b0a8667b125fb0fb793e8116529b514ec11a9"
+        }
+      ],
+      "roundtrip": true
+    },
+    {
+      "file": "docs/rule/specforge-execution-mode-and-evidence-protocol.md",
+      "totalLines": 182,
+      "sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef",
+      "chunks": [
+        {
+          "start": 1,
+          "end": 182,
+          "sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef"
+        }
+      ],
+      "roundtrip": true
+    }
+  ],
+  "write_classes": {
+    "TRUTH_SOURCE_WRITES": "No edits to original project authority; faults only in explicit isolated copies",
+    "REPOSITORY_TRACKED_WRITES": "project-status and final archived evidence only; no product fixes authorized in this acceptance",
+    "RUNTIME_OBSERVER_WRITES": "daemon lifecycle/observability, projected checkpoint on fresh reads; capture changes",
+    "EXTERNAL_EVIDENCE_WRITES": "D:\\code\\SpecForge\\.tmp\\final-six-acceptance-20261024"
+  },
+  "stop": "After independent six-item outcome review; defects reported, not silently fixed",
+  "scope": "original project normal/restart checks plus same-project isolated snapshots for destructive fault cases; no new business project or reopening closed WI"
+}

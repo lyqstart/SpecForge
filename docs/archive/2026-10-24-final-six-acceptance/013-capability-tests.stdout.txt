@@ -1,0 +1,12 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/opencode-adapter
+
+ ✓ tests/getCapabilities.test.ts (18 tests) 12ms
+ ✓ tests/real-capability-discovery.test.ts (5 tests) 12ms
+ ✓ tests/capability-evidence-boundary.test.ts (15 tests) 14ms
+
+ Test Files  3 passed (3)
+      Tests  38 passed (38)
+   Start at  16:38:22
+   Duration  828ms (transform 215ms, setup 0ms, collect 956ms, tests 38ms, environment 0ms, prepare 552ms)
+

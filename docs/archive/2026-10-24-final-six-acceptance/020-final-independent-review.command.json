@@ -1,0 +1,11 @@
+{
+  "id": "020-final-independent-review",
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    ".tmp/final-six-acceptance-20261024/independent-review-v3.cjs"
+  ],
+  "purpose": "020-final-independent-review",
+  "started": "2026-10-24T08:42:37.396Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged"
+}

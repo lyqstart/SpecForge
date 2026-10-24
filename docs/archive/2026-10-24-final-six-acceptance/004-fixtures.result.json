@@ -1,0 +1,16 @@
+{
+  "id": "004-fixtures",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    ".tmp/final-six-acceptance-20261024/prepare-fixtures.ts"
+  ],
+  "purpose": "004-fixtures",
+  "started": "2026-10-24T08:36:12.116Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T08:36:13.362Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_repository_status": " M docs/project-status.md\n"
+}

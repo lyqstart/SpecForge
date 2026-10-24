@@ -1,0 +1,1 @@
+{"utc":"2026-10-24T08:37:01.116Z","error":"Error: WRITE_GUARD_UNAVAILABLE: daemon handshake missing","target_exists":false,"scope":"actual installed plugin/client; offline rejection before host write; no generated OpenCode call"}

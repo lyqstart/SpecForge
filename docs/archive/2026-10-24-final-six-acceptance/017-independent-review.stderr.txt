@@ -1,0 +1,31 @@
+AssertionError [ERR_ASSERTION]: original projection semantic/cursor drift
++ actual - expected
+
+  {
+    activeSessions: [],
+    lastEventId: '01a15027-2577-711c-9a59-d6bbd0abdc74',
+    lastEventTs: 1792346105207,
++   projectPath: 'D:\\code\\sf-acceptance-six',
+-   projectPath: 'D:/code/sf-acceptance-six',
+    schema_version: '1.0',
+    workItems: [
+      {
+        created_at: 1792208444157,
+        current_state: 'closed',
+
+    at main (D:\code\SpecForge\.tmp\final-six-acceptance-20261024\independent-review.cjs:8:284)
+    at Object.<anonymous> (D:\code\SpecForge\.tmp\final-six-acceptance-20261024\independent-review.cjs:24:1)
+    at Module._compile (node:internal/modules/cjs/loader:1872:14)
+    at Object..js (node:internal/modules/cjs/loader:2003:10)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: [Object],
+  expected: [Object],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}

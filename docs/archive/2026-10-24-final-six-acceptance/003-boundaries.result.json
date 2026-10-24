@@ -1,0 +1,22 @@
+{
+  "id": "003-boundaries",
+  "cwd": "D:/code/SpecForge/packages/daemon-core",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/six-conformance-boundaries.test.ts",
+    "tests/unit/native-hardlink-boundary.test.ts",
+    "tests/unit/configuration-activation-loss.test.ts",
+    "tests/unit/runtime-history-integrity.test.ts"
+  ],
+  "purpose": "003-boundaries",
+  "started": "2026-10-24T08:35:22.639Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged",
+  "finished": "2026-10-24T08:35:29.521Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_repository_status": " M docs/project-status.md\n"
+}

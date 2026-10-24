@@ -1,0 +1,116 @@
+{
+  "started": "2026-10-24T08:38:17.912Z",
+  "finished": "2026-10-24T08:38:18.186Z",
+  "marker": "SF_SYNTHETIC_FINAL_PRIVATE_1792831097912",
+  "calls": [
+    {
+      "utc": "2026-10-24T08:38:17.978Z",
+      "args": {
+        "action": "read"
+      },
+      "result": {
+        "success": true,
+        "document_sha256": "ae4485aea4a3ee8a404d95e3b2ed3ea56f3c833d29077aaf8d012276d34a990c",
+        "valid": true
+      }
+    },
+    {
+      "utc": "2026-10-24T08:38:18.003Z",
+      "args": {
+        "action": "update",
+        "content": "{\"schema_version\":\"1.0\",\"timeoutMs\":30000,\"note\":\"SF_SYNTHETIC_FINAL_PRIVATE_1792831097912\"}",
+        "expected_sha256": "ae4485aea4a3ee8a404d95e3b2ed3ea56f3c833d29077aaf8d012276d34a990c"
+      },
+      "result": {
+        "success": true,
+        "document_sha256": "70ac288caf90433d7865a6b4381fba26fc064ef0a85d54607ed4024bd2152b3c",
+        "previous_sha256": "ae4485aea4a3ee8a404d95e3b2ed3ea56f3c833d29077aaf8d012276d34a990c",
+        "effective_sha256": "9da532e0d987584cef076c54a9e4bca6771e838145614d9159fa072276fcd846",
+        "activation": "validated_pending_acceptance"
+      }
+    },
+    {
+      "tool": "sf_state_read",
+      "result": {
+        "success": true,
+        "rebuilt_from_events": true,
+        "work_items": {
+          "WI-0001": {
+            "work_item_id": "WI-0001",
+            "workflow_type": "feature_spec",
+            "current_state": "closed",
+            "created_at": 1792208444157,
+            "updated_at": 1792346105207
+          }
+        }
+      }
+    },
+    {
+      "utc": "2026-10-24T08:38:18.056Z",
+      "args": {
+        "action": "validate",
+        "content": "{\"timeoutMs\":\"SF_SYNTHETIC_FINAL_PRIVATE_1792831097912\"}"
+      },
+      "result": {
+        "success": false,
+        "error": "CONFIGURATION_VALIDATION_FAILED"
+      }
+    },
+    {
+      "utc": "2026-10-24T08:38:18.077Z",
+      "args": {
+        "action": "validate",
+        "content": "{\"SF_SYNTHETIC_FINAL_PRIVATE_1792831097912\":{\"nested\":\"SF_SYNTHETIC_FINAL_PRIVATE_1792831097912\"},\"schema_version\":\"SF_SYNTHETIC_FINAL_PRIVATE_1792831097912\"}"
+      },
+      "result": {
+        "success": false,
+        "error": "CONFIGURATION_SCHEMA_UNSUPPORTED"
+      }
+    },
+    {
+      "utc": "2026-10-24T08:38:18.094Z",
+      "args": {
+        "action": "validate",
+        "content": "{\"SF_SYNTHETIC_FINAL_PRIVATE_1792831097912"
+      },
+      "result": {
+        "success": false,
+        "error": "CONFIGURATION_INVALID_OBJECT"
+      }
+    },
+    {
+      "utc": "2026-10-24T08:38:18.111Z",
+      "args": {
+        "action": "validate",
+        "content": "{\"schema_version\":\"1.0\",\"nested\":{\"apiKey\":\"SF_SYNTHETIC_FINAL_PRIVATE_1792831097912\"}}"
+      },
+      "result": {
+        "success": false,
+        "error": "CONFIGURATION_VALIDATION_FAILED"
+      }
+    },
+    {
+      "utc": "2026-10-24T08:38:18.134Z",
+      "args": {
+        "action": "restore",
+        "restore_sha256": "ae4485aea4a3ee8a404d95e3b2ed3ea56f3c833d29077aaf8d012276d34a990c",
+        "expected_sha256": "70ac288caf90433d7865a6b4381fba26fc064ef0a85d54607ed4024bd2152b3c"
+      },
+      "result": {
+        "success": true,
+        "document_sha256": "ae4485aea4a3ee8a404d95e3b2ed3ea56f3c833d29077aaf8d012276d34a990c",
+        "previous_sha256": "70ac288caf90433d7865a6b4381fba26fc064ef0a85d54607ed4024bd2152b3c",
+        "effective_sha256": "a808687e4b57d085d374d291f0a3592149b3a45d434f959272f749170e6a9fc2",
+        "activation": "validated_pending_acceptance"
+      }
+    }
+  ],
+  "scanned": 15,
+  "hits": [],
+  "counts": {
+    "daemon": 21,
+    "userlevel": 21
+  },
+  "exit_code": 0,
+  "scope": "Installed client + installed daemon; automatic configuration logs, not intentional raw evidence inputs"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "012-privacy",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    ".tmp/final-six-acceptance-20261024/privacy.ts"
+  ],
+  "purpose": "012-privacy",
+  "started": "2026-10-24T08:38:17.834Z",
+  "expected_writes": "Evidence and isolated test fixtures; explicit daemon lifecycle observer writes; original authority unchanged"
+}

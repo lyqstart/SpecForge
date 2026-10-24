@@ -1,0 +1,18 @@
+{
+  "utc": "2026-10-24T08:37:44.727Z",
+  "failures": [
+    {
+      "id": "009",
+      "classification": "TEST_ASSERTION_OVERREACH",
+      "evidence": "integrated-after.json; raw backup/current projection; StateManager initialize persists replayed cache",
+      "contract": "SPS3.3: complete WAL may rebuild checkpoint; task/cursor identities must match",
+      "action": "Permit only projection version increment for valid history, retain exact authority and activation checks"
+    },
+    {
+      "id": "010",
+      "classification": "CARRIER_GENERATION_FAILURE",
+      "evidence": "Inline shell quote caused SyntaxError; v2 was absent. No product change.",
+      "action": "Use separately parsed builder file, no nested shell source."
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "utc": "2026-10-24T08:40:11.562Z",
+  "classification": "EVIDENCE_COMPARATOR_PATH_FORMAT",
+  "evidence": "017 stderr shows only Windows slash style differs beyond cache stateVersion",
+  "contract": "EXP-268 resolved target platform identity; task states and event cursor remain exact",
+  "action": "Compare both projectPath values via realpath to original actual root; compare every other semantic field exactly. No source repair."
+}
