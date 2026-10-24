@@ -11,7 +11,7 @@ describe('OpenCodeAdapter capability contract', () => {
         } } }],
       }))) as typeof fetch });
       const adapter = new OpenCodeAdapter({ runtimeClient: runtime });
-      expect(await adapter.getCapabilities('custom/model')).toEqual({ streaming: true,
+      expect(await adapter.getCapabilities('custom/model')).toEqual({ streaming: null, jsonOutput: null,
         vision, tools, functionCalling: tools, maxContextLength: context, outputFormats: ['text', 'markdown'] });
     });
   }

@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import ts from 'typescript';
 
 const ROOT = resolve(import.meta.dirname, '../../..');
 
@@ -56,7 +57,14 @@ describe('current Permission and Write Guard ownership boundary', () => {
     const nativeBoundary = readFileSync(resolve(ROOT, 'packages/daemon-core/src/tools/lib/native-write-boundary.ts'), 'utf8');
     expect(daemonHttp).toContain('checkNativeTool(this.deps,');
     expect(nativeBoundary).toContain("from './write-guard-v11'");
-    expect(nativeBoundary).toContain('const result = checkWrite(');
+    const syntax = ts.createSourceFile('native-write-boundary.ts', nativeBoundary, ts.ScriptTarget.Latest, true);
+    let permissionCalls = 0;
+    const inspect = (node: ts.Node): void => {
+      if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === 'checkWrite') permissionCalls++;
+      ts.forEachChild(node, inspect);
+    };
+    inspect(syntax);
+    expect(permissionCalls).toBeGreaterThan(0);
     expect(daemonHttp).toContain('NATIVE_SHELL_REQUIRES_CONTROLLED_EXECUTION');
     expect(daemonHttp).not.toContain('const wiArtifactPattern =');
     expect(daemonHttp).not.toContain("case 'tool.invoking':");

@@ -34,11 +34,11 @@ describe('CapabilityTranslator', () => {
 
       const result = translator.translate(ocCapabilities);
 
-      expect(result.streaming).toBe(true); // default
+      expect(result.streaming).toBeNull(); // default
       expect(result.maxContextLength).toBe(200000);
       expect(result.tools).toBe(true); // has tools
-      expect(result.vision).toBe(true); // default
-      expect(result.functionCalling).toBe(true); // default
+      expect(result.vision).toBeNull(); // default
+      expect(result.functionCalling).toBeNull(); // default
       expect(result.outputFormats).toContain('text');
     });
 
@@ -77,11 +77,11 @@ describe('CapabilityTranslator', () => {
 
       const result = translator.translate(ocCapabilities);
 
-      expect(result.streaming).toBe(true);
-      expect(result.maxContextLength).toBe(128000);
-      expect(result.tools).toBe(false); // no tools = false
-      expect(result.vision).toBe(true);
-      expect(result.functionCalling).toBe(true);
+      expect(result.streaming).toBeNull();
+      expect(result.maxContextLength).toBeNull();
+      expect(result.tools).toBeNull(); // no tool evidence
+      expect(result.vision).toBeNull();
+      expect(result.functionCalling).toBeNull();
     });
 
     it('should handle empty features object', () => {
@@ -95,10 +95,10 @@ describe('CapabilityTranslator', () => {
 
       const result = translator.translate(ocCapabilities);
 
-      expect(result.streaming).toBe(true); // default
+      expect(result.streaming).toBeNull(); // default
       expect(result.maxContextLength).toBe(100000);
       expect(result.tools).toBe(false); // empty tools array = false
-      expect(result.vision).toBe(true); // default
+      expect(result.vision).toBeNull(); // default
     });
   });
 
@@ -178,12 +178,12 @@ describe('CapabilityTranslator', () => {
     it('should return default capabilities', () => {
       const defaults = translator.getDefaultCapabilities();
 
-      expect(defaults.streaming).toBe(true);
-      expect(defaults.maxContextLength).toBe(128000);
-      expect(defaults.tools).toBe(true);
-      expect(defaults.vision).toBe(true);
-      expect(defaults.functionCalling).toBe(true);
-      expect(defaults.outputFormats).toEqual(['text', 'json', 'markdown']);
+      expect(defaults.streaming).toBeNull();
+      expect(defaults.maxContextLength).toBeNull();
+      expect(defaults.tools).toBeNull();
+      expect(defaults.vision).toBeNull();
+      expect(defaults.functionCalling).toBeNull();
+      expect(defaults.outputFormats).toEqual([]);
     });
 
     it('should return a copy, not the original', () => {
@@ -192,7 +192,7 @@ describe('CapabilityTranslator', () => {
 
       // Get again should still be true
       const defaults2 = translator.getDefaultCapabilities();
-      expect(defaults2.streaming).toBe(true);
+      expect(defaults2.streaming).toBeNull();
     });
   });
 
@@ -280,11 +280,11 @@ describe('CapabilityTranslator', () => {
       expect(result.versionInfo?.schemaVersion).toBe('1.0');
     });
 
-    it('should use defaults when no capabilities provided', () => {
+    it('should fail discovery without capability evidence', () => {
       const result = translator.discoverCapabilities('test-model');
 
-      expect(result.success).toBe(true);
-      expect(result.capabilities).toEqual(translator.getDefaultCapabilities());
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('CAPABILITY_DISCOVERY_UNAVAILABLE');
     });
 
     it('should fail when model is empty', () => {

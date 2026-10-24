@@ -43,12 +43,16 @@ export async function checkNativeTool(deps: any, projectRoot: string, tool: stri
   const wiDir = path.join(projectRoot, '.specforge', 'work-items', state.work_item_id);
   if (checkHardStop(projectRoot, state.work_item_id).blocked) return { allowed: false, reason: 'HARD_STOP_ACTIVE' };
   const wi = await readWorkItemMetadata(wiDir, state.work_item_id);
-  const exists = await fs.lstat(absolute).then(() => true, error => {
-    if (error.code === 'ENOENT') return false;
+  const targetStat = await fs.lstat(absolute).catch(error => {
+    if (error.code === 'ENOENT') return null;
     throw error;
   });
-  const operation = exists ? 'modify' : 'create';
-  const result = checkWrite({
+  const operation = targetStat ? 'modify' : 'create';
+  // A permitted pathname does not authorize other names for the same inode.
+  // Do not inspect or edit those aliases: reject before the host can write.
+  const result = targetStat?.isFile() && targetStat.nlink !== 1
+    ? { allowed: false, violations: ['WRITE_HARDLINK_FORBIDDEN'] }
+    : checkWrite({
     hasActiveWI: true, callerRole: 'agent', isFrozen: isCandidateFrozenState(state.current_state),
     workItem: { work_item_id: state.work_item_id, status: state.current_state,
       code_change_allowed: wi.code_change_allowed === true, code_permission_revoked: wi.code_permission_revoked === true,

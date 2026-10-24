@@ -88,8 +88,10 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
     return {
       provider: identity.providerID, model: identity.modelID,
       context_window: limit['context'],
-      features: { streaming: true, vision: capabilities['input']['image'],
-        function_calling: capabilities['toolcall'], json_output: false },
+      // /provider does not expose streaming or constrained JSON support.
+      // Omit them; the neutral translator preserves that absence as unknown.
+      features: { vision: capabilities['input']['image'],
+        function_calling: capabilities['toolcall'] },
       // The API reports tool calling, not a fabricated list of filesystem tools.
       tools: capabilities['toolcall'] ? ['function_calling'] : [],
     };

@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.18
+> Product release version: 1.0.19
 >
 > Product version epoch: 1
 >
@@ -647,6 +647,8 @@ Write Guard 是统一写入控制机制，不建立与 Permission Engine 并列�
 
 原生工具写前检查必须识别全部正式受控入口，包括经独立 HTTP owner 执行的 `sf_project_init`；只能按精确注册名识别，不得放行任意 `sf_*` 名称。初始化仍由 Project Init owner 保证范围和幂等性。
 
+原生 edit/write 的路径批准不能授权同一文件的其他硬链接名称。现有目标为普通文件但链接数不为一时，执行边界必须在宿主写入前拒绝并记录守护结果；符号链接和目录联接继续拒绝。普通单链接修改与新文件创建仍须通过原权限判断。此写前检查不声明操作系统级沙箱或与外部并发文件替换之间的原子隔离能力。
+
 Changed Files Audit 必须绑定本次读取的 Write Guard、HardStop resolution 与 write authorization 原始证据身份；Verification 与 Close 复用同一新鲜度检查。审计后出现任何新记录或证据变化，旧 PASS 立即失效，必须重新审计并验证。尚未处理的拒绝应由审计 owner 建立可恢复 HardStop，经正式 resolution 后重新审计，保留原始拒绝与处置原因，不扩大代码权限。关闭流程不得改写历史守护日志的操作类型或计数来适配最终文件差异。历史无守护来源的报告可兼容；存在来源却未绑定的报告需重做。
 
 版本控制模式属于 Code Permission 前置冻结事实：已有 Git 项目必须在实施前绑定可验证的分支与基线；非 Git 项目必须冻结为 `filesystem` 并以 filesystem baseline、Changed Files Audit 和 Formal Version 完成闭环。filesystem Formal Version 必须保存经审计的实现文件精确集合及其逐字节内容指纹，Close Gate 必须重新计算文件集合与内容指纹；新增、删除或内容变化均使既有 Formal Version 失效，不得仅凭路径范围、文件大小、mtime 或先前 Gate 状态关闭。实施开始后出现的 `git init` 不得反向改变该事实。历史 Work Item 若缺少冻结字段，只能在原 governance scope 与 filesystem baseline 的原始字节哈希、时间线以及当前无 HEAD/零跟踪文件仓库现场均可验证时，由受控 Code Permission 工具写入追加式恢复记录；Formal Version 必须重新验证该记录，任何源漂移、Git context、HEAD、tracked file 或仓库身份变化均使恢复失效。该恢复不产生 Git 分支、提交、合并或交付义务。
@@ -716,6 +718,7 @@ Daemon
 - event subscription/translation
 - capability discovery
 - capability discovery 必须读取 OpenCode 已连接 provider 的实际模型字段；未知模型、服务不可用或响应不完整必须明确失败，不得根据模型名称编造上下文长度、视觉或工具能力。
+- 必需 provider 身份、上下文、视觉和工具字段缺失或非法时继续失败关闭；接口未提供的可选能力必须明确为未知，不能把未知当成支持或不支持。中立能力合同以 `null` 表达未知；`streaming` 与 `jsonOutput` 分别描述流式输出和受约束 JSON 能力。普通文本包含 JSON 不证明受约束 JSON 支持。当前 `/provider` 未提供这两项时返回未知；只有明确证据才能返回布尔值。能力合并、查询、缓存和 HTTP 序列化必须保留此区别，新证据优先于旧缓存。`outputFormats` 是可选用的文本呈现/已证实格式列表，缺少 JSON 条目不等于证明模型不支持 JSON。
 - OpenCode compatibility/version isolation
 
 OpenCode-specific type 不得泄漏到 Daemon core contract、Project Spec 或 workflow state。

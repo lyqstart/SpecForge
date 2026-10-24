@@ -60,11 +60,14 @@ export interface SessionInfo {
 export type SessionStatus = 'pending' | 'active' | 'completed' | 'cancelled' | 'error';
 
 export interface ModelCapabilities {
-  streaming: boolean;
-  maxContextLength: number;
-  tools: boolean;
-  vision: boolean;
-  functionCalling: boolean;
+  /** null means the provider has not supplied evidence; it is not false. */
+  streaming: boolean | null;
+  maxContextLength: number | null;
+  tools: boolean | null;
+  vision: boolean | null;
+  functionCalling: boolean | null;
+  /** Structured JSON support, distinct from ordinary text containing JSON. */
+  jsonOutput?: boolean | null;
   outputFormats: OutputFormat[];
 }
 

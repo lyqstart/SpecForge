@@ -535,7 +535,7 @@ describe('CapabilityTranslator (unit)', () => {
       const d1 = translator.getDefaultCapabilities();
       d1.streaming = false;
       const d2 = translator.getDefaultCapabilities();
-      expect(d2.streaming).toBe(true);
+      expect(d2.streaming).toBeNull();
     });
 
     it('includes all required fields', () => {
@@ -552,10 +552,10 @@ describe('CapabilityTranslator (unit)', () => {
   // ── hasCapability ───────────────────────────────────────────────────────
 
   describe('hasCapability', () => {
-    it('returns true for defined keys', () => {
+    it('does not treat defined but unknown keys as supported', () => {
       const caps = translator.getDefaultCapabilities();
-      expect(translator.hasCapability('streaming', caps)).toBe(true);
-      expect(translator.hasCapability('maxContextLength', caps)).toBe(true);
+      expect(translator.hasCapability('streaming', caps)).toBe(false);
+      expect(translator.hasCapability('maxContextLength', caps)).toBe(false);
     });
 
     it('returns false for non-existent keys', () => {

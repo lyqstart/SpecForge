@@ -8,6 +8,13 @@ The OpenCode Adapter is the LLM Kernel adapter layer that isolates OpenCode-spec
 
 ## Requirements
 
+Capability discovery reads the connected host provider metadata. A capability
+value of `null` means unknown, not unsupported; consumers must require `=== true`
+before selecting a capability. `jsonOutput` describes constrained JSON support.
+The current `/provider` response does not report that field or streaming support,
+so both remain unknown. Missing required model metadata and disconnected hosts
+fail discovery. This follows SPS §10.2; model names are not capability evidence.
+
 - Node.js 18+
 - Bun (recommended) or Node.js LTS
 

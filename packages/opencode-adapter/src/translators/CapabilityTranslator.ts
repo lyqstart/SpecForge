@@ -11,12 +11,13 @@ import { ModelCapabilities, OutputFormat, OpenCodeModelCapabilities, ICapability
  * Default capabilities for OpenCode
  */
 const DEFAULT_CAPABILITIES: ModelCapabilities = {
-  streaming: true,
-  maxContextLength: 128000,
-  tools: true,
-  vision: true,
-  functionCalling: true,
-  outputFormats: ['text', 'json', 'markdown'],
+  streaming: null,
+  maxContextLength: null,
+  tools: null,
+  vision: null,
+  functionCalling: null,
+  jsonOutput: null,
+  outputFormats: [],
 };
 
 /**
@@ -80,16 +81,23 @@ export class CapabilityTranslator implements ICapabilityTranslator {
     }
 
     const capabilities: ModelCapabilities = {
-      streaming: ocCapabilities.features?.streaming ?? DEFAULT_CAPABILITIES.streaming,
+      streaming: this.feature(ocCapabilities.features?.streaming),
       maxContextLength: ocCapabilities.context_window ?? DEFAULT_CAPABILITIES.maxContextLength,
-      tools: (ocCapabilities.tools?.length ?? 0) > 0,
-      vision: ocCapabilities.features?.vision ?? DEFAULT_CAPABILITIES.vision,
+      tools: ocCapabilities.tools === undefined ? null : ocCapabilities.tools.length > 0,
+      vision: this.feature(ocCapabilities.features?.vision),
       functionCalling:
-        ocCapabilities.features?.function_calling ?? DEFAULT_CAPABILITIES.functionCalling,
+        this.feature(ocCapabilities.features?.function_calling),
+      jsonOutput: this.feature(ocCapabilities.features?.json_output),
       outputFormats: this.getOutputFormats(ocCapabilities),
     };
 
     return capabilities;
+  }
+
+  private feature(value: unknown): boolean | null {
+    if (value === undefined) return null;
+    if (typeof value !== 'boolean') throw new Error('CAPABILITY_RESPONSE_INVALID');
+    return value;
   }
 
   /**
@@ -117,7 +125,7 @@ export class CapabilityTranslator implements ICapabilityTranslator {
    * @returns Default ModelCapabilities
    */
   getDefaultCapabilities(): ModelCapabilities {
-    return { ...DEFAULT_CAPABILITIES };
+    return { ...DEFAULT_CAPABILITIES, outputFormats: [] };
   }
 
   /**
@@ -128,7 +136,8 @@ export class CapabilityTranslator implements ICapabilityTranslator {
    * @returns Whether the capability is supported
    */
   hasCapability(capability: keyof ModelCapabilities, capabilities: ModelCapabilities): boolean {
-    return capabilities[capability] !== undefined;
+    const value = capabilities[capability];
+    return Array.isArray(value) ? value.length > 0 : typeof value === 'number' ? value > 0 : value === true;
   }
 
   /**
@@ -158,22 +167,20 @@ export class CapabilityTranslator implements ICapabilityTranslator {
 
     // Check cache first
     const cached = this.capabilityCache.get(model);
-    if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
+    if (!ocCapabilities && cached && Date.now() - cached.timestamp < this.cacheTTL) {
       return {
         success: true,
         capabilities: cached.capabilities,
         versionInfo: {
           schemaVersion: this.schemaVersion,
-          openCodeVersion: ocCapabilities?.model || 'unknown',
+          openCodeVersion: 'unknown',
           discoveredAt: new Date(cached.timestamp),
         },
       };
     }
 
-    // Use provided capabilities or default
-    const capabilities = ocCapabilities 
-      ? this.translate(ocCapabilities)
-      : this.getDefaultCapabilities();
+    if (!ocCapabilities) return { success: false, error: 'CAPABILITY_DISCOVERY_UNAVAILABLE' };
+    const capabilities = this.translate(ocCapabilities);
 
     // Cache the result
     this.capabilityCache.set(model, {
@@ -245,23 +252,16 @@ export class CapabilityTranslator implements ICapabilityTranslator {
       return single !== undefined ? single : this.getDefaultCapabilities();
     }
 
-    // Start with defaults and merge
-    const merged: ModelCapabilities = {
-      streaming: false,
-      maxContextLength: 0,
-      tools: false,
-      vision: false,
-      functionCalling: false,
-      outputFormats: [],
-    };
+    const merged: ModelCapabilities = this.getDefaultCapabilities();
+    const union = (values: Array<boolean | null | undefined>): boolean | null =>
+      values.some(value => value === true) ? true : values.every(value => value === false) ? false : null;
+    for (const key of ['streaming', 'tools', 'vision', 'functionCalling', 'jsonOutput'] as const) {
+      merged[key] = union(capabilitiesList.map(caps => caps[key]));
+    }
+    const contexts = capabilitiesList.map(caps => caps.maxContextLength);
+    merged.maxContextLength = contexts.every((value): value is number => value !== null) ? Math.max(...contexts) : null;
 
     for (const caps of capabilitiesList) {
-      merged.streaming = merged.streaming || caps.streaming;
-      merged.maxContextLength = Math.max(merged.maxContextLength, caps.maxContextLength);
-      merged.tools = merged.tools || caps.tools;
-      merged.vision = merged.vision || caps.vision;
-      merged.functionCalling = merged.functionCalling || caps.functionCalling;
-      
       // Merge output formats (union)
       for (const format of caps.outputFormats) {
         if (!merged.outputFormats.includes(format)) {
