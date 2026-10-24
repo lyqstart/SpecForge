@@ -1,0 +1,19 @@
+{
+  "id": "029-precheck",
+  "cwd": "D:/code/SpecForge/.tmp/boundary-capability-worktree",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "precheck:release",
+    "--candidate-id",
+    "commit-eac590c204fa75dcc6ef1d02f199742655fdc895"
+  ],
+  "started": "2026-10-24T08:24:02.905Z",
+  "purpose": "029-precheck",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only",
+  "finished": "2026-10-24T08:24:04.350Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_status": ""
+}

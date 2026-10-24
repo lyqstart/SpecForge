@@ -1,0 +1,27 @@
+{
+  "utc": "2026-10-24T08:16:48.689Z",
+  "pid": 32476,
+  "level": "real ProjectManager/StateManager/Permission Engine and filesystem; simulated host file write, not actual OpenCode",
+  "state": {
+    "work_item_id": "WI-0001",
+    "workflow_type": "feature_spec",
+    "current_state": "implementation_running",
+    "created_at": 1792829808646,
+    "updated_at": 1792829808668
+  },
+  "nlink": 2,
+  "isSymlink": false,
+  "deniedDirect": {
+    "allowed": false,
+    "reason": "WRITE_OUTSIDE_PROJECT"
+  },
+  "decision": {
+    "allowed": false,
+    "violations": [
+      "WRITE_HARDLINK_FORBIDDEN"
+    ],
+    "reason": "WRITE_HARDLINK_FORBIDDEN"
+  },
+  "before": "ORIGINAL",
+  "after": "ORIGINAL"
+}

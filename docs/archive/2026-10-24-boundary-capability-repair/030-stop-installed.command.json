@@ -1,0 +1,13 @@
+{
+  "id": "030-stop-installed",
+  "cwd": "D:/code/SpecForge/.tmp/boundary-capability-worktree",
+  "exe": "C:/Users/lyq/.config/opencode/sf-user/bin/specforge.exe",
+  "args": [
+    "daemon",
+    "stop",
+    "--json"
+  ],
+  "started": "2026-10-24T08:24:18.455Z",
+  "purpose": "030-stop-installed",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only"
+}

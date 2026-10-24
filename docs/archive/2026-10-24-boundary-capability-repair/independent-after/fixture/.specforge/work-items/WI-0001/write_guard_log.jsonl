@@ -1,0 +1,1 @@
+{"timestamp":"2026-10-24T08:16:48.688Z","path":"allowed.txt","operation":"modify","actor":"agent","allowed":false,"violations":["WRITE_HARDLINK_FORBIDDEN"],"tool":"write"}

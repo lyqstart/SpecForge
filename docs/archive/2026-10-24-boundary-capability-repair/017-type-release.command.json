@@ -1,0 +1,12 @@
+{
+  "id": "017-type-release",
+  "cwd": "D:/code/SpecForge/.tmp/boundary-capability-worktree",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "typecheck:release-owner-snapshot"
+  ],
+  "started": "2026-10-24T08:17:40.897Z",
+  "purpose": "017-type-release",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only"
+}

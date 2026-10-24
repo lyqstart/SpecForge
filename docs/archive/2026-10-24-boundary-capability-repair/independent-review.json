@@ -1,0 +1,176 @@
+{
+  "utc": "2026-10-24T08:25:27.030Z",
+  "conclusion": "CONFIRMED for specified native pre-hook hardlink bypass and capability evidence semantics",
+  "candidate": "commit-eac590c204fa75dcc6ef1d02f199742655fdc895",
+  "priorRawMembersVerified": 35,
+  "installedVersion": "1.0.19",
+  "pid": 39496,
+  "installedHashCount": 112,
+  "runtimes": [
+    {
+      "id": "runtime:specforge",
+      "path": "release/bin/specforge.exe",
+      "targetPath": "sf-user/bin/specforge.exe",
+      "sha256": "3edad06c21129d6b8d3dd2d620bca1654f0a2fe7908d68ee4ebdaccfcde08e15",
+      "size": 99623936,
+      "type": "runtime"
+    },
+    {
+      "id": "runtime:specforged",
+      "path": "release/bin/specforged.exe",
+      "targetPath": "sf-user/bin/specforged.exe",
+      "sha256": "73121c015b685eb6a0e7b475cfa46c4a635ebed8c8fe087eb6e3353c949e13cf",
+      "size": 110800384,
+      "type": "runtime"
+    }
+  ],
+  "totalPassedAcrossFinalSuites": 6889,
+  "regression": "019 exit 1 preserved; sole failing package scope-gate rerun in full as 028 exit 0",
+  "hardlink": {
+    "before": {
+      "utc": "2026-10-24T06:44:37.395Z",
+      "pid": 34312,
+      "level": "real ProjectManager/StateManager/Permission Engine and filesystem; simulated host file write, not actual OpenCode",
+      "state": {
+        "work_item_id": "WI-0001",
+        "workflow_type": "feature_spec",
+        "current_state": "implementation_running",
+        "created_at": 1792824277355,
+        "updated_at": 1792824277378
+      },
+      "nlink": 2,
+      "isSymlink": false,
+      "deniedDirect": {
+        "allowed": false,
+        "reason": "WRITE_OUTSIDE_PROJECT"
+      },
+      "decision": {
+        "allowed": true,
+        "violations": [],
+        "reason": ""
+      },
+      "before": "ORIGINAL",
+      "after": "CHANGED_THROUGH_APPROVED_PATH"
+    },
+    "after": {
+      "utc": "2026-10-24T08:16:48.689Z",
+      "pid": 32476,
+      "level": "real ProjectManager/StateManager/Permission Engine and filesystem; simulated host file write, not actual OpenCode",
+      "state": {
+        "work_item_id": "WI-0001",
+        "workflow_type": "feature_spec",
+        "current_state": "implementation_running",
+        "created_at": 1792829808646,
+        "updated_at": 1792829808668
+      },
+      "nlink": 2,
+      "isSymlink": false,
+      "deniedDirect": {
+        "allowed": false,
+        "reason": "WRITE_OUTSIDE_PROJECT"
+      },
+      "decision": {
+        "allowed": false,
+        "violations": [
+          "WRITE_HARDLINK_FORBIDDEN"
+        ],
+        "reason": "WRITE_HARDLINK_FORBIDDEN"
+      },
+      "before": "ORIGINAL",
+      "after": "ORIGINAL"
+    },
+    "installedDeniedCases": [
+      {
+        "utc": "2026-10-24T08:24:46.593Z",
+        "location": "outside",
+        "tool": "edit",
+        "error": "Error: WRITE_GUARD_DENIED: WRITE_HARDLINK_FORBIDDEN",
+        "nlink": 2,
+        "target": "PROTECTED",
+        "alias": "PROTECTED"
+      },
+      {
+        "utc": "2026-10-24T08:24:46.601Z",
+        "location": "outside",
+        "tool": "write",
+        "error": "Error: WRITE_GUARD_DENIED: WRITE_HARDLINK_FORBIDDEN",
+        "nlink": 2,
+        "target": "PROTECTED",
+        "alias": "PROTECTED"
+      },
+      {
+        "utc": "2026-10-24T08:24:46.611Z",
+        "location": "inside",
+        "tool": "edit",
+        "error": "Error: WRITE_GUARD_DENIED: WRITE_HARDLINK_FORBIDDEN",
+        "nlink": 2,
+        "target": "PROTECTED",
+        "alias": "PROTECTED"
+      },
+      {
+        "utc": "2026-10-24T08:24:46.622Z",
+        "location": "inside",
+        "tool": "write",
+        "error": "Error: WRITE_GUARD_DENIED: WRITE_HARDLINK_FORBIDDEN",
+        "nlink": 2,
+        "target": "PROTECTED",
+        "alias": "PROTECTED"
+      }
+    ]
+  },
+  "capability": {
+    "utc": "2026-10-24T08:16:38.394Z",
+    "pid": 26024,
+    "baseUrl": "http://127.0.0.1:4096",
+    "version": "1.18.35",
+    "rawModelFields": {
+      "id": "glm-5.3",
+      "providerID": "zhipuai-coding-plan",
+      "capabilities": {
+        "temperature": true,
+        "reasoning": true,
+        "attachment": false,
+        "toolcall": true,
+        "input": {
+          "text": true,
+          "audio": false,
+          "image": false,
+          "video": false,
+          "pdf": false
+        },
+        "output": {
+          "text": true,
+          "audio": false,
+          "image": false,
+          "video": false,
+          "pdf": false
+        },
+        "interleaved": {
+          "field": "reasoning_content"
+        }
+      },
+      "limit": {
+        "context": 1000000,
+        "output": 131072
+      }
+    },
+    "result": {
+      "streaming": null,
+      "maxContextLength": 1000000,
+      "tools": true,
+      "vision": false,
+      "functionCalling": true,
+      "jsonOutput": null,
+      "outputFormats": [
+        "text",
+        "markdown"
+      ]
+    },
+    "scope": "Read-only local host metadata; no prompt/inference or outbound test data"
+  },
+  "limits": [
+    "Native hook check is not an OS atomic filesystem sandbox; concurrent external replacement after permission response is not covered.",
+    "Installed daemon and actual HTTP clients/hooks tested; host write after hook is simulated, not an actual OpenCode generated tool call.",
+    "Real provider test reads metadata without model inference; absent streaming/structured JSON remain unknown."
+  ]
+}

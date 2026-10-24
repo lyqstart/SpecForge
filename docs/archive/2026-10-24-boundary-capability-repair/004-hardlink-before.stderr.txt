@@ -1,0 +1,30 @@
+$ vitest run tests/unit/native-hardlink-boundary.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/native-hardlink-boundary.test.ts > native hardlink enforcement through actual HTTP and pre-tool hook > template/write: denies aliases outside and inside project, permits ordinary files
+ FAIL  tests/unit/native-hardlink-boundary.test.ts > native hardlink enforcement through actual HTTP and pre-tool hook > template/edit: denies aliases outside and inside project, permits ordinary files
+ FAIL  tests/unit/native-hardlink-boundary.test.ts > native hardlink enforcement through actual HTTP and pre-tool hook > package/write: denies aliases outside and inside project, permits ordinary files
+ FAIL  tests/unit/native-hardlink-boundary.test.ts > native hardlink enforcement through actual HTTP and pre-tool hook > package/edit: denies aliases outside and inside project, permits ordinary files
+AssertionError: promise resolved "undefined" instead of rejecting
+
+- Expected: 
+Error {
+  "message": "rejected promise",
+}
+
++ Received: 
+undefined
+
+ ❯ tests/unit/native-hardlink-boundary.test.ts:44:41
+     42|             fs.writeFileSync(protectedPath, 'PROTECTED'); fs.linkSync(…
+     43|             expect(fs.lstatSync(target).nlink).toBe(2);
+     44|             await expect(execute(target)).rejects.toThrow('WRITE_HARDL…
+       |                                         ^
+     45|             expect(fs.readFileSync(protectedPath, 'utf8')).toBe('PROTE…
+     46|             expect(fs.readFileSync(target, 'utf8')).toBe('PROTECTED');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+error: script "test" exited with code 1

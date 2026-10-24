@@ -1,0 +1,17 @@
+{
+  "id": "022-installed-baseline",
+  "cwd": "D:/code/SpecForge/.tmp/boundary-capability-repair-20261024",
+  "exe": "node",
+  "args": [
+    "installed-review.cjs",
+    "before"
+  ],
+  "started": "2026-10-24T08:20:13.050Z",
+  "purpose": "022-installed-baseline",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only",
+  "finished": "2026-10-24T08:20:13.411Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_status": ""
+}

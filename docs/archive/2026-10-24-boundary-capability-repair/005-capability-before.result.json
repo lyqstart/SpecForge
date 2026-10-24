@@ -1,0 +1,18 @@
+{
+  "id": "005-capability-before",
+  "cwd": "D:/code/SpecForge/.tmp/boundary-capability-worktree/packages/opencode-adapter",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "tests/capability-evidence-boundary.test.ts"
+  ],
+  "started": "2026-10-24T08:13:19.294Z",
+  "purpose": "005-capability-before",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only",
+  "finished": "2026-10-24T08:13:22.875Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 1,
+  "signal": null,
+  "observed_status": " M docs/rule/specforge-development-error-ledger-and-experience.md\n?? packages/daemon-core/tests/unit/native-hardlink-boundary.test.ts\n?? packages/opencode-adapter/tests/capability-evidence-boundary.test.ts\n"
+}

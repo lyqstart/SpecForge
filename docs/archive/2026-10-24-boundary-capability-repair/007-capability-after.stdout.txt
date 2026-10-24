@@ -1,0 +1,56 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/.tmp/boundary-capability-worktree/packages/opencode-adapter
+
+ ❯ tests/CapabilityTranslator.test.ts (38 tests | 6 failed) 18ms
+   × CapabilityTranslator > translate - valid capabilities > should translate minimal OpenCode capabilities 7ms
+     → expected null to be true // Object.is equality
+   ✓ CapabilityTranslator > translate - valid capabilities > should translate full OpenCode capabilities with all features 1ms
+   × CapabilityTranslator > translate - valid capabilities > should use defaults when features are undefined 1ms
+     → expected null to be true // Object.is equality
+   × CapabilityTranslator > translate - valid capabilities > should handle empty features object 1ms
+     → expected null to be true // Object.is equality
+   ✓ CapabilityTranslator > translate - null/undefined input > should return default capabilities when input is null 0ms
+   ✓ CapabilityTranslator > translate - null/undefined input > should return default capabilities when input is undefined 0ms
+   ✓ CapabilityTranslator > translate - output formats > should include text and markdown by default 0ms
+   ✓ CapabilityTranslator > translate - output formats > should include json when json_output is true 0ms
+   ✓ CapabilityTranslator > translate - output formats > should not include json when json_output is false 0ms
+   × CapabilityTranslator > getDefaultCapabilities > should return default capabilities 0ms
+     → expected null to be true // Object.is equality
+   × CapabilityTranslator > getDefaultCapabilities > should return a copy, not the original 0ms
+     → expected null to be true // Object.is equality
+   ✓ CapabilityTranslator > hasCapability > should return true for supported capabilities 0ms
+   ✓ CapabilityTranslator > hasCapability > should return false for undefined capabilities 0ms
+   ✓ CapabilityTranslator > hasCapability > should return false for non-existent capabilities 0ms
+   ✓ CapabilityTranslator > getSchemaVersion > should return current schema version 0ms
+   ✓ CapabilityTranslator > discoverCapabilities > should discover capabilities for a model 1ms
+   × CapabilityTranslator > discoverCapabilities > should use defaults when no capabilities provided 1ms
+     → expected false to be true // Object.is equality
+   ✓ CapabilityTranslator > discoverCapabilities > should fail when model is empty 0ms
+   ✓ CapabilityTranslator > discoverCapabilities > should cache discovered capabilities 0ms
+   ✓ CapabilityTranslator > discoverCapabilities > should include version info in discovery result 0ms
+   ✓ CapabilityTranslator > clearCache > should clear specific model from cache 0ms
+   ✓ CapabilityTranslator > clearCache > should clear all models when no model specified 0ms
+   ✓ CapabilityTranslator > getCachedCapabilities > should return cached capabilities 0ms
+   ✓ CapabilityTranslator > getCachedCapabilities > should return null for non-cached model 0ms
+   ✓ CapabilityTranslator > getCachedModels > should return empty array when cache is empty 0ms
+   ✓ CapabilityTranslator > getCachedModels > should return all cached model identifiers 0ms
+   ✓ CapabilityTranslator > mergeCapabilities > should return default when given empty array 0ms
+   ✓ CapabilityTranslator > mergeCapabilities > should return single capability as-is 0ms
+   ✓ CapabilityTranslator > mergeCapabilities > should merge multiple capabilities with OR logic 0ms
+   ✓ CapabilityTranslator > mergeCapabilities > should handle duplicate output formats 0ms
+   ✓ CapabilityTranslator > edge cases > should handle very large context window 0ms
+   ✓ CapabilityTranslator > edge cases > should handle zero context window 0ms
+   ✓ CapabilityTranslator > edge cases > should handle many tools 0ms
+   ✓ CapabilityTranslator > edge cases > should handle all feature flags set to false 0ms
+   ✓ CapabilityTranslator > round-trip translation > should preserve core capabilities through translate 0ms
+   ✓ CapabilityTranslator > round-trip translation > should maintain capability consistency across multiple translations 0ms
+   ✓ CapabilityTranslator > multiple models > should handle different models with different capabilities 0ms
+   ✓ CapabilityTranslator > multiple models > should cache each model independently 0ms
+ ✓ tests/capability-evidence-boundary.test.ts (7 tests) 9ms
+ ✓ tests/real-capability-discovery.test.ts (5 tests) 10ms
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  6 failed | 44 passed (50)
+   Start at  16:14:01
+   Duration  833ms (transform 258ms, setup 0ms, collect 742ms, tests 37ms, environment 0ms, prepare 536ms)
+

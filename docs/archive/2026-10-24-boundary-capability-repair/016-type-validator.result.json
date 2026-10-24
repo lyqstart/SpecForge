@@ -1,0 +1,17 @@
+{
+  "id": "016-type-validator",
+  "cwd": "D:/code/SpecForge/.tmp/boundary-capability-worktree",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "typecheck:validator-contract"
+  ],
+  "started": "2026-10-24T08:17:36.921Z",
+  "purpose": "016-type-validator",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only",
+  "finished": "2026-10-24T08:17:37.913Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_status": " M docs/product-specification/authority-registry.md\n M docs/product-specification/specforge-product-specification.md\n M docs/project-status.md\n M docs/rule/specforge-active-development-rules.md\n M docs/rule/specforge-development-error-ledger-and-experience.md\n M package.json\n M packages/cli/package.json\n M packages/configuration/package.json\n M packages/daemon-core/package.json\n M packages/daemon-core/src/tools/lib/native-write-boundary.ts\n M packages/host-profile/package.json\n M packages/observability/package.json\n M packages/opencode-adapter/package.json\n M packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts\n M packages/opencode-adapter/src/translators/CapabilityTranslator.ts\n M packages/opencode-adapter/tests/CapabilityTranslator.test.ts\n M packages/opencode-adapter/tests/getCapabilities.test.ts\n M packages/opencode-adapter/tests/unit/translators.test.ts\n M packages/permission-engine/package.json\n M packages/scope-gate/package.json\n M packages/service-management/package.json\n M packages/types/package.json\n M packages/types/src/llm-kernel-contract.ts\n M packages/version-unification/package.json\n M packages/workflow-runtime/package.json\n?? packages/daemon-core/tests/unit/native-hardlink-boundary.test.ts\n?? packages/opencode-adapter/tests/capability-evidence-boundary.test.ts\n"
+}

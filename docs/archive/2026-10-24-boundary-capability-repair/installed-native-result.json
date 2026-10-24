@@ -1,0 +1,65 @@
+{
+  "utc": "2026-10-24T08:24:46.675Z",
+  "records": [
+    {
+      "utc": "2026-10-24T08:24:46.472Z",
+      "pid": 39496,
+      "health": {
+        "success": true,
+        "data": {
+          "status": "ok",
+          "service": "daemon-core",
+          "version": "1.0.19",
+          "uptime": 7
+        },
+        "requestId": "s0eh01zvxshmvm4v2it",
+        "timestamp": 1792830286469
+      }
+    },
+    {
+      "utc": "2026-10-24T08:24:46.593Z",
+      "location": "outside",
+      "tool": "edit",
+      "error": "Error: WRITE_GUARD_DENIED: WRITE_HARDLINK_FORBIDDEN",
+      "nlink": 2,
+      "target": "PROTECTED",
+      "alias": "PROTECTED"
+    },
+    {
+      "utc": "2026-10-24T08:24:46.601Z",
+      "location": "outside",
+      "tool": "write",
+      "error": "Error: WRITE_GUARD_DENIED: WRITE_HARDLINK_FORBIDDEN",
+      "nlink": 2,
+      "target": "PROTECTED",
+      "alias": "PROTECTED"
+    },
+    {
+      "utc": "2026-10-24T08:24:46.611Z",
+      "location": "inside",
+      "tool": "edit",
+      "error": "Error: WRITE_GUARD_DENIED: WRITE_HARDLINK_FORBIDDEN",
+      "nlink": 2,
+      "target": "PROTECTED",
+      "alias": "PROTECTED"
+    },
+    {
+      "utc": "2026-10-24T08:24:46.622Z",
+      "location": "inside",
+      "tool": "write",
+      "error": "Error: WRITE_GUARD_DENIED: WRITE_HARDLINK_FORBIDDEN",
+      "nlink": 2,
+      "target": "PROTECTED",
+      "alias": "PROTECTED"
+    },
+    {
+      "case": "ordinary edit and create",
+      "target": "MODIFIED",
+      "newFile": "MODIFIED"
+    },
+    {
+      "guardLog": "{\"timestamp\":\"2026-10-24T08:24:46.589Z\",\"path\":\"allowed.txt\",\"operation\":\"modify\",\"actor\":\"agent\",\"allowed\":false,\"violations\":[\"WRITE_HARDLINK_FORBIDDEN\"],\"tool\":\"edit\"}\n{\"timestamp\":\"2026-10-24T08:24:46.599Z\",\"path\":\"allowed.txt\",\"operation\":\"modify\",\"actor\":\"agent\",\"allowed\":false,\"violations\":[\"WRITE_HARDLINK_FORBIDDEN\"],\"tool\":\"write\"}\n{\"timestamp\":\"2026-10-24T08:24:46.608Z\",\"path\":\"allowed.txt\",\"operation\":\"modify\",\"actor\":\"agent\",\"allowed\":false,\"violations\":[\"WRITE_HARDLINK_FORBIDDEN\"],\"tool\":\"edit\"}\n{\"timestamp\":\"2026-10-24T08:24:46.617Z\",\"path\":\"allowed.txt\",\"operation\":\"modify\",\"actor\":\"agent\",\"allowed\":false,\"violations\":[\"WRITE_HARDLINK_FORBIDDEN\"],\"tool\":\"write\"}\n{\"timestamp\":\"2026-10-24T08:24:46.629Z\",\"path\":\"allowed.txt\",\"operation\":\"modify\",\"actor\":\"agent\",\"allowed\":true,\"violations\":[],\"tool\":\"edit\"}\n{\"timestamp\":\"2026-10-24T08:24:46.659Z\",\"path\":\"new.txt\",\"operation\":\"create\",\"actor\":\"agent\",\"allowed\":true,\"violations\":[],\"tool\":\"write\"}\n"
+    }
+  ],
+  "exit_code": 0
+}

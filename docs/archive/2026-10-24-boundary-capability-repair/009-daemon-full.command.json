@@ -1,0 +1,12 @@
+{
+  "id": "009-daemon-full",
+  "cwd": "D:/code/SpecForge/.tmp/boundary-capability-worktree/packages/daemon-core",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test"
+  ],
+  "started": "2026-10-24T08:14:51.567Z",
+  "purpose": "009-daemon-full",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only"
+}

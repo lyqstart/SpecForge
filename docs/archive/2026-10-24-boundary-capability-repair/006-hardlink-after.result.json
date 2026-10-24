@@ -1,0 +1,19 @@
+{
+  "id": "006-hardlink-after",
+  "cwd": "D:/code/SpecForge/.tmp/boundary-capability-worktree/packages/daemon-core",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "tests/unit/native-hardlink-boundary.test.ts",
+    "tests/unit/six-conformance-boundaries.test.ts"
+  ],
+  "started": "2026-10-24T08:13:55.997Z",
+  "purpose": "006-hardlink-after",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only",
+  "finished": "2026-10-24T08:13:59.054Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_status": " M docs/rule/specforge-development-error-ledger-and-experience.md\n M packages/daemon-core/src/tools/lib/native-write-boundary.ts\n M packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts\n M packages/opencode-adapter/src/translators/CapabilityTranslator.ts\n M packages/types/src/llm-kernel-contract.ts\n?? packages/daemon-core/tests/unit/native-hardlink-boundary.test.ts\n?? packages/opencode-adapter/tests/capability-evidence-boundary.test.ts\n"
+}

@@ -1,0 +1,3 @@
+const fs=require('fs'),p=require('path'),wt='D:/code/SpecForge/.tmp/boundary-capability-worktree';
+for(const f of ['tests/unit/current-product-version-contract.test.ts','packages/observability/tests/unit/project-structure.test.ts','packages/cli/tests/help-system.test.ts']){let s=fs.readFileSync(p.join(wt,f),'utf8');if(!s.includes('1.0.18'))throw Error(f);fs.writeFileSync(p.join(wt,f),s.replaceAll('1.0.18','1.0.19'));}
+fs.appendFileSync(p.join(wt,'docs/rule/specforge-development-error-ledger-and-experience.md'),'\n### ERR-1873：补丁版本身份尚未同步固定版本测试\n\n- 015正式全仓入口在root阶段727通过、2失败；新产品1.0.19而旧测试仍断言1.0.18。定向检索同时识别observability和CLI固定版本消费者并同步，不降低SemVer/发布身份断言。原始失败保留，随后重跑正式全仓命令。复用EXP-004/022/087。\n');

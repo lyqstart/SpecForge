@@ -1,0 +1,172 @@
+[
+  {
+    "path": "docs/rule/specforge-active-development-rules.md",
+    "sha256": "36eedd7f035d0f1ea8e0e71dabb1818ebc3481c432efd84a22eea78c632d3fec",
+    "lineCount": 2557,
+    "chunks": [
+      {
+        "start": 1,
+        "end": 200,
+        "sha256": "c1940b86917317af675de7616a44e7318264282ccce06013ed2d1cda19d52953"
+      },
+      {
+        "start": 201,
+        "end": 400,
+        "sha256": "fe7ad823bba6a3ab163e9f3c79e7866f5e3d9fa36f5ca403088d3c9f7655eff9"
+      },
+      {
+        "start": 401,
+        "end": 600,
+        "sha256": "04ca8fa9d6cdbd1bf61376a36a9afe142cd986c8069c7d04f5deb45a34ff5711"
+      },
+      {
+        "start": 601,
+        "end": 800,
+        "sha256": "08700e526b8bf502c3c72e1566054b66c0fdad600345970575ca038877f78096"
+      },
+      {
+        "start": 801,
+        "end": 1000,
+        "sha256": "9b3be1aa69943aeb745dab60c00f7f01280b29df871e625dbedd7a241a091427"
+      },
+      {
+        "start": 1001,
+        "end": 1200,
+        "sha256": "b70f980a27568d4105713859be3df38dac6da83fbdd6e52ef283fb531321bf24"
+      },
+      {
+        "start": 1201,
+        "end": 1400,
+        "sha256": "c7cd143ac784abc93d9237b1ed192af0a0746090b3b1e5c7a5efaf180e6bfe81"
+      },
+      {
+        "start": 1401,
+        "end": 1600,
+        "sha256": "e7dd31e2477dd84fd26fc0bcc3f3bb8de7270043e8b1b4dab650df99d4a4efbb"
+      },
+      {
+        "start": 1601,
+        "end": 1800,
+        "sha256": "c7d97f4e689da5286a3c7a295dfc87cc234596c72998b5c88abbd85b7707dce2"
+      },
+      {
+        "start": 1801,
+        "end": 2000,
+        "sha256": "e003452391631182625e077778e06504be744304417d7ac6b0cf110d1faf67ed"
+      },
+      {
+        "start": 2001,
+        "end": 2200,
+        "sha256": "08f851dd497f43a62029e4e32009f94a2b210252a4a59c4121d8155db852fed1"
+      },
+      {
+        "start": 2201,
+        "end": 2400,
+        "sha256": "5efbc270a17ea333dc9767355aae2511fa3d407be7d84b286378376198a7b23b"
+      },
+      {
+        "start": 2401,
+        "end": 2557,
+        "sha256": "e73ef5b354d1cf508589e43ba640fe35a45d546d077146358ceee4d64d1e8ac2"
+      }
+    ],
+    "roundtrip": true
+  },
+  {
+    "path": "docs/product-specification/authority-registry.md",
+    "sha256": "5a39b518e51d9a5a7a19a1b0cd247dff53a6f2633311ddd5d0520e5f40571772",
+    "lineCount": 131,
+    "chunks": [
+      {
+        "start": 1,
+        "end": 131,
+        "sha256": "5a39b518e51d9a5a7a19a1b0cd247dff53a6f2633311ddd5d0520e5f40571772"
+      }
+    ],
+    "roundtrip": true
+  },
+  {
+    "path": "docs/product-specification/specforge-product-specification.md",
+    "sha256": "d9547b834c9e2ad95c1b7b56cb99db5a2e0c76e30c83c3b9e7253d30c1c72379",
+    "lineCount": 1612,
+    "chunks": [
+      {
+        "start": 1,
+        "end": 200,
+        "sha256": "dc6b60122b91163367fd362c1e142b2130609cbab19fec86ccc6390cbe8739f3"
+      },
+      {
+        "start": 201,
+        "end": 400,
+        "sha256": "f6022d9f3dd38ad269dca42792eb88e58fd6c0ad7ac314fd3365ae1977f78089"
+      },
+      {
+        "start": 401,
+        "end": 600,
+        "sha256": "6267eecba0a1a48690b49c0e978fb562a7ede4598b6a372121dccb5258bdd71d"
+      },
+      {
+        "start": 601,
+        "end": 800,
+        "sha256": "6e32af442da883000bb41259346e1370a1cf33a8f0402dfa7ec9178554b99bcd"
+      },
+      {
+        "start": 801,
+        "end": 1000,
+        "sha256": "ae6ff1f571ccdd489978e3a83f7e91bbe28692c5ac1edf88e8b05fee52444238"
+      },
+      {
+        "start": 1001,
+        "end": 1200,
+        "sha256": "5f322316b48f34cf992d612ab05e7d14b2202224146a83bd4870fbe3273a82d9"
+      },
+      {
+        "start": 1201,
+        "end": 1400,
+        "sha256": "a8453ce228235fed50c5fff52cd8e8ee45f417412e1d2aa3c7b0049a348ff6dc"
+      },
+      {
+        "start": 1401,
+        "end": 1600,
+        "sha256": "04a77a6179d8bffa098e51b9e64b57edef16443382d0ea5e93b67930c0f8aa5e"
+      },
+      {
+        "start": 1601,
+        "end": 1612,
+        "sha256": "3b27748527dfee79921584da99e6497a54a02a7c7de8df1b8c4b0a443d0cf410"
+      }
+    ],
+    "roundtrip": true
+  },
+  {
+    "path": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+    "sha256": "d84911ea066dcb7a3fb8a78efb38425a52302f973b5bf032244ba8518fe374de",
+    "lineCount": 224,
+    "chunks": [
+      {
+        "start": 1,
+        "end": 200,
+        "sha256": "cfa23aceeb8da999fe640308a4b9bd0b482cb09cb6236c7edc249c58a5e415bb"
+      },
+      {
+        "start": 201,
+        "end": 224,
+        "sha256": "89073b12f094f55a555a9b643a8b0a8667b125fb0fb793e8116529b514ec11a9"
+      }
+    ],
+    "roundtrip": true
+  },
+  {
+    "path": "docs/rule/specforge-execution-mode-and-evidence-protocol.md",
+    "sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef",
+    "lineCount": 182,
+    "chunks": [
+      {
+        "start": 1,
+        "end": 182,
+        "sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef"
+      }
+    ],
+    "roundtrip": true
+  }
+]

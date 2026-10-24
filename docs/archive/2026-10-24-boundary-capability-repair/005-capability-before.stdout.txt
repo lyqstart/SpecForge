@@ -1,0 +1,25 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/.tmp/boundary-capability-worktree/packages/opencode-adapter
+
+ ❯ tests/capability-evidence-boundary.test.ts (7 tests | 7 failed) 17ms
+   × capability evidence, absence is not false > does not fabricate streaming or JSON support from a real-shape provider response 13ms
+     → expected { streaming: true, …(5) } to match object { streaming: null, …(5) }
+(1 matching property omitted from actual)
+   × capability evidence, absence is not false > preserves explicit feature evidence true through translation and JSON transport 1ms
+     → expected undefined to be true // Object.is equality
+   × capability evidence, absence is not false > preserves explicit feature evidence false through translation and JSON transport 0ms
+     → expected undefined to be false // Object.is equality
+   × capability evidence, absence is not false > preserves explicit feature evidence undefined through translation and JSON transport 0ms
+     → expected true to be null // Object.is equality
+   × capability evidence, absence is not false > does not let cached positive evidence override a later explicit negative 1ms
+     → expected true to be false // Object.is equality
+   × capability evidence, absence is not false > cannot discover a model by returning guessed defaults 0ms
+     → expected true to be false // Object.is equality
+   × capability evidence, absence is not false > does not turn incomplete merged evidence into a negative claim 0ms
+     → expected true to be null
+
+ Test Files  1 failed (1)
+      Tests  7 failed (7)
+   Start at  16:13:19
+   Duration  2.88s (transform 218ms, setup 0ms, collect 2.44s, tests 17ms, environment 0ms, prepare 168ms)
+

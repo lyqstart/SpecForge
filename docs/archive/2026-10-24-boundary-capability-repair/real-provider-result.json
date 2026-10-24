@@ -1,0 +1,73 @@
+{
+  "utc": "2026-10-24T08:16:39.580Z",
+  "records": [
+    {
+      "utc": "2026-10-24T08:16:38.394Z",
+      "pid": 26024,
+      "baseUrl": "http://127.0.0.1:4096",
+      "version": "1.18.35",
+      "rawModelFields": {
+        "id": "glm-5.3",
+        "providerID": "zhipuai-coding-plan",
+        "capabilities": {
+          "temperature": true,
+          "reasoning": true,
+          "attachment": false,
+          "toolcall": true,
+          "input": {
+            "text": true,
+            "audio": false,
+            "image": false,
+            "video": false,
+            "pdf": false
+          },
+          "output": {
+            "text": true,
+            "audio": false,
+            "image": false,
+            "video": false,
+            "pdf": false
+          },
+          "interleaved": {
+            "field": "reasoning_content"
+          }
+        },
+        "limit": {
+          "context": 1000000,
+          "output": 131072
+        }
+      },
+      "result": {
+        "streaming": null,
+        "maxContextLength": 1000000,
+        "tools": true,
+        "vision": false,
+        "functionCalling": true,
+        "jsonOutput": null,
+        "outputFormats": [
+          "text",
+          "markdown"
+        ]
+      },
+      "scope": "Read-only local host metadata; no prompt/inference or outbound test data"
+    },
+    {
+      "utc": "2026-10-24T08:16:39.471Z",
+      "case": "unknown model",
+      "error": "OpenCodeRuntimeError: CAPABILITY_MODEL_NOT_FOUND"
+    },
+    {
+      "case": "stop dedicated host",
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM"
+      }
+    },
+    {
+      "utc": "2026-10-24T08:16:39.580Z",
+      "case": "host disconnected",
+      "error": "OpenCodeRuntimeError: OpenCode GET /provider failed: Unable to connect. Is the computer able to access the url?"
+    }
+  ],
+  "exit_code": 0
+}

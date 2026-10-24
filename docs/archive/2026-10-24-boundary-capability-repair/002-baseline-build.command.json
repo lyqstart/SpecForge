@@ -1,0 +1,12 @@
+{
+  "id": "002-baseline-build",
+  "cwd": "D:/code/SpecForge/.tmp/boundary-capability-worktree",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "build"
+  ],
+  "started": "2026-10-24T08:12:19.220Z",
+  "purpose": "002-baseline-build",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only"
+}

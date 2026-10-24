@@ -1,0 +1,36 @@
+{
+  "utc": "2026-10-24T08:12:19.153Z",
+  "mode": "CODEX_DIRECT",
+  "run_id": "CODEX-SF-20261024-BOUNDARY-CAPABILITY-A01",
+  "attempt": "A01-01",
+  "baseline": "93dfe4d699467954cc4582b2487cc88c4f5fe43b",
+  "EXPERIENCE_FILE_READ": "YES",
+  "ACTIVE_EXPERIENCE_RULES_FILE_READ": "YES",
+  "APPLICABLE_EXPERIENCE_RULES": [
+    "EXP-004",
+    "EXP-006",
+    "EXP-007",
+    "EXP-010",
+    "EXP-268",
+    "EXP-282"
+  ],
+  "REPEATED_ERROR_CHECK": "PASS",
+  "HISTORICAL_LEDGER_SEARCH": "ERR-1845/1847/1851/1862; EXP-268/282; hardlink and capability discovery",
+  "priorFailureDisposition": "ERR-1868/1869/1870 recorded in isolated ledger before product edits",
+  "stop": "AFTER_FIX_TESTS_AND_INDEPENDENT_REVIEW",
+  "scope": [
+    "native write boundary",
+    "neutral capability contract",
+    "OpenCode translator and HTTP client",
+    "tests",
+    "SPS/registry/rules/ledger/status",
+    "version and release/install consumers",
+    "sealed evidence"
+  ],
+  "writes": {
+    "truth": "isolated fixtures only; no real business WI",
+    "tracked": "isolated branch until validated",
+    "observer": "test logs and controlled deployment logs",
+    "evidence": "D:\\code\\SpecForge\\.tmp\\boundary-capability-repair-20261024"
+  }
+}

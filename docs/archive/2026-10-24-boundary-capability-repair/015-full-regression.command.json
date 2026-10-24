@@ -1,0 +1,12 @@
+{
+  "id": "015-full-regression",
+  "cwd": "D:/code/SpecForge/.tmp/boundary-capability-worktree",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test"
+  ],
+  "started": "2026-10-24T08:16:51.606Z",
+  "purpose": "015-full-regression",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only"
+}

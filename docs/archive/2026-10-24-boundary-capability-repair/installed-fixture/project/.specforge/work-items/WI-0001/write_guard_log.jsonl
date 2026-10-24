@@ -1,0 +1,6 @@
+{"timestamp":"2026-10-24T08:24:46.589Z","path":"allowed.txt","operation":"modify","actor":"agent","allowed":false,"violations":["WRITE_HARDLINK_FORBIDDEN"],"tool":"edit"}
+{"timestamp":"2026-10-24T08:24:46.599Z","path":"allowed.txt","operation":"modify","actor":"agent","allowed":false,"violations":["WRITE_HARDLINK_FORBIDDEN"],"tool":"write"}
+{"timestamp":"2026-10-24T08:24:46.608Z","path":"allowed.txt","operation":"modify","actor":"agent","allowed":false,"violations":["WRITE_HARDLINK_FORBIDDEN"],"tool":"edit"}
+{"timestamp":"2026-10-24T08:24:46.617Z","path":"allowed.txt","operation":"modify","actor":"agent","allowed":false,"violations":["WRITE_HARDLINK_FORBIDDEN"],"tool":"write"}
+{"timestamp":"2026-10-24T08:24:46.629Z","path":"allowed.txt","operation":"modify","actor":"agent","allowed":true,"violations":[],"tool":"edit"}
+{"timestamp":"2026-10-24T08:24:46.659Z","path":"new.txt","operation":"create","actor":"agent","allowed":true,"violations":[],"tool":"write"}

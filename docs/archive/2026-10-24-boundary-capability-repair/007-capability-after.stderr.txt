@@ -1,0 +1,120 @@
+$ vitest run tests/capability-evidence-boundary.test.ts tests/real-capability-discovery.test.ts tests/CapabilityTranslator.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/CapabilityTranslator.test.ts > CapabilityTranslator > translate - valid capabilities > should translate minimal OpenCode capabilities
+AssertionError: expected null to be true // Object.is equality
+
+- Expected: 
+true
+
++ Received: 
+null
+
+ ❯ tests/CapabilityTranslator.test.ts:37:32
+     35|       const result = translator.translate(ocCapabilities);
+     36| 
+     37|       expect(result.streaming).toBe(true); // default
+       |                                ^
+     38|       expect(result.maxContextLength).toBe(200000);
+     39|       expect(result.tools).toBe(true); // has tools
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  tests/CapabilityTranslator.test.ts > CapabilityTranslator > translate - valid capabilities > should use defaults when features are undefined
+AssertionError: expected null to be true // Object.is equality
+
+- Expected: 
+true
+
++ Received: 
+null
+
+ ❯ tests/CapabilityTranslator.test.ts:80:32
+     78|       const result = translator.translate(ocCapabilities);
+     79| 
+     80|       expect(result.streaming).toBe(true);
+       |                                ^
+     81|       expect(result.maxContextLength).toBe(128000);
+     82|       expect(result.tools).toBe(false); // no tools = false
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  tests/CapabilityTranslator.test.ts > CapabilityTranslator > translate - valid capabilities > should handle empty features object
+AssertionError: expected null to be true // Object.is equality
+
+- Expected: 
+true
+
++ Received: 
+null
+
+ ❯ tests/CapabilityTranslator.test.ts:98:32
+     96|       const result = translator.translate(ocCapabilities);
+     97| 
+     98|       expect(result.streaming).toBe(true); // default
+       |                                ^
+     99|       expect(result.maxContextLength).toBe(100000);
+    100|       expect(result.tools).toBe(false); // empty tools array = false
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  tests/CapabilityTranslator.test.ts > CapabilityTranslator > getDefaultCapabilities > should return default capabilities
+AssertionError: expected null to be true // Object.is equality
+
+- Expected: 
+true
+
++ Received: 
+null
+
+ ❯ tests/CapabilityTranslator.test.ts:181:34
+    179|       const defaults = translator.getDefaultCapabilities();
+    180| 
+    181|       expect(defaults.streaming).toBe(true);
+       |                                  ^
+    182|       expect(defaults.maxContextLength).toBe(128000);
+    183|       expect(defaults.tools).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  tests/CapabilityTranslator.test.ts > CapabilityTranslator > getDefaultCapabilities > should return a copy, not the original
+AssertionError: expected null to be true // Object.is equality
+
+- Expected: 
+true
+
++ Received: 
+null
+
+ ❯ tests/CapabilityTranslator.test.ts:195:35
+    193|       // Get again should still be true
+    194|       const defaults2 = translator.getDefaultCapabilities();
+    195|       expect(defaults2.streaming).toBe(true);
+       |                                   ^
+    196|     });
+    197|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  tests/CapabilityTranslator.test.ts > CapabilityTranslator > discoverCapabilities > should use defaults when no capabilities provided
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/CapabilityTranslator.test.ts:286:30
+    284|       const result = translator.discoverCapabilities('test-model');
+    285| 
+    286|       expect(result.success).toBe(true);
+       |                              ^
+    287|       expect(result.capabilities).toEqual(translator.getDefaultCapabil…
+    288|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+error: script "test" exited with code 1

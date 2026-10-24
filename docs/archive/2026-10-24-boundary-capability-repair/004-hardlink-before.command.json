@@ -1,0 +1,13 @@
+{
+  "id": "004-hardlink-before",
+  "cwd": "D:/code/SpecForge/.tmp/boundary-capability-worktree/packages/daemon-core",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "tests/unit/native-hardlink-boundary.test.ts"
+  ],
+  "started": "2026-10-24T08:13:02.674Z",
+  "purpose": "004-hardlink-before",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only"
+}

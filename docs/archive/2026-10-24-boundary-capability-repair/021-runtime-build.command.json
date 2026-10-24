@@ -1,0 +1,12 @@
+{
+  "id": "021-runtime-build",
+  "cwd": "D:/code/SpecForge/.tmp/boundary-capability-worktree",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "build:release-runtimes"
+  ],
+  "started": "2026-10-24T08:19:41.979Z",
+  "purpose": "021-runtime-build",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only"
+}

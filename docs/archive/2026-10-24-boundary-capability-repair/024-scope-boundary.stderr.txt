@@ -1,0 +1,1 @@
+$ vitest run tests/current-permission-write-guard-boundary.test.ts

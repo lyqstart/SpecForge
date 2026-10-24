@@ -1,0 +1,17 @@
+{
+  "id": "010-build",
+  "cwd": "D:/code/SpecForge/.tmp/boundary-capability-worktree",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "build"
+  ],
+  "started": "2026-10-24T08:15:10.936Z",
+  "purpose": "010-build",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only",
+  "finished": "2026-10-24T08:15:35.506Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 2,
+  "signal": null,
+  "observed_status": " M docs/product-specification/authority-registry.md\n M docs/product-specification/specforge-product-specification.md\n M docs/project-status.md\n M docs/rule/specforge-active-development-rules.md\n M docs/rule/specforge-development-error-ledger-and-experience.md\n M packages/daemon-core/src/tools/lib/native-write-boundary.ts\n M packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts\n M packages/opencode-adapter/src/translators/CapabilityTranslator.ts\n M packages/opencode-adapter/tests/CapabilityTranslator.test.ts\n M packages/opencode-adapter/tests/getCapabilities.test.ts\n M packages/opencode-adapter/tests/unit/translators.test.ts\n M packages/types/src/llm-kernel-contract.ts\n?? packages/daemon-core/tests/unit/native-hardlink-boundary.test.ts\n?? packages/opencode-adapter/tests/capability-evidence-boundary.test.ts\n"
+}

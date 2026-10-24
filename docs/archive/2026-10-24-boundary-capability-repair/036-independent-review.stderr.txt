@@ -1,0 +1,22 @@
+node:fs:622
+  return binding.open(
+                 ^
+
+Error: ENOENT: no such file or directory, open 'C:\Users\lyq\.config\opencode\sf-user\bin\AGENTS.md'
+    at Object.openSync (node:fs:622:18)
+    at Object.readFileSync (node:fs:488:35)
+    at D:\code\SpecForge\.tmp\boundary-capability-repair-20261024\final-audit.cjs:16:145
+    at Array.map (<anonymous>)
+    at Object.<anonymous> (D:\code\SpecForge\.tmp\boundary-capability-repair-20261024\final-audit.cjs:16:74)
+    at Module._compile (node:internal/modules/cjs/loader:1872:14)
+    at Object..js (node:internal/modules/cjs/loader:2003:10)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\AGENTS.md'
+}
+
+Node.js v24.19.0

@@ -1,0 +1,52 @@
+$ node scripts/run-root-task.mjs test
+$ node scripts/run-root-tests.mjs current "--maxWorkers=1"
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/current-product-version-contract.test.ts > current product version contract > defines the new product epoch from the root package identity
+AssertionError: expected { version: '1.0.19', …(3) } to deeply equal { version: '1.0.18', …(3) }
+
+- Expected
++ Received
+
+  {
+    "releaseId": "specforge-current",
+    "tagPrefix": "specforge-v",
+-   "version": "1.0.18",
++   "version": "1.0.19",
+    "versionEpoch": 1,
+  }
+
+ ❯ tests/unit/current-product-version-contract.test.ts:31:22
+     29|     const identity = await loadProductIdentity(ROOT);
+     30|
+     31|     expect(identity).toEqual({
+       |                      ^
+     32|       version: '1.0.18',
+     33|       releaseId: 'specforge-current',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/unit/current-product-version-contract.test.ts > current product version contract > keeps every current workspace package on the product version
+AssertionError: expected Set{ '1.0.19' } to deeply equal Set{ '1.0.18' }
+
+- Expected
++ Received
+
+  Set {
+-   "1.0.18",
++   "1.0.19",
+  }
+
+ ❯ tests/unit/current-product-version-contract.test.ts:61:31
+     59|         }),
+     60|     )).filter((version): version is string => version !== undefined);
+     61|     expect(new Set(versions)).toEqual(new Set(['1.0.18']));
+       |                               ^
+     62|   });
+     63|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+error: script "test:root" exited with code 1
+error: script "test" exited with code 1

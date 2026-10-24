@@ -1,0 +1,135 @@
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+{
+  "utc": "2026-10-24T08:16:48.689Z",
+  "pid": 32476,
+  "level": "real ProjectManager/StateManager/Permission Engine and filesystem; simulated host file write, not actual OpenCode",
+  "state": {
+    "work_item_id": "WI-0001",
+    "workflow_type": "feature_spec",
+    "current_state": "implementation_running",
+    "created_at": 1792829808646,
+    "updated_at": 1792829808668
+  },
+  "nlink": 2,
+  "isSymlink": false,
+  "deniedDirect": {
+    "allowed": false,
+    "reason": "WRITE_OUTSIDE_PROJECT"
+  },
+  "decision": {
+    "allowed": false,
+    "violations": [
+      "WRITE_HARDLINK_FORBIDDEN"
+    ],
+    "reason": "WRITE_HARDLINK_FORBIDDEN"
+  },
+  "before": "ORIGINAL",
+  "after": "ORIGINAL"
+}

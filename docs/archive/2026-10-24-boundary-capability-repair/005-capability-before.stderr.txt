@@ -1,0 +1,132 @@
+$ vitest run tests/capability-evidence-boundary.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/capability-evidence-boundary.test.ts > capability evidence, absence is not false > does not fabricate streaming or JSON support from a real-shape provider response
+AssertionError: expected { streaming: true, …(5) } to match object { streaming: null, …(5) }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "functionCalling": false,
+-   "jsonOutput": null,
+    "maxContextLength": 12345,
+-   "streaming": null,
++   "streaming": true,
+    "tools": false,
+    "vision": false,
+  }
+
+ ❯ tests/capability-evidence-boundary.test.ts:10:20
+      8|     const adapter = new OpenCodeAdapter({ runtimeClient: new OpenCodeH…
+      9|     const result = await adapter.getCapabilities('fixture/model');
+     10|     expect(result).toMatchObject({ streaming: null, jsonOutput: null, …
+       |                    ^
+     11|     expect(result.outputFormats).not.toContain('json');
+     12|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  tests/capability-evidence-boundary.test.ts > capability evidence, absence is not false > preserves explicit feature evidence true through translation and JSON transport
+AssertionError: expected undefined to be true // Object.is equality
+
+- Expected: 
+true
+
++ Received: 
+undefined
+
+ ❯ tests/capability-evidence-boundary.test.ts:18:89
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  tests/capability-evidence-boundary.test.ts > capability evidence, absence is not false > preserves explicit feature evidence false through translation and JSON transport
+AssertionError: expected undefined to be false // Object.is equality
+
+- Expected: 
+false
+
++ Received: 
+undefined
+
+ ❯ tests/capability-evidence-boundary.test.ts:18:89
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  tests/capability-evidence-boundary.test.ts > capability evidence, absence is not false > preserves explicit feature evidence undefined through translation and JSON transport
+AssertionError: expected true to be null // Object.is equality
+
+- Expected: 
+null
+
++ Received: 
+true
+
+ ❯ tests/capability-evidence-boundary.test.ts:18:37
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  tests/capability-evidence-boundary.test.ts > capability evidence, absence is not false > does not let cached positive evidence override a later explicit negative
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/capability-evidence-boundary.test.ts:27:123
+     25|     const entry = { provider: 'fixture', model: 'model', features: { s…
+     26|     t.discoverCapabilities('fixture/model', entry);
+     27|     expect(t.discoverCapabilities('fixture/model', { ...entry, feature…
+       |                                                                                                                           ^
+     28|   });
+     29|   it('cannot discover a model by returning guessed defaults', () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  tests/capability-evidence-boundary.test.ts > capability evidence, absence is not false > cannot discover a model by returning guessed defaults
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/capability-evidence-boundary.test.ts:30:88
+     28|   });
+     29|   it('cannot discover a model by returning guessed defaults', () => {
+     30|     expect(new CapabilityTranslator().discoverCapabilities('fixture/un…
+       |                                                                                        ^
+     31|   });
+     32|   it('does not turn incomplete merged evidence into a negative claim',…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  tests/capability-evidence-boundary.test.ts > capability evidence, absence is not false > does not turn incomplete merged evidence into a negative claim
+AssertionError: expected true to be null
+
+- Expected: 
+null
+
++ Received: 
+true
+
+ ❯ tests/capability-evidence-boundary.test.ts:35:58
+     33|     const t = new CapabilityTranslator(), unknown = t.getDefaultCapabi…
+     34|     const no = { ...unknown, streaming: false };
+     35|     expect(t.mergeCapabilities([no, unknown]).streaming).toBeNull();
+       |                                                          ^
+     36|     expect(t.mergeCapabilities([{ ...no, streaming: true }, unknown]).…
+     37|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+error: script "test" exited with code 1

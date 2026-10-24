@@ -1,0 +1,27 @@
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import {ProjectManager} from '../boundary-capability-worktree/packages/daemon-core/src/project/ProjectManager';
+import {EventBus} from '../boundary-capability-worktree/packages/daemon-core/src/event-bus/EventBus';
+import {PersonalPathResolver} from '../boundary-capability-worktree/packages/daemon-core/src/daemon/path-resolver';
+import {checkNativeTool} from '../boundary-capability-worktree/packages/daemon-core/src/tools/lib/native-write-boundary';
+const base=path.join(path.resolve(import.meta.dir),'independent-after'), root=path.join(base,'fixture');
+fs.mkdirSync(path.join(root,'.specforge/config'),{recursive:true});
+process.env.OPENCODE_CONFIG_DIR=path.join(base,'user'); process.env.SPECFORGE_CONFIG_OVERRIDES='';
+fs.writeFileSync(path.join(root,'.specforge/config/project.json'),JSON.stringify({schema_version:'1.0'}));
+const manager=new ProjectManager(new EventBus(),new PersonalPathResolver(),undefined as any);
+await manager.getProjectConfiguration(root);
+const state=await manager.getProjectStateManager(root);
+await state.transition('WI-0001','','created');
+await state.transition('WI-0001','created','implementation_running');
+const wiDir=path.join(root,'.specforge/work-items/WI-0001');fs.mkdirSync(wiDir,{recursive:true});
+fs.writeFileSync(path.join(wiDir,'work_item.json'),JSON.stringify({schema_version:'1.1',work_item_id:'WI-0001',workflow_type:'feature_spec',code_change_allowed:true,code_permission_revoked:false,allowed_write_files:[{path:'allowed.txt',operation:'modify'}]}));
+const outside=path.join(base,'outside-protected.txt'), allowed=path.join(root,'allowed.txt');
+fs.writeFileSync(outside,'ORIGINAL');fs.linkSync(outside,allowed);
+const before=fs.readFileSync(outside,'utf8'), stat=fs.lstatSync(allowed);
+const deniedDirect=await checkNativeTool({projectManager:manager},root,'write',{filePath:outside});
+const decision=await checkNativeTool({projectManager:manager},root,'write',{filePath:allowed});
+if(decision.allowed)fs.writeFileSync(allowed,'CHANGED_THROUGH_APPROVED_PATH');
+const result={utc:new Date().toISOString(),pid:process.pid,level:'real ProjectManager/StateManager/Permission Engine and filesystem; simulated host file write, not actual OpenCode',state:state.getState('WI-0001'),nlink:stat.nlink,isSymlink:stat.isSymbolicLink(),deniedDirect,decision,before,after:fs.readFileSync(outside,'utf8')};
+fs.writeFileSync(path.join(base,'hardlink-result.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));
+
+if(result.decision.allowed || result.before !== result.after) throw Error('INDEPENDENT_HARDLINK_REVIEW_FAILED');

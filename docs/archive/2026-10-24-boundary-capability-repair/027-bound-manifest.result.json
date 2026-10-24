@@ -1,0 +1,19 @@
+{
+  "id": "027-bound-manifest",
+  "cwd": "D:/code/SpecForge/.tmp/boundary-capability-worktree",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "build:release-manifest",
+    "--candidate-id",
+    "commit-eac590c204fa75dcc6ef1d02f199742655fdc895"
+  ],
+  "started": "2026-10-24T08:23:42.496Z",
+  "purpose": "027-bound-manifest",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only",
+  "finished": "2026-10-24T08:23:43.200Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_status": ""
+}

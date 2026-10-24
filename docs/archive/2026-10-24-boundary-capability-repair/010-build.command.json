@@ -1,0 +1,12 @@
+{
+  "id": "010-build",
+  "cwd": "D:/code/SpecForge/.tmp/boundary-capability-worktree",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "build"
+  ],
+  "started": "2026-10-24T08:15:10.936Z",
+  "purpose": "010-build",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only"
+}

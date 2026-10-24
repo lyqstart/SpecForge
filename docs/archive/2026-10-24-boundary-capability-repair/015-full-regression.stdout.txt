@@ -1,0 +1,17 @@
+[root-task] Bun executable: C:\Users\lyq\AppData\Roaming\npm\node_modules\bun\bin\bun.exe
+[root-task] Bun version: 1.3.14
+[root-task] C:\Users\lyq\AppData\Roaming\npm\node_modules\bun\bin\bun.exe run test:root -- --maxWorkers=1
+[root-test-registry] {"CURRENT_HERMETIC":49,"CURRENT_ENVIRONMENTAL":1,"MIGRATED_DUPLICATE":14,"HISTORICAL_EVIDENCE":122}
+[root-test-registry] mode=current selected=49
+
+ RUN  v4.1.5 D:/code/SpecForge/.tmp/boundary-capability-worktree
+
+ ❯ tests/unit/current-product-version-contract.test.ts (6 tests | 2 failed) 30ms
+     × defines the new product epoch from the root package identity 8ms
+     × keeps every current workspace package on the product version 15ms
+
+ Test Files  1 failed | 48 passed (49)
+      Tests  2 failed | 727 passed (729)
+   Start at  16:16:56
+   Duration  26.62s (transform 1.53s, setup 0ms, import 6.61s, tests 10.92s, environment 4ms)
+

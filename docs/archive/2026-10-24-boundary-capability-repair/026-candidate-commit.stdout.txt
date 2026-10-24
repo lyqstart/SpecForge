@@ -1,0 +1,7 @@
+[codex/boundary-capability-repair eac590c2] fix: reject native hardlink writes and preserve unknown model capabilities
+ 32 files changed, 283 insertions(+), 100 deletions(-)
+ create mode 100644 packages/daemon-core/tests/unit/native-hardlink-boundary.test.ts
+ create mode 100644 packages/opencode-adapter/tests/capability-evidence-boundary.test.ts
+
+eac590c204fa75dcc6ef1d02f199742655fdc895
+

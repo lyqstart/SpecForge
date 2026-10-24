@@ -1,0 +1,14 @@
+{
+  "id": "033-start-installed",
+  "cwd": "D:/code/SpecForge/.tmp/boundary-capability-worktree",
+  "exe": "C:/Users/lyq/.config/opencode/sf-user/bin/specforge.exe",
+  "args": [
+    "daemon",
+    "start",
+    "--detach",
+    "--json"
+  ],
+  "started": "2026-10-24T08:24:37.717Z",
+  "purpose": "033-start-installed",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only"
+}

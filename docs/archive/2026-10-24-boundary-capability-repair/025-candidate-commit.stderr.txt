@@ -1,0 +1,17 @@
+D:\code\SpecForge\.tmp\boundary-capability-repair-20261024\snapshot-commit.cjs:3
+function git(args){const r=cp.spawnSync('git',args,{cwd,encoding:null,windowsHide:true});if(r.status!==0)throw Error(String(r.stderr));return r.stdout;}
+                                                                                                         ^
+
+Error
+    at git (D:\code\SpecForge\.tmp\boundary-capability-repair-20261024\snapshot-commit.cjs:3:112)
+    at D:\code\SpecForge\.tmp\boundary-capability-repair-20261024\snapshot-commit.cjs:6:116
+    at Array.map (<anonymous>)
+    at Object.<anonymous> (D:\code\SpecForge\.tmp\boundary-capability-repair-20261024\snapshot-commit.cjs:6:23)
+    at Module._compile (node:internal/modules/cjs/loader:1872:14)
+    at Object..js (node:internal/modules/cjs/loader:2003:10)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+
+Node.js v24.19.0

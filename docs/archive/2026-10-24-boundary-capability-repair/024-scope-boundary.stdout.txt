@@ -1,0 +1,10 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/.tmp/boundary-capability-worktree/packages/scope-gate
+
+ ✓ tests/current-permission-write-guard-boundary.test.ts  (4 tests) 25ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  16:21:22
+   Duration  2.98s (transform 1.97s, setup 0ms, collect 2.30s, tests 25ms, environment 0ms, prepare 252ms)
+

@@ -1,0 +1,1 @@
+$ bun scripts/build-release-manifest.ts --candidate-id boundary-capability-working-tree

@@ -1,0 +1,11 @@
+{
+  "id": "025-candidate-commit",
+  "cwd": "D:/code/SpecForge/.tmp/boundary-capability-worktree",
+  "exe": "node",
+  "args": [
+    "D:/code/SpecForge/.tmp/boundary-capability-repair-20261024/snapshot-commit.cjs"
+  ],
+  "started": "2026-10-24T08:23:18.680Z",
+  "purpose": "025-candidate-commit",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only"
+}

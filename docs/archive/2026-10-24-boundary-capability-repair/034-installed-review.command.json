@@ -1,0 +1,12 @@
+{
+  "id": "034-installed-review",
+  "cwd": "D:/code/SpecForge/.tmp/boundary-capability-worktree",
+  "exe": "node",
+  "args": [
+    "D:/code/SpecForge/.tmp/boundary-capability-repair-20261024/installed-review.cjs",
+    "after"
+  ],
+  "started": "2026-10-24T08:24:43.349Z",
+  "purpose": "034-installed-review",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only"
+}

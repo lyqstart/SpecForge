@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "platform": "win32-x64",
+  "artifacts": [
+    {
+      "id": "runtime:specforge",
+      "path": "release/bin/specforge.exe",
+      "sha256": "3edad06c21129d6b8d3dd2d620bca1654f0a2fe7908d68ee4ebdaccfcde08e15",
+      "size": 99623936
+    },
+    {
+      "id": "runtime:specforged",
+      "path": "release/bin/specforged.exe",
+      "sha256": "73121c015b685eb6a0e7b475cfa46c4a635ebed8c8fe087eb6e3353c949e13cf",
+      "size": 110800384
+    }
+  ]
+}

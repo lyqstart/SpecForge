@@ -1,0 +1,14 @@
+{
+  "id": "023-manifest",
+  "cwd": "D:/code/SpecForge/.tmp/boundary-capability-worktree",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "build:release-manifest",
+    "--candidate-id",
+    "boundary-capability-working-tree"
+  ],
+  "started": "2026-10-24T08:21:02.118Z",
+  "purpose": "023-manifest",
+  "expected_writes": "isolated workspace build/test outputs; evidence; explicit delivery commands only"
+}
