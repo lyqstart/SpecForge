@@ -183,6 +183,8 @@ export class StateManager {
     workflowType: string = DEFAULT_WORKFLOW_TYPE,
     extraPayload: Record<string, unknown> = {},
   ): Promise<void> {
+    // Revalidate persisted history even when this owner is already initialized.
+    await this.rebuildState();
     // ── Dev-only warning: direct transition to CRITICAL_STATE ──
     if (process.env.NODE_ENV !== 'production' && CRITICAL_STATES.has(toState)) {
       console.warn(
@@ -306,6 +308,19 @@ export class StateManager {
    */
   async rebuildState(): Promise<ProjectState> {
     const { events } = await this.wal.readAllEvents();
+    await this.assertHistoryWitnesses(events);
+    const replayed = new Map<string, string>();
+    for (const event of events) {
+      if (event.action !== 'state.transition') continue;
+      const id = event.payload.work_item_id ?? event.projectId;
+      const from = event.payload.from_state;
+      const to = event.payload.to_state;
+      if (typeof id !== 'string' || !id || typeof to !== 'string' || !this.isValidStateName(to) ||
+          typeof from !== 'string' || from !== (replayed.get(id) ?? '')) {
+        throw new Error('WAL_STATE_TRANSITION_INVALID');
+      }
+      replayed.set(id, to);
+    }
 
     // Track how many events were actually replayed so callers can distinguish
     // "an event log existed and was replayed" from "no event log existed".
@@ -318,8 +333,6 @@ export class StateManager {
     let lastEventTs = 0;
 
     for (const event of events) {
-      if (!event || !event.eventId) continue;
-
       lastEventId = event.eventId;
       lastEventTs = event.ts ?? 0;
 
@@ -346,6 +359,28 @@ export class StateManager {
     };
 
     return state;
+  }
+
+  /** Checkpoints are loss witnesses, never a substitute source of task states. */
+  private async assertHistoryWitnesses(events: Event[]): Promise<void> {
+    let checkpoint: ProjectState | null = null;
+    try {
+      const value: unknown = JSON.parse(await fs.readFile(this.statePath, 'utf-8'));
+      if (!RUNTIME_SCHEMA_DESCRIPTORS[0]!.validateCurrent!(value)) throw new Error('WAL_CHECKPOINT_INVALID');
+      checkpoint = value as ProjectState;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    }
+    const byId = new Map(events.map(event => [event.eventId, event]));
+    for (const witness of [checkpoint, this.buildProjectState()]) {
+      if (!witness) continue;
+      if (witness.lastEventId) {
+        const event = byId.get(witness.lastEventId);
+        if (!event || event.ts !== witness.lastEventTs) throw new Error('WAL_HISTORY_TRUNCATED');
+      } else if (witness.workItems.length > 0 && events.length === 0) {
+        throw new Error('WAL_HISTORY_MISSING');
+      }
+    }
   }
 
   /**

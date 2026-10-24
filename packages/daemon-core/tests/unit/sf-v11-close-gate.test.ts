@@ -506,7 +506,7 @@ describe('sf_close_gate handler', () => {
     await fs.writeFile(path.join(wiDir, 'gates/close_gate.json'), JSON.stringify({ gate_id: 'close_gate', status: 'passed' }));
     const closeTime = Date.now() + 1000;
     await fs.mkdir(path.join(tmpDir, '.specforge/runtime'), { recursive: true });
-    await fs.writeFile(path.join(tmpDir, '.specforge/runtime/events.jsonl'), JSON.stringify({ projectId: workItemId,
+    await fs.writeFile(path.join(tmpDir, '.specforge/runtime/events.jsonl'), JSON.stringify({ schema_version: '1.0', eventId: 'close-fixture', monotonicSeq: 1, actor: 'test', category: 'state', projectId: workItemId,
       action: 'state.transition', ts: closeTime, payload: { from_state: 'verification_done', to_state: 'closed' } }) + '\n');
     const log = JSON.stringify({ timestamp: new Date(closeTime - 1000).toISOString(), path: 'protected.txt',
       operation: 'modify', allowed: false, violations: ['outside scope'], actor: 'sf-executor', tool: 'write' }) + '\n';

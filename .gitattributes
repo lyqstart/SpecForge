@@ -17,3 +17,6 @@ setup/userlevel-opencode/skills/sf-workflow-*/SKILL.md text eol=lf
 
 # Sealed raw test outputs and source-byte snapshots must survive Git unchanged.
 docs/archive/2026-10-19-config-activation-loss-evidence/** -text -diff
+
+/templates/.specforge/config/observability.json text eol=lf
+/setup/userlevel-opencode/templates/.specforge/config/observability.json text eol=lf

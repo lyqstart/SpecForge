@@ -189,12 +189,6 @@ export class RecoverySubsystem {
     const issues: ConsistencyIssue[] = [];
     
     try {
-      // Check if events.jsonl exists
-      await fs.access(this.getEventsPath());
-      
-      // Check if state.json exists
-      await fs.access(this.getStatePath());
-      
       // Load events
       const events = await this.loadEvents();
       
@@ -240,7 +234,9 @@ export class RecoverySubsystem {
       }
       
     } catch (error) {
-      // File doesn't exist, this is OK for initial startup
+      // A missing checkpoint can be rebuilt. Missing/corrupt history must never
+      // be reported as a successful consistency check.
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
     }
 
     return {
@@ -341,20 +337,10 @@ export class RecoverySubsystem {
       return this.createEmptyState();
     }
 
-    // Sort events by timestamp to ensure correct order
-    const sortedEvents = [...events].sort((a, b) => a.ts - b.ts);
-    
-    const lastEvent = sortedEvents[sortedEvents.length - 1]!;
-    
-    return {
-      stateVersion: 0,
-      projectPath: this.projectPath,
-      schemaVersion: this.schemaVersion,
-      activeSessions: [],
-      workItems: [],
-      lastEventId: lastEvent.eventId,
-      lastEventTs: lastEvent.ts,
-    };
+    // Durable insertion order is authoritative. Reuse the task projection;
+    // recovery must not replace real work items with an empty array.
+    const owner = this.stateManager ?? new StateManager(this.pathResolver, this.projectPath);
+    return owner.rebuildFromEvents(events);
   }
 
   /**
@@ -487,15 +473,7 @@ export class RecoverySubsystem {
    * Load events from events.jsonl
    */
   async loadEvents(): Promise<Event[]> {
-    try {
-      const content = await fs.readFile(this.getEventsPath(), 'utf-8');
-      return content
-        .split('\n')
-        .filter(line => line.trim())
-        .map(line => JSON.parse(line)) as Event[];
-    } catch (error) {
-      return [];
-    }
+    return (await (this.wal ?? new WAL(this.getEventsPath())).readAllEvents()).events;
   }
 
   /**
@@ -506,7 +484,8 @@ export class RecoverySubsystem {
       const content = await fs.readFile(this.getStatePath(), 'utf-8');
       return deserializeRuntimeCheckpoint(JSON.parse(content) as unknown);
     } catch (error) {
-      return this.createEmptyState();
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') return this.createEmptyState();
+      throw error;
     }
   }
 

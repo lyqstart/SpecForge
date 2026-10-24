@@ -119,7 +119,7 @@ describe('StateManager concurrency — C2 / CP-2 version lock', () => {
 
     // Simulate external overwrite: write state.json with a much higher version
     const statePath = (sm as any).statePath as string;
-    const forgedState = { ...before, stateVersion: 999 };
+    const forgedState = { ...before, schema_version: '1.0', stateVersion: 999 };
     await fs.writeFile(statePath, JSON.stringify(forgedState, null, 2), 'utf-8');
 
     // Next transition should detect conflict (disk = 999 vs mem) → rebuild → retry → succeed
@@ -142,7 +142,7 @@ describe('StateManager concurrency — C2 / CP-2 version lock', () => {
     for (let i = 0; i < 10; i++) {
       // Write forged versions directly to disk without reading current state into memory,
       // so the in-memory _stateVersion remains stale and a conflict is detected.
-      const forged = makeProjectState({ stateVersion: 10000 + i });
+      const forged = { ...makeProjectState({ stateVersion: 10000 + i }), schema_version: '1.0' };
       await fs.writeFile(statePath, JSON.stringify(forged, null, 2), 'utf-8');
     }
 

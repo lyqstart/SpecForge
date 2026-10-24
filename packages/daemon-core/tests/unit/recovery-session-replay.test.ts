@@ -184,7 +184,7 @@ describe('RecoverySubsystem + SessionRegistry startupReplay integration', () => 
     const e1 = wal.createEvent('WI-003', 'state', 'state.transition', {
       work_item_id: 'WI-003',
       from_state: '',
-      to_state: 'intake',
+      to_state: 'intake_ready',
     });
     await wal.appendEvent(e1);
 

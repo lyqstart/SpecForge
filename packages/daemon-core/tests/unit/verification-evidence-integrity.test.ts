@@ -18,7 +18,7 @@ describe('verification evidence integrity', () => {
     await fs.writeFile(path.join(workItemDir, 'verification_report.md'),
       '```json\n{"timestamp":"2026-10-15T08:20:00Z"}\n```\n');
     await fs.writeFile(path.join(projectRoot, '.specforge', 'runtime', 'events.jsonl'),
-      JSON.stringify({ projectId: workItemId, action: 'state.transition', ts: Date.parse('2026-10-15T07:48:37Z'), payload: { to_state: 'closed' } }) + '\n');
+      JSON.stringify({ schema_version: '1.0', eventId: 'close-fixture', monotonicSeq: 1, actor: 'test', category: 'state', projectId: workItemId, action: 'state.transition', ts: Date.parse('2026-10-15T07:48:37Z'), payload: { to_state: 'closed' } }) + '\n');
   });
   afterEach(async () => { await fs.rm(projectRoot, { recursive: true, force: true }); });
 

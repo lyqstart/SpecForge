@@ -623,7 +623,9 @@ describe('T5: RecoverySubsystem with injected WAL + StateManager', () => {
       from_state: 'intake_ready',
       to_state: 'impact_analyzing',
     });
-    await wal.appendEvent(e2);
+    const beforeRejectedAppend = await fs.readFile(eventsPath);
+    await expect(wal.appendEvent(e2)).rejects.toThrow('WAL_CORRUPT_INPUT');
+    expect(await fs.readFile(eventsPath)).toEqual(beforeRejectedAppend);
 
     // Current runtime schema precheck must reject a corrupted authority before
     // StateManager replays or rewrites any events.

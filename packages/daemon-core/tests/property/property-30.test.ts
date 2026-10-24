@@ -186,7 +186,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
 
     // Clear existing events from previous tests
     const eventsPath = wal.getEventsPath();
-    await fs.writeFile(eventsPath, '');
+    await fs.rm(eventsPath, { force: true });
 
     const events: Event[] = [];
     for (let i = 0; i < 10; i++) {
@@ -237,7 +237,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
 
     // Clear existing events from previous tests
     const eventsPath = wal.getEventsPath();
-    await fs.writeFile(eventsPath, '');
+    await fs.rm(eventsPath, { force: true });
 
     const projectA = 'project-a';
     const projectB = 'project-b';

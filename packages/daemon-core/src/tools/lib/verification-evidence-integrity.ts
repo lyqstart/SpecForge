@@ -2,6 +2,7 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { createHash } from 'node:crypto';
 import { extractStructuredVerificationReport } from './verification-report-contract.js';
+import { WAL } from '../../wal/WAL.js';
 
 export interface VerificationEvidenceIntegrity {
   invalidity_reasons: string[];
@@ -24,16 +25,15 @@ function parseDeclaredTime(value: unknown): number | null {
 }
 
 async function readCloseEventAt(projectRoot: string, workItemId: string): Promise<string | null> {
-  let lines: string[];
+  let events;
   try {
-    lines = (await fs.readFile(path.join(projectRoot, '.specforge', 'runtime', 'events.jsonl'), 'utf-8')).split(/\r?\n/);
+    events = (await new WAL(path.join(projectRoot, '.specforge', 'runtime', 'events.jsonl')).readAllEvents()).events;
   } catch {
     return null;
   }
-  for (let index = lines.length - 1; index >= 0; index--) {
-    if (!lines[index]) continue;
+  for (let index = events.length - 1; index >= 0; index--) {
     try {
-      const event = JSON.parse(lines[index]) as Record<string, any>;
+      const event = events[index]!;
       if (event.projectId !== workItemId || event.action !== 'state.transition' ||
           event.payload?.to_state !== 'closed') continue;
       const milliseconds = Number(event.ts);
@@ -63,6 +63,7 @@ export async function inspectVerificationEvidenceIntegrity(input: {
     manifest_sha256: manifestBytes ? hash(manifestBytes) : null,
     close_event_at: input.closed ? await readCloseEventAt(input.projectRoot, input.workItemId) : null,
   };
+  if (input.closed && !result.close_event_at) reasons.push('authoritative_close_event_unavailable');
   if (!reportBytes || !manifestBytes) {
     reasons.push('verification_evidence_missing');
     return result;

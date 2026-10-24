@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.17
+> Product release version: 1.0.18
 >
 > Product version epoch: 1
 >
@@ -236,6 +236,8 @@ state.json
 - gate_summary、user_decision、merge_report、verification_report、close report 是阶段证据，不是状态事实源。
 - 不再存在 runtime/wal.jsonl 作为第二事件文件名。
 - Daemon-global workflow state 已废止；状态必须绑定真实 Project Context。
+
+事件归档不得丢弃重放所需的历史。由 WAL owner 轮转产生的 `events-*.jsonl.bak` 是同一追加历史的只读分段，必须与当前 `events.jsonl` 一起按完整顺序验证并重放，不是第二套状态源。不得按固定份数删除仍被重放依赖的段；缺段、重复、损坏或未知结构必须在状态、配置激活或后续事件写入前失败关闭。每次消费都执行结构检查，不能只在启动时校验。已有 checkpoint 或内存游标证明历史曾存在时，事件缺失不能被当作新项目；这些见证只用于拒绝不完整历史，不得用于补造事件。完整历史可以重建丢失或落后的投影。
 
 ---
 

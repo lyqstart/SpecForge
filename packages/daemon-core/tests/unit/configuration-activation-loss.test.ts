@@ -1,3 +1,4 @@
+import { buildProcessFixture } from '../fixtures/build-process-fixture';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -118,7 +119,7 @@ describe('missing configuration activation at the actual consumer', () => {
     const f = fixture();
     const bun = process.env.npm_execpath;
     expect(bun).toMatch(/bun(?:\.exe)?$/i);
-    const script = fileURLToPath(new URL('../fixtures/configuration-activation-process.ts', import.meta.url));
+    const script = buildProcessFixture(fileURLToPath(new URL('../fixtures/configuration-activation-process.ts', import.meta.url)), f.root);
     const run = (action: string) => {
       const child = spawnSync(bun!, [script, f.root, action], { encoding: 'utf8', windowsHide: true });
       expect(child.error).toBeUndefined();

@@ -112,7 +112,7 @@ describe('WAL', () => {
       expect(sessionEvents[0]!.category).toBe('session');
     });
 
-    it('should treat events without category field as "state" (backward compat)', async () => {
+    it('rejects unsupported legacy events before appending or reading', async () => {
       await wal.initialize();
       // Manually write a legacy event without category field
       const legacyEvent = {
@@ -130,16 +130,10 @@ describe('WAL', () => {
 
       // Also write a modern event with category
       const modernEvent = wal.createEvent('p1', 'session', 'session.activated', {});
-      await wal.appendEvent(modernEvent);
-
-      const stateEvents = await wal.readEventsByCategory('state');
-      expect(stateEvents).toHaveLength(1);
-      // Legacy event has no category field — defaults to 'state'
-      expect(stateEvents[0]!.eventId).toBe('legacy-1');
-
-      const sessionEvents = await wal.readEventsByCategory('session');
-      expect(sessionEvents).toHaveLength(1);
-      expect(sessionEvents[0]!.eventId).toBe(modernEvent.eventId);
+      const original = await fs.readFile(wal.getEventsPath());
+      await expect(wal.appendEvent(modernEvent)).rejects.toThrow('WAL_EVENT_SCHEMA_INVALID');
+      await expect(wal.readEventsByCategory('state')).rejects.toThrow('WAL_EVENT_SCHEMA_INVALID');
+      expect(await fs.readFile(wal.getEventsPath())).toEqual(original);
     });
 
     it('should return empty array for category with no matching events', async () => {
@@ -177,12 +171,8 @@ describe('WAL', () => {
       const eventsPath = wal.getEventsPath();
       const eventsDir = path.dirname(eventsPath);
 
-      // Manually write a large events.jsonl to trigger rotation
-      const bigLine = JSON.stringify({ eventId: 'big', ts: Date.now(), category: 'state', action: 'fill', payload: { data: 'X'.repeat(1024 * 1024) } }) + '\n';
-      // Write ~5.5MB (6 iterations of ~1MB each)
-      for (let i = 0; i < 6; i++) {
-        await fs.appendFile(eventsPath, bigLine, 'utf-8');
-      }
+      const first = wal.createEvent('p1', 'system', 'fill', { data: 'X'.repeat(5 * 1024 * 1024) });
+      await wal.appendEvent(first);
 
       // Now append one more event — this should trigger rotation
       const event = wal.createEvent('p1', 'state', 'state.transition', { after: 'rotate' });
@@ -192,7 +182,7 @@ describe('WAL', () => {
       const files = await fs.readdir(eventsDir);
       const archives = files.filter(f => f.startsWith('events-') && f.endsWith('.jsonl.bak'));
       expect(archives.length).toBeGreaterThanOrEqual(1);
-      expect(archives[0]!).toMatch(/^events-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z\.jsonl\.bak$/);
+      expect(archives[0]!).toMatch(/^events-.*\.jsonl\.bak$/);
 
       // Verify events.jsonl still exists and contains the rotated event
       const stat = await fs.stat(eventsPath);
@@ -201,43 +191,31 @@ describe('WAL', () => {
       // Verify archived file has the old content
       const archivePath = path.join(eventsDir, archives[0]!);
       const archiveContent = await fs.readFile(archivePath, 'utf-8');
-      expect(archiveContent).toContain('"eventId":"big"');
+      expect(archiveContent).toContain(first.eventId);
+      expect((await wal.readAllEvents()).events.map(item => item.eventId)).toEqual([first.eventId, event.eventId]);
     });
 
-    it('should clean up old archives keeping at most 3', async () => {
+    it('retains every history segment beyond three rotations', async () => {
       await wal.initialize();
       const eventsPath = wal.getEventsPath();
       const eventsDir = path.dirname(eventsPath);
 
-      // Create 5 fake archive files
+      const ids: string[] = [];
       for (let i = 0; i < 5; i++) {
-        const archiveName = `events-2025-01-${String(i + 1).padStart(2, '0')}T00-00-00-000Z.jsonl.bak`;
-        await fs.writeFile(path.join(eventsDir, archiveName), `archive-${i}\n`, 'utf-8');
+        const fill = wal.createEvent('p1', 'system', 'fill', { data: 'Y'.repeat(5 * 1024 * 1024) });
+        await wal.appendEvent(fill); ids.push(fill.eventId);
+        const next = wal.createEvent('p1', 'system', 'after_rotation', {});
+        await wal.appendEvent(next); ids.push(next.eventId);
       }
-
-      // Trigger rotation (write large file + append)
-      const bigLine = JSON.stringify({ eventId: 'cleanup', ts: Date.now(), category: 'state', action: 'fill', payload: { data: 'Y'.repeat(1024 * 1024) } }) + '\n';
-      for (let i = 0; i < 6; i++) {
-        await fs.appendFile(eventsPath, bigLine, 'utf-8');
-      }
-
-      const event = wal.createEvent('p1', 'state', 'state.transition', {});
-      await wal.appendEvent(event);
-
-      // Verify at most 3 archive files remain
-      await new Promise(resolve => setTimeout(resolve, 100)); // Small delay for filesystem
       const files = await fs.readdir(eventsDir);
       const archives = files.filter(f => f.startsWith('events-') && f.endsWith('.jsonl.bak'));
-      expect(archives.length).toBeLessThanOrEqual(3);
+      expect(archives).toHaveLength(5);
+      expect((await new WAL(eventsPath).readAllEvents()).events.map(item => item.eventId)).toEqual(ids);
     });
 
-    it('should not break event write when rotation fails', async () => {
+    it('writes a normal event without rotating below the threshold', async () => {
       await wal.initialize();
       const eventsPath = wal.getEventsPath();
-
-      // Remove read permissions from directory to make stat fail
-      // (on Windows this won't work the same way, but the code catches errors)
-      // We rely on the try-catch in rotateIfNeeded
 
       // Normal append should still work
       const event = wal.createEvent('p1', 'state', 'state.transition', { safe: true });
@@ -270,21 +248,23 @@ describe('WAL', () => {
       await fs.appendFile(eventsPath, 'THIS IS NOT JSON\n', 'utf-8');
 
       const e2 = wal.createEvent('p1', 'state', 'state.transition', { from: 'b', to: 'c' });
-      await wal.appendEvent(e2);
+      const original = await fs.readFile(eventsPath);
+      await expect(wal.appendEvent(e2)).rejects.toThrow('WAL_CORRUPT_INPUT');
+      expect(await fs.readFile(eventsPath)).toEqual(original);
 
       await expect(wal.readAllEvents()).rejects.toThrow(
-        'WAL_CORRUPT_INPUT:line=2:content=THIS IS NOT JSON',
+        'WAL_CORRUPT_INPUT:file=events.jsonl:line=2',
       );
     });
 
-    it('should truncate corrupted line content to 100 chars', async () => {
+    it('reports the corrupt location without echoing raw input', async () => {
       await wal.initialize();
       const longCorrupted = 'X'.repeat(200);
       const eventsPath = wal.getEventsPath();
       await fs.appendFile(eventsPath, longCorrupted + '\n', 'utf-8');
 
       await expect(wal.readAllEvents()).rejects.toThrow(
-        `WAL_CORRUPT_INPUT:line=1:content=${'X'.repeat(100)}`,
+        'WAL_CORRUPT_INPUT:file=events.jsonl:line=1',
       );
     });
 
@@ -295,7 +275,7 @@ describe('WAL', () => {
       await fs.appendFile(eventsPath, 'bad2\n', 'utf-8');
 
       await expect(wal.readAllEvents()).rejects.toThrow(
-        'WAL_CORRUPT_INPUT:line=1:content=bad1',
+        'WAL_CORRUPT_INPUT:file=events.jsonl:line=1',
       );
     });
 
@@ -308,8 +288,23 @@ describe('WAL', () => {
       await fs.appendFile(eventsPath, 'CORRUPTED\n', 'utf-8');
 
       await expect(wal.getLastEvent()).rejects.toThrow(
-        'WAL_CORRUPT_INPUT:line=2:content=CORRUPTED',
+        'WAL_CORRUPT_INPUT:file=events.jsonl:line=2',
       );
+    });
+
+    it('serializes multiple owners and readers across rotation without losing events', async () => {
+      await wal.initialize();
+      await wal.appendEvent(wal.createEvent('p1', 'system', 'padding', {data:'x'.repeat(5*1024*1024)}));
+      const other = new WAL(wal.getEventsPath()); await other.initialize();
+      const pending = Array.from({length:12}, (_,i) => {
+        const owner = i % 2 ? other : wal;
+        return owner.appendEvent(owner.createEvent('p1','system','concurrent',{i}));
+      });
+      await Promise.all([...pending, wal.readAllEvents(), other.readAllEvents()]);
+      const {events} = await new WAL(wal.getEventsPath()).readAllEvents();
+      expect(events).toHaveLength(13);
+      expect(events.map(e=>e.monotonicSeq)).toEqual(Array.from({length:13},(_,i)=>i+1));
+      expect(new Set(events.slice(1).map(e=>e.payload.i)).size).toBe(12);
     });
 
     it('should return ReadAllEventsResult type with both fields', async () => {

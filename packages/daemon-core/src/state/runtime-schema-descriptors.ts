@@ -14,7 +14,8 @@ export function isCurrentRuntimeEvent(value: unknown): boolean {
     && typeof value.eventId === 'string'
     && value.eventId.length > 0
     && typeof value.ts === 'number'
-    && Number.isInteger(value.monotonicSeq)
+    && Number.isFinite(value.ts)
+    && Number.isSafeInteger(value.monotonicSeq)
     && (value.monotonicSeq as number) > 0
     && typeof value.projectId === 'string'
     && value.projectId.length > 0
@@ -57,7 +58,8 @@ export const RUNTIME_SCHEMA_DESCRIPTORS: readonly PersistentFileSchemaDescriptor
     validateCurrent: (value: unknown): boolean => {
       if (!isRecord(value)) return false
       return (
-        Number.isInteger(value.stateVersion)
+        value.schema_version === RUNTIME_SCHEMA_VERSION
+        && Number.isInteger(value.stateVersion)
         && (value.stateVersion as number) >= 0
         && typeof value.projectPath === 'string'
         && value.projectPath.length > 0
