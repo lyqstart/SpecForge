@@ -1,0 +1,17 @@
+{
+  "stateVersion": 4,
+  "projectPath": "D:\\code\\SpecForge\\.tmp\\boundary-capability-repair-20261024\\installed-fixture\\project",
+  "activeSessions": [],
+  "workItems": [
+    {
+      "work_item_id": "WI-0001",
+      "workflow_type": "feature_spec",
+      "current_state": "implementation_running",
+      "created_at": 1792830286523,
+      "updated_at": 1792830286543
+    }
+  ],
+  "lastEventId": "01a16d03-2acf-7666-bf0e-07bf85726afa",
+  "lastEventTs": 1792830286543,
+  "schema_version": "1.0"
+}
