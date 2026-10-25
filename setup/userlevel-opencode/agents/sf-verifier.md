@@ -312,10 +312,9 @@ Runtime 负责把结构化 Verification JSON 渲染为 Markdown，并保留机�
 
 ## 原子写入
 
-报告文件使用原子写入机制：
-1. 先写入临时文件（`{path}.tmp.{timestamp}`）
-2. 写入完成后重命名为最终文件名
-3. 仅在重命名成功后，报告的 `status` 字段为 `"completed"`
+原子写入由 `sf_artifact_write` 的 Runtime 实现负责。Verifier 不创建临时文件、不执行重命名，
+只核对工具返回的规范路径和结果。写入成功只证明产物持久化，不改变验证结论或工作流状态；
+验证结论仍是 `pass | fail | blocked`，`closed` 只能由正式关闭门禁产生。
 
 ---
 
@@ -575,7 +574,8 @@ Verification report 中的 `evidence_refs` 必须与 `evidence_manifest.json` �
 
 **标准章节**：§13.5 — Verification Gate
 
-Verification gate 是 WI 从 verification 阶段推进到 completed 之前必须通过的质量关卡。
+Verification gate 核验验证证据；工作流的正式推进由 Orchestrator 经受控工具完成。
+关闭必须先达到权威状态 `verification_done`，再由 `sf_close_gate` 校验并写入 `closed`。
 Verifier 必须确认以下 **6 项检查**：
 
 | # | 检查项 | 通过条件 |
@@ -595,7 +595,7 @@ Verifier 必须确认以下 **6 项检查**：
 
 **标准章节**：§15.2 — Close Gate
 
-`close_gate` 是 WI 关闭前**最后一道锁**，由 Orchestrator 调用 `runCloseGate` 执行。
+`close_gate` 是 WI 关闭前**最后一道锁**，由 Orchestrator 调用正式工具 `sf_close_gate` 执行。
 Verifier 必须理解 close gate 的检查项，确保验证产出满足 close gate 的前置条件。
 
 ### Close Gate 关键检查
@@ -622,11 +622,10 @@ Verifier 必须理解 close gate 的检查项，确保验证产出满足 close g
 
 ### Close Gate 流程
 
-1. Orchestrator 调用 `runCloseGate(ctx)` 传入 GateContext
-2. `runCloseGate` 逐项执行上述 17 项检查
-3. 返回 `CloseGateResult { passed: boolean, checks: [...] }`
-4. 全部通过 → `passed: true`，WI 可推进到 completed
-5. 任一失败 → `passed: false`，返回具体的失败项，Orchestrator 必须处理
+1. Orchestrator 读取权威状态，确认是 `verification_done`。
+2. Orchestrator 调用 `sf_close_gate(work_item_id=...)`；Runtime 按当前 workflow_path 和正式合同执行检查。上表帮助理解证据，不替代 Runtime 的检查集合和适用性判定。
+3. 工具成功后重新读取权威状态，只有事件确认 `closed` 才能宣告关闭。
+4. 任一检查失败，保留返回证据并按正式恢复路径处理；不得手工推进终态。
 
 ### Verifier 的责任
 
@@ -663,15 +662,15 @@ Evidence 必须同时登记在 evidence_manifest 中，且 status、level、type
 
 ### 核心要求
 
-验证阶段必须执行 **changed_files_audit**，确认所有文件修改均在 task 合同声明的
+Orchestrator 必须通过正式工具 `sf_changed_files_audit` 取得审计产物；Verifier 核验该产物，确认所有文件修改均在 task 合同声明的
 `allowed_write_files` 范围内。**越界写入必须导致 blocked 状态**，不得继续推进到 close gate。
 
 ### 审计流程
 
 1. **读取 task 合同**：获取每个 TASK 的 `allowed_write_files` 列表
-2. **对比实际修改**：通过 `sf_git_diff` 或直接比较获取实际修改的文件列表
+2. **核对正式审计**：读取 `sf_changed_files_audit` 产生的当前审计记录及其基线、文件差异和 Write Guard 证据；缺失时返回 blocked，请 Orchestrator 经正式工具补齐
 3. **逐文件校验**：检查每个被修改的文件是否出现在对应 TASK 的 `allowed_write_files` 中
-4. **生成审计结果**：
+4. **记录验证发现**：在自己拥有的 verification_report 中引用正式审计路径和以下核对信息；不得自行写入或替代 changed_files_audit 产物：
 
 ```json
 {

@@ -41,5 +41,10 @@ describe('D18 verification guidance consumers', () => {
     }
     expect(read('setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md'))
       .not.toContain('skill，执行所有验证命令');
+    expect(verifier).not.toContain('runCloseGate');
+    expect(verifier).not.toContain('sf_git_diff');
+    expect(verifier).not.toContain('推进到 completed');
+    expect(verifier).toContain('原子写入由 `sf_artifact_write`');
+    expect(verifier).toContain('不得自行写入或替代 changed_files_audit');
   });
 });

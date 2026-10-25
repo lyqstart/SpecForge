@@ -32087,3 +32087,9 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 ### EXP-287：执行能力收缩必须同步指令正文、示例和委派消费者
 
 执行能力被禁用或限制后，Agent 角色、操作步骤、示例、加载的 Skill、上游委派提示和安装副本必须使用同一能力边界。不得只追加禁令而保留相反的可执行指令。缺失必需验证证据时必须保留 blocked/not_executed，不能更换执行器、重复派发同一不可执行任务或由编排者口头豁免；证据采集与既有证据核验必须明确区分。回归同时检查当前消费者集合和实际拒绝行为。
+
+### ERR-1891：Verifier 尾部旧关闭状态与审计入口仍冲突
+
+- 全文复查确认 Agent 尾部要求推进 completed、直接调用内部 runCloseGate、引用未注册 sf_git_diff，并自行生成 changed_files_audit；与 SPS §6.2、§9 及正式 sf_close_gate/sf_changed_files_audit 工具、产物所有权不符。已替换为 verification_done → sf_close_gate → 事件确认 closed，原子持久化归 Runtime，Verifier 只引用正式变更审计。
+- 定向26项通过。前轮 daemon2128/root729通过；首次scope3项因旧发布清单哈希失败，冻结提交并刷新清单后134项通过。首次正式升级5文件、跳过107文件，112安装哈希一致、二进制哈希和mtime不变。补充修复需再次冻结部署。
+- 调查中的不存在路径/Windows glob检索失败、一次apply_patch上下文不匹配未写入，均纠正后继续；冻结脚本对untracked的git show失败表示无基线，已正确保存正文和null基线，不是产品错误。相关原始结果与工具记录保留。EXP-032/033/287。
