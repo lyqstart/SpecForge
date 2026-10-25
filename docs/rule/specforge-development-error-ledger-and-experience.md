@@ -32100,3 +32100,9 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - Host Profile及Version Unification使用Vitest4，拒绝minWorkers；保留失败后仅移除不支持的参数重试，均2项通过。不是产品行为失败。其他包结果保留逐命令原始输出。
 - 逐条审计确认已部署TDD Skill仍有执行测试指令，属于SPS19.19未收口消费者；记录为未实现，不伪称Verifier修复覆盖全部Agents/Skills。真实OpenCode加载修正后的Verifier/Skill已取证，业务链另行记录。
 - 矩阵生成两次路径拼写失败在写出报告前停止，纠正为实际registry/cli入口；检索的不存在文件和PowerShell glob/brace错误均未作为不存在能力的依据。EXP-007/032/033/287。
+
+### ERR-1893：Verifier历史路径仍被测试固定，真实取证长请求中断
+
+- Daemon sf_artifact_write_core.ts的Trace读取路径已是.specforge/runtime/logs/trace.jsonl；Verifier与semantic-closure-contract-alignment旧断言仍要求.specforge/logs/trace.jsonl。按SPS4.2及实际owner更正指令和旧断言，不降低验证；同时移除未部署AGENT_CONSTITUTION路径引用。首次25通过1失败（旧路径断言），纠正后26通过。
+- 其他Agents、全局AGENTS及已部署旧tool_lib仍有历史路径，属于SPS19.19消费者缺口，未把本次Verifier修复声称为全局收口。
+- 真实OpenCode业务已创建WI-0001/intake_ready并受控保存Intake及辅助配置。外部取证载体POST长请求fetch failed，原消息保留；不认定产品失败。改用OpenCode正式prompt_async恢复同一会话/工作项，未另建WI；全部用户批准边界保持。

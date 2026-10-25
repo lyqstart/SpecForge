@@ -51,7 +51,7 @@ describe('semantic closure contract alignment', () => {
     expect(verifier).toContain('搜索内容使用 `Grep`');
     expect(verifier).toContain('权威状态必须使用 `sf_state_read`');
     expect(verifier).toContain('禁止**通过 `sf_safe_bash`');
-    expect(verifier).toContain('`.specforge/logs/trace.jsonl` 的写入与审计属于 Runtime/Orchestrator');
+    expect(verifier).toContain('`.specforge/runtime/logs/trace.jsonl` 的写入与审计属于 Runtime/Orchestrator');
   });
 
   it('orders semantic closure before verification_gate in the Orchestrator contract', () => {

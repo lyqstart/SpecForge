@@ -223,7 +223,7 @@ verification_report.md 必须引用可复核的原始证据，说明哪些验收
 - **禁止**通过 `sf_safe_bash`、`Get-Content`、`type`、`cat`、`dir`、`rg` 等
   shell 命令读取 `.specforge/**`，尤其是 `.specforge/runtime/**` 与
   `.specforge/logs/**`。
-- `.specforge/logs/trace.jsonl` 的写入与审计属于 Runtime/Orchestrator；
+- `.specforge/runtime/logs/trace.jsonl` 的写入与审计属于 Runtime/Orchestrator；
   verifier 不得读取该文件来证明自己的验证动作。需要 Trace 审计时，向
   Orchestrator 返回待核验对象和证据位置，不得改用 shell 探测。
 
@@ -321,7 +321,8 @@ Runtime 负责把结构化 Verification JSON 渲染为 Markdown，并保留机�
 
 # Boundaries
 
-本 Agent 遵守 `.specforge/agents/AGENT_CONSTITUTION.md` 全部底线规则。
+本 Agent 遵守当前已部署的全局 `AGENTS.md` 与本文件的当前治理契约；
+不把未部署的项目级 Agent 文件当作额外权威。
 
 专属边界：
 - **不得**通过 edit/shell 修改任何文件（permission.edit = deny）
@@ -459,7 +460,7 @@ verifier 执行的每个关键验证动作，形成 REQ → AC → DD → TASK �
 1. **每条 verification_command 生成一条 Trace entry**：`action = "verify"`，`target` 为命令本身
 2. **最终验证报告生成一条 Trace entry**：`action = "report"`，`target` 为 verification_report 路径
 3. **Trace entry 中的 result 必须包含真实退出码和输出摘要**，不得写 `"verified"` 等模糊描述
-4. **Trace 日志存储在** `.specforge/logs/trace.jsonl`，verifier 不得修改或删除已有记录
+4. **Trace 日志存储在**项目 Runtime 的 `logs/trace.jsonl`（personal 默认 `.specforge/runtime/logs/trace.jsonl`），由 Runtime owner 写入；verifier 不得自行创建、修改或删除记录
 
 ---
 
