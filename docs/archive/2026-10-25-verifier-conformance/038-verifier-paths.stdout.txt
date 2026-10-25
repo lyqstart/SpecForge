@@ -1,0 +1,19 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/v11-agent-skill-contract-alignment.test.ts (9 tests) 39ms
+ ✓ tests/unit/current-document-role-contract.test.ts (10 tests) 33ms
+ ❯ tests/unit/semantic-closure-contract-alignment.test.ts (5 tests | 1 failed) 16ms
+   ✓ semantic closure contract alignment > exposes the typed semantic_closure argument in the deployed OpenCode tool 2ms
+   ✓ semantic closure contract alignment > requires Verifier output to include the same closure sections 1ms
+   × semantic closure contract alignment > routes verifier governance reads away from sf_safe_bash 8ms
+     → expected '---\r\ndescription: SpecForge 验证 Agen…' to contain '`.specforge/logs/trace.jsonl` 的写入与审计属…'
+   ✓ semantic closure contract alignment > orders semantic closure before verification_gate in the Orchestrator contract 1ms
+   ✓ semantic closure contract alignment > keeps every workflow that runs verification_gate on the typed closeout protocol 4ms
+ ✓ tests/unit/verifier-guidance-execution-boundary.test.ts (2 tests) 6ms
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  1 failed | 25 passed (26)
+   Start at  13:24:07
+   Duration  1.19s (transform 67ms, setup 0ms, collect 116ms, tests 93ms, environment 1ms, prepare 363ms)
+

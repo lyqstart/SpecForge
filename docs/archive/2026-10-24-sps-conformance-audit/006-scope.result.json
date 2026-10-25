@@ -1,0 +1,17 @@
+{
+  "run_id": "CODEX-SF-20261024-SPS-AUDIT-A01",
+  "command": "bun",
+  "arguments": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:/code/SpecForge/packages/scope-gate",
+  "started_utc": "2026-10-24T15:59:42.2920952Z",
+  "purpose": "SPS conformance evidence",
+  "expected_writes": "Evidence files; test temporary fixtures/cache only",
+  "inner_exit_code": 0,
+  "finished_utc": "2026-10-24T16:00:37.1092304Z"
+}

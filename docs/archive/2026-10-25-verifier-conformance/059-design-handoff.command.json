@@ -1,0 +1,12 @@
+{
+  "run_id": "CODEX-SF-20261025-VERIFIER-CONFORMANCE-A01",
+  "id": "059-design-handoff",
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    "docs/archive/2026-10-25-verifier-conformance/capture-sessions.cjs",
+    "design-handoff"
+  ],
+  "started_utc": "2026-10-25T05:49:22.547Z",
+  "expected_writes": "Declared repair files/evidence; test fixtures; deployment only for explicitly named installer commands"
+}

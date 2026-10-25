@@ -1,0 +1,1 @@
+{"mode":"before","count":112,"changes":["agents/_AGENT_BASE.md","agents/sf-orchestrator.md","agents/sf-verifier.md","skills/sf-workflow-feature-spec/SKILL.md","skills/superpowers-verification-before-completion/SKILL.md"]}

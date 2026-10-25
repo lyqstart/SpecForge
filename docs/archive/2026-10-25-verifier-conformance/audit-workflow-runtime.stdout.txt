@@ -1,0 +1,598 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/packages/workflow-runtime
+
+ ✓ tests/unit/evidence-guard-v11.test.ts  (107 tests) 324ms
+ ✓ tests/unit/WorkflowEngine.test.ts  (45 tests) 84ms
+ ✓ tests/integration/workflow-e2e-property-29.test.ts  (15 tests) 66ms
+ ✓ tests/property/workflow-property-6.event-ordering.test.ts  (16 tests) 87ms
+ ✓ tests/property/error-handling-property.test.ts  (34 tests) 376ms
+ ✓ tests/unit/AgentWorkflowEngine.evidence-guard.test.ts  (18 tests) 93ms
+ ✓ tests/engine/WorkflowInstance.test.ts  (54 tests) 140ms
+stdout | tests/integration/persistence-comprehensive.test.ts > Comprehensive Persistence Integration Tests > State Recovery Mechanisms > should recover state from event log when instance file is missing
+State recovery completed for event-log-recovery-instance in 5ms
+
+stdout | tests/integration/persistence-comprehensive.test.ts > Comprehensive Persistence Integration Tests > State Recovery Mechanisms > should recover state with repair inconsistencies enabled
+State recovery completed for repair-instance in 4ms
+
+stdout | tests/integration/persistence-comprehensive.test.ts > Comprehensive Persistence Integration Tests > Crash Recovery Scenarios > should perform complete crash recovery for all instances
+State recovery completed for crash-instance-1 in 4ms
+
+stdout | tests/integration/persistence-comprehensive.test.ts > Comprehensive Persistence Integration Tests > Crash Recovery Scenarios > should perform complete crash recovery for all instances
+State recovery completed for crash-instance-2 in 1ms
+
+stdout | tests/integration/persistence-comprehensive.test.ts > Comprehensive Persistence Integration Tests > Crash Recovery Scenarios > should perform complete crash recovery for all instances
+State recovery completed for crash-instance-3 in 3ms
+
+stdout | tests/integration/persistence-comprehensive.test.ts > Comprehensive Persistence Integration Tests > Crash Recovery Scenarios > should perform complete crash recovery for all instances
+State recovery completed for crash-instance-4 in 2ms
+
+stdout | tests/integration/persistence-comprehensive.test.ts > Comprehensive Persistence Integration Tests > Crash Recovery Scenarios > should handle mixed state: some instances in storage, some in event log
+State recovery completed for storage-instance in 3ms
+
+stdout | tests/integration/persistence-comprehensive.test.ts > Comprehensive Persistence Integration Tests > Enhanced Workflow Persistence > should perform enhanced crash recovery with statistics
+State recovery completed for enhanced-1 in 1ms
+
+stdout | tests/integration/persistence-comprehensive.test.ts > Comprehensive Persistence Integration Tests > Enhanced Workflow Persistence > should perform enhanced crash recovery with statistics
+State recovery completed for enhanced-2 in 1ms
+
+stdout | tests/integration/persistence-comprehensive.test.ts > Comprehensive Persistence Integration Tests > Performance and Scalability > should handle large number of instances efficiently
+Performance: Saved 50 instances in 30ms, listed in 29ms
+
+stdout | tests/integration/persistence-comprehensive.test.ts > Comprehensive Persistence Integration Tests > Performance and Scalability > should handle instances with large history efficiently
+Performance: Saved instance with 200 events in 1ms, loaded in 0ms
+
+ ✓ tests/integration/persistence-comprehensive.test.ts  (29 tests) 264ms
+stdout | tests/acceptance.test.ts > Acceptance Tests - Task 5.1 > Workflow State Recovery from Crash > AC-5.4: 应该支持从崩溃中恢复 workflow 状态
+State recovery completed for crash-recovery-test in 1ms
+
+ ✓ tests/acceptance.test.ts  (16 tests) 37ms
+ ✓ tests/performance/workflow-performance.test.ts  (13 tests) 14ms
+ ✓ tests/unit/retry.test.ts  (39 tests) 1436ms
+ ✓ tests/property/composite-gate-property-3.sequential-execution.test.ts  (13 tests) 38ms
+ ✓ tests/property/composite-gate-parallel.property.test.ts  (14 tests) 172ms
+ ✓ tests/property/composite-gate-property-4.parallel-execution.test.ts  (11 tests) 137ms
+ ✓ tests/unit/error-handler.test.ts  (46 tests) 128ms
+ ✓ tests/unit/GateRunnerErrorHandling.test.ts  (31 tests) 26ms
+ ✓ tests/integration/event-integration.test.ts  (23 tests) 11ms
+ ✓ tests/unit/WorkflowDefinitionLoader.test.ts  (29 tests) 38ms
+ ✓ tests/property/composite-gate-property-5.fail-fast-parallel.test.ts  (14 tests) 2882ms
+ ✓ tests/unit/CompositeGateResultAggregation.test.ts  (16 tests) 9ms
+ ✓ tests/engine/WorkflowLoader.test.ts  (25 tests) 69ms
+ ✓ tests/v11/unit/path-policy-permissions.test.ts  (54 tests) 8ms
+ ✓ tests/unit/WorkflowErrorHandling.test.ts  (37 tests) 5166ms
+ ✓ tests/property/fail-fast-parallel.property.test.ts  (14 tests) 41ms
+stdout | tests/unit/StateRecoveryManager.test.ts > StateRecoveryManager > recoverState > should recover workflow state from storage
+State recovery completed for test-instance-qj1pkhsbl in 1ms
+
+stdout | tests/unit/StateRecoveryManager.test.ts > StateRecoveryManager > recoverState > should recover from event log when instance file is missing
+State recovery completed for event-log-instance in 6ms
+
+stdout | tests/unit/StateRecoveryManager.test.ts > StateRecoveryManager > performCrashRecovery > should recover all instances after crash
+State recovery completed for instance-1 in 3ms
+
+stdout | tests/unit/StateRecoveryManager.test.ts > StateRecoveryManager > performCrashRecovery > should recover all instances after crash
+State recovery completed for instance-2 in 2ms
+
+stdout | tests/unit/StateRecoveryManager.test.ts > StateRecoveryManager > performCrashRecovery > should recover all instances after crash
+State recovery completed for instance-3 in 2ms
+
+stdout | tests/unit/StateRecoveryManager.test.ts > StateRecoveryManager > performCrashRecovery > should handle recovery failures for individual instances
+State recovery completed for valid-instance in 1ms
+
+stdout | tests/unit/StateRecoveryManager.test.ts > StateRecoveryManager > repairInconsistencies > should repair inconsistencies when enabled
+State recovery completed for repair-instance in 2ms
+
+stdout | tests/unit/StateRecoveryManager.test.ts > StateRecoveryManager > repairInconsistencies > should remove duplicate events
+State recovery completed for duplicate-events-instance in 2ms
+
+stdout | tests/unit/StateRecoveryManager.test.ts > createStateRecoveryManager > should create recovery manager with default config
+State recovery completed for test-id in 0ms
+
+stdout | tests/unit/StateRecoveryManager.test.ts > createStateRecoveryManager > should create recovery manager without event log reader
+State recovery completed for test-id in 0ms
+
+ ✓ tests/unit/StateRecoveryManager.test.ts  (20 tests) 115ms
+ ✓ tests/unit/engine.test.ts  (21 tests) 11ms
+ ✓ tests/unit/GateRunner.test.ts  (27 tests) 16ms
+ ✓ tests/unit/AtomicWorkflowInstanceStorage.test.ts  (25 tests) 758ms
+ ✓ tests/unit/CompositeGateSerializer.test.ts  (28 tests) 8ms
+ ✓ tests/unit/error-propagation.test.ts  (20 tests) 11ms
+ ✓ tests/unit/EventLogReader.test.ts  (20 tests) 84ms
+ ✓ tests/property/workflow-property-1.state-machine-consistency.test.ts  (13 tests) 159ms
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle mixed state: some instances in storage, some in event log
+State recovery completed for stored-1 in 3ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle mixed state: some instances in storage, some in event log
+State recovery completed for stored-2 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-0 in 3ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+<empty line>
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-1 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-10 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-11 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-12 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-13 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-14 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-15 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-16 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-17 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-18 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-19 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+<empty line>
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-2 in 3ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-20 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-21 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-22 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-23 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-24 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-25 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-26 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-27 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-28 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-29 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+<empty line>
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-3 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-30 in 3ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-31 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-32 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-33 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-34 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-35 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-36 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-37 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-38 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-39 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+<empty line>
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-4 in 3ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-40 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-41 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-42 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-43 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-44 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-45 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-46 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-47 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-48 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-49 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+<empty line>
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-5 in 3ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+<empty line>
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-6 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+<empty line>
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-7 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+<empty line>
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-8 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+<empty line>
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should handle recovery with large number of instances
+State recovery completed for bulk-instance-9 in 3ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Simulated Crash Scenarios > should recover with repair inconsistencies enabled
+State recovery completed for inconsistent-repair-instance in 3ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-0 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-1 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-10 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-11 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-12 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-13 in 0ms
+State recovery completed for perf-instance-14 in 0ms
+State recovery completed for perf-instance-15 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-16 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-17 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-18 in 1ms
+State recovery completed for perf-instance-19 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-2 in 0ms
+State recovery completed for perf-instance-20 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-21 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-22 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-23 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-24 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-25 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-26 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-27 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-28 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-29 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-3 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-30 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-31 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-32 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-33 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-34 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-35 in 0ms
+State recovery completed for perf-instance-36 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-37 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-38 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-39 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-4 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-40 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-41 in 0ms
+State recovery completed for perf-instance-42 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-43 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-44 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-45 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-46 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-47 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-48 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-49 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-5 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-50 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-51 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-52 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-53 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-54 in 1ms
+State recovery completed for perf-instance-55 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-56 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-57 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-58 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-59 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-6 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-60 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-61 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-62 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-63 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-64 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-65 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-66 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-67 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-68 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-69 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-7 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-70 in 0ms
+State recovery completed for perf-instance-71 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-72 in 0ms
+State recovery completed for perf-instance-73 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-74 in 2ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-75 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-76 in 1ms
+State recovery completed for perf-instance-77 in 0ms
+State recovery completed for perf-instance-78 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-79 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-8 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-80 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-81 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-82 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-83 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-84 in 0ms
+State recovery completed for perf-instance-85 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-86 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-87 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-88 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-89 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-9 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-90 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-91 in 0ms
+State recovery completed for perf-instance-92 in 0ms
+State recovery completed for perf-instance-93 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-94 in 0ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-95 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-96 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-97 in 0ms
+State recovery completed for perf-instance-98 in 1ms
+
+stdout | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Recovery Performance > should complete recovery within reasonable time
+State recovery completed for perf-instance-99 in 0ms
+Recovery of 100 instances took 165ms
+
+ ✓ tests/integration/crash-recovery.test.ts  (9 tests) 535ms
+ ✓ tests/event-filter.test.ts  (42 tests) 109ms
+ ✓ tests/property/gate-property-2.determinism.test.ts  (12 tests) 99ms
+stdout | tests/unit/WorkflowPersistence.test.ts > EnhancedWorkflowPersistence > crash recovery > should perform crash recovery
+State recovery completed for crash-instance-1 in 1ms
+
+stdout | tests/unit/WorkflowPersistence.test.ts > EnhancedWorkflowPersistence > crash recovery > should perform crash recovery
+State recovery completed for crash-instance-2 in 1ms
+
+ ✓ tests/unit/WorkflowPersistence.test.ts  (28 tests) 111ms
+ ✓ tests/event-subscription.test.ts  (20 tests) 547ms
+ ✓ tests/unit/rbac/FileAuthorizationPolicy.test.ts  (37 tests) 7ms
+ ✓ tests/unit/WorkflowInstance.test.ts  (25 tests) 8ms
+ ✓ tests/unit/AgentWorkflowEngine.test.ts  (12 tests) 10ms
+ ✓ tests/integration/agent-runner.test.ts  (21 tests) 935ms
+ ✓ tests/unit/EventPublisher.test.ts  (19 tests) 7ms
+ ✓ tests/unit/rbac/TransitionAuthorizer.test.ts  (28 tests) 5ms
+ ✓ tests/unit/GateResult.test.ts  (28 tests) 7ms
+ ✓ tests/unit/CompositeGateCancellation.test.ts  (9 tests) 69ms
+ ✓ tests/integration/event-publisher.test.ts  (20 tests) 9ms
+ ✓ tests/unit/GateDefinition.test.ts  (17 tests) 5ms
+ ✓ tests/v11/e2e/v11-code-only-filesystem-e2e.test.ts  (8 tests) 77ms
+ ✓ tests/unit/rbac/RBACEngine-RoundB.test.ts  (24 tests) 7ms
+ ✓ tests/unit/WorkflowInstanceStorage.test.ts  (17 tests) 43ms
+ ✓ tests/unit/BasicGates.test.ts  (28 tests) 8ms
+ ✓ tests/v11/unit/path-policy.test.ts  (30 tests) 6ms
+ ✓ tests/unit/AgentGateRunner.test.ts  (11 tests) 97ms
+ ✓ tests/v11/unit/close-gate.test.ts  (11 tests) 5ms
+ ✓ tests/property/framework-verification.test.ts  (15 tests) 16ms
+ ✓ tests/v11/unit/path-service.test.ts  (39 tests) 6ms
+ ✓ tests/unit/rbac/seal-transitions.test.ts  (19 tests) 5ms
+ ✓ tests/unit/rbac/AuthorizationAuditLogger.test.ts  (12 tests) 6ms
+ ✓ tests/unit/rbac/ProtectedFileMatcher.test.ts  (25 tests) 6ms
+ ✓ tests/unit/rbac/PrincipalResolver.test.ts  (18 tests) 4ms
+ ✓ tests/unit/rbac/RBACEngine.test.ts  (13 tests) 4ms
+ ✓ tests/v11/property/path-validation.property.test.ts  (6 tests) 17ms
+ ✓ tests/v11/unit/json-parser.test.ts  (14 tests) 5ms
+ ✓ tests/unit/work-item-artifact-authority.test.ts  (3 tests) 30ms
+ ✓ tests/v11/property/parsers.property.test.ts  (2 tests) 19ms
+ ✓ tests/unit/current-workflow-engine-owner.test.ts  (2 tests) 19ms
+ ✓ tests/unit/user-decision-schema-boundary.test.ts  (2 tests) 16ms
+ ✓ tests/unit/rbac/state-advancement-subjects.test.ts  (2 tests) 3ms
+ ✓ tests/unit/current-release-builtin-workflow.test.ts  (1 test) 4ms
+
+ Test Files  69 passed (69)
+      Tests  1516 passed (1516)
+   Start at  13:15:59
+   Duration  37.62s (transform 1.27s, setup 593ms, collect 5.28s, tests 15.67s, environment 11ms, prepare 6.66s)
+

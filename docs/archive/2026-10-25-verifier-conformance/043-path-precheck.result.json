@@ -1,0 +1,16 @@
+{
+  "run_id": "CODEX-SF-20261025-VERIFIER-CONFORMANCE-A01",
+  "id": "043-path-precheck",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/run-current-release-precheck.ts",
+    "--candidate-id",
+    "commit-67baed1b0e9e4a331fbca262c196696e85f5a8d4"
+  ],
+  "started_utc": "2026-10-25T05:24:53.782Z",
+  "expected_writes": "Declared repair files/evidence; test fixtures; deployment only for explicitly named installer commands",
+  "finished_utc": "2026-10-25T05:24:55.315Z",
+  "inner_exit_code": 0,
+  "signal": null
+}

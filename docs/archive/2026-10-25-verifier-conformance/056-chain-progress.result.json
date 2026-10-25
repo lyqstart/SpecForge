@@ -1,0 +1,15 @@
+{
+  "run_id": "CODEX-SF-20261025-VERIFIER-CONFORMANCE-A01",
+  "id": "056-chain-progress",
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    "docs/archive/2026-10-25-verifier-conformance/capture-sessions.cjs",
+    "after-profile"
+  ],
+  "started_utc": "2026-10-25T05:39:32.755Z",
+  "expected_writes": "Declared repair files/evidence; test fixtures; deployment only for explicitly named installer commands",
+  "finished_utc": "2026-10-25T05:39:32.998Z",
+  "inner_exit_code": 0,
+  "signal": null
+}

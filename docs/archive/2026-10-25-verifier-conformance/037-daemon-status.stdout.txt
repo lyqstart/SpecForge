@@ -1,0 +1,6 @@
+✓ Daemon Status: ok
+PID: 37316
+Version: 1.0.21
+Uptime: 15h 17m
+Active clients: 0
+Pending events: 4

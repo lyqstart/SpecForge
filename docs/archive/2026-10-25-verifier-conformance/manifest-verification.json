@@ -1,0 +1,88 @@
+{
+  "utc": "2026-10-25T06:12:25.153Z",
+  "exit_code": 0,
+  "files": 480,
+  "prior_files_verified": 46,
+  "live_token_scan": "PASS",
+  "local_only": [
+    {
+      "file": "after-profile-sessions.raw.log",
+      "sha256": "79841d53d7978d3ebad67421c1b2b12224267861d338e261ef224bb9722ff109",
+      "bytes": 807226,
+      "local_only": true
+    },
+    {
+      "file": "design-handoff-sessions.raw.log",
+      "sha256": "0b453c67ddb0bd06f285cd4004f268fb1a419a48b9a2e63652c2a6f6bda9f2a6",
+      "bytes": 1075093,
+      "local_only": true
+    },
+    {
+      "file": "design-written-sessions.raw.log",
+      "sha256": "f146ccc67d528fb3f021a62ef8789d36b1b62b33859dd804f366c3e888648c82",
+      "bytes": 970387,
+      "local_only": true
+    },
+    {
+      "file": "final-collector-host.log",
+      "sha256": "ca384972cf88c2dd5c3e1b102843584eedf0d819bf3369bd1415a86d91dc166d",
+      "bytes": 118,
+      "local_only": true
+    },
+    {
+      "file": "final-sessions.raw.log",
+      "sha256": "ec0ec88716ce0619d27d3113e28af4d78764ce89ffec2c37597045201faf2972",
+      "bytes": 2187916,
+      "local_only": true
+    },
+    {
+      "file": "host01-host.log",
+      "sha256": "6a64ddc7b95c3607aa5f449737e2be81678fe2e1fe63baa4474b7aa9b4cc9d65",
+      "bytes": 151,
+      "local_only": true
+    },
+    {
+      "file": "host02-host.log",
+      "sha256": "6a64ddc7b95c3607aa5f449737e2be81678fe2e1fe63baa4474b7aa9b4cc9d65",
+      "bytes": 151,
+      "local_only": true
+    },
+    {
+      "file": "host03-host.log",
+      "sha256": "e4998e3d6e813ff4a04ae93ae0f1efc7b0a6851cb63ca94d3ec6f067eaad1ce7",
+      "bytes": 151,
+      "local_only": true
+    },
+    {
+      "file": "parent-check-sessions.raw.log",
+      "sha256": "edf66c924e02918d7c5d489816a771f898ff261d54e73a5d343b6e7170193f4c",
+      "bytes": 1338369,
+      "local_only": true
+    },
+    {
+      "file": "resume01-host.log",
+      "sha256": "c48e06b1ec9d4197d3e40f8d2929dd1f9b260e049738fd0b3fb4674d1565d30d",
+      "bytes": 184,
+      "local_only": true
+    },
+    {
+      "file": "resume02-host.log",
+      "sha256": "6a64ddc7b95c3607aa5f449737e2be81678fe2e1fe63baa4474b7aa9b4cc9d65",
+      "bytes": 151,
+      "local_only": true
+    },
+    {
+      "file": "seal-observation-sessions.raw.log",
+      "sha256": "7f7d5658ffaf7a4d131de4ddd444834f1bbfe9f58aab233f8d111d367430c5ff",
+      "bytes": 2018113,
+      "local_only": true
+    },
+    {
+      "file": "task-planning-sessions.raw.log",
+      "sha256": "2e3ed596fcff95182aa24d5e9178b27ed24d46be31f24efa2c258a9932569c4e",
+      "bytes": 1831007,
+      "local_only": true
+    }
+  ],
+  "scope": "Snapshot of evidence at seal time. Later Git receipts are append-only post-seal evidence. Ignored raw .log files remain local, hashes record their identity."
+}

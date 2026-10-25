@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261024-SPS-AUDIT-A01",
+  "command": "bun",
+  "arguments": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/six-conformance-boundaries.test.ts",
+    "tests/unit/configuration-activation-loss.test.ts",
+    "tests/unit/configuration-activation-boundary.test.ts",
+    "tests/unit/candidate-seal-boundary.test.ts",
+    "tests/unit/candidate-generation-integrity.test.ts",
+    "tests/unit/candidate-runtime-truth-contract.test.ts",
+    "tests/unit/acceptance-guard-audit-regression.test.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:/code/SpecForge/packages/daemon-core",
+  "started_utc": "2026-10-24T15:59:06.9657992Z",
+  "purpose": "SPS conformance evidence",
+  "expected_writes": "Evidence files; test temporary fixtures/cache only",
+  "inner_exit_code": 1,
+  "finished_utc": "2026-10-24T15:59:07.1388406Z"
+}

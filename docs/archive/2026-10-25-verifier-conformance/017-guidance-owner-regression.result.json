@@ -1,0 +1,21 @@
+{
+  "run_id": "CODEX-SF-20261025-VERIFIER-CONFORMANCE-A01",
+  "id": "017-guidance-owner-regression",
+  "cwd": "D:/code/SpecForge/packages/daemon-core",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/verifier-guidance-execution-boundary.test.ts",
+    "tests/v11-agent-skill-contract-alignment.test.ts",
+    "tests/unit/semantic-closure-contract-alignment.test.ts",
+    "tests/unit/current-document-role-contract.test.ts",
+    "--maxWorkers=1"
+  ],
+  "started_utc": "2026-10-25T05:12:10.461Z",
+  "expected_writes": "Declared repair files/evidence; test fixtures; deployment only for explicitly named installer commands",
+  "finished_utc": "2026-10-25T05:12:12.323Z",
+  "inner_exit_code": 0,
+  "signal": null
+}

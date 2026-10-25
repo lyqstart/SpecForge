@@ -1,0 +1,5 @@
+$ vitest run tests/unit/runtime-history-integrity.test.ts tests/unit/shell-readonly-boundary.test.ts tests/unit/native-hardlink-boundary.test.ts tests/unit/current-work-item-metadata-owner.test.ts tests/unit/current-project-module-schema-boundary.test.ts "--maxWorkers=1"
+The CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.
+stderr | tests/unit/runtime-history-integrity.test.ts > authoritative history integrity at configuration consumer > preserves a closed task and native denial after rotation and restart
+[StateManager] WARNING: direct StateManager.transition() to critical state 'closed' for 'WI-0001'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\packages\daemon-core\tests\unit\runtime-history-integrity.test.ts:51:29
+

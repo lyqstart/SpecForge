@@ -1,0 +1,253 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/packages/cli
+
+stdout | tests/async-command-property-18.test.ts > Property 18: Async Command Contract > **Validates: Requirements 11.1, 11.3, 11.4** - wait results in terminal state
+✓ Job job-1792905320291-etqrnwj2 completed
+✗ Job job-1792905320292-spudyjde failed: Error occurred
+Job job-1792905320292-xx9lfbyy ended with status: blocked
+Job job-1792905320293-nkuqpqax ended with status: cancelled
+
+stdout | tests/async-command-property-18.test.ts > Property 18: Async Command Contract > **Validates: Requirements 11.1, 11.3, 11.4** - jobs eventually reach terminal state
+✓ Job job-1792905320293-hqt902uy completed
+
+stdout | tests/async-command-property-18.test.ts > Property 18: Async Command Contract > **Validates: Requirements 11.1, 11.3, 11.4** - jobs eventually reach terminal state
+✗ Job job-1792905320613-7ezh6ml0 failed: Unknown error
+
+stdout | tests/async-command-property-18.test.ts > Property 18: Async Command Contract > **Validates: Requirements 11.1, 11.3, 11.4** - jobs eventually reach terminal state
+Job job-1792905320940-xrafrzza ended with status: blocked
+
+stdout | tests/async-command-property-18.test.ts > Property 18: Async Command Contract > **Validates: Requirements 11.1, 11.3, 11.4** - jobs eventually reach terminal state
+Job job-1792905321265-dya803cm ended with status: cancelled
+
+stdout | tests/async-command-property-18.test.ts > Property 18: Async Command Contract > **Validates: Requirements 11.1, 11.3, 11.4** - valid status transitions
+✓ Job job-1792905321720-420ii855 completed
+
+stdout | tests/async-command-property-18.test.ts > Property 18: Async Command Contract > **Validates: Requirements 11.1, 11.3, 11.4** - valid status transitions
+✗ Job job-1792905321833-ofqi8f29 failed: Unknown error
+
+stdout | tests/async-command-property-18.test.ts > Property 18: Async Command Contract > **Validates: Requirements 11.1, 11.3, 11.4** - valid status transitions
+Job job-1792905321940-ujsqt6h8 ended with status: blocked
+
+stdout | tests/async-command-property-18.test.ts > Property 18: Async Command Contract > **Validates: Requirements 11.1, 11.3, 11.4** - valid status transitions
+Job job-1792905322053-xy591ind ended with status: cancelled
+
+stdout | tests/async-command-property-18.test.ts > Property 18: Async Command Contract > **Validates: Requirements 11.1, 11.3, 11.4** - valid status transitions
+Job job-1792905322167-5d7r4jkw ended with status: cancelled
+
+ ✓ tests/async-command-property-18.test.ts  (20 tests) 2023ms
+stdout | tests/performance/performance-validation.test.ts > CLI Performance Validation (Task 11.3) > 1. Command Execution Time > 1.1 Command Parsing Performance > should parse simple command in < 50ms
+Command parsing took: 0.01ms
+
+stdout | tests/performance/performance-validation.test.ts > CLI Performance Validation (Task 11.3) > 1. Command Execution Time > 1.1 Command Parsing Performance > should parse complex command with multiple options in < 50ms
+Complex command parsing took: 0.02ms
+
+stdout | tests/performance/performance-validation.test.ts > CLI Performance Validation (Task 11.3) > 1. Command Execution Time > 1.2 Output Formatting Performance > should format JSON output in < 20ms
+JSON output formatting took: 0.01ms
+
+stdout | tests/performance/performance-validation.test.ts > CLI Performance Validation (Task 11.3) > 1. Command Execution Time > 1.2 Output Formatting Performance > should format human-readable output in < 20ms
+Human-readable output formatting took: 12.70ms
+
+stdout | tests/performance/performance-validation.test.ts > CLI Performance Validation (Task 11.3) > 2. Blob Handling Performance (Requirements 2.1-2.4) > 2.1 Blob Conversion Performance (Requirement 2.1) > should convert >64KB content to blob reference in < 500ms
+Blob conversion (100KB) took: 5.89ms
+
+stdout | tests/performance/performance-validation.test.ts > CLI Performance Validation (Task 11.3) > 2. Blob Handling Performance (Requirements 2.1-2.4) > 2.1 Blob Conversion Performance (Requirement 2.1) > should handle content exactly at 64KB threshold
+Blob conversion (64KB threshold) took: 2.75ms
+
+stdout | tests/performance/performance-validation.test.ts > CLI Performance Validation (Task 11.3) > 2. Blob Handling Performance (Requirements 2.1-2.4) > 2.1 Blob Conversion Performance (Requirement 2.1) > should leave <=64KB content inline (not convert to blob)
+Small content (10KB) stays inline as expected
+
+stdout | tests/performance/performance-validation.test.ts > CLI Performance Validation (Task 11.3) > 2. Blob Handling Performance (Requirements 2.1-2.4) > 2.2 Streaming Performance (Requirement 2.2) > should stream large file with memory usage < 50MB
+Streaming 20MB file: 15.84ms, memory increase: 0.17MB
+
+stdout | tests/performance/performance-validation.test.ts > CLI Performance Validation (Task 11.3) > 2. Blob Handling Performance (Requirements 2.1-2.4) > 2.2 Streaming Performance (Requirement 2.2) > should process chunks efficiently (< 10ms per chunk)
+Average chunk processing time: 0.53ms
+
+stdout | tests/performance/performance-validation.test.ts > CLI Performance Validation (Task 11.3) > 2. Blob Handling Performance (Requirements 2.1-2.4) > 2.3 Transparent Blob Handling (Requirement 2.3) > should resolve blob reference to content
+Blob resolution took: 0.00ms
+
+stdout | tests/performance/performance-validation.test.ts > CLI Performance Validation (Task 11.3) > 2. Blob Handling Performance (Requirements 2.1-2.4) > 2.4 HTTP Body Size Enforcement (Requirement 2.4) > should enforce 64KB inline limit in request body
+Large payload (100KB) converted to blob reference: blob://8b77ec70310a4f694fff9ad0bf5f1e9da39b97ec5ccb3ced6a6261ac4effee4c
+
+stdout | tests/performance/performance-validation.test.ts > CLI Performance Validation (Task 11.3) > 2. Blob Handling Performance (Requirements 2.1-2.4) > 2.4 HTTP Body Size Enforcement (Requirement 2.4) > should keep small payload inline
+Small payload (10KB) stays inline
+
+stdout | tests/performance/performance-validation.test.ts > CLI Performance Validation (Task 11.3) > 3. Async Job Tracking Performance (Requirements 3.1-3.5) > 3.1 Job Creation Performance (Requirement 3.1) > should generate job ID in < 100ms
+Job ID generation took: 0.01ms
+
+stdout | tests/performance/performance-validation.test.ts > CLI Performance Validation (Task 11.3) > 3. Async Job Tracking Performance (Requirements 3.1-3.5) > 3.2 Status Query Performance (Requirement 3.2) > should create job response in < 100ms
+Job creation response took: 0.02ms
+
+stdout | tests/performance/performance-validation.test.ts > CLI Performance Validation (Task 11.3) > 3. Async Job Tracking Performance (Requirements 3.1-3.5) > 3.2 Status Query Performance (Requirement 3.2) > should query status in < 50ms
+Status query took: 0.02ms
+
+stdout | tests/performance/performance-validation.test.ts > CLI Performance Validation (Task 11.3) > 3. Async Job Tracking Performance (Requirements 3.1-3.5) > 3.3 Polling Performance with Exponential Backoff (Requirement 3.3) > should implement exponential backoff polling
+Polling interval stats: min=52ms, max=200ms, avg=152ms
+
+stdout | tests/performance/performance-validation.test.ts > CLI Performance Validation (Task 11.3) > 3. Async Job Tracking Performance (Requirements 3.1-3.5) > 3.3 Polling Performance with Exponential Backoff (Requirement 3.3) > should detect terminal state in < 1000ms
+Terminal state detection took: 43.00ms (3 polls)
+
+stdout | tests/performance/performance-validation.test.ts > CLI Performance Validation (Task 11.3) > 3. Async Job Tracking Performance (Requirements 3.1-3.5) > 3.4 Wait Mode Performance (Requirement 3.4) > should wait for terminal state and return final state
+Wait mode completed in: 90.00ms, final status: completed
+
+stdout | tests/performance/performance-validation.test.ts > CLI Performance Validation (Task 11.3) > 3. Async Job Tracking Performance (Requirements 3.1-3.5) > 3.5 Terminal State Set Validation (Requirement 3.5) > should ensure all jobs end in terminal state
+All terminal states validated: completed, failed, blocked, cancelled
+
+ ✓ tests/performance/performance-validation.test.ts  (21 tests) 612ms
+stdout | tests/performance/performance-validation.test.ts > CLI Performance Validation (Task 11.3) > 4. Performance Summary > should generate performance report
+
+=== Performance Validation Report ===
+{
+  "timestamp": "2026-10-25T05:15:23.272Z",
+  "thresholds": {
+    "blobConversionMs": 500,
+    "blobResolutionMs": 300,
+    "streamingMemoryLimitMB": 50,
+    "chunkProcessingMs": 10,
+    "jobCreationMs": 100,
+    "statusQueryMs": 50,
+    "pollingIntervalMs": 200,
+    "terminalStateDetectionMs": 1000,
+    "commandParseMs": 50,
+    "outputFormattingMs": 50
+  },
+  "summary": {
+    "commandParsing": "Pass",
+    "outputFormatting": "Pass",
+    "blobConversion": "Pass",
+    "streaming": "Pass",
+    "jobTracking": "Pass",
+    "polling": "Pass"
+  }
+}
+=====================================
+
+
+ ✓ tests/unit/package-validator.test.ts  (65 tests) 12ms
+ ✓ tests/AuthManager.test.ts  (48 tests) 12ms
+ ✓ tests/unit/services-cli.test.ts  (48 tests) 10ms
+ ✓ tests/unit/dependency-rewriter.test.ts  (19 tests) 6ms
+ ✓ tests/unit/JobPoller.test.ts  (33 tests) 3891ms
+stdout | tests/commands/spec.test.ts > Spec Commands > spec start (async) > should support --wait flag to block until completion
+✓ Job job-spec-456 completed
+
+stdout | tests/commands/spec.test.ts > Spec Commands > spec status <id> > should support --wait flag for spec status
+✓ Job spec-456 completed
+
+stdout | tests/commands/spec.test.ts > Spec Commands > async command contract (Property 18) > should block until terminal state when --wait is used
+✓ Job spec-prop18-3 completed
+
+stdout | tests/commands/spec.test.ts > Spec Commands > async command contract (Property 18) > should ensure all specs end in terminal state set
+✓ Job spec-terminal-completed completed
+
+stdout | tests/commands/spec.test.ts > Spec Commands > async command contract (Property 18) > should ensure all specs end in terminal state set
+✗ Job spec-terminal-failed failed: Spec failed: timeout
+
+stdout | tests/commands/spec.test.ts > Spec Commands > async command contract (Property 18) > should ensure all specs end in terminal state set
+Job spec-terminal-blocked ended with status: blocked
+
+stdout | tests/commands/spec.test.ts > Spec Commands > async command contract (Property 18) > should ensure all specs end in terminal state set
+Job spec-terminal-cancelled ended with status: cancelled
+
+ ✓ tests/commands/spec.test.ts  (23 tests) 1010ms
+ ✓ tests/job-wait.test.ts  (18 tests) 10ms
+ ✓ tests/unit/version-cmd.test.ts  (18 tests) 37ms
+ ✓ tests/commands/plugin.test.ts  (23 tests) 11ms
+ ✓ tests/OutputFormatter.test.ts  (48 tests) 9ms
+ ✓ tests/comprehensive-error-handling.test.ts  (23 tests) 7ms
+stdout | tests/performance/BlobOptimizer.perf.test.ts > BlobOptimizer Performance Tests > Memory Usage Tests > should stream 100MB file with memory usage < 50MB
+
+        File size: 100 MB
+        Chunks processed: 100
+        Initial memory: 11.97 MB
+        Peak memory: 12.31 MB
+        Memory increase: 343.84 KB (0.34MB)
+      
+
+stdout | tests/performance/BlobOptimizer.perf.test.ts > BlobOptimizer Performance Tests > Memory Usage Tests > should track peak memory usage accurately
+Peak memory tracked: 11.97 MB
+
+stdout | tests/performance/BlobOptimizer.perf.test.ts > BlobOptimizer Performance Tests > Streaming Efficiency Tests > should process chunks efficiently
+
+        File size: 10 MB
+        Chunks: 10
+        Time: 14ms
+        Throughput: 714.29 MB/s
+      
+
+stdout | tests/performance/BlobOptimizer.perf.test.ts > BlobOptimizer Performance Tests > Upload Stream Tests > should upload stream with memory monitoring
+
+        Upload result:
+        - Blob ID: blob://3f8bf44f6e462c6869fb1b38584a1ab8bb9aec4131944d1db8b96dfcea4eded0
+        - SHA256: 3f8bf44f6e462c6869fb1b38584a1ab8bb9aec4131944d1db8b96dfcea4eded0
+        - Size: 30 MB
+        - Chunks: 30
+        - Peak memory: 10.42 MB
+        - Time: 24ms
+        - Memory warnings: 0
+      
+
+ ✓ tests/performance/BlobOptimizer.perf.test.ts  (12 tests) 1217ms
+ ✓ tests/cross-platform.test.ts  (23 tests) 7ms
+ ✓ tests/unit/terminal-states.test.ts  (38 tests) 10ms
+ ✓ tests/blob-handler-property-17.test.ts  (12 tests) 2989ms
+stdout | tests/commands/workflow.test.ts > Workflow Commands > spec start (async) > should support --wait flag to block until completion
+✓ Job job-test-456 completed
+
+stdout | tests/commands/workflow.test.ts > Workflow Commands > workflow status <id> > should support --wait flag for workflow status
+✓ Job workflow-456 completed
+
+stdout | tests/commands/workflow.test.ts > Workflow Commands > async command contract (Property 18) > should block until terminal state when --wait is used
+✓ Job job-prop18-3 completed
+
+stdout | tests/commands/workflow.test.ts > Workflow Commands > async command contract (Property 18) > should ensure all jobs end in terminal state set
+✓ Job job-terminal-completed completed
+
+stdout | tests/commands/workflow.test.ts > Workflow Commands > async command contract (Property 18) > should ensure all jobs end in terminal state set
+✗ Job job-terminal-failed failed: error message
+
+stdout | tests/commands/workflow.test.ts > Workflow Commands > async command contract (Property 18) > should ensure all jobs end in terminal state set
+Job job-terminal-blocked ended with status: blocked
+
+ ✓ tests/commands/workflow.test.ts  (15 tests) 1040ms
+stdout | tests/commands/workflow.test.ts > Workflow Commands > async command contract (Property 18) > should ensure all jobs end in terminal state set
+Job job-terminal-cancelled ended with status: cancelled
+
+ ✓ tests/BlobHandler.test.ts  (41 tests) 10ms
+ ✓ tests/commands/daemon.test.ts  (20 tests) 433ms
+stdout | tests/JobTracker.test.ts > JobTracker > waitForJob > should return immediately if job is already in terminal state
+✓ Job job-123 completed
+
+stdout | tests/JobTracker.test.ts > JobTracker > waitForJob > should poll until terminal state is reached
+✓ Job job-123 completed
+
+stdout | tests/JobTracker.test.ts > JobTracker > waitForJob > should call onUpdate callback on each poll
+✓ Job job-123 completed
+
+ ✓ tests/JobTracker.test.ts  (17 tests) 551ms
+ ✓ tests/help-system.test.ts  (16 tests) 9ms
+ ✓ tests/progress-indicator.test.ts  (19 tests) 11ms
+ ✓ tests/errors.test.ts  (22 tests) 6ms
+ ✓ tests/DaemonClient.test.ts  (21 tests) 3021ms
+ ✓ tests/blob-integration.test.ts  (25 tests) 11ms
+ ✓ tests/unit/JobPoller.performance.test.ts  (8 tests) 8200ms
+ ✓ tests/current-release-shared-directory-layout.test.ts  (8 tests) 23ms
+ ✓ tests/help-command.test.ts  (11 tests) 30ms
+ ❯ tests/current-release-installer-root.test.ts  (5 tests | 1 failed) 22ms
+   ❯ tests/current-release-installer-root.test.ts > current release installer root contract > keeps only the current user-level installer manifest contract
+     → expected '---\r\ndescription: SpecForge 验证 Agen…' to contain '.specforge/project/spec_manifest.json'
+ ✓ tests/unit/version-command.test.ts  (8 tests) 10ms
+ ✓ tests/mode-switch.test.ts  (21 tests) 5ms
+ ✓ tests/simple-progress.test.ts  (12 tests) 9ms
+ ✓ tests/commands/version.test.ts  (6 tests) 11ms
+ ✓ tests/commands/doctor.test.ts  (3 tests) 25ms
+ ✓ tests/current-release-project-layout.test.ts  (2 tests) 15ms
+ ✓ tests/unit/path-resolver.test.ts  (7 tests) 5ms
+ ✓ tests/unit/schema-version-manager.test.ts  (6 tests) 6ms
+ ✓ tests/user-level-path-boundary.test.ts  (2 tests) 3ms
+ ✓ tests/cli-async-parser-regression.test.ts  (2 tests) 5ms
+
+ Test Files  1 failed | 39 passed (40)
+      Tests  1 failed | 788 passed (789)
+   Start at  13:15:19
+   Duration  38.09s (transform 782ms, setup 3ms, collect 2.73s, tests 25.33s, environment 6ms, prepare 4.06s)
+

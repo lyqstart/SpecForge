@@ -1,0 +1,26 @@
+{
+  "utc": "2026-10-25T05:38:25.287Z",
+  "method": "Complete tracked production TypeScript roots packages/setup, exclude tests/declarations/dist/node_modules; inspect runtime composition and interfaces in source-evidence.json",
+  "command": [
+    "rg",
+    "-n",
+    "\\.pushEvent\\(|\\.subscribeEvents\\(|\\.simulateEvent\\(",
+    "packages",
+    "setup",
+    "-g",
+    "*.ts",
+    "-g",
+    "!*.test.ts",
+    "-g",
+    "!*.d.ts",
+    "-g",
+    "!**/tests/**",
+    "-g",
+    "!**/dist/**",
+    "-g",
+    "!**/node_modules/**"
+  ],
+  "exit_code": 0,
+  "stdout": "packages\\opencode-adapter\\src\\OpenCodeAdapter.ts:1011:    await this.pushEvent(sessionId, openCodeEvent);\n",
+  "stderr": ""
+}

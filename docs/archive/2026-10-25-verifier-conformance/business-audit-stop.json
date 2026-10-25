@@ -1,0 +1,16 @@
+{
+  "utc": "2026-10-25T06:08:28.152Z",
+  "session": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+  "before": {
+    "ses_e8e849253ffeo8tI9ZIOUEjSZ5": {
+      "type": "busy"
+    },
+    "ses_e8e53bba0ffecLInXEiXbP64gR": {
+      "type": "busy"
+    }
+  },
+  "http_status": 200,
+  "response": "true",
+  "reason": "Confirmed Runtime false positive (068) violates SPS 6.3; audit stops at the actual candidate seal failure. No business HardStop or approval is fabricated. Candidate/Runtime truth is untouched by the auditor.",
+  "completion_interpretation": "Observer runner idle/exit0 after this abort is NOT business workflow success."
+}

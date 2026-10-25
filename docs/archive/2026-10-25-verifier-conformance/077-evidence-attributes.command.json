@@ -1,0 +1,17 @@
+{
+  "run_id": "CODEX-SF-20261025-VERIFIER-CONFORMANCE-A01",
+  "id": "077-evidence-attributes",
+  "cwd": "D:/code/SpecForge",
+  "exe": "git",
+  "args": [
+    "check-attr",
+    "text",
+    "diff",
+    "--",
+    "docs/archive/2026-10-24-sps-conformance-audit/001-scope.stdout.txt",
+    "docs/archive/2026-10-25-verifier-conformance/source-freeze.json",
+    "docs/archive/2026-10-25-verifier-conformance/review.md"
+  ],
+  "started_utc": "2026-10-25T06:10:58.174Z",
+  "expected_writes": "Declared repair files/evidence; test fixtures; deployment only for explicitly named installer commands"
+}

@@ -1,0 +1,242 @@
+{
+  "utc": "2026-10-25T06:07:48.282Z",
+  "fixture": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-baseline-audit-unit-pvzQjh",
+  "scope": "Isolated unregistered unit fixture only; no live business project/Runtime state edited. Real source validator, valid binding in every case, same accurate filesystem facts.",
+  "baseline": {
+    "schema_version": "1.0",
+    "work_item_id": "WI-BASELINE-PROBE",
+    "captured_at": "2026-10-25T06:07:48.241Z",
+    "snapshot_id": "sha256:ddb8b7e06546893e4f6ecfc0fb9fb8a7e226c489db65930f9dbb634bdf7f7e2d",
+    "planned_code_paths": [
+      "README.md",
+      "package.json",
+      "src/greet.ts",
+      "tests/greet.test.ts",
+      "tsconfig.json"
+    ],
+    "current_file_count": 1,
+    "all_planned_paths_missing": false,
+    "entries": [
+      {
+        "scope_path": "README.md",
+        "scope_kind": "file",
+        "matched_files": [
+          {
+            "path": "README.md",
+            "size": 18,
+            "sha256": "sha256:02a0961d52223e01f565bf6bfe004c5a73cde06047fc794af70f1675f51a2aec"
+          }
+        ]
+      },
+      {
+        "scope_path": "package.json",
+        "scope_kind": "file",
+        "matched_files": []
+      },
+      {
+        "scope_path": "src/greet.ts",
+        "scope_kind": "file",
+        "matched_files": []
+      },
+      {
+        "scope_path": "tests/greet.test.ts",
+        "scope_kind": "file",
+        "matched_files": []
+      },
+      {
+        "scope_path": "tsconfig.json",
+        "scope_kind": "file",
+        "matched_files": []
+      }
+    ]
+  },
+  "results": [
+    {
+      "name": "accurate_facts",
+      "text": "CORE 模块当前无既有业务源代码、无既有测试、无既有工程配置；README.md 是唯一既有交付文件。",
+      "content": "implementation_baseline_id: sha256:ddb8b7e06546893e4f6ecfc0fb9fb8a7e226c489db65930f9dbb634bdf7f7e2d\n\nCORE 模块当前无既有业务源代码、无既有测试、无既有工程配置；README.md 是唯一既有交付文件。\n",
+      "result": {
+        "valid": true,
+        "errors": [],
+        "input_files": [
+          "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-baseline-audit-unit-pvzQjh\\.specforge\\work-items\\WI-BASELINE-PROBE\\candidates\\tasks.md",
+          "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-baseline-audit-unit-pvzQjh\\.specforge\\work-items\\WI-BASELINE-PROBE\\implementation_baseline.json"
+        ],
+        "baseline": {
+          "schema_version": "1.0",
+          "work_item_id": "WI-BASELINE-PROBE",
+          "captured_at": "2026-10-25T06:07:48.241Z",
+          "snapshot_id": "sha256:ddb8b7e06546893e4f6ecfc0fb9fb8a7e226c489db65930f9dbb634bdf7f7e2d",
+          "planned_code_paths": [
+            "README.md",
+            "package.json",
+            "src/greet.ts",
+            "tests/greet.test.ts",
+            "tsconfig.json"
+          ],
+          "current_file_count": 1,
+          "all_planned_paths_missing": false,
+          "entries": [
+            {
+              "scope_path": "README.md",
+              "scope_kind": "file",
+              "matched_files": [
+                {
+                  "path": "README.md",
+                  "size": 18,
+                  "sha256": "sha256:02a0961d52223e01f565bf6bfe004c5a73cde06047fc794af70f1675f51a2aec"
+                }
+              ]
+            },
+            {
+              "scope_path": "package.json",
+              "scope_kind": "file",
+              "matched_files": []
+            },
+            {
+              "scope_path": "src/greet.ts",
+              "scope_kind": "file",
+              "matched_files": []
+            },
+            {
+              "scope_path": "tests/greet.test.ts",
+              "scope_kind": "file",
+              "matched_files": []
+            },
+            {
+              "scope_path": "tsconfig.json",
+              "scope_kind": "file",
+              "matched_files": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "scoped_greenfield_explanation",
+      "text": "CORE 模块当前无既有业务源代码、无既有测试、无既有工程配置（greenfield 指本次新建业务实现）；README.md 是唯一既有交付文件。",
+      "content": "implementation_baseline_id: sha256:ddb8b7e06546893e4f6ecfc0fb9fb8a7e226c489db65930f9dbb634bdf7f7e2d\n\nCORE 模块当前无既有业务源代码、无既有测试、无既有工程配置（greenfield 指本次新建业务实现）；README.md 是唯一既有交付文件。\n",
+      "result": {
+        "valid": false,
+        "errors": [
+          "IMPLEMENTATION_BASELINE_CONTRADICTION: C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-baseline-audit-unit-pvzQjh\\.specforge\\work-items\\WI-BASELINE-PROBE\\candidates\\tasks.md: CORE 模块当前无既有业务源代码、无既有测试、无既有工程配置（greenfield 指本次新建业务实现）；README.md 是唯一既有交付文件。"
+        ],
+        "input_files": [
+          "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-baseline-audit-unit-pvzQjh\\.specforge\\work-items\\WI-BASELINE-PROBE\\candidates\\tasks.md",
+          "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-baseline-audit-unit-pvzQjh\\.specforge\\work-items\\WI-BASELINE-PROBE\\implementation_baseline.json"
+        ],
+        "baseline": {
+          "schema_version": "1.0",
+          "work_item_id": "WI-BASELINE-PROBE",
+          "captured_at": "2026-10-25T06:07:48.241Z",
+          "snapshot_id": "sha256:ddb8b7e06546893e4f6ecfc0fb9fb8a7e226c489db65930f9dbb634bdf7f7e2d",
+          "planned_code_paths": [
+            "README.md",
+            "package.json",
+            "src/greet.ts",
+            "tests/greet.test.ts",
+            "tsconfig.json"
+          ],
+          "current_file_count": 1,
+          "all_planned_paths_missing": false,
+          "entries": [
+            {
+              "scope_path": "README.md",
+              "scope_kind": "file",
+              "matched_files": [
+                {
+                  "path": "README.md",
+                  "size": 18,
+                  "sha256": "sha256:02a0961d52223e01f565bf6bfe004c5a73cde06047fc794af70f1675f51a2aec"
+                }
+              ]
+            },
+            {
+              "scope_path": "package.json",
+              "scope_kind": "file",
+              "matched_files": []
+            },
+            {
+              "scope_path": "src/greet.ts",
+              "scope_kind": "file",
+              "matched_files": []
+            },
+            {
+              "scope_path": "tests/greet.test.ts",
+              "scope_kind": "file",
+              "matched_files": []
+            },
+            {
+              "scope_path": "tsconfig.json",
+              "scope_kind": "file",
+              "matched_files": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "quoted_term_not_assertion",
+      "text": "CORE 模块当前无既有业务源代码、无既有测试、无既有工程配置；README.md 是唯一既有交付文件。\n说明：术语 greenfield 出现在上游描述中；本候选明确承认 README.md 已存在，不能将所有文件视为新建。",
+      "content": "implementation_baseline_id: sha256:ddb8b7e06546893e4f6ecfc0fb9fb8a7e226c489db65930f9dbb634bdf7f7e2d\n\nCORE 模块当前无既有业务源代码、无既有测试、无既有工程配置；README.md 是唯一既有交付文件。\n说明：术语 greenfield 出现在上游描述中；本候选明确承认 README.md 已存在，不能将所有文件视为新建。\n",
+      "result": {
+        "valid": false,
+        "errors": [
+          "IMPLEMENTATION_BASELINE_CONTRADICTION: C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-baseline-audit-unit-pvzQjh\\.specforge\\work-items\\WI-BASELINE-PROBE\\candidates\\tasks.md: 说明：术语 greenfield 出现在上游描述中；本候选明确承认 README.md 已存在，不能将所有文件视为新建。"
+        ],
+        "input_files": [
+          "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-baseline-audit-unit-pvzQjh\\.specforge\\work-items\\WI-BASELINE-PROBE\\candidates\\tasks.md",
+          "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-baseline-audit-unit-pvzQjh\\.specforge\\work-items\\WI-BASELINE-PROBE\\implementation_baseline.json"
+        ],
+        "baseline": {
+          "schema_version": "1.0",
+          "work_item_id": "WI-BASELINE-PROBE",
+          "captured_at": "2026-10-25T06:07:48.241Z",
+          "snapshot_id": "sha256:ddb8b7e06546893e4f6ecfc0fb9fb8a7e226c489db65930f9dbb634bdf7f7e2d",
+          "planned_code_paths": [
+            "README.md",
+            "package.json",
+            "src/greet.ts",
+            "tests/greet.test.ts",
+            "tsconfig.json"
+          ],
+          "current_file_count": 1,
+          "all_planned_paths_missing": false,
+          "entries": [
+            {
+              "scope_path": "README.md",
+              "scope_kind": "file",
+              "matched_files": [
+                {
+                  "path": "README.md",
+                  "size": 18,
+                  "sha256": "sha256:02a0961d52223e01f565bf6bfe004c5a73cde06047fc794af70f1675f51a2aec"
+                }
+              ]
+            },
+            {
+              "scope_path": "package.json",
+              "scope_kind": "file",
+              "matched_files": []
+            },
+            {
+              "scope_path": "src/greet.ts",
+              "scope_kind": "file",
+              "matched_files": []
+            },
+            {
+              "scope_path": "tests/greet.test.ts",
+              "scope_kind": "file",
+              "matched_files": []
+            },
+            {
+              "scope_path": "tsconfig.json",
+              "scope_kind": "file",
+              "matched_files": []
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -32106,3 +32106,25 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - Daemon sf_artifact_write_core.ts的Trace读取路径已是.specforge/runtime/logs/trace.jsonl；Verifier与semantic-closure-contract-alignment旧断言仍要求.specforge/logs/trace.jsonl。按SPS4.2及实际owner更正指令和旧断言，不降低验证；同时移除未部署AGENT_CONSTITUTION路径引用。首次25通过1失败（旧路径断言），纠正后26通过。
 - 其他Agents、全局AGENTS及已部署旧tool_lib仍有历史路径，属于SPS19.19消费者缺口，未把本次Verifier修复声称为全局收口。
 - 真实OpenCode业务已创建WI-0001/intake_ready并受控保存Intake及辅助配置。外部取证载体POST长请求fetch failed，原消息保留；不认定产品失败。改用OpenCode正式prompt_async恢复同一会话/工作项，未另建WI；全部用户批准边界保持。
+
+### ERR-1894：Adapter模拟事件测试未证明真实事件接入
+
+- 048/051已验证实际部署Daemon经Adapter创建/查询/取消及提示投递，独立OpenCode消息确认模型回复。052另外使用源码Adapter和真实HTTP runtime先订阅再投递：模型回复可见，订阅30秒后done且零事件。生产HTTPServer只把事件转SessionRegistry，runtime client无事件订阅方法，生产调用点检索仅有simulateEvent内部调用pushEvent；现有生命周期集成测试明确使用注入。缺口归Adapter/Daemon事件桥接，不能用918项测试通过代替SPS10.2真实事件链。
+- 矩阵复核收紧结论：模块源码和回归只能作为线索，不能自动将组内每个条款标成已实现；未形成完整逐项证明的段落改为INSUFFICIENT_EVIDENCE，不按段落数量计算产品完成率。EXP-004/007/022/287。
+- 本轮后续检索曾使用不存在的HTTPServer/daemon-contract路径和Windows通配符，已按rg文件清单纠正；localhost只读请求首次被沙箱拒绝后通过显式审核重试。读取host-profile的OpenCode访问放行被自动审核拒绝，未执行；原因是该文件含主机/用户/路径信息且会进入外部模型。已保留请求，向用户明确说明目的地和风险，不能当作产品HardStop或伪造用户批准。
+- 用户随后明确允许本次只读访问，054仅reply=once，未授予持续权限或Candidate批准。主机清单的原始会话保留本地忽略日志，发布用会话副本标明字段脱敏与原始哈希。一次PowerShell内嵌替换因引号错误、一次重复目标apply_patch在写入前失败；未改产品或证据结论。
+- 057只读校验真实需求Candidate，正式Requirements核心校验器返回6个REQ短号错误；该探针不是正式Gate，不推进状态。Agent已安装指令明确要求模块域和三位序号，因此先记录模型输出不合规，等待真实Gate/恢复行为，不手工替Agent修候选。
+- 035达到取证载体30分钟观察窗口，退出1并取消未完成调用，属于观察者中断，不是产品失败。061固化242个现场文件及事件，最后权威状态仍candidate_preparing；需求/设计已交接、任务规划未完成。062以同一会话和WI恢复，扩大观察窗口，原失败不覆盖；未重新初始化项目或伪造候选批准。设计阶段的Contract两次格式拒绝后第三次成功、trace_delta所有权拒绝、handoff结构修正均保留原始消息。
+
+### ERR-1895：设计Agent的Trace写入指令与Runtime产物owner冲突
+
+- 已部署sf-design第254/808行要求同步并写入trace_delta；sf-artifact-write正式owner表将trace_delta/candidate_trace_delta归sf-task-planner。真实会话ses_e8e74297effe1MO77bwaThogaE的sf_artifact_write返回ARTIFACT_OWNER_MISMATCH，required_agent=sf-task-planner、hard_stop=false；随后由Orchestrator将该产物转交Task Planner。责任在Agent派生指令，不应放宽Runtime owner。原始调用见parent-check-sessions.json；源码快照及安装字节身份可复核。
+- 同一真实链中sf_doc_lint对短号需求返回pass/0 issues，因为其标记函数显式提供历史短号读取兼容；Orchestrator将此结果错误解释为本代canonical ID已验证。Requirements正式核心校验器仍明确拒绝六个短号，故不得把lint或Agent自述替代Gate，也不把它直接说成正式Gate已绕过。EXP-004/007/287。
+- 063对恢复前已有六份Candidate和两份handoff做逐字节复核，八份均未改变；任务规划只重试缺失产物步骤，没有重复WI或覆写已成功候选。后续合法修订须另行绑定新证据，不能把这一时点的保全结论无限外推。
+- 回溯最初task输入，首次偏离是Orchestrator要求“canonical ID（REQ-001起始）”，设计委派又要求DD-001起始；下游专业Agent未拒绝这一与正式编号格式冲突的委派。不能将根因直接归为Requirements自行缩写或Executor问题。任务规划用canonical映射补齐结构化refs，066正式引用核心只读探针检出7条未解析引用；正式Gate结果仍需独立证明。
+
+### ERR-1896：基线事实校验将局部范围和术语解释误判为实现冲突
+
+- 067真实OpenCode候选封存返回CANDIDATE_IMPLEMENTATION_TRUTH_INVALID、state_advanced=false：三个候选绑定字段错误的拒绝正确；另把“无业务源码/测试/工程配置，README为唯一既有文件”的范围限定说明判为矛盾。068独立、未注册单元夹具使用正确implementation_baseline_id和同一文件事实，普通准确描述通过，带范围限定及仅引用术语greenfield的准确说明均被拒绝，确认Runtime违反SPS6.3第544行的非关键词误判要求。
+- 首次偏离在implementation-baseline.ts的contradictionLines：存在任一planned scope既有文件便按greenfield词语扫描全部语句，未关联该声明对应的实现范围。不能将有README等同于已有业务实现，也不能通过要求Agent删除准确说明来宣称校验器已符合规格。EXP-004/007/022。
+- 069据已确认Runtime缺陷停止本次合成验收，未伪造HardStop或批准。062退出0是观察终止成功，不是业务通过。070/071保全现场及全部会话，072正式StateManager读取确认唯一WI-0001仍candidate_preparing；正式Gate、批准、Merge、实现、Verification和Close均无本轮真实闭环证据。Verifier修复已完成部署，此新增缺陷只审计留证，未擅自扩大修复范围。

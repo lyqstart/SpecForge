@@ -1,0 +1,12 @@
+{
+  "run_id": "CODEX-SF-20261025-VERIFIER-CONFORMANCE-A01",
+  "id": "035-resume-business",
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    "docs/archive/2026-10-25-verifier-conformance/resume-business.cjs",
+    "resume01"
+  ],
+  "started_utc": "2026-10-25T05:21:29.328Z",
+  "expected_writes": "Declared repair files/evidence; test fixtures; deployment only for explicitly named installer commands"
+}

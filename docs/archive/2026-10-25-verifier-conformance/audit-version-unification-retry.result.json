@@ -1,0 +1,17 @@
+{
+  "run_id": "CODEX-SF-20261025-VERIFIER-CONFORMANCE-A01",
+  "id": "audit-version-unification-retry",
+  "cwd": "D:/code/SpecForge/packages/version-unification",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1"
+  ],
+  "started_utc": "2026-10-25T05:16:51.582Z",
+  "expected_writes": "Declared repair files/evidence; test fixtures; deployment only for explicitly named installer commands",
+  "finished_utc": "2026-10-25T05:16:52.307Z",
+  "inner_exit_code": 0,
+  "signal": null
+}

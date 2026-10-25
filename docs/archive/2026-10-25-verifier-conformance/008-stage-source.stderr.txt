@@ -1,0 +1,5 @@
+warning: in the working copy of 'docs/project-status.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'setup/userlevel-opencode/agents/sf-verifier.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/archive/2026-10-25-verifier-conformance/change-plan.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/archive/2026-10-25-verifier-conformance/source-freeze.json', LF will be replaced by CRLF the next time Git touches it

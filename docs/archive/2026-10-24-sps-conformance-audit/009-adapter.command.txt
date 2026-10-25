@@ -1,0 +1,17 @@
+{
+  "run_id": "CODEX-SF-20261024-SPS-AUDIT-A01",
+  "command": "bun",
+  "arguments": [
+    "run",
+    "test",
+    "--",
+    "tests/real-capability-discovery.test.ts",
+    "tests/capability-evidence-boundary.test.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:/code/SpecForge/packages/opencode-adapter",
+  "started_utc": "2026-10-24T16:00:32.6578656Z",
+  "purpose": "SPS conformance evidence",
+  "expected_writes": "Evidence files; test temporary fixtures/cache only",
+  "inner_exit_code": null
+}

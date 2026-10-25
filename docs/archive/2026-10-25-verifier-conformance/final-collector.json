@@ -1,0 +1,7 @@
+{
+  "utc": "2026-10-25T06:08:45.343Z",
+  "base": "http://127.0.0.1:4096",
+  "pid": 6584,
+  "exit_code": 0,
+  "scope": "Read persisted original sessions only; no model prompts or new business sessions"
+}

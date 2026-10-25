@@ -1,0 +1,178 @@
+{
+  "utc": "2026-10-25T05:29:40.509Z",
+  "token_recorded": false,
+  "records": [
+    {
+      "utc": "2026-10-25T05:29:31.420Z",
+      "method": "POST",
+      "url": "/api/v1/kernel/session/spawn",
+      "body": {
+        "agentRole": "sf-verifier",
+        "spawnIntentId": "CODEX-SF-20261025-prompt-probe",
+        "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-WNA7t9",
+        "model": "zhipuai-coding-plan/glm-5.3"
+      },
+      "status": 201,
+      "response": {
+        "success": true,
+        "data": {
+          "sessionId": "ses_e8e76ebf0ffef5ASoHtcLwf5MD"
+        },
+        "requestId": "7yzdajtqplgmvne1jpa",
+        "timestamp": 1792906171390
+      }
+    },
+    {
+      "utc": "2026-10-25T05:29:40.456Z",
+      "method": "POST",
+      "url": "/api/v1/kernel/session/prompt",
+      "body": {
+        "sessionId": "ses_e8e76ebf0ffef5ASoHtcLwf5MD",
+        "content": "This is a text transport acceptance probe. Reply exactly SF-ADAPTER-PROBE-OK. Do not use tools, create files, or perform any work item operations."
+      },
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "sessionId": "ses_e8e76ebf0ffef5ASoHtcLwf5MD",
+          "accepted": true
+        },
+        "requestId": "a9k9cj7s0ymvne1qog",
+        "timestamp": 1792906180432
+      }
+    },
+    {
+      "kind": "independent OpenCode messages",
+      "messages": [
+        {
+          "info": {
+            "id": "msg-1792906171404-eo9kjnm65",
+            "sessionID": "ses_e8e76ebf0ffef5ASoHtcLwf5MD",
+            "role": "user",
+            "time": {
+              "created": 1792906171463
+            },
+            "summary": {
+              "diffs": []
+            },
+            "agent": "sf-verifier",
+            "model": {
+              "providerID": "zhipuai-coding-plan",
+              "modelID": "glm-5.3"
+            }
+          },
+          "parts": [
+            {
+              "id": "prt_17189144e001tANIrtUatfNgdI",
+              "sessionID": "ses_e8e76ebf0ffef5ASoHtcLwf5MD",
+              "messageID": "msg-1792906171404-eo9kjnm65",
+              "type": "text",
+              "text": "This is a text transport acceptance probe. Reply exactly SF-ADAPTER-PROBE-OK. Do not use tools, create files, or perform any work item operations."
+            }
+          ]
+        },
+        {
+          "info": {
+            "id": "msg_1718915ef001rIqYOdJoKkRuFR",
+            "sessionID": "ses_e8e76ebf0ffef5ASoHtcLwf5MD",
+            "role": "assistant",
+            "time": {
+              "created": 1792906171887,
+              "completed": 1792906180443
+            },
+            "parentID": "msg-1792906171404-eo9kjnm65",
+            "modelID": "glm-5.3",
+            "providerID": "zhipuai-coding-plan",
+            "mode": "sf-verifier",
+            "agent": "sf-verifier",
+            "path": {
+              "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-WNA7t9",
+              "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-WNA7t9"
+            },
+            "cost": 0,
+            "tokens": {
+              "total": 28984,
+              "input": 27882,
+              "output": 11,
+              "reasoning": 67,
+              "cache": {
+                "read": 1024,
+                "write": 0
+              }
+            },
+            "finish": "stop"
+          },
+          "parts": [
+            {
+              "id": "prt_1718935330013babwqEsAjSw5K",
+              "sessionID": "ses_e8e76ebf0ffef5ASoHtcLwf5MD",
+              "messageID": "msg_1718915ef001rIqYOdJoKkRuFR",
+              "type": "step-start",
+              "snapshot": "697afd4902036c91bfb2756a3e507c1b223a23fa"
+            },
+            {
+              "id": "prt_171893537001HdihYn6z5pAF77",
+              "sessionID": "ses_e8e76ebf0ffef5ASoHtcLwf5MD",
+              "messageID": "msg_1718915ef001rIqYOdJoKkRuFR",
+              "type": "reasoning",
+              "text": "This is a transport acceptance probe message. The requester wants an exact reply of \"SF-ADAPTER-PROBE-OK\" with no tool usage, file creation, or work item operations. This is a simple text response test — no verification work is being requested. I should just reply exactly with the requested string and nothing else.",
+              "time": {
+                "start": 1792906179896,
+                "end": 1792906179933
+              }
+            },
+            {
+              "id": "prt_17189355f001ZwyBfP604PDuzS",
+              "sessionID": "ses_e8e76ebf0ffef5ASoHtcLwf5MD",
+              "messageID": "msg_1718915ef001rIqYOdJoKkRuFR",
+              "type": "text",
+              "text": "SF-ADAPTER-PROBE-OK",
+              "time": {
+                "start": 1792906179935,
+                "end": 1792906180005
+              }
+            },
+            {
+              "id": "prt_171893687001wMylXGh3c7r7W1",
+              "sessionID": "ses_e8e76ebf0ffef5ASoHtcLwf5MD",
+              "messageID": "msg_1718915ef001rIqYOdJoKkRuFR",
+              "type": "step-finish",
+              "reason": "stop",
+              "snapshot": "697afd4902036c91bfb2756a3e507c1b223a23fa",
+              "cost": 0,
+              "tokens": {
+                "total": 28984,
+                "input": 27882,
+                "output": 11,
+                "reasoning": 67,
+                "cache": {
+                  "read": 1024,
+                  "write": 0
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "utc": "2026-10-25T05:29:40.509Z",
+      "method": "POST",
+      "url": "/api/v1/kernel/session/cancel",
+      "body": {
+        "sessionId": "ses_e8e76ebf0ffef5ASoHtcLwf5MD",
+        "reason": "Synthetic prompt audit cleanup"
+      },
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "sessionId": "ses_e8e76ebf0ffef5ASoHtcLwf5MD",
+          "cancelled": true
+        },
+        "requestId": "ma1kmf4x28jmvne1qpx",
+        "timestamp": 1792906180485
+      }
+    }
+  ]
+}

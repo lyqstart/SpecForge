@@ -1,0 +1,20 @@
+{
+  "run_id": "CODEX-SF-20261025-VERIFIER-CONFORMANCE-A01",
+  "id": "040-stage-paths",
+  "cwd": "D:/code/SpecForge",
+  "exe": "git",
+  "args": [
+    "add",
+    "--",
+    "setup/userlevel-opencode/agents/sf-verifier.md",
+    "packages/daemon-core/tests/unit/verifier-guidance-execution-boundary.test.ts",
+    "packages/daemon-core/tests/unit/semantic-closure-contract-alignment.test.ts",
+    "docs/rule/specforge-development-error-ledger-and-experience.md",
+    "docs/archive/2026-10-25-verifier-conformance/path-consumer-freeze.json"
+  ],
+  "started_utc": "2026-10-25T05:24:38.954Z",
+  "expected_writes": "Declared repair files/evidence; test fixtures; deployment only for explicitly named installer commands",
+  "finished_utc": "2026-10-25T05:24:39.349Z",
+  "inner_exit_code": 0,
+  "signal": null
+}

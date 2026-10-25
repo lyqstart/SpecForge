@@ -1,0 +1,28 @@
+{
+  "utc": "2026-10-25T05:38:39.470Z",
+  "pending": {
+    "id": "per_1718c47c9001vfbf310MCB0YTG",
+    "sessionID": "ses_e8e74297effe1MO77bwaThogaE",
+    "permission": "external_directory",
+    "patterns": [
+      "C:\\Users\\lyq\\.config\\opencode\\sf-user\\*"
+    ],
+    "metadata": {
+      "filepath": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\host-profile.json",
+      "parentDir": "C:\\Users\\lyq\\.config\\opencode\\sf-user"
+    },
+    "always": [
+      "C:\\Users\\lyq\\.config\\opencode\\sf-user\\*"
+    ],
+    "tool": {
+      "messageID": "msg_1718c2439001PLO75CioUHupZA",
+      "callID": "call_ed02e5a69ba0400a961ea2fc"
+    }
+  },
+  "request": {
+    "reply": "once"
+  },
+  "status": 200,
+  "response": "true",
+  "scope": "One pending native read of host-profile.json; no persistent permission, Candidate approval, code authorization or write"
+}

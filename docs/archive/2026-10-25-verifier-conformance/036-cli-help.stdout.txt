@@ -1,0 +1,27 @@
+SpecForge v1.0.21
+
+Usage: specforge <command> [options]
+
+Available commands:
+
+  daemon          Manage the SpecForge daemon
+  config          Show or modify CLI configuration
+  version         Show CLI version
+  doctor          Inspect local SpecForge installation and project status
+  services        Manage supported OS services
+  opencode-server Manage the OpenCode Server service
+
+Global options:
+  --json, -j
+      Output in JSON format (machine-friendly) [default: false]
+  --verbose, -v
+      Enable verbose output [default: false]
+  --help, -h
+      Show help [default: false]
+  --version, -V
+      Show version [default: false]
+
+For more information on a specific command, run:
+  specforge <command> --help
+  specforge <command> <subcommand> --help
+

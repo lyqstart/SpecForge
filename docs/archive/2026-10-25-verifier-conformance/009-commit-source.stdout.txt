@@ -1,0 +1,5 @@
+[codex/verifier-conformance-audit 933fa4fe] fix(verifier): align evidence guidance with SPS D18 boundary
+ 11 files changed, 685 insertions(+), 138 deletions(-)
+ create mode 100644 docs/archive/2026-10-25-verifier-conformance/change-plan.md
+ create mode 100644 docs/archive/2026-10-25-verifier-conformance/source-freeze.json
+ create mode 100644 packages/daemon-core/tests/unit/verifier-guidance-execution-boundary.test.ts

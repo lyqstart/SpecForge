@@ -1,0 +1,2 @@
+packages\opencode-adapter\src\OpenCodeAdapter.ts:1011:    await this.pushEvent(sessionId, openCodeEvent);
+

@@ -1,0 +1,16 @@
+{
+  "run_id": "CODEX-SF-20261025-VERIFIER-CONFORMANCE-A01",
+  "id": "009-commit-source",
+  "cwd": "D:/code/SpecForge",
+  "exe": "git",
+  "args": [
+    "commit",
+    "-m",
+    "fix(verifier): align evidence guidance with SPS D18 boundary"
+  ],
+  "started_utc": "2026-10-25T04:28:09.142Z",
+  "expected_writes": "Declared repair files/evidence; test fixtures; deployment only for explicitly named installer commands",
+  "finished_utc": "2026-10-25T04:28:09.435Z",
+  "inner_exit_code": 0,
+  "signal": null
+}

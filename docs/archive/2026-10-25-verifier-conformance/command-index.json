@@ -1,0 +1,643 @@
+{
+  "utc": "2026-10-25T06:12:24.288Z",
+  "commands": [
+    {
+      "file": "001-branch.result.json",
+      "id": "001-branch",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T04:22:44.213Z",
+      "finished_utc": "2026-10-25T04:22:44.286Z"
+    },
+    {
+      "file": "002-baseline.result.json",
+      "id": "002-baseline",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T04:23:00.448Z",
+      "finished_utc": "2026-10-25T04:23:05.710Z"
+    },
+    {
+      "file": "003-guidance.result.json",
+      "id": "003-guidance",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T04:24:17.351Z",
+      "finished_utc": "2026-10-25T04:24:21.429Z"
+    },
+    {
+      "file": "004-workflow-check.result.json",
+      "id": "004-workflow-check",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T04:24:23.780Z",
+      "finished_utc": "2026-10-25T04:24:24.085Z"
+    },
+    {
+      "file": "005-daemon-regression.result.json",
+      "id": "005-daemon-regression",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T04:24:44.030Z",
+      "finished_utc": "2026-10-25T04:27:45.927Z"
+    },
+    {
+      "file": "006-root-regression.result.json",
+      "id": "006-root-regression",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T04:24:44.645Z",
+      "finished_utc": "2026-10-25T04:25:16.667Z"
+    },
+    {
+      "file": "007-scope-regression.result.json",
+      "id": "007-scope-regression",
+      "inner_exit_code": 1,
+      "started_utc": "2026-10-25T04:26:49.903Z",
+      "finished_utc": "2026-10-25T04:27:11.264Z"
+    },
+    {
+      "file": "008-stage-source.result.json",
+      "id": "008-stage-source",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T04:28:04.930Z",
+      "finished_utc": "2026-10-25T04:28:05.273Z"
+    },
+    {
+      "file": "009-commit-source.result.json",
+      "id": "009-commit-source",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T04:28:09.142Z",
+      "finished_utc": "2026-10-25T04:28:09.435Z"
+    },
+    {
+      "file": "010-release-manifest.result.json",
+      "id": "010-release-manifest",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T04:28:15.729Z",
+      "finished_utc": "2026-10-25T04:28:19.312Z"
+    },
+    {
+      "file": "011-scope-regression.result.json",
+      "id": "011-scope-regression",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T04:28:27.453Z",
+      "finished_utc": "2026-10-25T04:28:55.525Z"
+    },
+    {
+      "file": "012-release-precheck.result.json",
+      "id": "012-release-precheck",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T04:28:24.598Z",
+      "finished_utc": "2026-10-25T04:28:28.074Z"
+    },
+    {
+      "file": "013-installed-baseline.result.json",
+      "id": "013-installed-baseline",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T04:28:45.326Z",
+      "finished_utc": "2026-10-25T04:28:46.218Z"
+    },
+    {
+      "file": "014-deploy.result.json",
+      "id": "014-deploy",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T04:29:08.856Z",
+      "finished_utc": "2026-10-25T04:29:12.234Z"
+    },
+    {
+      "file": "015-installer-verify.result.json",
+      "id": "015-installer-verify",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T04:29:17.592Z",
+      "finished_utc": "2026-10-25T04:29:18.048Z"
+    },
+    {
+      "file": "016-installed-identity.result.json",
+      "id": "016-installed-identity",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T04:29:17.866Z",
+      "finished_utc": "2026-10-25T04:29:18.414Z"
+    },
+    {
+      "file": "017-guidance-owner-regression.result.json",
+      "id": "017-guidance-owner-regression",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:12:10.461Z",
+      "finished_utc": "2026-10-25T05:12:12.323Z"
+    },
+    {
+      "file": "018-stage-supplement.result.json",
+      "id": "018-stage-supplement",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:12:49.586Z",
+      "finished_utc": "2026-10-25T05:12:49.921Z"
+    },
+    {
+      "file": "019-commit-supplement.result.json",
+      "id": "019-commit-supplement",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:12:52.088Z",
+      "finished_utc": "2026-10-25T05:12:52.298Z"
+    },
+    {
+      "file": "020-release-manifest.result.json",
+      "id": "020-release-manifest",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:12:56.019Z",
+      "finished_utc": "2026-10-25T05:12:56.712Z"
+    },
+    {
+      "file": "021-release-precheck.result.json",
+      "id": "021-release-precheck",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:13:02.575Z",
+      "finished_utc": "2026-10-25T05:13:04.023Z"
+    },
+    {
+      "file": "022-deploy-supplement.result.json",
+      "id": "022-deploy-supplement",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:13:06.727Z",
+      "finished_utc": "2026-10-25T05:13:07.378Z"
+    },
+    {
+      "file": "023-installer-verify.result.json",
+      "id": "023-installer-verify",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:13:10.442Z",
+      "finished_utc": "2026-10-25T05:13:10.841Z"
+    },
+    {
+      "file": "024-real-opencode.result.json",
+      "id": "024-real-opencode",
+      "inner_exit_code": 1,
+      "started_utc": "2026-10-25T05:13:40.449Z",
+      "finished_utc": "2026-10-25T05:19:41.631Z"
+    },
+    {
+      "file": "025-cli-guidance-regression.result.json",
+      "id": "025-cli-guidance-regression",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:17:10.674Z",
+      "finished_utc": "2026-10-25T05:17:11.657Z"
+    },
+    {
+      "file": "026-guidance-final-regression.result.json",
+      "id": "026-guidance-final-regression",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:19:02.459Z",
+      "finished_utc": "2026-10-25T05:19:04.348Z"
+    },
+    {
+      "file": "027-stage-final-guidance.result.json",
+      "id": "027-stage-final-guidance",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:19:17.150Z",
+      "finished_utc": "2026-10-25T05:19:17.512Z"
+    },
+    {
+      "file": "028-commit-final-guidance.result.json",
+      "id": "028-commit-final-guidance",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:19:19.808Z",
+      "finished_utc": "2026-10-25T05:19:20.033Z"
+    },
+    {
+      "file": "029-final-release-manifest.result.json",
+      "id": "029-final-release-manifest",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:19:23.159Z",
+      "finished_utc": "2026-10-25T05:19:23.842Z"
+    },
+    {
+      "file": "030-final-precheck.result.json",
+      "id": "030-final-precheck",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:19:32.206Z",
+      "finished_utc": "2026-10-25T05:19:33.591Z"
+    },
+    {
+      "file": "031-final-deploy.result.json",
+      "id": "031-final-deploy",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:19:36.063Z",
+      "finished_utc": "2026-10-25T05:19:36.736Z"
+    },
+    {
+      "file": "032-final-verify.result.json",
+      "id": "032-final-verify",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:19:39.116Z",
+      "finished_utc": "2026-10-25T05:19:39.500Z"
+    },
+    {
+      "file": "033-final-installed-identity.result.json",
+      "id": "033-final-installed-identity",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:19:52.699Z",
+      "finished_utc": "2026-10-25T05:19:53.233Z"
+    },
+    {
+      "file": "034-final-host.result.json",
+      "id": "034-final-host",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:19:54.694Z",
+      "finished_utc": "2026-10-25T05:19:58.212Z"
+    },
+    {
+      "file": "035-resume-business.result.json",
+      "id": "035-resume-business",
+      "inner_exit_code": 1,
+      "started_utc": "2026-10-25T05:21:29.328Z",
+      "finished_utc": "2026-10-25T05:51:38.297Z"
+    },
+    {
+      "file": "036-cli-help.result.json",
+      "id": "036-cli-help",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:23:16.880Z",
+      "finished_utc": "2026-10-25T05:23:17.198Z"
+    },
+    {
+      "file": "037-daemon-status.result.json",
+      "id": "037-daemon-status",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:23:18.589Z",
+      "finished_utc": "2026-10-25T05:23:18.770Z"
+    },
+    {
+      "file": "038-verifier-paths.result.json",
+      "id": "038-verifier-paths",
+      "inner_exit_code": 1,
+      "started_utc": "2026-10-25T05:24:06.494Z",
+      "finished_utc": "2026-10-25T05:24:08.383Z"
+    },
+    {
+      "file": "039-verifier-paths-retry.result.json",
+      "id": "039-verifier-paths-retry",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:24:25.304Z",
+      "finished_utc": "2026-10-25T05:24:27.082Z"
+    },
+    {
+      "file": "040-stage-paths.result.json",
+      "id": "040-stage-paths",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:24:38.954Z",
+      "finished_utc": "2026-10-25T05:24:39.349Z"
+    },
+    {
+      "file": "041-commit-paths.result.json",
+      "id": "041-commit-paths",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:24:41.678Z",
+      "finished_utc": "2026-10-25T05:24:41.921Z"
+    },
+    {
+      "file": "042-path-release-manifest.result.json",
+      "id": "042-path-release-manifest",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:24:45.679Z",
+      "finished_utc": "2026-10-25T05:24:46.375Z"
+    },
+    {
+      "file": "043-path-precheck.result.json",
+      "id": "043-path-precheck",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:24:53.782Z",
+      "finished_utc": "2026-10-25T05:24:55.315Z"
+    },
+    {
+      "file": "044-path-deploy.result.json",
+      "id": "044-path-deploy",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:24:57.743Z",
+      "finished_utc": "2026-10-25T05:24:58.436Z"
+    },
+    {
+      "file": "045-path-verify.result.json",
+      "id": "045-path-verify",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:25:01.016Z",
+      "finished_utc": "2026-10-25T05:25:01.391Z"
+    },
+    {
+      "file": "046-final-byte-check.result.json",
+      "id": "046-final-byte-check",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:25:09.552Z",
+      "finished_utc": "2026-10-25T05:25:10.098Z"
+    },
+    {
+      "file": "047-fresh-final-host.result.json",
+      "id": "047-fresh-final-host",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:25:12.988Z",
+      "finished_utc": "2026-10-25T05:25:16.714Z"
+    },
+    {
+      "file": "048-production-probe.result.json",
+      "id": "048-production-probe",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:27:35.328Z",
+      "finished_utc": "2026-10-25T05:27:35.908Z"
+    },
+    {
+      "file": "049-remote-main.result.json",
+      "id": "049-remote-main",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:28:16.385Z",
+      "finished_utc": "2026-10-25T05:28:22.629Z"
+    },
+    {
+      "file": "050-business-snapshot.result.json",
+      "id": "050-business-snapshot",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:28:57.053Z",
+      "finished_utc": "2026-10-25T05:28:57.226Z"
+    },
+    {
+      "file": "051-production-prompt.result.json",
+      "id": "051-production-prompt",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:29:31.277Z",
+      "finished_utc": "2026-10-25T05:29:40.538Z"
+    },
+    {
+      "file": "052-adapter-events.result.json",
+      "id": "052-adapter-events",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:36:04.690Z",
+      "finished_utc": "2026-10-25T05:36:34.990Z"
+    },
+    {
+      "file": "053-child-capture.result.json",
+      "id": "053-child-capture",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:37:13.995Z",
+      "finished_utc": "2026-10-25T05:37:14.278Z"
+    },
+    {
+      "file": "054-profile-read.result.json",
+      "id": "054-profile-read",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:38:39.342Z",
+      "finished_utc": "2026-10-25T05:38:39.485Z"
+    },
+    {
+      "file": "055-event-callsites.result.json",
+      "id": "055-event-callsites",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:38:25.004Z",
+      "finished_utc": "2026-10-25T05:38:25.299Z"
+    },
+    {
+      "file": "056-chain-progress.result.json",
+      "id": "056-chain-progress",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:39:32.755Z",
+      "finished_utc": "2026-10-25T05:39:32.998Z"
+    },
+    {
+      "file": "057-requirement-core-probe.result.json",
+      "id": "057-requirement-core-probe",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:41:05.501Z",
+      "finished_utc": "2026-10-25T05:41:05.639Z"
+    },
+    {
+      "file": "058-design-progress.result.json",
+      "id": "058-design-progress",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:46:26.912Z",
+      "finished_utc": "2026-10-25T05:46:27.166Z"
+    },
+    {
+      "file": "059-design-handoff.result.json",
+      "id": "059-design-handoff",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:49:22.547Z",
+      "finished_utc": "2026-10-25T05:49:22.820Z"
+    },
+    {
+      "file": "060-parent-check.result.json",
+      "id": "060-parent-check",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:51:29.901Z",
+      "finished_utc": "2026-10-25T05:51:30.173Z"
+    },
+    {
+      "file": "061-observation-checkpoint.result.json",
+      "id": "061-observation-checkpoint",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:51:51.363Z",
+      "finished_utc": "2026-10-25T05:51:51.613Z"
+    },
+    {
+      "file": "062-resume-business.result.json",
+      "id": "062-resume-business",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:51:54.718Z",
+      "finished_utc": "2026-10-25T06:08:36.294Z"
+    },
+    {
+      "file": "063-recovery-preservation.result.json",
+      "id": "063-recovery-preservation",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:57:03.316Z",
+      "finished_utc": "2026-10-25T05:57:03.424Z"
+    },
+    {
+      "file": "064-credential-scan.result.json",
+      "id": "064-credential-scan",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:58:27.010Z",
+      "finished_utc": "2026-10-25T05:58:27.853Z"
+    },
+    {
+      "file": "065-task-planning.result.json",
+      "id": "065-task-planning",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T06:03:00.940Z",
+      "finished_utc": "2026-10-25T06:03:01.494Z"
+    },
+    {
+      "file": "066-reference-probe.result.json",
+      "id": "066-reference-probe",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T06:03:42.054Z",
+      "finished_utc": "2026-10-25T06:03:42.207Z"
+    },
+    {
+      "file": "067-seal-observation.result.json",
+      "id": "067-seal-observation",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T06:06:42.271Z",
+      "finished_utc": "2026-10-25T06:06:42.606Z"
+    },
+    {
+      "file": "068-baseline-false-positive.result.json",
+      "id": "068-baseline-false-positive",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T06:07:48.140Z",
+      "finished_utc": "2026-10-25T06:07:48.296Z"
+    },
+    {
+      "file": "069-audit-stop.result.json",
+      "id": "069-audit-stop",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T06:08:27.550Z",
+      "finished_utc": "2026-10-25T06:08:28.164Z"
+    },
+    {
+      "file": "070-final-business-files.result.json",
+      "id": "070-final-business-files",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T06:08:37.098Z",
+      "finished_utc": "2026-10-25T06:08:37.358Z"
+    },
+    {
+      "file": "071-final-sessions.result.json",
+      "id": "071-final-sessions",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T06:08:43.117Z",
+      "finished_utc": "2026-10-25T06:08:45.411Z"
+    },
+    {
+      "file": "072-final-runtime-state.result.json",
+      "id": "072-final-runtime-state",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T06:09:00.059Z",
+      "finished_utc": "2026-10-25T06:09:00.187Z"
+    },
+    {
+      "file": "073-sealed-business-snapshot.result.json",
+      "id": "073-sealed-business-snapshot",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T06:10:09.858Z",
+      "finished_utc": "2026-10-25T06:10:10.120Z"
+    },
+    {
+      "file": "074-final-installed.result.json",
+      "id": "074-final-installed",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T06:10:21.410Z",
+      "finished_utc": "2026-10-25T06:10:21.958Z"
+    },
+    {
+      "file": "075-remote-check.result.json",
+      "id": "075-remote-check",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T06:10:23.110Z",
+      "finished_utc": "2026-10-25T06:10:29.520Z"
+    },
+    {
+      "file": "076-diff-check.result.json",
+      "id": "076-diff-check",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T06:10:21.383Z",
+      "finished_utc": "2026-10-25T06:10:21.557Z"
+    },
+    {
+      "file": "077-evidence-attributes.result.json",
+      "id": "077-evidence-attributes",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T06:10:58.174Z",
+      "finished_utc": "2026-10-25T06:10:58.239Z"
+    },
+    {
+      "file": "078-final-credential-scan.result.json",
+      "id": "078-final-credential-scan",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T06:10:59.053Z",
+      "finished_utc": "2026-10-25T06:10:59.805Z"
+    },
+    {
+      "file": "079-final-matrix.result.json",
+      "id": "079-final-matrix",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T06:12:19.025Z",
+      "finished_utc": "2026-10-25T06:12:19.184Z"
+    },
+    {
+      "file": "080-final-diff.result.json",
+      "id": "080-final-diff",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T06:12:20.004Z",
+      "finished_utc": "2026-10-25T06:12:20.168Z"
+    },
+    {
+      "file": "audit-cli.result.json",
+      "id": "audit-cli",
+      "inner_exit_code": 1,
+      "started_utc": "2026-10-25T05:15:19.094Z",
+      "finished_utc": "2026-10-25T05:15:57.886Z"
+    },
+    {
+      "file": "audit-configuration.result.json",
+      "id": "audit-configuration",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:15:08.282Z",
+      "finished_utc": "2026-10-25T05:15:13.397Z"
+    },
+    {
+      "file": "audit-host-profile-retry.result.json",
+      "id": "audit-host-profile-retry",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:16:49.647Z",
+      "finished_utc": "2026-10-25T05:16:50.477Z"
+    },
+    {
+      "file": "audit-host-profile.result.json",
+      "id": "audit-host-profile",
+      "inner_exit_code": 1,
+      "started_utc": "2026-10-25T05:15:18.869Z",
+      "finished_utc": "2026-10-25T05:15:19.041Z"
+    },
+    {
+      "file": "audit-observability.result.json",
+      "id": "audit-observability",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:15:16.774Z",
+      "finished_utc": "2026-10-25T05:15:18.813Z"
+    },
+    {
+      "file": "audit-opencode-adapter.result.json",
+      "id": "audit-opencode-adapter",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:15:13.448Z",
+      "finished_utc": "2026-10-25T05:15:39.438Z"
+    },
+    {
+      "file": "audit-permission-engine.result.json",
+      "id": "audit-permission-engine",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:15:39.498Z",
+      "finished_utc": "2026-10-25T05:15:58.997Z"
+    },
+    {
+      "file": "audit-service-management.result.json",
+      "id": "audit-service-management",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:15:10.826Z",
+      "finished_utc": "2026-10-25T05:15:16.725Z"
+    },
+    {
+      "file": "audit-version-unification-retry.result.json",
+      "id": "audit-version-unification-retry",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:16:51.582Z",
+      "finished_utc": "2026-10-25T05:16:52.307Z"
+    },
+    {
+      "file": "audit-version-unification.result.json",
+      "id": "audit-version-unification",
+      "inner_exit_code": 1,
+      "started_utc": "2026-10-25T05:15:57.947Z",
+      "finished_utc": "2026-10-25T05:15:58.154Z"
+    },
+    {
+      "file": "audit-workflow-runtime.result.json",
+      "id": "audit-workflow-runtime",
+      "inner_exit_code": 0,
+      "started_utc": "2026-10-25T05:15:59.051Z",
+      "finished_utc": "2026-10-25T05:16:37.338Z"
+    }
+  ],
+  "interpretation": "Failures retained; retries are separate runs; exit zero from an audit probe may mean a defect was successfully reproduced."
+}

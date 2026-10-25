@@ -1,0 +1,29 @@
+[2026-10-25T05:36:04.937Z] [SPAWNAGENT] [INFO] Session created successfully {
+  sessionId: "ses_e8e70eaceffeLKMsaEcAthQVTS",
+  spawnIntentId: "CODEX-SF-20261025-event-probe",
+}
+[EventLogger] session.lifecycle {
+  eventId: "evt-1792906564938-1-q2tji5r",
+  ts: "2026-10-25T05:36:04.938Z",
+  projectId: "opencode-adapter",
+  payload: {
+    sessionId: "ses_e8e70eaceffeLKMsaEcAthQVTS",
+    spawnIntentId: "CODEX-SF-20261025-event-probe",
+    event: "created",
+    reason: undefined,
+    timestamp: "2026-10-25T05:36:04.938Z",
+  },
+}
+{"reply_observed":true,"event_received":false,"elapsed_ms":30017}
+[EventLogger] session.lifecycle {
+  eventId: "evt-1792906594973-2-sho8wq7",
+  ts: "2026-10-25T05:36:34.973Z",
+  projectId: "opencode-adapter",
+  payload: {
+    sessionId: "ses_e8e70eaceffeLKMsaEcAthQVTS",
+    spawnIntentId: "CODEX-SF-20261025-event-probe",
+    event: "cancelled",
+    reason: "Synthetic event probe cleanup",
+    timestamp: "2026-10-25T05:36:34.973Z",
+  },
+}

@@ -1,0 +1,133 @@
+{
+  "utc": "2026-10-25T05:36:34.973Z",
+  "scope": "Repository source adapter with real HTTP runtime client; no simulated or manually injected events",
+  "records": [
+    {
+      "utc": "2026-10-25T05:36:04.938Z",
+      "kind": "spawn",
+      "result": {
+        "sessionId": "ses_e8e70eaceffeLKMsaEcAthQVTS"
+      }
+    },
+    {
+      "utc": "2026-10-25T05:36:34.955Z",
+      "kind": "live-result",
+      "elapsed_ms": 30017,
+      "reply_observed": true,
+      "event": {
+        "done": true
+      },
+      "messages": [
+        {
+          "info": {
+            "id": "msg-1792906564938-k5003re55",
+            "sessionID": "ses_e8e70eaceffeLKMsaEcAthQVTS",
+            "role": "user",
+            "time": {
+              "created": 1792906564924
+            },
+            "summary": {
+              "diffs": []
+            },
+            "agent": "sf-verifier",
+            "model": {
+              "providerID": "zhipuai-coding-plan",
+              "modelID": "glm-5.3"
+            }
+          },
+          "parts": [
+            {
+              "id": "prt_1718f1541001XR2ATNUl955oM0",
+              "sessionID": "ses_e8e70eaceffeLKMsaEcAthQVTS",
+              "messageID": "msg-1792906564938-k5003re55",
+              "type": "text",
+              "text": "Text transport probe only: reply exactly SF-EVENT-PROBE-OK. Do not call tools, write files, or operate any work item."
+            }
+          ]
+        },
+        {
+          "info": {
+            "id": "msg_1718f1555001UBhTT7W0jJL8xw",
+            "sessionID": "ses_e8e70eaceffeLKMsaEcAthQVTS",
+            "role": "assistant",
+            "time": {
+              "created": 1792906564949,
+              "completed": 1792906575171
+            },
+            "parentID": "msg-1792906564938-k5003re55",
+            "modelID": "glm-5.3",
+            "providerID": "zhipuai-coding-plan",
+            "mode": "sf-verifier",
+            "agent": "sf-verifier",
+            "path": {
+              "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-WNA7t9",
+              "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-WNA7t9"
+            },
+            "cost": 0,
+            "tokens": {
+              "total": 28975,
+              "input": 37,
+              "output": 10,
+              "reasoning": 64,
+              "cache": {
+                "read": 28864,
+                "write": 0
+              }
+            },
+            "finish": "stop"
+          },
+          "parts": [
+            {
+              "id": "prt_1718f3833001ttSNejWQOSHVyp",
+              "sessionID": "ses_e8e70eaceffeLKMsaEcAthQVTS",
+              "messageID": "msg_1718f1555001UBhTT7W0jJL8xw",
+              "type": "step-start",
+              "snapshot": "697afd4902036c91bfb2756a3e507c1b223a23fa"
+            },
+            {
+              "id": "prt_1718f38350019iC4RYIfULj2Q7",
+              "sessionID": "ses_e8e70eaceffeLKMsaEcAthQVTS",
+              "messageID": "msg_1718f1555001UBhTT7W0jJL8xw",
+              "type": "reasoning",
+              "text": "This is a text transport probe request. The user asks me to reply exactly \"SF-EVENT-PROBE-OK\", without calling tools, writing files, or operating any work item. This is a simple connectivity/transport test that doesn't involve any governance operations, so I just need to reply exactly as requested.",
+              "time": {
+                "start": 1792906573877,
+                "end": 1792906574694
+              }
+            },
+            {
+              "id": "prt_1718f3b6900177Jfz00zlOwm40",
+              "sessionID": "ses_e8e70eaceffeLKMsaEcAthQVTS",
+              "messageID": "msg_1718f1555001UBhTT7W0jJL8xw",
+              "type": "text",
+              "text": "SF-EVENT-PROBE-OK",
+              "time": {
+                "start": 1792906574697,
+                "end": 1792906574776
+              }
+            },
+            {
+              "id": "prt_1718f3c8d001HDBIBdGqN2L0CE",
+              "sessionID": "ses_e8e70eaceffeLKMsaEcAthQVTS",
+              "messageID": "msg_1718f1555001UBhTT7W0jJL8xw",
+              "type": "step-finish",
+              "reason": "stop",
+              "snapshot": "697afd4902036c91bfb2756a3e507c1b223a23fa",
+              "cost": 0,
+              "tokens": {
+                "total": 28975,
+                "input": 37,
+                "output": 10,
+                "reasoning": 64,
+                "cache": {
+                  "read": 28864,
+                  "write": 0
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

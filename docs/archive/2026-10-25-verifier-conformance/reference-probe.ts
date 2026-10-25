@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import { validateCandidateRequirementReferences } from '../../../packages/daemon-core/src/tools/lib/candidate-requirement-reference-integrity';
+const root=import.meta.dir,host=JSON.parse(fs.readFileSync(path.join(root,'resume01-identity.json'),'utf8'));
+const dir=path.join(host.work,'.specforge/work-items/WI-0001'),file=path.join(dir,'candidates/project/modules/CORE/requirements.candidate.md');
+const result=await validateCandidateRequirementReferences({workItemDir:dir,requirementArtifacts:[{path:file,content:fs.readFileSync(file,'utf8')}]});
+const identities=result.input_files.map(file=>({file,sha256:crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')}));
+fs.writeFileSync(path.join(root,'reference-probe.json'),JSON.stringify({utc:new Date().toISOString(),scope:'Read-only reference core check on real current candidate set; not formal Gate/state transition',result,identities},null,2),{flag:'wx'});
+console.log(JSON.stringify(result));

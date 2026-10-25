@@ -1,0 +1,13 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/shell-readonly-boundary.test.ts (136 tests) 954ms
+ ✓ tests/v11-agent-skill-contract-alignment.test.ts (9 tests) 94ms
+ ✓ tests/unit/current-document-role-contract.test.ts (10 tests) 36ms
+ ✓ tests/unit/semantic-closure-contract-alignment.test.ts (5 tests) 13ms
+
+ Test Files  4 passed (4)
+      Tests  160 passed (160)
+   Start at  12:23:02
+   Duration  3.32s (transform 675ms, setup 0ms, collect 1.16s, tests 1.10s, environment 1ms, prepare 359ms)
+

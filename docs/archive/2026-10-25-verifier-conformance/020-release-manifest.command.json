@@ -1,0 +1,13 @@
+{
+  "run_id": "CODEX-SF-20261025-VERIFIER-CONFORMANCE-A01",
+  "id": "020-release-manifest",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/build-release-manifest.ts",
+    "--candidate-id",
+    "commit-6b51b20578d7c621cc05f22988055a9450bebd6d"
+  ],
+  "started_utc": "2026-10-25T05:12:56.019Z",
+  "expected_writes": "Declared repair files/evidence; test fixtures; deployment only for explicitly named installer commands"
+}

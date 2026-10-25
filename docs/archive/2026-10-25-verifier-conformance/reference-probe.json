@@ -1,0 +1,61 @@
+{
+  "utc": "2026-10-25T06:03:42.195Z",
+  "scope": "Read-only reference core check on real current candidate set; not formal Gate/state transition",
+  "result": {
+    "valid": false,
+    "errors": [
+      "REQUIREMENT_REFERENCE_UNRESOLVED: C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\tasks.md: REQ-CORE-001 is not defined by the current authoritative Requirements set",
+      "REQUIREMENT_REFERENCE_UNRESOLVED: C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\tasks.md: REQ-CORE-002 is not defined by the current authoritative Requirements set",
+      "REQUIREMENT_REFERENCE_UNRESOLVED: C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\tasks.md: REQ-CORE-003 is not defined by the current authoritative Requirements set",
+      "REQUIREMENT_REFERENCE_UNRESOLVED: C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\tasks.md: REQ-CORE-004 is not defined by the current authoritative Requirements set",
+      "REQUIREMENT_REFERENCE_UNRESOLVED: C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\tasks.md: REQ-CORE-005 is not defined by the current authoritative Requirements set",
+      "REQUIREMENT_REFERENCE_UNRESOLVED: C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\tasks.md: REQ-CORE-006 is not defined by the current authoritative Requirements set",
+      "REQUIREMENT_REFERENCE_UNRESOLVED: C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\trace_delta.md: REQ-CORE-001 is not defined by the current authoritative Requirements set"
+    ],
+    "declared_requirement_ids": [],
+    "input_files": [
+      "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\architecture.candidate.md",
+      "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\data_model.candidate.md",
+      "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\contracts.candidate.json",
+      "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\design.candidate.md",
+      "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\module.candidate.json",
+      "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\requirements.candidate.md",
+      "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\tasks.md",
+      "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\trace_delta.md"
+    ]
+  },
+  "identities": [
+    {
+      "file": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\architecture.candidate.md",
+      "sha256": "6b4c7c897dc83f61bf6c98a4328766a165234c97d5f9a04077d8c6a28fa302de"
+    },
+    {
+      "file": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\data_model.candidate.md",
+      "sha256": "7261faada9155c66b60bbeb90da3116bcc755791c8890cfafc227cf9586f0ba0"
+    },
+    {
+      "file": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\contracts.candidate.json",
+      "sha256": "74dfc9f4beef1476cf426916d82bcc714b6cd68417c5dfd4597c3d2d043f5893"
+    },
+    {
+      "file": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\design.candidate.md",
+      "sha256": "d1abd281058614e73a3fb0ebf63d7f016772fb26325729b2a5365f87f7617d7d"
+    },
+    {
+      "file": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\module.candidate.json",
+      "sha256": "7c2f8212361a912ba2fe598759a98cd3743838a92c5ac4362919ec5f4486e8f6"
+    },
+    {
+      "file": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\requirements.candidate.md",
+      "sha256": "a2182f36ab19a4e50e6caaf20c0d0b640ff0a2015f2722bcb53f869c83305a79"
+    },
+    {
+      "file": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\tasks.md",
+      "sha256": "d268abea006e944647144a9708a6717a3046358e3958d758a4d3d25b91d6ee5f"
+    },
+    {
+      "file": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\trace_delta.md",
+      "sha256": "7b4669fa0ea2e44743449e650f8287227c04caf0fa5e2aa2aaeb9fd1a2191150"
+    }
+  ]
+}

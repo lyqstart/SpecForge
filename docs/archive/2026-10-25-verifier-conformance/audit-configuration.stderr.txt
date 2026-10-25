@@ -1,0 +1,212 @@
+$ vitest run "--maxWorkers=1" "--minWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+stderr | tests/integration.test.ts > Integration: End-to-End Configuration Loading > Error Recovery Scenarios > should fail fast when project config is missing
+[Config] ERROR Failed to load project-level configuration {}
+
+stderr | tests/integration.test.ts > Integration: End-to-End Configuration Loading > Error Recovery Scenarios > should fail with clear error for invalid JSON in project config
+[Config] ERROR Invalid JSON in configuration file {}
+[Config] ERROR Failed to load project-level configuration {}
+
+stderr | tests/integration.test.ts > Integration: End-to-End Configuration Loading > Error Recovery Scenarios > should maintain previous valid config when new config fails to load
+[Config] ERROR Invalid JSON in configuration file {}
+[Config] ERROR Failed to load project-level configuration {}
+
+stderr | tests/integration.test.ts > Integration: End-to-End Configuration Loading > Sensitive Field Protection > should reject project-level override of sensitive fields
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/integration.test.ts > Integration: Hot-Reload with Concurrent Workflows > Concurrent workflow scenarios > should handle multiple workflows starting at different times around reload
+[Config] WARN Hot-reload watcher is not running
+
+stderr | tests/integration.test.ts > Integration: Hot-Reload with Concurrent Workflows > Concurrent workflow scenarios > should handle rapid sequential reloads
+[Config] WARN Hot-reload watcher is not running
+
+stderr | tests/integration.test.ts > Integration: Hot-Reload with Concurrent Workflows > Concurrent workflow scenarios > should handle cache eviction under load
+[Config] WARN Hot-reload watcher is not running
+
+stderr | tests/integration.test.ts > Integration: Hot-Reload with Concurrent Workflows > Concurrent workflow scenarios > should work with file watcher triggered reloads
+[Config] WARN Hot-reload watcher is not running
+
+stderr | tests/integration.test.ts > Integration: Cross-Component Configuration Sharing > Config change propagation > should propagate changes through reload callbacks
+[Config] WARN Hot-reload watcher is not running
+
+stderr | tests/merge-engine.test.ts > merge-engine > merge function > sensitive field protection > should reject project-level override of sensitive fields
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/merge-engine.test.ts > merge-engine > merge function > sensitive field protection > should allow runtime-level override of sensitive fields
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/merge-engine.test.ts > merge-engine > merge function > sensitive field protection > should protect all sensitive fields from project override
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/merge-engine.test.ts > merge-engine > merge function > sensitive field protection > should track validation errors with layer information
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/merge-engine.test.ts > merge-engine > merge function > metadata > should include validation errors in metadata
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/property/property-11.test.ts > Property 11: Configuration Merge Determinism > should handle sensitive field protection deterministically
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/hot-reload.test.ts > hot-reload > HotReloadManager > should handle disabled hot-reload
+[Config] WARN Hot-reload is disabled, cannot reload
+
+stderr | tests/hot-reload.test.ts > hot-reload > HotReloadManager > Activation Boundary > should throw error when no snapshot exists for work item
+[Config] ERROR No snapshot found for work item {}
+
+stderr | tests/config-access.test.ts > config-access > interpolate > should return empty string for missing env var
+[Config] WARN Environment variable not found for interpolation {}
+
+stderr | tests/config-loader.test.ts > config-loader > loadConfigFile > should throw for invalid JSON
+[Config] ERROR Invalid JSON in configuration file {}
+
+stderr | tests/config-loader.test.ts > config-loader > loadProjectConfig > does not accept .specforge.json as a compatibility alias
+[Config] ERROR Failed to load project-level configuration {}
+
+stderr | tests/config-loader.test.ts > config-loader > loadProjectConfig > should throw error for missing project config (no fallback)
+[Config] ERROR Failed to load project-level configuration {}
+
+stderr | tests/config-loader.test.ts > config-loader > loadProjectConfig > should throw error with clear context for missing project config
+[Config] ERROR Failed to load project-level configuration {}
+
+stderr | tests/config-loader.test.ts > config-loader > loadProjectConfig > should throw error for invalid JSON in project config
+[Config] ERROR Invalid JSON in configuration file {}
+[Config] ERROR Failed to load project-level configuration {}
+
+stderr | tests/config-loader.test.ts > loadProjectConfig with valid config > should throw for non-ENOENT errors on project config
+[Config] ERROR Invalid JSON in configuration file {}
+[Config] ERROR Failed to load project-level configuration {}
+
+stderr | tests/config-validator.test.ts > config-validator > validateConfig > should detect schema version mismatch
+[Config] WARN Schema version mismatch {}
+
+stderr | tests/config-merge.test.ts > config-merge > mergeConfigLayers > should reject project-level override of sensitive fields
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/config-merge.test.ts > config-merge > mergeConfigLayers > should allow runtime-level override of sensitive fields
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/config-merge.test.ts > config-merge > mergeConfigLayers > should protect all sensitive fields from project override
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+[Config] WARN Sensitive field protection violation {}
+
+stderr | tests/accepted-config-regression.test.ts > production configuration acceptance > rejects invalid project settings {"tokens":{"key":"secret"}}
+[Config] WARN Sensitive field protection violation {}
+

@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import { validateFormalRequirementBodies } from '../../../packages/daemon-core/src/tools/lib/sf_requirements_gate_core';
+const root=import.meta.dir;
+const host=JSON.parse(fs.readFileSync(path.join(root,'resume01-identity.json'),'utf8'));
+const file=path.join(host.work,'.specforge/work-items/WI-0001/candidates/project/modules/CORE/requirements.candidate.md');
+const bytes=fs.readFileSync(file),issues=validateFormalRequirementBodies(bytes.toString('utf8'));
+const result={utc:new Date().toISOString(),file,sha256:crypto.createHash('sha256').update(bytes).digest('hex'),issues,scope:'Read-only external audit of real existing candidate using Requirements Gate core validator; NOT a formal Gate run, no state or Candidate mutations.'};
+fs.writeFileSync(path.join(root,'requirement-probe.json'),JSON.stringify(result,null,2),{flag:'wx'});
+console.log(JSON.stringify(result));

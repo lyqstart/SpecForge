@@ -1,0 +1,20 @@
+{
+  "run_id": "CODEX-SF-20261024-SPS-AUDIT-A01",
+  "command": "bun",
+  "arguments": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/runtime-history-integrity.test.ts",
+    "tests/unit/shell-readonly-boundary.test.ts",
+    "tests/unit/native-hardlink-boundary.test.ts",
+    "tests/unit/current-work-item-metadata-owner.test.ts",
+    "tests/unit/current-project-module-schema-boundary.test.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:/code/SpecForge/packages/daemon-core",
+  "started_utc": "2026-10-24T16:00:30.9834313Z",
+  "purpose": "SPS conformance evidence",
+  "expected_writes": "Evidence files; test temporary fixtures/cache only",
+  "inner_exit_code": null
+}

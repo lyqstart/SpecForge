@@ -1,0 +1,6 @@
+docs/archive/2026-10-24-sps-conformance-audit/001-scope.stdout.txt: text: unset
+docs/archive/2026-10-24-sps-conformance-audit/001-scope.stdout.txt: diff: unset
+docs/archive/2026-10-25-verifier-conformance/source-freeze.json: text: unset
+docs/archive/2026-10-25-verifier-conformance/source-freeze.json: diff: unset
+docs/archive/2026-10-25-verifier-conformance/review.md: text: unset
+docs/archive/2026-10-25-verifier-conformance/review.md: diff: unset

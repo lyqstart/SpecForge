@@ -1,0 +1,8 @@
+{
+  "utc": "2026-10-24T16:01:02.479Z",
+  "root": "C:\\Users\\lyq\\.config\\opencode",
+  "shared_version": "1.0.21",
+  "count": 112,
+  "mismatches": [],
+  "scope": "Installed bytes versus installed manifest only; not live process identity or current source equivalence"
+}

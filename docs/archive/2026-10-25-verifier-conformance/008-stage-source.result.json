@@ -1,0 +1,26 @@
+{
+  "run_id": "CODEX-SF-20261025-VERIFIER-CONFORMANCE-A01",
+  "id": "008-stage-source",
+  "cwd": "D:/code/SpecForge",
+  "exe": "git",
+  "args": [
+    "add",
+    "--",
+    "docs/project-status.md",
+    "docs/rule/specforge-active-development-rules.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md",
+    "setup/userlevel-opencode/agents/_AGENT_BASE.md",
+    "setup/userlevel-opencode/agents/sf-orchestrator.md",
+    "setup/userlevel-opencode/agents/sf-verifier.md",
+    "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md",
+    "setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md",
+    "packages/daemon-core/tests/unit/verifier-guidance-execution-boundary.test.ts",
+    "docs/archive/2026-10-25-verifier-conformance/source-freeze.json",
+    "docs/archive/2026-10-25-verifier-conformance/change-plan.md"
+  ],
+  "started_utc": "2026-10-25T04:28:04.930Z",
+  "expected_writes": "Declared repair files/evidence; test fixtures; deployment only for explicitly named installer commands",
+  "finished_utc": "2026-10-25T04:28:05.273Z",
+  "inner_exit_code": 0,
+  "signal": null
+}

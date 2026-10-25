@@ -1,0 +1,212 @@
+[
+  {
+    "id": "ses_e8e7b37abffeGH2C4l9UgaTjr1",
+    "slug": "happy-garden",
+    "projectID": "8a692e88c0823984647622294f5199c18bb0c587",
+    "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+    "path": "",
+    "parentID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 64816,
+      "output": 15894,
+      "reasoning": 16096,
+      "cache": {
+        "read": 564160,
+        "write": 0
+      }
+    },
+    "title": "生成 WI-0001 需求候选 (@sf-requirements subagent)",
+    "agent": "sf-requirements",
+    "model": {
+      "id": "glm-5.3",
+      "providerID": "zhipuai-coding-plan",
+      "variant": "default"
+    },
+    "version": "1.18.35",
+    "time": {
+      "created": 1792905889876,
+      "updated": 1792906307302
+    },
+    "permission": [
+      {
+        "permission": "todowrite",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ]
+  },
+  {
+    "id": "ses_e8e74297effe1MO77bwaThogaE",
+    "slug": "kind-otter",
+    "projectID": "8a692e88c0823984647622294f5199c18bb0c587",
+    "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+    "path": "",
+    "parentID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 78610,
+      "output": 24071,
+      "reasoning": 21039,
+      "cache": {
+        "read": 1076288,
+        "write": 0
+      }
+    },
+    "title": "生成 WI-0001 设计候选 (@sf-design subagent)",
+    "agent": "sf-design",
+    "model": {
+      "id": "glm-5.3",
+      "providerID": "zhipuai-coding-plan",
+      "variant": "default"
+    },
+    "version": "1.18.35",
+    "time": {
+      "created": 1792906352257,
+      "updated": 1792907438790
+    },
+    "permission": [
+      {
+        "permission": "todowrite",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ]
+  },
+  {
+    "id": "ses_e8e6313c4ffeLm2bmNL5lB3xSh",
+    "slug": "eager-island",
+    "projectID": "8a692e88c0823984647622294f5199c18bb0c587",
+    "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+    "path": "",
+    "parentID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 16306,
+      "output": 234,
+      "reasoning": 133,
+      "cache": {
+        "read": 44096,
+        "write": 0
+      }
+    },
+    "title": "生成 WI-0001 任务/追溯候选 (@sf-task-planner subagent)",
+    "agent": "sf-task-planner",
+    "model": {
+      "id": "glm-5.3",
+      "providerID": "zhipuai-coding-plan",
+      "variant": "default"
+    },
+    "version": "1.18.35",
+    "time": {
+      "created": 1792907471931,
+      "updated": 1792907489323
+    },
+    "permission": [
+      {
+        "permission": "todowrite",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ]
+  },
+  {
+    "id": "ses_e8e614a4affeMhRxwM35Rc22Y7",
+    "slug": "lucky-forest",
+    "projectID": "8a692e88c0823984647622294f5199c18bb0c587",
+    "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+    "path": "",
+    "parentID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 82990,
+      "output": 33123,
+      "reasoning": 21870,
+      "cache": {
+        "read": 888256,
+        "write": 0
+      }
+    },
+    "title": "生成 WI-0001 任务/追溯候选 (@sf-task-planner subagent)",
+    "agent": "sf-task-planner",
+    "model": {
+      "id": "glm-5.3",
+      "providerID": "zhipuai-coding-plan",
+      "variant": "default"
+    },
+    "version": "1.18.35",
+    "time": {
+      "created": 1792907589045,
+      "updated": 1792908301478
+    },
+    "permission": [
+      {
+        "permission": "todowrite",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ]
+  },
+  {
+    "id": "ses_e8e53bba0ffecLInXEiXbP64gR",
+    "slug": "crisp-lagoon",
+    "projectID": "8a692e88c0823984647622294f5199c18bb0c587",
+    "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+    "path": "",
+    "parentID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 32265,
+      "output": 406,
+      "reasoning": 310,
+      "cache": {
+        "read": 32064,
+        "write": 0
+      }
+    },
+    "title": "修复设计候选基线绑定与措辞 (@sf-design subagent)",
+    "agent": "sf-design",
+    "model": {
+      "id": "glm-5.3",
+      "providerID": "zhipuai-coding-plan",
+      "variant": "default"
+    },
+    "version": "1.18.35",
+    "time": {
+      "created": 1792908477535,
+      "updated": 1792908502978
+    },
+    "permission": [
+      {
+        "permission": "todowrite",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ]
+  }
+]

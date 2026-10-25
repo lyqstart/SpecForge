@@ -1,0 +1,107 @@
+$ vitest run "--maxWorkers=1" "--minWorkers=1"
+stderr | tests/integration/crash-recovery.test.ts > Crash Recovery Integration > Configuration Integrity > should validate configuration after engine restart
+Hard rule conflicts detected: [
+  {
+    rule: {
+      id: 'hard-004',
+      description: 'Agent must not bypass Gate checks',
+      condition: [Function: condition],
+      effect: 'deny',
+      priority: 90,
+      layer: 'hard'
+    },
+    conflict: 'Configuration attempts to override hard rule: Agent must not bypass Gate checks'
+  }
+]
+
+stderr | tests/unit/event-logging.test.ts > Permission Engine Event Logging > Hard Rule Conflict Event Logging > should log hard rule conflict event when configuration conflicts
+Hard rule conflicts detected: [
+  {
+    rule: {
+      id: 'hard-004',
+      description: 'Agent must not bypass Gate checks',
+      condition: [Function: condition],
+      effect: 'deny',
+      priority: 90,
+      layer: 'hard'
+    },
+    conflict: 'Configuration attempts to override hard rule: Agent must not bypass Gate checks'
+  }
+]
+
+stderr | tests/unit/event-logging.test.ts > Permission Engine Event Logging > Hard Rule Conflict Event Logging > should log multiple conflict events for multiple conflicts
+Hard rule conflicts detected: [
+  {
+    rule: {
+      id: 'hard-004',
+      description: 'Agent must not bypass Gate checks',
+      condition: [Function: condition],
+      effect: 'deny',
+      priority: 90,
+      layer: 'hard'
+    },
+    conflict: 'Configuration attempts to override hard rule: Agent must not bypass Gate checks'
+  },
+  {
+    rule: {
+      id: 'hard-005',
+      description: 'Agent must not forge verification',
+      condition: [Function: condition],
+      effect: 'deny',
+      priority: 90,
+      layer: 'hard'
+    },
+    conflict: 'Configuration attempts to override hard rule: Agent must not forge verification'
+  }
+]
+
+stderr | tests/unit/plugin-permission-validator.test.ts > PluginPermissionValidator > Edge Cases > should handle invalid manifest gracefully
+Invalid plugin manifest: ZodError: [
+  {
+    "code": "invalid_type",
+    "expected": "string",
+    "received": "undefined",
+    "path": [
+      "id"
+    ],
+    "message": "Required"
+  }
+]
+    at Object.get error [as error] (file:///D:/code/SpecForge/node_modules/.bun/zod@3.25.76/node_modules/zod/v3/types.js:39:31)
+    at ZodObject.parse (file:///D:/code/SpecForge/node_modules/.bun/zod@3.25.76/node_modules/zod/v3/types.js:114:22)
+    at PluginPermissionValidator.parseManifest (D:\code\SpecForge\packages\permission-engine\src\services\plugin-permission-validator.ts:185:35)
+    at PluginPermissionValidator.validate (D:\code\SpecForge\packages\permission-engine\src\services\plugin-permission-validator.ts:125:33)
+    at D:\code\SpecForge\packages\permission-engine\tests\unit\plugin-permission-validator.test.ts:240:32
+    at file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:135:14
+    at file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:60:26
+    at runTest (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:781:17)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at runSuite (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:909:15) {
+  issues: [
+    {
+      code: 'invalid_type',
+      expected: 'string',
+      received: 'undefined',
+      path: [Array],
+      message: 'Required'
+    }
+  ],
+  addIssue: [Function (anonymous)],
+  addIssues: [Function (anonymous)]
+}
+
+stderr | tests/unit/permission-engine.test.ts > PermissionEngine > Hard Rule Integration > should detect hard rule conflicts in configuration
+Hard rule conflicts detected: [
+  {
+    rule: {
+      id: 'hard-004',
+      description: 'Agent must not bypass Gate checks',
+      condition: [Function: condition],
+      effect: 'deny',
+      priority: 90,
+      layer: 'hard'
+    },
+    conflict: 'Configuration attempts to override hard rule: Agent must not bypass Gate checks'
+  }
+]
+

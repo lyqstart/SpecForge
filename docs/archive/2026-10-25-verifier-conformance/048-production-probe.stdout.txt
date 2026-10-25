@@ -1,0 +1,1 @@
+Production auth, state, unsupported routes, adapter spawn/get/cancel verified.

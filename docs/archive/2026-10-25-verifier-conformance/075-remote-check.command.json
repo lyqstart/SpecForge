@@ -1,0 +1,13 @@
+{
+  "run_id": "CODEX-SF-20261025-VERIFIER-CONFORMANCE-A01",
+  "id": "075-remote-check",
+  "cwd": "D:/code/SpecForge",
+  "exe": "git",
+  "args": [
+    "ls-remote",
+    "origin",
+    "refs/heads/main"
+  ],
+  "started_utc": "2026-10-25T06:10:23.110Z",
+  "expected_writes": "Declared repair files/evidence; test fixtures; deployment only for explicitly named installer commands"
+}

@@ -1,0 +1,11 @@
+{
+  "utc": "2026-10-25T05:25:14.697Z",
+  "pid": 28604,
+  "base": "http://127.0.0.1:4232",
+  "work": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-WNA7t9",
+  "observer_effects": [
+    "OpenCode session database and logs",
+    "daemon observability",
+    "synthetic project .specforge through official tools only"
+  ]
+}

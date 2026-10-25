@@ -1,0 +1,172 @@
+{
+  "utc": "2026-10-25T05:27:35.890Z",
+  "daemon_pid": 37316,
+  "token_recorded": false,
+  "records": [
+    {
+      "utc": "2026-10-25T05:27:35.436Z",
+      "method": "POST",
+      "url": "/api/v1/state/read",
+      "body": {
+        "projectPath": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+        "workItemId": "all"
+      },
+      "http_status": 401,
+      "response": {
+        "success": false,
+        "error": {
+          "code": "UNAUTHORIZED",
+          "message": "Unauthorized"
+        },
+        "requestId": "1y5yxll3cc7mvndz27q",
+        "timestamp": 1792906055414
+      }
+    },
+    {
+      "utc": "2026-10-25T05:27:35.443Z",
+      "method": "POST",
+      "url": "/api/v1/state/read",
+      "body": {
+        "projectPath": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+        "workItemId": "all"
+      },
+      "http_status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "workItems": {
+            "WI-0001": {
+              "work_item_id": "WI-0001",
+              "workflow_type": "feature_spec",
+              "current_state": "candidate_preparing",
+              "created_at": 1792905467014,
+              "updated_at": 1792905816213
+            }
+          }
+        },
+        "requestId": "v9loivwzzemvndz281",
+        "timestamp": 1792906055425
+      }
+    },
+    {
+      "utc": "2026-10-25T05:27:35.452Z",
+      "method": "POST",
+      "url": "/api/v1/event/query",
+      "body": {
+        "projectId": "synthetic-audit"
+      },
+      "http_status": 501,
+      "response": {
+        "success": false,
+        "error": {
+          "code": "EVENT_QUERY_UNSUPPORTED",
+          "message": "Use the project event owner; this legacy query endpoint is not implemented"
+        },
+        "requestId": "6tbb1ump30wmvndz289",
+        "timestamp": 1792906055433
+      }
+    },
+    {
+      "utc": "2026-10-25T05:27:35.465Z",
+      "method": "POST",
+      "url": "/api/v1/cas/store",
+      "body": {
+        "content": "synthetic-no-store"
+      },
+      "http_status": 501,
+      "response": {
+        "success": false,
+        "error": {
+          "code": "CAS_API_UNSUPPORTED",
+          "message": "No content was stored"
+        },
+        "requestId": "bowfr742mrqmvndz28m",
+        "timestamp": 1792906055446
+      }
+    },
+    {
+      "utc": "2026-10-25T05:27:35.838Z",
+      "method": "POST",
+      "url": "/api/v1/kernel/session/spawn",
+      "body": {
+        "agentRole": "sf-verifier",
+        "spawnIntentId": "CODEX-SF-20261025-kernel-probe",
+        "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-WNA7t9",
+        "model": "zhipuai-coding-plan/glm-5.3"
+      },
+      "http_status": 201,
+      "response": {
+        "success": true,
+        "data": {
+          "sessionId": "ses_e8e78af6bffeHtHy204xh21TVw"
+        },
+        "requestId": "xk3ealhx9fmvndz2iz",
+        "timestamp": 1792906055819
+      }
+    },
+    {
+      "utc": "2026-10-25T05:27:35.874Z",
+      "kind": "independent OpenCode session identity",
+      "remote": {
+        "id": "ses_e8e78af6bffeHtHy204xh21TVw",
+        "slug": "witty-panda",
+        "projectID": "fbabd2384dfd65531c1f563412b6fddf732283a0",
+        "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-WNA7t9",
+        "path": "",
+        "cost": 0,
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        },
+        "title": "SpecForge sf-verifier (CODEX-SF-20261025-kernel-probe)",
+        "version": "1.18.35",
+        "time": {
+          "created": 1792906055829,
+          "updated": 1792906055829
+        }
+      }
+    },
+    {
+      "utc": "2026-10-25T05:27:35.877Z",
+      "method": "GET",
+      "url": "/api/v1/kernel/session?sessionId=ses_e8e78af6bffeHtHy204xh21TVw",
+      "http_status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "sessionId": "ses_e8e78af6bffeHtHy204xh21TVw",
+          "status": "active",
+          "createdAt": "2026-10-25T05:27:35.829Z",
+          "lastActivityAt": "2026-10-25T05:27:35.829Z",
+          "model": "zhipuai-coding-plan/glm-5.3"
+        },
+        "requestId": "77nwlyhuouvmvndz2k3",
+        "timestamp": 1792906055859
+      }
+    },
+    {
+      "utc": "2026-10-25T05:27:35.890Z",
+      "method": "POST",
+      "url": "/api/v1/kernel/session/cancel",
+      "body": {
+        "sessionId": "ses_e8e78af6bffeHtHy204xh21TVw",
+        "reason": "Synthetic production adapter audit complete; no inference requested"
+      },
+      "http_status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "sessionId": "ses_e8e78af6bffeHtHy204xh21TVw",
+          "cancelled": true
+        },
+        "requestId": "z4c93mzgg6nmvndz2kf",
+        "timestamp": 1792906055871
+      }
+    }
+  ]
+}

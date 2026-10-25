@@ -1,0 +1,3 @@
+warning: in the working copy of 'docs/rule/specforge-development-error-ledger-and-experience.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'setup/userlevel-opencode/agents/sf-verifier.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/archive/2026-10-25-verifier-conformance/final-guidance-freeze.json', LF will be replaced by CRLF the next time Git touches it

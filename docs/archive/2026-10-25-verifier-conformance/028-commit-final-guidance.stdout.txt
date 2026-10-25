@@ -1,0 +1,3 @@
+[codex/verifier-conformance-audit f2c6922b] fix(verifier): preserve spec paths and conditional input contracts
+ 3 files changed, 1307 insertions(+), 5 deletions(-)
+ create mode 100644 docs/archive/2026-10-25-verifier-conformance/final-guidance-freeze.json

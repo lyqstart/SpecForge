@@ -1,0 +1,12 @@
+{
+  "run_id": "CODEX-SF-20261025-VERIFIER-CONFORMANCE-A01",
+  "id": "013-installed-baseline",
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    "docs/archive/2026-10-25-verifier-conformance/installed-check.cjs",
+    "before"
+  ],
+  "started_utc": "2026-10-25T04:28:45.326Z",
+  "expected_writes": "Declared repair files/evidence; test fixtures; deployment only for explicitly named installer commands"
+}

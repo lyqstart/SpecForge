@@ -30,3 +30,6 @@ docs/archive/2026-10-19-config-activation-loss-evidence/** -text -diff
 /docs/archive/2026-10-24-shell-boundary-repair/** -text -diff
 
 /docs/archive/2026-10-24-candidate-seal-repair/** -text -diff
+
+/docs/archive/2026-10-24-sps-conformance-audit/** -text -diff
+/docs/archive/2026-10-25-verifier-conformance/** -text -diff

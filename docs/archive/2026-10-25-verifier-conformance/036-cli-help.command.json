@@ -1,0 +1,11 @@
+{
+  "run_id": "CODEX-SF-20261025-VERIFIER-CONFORMANCE-A01",
+  "id": "036-cli-help",
+  "cwd": "D:/code/SpecForge",
+  "exe": "C:/Users/lyq/.config/opencode/sf-user/bin/specforge.exe",
+  "args": [
+    "--help"
+  ],
+  "started_utc": "2026-10-25T05:23:16.880Z",
+  "expected_writes": "Declared repair files/evidence; test fixtures; deployment only for explicitly named installer commands"
+}

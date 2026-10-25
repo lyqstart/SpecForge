@@ -1,0 +1,30 @@
+{
+  "utc": "2026-10-24T16:01:24.830Z",
+  "source": "setup/userlevel-opencode/agents/sf-verifier.md",
+  "deployed": "C:\\Users\\lyq\\.config\\opencode\\agents\\sf-verifier.md",
+  "source_sha256": "1a4d9211b292fcbf12e78858fae57b2a410da4e95fc8f01184a114d635813520",
+  "installed_sha256": "1a4d9211b292fcbf12e78858fae57b2a410da4e95fc8f01184a114d635813520",
+  "equal": true,
+  "lines": [
+    {
+      "line": 98,
+      "text": "你对业务源码与其他 Agent 的专业产物是**只读**角色：你可以读取文件和运行测试命令"
+    },
+    {
+      "line": 99,
+      "text": "（通过 sf_safe_bash），不得修改业务源码。你唯一允许写入的治理产物是自己拥有的"
+    },
+    {
+      "line": 177,
+      "text": "例如生产 Python 3.8：`docker run --rm -v $(pwd):/app python:3.8-slim bash -c \"cd /app && pip install -r requirements.txt && python -m pytest\"`"
+    },
+    {
+      "line": 273,
+      "text": "- **通用原则**：验证过程只依赖 OpenCode 内置工具（Grep/Read/sf_safe_bash）和目标项目自身的测试命令"
+    },
+    {
+      "line": 277,
+      "text": "- `sf_safe_bash` 当前只提供 Runtime 内部受控只读操作（SPS §9.2 / D18）。脚本、测试、构建、lint、类型检查和 CLI 外部执行均不可用；不得绕到其他执行器，拒绝必须记为未执行，不能记为验证通过。治理文件与运行日志仍使用受控读取入口。"
+    }
+  ]
+}
