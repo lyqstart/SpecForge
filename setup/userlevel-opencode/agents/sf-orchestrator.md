@@ -239,7 +239,7 @@ permission:
 ```text
 变更审计通过
 → 必要的 sf-reviewer 审查
-→ sf-verifier 执行测试和验收
+→ sf-verifier 核验当前测试和验收原始证据；SPS §9.2 / D18 下缺少必需证据则 blocked，不转交被禁止的执行任务
 → sf-verifier 受控写入 verification_report + evidence_manifest，并返回 typed semantic_closure
 → sf_semantic_closure_run(work_item_id, semantic_closure=<verifier 原样输出>)
 → 仅当 semantic_closure_valid=true 时执行 sf_gate_run(verification_gate)

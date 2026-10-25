@@ -473,12 +473,12 @@ Orchestrator 随后只读最终 `candidate_manifest.json`，确认 required cand
    - work_item_id 和 spec_directory 路径
    - tasks.md 的路径（含 verification_commands）
    - requirements.md 的路径（含验收标准）
-   - 指令：加载 `superpowers-verification-before-completion` skill，执行所有验证命令，逐项确认验收标准
+   - 指令：加载 `superpowers-verification-before-completion` skill，逐项核验当前原始证据与验收标准。SPS §9.2 / D18 禁止脚本、测试和构建执行；不得绕过。必需证据缺失时返回 blocked，命令记 skipped、required evidence 记 not_executed
    - **必须明确告知返回验证 JSON 的完整要求**：
      ```
      你必须返回验证 JSON 对象，包含以下字段：
      1. conclusion: "pass" | "fail" | "blocked"
-     2. verification_commands: 逐条列出 PASS/FAIL
+     2. verification_commands: 逐条列出 pass/fail/skipped，保留未执行原因
      3. acceptance_criteria: 验收标准逐项确认
      4. e2e_tests: 端到端测试结果
      5. side_effects: 无副作用检查
@@ -489,7 +489,7 @@ Orchestrator 随后只读最终 `candidate_manifest.json`，确认 required cand
 6. **调用 `sf_artifact_write`** 写入工作日志：
    - `sf_artifact_write`（work_item_id=<id>, file_type="work_log", run_id=<run_id>, agent_content=<验证 JSON 的 summary>）
 7. 如果闭包有效：调用 `sf_gate_run(gate_ids=["verification_gate"])`；Gate Runner 通过后自动推进 `verification_done`
-8. 如果验证失败：**生成新的 run_id**（如 WI-001-sf-verifier-2），重新调度 sf-verifier 补充缺失内容，将 blocking_issues 作为修订反馈传递
+8. 如果验证失败：先按 blocking_issues 区分报告错误、真实失败和能力/证据缺口。仅当问题已由责任 owner 解决且存在可核验的新证据时，**生成新的 run_id**（如 WI-001-sf-verifier-2）重新调度；D18 下无法执行的任务保持 blocked，不得重复派发或口头豁免
 
 **⚠️ 重要规则：**
 - 每次重新调度 sf-verifier 必须使用新的 run_id 和新的 archive_path，不得复用之前的
