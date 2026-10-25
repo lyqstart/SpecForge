@@ -32093,3 +32093,10 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 全文复查确认 Agent 尾部要求推进 completed、直接调用内部 runCloseGate、引用未注册 sf_git_diff，并自行生成 changed_files_audit；与 SPS §6.2、§9 及正式 sf_close_gate/sf_changed_files_audit 工具、产物所有权不符。已替换为 verification_done → sf_close_gate → 事件确认 closed，原子持久化归 Runtime，Verifier 只引用正式变更审计。
 - 定向26项通过。前轮 daemon2128/root729通过；首次scope3项因旧发布清单哈希失败，冻结提交并刷新清单后134项通过。首次正式升级5文件、跳过107文件，112安装哈希一致、二进制哈希和mtime不变。补充修复需再次冻结部署。
 - 调查中的不存在路径/Windows glob检索失败、一次apply_patch上下文不匹配未写入，均纠正后继续；冻结脚本对untracked的git show失败表示无基线，已正确保存正文和null基线，不是产品错误。相关原始结果与工具记录保留。EXP-032/033/287。
+
+### ERR-1892：广域回归暴露Verifier清理遗漏与验收载体参数差异
+
+- CLI首轮788通过1失败：删除旧冒烟示例时同时移除了当前Project Spec Manifest的显式路径指引。补回spec_manifest与extension_registry复制版本核验，相关5项通过；另将辅助prod-environment输入改为正式Contract条件，扩展请求归Orchestrator，禁止Verifier写非owner产物。最终相关26项通过。
+- Host Profile及Version Unification使用Vitest4，拒绝minWorkers；保留失败后仅移除不支持的参数重试，均2项通过。不是产品行为失败。其他包结果保留逐命令原始输出。
+- 逐条审计确认已部署TDD Skill仍有执行测试指令，属于SPS19.19未收口消费者；记录为未实现，不伪称Verifier修复覆盖全部Agents/Skills。真实OpenCode加载修正后的Verifier/Skill已取证，业务链另行记录。
+- 矩阵生成两次路径拼写失败在写出报告前停止，纠正为实际registry/cli入口；检索的不存在文件和PowerShell glob/brace错误均未作为不存在能力的依据。EXP-007/032/033/287。

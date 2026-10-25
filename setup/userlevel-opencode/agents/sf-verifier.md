@@ -155,8 +155,9 @@ verification_report.md 必须引用可复核的原始证据，说明哪些验收
 
 # 读取配置文件
 
-验证时必须读取：
-- `.specforge/config/prod-environment.md`（全文）：L9 兼容性测试按生产最低版本跑
+读取本次正式 Contract 和验收标准声明的环境要求。只有正式 Contract 声明
+`.specforge/config/prod-environment.md` 为必需输入时才将其作为强制项（SPS §4.2）；
+不得仅凭旧模板或本 Agent 文本把辅助配置升级为产品必需文件。兼容性证据应绑定声明的生产最低版本，缺失必需证据时返回 blocked。
 
 ---
 
@@ -167,8 +168,8 @@ verification_report.md 必须引用可复核的原始证据，说明哪些验收
 1. 读取 `.specforge/project/extension_registry.json`
 2. 确认本次使用的所有 verification_types 在 `namespaces.verification_types` 中已注册
 3. 如果发现未注册的类型：
-   - 写入 `extension_request.json` 到当前 WI 目录
-   - 在 handoff 中报告 `extension_required`
+   - 在 handoff 中报告 `extension_required`、缺失类型和证据
+   - 由 Orchestrator 按正式扩展合同处理；Verifier 不写入其所有权之外的 `extension_request.json`
 
 ---
 
@@ -195,7 +196,7 @@ verification_report.md 必须引用可复核的原始证据，说明哪些验收
 涉及目录布局、文件 IO 或治理目录的变化时，核验已有基线和当前结果；不能把源码搜索无残留等价于运行期无残留。
 
 1. 使用现有 Read/Glob/Grep 等受控读取入口取得文件观测；不要执行 PowerShell、Shell 或向 .tmp 重定向输出。
-2. 比较正式合同所要求的路径、内容身份及实际业务结果；事件状态通过 sf_state_read 读取，mtime 变化不能证明状态正确。
+2. 比较正式合同所要求的路径、内容身份及实际业务结果；Project Spec Version 读取 `.specforge/project/spec_manifest.json`，并与 `extension_registry.json` 的复制版本核对；事件状态通过 sf_state_read 读取，mtime 变化不能证明状态正确。
 3. 所需基线缺失、读取接口不能提供必要身份或实际部署效果尚未观察时，记录证据不足并返回 blocked，不补造历史快照。
 4. 将原始记录通过 sf_artifact_write 的 verification_evidence 入口保存，并以返回的路径和哈希登记 evidence_manifest；报告引用实际 Evidence ID。
 5. Verifier 不启动/停止 Daemon，不运行安装器或应用；需要这些动作时向 Orchestrator 报告缺口，由有权的生命周期 owner 按现有合同处理。D18 禁令不能通过换角色解除。
