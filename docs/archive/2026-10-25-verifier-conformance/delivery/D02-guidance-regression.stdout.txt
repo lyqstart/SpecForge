@@ -1,0 +1,13 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/v11-agent-skill-contract-alignment.test.ts (9 tests) 35ms
+ ✓ tests/unit/current-document-role-contract.test.ts (10 tests) 20ms
+ ✓ tests/unit/semantic-closure-contract-alignment.test.ts (5 tests) 8ms
+ ✓ tests/unit/verifier-guidance-execution-boundary.test.ts (2 tests) 5ms
+
+ Test Files  4 passed (4)
+      Tests  26 passed (26)
+   Start at  14:16:09
+   Duration  1.12s (transform 69ms, setup 0ms, collect 106ms, tests 69ms, environment 1ms, prepare 367ms)
+

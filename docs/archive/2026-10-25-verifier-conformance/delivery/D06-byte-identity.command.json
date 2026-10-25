@@ -1,0 +1,11 @@
+{
+  "run_id": "CODEX-SF-20261025-VERIFIER-CONFORMANCE-A01",
+  "id": "D06-byte-identity",
+  "cwd": "D:/code/SpecForge",
+  "exe": "node",
+  "args": [
+    "docs/archive/2026-10-25-verifier-conformance/delivery/check-installed.cjs"
+  ],
+  "started_utc": "2026-10-25T06:16:49.512Z",
+  "expected_writes": "Declared repair files/evidence; test fixtures; deployment only for explicitly named installer commands"
+}
