@@ -32128,3 +32128,8 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 067真实OpenCode候选封存返回CANDIDATE_IMPLEMENTATION_TRUTH_INVALID、state_advanced=false：三个候选绑定字段错误的拒绝正确；另把“无业务源码/测试/工程配置，README为唯一既有文件”的范围限定说明判为矛盾。068独立、未注册单元夹具使用正确implementation_baseline_id和同一文件事实，普通准确描述通过，带范围限定及仅引用术语greenfield的准确说明均被拒绝，确认Runtime违反SPS6.3第544行的非关键词误判要求。
 - 首次偏离在implementation-baseline.ts的contradictionLines：存在任一planned scope既有文件便按greenfield词语扫描全部语句，未关联该声明对应的实现范围。不能将有README等同于已有业务实现，也不能通过要求Agent删除准确说明来宣称校验器已符合规格。EXP-004/007/022。
 - 069据已确认Runtime缺陷停止本次合成验收，未伪造HardStop或批准。062退出0是观察终止成功，不是业务通过。070/071保全现场及全部会话，072正式StateManager读取确认唯一WI-0001仍candidate_preparing；正式Gate、批准、Merge、实现、Verification和Close均无本轮真实闭环证据。Verifier修复已完成部署，此新增缺陷只审计留证，未擅自扩大修复范围。
+
+### ERR-1897：Git检出改变Verifier部署资产字节
+
+- 审计提交8f37b02合入本地main后，追加核验发现sf-verifier与验证Skill因Git换行转换偏离已部署清单。逐字规范化比较证明语义文本完全相同；Verifier旧工作区/部署含混合换行，不能谎称仅将检出CRLF变LF即可恢复其旧哈希。为两资产显式固定text/eol=lf，统一LF并重新绑定正式发布候选、安装升级和独立字节核验，避免只在当前工作区通过。
+- 主分支切换后两次分支内回执脚本加载失败（退出1），未执行merge/校验；原生Git快进后回执恢复，517份Git对象与封存清单一致。定向原始快照首次因execFileSync默认缓冲不足ENOBUFS失败，增加明确缓冲后保存完整四文件。全部交付失败保留在追加delivery回执，旧封存证据不改写。EXP-004/022/032/087/287。
