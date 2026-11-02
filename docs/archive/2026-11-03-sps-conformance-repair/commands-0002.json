@@ -97,5 +97,104 @@
     "inner_exit_code": 0,
     "expected_writes": "No writes",
     "observed_writes": "SHA-256 e24ed667612e6760c130bfab555007902284580182ca3cadf8c35cbf4ef24764; no Git status entry"
+  },
+  {
+    "seq": "0011",
+    "command": "node scripts/project-session-bootstrap.mjs",
+    "cwd": "D:/code/SpecForge",
+    "purpose": "Revalidate remote main reachability before commit and deployment",
+    "utc": "NOT_CAPTURED_AT_ACTION_TIME",
+    "carrier_exit_code": 0,
+    "inner_exit_code": 0,
+    "expected_writes": "No writes",
+    "observed_writes": "Bootstrap READY; local and remote heads both c55f0b09dd24d18f4618b1b4fe608eed29b42d51"
+  },
+  {
+    "seq": "0012",
+    "command": "git commit -m fix: repair SPS conformance gaps; git switch main; git merge --ff-only codex/sps-conformance-repair; git push origin main",
+    "cwd": "D:/code/SpecForge",
+    "purpose": "Commit validated repair, fast-forward local main, and push remote main",
+    "utc": "NOT_CAPTURED_AT_ACTION_TIME",
+    "carrier_exit_code": 0,
+    "inner_exit_code": 0,
+    "expected_writes": "Git commit, local branch reference, remote main",
+    "observed_writes": "Created bf8c593962dd924306abedd85a883952b63173bd; fast-forwarded and pushed origin/main from c55f0b09 to bf8c5939"
+  },
+  {
+    "seq": "0013",
+    "command": "bun run build; bun scripts/build-release-runtime-artifacts.ts; bun scripts/build-release-manifest.ts --candidate-id commit-bf8c593962dd924306abedd85a883952b63173bd; bun scripts/run-current-release-precheck.ts --candidate-id=commit-bf8c593962dd924306abedd85a883952b63173bd",
+    "cwd": "D:/code/SpecForge",
+    "purpose": "Build release runtime assets, produce commit-bound manifest, and run formal release precheck",
+    "utc": "NOT_CAPTURED_AT_ACTION_TIME",
+    "carrier_exit_code": 0,
+    "inner_exit_code": 0,
+    "expected_writes": "Ignored dist/release outputs and ignored release manifest",
+    "observed_writes": "All workspace packages built; runtime artifacts produced; formal precheck passed with no producer, inventory, authority, dependency, or completeness errors"
+  },
+  {
+    "seq": "0014",
+    "command": "bun scripts/sf-installer.ts upgrade; bun scripts/sf-installer.ts verify",
+    "cwd": "D:/code/SpecForge",
+    "purpose": "Deploy the verified release to the user-level OpenCode configuration and verify byte identity",
+    "utc": "NOT_CAPTURED_AT_ACTION_TIME",
+    "carrier_exit_code": 0,
+    "inner_exit_code": 0,
+    "expected_writes": "User-level OpenCode configuration files under C:/Users/lyq/.config/opencode",
+    "observed_writes": "Installer upgraded 12 files, skipped 100 unchanged files, then verified 112 deployed files complete"
+  },
+  {
+    "seq": "0015",
+    "command": "Invoke-RestMethod http://127.0.0.1:4096/global/health; Get-Process -Name opencode; Get-NetTCPConnection listen ports 4096,4097,4098",
+    "cwd": "D:/code/SpecForge",
+    "purpose": "Obtain fresh OpenCode host event-validation precondition evidence",
+    "utc": "NOT_CAPTURED_AT_ACTION_TIME",
+    "carrier_exit_code": 0,
+    "inner_exit_code": 1,
+    "expected_writes": "No writes",
+    "observed_writes": "Health endpoint actively refused connection; no opencode process and no listener on ports 4096-4098"
+  },
+  {
+    "seq": "0016",
+    "command": "git rev-parse HEAD; git ls-remote origin refs/heads/main",
+    "cwd": "D:/code/SpecForge",
+    "purpose": "Create timestamped receipt that local and remote main share the deployed commit",
+    "utc": "2026-11-02T17:15:04.9124386Z",
+    "carrier_exit_code": 0,
+    "inner_exit_code": 0,
+    "expected_writes": "No writes",
+    "observed_writes": "Both local HEAD and origin/main are bf8c593962dd924306abedd85a883952b63173bd"
+  },
+  {
+    "seq": "0017",
+    "command": "bun scripts/run-current-release-precheck.ts --candidate-id=commit-bf8c593962dd924306abedd85a883952b63173bd",
+    "cwd": "D:/code/SpecForge",
+    "purpose": "Create timestamped formal release-precheck receipt for the deployed commit",
+    "utc": "2026-11-02T17:15:17.4674715Z",
+    "carrier_exit_code": 0,
+    "inner_exit_code": 0,
+    "expected_writes": "Ignored release manifest output",
+    "observed_writes": "Passed with no producer, inventory, authority, dependency, or completeness errors"
+  },
+  {
+    "seq": "0018",
+    "command": "bun scripts/sf-installer.ts verify",
+    "cwd": "D:/code/SpecForge",
+    "purpose": "Create timestamped deployment byte-identity receipt",
+    "utc": "2026-11-02T17:15:24.1022756Z",
+    "carrier_exit_code": 0,
+    "inner_exit_code": 0,
+    "expected_writes": "No writes",
+    "observed_writes": "Installer verified all 112 user-level deployed files complete"
+  },
+  {
+    "seq": "0019",
+    "command": "Invoke-RestMethod http://127.0.0.1:4096/global/health; Get-Process -Name opencode; Get-NetTCPConnection listen ports 4096,4097,4098",
+    "cwd": "D:/code/SpecForge",
+    "purpose": "Create timestamped receipt for fresh OpenCode host event-validation precondition",
+    "utc": "2026-11-02T17:15:32.2902063Z",
+    "carrier_exit_code": 1,
+    "inner_exit_code": 1,
+    "expected_writes": "No writes",
+    "observed_writes": "Health endpoint actively refused connection; no opencode process or listener emitted by the read-only checks"
   }
 ]

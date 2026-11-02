@@ -38,7 +38,7 @@ The root `bun run` carrier failed twice with `CouldntReadCurrentDirectory` (inne
 
 - Local source and package tests: `CONFIRMED`.
 - Runtime event subscription against an actual OpenCode host: `INSUFFICIENT_EVIDENCE`; only the mocked HTTP/SSE protocol and Adapter bridge were exercised. Host probing was denied at the local socket boundary.
-- User-level deployed byte identity: `INSUFFICIENT_EVIDENCE`; this run did not change the installed copy, and sandbox permissions do not permit asserting that its files match this branch.
+- User-level deployed byte identity: `CONFIRMED`. Commit `bf8c593962dd924306abedd85a883952b63173bd` passed the formal release precheck; `sf-installer upgrade` deployed 12 changed files to `C:\Users\lyq\.config\opencode`, and `sf-installer verify` confirmed all 112 deployed files match the release manifest.
 - Overall SPS conformance / WI-0001 Candidate readiness: not established. No Gate, seal, approval, merge, or original WI resume was performed.
 
 ## Write classification and observer effects
@@ -48,10 +48,15 @@ The root `bun run` carrier failed twice with `CouldntReadCurrentDirectory` (inne
 - `RUNTIME_OBSERVER_WRITES`: none.
 - `EXTERNAL_EVIDENCE_WRITES`: this evidence root only.
 - Validation observer effect: the release-precheck integration suite regenerated the ignored release manifest. The pre-test SHA was independently recorded in the previous archived delivery audit; a clean-baseline regeneration reproduced that exact hash, and the manifest was restored to it. The workspace temporary directory and restoration test were removed.
+- Deployment observer effect: building and release-manifest production updated ignored build/release outputs; installer upgrade wrote 12 user-level files under `C:\Users\lyq\.config\opencode`. The timestamped installer verification receipt confirms all 112 deployed files match the commit-bound release manifest.
+
+## Receipt correction
+
+Command-log entries `0011` through `0015` preserve actions performed before their UTC receipt fields were captured. They are marked `NOT_CAPTURED_AT_ACTION_TIME` and are not used as standalone passing evidence. Entries `0016` through `0019` are the timestamped, numeric-exit-code receipts for remote-main identity, formal release precheck, deployment byte identity and the missing-host result.
 
 ## Gate and stop
 
-The five code/document repair workstreams and local validation are complete. Fresh-host event-feed evidence and installed byte identity remain unavailable, so do not claim deployment or overall runtime conformance. Stop before resuming the original WI-0001 at `candidate_preparing`; preserve its prior rejected Candidate seal and all existing HardStop/Gate history.
+The five code/document repair workstreams, local validation, committed main branch, remote push, release precheck and user-level deployment are complete. Fresh-host event-feed evidence remains unavailable: the health endpoint actively refused a connection and no `opencode` process or listener on ports 4096-4098 was present. Do not claim overall runtime conformance. Stop before resuming the original WI-0001 at `candidate_preparing`; preserve its prior rejected Candidate seal and all existing HardStop/Gate history.
 
 `EXPERIENCE_FILE_READ=YES`  
 `APPLICABLE_EXPERIENCE_RULES=EXP-004, EXP-007, EXP-026, EXP-060, EXP-065, EXP-261, EXP-280, EXP-282, EXP-287`  

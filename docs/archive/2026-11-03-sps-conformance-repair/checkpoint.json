@@ -7,8 +7,8 @@
   "branch": "codex/sps-conformance-repair",
   "evidence_root": "D:/code/SpecForge/docs/archive/2026-11-03-sps-conformance-repair",
   "stop_condition": "AFTER_GAP_REPAIRS_VALIDATION_AND_DEPLOYMENT_CLASSIFICATION_BEFORE_WI_RESUME",
-  "checkpoint": "New implementation phase authorized; initial baseline was Bootstrap READY and clean at c55f0b09dd24d18f4618b1b4fe608eed29b42d51.",
-  "next_step": "Complete source-to-consumer inventory and freeze exact changed-file scope.",
+  "checkpoint": "Commit bf8c593962dd924306abedd85a883952b63173bd is on local and remote main. Formal release precheck passed, installer deployed 12 changed files, and installed integrity verification passed for 112 files.",
+  "next_step": "Obtain a running OpenCode host and capture a fresh deployed SSE event subscription before reconciling evidence and stopping before WI-0001 resume.",
   "write_classification": {
     "external_evidence_writes": "THIS_EVIDENCE_ROOT",
     "runtime_observer_writes": "NONE_EXPECTED",
