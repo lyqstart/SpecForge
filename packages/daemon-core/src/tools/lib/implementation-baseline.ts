@@ -312,13 +312,19 @@ function contradictionLines(content: string, existingScopePaths: string[]): stri
   // only to its own claim: a truthful sentence must not mask a later lie.
   const negated = (prefix: string) =>
     /(?:并非|并不是|不是|不属于|非|禁止|不得|不能|无需|没有|\bnot|\bnever|\bno)\s*(?:(?:一个|一次|a|an)\s*)?(?:[「“"']\s*)?$/i.test(prefix);
-  const normalizedScopes = existingScopePaths.map(value => value.toLowerCase());
+  const caseInsensitivePaths = process.platform === 'win32';
+  const normalizedScopes = existingScopePaths.map(value => {
+    const normalized = value.replace(/\\/g, '/');
+    return caseInsensitivePaths ? normalized.toLowerCase() : normalized;
+  });
   return content.split(/\r?\n/).filter(line => {
     const plain = line.replace(/\*\*|`/g, '');
     return plain.split(/[，,；;。]/).some(clause => {
       if (/all_files_new\s*["']?\s*[:=]\s*true\b/i.test(clause)) return true;
-      for (const match of clause.matchAll(/绿地(?:项目|新建)|\bgreenfield\b/gi)) {
-        if (!negated(clause.slice(0, match.index))) return true;
+      const greenfieldProject = /(?:本项目|当前项目|该项目)\s*(?:(不是|并非|不属于)\s*)?(?:是|为|属于)\s*(?:一个\s*)?(?:greenfield(?:\s+project)?|绿地(?:项目|新建))|(?:this project|the current project|the project|this)\s+(?:is|remains)\s+(?:(not\s+(?:a\s+)?)\s*)?(?:a\s+)?greenfield(?:\s+project)?/gi;
+      for (const match of clause.matchAll(greenfieldProject)) {
+        const matched = match[0].toLowerCase();
+        if (!/(?:不是|并非|不属于)/.test(matched) && !/\bnot\b/.test(matched)) return true;
       }
       // Keep the subject and predicate together; do not span unrelated prose
       // such as “以已知当前实现为差量基础，不存在「当前实现未知」”.
@@ -330,13 +336,17 @@ function contradictionLines(content: string, existingScopePaths: string[]): stri
       for (const match of clause.matchAll(english)) {
         if (!negated(clause.slice(0, match.index))) return true;
       }
-      const lower = clause.toLowerCase();
-      if (!normalizedScopes.some(scope => lower.includes(scope))) return false;
+      const clausePathText = clause.replace(/\\/g, '/');
+      const normalizedClausePaths = caseInsensitivePaths ? clausePathText.toLowerCase() : clausePathText;
+      if (!normalizedScopes.some(scope => normalizedClausePaths.includes(scope))) return false;
       if (/\|\s*(?:新建|create|new file)\s*\|/i.test(clause)) return true;
       // A file action must be a declaration, not a method name or a warning.
       return normalizedScopes.some(scope => {
-        const action = new RegExp(`${escapeRegex(scope)}\\s*[:：]\\s*(?:new file|create|新建|目标文件不存在)(?:\\b|$)`, 'i');
-        return action.test(clause);
+        const action = new RegExp(
+          `${escapeRegex(scope)}\\s*[:：]\\s*(?:new file|create|新建|目标文件不存在)(?:\\b|$)`,
+          caseInsensitivePaths ? 'i' : '',
+        );
+        return action.test(normalizedClausePaths);
       });
     });
   });

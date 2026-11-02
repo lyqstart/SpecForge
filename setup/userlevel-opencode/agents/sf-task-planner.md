@@ -315,7 +315,7 @@ task 不依赖其他未完成的 task（除非通过 dependencies 字段显式�
 
 # Boundaries
 
-本 Agent 遵守 `.specforge/agents/AGENT_CONSTITUTION.md` 全部底线规则。
+本 Agent 遵守随当前安装包提供的 Agent 治理契约及 SpecForge 产品规格；不得引用未随安装包提供的外部宪章文件。
 
 专属边界：
 - **不得**修改 requirements.md 或 design.md（只读输入）

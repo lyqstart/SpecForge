@@ -7,6 +7,17 @@ import {
 } from '../src';
 
 describe('OpenCodeHttpRuntimeClient', () => {
+  it('parses native SSE data frames and scopes the feed to the project directory', async () => {
+    const bytes = new TextEncoder().encode('data: {"directory":"D:/project","payload":{"type":"session.updated","properties":{"sessionID":"s1"}}}\n\n');
+    const body = new ReadableStream<Uint8Array>({ start(controller) { controller.enqueue(bytes.slice(0, 19)); controller.enqueue(bytes.slice(19)); controller.close(); } });
+    const fetchFn = vi.fn(async () => new Response(body, { headers: { 'Content-Type': 'text/event-stream' } }));
+    const client = new OpenCodeHttpRuntimeClient({ fetchFn: fetchFn as typeof fetch });
+    const received: unknown[] = [];
+    for await (const event of client.subscribeEvents('D:/project')) received.push(event);
+    expect(String(fetchFn.mock.calls[0]?.[0])).toBe('http://127.0.0.1:4096/event?directory=D%3A%2Fproject');
+    expect(received).toEqual([{ directory: 'D:/project', payload: { type: 'session.updated', properties: { sessionID: 's1' } } }]);
+  });
+
   it('uses the documented OpenCode server health, session and prompt endpoints', async () => {
     const requests: Array<{ url: string; init?: RequestInit }> = [];
     const fetchFn = vi.fn(async (input: string | URL | Request, init?: RequestInit) => {
@@ -86,5 +97,26 @@ describe('OpenCodeHttpRuntimeClient', () => {
     await adapter.cancelSession(result.sessionId, 'done');
     expect(runtime.sendPrompt).toHaveBeenCalledTimes(2);
     expect(runtime.abortSession).toHaveBeenCalledWith('oc-real-session', 'D:/project');
+  });
+
+  it('bridges matching native runtime events into the translated adapter queue', async () => {
+    const runtime: OpenCodeRuntimeClient = {
+      getVersion: vi.fn(async () => '1.14.41'),
+      createSession: vi.fn(async () => ({ id: 'runtime-s1' })),
+      getSession: vi.fn(async () => ({ id: 'runtime-s1' })),
+      abortSession: vi.fn(async () => undefined),
+      sendPrompt: vi.fn(async () => undefined),
+      subscribeEvents: vi.fn(async function* () {
+        yield { directory: 'D:/project', payload: { type: 'session.updated', properties: { info: { id: 'other' } } } };
+        yield { directory: 'D:/project', payload: { type: 'session.updated', properties: { info: { id: 'runtime-s1' }, status: { type: 'busy' } } } };
+      }),
+    };
+    const adapter = new OpenCodeAdapter({ compatibleKernelRange: '>=1.14.0 <2.0.0', runtimeClient: runtime });
+    const { sessionId } = await adapter.spawnAgent({ agentRole: 'dev', spawnIntentId: 'intent-events', cwd: 'D:/project' });
+    const iterator = adapter.subscribeEvents(sessionId)[Symbol.asyncIterator]();
+    const result = await iterator.next();
+    expect(runtime.subscribeEvents).toHaveBeenCalledWith('D:/project', expect.any(AbortSignal));
+    expect(result.value).toMatchObject({ type: 'opencode.session.updated', sessionId: 'runtime-s1' });
+    adapter.unsubscribeEvents(sessionId);
   });
 });

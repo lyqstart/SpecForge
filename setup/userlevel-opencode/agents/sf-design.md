@@ -251,7 +251,7 @@ new_capability_justification: <充分理由>
 
 Layer 3 ✅：sf-task-planner 能基于 design.md 拆出可独立执行的 tasks.md，且 sf_design_gate 通过。
 
-返回 success 前必须完成两项闭环：每个 `DATA-*` 都有真实 Project Architecture 约束，每个 `DD-*` 都受 Architecture、Data Model 或已登记 Contract 中至少一项真实约束，并同步 `trace_delta`；随后调用 `sf_handoff(action=write)` 持久化本次输入、输出、发现、未知项、升级信号、下一步和边界。handoff 写入失败或内容为空时不得返回成功。
+返回 success 前必须完成两项闭环：每个 `DATA-*` 都有真实 Project Architecture 约束，每个 `DD-*` 都受 Architecture、Data Model 或已登记 Contract 中至少一项真实约束；随后调用 `sf_handoff(action=write)` 持久化本次输入、输出、发现、未知项、升级信号、下一步和边界。`trace_delta` 由 `sf-task-planner` 负责生成和同步，sf-design 只能向其报告追溯关系变化，不得直接写入或要求自身同步。handoff 写入失败或内容为空时不得返回成功。
 
 ---
 
@@ -494,7 +494,7 @@ C --> D[(Database)]
 
 # Boundaries
 
-本 Agent 遵守 `.specforge/agents/AGENT_CONSTITUTION.md` 全部底线规则。
+本 Agent 遵守随当前安装包提供的 Agent 治理契约及 SpecForge 产品规格；不得引用未随安装包提供的外部宪章文件。
 
 专属边界：
 
@@ -805,7 +805,7 @@ constrained_by: <约束来源>
 # Contract 消费者与 Trace 唯一真相源
 
 1. Contract 消费者只能通过正式关系 `DD-* constrained_by Contract-ID` 声明；不得用正文标记、Contract 内的 consumers 数组或 Module 内的消费者清单建立第二真相源。
-2. 本 WI 新增消费者时，在 `candidates/trace_delta.md` 的 Governance Relation Delta 标记区段写 `ADD`；取消消费者时写 `REMOVE`；关系迁移必须在同一个 WI 中成对写入有效的 `REMOVE 旧关系` 与 `ADD 新关系`。既有 REQ→AC→DD→TASK 追溯矩阵继续保留，不得被治理关系区段替代。
+2. 本 WI 新增、取消或迁移消费者时，向 `sf-task-planner` 报告需要写入 `candidates/trace_delta.md` Governance Relation Delta 标记区段的 `ADD`、`REMOVE` 或成对关系变更；由 `sf-task-planner` 作为正式 artifact owner 写入。既有 REQ→AC→DD→TASK 追溯矩阵继续保留，不得被治理关系区段替代。
 3. 修改、删除或提升 Contract 前，必须从 Prospective Trace 反向取得全部消费 DD 和消费 Module，并在同一个 WI 中更新这些 Module Design。
 4. Module Contract 仅允许 owner Module 的 DD 消费。需要跨 Module 消费时，必须按正式 Promotion 流程创建新的 Project Contract ID，不得直接放宽旧 Module Contract。
-5. `trace_delta.md` 只表达变化，不得复制完整正式矩阵，也不得把 Module `trace.md` 当作独立权威文件维护。
+5. `trace_delta.md` 只表达变化，不得复制完整正式矩阵，也不得把 Module `trace.md` 当作独立权威文件维护；sf-design 不拥有该产物的写入权。

@@ -517,7 +517,7 @@ export async function extractTraceStats(
   baseDir: string,
 ): Promise<TraceStats | null> {
   try {
-    const tracePath = join(baseDir, SPEC_DIR_NAME, "logs", "trace.jsonl");
+    const tracePath = join(baseDir, SPEC_DIR_NAME, "runtime", "logs", "trace.jsonl");
 
     let traceContent: string;
     try {

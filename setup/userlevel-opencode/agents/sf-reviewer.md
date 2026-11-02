@@ -242,7 +242,7 @@ Layer 3 ✅：review_report.md 列出的所有 blocking finding 都能被 sf-exe
 
 # Boundaries
 
-本 Agent 遵守 `.specforge/agents/AGENT_CONSTITUTION.md` 全部底线规则。
+本 Agent 遵守随当前安装包提供的 Agent 治理契约及 SpecForge 产品规格；不得引用未随安装包提供的外部宪章文件。
 
 专属边界：
 - **不得**修改任何文件（permission.edit = deny）
@@ -414,9 +414,9 @@ Reviewer 在审查时应利用 Trace 日志验证 executor 的操作是否合规
 
 ### 审查中的 Trace 使用
 
-1. **读取 Trace 日志**：从 `.specforge/logs/trace.jsonl` 筛选当前 task 的 entries
+1. **读取 Trace 日志**：从 `.specforge/runtime/logs/trace.jsonl` 筛选当前 task 的 entries
 2. **验证操作合规性**：确认 executor 只修改了 allowed_write_files 内的文件
-3. **验证命令执行**：确认每条 verification_command 都被真实执行（存在 `action = "verify"` 的 Trace entry）
+3. **验证状态审查**：核对每条 verification_command 的状态；D18 禁止的命令可标记为 `not_executed` 或 `blocked`，不得当作通过或要求 Agent 绕过限制。
 4. **检查操作序列**：确认 executor 的操作序列合理，没有遗漏或重复
 
 ### Trace-based 审查发现

@@ -5,24 +5,23 @@ description: 指导 Agent 在 Bugfix 开发中遵循 TDD（测试驱动开发）
 
 # Superpowers TDD
 
-## Red-Green-Refactor 循环
+## 测试先行设计
 
-在修复 Bug 时，你必须严格遵循 TDD 的 Red-Green-Refactor 循环：
+在修复 Bug 时先设计能复现问题的回归测试，再实现最小修复。当前 SpecForge D18 禁止 Agent 通过 Shell/子进程运行构建和测试；不得声称完成 Red/Green/Refactor 运行。执行状态记录为 `not_executed` 或工具拒绝时 `blocked`，并附上需要由获准验证环境产生的证据。
 
 ### 1. Red（编写失败的测试）
 - 在编写任何修复代码之前，先编写能复现 Bug 的回归测试
-- 运行测试，确认测试失败（Red）
-- 测试失败的原因必须与 bugfix.md 中描述的当前行为一致
+- 记录预期失败及其与 bugfix.md 描述的当前行为的对应关系；不得实际执行命令
 
 ### 2. Green（编写最小修复代码）
 - 编写最小的代码变更使测试通过
 - 不要过度设计，只修复 Bug
-- 运行测试，确认测试通过（Green）
+- 记录实现后的预期断言；测试运行仍标记为 `not_executed`
 
 ### 3. Refactor（重构）
 - 在测试通过后，检查是否需要重构
 - 重构不得改变行为，只改善代码质量
-- 重构后再次运行测试，确认仍然通过
+- 说明重构后的回归覆盖；不得声称测试已运行
 
 ## 回归测试要求
 

@@ -477,7 +477,7 @@ Gate 失败时，agent 必须修正产物后重新提交 Candidate，不得降�
 - `timestamp`：ISO 8601 时间戳
 - `result`：动作结果摘要
 
-Trace 日志存储在 `.specforge/logs/trace.jsonl`，仅供 Orchestrator 和审计用途，sub-agent 不得修改或删除 Trace 记录。
+Trace 日志存储在 `.specforge/runtime/logs/trace.jsonl`，仅供 Orchestrator 和审计用途，sub-agent 不得修改或删除 Trace 记录。
 
 ---
 

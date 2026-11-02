@@ -1,0 +1,101 @@
+[
+  {
+    "seq": "0002",
+    "command": "vitest.exe run --root packages/daemon-core tests/unit/candidate-seal-boundary.test.ts tests/unit/semantic-closure-contract-alignment.test.ts tests/unit/verifier-guidance-execution-boundary.test.ts",
+    "cwd": "D:/code/SpecForge",
+    "purpose": "Verify baseline truth and deployed consumer regressions",
+    "utc": "2026-11-02T16:37:11Z",
+    "carrier_exit_code": 0,
+    "inner_exit_code": 0,
+    "expected_writes": "Temporary test cache in workspace temp directory",
+    "observed_writes": "44 tests passed; temporary cache later removed"
+  },
+  {
+    "seq": "0003",
+    "command": "vitest.exe run --root packages/opencode-adapter",
+    "cwd": "D:/code/SpecForge",
+    "purpose": "Run full OpenCode Adapter package suite including SSE and event bridge regressions",
+    "utc": "2026-11-02T16:43:43Z",
+    "carrier_exit_code": 0,
+    "inner_exit_code": 0,
+    "expected_writes": "Temporary test cache in workspace temp directory",
+    "observed_writes": "33 files and 920 tests passed; temporary cache later removed"
+  },
+  {
+    "seq": "0004",
+    "command": "vitest.exe run --root packages/scope-gate tests/current-repository-formal-release-precheck.integration.test.ts tests/current-installer-backup-lifecycle.test.ts tests/current-repository-release-manifest-runtime.integration.test.ts",
+    "cwd": "D:/code/SpecForge",
+    "purpose": "Verify release precheck, installer lifecycle, and release manifest/runtime surfaces",
+    "utc": "2026-11-02T16:39:06Z",
+    "carrier_exit_code": 0,
+    "inner_exit_code": 0,
+    "expected_writes": "Temporary test cache; integration producer writes ignored release/release-manifest.json",
+    "observed_writes": "8 tests passed; ignored manifest regenerated then restored to archived pre-run SHA-256 e24ed667612e6760c130bfab555007902284580182ca3cadf8c35cbf4ef24764"
+  },
+  {
+    "seq": "0005",
+    "command": "vitest.exe run --root packages/scope-gate tests/restore-generated-manifest.temp.test.ts",
+    "cwd": "D:/code/SpecForge",
+    "purpose": "Regenerate the ignored release manifest from clean baseline inputs to recover exact pre-test bytes",
+    "utc": "2026-11-02T16:42:01Z",
+    "carrier_exit_code": 0,
+    "inner_exit_code": 0,
+    "expected_writes": "Temporary baseline and test files under workspace temp",
+    "observed_writes": "Regenerated SHA-256 matched the archived original; temporary test and directory removed"
+  },
+  {
+    "seq": "0006",
+    "command": "tsc.exe --noEmit --ignoreDeprecations 6.0 --types node -p packages/opencode-adapter/tsconfig.json; tsc.exe --noEmit --ignoreDeprecations 6.0 --types node -p packages/daemon-core/tsconfig.json",
+    "cwd": "D:/code/SpecForge",
+    "purpose": "Typecheck both affected packages with the current repository TypeScript and Node ambient-type configuration",
+    "utc": "2026-11-02T16:45:14.9445731Z",
+    "carrier_exit_code": 0,
+    "inner_exit_code": 0,
+    "expected_writes": "No writes",
+    "observed_writes": "Both package typechecks passed"
+  },
+  {
+    "seq": "0007",
+    "command": "node scripts/render-workflow-docs.ts --check",
+    "cwd": "D:/code/SpecForge",
+    "purpose": "Check generated workflow documentation consistency",
+    "utc": "2026-11-02T16:45:14.9344178Z",
+    "carrier_exit_code": 0,
+    "inner_exit_code": 0,
+    "expected_writes": "No writes",
+    "observed_writes": "All workflow markdown files in sync"
+  },
+  {
+    "seq": "0008",
+    "command": "git diff --check",
+    "cwd": "D:/code/SpecForge",
+    "purpose": "Check whitespace errors in tracked modifications",
+    "utc": "2026-11-02T16:45:14.841332Z",
+    "carrier_exit_code": 0,
+    "inner_exit_code": 0,
+    "expected_writes": "No writes",
+    "observed_writes": "No whitespace errors; Git emitted only the existing LF-to-CRLF notice for project status"
+  },
+  {
+    "seq": "0009",
+    "command": "Invoke-RestMethod -Uri http://127.0.0.1:4096/global/health -Method Get -TimeoutSec 3",
+    "cwd": "D:/code/SpecForge",
+    "purpose": "Read-only local OpenCode host availability probe",
+    "utc": "2026-11-02T16:45:14.8731695Z",
+    "carrier_exit_code": 0,
+    "inner_exit_code": 0,
+    "expected_writes": "No writes",
+    "observed_writes": "Sandbox denied socket access to 127.0.0.1:4096; host runtime state remains unknown"
+  },
+  {
+    "seq": "0010",
+    "command": "Get-FileHash release/release-manifest.json -Algorithm SHA256; git status --short -- release/release-manifest.json",
+    "cwd": "D:/code/SpecForge",
+    "purpose": "Confirm restored ignored release manifest identity and no Git-visible artifact change",
+    "utc": "2026-11-02T16:45:44.5644091Z",
+    "carrier_exit_code": 0,
+    "inner_exit_code": 0,
+    "expected_writes": "No writes",
+    "observed_writes": "SHA-256 e24ed667612e6760c130bfab555007902284580182ca3cadf8c35cbf4ef24764; no Git status entry"
+  }
+]

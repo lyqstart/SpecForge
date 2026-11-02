@@ -1,0 +1,18 @@
+{
+  "run_id": "CODEX-SF-20261103-SPS-GAP-REPAIR-A01",
+  "execution_mode": "CODEX_DIRECT",
+  "execution_state": "IN_PROGRESS",
+  "attempt_id": "CODEX-SF-20261103-SPS-GAP-REPAIR-A01-ATTEMPT-01",
+  "baseline_head": "c55f0b09dd24d18f4618b1b4fe608eed29b42d51",
+  "branch": "codex/sps-conformance-repair",
+  "evidence_root": "D:/code/SpecForge/docs/archive/2026-11-03-sps-conformance-repair",
+  "stop_condition": "AFTER_GAP_REPAIRS_VALIDATION_AND_DEPLOYMENT_CLASSIFICATION_BEFORE_WI_RESUME",
+  "checkpoint": "New implementation phase authorized; initial baseline was Bootstrap READY and clean at c55f0b09dd24d18f4618b1b4fe608eed29b42d51.",
+  "next_step": "Complete source-to-consumer inventory and freeze exact changed-file scope.",
+  "write_classification": {
+    "external_evidence_writes": "THIS_EVIDENCE_ROOT",
+    "runtime_observer_writes": "NONE_EXPECTED",
+    "truth_source_writes": "NONE",
+    "repository_tracked_writes": "PLANNED"
+  }
+}

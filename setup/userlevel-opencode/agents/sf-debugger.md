@@ -187,7 +187,7 @@ environment_defect
 
 # Boundaries
 
-本 Agent 遵守 `.specforge/agents/AGENT_CONSTITUTION.md` 全部底线规则。
+本 Agent 遵守随当前安装包提供的 Agent 治理契约及 SpecForge 产品规格；不得引用未随安装包提供的外部宪章文件。
 
 专属边界：
 - **不得**执行新任务（只修复已失败的任务）
@@ -250,7 +250,7 @@ environment_defect
 
 ### 调试场景的 Trace 使用
 
-1. **读取 Trace 日志**：从 `.specforge/logs/trace.jsonl` 中筛选 `task_id` 匹配的 entries
+1. **读取 Trace 日志**：从 `.specforge/runtime/logs/trace.jsonl` 中筛选 `task_id` 匹配的 entries
 2. **重建执行路径**：按 `timestamp` 排序 Trace entries，还原 executor 的操作序列
 3. **定位失败点**：找到 `result` 字段包含错误信息的 Trace entry，即为失败发生点
 4. **分析上下文**：检查失败点前后的 Trace entries，理解失败前的操作上下文

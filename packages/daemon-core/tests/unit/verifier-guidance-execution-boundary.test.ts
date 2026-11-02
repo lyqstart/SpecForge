@@ -6,6 +6,18 @@ const root = resolve(import.meta.dirname, '../../../..');
 const read = (file: string) => readFileSync(resolve(root, file), 'utf8');
 
 describe('D18 verification guidance consumers', () => {
+  it('keeps the executor and TDD skill from running shell-based verification', () => {
+    const executor = read('setup/userlevel-opencode/agents/sf-executor.md');
+    const tdd = read('setup/userlevel-opencode/skills/superpowers-tdd/SKILL.md');
+    expect(executor).toMatch(/permission:[\s\S]*?bash:\s*deny/);
+    expect(executor).toContain('命令状态只能记录为 `not_executed` 或 `blocked`');
+    expect(executor).toContain('不得在终端运行 verification_command');
+    expect(tdd).toContain('当前 SpecForge D18 禁止 Agent');
+    expect(tdd).toContain('`not_executed`');
+    expect(tdd).not.toContain('运行测试，确认测试失败');
+    expect(tdd).not.toContain('运行测试，确认测试通过');
+  });
+
   it('carries the execution limit and missing-evidence outcome through delegation and loading', () => {
     for (const file of [
       'agents/sf-verifier.md',

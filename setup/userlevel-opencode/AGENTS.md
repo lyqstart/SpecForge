@@ -190,7 +190,7 @@ SPEC_DIR_NAME = '.specforge'
 | runtimeCheckpoints | `runtime/checkpoints` | 状态快照目录（gitignored）— `<root>/.specforge/runtime/checkpoints/` |
 | logs | `logs` | 日志目录（gitignored）— `<root>/.specforge/logs/` |
 | logsTelemetry | `logs/telemetry.jsonl` | 遥测日志（gitignored）— `<root>/.specforge/logs/telemetry.jsonl` |
-| logsTrace | `logs/trace.jsonl` | 追踪日志（gitignored）— `<root>/.specforge/logs/trace.jsonl` |
+| logsTrace | `logs/trace.jsonl` | 追踪日志（gitignored）— `<root>/.specforge/runtime/logs/trace.jsonl` |
 | logsToolCalls | `logs/tool_calls.jsonl` | 工具调用日志（gitignored）— `<root>/.specforge/logs/tool_calls.jsonl` |
 | logsCost | `logs/cost.jsonl` | 成本日志（gitignored）— `<root>/.specforge/logs/cost.jsonl` |
 | logsConversations | `logs/conversations.jsonl` | 会话日志（gitignored）— `<root>/.specforge/logs/conversations.jsonl` |

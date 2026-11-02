@@ -9,6 +9,32 @@ function read(relativePath: string): string {
 }
 
 describe('semantic closure contract alignment', () => {
+  it('keeps deployed trace readers and writer on the canonical Runtime path', () => {
+    const consumers = [
+      'setup/userlevel-opencode/agents/_AGENT_BASE.md', 'setup/userlevel-opencode/AGENTS.md',
+      'setup/userlevel-opencode/agents/sf-debugger.md', 'setup/userlevel-opencode/agents/sf-knowledge.md',
+      'setup/userlevel-opencode/agents/sf-reviewer.md',
+      'setup/userlevel-opencode/skills/superpowers-knowledge-extraction/SKILL.md',
+    ];
+    for (const path of consumers) {
+      const content = read(path);
+      expect(content, path).not.toContain('.specforge/logs/trace.jsonl');
+      expect(content, path).toContain('.specforge/runtime/logs/trace.jsonl');
+    }
+    expect(read('setup/userlevel-opencode/tools/lib/sf_artifact_write_core.ts'))
+      .toContain('SPEC_DIR_NAME, "runtime", "logs", "trace.jsonl"');
+    expect(read('packages/daemon-core/src/tools/lib/sf_artifact_write_core.ts'))
+      .toContain("SPEC_DIR_NAME, 'runtime', 'logs', 'trace.jsonl'");
+  });
+
+  it('keeps deployed agents free of missing constitution references and sf-design out of trace_delta ownership', () => {
+    const agents = ['sf-debugger.md', 'sf-design.md', 'sf-executor.md', 'sf-requirements.md', 'sf-reviewer.md', 'sf-task-planner.md'];
+    for (const agent of agents) expect(read(`setup/userlevel-opencode/agents/${agent}`), agent).not.toContain('AGENT_CONSTITUTION.md');
+    const design = read('setup/userlevel-opencode/agents/sf-design.md');
+    expect(design).toContain('由 `sf-task-planner` 作为正式 artifact owner 写入');
+    expect(design).toContain('sf-design 不拥有该产物的写入权');
+  });
+
   it('exposes the typed semantic_closure argument in the deployed OpenCode tool', () => {
     const wrapper = read('setup/userlevel-opencode/tools/sf_semantic_closure_run.ts');
     expect(wrapper).toContain('semantic_closure: semanticClosureSchema');

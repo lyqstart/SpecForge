@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import * as fs from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { createHash } from 'node:crypto';
 import { materializeImplementationBaseline, validateImplementationTruthBeforeSeal } from '../../src/tools/lib/implementation-baseline';
 import { getHandler } from '../../src/tools/ToolDispatcher';
@@ -9,16 +9,20 @@ import '../../src/tools/handlers/sf-v11-gate-run';
 
 const roots: string[] = [];
 afterEach(async () => { for (const root of roots.splice(0)) await fs.rm(root, { recursive: true, force: true }); });
-async function fixture() {
+async function fixture(options: { plannedCodePaths?: string[]; existingFiles?: Record<string, string> } = {}) {
   const root = await fs.mkdtemp(join(tmpdir(), 'sf-seal-boundary-')); roots.push(root);
   const wi = join(root, '.specforge/work-items/WI-0001');
   await fs.mkdir(join(wi, 'candidates'), { recursive: true });
   await fs.mkdir(join(root, '.specforge/project'), { recursive: true });
   const put = async (name: string, value: unknown) => fs.writeFile(join(wi, name), typeof value === 'string' ? value : JSON.stringify(value));
-  await fs.writeFile(join(root, 'app.js'), 'existing implementation\n');
+  const existingFiles = options.existingFiles ?? { 'app.js': 'existing implementation\n' };
+  for (const [filePath, contents] of Object.entries(existingFiles)) {
+    await fs.mkdir(dirname(join(root, filePath)), { recursive: true });
+    await fs.writeFile(join(root, filePath), contents);
+  }
   await fs.writeFile(join(root, '.specforge/project/spec_manifest.json'), JSON.stringify({schema_version:'1.0', project_spec_version:'PSV-0001'}));
   await put('work_item.json', {schema_version:'1.1', work_item_id:'WI-0001', workflow_type:'feature_spec', workflow_path:'requirement_change_path', code_change_allowed:false, allowed_write_files:[]});
-  await put('trigger_result.json', {workflow_type:'feature_spec', workflow_path:'requirement_change_path', impact_scope:{planned_code_paths:['app.js']}});
+  await put('trigger_result.json', {workflow_type:'feature_spec', workflow_path:'requirement_change_path', impact_scope:{planned_code_paths:options.plannedCodePaths ?? ['app.js']}});
   await put('impact_analysis.md', '# Impact\n');
   const { baseline } = await materializeImplementationBaseline(root, 'WI-0001');
   const design = async (text: string) => put('candidates/design.candidate.md', `implementation_baseline_id: ${baseline.snapshot_id}\n${text}\n`);
@@ -43,6 +47,7 @@ describe('affirmative implementation facts',()=>{
     '本项目不是一个绿地项目。',
     'This is not a greenfield project.',
     'Current Implementation: not missing; existing app.js is retained.',
+    '本项目不是绿地项目；本候选只讨论 greenfield 术语的范围定义。',
     'app.js | 修改 | createApp 工厂保留',
     'app.js: do not create a new file',
   ])('accepts a truthful statement: %s',async text=>{
@@ -50,7 +55,7 @@ describe('affirmative implementation facts',()=>{
     expect(await validateImplementationTruthBeforeSeal({projectRoot:f.root,workItemId:'WI-0001'})).toMatchObject({valid:true,errors:[]});
   });
   it.each([
-    '本项目为绿地新建。', '当前业务实现不存在。', '现有代码缺失。',
+    '本项目为绿地新建。', 'This is a greenfield project.', '当前业务实现不存在。', '现有代码缺失。',
     '- **Current Implementation**: none', 'Current Implementation is missing',
     '{"all_files_new":true}', '| app.js | 新建 |', 'app.js: new file',
     '并非绿地新建；当前实现不存在。', '当前实现存在，但现有代码为空。',
@@ -58,6 +63,20 @@ describe('affirmative implementation facts',()=>{
     const f=await fixture();await f.design(text);
     const r=await validateImplementationTruthBeforeSeal({projectRoot:f.root,workItemId:'WI-0001'});
     expect(r.valid).toBe(false);expect(r.errors.join('\n')).toContain('IMPLEMENTATION_BASELINE_CONTRADICTION');
+  });
+  it.each([
+    'CORE 模块当前无既有业务源代码、无既有测试、无既有工程配置；README.md 是唯一既有交付文件。',
+    'CORE 模块当前无既有业务源代码、无既有测试、无既有工程配置（greenfield 指本次新建业务实现）；README.md 是唯一既有交付文件。',
+    'CORE 模块当前无既有业务源代码、无既有测试、无既有工程配置。说明：术语 greenfield 出现在上游描述中；本候选明确承认 README.md 已存在，不能将所有文件视为新建。',
+  ])('does not treat scoped implementation facts or term mentions as contradictions: %s', async text => {
+    const f = await fixture({
+      plannedCodePaths: ['README.md', 'src/greet.ts', 'tests/greet.test.ts', 'package.json', 'tsconfig.json'],
+      existingFiles: { 'README.md': '# Existing README\n' },
+    });
+    await f.put('impact_analysis.md', text);
+    await f.design(text);
+    expect(await validateImplementationTruthBeforeSeal({ projectRoot: f.root, workItemId: 'WI-0001' }))
+      .toMatchObject({ valid: true, errors: [] });
   });
   it('still rejects binding loss and actual source drift',async()=>{
     const f=await fixture();await f.put('candidates/design.candidate.md','本设计不是绿地新建。');

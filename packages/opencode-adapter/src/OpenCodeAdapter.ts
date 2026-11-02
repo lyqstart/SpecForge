@@ -808,6 +808,53 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
     const controller = new AbortController();
     this.eventControllers.set(sessionId, controller);
 
+    // Bridge the production OpenCode SSE feed into the same translated queue
+    // used by the adapter's injected-event path.
+    const runtimeSessionId = session.sessionId;
+    if (this.runtimeClient?.subscribeEvents) {
+      void (async () => {
+        try {
+          for await (const value of this.runtimeClient!.subscribeEvents!(session.cwd, controller.signal)) {
+            if (controller.signal.aborted) break;
+            if (typeof value !== 'object' || value === null) continue;
+            const envelope = value as Record<string, unknown>;
+            const event = envelope['payload'] && typeof envelope['payload'] === 'object'
+              ? envelope['payload'] as Record<string, unknown>
+              : envelope;
+            const eventType = event['type'];
+            const properties = event['properties'];
+            const propertyRecord = typeof properties === 'object' && properties !== null
+              ? properties as Record<string, unknown>
+              : undefined;
+            const info = typeof propertyRecord?.['info'] === 'object' && propertyRecord['info'] !== null
+              ? propertyRecord['info'] as Record<string, unknown>
+              : undefined;
+            const part = typeof propertyRecord?.['part'] === 'object' && propertyRecord['part'] !== null
+              ? propertyRecord['part'] as Record<string, unknown>
+              : undefined;
+            const sid = propertyRecord?.['sessionID'] ?? propertyRecord?.['sessionId'] ??
+              info?.['sessionID'] ?? info?.['sessionId'] ??
+              (typeof eventType === 'string' && eventType.startsWith('session.') ? info?.['id'] : undefined) ??
+              part?.['sessionID'] ?? part?.['sessionId'];
+            if (typeof eventType !== 'string' || sid !== runtimeSessionId) continue;
+            await this.pushEvent(sessionId, {
+              event_type: eventType,
+              data: properties,
+              sid: sessionId,
+              ts: Date.now(),
+            });
+          }
+        } catch (error) {
+          if (!controller.signal.aborted) {
+            this.enqueueEvent(sessionId, {
+              type: 'adapter.error', payload: { error: error instanceof Error ? error.message : String(error) },
+              sessionId, timestamp: new Date(), metadata: { error: true },
+            });
+          }
+        }
+      })();
+    }
+
     // Initialize reconnect state
     this.reconnectAttempts.set(sessionId, 0);
 

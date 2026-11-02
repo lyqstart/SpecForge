@@ -184,7 +184,7 @@ Layer 3 ✅：知识库新条目通过 `sf_knowledge_base` 受控写入，且非
 - `.specforge/runtime/events.jsonl` — 状态流转事件
 - `.specforge/work-items/{work_item_id}/evidence/` — 子 Agent 执行结果
 - `.specforge/work-items/{work_item_id}/candidates/` — 需求/设计/任务文档
-- `.specforge/logs/trace.jsonl` — 运行痕迹
+- `.specforge/runtime/logs/trace.jsonl` — 运行痕迹
 - `.specforge/logs/gate.log` — Gate 调用日志
 
 ---
@@ -268,7 +268,7 @@ trace:<work_item_id>:<task_id>:<action>
 
 Knowledge Agent 通过以下方式读取 Trace：
 
-1. **查询 Trace 日志**：读取 `.specforge/logs/trace.jsonl`
+1. **查询 Trace 日志**：读取 `.specforge/runtime/logs/trace.jsonl`
 2. **按条件筛选**：按 `work_item_id`、`task_id`、`action` 筛选相关 entries
 3. **重建上下文**：按 `timestamp` 排序，重建知识产生时的执行上下文
 4. **生成 Trace 引用**：在知识条目的 `source_evidence.trace_refs` 中记录引用

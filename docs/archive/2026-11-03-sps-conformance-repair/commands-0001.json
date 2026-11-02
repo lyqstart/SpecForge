@@ -1,0 +1,10 @@
+{
+  "inner_exit_code": 0,
+  "expected_writes": "Git branch metadata only",
+  "timestamp_utc": "2026-11-02T16:24:53Z",
+  "cwd": "D:/code/SpecForge",
+  "observed_writes": "codex/sps-conformance-repair created at c55f0b09dd24d18f4618b1b4fe608eed29b42d51",
+  "purpose": "Create isolated local branch",
+  "command": "git switch -c codex/sps-conformance-repair",
+  "carrier_exit_code": 0
+}

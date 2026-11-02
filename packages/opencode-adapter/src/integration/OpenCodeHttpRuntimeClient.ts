@@ -27,6 +27,7 @@ export interface OpenCodeRuntimeClient {
   getSession(sessionId: string, directory?: string): Promise<OpenCodeRuntimeSession | null>;
   abortSession(sessionId: string, directory?: string): Promise<void>;
   sendPrompt(sessionId: string, prompt: OpenCodeRuntimePrompt, directory?: string): Promise<void>;
+  subscribeEvents?(directory?: string, signal?: AbortSignal): AsyncIterable<unknown>;
 }
 
 export interface OpenCodeHttpRuntimeClientOptions {
@@ -144,6 +145,44 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
       this.withDirectory(`/session/${encodeURIComponent(sessionId)}/message`, directory),
       body,
     );
+  }
+
+  async *subscribeEvents(directory?: string, signal?: AbortSignal): AsyncIterable<unknown> {
+    const pathname = this.withDirectory('/event', directory);
+    const response = await this.fetchFn(`${this.baseUrl}${pathname}`, {
+      method: 'GET',
+      headers: { Accept: 'text/event-stream' },
+      signal,
+    });
+    if (!response.ok || !response.body) {
+      throw new OpenCodeRuntimeError(`OpenCode GET ${pathname} event stream failed with HTTP ${response.status}`, response.status);
+    }
+    if (!response.headers.get('content-type')?.toLowerCase().includes('text/event-stream')) {
+      throw new OpenCodeRuntimeError('OpenCode GET /event returned a non-SSE response');
+    }
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    try {
+      while (true) {
+        const { value, done } = await reader.read();
+        buffer += decoder.decode(value, { stream: !done }).replace(/\r\n/g, '\n');
+        let boundary: number;
+        while ((boundary = buffer.indexOf('\n\n')) >= 0) {
+          const frame = buffer.slice(0, boundary);
+          buffer = buffer.slice(boundary + 2);
+          const data = frame.split('\n').filter(line => line.startsWith('data:'))
+            .map(line => line.slice(5).trimStart()).join('\n');
+          if (data) {
+            try { yield JSON.parse(data) as unknown; }
+            catch { throw new OpenCodeRuntimeError('OpenCode GET /event emitted invalid JSON data'); }
+          }
+        }
+        if (done) break;
+      }
+    } finally {
+      reader.releaseLock();
+    }
   }
 
   private async requestJson(method: string, pathname: string, body?: unknown): Promise<unknown> {
