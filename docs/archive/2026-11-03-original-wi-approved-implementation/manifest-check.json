@@ -1,0 +1,9 @@
+{
+  "utc": "2026-11-03T15:55:29.842Z",
+  "run_id": "CODEX-SF-20261103-ORIGINAL-WI-APPROVED-IMPLEMENTATION-A01",
+  "manifest_sha256": "01fc60daaaece5a12f91a12f03f9b713c8f001a566c55f74178e107c7219f4fc",
+  "files": 649,
+  "self_check": "PASS",
+  "inner_exit_code": 0,
+  "exclusions": "Git-ignored private native reasoning/raw Cookie source; manifest and this check receipt cannot recursively contain their own hashes."
+}

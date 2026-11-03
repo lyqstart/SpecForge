@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-approved-implementation/check-publishable-evidence.cjs",
+    "--staged",
+    "--suffix=source-milestone"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "milestone-staged-privacy",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-03T15:36:16.677Z"
+}

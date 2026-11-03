@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-approved-implementation/inspect-implementation.cjs",
+    "fifth"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "inspect-original-implementation-fifth",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-03T15:41:44.873Z"
+}

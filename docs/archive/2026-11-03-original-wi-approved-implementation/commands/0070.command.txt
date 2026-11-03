@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-approved-implementation/audit-original.cjs",
+    "post-code-checkpoint"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "independent-post-checkpoint-formal-state",
+  "expected_writes": "runtime-observer-and-evidence",
+  "started_utc": "2026-11-03T15:48:51.499Z"
+}

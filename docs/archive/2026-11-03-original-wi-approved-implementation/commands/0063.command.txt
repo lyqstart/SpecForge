@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-approved-implementation/correct-native-readme.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "deliver-evidence-based-native-readme-correction",
+  "expected_writes": "native-session-context-observer-and-evidence",
+  "started_utc": "2026-11-03T15:43:39.850Z"
+}

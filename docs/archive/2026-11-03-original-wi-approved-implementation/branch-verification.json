@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-03T15:41:18.893Z",
+  "source_snapshot": "business-filesystem-branches-created.json",
+  "snapshot_utc": "2026-11-03T15:40:01.232Z",
+  "plan_sha256": "f7c1fe5dfe60741054b396cc7fb906aa990d05c2b902aa644dd25c876cf649ca",
+  "assertions": {
+    "head_is_original": true,
+    "exact_new_branches": true,
+    "head_bound": true,
+    "index_matches_prewrite_plan": true,
+    "readme_original": true,
+    "other_four_still_missing": true,
+    "standard_context": true
+  },
+  "scope": "Exact immediate pre-implementation branch boundary; not a claim that the reconstructed Git index equals an unavailable pre-loss index.",
+  "inner_exit_code": 0
+}

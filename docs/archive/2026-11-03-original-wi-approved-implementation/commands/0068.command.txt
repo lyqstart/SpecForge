@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-approved-implementation/audit-business-filesystem.cjs",
+    "corrected-code"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "independently-capture-corrected-business-files",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-03T15:47:48.112Z"
+}

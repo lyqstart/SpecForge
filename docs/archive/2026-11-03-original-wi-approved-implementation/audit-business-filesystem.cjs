@@ -1,0 +1,14 @@
+const fs = require('node:fs'), path = require('node:path'), cp = require('node:child_process'), crypto = require('node:crypto');
+const target = 'C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7', suffix=process.argv[2];
+if(!/^[a-z0-9-]+$/.test(suffix||''))throw Error('suffix required');
+const sha=raw=>crypto.createHash('sha256').update(raw).digest('hex');
+const capture=file=>{const full=path.join(target,file);if(!fs.existsSync(full))return {path:file,exists:false}; const s=fs.lstatSync(full);if(s.isSymbolicLink()||!s.isFile()||s.nlink!==1)throw Error('LINK_OR_SPECIAL'); const raw=fs.readFileSync(full);return {path:file,exists:true,size:raw.length,sha256:sha(raw),bytes_base64:raw.toString('base64')};};
+const receipts=[]; const git=(...args)=>{const start=new Date().toISOString();const r=cp.spawnSync('git',['--no-pager','-c','core.hooksPath=NUL','-c','core.fsmonitor=false',...args],{cwd:target,encoding:'utf8',windowsHide:true,env:{...process.env,GIT_OPTIONAL_LOCKS:'0',GIT_CONFIG_NOSYSTEM:'1',GIT_CONFIG_GLOBAL:'NUL'}});receipts.push({args,cwd:target,started_utc:start,finished_utc:new Date().toISOString(),inner_exit_code:r.status,stdout:r.stdout,stderr:r.stderr}); if(r.status!==0)throw Error('READ_ONLY_GIT_PROBE_FAILED');return r.stdout.trim();};
+const owner='.specforge/work-items/WI-0001/git_bootstrap', context=capture('.specforge/work-items/WI-0001/git_context.json');
+const plans=fs.existsSync(path.join(target,owner,'plans'))?fs.readdirSync(path.join(target,owner,'plans')).filter(n=>/^[a-f0-9]{64}\.json$/.test(n)).map(name=>capture(owner+'/plans/'+name)):[];
+const businessInventory=[];
+function walk(directory,prefix=''){for(const name of fs.readdirSync(directory).sort()){if(!prefix&&['.git','.specforge'].includes(name))continue;const relative=prefix+name,full=path.join(directory,name),stat=fs.lstatSync(full);if(stat.isSymbolicLink())throw Error('LINK');if(stat.isDirectory())walk(full,relative+'/');else businessInventory.push(capture(relative));}}
+walk(target);
+const result={utc:new Date().toISOString(),target,business_inventory:businessInventory,files:['README.md','package.json','tsconfig.json','src/greet.ts','tests/greet.test.ts','.git/HEAD','.git/index','.git/config'].map(capture),context,plans,head:git('rev-parse','HEAD'),refs:git('for-each-ref','--format=%(refname) %(objectname)'),branch:git('symbolic-ref','-q','HEAD'),commit_raw:git('cat-file','commit','HEAD'),tree_raw:git('ls-tree','-rz','--full-tree','HEAD'),commands:receipts,inner_exit_code:0};
+fs.writeFileSync(path.join(__dirname,'business-filesystem-'+suffix+'.json'),JSON.stringify(result,null,2)+'\n',{flag:'wx'});
+console.log(JSON.stringify({utc:result.utc,head:result.head,branch:result.branch,refs:result.refs,files:result.files.map(({bytes_base64,...file})=>file),plan_hashes:plans.map(p=>p.sha256),context:context.exists?JSON.parse(Buffer.from(context.bytes_base64,'base64')):null,inner_exit_code:0}));

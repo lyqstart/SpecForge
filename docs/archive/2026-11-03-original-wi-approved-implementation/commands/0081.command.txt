@@ -1,0 +1,12 @@
+{
+  "executable": "git",
+  "args": [
+    "ls-remote",
+    "origin",
+    "refs/heads/main"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-live-remote-publication-preflight",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-03T15:54:56.913Z"
+}

@@ -32174,6 +32174,7 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 原项目通过封存恢复只证明 detached 原提交，不证明旧分支；独立 symbolic-ref/show-ref 和正式 sf_git_preflight 确认无本地分支、无 remotes。现有 createBranch 固定先 git switch base_branch，因此不能用不存在的 main 建立 WI context。原 Agent 最终称确认名称后即可从 detached 建分支，属于尚无 owner 能力支持的推断；Codex 独立源码审核未将其当可执行路线，也未运行已知必败的创建命令。
 - 用户明确采用新 main 与 codex/greet-library-wi-0001、起点原完整提交。最小扩展归现有 Git plan/create owner：哈希冻结源现场和两条新引用、正式确认原话、原子引用事务、HEAD/context 绑定、互斥和中断恢复；不手工建分支，不将新 main 说成旧分支恢复，不重新 Merge 规格，不变更 D18。SPS §9.2/Registry D19 在代码前明确合同。
 - 实现与验证尚待本阶段完成，不能先标为已恢复。复用 EXP-004/006/017/032/181/188/193/260/270/273，活动 EXP-273 增加同类前置检查。
+- 后续闭环：cf94aa7d 的最终63项回归、四个真实进程中断恢复合同、构建/类型/发布precheck均通过；安装112文件校验和0051六资产字节核验通过。原生0052的实际 sf-orchestrator 以用户精确原话和实际计划 f7c1fe5d…49ca 调用受控 owner。0055/0059 独立证实两条新分支锚定原提交、HEAD/context正确、索引匹配写前计划、README仍原123字节；随后0057正式 Code Permission owner进入 implementation_running。该缺口已闭环，不据此声称D18业务运行或整体SPS验收通过。
 
 ### ERR-1905：Node 的 Windows null device 路径不能直接作为 Git 配置路径
 
@@ -32202,3 +32203,21 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 0026 类型检查退出2，scene 闭包捕获显式声明 unknown 的 plan，TypeScript 不保留外层控制流收窄；原项目未执行。改为先校验 parsed，再绑定推断为 Plan 的只读局部变量，0027 类型检查退出0。不用 any 或关闭类型检查规避。
 - 0025 在六个测试文件加载前因沙箱临时目录原子 rename 的 EPERM 全部失败，未执行任何测试；单列环境取证，不与源码缺陷混计。以新回执在原生自有临时夹具复跑，保留失败原文。复用 EXP-002/007/022/025。
 - 0029 Bun 在沙箱内启动即报 CouldntReadCurrentDirectory，未进入构建；0030 原生完整工作区构建退出0。0028 的63项回归为62通过、首个真实 Git 幂等正例超过默认10秒而失败；不将超时记为逻辑通过。0034 保持全部原断言，以单 worker 和30秒预算复核，避免与工作区构建/多夹具并行争用；最终结果另见真实回执。
+
+### ERR-1910：独立部署审计器误把全局 Agent/Tool 路径放到 sf-user 下
+
+- 0049 以 ENOENT 退出1，读取不存在的 sf-user/tools/sf_git_branch_plan.ts；安装器0048已通过112文件校验，但不能用它掩盖独立审计失败。只读实际目录与 installer targetPath 映射确认：二进制在 sf-user/bin，Tools/Agents/Skills 在 OpenCode 配置根对应目录。
+- 修正证据审计器按真实布局取六资产哈希并复跑；不改产品部署布局。0050 正式状态仍 post_merge_verified、updated_at 未变。复用 EXP-004/007/022/032，独立核验成功前不启动原分支写入。
+- 0051 六资产源/安装 SHA-256 全部一致且实际 daemon PID21644 健康，独立核验完成后才启动原分支续跑0052。
+
+### ERR-1911：专业交接遗漏顶层 WI 参数，静态工具失败不得算通过
+
+- 原生实施批次中 TASK001/002/004 首次 sf_handoff(action=write) 都遗漏顶层 work_item_id，TASK004 后续又遗漏 escalation_signals；正式 owner 拒绝后由相同真实 sf-executor 补齐，成功交接另存，原失败保留。0060/0061/0064 保留输入和工具结果。不是 HardStop，不需要清除或伪造状态。
+- TASK003 的 sf_batch_verify 以绝对 Windows 路径返回 target file not found；后续 Read/Grep 属独立静态证据，不能将失败调用改称通过。顶层工具只描述“文件路径”，源码具体解析需对照；已有相对路径正例可完成当前静态检查，不为本任务增加旁路执行器。
+- 专业 Agent 的午夜 timestamp、duration_ms 和“批次完成”等自述不作为真实时序或完整任务验收事实；用实际工具时间、Runtime事件、owner文件 recorded_at 与独立内容取证。没有执行原声明命令，不填退出码0，不将 Task 工具返回完成等同 Done When Evidence。0063 已显式向原 sf-orchestrator 投递上述事实纠正。复用 EXP-004/007/017/025/071/287/290。
+
+### ERR-1912：README 静态示例遗漏已批准 TypeScript 扩展名
+
+- 0062 独立原字节快照确认 README 的文字写 ./src/greet.ts，但实际 import 示例为 ./src/greet，且裸签名混入调用代码块；不符合批准的 DD-CORE-005/Task004。五文件落盘、grep命中或专业 Agent 声称完成都不能替代逐项合同复核。
+- 0063 保留原错版并向真实原 sf-orchestrator 投递纠正，0064 已实际派发 sf-reviewer 做静态审阅，要求随后仍由专业 Executor 在原 README 权限内修订、保留原123字节前缀；修正结果与复核须另行取证，不由外部手改或降低合同。复用 EXP-004/007/017/087。
+- 后续闭环：真实 Reviewer 以1 blocking/1 warning交接，专业 Executor 实际编辑修正，短暂限流后交接成功。0068/0072 原字节证明 import 已带.ts、签名移出代码块；0075逐字节核验原123字节前缀保留。正式 Changed Files Audit 为5/5范围内、1个guard历史拒绝已解决、0 unresolved；第二次工具调用是 HARD_STOP_ACTIVE 前置拒绝，未产生第二个guard写记录，两次工具拒绝均保留。受控 checkpoint f5fed085 只提交五文件，随后正式 revoke，0074仍 implementation_running。没有把旧 request_changes 改写为正式全阶段复审通过，也没有用静态修正冒充业务运行验收。

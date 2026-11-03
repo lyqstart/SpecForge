@@ -1,0 +1,30 @@
+[
+  {
+    "name": "sf-design",
+    "prompt_sha256": "33f6ab1813262964680ed7fbbe6af1c934a5913a3d248d7d337708d9371c1243"
+  },
+  {
+    "name": "sf-executor",
+    "prompt_sha256": "b3bf6d7d99f84751c5a346f7c978556834be03ce61636744af8a7965cf8ecfe4"
+  },
+  {
+    "name": "sf-orchestrator",
+    "prompt_sha256": "bc266f1f38c895c2e570cb0c454640807b1b26eed6c15ec13e61655f9a92617e"
+  },
+  {
+    "name": "sf-requirements",
+    "prompt_sha256": "d55b336eb18c0dca26f1811e57ba2b4d787139e9e2969af37fa1b948b991030c"
+  },
+  {
+    "name": "sf-reviewer",
+    "prompt_sha256": "bad95d3e45c8e3e02ae34aa2c75bc4c24e6b97b438b93aa676a4390621b6a95c"
+  },
+  {
+    "name": "sf-task-planner",
+    "prompt_sha256": "36fc3ce4eaeedd99a20b3b5b69218852d822388435f20c6cd4a6f87bda36341c"
+  },
+  {
+    "name": "sf-verifier",
+    "prompt_sha256": "aa2b8096ca67013bf2c0dd88a04339e3817e14efbc60d50affc5bb207a24db14"
+  }
+]

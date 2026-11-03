@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-approved-implementation/capture-final-observation.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-original-artifact-forensics",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-03T15:50:27.479Z"
+}

@@ -1,0 +1,22 @@
+node:fs:622
+  return binding.open(
+                 ^
+
+Error: ENOENT: no such file or directory, open 'C:\Users\lyq\.config\opencode\sf-user\tools\sf_git_branch_plan.ts'
+    at Object.openSync (node:fs:622:18)
+    at Object.readFileSync (node:fs:488:35)
+    at hash (D:\code\SpecForge\docs\archive\2026-11-03-original-wi-approved-implementation\verify-deployment.cjs:3:60)
+    at D:\code\SpecForge\docs\archive\2026-11-03-original-wi-approved-implementation\verify-deployment.cjs:5:221
+    at Array.map (<anonymous>)
+    at Object.<anonymous> (D:\code\SpecForge\docs\archive\2026-11-03-original-wi-approved-implementation\verify-deployment.cjs:5:22)
+    at Module._compile (node:internal/modules/cjs/loader:1872:14)
+    at Object..js (node:internal/modules/cjs/loader:2003:10)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12) {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\lyq\\.config\\opencode\\sf-user\\tools\\sf_git_branch_plan.ts'
+}
+
+Node.js v24.19.0

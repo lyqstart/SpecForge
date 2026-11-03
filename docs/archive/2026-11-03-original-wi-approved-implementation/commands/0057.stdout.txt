@@ -1,0 +1,1 @@
+{"out":"D:\\code\\SpecForge\\docs\\archive\\2026-11-03-original-wi-approved-implementation\\original-audit-implementation-running.json","state":{"WI-0001":{"work_item_id":"WI-0001","workflow_type":"feature_spec","current_state":"implementation_running","created_at":1792905467014,"updated_at":1793720405879}},"files":128,"inner_exit_code":0}

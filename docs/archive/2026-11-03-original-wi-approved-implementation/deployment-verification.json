@@ -1,0 +1,55 @@
+{
+  "utc": "2026-11-03T15:38:09.391Z",
+  "source_commit": "cf94aa7d7e7a04f1bfd97e34a8b1833accc1b89c",
+  "assets": [
+    {
+      "file": "bin/specforge.exe",
+      "target": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforge.exe",
+      "source_sha256": "791f41665965ea9b1aba24de57b31f62d696c5697021ad68ef37a47610be6b56",
+      "installed_sha256": "791f41665965ea9b1aba24de57b31f62d696c5697021ad68ef37a47610be6b56"
+    },
+    {
+      "file": "bin/specforged.exe",
+      "target": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforged.exe",
+      "source_sha256": "fcf5ce5ebc6c399cfec2aa405ebbd2c236bd0ad44792a20b0efbce06b91fe710",
+      "installed_sha256": "fcf5ce5ebc6c399cfec2aa405ebbd2c236bd0ad44792a20b0efbce06b91fe710"
+    },
+    {
+      "file": "tools/sf_git_branch_plan.ts",
+      "target": "C:\\Users\\lyq\\.config\\opencode\\tools\\sf_git_branch_plan.ts",
+      "source_sha256": "fe9632ef5aa043b0eebdd881fd1bd33e6417f3ba4d8496f9109b3707f50fa7c9",
+      "installed_sha256": "fe9632ef5aa043b0eebdd881fd1bd33e6417f3ba4d8496f9109b3707f50fa7c9"
+    },
+    {
+      "file": "tools/sf_git_branch_create.ts",
+      "target": "C:\\Users\\lyq\\.config\\opencode\\tools\\sf_git_branch_create.ts",
+      "source_sha256": "c2172972a1cc8057b2770f9a09ab5e15abedbe24e251b952499b6ee407292f8d",
+      "installed_sha256": "c2172972a1cc8057b2770f9a09ab5e15abedbe24e251b952499b6ee407292f8d"
+    },
+    {
+      "file": "agents/sf-orchestrator.md",
+      "target": "C:\\Users\\lyq\\.config\\opencode\\agents\\sf-orchestrator.md",
+      "source_sha256": "045228656a471bbfac04d98dfd8cff691c7374c5120f02e914136bb99250daed",
+      "installed_sha256": "045228656a471bbfac04d98dfd8cff691c7374c5120f02e914136bb99250daed"
+    },
+    {
+      "file": "skills/sf-workflow-feature-spec/SKILL.md",
+      "target": "C:\\Users\\lyq\\.config\\opencode\\skills\\sf-workflow-feature-spec\\SKILL.md",
+      "source_sha256": "14d69c6f94a27ec677dfdcc4cb9e7a3292761befa10be4920f9105b0c36138db",
+      "installed_sha256": "14d69c6f94a27ec677dfdcc4cb9e7a3292761befa10be4920f9105b0c36138db"
+    }
+  ],
+  "health": {
+    "schema_version": "1.0",
+    "status": "ok",
+    "pid": 21644,
+    "version": "1.0.21",
+    "startedAt": 1793720253905,
+    "uptimeSec": 35,
+    "activeClients": 0,
+    "pendingEvents": 4,
+    "lastEventTs": 1793720253917
+  },
+  "health_exit_code": 0,
+  "inner_exit_code": 0
+}

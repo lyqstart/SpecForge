@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-approved-implementation/verify-deployment.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "independently-verify-controlled-owner-real-layout",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-03T15:38:08.583Z"
+}

@@ -1,0 +1,14 @@
+{
+  "executable": "git",
+  "args": [
+    "add",
+    "--",
+    "docs/project-status.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md",
+    "docs/archive/2026-11-03-original-wi-approved-implementation"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "stage-final-implementation-evidence",
+  "expected_writes": "repository-index-and-evidence",
+  "started_utc": "2026-11-03T15:53:29.310Z"
+}

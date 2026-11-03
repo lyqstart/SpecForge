@@ -1,0 +1,12 @@
+{
+  "executable": "C:/Users/lyq/.config/opencode/sf-user/bin/specforge.exe",
+  "args": [
+    "daemon",
+    "status",
+    "--json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "before-controlled-owner-deploy-status",
+  "expected_writes": "runtime-observer-and-evidence",
+  "started_utc": "2026-11-03T15:36:59.478Z"
+}

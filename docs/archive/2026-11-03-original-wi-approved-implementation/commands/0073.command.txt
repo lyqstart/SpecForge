@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-approved-implementation/redact-native.cjs",
+    "native-resume-implementation"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "redact-completed-native-implementation",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-03T15:49:45.343Z"
+}

@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-approved-implementation/check-publishable-evidence.cjs",
+    "--staged",
+    "--suffix=final"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-staged-privacy",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-03T15:53:31.549Z"
+}

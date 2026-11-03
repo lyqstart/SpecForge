@@ -1,0 +1,9 @@
+const fs=require('node:fs'),path=require('node:path');
+const snapshot=JSON.parse(fs.readFileSync(path.join(__dirname,'business-filesystem-branches-created.json')));
+const plan=JSON.parse(Buffer.from(snapshot.plans[0].bytes_base64,'base64'));
+const context=JSON.parse(Buffer.from(snapshot.context.bytes_base64,'base64'));
+const expected='8a692e88c0823984647622294f5199c18bb0c587';
+const assertions={head_is_original:snapshot.head===expected,exact_new_branches:snapshot.refs.split('\n').sort().join('\n')===[`refs/heads/codex/greet-library-wi-0001 ${expected}`,`refs/heads/main ${expected}`].sort().join('\n'),head_bound:snapshot.branch==='refs/heads/codex/greet-library-wi-0001',index_matches_prewrite_plan:snapshot.files.find(f=>f.path==='.git/index').sha256===plan.source.index_sha256,readme_original:snapshot.files.find(f=>f.path==='README.md').sha256==='757ee94ea46933c3dd7092c04d15a32546a3f54e609b9c6e66351eeafe8fdf40',other_four_still_missing:snapshot.files.filter(f=>['package.json','tsconfig.json','src/greet.ts','tests/greet.test.ts'].includes(f.path)).every(f=>!f.exists),standard_context:context.base_commit===expected&&context.base_branch==='main'&&context.branch_name==='codex/greet-library-wi-0001'&&context.git_enabled===true};
+if(Object.values(assertions).some(value=>!value))throw Error('INDEPENDENT_BRANCH_PROOF_FAILED');
+const result={utc:new Date().toISOString(),source_snapshot:'business-filesystem-branches-created.json',snapshot_utc:snapshot.utc,plan_sha256:snapshot.plans[0].sha256,assertions,scope:'Exact immediate pre-implementation branch boundary; not a claim that the reconstructed Git index equals an unavailable pre-loss index.',inner_exit_code:0};
+fs.writeFileSync(path.join(__dirname,'branch-verification.json'),JSON.stringify(result,null,2)+'\n',{flag:'wx'});console.log(JSON.stringify(result));

@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-approved-implementation/audit-original.cjs",
+    "implementation-running"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "independent-original-running-state-audit",
+  "expected_writes": "runtime-observer-and-evidence",
+  "started_utc": "2026-11-03T15:40:27.811Z"
+}

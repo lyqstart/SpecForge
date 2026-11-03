@@ -1,0 +1,12 @@
+{
+  "executable": "git",
+  "args": [
+    "commit",
+    "-m",
+    "feat(git): add controlled detached branch bootstrap"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "commit-controlled-git-owner-milestone",
+  "expected_writes": "repository-git-commit-and-evidence",
+  "started_utc": "2026-11-03T15:36:30.133Z"
+}

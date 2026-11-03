@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-03T15:53:11.207Z",
+  "completed_receipts_verified": 78,
+  "prior_sealed_files_verified": 804,
+  "product_source_unchanged_since_validated_commit": true,
+  "formal_state": "implementation_running",
+  "code_change_allowed": false,
+  "code_permission_revoked": true,
+  "private_native_sources_ignored": true,
+  "publication_note": "Intermediate Bootstrap LOCAL_REMOTE_HEAD_MISMATCH is expected because this authorized maintenance branch has its own unpublished cf94aa7d commit; no further product/business implementation follows. Complete already-authorized seal/fast-forward/push and rerun Bootstrap on clean main.",
+  "inner_exit_code": 0
+}

@@ -1,0 +1,9 @@
+{
+  "utc": "2026-11-03T15:37:19.046Z",
+  "old_pid": 29796,
+  "old_process_alive": false,
+  "status_exit_code": 1,
+  "stdout": "",
+  "stderr": "{\"error\":true,\"code\":\"daemon_unreachable\",\"message\":\"无法连接到 Daemon，请确认 Daemon 已启动\",\"hint\":\"请运行 \\\"specforge daemon start\\\" 启动 Daemon\"}\n",
+  "inner_exit_code": 0
+}

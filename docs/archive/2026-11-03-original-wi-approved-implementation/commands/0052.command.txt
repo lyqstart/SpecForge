@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-approved-implementation/resume-implementation.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "original-native-approved-branch-and-implementation",
+  "expected_writes": "native-owner-truth-git-five-code-files-and-runtime-observer",
+  "started_utc": "2026-11-03T15:38:17.388Z"
+}
