@@ -1,0 +1,11 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "build"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "detached-bootstrap-final-workspace-build",
+  "expected_writes": "workspace-dist-and-build-cache",
+  "started_utc": "2026-11-03T15:32:22.593Z"
+}

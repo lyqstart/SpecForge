@@ -1,0 +1,11 @@
+{
+  "executable": "D:/code/SpecForge/node_modules/.bin/vitest.exe",
+  "args": [
+    "run",
+    "tests/unit/git-detached-filter-exclusion.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "detached-bootstrap-clean-filter-exclusion",
+  "expected_writes": "isolated-owned-filter-fixture-and-evidence",
+  "started_utc": "2026-11-03T15:23:48.538Z"
+}

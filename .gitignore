@@ -73,3 +73,10 @@ packages/observability/test-data/observability-req-[0-9]*/
 /docs/archive/2026-11-03-original-wi-archive-restore/native-resume-*/inspection-*.json
 !/docs/archive/2026-11-03-original-wi-archive-restore/native-resume-*/inspection-*-redacted.json
 /docs/archive/2026-11-03-original-wi-archive-restore/native-resume-*/new-messages.json
+# Original approved implementation: private native reasoning copies.
+/docs/archive/2026-11-03-original-wi-approved-implementation/native-resume-approval/new-messages.json
+/docs/archive/2026-11-03-original-wi-approved-implementation/native-resume-approval/inspection-*.json
+!/docs/archive/2026-11-03-original-wi-approved-implementation/native-resume-approval/inspection-*-redacted.json
+/docs/archive/2026-11-03-original-wi-approved-implementation/native-resume-*/new-messages.json
+/docs/archive/2026-11-03-original-wi-approved-implementation/native-resume-*/inspection-*.json
+!/docs/archive/2026-11-03-original-wi-approved-implementation/native-resume-*/inspection-*-redacted.json

@@ -1,0 +1,13 @@
+{
+  "executable": "D:/code/SpecForge/node_modules/.bin/vitest.exe",
+  "args": [
+    "run",
+    "tests/v11-agent-skill-contract-alignment.test.ts",
+    "--config",
+    "D:/code/SpecForge/.tmp/sf-detached-guidance-baseline-82fbc4e7-a82e-4182-899a-a6bffd0902c3/packages/daemon-core/vitest.config.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\.tmp\\sf-detached-guidance-baseline-82fbc4e7-a82e-4182-899a-a6bffd0902c3\\packages\\daemon-core",
+  "purpose": "exact-baseline-guidance-regression",
+  "expected_writes": "isolated-baseline-test-cache-and-evidence",
+  "started_utc": "2026-11-03T15:20:36.588Z"
+}

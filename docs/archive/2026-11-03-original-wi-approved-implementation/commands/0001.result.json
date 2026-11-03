@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-approved-implementation/audit-original.cjs",
+    "preapproval"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preapproval-formal-state",
+  "expected_writes": "formal-state-projection-and-audit-observer",
+  "started_utc": "2026-11-03T14:44:56.637Z",
+  "finished_utc": "2026-11-03T14:44:56.983Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_writes": {
+    "repository_status_before": " M .gitignore\n M docs/project-status.md\n?? docs/archive/2026-11-03-original-wi-approved-implementation/audit-original.cjs\n?? docs/archive/2026-11-03-original-wi-approved-implementation/before-authorized-continuation.json\n?? docs/archive/2026-11-03-original-wi-approved-implementation/change-plan.md\n?? docs/archive/2026-11-03-original-wi-approved-implementation/checkpoint.json\n?? docs/archive/2026-11-03-original-wi-approved-implementation/commands/0001.command.txt\n?? docs/archive/2026-11-03-original-wi-approved-implementation/continuation-prompt.txt\n?? docs/archive/2026-11-03-original-wi-approved-implementation/initialize-phase.cjs\n?? docs/archive/2026-11-03-original-wi-approved-implementation/resume-approval.cjs\n?? docs/archive/2026-11-03-original-wi-approved-implementation/rule-read-coverage.json\n?? docs/archive/2026-11-03-original-wi-approved-implementation/run-command.cjs\n?? docs/archive/2026-11-03-original-wi-approved-implementation/seal-receipts.cjs\n?? docs/archive/2026-11-03-original-wi-approved-implementation/user-authorization.json\n",
+    "repository_status_after": " M .gitignore\n M docs/project-status.md\n?? docs/archive/2026-11-03-original-wi-approved-implementation/audit-original.cjs\n?? docs/archive/2026-11-03-original-wi-approved-implementation/before-authorized-continuation.json\n?? docs/archive/2026-11-03-original-wi-approved-implementation/change-plan.md\n?? docs/archive/2026-11-03-original-wi-approved-implementation/checkpoint.json\n?? docs/archive/2026-11-03-original-wi-approved-implementation/commands/0001.command.txt\n?? docs/archive/2026-11-03-original-wi-approved-implementation/commands/0001.stderr.txt\n?? docs/archive/2026-11-03-original-wi-approved-implementation/commands/0001.stdout.txt\n?? docs/archive/2026-11-03-original-wi-approved-implementation/continuation-prompt.txt\n?? docs/archive/2026-11-03-original-wi-approved-implementation/initialize-phase.cjs\n?? docs/archive/2026-11-03-original-wi-approved-implementation/journal.jsonl\n?? docs/archive/2026-11-03-original-wi-approved-implementation/original-audit-preapproval.json\n?? docs/archive/2026-11-03-original-wi-approved-implementation/resume-approval.cjs\n?? docs/archive/2026-11-03-original-wi-approved-implementation/rule-read-coverage.json\n?? docs/archive/2026-11-03-original-wi-approved-implementation/run-command.cjs\n?? docs/archive/2026-11-03-original-wi-approved-implementation/seal-receipts.cjs\n?? docs/archive/2026-11-03-original-wi-approved-implementation/user-authorization.json\n",
+    "other": "See expected writes and owner-specific receipt; status does not enumerate external runtime writes."
+  }
+}

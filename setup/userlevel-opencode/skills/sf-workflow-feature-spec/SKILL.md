@@ -369,14 +369,14 @@ Orchestrator 随后只读最终 `candidate_manifest.json`，确认 required cand
 #### Step 1：进入 implementation_ready 并读取 tasks.md
 
 1. 调用 `sf_state_read` 确认当前状态为 `post_merge_verified`
-2. 调用 `sf_state_transition`（from_state="post_merge_verified"，to_state="implementation_ready"，evidence="ready for implementation"）
-3. 调用 `sf_code_permission`（work_item_id=<id>, allowed_write_files=[<从 tasks.md 提取的修改文件列表>]）设置 Write Guard 白名单
-4. 读取 `.specforge/work-items/<work_item_id>/candidates/tasks.md`，解析每个 Task 的：
+2. 读取 `.specforge/work-items/<work_item_id>/candidates/tasks.md`，解析每个 Task 的：
    - Task 编号和描述
    - `修改文件`（files_to_modify）列表
    - `依赖` 声明
    - `verification_commands`
-4. 读取 `.specforge/config/project.json`，获取 `max_parallel_executors` 值（字段不存在时默认为 3）
+3. 完成 `sf_git_preflight` 和实施前版本控制身份绑定；无分支 detached 项目使用下文 D19 的哈希计划/明确两分支确认，不手工补分支或 context。
+4. 在版本控制前置条件全部成立后调用 `sf_code_permission`（action="enable", work_item_id=<id>, allowed_write_files=[<从 tasks.md 提取的修改文件列表>]）；由 owner 统一放行并推进实施状态，不手动补 `implementation_ready`。
+5. 读取 `.specforge/config/project.json`，获取 `max_parallel_executors` 值（字段不存在时默认为 3）
 
 #### Step 2：Independence_Analysis（独立性分析）
 
@@ -458,7 +458,7 @@ Orchestrator 随后只读最终 `candidate_manifest.json`，确认 required cand
 2. 调用 `sf_state_transition`（from_state="implementation_running"，to_state="implementation_done"，evidence="all tasks completed"）
 3. 向用户报告 implementation 阶段总结（总耗时、并行节省的估算时间、各 Task 最终状态）
 
-**注意：** 在开始执行第一个 Task 前，须先调用 `sf_state_transition`（from_state="implementation_ready"，to_state="implementation_running"，evidence="starting task execution"）
+**注意：** 在开始执行第一个 Task 前，必须核验 Code Permission owner 已成功将状态推进到 `implementation_running`，不得自行补该转换。
 
 **产物：** 代码文件（由 executor 生成）
 
@@ -639,6 +639,8 @@ sf_gate_run(work_item_id=WI-XXXX, gate_ids=["post_merge_gate"])
 ```
 
 ## 阶段 9：post_merge_verified → implementation_running
+
+实施前 `sf_git_preflight` 若证明仓库处于无本地分支的 detached 原提交，使用 D19：`sf_git_branch_plan(bootstrap_from_detached=true, expected_head=<完整提交>, base_branch=<新基线>, branch_name=<新WI分支>)` 保存哈希计划；向用户确认两条**新建**分支身份。已有同代真实确认时不重复索要。再由 `sf_git_branch_create(confirmed=true, bootstrap_plan_sha256=..., bootstrap_confirmation_quote=<真实两分支名确认原话>, base_branch=..., branch_name=...)` 执行，核验标准 Git context 后才启用代码权限。禁止手工建 main、伪 base_branch、改 context、重新合并规格或切换 filesystem 模式。候选批准不自动确认分支名，新分支确认也不替代以后默认主线 Git Merge 确认；D18 不变。
 
 旧行为：
 

@@ -1,0 +1,11 @@
+
+ RUN  v4.1.5 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/git-detached-bootstrap.test.ts (24 tests | 1 failed) 45042ms
+     × rejects concurrent attachment to a different branch without overwriting that HEAD 2955ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 23 passed (24)
+   Start at  23:08:53
+   Duration  47.89s (transform 1.90s, setup 0ms, import 2.67s, tests 45.04s, environment 0ms)
+

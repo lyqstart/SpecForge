@@ -1,0 +1,314 @@
+{
+  "utc": "2026-11-03T15:19:21.333Z",
+  "stage": "refs_and_head_bound",
+  "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-detached-crash-5UcnTe",
+  "baseline": {
+    "index": "219732a50a98a2742bef8bf632965dfa8787f695fbb67bb0020b049c4ea1f18f",
+    "readme": "dae2418b2ebcfe94e72872cf31fe3584e8d7ab099b26f5aaa72f8f89496cf138"
+  },
+  "beforeResume": {
+    "head": "4a97ca5102f94733c6116a1fb45a954d59ced256",
+    "refs": "refs/heads/codex/crash-wi-0001 4a97ca5102f94733c6116a1fb45a954d59ced256\nrefs/heads/main 4a97ca5102f94733c6116a1fb45a954d59ced256",
+    "head_lock_present": true,
+    "context_present": false
+  },
+  "deadLeases": [
+    {
+      "name": "92179e7f-7c4c-48b0-8502-1ad224f84f05.json",
+      "sha256": "7c7b6f89519381171d218e5352a8b72452ffa69bbc840d217627fa7a442e43b0"
+    }
+  ],
+  "observed": {
+    "CRASH_EXIT": 37,
+    "RESUME_EXIT": 0,
+    "INDEX_SAME": true,
+    "README_SAME": true,
+    "HEAD_SAME": true,
+    "BRANCH": "codex/crash-wi-0001",
+    "DEAD_LEASE_RETAINED": true,
+    "HEAD_LOCK_RELEASED": true
+  },
+  "validation": {
+    "validator_accepted": true,
+    "validation_result": "PASS",
+    "error": null,
+    "declared_blocking_assertions": 8,
+    "executed_blocking_assertions": 8,
+    "extra_blocking_assertions": 0,
+    "missing_blocking_assertions": 0,
+    "assertion_results": [
+      {
+        "assertion_id": "CRASH_EXIT",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "RESUME_EXIT",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "INDEX_SAME",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "README_SAME",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "HEAD_SAME",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "BRANCH",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "DEAD_LEASE_RETAINED",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "HEAD_LOCK_RELEASED",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      }
+    ],
+    "validation_contract_gap": false
+  },
+  "receipts": [
+    {
+      "exe": "git",
+      "args": [
+        "init",
+        "-b",
+        "seed"
+      ],
+      "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-detached-crash-5UcnTe",
+      "started_utc": "2026-11-03T15:19:13.710Z",
+      "finished_utc": "2026-11-03T15:19:13.767Z",
+      "inner_exit_code": 0,
+      "stdout": "Initialized empty Git repository in C:/Users/lyq/AppData/Local/Temp/sf-detached-crash-5UcnTe/.git/\n",
+      "stderr": ""
+    },
+    {
+      "exe": "git",
+      "args": [
+        "config",
+        "user.name",
+        "Crash Fixture"
+      ],
+      "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-detached-crash-5UcnTe",
+      "started_utc": "2026-11-03T15:19:13.767Z",
+      "finished_utc": "2026-11-03T15:19:13.809Z",
+      "inner_exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "exe": "git",
+      "args": [
+        "config",
+        "user.email",
+        "fixture@example.invalid"
+      ],
+      "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-detached-crash-5UcnTe",
+      "started_utc": "2026-11-03T15:19:13.809Z",
+      "finished_utc": "2026-11-03T15:19:13.854Z",
+      "inner_exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "exe": "git",
+      "args": [
+        "add",
+        "--",
+        "README.md"
+      ],
+      "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-detached-crash-5UcnTe",
+      "started_utc": "2026-11-03T15:19:13.855Z",
+      "finished_utc": "2026-11-03T15:19:13.899Z",
+      "inner_exit_code": 0,
+      "stdout": "",
+      "stderr": "warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it\n"
+    },
+    {
+      "exe": "git",
+      "args": [
+        "commit",
+        "-m",
+        "fixture baseline"
+      ],
+      "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-detached-crash-5UcnTe",
+      "started_utc": "2026-11-03T15:19:13.899Z",
+      "finished_utc": "2026-11-03T15:19:13.970Z",
+      "inner_exit_code": 0,
+      "stdout": "[seed (root-commit) 4a97ca5] fixture baseline\n 1 file changed, 1 insertion(+)\n create mode 100644 README.md\n",
+      "stderr": ""
+    },
+    {
+      "exe": "git",
+      "args": [
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-detached-crash-5UcnTe",
+      "started_utc": "2026-11-03T15:19:13.970Z",
+      "finished_utc": "2026-11-03T15:19:14.009Z",
+      "inner_exit_code": 0,
+      "stdout": "4a97ca5102f94733c6116a1fb45a954d59ced256\n",
+      "stderr": ""
+    },
+    {
+      "exe": "git",
+      "args": [
+        "switch",
+        "--detach",
+        "4a97ca5102f94733c6116a1fb45a954d59ced256"
+      ],
+      "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-detached-crash-5UcnTe",
+      "started_utc": "2026-11-03T15:19:14.009Z",
+      "finished_utc": "2026-11-03T15:19:14.061Z",
+      "inner_exit_code": 0,
+      "stdout": "",
+      "stderr": "HEAD is now at 4a97ca5 fixture baseline\n"
+    },
+    {
+      "exe": "git",
+      "args": [
+        "branch",
+        "-D",
+        "seed"
+      ],
+      "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-detached-crash-5UcnTe",
+      "started_utc": "2026-11-03T15:19:14.061Z",
+      "finished_utc": "2026-11-03T15:19:14.109Z",
+      "inner_exit_code": 0,
+      "stdout": "Deleted branch seed (was 4a97ca5).\n",
+      "stderr": ""
+    },
+    {
+      "exe": "C:\\Users\\lyq\\AppData\\Roaming\\npm\\node_modules\\bun\\bin\\bun.exe",
+      "args": [
+        "D:\\code\\SpecForge\\docs\\archive\\2026-11-03-original-wi-approved-implementation\\process-crash-probe.ts",
+        "child",
+        "D:\\code\\SpecForge\\docs\\archive\\2026-11-03-original-wi-approved-implementation\\process-crash-proof-final-schema\\refs_and_head_bound.plan-input.json",
+        "plan"
+      ],
+      "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-detached-crash-5UcnTe",
+      "started_utc": "2026-11-03T15:19:14.117Z",
+      "finished_utc": "2026-11-03T15:19:14.907Z",
+      "inner_exit_code": 0,
+      "stdout": "{\"success\":true,\"work_item_id\":\"WI-0001\",\"bootstrap_plan_sha256\":\"18391beb368872a7d268505efebf78f2b6d360a71c379065a06b319126a4806b\",\"plan\":{\"schema_version\":\"1.0\",\"project_root\":\"c:\\\\users\\\\lyq\\\\appdata\\\\local\\\\temp\\\\sf-detached-crash-5ucnte\",\"work_item_id\":\"WI-0001\",\"base_branch\":\"main\",\"branch_name\":\"codex/crash-wi-0001\",\"expected_head\":\"4a97ca5102f94733c6116a1fb45a954d59ced256\",\"created_utc\":\"2026-11-03T15:19:14.889Z\",\"source\":{\"head\":\"4a97ca5102f94733c6116a1fb45a954d59ced256\",\"head_sha256\":\"6e908ffe3ab60f8e185a0d2892779912fa9b49201b1ce82e422ce86cb7e6a993\",\"refs\":\"\",\"index_sha256\":\"219732a50a98a2742bef8bf632965dfa8787f695fbb67bb0020b049c4ea1f18f\",\"config_sha256\":\"081edeac3e663666959e3786be13fdc704fa98b7b37cfbb815d2c8dde7711035\",\"tracked\":[{\"path\":\"README.md\",\"mode\":\"100644\",\"object_id\":\"24ec7efc5001f7e2b53fbf277614bbccd68df422\",\"sha256\":\"dae2418b2ebcfe94e72872cf31fe3584e8d7ab099b26f5aaa72f8f89496cf138\",\"size\":22}]},\"probe_commands\":[{\"args\":[\"-c\",\"core.hooksPath=NUL\",\"-c\",\"user.name=SpecForge Git Owner\",\"-c\",\"user.email=specforge@localhost.invalid\",\"-c\",\"core.fsmonitor=false\",\"-c\",\"gc.auto=0\",\"check-ref-format\",\"--branch\",\"main\"],\"cwd\":\"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-detached-crash-5UcnTe\",\"started_utc\":\"2026-11-03T15:19:14.210Z\",\"finished_utc\":\"2026-11-03T15:19:14.257Z\",\"inner_exit_code\":0,\"stdout\":\"main\\n\",\"stderr\":\"\"},{\"args\":[\"-c\",\"core.hooksPath=NUL\",\"-c\",\"user.name=SpecForge Git Owner\",\"-c\",\"user.email=specforge@localhost.invalid\",\"-c\",\"core.fsmonitor=false\",\"-c\",\"gc.auto=0\",\"check-ref-format\",\"--branch\",\"codex/crash-wi-0001\"],\"cwd\":\"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-detached-crash-5UcnTe\",\"started_utc\":\"2026-11-03T15:19:14.257Z\",\"finished_utc\":\"2026-11-03T15:19:14.302Z\",\"inner_exit_code\":0,\"stdout\":\"codex/crash-wi-0001\\n\",\"stderr\":\"\"},{\"args\":[\"-c\",\"core.hooksPath=NUL\",\"-c\",\"user.name=SpecForge Git Owner\",\"-c\",\"user.email=specforge@localhost.invalid\",\"-c\",\"core.fsmonitor=false\",\"-c\",\"gc.auto=0\",\"rev-parse\",\"--show-toplevel\"],\"cwd\":\"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-detached-crash-5UcnTe\",\"started_utc\":\"2026-11-03T15:19:14.361Z\",\"finished_utc\":\"2026-11-03T15:19:14.402Z\",\"inner_exit_code\":0,\"stdout\":\"C:/Users/lyq/AppData/Local/Temp/sf-detached-crash-5UcnTe\\n\",\"stderr\":\"\"},{\"args\":[\"-c\",\"core.hooksPath=NUL\",\"-c\",\"user.name=SpecForge Git Owner\",\"-c\",\"user.email=specforge@localhost.invalid\",\"-c\",\"core.fsmonitor=false\",\"-c\",\"gc.auto=0\",\"rev-parse\",\"--git-common-dir\"],\"cwd\":\"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-detached-crash-5UcnTe\",\"started_utc\":\"2026-11-03T15:19:14.403Z\",\"finished_utc\":\"2026-11-03T15:19:14.442Z\",\"inner_exit_code\":0,\"stdout\":\".git\\n\",\"stderr\":\"\"},{\"args\":[\"-c\",\"core.hooksPath=NUL\",\"-c\",\"user.name=SpecForge Git Owner\",\"-c\",\"user.email=specforge@localhost.invalid\",\"-c\",\"core.fsmonitor=false\",\"-c\",\"gc.auto=0\",\"rev-parse\",\"HEAD\"],\"cwd\":\"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-detached-crash-5UcnTe\",\"started_utc\":\"2026-11-03T15:19:14.442Z\",\"finished_utc\":\"2026-11-03T15:19:14.485Z\",\"inner_exit_code\":0,\"stdout\":\"4a97ca5102f94733c6116a1fb45a954d59ced256\\n\",\"stderr\":\"\"},{\"args\":[\"-c\",\"core.hooksPath=NUL\",\"-c\",\"user.name=SpecForge Git Owner\",\"-c\",\"user.email=specforge@localhost.invalid\",\"-c\",\"core.fsmonitor=false\",\"-c\",\"gc.auto=0\",\"fsck\",\"--full\",\"--no-reflogs\"],\"cwd\":\"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-detached-crash-5UcnTe\",\"started_utc\":\"2026-11-03T15:19:14.485Z\",\"finished_utc\":\"2026-11-03T15:19:14.592Z\",\"inner_exit_code\":0,\"stdout\":\"\",\"stderr\":\"\"},{\"args\":[\"-c\",\"core.hooksPath=NUL\",\"-c\",\"user.name=SpecForge Git Owner\",\"-c\",\"user.email=specforge@localhost.invalid\",\"-c\",\"core.fsmonitor=false\",\"-c\",\"gc.auto=0\",\"status\",\"--porcelain=v1\",\"-z\",\"--untracked-files=all\"],\"cwd\":\"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-detached-crash-5UcnTe\",\"started_utc\":\"2026-11-03T15:19:14.592Z\",\"finished_utc\":\"2026-11-03T15:19:14.640Z\",\"inner_exit_code\":0,\"stdout\":\"?? .specforge/work-items/WI-0001/work_item.json\\u0000\",\"stderr\":\"\"},{\"args\":[\"-c\",\"core.hooksPath=NUL\",\"-c\",\"user.name=SpecForge Git Owner\",\"-c\",\"user.email=specforge@localhost.invalid\",\"-c\",\"core.fsmonitor=false\",\"-c\",\"gc.auto=0\",\"ls-tree\",\"-rz\",\"--full-tree\",\"4a97ca5102f94733c6116a1fb45a954d59ced256\"],\"cwd\":\"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-detached-crash-5UcnTe\",\"started_utc\":\"2026-11-03T15:19:14.642Z\",\"finished_utc\":\"2026-11-03T15:19:14.691Z\",\"inner_exit_code\":0,\"stdout\":\"100644 blob 24ec7efc5001f7e2b53fbf277614bbccd68df422\\tREADME.md\\u0000\",\"stderr\":\"\"},{\"args\":[\"-c\",\"core.hooksPath=NUL\",\"-c\",\"user.name=SpecForge Git Owner\",\"-c\",\"user.email=specforge@localhost.invalid\",\"-c\",\"core.fsmonitor=false\",\"-c\",\"gc.auto=0\",\"ls-files\",\"--stage\",\"-z\"],\"cwd\":\"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-detached-crash-5UcnTe\",\"started_utc\":\"2026-11-03T15:19:14.691Z\",\"finished_utc\":\"2026-11-03T15:19:14.735Z\",\"inner_exit_code\":0,\"stdout\":\"100644 24ec7efc5001f7e2b53fbf277614bbccd68df422 0\\tREADME.md\\u0000\",\"stderr\":\"\"},{\"args\":[\"-c\",\"core.hooksPath=NUL\",\"-c\",\"user.name=SpecForge Git Owner\",\"-c\",\"user.email=specforge@localhost.invalid\",\"-c\",\"core.fsmonitor=false\",\"-c\",\"gc.auto=0\",\"for-each-ref\",\"--format=%(refname) %(objectname)\"],\"cwd\":\"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-detached-crash-5UcnTe\",\"started_utc\":\"2026-11-03T15:19:14.754Z\",\"finished_utc\":\"2026-11-03T15:19:14.802Z\",\"inner_exit_code\":0,\"stdout\":\"\",\"stderr\":\"\"},{\"args\":[\"-c\",\"core.hooksPath=NUL\",\"-c\",\"user.name=SpecForge Git Owner\",\"-c\",\"user.email=specforge@localhost.invalid\",\"-c\",\"core.fsmonitor=false\",\"-c\",\"gc.auto=0\",\"symbolic-ref\",\"-q\",\"HEAD\"],\"cwd\":\"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-detached-crash-5UcnTe\",\"started_utc\":\"2026-11-03T15:19:14.804Z\",\"finished_utc\":\"2026-11-03T15:19:14.850Z\",\"inner_exit_code\":1,\"stdout\":\"\",\"stderr\":\"\"},{\"args\":[\"-c\",\"core.hooksPath=NUL\",\"-c\",\"user.name=SpecForge Git Owner\",\"-c\",\"user.email=specforge@localhost.invalid\",\"-c\",\"core.fsmonitor=false\",\"-c\",\"gc.auto=0\",\"update-ref\",\"--stdin\"],\"cwd\":\"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-detached-crash-5UcnTe\",\"started_utc\":\"2026-11-03T15:19:14.850Z\",\"finished_utc\":\"2026-11-03T15:19:14.889Z\",\"inner_exit_code\":0,\"stdout\":\"start: ok\\nabort: ok\\n\",\"stderr\":\"\"}],\"work_item_metadata_sha256\":\"6e1729804be24af6ac026dfcf46ebe104b07d0d4ac166bad3efb768612138119\"},\"confirmation_required\":true,\"effect\":\"Create two new refs at the verified commit, bind HEAD and standard WI Git context; preserve index/business bytes; no old branch restoration\"}\n",
+      "stderr": "",
+      "input_payload": {
+        "sha256": "0aa959ee249a6280601f44cea6a7cdc56fa5a00a3202827a19f6a86a8c05fa74",
+        "bytes_base64": "eyJpbnB1dCI6eyJwcm9qZWN0Um9vdCI6IkM6XFxVc2Vyc1xcbHlxXFxBcHBEYXRhXFxMb2NhbFxcVGVtcFxcc2YtZGV0YWNoZWQtY3Jhc2gtNVVjblRlIiwid29ya0l0ZW1JZCI6IldJLTAwMDEiLCJiYXNlQnJhbmNoIjoibWFpbiIsImJyYW5jaE5hbWUiOiJjb2RleC9jcmFzaC13aS0wMDAxIiwiZXhwZWN0ZWRIZWFkIjoiNGE5N2NhNTEwMmY5NDczM2M2MTE2YTFmYjQ1YTk1NGQ1OWNlZDI1NiJ9fQ=="
+      }
+    },
+    {
+      "exe": "C:\\Users\\lyq\\AppData\\Roaming\\npm\\node_modules\\bun\\bin\\bun.exe",
+      "args": [
+        "D:\\code\\SpecForge\\docs\\archive\\2026-11-03-original-wi-approved-implementation\\process-crash-probe.ts",
+        "child",
+        "D:\\code\\SpecForge\\docs\\archive\\2026-11-03-original-wi-approved-implementation\\process-crash-proof-final-schema\\refs_and_head_bound.crash-input.json",
+        "crash"
+      ],
+      "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-detached-crash-5UcnTe",
+      "started_utc": "2026-11-03T15:19:14.908Z",
+      "finished_utc": "2026-11-03T15:19:17.838Z",
+      "inner_exit_code": 37,
+      "stdout": "",
+      "stderr": "",
+      "input_payload": {
+        "sha256": "89525c4c4f395f8fb5a69d17a3a2596592743dc2817d1fdd3fbefa2d311671bd",
+        "bytes_base64": "eyJpbnB1dCI6eyJwcm9qZWN0Um9vdCI6IkM6XFxVc2Vyc1xcbHlxXFxBcHBEYXRhXFxMb2NhbFxcVGVtcFxcc2YtZGV0YWNoZWQtY3Jhc2gtNVVjblRlIiwid29ya0l0ZW1JZCI6IldJLTAwMDEiLCJiYXNlQnJhbmNoIjoibWFpbiIsImJyYW5jaE5hbWUiOiJjb2RleC9jcmFzaC13aS0wMDAxIiwiZXhwZWN0ZWRIZWFkIjoiNGE5N2NhNTEwMmY5NDczM2M2MTE2YTFmYjQ1YTk1NGQ1OWNlZDI1NiJ9LCJleGVjdXRlIjp7InByb2plY3RSb290IjoiQzpcXFVzZXJzXFxseXFcXEFwcERhdGFcXExvY2FsXFxUZW1wXFxzZi1kZXRhY2hlZC1jcmFzaC01VWNuVGUiLCJ3b3JrSXRlbUlkIjoiV0ktMDAwMSIsImJhc2VCcmFuY2giOiJtYWluIiwiYnJhbmNoTmFtZSI6ImNvZGV4L2NyYXNoLXdpLTAwMDEiLCJleHBlY3RlZEhlYWQiOiI0YTk3Y2E1MTAyZjk0NzMzYzYxMTZhMWZiNDVhOTU0ZDU5Y2VkMjU2IiwicGxhblNoYTI1NiI6IjE4MzkxYmViMzY4ODcyYTdkMjY4NTA1ZWZlYmY3OGYyYjZkMzYwYTcxYzM3OTA2NWEwNmIzMTkxMjZhNDgwNmIiLCJjb25maXJtYXRpb25RdW90ZSI6IumHh+eUqCBtYWluICsgY29kZXgvY3Jhc2gtd2ktMDAwMSJ9LCJjcmFzaF9hdCI6InJlZnNfYW5kX2hlYWRfYm91bmQifQ=="
+      }
+    },
+    {
+      "exe": "git",
+      "args": [
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-detached-crash-5UcnTe",
+      "started_utc": "2026-11-03T15:19:17.839Z",
+      "finished_utc": "2026-11-03T15:19:17.880Z",
+      "inner_exit_code": 0,
+      "stdout": "4a97ca5102f94733c6116a1fb45a954d59ced256\n",
+      "stderr": ""
+    },
+    {
+      "exe": "git",
+      "args": [
+        "for-each-ref",
+        "--format=%(refname) %(objectname)"
+      ],
+      "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-detached-crash-5UcnTe",
+      "started_utc": "2026-11-03T15:19:17.880Z",
+      "finished_utc": "2026-11-03T15:19:17.922Z",
+      "inner_exit_code": 0,
+      "stdout": "refs/heads/codex/crash-wi-0001 4a97ca5102f94733c6116a1fb45a954d59ced256\nrefs/heads/main 4a97ca5102f94733c6116a1fb45a954d59ced256\n",
+      "stderr": ""
+    },
+    {
+      "exe": "C:\\Users\\lyq\\AppData\\Roaming\\npm\\node_modules\\bun\\bin\\bun.exe",
+      "args": [
+        "D:\\code\\SpecForge\\docs\\archive\\2026-11-03-original-wi-approved-implementation\\process-crash-probe.ts",
+        "child",
+        "D:\\code\\SpecForge\\docs\\archive\\2026-11-03-original-wi-approved-implementation\\process-crash-proof-final-schema\\refs_and_head_bound.resume.json",
+        "resume"
+      ],
+      "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-detached-crash-5UcnTe",
+      "started_utc": "2026-11-03T15:19:17.923Z",
+      "finished_utc": "2026-11-03T15:19:21.253Z",
+      "inner_exit_code": 0,
+      "stdout": "{\"success\":true,\"work_item_id\":\"WI-0001\",\"bootstrap_mode\":\"verified_detached_commit\",\"bootstrap_plan_sha256\":\"18391beb368872a7d268505efebf78f2b6d360a71c379065a06b319126a4806b\",\"branch_name\":\"codex/crash-wi-0001\",\"base_branch\":\"main\",\"base_commit\":\"4a97ca5102f94733c6116a1fb45a954d59ced256\",\"git_context_path\":\".specforge/work-items/WI-0001/git_context.json\",\"index_unchanged\":true,\"tracked_bytes_unchanged\":true,\"new_commit_created\":false,\"old_branch_restoration_claimed\":false}\n",
+      "stderr": "",
+      "input_payload": {
+        "sha256": "42c38f7e07202cf584dadd5939c03d5d0ab0d117563bc19c37f5cf886e122e69",
+        "bytes_base64": "eyJpbnB1dCI6eyJwcm9qZWN0Um9vdCI6IkM6XFxVc2Vyc1xcbHlxXFxBcHBEYXRhXFxMb2NhbFxcVGVtcFxcc2YtZGV0YWNoZWQtY3Jhc2gtNVVjblRlIiwid29ya0l0ZW1JZCI6IldJLTAwMDEiLCJiYXNlQnJhbmNoIjoibWFpbiIsImJyYW5jaE5hbWUiOiJjb2RleC9jcmFzaC13aS0wMDAxIiwiZXhwZWN0ZWRIZWFkIjoiNGE5N2NhNTEwMmY5NDczM2M2MTE2YTFmYjQ1YTk1NGQ1OWNlZDI1NiJ9LCJleGVjdXRlIjp7InByb2plY3RSb290IjoiQzpcXFVzZXJzXFxseXFcXEFwcERhdGFcXExvY2FsXFxUZW1wXFxzZi1kZXRhY2hlZC1jcmFzaC01VWNuVGUiLCJ3b3JrSXRlbUlkIjoiV0ktMDAwMSIsImJhc2VCcmFuY2giOiJtYWluIiwiYnJhbmNoTmFtZSI6ImNvZGV4L2NyYXNoLXdpLTAwMDEiLCJleHBlY3RlZEhlYWQiOiI0YTk3Y2E1MTAyZjk0NzMzYzYxMTZhMWZiNDVhOTU0ZDU5Y2VkMjU2IiwicGxhblNoYTI1NiI6IjE4MzkxYmViMzY4ODcyYTdkMjY4NTA1ZWZlYmY3OGYyYjZkMzYwYTcxYzM3OTA2NWEwNmIzMTkxMjZhNDgwNmIiLCJjb25maXJtYXRpb25RdW90ZSI6IumHh+eUqCBtYWluICsgY29kZXgvY3Jhc2gtd2ktMDAwMSJ9fQ=="
+      }
+    },
+    {
+      "exe": "git",
+      "args": [
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-detached-crash-5UcnTe",
+      "started_utc": "2026-11-03T15:19:21.254Z",
+      "finished_utc": "2026-11-03T15:19:21.293Z",
+      "inner_exit_code": 0,
+      "stdout": "4a97ca5102f94733c6116a1fb45a954d59ced256\n",
+      "stderr": ""
+    },
+    {
+      "exe": "git",
+      "args": [
+        "branch",
+        "--show-current"
+      ],
+      "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-detached-crash-5UcnTe",
+      "started_utc": "2026-11-03T15:19:21.293Z",
+      "finished_utc": "2026-11-03T15:19:21.332Z",
+      "inner_exit_code": 0,
+      "stdout": "codex/crash-wi-0001\n",
+      "stderr": ""
+    }
+  ],
+  "fixtures_retained": true
+}

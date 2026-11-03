@@ -1,0 +1,10 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/build-release-runtime-artifacts.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "detached-bootstrap-release-runtimes",
+  "expected_writes": "release-runtime-binaries-and-evidence",
+  "started_utc": "2026-11-03T15:33:07.135Z"
+}

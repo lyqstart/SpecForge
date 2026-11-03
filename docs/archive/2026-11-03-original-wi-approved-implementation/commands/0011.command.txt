@@ -1,0 +1,11 @@
+{
+  "executable": "D:/code/SpecForge/node_modules/.bin/vitest.exe",
+  "args": [
+    "run",
+    "tests/unit/git-detached-bootstrap.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "detached-bootstrap-head-lease-regression",
+  "expected_writes": "isolated-git-fixtures-and-test-cache",
+  "started_utc": "2026-11-03T15:11:56.815Z"
+}

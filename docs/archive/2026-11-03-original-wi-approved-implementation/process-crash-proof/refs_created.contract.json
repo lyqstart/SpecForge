@@ -1,0 +1,93 @@
+{
+  "validator_id": "detached-bootstrap-process-crash",
+  "validation_target": "refs_created",
+  "validation_contract_id": "DETACHED-GIT-BOOTSTRAP-PROCESS-001",
+  "contract_source": "SPS §9.2; DETACHED-GIT-BOOTSTRAP-001",
+  "truth_source": "actual child process exit + original fixture Git/filesystem",
+  "baseline_source": "4b193ae18d48c1052555c9385cfcfc06df830998",
+  "baseline_freshness": "Captured immediately before child launch; only owned temporary fixture",
+  "assertions": [
+    {
+      "assertion_id": "CRASH_EXIT",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "expected": 37,
+      "truth_source": "child receipt and independent fixture observation",
+      "contract_source": "SPS §9.2",
+      "blocking": true
+    },
+    {
+      "assertion_id": "RESUME_EXIT",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "expected": 0,
+      "truth_source": "child receipt and independent fixture observation",
+      "contract_source": "SPS §9.2",
+      "blocking": true
+    },
+    {
+      "assertion_id": "INDEX_SAME",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "expected": true,
+      "truth_source": "child receipt and independent fixture observation",
+      "contract_source": "SPS §9.2",
+      "blocking": true
+    },
+    {
+      "assertion_id": "README_SAME",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "expected": true,
+      "truth_source": "child receipt and independent fixture observation",
+      "contract_source": "SPS §9.2",
+      "blocking": true
+    },
+    {
+      "assertion_id": "HEAD_SAME",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "expected": true,
+      "truth_source": "child receipt and independent fixture observation",
+      "contract_source": "SPS §9.2",
+      "blocking": true
+    },
+    {
+      "assertion_id": "BRANCH",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "expected": "codex/crash-wi-0001",
+      "truth_source": "child receipt and independent fixture observation",
+      "contract_source": "SPS §9.2",
+      "blocking": true
+    },
+    {
+      "assertion_id": "DEAD_LEASE_RETAINED",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "expected": true,
+      "truth_source": "child receipt and independent fixture observation",
+      "contract_source": "SPS §9.2",
+      "blocking": true
+    },
+    {
+      "assertion_id": "HEAD_LOCK_RELEASED",
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "expected": true,
+      "truth_source": "child receipt and independent fixture observation",
+      "contract_source": "SPS §9.2",
+      "blocking": true
+    }
+  ],
+  "validation_contract_frozen": true,
+  "validation_contract_hash": "0236581E1C723C263C1C8424DDBB535BE1BFC74C90C1A6D2FB54433AE0846EEE"
+}

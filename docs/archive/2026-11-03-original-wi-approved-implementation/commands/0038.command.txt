@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-approved-implementation/audit-original.cjs",
+    "before-owner-deployment"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "before-owner-deployment-formal-audit",
+  "expected_writes": "runtime-observer-and-evidence",
+  "started_utc": "2026-11-03T15:35:50.096Z"
+}

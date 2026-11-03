@@ -207,6 +207,8 @@ TYPE_ENVIRONMENT_SOURCE=VERSIONED_TSCONFIG_AND_DECLARED_DEPENDENCIES
 
 ### 3.3 责任层与最小完整扩展
 
+`DETACHED-GIT-BOOTSTRAP-001`（SPS §9.2）：已有 Git plan/create owner 承担无分支 detached 提交的实施前身份建立。计划先绑定新基线和 WI 分支、完整原提交、原索引及跟踪文件原始字节；受控执行绑定计划哈希与用户明确两分支名原话，使用无 hook 的有限 Git 原子引用事务、HEAD 绑定及标准 git_context。不得检出内容、改索引、新建提交或用参数伪装基线。跨进程互斥、每步命令四件套、不可变计划与阶段回执支持精确中间状态恢复，当前状态、refs、索引、内容或上下文漂移时 fail closed。旧分支建立路径和下游正常 Code Permission/Git Merge context 合同不变。
+
 问题必须定位到首次偏离的责任层：Standard、Contract、Workflow Skill、Agent、Tool Schema、
 Tool Handler、Runtime / State、Permission / Write Guard、Gate、Merge / Audit / Close、Deployment 或
 Business Project。现有能力不够时，先补齐最小但完整、可验证、可审计、可恢复的治理闭环，再从原任务

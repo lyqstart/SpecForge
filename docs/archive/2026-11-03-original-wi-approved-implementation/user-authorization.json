@@ -1,0 +1,9 @@
+{
+  "utc_received_recorded": "2026-11-03T14:43:52.416Z",
+  "user_response_quote": "批准",
+  "exact_user_reply": true,
+  "context": "Direct reply to current frozen WI-0001 attempt-0005 Candidate review and question authorizing specification merge and controlled implementation",
+  "candidate_input_snapshot_sha256": "3012dc9895dd145465dc5a704411fb1b04ad22e9fa990d745b744e18970bca54",
+  "user_approval_recorded_in_runtime": false,
+  "limits": "No implicit semantic branch-name confirmation, default-main Git merge, bypass of D18 or claim of executed verification."
+}

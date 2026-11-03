@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-approved-implementation/audit-original.cjs",
+    "approved-merged"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "approved-merge-formal-outcome",
+  "expected_writes": "formal-state-and-audit-observers",
+  "started_utc": "2026-11-03T14:50:49.009Z"
+}

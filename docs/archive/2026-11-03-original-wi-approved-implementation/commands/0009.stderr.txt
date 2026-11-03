@@ -1,0 +1,20 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > rejects concurrent attachment to a different branch without overwriting that HEAD
+AssertionError: expected 'codex/greet-library-wi-0001' to be 'concurrent' // Object.is equality
+
+Expected: "concurrent"
+Received: "codex/greet-library-wi-0001"
+
+ ❯ tests/unit/git-detached-bootstrap.test.ts:84:59
+     82|       if (stage === 'before_refs_transaction') await git(f.root, 'swit…
+     83|     } })).rejects.toThrow();
+     84|     expect(await git(f.root, 'branch', '--show-current')).toBe('concur…
+       |                                                           ^
+     85|     expect(await git(f.root, 'for-each-ref', '--format=%(refname)')).t…
+     86|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

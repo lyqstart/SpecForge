@@ -1,0 +1,11 @@
+
+ RUN  v4.1.5 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/v11-agent-skill-contract-alignment.test.ts (9 tests | 1 failed) 62ms
+     × keeps Contract consumer truth-source and manual-review rules aligned in Agents and Skills 14ms
+
+ Test Files  1 failed | 4 passed (5)
+      Tests  1 failed | 58 passed (59)
+   Start at  23:17:07
+   Duration  75.45s (transform 5.27s, setup 0ms, import 7.78s, tests 84.49s, environment 1ms)
+

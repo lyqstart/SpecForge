@@ -1,0 +1,27 @@
+
+ RUN  v4.1.5 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/git-detached-bootstrap.test.ts (19 tests | 17 failed) 9050ms
+     × plans without creating refs, atomically binds two new branches and standard context, then retries idempotently 481ms
+     × recovers an interrupted owner at refs_and_head_bound without rewriting business/index or duplicating refs 455ms
+     × recovers an interrupted owner at context_bound without rewriting business/index or duplicating refs 441ms
+     × rejects unbound confirmation 批准 before refs 450ms
+     × rejects unbound confirmation 不同意 main + codex/greet-library-wi-0001 before refs 430ms
+     × rejects unbound confirmation 采用 main + codex/other-wi-0001 before refs 450ms
+     × rejects a tampered immutable plan before refs 445ms
+     × rejects tracked drift without creating target refs or context 436ms
+     × rejects untracked drift without creating target refs or context 440ms
+     × rejects staged drift without creating target refs or context 437ms
+     × rejects head drift without creating target refs or context 464ms
+     × rejects refs drift without creating target refs or context 448ms
+     × rejects config drift without creating target refs or context 463ms
+     × rejects context drift without creating target refs or context 458ms
+     × rejects active permission and an existing local branch at plan time 450ms
+     × rejects a tracked hard-link alias and retains bytes at both names 458ms
+     × does not execute repository hooks or change the index 452ms
+
+ Test Files  1 failed (1)
+      Tests  17 failed | 2 passed (19)
+   Start at  23:03:17
+   Duration  11.89s (transform 1.88s, setup 0ms, import 2.65s, tests 9.05s, environment 0ms)
+

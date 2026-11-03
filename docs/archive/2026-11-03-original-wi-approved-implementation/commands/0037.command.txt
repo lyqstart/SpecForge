@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-approved-implementation/capture-source.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "capture-validated-source-before-milestone",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-03T15:35:29.258Z"
+}

@@ -1,0 +1,39 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/git-detached-filter-exclusion.test.ts > never starts a repository clean filter while checking or publishing a detached bootstrap
+AssertionError: promise resolved "Stats{ dev: 2591198719, …(13) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ Stats {
++   "atimeMs": 1793719364814.2175,
++   "birthtimeMs": 1793719364812.2104,
++   "blksize": 4096,
++   "blocks": 0,
++   "ctimeMs": 1793719364814.2175,
++   "dev": 2591198719,
++   "gid": 0,
++   "ino": 46443371157696820,
++   "mode": 33206,
++   "mtimeMs": 1793719364814.2175,
++   "nlink": 1,
++   "rdev": 0,
++   "size": 4,
++   "uid": 0,
+  }
+
+ ❯ tests/unit/git-detached-filter-exclusion.test.ts:25:62
+     23|     const input = { projectRoot: root, workItemId: 'WI-0001', expected…
+     24|     const plan = await planDetachedGitBootstrap(input).catch(error => …
+     25|     await expect(fs.stat(path.join(root, '.git/filter-ran'))).rejects.…
+       |                                                              ^
+     26|     expect(plan).toMatchObject({ success: true });
+     27|     if (!('bootstrap_plan_sha256' in plan)) throw Error('PLAN_FAILED');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

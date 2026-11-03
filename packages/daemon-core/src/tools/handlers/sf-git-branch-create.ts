@@ -1,7 +1,9 @@
 import { registerHandler } from '../ToolDispatcher';
 import { createBranch } from '../lib/git-governance-core';
+import { executeDetachedGitBootstrap } from '../lib/git-detached-bootstrap';
+import { readAuthoritativeState } from '../lib/state-coordinator-v11';
 
-registerHandler('sf_git_branch_create', async (args, context) => {
+registerHandler('sf_git_branch_create', async (args, context, deps) => {
   const projectRoot =
     (context?.directory as string) ||
     (context?.worktree as string) ||
@@ -24,6 +26,14 @@ registerHandler('sf_git_branch_create', async (args, context) => {
   }
 
   try {
+    if (args['bootstrap_plan_sha256'] !== undefined) {
+      if (context?.agent !== 'sf-orchestrator') throw Error('DETACHED_GIT_BOOTSTRAP_OWNER_REQUIRED');
+      const state = await readAuthoritativeState({ deps, projectRoot, workItemId });
+      if (state.current_state !== 'post_merge_verified') throw Error('DETACHED_GIT_BOOTSTRAP_POST_MERGE_VERIFIED_REQUIRED');
+      return await executeDetachedGitBootstrap({ projectRoot, workItemId, baseBranch, branchName,
+        planSha256: String(args['bootstrap_plan_sha256']), confirmationQuote: String(args['bootstrap_confirmation_quote'] || '') });
+    }
+    if (args['bootstrap_confirmation_quote'] !== undefined) throw Error('DETACHED_GIT_BOOTSTRAP_PLAN_REQUIRED');
     return await createBranch({
       projectRoot,
       workItemId,

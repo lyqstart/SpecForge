@@ -1,0 +1,11 @@
+const fs = require('node:fs'), path = require('node:path'), cp = require('node:child_process'), crypto = require('node:crypto');
+const root = process.cwd(), installed = 'C:/Users/lyq/.config/opencode/sf-user';
+const hash = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+const files = ['bin/specforge.exe','bin/specforged.exe','tools/sf_git_branch_plan.ts','tools/sf_git_branch_create.ts','agents/sf-orchestrator.md','skills/sf-workflow-feature-spec/SKILL.md'];
+const assets = files.map(file => { const source = file.startsWith('bin/') ? path.join(root,'release',file) : path.join(root,'setup/userlevel-opencode',file); return { file, source_sha256: hash(source), installed_sha256: hash(path.join(installed,file)) }; });
+const status = cp.spawnSync(path.join(installed,'bin/specforge.exe'), ['daemon','status','--json'], { encoding:'utf8',windowsHide:true });
+const health = JSON.parse(status.stdout);
+if (status.status !== 0 || assets.some(file=>file.source_sha256!==file.installed_sha256)) throw Error('DEPLOYMENT_IDENTITY_FAILED');
+const result = { utc:new Date().toISOString(), source_commit:cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8',windowsHide:true}).trim(), assets, health, health_exit_code:status.status, inner_exit_code:0 };
+fs.writeFileSync(path.join(__dirname,'deployment-verification.json'),JSON.stringify(result,null,2)+'\n',{flag:'wx'});
+console.log(JSON.stringify(result));

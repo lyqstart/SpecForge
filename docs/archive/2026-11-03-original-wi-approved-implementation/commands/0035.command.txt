@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-approved-implementation/check-publishable-evidence.cjs",
+    "--suffix=source-precommit"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "pre-source-publication-privacy",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-03T15:35:05.366Z"
+}

@@ -1,0 +1,16 @@
+{
+  "executable": "D:/code/SpecForge/node_modules/.bin/tsc.exe",
+  "args": [
+    "--noEmit",
+    "--ignoreDeprecations",
+    "6.0",
+    "--types",
+    "node",
+    "-p",
+    "packages/daemon-core/tsconfig.json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "detached-bootstrap-final-schema-typecheck",
+  "expected_writes": "repository-typecheck-output-only",
+  "started_utc": "2026-11-03T15:17:05.360Z"
+}

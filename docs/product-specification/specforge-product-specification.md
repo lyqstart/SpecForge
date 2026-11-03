@@ -667,6 +667,10 @@ Changed Files Audit 必须绑定本次读取的 Write Guard、HardStop resolutio
 
 版本控制模式属于 Code Permission 前置冻结事实：已有 Git 项目必须在实施前绑定可验证的分支与基线；非 Git 项目必须冻结为 `filesystem` 并以 filesystem baseline、Changed Files Audit 和 Formal Version 完成闭环。filesystem Formal Version 必须保存经审计的实现文件精确集合及其逐字节内容指纹，Close Gate 必须重新计算文件集合与内容指纹；新增、删除或内容变化均使既有 Formal Version 失效，不得仅凭路径范围、文件大小、mtime 或先前 Gate 状态关闭。实施开始后出现的 `git init` 不得反向改变该事实。历史 Work Item 若缺少冻结字段，只能在原 governance scope 与 filesystem baseline 的原始字节哈希、时间线以及当前无 HEAD/零跟踪文件仓库现场均可验证时，由受控 Code Permission 工具写入追加式恢复记录；Formal Version 必须重新验证该记录，任何源漂移、Git context、HEAD、tracked file 或仓库身份变化均使恢复失效。该恢复不产生 Git 分支、提交、合并或交付义务。
 
+已核验提交处于 detached HEAD 且没有本地分支的普通 Git 仓库，可在实施前由 Git owner 补齐新的分支身份。`sf_git_branch_plan` 的显式 detached bootstrap 模式必须先绑定真实项目、原 WI、完整原提交、新基线与工作分支名、原索引及跟踪文件字节，保存不可覆盖的哈希计划。`sf_git_branch_create` 只能在同一计划哈希、明确确认两分支身份的用户原话、正式状态仍处于实施前且原现场无漂移时执行。仅允许未跟踪的 `.specforge/**` 治理现场；已有分支、暂存或业务内容差异、链接、外部 Git 目录、活动代码权限、冲突上下文和并发必须在更改 Git 引用前拒绝。此能力新建用户确认的基线与 WI 分支，不恢复或猜测旧分支，不新建提交、不检出或改写业务文件、不改索引、不放宽代码权限。
+
+两条新引用须以 Git 原子事务建立，再受控绑定 HEAD 和标准 WI Git context；每步保存原始命令与真实退出码，失败后保留哈希绑定计划和完成步骤，只能在精确匹配的中间状态重试，漂移不得覆盖。原索引和跟踪内容须在每步写前及完成后复核。禁止用 `HEAD`、`--detach` 等值冒充基线分支，禁止人工建分支或手写 context 代替 owner。普通已有基线分支路径保持兼容；此恢复不改变 D18，也不替代将来默认主线 Git Merge 的独立用户确认。
+
 ## 9.3 HardStop
 
 HardStop 是 recoverable safety latch，不是“任务永久结束”。

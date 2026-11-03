@@ -1,0 +1,9 @@
+
+ RUN  v4.1.5 D:/code/SpecForge/packages/daemon-core
+
+
+ Test Files  1 passed (1)
+      Tests  27 passed (27)
+   Start at  23:11:57
+   Duration  68.79s (transform 1.91s, setup 0ms, import 2.68s, tests 65.92s, environment 0ms)
+

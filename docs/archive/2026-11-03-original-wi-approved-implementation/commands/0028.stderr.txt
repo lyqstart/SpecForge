@@ -1,0 +1,17 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > plans without creating refs, atomically binds two new branches and standard context, then retries idempotently
+Error: Test timed out in 10000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/unit/git-detached-bootstrap.test.ts:40:3
+     38|
+     39| describe('controlled detached Git bootstrap', () => {
+     40|   it('plans without creating refs, atomically binds two new branches a…
+       |   ^
+     41|     const f = await prepared(); expect(await git(f.root, 'for-each-ref…
+     42|     const result = await executeDetachedGitBootstrap(f.execute);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

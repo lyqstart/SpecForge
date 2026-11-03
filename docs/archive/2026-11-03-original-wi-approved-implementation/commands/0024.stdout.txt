@@ -1,0 +1,52 @@
+[root-task] Bun executable: C:\Users\lyq\AppData\Roaming\npm\node_modules\bun\bin\bun.exe
+[root-task] Bun version: 1.3.14
+[root-task] C:\Users\lyq\AppData\Roaming\npm\node_modules\bun\bin\bun.exe scripts/render-workflow-docs.ts
+Loaded 1 current workflow definition.
+
+Rendering workflow docs...
+
+  Updated: setup\userlevel-opencode\skills\sf-workflow-feature-spec\SKILL.md [phase-table]
+
+Done.
+[root-task] C:\Users\lyq\AppData\Roaming\npm\node_modules\bun\bin\bun.exe scripts/build-workspace.ts
+[build-workspace] Deterministic workspace build start
+[build-workspace] Bun executable: C:\Users\lyq\AppData\Roaming\npm\node_modules\bun\bin\bun.exe
+
+[build-workspace] Building @specforge/types
+[build-workspace] OK @specforge/types
+
+[build-workspace] Building @specforge/version-unification
+[build-workspace] OK @specforge/version-unification
+
+[build-workspace] Building @specforge/configuration
+[build-workspace] OK @specforge/configuration
+
+[build-workspace] Building @specforge/service-management
+[build-workspace] OK @specforge/service-management
+
+[build-workspace] Building @specforge/host-profile
+[build-workspace] OK @specforge/host-profile
+
+[build-workspace] Building @specforge/observability
+[build-workspace] OK @specforge/observability
+
+[build-workspace] Building @specforge/permission-engine
+[build-workspace] OK @specforge/permission-engine
+
+[build-workspace] Building @specforge/opencode-adapter
+[build-workspace] OK @specforge/opencode-adapter
+
+[build-workspace] Building @specforge/scope-gate
+[build-workspace] OK @specforge/scope-gate
+
+[build-workspace] Building @specforge/workflow-runtime
+[build-workspace] OK @specforge/workflow-runtime
+
+[build-workspace] Building @specforge/cli
+[build-workspace] OK @specforge/cli
+
+[build-workspace] Building @specforge/daemon-core
+[build-workspace] OK @specforge/daemon-core
+
+[build-workspace] Deterministic workspace build complete
+[root-task] Complete: build

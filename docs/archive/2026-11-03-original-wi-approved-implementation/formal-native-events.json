@@ -1,0 +1,1395 @@
+{
+  "utc": "2026-11-03T14:52:02.701Z",
+  "source": "native-resume-approval/new-messages-redacted.json",
+  "events": [
+    {
+      "message_id": "msg_1a1df0c2f001aNe0K2aI6LH6A6",
+      "agent": "sf-orchestrator",
+      "variant": "low",
+      "tool": "sf_safe_bash",
+      "tool_state": "completed",
+      "input": {
+        "command": "Get-FileHash -Algorithm SHA256 \"C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\gate_attempts\\attempt-0005\\input-snapshot.json\"",
+        "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+      },
+      "result": {
+        "success": false,
+        "error": "SPEC_FORGE_PROTECTED_PATH_WRITE_REQUIRES_CONTROLLED_TOOL: sf_safe_bash cannot write protected .specforge paths.\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, or sf_merge_run for .specforge/project/**. Never fall back to native file tools, General Task, or helper scripts.",
+        "hard_stop": true,
+        "hard_stop_record": {
+          "schema_version": "1.2",
+          "hard_stop_id": "HS-1793717145264",
+          "scope": "work_item",
+          "work_item_id": "WI-0001",
+          "blocked": true,
+          "reason": "SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN",
+          "source_tool": "sf_safe_bash",
+          "created_at": "2026-11-03T14:45:45.264Z",
+          "resolved": false,
+          "recovery_status": "pending",
+          "triggering_agent": "sf-orchestrator",
+          "blocked_action": "Get-FileHash -Algorithm SHA256 \"C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\gate_attempts\\attempt-0005\\input-snapshot.json\"",
+          "blocked_target": ".specforge/**",
+          "policy_code": "SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN",
+          "blocked_step": "protected_path_shell_access",
+          "resume_step": "repeat evidence collection with a controlled read tool",
+          "retry_original_action": false,
+          "safe_alternative_tool": "read/glob/grep/sf_state_read"
+        },
+        "work_item_id": "WI-0001",
+        "policy_violation": true,
+        "retry_allowed": false,
+        "blocked_command": "Get-FileHash -Algorithm SHA256 \"C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\gate_attempts\\attempt-0005\\input-snapshot.json\""
+      }
+    },
+    {
+      "message_id": "msg_1a1df0c2f001aNe0K2aI6LH6A6",
+      "agent": "sf-orchestrator",
+      "variant": "low",
+      "tool": "sf_safe_bash",
+      "tool_state": "completed",
+      "input": {
+        "command": "Get-FileHash -Algorithm SHA256 \"C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidate_manifest.json\"",
+        "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+      },
+      "result": {
+        "success": false,
+        "error": "HARD_STOP_ACTIVE: Work item WI-0001 is blocked.\nScope: work_item.\nReason: SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN. Source: sf_safe_bash.\nOnly read/debug/recovery tools are allowed for this work item. Tool sf_safe_bash is blocked for WI-0001.",
+        "hard_stop": true,
+        "hard_stop_record": {
+          "schema_version": "1.2",
+          "hard_stop_id": "HS-1793717145264",
+          "scope": "work_item",
+          "work_item_id": "WI-0001",
+          "blocked": true,
+          "reason": "SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN",
+          "source_tool": "sf_safe_bash",
+          "created_at": "2026-11-03T14:45:45.264Z",
+          "resolved": false,
+          "recovery_status": "pending",
+          "triggering_agent": "sf-orchestrator",
+          "blocked_action": "Get-FileHash -Algorithm SHA256 \"C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\gate_attempts\\attempt-0005\\input-snapshot.json\"",
+          "blocked_target": ".specforge/**",
+          "policy_code": "SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN",
+          "blocked_step": "protected_path_shell_access",
+          "resume_step": "repeat evidence collection with a controlled read tool",
+          "retry_original_action": false,
+          "safe_alternative_tool": "read/glob/grep/sf_state_read"
+        },
+        "work_item_id": "WI-0001"
+      }
+    },
+    {
+      "message_id": "msg_1a1df9487001M51IiqaUDLv6Me",
+      "agent": "sf-orchestrator",
+      "variant": "low",
+      "tool": "sf_hard_stop_resolve",
+      "tool_state": "completed",
+      "input": {
+        "blocked_action_disposition": "abandon",
+        "evidence": [
+          "sf_safe_bash 两次调用均被拒（HS-1793717145264，policy=SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN，blocked_step=protected_path_shell_access）",
+          "被阻断动作仅为对 attempt-0005/input-snapshot.json 与 candidate_manifest.json 取 SHA-256；无任何写入发生（retry_allowed=false, zero writes）",
+          "hard_stop_record.safe_alternative_tool=read/glob/grep/sf_state_read"
+        ],
+        "hard_stop_id": "HS-1793717145264",
+        "last_successful_step": "sf_state_read 确认 WI-0001 @ approval_required（StateManager 2026-11-03T14:45 前）",
+        "reason": "orchestrator 工具选择错误：对 .specforge/** 受保护路径调用 sf_safe_bash Get-FileHash 做只读哈希取证；该路径族对 shell 类工具一律拒绝。放弃原动作，改用 read/glob/grep 只读内容比对 + 用户提供的 before-authorized-continuation.json 外部哈希核验完成同一无漂移证据目标，不扩大权限、不重试原动作。",
+        "resolution_type": "operator_error",
+        "resume_from_step": "用只读工具完成无漂移核验后，继续 approval_required 的决策记录与受控合并链",
+        "retry_original_action": false,
+        "scope": "command",
+        "work_item_id": "WI-0001"
+      },
+      "result": {
+        "success": false,
+        "error": "HARD_STOP_RECOVERY_PLAN_REQUIRED",
+        "message": "A system-safe HardStop resolution without user approval must prove a no-expansion recovery plan and an explicit resume point.",
+        "missing_fields": [
+          "allowed_next_action"
+        ],
+        "retry_allowed": true
+      }
+    },
+    {
+      "message_id": "msg_1a1dfe492001wnY1KpC2zj2AQZ",
+      "agent": "sf-orchestrator",
+      "variant": "low",
+      "tool": "sf_hard_stop_resolve",
+      "tool_state": "completed",
+      "input": {
+        "allowed_next_action": "仅使用 Read/Glob/Grep/sf_state_read 等只读工具完成 Candidate/Manifest 无漂移核验，然后按用户已给出的真实批准继续正式链：sf_user_decision_record(action=record, user_response_quote=\"批准\") → sf_merge_run → sf_gate_run(post_merge_gate) → sf_git_preflight → sf_git_branch_plan；全程不得再对 .specforge/** 调用 sf_safe_bash",
+        "blocked_action_disposition": "abandon",
+        "evidence": [
+          "sf_safe_bash 两次调用均被拒（HS-1793717145264，policy=SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN，blocked_step=protected_path_shell_access）",
+          "被阻断动作仅为对 attempt-0005/input-snapshot.json 与 candidate_manifest.json 取 SHA-256；无任何写入发生（retry_allowed=false, zero writes）",
+          "hard_stop_record.safe_alternative_tool=read/glob/grep/sf_state_read"
+        ],
+        "hard_stop_id": "HS-1793717145264",
+        "last_successful_step": "sf_state_read 确认 WI-0001 @ approval_required",
+        "reason": "orchestrator 工具选择错误：对 .specforge/** 受保护路径调用 sf_safe_bash Get-FileHash 做只读哈希取证；该路径族对 shell 类工具一律拒绝。放弃原动作，改用 read/glob/grep 只读内容比对 + 外部 before-authorized-continuation.json 哈希核验完成同一无漂移证据目标，不扩大权限、不重试原动作。",
+        "resolution_type": "operator_error",
+        "resume_from_step": "用只读工具完成无漂移核验后，继续 approval_required 的决策记录与受控合并链",
+        "retry_original_action": false,
+        "scope": "command",
+        "work_item_id": "WI-0001"
+      },
+      "result": {
+        "success": false,
+        "error": "SAFE_ALTERNATIVE_TOOL_REQUIRED",
+        "message": "An operator/tool-selection error must name the controlled Tool or read path that replaces the blocked action.",
+        "retry_allowed": true
+      }
+    },
+    {
+      "message_id": "msg_1a1e01a0b001U9pepikxoCDFJi",
+      "agent": "sf-orchestrator",
+      "variant": "low",
+      "tool": "sf_hard_stop_resolve",
+      "tool_state": "completed",
+      "input": {
+        "allowed_next_action": "仅使用 Read/Glob/Grep/sf_state_read 等只读工具完成 Candidate/Manifest 无漂移核验，然后按用户已给出的真实批准继续正式链：sf_user_decision_record(action=record, user_response_quote=\"批准\") → sf_merge_run → sf_gate_run(post_merge_gate) → sf_git_preflight → sf_git_branch_plan；全程不得再对 .specforge/** 调用 sf_safe_bash",
+        "blocked_action_disposition": "abandon",
+        "evidence": [
+          "sf_safe_bash 两次调用均被拒（HS-1793717145264，policy=SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN，blocked_step=protected_path_shell_access）",
+          "被阻断动作仅为取 SHA-256；无任何写入发生（retry_allowed=false, zero writes）",
+          "hard_stop_record.safe_alternative_tool=read/glob/grep/sf_state_read"
+        ],
+        "hard_stop_id": "HS-1793717145264",
+        "last_successful_step": "sf_state_read 确认 WI-0001 @ approval_required",
+        "reason": "orchestrator 工具选择错误：对 .specforge/** 受保护路径调用 sf_safe_bash Get-FileHash 做只读哈希取证；该路径族对 shell 类工具一律拒绝。放弃原动作，改用只读内容比对 + 外部 before-authorized-continuation.json 哈希核验完成同一无漂移证据目标，不扩大权限、不重试原动作。",
+        "resolution_type": "operator_error",
+        "resume_from_step": "用只读工具完成无漂移核验后，继续 approval_required 的决策记录与受控合并链",
+        "retry_original_action": false,
+        "safe_alternative_tool": "Read（只读内容比对 candidate_manifest.json 与 gate_attempts/attempt-0005/input-snapshot.json；无漂移哈希证据引用外部 before-authorized-continuation.json 独立核验结果）",
+        "scope": "command",
+        "work_item_id": "WI-0001"
+      },
+      "result": {
+        "success": true,
+        "work_item_id": "WI-0001",
+        "hard_stop_id": "HS-1793717145264",
+        "resolution_type": "operator_error",
+        "user_decision_required": false,
+        "cleared": true,
+        "recovery_complete": true,
+        "resolution_log": ".specforge/work-items/WI-0001/hard_stop_resolution.jsonl",
+        "authorization_installed": false,
+        "authorization": null,
+        "resume_context": {
+          "authoritative_state": "approval_required",
+          "last_successful_step": "sf_state_read 确认 WI-0001 @ approval_required",
+          "resume_from_step": "用只读工具完成无漂移核验后，继续 approval_required 的决策记录与受控合并链",
+          "allowed_next_action": "仅使用 Read/Glob/Grep/sf_state_read 等只读工具完成 Candidate/Manifest 无漂移核验，然后按用户已给出的真实批准继续正式链：sf_user_decision_record(action=record, user_response_quote=\"批准\") → sf_merge_run → sf_gate_run(post_merge_gate) → sf_git_preflight → sf_git_branch_plan；全程不得再对 .specforge/** 调用 sf_safe_bash",
+          "retry_original_action": false,
+          "safe_alternative_tool": "Read（只读内容比对 candidate_manifest.json 与 gate_attempts/attempt-0005/input-snapshot.json；无漂移哈希证据引用外部 before-authorized-continuation.json 独立核验结果）",
+          "must_revalidate_authoritative_state": true,
+          "must_recheck_prerequisites": true,
+          "must_not_repeat_completed_steps": true
+        },
+        "message": "HardStop resolved through a no-expansion recovery plan; original record preserved and resume context returned."
+      }
+    },
+    {
+      "message_id": "msg_1a1e05cac001607kaKzfhaMWOA",
+      "agent": "sf-orchestrator",
+      "variant": "low",
+      "tool": "sf_user_decision_record",
+      "tool_state": "completed",
+      "input": {
+        "action": "record",
+        "comments": "对 WI-0001 attempt-0005（10/10 passed）冻结 Candidate 的全新真实用户批准；批准范围：候选合并为正式项目规格及后续受控实现流程",
+        "decision_scope": "full",
+        "decision_status": "approved",
+        "decision_type": "user_approved",
+        "user_response_quote": "批准",
+        "work_item_id": "WI-0001"
+      },
+      "result": {
+        "success": true,
+        "work_item_id": "WI-0001",
+        "decision_id": "UD-WI-0001-1793717210435",
+        "decision_status": "approved",
+        "decision_type": "user_approved",
+        "decided_by": "user",
+        "recorded_by": "sf-orchestrator",
+        "user_response_quote": "批准",
+        "decided_at": "2026-11-03T14:46:50.435Z",
+        "workflow_type": "feature_spec",
+        "workflow_path": "requirement_change_path",
+        "state_auto_advance": {
+          "attempted": true,
+          "advanced": true,
+          "from_state": "approval_required",
+          "to_state": "approved",
+          "evidence": "user_decision_recorder auto-advance after valid user approval",
+          "transition_result": {
+            "source": "StateManager",
+            "workItemId": "WI-0001",
+            "previousState": "approval_required",
+            "currentState": "approved",
+            "timestamp": "2026-11-03T14:46:50.451Z"
+          }
+        }
+      }
+    },
+    {
+      "message_id": "msg_1a1e0906e001n2GHFMgaK0G0Ra",
+      "agent": "sf-orchestrator",
+      "variant": "low",
+      "tool": "sf_merge_run",
+      "tool_state": "completed",
+      "input": {
+        "work_item_id": "WI-0001"
+      },
+      "result": {
+        "success": true,
+        "status": "success",
+        "work_item_id": "WI-0001",
+        "merged_count": 9,
+        "failed_count": 0,
+        "spec_manifest_updated": true,
+        "project_spec_version": "PSV-0002",
+        "errors": [],
+        "state_auto_advance": {
+          "attempted": true,
+          "advanced": true,
+          "from_state": "approved",
+          "to_state": "merged",
+          "workflow_type": "feature_spec",
+          "transition_steps": [
+            {
+              "attempted": true,
+              "advanced": true,
+              "from_state": "approved",
+              "to_state": "merge_ready",
+              "evidence": "merge_runner authoritative post-approval transition after merge_report success",
+              "transition_result": {
+                "source": "StateManager",
+                "workItemId": "WI-0001",
+                "previousState": "approved",
+                "currentState": "merge_ready",
+                "timestamp": "2026-11-03T14:47:02.221Z"
+              }
+            },
+            {
+              "attempted": true,
+              "advanced": true,
+              "from_state": "merge_ready",
+              "to_state": "merging",
+              "evidence": "merge_runner authoritative post-approval transition after merge_report success",
+              "transition_result": {
+                "source": "StateManager",
+                "workItemId": "WI-0001",
+                "previousState": "merge_ready",
+                "currentState": "merging",
+                "timestamp": "2026-11-03T14:47:02.234Z"
+              }
+            },
+            {
+              "attempted": true,
+              "advanced": true,
+              "from_state": "merging",
+              "to_state": "merged",
+              "evidence": "merge_runner authoritative post-approval transition after merge_report success",
+              "transition_result": {
+                "source": "StateManager",
+                "workItemId": "WI-0001",
+                "previousState": "merging",
+                "currentState": "merged",
+                "timestamp": "2026-11-03T14:47:02.254Z"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "message_id": "msg_1a1e0beb30013NAkC7CijySxHb",
+      "agent": "sf-orchestrator",
+      "variant": "low",
+      "tool": "sf_gate_run",
+      "tool_state": "completed",
+      "input": {
+        "gate_ids": [
+          "post_merge_gate"
+        ],
+        "gate_type": "post_merge",
+        "work_item_id": "WI-0001",
+        "workflow_type": "feature_spec"
+      },
+      "result": {
+        "success": true,
+        "work_item_id": "WI-0001",
+        "workflow_path": "requirement_change_path",
+        "workflow_type": "feature_spec",
+        "workflow_type_source": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\trigger_result.json",
+        "candidate_phase": "full",
+        "candidate_phase_source": "artifact_inference",
+        "workflow_path_source": ".specforge/work-items/WI-0001/trigger_result.json",
+        "authoritative_state_before_gate": "merged",
+        "requested_gate_ids": [
+          "post_merge_gate"
+        ],
+        "requested_gate_type": "post_merge",
+        "normalized_gate_ids": [
+          "post_merge_gate"
+        ],
+        "aliases_used": [],
+        "summary_status": "passed",
+        "summary_path": ".specforge/work-items/WI-0001/gate_summary.md",
+        "gate_attempt_id": "attempt-0006",
+        "gate_attempt_path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0006",
+        "gate_count": 1,
+        "passed": 1,
+        "failed": 0,
+        "state_auto_advance": {
+          "attempted": true,
+          "advanced": true,
+          "from_state": "merged",
+          "to_state": "post_merge_verified",
+          "workflow_type": "feature_spec",
+          "transition_steps": [
+            {
+              "attempted": true,
+              "advanced": true,
+              "from_state": "merged",
+              "to_state": "post_merge_verified",
+              "evidence": "post_merge_gate passed; authoritative transition merged->post_merge_verified",
+              "transition_result": {
+                "source": "StateManager",
+                "workItemId": "WI-0001",
+                "previousState": "merged",
+                "currentState": "post_merge_verified",
+                "timestamp": "2026-11-03T14:47:10.634Z"
+              }
+            }
+          ]
+        },
+        "reports": [
+          {
+            "gate_id": "post_merge_gate",
+            "status": "passed",
+            "blocking_issues": 0,
+            "warnings": 0
+          }
+        ]
+      }
+    },
+    {
+      "message_id": "msg_1a1e0df73001Qrrn6yqEny9v3t",
+      "agent": "sf-orchestrator",
+      "variant": "low",
+      "tool": "sf_git_preflight",
+      "tool_state": "completed",
+      "input": {},
+      "result": {
+        "success": true,
+        "project_root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+        "inside_work_tree": true,
+        "current_branch": null,
+        "head_commit": "8a692e88c0823984647622294f5199c18bb0c587",
+        "default_branch": "main",
+        "on_default_branch": false,
+        "worktree_clean": false,
+        "status_entries": [
+          {
+            "path": ".specforge/.gitignore",
+            "raw": "?? .specforge/.gitignore",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/config/observability.json",
+            "raw": "?? .specforge/config/observability.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/config/prod-environment.md",
+            "raw": "?? .specforge/config/prod-environment.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/config/project-rules.md",
+            "raw": "?? .specforge/config/project-rules.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/config/project.json",
+            "raw": "?? .specforge/config/project.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/project/architecture.md",
+            "raw": "?? .specforge/project/architecture.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/project/data_model.md",
+            "raw": "?? .specforge/project/data_model.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/project/decisions.md",
+            "raw": "?? .specforge/project/decisions.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/project/design_index.md",
+            "raw": "?? .specforge/project/design_index.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/project/extension_registry.json",
+            "raw": "?? .specforge/project/extension_registry.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/project/glossary.md",
+            "raw": "?? .specforge/project/glossary.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/project/modules/CORE/contracts.json",
+            "raw": "?? .specforge/project/modules/CORE/contracts.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/project/modules/CORE/design.md",
+            "raw": "?? .specforge/project/modules/CORE/design.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/project/modules/CORE/module.json",
+            "raw": "?? .specforge/project/modules/CORE/module.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/project/modules/CORE/requirements.md",
+            "raw": "?? .specforge/project/modules/CORE/requirements.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/project/modules/CORE/trace.md",
+            "raw": "?? .specforge/project/modules/CORE/trace.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/project/requirements_index.md",
+            "raw": "?? .specforge/project/requirements_index.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/project/spec_manifest.json",
+            "raw": "?? .specforge/project/spec_manifest.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/project/trace_matrix.md",
+            "raw": "?? .specforge/project/trace_matrix.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/candidate_manifest.json",
+            "raw": "?? .specforge/work-items/WI-0001/candidate_manifest.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/candidates/project/architecture.candidate.md",
+            "raw": "?? .specforge/work-items/WI-0001/candidates/project/architecture.candidate.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/candidates/project/data_model.candidate.md",
+            "raw": "?? .specforge/work-items/WI-0001/candidates/project/data_model.candidate.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/candidates/project/extension_registry.json",
+            "raw": "?? .specforge/work-items/WI-0001/candidates/project/extension_registry.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/candidates/project/modules/CORE/contracts.candidate.json",
+            "raw": "?? .specforge/work-items/WI-0001/candidates/project/modules/CORE/contracts.candidate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/candidates/project/modules/CORE/design.candidate.md",
+            "raw": "?? .specforge/work-items/WI-0001/candidates/project/modules/CORE/design.candidate.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/candidates/project/modules/CORE/module.candidate.json",
+            "raw": "?? .specforge/work-items/WI-0001/candidates/project/modules/CORE/module.candidate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/candidates/project/modules/CORE/requirements.candidate.md",
+            "raw": "?? .specforge/work-items/WI-0001/candidates/project/modules/CORE/requirements.candidate.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/candidates/tasks.md",
+            "raw": "?? .specforge/work-items/WI-0001/candidates/tasks.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/candidates/trace_delta.md",
+            "raw": "?? .specforge/work-items/WI-0001/candidates/trace_delta.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/change_classification.md",
+            "raw": "?? .specforge/work-items/WI-0001/change_classification.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/attempt-result.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0001/attempt-result.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/attempt-start.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0001/attempt-start.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gate_summary.md",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gate_summary.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/candidate_manifest_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/candidate_manifest_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/contract_integrity_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/contract_integrity_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/entry_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/entry_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/path_policy_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/path_policy_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/required_files_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/required_files_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/schema_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/schema_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/spec_consistency_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/spec_consistency_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/trace_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/trace_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/workflow_selection_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/workflow_selection_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/workflow_specific_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/workflow_specific_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/input-snapshot.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0001/input-snapshot.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/attempt-result.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0002/attempt-result.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/attempt-start.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0002/attempt-start.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gate_summary.md",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gate_summary.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/candidate_manifest_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/candidate_manifest_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/contract_integrity_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/contract_integrity_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/entry_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/entry_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/path_policy_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/path_policy_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/required_files_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/required_files_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/schema_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/schema_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/spec_consistency_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/spec_consistency_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/trace_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/trace_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/workflow_selection_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/workflow_selection_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/workflow_specific_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/workflow_specific_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/input-snapshot.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0002/input-snapshot.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/attempt-result.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0003/attempt-result.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/attempt-start.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0003/attempt-start.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gate_summary.md",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gate_summary.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/candidate_manifest_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/candidate_manifest_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/contract_integrity_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/contract_integrity_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/entry_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/entry_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/path_policy_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/path_policy_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/required_files_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/required_files_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/schema_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/schema_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/spec_consistency_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/spec_consistency_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/trace_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/trace_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/workflow_selection_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/workflow_selection_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/workflow_specific_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/workflow_specific_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/input-snapshot.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0003/input-snapshot.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/attempt-result.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0004/attempt-result.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/attempt-start.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0004/attempt-start.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gate_summary.md",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gate_summary.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/candidate_manifest_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/candidate_manifest_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/contract_integrity_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/contract_integrity_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/entry_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/entry_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/path_policy_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/path_policy_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/required_files_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/required_files_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/schema_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/schema_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/spec_consistency_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/spec_consistency_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/trace_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/trace_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/workflow_selection_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/workflow_selection_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/workflow_specific_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/workflow_specific_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/input-snapshot.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0004/input-snapshot.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/attempt-result.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0005/attempt-result.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/attempt-start.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0005/attempt-start.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gate_summary.md",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gate_summary.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/candidate_manifest_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/candidate_manifest_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/contract_integrity_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/contract_integrity_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/entry_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/entry_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/path_policy_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/path_policy_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/required_files_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/required_files_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/schema_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/schema_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/spec_consistency_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/spec_consistency_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/trace_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/trace_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/workflow_selection_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/workflow_selection_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/workflow_specific_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/workflow_specific_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/input-snapshot.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0005/input-snapshot.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0006/attempt-result.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0006/attempt-result.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0006/attempt-start.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0006/attempt-start.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0006/gate_summary.md",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0006/gate_summary.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0006/gates/post_merge_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0006/gates/post_merge_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0006/input-snapshot.json",
+            "raw": "?? .specforge/work-items/WI-0001/gate_attempts/attempt-0006/input-snapshot.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gate_summary.md",
+            "raw": "?? .specforge/work-items/WI-0001/gate_summary.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gates/candidate_manifest_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gates/candidate_manifest_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gates/contract_integrity_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gates/contract_integrity_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gates/entry_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gates/entry_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gates/path_policy_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gates/path_policy_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gates/post_merge_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gates/post_merge_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gates/required_files_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gates/required_files_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gates/schema_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gates/schema_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gates/spec_consistency_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gates/spec_consistency_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gates/trace_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gates/trace_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gates/workflow_selection_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gates/workflow_selection_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/gates/workflow_specific_gate.json",
+            "raw": "?? .specforge/work-items/WI-0001/gates/workflow_specific_gate.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/handoff_validation_state.json",
+            "raw": "?? .specforge/work-items/WI-0001/handoff_validation_state.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1792907413595_7696c9a77469_0.json",
+            "raw": "?? .specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1792907413595_7696c9a77469_0.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1793709765455_184d510bc3f3_0.json",
+            "raw": "?? .specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1793709765455_184d510bc3f3_0.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1793711464843_76b7bd32dbf2_0.json",
+            "raw": "?? .specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1793711464843_76b7bd32dbf2_0.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1793712267542_83bdbc0b903e_0.json",
+            "raw": "?? .specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1793712267542_83bdbc0b903e_0.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1793714169917_aa831ae1c478_0.json",
+            "raw": "?? .specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1793714169917_aa831ae1c478_0.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-requirements_candidate_requirements_1792906288040_16e75c9feacf_0.json",
+            "raw": "?? .specforge/work-items/WI-0001/handoffs/handoff_sf-requirements_candidate_requirements_1792906288040_16e75c9feacf_0.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-requirements_candidate_requirements_1793708450063_3cfbc48a4bc7_0.json",
+            "raw": "?? .specforge/work-items/WI-0001/handoffs/handoff_sf-requirements_candidate_requirements_1793708450063_3cfbc48a4bc7_0.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-task-planner_candidate_tasks_1792908279507_15ec6734671a_0.json",
+            "raw": "?? .specforge/work-items/WI-0001/handoffs/handoff_sf-task-planner_candidate_tasks_1792908279507_15ec6734671a_0.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-task-planner_candidate_tasks_1793710908531_614e22c407c2_0.json",
+            "raw": "?? .specforge/work-items/WI-0001/handoffs/handoff_sf-task-planner_candidate_tasks_1793710908531_614e22c407c2_0.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-task-planner_candidate_tasks_1793711555074_56255b211e83_0.json",
+            "raw": "?? .specforge/work-items/WI-0001/handoffs/handoff_sf-task-planner_candidate_tasks_1793711555074_56255b211e83_0.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-task-planner_candidate_tasks_1793714308631_7a18a4bb25d7_0.json",
+            "raw": "?? .specforge/work-items/WI-0001/handoffs/handoff_sf-task-planner_candidate_tasks_1793714308631_7a18a4bb25d7_0.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/hard_stop_resolution.jsonl",
+            "raw": "?? .specforge/work-items/WI-0001/hard_stop_resolution.jsonl",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/impact_analysis.md",
+            "raw": "?? .specforge/work-items/WI-0001/impact_analysis.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/implementation_baseline.json",
+            "raw": "?? .specforge/work-items/WI-0001/implementation_baseline.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/intake.md",
+            "raw": "?? .specforge/work-items/WI-0001/intake.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/merge_report.md",
+            "raw": "?? .specforge/work-items/WI-0001/merge_report.md",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/trigger_result.json",
+            "raw": "?? .specforge/work-items/WI-0001/trigger_result.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/user_decision.json",
+            "raw": "?? .specforge/work-items/WI-0001/user_decision.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/work_item.json",
+            "raw": "?? .specforge/work-items/WI-0001/work_item.json",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          },
+          {
+            "path": ".specforge/work-items/WI-0001/write_guard_log.jsonl",
+            "raw": "?? .specforge/work-items/WI-0001/write_guard_log.jsonl",
+            "index": "?",
+            "worktree": "?",
+            "kind": "untracked"
+          }
+        ],
+        "remotes": [],
+        "warnings": [
+          "DETACHED_HEAD_OR_UNKNOWN_BRANCH",
+          "WORKTREE_NOT_CLEAN"
+        ],
+        "errors": []
+      }
+    },
+    {
+      "message_id": "msg_1a1e101cc001KCfr0cVEo0QcOQ",
+      "agent": "sf-orchestrator",
+      "variant": "low",
+      "tool": "sf_git_branch_plan",
+      "tool_state": "completed",
+      "input": {
+        "title": "greet library",
+        "work_item_id": "WI-0001",
+        "work_item_type": "feature"
+      },
+      "result": {
+        "success": true,
+        "work_item_id": "WI-0001",
+        "work_item_type": "feature",
+        "title": "greet library",
+        "candidates": [
+          "feature/greet-library-wi-0001",
+          "feature/specforge-greet-library-wi-0001"
+        ],
+        "recommended": "feature/greet-library-wi-0001"
+      }
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-approved-implementation/prepare-guidance-baseline.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-exact-guidance-baseline",
+  "expected_writes": "owned-partial-baseline-copy-and-evidence",
+  "started_utc": "2026-11-03T15:20:26.676Z"
+}

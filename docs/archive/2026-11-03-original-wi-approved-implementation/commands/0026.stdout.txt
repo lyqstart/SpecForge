@@ -1,0 +1,8 @@
+packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts(211,43): error TS18046: 'plan' is of type 'unknown'.
+packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts(212,35): error TS18046: 'plan' is of type 'unknown'.
+packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts(212,88): error TS18046: 'plan' is of type 'unknown'.
+packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts(212,155): error TS18046: 'plan' is of type 'unknown'.
+packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts(214,28): error TS18046: 'plan' is of type 'unknown'.
+packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts(218,85): error TS18046: 'plan' is of type 'unknown'.
+packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts(220,67): error TS18046: 'plan' is of type 'unknown'.
+packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts(220,91): error TS18046: 'plan' is of type 'unknown'.

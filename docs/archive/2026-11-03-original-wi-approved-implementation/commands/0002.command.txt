@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-approved-implementation/resume-approval.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "original-native-approved-decision-and-spec-merge",
+  "expected_writes": "original-owner-decision-merge-audit-and-native-session-observers",
+  "started_utc": "2026-11-03T14:45:09.159Z"
+}

@@ -1,0 +1,15 @@
+{
+  "executable": "D:/code/SpecForge/node_modules/.bin/vitest.exe",
+  "args": [
+    "run",
+    "tests/unit/git-detached-bootstrap.test.ts",
+    "tests/unit/phase12-unborn-git-bootstrap.test.ts",
+    "tests/unit/post-close-git-merge-governance.test.ts",
+    "tests/unit/current-release-tool-registry.test.ts",
+    "tests/v11-agent-skill-contract-alignment.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "detached-bootstrap-final-related-regression",
+  "expected_writes": "isolated-git-fixtures-and-test-cache",
+  "started_utc": "2026-11-03T15:17:07.205Z"
+}

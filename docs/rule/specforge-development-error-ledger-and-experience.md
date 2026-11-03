@@ -32162,3 +32162,43 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 原 Orchestrator 在 sf-design 已写新 Data Model 声明并交付 handoff 后过早封存、运行 attempt-0004，Trace Delta 尚未同步，因此同一布尔条件再次失败。0105 的全量原始报告独立确认，不将 9/10 当通过、不放宽 Gate、不改写失败 Attempt。首次偏离属于 Workflow/Agent 修订闭环，当前 Runtime 正确阻止不完整 Candidate。
 - 随后正式恢复 candidate_preparing，真实 sf-task-planner 被派发补对应规范四列 ADD 边和计数；其实际写入、fresh handoff 与后续 Gate 须另行核验，task running/自述不能证明完成。复用 EXP-004/007/017/287，活动 EXP-004 增加同类修订闭包要求；不创建单个 WI 的运行特例。
 - 后续闭环：同一原会话的 sf-task-planner 完成受控修订和 fresh handoff，重新封存后的 attempt-0005 10/10 passed，由 Gate Runner 正式进入 approval_required。0108/0109 从原始 WAL、投影游标、报告与 Gate 输入哈希独立交叉核验，未把通用任务完成或 Agent 自述当通过证据。四次失败 Attempt 保留，用户尚未批准、未 Merge、未实现。
+
+### ERR-1903：审批续跑为受保护证据补哈希误用 sf_safe_bash
+
+- CODEX-SF-20261103-ORIGINAL-WI-APPROVED-IMPLEMENTATION-A01 的原 sf-orchestrator 在同一个 message/tool batch 对两份 `.specforge/**` 证据调用 Get-FileHash。第一次在执行前触发 HS-1793717145264，第二次因 HARD_STOP_ACTIVE 被拒，不能将这一并行批次写成“收到首次结果后再次有意重试”。原命令未获执行，业务文件保持原字节；Runtime 正确失败关闭，不属于 false_positive。
+- 正式 resolution 前两次分别缺 allowed_next_action、safe_alternative_tool，第三次以 operator_error、abandon、retry_original_action=false、安全 Read 内容比对及明确恢复点成功解除，未扩大权限。随后真实 quote=批准 被 Recorder 记录、规格 Merge 至 PSV-0002、post_merge_gate 通过，正式 StateManager 为 post_merge_verified。0004 原始快照和 formal-native-events.json 保留全部失败/恢复。
+- 复用 EXP-007/071/161/264/285/287，活动 EXP-071 明确保护路径不能为补哈希调用命令。不能用已解决或后续成功抹去两条拒绝；后续 Changed Files Audit 必须如实消费历史处置。
+
+### ERR-1904：归档恢复后的 detached Git 提交缺少受控分支建立路径
+
+- 原项目通过封存恢复只证明 detached 原提交，不证明旧分支；独立 symbolic-ref/show-ref 和正式 sf_git_preflight 确认无本地分支、无 remotes。现有 createBranch 固定先 git switch base_branch，因此不能用不存在的 main 建立 WI context。原 Agent 最终称确认名称后即可从 detached 建分支，属于尚无 owner 能力支持的推断；Codex 独立源码审核未将其当可执行路线，也未运行已知必败的创建命令。
+- 用户明确采用新 main 与 codex/greet-library-wi-0001、起点原完整提交。最小扩展归现有 Git plan/create owner：哈希冻结源现场和两条新引用、正式确认原话、原子引用事务、HEAD/context 绑定、互斥和中断恢复；不手工建分支，不将新 main 说成旧分支恢复，不重新 Merge 规格，不变更 D18。SPS §9.2/Registry D19 在代码前明确合同。
+- 实现与验证尚待本阶段完成，不能先标为已恢复。复用 EXP-004/006/017/032/181/188/193/260/270/273，活动 EXP-273 增加同类前置检查。
+
+### ERR-1905：Node 的 Windows null device 路径不能直接作为 Git 配置路径
+
+- detached bootstrap 首轮 0006 的 19 项回归中 17 项在首个 check-ref-format 前置失败：Git 报 unable to access \\.\nul，未创建任何目标分支或业务文件。Node os.devNull 返回设备命名空间路径，但 Git for Windows 的 GIT_CONFIG_GLOBAL 路径接口不接受该值。
+- 同仓库已验证 Archive Restore owner 使用 Windows NUL / POSIX /dev/null；新 owner 改用同一边界约定，不放宽隔离全局配置、禁用 hooks 或前置检查。归类新实现的环境接口缺陷，不能归因为业务现场或测试夹具。保留失败，复用 EXP-002/007/008/016。
+
+### ERR-1906：仅比较 HEAD 的 OID 不能保护同提交下的符号绑定变化
+
+- 0008 的 24 项回归中 23 项通过；实际竞争反例在最后预检后把 detached HEAD 接到同提交的 concurrent 分支。symref-update 只校验旧 OID，仍把 HEAD 改成计划工作分支；后置 refs 校验虽拒绝，但已覆写并发 HEAD 选择。不能将“提交身份没有变”当成“HEAD 绑定未变”，也不能放宽该反例来通过测试。
+- 首次偏离在 Git 原子事务的旧引用语义。待验证修正为 update-ref --no-deref 的直接引用比较；必须以同一反例和全部原正例验证，未通过前不得部署或触碰原项目。复用 EXP-006/007/009/031/262；不能声称已获得 OS 级任意外部写入隔离。
+- 0009 以同样 23/24 结果直接排除了 --no-deref 修正假设；不再叠加参数试错。重建写入模型：先持有真正 Git HEAD.lock，在锁内比较原始 HEAD 字节，再原子创建两 refs、原子发布新 HEAD；owner 的 JSON 锁标记绑定计划 nonce/PID，死亡进程锁仅在完整匹配时恢复，未知锁保留并拒绝。补充真实并发 commit 锁拒绝、原同提交 attachment 反例与 refs/HEAD/context 各停点。此方案尚须新回归证明。
+- 新模型 0011 的27项回归全部通过；0012与最终Schema版本0015分别实际以退出37终止四种停点的子进程，全部原 owner 续跑退出0，索引、README和源提交不变，死亡租约字节保留、HEAD锁解除。进一步 producer/consumer 回归另行记录，不把这些局部成功当原项目已执行。
+
+### ERR-1907：既有 Agent 指导测试把自然语言旧短语当作 Contract
+
+- 0014 五文件相关回归 58过1失败，失败断言要求未修改的 sf-design.md 含字面“REMOVE 旧关系”。0017 在精确 b09edc26 的隔离原文件副本、相同 Vitest/同一测试上重现同名失败（8过1失败）；来源为设计指导已将 Trace 写入责任明确交给 sf-task-planner，而旧测试仍绑定旧措辞。不是 detached bootstrap 引入的产品回归。
+- 修正测试在 Contract Trace 正式职责章节中检查 canonical `ADD`/`REMOVE`、`trace_delta.md` 和 `sf-task-planner` 关系，不要求自然语言旧短语，不把 Trace 写权限交回 sf-design。补充 D19 的 wrapper/handler/Agent/Skill 同一参数消费者检查。复用 EXP-022/025/026/074/087/194；生产 Design 文件不为旧测试添加误导文本。
+
+### ERR-1908：新 Git bootstrap 的 status 探测会执行仓库 clean filter
+
+- 0020 独立真实 Git 反例在自有临时仓库配置无害 clean filter，并让 README stat 过期；新 owner 调用 git status 时实际创建 `.git/filter-ran` 标记，尽管 hooks/fsmonitor 已关闭。不能把 Git 命令名或只读意图当作“不启动仓库回调”的证据。该新入口尚未部署，原项目没有被用于探测。
+- 新 owner 改为 ls-files --others -z 枚举全部未跟踪路径（含 ignored，不隐匿范围），ls-files --stage 与 ls-tree 精确对账索引，直接读取原始字节计算 Git blob 身份；不调用 status、diff、checkout、hash-object --path 或过滤器。保持非法业务/暂存差异、链接和回调拒绝边界。范围是 detached bootstrap 入口；不据此宣称所有旧 Git 工具已完成外部回调审计。复用 EXP-004/006/007/031/285，独立回归同时要求合法分支闭环、无标记副作用及原索引/README 不变。
+
+### ERR-1909：最终 Schema 校验后的闭包未保留 unknown 类型收窄
+
+- 0026 类型检查退出2，scene 闭包捕获显式声明 unknown 的 plan，TypeScript 不保留外层控制流收窄；原项目未执行。改为先校验 parsed，再绑定推断为 Plan 的只读局部变量，0027 类型检查退出0。不用 any 或关闭类型检查规避。
+- 0025 在六个测试文件加载前因沙箱临时目录原子 rename 的 EPERM 全部失败，未执行任何测试；单列环境取证，不与源码缺陷混计。以新回执在原生自有临时夹具复跑，保留失败原文。复用 EXP-002/007/022/025。
+- 0029 Bun 在沙箱内启动即报 CouldntReadCurrentDirectory，未进入构建；0030 原生完整工作区构建退出0。0028 的63项回归为62通过、首个真实 Git 幂等正例超过默认10秒而失败；不将超时记为逻辑通过。0034 保持全部原断言，以单 worker 和30秒预算复核，避免与工作区构建/多夹具并行争用；最终结果另见真实回执。

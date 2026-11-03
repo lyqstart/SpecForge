@@ -4,6 +4,7 @@ import * as fs from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import * as path from 'node:path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { withGitBranchMutationLease } from './git-detached-bootstrap';
 
 const execFileAsync = promisify(execFile);
 
@@ -404,6 +405,10 @@ export async function branchExists(projectRoot: string, branchName: string): Pro
 }
 
 export async function createBranch(input: { projectRoot: string; workItemId: string; branchName: string; baseBranch?: string; requireClean?: boolean }): Promise<BranchCreateResult> {
+  return withGitBranchMutationLease(input.projectRoot, input.workItemId, () => createBranchWithLease(input));
+}
+
+async function createBranchWithLease(input: { projectRoot: string; workItemId: string; branchName: string; baseBranch?: string; requireClean?: boolean }): Promise<BranchCreateResult> {
   const projectRoot = input.projectRoot;
   const baseBranch = input.baseBranch || 'main';
   const requireClean = input.requireClean !== false;

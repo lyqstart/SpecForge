@@ -1,0 +1,28 @@
+{
+  "statuses": {
+    "ses_e8e849253ffeo8tI9ZIOUEjSZ5": {
+      "type": "busy"
+    }
+  },
+  "recent_child_sessions": []
+}
+[
+  {
+    "id": "msg_1a1e05cac001607kaKzfhaMWOA",
+    "role": "assistant",
+    "tools": [
+      {
+        "tool": "sf_user_decision_record",
+        "status": "completed",
+        "output": "{\n  \"success\": true,\n  \"work_item_id\": \"WI-0001\",\n  \"decision_id\": \"UD-WI-0001-1793717210435\",\n  \"decision_status\": \"approved\",\n  \"decision_type\": \"user_approved\",\n  \"decided_by\": \"user\",\n  \"recorded_by\": \"sf-orchestrator\",\n  \"user_response_quote\": \"批准\",\n  \"decided_at\": \"2026-11-03T14:46:50.435Z\",\n  \"workflow_type\": \"feature_spec\",\n  \"workflow_path\": \"requirement_change_path\",\n  \"state_auto_advance\": {\n    \"attempted\": true,\n    \"advanced\": true,\n    \"from_state\": \"approval_required\",\n    \"to_state\": \"approved\",\n    \"evidence\": \"user_decision_recorder auto-advance after valid user approval\",\n    \"transition_result\": {\n      \"source\": \"StateManager\",\n      \"workItemId\": \"WI-0001\",\n      \"previousState\": \"approval_required\",\n      \"currentState\": \"approved\",\n      \"timestamp\": \"2026-11-03T14:46:50.451Z\"\n    }\n  }\n}"
+      }
+    ],
+    "text": "无漂移核验通过（权威状态 `approval_required`；manifest 内容与封存代一致；attempt-0005 input-snapshot 在位；外部 `before-authorized-continuation.json` 已独立核验同代字节，SHA 与您提供的一致）。记录真实用户批准（quote 逐字“批准”）："
+  },
+  {
+    "id": "msg_1a1e0906e001n2GHFMgaK0G0Ra",
+    "role": "assistant",
+    "tools": [],
+    "text": ""
+  }
+]

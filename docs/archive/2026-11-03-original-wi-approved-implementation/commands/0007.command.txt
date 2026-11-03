@@ -1,0 +1,11 @@
+{
+  "executable": "D:/code/SpecForge/node_modules/.bin/vitest.exe",
+  "args": [
+    "run",
+    "tests/unit/git-detached-bootstrap.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "detached-bootstrap-owner-regression-null-device-correction",
+  "expected_writes": "isolated-git-fixtures-and-test-cache",
+  "started_utc": "2026-11-03T15:04:28.664Z"
+}

@@ -290,7 +290,11 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
 
     expect(design).toContain('DD-* constrained_by Contract-ID');
     expect(design).toContain('Trace 唯一真相源');
-    expect(design).toContain('REMOVE 旧关系');
+    const traceOwnerSection = design.split('# Contract 消费者与 Trace 唯一真相源')[1]?.split(/\n# /)[0] ?? '';
+    expect(traceOwnerSection).toContain('sf-task-planner');
+    expect(traceOwnerSection).toContain('candidates/trace_delta.md');
+    expect(traceOwnerSection).toMatch(/\bADD\b/);
+    expect(traceOwnerSection).toMatch(/\bREMOVE\b/);
     expect(planner).toContain('全部消费 DD');
     expect(planner).toContain('allowed_write_files');
     expect(verifier).toContain('verification_report.contract_reviews');
@@ -298,6 +302,23 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
     expect(verifier).toContain('Fail Closed');
     expect(feature).toContain('Current Governance Relations + ADD - REMOVE');
     expect(feature).toContain('Module trace.md');
+  });
+
+  it('aligns detached bootstrap fields across actual wrappers, handlers, orchestrator and workflow', () => {
+    const plan = read('setup/userlevel-opencode/tools/sf_git_branch_plan.ts');
+    const create = read('setup/userlevel-opencode/tools/sf_git_branch_create.ts');
+    const planHandler = read('packages/daemon-core/src/tools/handlers/sf-git-branch-plan.ts');
+    const createHandler = read('packages/daemon-core/src/tools/handlers/sf-git-branch-create.ts');
+    const orchestrator = read('setup/userlevel-opencode/agents/sf-orchestrator.md');
+    const workflow = read('setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md');
+    for (const field of ['bootstrap_from_detached', 'expected_head', 'base_branch', 'branch_name']) {
+      expect(plan).toContain(field + ': tool.schema.'); expect(planHandler).toContain("args['" + field + "']");
+      expect(orchestrator).toContain(field); expect(workflow).toContain(field);
+    }
+    for (const field of ['bootstrap_plan_sha256', 'bootstrap_confirmation_quote']) {
+      expect(create).toContain(field + ': tool.schema.'); expect(createHandler).toContain("args['" + field + "']");
+      expect(orchestrator).toContain(field); expect(workflow).toContain(field);
+    }
   });
 
 });

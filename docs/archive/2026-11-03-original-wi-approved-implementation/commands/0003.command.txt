@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-approved-implementation/inspect-native.cjs",
+    "first"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "approved-native-progress",
+  "expected_writes": "read-only-native-evidence",
+  "started_utc": "2026-11-03T14:46:58.403Z"
+}

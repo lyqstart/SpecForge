@@ -34,6 +34,8 @@ HISTORICAL_LEDGER_SEARCH=<关键词及命中 EXP/ERR，或 NONE_WITH_JUSTIFICATI
 
 ## EXP-002：环境边界就是正式接口
 
+Git for Windows 的配置文件空设备输入使用经实际 Git 验证的 `NUL`，POSIX 使用 `/dev/null`；不能把 Node `os.devNull` 返回的 Windows 设备命名空间路径直接视为 Git 可接受路径。见 ERR-1905。
+
 Windows/CMD、编码、PATH、npm shim、Git stdout/stderr、Bun 参数都属于系统接口，不是“运行细节”。跨越边界前必须明确输入、输出、编码、转义和调用方式。
 <!-- source: ledger Part3/4 verbatim (audited), view L1903-2944 -->
 
@@ -449,6 +451,8 @@ JavaScript正则中的 `\s` 包含空格、制表符、CR和LF。凡用于标题
 <!-- source: ledger Part3/4 verbatim (audited), view L1903-2944 -->
 
 ## EXP-071：受限状态的只读证据不能通过sf_safe_bash补哈希
+
+对 `.specforge/**` 的受保护治理证据同样不得以 `sf_safe_bash Get-FileHash`、certutil、脚本或解释器补哈希。无正式哈希读取能力时，使用受控 Read 内容比对和已封存的外部证据；审批/Merge owner 的正式新鲜度校验仍由 owner 自身复算，Agent 不得为展示哈希制造 HardStop。参见 ERR-1903。
 
 权威状态或活动HardStop限制为read/debug-only时，`sf_safe_bash` 不是只读证据工具。即使子命令是 `certutil -hashfile`、`Get-FileHash`、Node或Python哈希，也不得调用。
 
@@ -2443,6 +2447,8 @@ Contract consumer 判断必须直接枚举目标 Contract 的 formal Trace consu
 
 ## EXP-262：指针一致性必须逐字段比对，状态等价不能替代指针等价
 
+Git HEAD 的对象 ID 相同不证明 detached/符号分支绑定相同；切换绑定必须在 Git HEAD.lock 下比对原始 HEAD 字节并原子发布，不能用 OID CAS 或 --no-deref 声称已保护同提交的并发分支选择。见 ERR-1906。
+
 核验 checkpoint/游标类字段（lastEventId、lastEventTs、monotonicSeq）与日志尾部一致性时，必须对全部标识字段逐字段比对；任何以“状态值相同”推断“指针一致”的结论只能标 CORROBORATED 或 INSUFFICIENT_EVIDENCE，不得标 CONFIRMED。
 <!-- source: ledger view L31205-31208 format H2COLON (purity-filtered) -->
 
@@ -2497,6 +2503,8 @@ Code Permission 的作用域、合并事实、版本控制模式、Git 上下文
 <!-- source: ledger view L30854-30856 format H2COLON (purity-filtered) -->
 
 ## EXP-273：版本控制模式必须在实施前冻结且实施期间不可切换
+
+已恢复 detached 提交不证明旧默认分支存在。当前 Git owner 不能表达该现场时，先建立并验证哈希绑定的新分支 bootstrap 合同，再由已确认的两分支身份执行；不得传伪 base_branch、手工创建主线、改 context 或切换 filesystem 模式逃避前置条件。参见 ERR-1904。
 
 现有 Git 仓库必须在 Code Permission 前建立 Work Item 分支、base commit 和可验证 git_context；非 Git 项目应冻结为 filesystem 模式，以受控 baseline 和 changed-files audit 完成闭环。实施开始后不得用 `git init` 把 filesystem 项目切换为 Git 模式，也不得让 Formal Version Gate 强制非 Git 项目补造 Git 历史。
 <!-- source: ledger view L30858-30860 format H2COLON (purity-filtered) -->
@@ -2563,6 +2571,8 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 <!-- source: ledger current EXP-284 -->
 
 ## EXP-285：未知命令效果不得当作只读证明
+
+Git status/diff 等表面只读操作可能触发仓库配置的 clean/textconv 等外部回调；禁 hooks/fsmonitor 不能证明这些回调已隔离。受限 Git 取证入口应采用经验证的有限 plumbing 和原始文件/对象身份对比，或在执行前拒绝需要外部回调的语义；不能把 Git 命令名当作无子程序证明。见 ERR-1908。
 
 脚本、解释器、子进程、环境注入及动态加载的文件效果不能由命令文字目标提取证明。无已验证隔离执行能力时必须在启动进程前拒绝，受控只读操作须由内部有限解释器执行；不得因角色、活动任务、报告路径或旧授权放宽。生产与部署库以及验证备用执行器必须共享边界；回归同时覆盖真实文件零副作用、合法读取、复合文本、注入、重启和拒绝日志。
 <!-- source: ledger current EXP-285 -->

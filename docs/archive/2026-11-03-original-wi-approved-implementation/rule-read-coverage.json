@@ -1,0 +1,190 @@
+{
+  "utc": "2026-11-03T14:43:52.142Z",
+  "files": [
+    {
+      "file": "docs/rule/specforge-active-development-rules.md",
+      "raw_sha256": "2bacbe30fa8b005b3d5835ba88fb9328b40312c2f09a63663db48c02c2698bc7",
+      "normalized_sha256": "229a73a7dd7433f494dc49c0708048c89e938a326fb3aae64697c815468742f2",
+      "lines": 2594,
+      "eof_covered": true,
+      "reassembly_equal": true,
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 200,
+          "sha256": "18cd60dad97f8165ab01682da4c88ac8b2ae5392a3c1d968b21bd1e05e7e20c2"
+        },
+        {
+          "first_line": 201,
+          "last_line": 400,
+          "sha256": "c8407f64dc84cce2f7ce9b4bfef71df5fd24056d589b926ed75526f128afba3a"
+        },
+        {
+          "first_line": 401,
+          "last_line": 600,
+          "sha256": "b37191f4c892ad4d1db3b0bbf5550208031917cbfc5ef6f10bcc5c0fe49c3a2e"
+        },
+        {
+          "first_line": 601,
+          "last_line": 800,
+          "sha256": "209e01da61ef1f33128a82eaacc8e4616e03ccda546f47ccb6298701078be120"
+        },
+        {
+          "first_line": 801,
+          "last_line": 1000,
+          "sha256": "aae4c8ffaf370370a985cfc3303326905afc99b729749b170bc1518c791e0740"
+        },
+        {
+          "first_line": 1001,
+          "last_line": 1200,
+          "sha256": "b09eec048da6a0aaa8e7957d875c19d5203665d9dc5d9027afdca61de80307bc"
+        },
+        {
+          "first_line": 1201,
+          "last_line": 1400,
+          "sha256": "967073921e8c6db57da1e677e08525926986a7f7dc6b13a62f8d9e666c9d6cca"
+        },
+        {
+          "first_line": 1401,
+          "last_line": 1600,
+          "sha256": "5456495f183ba257cd4ff88d09d92b592d454d2a920f9b0b20a55a286b2e0990"
+        },
+        {
+          "first_line": 1601,
+          "last_line": 1800,
+          "sha256": "1c8bfa8774bfc21a05847580d19f9c717391505e82e0f784f68701bbdaf4546a"
+        },
+        {
+          "first_line": 1801,
+          "last_line": 2000,
+          "sha256": "00a0016a8422a561d84008e1da6a19a072cf384aa9780af5a0268a58bbbd846c"
+        },
+        {
+          "first_line": 2001,
+          "last_line": 2200,
+          "sha256": "412496e86a94bb9dccd26f0640645f1a4345657e59e834dd35b4859b070a229b"
+        },
+        {
+          "first_line": 2201,
+          "last_line": 2400,
+          "sha256": "8a7100bfd7432c63eefe691552cec7df5be07ea51511338f9effcfab63c5426b"
+        },
+        {
+          "first_line": 2401,
+          "last_line": 2594,
+          "sha256": "58101ae71128bb9c47757df59f4d127f7da183cdb10882e1b953825ed1af4791"
+        }
+      ],
+      "read_method": "Full tool-output coverage to EOF; truncated display intervals were reread separately before this receipt."
+    },
+    {
+      "file": "docs/product-specification/authority-registry.md",
+      "raw_sha256": "dec6de06227933ac349b24efafabbab7a661541013265ebac518202d04e44c96",
+      "normalized_sha256": "815762211a76ea4794fd6cd3c1deb1749aa9f583e3de1ecfc33d69ea4d455f93",
+      "lines": 139,
+      "eof_covered": true,
+      "reassembly_equal": true,
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 139,
+          "sha256": "815762211a76ea4794fd6cd3c1deb1749aa9f583e3de1ecfc33d69ea4d455f93"
+        }
+      ],
+      "read_method": "Full tool-output coverage to EOF; truncated display intervals were reread separately before this receipt."
+    },
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "raw_sha256": "21f6e14583b7aacd5de0cd50de1ae4621445b463116ba3263580de5b3b8bda7d",
+      "normalized_sha256": "b193a881e2afeb146ddc020e198f2d205e4ff9d055552765351df46c18660a47",
+      "lines": 1634,
+      "eof_covered": true,
+      "reassembly_equal": true,
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 200,
+          "sha256": "be8fb669dc2798eb3779311e0737c9c68d13315555e5b89298035c3fe8766daf"
+        },
+        {
+          "first_line": 201,
+          "last_line": 400,
+          "sha256": "dd0f0b838a62ae506dad8f095203f821857beba78b14eb28ac2346d8b657ccf3"
+        },
+        {
+          "first_line": 401,
+          "last_line": 600,
+          "sha256": "655881d0d5a8d6f704a0692e5da26182d8999c90ac5225338a20efb73fa9c217"
+        },
+        {
+          "first_line": 601,
+          "last_line": 800,
+          "sha256": "b21e2da95a591f6c436fd3136440e3fc497ebd76005dbde31e664e1db53f6a10"
+        },
+        {
+          "first_line": 801,
+          "last_line": 1000,
+          "sha256": "9253eecf001986e370c093aed2ef757ed1316d285d26c18b212544b285a288d3"
+        },
+        {
+          "first_line": 1001,
+          "last_line": 1200,
+          "sha256": "40b5acc1f40c900936a504220b664f272f8b13cb914c205bfb93deca93c84565"
+        },
+        {
+          "first_line": 1201,
+          "last_line": 1400,
+          "sha256": "5487f4557d35fff74156351e174d2b0ed48bc57b5a4b641ca970bfa4d4581729"
+        },
+        {
+          "first_line": 1401,
+          "last_line": 1600,
+          "sha256": "dcb746f46669c14174e2fca8a37dca06268a36694fdc5b24e40ea7247763b283"
+        },
+        {
+          "first_line": 1601,
+          "last_line": 1634,
+          "sha256": "4becdffbc00c8d6d7c959e54b3d9b96e17c4aa25b133a12cd9839e1773a06562"
+        }
+      ],
+      "read_method": "Full tool-output coverage to EOF; truncated display intervals were reread separately before this receipt."
+    },
+    {
+      "file": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "raw_sha256": "499f5b4d4d58d9b2444a639b17bbd8676aa90f162b783f88687f29e48d8ed39f",
+      "normalized_sha256": "3d7561aa1ca56d564a20d6092f60f4906c50fd64169145bbf4fd7e3b405872aa",
+      "lines": 231,
+      "eof_covered": true,
+      "reassembly_equal": true,
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 200,
+          "sha256": "30112d97cfbd04694cf2022afa62a42a63244eb451bdd8003701dc93a175eb78"
+        },
+        {
+          "first_line": 201,
+          "last_line": 231,
+          "sha256": "435b45d435ac71f9648f51686da8cdc600eedee2b1a4fb0a2911e01f4b6f27e8"
+        }
+      ],
+      "read_method": "Full tool-output coverage to EOF; truncated display intervals were reread separately before this receipt."
+    },
+    {
+      "file": "docs/rule/specforge-execution-mode-and-evidence-protocol.md",
+      "raw_sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef",
+      "normalized_sha256": "ad5805c4d203c5f3aba8cf506fff83c7b2aa8bb6a38ea4e871b49c1414895ba7",
+      "lines": 183,
+      "eof_covered": true,
+      "reassembly_equal": true,
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 183,
+          "sha256": "ad5805c4d203c5f3aba8cf506fff83c7b2aa8bb6a38ea4e871b49c1414895ba7"
+        }
+      ],
+      "read_method": "Full tool-output coverage to EOF; truncated display intervals were reread separately before this receipt."
+    }
+  ]
+}

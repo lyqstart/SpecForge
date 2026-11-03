@@ -1,0 +1,28 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/v11-agent-skill-contract-alignment.test.ts [ tests/v11-agent-skill-contract-alignment.test.ts ]
+Error: EPERM: operation not permitted, rename 'C:\Users\lyq\AppData\Local\Packages\sandbox.{31abc20c-c908-46ff-9f23-e107d27537a5}\AC\Temp\zKSLJIFQ9vOGJKBFa0lne\ssr\.tmp-1793719885143-pq1ybuyllp' -> 'C:\Users\lyq\AppData\Local\Packages\sandbox.{31abc20c-c908-46ff-9f23-e107d27537a5}\AC\Temp\zKSLJIFQ9vOGJKBFa0lne\ssr\06a040b524ee5ebd659f40c7d67b5e97e96ef0b3'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  tests/unit/current-release-tool-registry.test.ts [ tests/unit/current-release-tool-registry.test.ts ]
+Error: EPERM: operation not permitted, rename 'C:\Users\lyq\AppData\Local\Packages\sandbox.{31abc20c-c908-46ff-9f23-e107d27537a5}\AC\Temp\zKSLJIFQ9vOGJKBFa0lne\ssr\.tmp-1793719885158-3aisngn1azn' -> 'C:\Users\lyq\AppData\Local\Packages\sandbox.{31abc20c-c908-46ff-9f23-e107d27537a5}\AC\Temp\zKSLJIFQ9vOGJKBFa0lne\ssr\30e8947cc9ab19ad0293577a4f7d81b7d3f2fd84'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  tests/unit/git-detached-bootstrap.test.ts [ tests/unit/git-detached-bootstrap.test.ts ]
+Error: EPERM: operation not permitted, rename 'C:\Users\lyq\AppData\Local\Packages\sandbox.{31abc20c-c908-46ff-9f23-e107d27537a5}\AC\Temp\zKSLJIFQ9vOGJKBFa0lne\ssr\.tmp-1793719885101-tzzy0yq5vc' -> 'C:\Users\lyq\AppData\Local\Packages\sandbox.{31abc20c-c908-46ff-9f23-e107d27537a5}\AC\Temp\zKSLJIFQ9vOGJKBFa0lne\ssr\cdadfd5152b94af3affe6e0ffe628d6fda1db109'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  tests/unit/git-detached-filter-exclusion.test.ts [ tests/unit/git-detached-filter-exclusion.test.ts ]
+Error: EPERM: operation not permitted, rename 'C:\Users\lyq\AppData\Local\Packages\sandbox.{31abc20c-c908-46ff-9f23-e107d27537a5}\AC\Temp\zKSLJIFQ9vOGJKBFa0lne\ssr\.tmp-1793719885092-2e2smnagc2p' -> 'C:\Users\lyq\AppData\Local\Packages\sandbox.{31abc20c-c908-46ff-9f23-e107d27537a5}\AC\Temp\zKSLJIFQ9vOGJKBFa0lne\ssr\02ece9a5c14642dd1aaf5ffa48d7c6a180427a9d'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  tests/unit/phase12-unborn-git-bootstrap.test.ts [ tests/unit/phase12-unborn-git-bootstrap.test.ts ]
+Error: EPERM: operation not permitted, rename 'C:\Users\lyq\AppData\Local\Packages\sandbox.{31abc20c-c908-46ff-9f23-e107d27537a5}\AC\Temp\zKSLJIFQ9vOGJKBFa0lne\ssr\.tmp-1793719885161-9xhojopfjtd' -> 'C:\Users\lyq\AppData\Local\Packages\sandbox.{31abc20c-c908-46ff-9f23-e107d27537a5}\AC\Temp\zKSLJIFQ9vOGJKBFa0lne\ssr\b595842bc267c8ddc3b055ffd167e851afe56853'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  tests/unit/post-close-git-merge-governance.test.ts [ tests/unit/post-close-git-merge-governance.test.ts ]
+Error: EPERM: operation not permitted, rename 'C:\Users\lyq\AppData\Local\Packages\sandbox.{31abc20c-c908-46ff-9f23-e107d27537a5}\AC\Temp\zKSLJIFQ9vOGJKBFa0lne\ssr\.tmp-1793719885153-n4alce6u9y' -> 'C:\Users\lyq\AppData\Local\Packages\sandbox.{31abc20c-c908-46ff-9f23-e107d27537a5}\AC\Temp\zKSLJIFQ9vOGJKBFa0lne\ssr\297e8d43347e8fb99822ed091e5033120bb062f9'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+

@@ -333,6 +333,12 @@ Candidate Package 的批准不能替代正式 Git Merge 确认。`sf_git_merge_p
 
 用户提出新目标时，先判断它是当前工作项的补充、正式变更、独立工作项，还是会推翻原路由；必要时重新分类并取得用户决定，不能把新目标强行塞进旧任务。会话中断后只能依据持久化状态和产物恢复，不依赖对话记忆猜测。
 
+## 实施前 detached Git bootstrap（D19）
+
+`sf_git_preflight` 确认原项目有完整提交但没有本地分支时，不猜旧 `main`、不传伪 `base_branch`、不手工建分支/context，也不改成 filesystem 模式。在 `post_merge_verified`、尚未发放代码权限时，使用 `sf_git_branch_plan(bootstrap_from_detached=true, expected_head=<完整原提交>, base_branch=<拟新建基线>, branch_name=<拟新建WI分支>)` 生成不可变 `bootstrap_plan_sha256`。向用户展示两条**新**分支身份；用户已明确确认同一两名时不要重复询问。然后调用 `sf_git_branch_create(confirmed=true, bootstrap_plan_sha256=<原计划哈希>, bootstrap_confirmation_quote=<确认两名的真实原话>, base_branch=..., branch_name=...)`。仅消费 owner 返回的成功及标准 context，再调用 Code Permission；拒绝或漂移时停止依赖动作，不重新合并规格或用普通 Git 绕过。此能力不恢复旧分支，不新建提交、不改索引/业务字节，也不解除 D18 或将来主线 Git Merge 确认。
+
+Candidate/审批前取证不得为了展示 SHA-256 对 `.specforge/**` 调用 `sf_safe_bash Get-FileHash`、certutil、脚本或解释器。缺正式哈希读取 Tool 时使用 Read 内容比对并说明范围；正式 Recorder/Merge 的 owner 自行复算新鲜度，不能为重复补哈希制造 HardStop。
+
 # 职责边界
 
 主编排代理管理的是治理链和产物生命周期，不是所有具体工作：

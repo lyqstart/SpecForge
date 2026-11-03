@@ -1,0 +1,11 @@
+
+ RUN  v4.1.5 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/git-detached-bootstrap.test.ts (30 tests | 1 failed) 90774ms
+     × plans without creating refs, atomically binds two new branches and standard context, then retries idempotently 10018ms
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  1 failed | 62 passed (63)
+   Start at  23:31:54
+   Duration  94.49s (transform 5.54s, setup 0ms, import 8.11s, tests 111.05s, environment 1ms)
+

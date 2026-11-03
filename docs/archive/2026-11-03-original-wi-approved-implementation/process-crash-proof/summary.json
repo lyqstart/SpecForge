@@ -1,0 +1,62 @@
+{
+  "utc": "2026-11-03T15:14:55.821Z",
+  "results": [
+    {
+      "stage": "head_lease_acquired",
+      "validation": "PASS",
+      "observed": {
+        "CRASH_EXIT": 37,
+        "RESUME_EXIT": 0,
+        "INDEX_SAME": true,
+        "README_SAME": true,
+        "HEAD_SAME": true,
+        "BRANCH": "codex/crash-wi-0001",
+        "DEAD_LEASE_RETAINED": true,
+        "HEAD_LOCK_RELEASED": true
+      }
+    },
+    {
+      "stage": "refs_created",
+      "validation": "PASS",
+      "observed": {
+        "CRASH_EXIT": 37,
+        "RESUME_EXIT": 0,
+        "INDEX_SAME": true,
+        "README_SAME": true,
+        "HEAD_SAME": true,
+        "BRANCH": "codex/crash-wi-0001",
+        "DEAD_LEASE_RETAINED": true,
+        "HEAD_LOCK_RELEASED": true
+      }
+    },
+    {
+      "stage": "refs_and_head_bound",
+      "validation": "PASS",
+      "observed": {
+        "CRASH_EXIT": 37,
+        "RESUME_EXIT": 0,
+        "INDEX_SAME": true,
+        "README_SAME": true,
+        "HEAD_SAME": true,
+        "BRANCH": "codex/crash-wi-0001",
+        "DEAD_LEASE_RETAINED": true,
+        "HEAD_LOCK_RELEASED": true
+      }
+    },
+    {
+      "stage": "context_bound",
+      "validation": "PASS",
+      "observed": {
+        "CRASH_EXIT": 37,
+        "RESUME_EXIT": 0,
+        "INDEX_SAME": true,
+        "README_SAME": true,
+        "HEAD_SAME": true,
+        "BRANCH": "codex/crash-wi-0001",
+        "DEAD_LEASE_RETAINED": true,
+        "HEAD_LOCK_RELEASED": true
+      }
+    }
+  ],
+  "inner_exit_code": 0
+}

@@ -1,0 +1,31 @@
+{
+  "executable": "git",
+  "args": [
+    "add",
+    "--",
+    ".gitattributes",
+    ".gitignore",
+    "docs/product-specification/authority-registry.md",
+    "docs/product-specification/specforge-product-specification.md",
+    "docs/design/SpecForge架构一致性治理最终实施方案.md",
+    "docs/project-status.md",
+    "docs/rule/specforge-active-development-rules.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md",
+    "packages/daemon-core/src/tools/handlers/sf-git-branch-create.ts",
+    "packages/daemon-core/src/tools/handlers/sf-git-branch-plan.ts",
+    "packages/daemon-core/src/tools/lib/git-governance-core.ts",
+    "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+    "packages/daemon-core/tests/unit/git-detached-bootstrap.test.ts",
+    "packages/daemon-core/tests/unit/git-detached-filter-exclusion.test.ts",
+    "packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts",
+    "setup/userlevel-opencode/agents/sf-orchestrator.md",
+    "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md",
+    "setup/userlevel-opencode/tools/sf_git_branch_create.ts",
+    "setup/userlevel-opencode/tools/sf_git_branch_plan.ts",
+    "docs/archive/2026-11-03-original-wi-approved-implementation"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "stage-controlled-git-owner-milestone",
+  "expected_writes": "repository-index-and-evidence",
+  "started_utc": "2026-11-03T15:36:10.263Z"
+}

@@ -1,0 +1,15 @@
+
+ RUN  v4.1.5 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/git-detached-filter-exclusion.test.ts (0 test)
+ ❯ tests/unit/git-detached-bootstrap.test.ts (0 test)
+ ❯ tests/v11-agent-skill-contract-alignment.test.ts (0 test)
+ ❯ tests/unit/phase12-unborn-git-bootstrap.test.ts (0 test)
+ ❯ tests/unit/current-release-tool-registry.test.ts (0 test)
+ ❯ tests/unit/post-close-git-merge-governance.test.ts (0 test)
+
+ Test Files  6 failed (6)
+      Tests  no tests
+   Start at  23:31:24
+   Duration  501ms (transform 0ms, setup 0ms, import 0ms, tests 0ms, environment 1ms)
+
