@@ -1,0 +1,20 @@
+{
+  "run_id": "CODEX-SF-20261103-ORIGINAL-WI-RECOVERY-A01",
+  "utc": "2026-11-03T11:47:24.202Z",
+  "method": "Read-only surviving loose Git object and sealed archive linkage check",
+  "original_commit": "8a692e88c0823984647622294f5199c18bb0c587",
+  "tree": "f2e455b43295bd646673e147c8d8931f82b8f7bc",
+  "entries": [
+    {
+      "mode_name": "100644 README.md",
+      "object_id": "5518fb719d5bf8e902ef8d601bc82178a2b8f461"
+    }
+  ],
+  "archive_sha256": "65b2257fc90354a6349f1df5be1d8d01c6e9f5aa13f8a4feafc67698363f103a",
+  "verdict": "CONFIRMED_ORIGINAL_COMMIT_TREE_README_LINKAGE",
+  "limits": "Original branch/ref/index/config bytes were not captured; only detached original-commit reconstruction is supported by this evidence.",
+  "expected_writes": "git-identity-proof.json only",
+  "observed_writes": "git-identity-proof.json only",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0
+}

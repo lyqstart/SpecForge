@@ -1,0 +1,15 @@
+{
+  "run_id": "CODEX-SF-20261103-ORIGINAL-WI-RECOVERY-A01",
+  "execution_mode": "CODEX_DIRECT",
+  "status": "PREFLIGHT_COMPLETE_AWAITING_ARCHIVE_RESTORE_DECISION",
+  "original_project": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7",
+  "verified_archive_files": 319,
+  "missing_archive_files": 319,
+  "conflicting_current_files": 0,
+  "surviving_git_objects": 3,
+  "verified_original_commit": "8a692e88c0823984647622294f5199c18bb0c587",
+  "archived_last_workflow_state": "candidate_preparing",
+  "live_authority_read": "NOT_PERFORMED_BECAUSE_EVENTS_AND_PROJECT_FILES_MISSING",
+  "target_project_writes": "NONE",
+  "next_step": "User decision on byte-verified archive restore and minimal detached-HEAD Git metadata reconstruction; establish controlled Recovery owner before any target write."
+}
