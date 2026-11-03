@@ -1,0 +1,8 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/project-archive-restore.test.ts [ tests/unit/project-archive-restore.test.ts ]
+Error: EPERM: operation not permitted, rename 'C:\Users\lyq\AppData\Local\Packages\sandbox.{7435950c-fab6-43a8-92a1-215e5376a07a}\AC\Temp\P1NPmx4opJFrW8sjvwWk5\ssr\.tmp-1793707421856-gace9hs49vw' -> 'C:\Users\lyq\AppData\Local\Packages\sandbox.{7435950c-fab6-43a8-92a1-215e5376a07a}\AC\Temp\P1NPmx4opJFrW8sjvwWk5\ssr\0dae3e5c68fa98622e5ec6dd579bb48563e761b1'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

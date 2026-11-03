@@ -1,0 +1,16 @@
+{
+  "executable": "D:\\code\\SpecForge\\node_modules\\.bin\\tsc.exe",
+  "args": [
+    "--noEmit",
+    "--ignoreDeprecations",
+    "6.0",
+    "--types",
+    "node",
+    "-p",
+    "packages/daemon-core/tsconfig.json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-source-typecheck",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-03T12:06:52.999Z"
+}

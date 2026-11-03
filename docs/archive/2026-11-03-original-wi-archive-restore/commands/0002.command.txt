@@ -1,0 +1,11 @@
+{
+  "executable": "D:\\code\\SpecForge\\node_modules\\.bin\\vitest.exe",
+  "args": [
+    "run",
+    "tests/unit/project-archive-restore.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "archive-owner-regression",
+  "expected_writes": "isolated-test-fixtures-and-evidence",
+  "started_utc": "2026-11-03T12:03:39.257Z"
+}

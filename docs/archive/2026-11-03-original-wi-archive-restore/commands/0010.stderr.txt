@@ -1,0 +1,13 @@
+$ node scripts/run-root-task.mjs build
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ rimraf dist && tsc
+$ tsc
+$ tsc
+$ tsc

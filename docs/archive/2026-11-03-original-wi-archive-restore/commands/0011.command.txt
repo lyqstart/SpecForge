@@ -1,0 +1,16 @@
+{
+  "executable": "D:\\code\\SpecForge\\node_modules\\.bin\\vitest.exe",
+  "args": [
+    "run",
+    "tests/unit/project.test.ts",
+    "tests/unit/project-config-owner.test.ts",
+    "tests/unit/current-project-layout-boundary.test.ts",
+    "tests/unit/state.test.ts",
+    "tests/unit/state-concurrency.test.ts",
+    "tests/unit/err417-authoritative-state-read-no-projection.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "project-state-consumers",
+  "expected_writes": "isolated-test-fixtures-and-evidence",
+  "started_utc": "2026-11-03T12:07:25.058Z"
+}

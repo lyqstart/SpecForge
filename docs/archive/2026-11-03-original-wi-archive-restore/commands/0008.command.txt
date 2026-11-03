@@ -1,0 +1,11 @@
+{
+  "executable": "bun",
+  "args": [
+    "run",
+    "build"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "full-build",
+  "expected_writes": "ignored-build-outputs-and-evidence",
+  "started_utc": "2026-11-03T12:06:41.011Z"
+}

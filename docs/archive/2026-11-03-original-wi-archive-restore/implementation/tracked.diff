@@ -1,0 +1,275 @@
+diff --git a/.gitattributes b/.gitattributes
+index e39fdbbd..5101d876 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -42,3 +42,4 @@ docs/archive/2026-10-19-config-activation-loss-evidence/** -text -diff
+ /docs/archive/2026-11-03-isolated-crash-validation/** -text -diff
+ /docs/archive/2026-11-03-isolated-state-replay/** -text -diff
+ /docs/archive/2026-11-03-original-wi-recovery/** -text -diff
++/docs/archive/2026-11-03-original-wi-archive-restore/** -text -diff
+diff --git "a/docs/design/SpecForge\346\236\266\346\236\204\344\270\200\350\207\264\346\200\247\346\262\273\347\220\206\346\234\200\347\273\210\345\256\236\346\226\275\346\226\271\346\241\210.md" "b/docs/design/SpecForge\346\236\266\346\236\204\344\270\200\350\207\264\346\200\247\346\262\273\347\220\206\346\234\200\347\273\210\345\256\236\346\226\275\346\226\271\346\241\210.md"
+index 1b41acd4..04186f61 100644
+--- "a/docs/design/SpecForge\346\236\266\346\236\204\344\270\200\350\207\264\346\200\247\346\262\273\347\220\206\346\234\200\347\273\210\345\256\236\346\226\275\346\226\271\346\241\210.md"
++++ "b/docs/design/SpecForge\346\236\266\346\236\204\344\270\200\350\207\264\346\200\247\346\262\273\347\220\206\346\234\200\347\273\210\345\256\236\346\226\275\346\226\271\346\241\210.md"
+@@ -222,3 +222,7 @@ Business Project。现有能力不够时，先补齐最小但完整、可验证
+ 4. 定向测试、完整回归、构建、Bootstrap、diff 检查和远端基线按风险通过；
+ 5. 唯一 `docs/project-status.md` 已更新到真实可恢复检查点；
+ 6. ADR、ERR、审计证据和历史报告继续保留。
++
++## 5. 封存项目恢复实现边界（SPS §3.6）
++
++新增恢复路径为 authenticated operator HTTP → ProjectManager 独占恢复租约 → RecoverySubsystem → ProjectArchiveRestore。此路径不进入 Agent Tool 表，不复用 Project Init。租约拒绝已有 context、StateManager、配置操作、锁及恢复期间的新项目访问；Recovery 另拒绝会话绑定。文件恢复在同卷 staging 内完成，Git 仅重建已证明提交的 detached HEAD/index；StateManager.rebuildState 只读检验原始 WAL 和 projection witness。不可变 plan、stage-ready、publish-intent、completed 与残留 quarantine 支持中断后重试，任何内容漂移均拒绝。只支持完整原路径归档与松散对象，外部 runtime 不适用。部署通过现有 daemon 二进制与安装器交付，无新增 Agent 或模板资产。
+diff --git a/docs/product-specification/authority-registry.md b/docs/product-specification/authority-registry.md
+index 0b598dc9..902eb7d8 100644
+--- a/docs/product-specification/authority-registry.md
++++ b/docs/product-specification/authority-registry.md
+@@ -127,6 +127,8 @@ SPS-1.0
+ 
+ 初始化事故恢复裁决：用户于本轮明确同意“使用 Git 内容基线重建”。对应产品合同归 SPS §10.1 的 Project Init owner 显式重建动作；其权限限于哈希绑定的初始化事故补偿，不授予旧布局迁移或 Work Item 状态写入权。
+ 
++封存项目恢复裁决：用户于 2026-11-03 明确回复“同意按封存归档恢复原项目”，接受同路径恢复封存文件并用已核验对象重建 detached 原提交，不声称恢复旧分支或旧索引。稳定合同归 SPS §3.6，责任为 Recovery owner，必须先完成隔离校验、不可变计划和可恢复发布；Project Init 不扩权，恢复授权不等于 Candidate 批准。
++
+ 配置受控入口的权威归属：SPS §5.1–5.2 定义 `sf_project_config` 的项目 JSON producer、激活和恢复边界，SPS release-surface 机器块登记发布面。此入口是用户批准的六项验收补齐方案中的最小治理扩展；说明文档 producer 不得冒充运行时 JSON producer，受控入口不能管理用户凭据或放宽 HardStop。
+ 
+ 本 Registry 与 SPS-1.0 建立后，ADR-014 所要求的“显式 authority registry + 唯一正式产品规格”已经建立。
+diff --git a/docs/product-specification/specforge-product-specification.md b/docs/product-specification/specforge-product-specification.md
+index 791cd8d6..0e40878b 100644
+--- a/docs/product-specification/specforge-product-specification.md
++++ b/docs/product-specification/specforge-product-specification.md
+@@ -239,6 +239,14 @@ state.json
+ 
+ 事件归档不得丢弃重放所需的历史。由 WAL owner 轮转产生的 `events-*.jsonl.bak` 是同一追加历史的只读分段，必须与当前 `events.jsonl` 一起按完整顺序验证并重放，不是第二套状态源。不得按固定份数删除仍被重放依赖的段；缺段、重复、损坏或未知结构必须在状态、配置激活或后续事件写入前失败关闭。每次消费都执行结构检查，不能只在启动时校验。已有 checkpoint 或内存游标证明历史曾存在时，事件缺失不能被当作新项目；这些见证只用于拒绝不完整历史，不得用于补造事件。完整历史可以重建丢失或落后的投影。
+ 
++## 3.6 同路径封存项目恢复
++
++项目文件及 Git 元数据缺失时，Recovery owner 可通过经过 daemon 身份认证的操作者入口 `POST /api/v1/recovery/project-archive/restore` 恢复原项目。此入口不是 Agent Tool，不授予 Agent 任意真相源写权限。请求必须绑定操作者明确接受归档恢复和最小 Git 元数据重建的原话、封存归档原始字节 SHA-256、归档中的原路径与完整原提交 ID；不得从当前目录、分支名或快照状态推测身份。受支持的输入为带 `project` 和逐文件 `path/size/sha256/bytes_base64` 的完整非 Git 文件归档，以及原路径保留的完整可验证松散 Git 对象图。外部 runtime 存储、缺对象、旧分支和旧索引恢复不在此合同内，必须失败关闭。
++
++恢复前必须拒绝活动或缓存中的项目、并发恢复、路径穿越、平台别名/大小写碰撞、链接/硬链接、损坏归档、冲突现场或不一致事件历史。目标现存非 Git 文件只能缺失或与归档逐字节一致；目标 Git 残留只能包含经对象身份复核的松散对象。恢复必须保留不可变计划、现场清单、原 Git 对象和分步审计，先在同卷隔离目录生成并复核全部归档文件，通过正式 StateManager 只读重放检查完整历史及投影见证，再由 Git 重建 detached HEAD 和索引。重建不得改写归档文件或声称还原旧分支、配置、索引字节。
++
++发布必须先重新核对现场，将原残留目录完整保留到隔离位置，再将已验证的完整目录更名到原路径。中断后仅同一哈希绑定计划可恢复；阶段目录、残留目录或目标有漂移时停止，不覆盖后续写入。完成后逐文件、逐对象与 HEAD 复核，正式 StateManager 才能接管；原 Work Item、历史失败、HardStop、审批证据均保留。恢复不创建新 Work Item、不补造事件、不推进工作流、不产生新的 Candidate 批准；后续审批仍须绑定当前 Candidate 的新鲜显式答复。
++
+ ---
+ 
+ # 4. 文件与目录模型
+diff --git a/docs/project-status.md b/docs/project-status.md
+index 08c627f5..25fe41c1 100644
+--- a/docs/project-status.md
++++ b/docs/project-status.md
+@@ -11,21 +11,21 @@ PROJECT_STATUS_SCHEMA=2
+ PROJECT_STATUS_DECLARATION=ACTIVE
+ ACTIVE_INITIATIVE=VERIFIER_GUIDANCE_AND_SPS_CONFORMANCE
+ OBJECTIVE=Repair verifier D18 guidance, deploy and verify; audit SPS clauses and real OpenCode chain with implemented/unimplemented/insufficient evidence results.
+-CURRENT_PHASE=ORIGINAL_WI_ARCHIVE_RECOVERY_PREFLIGHT_COMPLETE
++CURRENT_PHASE=ORIGINAL_WI_ARCHIVE_RECOVERY_IMPLEMENTATION
+ OWNER_DECISIONS=AR-DEC-01:APPROVED;AR-DEC-02:APPROVED_WITH_ARCHIVE_CONSOLIDATION;AR-DEC-03:APPROVED_WITH_KIRO_RETIREMENT;AR-DEC-04:APPROVED_WITH_SINGLE_PROJECT_STATUS;AR-DEC-05:ONLY_TWO_EXTERNAL_EXECUTION_MODES_CODEX_DIRECT_AND_WORKBUDDY_COORDINATED;AR-DEC-06:ACTIVE_RULES_SEPARATED_FROM_HISTORICAL_LEDGER;D05:OPENCODE_ADAPTER_ENABLED;D10:NSSM_REMOVED_WINDOWS_DIRECT_DAEMON_ONLY;D11:GLOBAL_ONLY_THIN_PLUGIN_SINGLE_EXPORT;VR-DEC-01:NEW_EPOCH_1_0_0;VR-DEC-02:TAG_PREFIX_SPECFORGE_V;VR-DEC-03:INDEPENDENT_CONTRACT_VERSIONS;VR-DEC-04:ACTIVE_REFERENCES_CONVERGE_HISTORY_PRESERVED;D18:INTERNAL_READ_ONLY_COMMAND_CONTAINMENT
+ EXECUTION_MODE=CODEX_DIRECT
+-EXECUTION_STATE=AWAITING_ARCHIVE_RESTORE_DECISION
++EXECUTION_STATE=IN_PROGRESS
+ EXECUTION_PROTOCOL=docs/rule/specforge-execution-mode-and-evidence-protocol.md
+ EXECUTION_PLANNER=CODEX
+ EXECUTION_ACTOR=CODEX
+ EXECUTION_AUDITOR=CODEX
+-EXECUTION_RUN_ID=CODEX-SF-20261103-ORIGINAL-WI-RECOVERY-A01
+-EXECUTION_EVIDENCE_ROOT=D:/code/SpecForge/docs/archive/2026-11-03-original-wi-recovery
+-LAST_EXECUTION_CHECKPOINT=Original WI identity resolved from the sealed audit to sf-conformance-business-R6ttE7 and native session ses_e8e849253ffeo8tI9ZIOUEjSZ5. All 319 archived file hashes verified, but all 319 files are now absent from the target. Three remaining Git objects were preserved and verified to link original commit 8a692e88c0823984647622294f5199c18bb0c587 to the archived README. Live authority cannot be read while WAL is missing. No target writes; archive restore and minimal Git metadata reconstruction require the pending explicit decision.
++EXECUTION_RUN_ID=CODEX-SF-20261103-ORIGINAL-WI-ARCHIVE-RESTORE-A01
++EXECUTION_EVIDENCE_ROOT=D:/code/SpecForge/docs/archive/2026-11-03-original-wi-archive-restore
++LAST_EXECUTION_CHECKPOINT=User explicitly approved same-path sealed archive restoration. SPS 3.6 and Authority Registry updated before Recovery owner implementation. Authenticated operator endpoint, project exclusion, staging, exact-byte checks, real Git reconstruction and StateManager validation are implemented. Focused 37-test regression, Recovery/WAL/HTTP 81-test regression and project/config/state 61-test regression pass; typecheck, workspace build and release runtime build pass. Original target remains untouched; deployment and actual import are next.
+ NEXT_EXECUTION_STOP=AT_ORIGINAL_WI_CANDIDATE_APPROVAL_OR_PROVEN_ARCHIVE_RECOVERY_CAPABILITY_GAP
+ LAST_COMPLETED_CHECKPOINT=Incident reconstruction, deployed registration, native compaction checkpoint delivery, post-write checkpoint crash survival and bounded business-state WAL replay are independently evidenced. The latest isolated replay recovered two fixture Work Items after projection loss with identical event history and cursor. Session identity restoration is separate from Work Item authority. No original business WI recovery, complete workflow acceptance or overall SPS PASS claim has been made.
+-CURRENT_BLOCKER=ORIGINAL_FILES_MISSING;ARCHIVE_RESTORE_AND_MINIMAL_GIT_RECONSTRUCTION_DECISION_PENDING
+-NEXT_LEGAL_ACTION=Review archive-recovery-proposal.md, scene-assessment.json and git-identity-proof.json. All 319 sealed non-Git files are missing but hash-verified in archive; three surviving objects prove the original commit/tree/README. Obtain explicit decision for same-path archive restoration with detached original-commit metadata, then establish its controlled Recovery owner. No original project writes or Candidate seal yet.
++CURRENT_BLOCKER=ORIGINAL_FILES_MISSING;CONTROLLED_ARCHIVE_RECOVERY_IMPLEMENTATION_AND_VALIDATION_REQUIRED
++NEXT_LEGAL_ACTION=User approved archive restoration. Implement SPS 3.6 through Recovery owner, validate rejection/interruption/Git/StateManager/HTTP behavior, build and deploy, restore only the original synthetic path through authenticated owner, verify identity and original WI state, then resume its legal candidate boundary.
+ ALLOWED_SCOPE=AGENTS.md;README.md;.gitattributes;.gitignore;package.json;bun.lock;docs/project-status.md;docs/product-specification/**;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/archive/**;docs/adr/**;docs/cli/**;docs/conventions/**;docs/user/**;docs/plugins/**;docs/tools/**;docs/engineering-lessons/**;docs/rule/**;scripts/**;setup/**;packages/**/package.json;packages/service-management/src/**;packages/configuration/src/**;packages/opencode-adapter/src/**;packages/permission-engine/src/**;packages/daemon-core/src/**;packages/cli/src/**;packages/types/src/**;packages/observability/src/**;packages/observability/examples/**;packages/workflow-runtime/src/types/state-machine.ts;packages/**/README.md;packages/**/DEVELOPMENT.md;packages/**/docs/**;packages/**/src/**/*.md;packages/**/tests/**;tests/**
+ PROHIBITED=Deleting ADR ERR audit or report evidence;creating another active handoff current-status or recovery-status file;modifying D:\code\t3 outside a separately authorized controlled recovery phase;reading or modifying D:\code\t2 during SpecForge repair;creating a SpecForge Work Item for SpecForge product self-development;using archive evidence as a current product contract
+ REQUIRED_RULES=docs/rule/specforge-active-development-rules.md;docs/product-specification/authority-registry.md;docs/product-specification/specforge-product-specification.md;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/rule/specforge-execution-mode-and-evidence-protocol.md
+diff --git a/packages/daemon-core/src/http/HTTPServer.ts b/packages/daemon-core/src/http/HTTPServer.ts
+index 13443df5..000f61a7 100644
+--- a/packages/daemon-core/src/http/HTTPServer.ts
++++ b/packages/daemon-core/src/http/HTTPServer.ts
+@@ -307,6 +307,7 @@ export class HTTPServer {
+     this.addExactRoute('GET', '/api/v1/kernel/session', this.handleKernelSessionGet.bind(this));
+     this.addExactRoute('POST', '/api/v1/tool/invoke', this.handleToolInvoke.bind(this));
+     this.addExactRoute('POST', '/api/v1/admin/stop', this.handleAdminStop.bind(this));
++    this.addExactRoute('POST', '/api/v1/recovery/project-archive/restore', this.handleProjectArchiveRestore.bind(this));
+     this.addExactRoute('POST', '/api/v1/ingest/register', this.handleIngestRegister.bind(this));
+     this.addExactRoute('POST', '/api/v1/ingest/event', this.handleIngestEvent.bind(this));
+ 
+@@ -1170,7 +1171,10 @@ export class HTTPServer {
+     // Try real dispatcher first
+     if (this.deps.toolDispatcher) {
+       try {
+-        const result = await this.deps.toolDispatcher.dispatch(request as DispatcherRequest);
++        const directory = request.context?.directory;
++        const result = directory && this.deps.projectManager?.withProjectOperation
++          ? await this.deps.projectManager.withProjectOperation(directory, () => this.deps.toolDispatcher!.dispatch(request as DispatcherRequest))
++          : await this.deps.toolDispatcher.dispatch(request as DispatcherRequest);
+         this.sendJsonResponse(res, 200, this.successBody(result));
+       } catch (err) {
+         const msg = (err as Error).message;
+@@ -1274,18 +1278,43 @@ export class HTTPServer {
+     try {
+       if (request.action === 'reconstruct_git_baseline') {
+         if (!request.reconstruction) throw new Error('RECOVERY_INPUT_REQUIRED');
+-        const result = await reconstructInitialization(projectPath, request.reconstruction);
++        const reconstruction = request.reconstruction;
++        const result = this.deps.projectManager?.withProjectOperation
++          ? await this.deps.projectManager.withProjectOperation(projectPath, () => reconstructInitialization(projectPath, reconstruction))
++          : await reconstructInitialization(projectPath, reconstruction);
+         this.sendJsonResponse(res, 200, this.successBody(result));
+         return;
+       }
+       if (request.action && request.action !== 'ensure') throw new Error('UNKNOWN_PROJECT_INIT_ACTION');
+-      const result = await ensureProjectInit(projectPath, request.projectName);
++      const result = this.deps.projectManager?.withProjectOperation
++        ? await this.deps.projectManager.withProjectOperation(projectPath, () => ensureProjectInit(projectPath, request.projectName))
++        : await ensureProjectInit(projectPath, request.projectName);
+       this.sendJsonResponse(res, 200, this.successBody(result));
+     } catch (err) {
+       this.sendJsonResponse(res, 500, this.errorBody('INIT_FAILED', (err as Error).message));
+     }
+   }
+ 
++  /** Authenticated operator recovery. Deliberately absent from Agent Tool registries. */
++  private async handleProjectArchiveRestore(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
++    let input;
++    try { input = JSON.parse(body); }
++    catch { return this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON')); }
++    if (!input || typeof input.project_path !== 'string' || !input.project_path) {
++      return this.sendJsonResponse(res, 400, this.errorBody('ARCHIVE_RECOVERY_INPUT_REQUIRED', 'project_path required'));
++    }
++    if (!this.deps.recoverySubsystem?.restoreProjectArchive || !this.deps.projectManager?.withProjectArchiveRecovery) {
++      return this.sendJsonResponse(res, 503, this.errorBody('ARCHIVE_RECOVERY_UNAVAILABLE', 'Recovery owner or project exclusion unavailable'));
++    }
++    try {
++      const result = await this.deps.projectManager.withProjectArchiveRecovery(input.project_path,
++        () => this.deps.recoverySubsystem.restoreProjectArchive(input));
++      this.sendJsonResponse(res, 200, this.successBody(result));
++    } catch (error) {
++      this.sendJsonResponse(res, 409, this.errorBody('ARCHIVE_RECOVERY_BLOCKED', (error as Error).message));
++    }
++  }
++
+   // ── Ingest Event Handling ──
+ 
+   /**
+diff --git a/packages/daemon-core/src/project/ProjectManager.ts b/packages/daemon-core/src/project/ProjectManager.ts
+index 5786290d..a70b2e72 100644
+--- a/packages/daemon-core/src/project/ProjectManager.ts
++++ b/packages/daemon-core/src/project/ProjectManager.ts
+@@ -11,6 +11,7 @@ import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+ import type { SchemaDescriptorPrecheckResult } from '@specforge/types/schema-contract';
+ import { precheckProjectRegistrationSchemas } from './project-schema-descriptors';
+ import { loadAcceptedConfigSync, parseConfigurationObject, type MergedConfig } from '@specforge/configuration';
++import { projectPathIdentity } from '../recovery/ProjectArchiveRestore';
+ 
+ export interface ProjectContext {
+   projectId: string;
+@@ -39,9 +40,33 @@ export type ProjectSchemaPrecheck = (
+ ) => Promise<SchemaDescriptorPrecheckResult>;
+ 
+ export class ProjectManager {
++  private recoveringProjects = new Set<string>();
++  private projectOperations = new Map<string, number>();
++
++  async withProjectOperation<T>(projectPath: string, action: () => Promise<T>): Promise<T> {
++    const key = projectPathIdentity(projectPath);
++    if (this.recoveringProjects.has(key)) throw new Error('ARCHIVE_RECOVERY_IN_PROGRESS');
++    this.projectOperations.set(key, (this.projectOperations.get(key) ?? 0) + 1);
++    try { return await action(); }
++    finally {
++      const count = this.projectOperations.get(key)! - 1;
++      if (count) this.projectOperations.set(key, count); else this.projectOperations.delete(key);
++    }
++  }
++
++  async withProjectArchiveRecovery<T>(projectPath: string, action: () => Promise<T>): Promise<T> {
++    const key = projectPathIdentity(projectPath);
++    const loaded = [...this.projects.keys(), ...this.projectStateManagers.keys(), ...this.projectLocks.keys()];
++    if (this.recoveringProjects.has(key) || this.projectOperations.has(key) || this.configurationActivations.has(key) ||
++        loaded.some(value => projectPathIdentity(value) === key)) throw new Error('ARCHIVE_RECOVERY_PROJECT_IN_USE');
++    this.recoveringProjects.add(key);
++    try { return await action(); } finally { this.recoveringProjects.delete(key); }
++  }
++
+   private configurationActivations = new Map<string, Promise<unknown>>();
+ 
+   private async serializeConfiguration<T>(projectPath: string, action: () => Promise<T>): Promise<T> {
++    if (this.recoveringProjects.has(projectPathIdentity(projectPath))) throw new Error('ARCHIVE_RECOVERY_IN_PROGRESS');
+     const key = process.platform === 'win32' ? path.resolve(projectPath).toLowerCase() : path.resolve(projectPath);
+     const prior = this.configurationActivations.get(key);
+     const next = (prior ? prior.catch(() => undefined) : Promise.resolve()).then(action);
+@@ -181,6 +206,10 @@ export class ProjectManager {
+    * 写入路径为 <projectPath>/.specforge/runtime/events.jsonl
+    */
+   async getProjectStateManager(projectPath: string): Promise<StateManager> {
++    return this.withProjectOperation(projectPath, () => this.loadProjectStateManager(projectPath));
++  }
++
++  private async loadProjectStateManager(projectPath: string): Promise<StateManager> {
+     if (!this.projectStateManagers.has(projectPath)) {
+       const sm = new StateManager(this.pathResolver, projectPath, false);
+       await sm.initialize();
+@@ -190,6 +219,7 @@ export class ProjectManager {
+   }
+ 
+   async getProject(projectPath: string): Promise<ProjectContext> {
++    if (this.recoveringProjects.has(projectPathIdentity(projectPath))) throw new Error('ARCHIVE_RECOVERY_IN_PROGRESS');
+     const existing = this.projects.get(projectPath);
+     if (existing?.isFullyRegistered) {
+       return existing;
+@@ -198,6 +228,10 @@ export class ProjectManager {
+   }
+ 
+   async registerProject(projectPath: string): Promise<ProjectContext> {
++    return this.withProjectOperation(projectPath, () => this.registerAvailableProject(projectPath));
++  }
++
++  private async registerAvailableProject(projectPath: string): Promise<ProjectContext> {
+     const existing = this.projects.get(projectPath);
+     if (existing?.isFullyRegistered) {
+       return existing;
+@@ -280,6 +314,7 @@ export class ProjectManager {
+   }
+ 
+   async acquireLock(projectPath: string): Promise<Lock> {
++    if (this.recoveringProjects.has(projectPathIdentity(projectPath))) throw new Error('ARCHIVE_RECOVERY_IN_PROGRESS');
+     const current = this.projectLocks.get(projectPath);
+     if (current && current.expiresAt > Date.now()) {
+       throw new Error(`Project ${projectPath} is already locked`);
+@@ -312,6 +347,7 @@ export class ProjectManager {
+   }
+ 
+   getProjectContext(projectPath: string): ProjectContext {
++    if (this.recoveringProjects.has(projectPathIdentity(projectPath))) throw new Error('ARCHIVE_RECOVERY_IN_PROGRESS');
+     const existing = this.projects.get(projectPath);
+     if (existing) {
+       return existing;
+diff --git a/packages/daemon-core/src/recovery/RecoverySubsystem.ts b/packages/daemon-core/src/recovery/RecoverySubsystem.ts
+index c1aa8a97..27d80a5c 100644
+--- a/packages/daemon-core/src/recovery/RecoverySubsystem.ts
++++ b/packages/daemon-core/src/recovery/RecoverySubsystem.ts
+@@ -23,6 +23,7 @@ import { WAL } from '../wal';
+ import { StateManager } from '../state/StateManager';
+ import { IPathResolver } from '../daemon/path-resolver';
+ import { SessionRegistry } from '../session/SessionRegistry';
++import { restoreProjectArchive, projectPathIdentity, type ProjectArchiveRestoreInput } from './ProjectArchiveRestore';
+ import {
+   deserializeRuntimeCheckpoint,
+   serializeRuntimeCheckpoint,
+@@ -36,6 +37,14 @@ export interface SessionReconnectResult {
+ }
+ 
+ export class RecoverySubsystem {
++  /** Operator-only project import; does not create or transition Work Items. */
++  async restoreProjectArchive(input: ProjectArchiveRestoreInput) {
++    if (this.sessionRegistry?.listSessions().some(session => {
++      const bound = this.sessionRegistry!.getProjectPath(session.sessionId);
++      return bound && projectPathIdentity(bound) === projectPathIdentity(input.project_path);
++    })) throw new Error('ARCHIVE_RECOVERY_ACTIVE_SESSION');
++    return restoreProjectArchive(this.pathResolver, input);
++  }
+   private pathResolver: IPathResolver;
+   private projectPath: string;
+   private eventsPath: string;

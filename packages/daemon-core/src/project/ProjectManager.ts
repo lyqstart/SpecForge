@@ -11,6 +11,7 @@ import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import type { SchemaDescriptorPrecheckResult } from '@specforge/types/schema-contract';
 import { precheckProjectRegistrationSchemas } from './project-schema-descriptors';
 import { loadAcceptedConfigSync, parseConfigurationObject, type MergedConfig } from '@specforge/configuration';
+import { projectPathIdentity } from '../recovery/ProjectArchiveRestore';
 
 export interface ProjectContext {
   projectId: string;
@@ -39,9 +40,33 @@ export type ProjectSchemaPrecheck = (
 ) => Promise<SchemaDescriptorPrecheckResult>;
 
 export class ProjectManager {
+  private recoveringProjects = new Set<string>();
+  private projectOperations = new Map<string, number>();
+
+  async withProjectOperation<T>(projectPath: string, action: () => Promise<T>): Promise<T> {
+    const key = projectPathIdentity(projectPath);
+    if (this.recoveringProjects.has(key)) throw new Error('ARCHIVE_RECOVERY_IN_PROGRESS');
+    this.projectOperations.set(key, (this.projectOperations.get(key) ?? 0) + 1);
+    try { return await action(); }
+    finally {
+      const count = this.projectOperations.get(key)! - 1;
+      if (count) this.projectOperations.set(key, count); else this.projectOperations.delete(key);
+    }
+  }
+
+  async withProjectArchiveRecovery<T>(projectPath: string, action: () => Promise<T>): Promise<T> {
+    const key = projectPathIdentity(projectPath);
+    const loaded = [...this.projects.keys(), ...this.projectStateManagers.keys(), ...this.projectLocks.keys()];
+    if (this.recoveringProjects.has(key) || this.projectOperations.has(key) || this.configurationActivations.has(key) ||
+        loaded.some(value => projectPathIdentity(value) === key)) throw new Error('ARCHIVE_RECOVERY_PROJECT_IN_USE');
+    this.recoveringProjects.add(key);
+    try { return await action(); } finally { this.recoveringProjects.delete(key); }
+  }
+
   private configurationActivations = new Map<string, Promise<unknown>>();
 
   private async serializeConfiguration<T>(projectPath: string, action: () => Promise<T>): Promise<T> {
+    if (this.recoveringProjects.has(projectPathIdentity(projectPath))) throw new Error('ARCHIVE_RECOVERY_IN_PROGRESS');
     const key = process.platform === 'win32' ? path.resolve(projectPath).toLowerCase() : path.resolve(projectPath);
     const prior = this.configurationActivations.get(key);
     const next = (prior ? prior.catch(() => undefined) : Promise.resolve()).then(action);
@@ -181,6 +206,10 @@ export class ProjectManager {
    * 写入路径为 <projectPath>/.specforge/runtime/events.jsonl
    */
   async getProjectStateManager(projectPath: string): Promise<StateManager> {
+    return this.withProjectOperation(projectPath, () => this.loadProjectStateManager(projectPath));
+  }
+
+  private async loadProjectStateManager(projectPath: string): Promise<StateManager> {
     if (!this.projectStateManagers.has(projectPath)) {
       const sm = new StateManager(this.pathResolver, projectPath, false);
       await sm.initialize();
@@ -190,6 +219,7 @@ export class ProjectManager {
   }
 
   async getProject(projectPath: string): Promise<ProjectContext> {
+    if (this.recoveringProjects.has(projectPathIdentity(projectPath))) throw new Error('ARCHIVE_RECOVERY_IN_PROGRESS');
     const existing = this.projects.get(projectPath);
     if (existing?.isFullyRegistered) {
       return existing;
@@ -198,6 +228,10 @@ export class ProjectManager {
   }
 
   async registerProject(projectPath: string): Promise<ProjectContext> {
+    return this.withProjectOperation(projectPath, () => this.registerAvailableProject(projectPath));
+  }
+
+  private async registerAvailableProject(projectPath: string): Promise<ProjectContext> {
     const existing = this.projects.get(projectPath);
     if (existing?.isFullyRegistered) {
       return existing;
@@ -280,6 +314,7 @@ export class ProjectManager {
   }
 
   async acquireLock(projectPath: string): Promise<Lock> {
+    if (this.recoveringProjects.has(projectPathIdentity(projectPath))) throw new Error('ARCHIVE_RECOVERY_IN_PROGRESS');
     const current = this.projectLocks.get(projectPath);
     if (current && current.expiresAt > Date.now()) {
       throw new Error(`Project ${projectPath} is already locked`);
@@ -312,6 +347,7 @@ export class ProjectManager {
   }
 
   getProjectContext(projectPath: string): ProjectContext {
+    if (this.recoveringProjects.has(projectPathIdentity(projectPath))) throw new Error('ARCHIVE_RECOVERY_IN_PROGRESS');
     const existing = this.projects.get(projectPath);
     if (existing) {
       return existing;

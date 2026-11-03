@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/capture-change.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "change-review",
+  "expected_writes": "evidence-snapshot-only",
+  "started_utc": "2026-11-03T12:08:10.825Z"
+}

@@ -1,0 +1,16 @@
+{
+  "executable": "D:\\code\\SpecForge\\node_modules\\.bin\\vitest.exe",
+  "args": [
+    "run",
+    "tests/unit/project-archive-restore.test.ts",
+    "tests/unit/recovery-paths.test.ts",
+    "tests/unit/recovery-session-replay.test.ts",
+    "tests/unit/wal.test.ts",
+    "tests/unit/http-server-handleOpenCodeEvent.test.ts",
+    "tests/integration/wal-singleton-e2e.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "recovery-and-state-regression",
+  "expected_writes": "isolated-test-fixtures-and-evidence",
+  "started_utc": "2026-11-03T12:06:28.498Z"
+}

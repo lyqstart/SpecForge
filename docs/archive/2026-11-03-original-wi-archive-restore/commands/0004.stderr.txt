@@ -1,0 +1,16 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/project-archive-restore.test.ts > Recovery owner sealed project import > preserves exact existing matches while rejecting loose-object corruption and old metadata
+Error: EPERM: operation not permitted, open 'C:\Users\lyq\AppData\Local\Temp\sf-archive-test-m7cKvm\project\.git\objects\69\ee63a8861a551875598dbe8d2687b5973bdc53'
+ ❯ tests/unit/project-archive-restore.test.ts:169:44
+    167|     const prefix = (await fs.readdir(path.join(f.target, '.git/objects…
+    168|     const object = path.join(f.target, '.git/objects', prefix, (await …
+    169|     const raw = await fs.readFile(object); await fs.writeFile(object, …
+       |                                            ^
+    170|     await expect(f.run()).rejects.toThrow(); await fs.writeFile(object…
+    171|     expect((await f.run()).restored_files).toBe(3);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

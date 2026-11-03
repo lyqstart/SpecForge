@@ -1,0 +1,11 @@
+
+ RUN  v4.1.5 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/project-archive-restore.test.ts (24 tests | 1 failed) 10144ms
+     × preserves exact existing matches while rejecting loose-object corruption and old metadata 292ms
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 36 passed (37)
+   Start at  20:04:51
+   Duration  11.49s (transform 2.45s, setup 0ms, import 3.92s, tests 15.15s, environment 0ms)
+

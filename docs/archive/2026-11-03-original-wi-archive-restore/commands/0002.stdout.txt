@@ -1,0 +1,10 @@
+
+ RUN  v4.1.5 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/project-archive-restore.test.ts (0 test)
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  20:03:41
+   Duration  674ms (transform 0ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)
+

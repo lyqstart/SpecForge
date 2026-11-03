@@ -1,0 +1,6 @@
+# Validation attribution
+
+- The first direct typecheck found TypeScript control-flow narrowing errors for a const-bound never-returning helper. Replaced it with a function declaration; recorded typechecks 0001 and 0005 pass. No original target writes.
+- Receipt 0002: sandbox denied Vite cache rename before any test loaded. Retried outside sandbox, receipt 0003: 20 tests pass.
+- Receipt 0004: 36 pass, one fixture setup fails because Git creates read-only loose objects on Windows. The failing line attempted corruption of a test-owned object, before calling recovery. The fixture now explicitly makes its own object writable before the negative corruption probe. No production guard weakened.
+- The evidence carrier initially allocated sequence numbers by completed results, which collided with an in-flight command receipt. It failed with EEXIST before starting typecheck, preserving all existing receipts. Allocation now atomically reserves command files using exclusive creation and retries on collision. This applies existing EXP-002/007; immutable failed receipts are retained. The source fix and these notes preserve attribution; uncaptured tool-only preliminary commands are not counted as sealed validation coverage.

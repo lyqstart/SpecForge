@@ -1,0 +1,8 @@
+{
+  "run_id": "CODEX-SF-20261103-ORIGINAL-WI-ARCHIVE-RESTORE-A01",
+  "execution_mode": "CODEX_DIRECT",
+  "status": "IN_PROGRESS",
+  "authorization": "同意按封存归档恢复原项目",
+  "target_writes": false,
+  "next": "Validate controlled Recovery owner, then deploy and execute through authenticated HTTP."
+}

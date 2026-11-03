@@ -307,6 +307,7 @@ export class HTTPServer {
     this.addExactRoute('GET', '/api/v1/kernel/session', this.handleKernelSessionGet.bind(this));
     this.addExactRoute('POST', '/api/v1/tool/invoke', this.handleToolInvoke.bind(this));
     this.addExactRoute('POST', '/api/v1/admin/stop', this.handleAdminStop.bind(this));
+    this.addExactRoute('POST', '/api/v1/recovery/project-archive/restore', this.handleProjectArchiveRestore.bind(this));
     this.addExactRoute('POST', '/api/v1/ingest/register', this.handleIngestRegister.bind(this));
     this.addExactRoute('POST', '/api/v1/ingest/event', this.handleIngestEvent.bind(this));
 
@@ -1170,7 +1171,10 @@ export class HTTPServer {
     // Try real dispatcher first
     if (this.deps.toolDispatcher) {
       try {
-        const result = await this.deps.toolDispatcher.dispatch(request as DispatcherRequest);
+        const directory = request.context?.directory;
+        const result = directory && this.deps.projectManager?.withProjectOperation
+          ? await this.deps.projectManager.withProjectOperation(directory, () => this.deps.toolDispatcher!.dispatch(request as DispatcherRequest))
+          : await this.deps.toolDispatcher.dispatch(request as DispatcherRequest);
         this.sendJsonResponse(res, 200, this.successBody(result));
       } catch (err) {
         const msg = (err as Error).message;
@@ -1274,15 +1278,40 @@ export class HTTPServer {
     try {
       if (request.action === 'reconstruct_git_baseline') {
         if (!request.reconstruction) throw new Error('RECOVERY_INPUT_REQUIRED');
-        const result = await reconstructInitialization(projectPath, request.reconstruction);
+        const reconstruction = request.reconstruction;
+        const result = this.deps.projectManager?.withProjectOperation
+          ? await this.deps.projectManager.withProjectOperation(projectPath, () => reconstructInitialization(projectPath, reconstruction))
+          : await reconstructInitialization(projectPath, reconstruction);
         this.sendJsonResponse(res, 200, this.successBody(result));
         return;
       }
       if (request.action && request.action !== 'ensure') throw new Error('UNKNOWN_PROJECT_INIT_ACTION');
-      const result = await ensureProjectInit(projectPath, request.projectName);
+      const result = this.deps.projectManager?.withProjectOperation
+        ? await this.deps.projectManager.withProjectOperation(projectPath, () => ensureProjectInit(projectPath, request.projectName))
+        : await ensureProjectInit(projectPath, request.projectName);
       this.sendJsonResponse(res, 200, this.successBody(result));
     } catch (err) {
       this.sendJsonResponse(res, 500, this.errorBody('INIT_FAILED', (err as Error).message));
+    }
+  }
+
+  /** Authenticated operator recovery. Deliberately absent from Agent Tool registries. */
+  private async handleProjectArchiveRestore(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
+    let input;
+    try { input = JSON.parse(body); }
+    catch { return this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON')); }
+    if (!input || typeof input.project_path !== 'string' || !input.project_path) {
+      return this.sendJsonResponse(res, 400, this.errorBody('ARCHIVE_RECOVERY_INPUT_REQUIRED', 'project_path required'));
+    }
+    if (!this.deps.recoverySubsystem?.restoreProjectArchive || !this.deps.projectManager?.withProjectArchiveRecovery) {
+      return this.sendJsonResponse(res, 503, this.errorBody('ARCHIVE_RECOVERY_UNAVAILABLE', 'Recovery owner or project exclusion unavailable'));
+    }
+    try {
+      const result = await this.deps.projectManager.withProjectArchiveRecovery(input.project_path,
+        () => this.deps.recoverySubsystem.restoreProjectArchive(input));
+      this.sendJsonResponse(res, 200, this.successBody(result));
+    } catch (error) {
+      this.sendJsonResponse(res, 409, this.errorBody('ARCHIVE_RECOVERY_BLOCKED', (error as Error).message));
     }
   }
 

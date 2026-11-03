@@ -23,6 +23,7 @@ import { WAL } from '../wal';
 import { StateManager } from '../state/StateManager';
 import { IPathResolver } from '../daemon/path-resolver';
 import { SessionRegistry } from '../session/SessionRegistry';
+import { restoreProjectArchive, projectPathIdentity, type ProjectArchiveRestoreInput } from './ProjectArchiveRestore';
 import {
   deserializeRuntimeCheckpoint,
   serializeRuntimeCheckpoint,
@@ -36,6 +37,14 @@ export interface SessionReconnectResult {
 }
 
 export class RecoverySubsystem {
+  /** Operator-only project import; does not create or transition Work Items. */
+  async restoreProjectArchive(input: ProjectArchiveRestoreInput) {
+    if (this.sessionRegistry?.listSessions().some(session => {
+      const bound = this.sessionRegistry!.getProjectPath(session.sessionId);
+      return bound && projectPathIdentity(bound) === projectPathIdentity(input.project_path);
+    })) throw new Error('ARCHIVE_RECOVERY_ACTIVE_SESSION');
+    return restoreProjectArchive(this.pathResolver, input);
+  }
   private pathResolver: IPathResolver;
   private projectPath: string;
   private eventsPath: string;

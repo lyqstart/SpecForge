@@ -1,0 +1,21 @@
+{
+  "executable": "git",
+  "args": [
+    "add",
+    ".gitattributes",
+    "docs/project-status.md",
+    "docs/product-specification/authority-registry.md",
+    "docs/product-specification/specforge-product-specification.md",
+    "docs/design/SpecForge架构一致性治理最终实施方案.md",
+    "packages/daemon-core/src/http/HTTPServer.ts",
+    "packages/daemon-core/src/project/ProjectManager.ts",
+    "packages/daemon-core/src/recovery/RecoverySubsystem.ts",
+    "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+    "packages/daemon-core/tests/unit/project-archive-restore.test.ts",
+    "docs/archive/2026-11-03-original-wi-archive-restore"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "stage-implementation",
+  "expected_writes": "git-index-and-evidence",
+  "started_utc": "2026-11-03T12:08:31.253Z"
+}
