@@ -1,0 +1,34 @@
+{
+  "run_id": "CODEX-SF-20261103-SPS-GAP-REPAIR-A01",
+  "started_utc": "2026-11-03T04:42:08.662Z",
+  "method": "Controlled invocation of installed pre-compaction callback, not real OpenCode compaction",
+  "command": "bun docs/archive/2026-11-03-sps-conformance-repair/checkpoint-persistence-probe.ts",
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Verify actual deployed plugin callback to daemon to durable checkpoint file",
+  "expected_writes": "Isolated fixture runtime checkpoint, installed plugin bridge diagnostic log, evidence receipt",
+  "fixture": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-acceptance-biVm6Q",
+  "registration": {
+    "sessionId": "01a19f9a-46f6-73b8-8431-28ffed0d014e",
+    "projectId": "6b0c44fe756876fe",
+    "mode": "personal"
+  },
+  "checkpoint_path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-acceptance-biVm6Q\\.specforge\\runtime\\checkpoints\\01a19f9a-46f6-73b8-8431-28ffed0d014e.json",
+  "checkpoint_sha256": "adcf840bf56360bc210a688c53805cb44d4821d38d18a15f977a169793b0786a",
+  "checkpoint": {
+    "schema_version": "1.0",
+    "source": "opencode.experimental.session.compacting",
+    "phase": "pre-compaction",
+    "projectPath": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-acceptance-biVm6Q",
+    "opencodeSessionId": "ses_e6065b8faffe966eziUVJXb3Dc",
+    "capturedAt": "2026-11-03T04:42:08.789Z"
+  },
+  "independent_process_sha256": "adcf840bf56360bc210a688c53805cb44d4821d38d18a15f977a169793b0786a",
+  "persisted_checkpoint": "CONFIRMED",
+  "real_opencode_triggered_compaction": "NOT_EXECUTED",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "notes": [
+    "Daemon connected."
+  ],
+  "finished_utc": "2026-11-03T04:42:08.868Z"
+}
