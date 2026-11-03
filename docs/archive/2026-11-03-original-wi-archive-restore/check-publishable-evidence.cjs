@@ -10,7 +10,7 @@ let decoded = 0;
 function check(raw, file, depth = 0) {
   if (depth > 16) throw Error('EVIDENCE_NESTING_LIMIT');
   const text = raw.toString('utf8');
-  if (text.includes(secret)) throw Error('SENSITIVE_VALUE_IN_PUBLICATION:' + file);
+  if (text.includes(secret) || /\bacw_tc=[a-f0-9]{20,}/i.test(text)) throw Error('SENSITIVE_VALUE_IN_PUBLICATION:' + file);
   let value; try { value = JSON.parse(text); } catch { return; }
   const visit = object => {
     if (!object || typeof object !== 'object') return;
@@ -27,5 +27,7 @@ for (const file of names) {
 }
 const result = { utc: new Date().toISOString(), mode: staged ? 'staged' : 'working-publication-candidates', files: names.length, decoded_base64_members: decoded,
   sensitive_source_retained_locally: true, sensitive_value_published: false, inner_exit_code: 0 };
-const out = path.join(__dirname, staged ? 'staged-privacy-check.json' : 'publication-privacy-check.json');
+const suffix = process.argv.find(arg => arg.startsWith('--suffix='))?.slice(9) || '';
+if (suffix && !/^[a-z0-9-]+$/.test(suffix)) throw Error('INVALID_OUTPUT_SUFFIX');
+const out = path.join(__dirname, (staged ? 'staged-privacy-check' : 'publication-privacy-check') + (suffix ? '-' + suffix : '') + '.json');
 fs.writeFileSync(out, JSON.stringify(result, null, 2) + '\n', { flag: 'wx' }); console.log(JSON.stringify(result));

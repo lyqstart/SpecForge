@@ -1171,10 +1171,7 @@ export class HTTPServer {
     // Try real dispatcher first
     if (this.deps.toolDispatcher) {
       try {
-        const directory = request.context?.directory;
-        const result = directory && this.deps.projectManager?.withProjectOperation
-          ? await this.deps.projectManager.withProjectOperation(directory, () => this.deps.toolDispatcher!.dispatch(request as DispatcherRequest))
-          : await this.deps.toolDispatcher.dispatch(request as DispatcherRequest);
+        const result = await this.deps.toolDispatcher.dispatch(request as DispatcherRequest);
         this.sendJsonResponse(res, 200, this.successBody(result));
       } catch (err) {
         const msg = (err as Error).message;

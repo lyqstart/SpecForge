@@ -1,6 +1,8 @@
 // Native reasoning is not factual product evidence. Retain source locally and publish a hash-bound derivative.
 const fs = require('node:fs'), path = require('node:path'), crypto = require('node:crypto');
-const dir = path.join(__dirname, 'native-resume'), records = [];
+const directoryName = process.argv[2] || 'native-resume';
+if (!/^native-resume(?:-[a-z0-9-]+)?$/.test(directoryName)) throw Error('UNSAFE_NATIVE_DIRECTORY');
+const dir = path.join(__dirname, directoryName), records = [];
 const sha = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const failedStdout = path.join(__dirname, 'commands/0048.stdout.txt');
 const redactedStdout = path.join(__dirname, 'commands/0048.stdout-redacted.txt');

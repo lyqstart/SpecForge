@@ -1,0 +1,727 @@
+{
+  "source_sha256": "27ddebb7a8f22fac78347817436a72b987d2903ffb607c266b268b4d526d2bea",
+  "source_file": "inspection-owners.json",
+  "redaction": "Model reasoning text omitted; source retained locally and excluded from Git. Tool calls/results and document content retained.",
+  "data": {
+    "utc": "2026-11-03T12:17:43.923Z",
+    "source": "http://127.0.0.1:4096",
+    "messages": [
+      {
+        "info": {
+          "id": "msg_1a1548052001Y583aZHwaWRMue",
+          "sessionID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+          "role": "user",
+          "time": {
+            "created": 1793708032082
+          },
+          "summary": {
+            "diffs": []
+          },
+          "agent": "sf-orchestrator",
+          "model": {
+            "providerID": "zhipuai-coding-plan",
+            "modelID": "glm-5.3"
+          }
+        },
+        "parts": [
+          {
+            "id": "prt_1a1548054001LUhqNJ64hU51dX",
+            "sessionID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+            "messageID": "msg_1a1548052001Y583aZHwaWRMue",
+            "type": "text",
+            "text": "继续原会话和原 WI-0001，不创建替代工作项。原路径已由新增且部署验证的 Recovery owner 从封存归档恢复：319 文件逐字节复核、Git 为原提交 8a692e88c0823984647622294f5199c18bb0c587 的 detached HEAD，原残留树完整保留。正式 sf_state_read 刚从原 events.jsonl 重放确认唯一 WI-0001=candidate_preparing，原五条事件未变。恢复授权不是 Candidate 批准，旧分支和旧索引未声称恢复。先正式重读状态和既有产物/handoff，从原合法断点继续原 Greeting Library 需求，到真实 Candidate 审批边界展示并停止；不得进入批准/合并/代码实现。已有封存失败须保留。已修复 Runtime 对准确范围限定说明的误判。当前待专业 owner 修订：候选绑定字段必须为 implementation_baseline_id 并引用 Runtime 的 implementation_baseline.json；需求正文和全部下游引用采用正式模块域与三位序号（例如 REQ-CORE-001、DD-CORE-001，不能用 REQ-001/DD-001 或说明性别名冒充）；需求修订由 sf-requirements、设计/正式关系修订由 sf-design、tasks 与 trace_delta 同步由 sf-task-planner 执行并持久化本次 owner-bound handoff。Orchestrator 不代写专业候选、不把旧 lint PASS 当作正式 Gate，不重复已成功步骤。用正式受控 artifact 工具保存，完成 validate_all、seal 和 required Gates；如已有字段不一致先以真实文件与 Runtime 拒绝定位首次责任层，禁止绕过 HardStop 或制造假失败。遵守 D18，不运行 shell/测试/其他执行器，不读与此恢复无关的主机清单或凭据；缺少实际验证证据则明确 blocked/not_executed。若出现不能合法恢复的能力缺口，保存完整正式错误并报告最后成功点和下一合法动作。"
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1a154824c001VYErWqd8en4qbB",
+          "sessionID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+          "role": "assistant",
+          "time": {
+            "created": 1793708032588,
+            "completed": 1793708071780
+          },
+          "parentID": "msg_1a1548052001Y583aZHwaWRMue",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-orchestrator",
+          "agent": "sf-orchestrator",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 111476,
+            "input": 108723,
+            "output": 277,
+            "reasoning": 1452,
+            "cache": {
+              "read": 1024,
+              "write": 0
+            }
+          },
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1a154b1d2001TKZfPQX3SxU6AJ",
+            "sessionID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+            "messageID": "msg_1a154824c001VYErWqd8en4qbB",
+            "type": "step-start",
+            "snapshot": "48b743f0b95df23db779dca4effe5ee0a9b9b0d5"
+          },
+          {
+            "id": "prt_1a154b1da001H0Up2XlQVkUGqP",
+            "sessionID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+            "messageID": "msg_1a154824c001VYErWqd8en4qbB",
+            "type": "reasoning",
+            "text": "[Model reasoning omitted; not factual evidence]",
+            "time": {
+              "start": 1793708044762,
+              "end": 1793708067818
+            },
+            "text_sha256": "f029d1e617536e7afc9386203a24402ca4279f3a1100ef90f2bfd63dfdfdef19",
+            "original_text_length": 6794
+          },
+          {
+            "id": "prt_1a1550bf5001HloMUNnDOSa1pL",
+            "sessionID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+            "messageID": "msg_1a154824c001VYErWqd8en4qbB",
+            "type": "text",
+            "text": "收到恢复上下文：原路径已由 Recovery owner 从封存归档逐字节恢复（detached HEAD @ 8a692e88…，残留树保留），恢复授权≠Candidate 批准；修复重点是①候选绑定字段必须为 `implementation_baseline_id` 并引用 Runtime 的 `implementation_baseline.json`，②需求正文与全部下游引用统一正式模块域+三位序号（REQ-CORE-001 / DD-CORE-001），禁止短编号或说明性别名；各专业 owner 修订并持久化 owner-bound handoff。先正式重读权威状态与实际产物。",
+            "time": {
+              "start": 1793708067829,
+              "end": 1793708071015
+            }
+          },
+          {
+            "id": "prt_1a15514850011A03N5YdypSOGB",
+            "sessionID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+            "messageID": "msg_1a154824c001VYErWqd8en4qbB",
+            "type": "tool",
+            "callID": "call_3a0c309dde22405eb414f927",
+            "tool": "sf_state_read",
+            "state": {
+              "status": "completed",
+              "input": {
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\n  \"success\": true,\n  \"rebuilt_from_events\": true,\n  \"work_item_id\": \"WI-0001\",\n  \"workflow_type\": \"feature_spec\",\n  \"current_state\": \"candidate_preparing\",\n  \"created_at\": 1792905467014,\n  \"updated_at\": 1792905816213\n}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1793708070042,
+                "end": 1793708070163
+              }
+            }
+          },
+          {
+            "id": "prt_1a15515a7001uKcPnk1sJdj4vN",
+            "sessionID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+            "messageID": "msg_1a154824c001VYErWqd8en4qbB",
+            "type": "tool",
+            "callID": "call_eb22fdcfba8140a19943c841",
+            "tool": "read",
+            "state": {
+              "status": "completed",
+              "input": {
+                "filePath": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\handoffs"
+              },
+              "output": "<path>C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\handoffs</path>\n<type>directory</type>\n<entries>\nhandoff_sf-design_candidate_design_1792907413595_7696c9a77469_0.json\nhandoff_sf-requirements_candidate_requirements_1792906288040_16e75c9feacf_0.json\nhandoff_sf-task-planner_candidate_tasks_1792908279507_15ec6734671a_0.json\n\n(3 entries)\n</entries>",
+              "title": ".specforge\\work-items\\WI-0001\\handoffs",
+              "metadata": {
+                "preview": "handoff_sf-design_candidate_design_1792907413595_7696c9a77469_0.json\nhandoff_sf-requirements_candidate_requirements_1792906288040_16e75c9feacf_0.json\nhandoff_sf-task-planner_candidate_tasks_1792908279507_15ec6734671a_0.json",
+                "truncated": false,
+                "loaded": [],
+                "display": {
+                  "type": "directory",
+                  "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\handoffs",
+                  "entries": [
+                    "handoff_sf-design_candidate_design_1792907413595_7696c9a77469_0.json",
+                    "handoff_sf-requirements_candidate_requirements_1792906288040_16e75c9feacf_0.json",
+                    "handoff_sf-task-planner_candidate_tasks_1792908279507_15ec6734671a_0.json"
+                  ],
+                  "offset": 1,
+                  "totalEntries": 3,
+                  "truncated": false
+                }
+              },
+              "time": {
+                "start": 1793708070320,
+                "end": 1793708070362
+              }
+            }
+          },
+          {
+            "id": "prt_1a1551715001fPNnohT9Gsku3Q",
+            "sessionID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+            "messageID": "msg_1a154824c001VYErWqd8en4qbB",
+            "type": "tool",
+            "callID": "call_b144702fd76647cf8e4cacbb",
+            "tool": "read",
+            "state": {
+              "status": "completed",
+              "input": {
+                "filePath": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE"
+              },
+              "output": "<path>C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE</path>\n<type>directory</type>\n<entries>\ncontracts.candidate.json\ndesign.candidate.md\nmodule.candidate.json\nrequirements.candidate.md\n\n(4 entries)\n</entries>",
+              "title": ".specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE",
+              "metadata": {
+                "preview": "contracts.candidate.json\ndesign.candidate.md\nmodule.candidate.json\nrequirements.candidate.md",
+                "truncated": false,
+                "loaded": [],
+                "display": {
+                  "type": "directory",
+                  "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE",
+                  "entries": [
+                    "contracts.candidate.json",
+                    "design.candidate.md",
+                    "module.candidate.json",
+                    "requirements.candidate.md"
+                  ],
+                  "offset": 1,
+                  "totalEntries": 4,
+                  "truncated": false
+                }
+              },
+              "time": {
+                "start": 1793708070693,
+                "end": 1793708070743
+              }
+            }
+          },
+          {
+            "id": "prt_1a155184c001OgO9VCV7gBtLyp",
+            "sessionID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+            "messageID": "msg_1a154824c001VYErWqd8en4qbB",
+            "type": "tool",
+            "callID": "call_4fbfe5b7b8864877ba3e68d1",
+            "tool": "read",
+            "state": {
+              "status": "completed",
+              "input": {
+                "filePath": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates"
+              },
+              "output": "<path>C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates</path>\n<type>directory</type>\n<entries>\nproject/\ntasks.md\ntrace_delta.md\n\n(3 entries)\n</entries>",
+              "title": ".specforge\\work-items\\WI-0001\\candidates",
+              "metadata": {
+                "preview": "project/\ntasks.md\ntrace_delta.md",
+                "truncated": false,
+                "loaded": [],
+                "display": {
+                  "type": "directory",
+                  "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates",
+                  "entries": [
+                    "project/",
+                    "tasks.md",
+                    "trace_delta.md"
+                  ],
+                  "offset": 1,
+                  "totalEntries": 3,
+                  "truncated": false
+                }
+              },
+              "time": {
+                "start": 1793708071004,
+                "end": 1793708071038
+              }
+            }
+          },
+          {
+            "id": "prt_1a15519e600108P8c5k5j6lYyV",
+            "sessionID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+            "messageID": "msg_1a154824c001VYErWqd8en4qbB",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "48b743f0b95df23db779dca4effe5ee0a9b9b0d5",
+            "cost": 0,
+            "tokens": {
+              "total": 111476,
+              "input": 108723,
+              "output": 277,
+              "reasoning": 1452,
+              "cache": {
+                "read": 1024,
+                "write": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1a1551b73001dPokIT7Dc7nuho",
+          "sessionID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+          "role": "assistant",
+          "time": {
+            "created": 1793708071795
+          },
+          "parentID": "msg_1a1548052001Y583aZHwaWRMue",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-orchestrator",
+          "agent": "sf-orchestrator",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "input": 0,
+            "output": 0,
+            "reasoning": 0,
+            "cache": {
+              "read": 0,
+              "write": 0
+            }
+          }
+        },
+        "parts": [
+          {
+            "id": "prt_1a155315d001bM12sruqCAO3Nd",
+            "sessionID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+            "messageID": "msg_1a1551b73001dPokIT7Dc7nuho",
+            "type": "step-start",
+            "snapshot": "48b743f0b95df23db779dca4effe5ee0a9b9b0d5"
+          },
+          {
+            "id": "prt_1a1553164001DR7BXYmPjPZnv4",
+            "sessionID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+            "messageID": "msg_1a1551b73001dPokIT7Dc7nuho",
+            "type": "reasoning",
+            "text": "[Model reasoning omitted; not factual evidence]",
+            "time": {
+              "start": 1793708077412,
+              "end": 1793708107039
+            },
+            "text_sha256": "27f315d69d27e64c182a634e34c148642a9f6ab1d65d5ff91a0db07e056f0950",
+            "original_text_length": 7949
+          },
+          {
+            "id": "prt_1a155a528001Lv4Cww6lAQC3xV",
+            "sessionID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+            "messageID": "msg_1a1551b73001dPokIT7Dc7nuho",
+            "type": "text",
+            "text": "权威状态与产物核对完成：\n\n- `WI-0001 @ candidate_preparing`（events 重放，5 条事件未变）；handoff 仍为原 3 条（被取消的修复轮零写入、零 handoff——无重复步骤需要处理）\n- 候选树完整：6 份 md + 2 份 json + tasks.md + trace_delta.md；我的 impact_analysis.md 修订版在位；封存失败记录保留于治理日志\n- **首次责任层定位（真实文件 + Runtime 拒绝）**：①短编号 `REQ-001…006` 起源于 `requirements.candidate.md` 正文 → 首责 owner = sf-requirements；②绑定字段 `implementation_baseline_snapshot_id`（front-matter）≠ Runtime 要求的 `implementation_baseline_id`，涉及全部候选 → 各 owner 就地修订\n\n按依赖顺序调度修订：sf-requirements（REQ/AC 规范化根因层）→ sf-design（DD/绑定字段/关系同步）→ sf-task-planner（tasks/trace_delta 同步）。先调度 sf-requirements：",
+            "time": {
+              "start": 1793708107048,
+              "end": 1793708125563
+            }
+          },
+          {
+            "id": "prt_1a155ed61001MUNxx7ZPih1dte",
+            "sessionID": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+            "messageID": "msg_1a1551b73001dPokIT7Dc7nuho",
+            "type": "tool",
+            "callID": "call_8bcf123f8c1e42eb96fa3c87",
+            "tool": "task",
+            "state": {
+              "status": "running",
+              "input": {
+                "command": "sf-orchestrator 调度 sf-requirements 规范化需求候选 ID 与绑定字段",
+                "description": "规范化需求候选 ID/绑定",
+                "prompt": "你是 sf-requirements（SpecForge 需求分析 Agent），由 sf-orchestrator 调度执行 WI-0001 需求候选的**修复轮**（candidate_preparing 可写窗口内就地修订同一权威产物）。不推翻需求实质内容、不新增/删除 REQ 或 AC、不推进状态、不触发审批、不实现代码。\n\n## 修复依据（真实文件 + Runtime 封存拒绝定位，首责层=本 Agent 所有物）\n封存转换曾以 CANDIDATE_IMPLEMENTATION_TRUTH_INVALID 被拒（记录保留）。经恢复后确认需修复：\n1. **绑定字段**：候选 front-matter 当前为 `implementation_baseline_snapshot_id`，Runtime 要求的正式字段为 **`implementation_baseline_id`**，且必须引用 Runtime 的 `implementation_baseline.json`。\n2. **正式 ID 规范**：需求正文与全部下游引用必须使用**正式模块域+三位序号**：REQ → `REQ-CORE-001`～`REQ-CORE-006`；AC → `AC-CORE-001`～`AC-CORE-018`。禁止使用短编号 `REQ-001`/`AC-001` 形态或说明性别名冒充（映射说明表也不得作为正式引用形态保留）。\n\n## 目标文件\n`.specforge/work-items/WI-0001/candidates/project/modules/CORE/requirements.candidate.md`（你所有；先完整读取当前版本）\n\n## 修复要求（ID 规范化为主，语义逐字保持）\n1. front-matter：将 `implementation_baseline_snapshot_id: ...` 替换为 `implementation_baseline_id: sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722`；正文\"候选绑定与 Basis 来源\"节同步使用 `implementation_baseline_id` 并显式引用 `.specforge/work-items/WI-0001/implementation_baseline.json`（captured_at: 2026-10-25T05:23:36.211Z；README.md 既有 123 bytes sha256:757ee94ea46933c3dd7092c04d15a32546a3f54e609b9c6e66351eeafe8fdf40 → 追加式修改；package.json/src/greet.ts/tests/greet.test.ts/tsconfig.json 基线 matched_files 为空 → 新建）。\n2. 全文 ID 替换：`REQ-001`→`REQ-CORE-001` … `REQ-006`→`REQ-CORE-006`；`AC-001`→`AC-CORE-001` … `AC-018`→`AC-CORE-018`（定义、引用、表格、Required Evidence、not_done_when 全部覆盖；替换后 grep 确认全文不再出现 `REQ-0`/`AC-0` 短编号残留——注意替换顺序避免子串误伤，REQ-CORE-0xx/AC-CORE-0xx 本身合法）。\n3. EVREQ-* 证据键保持原样（EVREQ-1A 等，属需求证据命名，非本次修复对象）。\n4. 其余内容（REQ/AC 实质、Out-of-Scope、术语表、basis 引用键 UQ/FACT/CONSTRAINT/IMPACT/UNKNOWN/CLS）逐字保留；Runtime 对准确范围限定说明的误判已修复，FACT-1 等枚举式表述无需改动。\n5. 若正文存在对 `DD-001` 等设计短编号的引用，一并替换为 `DD-CORE-001` 形态（与设计层规范一致）。\n\n## 写入与验证边界（硬约束）\n- 唯一写入方式：sf_artifact_write(work_item_id=\"WI-0001\", module_id=\"CORE\", file_type=\"candidate_requirements\", artifact_name=\"requirements.candidate.md\", content=<修订后全文>, content_encoding=\"utf8\", run_id=\"WI-0001-sf-requirements-2\")；以返回 path 为准\n- 禁止调用 sf_safe_bash、bash、PowerShell、Node、Python 检查/读取/验证 .specforge/work-items/**；写入后只能用 Read、Glob、Grep、sf_batch_verify、sf_doc_lint 只读验证（注意：doc_lint PASS 只是结构检查，不构成正式 Gate；正式 Gate 由 orchestrator 后续运行）\n- 禁止触碰其他任何文件（design/tasks/trace_delta/impact_analysis 均非你所有权）\n- 完成后必须调用 sf_handoff(action=\"write\", handoff={schema_version:\"1.0\", agent:\"sf-requirements\", work_item_id:\"WI-0001\", stage:\"candidate_requirements\", timestamp:<当前UTC>, inputs_read:[...], outputs_written:[实际返回路径], findings:[修复点：绑定字段、REQ/AC 规范化计数], unknowns:[...], escalation_signals:[], next_step_recommendation:\"调度 sf-design 完成设计层同源规范化\", boundary_statement:\"仅修订需求候选 ID 与绑定字段\"}) 持久化交接\n- 返回：success、写入路径、ID 替换计数（REQ/AC 各多少处）、grep 残留检查结果、sf_handoff 结果\n- 若遇 hard_stop=true 或 HARD_STOP_ACTIVE：停止被阻断动作，按协议返回 hard_stop_id、source_tool、blocked_action、blocked_target、reason、last_successful_step、blocked_step、safe_alternative_tool、resume_from_step、evidence",
+                "subagent_type": "sf-requirements"
+              },
+              "title": "规范化需求候选 ID/绑定",
+              "metadata": {
+                "parentSessionId": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
+                "sessionId": "ses_e5eaa1262fferLMML8IigCp3PI",
+                "model": {
+                  "modelID": "glm-5.3",
+                  "providerID": "zhipuai-coding-plan"
+                }
+              },
+              "time": {
+                "start": 1793708125552
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "childMessages": [
+      {
+        "session": "ses_e5eaa1262fferLMML8IigCp3PI",
+        "title": "规范化需求候选 ID/绑定 (@sf-requirements subagent)",
+        "messages": [
+          {
+            "info": {
+              "id": "msg_1a155edb6001333zfYeKxyIkvd",
+              "sessionID": "ses_e5eaa1262fferLMML8IigCp3PI",
+              "role": "user",
+              "time": {
+                "created": 1793708125623
+              },
+              "summary": {
+                "diffs": []
+              },
+              "agent": "sf-requirements",
+              "model": {
+                "providerID": "zhipuai-coding-plan",
+                "modelID": "glm-5.3"
+              }
+            },
+            "parts": [
+              {
+                "id": "prt_1a155edc1001o2pEPWNvdZdjbU",
+                "sessionID": "ses_e5eaa1262fferLMML8IigCp3PI",
+                "messageID": "msg_1a155edb6001333zfYeKxyIkvd",
+                "type": "text",
+                "text": "你是 sf-requirements（SpecForge 需求分析 Agent），由 sf-orchestrator 调度执行 WI-0001 需求候选的**修复轮**（candidate_preparing 可写窗口内就地修订同一权威产物）。不推翻需求实质内容、不新增/删除 REQ 或 AC、不推进状态、不触发审批、不实现代码。\n\n## 修复依据（真实文件 + Runtime 封存拒绝定位，首责层=本 Agent 所有物）\n封存转换曾以 CANDIDATE_IMPLEMENTATION_TRUTH_INVALID 被拒（记录保留）。经恢复后确认需修复：\n1. **绑定字段**：候选 front-matter 当前为 `implementation_baseline_snapshot_id`，Runtime 要求的正式字段为 **`implementation_baseline_id`**，且必须引用 Runtime 的 `implementation_baseline.json`。\n2. **正式 ID 规范**：需求正文与全部下游引用必须使用**正式模块域+三位序号**：REQ → `REQ-CORE-001`～`REQ-CORE-006`；AC → `AC-CORE-001`～`AC-CORE-018`。禁止使用短编号 `REQ-001`/`AC-001` 形态或说明性别名冒充（映射说明表也不得作为正式引用形态保留）。\n\n## 目标文件\n`.specforge/work-items/WI-0001/candidates/project/modules/CORE/requirements.candidate.md`（你所有；先完整读取当前版本）\n\n## 修复要求（ID 规范化为主，语义逐字保持）\n1. front-matter：将 `implementation_baseline_snapshot_id: ...` 替换为 `implementation_baseline_id: sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722`；正文\"候选绑定与 Basis 来源\"节同步使用 `implementation_baseline_id` 并显式引用 `.specforge/work-items/WI-0001/implementation_baseline.json`（captured_at: 2026-10-25T05:23:36.211Z；README.md 既有 123 bytes sha256:757ee94ea46933c3dd7092c04d15a32546a3f54e609b9c6e66351eeafe8fdf40 → 追加式修改；package.json/src/greet.ts/tests/greet.test.ts/tsconfig.json 基线 matched_files 为空 → 新建）。\n2. 全文 ID 替换：`REQ-001`→`REQ-CORE-001` … `REQ-006`→`REQ-CORE-006`；`AC-001`→`AC-CORE-001` … `AC-018`→`AC-CORE-018`（定义、引用、表格、Required Evidence、not_done_when 全部覆盖；替换后 grep 确认全文不再出现 `REQ-0`/`AC-0` 短编号残留——注意替换顺序避免子串误伤，REQ-CORE-0xx/AC-CORE-0xx 本身合法）。\n3. EVREQ-* 证据键保持原样（EVREQ-1A 等，属需求证据命名，非本次修复对象）。\n4. 其余内容（REQ/AC 实质、Out-of-Scope、术语表、basis 引用键 UQ/FACT/CONSTRAINT/IMPACT/UNKNOWN/CLS）逐字保留；Runtime 对准确范围限定说明的误判已修复，FACT-1 等枚举式表述无需改动。\n5. 若正文存在对 `DD-001` 等设计短编号的引用，一并替换为 `DD-CORE-001` 形态（与设计层规范一致）。\n\n## 写入与验证边界（硬约束）\n- 唯一写入方式：sf_artifact_write(work_item_id=\"WI-0001\", module_id=\"CORE\", file_type=\"candidate_requirements\", artifact_name=\"requirements.candidate.md\", content=<修订后全文>, content_encoding=\"utf8\", run_id=\"WI-0001-sf-requirements-2\")；以返回 path 为准\n- 禁止调用 sf_safe_bash、bash、PowerShell、Node、Python 检查/读取/验证 .specforge/work-items/**；写入后只能用 Read、Glob、Grep、sf_batch_verify、sf_doc_lint 只读验证（注意：doc_lint PASS 只是结构检查，不构成正式 Gate；正式 Gate 由 orchestrator 后续运行）\n- 禁止触碰其他任何文件（design/tasks/trace_delta/impact_analysis 均非你所有权）\n- 完成后必须调用 sf_handoff(action=\"write\", handoff={schema_version:\"1.0\", agent:\"sf-requirements\", work_item_id:\"WI-0001\", stage:\"candidate_requirements\", timestamp:<当前UTC>, inputs_read:[...], outputs_written:[实际返回路径], findings:[修复点：绑定字段、REQ/AC 规范化计数], unknowns:[...], escalation_signals:[], next_step_recommendation:\"调度 sf-design 完成设计层同源规范化\", boundary_statement:\"仅修订需求候选 ID 与绑定字段\"}) 持久化交接\n- 返回：success、写入路径、ID 替换计数（REQ/AC 各多少处）、grep 残留检查结果、sf_handoff 结果\n- 若遇 hard_stop=true 或 HARD_STOP_ACTIVE：停止被阻断动作，按协议返回 hard_stop_id、source_tool、blocked_action、blocked_target、reason、last_successful_step、blocked_step、safe_alternative_tool、resume_from_step、evidence"
+              }
+            ]
+          },
+          {
+            "info": {
+              "id": "msg_1a155edd6001U3nZIOEtA2yEwb",
+              "sessionID": "ses_e5eaa1262fferLMML8IigCp3PI",
+              "role": "assistant",
+              "time": {
+                "created": 1793708125654,
+                "completed": 1793708138008
+              },
+              "parentID": "msg_1a155edb6001333zfYeKxyIkvd",
+              "modelID": "glm-5.3",
+              "providerID": "zhipuai-coding-plan",
+              "mode": "sf-requirements",
+              "agent": "sf-requirements",
+              "path": {
+                "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+                "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+              },
+              "cost": 0,
+              "tokens": {
+                "total": 27227,
+                "input": 25849,
+                "output": 130,
+                "reasoning": 224,
+                "cache": {
+                  "read": 1024,
+                  "write": 0
+                }
+              },
+              "finish": "tool-calls"
+            },
+            "parts": [
+              {
+                "id": "prt_1a1560d79001MP1st8Q7r9FT3I",
+                "sessionID": "ses_e5eaa1262fferLMML8IigCp3PI",
+                "messageID": "msg_1a155edd6001U3nZIOEtA2yEwb",
+                "type": "step-start",
+                "snapshot": "48b743f0b95df23db779dca4effe5ee0a9b9b0d5"
+              },
+              {
+                "id": "prt_1a1560d88001wnf3UmfRGT4L6k",
+                "sessionID": "ses_e5eaa1262fferLMML8IigCp3PI",
+                "messageID": "msg_1a155edd6001U3nZIOEtA2yEwb",
+                "type": "reasoning",
+                "text": "[Model reasoning omitted; not factual evidence]",
+                "time": {
+                  "start": 1793708133768,
+                  "end": 1793708136366
+                },
+                "text_sha256": "ef172eb7a6276cb043600fb1b54e0a91cbec19710862d4d3be07d1d4b94d4446",
+                "original_text_length": 563
+              },
+              {
+                "id": "prt_1a15617ba001Qsb0umFikuBZY0",
+                "sessionID": "ses_e5eaa1262fferLMML8IigCp3PI",
+                "messageID": "msg_1a155edd6001U3nZIOEtA2yEwb",
+                "type": "text",
+                "text": "我作为 sf-requirements 执行 WI-0001 需求候选的修复轮。首先完整读取目标文件和绑定依据文件。",
+                "time": {
+                  "start": 1793708136379,
+                  "end": 1793708137481
+                }
+              },
+              {
+                "id": "prt_1a1561aba001rY8fC136o0F1Fp",
+                "sessionID": "ses_e5eaa1262fferLMML8IigCp3PI",
+                "messageID": "msg_1a155edd6001U3nZIOEtA2yEwb",
+                "type": "tool",
+                "callID": "call_ace2c5a1a9564fbb9daa623e",
+                "tool": "read",
+                "state": {
+                  "status": "completed",
+                  "input": {
+                    "filePath": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\requirements.candidate.md"
+                  },
+                  "output": "<path>C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\requirements.candidate.md</path>\n<type>file</type>\n<content>\n1: ---\n2: requirements_format: ears\n3: work_item_id: WI-0001\n4: module_id: CORE\n5: workflow_type: feature_spec\n6: workflow_path: requirement_change_path\n7: candidate_type: candidate_requirements\n8: base_spec_version: PSV-0001\n9: implementation_baseline_snapshot_id: sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722\n10: ---\n11: \n12: # Requirements Candidate — WI-0001 / CORE（Greeting Library 首个功能）\n13: \n14: ## 候选绑定与 Basis 来源\n15: \n16: - Work Item: WI-0001（feature_spec / requirement_change_path）\n17: - 模块归属: CORE（spec_manifest.json PSV-0001 中唯一已声明模块，default_module=CORE）\n18: - implementation_baseline snapshot_id: `sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722`\n19: - Basis 来源文件：\n20:   1. `.specforge/work-items/WI-0001/intake.md`\n21:   2. `.specforge/work-items/WI-0001/trigger_result.json`\n22:   3. `.specforge/work-items/WI-0001/change_classification.md`\n23:   4. `.specforge/work-items/WI-0001/impact_analysis.md`\n24: \n25: ### Basis 引用键定义\n26: \n27: | 引用键 | 内容 | 来源 |\n28: | --- | --- | --- |\n29: | UQ-1 | 用户原话：\"新增 src/greet.ts，导出 greet(name: string): string\" | intake.md 明确事实 1 |\n30: | UQ-2 | 用户原话：\"非空名称返回 Hello, <name>!\" | intake.md 明确事实 1 |\n31: | UQ-3 | 用户原话：\"空名称返回 Hello, world!\" | intake.md 明确事实 1 |\n32: | UQ-4 | 用户原话：\"补充可验证这两个行为的测试和使用说明\" | intake.md 明确事实 1 |\n33: | FACT-1 | greenfield：项目无 package.json、src/、tests/、tsconfig.json；根目录仅 .git/、.specforge/、README.md（既有 123 bytes，sha256:757ee94ea46933c3dd7092c04d15a32546a3f54e609b9c6e66351eeafe8fdf40） | intake.md 明确事实 3 |\n34: | FACT-2 | spec_manifest.json PSV-0001：唯一已声明模块 CORE（active，default_module=CORE，尚无 code_paths） | intake.md 明确事实 3 |\n35: | FACT-3 | README.md 明示项目为 TypeScript 库、隔离验收运行、无生产数据（\"No production data\"） | intake.md 明确事实 3 |\n36: | FACT-4 | 项目 architecture.md、数据模型、模块契约均为占位/缺失，首份正式产物由本 WI 创建 | intake.md 明确事实 3；impact_analysis §4 |\n37: | CONSTRAINT-1 | 禁止假设：不得扩展额外输入分支（null/undefined/纯空白的额外行为）；不得假设测试已运行或通过；本 WI 停在 approval_required | intake.md 禁止假设 |\n38: | CONSTRAINT-2 | 禁止假设：不得假设任何包管理器依赖、构建脚本、CI、npm registry、网络或外部执行器可用 | intake.md 禁止假设 |\n39: | IMPACT-1 | planned_code_paths：src/greet.ts、tests/greet.test.ts、README.md、package.json、tsconfig.json（全部归属 CORE） | trigger_result.json；impact_analysis §3 |\n40: | UNKNOWN-1 | 测试运行器与最小工程配置选型待设计阶段以零依赖方案优先决策并取证 | intake.md 未知项 1 |\n41: | UNKNOWN-2 | Node.js/TypeScript 具体可用版本未取证，由实现/验证阶段以真实运行证据确认 | intake.md 未知项 2 |\n42: | CLS-1 | 11 项事实分类：requirement/acceptance_criteria/business_rule/user_visible_behavior/api_contract/design/architecture/data_model/module_contract 均为 true；data_semantics/module_boundary/contract_registry_only 为 false | change_classification.md |\n43: \n44: ## 简介\n45: \n46: 本候选是 WI-0001 在 requirement_change_path 上生成的 CORE 模块首份正式需求候选，描述 Greeting Library 首个功能的行为契约与交付物需求：`src/greet.ts` 导出 `greet(name: string): string`，两条问候行为规则（非空名称、空名称默认问候），以及可验证该两行为的自动化测试与使用说明。本文档只回答\"要什么\"与\"什么才算完成\"；技术实现决策（测试运行器、工程配置、编译路径）由设计阶段承接（见\"待决项\"）。全部验收标准采用 EARS 句式并具有全局唯一三位编号（AC-001～AC-018）；每条 Must 需求声明 Required Evidence 与 not_done_when，作为后续设计、任务与验证阶段的追溯起点。\n47: \n48: ## 术语表\n49: \n50: | 术语 | 定义 |\n51: | --- | --- |\n52: | Greeting Library | 问候库：本项目的 TypeScript 业务库形态（README 标题 \"Greeting Library\"，FACT-3） |\n53: | greet | 本库唯一公共导出函数，签名 `greet(name: string): string`（REQ-001） |\n54: | 非空名称 | 长度 ≥ 1 的 string 输入；包含由空白字符构成的字符串（按 REQ-002 规则直接处理，见\"定义域边界\"） |\n55: | 空名称 | 长度为 0 的 string 输入 `\"\"` |\n56: | 默认问候 | 空名称时的回退返回值 `Hello, world!`（REQ-003） |\n57: | 导出契约 | `src/greet.ts` 对外暴露的公共 API 形态：导出名 `greet` 与其 TypeScript 签名 |\n58: | 自动化测试 | 可在确定命令下重复执行、输出通过/失败结果的程序化断言集合 |\n59: | 使用说明 | 面向库调用方、说明 greet 调用方式与两种返回行为的文档 |\n60: | 零运行时依赖 | 库运行路径不引用任何第三方包、网络资源或外部服务（REQ-006） |\n61: | greenfield | 项目无既有正式功能代码与规格条目的初始状态（FACT-1、FACT-4） |\n62: | EARS | Easy Approach to Requirements Syntax；本候选验收标准采用的句式规范 |\n63: | Required Evidence | 证明某条验收标准被满足所必需的证据；本候选只声明证据预期，不声称证据已取得 |\n64: | approval_required | SpecForge 治理流程中的用户审批边界状态；本 WI 在此停止等待批准 |\n65: \n66: ## 需求\n67: \n68: 优先级结论：REQ-001～REQ-005 为 **Must**（直接源自用户原话的交付物与行为契约），REQ-006 为 **Should**（源自 intake 决策边界的零依赖优先基线，允许设计阶段举证后固化）。\n69: \n70: ### REQ-001 greet 导出契约\n71: \n72: 优先级: Must\n73: \n74: 用户故事: 作为 Greeting Library 的调用方，我希望从 `src/greet.ts` 导入名为 `greet` 的函数并依赖其确定的 TypeScript 签名，以便以静态可检查的方式调用问候能力。\n75: \n76: 验收标准:\n77: - AC-001 [Ubiquitous] THE 项目 SHALL 在 `src/greet.ts` 中提供名为 `greet` 的导出函数.\n78: - AC-002 [Ubiquitous] THE greet SHALL 具备签名 `greet(name: string): string`，即恰好一个名为 name 的 string 类型入参、一个 string 类型返回值.\n79: - AC-003 [Unwanted-behavior] IF `src/greet.ts` 不存在、greet 未被导出、或签名与 `greet(name: string): string` 不一致, THEN 本需求验收 SHALL 判定为未满足.\n80: \n81: basis_refs: [UQ-1, FACT-1, FACT-2, IMPACT-1]\n82: \n83: required_evidence:\n84:   - EVREQ-1A: 实现完成后，`src/greet.ts` 存在于 CORE 模块 code_paths 且源码存在名为 greet 的导出（源码/模块清单证据）.\n85:   - EVREQ-1B: 自动化测试以 import/require 方式成功引用 greet 并完成调用（与 REQ-004 测试证据同源）.\n86: \n87: not_done_when:\n88:   - 只创建了 `src/greet.ts` 文件但没有任何具名导出 greet.\n89:   - 只有类型声明而无函数实现（无行为路径）.\n90:   - 导出签名与 `(name: string) => string` 不符（多参、可选参或返回类型不是 string）.\n91: \n92: ### REQ-002 非空名称问候行为\n93: \n94: 优先级: Must\n95: \n96: 用户故事: 作为调用方，当我传入一个非空名称时，我希望得到精确的个性化问候字符串，以便在下游展示中直接使用返回值。\n97: \n98: 验收标准:\n99: - AC-004 [Event-driven] WHEN 调用方以任意非空字符串 name 调用 `greet(name)`, THE greet SHALL 返回精确字符串 `Hello, <name>!`（即 \"Hello, \" + name + \"!\"，name 原样保留、不做增删改写）.\n100: - AC-005 [Ubiquitous] THE 非空名称返回值 SHALL 为 string 类型，且由固定模板 \"Hello, \"、name、\"!\" 三段依序拼接，模板字符（逗号、一个空格、结尾感叹号）不得增删或改写.\n101: - AC-006 [Unwanted-behavior] IF greet 对任一非空字符串输入返回了不符合 `Hello, <name>!` 模板的值、改写了 name、或抛出异常, THEN 本需求验收 SHALL 判定为未满足.\n102: \n103: basis_refs: [UQ-1, UQ-2, CONSTRAINT-1]\n104: \n105: required_evidence:\n106:   - EVREQ-2A: 自动化测试包含至少 2 个互不相同的非空名称输入断言（示例形态：`greet(\"Ada\")` 严格等于 `\"Hello, Ada!\"`），并在批准后验证阶段取得全部通过的真实运行证据.\n107: \n108: not_done_when:\n109:   - 只定义函数而无任何非空输入行为验证路径.\n110:   - 返回模板与 `Hello, <name>!` 不符（缺少逗号/空格/感叹号、大小写错误）.\n111:   - 对 name 做了 trim、大小写变换或其他任何改写.\n112:   - 测试断言存在但从未在合法执行边界内运行（无真实运行证据）.\n113: \n114: ### REQ-003 空名称默认问候行为\n115: \n116: 优先级: Must\n117: \n118: 用户故事: 作为调用方，当我传入空字符串时，我希望得到固定的默认问候，以便在未提供名称的场景下仍获得一致的输出。\n119: \n120: 验收标准:\n121: - AC-007 [Event-driven] WHEN 调用方以空字符串 `\"\"` 调用 `greet(\"\")`, THE greet SHALL 返回精确字符串 `Hello, world!`.\n122: - AC-008 [Ubiquitous] THE 空名称默认问候 SHALL 精确等于 `Hello, world!`（大写 H 开头、逗号后一个空格、小写 world、结尾感叹号，共 13 个字符）.\n123: - AC-009 [Unwanted-behavior] IF 空字符串调用返回其他任何值、抛出异常、或行为不确定, THEN 本需求验收 SHALL 判定为未满足.\n124: \n125: basis_refs: [UQ-1, UQ-3, CONSTRAINT-1, CLS-1]\n126: \n127: required_evidence:\n128:   - EVREQ-3A: 自动化测试包含断言 `greet(\"\")` 严格等于 `\"Hello, world!\"`，并在批准后验证阶段取得通过的真实运行证据.\n129: \n130: not_done_when:\n131:   - 空字符串输入导致异常、undefined 或非 `Hello, world!` 字符串.\n132:   - 默认问候字面量拼写错误（大小写、标点、空格不符）.\n133:   - 该分支仅有实现而无可复核的自动化断言证据.\n134: \n135: ### REQ-004 两条行为规则的自动化测试交付物\n136: \n137: 优先级: Must\n138: \n139: 用户故事: 作为库的维护者与验收方，我希望拥有一组覆盖两条行为规则的自动化测试，以便在后续任何变更后都能以机器可复核的方式确认行为未被破坏。\n140: \n141: 验收标准:\n142: - AC-010 [Ubiquitous] THE 项目 SHALL 交付自动化测试（计划路径 `tests/greet.test.ts`，最终位置与形态由设计阶段固化），其中针对 REQ-002 的断言不少于 1 条、针对 REQ-003 的断言不少于 1 条.\n143: - AC-011 [Event-driven] WHEN 该测试套件在设计阶段固化的测试运行器（UNKNOWN-1，零依赖方案优先）上、于批准后阶段的合法执行边界内运行, THEN 上述全部断言 SHALL 通过.\n144: - AC-012 [Unwanted-behavior] IF 测试在本候选所处阶段被表述为\"已运行/已通过\"、断言未覆盖两条行为之一、或运行证据缺失, THEN 本需求验收 SHALL 判定为未满足.\n145: \n146: basis_refs: [UQ-4, CONSTRAINT-1, CONSTRAINT-2, IMPACT-1, UNKNOWN-1]\n147: \n148: required_evidence:\n149:   - EVREQ-4A: 测试文件存在于受控代码路径且其断言可映射到 REQ-002/REQ-003（源码证据）.\n150:   - EVREQ-4B: 批准后验证阶段产出的测试套件真实运行输出证据（全部断言通过，含运行方式与结果记录）.\n151: \n152: not_done_when:\n153:   - 只有测试文件名或测试骨架而无可执行断言.\n154:   - 断言只覆盖两条行为之一.\n155:   - 在缺乏真实运行证据时声称\"测试通过\"（违反 CONSTRAINT-1 禁止假设）.\n156: \n157: ### REQ-005 使用说明交付物\n158: \n159: 优先级: Must\n160: \n161: 用户故事: 作为库的潜在使用者，我希望在项目文档中读到 greet 的调用方式与两种返回行为，以便不阅读源码即可正确使用该库。\n162: \n163: 验收标准:\n164: - AC-013 [Ubiquitous] THE 项目 SHALL 提供使用说明（基线位置为 README.md 既有内容之后的追加章节，保留现有标题与项目性质描述），说明 greet 的导入与调用方式.\n165: - AC-014 [Event-driven] WHEN 读者查阅使用说明, THEN SHALL 能在其中同时找到非空名称返回 `Hello, <name>!` 与空名称返回 `Hello, world!` 两种行为的说明或示例.\n166: - AC-015 [Unwanted-behavior] IF 使用说明缺失调用方式、缺失任一行为描述、或描述与实现行为不一致, THEN 本需求验收 SHALL 判定为未满足.\n167: \n168: basis_refs: [UQ-4, FACT-1, FACT-3, IMPACT-1]\n169: \n170: required_evidence:\n171:   - EVREQ-5A: README.md（或设计阶段确认的等效位置）包含调用方式与两种返回行为的文档内容（文档内容证据）.\n172: \n173: not_done_when:\n174:   - 使用说明未说明如何导入或调用 greet.\n175:   - 只描述了两种行为之一.\n176:   - 示例与 REQ-002/REQ-003 定义的行为不一致.\n177: \n178: ### REQ-006 零运行时第三方依赖约束\n179: \n180: 优先级: Should\n181: \n182: 用户故事: 作为库的调用方与维护者，我希望库的运行路径不依赖任何第三方包、网络资源或外部服务，以便在无网络、无包管理器缓存的环境中也能安装、审查与使用该库。\n183: \n184: 验收标准:\n185: - AC-016 [Ubiquitous] THE 库 SHALL 不声明任何运行时第三方依赖（运行时 dependencies 为空集）.\n186: - AC-017 [Unwanted-behavior] IF 库的运行时行为依赖任何第三方包、网络资源或外部服务, THEN 本需求验收 SHALL 判定为未满足.\n187: - AC-018 [Optional-feature] WHERE 工具链组件（TypeScript 编译、测试运行器）确需开发期依赖, THE 选型 SHALL 由设计阶段在零依赖优先原则下决策并取证，且该类开发期依赖不计入运行时依赖；本条不预设任何具体工具链结论.\n188: \n189: basis_refs: [FACT-1, FACT-3, CONSTRAINT-2, UNKNOWN-1]\n190: \n191: required_evidence:\n192:   - EVREQ-6A: 工程配置（计划路径 package.json，最终形态由设计阶段固化）中运行时 dependencies 为空（或经设计决策证明等价于零运行时依赖）的配置证据.\n193: \n194: not_done_when:\n195:   - 运行路径 import/require 了任何第三方包.\n196:   - 仅以\"应该没有依赖\"表述而未提供可检查的配置证据.\n197:   - 未经取证即假设包管理器或网络可用（违反 CONSTRAINT-2）.\n198: \n199: ### 需求依赖关系\n200: \n201: - REQ-002、REQ-003 依赖 REQ-001（导出契约是行为验证的载体）.\n202: - REQ-004 依赖 REQ-002、REQ-003（断言对象为两条行为规则）.\n203: - REQ-005 依赖 REQ-001、REQ-002、REQ-003（说明内容须与契约和行为一致）.\n204: - REQ-006 为独立约束，约束 REQ-001～REQ-005 的交付形态.\n205: \n206: ## 范围外（Out-of-Scope）\n207: \n208: 以下维度在多维度头脑风暴（业务需求、技术约束、用户体验、安全合规、运维部署、成本预算、扩展性、EARS 覆盖）中已逐一考虑，经依据判断排除在本 WI 需求之外；未经用户新的批准不得实现：\n209: \n210: | # | 排除项 | 理由（依据） |\n211: | --- | --- | --- |\n212: | 1 | 额外输入分支（null、undefined、纯空白字符串的特殊处理、trim 归一化、超长输入截断、非 string 类型输入的校验或抛错） | CONSTRAINT-1：用户仅定义\"空与非空\"两条规则，额外分支行为未定义、未经批准不得实现；纯空白字符串按非空规则直接应用，不做归一化 |\n213: | 2 | 国际化与多语言问候（如 \"Hola\"、\"Bonjour\"、locale 参数） | UQ-2/UQ-3 明确固定英文模板；用户未提出多语言诉求 |\n214: | 3 | 可配置问候语模板（自定义前缀、后缀或分隔符） | 用户未要求配置能力；首版公共 API 契约固定为 `greet(name: string): string`（UQ-1） |\n215: | 4 | 性能指标（吞吐、并发用户数、P95 延迟等 SLA 数值） | 纯本地纯函数、无并发业务场景与量级输入事实，设定数值指标缺乏可举证基线（头脑风暴维度结论：无业务量级依据，宁缺毋伪造） |\n216: | 5 | 持久化与存储 | FACT-3：README 明示 \"No production data\"；data_semantics_changed=false（CLS-1），纯函数无状态 |\n217: | 6 | 安全加固（输入消毒、注入防护、权限控制、审计日志） | 无网络、无存储、无敏感信息（FACT-3）；输出仅为字面量模板拼接，无既有威胁面；额外输入处理已被第 1 项排除 |\n218: | 7 | 运维部署、监控、日志与故障恢复 | 库形态交付而非运行服务；隔离验收运行环境（FACT-3），无部署目标与监控诉求 |\n219: | 8 | npm 包发布、版本发布流、CI/CD 流水线 | 用户未要求；CONSTRAINT-2：不得假设 npm registry、网络或 CI 可用 |\n220: | 9 | CLI 入口或交互式调用界面 | 用户目标为库导出函数（UQ-1），未要求 CLI 形态 |\n221: | 10 | 成本预算权衡分析 | 无外部 API、无云资源、无存储成本项；成本维度经头脑风暴确认不适用 |\n222: \n223: ## 约束与待决项\n224: \n225: ### 定义域边界（Must，承接 CONSTRAINT-1）\n226: \n227: - greet 的输入定义域为 string 类型，且仅\"空字符串\"与\"非空字符串\"两种情形具有定义行为：\n228:   - 空名称：长度为 0 的字符串 `\"\"`（→ REQ-003）.\n229:   - 非空名称：长度 ≥ 1 的任意字符串，包括由空白字符构成的字符串（其按 REQ-002 规则直接处理，不做 trim 或其他归一化）.\n230: - null、undefined、非 string 类型输入的行为在本 WI 中未定义：实现不得为其编写分支，验收不为其设定预期.\n231: \n232: ### 待决项（由后续阶段承接，本候选不伪造结论）\n233: \n234: | 待决项 | 内容 | 承接阶段 | 依据 |\n235: | --- | --- | --- | --- |\n236: | D-1 | 测试运行器与最小工程配置（package.json/tsconfig 形态），零依赖方案优先 | sf-design（固化为 DD 决策并取证） | UNKNOWN-1 |\n237: | D-2 | Node.js/TypeScript 具体可用版本 | 批准后实现/验证阶段以真实运行证据确认 | UNKNOWN-2 |\n238: \n239: ### 流程约束（Must，承接 CONSTRAINT-1）\n240: \n241: - 本 WI 推进至 approval_required 为止：本候选仅定义可验证 AC 与证据预期；测试的编写属于批准后实现任务，测试的运行与证据取得属于批准后验证阶段.\n242: - 在取得合法运行证据之前，任何交付物不得含有\"测试已运行/已通过\"的表述.\n243: \n244: ## Requirements Delta 说明（requirement_change_path 承接）\n245: \n246: 1. 变更原因：greenfield 项目实现首个正式功能（FACT-1、FACT-4），项目此前无任何正式需求条目.\n247: 2. 变更内容：全量新增 REQ-001～REQ-006（含 AC-001～AC-018），无修改条目、无删除条目.\n248: 3. 影响正式规格（预期经用户批准并合并后更新，本阶段不直接写入）：\n249:    - `.specforge/project/modules/CORE/requirements.md`（占位 → 首份正式模块需求）\n250:    - `.specforge/project/requirements_index.md`（新增 CORE 需求索引条目）\n251: 4. 旧内容处理：无既有正式需求内容，无替换或废弃对象；占位内容由合并流程处置.\n252: 5. User Decision：需要——本候选属于 approval_required 审批边界的待批准内容.\n253: \n254: ## 配置点清单\n255: \n256: 本候选无 `<configurable>` 配置点：所有行为模板（`Hello, <name>!`、`Hello, world!`）均为用户原话固定的确定值，当前无任何需求级可配置项.\n\n(End of file - total 256 lines)\n</content>",
+                  "title": ".specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\requirements.candidate.md",
+                  "metadata": {
+                    "preview": "---\nrequirements_format: ears\nwork_item_id: WI-0001\nmodule_id: CORE\nworkflow_type: feature_spec\nworkflow_path: requirement_change_path\ncandidate_type: candidate_requirements\nbase_spec_version: PSV-0001\nimplementation_baseline_snapshot_id: sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722\n---\n\n# Requirements Candidate — WI-0001 / CORE（Greeting Library 首个功能）\n\n## 候选绑定与 Basis 来源\n\n- Work Item: WI-0001（feature_spec / requirement_change_path）\n- 模块归属: CORE（spec_manifest.json PSV-0001 中唯一已声明模块，default_module=CORE）\n- implementation_baseline snapshot_id: `sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722`\n- Basis 来源文件：\n  1. `.specforge/work-items/WI-0001/intake.md`",
+                    "truncated": false,
+                    "loaded": [],
+                    "display": {
+                      "type": "file",
+                      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\requirements.candidate.md",
+                      "text": "---\nrequirements_format: ears\nwork_item_id: WI-0001\nmodule_id: CORE\nworkflow_type: feature_spec\nworkflow_path: requirement_change_path\ncandidate_type: candidate_requirements\nbase_spec_version: PSV-0001\nimplementation_baseline_snapshot_id: sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722\n---\n\n# Requirements Candidate — WI-0001 / CORE（Greeting Library 首个功能）\n\n## 候选绑定与 Basis 来源\n\n- Work Item: WI-0001（feature_spec / requirement_change_path）\n- 模块归属: CORE（spec_manifest.json PSV-0001 中唯一已声明模块，default_module=CORE）\n- implementation_baseline snapshot_id: `sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722`\n- Basis 来源文件：\n  1. `.specforge/work-items/WI-0001/intake.md`\n  2. `.specforge/work-items/WI-0001/trigger_result.json`\n  3. `.specforge/work-items/WI-0001/change_classification.md`\n  4. `.specforge/work-items/WI-0001/impact_analysis.md`\n\n### Basis 引用键定义\n\n| 引用键 | 内容 | 来源 |\n| --- | --- | --- |\n| UQ-1 | 用户原话：\"新增 src/greet.ts，导出 greet(name: string): string\" | intake.md 明确事实 1 |\n| UQ-2 | 用户原话：\"非空名称返回 Hello, <name>!\" | intake.md 明确事实 1 |\n| UQ-3 | 用户原话：\"空名称返回 Hello, world!\" | intake.md 明确事实 1 |\n| UQ-4 | 用户原话：\"补充可验证这两个行为的测试和使用说明\" | intake.md 明确事实 1 |\n| FACT-1 | greenfield：项目无 package.json、src/、tests/、tsconfig.json；根目录仅 .git/、.specforge/、README.md（既有 123 bytes，sha256:757ee94ea46933c3dd7092c04d15a32546a3f54e609b9c6e66351eeafe8fdf40） | intake.md 明确事实 3 |\n| FACT-2 | spec_manifest.json PSV-0001：唯一已声明模块 CORE（active，default_module=CORE，尚无 code_paths） | intake.md 明确事实 3 |\n| FACT-3 | README.md 明示项目为 TypeScript 库、隔离验收运行、无生产数据（\"No production data\"） | intake.md 明确事实 3 |\n| FACT-4 | 项目 architecture.md、数据模型、模块契约均为占位/缺失，首份正式产物由本 WI 创建 | intake.md 明确事实 3；impact_analysis §4 |\n| CONSTRAINT-1 | 禁止假设：不得扩展额外输入分支（null/undefined/纯空白的额外行为）；不得假设测试已运行或通过；本 WI 停在 approval_required | intake.md 禁止假设 |\n| CONSTRAINT-2 | 禁止假设：不得假设任何包管理器依赖、构建脚本、CI、npm registry、网络或外部执行器可用 | intake.md 禁止假设 |\n| IMPACT-1 | planned_code_paths：src/greet.ts、tests/greet.test.ts、README.md、package.json、tsconfig.json（全部归属 CORE） | trigger_result.json；impact_analysis §3 |\n| UNKNOWN-1 | 测试运行器与最小工程配置选型待设计阶段以零依赖方案优先决策并取证 | intake.md 未知项 1 |\n| UNKNOWN-2 | Node.js/TypeScript 具体可用版本未取证，由实现/验证阶段以真实运行证据确认 | intake.md 未知项 2 |\n| CLS-1 | 11 项事实分类：requirement/acceptance_criteria/business_rule/user_visible_behavior/api_contract/design/architecture/data_model/module_contract 均为 true；data_semantics/module_boundary/contract_registry_only 为 false | change_classification.md |\n\n## 简介\n\n本候选是 WI-0001 在 requirement_change_path 上生成的 CORE 模块首份正式需求候选，描述 Greeting Library 首个功能的行为契约与交付物需求：`src/greet.ts` 导出 `greet(name: string): string`，两条问候行为规则（非空名称、空名称默认问候），以及可验证该两行为的自动化测试与使用说明。本文档只回答\"要什么\"与\"什么才算完成\"；技术实现决策（测试运行器、工程配置、编译路径）由设计阶段承接（见\"待决项\"）。全部验收标准采用 EARS 句式并具有全局唯一三位编号（AC-001～AC-018）；每条 Must 需求声明 Required Evidence 与 not_done_when，作为后续设计、任务与验证阶段的追溯起点。\n\n## 术语表\n\n| 术语 | 定义 |\n| --- | --- |\n| Greeting Library | 问候库：本项目的 TypeScript 业务库形态（README 标题 \"Greeting Library\"，FACT-3） |\n| greet | 本库唯一公共导出函数，签名 `greet(name: string): string`（REQ-001） |\n| 非空名称 | 长度 ≥ 1 的 string 输入；包含由空白字符构成的字符串（按 REQ-002 规则直接处理，见\"定义域边界\"） |\n| 空名称 | 长度为 0 的 string 输入 `\"\"` |\n| 默认问候 | 空名称时的回退返回值 `Hello, world!`（REQ-003） |\n| 导出契约 | `src/greet.ts` 对外暴露的公共 API 形态：导出名 `greet` 与其 TypeScript 签名 |\n| 自动化测试 | 可在确定命令下重复执行、输出通过/失败结果的程序化断言集合 |\n| 使用说明 | 面向库调用方、说明 greet 调用方式与两种返回行为的文档 |\n| 零运行时依赖 | 库运行路径不引用任何第三方包、网络资源或外部服务（REQ-006） |\n| greenfield | 项目无既有正式功能代码与规格条目的初始状态（FACT-1、FACT-4） |\n| EARS | Easy Approach to Requirements Syntax；本候选验收标准采用的句式规范 |\n| Required Evidence | 证明某条验收标准被满足所必需的证据；本候选只声明证据预期，不声称证据已取得 |\n| approval_required | SpecForge 治理流程中的用户审批边界状态；本 WI 在此停止等待批准 |\n\n## 需求\n\n优先级结论：REQ-001～REQ-005 为 **Must**（直接源自用户原话的交付物与行为契约），REQ-006 为 **Should**（源自 intake 决策边界的零依赖优先基线，允许设计阶段举证后固化）。\n\n### REQ-001 greet 导出契约\n\n优先级: Must\n\n用户故事: 作为 Greeting Library 的调用方，我希望从 `src/greet.ts` 导入名为 `greet` 的函数并依赖其确定的 TypeScript 签名，以便以静态可检查的方式调用问候能力。\n\n验收标准:\n- AC-001 [Ubiquitous] THE 项目 SHALL 在 `src/greet.ts` 中提供名为 `greet` 的导出函数.\n- AC-002 [Ubiquitous] THE greet SHALL 具备签名 `greet(name: string): string`，即恰好一个名为 name 的 string 类型入参、一个 string 类型返回值.\n- AC-003 [Unwanted-behavior] IF `src/greet.ts` 不存在、greet 未被导出、或签名与 `greet(name: string): string` 不一致, THEN 本需求验收 SHALL 判定为未满足.\n\nbasis_refs: [UQ-1, FACT-1, FACT-2, IMPACT-1]\n\nrequired_evidence:\n  - EVREQ-1A: 实现完成后，`src/greet.ts` 存在于 CORE 模块 code_paths 且源码存在名为 greet 的导出（源码/模块清单证据）.\n  - EVREQ-1B: 自动化测试以 import/require 方式成功引用 greet 并完成调用（与 REQ-004 测试证据同源）.\n\nnot_done_when:\n  - 只创建了 `src/greet.ts` 文件但没有任何具名导出 greet.\n  - 只有类型声明而无函数实现（无行为路径）.\n  - 导出签名与 `(name: string) => string` 不符（多参、可选参或返回类型不是 string）.\n\n### REQ-002 非空名称问候行为\n\n优先级: Must\n\n用户故事: 作为调用方，当我传入一个非空名称时，我希望得到精确的个性化问候字符串，以便在下游展示中直接使用返回值。\n\n验收标准:\n- AC-004 [Event-driven] WHEN 调用方以任意非空字符串 name 调用 `greet(name)`, THE greet SHALL 返回精确字符串 `Hello, <name>!`（即 \"Hello, \" + name + \"!\"，name 原样保留、不做增删改写）.\n- AC-005 [Ubiquitous] THE 非空名称返回值 SHALL 为 string 类型，且由固定模板 \"Hello, \"、name、\"!\" 三段依序拼接，模板字符（逗号、一个空格、结尾感叹号）不得增删或改写.\n- AC-006 [Unwanted-behavior] IF greet 对任一非空字符串输入返回了不符合 `Hello, <name>!` 模板的值、改写了 name、或抛出异常, THEN 本需求验收 SHALL 判定为未满足.\n\nbasis_refs: [UQ-1, UQ-2, CONSTRAINT-1]\n\nrequired_evidence:\n  - EVREQ-2A: 自动化测试包含至少 2 个互不相同的非空名称输入断言（示例形态：`greet(\"Ada\")` 严格等于 `\"Hello, Ada!\"`），并在批准后验证阶段取得全部通过的真实运行证据.\n\nnot_done_when:\n  - 只定义函数而无任何非空输入行为验证路径.\n  - 返回模板与 `Hello, <name>!` 不符（缺少逗号/空格/感叹号、大小写错误）.\n  - 对 name 做了 trim、大小写变换或其他任何改写.\n  - 测试断言存在但从未在合法执行边界内运行（无真实运行证据）.\n\n### REQ-003 空名称默认问候行为\n\n优先级: Must\n\n用户故事: 作为调用方，当我传入空字符串时，我希望得到固定的默认问候，以便在未提供名称的场景下仍获得一致的输出。\n\n验收标准:\n- AC-007 [Event-driven] WHEN 调用方以空字符串 `\"\"` 调用 `greet(\"\")`, THE greet SHALL 返回精确字符串 `Hello, world!`.\n- AC-008 [Ubiquitous] THE 空名称默认问候 SHALL 精确等于 `Hello, world!`（大写 H 开头、逗号后一个空格、小写 world、结尾感叹号，共 13 个字符）.\n- AC-009 [Unwanted-behavior] IF 空字符串调用返回其他任何值、抛出异常、或行为不确定, THEN 本需求验收 SHALL 判定为未满足.\n\nbasis_refs: [UQ-1, UQ-3, CONSTRAINT-1, CLS-1]\n\nrequired_evidence:\n  - EVREQ-3A: 自动化测试包含断言 `greet(\"\")` 严格等于 `\"Hello, world!\"`，并在批准后验证阶段取得通过的真实运行证据.\n\nnot_done_when:\n  - 空字符串输入导致异常、undefined 或非 `Hello, world!` 字符串.\n  - 默认问候字面量拼写错误（大小写、标点、空格不符）.\n  - 该分支仅有实现而无可复核的自动化断言证据.\n\n### REQ-004 两条行为规则的自动化测试交付物\n\n优先级: Must\n\n用户故事: 作为库的维护者与验收方，我希望拥有一组覆盖两条行为规则的自动化测试，以便在后续任何变更后都能以机器可复核的方式确认行为未被破坏。\n\n验收标准:\n- AC-010 [Ubiquitous] THE 项目 SHALL 交付自动化测试（计划路径 `tests/greet.test.ts`，最终位置与形态由设计阶段固化），其中针对 REQ-002 的断言不少于 1 条、针对 REQ-003 的断言不少于 1 条.\n- AC-011 [Event-driven] WHEN 该测试套件在设计阶段固化的测试运行器（UNKNOWN-1，零依赖方案优先）上、于批准后阶段的合法执行边界内运行, THEN 上述全部断言 SHALL 通过.\n- AC-012 [Unwanted-behavior] IF 测试在本候选所处阶段被表述为\"已运行/已通过\"、断言未覆盖两条行为之一、或运行证据缺失, THEN 本需求验收 SHALL 判定为未满足.\n\nbasis_refs: [UQ-4, CONSTRAINT-1, CONSTRAINT-2, IMPACT-1, UNKNOWN-1]\n\nrequired_evidence:\n  - EVREQ-4A: 测试文件存在于受控代码路径且其断言可映射到 REQ-002/REQ-003（源码证据）.\n  - EVREQ-4B: 批准后验证阶段产出的测试套件真实运行输出证据（全部断言通过，含运行方式与结果记录）.\n\nnot_done_when:\n  - 只有测试文件名或测试骨架而无可执行断言.\n  - 断言只覆盖两条行为之一.\n  - 在缺乏真实运行证据时声称\"测试通过\"（违反 CONSTRAINT-1 禁止假设）.\n\n### REQ-005 使用说明交付物\n\n优先级: Must\n\n用户故事: 作为库的潜在使用者，我希望在项目文档中读到 greet 的调用方式与两种返回行为，以便不阅读源码即可正确使用该库。\n\n验收标准:\n- AC-013 [Ubiquitous] THE 项目 SHALL 提供使用说明（基线位置为 README.md 既有内容之后的追加章节，保留现有标题与项目性质描述），说明 greet 的导入与调用方式.\n- AC-014 [Event-driven] WHEN 读者查阅使用说明, THEN SHALL 能在其中同时找到非空名称返回 `Hello, <name>!` 与空名称返回 `Hello, world!` 两种行为的说明或示例.\n- AC-015 [Unwanted-behavior] IF 使用说明缺失调用方式、缺失任一行为描述、或描述与实现行为不一致, THEN 本需求验收 SHALL 判定为未满足.\n\nbasis_refs: [UQ-4, FACT-1, FACT-3, IMPACT-1]\n\nrequired_evidence:\n  - EVREQ-5A: README.md（或设计阶段确认的等效位置）包含调用方式与两种返回行为的文档内容（文档内容证据）.\n\nnot_done_when:\n  - 使用说明未说明如何导入或调用 greet.\n  - 只描述了两种行为之一.\n  - 示例与 REQ-002/REQ-003 定义的行为不一致.\n\n### REQ-006 零运行时第三方依赖约束\n\n优先级: Should\n\n用户故事: 作为库的调用方与维护者，我希望库的运行路径不依赖任何第三方包、网络资源或外部服务，以便在无网络、无包管理器缓存的环境中也能安装、审查与使用该库。\n\n验收标准:\n- AC-016 [Ubiquitous] THE 库 SHALL 不声明任何运行时第三方依赖（运行时 dependencies 为空集）.\n- AC-017 [Unwanted-behavior] IF 库的运行时行为依赖任何第三方包、网络资源或外部服务, THEN 本需求验收 SHALL 判定为未满足.\n- AC-018 [Optional-feature] WHERE 工具链组件（TypeScript 编译、测试运行器）确需开发期依赖, THE 选型 SHALL 由设计阶段在零依赖优先原则下决策并取证，且该类开发期依赖不计入运行时依赖；本条不预设任何具体工具链结论.\n\nbasis_refs: [FACT-1, FACT-3, CONSTRAINT-2, UNKNOWN-1]\n\nrequired_evidence:\n  - EVREQ-6A: 工程配置（计划路径 package.json，最终形态由设计阶段固化）中运行时 dependencies 为空（或经设计决策证明等价于零运行时依赖）的配置证据.\n\nnot_done_when:\n  - 运行路径 import/require 了任何第三方包.\n  - 仅以\"应该没有依赖\"表述而未提供可检查的配置证据.\n  - 未经取证即假设包管理器或网络可用（违反 CONSTRAINT-2）.\n\n### 需求依赖关系\n\n- REQ-002、REQ-003 依赖 REQ-001（导出契约是行为验证的载体）.\n- REQ-004 依赖 REQ-002、REQ-003（断言对象为两条行为规则）.\n- REQ-005 依赖 REQ-001、REQ-002、REQ-003（说明内容须与契约和行为一致）.\n- REQ-006 为独立约束，约束 REQ-001～REQ-005 的交付形态.\n\n## 范围外（Out-of-Scope）\n\n以下维度在多维度头脑风暴（业务需求、技术约束、用户体验、安全合规、运维部署、成本预算、扩展性、EARS 覆盖）中已逐一考虑，经依据判断排除在本 WI 需求之外；未经用户新的批准不得实现：\n\n| # | 排除项 | 理由（依据） |\n| --- | --- | --- |\n| 1 | 额外输入分支（null、undefined、纯空白字符串的特殊处理、trim 归一化、超长输入截断、非 string 类型输入的校验或抛错） | CONSTRAINT-1：用户仅定义\"空与非空\"两条规则，额外分支行为未定义、未经批准不得实现；纯空白字符串按非空规则直接应用，不做归一化 |\n| 2 | 国际化与多语言问候（如 \"Hola\"、\"Bonjour\"、locale 参数） | UQ-2/UQ-3 明确固定英文模板；用户未提出多语言诉求 |\n| 3 | 可配置问候语模板（自定义前缀、后缀或分隔符） | 用户未要求配置能力；首版公共 API 契约固定为 `greet(name: string): string`（UQ-1） |\n| 4 | 性能指标（吞吐、并发用户数、P95 延迟等 SLA 数值） | 纯本地纯函数、无并发业务场景与量级输入事实，设定数值指标缺乏可举证基线（头脑风暴维度结论：无业务量级依据，宁缺毋伪造） |\n| 5 | 持久化与存储 | FACT-3：README 明示 \"No production data\"；data_semantics_changed=false（CLS-1），纯函数无状态 |\n| 6 | 安全加固（输入消毒、注入防护、权限控制、审计日志） | 无网络、无存储、无敏感信息（FACT-3）；输出仅为字面量模板拼接，无既有威胁面；额外输入处理已被第 1 项排除 |\n| 7 | 运维部署、监控、日志与故障恢复 | 库形态交付而非运行服务；隔离验收运行环境（FACT-3），无部署目标与监控诉求 |\n| 8 | npm 包发布、版本发布流、CI/CD 流水线 | 用户未要求；CONSTRAINT-2：不得假设 npm registry、网络或 CI 可用 |\n| 9 | CLI 入口或交互式调用界面 | 用户目标为库导出函数（UQ-1），未要求 CLI 形态 |\n| 10 | 成本预算权衡分析 | 无外部 API、无云资源、无存储成本项；成本维度经头脑风暴确认不适用 |\n\n## 约束与待决项\n\n### 定义域边界（Must，承接 CONSTRAINT-1）\n\n- greet 的输入定义域为 string 类型，且仅\"空字符串\"与\"非空字符串\"两种情形具有定义行为：\n  - 空名称：长度为 0 的字符串 `\"\"`（→ REQ-003）.\n  - 非空名称：长度 ≥ 1 的任意字符串，包括由空白字符构成的字符串（其按 REQ-002 规则直接处理，不做 trim 或其他归一化）.\n- null、undefined、非 string 类型输入的行为在本 WI 中未定义：实现不得为其编写分支，验收不为其设定预期.\n\n### 待决项（由后续阶段承接，本候选不伪造结论）\n\n| 待决项 | 内容 | 承接阶段 | 依据 |\n| --- | --- | --- | --- |\n| D-1 | 测试运行器与最小工程配置（package.json/tsconfig 形态），零依赖方案优先 | sf-design（固化为 DD 决策并取证） | UNKNOWN-1 |\n| D-2 | Node.js/TypeScript 具体可用版本 | 批准后实现/验证阶段以真实运行证据确认 | UNKNOWN-2 |\n\n### 流程约束（Must，承接 CONSTRAINT-1）\n\n- 本 WI 推进至 approval_required 为止：本候选仅定义可验证 AC 与证据预期；测试的编写属于批准后实现任务，测试的运行与证据取得属于批准后验证阶段.\n- 在取得合法运行证据之前，任何交付物不得含有\"测试已运行/已通过\"的表述.\n\n## Requirements Delta 说明（requirement_change_path 承接）\n\n1. 变更原因：greenfield 项目实现首个正式功能（FACT-1、FACT-4），项目此前无任何正式需求条目.\n2. 变更内容：全量新增 REQ-001～REQ-006（含 AC-001～AC-018），无修改条目、无删除条目.\n3. 影响正式规格（预期经用户批准并合并后更新，本阶段不直接写入）：\n   - `.specforge/project/modules/CORE/requirements.md`（占位 → 首份正式模块需求）\n   - `.specforge/project/requirements_index.md`（新增 CORE 需求索引条目）\n4. 旧内容处理：无既有正式需求内容，无替换或废弃对象；占位内容由合并流程处置.\n5. User Decision：需要——本候选属于 approval_required 审批边界的待批准内容.\n\n## 配置点清单\n\n本候选无 `<configurable>` 配置点：所有行为模板（`Hello, <name>!`、`Hello, world!`）均为用户原话固定的确定值，当前无任何需求级可配置项.",
+                      "lineStart": 1,
+                      "lineEnd": 256,
+                      "totalLines": 256,
+                      "truncated": false
+                    }
+                  },
+                  "time": {
+                    "start": 1793708137164,
+                    "end": 1793708137228
+                  }
+                }
+              },
+              {
+                "id": "prt_1a1561bf50016IIFzw8pojozvo",
+                "sessionID": "ses_e5eaa1262fferLMML8IigCp3PI",
+                "messageID": "msg_1a155edd6001U3nZIOEtA2yEwb",
+                "type": "tool",
+                "callID": "call_c1dc1c2bb0774114804f4801",
+                "tool": "read",
+                "state": {
+                  "status": "completed",
+                  "input": {
+                    "filePath": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\implementation_baseline.json"
+                  },
+                  "output": "<path>C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\implementation_baseline.json</path>\n<type>file</type>\n<content>\n1: {\n2:   \"schema_version\": \"1.0\",\n3:   \"work_item_id\": \"WI-0001\",\n4:   \"captured_at\": \"2026-10-25T05:23:36.211Z\",\n5:   \"snapshot_id\": \"sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722\",\n6:   \"planned_code_paths\": [\n7:     \"README.md\",\n8:     \"package.json\",\n9:     \"src/greet.ts\",\n10:     \"tests/greet.test.ts\",\n11:     \"tsconfig.json\"\n12:   ],\n13:   \"current_file_count\": 1,\n14:   \"all_planned_paths_missing\": false,\n15:   \"entries\": [\n16:     {\n17:       \"scope_path\": \"README.md\",\n18:       \"scope_kind\": \"file\",\n19:       \"matched_files\": [\n20:         {\n21:           \"path\": \"README.md\",\n22:           \"size\": 123,\n23:           \"sha256\": \"sha256:757ee94ea46933c3dd7092c04d15a32546a3f54e609b9c6e66351eeafe8fdf40\"\n24:         }\n25:       ]\n26:     },\n27:     {\n28:       \"scope_path\": \"package.json\",\n29:       \"scope_kind\": \"file\",\n30:       \"matched_files\": []\n31:     },\n32:     {\n33:       \"scope_path\": \"src/greet.ts\",\n34:       \"scope_kind\": \"file\",\n35:       \"matched_files\": []\n36:     },\n37:     {\n38:       \"scope_path\": \"tests/greet.test.ts\",\n39:       \"scope_kind\": \"file\",\n40:       \"matched_files\": []\n41:     },\n42:     {\n43:       \"scope_path\": \"tsconfig.json\",\n44:       \"scope_kind\": \"file\",\n45:       \"matched_files\": []\n46:     }\n47:   ]\n48: }\n\n(End of file - total 48 lines)\n</content>",
+                  "title": ".specforge\\work-items\\WI-0001\\implementation_baseline.json",
+                  "metadata": {
+                    "preview": "{\n  \"schema_version\": \"1.0\",\n  \"work_item_id\": \"WI-0001\",\n  \"captured_at\": \"2026-10-25T05:23:36.211Z\",\n  \"snapshot_id\": \"sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722\",\n  \"planned_code_paths\": [\n    \"README.md\",\n    \"package.json\",\n    \"src/greet.ts\",\n    \"tests/greet.test.ts\",\n    \"tsconfig.json\"\n  ],\n  \"current_file_count\": 1,\n  \"all_planned_paths_missing\": false,\n  \"entries\": [\n    {\n      \"scope_path\": \"README.md\",\n      \"scope_kind\": \"file\",\n      \"matched_files\": [\n        {",
+                    "truncated": false,
+                    "loaded": [],
+                    "display": {
+                      "type": "file",
+                      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\implementation_baseline.json",
+                      "text": "{\n  \"schema_version\": \"1.0\",\n  \"work_item_id\": \"WI-0001\",\n  \"captured_at\": \"2026-10-25T05:23:36.211Z\",\n  \"snapshot_id\": \"sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722\",\n  \"planned_code_paths\": [\n    \"README.md\",\n    \"package.json\",\n    \"src/greet.ts\",\n    \"tests/greet.test.ts\",\n    \"tsconfig.json\"\n  ],\n  \"current_file_count\": 1,\n  \"all_planned_paths_missing\": false,\n  \"entries\": [\n    {\n      \"scope_path\": \"README.md\",\n      \"scope_kind\": \"file\",\n      \"matched_files\": [\n        {\n          \"path\": \"README.md\",\n          \"size\": 123,\n          \"sha256\": \"sha256:757ee94ea46933c3dd7092c04d15a32546a3f54e609b9c6e66351eeafe8fdf40\"\n        }\n      ]\n    },\n    {\n      \"scope_path\": \"package.json\",\n      \"scope_kind\": \"file\",\n      \"matched_files\": []\n    },\n    {\n      \"scope_path\": \"src/greet.ts\",\n      \"scope_kind\": \"file\",\n      \"matched_files\": []\n    },\n    {\n      \"scope_path\": \"tests/greet.test.ts\",\n      \"scope_kind\": \"file\",\n      \"matched_files\": []\n    },\n    {\n      \"scope_path\": \"tsconfig.json\",\n      \"scope_kind\": \"file\",\n      \"matched_files\": []\n    }\n  ]\n}",
+                      "lineStart": 1,
+                      "lineEnd": 48,
+                      "totalLines": 48,
+                      "truncated": false
+                    }
+                  },
+                  "time": {
+                    "start": 1793708137476,
+                    "end": 1793708137496
+                  }
+                }
+              },
+              {
+                "id": "prt_1a1561cee001h4PJ7MzT2M3ZFP",
+                "sessionID": "ses_e5eaa1262fferLMML8IigCp3PI",
+                "messageID": "msg_1a155edd6001U3nZIOEtA2yEwb",
+                "type": "step-finish",
+                "reason": "tool-calls",
+                "snapshot": "48b743f0b95df23db779dca4effe5ee0a9b9b0d5",
+                "cost": 0,
+                "tokens": {
+                  "total": 27227,
+                  "input": 25849,
+                  "output": 130,
+                  "reasoning": 224,
+                  "cache": {
+                    "read": 1024,
+                    "write": 0
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "info": {
+              "id": "msg_1a1561e200013oRsN4Y0lOWxwT",
+              "sessionID": "ses_e5eaa1262fferLMML8IigCp3PI",
+              "role": "assistant",
+              "time": {
+                "created": 1793708138016,
+                "completed": 1793708199810
+              },
+              "parentID": "msg_1a155edb6001333zfYeKxyIkvd",
+              "modelID": "glm-5.3",
+              "providerID": "zhipuai-coding-plan",
+              "mode": "sf-requirements",
+              "agent": "sf-requirements",
+              "path": {
+                "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+                "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+              },
+              "cost": 0,
+              "tokens": {
+                "total": 38797,
+                "input": 6638,
+                "output": 128,
+                "reasoning": 5215,
+                "cache": {
+                  "read": 26816,
+                  "write": 0
+                }
+              },
+              "finish": "tool-calls"
+            },
+            "parts": [
+              {
+                "id": "prt_1a15639b3001Af2Ku0i3B0uIqW",
+                "sessionID": "ses_e5eaa1262fferLMML8IigCp3PI",
+                "messageID": "msg_1a1561e200013oRsN4Y0lOWxwT",
+                "type": "step-start",
+                "snapshot": "48b743f0b95df23db779dca4effe5ee0a9b9b0d5"
+              },
+              {
+                "id": "prt_1a15639b8001w0n5dto57kXHZ2",
+                "sessionID": "ses_e5eaa1262fferLMML8IigCp3PI",
+                "messageID": "msg_1a1561e200013oRsN4Y0lOWxwT",
+                "type": "reasoning",
+                "text": "[Model reasoning omitted; not factual evidence]",
+                "time": {
+                  "start": 1793708145080,
+                  "end": 1793708198255
+                },
+                "text_sha256": "5b7976d6b1586ce8bd95b2a337ab8c25aaa932e88fed99b5c746cfd23d6ad002",
+                "original_text_length": 9793
+              },
+              {
+                "id": "prt_1a1570975001TCl2dW2bhOaio4",
+                "sessionID": "ses_e5eaa1262fferLMML8IigCp3PI",
+                "messageID": "msg_1a1561e200013oRsN4Y0lOWxwT",
+                "type": "text",
+                "text": "已读取当前候选全文和 Runtime 基线文件。现在执行前置检查：Extension Registry 检查 + 确认 WI-0001 当前权威状态（只读）。",
+                "time": {
+                  "start": 1793708198261,
+                  "end": 1793708199356
+                }
+              },
+              {
+                "id": "prt_1a1570ce8001xbs36Xuo9SV9VM",
+                "sessionID": "ses_e5eaa1262fferLMML8IigCp3PI",
+                "messageID": "msg_1a1561e200013oRsN4Y0lOWxwT",
+                "type": "tool",
+                "callID": "call_6a90a3a91e374aceb586be23",
+                "tool": "read",
+                "state": {
+                  "status": "completed",
+                  "input": {
+                    "filePath": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\extension_registry.json"
+                  },
+                  "output": "<path>C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\extension_registry.json</path>\n<type>file</type>\n<content>\n1: {\n2:   \"schema_version\": \"1.0\",\n3:   \"project_spec_version\": \"PSV-0001\",\n4:   \"namespaces\": {\n5:     \"requirement_types\": [],\n6:     \"design_types\": [],\n7:     \"task_types\": [],\n8:     \"verification_types\": [],\n9:     \"gate_types\": []\n10:   },\n11:   \"updated_by_work_item\": null,\n12:   \"updated_at\": null,\n13:   \"contracts\": {\n14:     \"shared_enums\": [],\n15:     \"invariants\": [],\n16:     \"public_interfaces\": [],\n17:     \"extension_points\": []\n18:   }\n19: }\n\n(End of file - total 19 lines)\n</content>",
+                  "title": ".specforge\\project\\extension_registry.json",
+                  "metadata": {
+                    "preview": "{\n  \"schema_version\": \"1.0\",\n  \"project_spec_version\": \"PSV-0001\",\n  \"namespaces\": {\n    \"requirement_types\": [],\n    \"design_types\": [],\n    \"task_types\": [],\n    \"verification_types\": [],\n    \"gate_types\": []\n  },\n  \"updated_by_work_item\": null,\n  \"updated_at\": null,\n  \"contracts\": {\n    \"shared_enums\": [],\n    \"invariants\": [],\n    \"public_interfaces\": [],\n    \"extension_points\": []\n  }\n}",
+                    "truncated": false,
+                    "loaded": [],
+                    "display": {
+                      "type": "file",
+                      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\extension_registry.json",
+                      "text": "{\n  \"schema_version\": \"1.0\",\n  \"project_spec_version\": \"PSV-0001\",\n  \"namespaces\": {\n    \"requirement_types\": [],\n    \"design_types\": [],\n    \"task_types\": [],\n    \"verification_types\": [],\n    \"gate_types\": []\n  },\n  \"updated_by_work_item\": null,\n  \"updated_at\": null,\n  \"contracts\": {\n    \"shared_enums\": [],\n    \"invariants\": [],\n    \"public_interfaces\": [],\n    \"extension_points\": []\n  }\n}",
+                      "lineStart": 1,
+                      "lineEnd": 19,
+                      "totalLines": 19,
+                      "truncated": false
+                    }
+                  },
+                  "time": {
+                    "start": 1793708199151,
+                    "end": 1793708199163
+                  }
+                }
+              },
+              {
+                "id": "prt_1a1570db2001NBk1f7WKCjcvtz",
+                "sessionID": "ses_e5eaa1262fferLMML8IigCp3PI",
+                "messageID": "msg_1a1561e200013oRsN4Y0lOWxwT",
+                "type": "tool",
+                "callID": "call_6fa1f6fff2f34585a211bbed",
+                "tool": "sf_state_read",
+                "state": {
+                  "status": "completed",
+                  "input": {
+                    "query": "state",
+                    "work_item_id": "WI-0001"
+                  },
+                  "output": "{\n  \"success\": true,\n  \"rebuilt_from_events\": true,\n  \"work_item_id\": \"WI-0001\",\n  \"workflow_type\": \"feature_spec\",\n  \"current_state\": \"candidate_preparing\",\n  \"created_at\": 1792905467014,\n  \"updated_at\": 1792905816213\n}",
+                  "title": "",
+                  "metadata": {
+                    "truncated": false
+                  },
+                  "time": {
+                    "start": 1793708199352,
+                    "end": 1793708199395
+                  }
+                }
+              },
+              {
+                "id": "prt_1a1570ebf00117bZ9uRqdaO5yx",
+                "sessionID": "ses_e5eaa1262fferLMML8IigCp3PI",
+                "messageID": "msg_1a1561e200013oRsN4Y0lOWxwT",
+                "type": "step-finish",
+                "reason": "tool-calls",
+                "snapshot": "48b743f0b95df23db779dca4effe5ee0a9b9b0d5",
+                "cost": 0,
+                "tokens": {
+                  "total": 38797,
+                  "input": 6638,
+                  "output": 128,
+                  "reasoning": 5215,
+                  "cache": {
+                    "read": 26816,
+                    "write": 0
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "info": {
+              "id": "msg_1a1570f87001jhgOlC48vDDN5w",
+              "sessionID": "ses_e5eaa1262fferLMML8IigCp3PI",
+              "role": "assistant",
+              "time": {
+                "created": 1793708199815
+              },
+              "parentID": "msg_1a155edb6001333zfYeKxyIkvd",
+              "modelID": "glm-5.3",
+              "providerID": "zhipuai-coding-plan",
+              "mode": "sf-requirements",
+              "agent": "sf-requirements",
+              "path": {
+                "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+                "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+              },
+              "cost": 0,
+              "tokens": {
+                "input": 0,
+                "output": 0,
+                "reasoning": 0,
+                "cache": {
+                  "read": 0,
+                  "write": 0
+                }
+              }
+            },
+            "parts": [
+              {
+                "id": "prt_1a15742dc001FNYKUO1eMmXdi6",
+                "sessionID": "ses_e5eaa1262fferLMML8IigCp3PI",
+                "messageID": "msg_1a1570f87001jhgOlC48vDDN5w",
+                "type": "step-start",
+                "snapshot": "48b743f0b95df23db779dca4effe5ee0a9b9b0d5"
+              },
+              {
+                "id": "prt_1a15742e8001iSf86Xh1ctw5Vm",
+                "sessionID": "ses_e5eaa1262fferLMML8IigCp3PI",
+                "messageID": "msg_1a1570f87001jhgOlC48vDDN5w",
+                "type": "reasoning",
+                "text": "[Model reasoning omitted; not factual evidence]",
+                "time": {
+                  "start": 1793708212968
+                },
+                "text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "original_text_length": 0
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

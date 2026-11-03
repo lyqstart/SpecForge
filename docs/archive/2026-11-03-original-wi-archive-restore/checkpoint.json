@@ -6,11 +6,14 @@
   "target_writes": "Only deployed Recovery owner restored the original tree; formal StateManager projection initialization recorded. Native owner workflow is now resuming.",
   "restored_files": 319,
   "restored_head": "8a692e88c0823984647622294f5199c18bb0c587",
-  "formal_state": "WI-0001=candidate_preparing",
+  "formal_state": "First formal post-import read: WI-0001=candidate_preparing; subsequent Gate attempt-0001 advanced to gates_failed. Re-read before continuing.",
   "original_native_session": "ses_e8e849253ffeo8tI9ZIOUEjSZ5",
   "requirements_repair_session": "ses_e5eaa1262fferLMML8IigCp3PI",
   "design_first_session": "ses_e5ea3c781ffexOAlCZo8pe1loi",
   "design_retry_session": "ses_e5e9c2900ffeoa6VzybWd4iIWQ",
+  "task_repair_session": "ses_e5e8810e5ffeV6H0SIGMghbQuO",
+  "published_milestone": "ecc1f1f15fdf7b7301ee78eccc84f6f4efd69b38",
+  "candidate_gate_attempt": { "id": "attempt-0001", "gates": 10, "passed": 6, "failed": 4, "blocking_issues": 12 },
   "partial_success": "Requirements normalized with fresh handoff; architecture and data model controlled writes succeeded before first design provider HTTP 429. Recovery fact correction delivered to parent and retry owner.",
   "next": "Independently audit original native owner completion and stop at Candidate approval or proven capability gap."
 }

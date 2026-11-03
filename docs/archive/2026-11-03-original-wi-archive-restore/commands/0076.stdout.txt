@@ -1,0 +1,12 @@
+
+ RUN  v4.1.5 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/project-archive-dispatch-exclusion.test.ts (2 tests | 2 failed) 91ms
+     × rejects direct dispatch before project-scoped observation or handlers, then allows the real handler 17ms
+     × rejects the legacy HTTP dispatch route before observation and preserves its normal result after recovery 72ms
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  21:25:08
+   Duration  3.73s (transform 2.50s, setup 0ms, import 3.44s, tests 91ms, environment 0ms)
+

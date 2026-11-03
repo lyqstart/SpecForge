@@ -1,0 +1,15 @@
+{
+  "executable": "D:\\code\\SpecForge\\node_modules\\.bin\\vitest.exe",
+  "args": [
+    "run",
+    "tests/unit/project-archive-dispatch-exclusion.test.ts",
+    "tests/unit/project-archive-restore.test.ts",
+    "tests/unit/project-init-reconstruction.test.ts",
+    "tests/unit/project.test.ts",
+    "tests/unit/project-config-owner.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "shared-dispatch-final-regression",
+  "expected_writes": "isolated-test-fixtures-and-evidence",
+  "started_utc": "2026-11-03T13:29:26.405Z"
+}

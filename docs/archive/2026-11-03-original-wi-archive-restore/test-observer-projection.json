@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-03T13:35:00.684Z",
+  "path": "D:\\code\\SpecForge\\packages\\daemon-core\\.specforge\\runtime\\state.json",
+  "sha256": "cf8e1bdd4267ae946d7a06518e6065573995fab475c033e8cfeb64909f631c69",
+  "bytes_base64": "ewogICJzdGF0ZVZlcnNpb24iOiAyLAogICJwcm9qZWN0UGF0aCI6ICJEOlxcY29kZVxcU3BlY0ZvcmdlXFxwYWNrYWdlc1xcZGFlbW9uLWNvcmUiLAogICJhY3RpdmVTZXNzaW9ucyI6IFtdLAogICJ3b3JrSXRlbXMiOiBbXSwKICAibGFzdEV2ZW50SWQiOiAiIiwKICAibGFzdEV2ZW50VHMiOiAwLAogICJzY2hlbWFfdmVyc2lvbiI6ICIxLjAiCn0=",
+  "birthtime": "2026-11-03T13:25:11.827Z",
+  "mtime": "2026-11-03T13:25:30.983Z",
+  "projectPath": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "stateVersion": 2,
+  "lastEventId": "",
+  "work_item_count": 0,
+  "active_event_file_exists": false,
+  "runtime_entries": [
+    "cas",
+    "logs",
+    "state.json"
+  ],
+  "classification": "RUNTIME_OBSERVER_WRITES: test-induced StateManager projection from legacy service-cwd resolver",
+  "pre_probe_bytes": "INSUFFICIENT_EVIDENCE: no pre-probe raw snapshot for this ignored runtime directory",
+  "disposition": "Preserved; no manual deletion or invented byte-perfect rollback. Fixture now binds the resolver to owned temp root.",
+  "inner_exit_code": 0
+}

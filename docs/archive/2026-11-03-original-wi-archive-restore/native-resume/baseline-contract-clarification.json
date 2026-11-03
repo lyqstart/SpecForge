@@ -1,0 +1,37 @@
+{
+  "utc": "2026-11-03T12:45:51.301Z",
+  "sources": [
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "sha256": "21f6e14583b7aacd5de0cd50de1ae4621445b463116ba3263580de5b3b8bda7d"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/implementation-baseline.ts",
+      "sha256": "36d294c50a3574977c8dd7d8dbf64374d3ee6e3da1618e436734292f7ea9bb26"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/candidate-generation-integrity.ts",
+      "sha256": "19e3451b7ed6172ba41f33533d7c90c64b63af11374fb92ea923e14b1ebb995e"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/artifact-schema-validation.ts",
+      "sha256": "ccfcf8acb0c44abc1509e9301070947cedc50e8c884df315fc409b1ff3662899"
+    }
+  ],
+  "request": {
+    "noReply": true,
+    "agent": "sf-orchestrator",
+    "model": {
+      "providerID": "zhipuai-coding-plan",
+      "modelID": "glm-5.3"
+    },
+    "parts": [
+      {
+        "type": "text",
+        "text": "外部审计给出上位合同核对结果（只澄清既有合同，不批准 Candidate，不放宽 Gate）：当前 Product Specification §6.3 第8条明确要求 Architecture、Design、Tasks Candidate 绑定同一 implementation_baseline_id；第9条把 implementation_baseline.json 纳入固定 seal 集。生产 implementation-baseline.ts 的 walkCandidateMarkdown 精确检查 architecture.candidate.md/design.candidate.md/tasks.md；artifact-schema-validation.ts:526 的 Module Contract 顶层必须恰为 contracts/owner_module/schema_version；candidate-generation-integrity.ts 的 candidateSealInputPaths 把 candidates/** 的所有文件和 implementation_baseline.json 一起封存。因此，调度提示中给 contracts.candidate.json 额外添加第4个顶层字段的要求没有这份产品合同依据，应修正该提示，保持现有三键 schema；不需要让用户在“保持现状”与“扩 schema”之间补做产品裁决，也不能用兄弟文件自述替代正式 seal 验证。请按上述明确的载体职责核验当前 Design、Architecture、Tasks 绑定与完整 seal 集，继续专业交接/任务规划；若实际 Runtime 再给出不同拒绝，保留原错误按首次责任层定位，不能绕过。"
+      }
+    ]
+  },
+  "status": 200,
+  "inner_exit_code": 0
+}

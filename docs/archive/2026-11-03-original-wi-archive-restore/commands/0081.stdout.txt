@@ -1,0 +1,1 @@
+{"path":"D:\\code\\SpecForge\\packages\\daemon-core\\.specforge\\runtime\\state.json","sha256":"cf8e1bdd4267ae946d7a06518e6065573995fab475c033e8cfeb64909f631c69","work_item_count":0,"active_event_file_exists":false,"inner_exit_code":0}

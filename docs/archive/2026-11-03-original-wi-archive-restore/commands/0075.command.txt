@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/inspect-native.cjs",
+    "a02-current"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "gate-repair-owner-metadata-read",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-03T13:24:02.597Z"
+}

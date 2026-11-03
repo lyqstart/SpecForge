@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/prepare-gates-resume.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-observer-continuation",
+  "expected_writes": "evidence-script-only",
+  "started_utc": "2026-11-03T13:14:48.149Z"
+}

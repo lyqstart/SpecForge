@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/clarify-baseline-contract.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "clarify-existing-baseline-carriers",
+  "expected_writes": "native-session-message-and-evidence",
+  "started_utc": "2026-11-03T12:45:50.989Z"
+}

@@ -1,0 +1,11 @@
+{
+  "executable": "C:\\Users\\lyq\\AppData\\Roaming\\npm\\node_modules\\bun\\bin\\bun.exe",
+  "args": [
+    "run",
+    "build"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "shared-dispatch-build",
+  "expected_writes": "ignored-build-artifacts-and-evidence",
+  "started_utc": "2026-11-03T13:35:12.882Z"
+}

@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/audit-original.cjs",
+    "design-complete"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "design-independent-file-audit",
+  "expected_writes": "evidence-and-formal-read-observer-logs",
+  "started_utc": "2026-11-03T12:44:22.033Z"
+}

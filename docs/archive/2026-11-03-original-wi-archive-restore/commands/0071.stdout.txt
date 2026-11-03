@@ -1,0 +1,221 @@
+{
+  "statuses": {
+    "ses_e8e849253ffeo8tI9ZIOUEjSZ5": {
+      "type": "busy"
+    }
+  },
+  "recent_child_sessions": [
+    {
+      "session": "ses_e5eaa1262fferLMML8IigCp3PI",
+      "title": "规范化需求候选 ID/绑定 (@sf-requirements subagent)",
+      "last_info": {
+        "role": "assistant",
+        "agent": "sf-requirements",
+        "finish": "stop"
+      },
+      "part_sizes": [
+        {
+          "type": "step-start"
+        },
+        {
+          "type": "reasoning",
+          "text_length": 521
+        },
+        {
+          "type": "text",
+          "text_length": 2981
+        },
+        {
+          "type": "step-finish"
+        }
+      ],
+      "messages": 10,
+      "tools": [
+        {
+          "tool": "sf_handoff",
+          "status": "completed",
+          "output": "{\n  \"success\": false,\n  \"error\": \"handoff and work_item_id are required\"\n}"
+        },
+        {
+          "tool": "sf_handoff",
+          "status": "completed",
+          "output": "{\n  \"success\": false,\n  \"error\": \"Handoff validation failed: Missing required field: escalation_signals (§14.3)\"\n}"
+        },
+        {
+          "tool": "sf_handoff",
+          "status": "completed",
+          "output": "{\n  \"success\": true,\n  \"action\": \"write\",\n  \"path\": \"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-conformance-business-R6ttE7\\\\.specforge\\\\work-items\\\\WI-0001\\\\handoffs\\\\handoff_sf-requirements_candidate_requirements_1793708450063_3cfbc48a4bc7_0.json\"\n}"
+        }
+      ]
+    },
+    {
+      "session": "ses_e5ea3c781ffexOAlCZo8pe1loi",
+      "title": "规范化设计候选 ID/绑定 (@sf-design subagent)",
+      "last_info": {
+        "role": "assistant",
+        "agent": "sf-design",
+        "error_code": 429
+      },
+      "part_sizes": [],
+      "messages": 5,
+      "tools": [
+        {
+          "tool": "sf_artifact_write",
+          "status": "completed",
+          "output": "{\n  \"success\": true,\n  \"path\": \".specforge/work-items/WI-0001/candidates/project/architecture.candidate.md\",\n  \"size\": 7393,\n  \"file_type\": \"candidate_architecture\",\n  \"controlled_artifact\": true,\n  \"normalized\": false\n}"
+        },
+        {
+          "tool": "invalid",
+          "status": "error",
+          "error": "WRITE_GUARD_DENIED: NATIVE_TOOL_REQUIRES_CONTROLLED_EXECUTION: use sf_safe_bash or an approved SpecForge tool"
+        },
+        {
+          "tool": "sf_artifact_write",
+          "status": "completed",
+          "output": "{\n  \"success\": true,\n  \"path\": \".specforge/work-items/WI-0001/candidates/project/data_model.candidate.md\",\n  \"size\": 5387,\n  \"file_type\": \"candidate_data_model\",\n  \"controlled_artifact\": true,\n  \"normalized\": false\n}"
+        }
+      ]
+    },
+    {
+      "session": "ses_e5e9c2900ffeoa6VzybWd4iIWQ",
+      "title": "规范化设计候选 ID/绑定 (@sf-design subagent)",
+      "last_info": {
+        "role": "assistant",
+        "agent": "sf-design",
+        "finish": "stop"
+      },
+      "part_sizes": [
+        {
+          "type": "step-start"
+        },
+        {
+          "type": "reasoning",
+          "text_length": 150
+        },
+        {
+          "type": "text",
+          "text_length": 2100
+        },
+        {
+          "type": "step-finish"
+        }
+      ],
+      "messages": 17,
+      "tools": [
+        {
+          "tool": "sf_handoff",
+          "status": "completed",
+          "output": "{\n  \"success\": false,\n  \"error\": \"handoff and work_item_id are required\"\n}"
+        },
+        {
+          "tool": "sf_handoff",
+          "status": "completed",
+          "output": "{\n  \"success\": false,\n  \"error\": \"Handoff validation failed: Missing required field: escalation_signals (§14.3)\"\n}"
+        },
+        {
+          "tool": "sf_handoff",
+          "status": "completed",
+          "output": "{\n  \"success\": true,\n  \"action\": \"write\",\n  \"path\": \"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-conformance-business-R6ttE7\\\\.specforge\\\\work-items\\\\WI-0001\\\\handoffs\\\\handoff_sf-design_candidate_design_1793709765455_184d510bc3f3_0.json\"\n}"
+        }
+      ]
+    },
+    {
+      "session": "ses_e5e8e927effeUmNgRiHfnXwxwY",
+      "title": "规范化任务/追溯候选 ID/绑定 (@sf-task-planner subagent)",
+      "last_info": {
+        "role": "assistant",
+        "agent": "sf-task-planner",
+        "finish": "length"
+      },
+      "part_sizes": [
+        {
+          "type": "step-start"
+        },
+        {
+          "type": "reasoning",
+          "text_length": 80541
+        },
+        {
+          "type": "step-finish"
+        }
+      ],
+      "messages": 3,
+      "tools": [
+        {
+          "tool": "read",
+          "status": "completed"
+        },
+        {
+          "tool": "read",
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "session": "ses_e5e8810e5ffeV6H0SIGMghbQuO",
+      "title": "规范化任务/追溯候选 ID/绑定 (@sf-task-planner subagent)",
+      "last_info": {
+        "role": "assistant",
+        "agent": "sf-task-planner",
+        "variant": "low",
+        "finish": "stop"
+      },
+      "part_sizes": [
+        {
+          "type": "step-start"
+        },
+        {
+          "type": "reasoning",
+          "text_length": 32
+        },
+        {
+          "type": "text",
+          "text_length": 1706
+        },
+        {
+          "type": "step-finish"
+        }
+      ],
+      "messages": 11,
+      "tools": [
+        {
+          "tool": "sf_batch_verify",
+          "status": "completed",
+          "output": "{\n  \"success\": true,\n  \"total\": 3,\n  \"passed\": 1,\n  \"failed\": 2,\n  \"results\": [\n    {\n      \"name\": \"front-matter 绑定字段（非锚定）\",\n      \"status\": \"fail\",\n      \"found\": true,\n      \"match_count\": 1\n    },\n    {\n      \"name\": \"追溯矩阵 18 行规范 ID（非锚定，统计 REQ-CORE-00x | AC-CORE-00x 组合）\",\n      \"status\": \"fail\",\n      \"found\": true,\n      \"match_count\": 9\n    },\n    {\n      \"name\": \"Governance Delta 抽样行（非锚定）\",\n      \"status\": \"pass\",\n      \"found\": true,\n      \"match_count\": 1\n    }\n  ]\n}"
+        },
+        {
+          "tool": "read",
+          "status": "completed"
+        },
+        {
+          "tool": "sf_handoff",
+          "status": "completed",
+          "output": "{\n  \"success\": true,\n  \"action\": \"write\",\n  \"path\": \"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-conformance-business-R6ttE7\\\\.specforge\\\\work-items\\\\WI-0001\\\\handoffs\\\\handoff_sf-task-planner_candidate_tasks_1793710908531_614e22c407c2_0.json\"\n}"
+        }
+      ]
+    }
+  ]
+}
+[
+  {
+    "id": "msg_1a184be88001Yy3YTIS8upwQBk",
+    "role": "assistant",
+    "tools": [
+      {
+        "tool": "read",
+        "status": "completed"
+      },
+      {
+        "tool": "grep",
+        "status": "completed"
+      }
+    ],
+    "text": "分析 12 个阻塞项（去重后三类）：①`DATA-CORE-003 constrained_by PI-CORE-001` 关系非法（多门重复报）；②PI-0001 的 4 条 source 关系需正式 Trace 登记；③architecture.candidate.md 缺 `analysis_scope: system_governance` 声明。先读取不可变 Attempt 结果与相关产物的关系数据，精确定位每条责任层。"
+  },
+  {
+    "id": "msg_1a18542be001WVP2NNclFBVNKh",
+    "role": "assistant",
+    "tools": [],
+    "text": ""
+  }
+]

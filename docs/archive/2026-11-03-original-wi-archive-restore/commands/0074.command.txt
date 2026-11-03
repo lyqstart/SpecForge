@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/resume-gates-a02.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "resume-original-gates-after-observer-boundary",
+  "expected_writes": "original-owner-controlled-gate-recovery-and-native-observer-logs",
+  "started_utc": "2026-11-03T13:15:20.536Z"
+}

@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/verify-milestone.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "milestone-seal-recheck",
+  "expected_writes": "evidence-and-remote-read-only",
+  "started_utc": "2026-11-03T13:02:46.319Z"
+}

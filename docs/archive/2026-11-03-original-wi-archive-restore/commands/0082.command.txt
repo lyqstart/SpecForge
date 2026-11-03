@@ -1,0 +1,14 @@
+{
+  "executable": "D:\\code\\SpecForge\\node_modules\\.bin\\vitest.exe",
+  "args": [
+    "run",
+    "tests/unit/project-archive-dispatch-exclusion.test.ts",
+    "tests/unit/tool-dispatcher-rbac.test.ts",
+    "tests/hard-stop-recovery-protocol.test.ts",
+    "tests/unit/acceptance-guard-audit-regression.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "dispatch-alias-and-guard-regression",
+  "expected_writes": "isolated-test-fixtures-and-evidence",
+  "started_utc": "2026-11-03T13:35:06.307Z"
+}

@@ -1,0 +1,22 @@
+const fs = require('node:fs'), path = require('node:path'), crypto = require('node:crypto'), cp = require('node:child_process');
+const attempt = process.argv[2] || 'a02';
+if (!/^[a-z][a-z0-9]{1,7}$/.test(attempt)) throw Error('UNSAFE_ATTEMPT');
+const source = path.join(__dirname, 'resume-original.cjs'), destination = path.join(__dirname, 'resume-gates-' + attempt + '.cjs');
+if (fs.existsSync(destination)) throw Error('DESTINATION_EXISTS');
+const prompt = '继续原会话和原 WI-0001，仅从当前真实权威状态恢复尚未完成的 Gate 修订，不创建或初始化项目，不重复归档恢复。前一外部取证进程的60分钟观察窗口结束，若它取消了未完成调用，这是观察者断点，不是用户取消、产品HardStop或业务失败。先正式 sf_state_read 并核对当前 Gate Attempt、Candidate seal、最新 owner handoff 与实际文件，再决定下一步。已完成：原路径319文件由Recovery owner恢复；规范REQ/AC/DD与baseline绑定；sf_contract_register创建了项目公共接口PI-0001；首次正式封存成功；attempt-0001运行10 Gate，6过4失败。失败三类：DATA-CORE-003错误消费Module PI-CORE-001、PI-0001四个source_refs缺正式Trace边、Architecture缺analysis_scope:system_governance。相关设计和任务owner已于13:11/13:12实际保存修订并产生新handoff，请先核验这些已完成成果，禁止重复覆写或把中断说成零写入。只在合法candidate_preparing恢复窗口由原专业owner补真实缺项，重新封存并跑全部required Gates。保留旧Attempt与全部拒绝记录。当前模型为同一glm-5.3的已配置low variant，继续保持真实sf-orchestrator/专业Agent身份；不得传工具agent参数冒充角色，不用shell或其他执行器绕过D18。若已达到approval_required则只展示当前冻结候选与Gate证据并停止，不重跑或推进。原授权仅为归档恢复，绝不是Candidate批准；不得写user_approved，不合并、不实现。若仍有不能合法容纳的能力缺口，保留原始证据，说明首次责任层与下一合法动作。';
+if (process.argv[3] && !/^[a-z0-9-]+\.txt$/.test(process.argv[3])) throw Error('UNSAFE_PROMPT_FILENAME');
+const selectedPrompt = process.argv[3] ? fs.readFileSync(path.join(__dirname, process.argv[3]), 'utf8') : prompt;
+const ticks = Number(process.argv[4] || 120);
+if (!Number.isSafeInteger(ticks) || ticks < 1 || ticks > 240) throw Error('INVALID_OBSERVATION_TICKS');
+let code = fs.readFileSync(source, 'utf8');
+const once = (before, after) => { if (code.split(before).length !== 2) throw Error('TEMPLATE_MARKER_NOT_UNIQUE'); code = code.replace(before, after); };
+once("path.join(__dirname, 'native-resume')", "path.join(__dirname, 'native-resume-gates-" + attempt + "')");
+const line = code.split('\n').filter(line => line.startsWith('const prompt = '));
+if (line.length !== 1) throw Error('PROMPT_LINE_NOT_UNIQUE');
+once(line[0], 'const prompt = ' + JSON.stringify(selectedPrompt) + ';');
+once('tick < 240', 'tick < ' + ticks);
+once("{ agent: 'sf-orchestrator', model: { providerID: 'zhipuai-coding-plan', modelID: 'glm-5.3' }, parts:", "{ agent: 'sf-orchestrator', model: { providerID: 'zhipuai-coding-plan', modelID: 'glm-5.3' }, variant: 'low', parts:");
+fs.writeFileSync(destination, code, { flag: 'wx' });
+cp.execFileSync(process.execPath, ['--check', destination]);
+console.log(JSON.stringify({ utc: new Date().toISOString(), source_sha256: crypto.createHash('sha256').update(fs.readFileSync(source)).digest('hex'),
+  generated_sha256: crypto.createHash('sha256').update(code).digest('hex'), generated: destination, purpose: 'Reviewable same-session continuation after observer window only; not run by this generator', inner_exit_code: 0 }));

@@ -1,0 +1,47 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/project-archive-dispatch-exclusion.test.ts > project archive exclusion across dispatcher consumers > rejects direct dispatch before project-scoped observation or handlers, then allows the real handler
+AssertionError: promise resolved "{ success: false, denied: true, …(1) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "denied": true,
++   "error": "AUTHORITATIVE_STATE_UNAVAILABLE",
++   "success": false,
+  }
+
+ ❯ tests/unit/project-archive-dispatch-exclusion.test.ts:31:51
+     29|     const request = { tool: 'sf_handoff', args: { action: 'validate', …
+     30|     try {
+     31|       await expect(f.dispatcher.dispatch(request)).rejects.toThrow('AR…
+       |                                                   ^
+     32|       expect(f.recorded).not.toHaveBeenCalled();
+     33|       expect(await fs.readdir(f.root)).toEqual([]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/unit/project-archive-dispatch-exclusion.test.ts > project archive exclusion across dispatcher consumers > rejects the legacy HTTP dispatch route before observation and preserves its normal result after recovery
+AssertionError: expected 200 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 200
+
+ ❯ tests/unit/project-archive-dispatch-exclusion.test.ts:48:58
+     46|     }, body: JSON.stringify({ action: 'validate', handoff: {} }) });
+     47|     try {
+     48|       const denied = await post(); expect(denied.status).toBe(400);
+       |                                                          ^
+     49|       expect(await denied.json()).toMatchObject({ success: false, erro…
+     50|       expect(f.recorded).not.toHaveBeenCalled(); expect(await fs.readd…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+

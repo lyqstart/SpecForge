@@ -1,0 +1,18 @@
+[
+  {
+    "name": "sf-design",
+    "prompt_sha256": "33f6ab1813262964680ed7fbbe6af1c934a5913a3d248d7d337708d9371c1243"
+  },
+  {
+    "name": "sf-orchestrator",
+    "prompt_sha256": "6932c98cc41f169b3ef8c8e106da96e27b4a331b4b95d42c8e0f31b9f99e8750"
+  },
+  {
+    "name": "sf-requirements",
+    "prompt_sha256": "d55b336eb18c0dca26f1811e57ba2b4d787139e9e2969af37fa1b948b991030c"
+  },
+  {
+    "name": "sf-task-planner",
+    "prompt_sha256": "36fc3ce4eaeedd99a20b3b5b69218852d822388435f20c6cd4a6f87bda36341c"
+  }
+]

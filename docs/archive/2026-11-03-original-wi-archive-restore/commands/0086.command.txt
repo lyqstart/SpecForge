@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/prepare-gates-resume.cjs",
+    "a03",
+    "gate-only-a03-prompt.txt",
+    "60"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-gate-only-retry",
+  "expected_writes": "evidence-script-only",
+  "started_utc": "2026-11-03T13:44:05.622Z"
+}

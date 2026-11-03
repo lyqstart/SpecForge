@@ -12,7 +12,13 @@ function sanitize(value) {
   }
   return result;
 }
-function print(value) { console.log(JSON.stringify(sanitize(value), null, 2)); }
+function print(value) {
+  const concise = Array.isArray(value) ? value.slice(-2) : { ...value,
+    recent_child_sessions: value.recent_child_sessions?.map(child => ({ session: child.session, title: child.title,
+      last_info: { role: child.last_info?.role, agent: child.last_info?.agent, variant: child.last_info?.variant, finish: child.last_info?.finish, error_code: child.last_info?.error?.data?.statusCode },
+      part_sizes: child.part_sizes, messages: child.messages, tools: child.tools })) };
+  console.log(JSON.stringify(sanitize(concise), null, 2));
+}
 (async () => {
   const response = await fetch(`${identity.base}/session/${identity.session}/message`, { signal: AbortSignal.timeout(30000) });
   if (!response.ok) throw Error('HTTP_' + response.status);
@@ -33,7 +39,7 @@ function print(value) { console.log(JSON.stringify(sanitize(value), null, 2)); }
   }
   fs.writeFileSync(path.join(root, `inspection-${suffix}.json`), JSON.stringify({ utc: new Date().toISOString(), source: identity.base, statuses, messages: sanitize(messages), childMessages: sanitize(childMessages) }, null, 2), { flag: 'wx' });
   print({ statuses, recent_child_sessions: childMessages.map(child => ({ session: child.session, title: child.title,
-    last_info: sanitize(child.messages.at(-1)?.info), part_sizes: child.messages.at(-1)?.parts?.map(part => ({ type: part.type, text_length: part.text?.length })),
+    last_info: sanitize(child.messages.filter(message => message.info?.role === 'assistant').at(-1)?.info), part_sizes: child.messages.filter(message => message.info?.role === 'assistant').at(-1)?.parts?.map(part => ({ type: part.type, text_length: part.text?.length })),
     messages: child.messages.length, tools: child.messages.flatMap(message => message.parts || []).filter(part => part.type === 'tool').slice(-3).map(part => ({ tool: part.tool, status: part.state?.status, error: part.state?.error, output: part.tool?.startsWith('sf_') ? String(part.state?.output || '').slice(-900) : undefined })) })) });
   print(messages.map(message => ({ id: message.info?.id, role: message.info?.role, error: message.info?.error,
     tools: message.parts?.filter(part => part.type === 'tool').map(part => ({ tool: part.tool, status: part.state?.status,

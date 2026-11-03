@@ -32149,3 +32149,9 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 
 - 0050 为纠正设计重试提示中“零写入”的错误事实，向原 parent/child 追加 noReply 消息；载体未传 agent。0054 原始会话记录随后出现 caller_agent=build 的两次 ARTIFACT_OWNER_MISMATCH，success=false、hard_stop=false、retry_allowed=true；权限边界正确拒绝，未将其当作产品写入成功或强行绕过。
 - 首次偏离在外部恢复载体，而非 sf-design 所有权规则。0055 在相同会话显式传递 sf-design/sf-orchestrator 与原模型，记录完整请求；后续仍须核验真实执行角色和工具结果，不能仅凭投递 HTTP 200 声称恢复完成。原两份设计成功输出、限速失败、拒绝与事实纠正均保留。类防护：EXP-007/282/290。
+
+### ERR-1901：恢复互斥只包装单一路由，补充测试又误假定旧路由项目头已实现
+
+- 已实现的 ProjectManager 恢复互斥先前仅由 /tool/invoke 外层包装，直接 dispatcher、kernel/v11 消费者会先进入项目级 observation。0076 两项回归复现共同入口缺少前置排斥；改为 ToolDispatcher.dispatch 进入任何 observation/handler 前持有同一操作租约，独立 Project Init HTTP owner 保持自身租约，移除重复外包装。
+- 0077 直接 dispatcher 已通过，旧 HTTP 夹具仍失败；源码 getProjectPathFromRequest 实际只返回服务 cwd，未实现假设中的 x-project-path。夹具现绑定该解析依赖到自有临时目录，并覆盖正常结果与恢复期间零项目 observation。旧路由项目选择不是本次修正的产品承诺。0079 五文件61项通过，类型检查通过；补充 directory/worktree 入口仍需最终回归。
+- 错误夹具触发 package-level StateManager 空投影：birthtime 13:25:11.827Z、第二次 mtime 13:25:30.983Z，stateVersion=2、workItems=0、lastEventId为空、events.jsonl不存在。归类测试 RUNTIME_OBSERVER_WRITES，保存原字节与元数据，不手工删真相源或虚构探测前字节；旧运行目录的其他资料保留。事实与范围见 test-observer-projection.json。类防护：EXP-002/004/007/031。

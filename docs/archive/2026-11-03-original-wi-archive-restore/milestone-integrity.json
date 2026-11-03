@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-03T13:02:54.083Z",
+  "head": "ecc1f1f15fdf7b7301ee78eccc84f6f4efd69b38",
+  "remote_main": "ecc1f1f15fdf7b7301ee78eccc84f6f4efd69b38",
+  "manifests": 66,
+  "verified_members": 330,
+  "pending_commands": [
+    "0037.command.txt",
+    "0068.command.txt"
+  ],
+  "interpretation": "Completed receipt bytes survived Git main merge; pending native execution is not acceptance coverage.",
+  "inner_exit_code": 0
+}

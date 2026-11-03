@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/redact-native.cjs",
+    "native-resume-gates-a02"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "redact-a02-complete-evidence",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-03T13:44:09.777Z"
+}

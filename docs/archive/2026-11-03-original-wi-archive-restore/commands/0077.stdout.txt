@@ -1,0 +1,11 @@
+
+ RUN  v4.1.5 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/project-archive-dispatch-exclusion.test.ts (2 tests | 1 failed) 136ms
+     × rejects the legacy HTTP dispatch route before observation and preserves its normal result after recovery 104ms
+
+ Test Files  1 failed | 4 passed (5)
+      Tests  1 failed | 60 passed (61)
+   Start at  21:25:27
+   Duration  17.04s (transform 5.16s, setup 0ms, import 8.00s, tests 21.25s, environment 0ms)
+

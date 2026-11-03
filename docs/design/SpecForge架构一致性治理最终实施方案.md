@@ -226,3 +226,5 @@ Business Project。现有能力不够时，先补齐最小但完整、可验证�
 ## 5. 封存项目恢复实现边界（SPS §3.6）
 
 新增恢复路径为 authenticated operator HTTP → ProjectManager 独占恢复租约 → RecoverySubsystem → ProjectArchiveRestore。此路径不进入 Agent Tool 表，不复用 Project Init。租约拒绝已有 context、StateManager、配置操作、锁及恢复期间的新项目访问；Recovery 另拒绝会话绑定。文件恢复在同卷 staging 内完成，Git 仅重建已证明提交的 detached HEAD/index；StateManager.rebuildState 只读检验原始 WAL 和 projection witness。不可变 plan、stage-ready、publish-intent、completed 与残留 quarantine 支持中断后重试，任何内容漂移均拒绝。只支持完整原路径归档与松散对象，外部 runtime 不适用。部署通过现有 daemon 二进制与安装器交付，无新增 Agent 或模板资产。
+
+项目访问互斥由 ToolDispatcher 的共同执行入口在任何项目级 observation/handler 前消费，覆盖普通 Tool HTTP、v11 HTTP 和 kernel 调用；Project Init 的独立 HTTP owner 另持有同一 ProjectManager 操作租约。不能只在 `/tool/invoke` 外包装一层而遗漏同一 dispatcher 的其他消费者。

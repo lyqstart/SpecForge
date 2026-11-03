@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/inspect-native.cjs",
+    "seal-followup"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "seal-rejection-followup-read",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-03T13:07:25.394Z"
+}

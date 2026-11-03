@@ -182,6 +182,16 @@ export class ToolDispatcher {
   }
 
   async dispatch(req: ToolInvokeRequest): Promise<unknown> {
+    const projectRoot = resolveProjectRoot(req.context);
+    // Every dispatcher consumer (including legacy HTTP and kernel calls) must
+    // exclude recovery before any project-scoped observation or handler work.
+    if (this.deps.projectManager?.withProjectOperation) {
+      return this.deps.projectManager.withProjectOperation(projectRoot, () => this.dispatchAvailableProject(req));
+    }
+    return this.dispatchAvailableProject(req);
+  }
+
+  private async dispatchAvailableProject(req: ToolInvokeRequest): Promise<unknown> {
     const ctx = req.context;
     const trace_id = getTraceIdFromContext(ctx) ?? createSfTraceId();
     const started = Date.now();

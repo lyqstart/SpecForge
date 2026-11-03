@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/resume-original.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "resume-original-owners",
+  "expected_writes": "original-WI-owner-tools-and-native-observer-logs-and-evidence",
+  "started_utc": "2026-11-03T12:13:49.197Z"
+}

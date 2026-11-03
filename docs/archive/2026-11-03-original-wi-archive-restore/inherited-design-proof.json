@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-03T12:49:36.348Z",
+  "method": "Compare original successful controlled tool payload bytes with independent current file reads",
+  "results": [
+    {
+      "file": ".specforge/work-items/WI-0001/candidates/project/architecture.candidate.md",
+      "source_owner_session": "ses_e5ea3c781ffexOAlCZo8pe1loi",
+      "source_sha256": "7e0a170add4a5b1ba8d55211de320e668b33419f95ea0b81bdb8d277e22c7fdb",
+      "current_sha256": "7e0a170add4a5b1ba8d55211de320e668b33419f95ea0b81bdb8d277e22c7fdb",
+      "size": 7393,
+      "identical_to_first_success": true
+    },
+    {
+      "file": ".specforge/work-items/WI-0001/candidates/project/data_model.candidate.md",
+      "source_owner_session": "ses_e5ea3c781ffexOAlCZo8pe1loi",
+      "source_sha256": "dcf5764df623ff740891fc2693da8e33b2de2a4dc5c191e749d4b688e2e37502",
+      "current_sha256": "dcf5764df623ff740891fc2693da8e33b2de2a4dc5c191e749d4b688e2e37502",
+      "size": 5387,
+      "identical_to_first_success": true
+    }
+  ],
+  "inner_exit_code": 0
+}

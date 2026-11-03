@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/bound-task-retry.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "bounded-task-owner-recovery",
+  "expected_writes": "native-session-message-and-evidence",
+  "started_utc": "2026-11-03T12:53:09.208Z"
+}

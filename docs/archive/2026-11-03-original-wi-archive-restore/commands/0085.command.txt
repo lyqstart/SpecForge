@@ -1,0 +1,12 @@
+{
+  "executable": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "daemon",
+    "status",
+    "--json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "shared-dispatch-deploy-preflight",
+  "expected_writes": "runtime-status-and-evidence",
+  "started_utc": "2026-11-03T13:38:53.210Z"
+}
