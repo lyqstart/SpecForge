@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "producerErrors": [],
+  "inventoryErrors": [],
+  "result": {
+    "status": "passed",
+    "releaseId": "specforge-current",
+    "candidateId": "commit-bd32d45c6a2abfe9c6efb7bfcac007b6b3f21d33",
+    "authorityErrors": [],
+    "inventoryErrors": [],
+    "verdict": {
+      "status": "passed",
+      "missingRequired": [],
+      "unexpectedExcluded": [],
+      "invalidDependencies": [],
+      "incompleteEvidence": []
+    }
+  }
+}

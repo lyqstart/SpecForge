@@ -26,6 +26,7 @@ const receipt = { ...command, finished_utc: new Date().toISOString(), carrier_ex
   observed_writes: { repository_status_before: before, repository_status_after: snapshot(), other: 'See expected writes and owner-specific receipt; status does not enumerate external runtime writes.' } };
 fs.writeFileSync(base + '.result.json', JSON.stringify(receipt, null, 2) + '\n', { flag: 'wx' });
 fs.appendFileSync(path.join(root, 'journal.jsonl'), JSON.stringify({ event: 'command_finished', seq, ...receipt }) + '\n');
+require('./seal-receipts.cjs').seal(seq);
 process.stdout.write(stdout); process.stderr.write(stderr);
 console.log(JSON.stringify({ receipt: seq, inner_exit_code: receipt.inner_exit_code, finished_utc: receipt.finished_utc }));
 process.exitCode = receipt.inner_exit_code;

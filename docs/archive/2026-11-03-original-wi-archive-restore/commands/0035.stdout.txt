@@ -1,0 +1,1 @@
+{"receipt":"D:\\code\\SpecForge\\docs\\archive\\2026-11-03-original-wi-archive-restore\\deployed-restoration-retry2.json","restored_files":319,"inner_exit_code":0}

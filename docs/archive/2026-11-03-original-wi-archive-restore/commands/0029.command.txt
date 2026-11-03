@@ -1,0 +1,12 @@
+{
+  "executable": "git",
+  "args": [
+    "commit",
+    "-m",
+    "fix(recovery): preserve empty residual directories during import"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "commit-directory-correction",
+  "expected_writes": "git-commit-and-evidence",
+  "started_utc": "2026-11-03T12:11:37.634Z"
+}

@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/inspect-native.cjs",
+    "sanitized"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "sanitized-provider-status-read",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-03T12:35:37.499Z"
+}

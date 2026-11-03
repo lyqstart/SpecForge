@@ -1,0 +1,1 @@
+{"definitions":["REQ-CORE-001","REQ-CORE-002","REQ-CORE-003","REQ-CORE-004","REQ-CORE-005","REQ-CORE-006"],"ac_count":18,"short_refs":0,"baseline_binding":true,"handoffs":2,"inner_exit_code":0}

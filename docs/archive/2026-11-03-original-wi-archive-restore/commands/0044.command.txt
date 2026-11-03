@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/check-requirements.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "requirements-independent-check",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-03T12:21:13.506Z"
+}

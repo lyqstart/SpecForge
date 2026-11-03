@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/execute-restoration.cjs",
+    "-retry2",
+    "69837184547f477b199c49d210344ebbf591ddae9ef36b63f5d327f16f0aaa56",
+    "35728"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "deployed-controlled-restore-retry",
+  "expected_writes": "original-project-only-via-Recovery-owner-and-evidence",
+  "started_utc": "2026-11-03T12:12:12.356Z"
+}

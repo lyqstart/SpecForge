@@ -1,0 +1,58 @@
+{
+  "utc": "2026-11-03T12:12:42.985Z",
+  "run_id": "CODEX-SF-20261103-ORIGINAL-WI-ARCHIVE-RESTORE-A01",
+  "project": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+  "expected_writes": "StateManager first-load projection and daemon audit logs; original event history must stay unchanged",
+  "before_events_sha256": "a3166374c640e3c4cbc2f7b80dbf7424925d90d5a2ce45b670bb46c4a306ef13",
+  "before_projection_base64": "ewogICJzdGF0ZVZlcnNpb24iOiA2LAogICJwcm9qZWN0UGF0aCI6ICJDOlxcVXNlcnNcXGx5cVxcQXBwRGF0YVxcTG9jYWxcXFRlbXBcXHNmLWNvbmZvcm1hbmNlLWJ1c2luZXNzLVI2dHRFNyIsCiAgImFjdGl2ZVNlc3Npb25zIjogW10sCiAgIndvcmtJdGVtcyI6IFsKICAgIHsKICAgICAgIndvcmtfaXRlbV9pZCI6ICJXSS0wMDAxIiwKICAgICAgIndvcmtmbG93X3R5cGUiOiAiZmVhdHVyZV9zcGVjIiwKICAgICAgImN1cnJlbnRfc3RhdGUiOiAiY2FuZGlkYXRlX3ByZXBhcmluZyIsCiAgICAgICJjcmVhdGVkX2F0IjogMTc5MjkwNTQ2NzAxNCwKICAgICAgInVwZGF0ZWRfYXQiOiAxNzkyOTA1ODE2MjEzCiAgICB9CiAgXSwKICAibGFzdEV2ZW50SWQiOiAiMDFhMTcxODMtYTg5NS03N2U5LWFmZDktYTlkMGVkMjhkYTAwIiwKICAibGFzdEV2ZW50VHMiOiAxNzkyOTA1ODE2MjEzLAogICJzY2hlbWFfdmVyc2lvbiI6ICIxLjAiCn0=",
+  "observations": [
+    {
+      "utc": "2026-11-03T12:12:43.083Z",
+      "tool": "sf_state_read",
+      "work_item_id": "WI-0001",
+      "http_status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "success": true,
+          "rebuilt_from_events": true,
+          "work_item_id": "WI-0001",
+          "workflow_type": "feature_spec",
+          "current_state": "candidate_preparing",
+          "created_at": 1792905467014,
+          "updated_at": 1792905816213
+        },
+        "requestId": "3yxyytsnh9omw0neq4s",
+        "timestamp": 1793707963084
+      }
+    },
+    {
+      "utc": "2026-11-03T12:12:43.099Z",
+      "tool": "sf_state_read",
+      "work_item_id": "all",
+      "http_status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "success": true,
+          "rebuilt_from_events": true,
+          "work_items": {
+            "WI-0001": {
+              "work_item_id": "WI-0001",
+              "workflow_type": "feature_spec",
+              "current_state": "candidate_preparing",
+              "created_at": 1792905467014,
+              "updated_at": 1792905816213
+            }
+          }
+        },
+        "requestId": "wkunc8qc3fmw0neq5c",
+        "timestamp": 1793707963104
+      }
+    }
+  ],
+  "after_events_sha256": "a3166374c640e3c4cbc2f7b80dbf7424925d90d5a2ce45b670bb46c4a306ef13",
+  "after_projection_base64": "ewogICJzdGF0ZVZlcnNpb24iOiA3LAogICJwcm9qZWN0UGF0aCI6ICJDOlxcVXNlcnNcXGx5cVxcQXBwRGF0YVxcTG9jYWxcXFRlbXBcXHNmLWNvbmZvcm1hbmNlLWJ1c2luZXNzLVI2dHRFNyIsCiAgImFjdGl2ZVNlc3Npb25zIjogW10sCiAgIndvcmtJdGVtcyI6IFsKICAgIHsKICAgICAgIndvcmtfaXRlbV9pZCI6ICJXSS0wMDAxIiwKICAgICAgIndvcmtmbG93X3R5cGUiOiAiZmVhdHVyZV9zcGVjIiwKICAgICAgImN1cnJlbnRfc3RhdGUiOiAiY2FuZGlkYXRlX3ByZXBhcmluZyIsCiAgICAgICJjcmVhdGVkX2F0IjogMTc5MjkwNTQ2NzAxNCwKICAgICAgInVwZGF0ZWRfYXQiOiAxNzkyOTA1ODE2MjEzCiAgICB9CiAgXSwKICAibGFzdEV2ZW50SWQiOiAiMDFhMTcxODMtYTg5NS03N2U5LWFmZDktYTlkMGVkMjhkYTAwIiwKICAibGFzdEV2ZW50VHMiOiAxNzkyOTA1ODE2MjEzLAogICJzY2hlbWFfdmVyc2lvbiI6ICIxLjAiCn0=",
+  "inner_exit_code": 0,
+  "finished_utc": "2026-11-03T12:12:43.099Z"
+}

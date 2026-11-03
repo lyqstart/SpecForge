@@ -1,0 +1,63 @@
+const fs = require('node:fs'), path = require('node:path'), cp = require('node:child_process'), crypto = require('node:crypto');
+const target = 'C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7', session = 'ses_e8e849253ffeo8tI9ZIOUEjSZ5';
+const out = path.join(__dirname, 'native-resume'); fs.mkdirSync(out);
+const save = (name, value) => fs.writeFileSync(path.join(out, name + '.json'), JSON.stringify(value, null, 2) + '\n', { flag: 'wx' });
+const hash = value => crypto.createHash('sha256').update(value).digest('hex');
+const prompt = '继续原会话和原 WI-0001，不创建替代工作项。原路径已由新增且部署验证的 Recovery owner 从封存归档恢复：319 文件逐字节复核、Git 为原提交 8a692e88c0823984647622294f5199c18bb0c587 的 detached HEAD，原残留树完整保留。正式 sf_state_read 刚从原 events.jsonl 重放确认唯一 WI-0001=candidate_preparing，原五条事件未变。恢复授权不是 Candidate 批准，旧分支和旧索引未声称恢复。先正式重读状态和既有产物/handoff，从原合法断点继续原 Greeting Library 需求，到真实 Candidate 审批边界展示并停止；不得进入批准/合并/代码实现。已有封存失败须保留。已修复 Runtime 对准确范围限定说明的误判。当前待专业 owner 修订：候选绑定字段必须为 implementation_baseline_id 并引用 Runtime 的 implementation_baseline.json；需求正文和全部下游引用采用正式模块域与三位序号（例如 REQ-CORE-001、DD-CORE-001，不能用 REQ-001/DD-001 或说明性别名冒充）；需求修订由 sf-requirements、设计/正式关系修订由 sf-design、tasks 与 trace_delta 同步由 sf-task-planner 执行并持久化本次 owner-bound handoff。Orchestrator 不代写专业候选、不把旧 lint PASS 当作正式 Gate，不重复已成功步骤。用正式受控 artifact 工具保存，完成 validate_all、seal 和 required Gates；如已有字段不一致先以真实文件与 Runtime 拒绝定位首次责任层，禁止绕过 HardStop 或制造假失败。遵守 D18，不运行 shell/测试/其他执行器，不读与此恢复无关的主机清单或凭据；缺少实际验证证据则明确 blocked/not_executed。若出现不能合法恢复的能力缺口，保存完整正式错误并报告最后成功点和下一合法动作。';
+save('request', { utc: new Date().toISOString(), target, session, agent: 'sf-orchestrator', model: 'zhipuai-coding-plan/glm-5.3', prompt,
+  expected_writes: 'OpenCode session storage/plugin logs and original WI owner-controlled candidate/handoff/Gate artifacts only; no Candidate approval or implementation' });
+const child = cp.spawn('C:/Users/lyq/AppData/Roaming/npm/node_modules/opencode-ai/bin/opencode.exe', ['serve', '--hostname', '127.0.0.1', '--port', '0'], { cwd: target, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+const log = fs.createWriteStream(path.join(out, 'host.log'), { flags: 'wx' });
+let raw = '', base;
+for (const stream of [child.stdout, child.stderr]) stream.on('data', chunk => { raw += chunk; log.write(chunk); });
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+async function request(method, endpoint, body) {
+  const response = await fetch(base + endpoint, { method, headers: { 'content-type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(60000) });
+  const text = await response.text(); if (!response.ok) throw Error(`NATIVE_HTTP_${response.status}:${endpoint}:${text.slice(0,300)}`);
+  return text ? JSON.parse(text) : null;
+}
+function redact(value) {
+  if (Array.isArray(value)) return value.map(redact);
+  if (!value || typeof value !== 'object') return value;
+  const result = Object.fromEntries(Object.entries(value).map(([key, item]) => [key, /^(authorization|token|cookie|set-cookie|api_key|apiKey|access_token)$/i.test(key) ? '[REDACTED]' : redact(item)]));
+  if (result.type === 'tool' && result.tool === 'read' && /host-profile\.json$/.test(result.state?.input?.filePath || '') && result.state?.output) {
+    result.state.output_sha256 = hash(result.state.output); result.state.output = '[Host inventory redacted]';
+  }
+  return result;
+}
+(async () => {
+  let before = [], completed = false;
+  try {
+    for (let i = 0; i < 300; i++) {
+      base = raw.match(/http:\/\/127\.0\.0\.1:\d+/)?.[0]; if (base) break;
+      if (child.exitCode !== null) throw Error('NATIVE_HOST_EXITED'); await sleep(100);
+    }
+    if (!base) throw Error('NATIVE_HOST_START_TIMEOUT');
+    save('identity', { utc: new Date().toISOString(), base, pid: child.pid, target, session });
+    await request('GET', `/session/${session}`);
+    before = await request('GET', `/session/${session}/message`);
+    save('baseline', { utc: new Date().toISOString(), message_count: before.length, message_ids: before.map(message => message.info?.id) });
+    const agents = await request('GET', '/agent');
+    save('owners', agents.filter(agent => ['sf-orchestrator', 'sf-requirements', 'sf-design', 'sf-task-planner'].includes(agent.name)).map(agent => ({ name: agent.name, prompt_sha256: hash(agent.prompt || ''), tools: agent.tools })));
+    await request('POST', `/session/${session}/prompt_async`, { agent: 'sf-orchestrator', model: { providerID: 'zhipuai-coding-plan', modelID: 'glm-5.3' }, parts: [{ type: 'text', text: prompt }] });
+    for (let tick = 0; tick < 240; tick++) {
+      await sleep(15000);
+      const statuses = await request('GET', '/session/status'), messages = await request('GET', `/session/${session}/message`);
+      const last = messages.flatMap(message => message.parts || []).filter(part => part.type === 'tool').at(-1);
+      const progress = { utc: new Date().toISOString(), status: statuses[session], messages: messages.length, last_tool: last?.tool, last_status: last?.state?.status };
+      fs.appendFileSync(path.join(out, 'progress.jsonl'), JSON.stringify(progress) + '\n'); console.log(JSON.stringify(progress));
+      if (messages.length > before.length && (!statuses[session] || statuses[session].type === 'idle')) {
+        const ids = new Set(before.map(message => message.info?.id));
+        save('new-messages', redact(messages.filter(message => !ids.has(message.info?.id))));
+        save('children', await request('GET', `/session/${session}/children`));
+        save('result', { utc: new Date().toISOString(), session, target, inner_exit_code: 0, interpretation: 'Native agent returned; workflow outcome must be independently audited from owner artifacts and formal state.' });
+        completed = true; break;
+      }
+    }
+    if (!completed) throw Error('OBSERVATION_WINDOW_EXPIRED');
+  } catch (error) {
+    save('failure', { utc: new Date().toISOString(), error: String(error), inner_exit_code: 1 });
+    try { await request('POST', `/session/${session}/abort`); } catch {}
+    process.exitCode = 1;
+  } finally { child.kill(); log.end(); }
+})();

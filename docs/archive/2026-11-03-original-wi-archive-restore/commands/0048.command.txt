@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/inspect-native.cjs",
+    "design-return"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "design-return-audit",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-03T12:30:40.894Z"
+}

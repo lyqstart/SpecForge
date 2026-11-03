@@ -64,3 +64,9 @@ test-project-path
 packages/daemon-core/test-project-path
 packages/observability/test-data/observability-[0-9]*/
 packages/observability/test-data/observability-req-[0-9]*/
+
+# Local native-model source receipts; publish hash-bound derivatives without reasoning text.
+/docs/archive/2026-11-03-original-wi-archive-restore/native-resume/inspection-*.json
+!/docs/archive/2026-11-03-original-wi-archive-restore/native-resume/inspection-*-redacted.json
+/docs/archive/2026-11-03-original-wi-archive-restore/native-resume/new-messages.json
+/docs/archive/2026-11-03-original-wi-archive-restore/commands/0048.stdout.txt

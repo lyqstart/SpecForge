@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/inspect-native.cjs",
+    "owners"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "professional-owner-progress-read",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-03T12:17:43.416Z"
+}

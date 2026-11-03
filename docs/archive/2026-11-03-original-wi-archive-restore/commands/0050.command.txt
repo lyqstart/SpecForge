@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/correct-resume-facts.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "correct-owner-recovery-facts",
+  "expected_writes": "native-session-message-only-and-evidence",
+  "started_utc": "2026-11-03T12:33:38.353Z"
+}

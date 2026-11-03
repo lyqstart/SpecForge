@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/check-publishable-evidence.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "publication-privacy-scan",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-03T12:35:39.117Z"
+}

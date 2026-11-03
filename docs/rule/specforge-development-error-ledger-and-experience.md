@@ -32139,3 +32139,13 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - CODEX-SF-20261103-ORIGINAL-WI-ARCHIVE-RESTORE-A01 的 0022 部署入口在写前返回 409/GIT_RESIDUE_UNSUPPORTED。0023 独立只读取证确认现场只有原三个 Git 对象文件及 250 个目录，全部 319 个归档文件仍缺失；首次调用没有恢复项目文件。
 - 首次偏离在 ProjectArchiveRestore 对目录形状的额外 allowlist，SPS §3.6 只允许可验证的文件内容，并未禁止保留空目录。修正为逐文件严格校验、全部目录仍检验链接与安全路径，原树整体保存在 residue；不手工清理目录，不放宽 Git 配置/未知文件拒绝。新增空 Git/项目/无关目录保留回归，0024 共 33 项通过。
 - 载体另有 Bun shim 解析失败、证据序号与在途命令冲突、Git 只读测试对象设置失败；均在执行目标写入前失败，原始失败保留，按 EXP-002/007 分类纠正。类防护：EXP-006/007/024/288。
+
+### ERR-1899：控制台诊断绕过已有文件脱敏器
+
+- 原会话设计 owner 因 provider HTTP 429 返回 APIError。0048 的取证脚本保存文件前已递归净化敏感键，但控制台摘要直接打印 child last_info，使响应 Set-Cookie 进入本地 stdout。该文件未提交；已以精确 ignore 保留本地原件、生成绑定原始 SHA-256 的 stdout-redacted 副本，工具转录中不再复述该值。
+- 首次偏离为诊断出口未共用 sanitizer；改为全部控制台对象经统一 print/sanitize，保留错误码、时间、请求 ID 与 provider 限速原文。模型 reasoning 不作为产品事实，单独本地保留并发布 hash-bound 脱敏副本。后续提交需同时扫描发布内容和嵌套 Base64 证据。类防护：EXP-007/289。
+
+### ERR-1900：noReply 恢复纠正消息遗漏 Agent 导致默认 build
+
+- 0050 为纠正设计重试提示中“零写入”的错误事实，向原 parent/child 追加 noReply 消息；载体未传 agent。0054 原始会话记录随后出现 caller_agent=build 的两次 ARTIFACT_OWNER_MISMATCH，success=false、hard_stop=false、retry_allowed=true；权限边界正确拒绝，未将其当作产品写入成功或强行绕过。
+- 首次偏离在外部恢复载体，而非 sf-design 所有权规则。0055 在相同会话显式传递 sf-design/sf-orchestrator 与原模型，记录完整请求；后续仍须核验真实执行角色和工具结果，不能仅凭投递 HTTP 200 声称恢复完成。原两份设计成功输出、限速失败、拒绝与事实纠正均保留。类防护：EXP-007/282/290。

@@ -1,0 +1,33 @@
+{
+  "utc": "2026-11-03T12:37:04.221Z",
+  "seq": "0048",
+  "raw_members": {
+    "0048.command.txt": {
+      "sha256": "be356d74a5e2fa1d3d172202b5e32ffee7470e5092c19acdcf727c21b32d4b68",
+      "first_line_sha256": "021fb596db81e6d02bf3d2586ee3981fe519f275c0ac9ca76bbcf2ebb4097d96",
+      "last_line_sha256": "d10b36aa74a59bcf4a88185837f658afaf3646eff2bb16c3928d0e9335e945d2"
+    },
+    "0048.stdout.txt": {
+      "sha256": "ed09963b6270a8cbc51e4a7d9ed057611ef064ccf97a668c6e7be10e9b6d7afb",
+      "first_line_sha256": "296d6e93c6bf6dfa52ac836a81dc3036f2a2b5fd5f58b21172f2ce47fe5986c1",
+      "last_line_sha256": "cfae0d4248f7142f7b17f826cd7a519280e312577690e957830d23dcf35a3fff"
+    },
+    "0048.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "first_line_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "last_line_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "0048.result.json": {
+      "sha256": "9b8016f231b5638bf3a177cb2a905e56aea02ecaf645c22d50674e959af4d9c2",
+      "first_line_sha256": "021fb596db81e6d02bf3d2586ee3981fe519f275c0ac9ca76bbcf2ebb4097d96",
+      "last_line_sha256": "d10b36aa74a59bcf4a88185837f658afaf3646eff2bb16c3928d0e9335e945d2"
+    }
+  },
+  "redactions": [
+    {
+      "source": "0048.stdout.txt",
+      "derivative": "0048.stdout-redacted.txt",
+      "reason": "Sensitive response Cookie retained only locally"
+    }
+  ]
+}

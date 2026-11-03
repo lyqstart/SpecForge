@@ -1,0 +1,113 @@
+{
+  "utc": "2026-11-03T12:21:14.220Z",
+  "interpretation": "Independent bounded text/identity check, not a formal Gate",
+  "file": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\requirements.candidate.md",
+  "sha256": "c3aee7cb3eb8eb36e4ecc181283c67fec9ce3de00e63ab771f0e3a6ffad677e6",
+  "definitions": [
+    "REQ-CORE-001",
+    "REQ-CORE-002",
+    "REQ-CORE-003",
+    "REQ-CORE-004",
+    "REQ-CORE-005",
+    "REQ-CORE-006"
+  ],
+  "acceptance_definitions": [
+    "AC-CORE-001",
+    "AC-CORE-002",
+    "AC-CORE-003",
+    "AC-CORE-004",
+    "AC-CORE-005",
+    "AC-CORE-006",
+    "AC-CORE-007",
+    "AC-CORE-008",
+    "AC-CORE-009",
+    "AC-CORE-010",
+    "AC-CORE-011",
+    "AC-CORE-012",
+    "AC-CORE-013",
+    "AC-CORE-014",
+    "AC-CORE-015",
+    "AC-CORE-016",
+    "AC-CORE-017",
+    "AC-CORE-018"
+  ],
+  "short_req_refs": [],
+  "baseline_binding": true,
+  "handoffs": [
+    {
+      "name": "handoff_sf-requirements_candidate_requirements_1792906288040_16e75c9feacf_0.json",
+      "sha256": "16e75c9feacfa5d79a43b40e39e8b80b05518bbfeada57137e0df653a05c74b3",
+      "value": {
+        "agent": "sf-requirements",
+        "boundary_statement": "仅生成需求候选（candidates 树），未推进工作流状态、未触发用户审批、未调度其他 Agent、未实现代码、未写入 .specforge/project/** 或任何治理真相源。",
+        "duration_ms": 0,
+        "escalation_signals": [],
+        "findings": [
+          "Extension Registry namespaces.requirement_types 为空；本候选仅使用标准 canonical 结构（REQ 三位编号 + EARS AC + Must/Should + Out-of-Scope），无自定义扩展类型，判定无 contract_gap",
+          "intake 四条用户原话全部转成可验收 REQ：UQ-1→REQ-001 导出契约、UQ-2→REQ-002、UQ-3→REQ-003、UQ-4→REQ-004（测试）+REQ-005（使用说明）；用户核心目标无遗漏进入 Out-of-Scope",
+          "两条行为规则固化为独立 MUST 需求 REQ-002/REQ-003，各自绑定 Required Evidence（EVREQ-2A：≥2 个非空名称断言；EVREQ-3A：greet(\"\") 严格等于 Hello, world! 断言），证据预期指向批准后验证阶段的真实运行输出",
+          "intake 禁止假设全部承接：『定义域边界』章节明确 null/undefined/非 string 行为未定义、实现不得编写分支、纯空白按非空规则直接处理不做 trim；全文经结构校验无『测试已通过』类表述；流程约束明确本 WI 停在 approval_required",
+          "unknowns 未伪造结论：以待决项 D-1（测试运行器与工程配置，零依赖优先）移交 sf-design、D-2（Node/TS 版本）移交批准后实现/验证阶段",
+          "REQ-006（Should）零运行时第三方依赖：源自 intake 决策边界『零依赖优先』，工具链开发期依赖选型显式留给设计阶段，不预设结论",
+          "写入过程修正记录：首版 AC 缺显式编号，已在同一受控写入窗口二次写入修正为 AC-001～AC-018 全局三位编号，与 Delta 说明引用逐字一致",
+          "只读验证结论：sf_doc_lint=pass（无 issues）；sf_batch_verify 19/20，唯一 fail 项为『^ 行首锚点无 multiline 支持』的正则引擎限制，grep 独立复核确认 6 个 REQ 标题全部存在（行 70/92/114/135/157/178）",
+          "Delta 结论：greenfield 全量新增 REQ-001～REQ-006/AC-001～AC-018，合并后更新 .specforge/project/modules/CORE/requirements.md（占位→首份）与 requirements_index.md；本阶段未直接写真相源"
+        ],
+        "inputs_read": [
+          ".specforge/work-items/WI-0001/intake.md",
+          ".specforge/work-items/WI-0001/trigger_result.json",
+          ".specforge/work-items/WI-0001/change_classification.md",
+          ".specforge/work-items/WI-0001/impact_analysis.md",
+          ".specforge/project/extension_registry.json"
+        ],
+        "next_step_recommendation": "调度 sf-design 生成设计候选（承接 D-1 测试运行器/零依赖工程配置决策，并为首份架构、数据模型、CORE 模块契约提供 candidate 产物）",
+        "outputs_written": [
+          ".specforge/work-items/WI-0001/candidates/project/modules/CORE/requirements.candidate.md"
+        ],
+        "schema_version": "1.0",
+        "stage": "candidate_requirements",
+        "timestamp": "2026-10-25T05:40:00.000Z",
+        "unknowns": [
+          "测试运行器与最小工程配置选型（package.json/tsconfig 形态）：由 sf-design 以零依赖方案优先决策并取证（候选内 D-1）",
+          "Node.js/TypeScript 具体可用版本未取证（D18 禁止外部命令探测）：由批准后实现/验证阶段以真实运行证据确认（候选内 D-2）"
+        ],
+        "work_item_id": "WI-0001"
+      }
+    },
+    {
+      "name": "handoff_sf-requirements_candidate_requirements_1793708450063_3cfbc48a4bc7_0.json",
+      "sha256": "3cfbc48a4bc71ba911bad3022e0f321409366def86a86acb8b4312a2574ea264",
+      "value": {
+        "agent": "sf-requirements",
+        "boundary_statement": "仅修订需求候选 ID 与绑定字段；不推进状态、不触发审批、不触碰 design/tasks/trace_delta/impact_analysis 等非本所有物文件、不实现代码。",
+        "escalation_signals": [],
+        "findings": [
+          "front-matter 绑定字段已由 implementation_baseline_snapshot_id 替换为 implementation_baseline_id: sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722",
+          "正文『候选绑定与 Basis 来源』节已改用 implementation_baseline_id 并显式引用 .specforge/work-items/WI-0001/implementation_baseline.json（captured_at: 2026-10-25T05:23:36.211Z；README.md 既有 123 bytes sha256:757ee94e...→ 追加式修改；package.json/src/greet.ts/tests/greet.test.ts/tsconfig.json 基线 matched_files 为空 → 新建）",
+          "REQ 短编号规范化 37 处：REQ-CORE-001×7、REQ-CORE-002×9、REQ-CORE-003×9、REQ-CORE-004×3、REQ-CORE-005×4、REQ-CORE-006×5，覆盖定义/引用/表格/Required Evidence/not_done_when/Delta 说明",
+          "AC 短编号规范化 22 处：AC-CORE-001×3、AC-CORE-002～AC-CORE-017 各×1（16 处）、AC-CORE-018×3",
+          "grep/batch_verify 残留检查：REQ-0、AC-0、DD-0 短编号残留均为 0；implementation_baseline_snapshot_id 残留 0",
+          "正文仅存在 L236『固化为 DD 决策』无编号泛指，非 DD-0xx 形态，按修复要求无需替换",
+          "EVREQ-1A/1B/2A/3A/4A/4B/5A/6A 共 8 处证据键保持原样；REQ/AC 实质、Out-of-Scope、术语表、basis 引用键（UQ/FACT/CONSTRAINT/IMPACT/UNKNOWN/CLS）逐字保留",
+          "sf_doc_lint(doc_type=requirements)=pass（结构自检，不构成正式 Gate）",
+          "前置检查：extension_registry.json requirement_types 为空，本候选未使用自定义类型，无 contract_gap；写入时权威状态 candidate_preparing（可写窗口内）"
+        ],
+        "inputs_read": [
+          ".specforge/work-items/WI-0001/candidates/project/modules/CORE/requirements.candidate.md",
+          ".specforge/work-items/WI-0001/implementation_baseline.json",
+          ".specforge/project/extension_registry.json",
+          "sf_state_read(WI-0001): candidate_preparing / feature_spec"
+        ],
+        "next_step_recommendation": "调度 sf-design 完成设计层同源规范化（DD 编号与绑定字段对齐 Runtime 正式规范），随后由 orchestrator 运行正式 Candidate Gate。",
+        "outputs_written": [
+          ".specforge/work-items/WI-0001/candidates/project/modules/CORE/requirements.candidate.md"
+        ],
+        "schema_version": "1.0",
+        "stage": "candidate_requirements",
+        "timestamp": "2026-11-03T00:00:00.000Z",
+        "unknowns": [],
+        "work_item_id": "WI-0001"
+      }
+    }
+  ]
+}

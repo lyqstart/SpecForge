@@ -1,0 +1,1 @@
+{"receipt":"D:\\code\\SpecForge\\docs\\archive\\2026-11-03-original-wi-archive-restore\\formal-state-read.json","state":"candidate_preparing","inner_exit_code":0}

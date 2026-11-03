@@ -3,7 +3,7 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { tmpdir } from 'node:os';
 import { createHash } from 'node:crypto';
-import { execFile } from 'node:child_process';
+import { execFile, spawn } from 'node:child_process';
 import { promisify } from 'node:util';
 import { restoreProjectArchive } from '../../src/recovery/ProjectArchiveRestore';
 import { RecoverySubsystem } from '../../src/recovery/RecoverySubsystem';
@@ -198,6 +198,19 @@ describe('Recovery owner sealed project import', () => {
     await expect(pm.withProjectArchiveRecovery(f.target, f.run)).rejects.toThrow('PROJECT_IN_USE');
     release(); await operation;
     expect((await pm.withProjectArchiveRecovery(f.target, f.run)).success).toBe(true);
+  });
+
+  it('rejects a live recovery lock and retains a dead process lock while resuming the same plan', async () => {
+    const f = await fixture(), result = await f.run(), lock = path.join(result.audit_path, 'lock.json');
+    await fs.writeFile(lock, JSON.stringify({ pid: process.pid, archive_sha256: f.input.archive_sha256 }));
+    await expect(f.run()).rejects.toThrow('LOCKED'); await fs.unlink(lock);
+    const child = spawn(process.execPath, ['-e', 'setInterval(() => {}, 1000)'], { windowsHide: true, stdio: 'ignore' });
+    await new Promise<void>((resolve, reject) => { child.once('spawn', resolve); child.once('error', reject); });
+    const exited = new Promise<void>(resolve => child.once('exit', () => resolve()));
+    child.kill(); await exited;
+    await fs.writeFile(lock, JSON.stringify({ pid: child.pid, archive_sha256: f.input.archive_sha256 }));
+    expect((await f.run()).success).toBe(true);
+    expect((await fs.readdir(result.audit_path)).some(name => name.startsWith('dead-lock-'))).toBe(true);
   });
 
   it('recovers from a prepared stage before the original rename and rebuilds uncommitted staging safely', async () => {

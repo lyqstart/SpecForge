@@ -1,0 +1,1 @@
+{"utc":"2026-11-03T12:31:16.182Z","derivatives":[{"source":"inspection-design-return.json","source_sha256":"1e1e0376abb17c7ab6c5644e54c32d2f4746e315270e61b9d059779ff3e2e0c3","derivative":"inspection-design-return-redacted.json"}],"inner_exit_code":0}

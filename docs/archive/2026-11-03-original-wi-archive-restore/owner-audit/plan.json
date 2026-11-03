@@ -1,0 +1,1050 @@
+{
+  "schema_version": "1.0",
+  "input": {
+    "project_path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+    "archive_path": "D:\\code\\SpecForge\\docs\\archive\\2026-10-25-verifier-conformance\\sealed-business-files.json",
+    "archive_sha256": "65b2257fc90354a6349f1df5be1d8d01c6e9f5aa13f8a4feafc67698363f103a",
+    "original_commit": "8a692e88c0823984647622294f5199c18bb0c587",
+    "confirmation_quote": "同意按封存归档恢复原项目"
+  },
+  "created_utc": "2026-11-03T12:12:13.133Z",
+  "before": [
+    {
+      "path": ".git",
+      "kind": "directory"
+    },
+    {
+      "path": ".git/hooks",
+      "kind": "directory"
+    },
+    {
+      "path": ".git/info",
+      "kind": "directory"
+    },
+    {
+      "path": ".git/logs",
+      "kind": "directory"
+    },
+    {
+      "path": ".git/logs/refs",
+      "kind": "directory"
+    },
+    {
+      "path": ".git/logs/refs/heads",
+      "kind": "directory"
+    },
+    {
+      "path": ".git/objects",
+      "kind": "directory"
+    },
+    {
+      "path": ".git/objects/55",
+      "kind": "directory"
+    },
+    {
+      "path": ".git/objects/55/18fb719d5bf8e902ef8d601bc82178a2b8f461",
+      "kind": "file",
+      "sha256": "45d63ca01b2d09681b16fcc055be4fe7c2f1abb8cbad39987912587b9ad48ec8"
+    },
+    {
+      "path": ".git/objects/8a",
+      "kind": "directory"
+    },
+    {
+      "path": ".git/objects/8a/692e88c0823984647622294f5199c18bb0c587",
+      "kind": "file",
+      "sha256": "cea9fe2be3b3f64bc6e1af89137ae3a4de3452b39fb51be62d0954b44c973af6"
+    },
+    {
+      "path": ".git/objects/f2",
+      "kind": "directory"
+    },
+    {
+      "path": ".git/objects/f2/e455b43295bd646673e147c8d8931f82b8f7bc",
+      "kind": "file",
+      "sha256": "9d46e088bef5921b1321a15bbce7453367353d6c0d28f3ba08be95917e591eca"
+    },
+    {
+      "path": ".git/refs",
+      "kind": "directory"
+    },
+    {
+      "path": ".git/refs/heads",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/config",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/02",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/04",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/06",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/07",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/08",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/09",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/0b",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/0c",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/0f",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/12",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/14",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/15",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/16",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/17",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/1b",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/1f",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/24",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/25",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/26",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/27",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/28",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/2a",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/2b",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/2e",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/2f",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/34",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/35",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/36",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/38",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/39",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/3a",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/3b",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/3c",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/3d",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/3e",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/41",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/42",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/43",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/45",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/47",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/4a",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/4b",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/4c",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/4d",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/4e",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/4f",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/51",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/53",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/55",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/56",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/57",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/5a",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/5d",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/61",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/62",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/65",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/67",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/68",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/69",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/6a",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/6b",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/6d",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/6f",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/71",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/72",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/73",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/74",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/75",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/77",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/78",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/7d",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/83",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/84",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/85",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/8b",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/8d",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/90",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/92",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/94",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/96",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/97",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/9a",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/9b",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/9c",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/9d",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/9f",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/a3",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/a5",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/a6",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/a7",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/b4",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/b5",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/b9",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/ba",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/bb",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/bc",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/bd",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/bf",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/c0",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/c1",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/c2",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/c5",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/c7",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/c8",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/ca",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/cb",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/ce",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/d0",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/d1",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/d6",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/d9",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/db",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/de",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/e2",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/e3",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/e4",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/e7",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/e8",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/ee",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/ef",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/f0",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/f1",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/f4",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/f6",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/fc",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/daemon/payloads/by-sha256/ff",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/01",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/04",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/05",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/09",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/0c",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/14",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/15",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/17",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/1d",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/21",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/22",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/24",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/26",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/28",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/2b",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/2e",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/35",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/36",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/39",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/3a",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/3b",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/3e",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/3f",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/43",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/45",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/47",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/49",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/4a",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/4e",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/4f",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/53",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/56",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/5c",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/5d",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/61",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/62",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/67",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/68",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/69",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/6a",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/6b",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/6d",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/73",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/7c",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/7d",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/84",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/87",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/90",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/92",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/97",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/9a",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/9b",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/a4",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/a5",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/a6",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/a7",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/a9",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/aa",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/b4",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/b5",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/b7",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/bb",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/bf",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/c1",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/c2",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/c4",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/c5",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/c7",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/c8",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/ca",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/cf",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/d1",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/d6",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/d7",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/d8",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/db",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/de",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/e2",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/e4",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/e6",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/e8",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/ed",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/ee",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/ef",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/f2",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/f4",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/f6",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/f7",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/fa",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/fc",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/logs/observability/userlevel/payloads/by-sha256/ff",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/project",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/project/modules",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/project/modules/CORE",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/runtime",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/work-items",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/work-items/WI-0001",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/work-items/WI-0001/candidates",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/work-items/WI-0001/candidates/project",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/work-items/WI-0001/candidates/project/modules",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/work-items/WI-0001/candidates/project/modules/CORE",
+      "kind": "directory"
+    },
+    {
+      "path": ".specforge/work-items/WI-0001/handoffs",
+      "kind": "directory"
+    }
+  ],
+  "objects": [
+    {
+      "path": ".git/objects/55/18fb719d5bf8e902ef8d601bc82178a2b8f461",
+      "size": 115,
+      "sha256": "45d63ca01b2d09681b16fcc055be4fe7c2f1abb8cbad39987912587b9ad48ec8",
+      "bytes_base64": "eAE1ykEKAjEMRmHXPcUP7gfUE7hyI270Amkm1kJJSiYz0NsrirvH48vNMg7H026Pi4tE1YJrzU4+UjpjGRqvz2U8Rpc7e+2B8oftB/E0BynqYo1CZhTbxJWUBcQsPb7pq064GbrbvHJUU8wUNKU37TQu5w=="
+    },
+    {
+      "path": ".git/objects/8a/692e88c0823984647622294f5199c18bb0c587",
+      "size": 157,
+      "sha256": "cea9fe2be3b3f64bc6e1af89137ae3a4de3452b39fb51be62d0954b44c973af6",
+      "bytes_base64": "eAGlzU0OgjAQQGHXPcXsTUwpbSmJMboxce0J+jNIEyikTA16etEruHq77/lpHCOBqPSOMiJ0AqVSTtaiVS5oqXVTYyUbb4Jp66ozwpmucZ7ZQv2U4T6jv075gXApYYOO9pszrnacBzzE9LRDDCeomla0XAnBYc8N58z/xoR/EOyWIsXNfyMsr0Q9UvTgyhITLgt0caWSkX0AdClI1Q=="
+    },
+    {
+      "path": ".git/objects/f2/e455b43295bd646673e147c8d8931f82b8f7bc",
+      "size": 54,
+      "sha256": "9d46e088bef5921b1321a15bbce7453367353d6c0d28f3ba08be95917e591eca",
+      "bytes_base64": "eAErKUpNVTA2ZzA0MDAzMVEIcnV08XXVy01hCJX4XTg3+sdLpve9CdInFCsW7fiSCAA+mRDy"
+    }
+  ],
+  "stage": "C:\\Users\\lyq\\AppData\\Local\\Temp\\.sf-archive-stage-cb4f0c62ac7724fc56c08344",
+  "residue": "C:\\Users\\lyq\\AppData\\Local\\Temp\\.sf-archive-residue-cb4f0c62ac7724fc56c08344"
+}
