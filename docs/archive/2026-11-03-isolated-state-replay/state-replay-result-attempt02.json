@@ -1,0 +1,495 @@
+{
+  "run_id": "CODEX-SF-20261103-ISOLATED-STATE-REPLAY-A01",
+  "command": "node docs/archive/2026-11-03-isolated-state-replay/state-replay-probe.cjs attempt02",
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Real formal-tool business state replay after isolated daemon crash and projection loss",
+  "started_utc": "2026-11-03T06:31:09.721Z",
+  "scratch": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-state-replay-SabDX1",
+  "project": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-state-replay-SabDX1\\project",
+  "config": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-state-replay-SabDX1\\opencode-config",
+  "executable": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforged.exe",
+  "executable_sha256": "cc4e5d4aa0282afda7a005a12a89b19acb4bdb78094448d2d631efc6d9fdc50c",
+  "shared_pid": 35652,
+  "expected_writes": "Official-owner synthetic project/WI artifacts and WAL; retained projection backup; isolated daemon logs/config/runtime; receipt",
+  "observations": [
+    {
+      "utc": "2026-11-03T06:31:11.471Z",
+      "pid": 32696,
+      "method": "POST",
+      "endpoint": "/api/v1/project/ensure",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "success": true,
+          "created": [
+            ".specforge\\config\\observability.json",
+            ".specforge\\project\\modules\\CORE\\module.json",
+            ".specforge\\project\\modules\\CORE\\requirements.md",
+            ".specforge\\project\\modules\\CORE\\design.md",
+            ".specforge\\project\\modules\\CORE\\trace.md",
+            ".specforge\\config\\project-rules.md",
+            ".specforge\\config\\prod-environment.md",
+            ".specforge\\config\\project.json",
+            ".specforge\\project\\spec_manifest.json",
+            ".specforge\\project\\extension_registry.json",
+            ".specforge\\project\\requirements_index.md",
+            ".specforge\\project\\design_index.md",
+            ".specforge\\project\\architecture.md",
+            ".specforge\\project\\glossary.md",
+            ".specforge\\project\\decisions.md",
+            ".specforge\\project\\trace_matrix.md",
+            ".specforge\\.gitignore"
+          ],
+          "existed": [],
+          "errors": [],
+          "placeholderFiles": [
+            ".specforge\\config\\project-rules.md",
+            ".specforge\\config\\prod-environment.md"
+          ],
+          "normalized": [],
+          "moduleRegistry": {
+            "status": "unchanged",
+            "moduleCodes": [
+              "CORE"
+            ]
+          }
+        },
+        "requestId": "woozgnl5w9omw0b7ipa",
+        "timestamp": 1793687471470
+      }
+    },
+    {
+      "utc": "2026-11-03T06:31:11.511Z",
+      "pid": 32696,
+      "method": "POST",
+      "endpoint": "/api/v1/ingest/register",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "sessionId": "01a1a01a-c595-773d-9c7f-9753b2e2feec",
+          "projectId": "ec0410c9c4dcf4c3",
+          "mode": "personal"
+        },
+        "requestId": "ecuzupbwxv5mw0b7iqd",
+        "timestamp": 1793687471509
+      }
+    },
+    {
+      "utc": "2026-11-03T06:31:11.567Z",
+      "pid": 32696,
+      "method": "POST",
+      "endpoint": "/api/v1/tool/invoke",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "success": true,
+          "work_item_id": "WI-0001",
+          "wi_dir": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-state-replay-SabDX1\\project\\.specforge\\work-items\\WI-0001",
+          "workflow_type": "feature_spec",
+          "workflow_path": "requirement_change_path",
+          "status": "intake_ready"
+        },
+        "requestId": "a6m0d54v5samw0b7iry",
+        "timestamp": 1793687471566
+      }
+    },
+    {
+      "utc": "2026-11-03T06:31:11.595Z",
+      "pid": 32696,
+      "method": "POST",
+      "endpoint": "/api/v1/tool/invoke",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "success": true,
+          "work_item_id": "WI-0001",
+          "workflow_type": "feature_spec",
+          "workflow_path": "requirement_change_path",
+          "state_authority": "StateManager",
+          "workflow_engine_transition_full_used": false,
+          "transition_result": {
+            "source": "StateManager",
+            "workItemId": "WI-0001",
+            "previousState": "intake_ready",
+            "currentState": "impact_analyzing",
+            "timestamp": "2026-11-03T06:31:11.592Z"
+          }
+        },
+        "requestId": "m55a3owb7eamw0b7isq",
+        "timestamp": 1793687471594
+      }
+    },
+    {
+      "utc": "2026-11-03T06:31:11.636Z",
+      "pid": 32696,
+      "method": "POST",
+      "endpoint": "/api/v1/tool/invoke",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "success": true,
+          "work_item_id": "WI-0002",
+          "wi_dir": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-state-replay-SabDX1\\project\\.specforge\\work-items\\WI-0002",
+          "workflow_type": "feature_spec",
+          "workflow_path": "requirement_change_path",
+          "status": "intake_ready"
+        },
+        "requestId": "uf2vvcqhfxqmw0b7itu",
+        "timestamp": 1793687471634
+      }
+    },
+    {
+      "utc": "2026-11-03T06:31:11.651Z",
+      "pid": 32696,
+      "method": "POST",
+      "endpoint": "/api/v1/tool/invoke",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "success": true,
+          "rebuilt_from_events": true,
+          "work_items": {
+            "WI-0001": {
+              "work_item_id": "WI-0001",
+              "workflow_type": "feature_spec",
+              "current_state": "impact_analyzing",
+              "created_at": 1793687471557,
+              "updated_at": 1793687471589
+            },
+            "WI-0002": {
+              "work_item_id": "WI-0002",
+              "workflow_type": "feature_spec",
+              "current_state": "intake_ready",
+              "created_at": 1793687471630,
+              "updated_at": 1793687471630
+            }
+          }
+        },
+        "requestId": "pyeeh1zrnopmw0b7iua",
+        "timestamp": 1793687471650
+      }
+    },
+    {
+      "utc": "2026-11-03T06:31:12.165Z",
+      "pid": 32248,
+      "method": "POST",
+      "endpoint": "/api/v1/tool/invoke",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "success": true,
+          "rebuilt_from_events": true,
+          "work_items": {
+            "WI-0001": {
+              "work_item_id": "WI-0001",
+              "workflow_type": "feature_spec",
+              "current_state": "impact_analyzing",
+              "created_at": 1793687471557,
+              "updated_at": 1793687471589
+            },
+            "WI-0002": {
+              "work_item_id": "WI-0002",
+              "workflow_type": "feature_spec",
+              "current_state": "intake_ready",
+              "created_at": 1793687471630,
+              "updated_at": 1793687471630
+            }
+          }
+        },
+        "requestId": "hif1f1b7nc5mw0b7j8k",
+        "timestamp": 1793687472164
+      }
+    },
+    {
+      "utc": "2026-11-03T06:31:12.173Z",
+      "pid": 32248,
+      "method": "POST",
+      "endpoint": "/api/v1/admin/stop",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "message": "shutdown initiated"
+        },
+        "requestId": "4a8zq3uxnu5mw0b7j8s",
+        "timestamp": 1793687472172
+      }
+    },
+    {
+      "utc": "2026-11-03T06:31:12.690Z",
+      "pid": 33208,
+      "method": "POST",
+      "endpoint": "/api/v1/tool/invoke",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "success": true,
+          "rebuilt_from_events": true,
+          "work_items": {
+            "WI-0001": {
+              "work_item_id": "WI-0001",
+              "workflow_type": "feature_spec",
+              "current_state": "impact_analyzing",
+              "created_at": 1793687471557,
+              "updated_at": 1793687471589
+            },
+            "WI-0002": {
+              "work_item_id": "WI-0002",
+              "workflow_type": "feature_spec",
+              "current_state": "intake_ready",
+              "created_at": 1793687471630,
+              "updated_at": 1793687471630
+            }
+          }
+        },
+        "requestId": "6co7z825wd9mw0b7jn6",
+        "timestamp": 1793687472690
+      }
+    },
+    {
+      "utc": "2026-11-03T06:31:12.698Z",
+      "pid": 33208,
+      "method": "POST",
+      "endpoint": "/api/v1/admin/stop",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "message": "shutdown initiated"
+        },
+        "requestId": "cyt4elpp6krmw0b7jne",
+        "timestamp": 1793687472698
+      }
+    }
+  ],
+  "processes": [
+    {
+      "label": "before-crash",
+      "pid": 32696,
+      "utc": "2026-11-03T06:31:09.871Z"
+    },
+    {
+      "label": "after-crash",
+      "pid": 32248,
+      "utc": "2026-11-03T06:31:11.687Z"
+    },
+    {
+      "label": "after-clean-restart",
+      "pid": 33208,
+      "utc": "2026-11-03T06:31:12.213Z"
+    }
+  ],
+  "shared_before": {
+    "schema_version": "1.0",
+    "status": "ok",
+    "pid": 35652,
+    "version": "1.0.21",
+    "startedAt": 1793678876928,
+    "uptimeSec": 8592,
+    "activeClients": 0,
+    "pendingEvents": 4,
+    "lastEventTs": 1793678876951
+  },
+  "fixture_work_items": [
+    "WI-0001",
+    "WI-0002"
+  ],
+  "before_read": {
+    "success": true,
+    "rebuilt_from_events": true,
+    "work_items": {
+      "WI-0001": {
+        "work_item_id": "WI-0001",
+        "workflow_type": "feature_spec",
+        "current_state": "impact_analyzing",
+        "created_at": 1793687471557,
+        "updated_at": 1793687471589
+      },
+      "WI-0002": {
+        "work_item_id": "WI-0002",
+        "workflow_type": "feature_spec",
+        "current_state": "intake_ready",
+        "created_at": 1793687471630,
+        "updated_at": 1793687471630
+      }
+    }
+  },
+  "history_before": [
+    {
+      "file": "events.jsonl",
+      "sha256": "43cbc625c17217f2150580f21d49295bafc6bfb41f8156aab73e723a7f13bd07",
+      "bytes_base64": "eyJzY2hlbWFfdmVyc2lvbiI6IjEuMCIsImV2ZW50SWQiOiIwMWExYTAxYS1jNWM1LTc1YjMtOWE1Yy04OGY5YWQ2NWZlM2IiLCJ0cyI6MTc5MzY4NzQ3MTU1NywibW9ub3RvbmljU2VxIjoxLCJwcm9qZWN0SWQiOiJXSS0wMDAxIiwiYWN0b3IiOiJzZi1vcmNoZXN0cmF0b3IiLCJjYXRlZ29yeSI6InN0YXRlIiwiYWN0aW9uIjoic3RhdGUudHJhbnNpdGlvbiIsInBheWxvYWQiOnsid29ya19pdGVtX2lkIjoiV0ktMDAwMSIsImZyb21fc3RhdGUiOiIiLCJ0b19zdGF0ZSI6ImludGFrZV9yZWFkeSIsIndvcmtmbG93X3R5cGUiOiJmZWF0dXJlX3NwZWMiLCJ0cmFuc2l0aW9uZWRfYXQiOjE3OTM2ODc0NzE1NTcsIndvcmtmbG93X3BhdGgiOiJyZXF1aXJlbWVudF9jaGFuZ2VfcGF0aCJ9LCJtZXRhZGF0YSI6eyJzY2hlbWFWZXJzaW9uIjoiMS4wIiwic291cmNlIjoiZGFlbW9uIn19Cnsic2NoZW1hX3ZlcnNpb24iOiIxLjAiLCJldmVudElkIjoiMDFhMWEwMWEtYzVlNS03NmY4LTlhMGYtMTM4MGRiODYxMjg1IiwidHMiOjE3OTM2ODc0NzE1ODksIm1vbm90b25pY1NlcSI6MiwicHJvamVjdElkIjoiV0ktMDAwMSIsImFjdG9yIjoic2Ytb3JjaGVzdHJhdG9yIiwiY2F0ZWdvcnkiOiJzdGF0ZSIsImFjdGlvbiI6InN0YXRlLnRyYW5zaXRpb24iLCJwYXlsb2FkIjp7IndvcmtfaXRlbV9pZCI6IldJLTAwMDEiLCJmcm9tX3N0YXRlIjoiaW50YWtlX3JlYWR5IiwidG9fc3RhdGUiOiJpbXBhY3RfYW5hbHl6aW5nIiwid29ya2Zsb3dfdHlwZSI6ImZlYXR1cmVfc3BlYyIsInRyYW5zaXRpb25lZF9hdCI6MTc5MzY4NzQ3MTU4OSwiZXZpZGVuY2UiOiJVc2VyLWF1dGhvcml6ZWQgaXNvbGF0ZWQgYnVzaW5lc3Mtc3RhdGUgcmVwbGF5IGFjY2VwdGFuY2U7IG5vIG9yaWdpbmFsIGJ1c2luZXNzIHByb2plY3QgaXMgaW52b2x2ZWQuIiwidHJhbnNpdGlvbl9jb250ZXh0Ijp7InNvdXJjZSI6InNmX3N0YXRlX3RyYW5zaXRpb24ifX0sIm1ldGFkYXRhIjp7InNjaGVtYVZlcnNpb24iOiIxLjAiLCJzb3VyY2UiOiJkYWVtb24ifX0KeyJzY2hlbWFfdmVyc2lvbiI6IjEuMCIsImV2ZW50SWQiOiIwMWExYTAxYS1jNjBlLTc2ODktOWEzNS00ZDhjMGNhNzRmN2YiLCJ0cyI6MTc5MzY4NzQ3MTYzMCwibW9ub3RvbmljU2VxIjozLCJwcm9qZWN0SWQiOiJXSS0wMDAyIiwiYWN0b3IiOiJzZi1vcmNoZXN0cmF0b3IiLCJjYXRlZ29yeSI6InN0YXRlIiwiYWN0aW9uIjoic3RhdGUudHJhbnNpdGlvbiIsInBheWxvYWQiOnsid29ya19pdGVtX2lkIjoiV0ktMDAwMiIsImZyb21fc3RhdGUiOiIiLCJ0b19zdGF0ZSI6ImludGFrZV9yZWFkeSIsIndvcmtmbG93X3R5cGUiOiJmZWF0dXJlX3NwZWMiLCJ0cmFuc2l0aW9uZWRfYXQiOjE3OTM2ODc0NzE2MzAsIndvcmtmbG93X3BhdGgiOiJyZXF1aXJlbWVudF9jaGFuZ2VfcGF0aCJ9LCJtZXRhZGF0YSI6eyJzY2hlbWFWZXJzaW9uIjoiMS4wIiwic291cmNlIjoiZGFlbW9uIn19Cg=="
+    }
+  ],
+  "projection_before": {
+    "sha256": "084d77da5fe6fab05c21f218d5c87e4281b271095a2960c42761d5e70fbaca36",
+    "content": {
+      "stateVersion": 4,
+      "projectPath": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-state-replay-SabDX1\\project",
+      "activeSessions": [],
+      "workItems": [
+        {
+          "work_item_id": "WI-0001",
+          "workflow_type": "feature_spec",
+          "current_state": "impact_analyzing",
+          "created_at": 1793687471557,
+          "updated_at": 1793687471589
+        },
+        {
+          "work_item_id": "WI-0002",
+          "workflow_type": "feature_spec",
+          "current_state": "intake_ready",
+          "created_at": 1793687471630,
+          "updated_at": 1793687471630
+        }
+      ],
+      "lastEventId": "01a1a01a-c60e-7689-9a35-4d8c0ca74f7f",
+      "lastEventTs": 1793687471630,
+      "schema_version": "1.0"
+    }
+  },
+  "crash_utc": "2026-11-03T06:31:11.652Z",
+  "crashed_process": {
+    "pid": 32696,
+    "exit_code": null,
+    "signal": "SIGKILL"
+  },
+  "projection_backup": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-state-replay-SabDX1\\retained-state-before-crash.json",
+  "projection_absent_before_restart": true,
+  "after_read": {
+    "success": true,
+    "rebuilt_from_events": true,
+    "work_items": {
+      "WI-0001": {
+        "work_item_id": "WI-0001",
+        "workflow_type": "feature_spec",
+        "current_state": "impact_analyzing",
+        "created_at": 1793687471557,
+        "updated_at": 1793687471589
+      },
+      "WI-0002": {
+        "work_item_id": "WI-0002",
+        "workflow_type": "feature_spec",
+        "current_state": "intake_ready",
+        "created_at": 1793687471630,
+        "updated_at": 1793687471630
+      }
+    }
+  },
+  "history_after": [
+    {
+      "file": "events.jsonl",
+      "sha256": "43cbc625c17217f2150580f21d49295bafc6bfb41f8156aab73e723a7f13bd07",
+      "bytes_base64": "eyJzY2hlbWFfdmVyc2lvbiI6IjEuMCIsImV2ZW50SWQiOiIwMWExYTAxYS1jNWM1LTc1YjMtOWE1Yy04OGY5YWQ2NWZlM2IiLCJ0cyI6MTc5MzY4NzQ3MTU1NywibW9ub3RvbmljU2VxIjoxLCJwcm9qZWN0SWQiOiJXSS0wMDAxIiwiYWN0b3IiOiJzZi1vcmNoZXN0cmF0b3IiLCJjYXRlZ29yeSI6InN0YXRlIiwiYWN0aW9uIjoic3RhdGUudHJhbnNpdGlvbiIsInBheWxvYWQiOnsid29ya19pdGVtX2lkIjoiV0ktMDAwMSIsImZyb21fc3RhdGUiOiIiLCJ0b19zdGF0ZSI6ImludGFrZV9yZWFkeSIsIndvcmtmbG93X3R5cGUiOiJmZWF0dXJlX3NwZWMiLCJ0cmFuc2l0aW9uZWRfYXQiOjE3OTM2ODc0NzE1NTcsIndvcmtmbG93X3BhdGgiOiJyZXF1aXJlbWVudF9jaGFuZ2VfcGF0aCJ9LCJtZXRhZGF0YSI6eyJzY2hlbWFWZXJzaW9uIjoiMS4wIiwic291cmNlIjoiZGFlbW9uIn19Cnsic2NoZW1hX3ZlcnNpb24iOiIxLjAiLCJldmVudElkIjoiMDFhMWEwMWEtYzVlNS03NmY4LTlhMGYtMTM4MGRiODYxMjg1IiwidHMiOjE3OTM2ODc0NzE1ODksIm1vbm90b25pY1NlcSI6MiwicHJvamVjdElkIjoiV0ktMDAwMSIsImFjdG9yIjoic2Ytb3JjaGVzdHJhdG9yIiwiY2F0ZWdvcnkiOiJzdGF0ZSIsImFjdGlvbiI6InN0YXRlLnRyYW5zaXRpb24iLCJwYXlsb2FkIjp7IndvcmtfaXRlbV9pZCI6IldJLTAwMDEiLCJmcm9tX3N0YXRlIjoiaW50YWtlX3JlYWR5IiwidG9fc3RhdGUiOiJpbXBhY3RfYW5hbHl6aW5nIiwid29ya2Zsb3dfdHlwZSI6ImZlYXR1cmVfc3BlYyIsInRyYW5zaXRpb25lZF9hdCI6MTc5MzY4NzQ3MTU4OSwiZXZpZGVuY2UiOiJVc2VyLWF1dGhvcml6ZWQgaXNvbGF0ZWQgYnVzaW5lc3Mtc3RhdGUgcmVwbGF5IGFjY2VwdGFuY2U7IG5vIG9yaWdpbmFsIGJ1c2luZXNzIHByb2plY3QgaXMgaW52b2x2ZWQuIiwidHJhbnNpdGlvbl9jb250ZXh0Ijp7InNvdXJjZSI6InNmX3N0YXRlX3RyYW5zaXRpb24ifX0sIm1ldGFkYXRhIjp7InNjaGVtYVZlcnNpb24iOiIxLjAiLCJzb3VyY2UiOiJkYWVtb24ifX0KeyJzY2hlbWFfdmVyc2lvbiI6IjEuMCIsImV2ZW50SWQiOiIwMWExYTAxYS1jNjBlLTc2ODktOWEzNS00ZDhjMGNhNzRmN2YiLCJ0cyI6MTc5MzY4NzQ3MTYzMCwibW9ub3RvbmljU2VxIjozLCJwcm9qZWN0SWQiOiJXSS0wMDAyIiwiYWN0b3IiOiJzZi1vcmNoZXN0cmF0b3IiLCJjYXRlZ29yeSI6InN0YXRlIiwiYWN0aW9uIjoic3RhdGUudHJhbnNpdGlvbiIsInBheWxvYWQiOnsid29ya19pdGVtX2lkIjoiV0ktMDAwMiIsImZyb21fc3RhdGUiOiIiLCJ0b19zdGF0ZSI6ImludGFrZV9yZWFkeSIsIndvcmtmbG93X3R5cGUiOiJmZWF0dXJlX3NwZWMiLCJ0cmFuc2l0aW9uZWRfYXQiOjE3OTM2ODc0NzE2MzAsIndvcmtmbG93X3BhdGgiOiJyZXF1aXJlbWVudF9jaGFuZ2VfcGF0aCJ9LCJtZXRhZGF0YSI6eyJzY2hlbWFWZXJzaW9uIjoiMS4wIiwic291cmNlIjoiZGFlbW9uIn19Cg=="
+    }
+  ],
+  "projection_after": {
+    "sha256": "4e75f31af874b4afc5710d2c22a6381e91a5bfc465c989be6c324de2cc8f2f5d",
+    "content": {
+      "stateVersion": 1,
+      "projectPath": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-state-replay-SabDX1\\project",
+      "activeSessions": [],
+      "workItems": [
+        {
+          "work_item_id": "WI-0001",
+          "workflow_type": "feature_spec",
+          "current_state": "impact_analyzing",
+          "created_at": 1793687471557,
+          "updated_at": 1793687471589
+        },
+        {
+          "work_item_id": "WI-0002",
+          "workflow_type": "feature_spec",
+          "current_state": "intake_ready",
+          "created_at": 1793687471630,
+          "updated_at": 1793687471630
+        }
+      ],
+      "lastEventId": "01a1a01a-c60e-7689-9a35-4d8c0ca74f7f",
+      "lastEventTs": 1793687471630,
+      "schema_version": "1.0"
+    }
+  },
+  "projection_version_observation": {
+    "before": 4,
+    "after_missing_projection": 1,
+    "explanation": "Projection concurrency counter is seeded from disk and resets when the projection is absent; not the authoritative WAL cursor."
+  },
+  "replay": "CONFIRMED_FROM_UNCHANGED_EVENTS_WITH_MISSING_PROJECTION",
+  "after_clean_restart_read": {
+    "success": true,
+    "rebuilt_from_events": true,
+    "work_items": {
+      "WI-0001": {
+        "work_item_id": "WI-0001",
+        "workflow_type": "feature_spec",
+        "current_state": "impact_analyzing",
+        "created_at": 1793687471557,
+        "updated_at": 1793687471589
+      },
+      "WI-0002": {
+        "work_item_id": "WI-0002",
+        "workflow_type": "feature_spec",
+        "current_state": "intake_ready",
+        "created_at": 1793687471630,
+        "updated_at": 1793687471630
+      }
+    }
+  },
+  "after_clean_restart_projection": {
+    "stateVersion": 2,
+    "projectPath": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-state-replay-SabDX1\\project",
+    "activeSessions": [],
+    "workItems": [
+      {
+        "work_item_id": "WI-0001",
+        "workflow_type": "feature_spec",
+        "current_state": "impact_analyzing",
+        "created_at": 1793687471557,
+        "updated_at": 1793687471589
+      },
+      {
+        "work_item_id": "WI-0002",
+        "workflow_type": "feature_spec",
+        "current_state": "intake_ready",
+        "created_at": 1793687471630,
+        "updated_at": 1793687471630
+      }
+    ],
+    "lastEventId": "01a1a01a-c60e-7689-9a35-4d8c0ca74f7f",
+    "lastEventTs": 1793687471630,
+    "schema_version": "1.0"
+  },
+  "shared_after": {
+    "schema_version": "1.0",
+    "status": "ok",
+    "pid": 35652,
+    "version": "1.0.21",
+    "startedAt": 1793678876928,
+    "uptimeSec": 8595,
+    "activeClients": 0,
+    "pendingEvents": 4,
+    "lastEventTs": 1793678876951
+  },
+  "shared_handshake_unchanged": true,
+  "inner_exit_code": 0,
+  "finished_utc": "2026-11-03T06:31:12.720Z",
+  "carrier_exit_code": 0,
+  "observed_writes": {
+    "retained_scratch": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-state-replay-SabDX1",
+    "logs": [
+      "attempt02-before-crash.log",
+      "attempt02-after-crash.log",
+      "attempt02-after-clean-restart.log"
+    ],
+    "receipt": "D:\\code\\SpecForge\\docs\\archive\\2026-11-03-isolated-state-replay\\state-replay-result-attempt02.json"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "run_id": "CODEX-SF-20261103-ISOLATED-STATE-REPLAY-A01",
+  "execution_mode": "CODEX_DIRECT",
+  "status": "COMPLETED_AT_DECLARED_STOP",
+  "baseline_head": "3eb7e8a43277b645d80982cba89302f61d87f724",
+  "receipt": "state-replay-result-attempt02.json",
+  "workflow_state_replay": "CONFIRMED_FOR_TWO_FIXTURE_WORK_ITEMS",
+  "projection_removed_and_rebuilt": true,
+  "authoritative_event_bytes_unchanged": true,
+  "wal_sha256": "43cbc625c17217f2150580f21d49295bafc6bfb41f8156aab73e723a7f13bd07",
+  "projection_versions": [4, 1, 2],
+  "shared_daemon_unchanged": true,
+  "original_business_work_item_resumed": false,
+  "next_step": "Stop before separately authorized original business WI recovery; preserve evidence limits.",
+  "writes": {
+    "TRUTH_SOURCE_WRITES": "Official-owner synthetic fixture Work Items only; no existing business project changed",
+    "REPOSITORY_TRACKED_WRITES": "Project-status and evidence preservation attribute",
+    "RUNTIME_OBSERVER_WRITES": "Isolated runtime/configuration and child logs; one retained projection backup",
+    "EXTERNAL_EVIDENCE_WRITES": "This RUN_ID evidence root"
+  }
+}
