@@ -28,6 +28,7 @@ import { WAL } from '../wal/WAL';
 import { ToolDispatcher } from '../tools';
 import { WALWriteError } from '../session/SessionRegistry';
 import { ensureProjectInit } from '../tools/lib/sf_project_init_core';
+import { reconstructInitialization, type ReconstructionInput } from '../tools/lib/project-init-reconstruction';
 import { CONTROLLED_HTTP_TOOLS } from '../tools/lib/controlled-http-tools';
 import { performChangedFilesAudit, type WriteGuardContext } from '../tools/lib/write-guard-v11';
 import { isCandidateFrozenState } from '../tools/lib/candidate-freeze-v11';
@@ -1222,9 +1223,10 @@ export class HTTPServer {
     }
 
     try {
-      // P0: 确保项目已初始化（幂等）
-      await ensureProjectInit(request.projectPath);
-
+      // Registration must remain read-only until ProjectManager's layout and
+      // schema prechecks accept the project. Initialization belongs to the
+      // explicit /project/ensure owner; a rejected plugin registration must
+      // never seed modules or normalize formal Project Spec files.
       const ctx = await (this.deps.projectManager as any).registerProject(request.projectPath);
       const identity = await (this.deps.sessionRegistry as any).registerPluginSession(ctx.projectId, request.projectPath);
       this.sendJsonResponse(res, 200, this.successBody({
@@ -1260,7 +1262,7 @@ export class HTTPServer {
   private async handleProjectEnsure(
     _req: http.IncomingMessage, res: http.ServerResponse, body: string
   ): Promise<void> {
-    let request: { projectPath?: string; projectName?: string };
+    let request: { projectPath?: string; projectName?: string; action?: string; reconstruction?: ReconstructionInput };
     try {
       request = JSON.parse(body || "{}");
     } catch {
@@ -1270,6 +1272,13 @@ export class HTTPServer {
     const projectPath = request.projectPath || process.cwd();
 
     try {
+      if (request.action === 'reconstruct_git_baseline') {
+        if (!request.reconstruction) throw new Error('RECOVERY_INPUT_REQUIRED');
+        const result = await reconstructInitialization(projectPath, request.reconstruction);
+        this.sendJsonResponse(res, 200, this.successBody(result));
+        return;
+      }
+      if (request.action && request.action !== 'ensure') throw new Error('UNKNOWN_PROJECT_INIT_ACTION');
       const result = await ensureProjectInit(projectPath, request.projectName);
       this.sendJsonResponse(res, 200, this.successBody(result));
     } catch (err) {

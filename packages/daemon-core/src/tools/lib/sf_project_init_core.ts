@@ -237,6 +237,11 @@ function buildManifest(): InitEntry[] {
   });
 }
 
+/** Read-only ownership inventory for initialization incident recovery. */
+export function projectInitOwnedFiles(): string[] {
+  return buildManifest().filter(entry => entry.type !== 'dir').map(entry => normalizeLayoutPath(entry.path));
+}
+
 function makeFileEntry(relativePath: string): InitEntry | null {
   const normalized = normalizeLayoutPath(relativePath);
   const fullPath = join(SPEC_DIR_NAME, normalized);

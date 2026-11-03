@@ -697,6 +697,10 @@ Thin Plugin 是 OpenCode 侧第一方连接组件，只负责：
 
 Thin Plugin 不等于第三方 Plugin Loader。
 
+插件注册不得隐式执行项目初始化；必须先通过 ProjectManager 的布局与 Schema 检查。被拒绝的注册不得创建或规范化 Project Spec。
+
+对于旧布局注册在拒绝前已产生初始化写入的历史事故，Project Init owner 可通过显式 `reconstruct_git_baseline` 动作执行受控基线重建。此动作必须绑定不可变事故快照的 SHA-256、完整 Git 提交身份和操作者明确接受“Git 内容重建而非历史原始字节还原”的原话；仅允许处理初始化 owner 拥有的文件，保留当前字节与审计记录，逐文件核对事故快照哈希。已跟踪文件必须由本地 Git 对象复核基线；新建文件必须不在基线提交中且仍匹配初始化模板，移入恢复归档。链接、范围外路径、哈希漂移、缺失基线或并发恢复必须失败关闭。重试只能接受已归档计划记录的原状态或目标状态，不得覆盖后续变更。此动作不注册旧布局、不迁移布局、不推进 Work Item、不解除 HardStop；恢复失败必须保留计划与已完成步骤供同一 owner 恢复。
+
 部署边界：
 
 - Thin Plugin 只安装在 `<OpenCode config>/plugins/sf_specforge.ts`，作为用户级全局插件被 OpenCode 发现。

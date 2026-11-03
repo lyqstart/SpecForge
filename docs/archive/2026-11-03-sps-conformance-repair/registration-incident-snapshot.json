@@ -1,0 +1,135 @@
+{
+  "run_id": "CODEX-SF-20261103-SPS-GAP-REPAIR-A01",
+  "mode": "CODEX_DIRECT",
+  "command": "node docs/archive/2026-11-03-sps-conformance-repair/capture-registration-incident.cjs",
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Preserve initialization incident evidence without changing live governance files",
+  "started_utc": "2026-11-03T03:56:09.479Z",
+  "head": "0cb19d666be0c65b287b5d47d6afc0ee1a2b68ed",
+  "status": " M .specforge/config/project.json\n M .specforge/project/spec_manifest.json\n?? .specforge/project/modules/CORE/design.md\n?? .specforge/project/modules/CORE/module.json\n?? .specforge/project/modules/CORE/requirements.md\n?? .specforge/project/modules/CORE/trace.md\n",
+  "entries": [
+    {
+      "file": ".specforge/config/project.json",
+      "classification": "CORROBORATED_PROBE_INITIALIZATION_WRITE",
+      "sha256": "ae4485aea4a3ee8a404d95e3b2ed3ea56f3c833d29077aaf8d012276d34a990c",
+      "bytes_base64": "ewogICJzY2hlbWFfdmVyc2lvbiI6ICIxLjAiCn0K",
+      "size": 30,
+      "created_utc": "2026-10-03T05:24:58.650Z",
+      "modified_utc": "2026-11-02T17:19:24.164Z",
+      "baseline_kind": "GIT_BLOB_NOT_PREPROBE_RAW_BYTES",
+      "baseline_sha256": "ae4485aea4a3ee8a404d95e3b2ed3ea56f3c833d29077aaf8d012276d34a990c",
+      "baseline_bytes_base64": "ewogICJzY2hlbWFfdmVyc2lvbiI6ICIxLjAiCn0K"
+    },
+    {
+      "file": ".specforge/project/spec_manifest.json",
+      "classification": "CORROBORATED_PROBE_INITIALIZATION_WRITE",
+      "sha256": "9ca5ce4ae0a41df2b44ee2b7a018bc8d27377e8be8e8ac4628c333984091891c",
+      "bytes_base64": "ewogICJzY2hlbWFfdmVyc2lvbiI6ICIxLjAiLAogICJwcm9qZWN0X3NwZWNfdmVyc2lvbiI6ICJQU1YtMDAwMSIsCiAgInByb2plY3RfbmFtZSI6ICJTcGVjRm9yZ2UiLAogICJwcm9qZWN0IjogewogICAgImV4dGVuc2lvbl9yZWdpc3RyeSI6ICIuc3BlY2ZvcmdlL3Byb2plY3QvZXh0ZW5zaW9uX3JlZ2lzdHJ5Lmpzb24iLAogICAgInJlcXVpcmVtZW50c19pbmRleCI6ICIuc3BlY2ZvcmdlL3Byb2plY3QvcmVxdWlyZW1lbnRzX2luZGV4Lm1kIiwKICAgICJkZXNpZ25faW5kZXgiOiAiLnNwZWNmb3JnZS9wcm9qZWN0L2Rlc2lnbl9pbmRleC5tZCIsCiAgICAiYXJjaGl0ZWN0dXJlIjogIi5zcGVjZm9yZ2UvcHJvamVjdC9hcmNoaXRlY3R1cmUubWQiLAogICAgImdsb3NzYXJ5IjogIi5zcGVjZm9yZ2UvcHJvamVjdC9nbG9zc2FyeS5tZCIsCiAgICAiZGVjaXNpb25zIjogIi5zcGVjZm9yZ2UvcHJvamVjdC9kZWNpc2lvbnMubWQiLAogICAgInRyYWNlX21hdHJpeCI6ICIuc3BlY2ZvcmdlL3Byb2plY3QvdHJhY2VfbWF0cml4Lm1kIgogIH0sCiAgIm1vZHVsZXMiOiBbCiAgICB7CiAgICAgICJtb2R1bGVfY29kZSI6ICJDT1JFIiwKICAgICAgInBhdGgiOiAiLnNwZWNmb3JnZS9wcm9qZWN0L21vZHVsZXMvQ09SRSIsCiAgICAgICJtb2R1bGVfZmlsZSI6ICIuc3BlY2ZvcmdlL3Byb2plY3QvbW9kdWxlcy9DT1JFL21vZHVsZS5qc29uIiwKICAgICAgInJlcXVpcmVtZW50cyI6ICIuc3BlY2ZvcmdlL3Byb2plY3QvbW9kdWxlcy9DT1JFL3JlcXVpcmVtZW50cy5tZCIsCiAgICAgICJkZXNpZ24iOiAiLnNwZWNmb3JnZS9wcm9qZWN0L21vZHVsZXMvQ09SRS9kZXNpZ24ubWQiLAogICAgICAidHJhY2UiOiAiLnNwZWNmb3JnZS9wcm9qZWN0L21vZHVsZXMvQ09SRS90cmFjZS5tZCIKICAgIH0KICBdLAogICJkZWZhdWx0X21vZHVsZSI6ICJDT1JFIgp9Cg==",
+      "size": 934,
+      "created_utc": "2026-10-03T05:24:58.692Z",
+      "modified_utc": "2026-11-02T17:19:27.651Z",
+      "baseline_kind": "GIT_BLOB_NOT_PREPROBE_RAW_BYTES",
+      "baseline_sha256": "b24eb9f04c4a3c7412a7695d36617b722e5d5ae3e3beffb64502567a564c17c2",
+      "baseline_bytes_base64": "ewogICJzY2hlbWFfdmVyc2lvbiI6ICIxLjAiLAogICJwcm9qZWN0X3NwZWNfdmVyc2lvbiI6ICJQU1YtMDAwMSIsCiAgInByb2plY3RfbmFtZSI6ICJTcGVjRm9yZ2UiLAogICJwcm9qZWN0IjogewogICAgImV4dGVuc2lvbl9yZWdpc3RyeSI6ICIuc3BlY2ZvcmdlL3Byb2plY3QvZXh0ZW5zaW9uX3JlZ2lzdHJ5Lmpzb24iLAogICAgInJlcXVpcmVtZW50c19pbmRleCI6ICIuc3BlY2ZvcmdlL3Byb2plY3QvcmVxdWlyZW1lbnRzX2luZGV4Lm1kIiwKICAgICJkZXNpZ25faW5kZXgiOiAiLnNwZWNmb3JnZS9wcm9qZWN0L2Rlc2lnbl9pbmRleC5tZCIsCiAgICAiYXJjaGl0ZWN0dXJlIjogIi5zcGVjZm9yZ2UvcHJvamVjdC9hcmNoaXRlY3R1cmUubWQiLAogICAgImdsb3NzYXJ5IjogIi5zcGVjZm9yZ2UvcHJvamVjdC9nbG9zc2FyeS5tZCIsCiAgICAiZGVjaXNpb25zIjogIi5zcGVjZm9yZ2UvcHJvamVjdC9kZWNpc2lvbnMubWQiLAogICAgInRyYWNlX21hdHJpeCI6ICIuc3BlY2ZvcmdlL3Byb2plY3QvdHJhY2VfbWF0cml4Lm1kIgogIH0sCiAgIm1vZHVsZXMiOiBbXQp9Cg=="
+    },
+    {
+      "file": ".specforge/project/modules/CORE/module.json",
+      "classification": "CORROBORATED_PROBE_INITIALIZATION_WRITE",
+      "sha256": "944f4ccbd3e0f1d9878fa448f60e964068c132c5dd3c184ae03bb87ac313fd55",
+      "bytes_base64": "ewogICJzY2hlbWFfdmVyc2lvbiI6ICIxLjAiLAogICJtb2R1bGVfY29kZSI6ICJDT1JFIiwKICAic3RhdHVzIjogImFjdGl2ZSIKfQo=",
+      "size": 77,
+      "created_utc": "2026-11-02T17:19:24.127Z",
+      "modified_utc": "2026-11-02T17:19:24.127Z",
+      "baseline_kind": "UNTRACKED_NO_PREPROBE_BYTE_SNAPSHOT",
+      "baseline_sha256": null,
+      "baseline_bytes_base64": null
+    },
+    {
+      "file": ".specforge/project/modules/CORE/requirements.md",
+      "classification": "CORROBORATED_PROBE_INITIALIZATION_WRITE",
+      "sha256": "8d975c562c022cc9d809c04f613e91ee0673bdeef39ed096c68e735b66e6400c",
+      "bytes_base64": "PiBUT0RPOiDnlLHpppbmrKEgaW50YWtlIOmYtuauteWhq+WFhQo=",
+      "size": 38,
+      "created_utc": "2026-11-02T17:19:24.129Z",
+      "modified_utc": "2026-11-02T17:19:24.129Z",
+      "baseline_kind": "UNTRACKED_NO_PREPROBE_BYTE_SNAPSHOT",
+      "baseline_sha256": null,
+      "baseline_bytes_base64": null
+    },
+    {
+      "file": ".specforge/project/modules/CORE/design.md",
+      "classification": "CORROBORATED_PROBE_INITIALIZATION_WRITE",
+      "sha256": "8d975c562c022cc9d809c04f613e91ee0673bdeef39ed096c68e735b66e6400c",
+      "bytes_base64": "PiBUT0RPOiDnlLHpppbmrKEgaW50YWtlIOmYtuauteWhq+WFhQo=",
+      "size": 38,
+      "created_utc": "2026-11-02T17:19:24.129Z",
+      "modified_utc": "2026-11-02T17:19:24.129Z",
+      "baseline_kind": "UNTRACKED_NO_PREPROBE_BYTE_SNAPSHOT",
+      "baseline_sha256": null,
+      "baseline_bytes_base64": null
+    },
+    {
+      "file": ".specforge/project/modules/CORE/trace.md",
+      "classification": "CORROBORATED_PROBE_INITIALIZATION_WRITE",
+      "sha256": "8d975c562c022cc9d809c04f613e91ee0673bdeef39ed096c68e735b66e6400c",
+      "bytes_base64": "PiBUT0RPOiDnlLHpppbmrKEgaW50YWtlIOmYtuauteWhq+WFhQo=",
+      "size": 38,
+      "created_utc": "2026-11-02T17:19:24.131Z",
+      "modified_utc": "2026-11-02T17:19:24.131Z",
+      "baseline_kind": "UNTRACKED_NO_PREPROBE_BYTE_SNAPSHOT",
+      "baseline_sha256": null,
+      "baseline_bytes_base64": null
+    }
+  ],
+  "recent_specforge_inventory": [
+    {
+      "file": ".specforge/config/project.json",
+      "size": 30,
+      "modified_utc": "2026-11-02T17:19:24.164Z",
+      "sha256": "ae4485aea4a3ee8a404d95e3b2ed3ea56f3c833d29077aaf8d012276d34a990c"
+    },
+    {
+      "file": ".specforge/project/modules/CORE/design.md",
+      "size": 38,
+      "modified_utc": "2026-11-02T17:19:24.129Z",
+      "sha256": "8d975c562c022cc9d809c04f613e91ee0673bdeef39ed096c68e735b66e6400c"
+    },
+    {
+      "file": ".specforge/project/modules/CORE/module.json",
+      "size": 77,
+      "modified_utc": "2026-11-02T17:19:24.127Z",
+      "sha256": "944f4ccbd3e0f1d9878fa448f60e964068c132c5dd3c184ae03bb87ac313fd55"
+    },
+    {
+      "file": ".specforge/project/modules/CORE/requirements.md",
+      "size": 38,
+      "modified_utc": "2026-11-02T17:19:24.129Z",
+      "sha256": "8d975c562c022cc9d809c04f613e91ee0673bdeef39ed096c68e735b66e6400c"
+    },
+    {
+      "file": ".specforge/project/modules/CORE/trace.md",
+      "size": 38,
+      "modified_utc": "2026-11-02T17:19:24.131Z",
+      "sha256": "8d975c562c022cc9d809c04f613e91ee0673bdeef39ed096c68e735b66e6400c"
+    },
+    {
+      "file": ".specforge/project/spec_manifest.json",
+      "size": 934,
+      "modified_utc": "2026-11-02T17:19:27.651Z",
+      "sha256": "9ca5ce4ae0a41df2b44ee2b7a018bc8d27377e8be8e8ac4628c333984091891c"
+    }
+  ],
+  "limits": [
+    "Recent-file inventory uses modification time, not a causal process audit.",
+    "Git blob is a semantic baseline; it does not prove original CRLF/LF bytes.",
+    "This snapshot is not authority to restore or delete live governance files."
+  ],
+  "expected_writes": [
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-03-sps-conformance-repair\\registration-incident-snapshot.json"
+  ],
+  "observed_writes": [
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-03-sps-conformance-repair\\registration-incident-snapshot.json"
+  ],
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0
+}

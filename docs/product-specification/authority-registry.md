@@ -125,6 +125,8 @@ SPS-1.0
 
 ## 7. ADR-014 关闭条件
 
+初始化事故恢复裁决：用户于本轮明确同意“使用 Git 内容基线重建”。对应产品合同归 SPS §10.1 的 Project Init owner 显式重建动作；其权限限于哈希绑定的初始化事故补偿，不授予旧布局迁移或 Work Item 状态写入权。
+
 配置受控入口的权威归属：SPS §5.1–5.2 定义 `sf_project_config` 的项目 JSON producer、激活和恢复边界，SPS release-surface 机器块登记发布面。此入口是用户批准的六项验收补齐方案中的最小治理扩展；说明文档 producer 不得冒充运行时 JSON producer，受控入口不能管理用户凭据或放宽 HardStop。
 
 本 Registry 与 SPS-1.0 建立后，ADR-014 所要求的“显式 authority registry + 唯一正式产品规格”已经建立。
