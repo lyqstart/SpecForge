@@ -5,6 +5,8 @@ node_modules/
 dist/
 release/bin/
 release/release-manifest.json
+# Retained local raw provider-error receipt; only its redacted copy is versioned.
+/docs/archive/2026-11-03-sps-conformance-repair/native-compaction-result.json
 *.tsbuildinfo
 
 # SpecForge project runtime (Plugin auto-generated)

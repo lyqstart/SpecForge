@@ -1,0 +1,427 @@
+{
+  "run_id": "CODEX-SF-20261103-SPS-GAP-REPAIR-A01",
+  "started_utc": "2026-11-03T04:48:33.977Z",
+  "fixture": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-acceptance-biVm6Q",
+  "cwd": "D:\\code\\SpecForge",
+  "command": "node docs/archive/2026-11-03-sps-conformance-repair/native-compaction-probe.cjs --glm53",
+  "purpose": "Invoke actual OpenCode summarize API and independently verify native callback checkpoint",
+  "expected_writes": "New synthetic OpenCode session/messages, model summary, isolated fixture checkpoint, plugin diagnostics, receipt",
+  "model": {
+    "providerID": "zhipuai-coding-plan",
+    "modelID": "glm-5.3"
+  },
+  "observations": [
+    {
+      "utc": "2026-11-03T04:48:34.019Z",
+      "method": "GET",
+      "endpoint": "/global/health",
+      "status": 200,
+      "response": {
+        "healthy": true,
+        "version": "1.18.35"
+      }
+    },
+    {
+      "utc": "2026-11-03T04:48:34.720Z",
+      "method": "POST",
+      "endpoint": "/session",
+      "status": 200,
+      "response": {
+        "id": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+        "slug": "clever-panda",
+        "projectID": "global",
+        "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-acceptance-biVm6Q",
+        "path": "Users/lyq/AppData/Local/Temp/sf-registration-acceptance-biVm6Q",
+        "cost": 0,
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        },
+        "title": "Native compaction checkpoint acceptance only",
+        "version": "1.18.35",
+        "time": {
+          "created": 1793681314710,
+          "updated": 1793681314710
+        }
+      }
+    },
+    {
+      "utc": "2026-11-03T04:48:34.752Z",
+      "method": "POST",
+      "endpoint": "/session/ses_e60432c69ffeIn7aqw6GqRCX1Q/message",
+      "status": 200,
+      "response": {
+        "info": {
+          "id": "msg_19fbcd3ae001IDMRqPuTW9SmdX",
+          "role": "user",
+          "sessionID": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+          "time": {
+            "created": 1793681314734
+          },
+          "agent": "build",
+          "model": {
+            "providerID": "zhipuai-coding-plan",
+            "modelID": "glm-5.3"
+          }
+        },
+        "parts": [
+          {
+            "type": "text",
+            "text": "Isolated acceptance fixture. Remember marker SPECFORGE-NATIVE-COMPACTION-01. There is no coding task. Do not call tools or change files. Preserve this marker in the session summary.",
+            "messageID": "msg_19fbcd3ae001IDMRqPuTW9SmdX",
+            "sessionID": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+            "id": "prt_19fbcd3b4001Y2vA5QRGzmZDFZ"
+          }
+        ]
+      }
+    },
+    {
+      "utc": "2026-11-03T04:48:34.755Z",
+      "method": "POST",
+      "endpoint": "/api/v1/ingest/register",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "sessionId": "01a19f9a-46f6-73b8-8431-28ffed0d014e",
+          "projectId": "6b0c44fe756876fe",
+          "mode": "personal"
+        },
+        "requestId": "dacz8175zd4mw07jk5f",
+        "timestamp": 1793681314755
+      }
+    },
+    {
+      "utc": "2026-11-03T04:48:39.918Z",
+      "method": "POST",
+      "endpoint": "/session/ses_e60432c69ffeIn7aqw6GqRCX1Q/summarize",
+      "status": 200,
+      "response": true
+    },
+    {
+      "utc": "2026-11-03T04:48:39.940Z",
+      "method": "GET",
+      "endpoint": "/session/ses_e60432c69ffeIn7aqw6GqRCX1Q/message",
+      "status": 200,
+      "response": [
+        {
+          "info": {
+            "id": "msg_19fbcd3ae001IDMRqPuTW9SmdX",
+            "sessionID": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+            "role": "user",
+            "time": {
+              "created": 1793681314734
+            },
+            "agent": "build",
+            "model": {
+              "providerID": "zhipuai-coding-plan",
+              "modelID": "glm-5.3"
+            }
+          },
+          "parts": [
+            {
+              "id": "prt_19fbcd3b4001Y2vA5QRGzmZDFZ",
+              "sessionID": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+              "messageID": "msg_19fbcd3ae001IDMRqPuTW9SmdX",
+              "type": "text",
+              "text": "Isolated acceptance fixture. Remember marker SPECFORGE-NATIVE-COMPACTION-01. There is no coding task. Do not call tools or change files. Preserve this marker in the session summary."
+            }
+          ]
+        },
+        {
+          "info": {
+            "id": "msg_19fbcd3cf001dwBmRbYKYB0iw0",
+            "sessionID": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+            "role": "user",
+            "time": {
+              "created": 1793681314767
+            },
+            "summary": {
+              "diffs": []
+            },
+            "agent": "build",
+            "model": {
+              "providerID": "zhipuai-coding-plan",
+              "modelID": "glm-5.3"
+            }
+          },
+          "parts": [
+            {
+              "id": "prt_19fbcd3d1001j0QxtLZrIOL62g",
+              "sessionID": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+              "messageID": "msg_19fbcd3cf001dwBmRbYKYB0iw0",
+              "type": "compaction",
+              "auto": false
+            }
+          ]
+        },
+        {
+          "info": {
+            "id": "msg_19fbcd3ec001T2n46fYp46ERqA",
+            "sessionID": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+            "role": "assistant",
+            "time": {
+              "created": 1793681314796,
+              "completed": 1793681319913
+            },
+            "parentID": "msg_19fbcd3cf001dwBmRbYKYB0iw0",
+            "modelID": "glm-5.3",
+            "providerID": "zhipuai-coding-plan",
+            "mode": "compaction",
+            "agent": "compaction",
+            "path": {
+              "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-acceptance-biVm6Q",
+              "root": "/"
+            },
+            "summary": true,
+            "cost": 0,
+            "tokens": {
+              "total": 857,
+              "input": 462,
+              "output": 124,
+              "reasoning": 271,
+              "cache": {
+                "read": 0,
+                "write": 0
+              }
+            },
+            "finish": "stop"
+          },
+          "parts": [
+            {
+              "id": "prt_19fbcd7de001UIRaiAXhMqIxH0",
+              "sessionID": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+              "messageID": "msg_19fbcd3ec001T2n46fYp46ERqA",
+              "type": "step-start"
+            },
+            {
+              "id": "prt_19fbcd7e5001AgXVoDMX1Kp2Km",
+              "sessionID": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+              "messageID": "msg_19fbcd3ec001T2n46fYp46ERqA",
+              "type": "reasoning",
+              "text": "The user asked me to summarize a conversation. The conversation is minimal: the user says \"Isolated acceptance fixture. Remember marker SPECFORGE-NATIVE-COMPACTION-01. There is no coding task. Do not call tools or change files. Preserve this marker in the session summary.\"\n\nSo I need to produce the structured summary in the exact template, preserving the marker SPECFORGE-NATIVE-COMPACTION-01. No coding task, no tools called, no files changed.\n\nI should not mention the summary process or compaction... wait, \"Do not mention the summary process or that context was compacted.\" But the marker itself contains \"COMPACTION\" — I must preserve the exact marker identifier as instructed. That's fine; it's an identifier, not a description of the process.\n\nFill out:\n\n## Objective\n- User is storing an acceptance fixture marker for session continuity; no coding task.\n\n## Important Details\n- Marker to preserve: SPECFORGE-NATIVE-COMPACTION-01\n- Explicitly no coding task; do not call tools or change files.\n\n## Work State\n### Completed\n- (none)\n\n### Active\n- (none)\n\n### Blocked\n- (none)\n\n## Next Move\n1. (none)\n2. (none)\n\n## Relevant Files\n- (none)",
+              "time": {
+                "start": 1793681315813,
+                "end": 1793681318699
+              }
+            },
+            {
+              "id": "prt_19fbce32f001gbGK37L49r3FAH",
+              "sessionID": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+              "messageID": "msg_19fbcd3ec001T2n46fYp46ERqA",
+              "type": "text",
+              "text": "## Objective\n- User recorded an acceptance fixture marker (SPECFORGE-NATIVE-COMPACTION-01) for session continuity; explicitly stated there is no coding task.\n\n## Important Details\n- Marker to preserve verbatim: SPECFORGE-NATIVE-COMPACTION-01\n- No coding task assigned; do not call tools or change files.\n\n## Work State\n### Completed\n- (none)\n\n### Active\n- (none)\n\n### Blocked\n- (none)\n\n## Next Move\n1. (none)\n2. (none)\n\n## Relevant Files\n- (none)",
+              "time": {
+                "start": 1793681318703,
+                "end": 1793681319900
+              }
+            },
+            {
+              "id": "prt_19fbce7e2001X86LTdXvhJw2Yy",
+              "sessionID": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+              "messageID": "msg_19fbcd3ec001T2n46fYp46ERqA",
+              "type": "step-finish",
+              "reason": "stop",
+              "cost": 0,
+              "tokens": {
+                "total": 857,
+                "input": 462,
+                "output": 124,
+                "reasoning": 271,
+                "cache": {
+                  "read": 0,
+                  "write": 0
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "host_version": "1.18.35",
+  "summarize_contract": {
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "providerID": {
+              "type": "string"
+            },
+            "modelID": {
+              "type": "string"
+            },
+            "auto": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "providerID",
+            "modelID"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  },
+  "before_checkpoint": {
+    "sha256": "37d1e0318536e1e79fc39c4aa10422a1b488485de88402f57b5ca6a24bc2e2c1",
+    "bytes_base64": "ewogICJzY2hlbWFfdmVyc2lvbiI6ICIxLjAiLAogICJzb3VyY2UiOiAib3BlbmNvZGUuZXhwZXJpbWVudGFsLnNlc3Npb24uY29tcGFjdGluZyIsCiAgInBoYXNlIjogInByZS1jb21wYWN0aW9uIiwKICAicHJvamVjdFBhdGgiOiAiQzpcXFVzZXJzXFxseXFcXEFwcERhdGFcXExvY2FsXFxUZW1wXFxzZi1yZWdpc3RyYXRpb24tYWNjZXB0YW5jZS1iaVZtNlEiLAogICJvcGVuY29kZVNlc3Npb25JZCI6ICJzZXNfZTYwNDU3MWE2ZmZleDBsMW5CUWpRSElmUTEiLAogICJjYXB0dXJlZEF0IjogIjIwMjYtMTEtMDNUMDQ6NDY6MDYuMDU4WiIKfQ=="
+  },
+  "summary_api_returned": true,
+  "messages": [
+    {
+      "info": {
+        "id": "msg_19fbcd3ae001IDMRqPuTW9SmdX",
+        "sessionID": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+        "role": "user",
+        "time": {
+          "created": 1793681314734
+        },
+        "agent": "build",
+        "model": {
+          "providerID": "zhipuai-coding-plan",
+          "modelID": "glm-5.3"
+        }
+      },
+      "parts": [
+        {
+          "id": "prt_19fbcd3b4001Y2vA5QRGzmZDFZ",
+          "sessionID": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+          "messageID": "msg_19fbcd3ae001IDMRqPuTW9SmdX",
+          "type": "text",
+          "text": "Isolated acceptance fixture. Remember marker SPECFORGE-NATIVE-COMPACTION-01. There is no coding task. Do not call tools or change files. Preserve this marker in the session summary."
+        }
+      ]
+    },
+    {
+      "info": {
+        "id": "msg_19fbcd3cf001dwBmRbYKYB0iw0",
+        "sessionID": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+        "role": "user",
+        "time": {
+          "created": 1793681314767
+        },
+        "summary": {
+          "diffs": []
+        },
+        "agent": "build",
+        "model": {
+          "providerID": "zhipuai-coding-plan",
+          "modelID": "glm-5.3"
+        }
+      },
+      "parts": [
+        {
+          "id": "prt_19fbcd3d1001j0QxtLZrIOL62g",
+          "sessionID": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+          "messageID": "msg_19fbcd3cf001dwBmRbYKYB0iw0",
+          "type": "compaction",
+          "auto": false
+        }
+      ]
+    },
+    {
+      "info": {
+        "id": "msg_19fbcd3ec001T2n46fYp46ERqA",
+        "sessionID": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+        "role": "assistant",
+        "time": {
+          "created": 1793681314796,
+          "completed": 1793681319913
+        },
+        "parentID": "msg_19fbcd3cf001dwBmRbYKYB0iw0",
+        "modelID": "glm-5.3",
+        "providerID": "zhipuai-coding-plan",
+        "mode": "compaction",
+        "agent": "compaction",
+        "path": {
+          "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-acceptance-biVm6Q",
+          "root": "/"
+        },
+        "summary": true,
+        "cost": 0,
+        "tokens": {
+          "total": 857,
+          "input": 462,
+          "output": 124,
+          "reasoning": 271,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        },
+        "finish": "stop"
+      },
+      "parts": [
+        {
+          "id": "prt_19fbcd7de001UIRaiAXhMqIxH0",
+          "sessionID": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+          "messageID": "msg_19fbcd3ec001T2n46fYp46ERqA",
+          "type": "step-start"
+        },
+        {
+          "id": "prt_19fbcd7e5001AgXVoDMX1Kp2Km",
+          "sessionID": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+          "messageID": "msg_19fbcd3ec001T2n46fYp46ERqA",
+          "type": "reasoning",
+          "text": "The user asked me to summarize a conversation. The conversation is minimal: the user says \"Isolated acceptance fixture. Remember marker SPECFORGE-NATIVE-COMPACTION-01. There is no coding task. Do not call tools or change files. Preserve this marker in the session summary.\"\n\nSo I need to produce the structured summary in the exact template, preserving the marker SPECFORGE-NATIVE-COMPACTION-01. No coding task, no tools called, no files changed.\n\nI should not mention the summary process or compaction... wait, \"Do not mention the summary process or that context was compacted.\" But the marker itself contains \"COMPACTION\" — I must preserve the exact marker identifier as instructed. That's fine; it's an identifier, not a description of the process.\n\nFill out:\n\n## Objective\n- User is storing an acceptance fixture marker for session continuity; no coding task.\n\n## Important Details\n- Marker to preserve: SPECFORGE-NATIVE-COMPACTION-01\n- Explicitly no coding task; do not call tools or change files.\n\n## Work State\n### Completed\n- (none)\n\n### Active\n- (none)\n\n### Blocked\n- (none)\n\n## Next Move\n1. (none)\n2. (none)\n\n## Relevant Files\n- (none)",
+          "time": {
+            "start": 1793681315813,
+            "end": 1793681318699
+          }
+        },
+        {
+          "id": "prt_19fbce32f001gbGK37L49r3FAH",
+          "sessionID": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+          "messageID": "msg_19fbcd3ec001T2n46fYp46ERqA",
+          "type": "text",
+          "text": "## Objective\n- User recorded an acceptance fixture marker (SPECFORGE-NATIVE-COMPACTION-01) for session continuity; explicitly stated there is no coding task.\n\n## Important Details\n- Marker to preserve verbatim: SPECFORGE-NATIVE-COMPACTION-01\n- No coding task assigned; do not call tools or change files.\n\n## Work State\n### Completed\n- (none)\n\n### Active\n- (none)\n\n### Blocked\n- (none)\n\n## Next Move\n1. (none)\n2. (none)\n\n## Relevant Files\n- (none)",
+          "time": {
+            "start": 1793681318703,
+            "end": 1793681319900
+          }
+        },
+        {
+          "id": "prt_19fbce7e2001X86LTdXvhJw2Yy",
+          "sessionID": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+          "messageID": "msg_19fbcd3ec001T2n46fYp46ERqA",
+          "type": "step-finish",
+          "reason": "stop",
+          "cost": 0,
+          "tokens": {
+            "total": 857,
+            "input": 462,
+            "output": 124,
+            "reasoning": 271,
+            "cache": {
+              "read": 0,
+              "write": 0
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "checkpoint": {
+    "schema_version": "1.0",
+    "source": "opencode.experimental.session.compacting",
+    "phase": "pre-compaction",
+    "projectPath": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-acceptance-biVm6Q",
+    "opencodeSessionId": "ses_e60432c69ffeIn7aqw6GqRCX1Q",
+    "capturedAt": "2026-11-03T04:48:34.785Z"
+  },
+  "checkpoint_sha256": "1b0e05931509d9a68535016b39e649e68414e18cf5e337c47211efa3dd0bea3c",
+  "checkpoint_path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-acceptance-biVm6Q\\.specforge\\runtime\\checkpoints\\01a19f9a-46f6-73b8-8431-28ffed0d014e.json",
+  "native_callback_to_disk": "CONFIRMED",
+  "summary_generation": "CONFIRMED_WITH_MARKER",
+  "inner_exit_code": 0,
+  "finished_utc": "2026-11-03T04:48:39.941Z",
+  "carrier_exit_code": 0
+}

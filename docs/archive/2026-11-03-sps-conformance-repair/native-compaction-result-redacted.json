@@ -1,0 +1,369 @@
+{
+  "run_id": "CODEX-SF-20261103-SPS-GAP-REPAIR-A01",
+  "started_utc": "2026-11-03T04:46:05.161Z",
+  "fixture": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-acceptance-biVm6Q",
+  "cwd": "D:\\code\\SpecForge",
+  "command": "node docs/archive/2026-11-03-sps-conformance-repair/native-compaction-probe.cjs",
+  "purpose": "Invoke actual OpenCode summarize API and independently verify native callback checkpoint",
+  "expected_writes": "New synthetic OpenCode session/messages, model summary, isolated fixture checkpoint, plugin diagnostics, receipt",
+  "model": {
+    "providerID": "zhipuai-coding-plan",
+    "modelID": "glm-5.3-highspeed"
+  },
+  "observations": [
+    {
+      "utc": "2026-11-03T04:46:05.204Z",
+      "method": "GET",
+      "endpoint": "/global/health",
+      "status": 200,
+      "response": {
+        "healthy": true,
+        "version": "1.18.35"
+      }
+    },
+    {
+      "utc": "2026-11-03T04:46:05.925Z",
+      "method": "POST",
+      "endpoint": "/session",
+      "status": 200,
+      "response": {
+        "id": "ses_e604571a6ffex0l1nBQjQHIfQ1",
+        "slug": "curious-mountain",
+        "projectID": "global",
+        "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-acceptance-biVm6Q",
+        "path": "Users/lyq/AppData/Local/Temp/sf-registration-acceptance-biVm6Q",
+        "cost": 0,
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        },
+        "title": "Native compaction checkpoint acceptance only",
+        "version": "1.18.35",
+        "time": {
+          "created": 1793681165913,
+          "updated": 1793681165913
+        }
+      }
+    },
+    {
+      "utc": "2026-11-03T04:46:05.994Z",
+      "method": "POST",
+      "endpoint": "/session/ses_e604571a6ffex0l1nBQjQHIfQ1/message",
+      "status": 200,
+      "response": {
+        "info": {
+          "id": "msg_19fba8e93001Q42JQZ9ILv63Wb",
+          "role": "user",
+          "sessionID": "ses_e604571a6ffex0l1nBQjQHIfQ1",
+          "time": {
+            "created": 1793681165971
+          },
+          "agent": "build",
+          "model": {
+            "providerID": "zhipuai-coding-plan",
+            "modelID": "glm-5.3-highspeed"
+          }
+        },
+        "parts": [
+          {
+            "type": "text",
+            "text": "Isolated acceptance fixture. Remember marker SPECFORGE-NATIVE-COMPACTION-01. There is no coding task. Do not call tools or change files. Preserve this marker in the session summary.",
+            "messageID": "msg_19fba8e93001Q42JQZ9ILv63Wb",
+            "sessionID": "ses_e604571a6ffex0l1nBQjQHIfQ1",
+            "id": "prt_19fba8e9b0011TS4pikU9fD28t"
+          }
+        ]
+      }
+    },
+    {
+      "utc": "2026-11-03T04:46:05.999Z",
+      "method": "POST",
+      "endpoint": "/api/v1/ingest/register",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "sessionId": "01a19f9a-46f6-73b8-8431-28ffed0d014e",
+          "projectId": "6b0c44fe756876fe",
+          "mode": "personal"
+        },
+        "requestId": "rsto5grksimw07gddb",
+        "timestamp": 1793681165999
+      }
+    },
+    {
+      "utc": "2026-11-03T04:47:24.525Z",
+      "method": "POST",
+      "endpoint": "/session/ses_e604571a6ffex0l1nBQjQHIfQ1/summarize",
+      "status": 200,
+      "response": true
+    },
+    {
+      "utc": "2026-11-03T04:47:24.533Z",
+      "method": "GET",
+      "endpoint": "/session/ses_e604571a6ffex0l1nBQjQHIfQ1/message",
+      "status": 200,
+      "response": [
+        {
+          "info": {
+            "id": "msg_19fba8e93001Q42JQZ9ILv63Wb",
+            "sessionID": "ses_e604571a6ffex0l1nBQjQHIfQ1",
+            "role": "user",
+            "time": {
+              "created": 1793681165971
+            },
+            "agent": "build",
+            "model": {
+              "providerID": "zhipuai-coding-plan",
+              "modelID": "glm-5.3-highspeed"
+            }
+          },
+          "parts": [
+            {
+              "id": "prt_19fba8e9b0011TS4pikU9fD28t",
+              "sessionID": "ses_e604571a6ffex0l1nBQjQHIfQ1",
+              "messageID": "msg_19fba8e93001Q42JQZ9ILv63Wb",
+              "type": "text",
+              "text": "Isolated acceptance fixture. Remember marker SPECFORGE-NATIVE-COMPACTION-01. There is no coding task. Do not call tools or change files. Preserve this marker in the session summary."
+            }
+          ]
+        },
+        {
+          "info": {
+            "id": "msg_19fba8ec4001rN1LfODfHSti19",
+            "sessionID": "ses_e604571a6ffex0l1nBQjQHIfQ1",
+            "role": "user",
+            "time": {
+              "created": 1793681166020
+            },
+            "agent": "build",
+            "model": {
+              "providerID": "zhipuai-coding-plan",
+              "modelID": "glm-5.3-highspeed"
+            }
+          },
+          "parts": [
+            {
+              "id": "prt_19fba8ec7001QYNdRfHKD5f4WB",
+              "sessionID": "ses_e604571a6ffex0l1nBQjQHIfQ1",
+              "messageID": "msg_19fba8ec4001rN1LfODfHSti19",
+              "type": "compaction",
+              "auto": false
+            }
+          ]
+        },
+        {
+          "info": {
+            "id": "msg_19fba8ef8001QuO2kprN2KSNn2",
+            "sessionID": "ses_e604571a6ffex0l1nBQjQHIfQ1",
+            "role": "assistant",
+            "time": {
+              "created": 1793681166072,
+              "completed": 1793681244517
+            },
+            "error": {
+              "name": "APIError",
+              "data": {
+                "message": "当前订阅套餐暂未开放GLM-5.3-Highspeed权限",
+                "statusCode": 429,
+                "isRetryable": true,
+                "responseHeaders": {
+                  "alt-svc": "h3=\":443\"; ma=3600",
+                  "connection": "keep-alive",
+                  "date": "Tue, 03 Nov 2026 04:47:25 GMT",
+                  "ga-traceid": "007766a92c158d64ceeb67828f947b0e",
+                  "transfer-encoding": "chunked",
+                  "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers, Origin, Access-Control-Request-Method, Access-Control-Request-Headers, Origin",
+                  "x-log-id": "20261103124720b9e2718403694d7d",
+                  "x-request-id": "f58d2e67-62f9-4820-8932-52186837b311",
+                  "set-cookie": "[REDACTED]"
+                },
+                "responseBody": "{\"error\":{\"code\":\"1311\",\"message\":\"当前订阅套餐暂未开放GLM-5.3-Highspeed权限\"}}",
+                "metadata": {
+                  "url": "https://open.bigmodel.cn/api/coding/paas/v4/chat/completions"
+                }
+              }
+            },
+            "parentID": "msg_19fba8ec4001rN1LfODfHSti19",
+            "modelID": "glm-5.3-highspeed",
+            "providerID": "zhipuai-coding-plan",
+            "mode": "compaction",
+            "agent": "compaction",
+            "path": {
+              "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-acceptance-biVm6Q",
+              "root": "/"
+            },
+            "summary": true,
+            "cost": 0,
+            "tokens": {
+              "input": 0,
+              "output": 0,
+              "reasoning": 0,
+              "cache": {
+                "read": 0,
+                "write": 0
+              }
+            }
+          },
+          "parts": []
+        }
+      ]
+    }
+  ],
+  "host_version": "1.18.35",
+  "summarize_contract": {
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "providerID": {
+              "type": "string"
+            },
+            "modelID": {
+              "type": "string"
+            },
+            "auto": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "providerID",
+            "modelID"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  },
+  "before_checkpoint": {
+    "sha256": "adcf840bf56360bc210a688c53805cb44d4821d38d18a15f977a169793b0786a",
+    "bytes_base64": "ewogICJzY2hlbWFfdmVyc2lvbiI6ICIxLjAiLAogICJzb3VyY2UiOiAib3BlbmNvZGUuZXhwZXJpbWVudGFsLnNlc3Npb24uY29tcGFjdGluZyIsCiAgInBoYXNlIjogInByZS1jb21wYWN0aW9uIiwKICAicHJvamVjdFBhdGgiOiAiQzpcXFVzZXJzXFxseXFcXEFwcERhdGFcXExvY2FsXFxUZW1wXFxzZi1yZWdpc3RyYXRpb24tYWNjZXB0YW5jZS1iaVZtNlEiLAogICJvcGVuY29kZVNlc3Npb25JZCI6ICJzZXNfZTYwNjViOGZhZmZlOTY2ZXppVVZKWGIzRGMiLAogICJjYXB0dXJlZEF0IjogIjIwMjYtMTEtMDNUMDQ6NDI6MDguNzg5WiIKfQ=="
+  },
+  "summary_api_returned": true,
+  "messages": [
+    {
+      "info": {
+        "id": "msg_19fba8e93001Q42JQZ9ILv63Wb",
+        "sessionID": "ses_e604571a6ffex0l1nBQjQHIfQ1",
+        "role": "user",
+        "time": {
+          "created": 1793681165971
+        },
+        "agent": "build",
+        "model": {
+          "providerID": "zhipuai-coding-plan",
+          "modelID": "glm-5.3-highspeed"
+        }
+      },
+      "parts": [
+        {
+          "id": "prt_19fba8e9b0011TS4pikU9fD28t",
+          "sessionID": "ses_e604571a6ffex0l1nBQjQHIfQ1",
+          "messageID": "msg_19fba8e93001Q42JQZ9ILv63Wb",
+          "type": "text",
+          "text": "Isolated acceptance fixture. Remember marker SPECFORGE-NATIVE-COMPACTION-01. There is no coding task. Do not call tools or change files. Preserve this marker in the session summary."
+        }
+      ]
+    },
+    {
+      "info": {
+        "id": "msg_19fba8ec4001rN1LfODfHSti19",
+        "sessionID": "ses_e604571a6ffex0l1nBQjQHIfQ1",
+        "role": "user",
+        "time": {
+          "created": 1793681166020
+        },
+        "agent": "build",
+        "model": {
+          "providerID": "zhipuai-coding-plan",
+          "modelID": "glm-5.3-highspeed"
+        }
+      },
+      "parts": [
+        {
+          "id": "prt_19fba8ec7001QYNdRfHKD5f4WB",
+          "sessionID": "ses_e604571a6ffex0l1nBQjQHIfQ1",
+          "messageID": "msg_19fba8ec4001rN1LfODfHSti19",
+          "type": "compaction",
+          "auto": false
+        }
+      ]
+    },
+    {
+      "info": {
+        "id": "msg_19fba8ef8001QuO2kprN2KSNn2",
+        "sessionID": "ses_e604571a6ffex0l1nBQjQHIfQ1",
+        "role": "assistant",
+        "time": {
+          "created": 1793681166072,
+          "completed": 1793681244517
+        },
+        "error": {
+          "name": "APIError",
+          "data": {
+            "message": "当前订阅套餐暂未开放GLM-5.3-Highspeed权限",
+            "statusCode": 429,
+            "isRetryable": true,
+            "responseHeaders": {
+              "alt-svc": "h3=\":443\"; ma=3600",
+              "connection": "keep-alive",
+              "date": "Tue, 03 Nov 2026 04:47:25 GMT",
+              "ga-traceid": "007766a92c158d64ceeb67828f947b0e",
+              "transfer-encoding": "chunked",
+              "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers, Origin, Access-Control-Request-Method, Access-Control-Request-Headers, Origin",
+              "x-log-id": "20261103124720b9e2718403694d7d",
+              "x-request-id": "f58d2e67-62f9-4820-8932-52186837b311",
+              "set-cookie": "[REDACTED]"
+            },
+            "responseBody": "{\"error\":{\"code\":\"1311\",\"message\":\"当前订阅套餐暂未开放GLM-5.3-Highspeed权限\"}}",
+            "metadata": {
+              "url": "https://open.bigmodel.cn/api/coding/paas/v4/chat/completions"
+            }
+          }
+        },
+        "parentID": "msg_19fba8ec4001rN1LfODfHSti19",
+        "modelID": "glm-5.3-highspeed",
+        "providerID": "zhipuai-coding-plan",
+        "mode": "compaction",
+        "agent": "compaction",
+        "path": {
+          "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-acceptance-biVm6Q",
+          "root": "/"
+        },
+        "summary": true,
+        "cost": 0,
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      },
+      "parts": []
+    }
+  ],
+  "checkpoint": {
+    "schema_version": "1.0",
+    "source": "opencode.experimental.session.compacting",
+    "phase": "pre-compaction",
+    "projectPath": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-acceptance-biVm6Q",
+    "opencodeSessionId": "ses_e604571a6ffex0l1nBQjQHIfQ1",
+    "capturedAt": "2026-11-03T04:46:06.058Z"
+  },
+  "checkpoint_sha256": "37d1e0318536e1e79fc39c4aa10422a1b488485de88402f57b5ca6a24bc2e2c1",
+  "checkpoint_path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-acceptance-biVm6Q\\.specforge\\runtime\\checkpoints\\01a19f9a-46f6-73b8-8431-28ffed0d014e.json",
+  "native_callback_to_disk": "CONFIRMED",
+  "inner_exit_code": 0,
+  "finished_utc": "2026-11-03T04:47:24.533Z",
+  "carrier_exit_code": 0,
+  "redaction": "Sensitive response-header values removed; original retained locally and excluded from Git."
+}
