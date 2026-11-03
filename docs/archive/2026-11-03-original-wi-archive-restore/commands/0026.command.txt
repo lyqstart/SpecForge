@@ -1,0 +1,10 @@
+{
+  "executable": "C:\\Users\\lyq\\AppData\\Roaming\\npm\\node_modules\\bun\\bin\\bun.exe",
+  "args": [
+    "scripts/build-release-runtime-artifacts.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "corrected-runtime-build",
+  "expected_writes": "ignored-release-binaries-and-evidence",
+  "started_utc": "2026-11-03T12:10:58.039Z"
+}

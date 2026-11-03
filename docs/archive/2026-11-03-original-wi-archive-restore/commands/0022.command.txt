@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/execute-restoration.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "deployed-controlled-restore",
+  "expected_writes": "original-project-only-via-Recovery-owner-and-evidence",
+  "started_utc": "2026-11-03T12:09:50.897Z"
+}

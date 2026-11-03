@@ -1,0 +1,11 @@
+{
+  "executable": "C:\\Users\\lyq\\AppData\\Roaming\\npm\\node_modules\\bun\\bin\\bun.exe",
+  "args": [
+    "scripts/run-current-release-precheck.ts",
+    "--candidate-id=commit-df0b9ea6e04e40f42ad945a8a2415547ca7b8037"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "release-precheck",
+  "expected_writes": "ignored-release-manifest-and-evidence",
+  "started_utc": "2026-11-03T12:08:45.445Z"
+}

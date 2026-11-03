@@ -1,0 +1,12 @@
+{
+  "executable": "git",
+  "args": [
+    "commit",
+    "-m",
+    "feat(recovery): restore sealed projects through controlled archive owner"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "commit-implementation",
+  "expected_writes": "git-commit-and-evidence",
+  "started_utc": "2026-11-03T12:08:34.161Z"
+}

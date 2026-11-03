@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/capture-residue.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "rejection-scene-read",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-03T12:10:21.554Z"
+}

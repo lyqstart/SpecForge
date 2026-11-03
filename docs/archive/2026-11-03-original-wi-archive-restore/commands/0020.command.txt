@@ -1,0 +1,13 @@
+{
+  "executable": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "daemon",
+    "start",
+    "--detach",
+    "--json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "daemon-start",
+  "expected_writes": "runtime-lifecycle-and-evidence",
+  "started_utc": "2026-11-03T12:09:17.027Z"
+}

@@ -239,11 +239,9 @@ export async function restoreProjectArchive(resolver: IPathResolver, input: Proj
       const byPath = new Map(entries.map(entry => [entry.path, entry]));
       const objects: Entry[] = [];
       for (const item of before) {
-        if (item.kind === 'directory') {
-          if (item.path !== '.git' && !item.path.startsWith('.git/') && !entries.some(entry => entry.path.startsWith(item.path + '/'))) fail('UNEXPECTED_RESIDUE');
-          if (item.path.startsWith('.git/') && item.path !== '.git/objects' && !/^\.git\/objects\/[a-f0-9]{2}$/.test(item.path)) fail('GIT_RESIDUE_UNSUPPORTED');
-          continue;
-        }
+        // Empty directory structure carries no file content or Git identity.
+        // Retain it in the original residue; only verified archive/object files may be published.
+        if (item.kind === 'directory') continue;
         if (item.path.startsWith('.git/')) {
           if (!/^\.git\/objects\/[a-f0-9]{2}\/[a-f0-9]{38}$/.test(item.path)) fail('GIT_RESIDUE_UNSUPPORTED');
           const bytes = await fs.readFile(path.join(target, item.path));

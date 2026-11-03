@@ -1,0 +1,15 @@
+{
+  "executable": "git",
+  "args": [
+    "add",
+    "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+    "packages/daemon-core/tests/unit/project-archive-restore.test.ts",
+    "docs/rule/specforge-active-development-rules.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md",
+    "docs/archive/2026-11-03-original-wi-archive-restore"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "stage-directory-correction",
+  "expected_writes": "git-index-and-evidence",
+  "started_utc": "2026-11-03T12:11:34.703Z"
+}

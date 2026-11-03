@@ -1,0 +1,63 @@
+{
+  "run_id": "CODEX-SF-20261103-ORIGINAL-WI-ARCHIVE-RESTORE-A01",
+  "started_utc": "2026-11-03T12:09:51.145Z",
+  "input": {
+    "project_path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+    "archive_path": "D:\\code\\SpecForge\\docs\\archive\\2026-10-25-verifier-conformance\\sealed-business-files.json",
+    "archive_sha256": "65b2257fc90354a6349f1df5be1d8d01c6e9f5aa13f8a4feafc67698363f103a",
+    "original_commit": "8a692e88c0823984647622294f5199c18bb0c587",
+    "confirmation_quote": "同意按封存归档恢复原项目"
+  },
+  "observations": [
+    {
+      "utc": "2026-11-03T12:09:51.510Z",
+      "method": "GET",
+      "endpoint": "/api/v1/healthz",
+      "status": 200,
+      "response": {
+        "schema_version": "1.0",
+        "status": "ok",
+        "pid": 35728,
+        "version": "1.0.21",
+        "startedAt": 1793707757857,
+        "uptimeSec": 33,
+        "activeClients": 0,
+        "pendingEvents": 4,
+        "lastEventTs": 1793707757878
+      }
+    },
+    {
+      "utc": "2026-11-03T12:09:51.631Z",
+      "method": "POST",
+      "endpoint": "/api/v1/recovery/project-archive/restore",
+      "status": 409,
+      "response": {
+        "success": false,
+        "error": {
+          "code": "ARCHIVE_RECOVERY_BLOCKED",
+          "message": "ARCHIVE_RECOVERY_GIT_RESIDUE_UNSUPPORTED"
+        },
+        "requestId": "9sthepfc4f8mw0nb1u7",
+        "timestamp": 1793707791631
+      }
+    }
+  ],
+  "release_daemon_sha256": "b182980215a7edbfb06404a9225c082edab0879ad4aacf2a40f1ec9ee0181362",
+  "deployed_daemon_sha256": "b182980215a7edbfb06404a9225c082edab0879ad4aacf2a40f1ec9ee0181362",
+  "prior_pid_alive": false,
+  "health": {
+    "schema_version": "1.0",
+    "status": "ok",
+    "pid": 35728,
+    "version": "1.0.21",
+    "startedAt": 1793707757857,
+    "uptimeSec": 33,
+    "activeClients": 0,
+    "pendingEvents": 4,
+    "lastEventTs": 1793707757878
+  },
+  "error": "Error: OWNER_REJECTED:409:ARCHIVE_RECOVERY_GIT_RESIDUE_UNSUPPORTED",
+  "inner_exit_code": 1,
+  "finished_utc": "2026-11-03T12:09:51.631Z",
+  "carrier_exit_code": 1
+}

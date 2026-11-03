@@ -1,0 +1,1 @@
+{"receipt":"D:\\code\\SpecForge\\docs\\archive\\2026-11-03-original-wi-archive-restore\\deployed-restoration.json","error":"Error: OWNER_REJECTED:409:ARCHIVE_RECOVERY_GIT_RESIDUE_UNSUPPORTED","inner_exit_code":1}

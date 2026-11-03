@@ -179,6 +179,18 @@ describe('Recovery owner sealed project import', () => {
     expect(await fs.readdir(f.target)).toEqual(['.git']);
   });
 
+  it('retains empty Git and project directories in residue without interpreting them as metadata', async () => {
+    const f = await fixture();
+    for (const dir of ['.git/hooks', '.git/info', '.git/logs/refs/heads', '.git/refs/heads', '.git/objects/info', '.git/objects/pack', '.specforge/logs/old-empty', 'empty-residue']) {
+      await fs.mkdir(path.join(f.target, dir), { recursive: true });
+    }
+    const result = await f.run();
+    expect(await fs.readdir(path.join(result.residue_path, '.git/hooks'))).toEqual([]);
+    expect(await fs.readdir(path.join(result.residue_path, 'empty-residue'))).toEqual([]);
+    await expect(fs.access(path.join(f.target, 'empty-residue'))).rejects.toThrow();
+    expect(result.detached_head).toBe(true);
+  });
+
   it('excludes pending writers before a context is created', async () => {
     const f = await fixture(), pm = new ProjectManager(new EventBus(), f.resolver, undefined as any);
     let release!: () => void;
