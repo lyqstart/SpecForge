@@ -1,0 +1,25 @@
+{
+  "run_id": "CODEX-SF-20261103-SPS-GAP-REPAIR-A01",
+  "started_utc": "2026-11-03T04:07:06.872Z",
+  "finished_utc": "2026-11-03T04:07:07.696Z",
+  "cwd": "D:\\code\\SpecForge",
+  "command": "node docs/archive/2026-11-03-sps-conformance-repair/run-registration-reconstruction.cjs",
+  "purpose": "Call authenticated deployed Project Init owner for user-approved Git-content reconstruction",
+  "daemon_pid": 7868,
+  "http_status": 200,
+  "result": {
+    "success": true,
+    "data": {
+      "success": true,
+      "reconstruction": "git_content_baseline",
+      "archive": ".specforge/runtime/init-recovery/4ff1c8f29307b44a93df8a4a2b321e5799bc9f215641b7770d8bf46510a88a06",
+      "files": 6
+    },
+    "requestId": "bujd46izyibmw06294b",
+    "timestamp": 1793678827691
+  },
+  "expected_writes": "Six snapshot-bound initialization files plus Project Init runtime recovery archive and this receipt",
+  "observed_writes": ".specforge/runtime/init-recovery/4ff1c8f29307b44a93df8a4a2b321e5799bc9f215641b7770d8bf46510a88a06",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0
+}

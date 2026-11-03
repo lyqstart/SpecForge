@@ -36,6 +36,16 @@ The user explicitly chose: `同意使用 Git 内容基线重建`. SPS §10.1 and
 
 Five targeted suites (registration, HTTP, layout, initialization and reconstruction) passed: 58 tests, carrier/inner exits 0/0, UTC 2026-11-03T04:02:49.5011996Z to 2026-11-03T04:02:57.4350867Z. Cases include reconstructed/quarantined output, retries with mixed original/target states, later-edit refusal, forged Git baseline refusal, changed snapshot refusal, hard-link refusal and the authenticated HTTP owner. The daemon-core typecheck passed with exit 0. Execution against the preserved incident is a subsequent step after build/deployment validation.
 
+## Executed reconstruction
+
+Commit `c5bc48e06c1c58dc215b71a7ba62745be1109dca` passed the full workspace build and formal release precheck. The installer upgraded two user-level files and verified all 112 deployed files. The installed daemon binary SHA-256 is `cc4e5d4aa0282afda7a005a12a89b19acb4bdb78094448d2d631efc6d9fdc50c`.
+
+`run-registration-reconstruction.cjs` called the actual installed daemon's authenticated Project Init endpoint, received HTTP 200 and returned numeric exit 0. See `registration-reconstruction-result.json` for timestamps, process identity and raw response. Two tracked files were reconstructed from verified Git blobs. Four newly created CORE template files were moved to `.specforge/runtime/init-recovery/4ff1c8f29307b44a93df8a4a2b321e5799bc9f215641b7770d8bf46510a88a06/quarantine-*`; their contents were retained, not deleted. The same archive holds `plan.json` with the original current bytes and `events.jsonl` with completed operations.
+
+Postchecks found no Git content diff in the two tracked files and no remaining untracked CORE files. Git `core.autocrlf=true` initially reported stat/line-ending changes. Each working file's Git-normalized object hash was independently compared with its HEAD blob before synchronizing the index's unchanged content identity. No governance content was staged or committed; `.specforge` status is clean. This is the explicitly authorized Git-content reconstruction, not proof of historical raw-byte restoration.
+
+The daemon was returned to background operation through the official CLI. Health confirmed PID 35652, status `ok`, version 1.0.21. Runtime recovery plans, quarantine files and diagnostic logs are declared owner/audit writes. The independent business fixture event-chain probe remains a separate next step; original WI-0001 was not accessed or resumed.
+
 EXPERIENCE_FILE_READ=YES
 ACTIVE_EXPERIENCE_RULES_FILE_READ=YES
 APPLICABLE_EXPERIENCE_RULES=EXP-004,EXP-007,EXP-026,EXP-060,EXP-065
