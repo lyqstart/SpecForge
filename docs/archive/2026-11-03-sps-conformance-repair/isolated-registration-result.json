@@ -1,0 +1,176 @@
+{
+  "started_utc": "2026-11-03T04:10:48.812Z",
+  "fixture": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-acceptance-biVm6Q",
+  "daemon_pid": 35652,
+  "observations": [
+    {
+      "utc": "2026-11-03T04:10:48.890Z",
+      "method": "POST",
+      "endpoint": "/api/v1/project/ensure",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "success": true,
+          "created": [
+            ".specforge\\config\\observability.json",
+            ".specforge\\project\\modules\\CORE\\module.json",
+            ".specforge\\project\\modules\\CORE\\requirements.md",
+            ".specforge\\project\\modules\\CORE\\design.md",
+            ".specforge\\project\\modules\\CORE\\trace.md",
+            ".specforge\\config\\project-rules.md",
+            ".specforge\\config\\prod-environment.md",
+            ".specforge\\config\\project.json",
+            ".specforge\\project\\spec_manifest.json",
+            ".specforge\\project\\extension_registry.json",
+            ".specforge\\project\\requirements_index.md",
+            ".specforge\\project\\design_index.md",
+            ".specforge\\project\\architecture.md",
+            ".specforge\\project\\glossary.md",
+            ".specforge\\project\\decisions.md",
+            ".specforge\\project\\trace_matrix.md",
+            ".specforge\\.gitignore"
+          ],
+          "existed": [],
+          "errors": [],
+          "placeholderFiles": [
+            ".specforge\\config\\project-rules.md",
+            ".specforge\\config\\prod-environment.md"
+          ],
+          "normalized": [],
+          "moduleRegistry": {
+            "status": "unchanged",
+            "moduleCodes": [
+              "CORE"
+            ]
+          }
+        },
+        "requestId": "edubwkkcabmmw066zsl",
+        "timestamp": 1793679048885
+      }
+    },
+    {
+      "utc": "2026-11-03T04:10:48.893Z",
+      "method": "GET",
+      "endpoint": "/api/v1/session/list",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "sessions": []
+        },
+        "requestId": "o0sw39n86pimw066zst",
+        "timestamp": 1793679048893
+      }
+    },
+    {
+      "utc": "2026-11-03T04:10:50.514Z",
+      "method": "POST",
+      "endpoint": "/session",
+      "status": 200,
+      "response": {
+        "id": "ses_e6065b8faffe966eziUVJXb3Dc",
+        "slug": "gentle-river",
+        "projectID": "global",
+        "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-acceptance-biVm6Q",
+        "path": "Users/lyq/AppData/Local/Temp/sf-registration-acceptance-biVm6Q",
+        "cost": 0,
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        },
+        "title": "Independent SpecForge registration acceptance",
+        "version": "1.18.35",
+        "time": {
+          "created": 1793679050501,
+          "updated": 1793679050501
+        }
+      }
+    },
+    {
+      "utc": "2026-11-03T04:10:50.540Z",
+      "method": "PATCH",
+      "endpoint": "/session/ses_e6065b8faffe966eziUVJXb3Dc",
+      "status": 200,
+      "response": {
+        "id": "ses_e6065b8faffe966eziUVJXb3Dc",
+        "slug": "gentle-river",
+        "projectID": "global",
+        "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-registration-acceptance-biVm6Q",
+        "path": "Users/lyq/AppData/Local/Temp/sf-registration-acceptance-biVm6Q",
+        "cost": 0,
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        },
+        "title": "Independent event emitted",
+        "version": "1.18.35",
+        "time": {
+          "created": 1793679050501,
+          "updated": 1793679050501
+        }
+      }
+    },
+    {
+      "utc": "2026-11-03T04:10:52.062Z",
+      "method": "GET",
+      "endpoint": "/api/v1/session/list",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "sessions": [
+            {
+              "sessionId": "01a19f9a-46f6-73b8-8431-28ffed0d014e",
+              "agentRole": "plugin",
+              "workflowRole": "plugin-daemon-bridge",
+              "parentSessionId": null,
+              "workItemId": "",
+              "projectId": "6b0c44fe756876fe",
+              "spawnIntentId": "",
+              "createdAt": 1793679050486,
+              "lastActiveAt": 1793679050486,
+              "status": "pending"
+            }
+          ]
+        },
+        "requestId": "h1wzbu3l2hamw06728t",
+        "timestamp": 1793679052061
+      }
+    }
+  ],
+  "registration": "CONFIRMED_HOST_PLUGIN_AND_DAEMON_SESSION_REGISTRY",
+  "event_handling": "INSUFFICIENT_EVIDENCE_OF_PERSISTED_EVENT_EFFECT_FROM_THIS_PROBE",
+  "new_sessions": [
+    {
+      "sessionId": "01a19f9a-46f6-73b8-8431-28ffed0d014e",
+      "agentRole": "plugin",
+      "workflowRole": "plugin-daemon-bridge",
+      "parentSessionId": null,
+      "workItemId": "",
+      "projectId": "6b0c44fe756876fe",
+      "spawnIntentId": "",
+      "createdAt": 1793679050486,
+      "lastActiveAt": 1793679050486,
+      "status": "pending"
+    }
+  ],
+  "inner_exit_code": 0,
+  "host_output": "Warning: OPENCODE_SERVER_PASSWORD is not set; server is unsecured.\nopencode server listening on http://127.0.0.1:4096\n[sf:specforge] Daemon connected.\n",
+  "finished_utc": "2026-11-03T04:10:52.119Z",
+  "observer_writes": [
+    "Retained isolated fixture",
+    "OpenCode session database/logs",
+    "Daemon session registration/runtime records"
+  ]
+}
