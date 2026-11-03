@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/capture-approval-filesystem.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "approval-filesystem-independent-proof",
+  "expected_writes": "read-only-original-files-and-evidence",
+  "started_utc": "2026-11-03T14:03:31.940Z"
+}

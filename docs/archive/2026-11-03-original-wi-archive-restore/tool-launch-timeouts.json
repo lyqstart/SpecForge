@@ -1,0 +1,10 @@
+{
+  "recorded_utc": "2026-11-03T14:04:35.376Z",
+  "purpose": "latest-gates-formal-proof",
+  "cwd": "D:\\code\\SpecForge",
+  "elevated_launch_attempts": 2,
+  "process_started": false,
+  "error_literal": "The automatic permission approval review did not finish before its deadline. Do not assume the action is unsafe based on the timeout alone. You may retry once, or ask the user for guidance or explicit approval.",
+  "numeric_process_exit_code_available": false,
+  "attribution": "Infrastructure launch timeout; no safety rejection inferred. Later sandbox receipt 0107 actually ran and returned numeric exit 1/fetch failed; exact fetch cause remains INSUFFICIENT_EVIDENCE. Independent original files and actual Runtime WAL/Gate reports were then captured in 0108/0109 without any target writes."
+}

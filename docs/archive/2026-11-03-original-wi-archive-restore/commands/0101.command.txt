@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/prepare-gates-resume.cjs",
+    "a04",
+    "trace-owner-repair-a04-prompt.txt",
+    "80"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-trace-owner-continuation",
+  "expected_writes": "reviewable-continuation-script-only",
+  "started_utc": "2026-11-03T13:51:56.204Z"
+}

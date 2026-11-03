@@ -1,0 +1,21 @@
+{
+  "executable": "C:/Users/lyq/.config/opencode/sf-user/bin/specforge.exe",
+  "args": [
+    "daemon",
+    "status",
+    "--json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "shared-closure-daemon-status",
+  "expected_writes": "read-only-health",
+  "started_utc": "2026-11-03T13:48:25.219Z",
+  "finished_utc": "2026-11-03T13:48:28.589Z",
+  "carrier_exit_code": 1,
+  "inner_exit_code": 1,
+  "signal": null,
+  "observed_writes": {
+    "repository_status_before": " M docs/archive/2026-11-03-original-wi-archive-restore/journal.jsonl\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0090.command.txt\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0090.manifest.sha256\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0090.receipt-seal.json\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0090.result.json\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0090.stderr.txt\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0090.stdout.txt\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0091.command.txt\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0091.manifest.sha256\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0091.receipt-seal.json\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0091.result.json\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0091.stderr.txt\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0091.stdout.txt\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0092.command.txt\n",
+    "repository_status_after": " M docs/archive/2026-11-03-original-wi-archive-restore/journal.jsonl\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0090.command.txt\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0090.manifest.sha256\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0090.receipt-seal.json\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0090.result.json\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0090.stderr.txt\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0090.stdout.txt\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0091.command.txt\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0091.manifest.sha256\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0091.receipt-seal.json\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0091.result.json\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0091.stderr.txt\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0091.stdout.txt\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0092.command.txt\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0092.stderr.txt\n?? docs/archive/2026-11-03-original-wi-archive-restore/commands/0092.stdout.txt\n",
+    "other": "See expected writes and owner-specific receipt; status does not enumerate external runtime writes."
+  }
+}

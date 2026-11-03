@@ -1,0 +1,1 @@
+{"out":"D:\\code\\SpecForge\\docs\\archive\\2026-11-03-original-wi-archive-restore\\original-audit-latest-gates.json","files":0,"error":"TypeError: fetch failed","inner_exit_code":1}

@@ -1,0 +1,12 @@
+{
+  "executable": "C:/Users/lyq/.config/opencode/sf-user/bin/specforge.exe",
+  "args": [
+    "daemon",
+    "stop",
+    "--json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "shared-closure-daemon-stop",
+  "expected_writes": "runtime-stop-observer",
+  "started_utc": "2026-11-03T13:48:16.998Z"
+}

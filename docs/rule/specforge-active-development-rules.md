@@ -45,6 +45,8 @@ Windows/CMD、编码、PATH、npm shim、Git stdout/stderr、Bun 参数都属于
 ## EXP-004：修改必须形成闭包，不是只改发现点
 
 任何定义变化都要沿调用图和消费图闭环。修改函数签名、Schema、路径、状态、Contract 时，必须覆盖全部生产入口、调用者、测试、部署副本和真实消费者。
+
+Candidate Gate 修订须先从 failed check 的实际布尔条件和输入来源区分非法关系与缺失必需关系；删除非法边不证明必需覆盖已经成立。跨设计声明和 Trace Delta 的修订须由各自产物 owner 完成并核对一致后再重新封存、重跑，不能以单文件词语检查代替整个失败条件的闭环。见 ERR-1902。
 <!-- source: ledger Part3/4 verbatim (audited), view L1903-2944 -->
 
 ## EXP-005：权威数据不得有隐式默认

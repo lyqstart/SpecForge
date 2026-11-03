@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/verify-shared-deployment.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "shared-deployment-byte-and-event-proof",
+  "expected_writes": "read-only-health-plus-evidence",
+  "started_utc": "2026-11-03T13:49:24.026Z"
+}

@@ -1,0 +1,12 @@
+{
+  "executable": "C:/Users/lyq/.config/opencode/sf-user/bin/specforge.exe",
+  "args": [
+    "daemon",
+    "status",
+    "--json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "shared-closure-daemon-status",
+  "expected_writes": "read-only-health",
+  "started_utc": "2026-11-03T13:48:25.219Z"
+}

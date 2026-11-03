@@ -1,0 +1,121 @@
+{
+  "statuses": {
+    "ses_e8e849253ffeo8tI9ZIOUEjSZ5": {
+      "type": "busy"
+    }
+  },
+  "recent_child_sessions": [
+    {
+      "session": "ses_e5e6f16c2ffeoVV1kmDQR2Kjp8",
+      "title": "修复数据关系与治理模板 (@sf-design subagent)",
+      "last_info": {
+        "role": "assistant",
+        "agent": "sf-design",
+        "variant": "low",
+        "error_code": 429
+      },
+      "part_sizes": [],
+      "messages": 2,
+      "tools": []
+    },
+    {
+      "session": "ses_e5e6d886effenjTiNUwaNU786c",
+      "title": "修复数据关系与治理模板 (@sf-design subagent)",
+      "last_info": {
+        "role": "assistant",
+        "agent": "sf-design",
+        "variant": "low",
+        "finish": "stop"
+      },
+      "part_sizes": [
+        {
+          "type": "step-start"
+        },
+        {
+          "type": "text",
+          "text_length": 1403
+        },
+        {
+          "type": "step-finish"
+        }
+      ],
+      "messages": 8,
+      "tools": [
+        {
+          "tool": "sf_batch_verify",
+          "status": "completed",
+          "output": "{\n  \"success\": true,\n  \"total\": 5,\n  \"passed\": 5,\n  \"failed\": 0,\n  \"results\": [\n    {\n      \"name\": \"DATA-CORE-003 不再含 constrained_by PI-CORE-001\",\n      \"status\": \"pass\",\n      \"found\": false,\n      \"match_count\": 0\n    },\n    {\n      \"name\": \"DATA-CORE-003 含新契约对应说明行\",\n      \"status\": \"pass\",\n      \"found\": true,\n      \"match_count\": 1\n    },\n    {\n      \"name\": \"DATA-CORE-001 保留 ARCH-CORE-003\",\n      \"status\": \"pass\",\n      \"found\": true,\n      \"match_count\": 1\n    },\n    {\n      \"name\": \"DATA-CORE-002 保留 ARCH-CORE-003\",\n      \"status\": \"pass\",\n      \"found\": true,\n      \"match_count\": 1\n    },\n    {\n      \"name\": \"DATA-CORE-004 保留 ARCH-CORE-002\",\n      \"status\": \"pass\",\n      \"found\": true,\n      \"match_count\": 1\n    }\n  ]\n}"
+        },
+        {
+          "tool": "sf_batch_verify",
+          "status": "completed",
+          "output": "s\": true,\n  \"total\": 7,\n  \"passed\": 7,\n  \"failed\": 0,\n  \"results\": [\n    {\n      \"name\": \"front-matter capability_verdict\",\n      \"status\": \"pass\",\n      \"found\": true,\n      \"match_count\": 1\n    },\n    {\n      \"name\": \"治理大章标题\",\n      \"status\": \"pass\",\n      \"found\": true,\n      \"match_count\": 1\n    },\n    {\n      \"name\": \"七小节逐字存在\",\n      \"status\": \"pass\",\n      \"found\": true,\n      \"match_count\": 1\n    },\n    {\n      \"name\": \"同值声明出现 2 次（front-matter + 正文各 1）\",\n      \"status\": \"pass\",\n      \"found\": true,\n      \"match_count\": 2\n    },\n    {\n      \"name\": \"正文声明在 Verification Plan 之后收尾\",\n      \"status\": \"pass\",\n      \"found\": true,\n      \"match_count\": 1\n    },\n    {\n      \"name\": \"既有章节保留：架构总览\",\n      \"status\": \"pass\",\n      \"found\": true,\n      \"match_count\": 1\n    },\n    {\n      \"name\": \"既有章节保留：Out of Scope\",\n      \"status\": \"pass\",\n      \"found\": true,\n      \"match_count\": 1\n    }\n  ]\n}"
+        },
+        {
+          "tool": "sf_handoff",
+          "status": "completed",
+          "output": "{\n  \"success\": true,\n  \"action\": \"write\",\n  \"path\": \"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-conformance-business-R6ttE7\\\\.specforge\\\\work-items\\\\WI-0001\\\\handoffs\\\\handoff_sf-design_candidate_design_1793712267542_83bdbc0b903e_0.json\"\n}"
+        }
+      ]
+    },
+    {
+      "session": "ses_e5e4ea318ffeVr0xr0ViBnumcr",
+      "title": "恢复 DATA-CORE-003 架构约束 (@sf-design subagent)",
+      "last_info": {
+        "role": "assistant",
+        "agent": "sf-design",
+        "variant": "low",
+        "finish": "stop"
+      },
+      "part_sizes": [
+        {
+          "type": "step-start"
+        },
+        {
+          "type": "text",
+          "text_length": 648
+        },
+        {
+          "type": "step-finish"
+        }
+      ],
+      "messages": 7,
+      "tools": [
+        {
+          "tool": "sf_doc_lint",
+          "status": "completed",
+          "output": "{\n  \"success\": true,\n  \"status\": \"pass\",\n  \"issues\": []\n}"
+        },
+        {
+          "tool": "sf_handoff",
+          "status": "completed",
+          "output": "{\n  \"success\": false,\n  \"error\": \"handoff and work_item_id are required\"\n}"
+        },
+        {
+          "tool": "sf_handoff",
+          "status": "completed",
+          "output": "{\n  \"success\": true,\n  \"action\": \"write\",\n  \"path\": \"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-conformance-business-R6ttE7\\\\.specforge\\\\work-items\\\\WI-0001\\\\handoffs\\\\handoff_sf-design_candidate_design_1793714169917_aa831ae1c478_0.json\"\n}"
+        }
+      ]
+    }
+  ]
+}
+[
+  {
+    "id": "msg_1a1ae70b1001G1LPTe3uyVrSpd",
+    "role": "assistant",
+    "tools": [
+      {
+        "tool": "task",
+        "status": "completed"
+      }
+    ],
+    "text": ""
+  },
+  {
+    "id": "msg_1a1b2508f001iJsdK6SI5OeluG",
+    "role": "assistant",
+    "tools": [],
+    "text": ""
+  }
+]

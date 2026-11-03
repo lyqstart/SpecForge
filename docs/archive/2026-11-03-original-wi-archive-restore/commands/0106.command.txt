@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/inspect-native.cjs",
+    "a03-outcome"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "original-gates-a03-outcome-native",
+  "expected_writes": "read-only-native-evidence",
+  "started_utc": "2026-11-03T13:57:28.773Z"
+}

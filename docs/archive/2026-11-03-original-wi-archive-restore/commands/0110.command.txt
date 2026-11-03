@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/extract-review-candidate.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "extract-frozen-review-candidate",
+  "expected_writes": "evidence-copy-only",
+  "started_utc": "2026-11-03T14:04:03.582Z"
+}

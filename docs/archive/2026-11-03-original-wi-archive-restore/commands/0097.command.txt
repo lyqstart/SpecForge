@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/resume-gates-a03.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "original-gates-a03-native-continuation",
+  "expected_writes": "native-session-and-formal-owner-gate-artifacts",
+  "started_utc": "2026-11-03T13:49:03.225Z"
+}

@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/verify-candidate-review.cjs",
+    "original-audit-approval-filesystem.json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "approval-candidate-independent-verification",
+  "expected_writes": "read-only-source-git-and-evidence",
+  "started_utc": "2026-11-03T14:03:33.912Z"
+}

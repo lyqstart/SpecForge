@@ -1,0 +1,11 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/sf-installer.ts",
+    "verify"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "shared-closure-installer-verify",
+  "expected_writes": "read-only-installed-inventory",
+  "started_utc": "2026-11-03T13:48:48.041Z"
+}

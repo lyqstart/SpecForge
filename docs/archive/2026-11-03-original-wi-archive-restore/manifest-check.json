@@ -1,0 +1,9 @@
+{
+  "utc": "2026-11-03T14:07:25.113Z",
+  "run_id": "CODEX-SF-20261103-ORIGINAL-WI-ARCHIVE-RESTORE-A01",
+  "manifest_sha256": "86f5a5c6c15573cc2da0d4036f88ce68ac0d75b77dfca060db2ec7e6e03a3e39",
+  "files": 804,
+  "self_check": "PASS",
+  "inner_exit_code": 0,
+  "exclusions": "Git-ignored private native reasoning/raw Cookie source; manifest and this check receipt cannot recursively contain their own hashes."
+}

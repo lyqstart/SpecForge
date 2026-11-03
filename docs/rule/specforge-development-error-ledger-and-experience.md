@@ -32155,3 +32155,10 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 已实现的 ProjectManager 恢复互斥先前仅由 /tool/invoke 外层包装，直接 dispatcher、kernel/v11 消费者会先进入项目级 observation。0076 两项回归复现共同入口缺少前置排斥；改为 ToolDispatcher.dispatch 进入任何 observation/handler 前持有同一操作租约，独立 Project Init HTTP owner 保持自身租约，移除重复外包装。
 - 0077 直接 dispatcher 已通过，旧 HTTP 夹具仍失败；源码 getProjectPathFromRequest 实际只返回服务 cwd，未实现假设中的 x-project-path。夹具现绑定该解析依赖到自有临时目录，并覆盖正常结果与恢复期间零项目 observation。旧路由项目选择不是本次修正的产品承诺。0079 五文件61项通过，类型检查通过；补充 directory/worktree 入口仍需最终回归。
 - 错误夹具触发 package-level StateManager 空投影：birthtime 13:25:11.827Z、第二次 mtime 13:25:30.983Z，stateVersion=2、workItems=0、lastEventId为空、events.jsonl不存在。归类测试 RUNTIME_OBSERVER_WRITES，保存原字节与元数据，不手工删真相源或虚构探测前字节；旧运行目录的其他资料保留。事实与范围见 test-observer-projection.json。类防护：EXP-002/004/007/031。
+
+### ERR-1902：将必需 Trace 覆盖当成非法关系，单文件修订后过早重跑 Gate
+
+- 原业务 WI-0001 的 attempt-0002/0003 均有 trace_data_DATA-CORE-003=false。专业修订删掉 DATA 指向 Module Contract 的非法边，却未建立该 DATA 指向 Architecture 的必需边；Gate 描述中的 “is constrained by” 是应当成立的断言，不能当作正在报告该关系非法。0100 封存的候选无 DATA-CORE-003 的 Architecture 声明和 Trace ADD 行，真实 project-governance-v2.ts:1724-1739 检查每个 DATA 在 model.trace 中存在指向已声明 Architecture ID 的 constrained_by 边。
+- 原 Orchestrator 在 sf-design 已写新 Data Model 声明并交付 handoff 后过早封存、运行 attempt-0004，Trace Delta 尚未同步，因此同一布尔条件再次失败。0105 的全量原始报告独立确认，不将 9/10 当通过、不放宽 Gate、不改写失败 Attempt。首次偏离属于 Workflow/Agent 修订闭环，当前 Runtime 正确阻止不完整 Candidate。
+- 随后正式恢复 candidate_preparing，真实 sf-task-planner 被派发补对应规范四列 ADD 边和计数；其实际写入、fresh handoff 与后续 Gate 须另行核验，task running/自述不能证明完成。复用 EXP-004/007/017/287，活动 EXP-004 增加同类修订闭包要求；不创建单个 WI 的运行特例。
+- 后续闭环：同一原会话的 sf-task-planner 完成受控修订和 fresh handoff，重新封存后的 attempt-0005 10/10 passed，由 Gate Runner 正式进入 approval_required。0108/0109 从原始 WAL、投影游标、报告与 Gate 输入哈希独立交叉核验，未把通用任务完成或 Agent 自述当通过证据。四次失败 Attempt 保留，用户尚未批准、未 Merge、未实现。

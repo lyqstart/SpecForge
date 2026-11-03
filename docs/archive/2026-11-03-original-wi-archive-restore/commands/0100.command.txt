@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/audit-original.cjs",
+    "gates-a03"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "original-gates-a03-formal-audit",
+  "expected_writes": "formal-read-and-evidence",
+  "started_utc": "2026-11-03T13:50:01.128Z"
+}

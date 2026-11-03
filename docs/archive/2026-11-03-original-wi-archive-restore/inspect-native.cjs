@@ -16,7 +16,7 @@ function print(value) {
   const concise = Array.isArray(value) ? value.slice(-2) : { ...value,
     recent_child_sessions: value.recent_child_sessions?.map(child => ({ session: child.session, title: child.title,
       last_info: { role: child.last_info?.role, agent: child.last_info?.agent, variant: child.last_info?.variant, finish: child.last_info?.finish, error_code: child.last_info?.error?.data?.statusCode },
-      part_sizes: child.part_sizes, messages: child.messages, tools: child.tools })) };
+      part_sizes: child.part_sizes, messages: child.messages, tools: child.tools })).slice(-3) };
   console.log(JSON.stringify(sanitize(concise), null, 2));
 }
 (async () => {

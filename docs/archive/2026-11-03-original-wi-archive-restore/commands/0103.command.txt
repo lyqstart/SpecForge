@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-03-original-wi-archive-restore/inspect-current-progress.cjs",
+    "a03-liveness"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "native-a03-liveness-proof",
+  "expected_writes": "read-only-native-metadata",
+  "started_utc": "2026-11-03T13:55:08.614Z"
+}
