@@ -1,0 +1,19 @@
+{
+  "run_id": "CODEX-SF-20261103-ISOLATED-CRASH-VALIDATION-A01",
+  "execution_mode": "CODEX_DIRECT",
+  "status": "COMPLETED_AT_DECLARED_STOP",
+  "baseline_head": "65bfe88ec8061e9ba2d617dab9679242066576ff",
+  "receipt": "crash-result-attempt02.json",
+  "checkpoint_survival": "CONFIRMED_POST_ACKNOWLEDGED_WRITE",
+  "prior_plugin_session_restored": false,
+  "explicit_reregistration": "CONFIRMED_WITH_NEW_SESSION_ID",
+  "shared_daemon_unchanged": true,
+  "stop": "BEFORE_ORIGINAL_WI_RESUME",
+  "unverified": ["workflow WAL replay", "mid-write crash", "power loss", "full business recovery"],
+  "write_classification": {
+    "TRUTH_SOURCE_WRITES": "Synthetic isolated project initialized by official owner; no existing project truth source changed",
+    "REPOSITORY_TRACKED_WRITES": "Project status and evidence-byte preservation attribute only",
+    "RUNTIME_OBSERVER_WRITES": "Retained isolated temporary runtime/configuration and test-process logs; shared handshake unchanged",
+    "EXTERNAL_EVIDENCE_WRITES": "This run's evidence root"
+  }
+}

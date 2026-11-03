@@ -1,0 +1,324 @@
+{
+  "run_id": "CODEX-SF-20261103-ISOLATED-CRASH-VALIDATION-A01",
+  "command": "node docs/archive/2026-11-03-isolated-crash-validation/crash-probe.cjs attempt02",
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Isolated post-acknowledged-checkpoint process crash and startup classification",
+  "started_utc": "2026-11-03T05:59:25.089Z",
+  "scratch": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-isolated-crash-p2h7s8",
+  "project": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-isolated-crash-p2h7s8\\project",
+  "config": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-isolated-crash-p2h7s8\\opencode-config",
+  "executable": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforged.exe",
+  "executable_sha256": "cc4e5d4aa0282afda7a005a12a89b19acb4bdb78094448d2d631efc6d9fdc50c",
+  "shared_pid": 35652,
+  "expected_writes": "Isolated temp project/configuration/runtime, this evidence directory logs and receipt",
+  "observations": [
+    {
+      "utc": "2026-11-03T05:59:27.481Z",
+      "pid": 24196,
+      "method": "POST",
+      "endpoint": "/api/v1/project/ensure",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "success": true,
+          "created": [
+            ".specforge\\config\\observability.json",
+            ".specforge\\project\\modules\\CORE\\module.json",
+            ".specforge\\project\\modules\\CORE\\requirements.md",
+            ".specforge\\project\\modules\\CORE\\design.md",
+            ".specforge\\project\\modules\\CORE\\trace.md",
+            ".specforge\\config\\project-rules.md",
+            ".specforge\\config\\prod-environment.md",
+            ".specforge\\config\\project.json",
+            ".specforge\\project\\spec_manifest.json",
+            ".specforge\\project\\extension_registry.json",
+            ".specforge\\project\\requirements_index.md",
+            ".specforge\\project\\design_index.md",
+            ".specforge\\project\\architecture.md",
+            ".specforge\\project\\glossary.md",
+            ".specforge\\project\\decisions.md",
+            ".specforge\\project\\trace_matrix.md",
+            ".specforge\\.gitignore"
+          ],
+          "existed": [],
+          "errors": [],
+          "placeholderFiles": [
+            ".specforge\\config\\project-rules.md",
+            ".specforge\\config\\prod-environment.md"
+          ],
+          "normalized": [],
+          "moduleRegistry": {
+            "status": "unchanged",
+            "moduleCodes": [
+              "CORE"
+            ]
+          }
+        },
+        "requestId": "95990xy8iykmw0a2pko",
+        "timestamp": 1793685567480
+      }
+    },
+    {
+      "utc": "2026-11-03T05:59:27.528Z",
+      "pid": 24196,
+      "method": "POST",
+      "endpoint": "/api/v1/ingest/register",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "sessionId": "01a19ffd-b827-7118-a140-d0a9af1a0afb",
+          "projectId": "39ff39ae3bac18b9",
+          "mode": "personal"
+        },
+        "requestId": "khuvs9i4aamw0a2pm0",
+        "timestamp": 1793685567528
+      }
+    },
+    {
+      "utc": "2026-11-03T05:59:27.545Z",
+      "pid": 24196,
+      "method": "POST",
+      "endpoint": "/api/v1/ingest/event",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "received": true,
+          "type": "session.compacting"
+        },
+        "requestId": "hf419j2etskmw0a2pmg",
+        "timestamp": 1793685567544
+      }
+    },
+    {
+      "utc": "2026-11-03T05:59:27.555Z",
+      "pid": 24196,
+      "method": "GET",
+      "endpoint": "/api/v1/session/list",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "sessions": [
+            {
+              "sessionId": "01a19ffd-b827-7118-a140-d0a9af1a0afb",
+              "agentRole": "plugin",
+              "workflowRole": "plugin-daemon-bridge",
+              "parentSessionId": null,
+              "workItemId": "",
+              "projectId": "39ff39ae3bac18b9",
+              "spawnIntentId": "",
+              "createdAt": 1793685567527,
+              "lastActiveAt": 1793685567527,
+              "status": "pending"
+            }
+          ]
+        },
+        "requestId": "ql34f8evmymw0a2pmr",
+        "timestamp": 1793685567555
+      }
+    },
+    {
+      "utc": "2026-11-03T05:59:28.016Z",
+      "pid": 24812,
+      "method": "GET",
+      "endpoint": "/api/v1/session/list",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "sessions": []
+        },
+        "requestId": "39eyxay0q6tmw0a2pzk",
+        "timestamp": 1793685568016
+      }
+    },
+    {
+      "utc": "2026-11-03T05:59:28.034Z",
+      "pid": 24812,
+      "method": "POST",
+      "endpoint": "/api/v1/ingest/register",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "sessionId": "01a19ffd-ba21-720e-a6e0-dd36c831149c",
+          "projectId": "39ff39ae3bac18b9",
+          "mode": "personal"
+        },
+        "requestId": "xfr92i03s5mw0a2q01",
+        "timestamp": 1793685568033
+      }
+    },
+    {
+      "utc": "2026-11-03T05:59:28.036Z",
+      "pid": 24812,
+      "method": "GET",
+      "endpoint": "/api/v1/session/list",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "sessions": [
+            {
+              "sessionId": "01a19ffd-ba21-720e-a6e0-dd36c831149c",
+              "agentRole": "plugin",
+              "workflowRole": "plugin-daemon-bridge",
+              "parentSessionId": null,
+              "workItemId": "",
+              "projectId": "39ff39ae3bac18b9",
+              "spawnIntentId": "",
+              "createdAt": 1793685568033,
+              "lastActiveAt": 1793685568033,
+              "status": "pending"
+            }
+          ]
+        },
+        "requestId": "fc6v0sa8k3amw0a2q04",
+        "timestamp": 1793685568036
+      }
+    },
+    {
+      "utc": "2026-11-03T05:59:28.070Z",
+      "pid": 24812,
+      "method": "POST",
+      "endpoint": "/api/v1/admin/stop",
+      "status": 200,
+      "response": {
+        "success": true,
+        "data": {
+          "message": "shutdown initiated"
+        },
+        "requestId": "0s8h5bqbq7memw0a2q12",
+        "timestamp": 1793685568070
+      }
+    }
+  ],
+  "processes": [
+    {
+      "label": "before-crash",
+      "pid": 24196,
+      "started_utc": "2026-11-03T05:59:25.299Z"
+    },
+    {
+      "label": "after-crash",
+      "pid": 24812,
+      "started_utc": "2026-11-03T05:59:27.590Z"
+    }
+  ],
+  "limits": [
+    "Crash occurs after the checkpoint owner returned and disk bytes were verified; not a mid-write crash or power-loss test."
+  ],
+  "shared_health_before": {
+    "schema_version": "1.0",
+    "status": "ok",
+    "pid": 35652,
+    "version": "1.0.21",
+    "startedAt": 1793678876928,
+    "uptimeSec": 6688,
+    "activeClients": 0,
+    "pendingEvents": 4,
+    "lastEventTs": 1793678876951
+  },
+  "checkpoint": {
+    "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-isolated-crash-p2h7s8\\project\\.specforge\\runtime\\checkpoints\\01a19ffd-b827-7118-a140-d0a9af1a0afb.json",
+    "sessionId": "01a19ffd-b827-7118-a140-d0a9af1a0afb",
+    "before_sha256": "2e457523ed2feddd7f4226476bd3bbe1b7a2f481a54f73d7f36c67b2a4003d82",
+    "before_bytes_base64": "ewogICJzY2hlbWFfdmVyc2lvbiI6ICIxLjAiLAogICJzb3VyY2UiOiAiaXNvbGF0ZWQuY3Jhc2guYWNjZXB0YW5jZSIsCiAgInByb2plY3RQYXRoIjogIkM6XFxVc2Vyc1xcbHlxXFxBcHBEYXRhXFxMb2NhbFxcVGVtcFxcc2YtaXNvbGF0ZWQtY3Jhc2gtcDJoN3M4XFxwcm9qZWN0IiwKICAibWFya2VyIjogIjExYjZmNmZkLTBhOGEtNGQ3Yi1hMDNmLWYzYzJmMGFkMjlkYyIsCiAgImNhcHR1cmVkQXQiOiAiMjAyNi0xMS0wM1QwNTo1OToyNy41MjlaIgp9",
+    "after_sha256": "2e457523ed2feddd7f4226476bd3bbe1b7a2f481a54f73d7f36c67b2a4003d82"
+  },
+  "sessions_before": {
+    "success": true,
+    "data": {
+      "sessions": [
+        {
+          "sessionId": "01a19ffd-b827-7118-a140-d0a9af1a0afb",
+          "agentRole": "plugin",
+          "workflowRole": "plugin-daemon-bridge",
+          "parentSessionId": null,
+          "workItemId": "",
+          "projectId": "39ff39ae3bac18b9",
+          "spawnIntentId": "",
+          "createdAt": 1793685567527,
+          "lastActiveAt": 1793685567527,
+          "status": "pending"
+        }
+      ]
+    },
+    "requestId": "ql34f8evmymw0a2pmr",
+    "timestamp": 1793685567555
+  },
+  "crash_utc": "2026-11-03T05:59:27.555Z",
+  "crashed_process": {
+    "pid": 24196,
+    "exit_code": null,
+    "signal": "SIGKILL"
+  },
+  "sessions_immediately_after_startup": {
+    "success": true,
+    "data": {
+      "sessions": []
+    },
+    "requestId": "39eyxay0q6tmw0a2pzk",
+    "timestamp": 1793685568016
+  },
+  "checkpoint_survival": "CONFIRMED_POST_ACKNOWLEDGED_WRITE",
+  "prior_session_restored_at_startup": false,
+  "reregistration": {
+    "success": true,
+    "data": {
+      "sessionId": "01a19ffd-ba21-720e-a6e0-dd36c831149c",
+      "projectId": "39ff39ae3bac18b9",
+      "mode": "personal"
+    },
+    "requestId": "xfr92i03s5mw0a2q01",
+    "timestamp": 1793685568033
+  },
+  "reregistration_same_session": false,
+  "sessions_after_explicit_reregistration": {
+    "success": true,
+    "data": {
+      "sessions": [
+        {
+          "sessionId": "01a19ffd-ba21-720e-a6e0-dd36c831149c",
+          "agentRole": "plugin",
+          "workflowRole": "plugin-daemon-bridge",
+          "parentSessionId": null,
+          "workItemId": "",
+          "projectId": "39ff39ae3bac18b9",
+          "spawnIntentId": "",
+          "createdAt": 1793685568033,
+          "lastActiveAt": 1793685568033,
+          "status": "pending"
+        }
+      ]
+    },
+    "requestId": "fc6v0sa8k3amw0a2q04",
+    "timestamp": 1793685568036
+  },
+  "shared_health_after": {
+    "schema_version": "1.0",
+    "status": "ok",
+    "pid": 35652,
+    "version": "1.0.21",
+    "startedAt": 1793678876928,
+    "uptimeSec": 6691,
+    "activeClients": 0,
+    "pendingEvents": 4,
+    "lastEventTs": 1793678876951
+  },
+  "shared_handshake_unchanged": true,
+  "inner_exit_code": 0,
+  "finished_utc": "2026-11-03T05:59:28.100Z",
+  "carrier_exit_code": 0,
+  "observed_writes": {
+    "retained_fixture": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-isolated-crash-p2h7s8",
+    "logs": [
+      "attempt02-before-crash.log",
+      "attempt02-after-crash.log"
+    ],
+    "receipt": "D:\\code\\SpecForge\\docs\\archive\\2026-11-03-isolated-crash-validation\\crash-result-attempt02.json"
+  }
+}

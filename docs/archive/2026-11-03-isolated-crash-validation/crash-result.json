@@ -1,0 +1,35 @@
+{
+  "run_id": "CODEX-SF-20261103-ISOLATED-CRASH-VALIDATION-A01",
+  "command": "node docs/archive/2026-11-03-isolated-crash-validation/crash-probe.cjs",
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Isolated post-acknowledged-checkpoint process crash and startup classification",
+  "started_utc": "2026-11-03T05:58:57.619Z",
+  "scratch": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-isolated-crash-jUSt5B",
+  "project": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-isolated-crash-jUSt5B\\project",
+  "config": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-isolated-crash-jUSt5B\\opencode-config",
+  "executable": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforged.exe",
+  "executable_sha256": "cc4e5d4aa0282afda7a005a12a89b19acb4bdb78094448d2d631efc6d9fdc50c",
+  "shared_pid": 35652,
+  "expected_writes": "Isolated temp project/configuration/runtime, this evidence directory logs and receipt",
+  "observations": [],
+  "processes": [],
+  "limits": [
+    "Crash occurs after the checkpoint owner returned and disk bytes were verified; not a mid-write crash or power-loss test."
+  ],
+  "shared_health_before": {
+    "success": true,
+    "data": {
+      "status": "ok",
+      "service": "daemon-core",
+      "version": "1.0.21",
+      "uptime": 6660
+    },
+    "requestId": "sgqfp2h3idmw0a22mz",
+    "timestamp": 1793685537755
+  },
+  "error": "Error: SHARED_IDENTITY_MISMATCH",
+  "inner_exit_code": 1,
+  "finished_utc": "2026-11-03T05:58:57.760Z",
+  "carrier_exit_code": 1,
+  "observed_writes": "Retained isolated fixture/config/runtime, before-crash.log, after-crash.log, crash-result.json"
+}
