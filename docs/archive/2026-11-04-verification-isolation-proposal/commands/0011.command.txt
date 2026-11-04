@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-verification-isolation-proposal/check-publishable-evidence.cjs",
+    "--staged",
+    "--suffix=final"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "staged-proposal-privacy",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-04T11:09:37.940Z"
+}

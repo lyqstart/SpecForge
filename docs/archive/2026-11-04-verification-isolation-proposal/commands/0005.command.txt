@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-verification-isolation-proposal/capture-architecture.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "capture-current-architecture-and-original-identity",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-04T10:59:12.464Z"
+}

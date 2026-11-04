@@ -1,0 +1,1 @@
+{"scope":"PASS","proposal_sha256":"606fef86706c8dc86ee4d105fe4204392fd4a9e256b8410a7b591941a68c8e2d","prior_sealed_members_verified":649,"runtime_code_changed":false,"inner_exit_code":0}

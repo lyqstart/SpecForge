@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-verification-isolation-proposal/capture-change.cjs",
+    "reviewable-change"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "proposal-change-content-snapshot",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-04T11:07:24.866Z"
+}

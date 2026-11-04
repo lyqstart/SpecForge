@@ -1,0 +1,15 @@
+{
+  "executable": "git",
+  "args": [
+    "add",
+    "--",
+    ".gitattributes",
+    "docs/project-status.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md",
+    "docs/archive/2026-11-04-verification-isolation-proposal"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "stage-reviewable-proposal",
+  "expected_writes": "repository-index-and-evidence",
+  "started_utc": "2026-11-04T11:09:35.974Z"
+}

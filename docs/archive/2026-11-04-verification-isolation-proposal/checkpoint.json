@@ -1,0 +1,15 @@
+{
+  "utc": "2026-11-04T11:06:39.247Z",
+  "execution_mode": "CODEX_DIRECT",
+  "run_id": "CODEX-SF-20261104-VERIFICATION-ISOLATION-PROPOSAL-A01",
+  "execution_attempt_id": "CODEX-SF-20261104-VERIFICATION-ISOLATION-PROPOSAL-A01-01",
+  "status": "READY_FOR_PRODUCT_ISOLATED_VERIFICATION_DECISION",
+  "proposal": "proposal.md",
+  "proposal_approved": false,
+  "original_wi": "WI-0001",
+  "original_state": "implementation_running",
+  "original_checkpoint": "f5fed085a8609f593592eca5e8035b2d1c958759",
+  "code_permission_revoked": true,
+  "business_tests_executed": false,
+  "next": "Explicit decision on the concrete limited LPAC/Job readonly Node proposal; no repeated Candidate or branch approval."
+}

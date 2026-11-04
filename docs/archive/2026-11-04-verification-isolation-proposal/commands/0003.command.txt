@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-verification-isolation-proposal/audit-original.cjs",
+    "baseline"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "original-wi-current-formal-state",
+  "expected_writes": "runtime-observer-and-evidence",
+  "started_utc": "2026-11-04T10:56:40.752Z"
+}

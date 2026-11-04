@@ -1,0 +1,10 @@
+{
+  "recorded_utc": "2026-11-04T10:55:30.258Z",
+  "exact_user_quote": "继续",
+  "mode": "CODEX_DIRECT",
+  "run_id": "CODEX-SF-20261104-VERIFICATION-ISOLATION-PROPOSAL-A01",
+  "execution_attempt_id": "CODEX-SF-20261104-VERIFICATION-ISOLATION-PROPOSAL-A01-01",
+  "baseline_head": "bb7780cc0d057d8cbeae14462123b993e65c9639",
+  "scope": "Continue from the declared D18 stop: investigate and prepare a concrete product decision proposal. This is not explicit approval of an unseen execution backend or permission to run business tests.",
+  "no_product_execution_decision_recorded": true
+}

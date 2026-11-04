@@ -1,0 +1,12 @@
+{
+  "executable": "pwsh",
+  "args": [
+    "-NoProfile",
+    "-File",
+    "docs/archive/2026-11-04-verification-isolation-proposal/probe-host.ps1"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "native-host-readonly-isolation-discovery",
+  "expected_writes": "evidence-only",
+  "started_utc": "2026-11-04T10:56:09.750Z"
+}

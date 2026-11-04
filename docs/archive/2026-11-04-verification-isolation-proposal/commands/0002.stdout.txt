@@ -1,0 +1,85 @@
+{
+  "utc": "2026-11-04T10:56:12.0132301Z",
+  "os_description": "Microsoft Windows 10.0.26100",
+  "os_architecture": "X64",
+  "process_architecture": "X64",
+  "tools": [
+    {
+      "name": "docker",
+      "found": false,
+      "path": null
+    },
+    {
+      "name": "podman",
+      "found": false,
+      "path": null
+    },
+    {
+      "name": "wsl",
+      "found": true,
+      "path": [
+        "C:\\WINDOWS\\system32\\wsl.exe",
+        "C:\\Users\\lyq\\AppData\\Local\\Microsoft\\WindowsApps\\wsl.exe"
+      ]
+    },
+    {
+      "name": "hcsdiag",
+      "found": true,
+      "path": "C:\\WINDOWS\\system32\\hcsdiag.exe"
+    },
+    {
+      "name": "cl",
+      "found": false,
+      "path": null
+    },
+    {
+      "name": "clang",
+      "found": false,
+      "path": null
+    },
+    {
+      "name": "dotnet",
+      "found": true,
+      "path": "C:\\Program Files\\dotnet\\dotnet.exe"
+    },
+    {
+      "name": "node",
+      "found": true,
+      "path": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "C:\\Users\\lyq\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe"
+      ]
+    }
+  ],
+  "paths": [
+    {
+      "path": "C:/Windows/System32/WindowsSandbox.exe",
+      "exists": false
+    },
+    {
+      "path": "C:/Windows/System32/wsb.exe",
+      "exists": false
+    },
+    {
+      "path": "C:/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe",
+      "exists": true
+    },
+    {
+      "path": "C:/Program Files/Docker/Docker/resources/bin/docker.exe",
+      "exists": false
+    }
+  ],
+  "services": [
+    {
+      "name": "vmcompute",
+      "status": "Running"
+    },
+    {
+      "name": "WslService",
+      "status": "Running"
+    }
+  ],
+  "wsl_registered_distro_key_count": 1,
+  "limitation": "Read-only discovery only. WSL binary/registry presence is not proof of usable confinement; no isolation process or system feature was started.",
+  "inner_exit_code": 0
+}

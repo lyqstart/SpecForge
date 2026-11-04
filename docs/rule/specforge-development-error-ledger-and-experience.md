@@ -32221,3 +32221,8 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 0062 独立原字节快照确认 README 的文字写 ./src/greet.ts，但实际 import 示例为 ./src/greet，且裸签名混入调用代码块；不符合批准的 DD-CORE-005/Task004。五文件落盘、grep命中或专业 Agent 声称完成都不能替代逐项合同复核。
 - 0063 保留原错版并向真实原 sf-orchestrator 投递纠正，0064 已实际派发 sf-reviewer 做静态审阅，要求随后仍由专业 Executor 在原 README 权限内修订、保留原123字节前缀；修正结果与复核须另行取证，不由外部手改或降低合同。复用 EXP-004/007/017/087。
 - 后续闭环：真实 Reviewer 以1 blocking/1 warning交接，专业 Executor 实际编辑修正，短暂限流后交接成功。0068/0072 原字节证明 import 已带.ts、签名移出代码块；0075逐字节核验原123字节前缀保留。正式 Changed Files Audit 为5/5范围内、1个guard历史拒绝已解决、0 unresolved；第二次工具调用是 HARD_STOP_ACTIVE 前置拒绝，未产生第二个guard写记录，两次工具拒绝均保留。受控 checkpoint f5fed085 只提交五文件，随后正式 revoke，0074仍 implementation_running。没有把旧 request_changes 改写为正式全阶段复审通过，也没有用静态修正冒充业务运行验收。
+
+### ERR-1913：隔离方案取证的显示截断与 PowerShell 语法失败
+
+- 2026-11-04 只读取证首次把多个大文件结果装入同一输出预算，发生显示截断；随后活动规则按350行、SPS按450行完整分块重读到EOF，相关 executor 另行完整读取，不以标题或哈希代替阅读。首次环境探测的 CIM 查询因客户端访问限制失败，不能据此判定主机缺少相应能力。
+- 另一个只读路径探测把 foreach 语句直接接到管道，PowerShell 在执行前以 An empty pipe element is not allowed/exit1 拒绝。改为先收集对象再 ConvertTo-Json；未启动测试、隔离进程或修改业务文件。后续主机证据须用结构化原始输出，避免格式化表格省略路径。复用 EXP-002/007/008/261；不把探测入口失败计为产品隔离能力测试结果。

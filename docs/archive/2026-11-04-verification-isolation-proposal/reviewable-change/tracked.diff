@@ -1,0 +1,61 @@
+diff --git a/.gitattributes b/.gitattributes
+index d975ef57..fcf496c8 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -44,3 +44,4 @@ docs/archive/2026-10-19-config-activation-loss-evidence/** -text -diff
+ /docs/archive/2026-11-03-original-wi-recovery/** -text -diff
+ /docs/archive/2026-11-03-original-wi-archive-restore/** -text -diff
+ /docs/archive/2026-11-03-original-wi-approved-implementation/** -text -diff
++/docs/archive/2026-11-04-verification-isolation-proposal/** -text -diff
+diff --git a/docs/project-status.md b/docs/project-status.md
+index 8341b860..a9677dd6 100644
+--- a/docs/project-status.md
++++ b/docs/project-status.md
+@@ -11,25 +11,25 @@ PROJECT_STATUS_SCHEMA=2
+ PROJECT_STATUS_DECLARATION=ACTIVE
+ ACTIVE_INITIATIVE=VERIFIER_GUIDANCE_AND_SPS_CONFORMANCE
+ OBJECTIVE=Repair verifier D18 guidance, deploy and verify; audit SPS clauses and real OpenCode chain with implemented/unimplemented/insufficient evidence results.
+-CURRENT_PHASE=ORIGINAL_WI_IMPLEMENTATION_CHECKPOINT_D18_STOP
++CURRENT_PHASE=VERIFICATION_ISOLATION_PROPOSAL
+ OWNER_DECISIONS=AR-DEC-01:APPROVED;AR-DEC-02:APPROVED_WITH_ARCHIVE_CONSOLIDATION;AR-DEC-03:APPROVED_WITH_KIRO_RETIREMENT;AR-DEC-04:APPROVED_WITH_SINGLE_PROJECT_STATUS;AR-DEC-05:ONLY_TWO_EXTERNAL_EXECUTION_MODES_CODEX_DIRECT_AND_WORKBUDDY_COORDINATED;AR-DEC-06:ACTIVE_RULES_SEPARATED_FROM_HISTORICAL_LEDGER;D05:OPENCODE_ADAPTER_ENABLED;D10:NSSM_REMOVED_WINDOWS_DIRECT_DAEMON_ONLY;D11:GLOBAL_ONLY_THIN_PLUGIN_SINGLE_EXPORT;VR-DEC-01:NEW_EPOCH_1_0_0;VR-DEC-02:TAG_PREFIX_SPECFORGE_V;VR-DEC-03:INDEPENDENT_CONTRACT_VERSIONS;VR-DEC-04:ACTIVE_REFERENCES_CONVERGE_HISTORY_PRESERVED;D18:INTERNAL_READ_ONLY_COMMAND_CONTAINMENT
+ EXECUTION_MODE=CODEX_DIRECT
+-EXECUTION_STATE=AT_STOP_CONDITION
++EXECUTION_STATE=AWAITING_PRODUCT_DECISION
+ EXECUTION_PROTOCOL=docs/rule/specforge-execution-mode-and-evidence-protocol.md
+ EXECUTION_PLANNER=CODEX
+ EXECUTION_ACTOR=CODEX
+ EXECUTION_AUDITOR=CODEX
+-EXECUTION_RUN_ID=CODEX-SF-20261103-ORIGINAL-WI-APPROVED-IMPLEMENTATION-A01
+-EXECUTION_EVIDENCE_ROOT=D:/code/SpecForge/docs/archive/2026-11-03-original-wi-approved-implementation
+-LAST_EXECUTION_CHECKPOINT=Product Git owner cf94aa7d7e7a04f1bfd97e34a8b1833accc1b89c passed63 regressions and four real process-crash recovery contracts, build/typecheck/release precheck;112 installed files verified, six independent hashes matched, daemon fcf5ce5ebc6c399cfec2aa405ebbd2c236bd0ad44792a20b0efbce06b91fe710 healthy PID21644. Original native0052 completed actual approved new main plus codex/greet-library-wi-0001 bootstrap at8a692e88, formal permission, five-file professional implementation, Reviewer-discovered README correction, Changed Files Audit and controlled checkpoint f5fed085a8609f593592eca5e8035b2d1c958759. Permission formally revoked.0074 state remains implementation_running;0075 proves exact five committed files, parent original commit and README123-byte prefix preservation. Native host31152 exited; daemon remains healthy. Detailed evidence/conclusion in current sealed phase root.
+-NEXT_EXECUTION_STOP=AT_D18_BUSINESS_VERIFICATION_BOUNDARY;NO_AUTOMATIC_EXECUTION_CAPABILITY_EXPANSION
++EXECUTION_RUN_ID=CODEX-SF-20261104-VERIFICATION-ISOLATION-PROPOSAL-A01
++EXECUTION_EVIDENCE_ROOT=D:/code/SpecForge/docs/archive/2026-11-04-verification-isolation-proposal
++LAST_EXECUTION_CHECKPOINT=Current proposal phase0003/0005 independently confirm original WI-0001 remains implementation_running with permission revoked; business checkpoint f5fed085, five implementation files and WAL match prior sealed bytes. Daemon1.0.21/PID21644 healthy and disk binary still fcf5ce5ebc6c399cfec2aa405ebbd2c236bd0ad44792a20b0efbce06b91fe710. Five mandatory rules fully reread to EOF, actual execution owners/templates and installed bytes captured, native host discovery recorded. Proposal VERIFICATION-ISOLATION-PROPOSAL-001 is complete but NOT approved: Windows x64 LPAC plus Job readonly Node profile, synthetic isolation PoC before product integration/business execution. No SPS/Registry or runtime code change, no isolation process/profile/system ACL change or business tests. Current proposal/evidence is in the declared phase root.
++NEXT_EXECUTION_STOP=READY_FOR_PRODUCT_ISOLATED_VERIFICATION_DECISION;NO_BUSINESS_EXECUTION_OR_AUTHORITY_CHANGE_BEFORE_EXPLICIT_DECISION
+ LAST_COMPLETED_CHECKPOINT=User decision UD-WI-0001-1793717210435, nine-artifact PSV-0002 merge and post_merge_gate passed. D19 owner extension/release/deployment and original implementation checkpoint completed. Task001-004 code/static artifacts exist; original verification command exits and Task005 integration/e2e were not executed. Code permission revoked, business main unchanged at8a692e88; no implementation_done/review_done/verification_done/Formal Version/Close or overall SPS acceptance claimed. Original data-loss cause remains INSUFFICIENT_EVIDENCE.
+-CURRENT_BLOCKER=D18_CONTROLLED_BUSINESS_TEST_EXECUTION_UNAVAILABLE;TASK_005_NOT_EXECUTED;FORMAL_REVIEW_VERIFICATION_AND_CLOSE_PENDING
+-NEXT_LEGAL_ACTION=Read current phase conclusion.md and sealed evidence, then obtain the product-authority decision/contract for a legal controlled business verification execution capability; D18 remains effective until formally changed. Preserve same WI-0001, PSV-0002, approval history, new Git context and f5fed085 implementation checkpoint. No duplicate Decision/Merge/Candidate, external business test execution, manual truth writes, invented verification exits, default-main business Git merge or false Close. Resume through formal owners from actual implementation_running with permission revoked; new branch-name approval is already complete and must not be requested again. Overall SPS audit and legal executed verification remain unfinished.
++CURRENT_BLOCKER=EXPLICIT_PRODUCT_DECISION_PENDING_FOR_PROPOSAL_001;D18_EXECUTION_UNAVAILABLE;TASK_005_NOT_EXECUTED
++NEXT_LEGAL_ACTION=Present proposal.md VERIFICATION-ISOLATION-PROPOSAL-001 for the explicit product-owner decision required by Registry section6. It proposes only Windows x64 LPAC/Job readonly Node verification, with formal authority/contract before implementation, mandatory real synthetic isolation and process-crash proof before product wiring or original business execution; unsupported Task command semantics remain not_executed. Do not treat the earlier 继续 as approval of this previously unseen concrete scheme. On explicit approval first update SPS/Registry, then PoC and required producer/consumer/deployment validation; do not bypass D18 or use an ordinary child process fallback. Preserve original WI-0001/PSV-0002/f5fed085 and revoked code permission. Candidate/branch approvals are already complete and must not be requested again; default-main business Git merge and overall SPS acceptance remain separate unfinished work.
+ ALLOWED_SCOPE=AGENTS.md;README.md;.gitattributes;.gitignore;package.json;bun.lock;docs/project-status.md;docs/product-specification/**;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/archive/**;docs/adr/**;docs/cli/**;docs/conventions/**;docs/user/**;docs/plugins/**;docs/tools/**;docs/engineering-lessons/**;docs/rule/**;scripts/**;setup/**;packages/**/package.json;packages/service-management/src/**;packages/configuration/src/**;packages/opencode-adapter/src/**;packages/permission-engine/src/**;packages/daemon-core/src/**;packages/cli/src/**;packages/types/src/**;packages/observability/src/**;packages/observability/examples/**;packages/workflow-runtime/src/types/state-machine.ts;packages/**/README.md;packages/**/DEVELOPMENT.md;packages/**/docs/**;packages/**/src/**/*.md;packages/**/tests/**;tests/**
+ PROHIBITED=Deleting ADR ERR audit or report evidence;creating another active handoff current-status or recovery-status file;modifying D:\code\t3 outside a separately authorized controlled recovery phase;reading or modifying D:\code\t2 during SpecForge repair;creating a SpecForge Work Item for SpecForge product self-development;using archive evidence as a current product contract
+ REQUIRED_RULES=docs/rule/specforge-active-development-rules.md;docs/product-specification/authority-registry.md;docs/product-specification/specforge-product-specification.md;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/rule/specforge-execution-mode-and-evidence-protocol.md
+-REQUIRED_VALIDATION=Guidance and shell-boundary regression; workflow generation check; release precheck and installer lifecycle; deployed byte identity; fresh OpenCode evidence; clause-by-clause conformance report.
++REQUIRED_VALIDATION=This proposal phase: full mandatory-rule coverage; original formal-state/code/WAL and installed-byte identity; read-only host evidence; official-source and actual-owner reconciliation; complete bounded proposal and failure classification; exact document scope/diff, sealed evidence and clean local/remote main. Runtime PoC, product tests/build/deployment and business verification have NOT started and require the explicit product decision first.
+ <!-- SPECFORGE_PROJECT_STATUS:END -->
+ 
+ ## Resume guidance
+diff --git a/docs/rule/specforge-development-error-ledger-and-experience.md b/docs/rule/specforge-development-error-ledger-and-experience.md
+index 4652f03e..8e007441 100644
+--- a/docs/rule/specforge-development-error-ledger-and-experience.md
++++ b/docs/rule/specforge-development-error-ledger-and-experience.md
+@@ -32221,3 +32221,8 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制
+ - 0062 独立原字节快照确认 README 的文字写 ./src/greet.ts，但实际 import 示例为 ./src/greet，且裸签名混入调用代码块；不符合批准的 DD-CORE-005/Task004。五文件落盘、grep命中或专业 Agent 声称完成都不能替代逐项合同复核。
+ - 0063 保留原错版并向真实原 sf-orchestrator 投递纠正，0064 已实际派发 sf-reviewer 做静态审阅，要求随后仍由专业 Executor 在原 README 权限内修订、保留原123字节前缀；修正结果与复核须另行取证，不由外部手改或降低合同。复用 EXP-004/007/017/087。
+ - 后续闭环：真实 Reviewer 以1 blocking/1 warning交接，专业 Executor 实际编辑修正，短暂限流后交接成功。0068/0072 原字节证明 import 已带.ts、签名移出代码块；0075逐字节核验原123字节前缀保留。正式 Changed Files Audit 为5/5范围内、1个guard历史拒绝已解决、0 unresolved；第二次工具调用是 HARD_STOP_ACTIVE 前置拒绝，未产生第二个guard写记录，两次工具拒绝均保留。受控 checkpoint f5fed085 只提交五文件，随后正式 revoke，0074仍 implementation_running。没有把旧 request_changes 改写为正式全阶段复审通过，也没有用静态修正冒充业务运行验收。
++
++### ERR-1913：隔离方案取证的显示截断与 PowerShell 语法失败
++
++- 2026-11-04 只读取证首次把多个大文件结果装入同一输出预算，发生显示截断；随后活动规则按350行、SPS按450行完整分块重读到EOF，相关 executor 另行完整读取，不以标题或哈希代替阅读。首次环境探测的 CIM 查询因客户端访问限制失败，不能据此判定主机缺少相应能力。
++- 另一个只读路径探测把 foreach 语句直接接到管道，PowerShell 在执行前以 An empty pipe element is not allowed/exit1 拒绝。改为先收集对象再 ConvertTo-Json；未启动测试、隔离进程或修改业务文件。后续主机证据须用结构化原始输出，避免格式化表格省略路径。复用 EXP-002/007/008/261；不把探测入口失败计为产品隔离能力测试结果。

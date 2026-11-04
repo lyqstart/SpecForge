@@ -1,0 +1,12 @@
+{
+  "executable": "git",
+  "args": [
+    "switch",
+    "-c",
+    "codex/verification-isolation-proposal"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "create-proposal-maintenance-branch",
+  "expected_writes": "repository-git-ref-and-evidence",
+  "started_utc": "2026-11-04T10:56:03.903Z"
+}

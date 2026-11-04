@@ -1,0 +1,130 @@
+{
+  "utc": "2026-11-04T10:55:30.255Z",
+  "files": [
+    {
+      "file": "docs/rule/specforge-active-development-rules.md",
+      "raw_sha256": "de23c0d38acda18052752344805703f2df53cd502503925a51c0341573b19d74",
+      "lines": 2603,
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 350,
+          "sha256": "505df49f6e362ea8f3f53a44e5abc9b72cf9ffd7b36cda8e2748bfaa2c09a677"
+        },
+        {
+          "first_line": 351,
+          "last_line": 700,
+          "sha256": "44e83fcab3ab3180732b1e8272643c28985775250c68f5a9bbd2df6b10b053ad"
+        },
+        {
+          "first_line": 701,
+          "last_line": 1050,
+          "sha256": "8fec855d399038924de097579769beb6848d5da0c09b31ac39d9f71c22455e9f"
+        },
+        {
+          "first_line": 1051,
+          "last_line": 1400,
+          "sha256": "38da50cabf1cb940ee936cb3e31ba4ef0c483de8940a4af4688810b351e7af45"
+        },
+        {
+          "first_line": 1401,
+          "last_line": 1750,
+          "sha256": "5577cb40126c33d3d2c66d416e656ac92b6c7be1b1247df3cfe54d972c0186bf"
+        },
+        {
+          "first_line": 1751,
+          "last_line": 2100,
+          "sha256": "7946c90abb701c655d9050e40d85cf6098bce75d12c5576db6e83bb1a8d36799"
+        },
+        {
+          "first_line": 2101,
+          "last_line": 2450,
+          "sha256": "988544c162d5812f238209ae6cae1106c420bfe114586f62658de9626b6ace81"
+        },
+        {
+          "first_line": 2451,
+          "last_line": 2603,
+          "sha256": "9cf79a84255716299270a5bf0d4f67d2a1a9fda77a0699dbc2f99b26bfde9a16"
+        }
+      ],
+      "eof_covered": true,
+      "reassembly_equal": true,
+      "read_method": "Actual full tool-output chunks; initially truncated displays were reread before gate acceptance."
+    },
+    {
+      "file": "docs/product-specification/authority-registry.md",
+      "raw_sha256": "592b8bd01646a54e6d23c447440fd46a5b39353a1831f1fcdc563e3bb269f4e9",
+      "lines": 139,
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 139,
+          "sha256": "c0dc880fd393c5de8f422ba01f42119c2460123ee523da30d51358845a3a2d48"
+        }
+      ],
+      "eof_covered": true,
+      "reassembly_equal": true,
+      "read_method": "Actual full tool-output chunks; initially truncated displays were reread before gate acceptance."
+    },
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "raw_sha256": "e13cbec6d4b159c3061806b9b5fa0c686befe81b9a17b8e73315c3065c3b3061",
+      "lines": 1637,
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 450,
+          "sha256": "68f0ac78c71e3bc5256debd8e4cc821c936509e2ed203ec1b01eed710bfb8409"
+        },
+        {
+          "first_line": 451,
+          "last_line": 900,
+          "sha256": "cfdf2b8cd8ce2bd5e97b1f33827ee5361f4929994accb0dd2d64e3e1b9e9bd05"
+        },
+        {
+          "first_line": 901,
+          "last_line": 1350,
+          "sha256": "cd21871f4dbf7cd686c1bc9ab2f71b038eb89ed396944dbef2622ff78e9b7297"
+        },
+        {
+          "first_line": 1351,
+          "last_line": 1637,
+          "sha256": "4f07670b086b09ebf4ac52d1a1b6d8f5a387e54349605ebe2507de26b6121357"
+        }
+      ],
+      "eof_covered": true,
+      "reassembly_equal": true,
+      "read_method": "Actual full tool-output chunks; initially truncated displays were reread before gate acceptance."
+    },
+    {
+      "file": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "raw_sha256": "956df3943a44d1b99636790a32e9b2a0dc266b7116f50b60b7b8c6f2614423ac",
+      "lines": 232,
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 232,
+          "sha256": "634dd431a58c972e6059e86aee47524e16a0dea45f666ea6dbee71b2de0d4879"
+        }
+      ],
+      "eof_covered": true,
+      "reassembly_equal": true,
+      "read_method": "Actual full tool-output chunks; initially truncated displays were reread before gate acceptance."
+    },
+    {
+      "file": "docs/rule/specforge-execution-mode-and-evidence-protocol.md",
+      "raw_sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef",
+      "lines": 182,
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 182,
+          "sha256": "ad5805c4d203c5f3aba8cf506fff83c7b2aa8bb6a38ea4e871b49c1414895ba7"
+        }
+      ],
+      "eof_covered": true,
+      "reassembly_equal": true,
+      "read_method": "Actual full tool-output chunks; initially truncated displays were reread before gate acceptance."
+    }
+  ]
+}

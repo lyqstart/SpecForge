@@ -1,0 +1,9 @@
+{
+  "utc": "2026-11-04T11:11:07.580Z",
+  "run_id": "CODEX-SF-20261104-VERIFICATION-ISOLATION-PROPOSAL-A01",
+  "manifest_sha256": "3ff5ac8db1ef1b9014743ba80696017142446c6126f75d366919df42b0971ac4",
+  "files": 100,
+  "self_check": "PASS",
+  "inner_exit_code": 0,
+  "exclusions": "Git-ignored private native reasoning/raw Cookie source; manifest and this check receipt cannot recursively contain their own hashes."
+}
