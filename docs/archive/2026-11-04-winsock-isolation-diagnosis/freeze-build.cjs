@@ -1,0 +1,7 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const name=process.argv[2];if(!/^build-[a-z0-9-]+$/.test(name))throw Error('NAME');
+const root=path.join(__dirname,name);fs.mkdirSync(root);const members=[];
+for(const file of ['packages/daemon-core/src/verification/windows/LpacStartupPoc.cs','packages/daemon-core/src/verification/windows/LpacReadTrace.cs','.tmp/verification-lpac-build/LpacReadTracePoc.exe']){
+ const bytes=fs.readFileSync(file),sha256=crypto.createHash('sha256').update(bytes).digest('hex');fs.writeFileSync(path.join(root,path.basename(file)),bytes,{flag:'wx'});members.push({source:file,file:path.basename(file),bytes:bytes.length,sha256});
+}
+fs.writeFileSync(path.join(root,'identity.json'),JSON.stringify({utc:new Date().toISOString(),members},null,2)+'\n',{flag:'wx'});console.log(JSON.stringify({build:name,members,inner_exit_code:0}));

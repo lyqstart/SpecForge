@@ -5,7 +5,7 @@ under SPS §9.2.1 / D20. It is not registered as a tool, imported by the daemon,
 included in release assets, or installed. It only creates a fixed synthetic
 assertion, then attempts to execute a frozen Node copy under LPAC and a Job.
 
-Build with the existing .NET Framework x64 C# compiler and
+Build both `LpacStartupPoc.cs` and `LpacReadTrace.cs` with the existing .NET Framework x64 C# compiler and
 `/reference:System.Web.Extensions.dll`. Use absolute Windows source/output paths.
 The CLI accepts `--synthetic-p01 NEW_UUID_ROOT PINNED_NODE_EXE`, where the fresh
 root must be a UUID leaf below `<cwd>/.tmp/verification-lpac`. Creating the
@@ -26,3 +26,10 @@ profile cleanup are preserved under the 2026-11-04 isolation PoC evidence phase.
 This is evidence for that exact configuration, not a proof that every possible
 LPAC/Node configuration fails. Do not widen capabilities or use an ordinary
 child process as an execution fallback.
+
+`--synthetic-trace` observes the same fixed Node startup through the Windows debug
+API. It sets hardware breakpoints in the newly created synthetic process's
+threads to record named system-call entry/return facts. It does not patch code,
+change capabilities, attach to another process, install a driver, or change
+system privileges. Debugging changes scheduling and can be detected, so traces
+are diagnostic evidence and never substitute for isolation acceptance.

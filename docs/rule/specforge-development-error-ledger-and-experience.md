@@ -32244,3 +32244,11 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 0016 内联采集先以 Windows PowerShell 默认文本编码读取UTF-8 events，中文错误消息被错误解码而导致ConvertFrom-Json失败，exit1；改为显式Get-Content -Encoding UTF8及UTF-8控制台输出，不换第二种载体。旧原始events仍为完整UTF-8字节，早期命令stdout展示存在代码页替换，不能作为对应中文错误原字节；以封存events为一手证据。
 - 收尾准备曾以带反斜杠双引号的node -e嵌套PowerShell改采集器，在解析阶段Missing type name after '['/exit1，未执行任何嵌套命令或快照。改用apply_patch直接改源码，再按独立命令采集，避免多层Shell引用。此载体错误不影响0012原始失败事实或0017/0018已完成独立核验。
 - 0025收尾Bootstrap在受限网络环境DNS解析github.com失败，carrier1/inner2、REMOTE_MAIN_UNAVAILABLE，立即停止封存/发布；0026相同只读Bootstrap在主机网络范围复核READY，本地/远端仍45b256795b02eb732e0b8191b54e03be1af0c61e。仅区分取证环境，不把远端不可核验改写为一致；工作区已按批准的8个非证据文件和本phase根逐项分类。
+
+### ERR-1916：零 capability LPAC 与固定 Node 的 Winsock 注册表启动依赖冲突
+
+- 2026-11-04新诊断阶段CODEX-SF-20261104-WINSOCK-DIAGNOSIS-A01继承用户“继续”，先核验54b66882本地/远端一致、工作区干净与旧245份封存成员。保持固定Node、零capability、只读profile/input/runtime和Job，未改原业务或系统ACL。第一条硬件trace观察48次调用；第二条在WSAStartup范围内确认机器根键打开被拒绝，但没有经过所观察的W入口。0009固定ws2_32导入表证实A/W接口均存在，仅支持改观察槽的取证假设，不作为实际调用事实。
+- CONFIRMED：0013第三条真实trace为WSAStartup(2.2) → RegOpenKeyExA(HKLM\System\CurrentControlSet\Services\WinSock2\Parameters,0x20019) → NtOpenKeyEx(REGISTRY/MACHINE,0x02000000)返回c0000022 → RegOpenKeyExA返回5 → WSAStartup返回10107；父调用ID、同线程与进入/返回记录逐项匹配。Node退出2147483651，Job active0/profile删除0。硬件断点只改本轮新合成进程的调试寄存器/时序，未patch代码、启用SeDebugPrivilege或安装驱动。
+- CORROBORATED：与未调试原失败的同Node/零capability/只读边界及错误、退出码相符；调试有观察者效应，不能把trace当作未调试隔离验收。0015是诊断链校验成功，不是Node正例通过。0004/0008/0013的非零和原始字节完整保留。
+- 责任为隔离Execution Producer的权限profile与固定运行时启动依赖不兼容。registryRead是否足够且安全仍INSUFFICIENT_EVIDENCE；SPS9.2.1明确新增注册表capability须重新产品决定。已准备仅合成实验的具体D21候选/可应用检查通过的patch，未改正式SPS/Registry、未增加任何capability，不以同意目标替代扩权决定。0019宿主独立PID/profile复核，0020原业务/部署156项未变，0021仅删除3个已核验自有Node副本。
+- 初期把源码与多个网页装入同一显示预算出现截断，未据此声称新全文覆盖；随后用独立尾段和正确API页面补齐相关读取。错误debug-event URL也已改为minwinbase的正式页面。复用EXP-002/004/007/008/038/060/145/193/261/285；不以错误页、枚举存在或Agent自述证明接口支持。

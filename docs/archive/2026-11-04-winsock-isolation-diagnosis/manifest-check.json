@@ -1,0 +1,9 @@
+{
+  "utc": "2026-11-04T12:15:28.784Z",
+  "run_id": "CODEX-SF-20261104-WINSOCK-DIAGNOSIS-A01",
+  "files": 266,
+  "manifest_sha256": "b7cdae8c82f775dba703f4c04863712c60418938dfb68b6992221dbf34260702",
+  "self_check": "PASS",
+  "exclusions": "Only manifest and its own check excluded to avoid recursive hash. No private credential data collected.",
+  "inner_exit_code": 0
+}

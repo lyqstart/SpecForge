@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-winsock-isolation-diagnosis/verify-unaffected.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "unaffected-original-and-installed-identities",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=156 identity checks and receipts",
+  "started_utc": "2026-11-04T12:09:54.386Z"
+}

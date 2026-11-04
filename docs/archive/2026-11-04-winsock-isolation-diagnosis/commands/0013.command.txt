@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacReadTracePoc.exe",
+  "args": [
+    "--synthetic-trace",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\a102d98644fe44feb6641ab3b023f613",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "observe-winsock-ansi-target",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned zero-capability readonly LPAC Job fixture hardware registers then cleanup;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-04T12:04:25.490Z"
+}

@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-winsock-isolation-diagnosis/finish-phase.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "finish-denied-resource-diagnosis",
+  "expected_writes": "TRUTH_SOURCE_WRITES=unique project-status;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-04T12:11:31.746Z"
+}

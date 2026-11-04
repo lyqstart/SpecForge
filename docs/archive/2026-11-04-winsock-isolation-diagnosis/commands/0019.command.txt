@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-winsock-isolation-diagnosis/cleanup-observation.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "independent-host-resource-reconciliation",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=host PID/profile reconciliation and receipts;RUNTIME_OBSERVER_WRITES=read-only inventory",
+  "started_utc": "2026-11-04T12:09:52.273Z"
+}

@@ -1,0 +1,163 @@
+{
+  "utc": "2026-11-04T12:07:55.561Z",
+  "classification": "CONFIRMED_FOR_TRACED_CONFIGURATION",
+  "attempt": "a102d98644fe44feb6641ab3b023f613",
+  "matched_calls": 13,
+  "call_chain": [
+    {
+      "utc": "2026-11-04T12:04:30.8798257Z",
+      "name": "trace_call_return",
+      "data": {
+        "call_id": 11,
+        "parent_call_id": 0,
+        "inside_wsa_startup": false,
+        "thread": 29600,
+        "api": "WSAStartup",
+        "object_name": "requested-version=0x0202",
+        "desired_access": "0x00000000",
+        "ntstatus": null,
+        "return_value": 10107,
+        "return_kind": "Winsock error code",
+        "return_address": "7ff661a20a0a"
+      }
+    },
+    {
+      "utc": "2026-11-04T12:04:30.8798257Z",
+      "name": "trace_call_return",
+      "data": {
+        "call_id": 12,
+        "parent_call_id": 11,
+        "inside_wsa_startup": true,
+        "thread": 29600,
+        "api": "RegOpenKeyExA",
+        "object_name": "HKLM\\System\\CurrentControlSet\\Services\\WinSock2\\Parameters",
+        "desired_access": "0x00020019",
+        "ntstatus": null,
+        "return_value": 5,
+        "return_kind": "Win32 error code",
+        "return_address": "7fffbeaba8a7"
+      }
+    },
+    {
+      "utc": "2026-11-04T12:04:30.8738207Z",
+      "name": "trace_call_return",
+      "data": {
+        "call_id": 13,
+        "parent_call_id": 12,
+        "inside_wsa_startup": true,
+        "thread": 29600,
+        "api": "NtOpenKeyEx",
+        "object_name": "\\REGISTRY\\MACHINE",
+        "desired_access": "0x02000000",
+        "ntstatus": "0xc0000022",
+        "return_value": 3221225506,
+        "return_kind": "NTSTATUS",
+        "return_address": "7fffbcbae943"
+      }
+    }
+  ],
+  "chronological_returns": [
+    {
+      "utc": "2026-11-04T12:04:30.8738207Z",
+      "name": "trace_call_return",
+      "data": {
+        "call_id": 13,
+        "parent_call_id": 12,
+        "inside_wsa_startup": true,
+        "thread": 29600,
+        "api": "NtOpenKeyEx",
+        "object_name": "\\REGISTRY\\MACHINE",
+        "desired_access": "0x02000000",
+        "ntstatus": "0xc0000022",
+        "return_value": 3221225506,
+        "return_kind": "NTSTATUS",
+        "return_address": "7fffbcbae943"
+      }
+    },
+    {
+      "utc": "2026-11-04T12:04:30.8798257Z",
+      "name": "trace_call_return",
+      "data": {
+        "call_id": 12,
+        "parent_call_id": 11,
+        "inside_wsa_startup": true,
+        "thread": 29600,
+        "api": "RegOpenKeyExA",
+        "object_name": "HKLM\\System\\CurrentControlSet\\Services\\WinSock2\\Parameters",
+        "desired_access": "0x00020019",
+        "ntstatus": null,
+        "return_value": 5,
+        "return_kind": "Win32 error code",
+        "return_address": "7fffbeaba8a7"
+      }
+    },
+    {
+      "utc": "2026-11-04T12:04:30.8798257Z",
+      "name": "trace_call_return",
+      "data": {
+        "call_id": 11,
+        "parent_call_id": 0,
+        "inside_wsa_startup": false,
+        "thread": 29600,
+        "api": "WSAStartup",
+        "object_name": "requested-version=0x0202",
+        "desired_access": "0x00000000",
+        "ntstatus": null,
+        "return_value": 10107,
+        "return_kind": "Winsock error code",
+        "return_address": "7ff661a20a0a"
+      }
+    }
+  ],
+  "module_identities": [
+    {
+      "utc": "2026-11-04T12:04:30.7094584Z",
+      "name": "trace_hook_identity",
+      "data": {
+        "api": "NtOpenKeyEx",
+        "module": "C:\\Windows\\System32\\ntdll.dll",
+        "module_sha256": "651ac9041af8e6b5ebd331d53163244c0a27d36d1433f0f15cac1f28c5f2e82c",
+        "export_rva": 1458864,
+        "address": "7fffbf7042b0",
+        "remote_first16_equal_disk": true,
+        "mechanism": "hardware execution breakpoint; no code patch"
+      }
+    },
+    {
+      "utc": "2026-11-04T12:04:30.7254697Z",
+      "name": "trace_hook_identity",
+      "data": {
+        "api": "RegOpenKeyExA",
+        "module": "C:\\Windows\\System32\\KernelBase.dll",
+        "module_sha256": "5c29b73622ce0976e1ada566f31f2197ba0f8beaea89c3ec033366126172c3d0",
+        "export_rva": 557264,
+        "address": "7fffbcbd80d0",
+        "remote_first16_equal_disk": true,
+        "mechanism": "hardware execution breakpoint; no code patch"
+      }
+    },
+    {
+      "utc": "2026-11-04T12:04:30.7770537Z",
+      "name": "trace_hook_identity",
+      "data": {
+        "api": "WSAStartup",
+        "module": "C:\\Windows\\System32\\ws2_32.dll",
+        "module_sha256": "b123b00c46c415d7baeaada58c29c3e6920895db836ee4c0cfee49d738af60ad",
+        "export_rva": 145488,
+        "address": "7fffbead3850",
+        "remote_first16_equal_disk": true,
+        "mechanism": "hardware execution breakpoint; no code patch"
+      }
+    }
+  ],
+  "application_exit_code": 2147483651,
+  "isolation_acceptance": "NOT_ACCEPTED",
+  "unmodified_baseline_relation": "CORROBORATED: same fixed Node/input, zero capabilities, readonly LPAC and identical error/exit; debugging changes timing and is not an unobserved acceptance run.",
+  "not_proved": [
+    "registryRead resolves startup",
+    "safe registry exposure under registryRead",
+    "complete isolation/lifecycle matrix",
+    "business verification"
+  ],
+  "inner_exit_code": 0
+}

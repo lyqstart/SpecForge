@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-winsock-isolation-diagnosis/build-authority-proposal.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "build-reviewable-authority-delta",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=hypothetical authority documents and valid review patch;TRUTH_SOURCE_WRITES=NONE",
+  "started_utc": "2026-11-04T12:09:31.290Z"
+}

@@ -1,0 +1,38 @@
+{
+  "utc": "2026-11-04T12:13:41.097Z",
+  "result": "PASS_FOR_DIAGNOSIS_AND_UNAPPROVED_PROPOSAL_ONLY",
+  "diagnosis": "specific denied system registry access identified",
+  "isolation_acceptance": "NOT_ACCEPTED",
+  "proposal_status": "NOT_APPROVED_NOT_APPLIED",
+  "proposal_sha256": "d342fc7d4fc466f423c939f31da7559222a1956d4cfa4d7a5ec20fd484cc317c",
+  "patch_sha256": "cd381fb92e8d2300d7c5125d3854039a653298d29a2a5832dccc8e5f736d3453",
+  "prior_seals": [
+    {
+      "directory": "2026-11-03-original-wi-approved-implementation",
+      "members": 649,
+      "manifest_sha256": "01fc60daaaece5a12f91a12f03f9b713c8f001a566c55f74178e107c7219f4fc"
+    },
+    {
+      "directory": "2026-11-04-verification-isolation-proposal",
+      "members": 100,
+      "manifest_sha256": "3ff5ac8db1ef1b9014743ba80696017142446c6126f75d366919df42b0971ac4"
+    },
+    {
+      "directory": "2026-11-04-verification-isolation-poc",
+      "members": 245,
+      "manifest_sha256": "918f5f6f5b389ec9c099fc4c2d70fa67da2edcbdf38e27342dcf72d4350f68ca"
+    }
+  ],
+  "original_and_installed_identities": 156,
+  "all_unchanged": true,
+  "declared_non_evidence_files": [
+    ".gitattributes",
+    "docs/project-status.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md",
+    "packages/daemon-core/src/verification/windows/LpacStartupPoc.cs",
+    "packages/daemon-core/src/verification/windows/LpacReadTrace.cs",
+    "packages/daemon-core/src/verification/windows/README.md"
+  ],
+  "changed_files": 247,
+  "inner_exit_code": 0
+}

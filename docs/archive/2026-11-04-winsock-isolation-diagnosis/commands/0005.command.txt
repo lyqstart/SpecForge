@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-winsock-isolation-diagnosis/preserve-attempt.cjs",
+    "3a0a361db28c4b72a0f8d979d39413f5"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-first-diagnostic-trace",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=immutable raw attempt and member hashes",
+  "started_utc": "2026-11-04T12:00:52.460Z"
+}

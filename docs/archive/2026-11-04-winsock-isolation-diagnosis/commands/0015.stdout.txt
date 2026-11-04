@@ -1,0 +1,1 @@
+{"classification":"CONFIRMED_FOR_TRACED_CONFIGURATION","matched_calls":13,"chain":["WSAStartup=10107","RegOpenKeyExA WinSock2 Parameters=5","NtOpenKeyEx HKLM root=c0000022"],"isolation_acceptance":"NOT_ACCEPTED","inner_exit_code":0}

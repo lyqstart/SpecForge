@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-winsock-isolation-diagnosis/prepare-review.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-independent-review-tools",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=read-only review recipes and exact owned-copy cleanup helper",
+  "started_utc": "2026-11-04T12:09:30.049Z"
+}

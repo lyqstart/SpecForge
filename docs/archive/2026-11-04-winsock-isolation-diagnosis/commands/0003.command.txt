@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-winsock-isolation-diagnosis/freeze-build.cjs",
+    "build-hardware-observer-01"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-observer-build",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=immutable source executable identity snapshot",
+  "started_utc": "2026-11-04T11:58:34.140Z"
+}

@@ -130,7 +130,8 @@ internal static class LpacStartupPoc {
     static string Quote(string s) {if(s.IndexOf('"')>=0 || s.EndsWith("\\"))throw new InvalidOperationException("UNSUPPORTED_ARGUMENT");return "\""+s+"\"";}
     public static int Main(string[] args) {
         // Fixed P01 probe; no caller-supplied script/argv/environment.
-        if(args.Length!=3 || args[0]!="--synthetic-p01" || IntPtr.Size!=8) {Console.Error.WriteLine("usage: --synthetic-p01 NEW_ATTEMPT_ROOT PINNED_NODE_EXE");return 64;}
+        if(args.Length!=3 || (args[0]!="--synthetic-p01"&&args[0]!="--synthetic-trace") || IntPtr.Size!=8) {Console.Error.WriteLine("usage: --synthetic-p01|--synthetic-trace NEW_ATTEMPT_ROOT PINNED_NODE_EXE");return 64;}
+        bool traceMode=args[0]=="--synthetic-trace";
         string root=Path.GetFullPath(args[1]),sourceNode=Path.GetFullPath(args[2]);
         if(Directory.Exists(root) || File.Exists(root)) {Console.Error.WriteLine("ATTEMPT_COLLISION");return 65;}
         // Only a new UUID leaf in this exact synthetic scope is eligible for ACL edits.
@@ -142,7 +143,7 @@ internal static class LpacStartupPoc {
         string moniker="specforge.poc."+nonce.ToString("N"),sidText=null,profile=null;
         bool profileCreated=false,started=false,allEnded=false,resumed=false;
         uint? exit=null;int result=1;string error=null;
-        IntPtr sid=IntPtr.Zero,job=IntPtr.Zero,attributes=IntPtr.Zero,environment=IntPtr.Zero;
+        IntPtr sid=IntPtr.Zero,job=IntPtr.Zero,attributes=IntPtr.Zero,environment=IntPtr.Zero,observationHandle=IntPtr.Zero;
         var pi=new ProcessInformation();var allocations=new List<IntPtr>();var handles=new List<IntPtr>();
         var stdout=new Output();var stderr=new Output();
         var startedUtc=DateTime.UtcNow.ToString("o");var timer=Stopwatch.StartNew();
@@ -202,7 +203,10 @@ internal static class LpacStartupPoc {
                 if(control.Process!=IntPtr.Zero) {Check(TerminateProcess(control.Process,125),"Terminate control");Check(WaitForSingleObject(control.Process,5000)==0,"Wait control termination");CloseHandle(control.Process);CloseHandle(control.Thread);Record("control_terminated_never_resumed",new{pid=control.ProcessId});}
             }
             Marshal.WriteInt32(policy,1);
-            Check(CreateProcessW(node,new StringBuilder(command),IntPtr.Zero,IntPtr.Zero,true,0x08080404,environment,input,ref si,out pi),"CreateProcessW LPAC suspended");started=true;
+            uint actualFlags=0x08080404u|(traceMode?2u:0u);
+            Record("actual_creation_flags",new{flags=actualFlags,diagnostic_debugger=traceMode});
+            Check(CreateProcessW(node,new StringBuilder(command),IntPtr.Zero,IntPtr.Zero,true,actualFlags,environment,input,ref si,out pi),"CreateProcessW LPAC suspended");started=true;
+            if(traceMode){observationHandle=LpacReadTrace.DuplicateOwnedHandle(pi.Process);handles.Add(observationHandle);}
             Record("process_created_suspended",new {pid=pi.ProcessId,thread_id=pi.ThreadId});
             Check(AssignProcessToJobObject(job,pi.Process),"AssignProcessToJobObject");
             bool inJob;Check(IsProcessInJob(pi.Process,job,out inJob),"IsProcessInJob");if(!inJob)throw new InvalidOperationException("JOB_ASSOCIATION_MISSING");
@@ -211,6 +215,7 @@ internal static class LpacStartupPoc {
             foreach(var h in new[]{outWrite,errWrite,stdin}) {CloseHandle(h);handles.Remove(h);}
             stdout.Start(outRead,job);handles.Remove(outRead);stderr.Start(errRead,job);handles.Remove(errRead);
             Check(ResumeThread(pi.Thread)!=UInt32.MaxValue,"ResumeThread");resumed=true;Record("process_resumed",new {pid=pi.ProcessId});
+            if(traceMode){uint traceExit=LpacReadTrace.Run(observationHandle,job,pi.ProcessId,Record,delegate{return timer.ElapsedMilliseconds;});Record("diagnostic_trace_complete",new{exit_code=traceExit,isolation_acceptance="INCOMPLETE"});}
             for(;;) {
                 var count=Accounting(job);
                 if(count.ActiveProcesses==0) {allEnded=true;Record("job_empty",new {active=count.ActiveProcesses,total=count.TotalProcesses,terminated=count.TotalTerminatedProcesses});break;}
@@ -218,7 +223,7 @@ internal static class LpacStartupPoc {
                 if(timer.ElapsedMilliseconds>130000)throw new InvalidOperationException("JOB_TERMINATION_UNPROVED");
                 Thread.Sleep(20);
             }
-            uint code;Check(GetExitCodeProcess(pi.Process,out code),"GetExitCodeProcess");exit=code;
+            uint code;Check(GetExitCodeProcess(traceMode?observationHandle:pi.Process,out code),"GetExitCodeProcess");exit=code;
             if(!stdout.Thread.Join(5000)||!stderr.Thread.Join(5000))throw new InvalidOperationException("OUTPUT_NOT_COMPLETE");
             if(stdout.Overflow||stderr.Overflow||stdout.Error!=null||stderr.Error!=null)throw new InvalidOperationException("OUTPUT_INCOMPLETE");
             string output=Encoding.UTF8.GetString(stdout.Bytes.ToArray());
@@ -240,7 +245,7 @@ internal static class LpacStartupPoc {
             if(profileCreated&&(!started||allEnded)) {int hr=DeleteAppContainerProfile(moniker);Record("profile_cleanup",new{moniker=moniker,hresult=hr,profile_path_exists=profile!=null&&Directory.Exists(profile)});if(hr!=0)result=1;}
             if(sid!=IntPtr.Zero)FreeSid(sid);
             File.WriteAllBytes(Path.Combine(root,"stdout.bin"),stdout.Bytes.ToArray());File.WriteAllBytes(Path.Combine(root,"stderr.bin"),stderr.Bytes.ToArray());
-            var receipt=new {schema="synthetic-lpac-startup/1",started_utc=startedUtc,finished_utc=DateTime.UtcNow.ToString("o"),duration_ms=timer.ElapsedMilliseconds,root=root,moniker=moniker,sid=sidText,profile=profile,process_started=started,process_resumed=resumed,application_exit_code=exit,job_all_ended=allEnded,scope="P01 startup only; other matrix rows NOT_EXECUTED",startup_result=result==0?"P01_STARTUP_OBSERVED":"FAILED",isolation_acceptance="INCOMPLETE",error=error,inner_exit_code=result};
+            var receipt=new {schema="synthetic-lpac-startup/1",started_utc=startedUtc,finished_utc=DateTime.UtcNow.ToString("o"),duration_ms=timer.ElapsedMilliseconds,root=root,moniker=moniker,sid=sidText,profile=profile,process_started=started,process_resumed=resumed,application_exit_code=exit,job_all_ended=allEnded,scope=traceMode?"Diagnostic observation only; not isolation acceptance":"P01 startup only; other matrix rows NOT_EXECUTED",debug_observer=traceMode,startup_result=result==0?"P01_STARTUP_OBSERVED":"FAILED",isolation_acceptance="INCOMPLETE",error=error,inner_exit_code=result};
             NewFile(Path.Combine(root,"receipt.json"),Json.Serialize(receipt)+"\n");Console.WriteLine(Json.Serialize(receipt));
         }
         return result;

@@ -1,0 +1,19 @@
+{
+  "utc": "2026-11-04T12:09:31.888Z",
+  "status": "NOT_APPLIED_NOT_APPROVED",
+  "files": [
+    {
+      "file": "docs/product-specification/authority-registry.md",
+      "baseline_sha256": "546e861a181074939d6772ba237178299f54db17bb8121190d239e290003b8ae",
+      "proposed_sha256": "fd12e23c1434a846d79563856804f317411b68bd196e1cdba867792f48e1c206",
+      "eol_domain": "CRLF"
+    },
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "baseline_sha256": "4c678232970c8906ccf532605a2e690e35b0b4e225f257aa6f15e76a12dfced9",
+      "proposed_sha256": "586015479eee087249d2a18d82f6ce5065a8aa0e54e0c5a9bbc1483fb9d28622",
+      "eol_domain": "CRLF"
+    }
+  ],
+  "patch_sha256": "cd381fb92e8d2300d7c5125d3854039a653298d29a2a5832dccc8e5f736d3453"
+}

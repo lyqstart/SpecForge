@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-winsock-isolation-diagnosis/cleanup-runtime-copies.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "cleanup-owned-runtime-copies",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES=unlink exactly3 own verified Node runtime copies after raw preservation;EXTERNAL_EVIDENCE_WRITES=cleanup receipts",
+  "started_utc": "2026-11-04T12:09:55.925Z"
+}

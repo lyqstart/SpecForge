@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacReadTracePoc.exe",
+  "args": [
+    "--synthetic-trace",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\3a0a361db28c4b72a0f8d979d39413f5",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "observe-synthetic-system-call-denials",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;RUNTIME_OBSERVER_WRITES=one new owned zero-capability readonly LPAC profile Job Node copy and hardware debug-register observation then cleanup;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-04T11:58:42.615Z"
+}

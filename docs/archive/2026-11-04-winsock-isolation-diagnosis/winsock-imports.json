@@ -1,0 +1,41 @@
+{
+  "utc": "2026-11-04T12:03:18.160Z",
+  "file": "C:\\WINDOWS\\System32\\ws2_32.dll",
+  "sha256": "b123b00c46c415d7baeaada58c29c3e6920895db836ee4c0cfee49d738af60ad",
+  "method": "Read-only PE import parsing; no DLL execution",
+  "imports": [
+    {
+      "library": "ntdll.dll",
+      "symbol": "NtOpenFile"
+    },
+    {
+      "library": "ntdll.dll",
+      "symbol": "NtQueryDirectoryFile"
+    },
+    {
+      "library": "api-ms-win-core-errorhandling-l1-1-0.dll",
+      "symbol": "GetLastError"
+    },
+    {
+      "library": "api-ms-win-core-registry-l1-1-0.dll",
+      "symbol": "RegOpenKeyExW"
+    },
+    {
+      "library": "api-ms-win-core-registry-l1-1-0.dll",
+      "symbol": "RegQueryValueExA"
+    },
+    {
+      "library": "api-ms-win-core-registry-l1-1-0.dll",
+      "symbol": "RegOpenKeyExA"
+    },
+    {
+      "library": "api-ms-win-core-registry-l1-1-0.dll",
+      "symbol": "RegCloseKey"
+    },
+    {
+      "library": "api-ms-win-core-registry-l1-1-0.dll",
+      "symbol": "RegQueryValueExW"
+    }
+  ],
+  "inner_exit_code": 0
+}

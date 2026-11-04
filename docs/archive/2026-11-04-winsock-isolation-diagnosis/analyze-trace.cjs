@@ -1,0 +1,14 @@
+const fs=require('node:fs'),path=require('node:path');
+const name='a102d98644fe44feb6641ab3b023f613',base=path.join(__dirname,'attempts',name);
+const events=fs.readFileSync(path.join(base,'events.jsonl'),'utf8').trim().split('\n').map(JSON.parse);
+const entries=events.filter(e=>e.name==='trace_call_enter'),returns=events.filter(e=>e.name==='trace_call_return');
+const assert=(ok,m)=>{if(!ok)throw Error(m);};
+for(const call of entries){const result=returns.filter(e=>e.data.call_id===call.data.call_id);assert(result.length===1&&result[0].data.api===call.data.api&&result[0].data.thread===call.data.thread&&Date.parse(result[0].utc)>=Date.parse(call.utc),'UNMATCHED_TRACE_CALL');}
+const wsa=returns.find(e=>e.data.api==='WSAStartup'&&e.data.return_value===10107);assert(wsa,'WSA_RETURN_MISSING');
+const reg=returns.find(e=>e.data.api==='RegOpenKeyExA'&&e.data.parent_call_id===wsa.data.call_id&&e.data.inside_wsa_startup&&e.data.return_value===5&&e.data.object_name.toLowerCase()==='hklm\\system\\currentcontrolset\\services\\winsock2\\parameters');assert(reg,'WIN32_REGISTRY_CHAIN_MISSING');
+const nt=returns.find(e=>e.data.api==='NtOpenKeyEx'&&e.data.parent_call_id===reg.data.call_id&&e.data.inside_wsa_startup&&e.data.ntstatus==='0xc0000022'&&e.data.object_name==='\\REGISTRY\\MACHINE');assert(nt,'NT_REGISTRY_CHAIN_MISSING');
+assert(wsa.data.thread===reg.data.thread&&reg.data.thread===nt.data.thread&&reg.data.desired_access==='0x00020019'&&nt.data.desired_access==='0x02000000','ABI_OR_ACCESS_MISMATCH');
+const receipt=JSON.parse(fs.readFileSync(path.join(base,'receipt.json')));assert(receipt.debug_observer&&receipt.application_exit_code===2147483651&&receipt.job_all_ended,'PROCESS_FACT_MISMATCH');
+const hooks=events.filter(e=>e.name==='trace_hook_identity');assert(hooks.length===3&&hooks.every(h=>h.data.remote_first16_equal_disk),'MODULE_IDENTITY_MISSING');
+const result={utc:new Date().toISOString(),classification:'CONFIRMED_FOR_TRACED_CONFIGURATION',attempt:name,matched_calls:entries.length,call_chain:[wsa,reg,nt],chronological_returns:[nt,reg,wsa],module_identities:hooks,application_exit_code:receipt.application_exit_code,isolation_acceptance:'NOT_ACCEPTED',unmodified_baseline_relation:'CORROBORATED: same fixed Node/input, zero capabilities, readonly LPAC and identical error/exit; debugging changes timing and is not an unobserved acceptance run.',not_proved:['registryRead resolves startup','safe registry exposure under registryRead','complete isolation/lifecycle matrix','business verification'],inner_exit_code:0};
+fs.writeFileSync(path.join(__dirname,'diagnosis.json'),JSON.stringify(result,null,2)+'\n',{flag:'wx'});console.log(JSON.stringify({classification:result.classification,matched_calls:entries.length,chain:['WSAStartup=10107','RegOpenKeyExA WinSock2 Parameters=5','NtOpenKeyEx HKLM root=c0000022'],isolation_acceptance:result.isolation_acceptance,inner_exit_code:0}));

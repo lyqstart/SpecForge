@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-winsock-isolation-diagnosis/freeze-build.cjs",
+    "build-nested-observer-02"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-nested-observer",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=immutable source executable identity snapshot",
+  "started_utc": "2026-11-04T12:01:55.993Z"
+}

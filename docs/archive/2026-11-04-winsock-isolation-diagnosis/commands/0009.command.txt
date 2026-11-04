@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-winsock-isolation-diagnosis/inspect-winsock-imports.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "inspect-pinned-winsock-imports",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=read-only PE import analysis and receipts",
+  "started_utc": "2026-11-04T12:03:16.910Z"
+}

@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacReadTracePoc.exe",
+  "args": [
+    "--synthetic-trace",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\dcab7f35f12547038f7baa18969571ae",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "observe-nested-winsock-registry-calls",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned zero-capability readonly LPAC Job fixture and hardware call observation then cleanup;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-04T12:02:13.975Z"
+}

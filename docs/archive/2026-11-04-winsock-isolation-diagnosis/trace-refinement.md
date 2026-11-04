@@ -1,0 +1,9 @@
+# 第二条诊断链的执行前冻结
+
+第一条trace（0004，3a0a361d）真实观察48次系统调用/返回；NtOpenKeyEx对REGISTRY/MACHINE的MAXIMUM_ALLOWED返回c0000022。Node仍以2147483651退出并输出10107，Job清空/profile删除0。它直接证明具体根键打开被拒绝，但尚不能证明调用者原本想打开哪个Winsock子键，也未证明其与WSAStartup的调用内关系。
+
+因此第二Attempt不改变任何应用权限或输入，只细化观察对象：硬件槽改为NtOpenKeyEx、Win32 RegOpenKeyExW、WSAStartup。记录Win32传入的hKey/子键/访问掩码与真实返回值，以及同线程调用栈嵌套的WSAStartup范围；仍只读名称不读注册表值、不替应用打开被拒绝键。保留第一Attempt，不重写成新trace。
+
+PE导出RVA从本机固定System32 DLL的磁盘字节解析；远端对应入口前16字节须匹配同文件对应内容，转发/歧义/越界fail closed。只给本轮新建合成进程设置硬件寄存器，无软件断点/代码修改，最多4096事件/120秒。调试影响照前声明，本次只是诊断而非隔离验收。
+
+第二条trace（0008，dcab7f35）已在真实WSAStartup调用内看到NtOpenKeyEx(REGISTRY/MACHINE, MAXIMUM_ALLOWED)返回c0000022，随后WSAStartup真实返回10107。其范围内没有经过所观察的RegOpenKeyExW入口；0009的固定ws2_32 PE导入表同时存在A/W两个入口。因此第三Attempt只将W槽换成RegOpenKeyExA，其他槽和权限不变，用来获取同一调用内的ANSI子键参数。仅支持实际ASCII名字；遇到非ASCII不猜代码页而拒绝完整性声明。不因“有导入”声称真实一定经过A入口，待实际trace证明。

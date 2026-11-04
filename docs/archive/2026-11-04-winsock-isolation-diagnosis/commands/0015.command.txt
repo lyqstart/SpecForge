@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-winsock-isolation-diagnosis/analyze-trace.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "validate-actual-nested-call-chain",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=trace validation and diagnosis only",
+  "started_utc": "2026-11-04T12:07:54.917Z"
+}
