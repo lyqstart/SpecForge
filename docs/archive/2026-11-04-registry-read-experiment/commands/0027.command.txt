@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-registry-read-experiment/finish-phase.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "record-inconclusive-experiment-stop",
+  "expected_writes": "TRUTH_SOURCE_WRITES=unique project-status;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-04T14:35:41.165Z"
+}

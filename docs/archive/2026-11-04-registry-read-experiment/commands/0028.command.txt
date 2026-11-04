@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-registry-read-experiment/finish-phase.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "reconcile-final-scope-status",
+  "expected_writes": "TRUTH_SOURCE_WRITES=unique status includes approved subordinate contract path;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-04T14:40:50.194Z"
+}

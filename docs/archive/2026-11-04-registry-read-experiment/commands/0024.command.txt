@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-registry-read-experiment/freeze-regression.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-recorded-output-regression",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=source/binary regression identity",
+  "started_utc": "2026-11-04T14:33:40.421Z"
+}

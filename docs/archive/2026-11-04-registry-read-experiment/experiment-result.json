@@ -1,0 +1,76 @@
+{
+  "utc": "2026-11-04T14:33:39.660Z",
+  "classification": "SYNTHETIC_EXPERIMENT_INCONCLUSIVE",
+  "profile": "windows-lpac-node-readonly-registry-read-experiment/v1",
+  "actual_capabilities": [
+    "registryRead"
+  ],
+  "rows": [
+    {
+      "id": "S01_FILE",
+      "attempt": "8e0ad1a6ac3c453a9508c08ace4cbdb5",
+      "status": "FAILED",
+      "application_exit_code": 1,
+      "reason": "Unapproved drive-root lstat denied; assertion did not run"
+    },
+    {
+      "id": "S01_INLINE",
+      "attempt": "8eaf58c1d9324da7bc70c652c2725b63",
+      "status": "PASSED_FIXED_ASSERTION_ONLY",
+      "application_exit_code": 0,
+      "input_raw_sha256": "61a5b3d924ebadcf993a8c486f696c80dbd348d2ec82fa566b5771b2351d5c2b",
+      "original_file_command_passed": false
+    },
+    {
+      "id": "R01_REGISTRY",
+      "attempt": "9f15338e2bef41cdb78df6b6a009cd0a",
+      "status": "INCONCLUSIVE_WALL_TIMEOUT",
+      "application_exit_code": 124,
+      "query_report_completed": false,
+      "fake_key_unchanged": true,
+      "secret_absent_from_input": true
+    },
+    {
+      "id": "FILE_CANARIES",
+      "status": "NOT_EXECUTED",
+      "reason": "Stopped after inconclusive R01; no product adoption"
+    },
+    {
+      "id": "NETWORK",
+      "status": "NOT_EXECUTED",
+      "reason": "Stopped after inconclusive R01; no product adoption"
+    },
+    {
+      "id": "CHILD_GRANDCHILD",
+      "status": "NOT_EXECUTED",
+      "reason": "Stopped after inconclusive R01; no product adoption"
+    },
+    {
+      "id": "FULL_LIMITS_CRASH_RECOVERY",
+      "status": "NOT_EXECUTED",
+      "reason": "Stopped after inconclusive R01; no product adoption"
+    },
+    {
+      "id": "PUBLIC_TOOLS_AND_CONSUMERS",
+      "status": "NOT_EXECUTED",
+      "reason": "Stopped after inconclusive R01; no product adoption"
+    },
+    {
+      "id": "DEPLOYMENT",
+      "status": "NOT_EXECUTED",
+      "reason": "Stopped after inconclusive R01; no product adoption"
+    },
+    {
+      "id": "ORIGINAL_WI",
+      "status": "NOT_EXECUTED",
+      "reason": "Stopped after inconclusive R01; no product adoption"
+    }
+  ],
+  "isolation_acceptance": "NOT_ACCEPTED",
+  "limitations": [
+    "No evidence whether the fake registry value was readable.",
+    "Exact point/cause of canary producer stall remains insufficient evidence.",
+    "Recorded empty-output parser exception preserved; corrected source only compiled/parser-regression tested, not another OS isolation run."
+  ],
+  "inner_exit_code": 0
+}

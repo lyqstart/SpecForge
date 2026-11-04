@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-registry-read-experiment/freeze-build.cjs",
+    "build-canary-03"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-registry-canary-build",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=immutable source executable snapshot",
+  "started_utc": "2026-11-04T14:22:47.098Z"
+}

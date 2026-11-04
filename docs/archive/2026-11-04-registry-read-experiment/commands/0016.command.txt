@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-registry-read-experiment/freeze-build.cjs",
+    "build-timeout-classification-04"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-classifier-source-no-os-rerun",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=corrected source executable snapshot;OS_EXPERIMENT_RERUN=NO",
+  "started_utc": "2026-11-04T14:27:59.259Z"
+}

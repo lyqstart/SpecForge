@@ -685,6 +685,14 @@ Changed Files Audit 必须绑定本次读取的 Write Guard、HardStop resolutio
 
 从属实施与验收合同为 `docs/design/windows-lpac-node-readonly-contract.md`，须先完成真实合成正例、恶意父/子/孙进程、文件/网络/注册表/COM/WMI/breakaway、资源上限、取消、launcher/daemon 中断及重启恢复，再闭合公共工具到共同 Gate/Close 的实际生产链路，并同步源码、模板、Agent/Skill、安装器和固定编译资产。每个阶段保留不足项；库测试通过不代表入口或部署可用。原 WI、审批、权限撤销和主线合并前置条件保持有效，不能因新增执行能力自动完成任务。
 
+### 9.2.2 单项注册表权限的合成实验（D21）
+
+只允许在自有合成环境使用独立实验profile `windows-lpac-node-readonly-registry-read-experiment/v1`，相对D20仅增加由Windows派生并经实际token核验的恰好一个registryRead capability。它可能扩大系统注册表读取面，不是单键白名单，不承诺仅Winsock可读。文件/输入/私有profile仍无应用写权限；无网络/COM或其他扩展能力；不修改已有系统/业务ACL、不安装驱动或改变系统功能。固定Node、最小环境、独立SID/profile/Job、预算、输出、原始回执与清理要求保持D20约束。
+
+先以未调试的固定合成正例取得实际退出事实，再用本次owner唯一新建、只含假值的文件/注册表/loopback哨兵测试边界；不读取真实凭据。宿主假配置/凭据可读写、网络通达、额外capability、未知资源或残留进程均不通过，不增加第二项权限兜底。失败和中断保留独立Attempt，不改D20历史结果。调试改变时序，其trace不能替代未调试验收。
+
+该实验profile不得被业务Plan选择，不接生产工具、Gate、部署或原WI，不推进工作流或放行代码权限。实验成功不等于完整隔离矩阵通过；是否采用进产品须依据完整证据重新裁决，D18只读与D20生产边界仍有效。
+
 ## 9.3 HardStop
 
 HardStop 是 recoverable safety latch，不是“任务永久结束”。

@@ -1,0 +1,1 @@
+{"classification":"SYNTHETIC_EXPERIMENT_INCONCLUSIVE","inline_positive_exit":0,"file_entry_exit":1,"canary_application_exit":124,"registry_isolation":"UNPROVEN","cleanup":"CORROBORATED_NATIVE_PLUS_HOST","inner_exit_code":0}

@@ -1,0 +1,18 @@
+{
+  "executable": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+  "args": [
+    "/nologo",
+    "/platform:x64",
+    "/target:exe",
+    "/optimize+",
+    "/reference:System.Web.Extensions.dll",
+    "/main:CanaryOutputRegression",
+    "/out:D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\CanaryOutputRegression.exe",
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-04-registry-read-experiment\\CanaryOutputRegression.cs",
+    "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacRegistryReadCanary.cs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "compile-recorded-output-regression",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES=.tmp regression executable;EXTERNAL_EVIDENCE_WRITES=receipts;APP_EXECUTION=NONE",
+  "started_utc": "2026-11-04T14:30:16.312Z"
+}

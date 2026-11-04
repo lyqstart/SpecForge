@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-registry-read-experiment/cleanup-runtime-copies.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "delete-only-owned-runtime-copies",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES=exact3 own Node copies after identity/process reconciliation;EXTERNAL_EVIDENCE_WRITES=cleanup records",
+  "started_utc": "2026-11-04T14:31:33.154Z"
+}

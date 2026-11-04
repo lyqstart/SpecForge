@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-registry-read-experiment/preserve-attempt.cjs",
+    "8eaf58c1d9324da7bc70c652c2725b63"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-inline-startup-positive",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=immutable raw inline positive;original file-entry failure retained",
+  "started_utc": "2026-11-04T14:22:41.980Z"
+}

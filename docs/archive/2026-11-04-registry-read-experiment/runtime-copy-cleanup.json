@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-04T14:31:34.158Z",
+  "method": "Exact owned single-file unlink after hash/path/nlink/process/profile checks; no recursive deletion.",
+  "facts": [
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\8e0ad1a6ac3c453a9508c08ace4cbdb5\\runtime\\node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "bytes": 92825416,
+      "deleted": true
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\8eaf58c1d9324da7bc70c652c2725b63\\runtime\\node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "bytes": 92825416,
+      "deleted": true
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\9f15338e2bef41cdb78df6b6a009cd0a\\runtime\\node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "bytes": 92825416,
+      "deleted": true
+    }
+  ],
+  "inner_exit_code": 0
+}

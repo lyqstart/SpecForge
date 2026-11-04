@@ -45,3 +45,9 @@ PoC 阶段 P01/A01/A02/A03/L01/L02/L03 未全证明不得通过隔离；I01/D01 
 真实 sf-orchestrator → sf_verification_plan；真实 sf-verifier → sf_verification_run；无可关闭的 owner 检查；StateManager 权威状态、已撤销代码权限、独立验证许可；不可变计划和副本；受信 launcher 控制通道；owner-only 原始回执；Report/Evidence/Verification/Formal Version/Close 同一校验器；模板、精确登记、Agent/Skill、构建与安装器全链路。未接线阶段工具名仅为规定的目标，不代表当前已注册。
 
 Node 命令只承接 node:test 及已冻结内联探针。POSIX 静态命令须另以共享版本化有限解释器证明语义，记录原声明、解析树、实际种类、输出和退出含义。第三方依赖、动态展开、未支持语法不执行。测试能力不自动授权 implementation_done、verification_done、Close 或业务 main 合并。
+
+## D21 独立合成实验
+
+SPS §9.2.2 / Registry D21 仅授权独立实验profile `windows-lpac-node-readonly-registry-read-experiment/v1`，不改变上述D20 profile的零capability合同或未验收状态。只由Windows `DeriveCapabilitySidsFromName("registryRead")` 派生恰好一个能力SID；实际普通AppContainer挂起对照和LPAC token均逐项核对数量、SID与启用位，LPAC有效权限对照仍必需。未知、额外能力或API错误在恢复前拒绝。
+
+先以固定Node/原正例在未调试进程取得真实启动结果，不能启动就停止，不追加其他能力；成功后才进入固定假哨兵检查。真实凭据与原业务不是夹具。新增registryRead可能扩大注册表读取面，不是单键白名单；假哨兵读取/写入、文件写入、网络通达、未知边界或资源残留均不得通过。新夹具只能在本次唯一owner标记路径/新键创建及回收，不改已有键/ACL。完整生产验收及后续采用仍按SPS §9.2.2，不由合成结果自动启用。

@@ -1,0 +1,9 @@
+{
+  "utc": "2026-11-04T14:45:46.615Z",
+  "run_id": "CODEX-SF-20261104-REGISTRY-READ-EXPERIMENT-A01",
+  "files": 353,
+  "manifest_sha256": "07832b9fa1df94ae2545e86465406d18cac1bada3bf22e750091490af6b746bc",
+  "self_check": "PASS",
+  "exclusions": "Only manifest and its own check excluded to avoid recursive hash. No private credential data collected.",
+  "inner_exit_code": 0
+}

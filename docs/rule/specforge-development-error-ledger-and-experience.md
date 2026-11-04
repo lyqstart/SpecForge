@@ -32252,3 +32252,17 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - CORROBORATED：与未调试原失败的同Node/零capability/只读边界及错误、退出码相符；调试有观察者效应，不能把trace当作未调试隔离验收。0015是诊断链校验成功，不是Node正例通过。0004/0008/0013的非零和原始字节完整保留。
 - 责任为隔离Execution Producer的权限profile与固定运行时启动依赖不兼容。registryRead是否足够且安全仍INSUFFICIENT_EVIDENCE；SPS9.2.1明确新增注册表capability须重新产品决定。已准备仅合成实验的具体D21候选/可应用检查通过的patch，未改正式SPS/Registry、未增加任何capability，不以同意目标替代扩权决定。0019宿主独立PID/profile复核，0020原业务/部署156项未变，0021仅删除3个已核验自有Node副本。
 - 初期把源码与多个网页装入同一显示预算出现截断，未据此声称新全文覆盖；随后用独立尾段和正确API页面补齐相关读取。错误debug-event URL也已改为minwinbase的正式页面。复用EXP-002/004/007/008/038/060/145/193/261/285；不以错误页、枚举存在或Agent自述证明接口支持。
+
+### ERR-1917：单 registryRead 实验的文件入口触发未授权盘根 lstat
+
+- 用户精确批准“批准仅合成实验”后，CODEX-SF-20261104-REGISTRY-READ-EXPERIMENT-A01先按已审阅原始字节写入SPS9.2.2/RegistryD21，再编译未发布合成资产。0005实际token恰好一个由系统派生的registryRead SID、启用位4、LPAC权限对照与Job均成立；Node文件入口退出1，stderr为realpathSync/lstat D:\ EPERM，原断言未执行。不能把达到JS模块加载层等同文件命令通过，也不能为此改D盘根ACL。
+- SPS9.2.1已支持冻结Node内联探针。先记录独立执行种类/计划，将逐字节相同的断言作为node -e参数；新0009未调试内联探针实际exit0、输出完全匹配。原0005仍FAILED，实际argv与结果分开绑定，不冒充原Task或文件入口命令验收。0capability旧失败、单registryRead文件失败、单registryRead内联正例均独立保留。复用EXP-002/004/007/017/145/193/260/285。
+
+### ERR-1918：假注册表哨兵未完成与超时后的空报告异常
+
+- 0013以独立新键/假值执行R01，恰好registryRead、无调试及只读文件边界不变。应用未产出查询报告，原生owner在elapsed120029ms记录wall_timeout并TerminateJobObject(124)，Job随后active0，应用exit124。没有真实reg.exe query结果，不能判假凭据不可读/已暴露；具体卡点仍INSUFFICIENT_EVIDENCE，不能仅凭脚本文字、CPU或空输出定位到某个系统调用。
+- owner继续解析空stdout，JavaScriptSerializer返回null后调用ContainsKey产生NullReferenceException，掩盖了主要超时分类。原始非零/异常回执不改。修正为超时先记录INCONCLUSIVE，不进入查询报告接受；空/无效报告返回未知。0018用真实空stdout及null/畸形/缺字段报告做无OS副作用的回归exit0；修正源码另编译，不以该回归替代R01重跑或隔离通过。
+- 假键before/after均为原随机假值及OwnerAttempt，owner仅非递归删除该新键；profile也删除。0020独立64位宿主完整PID清单/路径/注册表视图复核三个Attempt均已回收；0021原业务/治理/部署156项身份不变；0022仅删除三个已核验自有Node副本。R01保持INCONCLUSIVE，后续文件/网络/父子/完整生命周期检查停止，未增加第二capability、未访问真实凭据、未启用产品/业务。
+- 附带Get-Process多名称观测返回部分JSON及exit1，没有作为完整成功进程清单或“reg进程不存在”的证据；完整采集改用0020。Node官方文档页面一次不可访问，没有据此形成API行为结论。复用EXP-002/004/007/008/038/060/145/193/261/285。
+- 收尾一次多文件apply_patch带入上一阶段change-plan上下文，工具在校验阶段拒绝；独立读取确认两个文件均未改变，再用本阶段精确上下文修改。该工具拒绝没有数字进程退出码，不伪填0，也不作为产品测试失败或现场漂移。复用EXP-002/007/008。
+- 0031封存前Bootstrap的远端git只读查询在15秒内ETIMEDOUT，carrier1/inner2，停止封存/发布；0032相同宿主载体重新核验READY，本地/远端仍5bee5e5144ad02f9281f363db5dfd4d032ddfb29。失败保留，不把暂时未核验写成远端一致，不修改Bootstrap限额来绕过。

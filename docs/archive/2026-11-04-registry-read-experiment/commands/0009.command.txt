@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+  "args": [
+    "--synthetic-registry-read-inline-p01",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\8eaf58c1d9324da7bc70c652c2725b63",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "fixed-inline-same-assertion",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned one-registryRead readonly LPAC Job and same frozen assertion via inline argv then cleanup;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-04T14:18:55.468Z"
+}

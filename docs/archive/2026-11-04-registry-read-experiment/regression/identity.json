@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-04T14:33:41.089Z",
+  "scope": "Recorded empty-output regression only; no profile/key/application creation",
+  "members": [
+    {
+      "source": ".tmp/verification-lpac-build/CanaryOutputRegression.exe",
+      "bytes": 18944,
+      "sha256": "e5aac266ecaa64fa0b33dc33e7cd54b6e5a73c8108bffa9e15c66a848acc2862"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\docs\\archive\\2026-11-04-registry-read-experiment\\CanaryOutputRegression.cs",
+      "bytes": 767,
+      "sha256": "9031339579b0df56c20f7db610878dc6b564258036b128ab7dba5548154f45ae"
+    },
+    {
+      "source": "packages/daemon-core/src/verification/windows/LpacRegistryReadCanary.cs",
+      "bytes": 7041,
+      "sha256": "7c9862160682c17c463e65ba81bcb50e69b055a2fa147796ef2360af768a9c12"
+    }
+  ]
+}

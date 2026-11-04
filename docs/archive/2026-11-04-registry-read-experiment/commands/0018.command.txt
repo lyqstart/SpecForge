@@ -1,0 +1,10 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\CanaryOutputRegression.exe",
+  "args": [
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-04-registry-read-experiment\\attempts\\9f15338e2bef41cdb78df6b6a009cd0a\\stdout.bin"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-empty-output-regression",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=receipts only;OS_EXPERIMENT_RERUN=NO",
+  "started_utc": "2026-11-04T14:30:17.757Z"
+}

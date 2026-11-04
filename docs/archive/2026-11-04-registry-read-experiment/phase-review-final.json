@@ -1,0 +1,34 @@
+{
+  "utc": "2026-11-04T14:45:35.665Z",
+  "result": "PASS_FOR_HONEST_INCONCLUSIVE_EXPERIMENT_CHECKPOINT",
+  "experiment_status": "SYNTHETIC_EXPERIMENT_INCONCLUSIVE",
+  "isolation_acceptance": "NOT_ACCEPTED",
+  "authority_exactly_matches_approved_candidate": true,
+  "original_and_installed156_unchanged": true,
+  "prior_seals": [
+    {
+      "directory": "2026-11-03-original-wi-approved-implementation",
+      "members": 649,
+      "manifest_sha256": "01fc60daaaece5a12f91a12f03f9b713c8f001a566c55f74178e107c7219f4fc"
+    },
+    {
+      "directory": "2026-11-04-verification-isolation-proposal",
+      "members": 100,
+      "manifest_sha256": "3ff5ac8db1ef1b9014743ba80696017142446c6126f75d366919df42b0971ac4"
+    },
+    {
+      "directory": "2026-11-04-verification-isolation-poc",
+      "members": 245,
+      "manifest_sha256": "918f5f6f5b389ec9c099fc4c2d70fa67da2edcbdf38e27342dcf72d4350f68ca"
+    },
+    {
+      "directory": "2026-11-04-winsock-isolation-diagnosis",
+      "members": 266,
+      "manifest_sha256": "b7cdae8c82f775dba703f4c04863712c60418938dfb68b6992221dbf34260702"
+    }
+  ],
+  "current_scope_files": 354,
+  "source_validation": "Final C# compiled; actual empty-output parser regression passed. No OS rerun after timeout; no claim stall fixed.",
+  "remaining_checks": "File/network/descendant/full limits/crash/public tool/deployment/original WI NOT_EXECUTED",
+  "inner_exit_code": 0
+}

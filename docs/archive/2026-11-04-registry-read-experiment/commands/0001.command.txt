@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-registry-read-experiment/apply-approved-authority.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "apply-approved-d21-first",
+  "expected_writes": "TRUTH_SOURCE_WRITES=exact approved SPS Registry D21 bytes;EXTERNAL_EVIDENCE_WRITES=before/after identities and receipts",
+  "started_utc": "2026-11-04T14:12:04.499Z"
+}

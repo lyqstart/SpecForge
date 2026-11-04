@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-registry-read-experiment/freeze-build.cjs",
+    "build-final-05"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-final-source",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=final source compiled identity only;OS_EXPERIMENT_RERUN=NO",
+  "started_utc": "2026-11-04T14:33:43.338Z"
+}

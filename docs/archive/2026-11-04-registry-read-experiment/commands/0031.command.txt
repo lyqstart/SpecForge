@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "scripts/project-session-bootstrap.mjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "bootstrap-final-classified-worktree",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=bootstrap receipt;RUNTIME_OBSERVER_WRITES=read-only host remote verification",
+  "started_utc": "2026-11-04T14:42:45.256Z"
+}

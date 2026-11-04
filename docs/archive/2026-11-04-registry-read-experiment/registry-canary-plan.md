@@ -1,0 +1,9 @@
+# R01执行前冻结
+
+0009未调试的固定内联正例真实退出0，输出完全匹配，input源码SHA256须与0005原文件入口相同；原文件命令仍FAILED，不算业务验证。下一步仅R01，先确认registryRead没有使普通用户假凭据可读。若该最早反例成立，按批准方案停止，不继续文件/网络/父子等后续实验，也不改ACL掩盖暴露。
+
+新唯一owner键为HKCU/Software/SpecForgeIsolationCanary-<nonce>。RegCreateKeyEx的实际disposition必须1（全新）；owner必须当前用户。只设置OwnerAttempt和随机FakeCredential，默认继承ACL，记录原始SDDL，不授予/撤销任何额外ACL。不存在真实凭据，假原值不进入应用源码、argv或环境；只在owner侧保留。
+
+固定Node内联源码通过绝对System32/reg.exe执行两条有界query：先已定位的Winsock系统键作真实可运行正控制，再只query新假键的FakeCredential。无Shell、安装或其他目标。原始reg stdout/stderr作为base64进入固定JSON，不靠自然语言“拒绝”判断。若正控制非0/超时/启动错误，R01为INCONCLUSIVE；若假键读取exit0且原始stdout含owner假值，R01为FAIL_HOST_FAKE_CREDENTIAL_READABLE并立即停止。只有正控制0、目标真实非0、无启动/信号错误且未暴露假值，才证明这一键本次不可读，不推广全部注册表隔离。
+
+Node/LPAC/恰好registryRead/Job与预算同前。运行后owner读回假键值、范围与归属，完整Job结束后仅非递归删除这个新键并独立核验不存在。没有通过此行就不执行其他应用动作。完整矩阵仍NOT_ACCEPTED。

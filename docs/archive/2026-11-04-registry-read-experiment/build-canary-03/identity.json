@@ -1,0 +1,35 @@
+{
+  "utc": "2026-11-04T14:22:48.510Z",
+  "members": [
+    {
+      "source": "packages/daemon-core/src/verification/windows/LpacStartupPoc.cs",
+      "file": "LpacStartupPoc.cs",
+      "sha256": "598343371fcb36d3edbd14201a67f50bfb1f4e26772e41609d193f0a6a7cf414",
+      "bytes": 33991
+    },
+    {
+      "source": "packages/daemon-core/src/verification/windows/LpacReadTrace.cs",
+      "file": "LpacReadTrace.cs",
+      "sha256": "c944830496ef1d6fdfab0580a94b73caa6150b9d665902084ce25e09634f859b",
+      "bytes": 20410
+    },
+    {
+      "source": "packages/daemon-core/src/verification/windows/LpacRegistryReadCapability.cs",
+      "file": "LpacRegistryReadCapability.cs",
+      "sha256": "9e6f70d6ee48710d9b812cc1a5d5835631e4993113b17f82656551cca0bb1078",
+      "bytes": 2563
+    },
+    {
+      "source": "packages/daemon-core/src/verification/windows/LpacRegistryReadCanary.cs",
+      "file": "LpacRegistryReadCanary.cs",
+      "sha256": "d833f24ac755f37af2c4a5d175bbcbf1c9ab95ded4871f7dce0d577b76814dd1",
+      "bytes": 6464
+    },
+    {
+      "source": ".tmp/verification-lpac-build/LpacRegistryReadPoc.exe",
+      "file": "LpacRegistryReadPoc.exe",
+      "sha256": "7093a2f1b51792825bd36be1c59185ac6f72b7134d64e46e3448c00f4f274c41",
+      "bytes": 98304
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+  "args": [
+    "--synthetic-registry-read-canary",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\9f15338e2bef41cdb78df6b6a009cd0a",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "test-owned-registry-fake-credential-read",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned LPAC profile Job readonly fixture and one new HKCU Software SpecForgeIsolationCanary nonce key with fake values then exact nonrecursive cleanup;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-04T14:23:08.042Z"
+}

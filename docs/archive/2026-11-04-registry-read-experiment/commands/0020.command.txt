@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-registry-read-experiment/cleanup-observation.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "independent-host-profiles-pids-and-fake-key",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=host reconciliation receipt;RUNTIME_OBSERVER_WRITES=read-only host inventory registry/profile probes",
+  "started_utc": "2026-11-04T14:31:25.205Z"
+}

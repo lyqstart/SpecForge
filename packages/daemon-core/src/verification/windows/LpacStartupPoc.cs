@@ -85,7 +85,7 @@ internal static class LpacStartupPoc {
             return allowed&&granted==1;
         } finally {Marshal.FreeHGlobal(privileges);LocalFree(descriptor);}
     }
-    static void VerifyToken(IntPtr process,string expectedSid,bool expectedLpac) {
+    static void VerifyToken(IntPtr process,string expectedSid,bool expectedLpac,string expectedCapability=null) {
         IntPtr token;Check(OpenProcessToken(process,10,out token),"OpenProcessToken");
         try {
             int ac,caps;
@@ -95,14 +95,15 @@ internal static class LpacStartupPoc {
             try {Marshal.WriteInt32(v,-1);query=GetTokenInformation(token,IsLpac,v,4,out returned);queryError=query?0:Marshal.GetLastWin32Error();lpacValue=Marshal.ReadInt32(v);}
             finally{Marshal.FreeHGlobal(v);}
             Record("class46_diagnostic",new {api_success=query,win32_error=queryError,returned_bytes=returned,value=query?(int?)lpacValue:null,expected_lpac=expectedLpac});
-            v=TokenInfo(token,30);try{caps=Marshal.ReadInt32(v);}finally{Marshal.FreeHGlobal(v);}
+            string actualCapability=null;uint capabilityFlags=0;
+            v=TokenInfo(token,30);try{caps=Marshal.ReadInt32(v);if(caps==1){actualCapability=SidText(Marshal.ReadIntPtr(v,8));capabilityFlags=unchecked((uint)Marshal.ReadInt32(v,16));}}finally{Marshal.FreeHGlobal(v);}
             v=TokenInfo(token,AppContainerSid);string actual;try{actual=SidText(Marshal.ReadIntPtr(v));}finally{Marshal.FreeHGlobal(v);}
-            if(ac!=1 || caps!=0 || actual!=expectedSid)throw new InvalidOperationException("TOKEN_BOUNDARY_MISMATCH");
+            if(ac!=1 || caps!=(expectedCapability==null?0:1) || actual!=expectedSid || actualCapability!=expectedCapability || (caps==1&&(capabilityFlags&4)==0))throw new InvalidOperationException("TOKEN_BOUNDARY_MISMATCH");
             IntPtr duplicate;Check(DuplicateToken(token,2,out duplicate),"DuplicateToken");
             bool own,unscoped,allApps;
             try {own=ProbeAccess(duplicate,expectedSid,"package-read");unscoped=ProbeAccess(duplicate,null,"everyone-only");allApps=ProbeAccess(duplicate,"S-1-15-2-1","all-application-packages");}
             finally{CloseHandle(duplicate);}
-            Record("actual_token",new {is_appcontainer=ac,lpac_effective_check=expectedLpac,capability_count=caps,sid=actual,package_read=own,everyone_only=unscoped,all_application_packages=allApps});
+            Record("actual_token",new {is_appcontainer=ac,lpac_effective_check=expectedLpac,capability_count=caps,capability_sid=actualCapability,capability_flags=capabilityFlags,sid=actual,package_read=own,everyone_only=unscoped,all_application_packages=allApps});
             if(!own || unscoped || allApps==expectedLpac || (query&&(lpacValue!=0)!=expectedLpac))throw new InvalidOperationException("LPAC_EFFECTIVE_ACCESS_MISMATCH");
         } finally {CloseHandle(token);}
     }
@@ -130,8 +131,11 @@ internal static class LpacStartupPoc {
     static string Quote(string s) {if(s.IndexOf('"')>=0 || s.EndsWith("\\"))throw new InvalidOperationException("UNSUPPORTED_ARGUMENT");return "\""+s+"\"";}
     public static int Main(string[] args) {
         // Fixed P01 probe; no caller-supplied script/argv/environment.
-        if(args.Length!=3 || (args[0]!="--synthetic-p01"&&args[0]!="--synthetic-trace") || IntPtr.Size!=8) {Console.Error.WriteLine("usage: --synthetic-p01|--synthetic-trace NEW_ATTEMPT_ROOT PINNED_NODE_EXE");return 64;}
+        if(args.Length!=3 || (args[0]!="--synthetic-p01"&&args[0]!="--synthetic-trace"&&args[0]!="--synthetic-registry-read-p01"&&args[0]!="--synthetic-registry-read-inline-p01"&&args[0]!="--synthetic-registry-read-canary") || IntPtr.Size!=8) {Console.Error.WriteLine("usage: synthetic mode NEW_ATTEMPT_ROOT PINNED_NODE_EXE");return 64;}
         bool traceMode=args[0]=="--synthetic-trace";
+        bool canaryProbe=args[0]=="--synthetic-registry-read-canary";
+        bool registryExperiment=args[0]=="--synthetic-registry-read-p01"||args[0]=="--synthetic-registry-read-inline-p01"||canaryProbe;
+        bool inlineProbe=args[0]=="--synthetic-registry-read-inline-p01"||canaryProbe;
         string root=Path.GetFullPath(args[1]),sourceNode=Path.GetFullPath(args[2]);
         if(Directory.Exists(root) || File.Exists(root)) {Console.Error.WriteLine("ATTEMPT_COLLISION");return 65;}
         // Only a new UUID leaf in this exact synthetic scope is eligible for ACL edits.
@@ -140,16 +144,19 @@ internal static class LpacStartupPoc {
         if(Path.GetDirectoryName(root)!=parent || !Guid.TryParseExact(Path.GetFileName(root),"N",out nonce))return 66;
         Directory.CreateDirectory(parent);NoLinks(parent);NoLinks(sourceNode);
         Directory.CreateDirectory(root);eventFile=Path.Combine(root,"events.jsonl");
-        string moniker="specforge.poc."+nonce.ToString("N"),sidText=null,profile=null;
-        bool profileCreated=false,started=false,allEnded=false,resumed=false;
+        string moniker=(registryExperiment?"specforge.regread.":"specforge.poc.")+nonce.ToString("N"),sidText=null,profile=null;
+        bool profileCreated=false,started=false,allEnded=false,resumed=false,timedOut=false;
         uint? exit=null;int result=1;string error=null;
         IntPtr sid=IntPtr.Zero,job=IntPtr.Zero,attributes=IntPtr.Zero,environment=IntPtr.Zero,observationHandle=IntPtr.Zero;
         var pi=new ProcessInformation();var allocations=new List<IntPtr>();var handles=new List<IntPtr>();
         var stdout=new Output();var stderr=new Output();
+        LpacRegistryReadCapability capability=null;
+        LpacRegistryReadCanary canary=null;
         var startedUtc=DateTime.UtcNow.ToString("o");var timer=Stopwatch.StartNew();
-        Record("attempt_reserved",new {root=root,moniker=moniker,source_node=sourceNode,node_sha256=Hash(sourceNode),launcher_sha256=Hash(System.Reflection.Assembly.GetExecutingAssembly().Location),wall_ms=120000,process_limit=32,job_commit_bytes=1073741824,output_limit_each=1048576,capabilities=new string[0],application_file_write=false});
+        Record("attempt_reserved",new {root=root,moniker=moniker,source_node=sourceNode,node_sha256=Hash(sourceNode),launcher_sha256=Hash(System.Reflection.Assembly.GetExecutingAssembly().Location),wall_ms=120000,process_limit=32,job_commit_bytes=1073741824,output_limit_each=1048576,capabilities=registryExperiment?new[]{"registryRead"}:new string[0],application_file_write=false,profile_id=registryExperiment?"windows-lpac-node-readonly-registry-read-experiment/v1":"windows-lpac-node-readonly/v1"});
         try {
-            int hr=CreateAppContainerProfile(moniker,moniker,"SpecForge synthetic readonly acceptance",IntPtr.Zero,0,out sid);
+            if(registryExperiment){if(Hash(sourceNode)!="3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237")throw new InvalidOperationException("PINNED_NODE_DRIFT");capability=LpacRegistryReadCapability.Derive();Record("experiment_capability_derived",new{name="registryRead",sid=capability.Sid,count=1,profile_id="windows-lpac-node-readonly-registry-read-experiment/v1",debugger=false});}
+            int hr=CreateAppContainerProfile(moniker,moniker,"SpecForge synthetic readonly acceptance",capability==null?IntPtr.Zero:capability.Attributes,capability==null?0u:1u,out sid);
             if(hr!=0)throw new COMException("CreateAppContainerProfile",hr);profileCreated=true;sidText=SidText(sid);
             Record("profile_created",new {moniker=moniker,sid=sidText});
             IntPtr folder;hr=GetAppContainerFolderPath(sidText,out folder);if(hr!=0)throw new COMException("GetAppContainerFolderPath",hr);
@@ -161,7 +168,8 @@ internal static class LpacStartupPoc {
             Directory.CreateDirectory(input);Directory.CreateDirectory(runtime);Directory.CreateDirectory(Path.Combine(profile,"Temp"));
             string node=Path.Combine(runtime,"node.exe");File.Copy(sourceNode,node,false);
             // P01 only: no filesystem mutation probes until token/Job startup works.
-            NewFile(Path.Combine(input,"positive.cjs"),"'use strict';const assert=require('node:assert/strict');assert.equal(2+2,4);console.log('SPECFORGE_SYNTHETIC_P01');\n");
+            if(canaryProbe)canary=new LpacRegistryReadCanary(nonce.ToString("N"),Record);
+            NewFile(Path.Combine(input,"positive.cjs"),canaryProbe?canary.Script():"'use strict';const assert=require('node:assert/strict');assert.equal(2+2,4);console.log('SPECFORGE_SYNTHETIC_P01');\n");
             ReadOnlyTree(ownedProfile,new SecurityIdentifier(sid));ReadOnlyTree(input,new SecurityIdentifier(sid));ReadOnlyTree(runtime,new SecurityIdentifier(sid));
             Record("input_frozen",new {node_sha256=Hash(node),input_sha256=Hash(Path.Combine(input,"positive.cjs")),script=Path.Combine(input,"positive.cjs")});
             job=CreateJobObjectW(IntPtr.Zero,null);Check(job!=IntPtr.Zero,"CreateJobObject");
@@ -180,6 +188,7 @@ internal static class LpacStartupPoc {
             UIntPtr attrBytes=UIntPtr.Zero;InitializeProcThreadAttributeList(IntPtr.Zero,3,0,ref attrBytes);
             attributes=Marshal.AllocHGlobal(checked((int)attrBytes.ToUInt64()));Check(InitializeProcThreadAttributeList(attributes,3,0,ref attrBytes),"InitializeAttributes");
             var caps=new SecurityCapabilities();caps.AppContainerSid=sid;
+            if(capability!=null){caps.Capabilities=capability.Attributes;caps.CapabilityCount=1;}
             Attribute(attributes,0x20009,AllocStructure(caps,allocations),Marshal.SizeOf(typeof(SecurityCapabilities)));
             var policy=Marshal.AllocHGlobal(4);allocations.Add(policy);Marshal.WriteInt32(policy,1);Attribute(attributes,0x2000F,policy,4);
             var inheritList=Marshal.AllocHGlobal(IntPtr.Size*3);allocations.Add(inheritList);
@@ -189,7 +198,9 @@ internal static class LpacStartupPoc {
             string systemRoot=Environment.GetFolderPath(Environment.SpecialFolder.Windows);
             string env="APPDATA="+profile+"\0LOCALAPPDATA="+profile+"\0SystemRoot="+systemRoot+"\0TEMP="+Path.Combine(profile,"Temp")+"\0TMP="+Path.Combine(profile,"Temp")+"\0USERPROFILE="+profile+"\0WINDIR="+systemRoot+"\0\0";
             environment=Marshal.StringToHGlobalUni(env);
-            string command=Quote(node)+" "+Quote(Path.Combine(input,"positive.cjs"));
+            string inlineSource=inlineProbe?File.ReadAllText(Path.Combine(input,"positive.cjs"),new UTF8Encoding(false)):null;
+            string command=Quote(node)+(inlineProbe?" -e "+Quote(inlineSource):" "+Quote(Path.Combine(input,"positive.cjs")));
+            Record("execution_identity",new{kind=inlineProbe?"node_inline_frozen":"node_script_file",source_sha256=Hash(Path.Combine(input,"positive.cjs")),actual_command_line=command,original_file_entry_passed=false});
             Record("create_suspended_requested",new {executable=node,command_line=command,cwd=input,environment_keys=new[]{"APPDATA","LOCALAPPDATA","SystemRoot","TEMP","TMP","USERPROFILE","WINDIR"},creation_flags=0x08080404});
             // Negative control is ordinary AppContainer but NEVER resumed. Same executable,
             // SID/capabilities/handles/Job; only the opt-out policy differs.
@@ -198,7 +209,7 @@ internal static class LpacStartupPoc {
             try {
                 Check(CreateProcessW(node,new StringBuilder(command),IntPtr.Zero,IntPtr.Zero,true,0x08080404,environment,input,ref si,out control),"Create ordinary AppContainer suspended control");
                 Record("control_created_suspended",new{pid=control.ProcessId});
-                Check(AssignProcessToJobObject(job,control.Process),"Assign control Job");VerifyToken(control.Process,sidText,false);
+                Check(AssignProcessToJobObject(job,control.Process),"Assign control Job");VerifyToken(control.Process,sidText,false,capability==null?null:capability.Sid);
             } finally {
                 if(control.Process!=IntPtr.Zero) {Check(TerminateProcess(control.Process,125),"Terminate control");Check(WaitForSingleObject(control.Process,5000)==0,"Wait control termination");CloseHandle(control.Process);CloseHandle(control.Thread);Record("control_terminated_never_resumed",new{pid=control.ProcessId});}
             }
@@ -210,7 +221,7 @@ internal static class LpacStartupPoc {
             Record("process_created_suspended",new {pid=pi.ProcessId,thread_id=pi.ThreadId});
             Check(AssignProcessToJobObject(job,pi.Process),"AssignProcessToJobObject");
             bool inJob;Check(IsProcessInJob(pi.Process,job,out inJob),"IsProcessInJob");if(!inJob)throw new InvalidOperationException("JOB_ASSOCIATION_MISSING");
-            VerifyToken(pi.Process,sidText,true);Record("pre_resume_checks",new {job_association=true,actual_token_checked=true,acl_readback=true,ordinary_appcontainer_control_verified=true});
+            VerifyToken(pi.Process,sidText,true,capability==null?null:capability.Sid);Record("pre_resume_checks",new {job_association=true,actual_token_checked=true,acl_readback=true,ordinary_appcontainer_control_verified=true});
             // Broker closes its copies of child pipe endpoints before reading.
             foreach(var h in new[]{outWrite,errWrite,stdin}) {CloseHandle(h);handles.Remove(h);}
             stdout.Start(outRead,job);handles.Remove(outRead);stderr.Start(errRead,job);handles.Remove(errRead);
@@ -219,15 +230,17 @@ internal static class LpacStartupPoc {
             for(;;) {
                 var count=Accounting(job);
                 if(count.ActiveProcesses==0) {allEnded=true;Record("job_empty",new {active=count.ActiveProcesses,total=count.TotalProcesses,terminated=count.TotalTerminatedProcesses});break;}
-                if(timer.ElapsedMilliseconds>120000) {Record("wall_timeout",new {elapsed_ms=timer.ElapsedMilliseconds});Check(TerminateJobObject(job,124),"TerminateJob timeout");}
+                if(timer.ElapsedMilliseconds>120000&&!timedOut) {timedOut=true;Record("wall_timeout",new {elapsed_ms=timer.ElapsedMilliseconds});Check(TerminateJobObject(job,124),"TerminateJob timeout");}
                 if(timer.ElapsedMilliseconds>130000)throw new InvalidOperationException("JOB_TERMINATION_UNPROVED");
                 Thread.Sleep(20);
             }
             uint code;Check(GetExitCodeProcess(traceMode?observationHandle:pi.Process,out code),"GetExitCodeProcess");exit=code;
             if(!stdout.Thread.Join(5000)||!stderr.Thread.Join(5000))throw new InvalidOperationException("OUTPUT_NOT_COMPLETE");
             if(stdout.Overflow||stderr.Overflow||stdout.Error!=null||stderr.Error!=null)throw new InvalidOperationException("OUTPUT_INCOMPLETE");
+            if(timedOut){Record("experiment_outcome",new{result="INCONCLUSIVE_WALL_LIMIT",application_exit_code=code,canary_checks_completed=false});throw new TimeoutException("SYNTHETIC_WALL_LIMIT");}
             string output=Encoding.UTF8.GetString(stdout.Bytes.ToArray());
-            if(exit!=0||output!="SPECFORGE_SYNTHETIC_P01\n")throw new InvalidOperationException("POSITIVE_ASSERTION_NOT_MET");
+            if(canaryProbe){if(!canary.Validate(output,code))throw new InvalidOperationException("REGISTRY_CANARY_NOT_SAFE_OR_UNPROVED");}
+            else if(exit!=0||output!="SPECFORGE_SYNTHETIC_P01\n")throw new InvalidOperationException("POSITIVE_ASSERTION_NOT_MET");
             result=0;
         } catch(Exception e) {error=e.GetType().Name+":"+e.Message;Record("failure",new {type=e.GetType().FullName,message=e.Message,stack=e.StackTrace,hresult=e.HResult,win32_error=e is Win32Exception?((Win32Exception)e).NativeErrorCode:(int?)null});}
         finally {
@@ -244,8 +257,10 @@ internal static class LpacStartupPoc {
             foreach(var p in allocations)Marshal.FreeHGlobal(p);if(environment!=IntPtr.Zero)Marshal.FreeHGlobal(environment);
             if(profileCreated&&(!started||allEnded)) {int hr=DeleteAppContainerProfile(moniker);Record("profile_cleanup",new{moniker=moniker,hresult=hr,profile_path_exists=profile!=null&&Directory.Exists(profile)});if(hr!=0)result=1;}
             if(sid!=IntPtr.Zero)FreeSid(sid);
+            if(capability!=null)capability.Dispose();
+            if(canary!=null&&(!started||allEnded))try{canary.ReconcileAndCleanup();}catch(Exception cleanup){Record("canary_cleanup_failed",new{type=cleanup.GetType().FullName,message=cleanup.Message});result=1;}
             File.WriteAllBytes(Path.Combine(root,"stdout.bin"),stdout.Bytes.ToArray());File.WriteAllBytes(Path.Combine(root,"stderr.bin"),stderr.Bytes.ToArray());
-            var receipt=new {schema="synthetic-lpac-startup/1",started_utc=startedUtc,finished_utc=DateTime.UtcNow.ToString("o"),duration_ms=timer.ElapsedMilliseconds,root=root,moniker=moniker,sid=sidText,profile=profile,process_started=started,process_resumed=resumed,application_exit_code=exit,job_all_ended=allEnded,scope=traceMode?"Diagnostic observation only; not isolation acceptance":"P01 startup only; other matrix rows NOT_EXECUTED",debug_observer=traceMode,startup_result=result==0?"P01_STARTUP_OBSERVED":"FAILED",isolation_acceptance="INCOMPLETE",error=error,inner_exit_code=result};
+            var receipt=new {schema="synthetic-lpac-startup/1",started_utc=startedUtc,finished_utc=DateTime.UtcNow.ToString("o"),duration_ms=timer.ElapsedMilliseconds,root=root,moniker=moniker,sid=sidText,profile=profile,process_started=started,process_resumed=resumed,application_exit_code=exit,job_all_ended=allEnded,timed_out=timedOut,scope=canaryProbe?"D21 registry canary only; remaining isolation checks NOT_EXECUTED":registryExperiment?"D21 synthetic startup experiment only; not product acceptance":traceMode?"Diagnostic observation only; not isolation acceptance":"P01 startup only; other matrix rows NOT_EXECUTED",debug_observer=traceMode,execution_kind=inlineProbe?"node_inline_frozen":"node_script_file",capability_sid=capability==null?null:capability.Sid,profile_id=registryExperiment?"windows-lpac-node-readonly-registry-read-experiment/v1":"windows-lpac-node-readonly/v1",startup_result=result==0?(canaryProbe?"SINGLE_CANARY_READ_DENIAL_OBSERVED":"P01_STARTUP_OBSERVED"):"FAILED",isolation_acceptance="INCOMPLETE",error=error,inner_exit_code=result};
             NewFile(Path.Combine(root,"receipt.json"),Json.Serialize(receipt)+"\n");Console.WriteLine(Json.Serialize(receipt));
         }
         return result;

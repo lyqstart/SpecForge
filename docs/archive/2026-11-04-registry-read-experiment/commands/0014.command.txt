@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-registry-read-experiment/preserve-attempt.cjs",
+    "9f15338e2bef41cdb78df6b6a009cd0a"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-inconclusive-canary-timeout",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=immutable raw timed-out canary attempt;no rerun",
+  "started_utc": "2026-11-04T14:27:53.321Z"
+}
