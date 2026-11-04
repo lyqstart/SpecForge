@@ -1,0 +1,9 @@
+ConvertFrom-Json : ����Ķ�����Ч��ӦΪ��:����}���� (140): {"utc":"2026-11-04T11:29:44.7105247Z","name":"failure","data":{
+"type":"System.UnauthorizedAccessException","message":"尝试执行未经授权的操作�?,"hresult":-2147024891,"win32_e
+rror":null}}
+����λ�� ��:9 �ַ�: 106
++ ... temptPath 'events.jsonl') | ForEach-Object { $_ | ConvertFrom-Json })
++                                                       ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [ConvertFrom-Json], ArgumentException
+    + FullyQualifiedErrorId : System.ArgumentException,Microsoft.PowerShell.Commands.ConvertFromJsonCommand
+ 

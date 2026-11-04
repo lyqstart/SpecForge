@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-verification-isolation-poc/cleanup-observation.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "independent-host-cleanup-inline",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=cleanup observation and receipts;RUNTIME_OBSERVER_WRITES=read-only host process inventory;CARRIER_SUBSTITUTION=1 File-to-Command no policy change",
+  "started_utc": "2026-11-04T11:36:16.956Z"
+}

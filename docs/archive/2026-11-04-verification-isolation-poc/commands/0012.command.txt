@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacStartupPoc.exe",
+  "args": [
+    "--synthetic-p01",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\7e60d6c286ce4efca94b818664c89da8",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "synthetic-p01-effective-token-control",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=owned profile readonly fixture Job and never-resumed ordinary AppContainer control;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-04T11:33:31.909Z"
+}

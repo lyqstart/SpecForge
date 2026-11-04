@@ -1,0 +1,19 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-verification-isolation-poc/set-phase.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "phase-start",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES=unique project-status;EXTERNAL_EVIDENCE_WRITES=this phase receipts",
+  "started_utc": "2026-11-04T11:28:22.170Z",
+  "finished_utc": "2026-11-04T11:28:23.458Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_writes": {
+    "repository_status_before": " M .gitattributes\n M docs/product-specification/authority-registry.md\n M docs/product-specification/specforge-product-specification.md\n?? docs/archive/2026-11-04-verification-isolation-poc/authorization.json\n?? docs/archive/2026-11-04-verification-isolation-poc/change-plan.md\n?? docs/archive/2026-11-04-verification-isolation-poc/commands/0001.command.txt\n?? docs/archive/2026-11-04-verification-isolation-poc/commands/0001.manifest.sha256\n?? docs/archive/2026-11-04-verification-isolation-poc/commands/0001.receipt-seal.json\n?? docs/archive/2026-11-04-verification-isolation-poc/commands/0001.result.json\n?? docs/archive/2026-11-04-verification-isolation-poc/commands/0001.stderr.txt\n?? docs/archive/2026-11-04-verification-isolation-poc/commands/0001.stdout.txt\n?? docs/archive/2026-11-04-verification-isolation-poc/commands/0002.command.txt\n?? docs/archive/2026-11-04-verification-isolation-poc/initialize.cjs\n?? docs/archive/2026-11-04-verification-isolation-poc/journal.jsonl\n?? docs/archive/2026-11-04-verification-isolation-poc/run-command.cjs\n?? docs/archive/2026-11-04-verification-isolation-poc/seal-receipts.cjs\n?? docs/archive/2026-11-04-verification-isolation-poc/set-phase.cjs\n?? docs/design/windows-lpac-node-readonly-contract.md\n?? packages/daemon-core/src/verification/windows/LpacStartupPoc.cs\n",
+    "repository_status_after": " M .gitattributes\n M docs/product-specification/authority-registry.md\n M docs/product-specification/specforge-product-specification.md\n M docs/project-status.md\n?? docs/archive/2026-11-04-verification-isolation-poc/authorization.json\n?? docs/archive/2026-11-04-verification-isolation-poc/change-plan.md\n?? docs/archive/2026-11-04-verification-isolation-poc/commands/0001.command.txt\n?? docs/archive/2026-11-04-verification-isolation-poc/commands/0001.manifest.sha256\n?? docs/archive/2026-11-04-verification-isolation-poc/commands/0001.receipt-seal.json\n?? docs/archive/2026-11-04-verification-isolation-poc/commands/0001.result.json\n?? docs/archive/2026-11-04-verification-isolation-poc/commands/0001.stderr.txt\n?? docs/archive/2026-11-04-verification-isolation-poc/commands/0001.stdout.txt\n?? docs/archive/2026-11-04-verification-isolation-poc/commands/0002.command.txt\n?? docs/archive/2026-11-04-verification-isolation-poc/commands/0002.stderr.txt\n?? docs/archive/2026-11-04-verification-isolation-poc/commands/0002.stdout.txt\n?? docs/archive/2026-11-04-verification-isolation-poc/initialize.cjs\n?? docs/archive/2026-11-04-verification-isolation-poc/journal.jsonl\n?? docs/archive/2026-11-04-verification-isolation-poc/run-command.cjs\n?? docs/archive/2026-11-04-verification-isolation-poc/seal-receipts.cjs\n?? docs/archive/2026-11-04-verification-isolation-poc/set-phase.cjs\n?? docs/design/windows-lpac-node-readonly-contract.md\n?? packages/daemon-core/src/verification/windows/LpacStartupPoc.cs\n",
+    "other": "See expected writes and owner-specific receipt; status does not enumerate external runtime writes."
+  }
+}

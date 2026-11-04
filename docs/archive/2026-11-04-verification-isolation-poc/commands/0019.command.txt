@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-verification-isolation-poc/finish-phase.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "finish-synthetic-phase",
+  "expected_writes": "TRUTH_SOURCE_WRITES=unique project-status;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-04T11:39:47.176Z"
+}

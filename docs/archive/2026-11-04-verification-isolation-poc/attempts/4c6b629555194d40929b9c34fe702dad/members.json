@@ -1,0 +1,37 @@
+{
+  "utc": "2026-11-04T11:35:27.508Z",
+  "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\4c6b629555194d40929b9c34fe702dad",
+  "members": [
+    {
+      "file": "events.jsonl",
+      "sha256": "a506407cd56a559ba75c1d7c4e1370389830a70dbbb4fee9e1fd2b798b767020",
+      "bytes": 11928
+    },
+    {
+      "file": "receipt.json",
+      "sha256": "eac69e9c7a1ddc6176df499049af1be4e7cd05429c3238248da6052b5a207d39",
+      "bytes": 782
+    },
+    {
+      "file": "stdout.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "stderr.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "file": "input/positive.cjs",
+      "sha256": "61a5b3d924ebadcf993a8c486f696c80dbd348d2ec82fa566b5771b2351d5c2b",
+      "bytes": 116
+    },
+    {
+      "file": "runtime/node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "bytes": 92825416,
+      "not_copied": "Pinned host Node distribution; no redistribution needed; hash remains bound in raw attempt events."
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "executable": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+  "args": [
+    "/nologo",
+    "/platform:x64",
+    "/target:exe",
+    "/optimize+",
+    "/reference:System.Web.Extensions.dll",
+    "/out:D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacStartupPoc.exe",
+    "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacStartupPoc.cs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "compile-x64-native-paths",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=.tmp/verification-lpac-build executable;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-04T11:29:08.800Z"
+}

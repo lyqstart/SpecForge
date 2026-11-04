@@ -32226,3 +32226,21 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 
 - 2026-11-04 只读取证首次把多个大文件结果装入同一输出预算，发生显示截断；随后活动规则按350行、SPS按450行完整分块重读到EOF，相关 executor 另行完整读取，不以标题或哈希代替阅读。首次环境探测的 CIM 查询因客户端访问限制失败，不能据此判定主机缺少相应能力。
 - 另一个只读路径探测把 foreach 语句直接接到管道，PowerShell 在执行前以 An empty pipe element is not allowed/exit1 拒绝。改为先收集对象再 ConvertTo-Json；未启动测试、隔离进程或修改业务文件。后续主机证据须用结构化原始输出，避免格式化表格省略路径。复用 EXP-002/007/008/261；不把探测入口失败计为产品隔离能力测试结果。
+
+### ERR-1914：旧 Windows C# 编译器的路径载体失败
+
+- 有限隔离 PoC 的0003以 argv 调用 Framework64/v4.0.30319/csc.exe，源参数使用 packages/daemon-core/src/verification/windows/LpacStartupPoc.cs，实际报 CS1504，诊断寻找仓库根 LpacStartupPoc.cs，exit1；原始 command/stdout/result 已立即封存。文件真实存在于原参数指向的子目录，不把这个编译失败算作 LPAC 能力失败或执行通过。
+- 待验证修正：旧 Windows 原生编译器改用绝对反斜杠源/输出路径，后续另一个 seq 保存结果；不改变 capability、产品合同或合成运行权限。复用 EXP-002/007/008/060/145。
+- 0004 绝对反斜杠参数编译 exit0，支持路径载体归因。0005 首次合成入口的 Node 路径含空格但 PowerShell 未引号，launcher 在参数个数检查前置返回64，未创建 profile 或进程；随后显式引用完整路径，以新 seq 重试。该载体错误同样不作为隔离能力判据。
+
+### ERR-1915：隔离原型 ACL 初始化失败与只读取证边界
+
+- 0006 真实创建新 profile、读取路径、收紧其6个目录后，在输入文件 ACL 处理阶段出现 UnauthorizedAccessException/HRESULT0x80070005，Node未创建/恢复；profile owner DeleteAppContainerProfile 返回0且目录消失。不能把这个初始化结果当作Node/LPAC安全或不兼容事实。完整 events/receipt 保留到新证据根。
+- 独立 Get-Acl 确认输入文件 owner 是当前用户，继承 ACL 不是FullControl；待验证修正为只修改 DACL，先核验既有 owner，不再为只读收紧重复 SetOwner（需要额外权限），同时保存写前SDDL/异常栈。不得为通过而给应用写权限。
+- 附带 Get-Volume 又触发既有 CIM 客户端不可访问限制，exit1；前面的 Get-Acl 输出仍有效，不能从该失败推导磁盘类型或系统能力。后续不再用 CIM 载体探测磁盘。本记录复用 EXP-002/007/008/060/145/285。
+- 0008 DACL-only 新Attempt成功收紧profile/input/runtime、创建挂起进程PID16396并绑定Job，随后class46 size query返回needed0，原型在恢复前拒绝并终止；Job active0、profile删除0。Microsoft Win32文档虽列出TokenIsLessPrivilegedAppContainer却未定义该查询输出合同，原型不能预设任意枚举值均支持通用size-query。已先补充从属合同：保留实际查询错误，使用真实token AccessCheck的Package/Everyone/AAP权限三项与普通AppContainer挂起对照检验LPAC实际权限语义；不把IsAppContainer=1代替LPAC、不放宽capabilities。后续结果另行保留，不提前声称通过。
+- 0012 实际普通AppContainer/LPAC权限对照成立，class46直接查询均87；Node恢复后以2147483651退出，stderr为WSAStartup10107，正例标志未输出。只证明该固定Node/零capability/本机配置的启动不兼容；具体被拒绝系统资源仍INSUFFICIENT_EVIDENCE。Job active0、profile删除0。后续攻防/生命周期未执行，不能判通过。
+- 0015 独立清理采集的 Windows PowerShell -File 被现有ExecutionPolicy拒绝，exit1；不改变该系统策略。阶段唯一一次观测载体替代为相同静态只读cmdlet的-Command内联（0016），保留脚本原文和真实结果；这不改变隔离执行器，也不运行业务/测试。
+- 0016 内联采集先以 Windows PowerShell 默认文本编码读取UTF-8 events，中文错误消息被错误解码而导致ConvertFrom-Json失败，exit1；改为显式Get-Content -Encoding UTF8及UTF-8控制台输出，不换第二种载体。旧原始events仍为完整UTF-8字节，早期命令stdout展示存在代码页替换，不能作为对应中文错误原字节；以封存events为一手证据。
+- 收尾准备曾以带反斜杠双引号的node -e嵌套PowerShell改采集器，在解析阶段Missing type name after '['/exit1，未执行任何嵌套命令或快照。改用apply_patch直接改源码，再按独立命令采集，避免多层Shell引用。此载体错误不影响0012原始失败事实或0017/0018已完成独立核验。
+- 0025收尾Bootstrap在受限网络环境DNS解析github.com失败，carrier1/inner2、REMOTE_MAIN_UNAVAILABLE，立即停止封存/发布；0026相同只读Bootstrap在主机网络范围复核READY，本地/远端仍45b256795b02eb732e0b8191b54e03be1af0c61e。仅区分取证环境，不把远端不可核验改写为一致；工作区已按批准的8个非证据文件和本phase根逐项分类。

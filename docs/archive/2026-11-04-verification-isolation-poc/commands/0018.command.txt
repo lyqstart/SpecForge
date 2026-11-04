@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-verification-isolation-poc/verify-unaffected.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-original-source-installed-identity",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=identity verification and receipts;RUNTIME_OBSERVER_WRITES=NONE",
+  "started_utc": "2026-11-04T11:37:34.484Z"
+}

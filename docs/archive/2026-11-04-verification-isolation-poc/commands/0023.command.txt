@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-verification-isolation-poc/review-phase.cjs",
+    "-final"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-review",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=final scope raw failure and unaffected review only",
+  "started_utc": "2026-11-04T11:41:42.216Z"
+}

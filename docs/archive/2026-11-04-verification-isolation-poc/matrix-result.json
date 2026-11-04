@@ -1,0 +1,57 @@
+{
+  "utc": "2026-11-04T11:39:51.911Z",
+  "contract": "windows-lpac-node-readonly/v1",
+  "result": "NOT_ACCEPTED",
+  "rows": [
+    {
+      "id": "P01",
+      "status": "FAILED_AT_RUNTIME_STARTUP",
+      "evidence": "commands/0012 and attempts/7e60d6c286ce4efca94b818664c89da8"
+    },
+    {
+      "id": "TOKEN_PREFLIGHT",
+      "status": "OBSERVED_EFFECTIVE_ACCESS_CONTROL",
+      "does_not_prove": "Full application isolation"
+    },
+    {
+      "id": "A01",
+      "status": "NOT_EXECUTED",
+      "reason": "P01 failed; synthetic startup/normal cleanup facts do not replace this full row"
+    },
+    {
+      "id": "A02",
+      "status": "NOT_EXECUTED",
+      "reason": "P01 failed; synthetic startup/normal cleanup facts do not replace this full row"
+    },
+    {
+      "id": "A03",
+      "status": "NOT_EXECUTED",
+      "reason": "P01 failed; synthetic startup/normal cleanup facts do not replace this full row"
+    },
+    {
+      "id": "L01",
+      "status": "NOT_EXECUTED",
+      "reason": "P01 failed; synthetic startup/normal cleanup facts do not replace this full row"
+    },
+    {
+      "id": "L02",
+      "status": "NOT_EXECUTED",
+      "reason": "P01 failed; synthetic startup/normal cleanup facts do not replace this full row"
+    },
+    {
+      "id": "L03",
+      "status": "NOT_EXECUTED",
+      "reason": "P01 failed; synthetic startup/normal cleanup facts do not replace this full row"
+    },
+    {
+      "id": "I01",
+      "status": "NOT_EXECUTED",
+      "reason": "Later production phase not entered"
+    },
+    {
+      "id": "D01",
+      "status": "NOT_EXECUTED",
+      "reason": "Later production phase not entered"
+    }
+  ]
+}

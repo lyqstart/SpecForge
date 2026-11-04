@@ -1,0 +1,15 @@
+const fs = require('node:fs'), path = require('node:path'), crypto = require('node:crypto');
+const root = __dirname;
+const hash = b => crypto.createHash('sha256').update(b).digest('hex');
+const prior = path.resolve(root, '../2026-11-04-verification-isolation-proposal');
+if (fs.existsSync(path.join(root, 'authorization.json'))) throw Error('EVIDENCE_DIRECTORY_COLLISION');
+const coverage = JSON.parse(fs.readFileSync(path.join(prior, 'rule-read-coverage.json')));
+for (const item of coverage.files) if (hash(fs.readFileSync(item.file)) !== item.raw_sha256) throw Error('RULE_BASELINE_DRIFT:' + item.file);
+const proposal = fs.readFileSync(path.join(prior, 'proposal.md'));
+if (hash(proposal) !== '606fef86706c8dc86ee4d105fe4204392fd4a9e256b8410a7b591941a68c8e2d') throw Error('PROPOSAL_DRIFT');
+const utc = new Date().toISOString();
+const write = (name, value) => fs.writeFileSync(path.join(root, name), JSON.stringify(value, null, 2) + '\n', { flag:'wx' });
+write('authorization.json', { utc, mode:'CODEX_DIRECT', run_id:'CODEX-SF-20261104-VERIFICATION-ISOLATION-POC-A01', attempt_id:'CODEX-SF-20261104-VERIFICATION-ISOLATION-POC-A01-01', baseline:'45b256795b02eb732e0b8191b54e03be1af0c61e', proposal_id:'VERIFICATION-ISOLATION-PROPOSAL-001', proposal_sha256:hash(proposal), user_reply:'批准有限方案，先完成隔离验收', original_question:'是否批准这份有限隔离验证方案：采用 Windows LPAC + Job Object，仅开放只读 Node 验证；先更新正式合同并通过合成隔离、攻防及中断恢复验收，再接入原 WI，sf_safe_bash 继续保持只读？', authority_effect:'Approve bounded contract first; synthetic isolation acceptance before product or original-WI execution.', prior_read_coverage_sha256:hash(fs.readFileSync(path.join(prior,'rule-read-coverage.json'))), rule_read_reuse:'Same conversation full reads, exact raw hashes unchanged; this is hash revalidation, not a new full read.', gate:'PASS', preflight:{bootstrap:'READY',head:'45b256795b02eb732e0b8191b54e03be1af0c61e',remote_head:'45b256795b02eb732e0b8191b54e03be1af0c61e',initial_worktree:'CLEAN',branch_creation_exit_code:0} });
+for (const name of ['run-command.cjs','seal-receipts.cjs']) fs.copyFileSync(path.join(prior,name),path.join(root,name),fs.constants.COPYFILE_EXCL);
+fs.writeFileSync(path.join(root,'journal.jsonl'),JSON.stringify({event:'phase_authorized',utc,user_reply:'批准有限方案，先完成隔离验收',prior_run:'CODEX-SF-20261104-VERIFICATION-ISOLATION-PROPOSAL-A01',run_id:'CODEX-SF-20261104-VERIFICATION-ISOLATION-POC-A01',mode:'CODEX_DIRECT'})+'\n',{flag:'wx'});
+console.log(JSON.stringify({utc,rule_hashes:'PASS',proposal_identity:'PASS',inner_exit_code:0}));

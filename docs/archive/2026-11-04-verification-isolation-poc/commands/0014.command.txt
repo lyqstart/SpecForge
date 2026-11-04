@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-verification-isolation-poc/preserve-attempts.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-all-raw-attempts",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=immutable raw attempts and identities",
+  "started_utc": "2026-11-04T11:35:26.631Z"
+}

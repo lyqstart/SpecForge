@@ -1,0 +1,4 @@
+�޷������ļ� D:\code\SpecForge\docs\archive\2026-11-04-verification-isolation-poc\inspect-cleanup.ps1����Ϊ�ڴ�ϵͳ�Ͻ�
+ֹ���нű����й���ϸ��Ϣ������� https:/go.microsoft.com/fwlink/?LinkID=135170 �е� about_Execution_Policies��
+    + CategoryInfo          : SecurityError: (:) []��ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : UnauthorizedAccess

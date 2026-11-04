@@ -671,6 +671,20 @@ Changed Files Audit 必须绑定本次读取的 Write Guard、HardStop resolutio
 
 两条新引用须以 Git 原子事务建立，再受控绑定 HEAD 和标准 WI Git context；每步保存原始命令与真实退出码，失败后保留哈希绑定计划和完成步骤，只能在精确匹配的中间状态重试，漂移不得覆盖。原索引和跟踪内容须在每步写前及完成后复核。禁止用 `HEAD`、`--detach` 等值冒充基线分支，禁止人工建分支或手写 context 代替 owner。普通已有基线分支路径保持兼容；此恢复不改变 D18，也不替代将来默认主线 Git Merge 的独立用户确认。
 
+### 9.2.1 有限隔离验证（D20）
+
+产品负责人批准先完成有限隔离验收。仅允许版本化的 Windows x64 `windows-lpac-node-readonly/v1`，使用真实 LPAC/AppContainer 与独立 Job Object；Node 权限标志、目录副本或普通子进程不能替代操作系统边界。`sf_safe_bash` 的 D18 只读合同不变。未通过合成隔离与生命周期验收前，不接入原业务，也不宣称测试执行能力已交付。
+
+首期入口只承接已批准 Task 中的 Node 内置测试、冻结的 Node 内联验收与明确支持的只读静态检查。输入以逐字节身份冻结到不可变副本，不授予原项目、Git/治理目录、用户目录或凭据访问；仅授予固定运行文件、冻结输入及明确的最低系统资源读取。应用不得写文件，包括新建私有 profile 与临时目录。环境从零构造，不授予网络、广泛文件、COM 或注册表扩展 capability；不开放任意程序路径、环境、stdin、host cwd、安装、构建、第三方框架、服务器或联网测试。需要更宽权限、可写磁盘、另一后端或系统设置时须重新形成具体产品决定，不得静默放宽。
+
+每次运行须使用独立 SID/profile 与 Job，在挂起态创建进程，核验 token、有效权限与 Job 后才恢复。后代进程必须继承隔离和资源上限，禁止 breakaway，关闭最后 Job 句柄终止全部成员；墙钟、进程、总内存与输出有固定上限。仅接收有界 stdout/stderr 和真实退出事实，不回写或导入应用生成的项目文件。输出不完整、退出码未知、残留进程或隔离证据不足不能产生 passed。仅可回收归属已经证明的本次资源，不能改已有系统或业务 ACL。
+
+产品执行入口由 `sf_verification_plan` 的真实 sf-orchestrator owner 和 `sf_verification_run` 的真实 sf-verifier owner 组成，允许 implementation_running 的实施验证与 verification_running 的正式验证。两者均强制校验真实身份、权威状态、HardStop 与独立验证许可，不依赖可关闭的 RBAC 或调用者自报角色，不推进工作流，不恢复代码权限。Plan 不可覆盖，绑定项目/WI/Task、PSV/Manifest、当前分支和提交、完整输入原始字节、声明命令及实际 argv、固定 Node/第一方 launcher 指纹、profile 与预算；调用者只能选择正式 Task/命令身份。运行前、接受结果前及 Gate/Close 消费时重核源身份，漂移使旧结果失效。链接、硬链接、外部路径、未知字段、依赖和权限歧义在启动前拒绝。
+
+原始执行回执由受信 Runtime owner 追加产生，与不可信应用输出分通道；Agent 不能通过 artifact_write 伪造。回执绑定计划、输入、实际执行身份、真实 UTC、数值退出码或明确未启动、资源限制、输出哈希和完整 Job 终止事实；独立 Attempt 保留失败、取消、崩溃和恢复历史，不补写通过，不盲重跑。Verification、Evidence、Formal Version 与 Close 共享同一回执校验器。静态有限解释器必须明确记录实际执行种类、版本化解析和逐行/正则/否定/短路语义，不冒充宿主 Shell 退出；不能证明原 Task 证据语义时保持 not_executed，由原 owner 处理合同冲突，不能手改封存 Task 或弱化验收。
+
+从属实施与验收合同为 `docs/design/windows-lpac-node-readonly-contract.md`，须先完成真实合成正例、恶意父/子/孙进程、文件/网络/注册表/COM/WMI/breakaway、资源上限、取消、launcher/daemon 中断及重启恢复，再闭合公共工具到共同 Gate/Close 的实际生产链路，并同步源码、模板、Agent/Skill、安装器和固定编译资产。每个阶段保留不足项；库测试通过不代表入口或部署可用。原 WI、审批、权限撤销和主线合并前置条件保持有效，不能因新增执行能力自动完成任务。
+
 ## 9.3 HardStop
 
 HardStop 是 recoverable safety latch，不是“任务永久结束”。

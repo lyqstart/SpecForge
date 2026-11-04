@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-04T11:25:02.212Z",
+  "mode": "CODEX_DIRECT",
+  "run_id": "CODEX-SF-20261104-VERIFICATION-ISOLATION-POC-A01",
+  "attempt_id": "CODEX-SF-20261104-VERIFICATION-ISOLATION-POC-A01-01",
+  "baseline": "45b256795b02eb732e0b8191b54e03be1af0c61e",
+  "proposal_id": "VERIFICATION-ISOLATION-PROPOSAL-001",
+  "proposal_sha256": "606fef86706c8dc86ee4d105fe4204392fd4a9e256b8410a7b591941a68c8e2d",
+  "user_reply": "批准有限方案，先完成隔离验收",
+  "original_question": "是否批准这份有限隔离验证方案：采用 Windows LPAC + Job Object，仅开放只读 Node 验证；先更新正式合同并通过合成隔离、攻防及中断恢复验收，再接入原 WI，sf_safe_bash 继续保持只读？",
+  "authority_effect": "Approve bounded contract first; synthetic isolation acceptance before product or original-WI execution.",
+  "prior_read_coverage_sha256": "38b57c060ce7f0b6099cc01db2fdaaf0a892b67b8b809b3bddf593c328bd3b9a",
+  "rule_read_reuse": "Same conversation full reads, exact raw hashes unchanged; this is hash revalidation, not a new full read.",
+  "gate": "PASS",
+  "preflight": {
+    "bootstrap": "READY",
+    "head": "45b256795b02eb732e0b8191b54e03be1af0c61e",
+    "remote_head": "45b256795b02eb732e0b8191b54e03be1af0c61e",
+    "initial_worktree": "CLEAN",
+    "branch_creation_exit_code": 0
+  }
+}

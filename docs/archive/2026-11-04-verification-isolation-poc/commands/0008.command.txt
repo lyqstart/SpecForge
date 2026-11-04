@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacStartupPoc.exe",
+  "args": [
+    "--synthetic-p01",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\4c6b629555194d40929b9c34fe702dad",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "synthetic-p01-dacl-only",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned profile readonly DACL Job and synthetic runtime;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-04T11:30:57.648Z"
+}

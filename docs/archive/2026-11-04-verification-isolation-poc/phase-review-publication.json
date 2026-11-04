@@ -1,0 +1,70 @@
+{
+  "utc": "2026-11-04T11:43:12.672Z",
+  "review": "PASS_FOR_HONEST_FAILED_SYNTHETIC_CHECKPOINT_ONLY",
+  "isolation_acceptance": "FAILED_P01_OTHER_ROWS_NOT_EXECUTED",
+  "application_exit_code": 2147483651,
+  "source_and_deployment_unchanged": true,
+  "prior_seals": [
+    {
+      "directory": "2026-11-04-verification-isolation-proposal",
+      "manifest_sha256": "3ff5ac8db1ef1b9014743ba80696017142446c6126f75d366919df42b0971ac4",
+      "members": 100
+    },
+    {
+      "directory": "2026-11-03-original-wi-approved-implementation",
+      "manifest_sha256": "01fc60daaaece5a12f91a12f03f9b713c8f001a566c55f74178e107c7219f4fc",
+      "members": 649
+    }
+  ],
+  "non_evidence_file_identities": [
+    {
+      "file": ".gitattributes",
+      "bytes": 2532,
+      "sha256": "2764b93450eaeceb71292c015c7ebf3a878aac71a445da0978127468b95e932a"
+    },
+    {
+      "file": "docs/product-specification/authority-registry.md",
+      "bytes": 16681,
+      "sha256": "546e861a181074939d6772ba237178299f54db17bb8121190d239e290003b8ae"
+    },
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "bytes": 81312,
+      "sha256": "4c678232970c8906ccf532605a2e690e35b0b4e225f257aa6f15e76a12dfced9"
+    },
+    {
+      "file": "docs/design/windows-lpac-node-readonly-contract.md",
+      "bytes": 6391,
+      "sha256": "7ee3cc9474956ff769aeb0f1b290d291882fee4e54d81a134242d42069851126"
+    },
+    {
+      "file": "docs/project-status.md",
+      "bytes": 6388,
+      "sha256": "1c32d6e20197fb7bd2937f7449306bba88ab8351ba5f0a04f1c87ec1dcf7da18"
+    },
+    {
+      "file": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "bytes": 4372236,
+      "sha256": "0ea70ecd703a4bf3b03734dcc49f0c5f2fbf753df3583244d4289c6bc32a55c4"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/windows/LpacStartupPoc.cs",
+      "bytes": 29937,
+      "sha256": "bc17bc138ca517aec907872773bbdcd585c57000015c913594af6444666fab63"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/windows/README.md",
+      "bytes": 1789,
+      "sha256": "35e1517ddbe8c0c9e76a7ea428d107b9e9b2cbbf0b8d886db52ea30795bd6d3f"
+    }
+  ],
+  "scope_files": 244,
+  "limitations": [
+    "Class46 API returned87; LPAC effective semantics tested with ordinary AppContainer control, not a supported class46 result.",
+    "No hostile filesystem/registry/network/process or crash/limit acceptance.",
+    "No public tool, Gate consumer, installer or deployment changes.",
+    "Earlier command text views may contain code-page replacement; primary native events/pipe bytes retained in attempts. Raw command pipe buffers added from0018.",
+    "Initial compiler build was not retained; its native failure facts do not prove source-binary reproducibility. Later two source/binary snapshots retained."
+  ],
+  "inner_exit_code": 0
+}

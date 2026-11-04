@@ -4,7 +4,7 @@
 >
 > Effective date: 2026-10-11
 >
-> Registry version: 1.10
+> Registry version: 1.11
 >
 > Product owner: SpecForge 产品负责人
 >
@@ -43,6 +43,7 @@ SPS-1.0
 | docs/rule/specforge-active-development-rules.md | 当前活动开发规则（新会话必须完整读取）；经验规则唯一当前载体 | NO（DEVELOPMENT RULE） |
 | docs/rule/specforge-development-error-ledger-and-experience.md | 开发错误台账：历史错误、审计与经验演化证据；不再要求每会话全文读取，按任务关键词定向检索 | NO（HISTORICAL EVIDENCE + TARGETED SEARCH） |
 | docs/design/SpecForge架构一致性治理最终实施方案.md | 架构一致性与契约治理的从属技术合同 | NO |
+| docs/design/windows-lpac-node-readonly-contract.md | SPS §9.2.1 / D20 的有限隔离验证从属实施与验收合同；验收不完整时不得启用产品执行 | NO |
 | docs/archive/design/SpecForge架构一致性治理最终实施方案.full-history-20261006.md | 2026-10-06 前完整治理实施方案的原样历史快照；只用于追溯规则演进 | NO（HISTORICAL EVIDENCE） |
 | docs/conventions/** | 当前实现合同的派生说明；必须可追溯到 SPS、已登记 Contract 或真实代码，不得独立定义产品 | NO（DERIVED REFERENCE） |
 | docs/user/**, docs/cli/** | 面向用户和运维者的当前版本使用说明；必须与已发布入口、安装器和运行合同一致 | NO（DERIVED OPERATING DOCUMENTATION） |
@@ -67,6 +68,7 @@ SPS-1.0
 |---|---|
 | D18 | 命令写入漏洞修复先采用安全封堵：保留 Runtime 内部受控只读操作，无法隔离的脚本、解释器、子进程、构建和测试命令明确拒绝，不宣称这些执行功能可用。对应 SPS §9.2；任何角色、活动任务或已有授权不得绕过此边界。 |
 | D19 | 无分支 detached Git 项目在实施前可以建立新的用户确认基线与 WI 分支；由现有 Git plan/create owner 以完整提交、索引/跟踪字节和不可变计划绑定执行，原子建立引用、保留可恢复审计，不声称恢复旧分支，不创建提交或改写业务文件。对应 SPS §9.2；新分支决定不替代默认主线 Git Merge 确认，也不解除 D18。 |
+| D20 | 批准有限隔离验证方案，先完成隔离验收：仅 Windows x64 LPAC + Job Object 的 `windows-lpac-node-readonly/v1`，不可变副本、固定 Node、无应用文件写权限、无网络或扩展 capability。先更新正式合同，再以自有合成夹具完成真实隔离、攻防、后代进程、中断和恢复验收，之后才接产品工具、共同证据消费者、发布部署及原 WI；任何未证明属性都不得通过或降级到普通子进程。`sf_safe_bash` 保持 D18 只读。对应 SPS §9.2；从属合同为 `docs/design/windows-lpac-node-readonly-contract.md`，提案归档只证明裁决来源，不取代正式合同。 |
 | PO-001 | Migration 模块退出当前产品；schema validation 保留为文件 owner / contract 责任，不等同 Migration |
 | D01 | events.jsonl 是持久化工作流状态事实源；state.json 是可重建 checkpoint/projection |
 | D02 | Daemon 是独立共享服务；生命周期由部署环境、CLI 或 service manager 管理；Thin Plugin 不启动/停止/重启 Daemon |

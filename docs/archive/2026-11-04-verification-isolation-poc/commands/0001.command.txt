@@ -1,0 +1,11 @@
+{
+  "executable": "git",
+  "args": [
+    "diff",
+    "--stat"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "authority-baseline",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES=approved SPS Registry subordinate contract;EXTERNAL_EVIDENCE_WRITES=this phase receipts",
+  "started_utc": "2026-11-04T11:26:12.158Z"
+}

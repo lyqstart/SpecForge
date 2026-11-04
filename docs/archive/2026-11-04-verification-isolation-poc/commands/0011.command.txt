@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-verification-isolation-poc/snapshot-build.cjs",
+    "build-effective-probe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-build-effective-probe",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=immutable source executable identity snapshot",
+  "started_utc": "2026-11-04T11:33:25.204Z"
+}

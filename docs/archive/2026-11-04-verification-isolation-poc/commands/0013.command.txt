@@ -1,0 +1,10 @@
+{
+  "executable": "C:\\Program Files\\nodejs\\node.exe",
+  "args": [
+    "--version"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "inspect-pinned-node-version",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=receipts;RUNTIME_OBSERVER_WRITES=host version query only no business input",
+  "started_utc": "2026-11-04T11:33:56.950Z"
+}

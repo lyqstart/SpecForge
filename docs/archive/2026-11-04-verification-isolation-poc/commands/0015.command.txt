@@ -1,0 +1,12 @@
+{
+  "executable": "powershell.exe",
+  "args": [
+    "-NoProfile",
+    "-File",
+    "docs/archive/2026-11-04-verification-isolation-poc/inspect-cleanup.ps1"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "independent-host-cleanup",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=cleanup observation and receipts;RUNTIME_OBSERVER_WRITES=read-only process inventory",
+  "started_utc": "2026-11-04T11:35:39.765Z"
+}

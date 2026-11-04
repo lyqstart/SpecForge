@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "scripts/project-session-bootstrap.mjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "bootstrap-host-network-recheck",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=bootstrap receipt only;RUNTIME_OBSERVER_WRITES=read-only host Git remote check",
+  "started_utc": "2026-11-04T11:42:34.197Z"
+}

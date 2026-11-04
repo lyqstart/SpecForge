@@ -1,0 +1,11 @@
+{
+  "executable": "git",
+  "args": [
+    "diff",
+    "--check"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "diff-whitespace-review",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=receipts only",
+  "started_utc": "2026-11-04T11:41:45.046Z"
+}

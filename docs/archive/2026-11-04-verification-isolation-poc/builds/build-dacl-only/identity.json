@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-04T11:32:29.643Z",
+  "members": [
+    {
+      "source": "packages/daemon-core/src/verification/windows/LpacStartupPoc.cs",
+      "file": "LpacStartupPoc.cs",
+      "bytes": 25780,
+      "sha256": "d50731110f172bee6bc2e6ad305c3111c5b1fae6d3160d65d66457ad95d06077"
+    },
+    {
+      "source": ".tmp/verification-lpac-build/LpacStartupPoc.exe",
+      "file": "LpacStartupPoc.exe",
+      "bytes": 45056,
+      "sha256": "d574f8dbecd1448a4982f6a90ad27a704ae4cb5207c51224e51cb2d232766152"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "utc": "2026-11-04T11:43:13.768Z",
+  "run_id": "CODEX-SF-20261104-VERIFICATION-ISOLATION-POC-A01",
+  "files": 245,
+  "manifest_sha256": "918f5f6f5b389ec9c099fc4c2d70fa67da2edcbdf38e27342dcf72d4350f68ca",
+  "self_check": "PASS",
+  "exclusions": "Only manifest and its own check excluded to avoid recursive hash. No private credential data collected.",
+  "inner_exit_code": 0
+}

@@ -1,0 +1,4 @@
+ .gitattributes                                             |  1 +
+ docs/product-specification/authority-registry.md           |  1 +
+ .../specforge-product-specification.md                     | 14 ++++++++++++++
+ 3 files changed, 16 insertions(+)

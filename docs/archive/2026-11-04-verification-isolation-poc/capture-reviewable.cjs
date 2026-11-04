@@ -1,0 +1,10 @@
+const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process'),crypto=require('node:crypto');
+const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+const git=args=>cp.execFileSync('git',args,{windowsHide:true,maxBuffer:32*1024*1024});
+const review=JSON.parse(fs.readFileSync(path.join(__dirname,'phase-review.json')));
+const files=review.non_evidence_file_identities.map(e=>e.file);
+const base=git(['rev-parse','HEAD']).toString().trim();
+const entries=files.map(file=>{const current=fs.readFileSync(file);let old=null;const tracked=git(['ls-files',file]).toString().trim();if(tracked)old=git(['show',base+':'+file]);return {file,current_sha256:sha(current),current_base64:current.toString('base64'),baseline_sha256:old&&sha(old),baseline_base64:old&&old.toString('base64')};});
+const suffix=process.argv[2]||'';if(suffix!==''&&!/^-[a-z0-9-]+$/.test(suffix))throw Error('SNAPSHOT_SUFFIX');
+fs.writeFileSync(path.join(__dirname,'reviewable-change'+suffix+'.json'),JSON.stringify({utc:new Date().toISOString(),base,entries},null,2)+'\n',{flag:'wx'});
+console.log(JSON.stringify({base,files:entries.length,inner_exit_code:0}));
