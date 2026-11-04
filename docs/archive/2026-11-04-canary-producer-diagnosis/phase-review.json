@@ -1,0 +1,49 @@
+{
+  "utc": "2026-11-04T15:14:02.302Z",
+  "result": "PASS_FOR_LIMITED_SINGLE_CANARY_CHECKPOINT",
+  "isolation_acceptance": "NOT_ACCEPTED",
+  "recovery_attempt": "fb750cfffd6b4ae2a3a47b996020604b",
+  "raw_error_cp936": "错误: 拒绝访问。\r\r\n",
+  "original_and_installed156_unchanged": true,
+  "authority_unchanged": [
+    [
+      "docs/product-specification/authority-registry.md",
+      "fd12e23c1434a846d79563856804f317411b68bd196e1cdba867792f48e1c206"
+    ],
+    [
+      "docs/product-specification/specforge-product-specification.md",
+      "586015479eee087249d2a18d82f6ce5065a8aa0e54e0c5a9bbc1483fb9d28622"
+    ]
+  ],
+  "prior_seals": [
+    {
+      "directory": "2026-11-03-original-wi-approved-implementation",
+      "members": 649,
+      "manifest_sha256": "01fc60daaaece5a12f91a12f03f9b713c8f001a566c55f74178e107c7219f4fc"
+    },
+    {
+      "directory": "2026-11-04-verification-isolation-proposal",
+      "members": 100,
+      "manifest_sha256": "3ff5ac8db1ef1b9014743ba80696017142446c6126f75d366919df42b0971ac4"
+    },
+    {
+      "directory": "2026-11-04-verification-isolation-poc",
+      "members": 245,
+      "manifest_sha256": "918f5f6f5b389ec9c099fc4c2d70fa67da2edcbdf38e27342dcf72d4350f68ca"
+    },
+    {
+      "directory": "2026-11-04-winsock-isolation-diagnosis",
+      "members": 266,
+      "manifest_sha256": "b7cdae8c82f775dba703f4c04863712c60418938dfb68b6992221dbf34260702"
+    },
+    {
+      "directory": "2026-11-04-registry-read-experiment",
+      "members": 353,
+      "manifest_sha256": "07832b9fa1df94ae2545e86465406d18cac1bada3bf22e750091490af6b746bc"
+    }
+  ],
+  "current_scope_files": 263,
+  "regression_binary_sha256": "3d569c2c02837c1909957781a7fa41be2e14e5387d47f6cf86fda419a72ef8d8",
+  "remaining": "Original file/default-pipe commands FAILED; full matrix/public tool/deploy/original WI NOT_ACCEPTED",
+  "inner_exit_code": 0
+}

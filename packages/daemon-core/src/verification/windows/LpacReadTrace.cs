@@ -30,11 +30,11 @@ internal static class LpacReadTrace {
         internal readonly IntPtr Process,Job;internal readonly uint Pid;
         internal readonly Action<string,object> Record;internal readonly Func<long> Elapsed;
         readonly Dictionary<uint,ThreadState> threads=new Dictionary<uint,ThreadState>();
-        readonly string[] names={"RegOpenKeyExA","WSAStartup","NtOpenKeyEx"};
-        readonly string[] libraries={"kernelbase.dll","ws2_32.dll","ntdll.dll"};
+        readonly string[] names,libraries;
+        readonly bool pipeTrace;
         readonly long[] entries=new long[3];
-        bool installed,initialBreakpoint,sawStartup;int callId,events;
-        internal Observer(IntPtr process,IntPtr job,uint pid,Action<string,object> record,Func<long> elapsed){Process=process;Job=job;Pid=pid;Record=record;Elapsed=elapsed;}
+        bool installed,initialBreakpoint,sawStartup,stopRequested,stopIssued;int callId,events,deniedPipes;
+        internal Observer(IntPtr process,IntPtr job,uint pid,Action<string,object> record,Func<long> elapsed,bool pipeTrace){Process=process;Job=job;Pid=pid;Record=record;Elapsed=elapsed;this.pipeTrace=pipeTrace;names=pipeTrace?new[]{"CreateNamedPipeA","NtCreateNamedPipeFile","CreateProcessW"}:new[]{"RegOpenKeyExA","WSAStartup","NtOpenKeyEx"};libraries=pipeTrace?new[]{"kernel32.dll","ntdll.dll","kernel32.dll"}:new[]{"kernelbase.dll","ws2_32.dll","ntdll.dll"};}
         byte[] Read(long address,int bytes) {
             if(address<=0||bytes<0||bytes>8192)throw new InvalidOperationException("TRACE_READ_BOUNDS");
             var buffer=new byte[bytes];UIntPtr read;Check(ReadProcessMemory(Process,new IntPtr(address),buffer,new UIntPtr((uint)bytes),out read),"Read synthetic memory");
@@ -66,6 +66,11 @@ internal static class LpacReadTrace {
             if(pointer==0)return "";var bytes=new List<byte>();
             for(int i=0;i<4096;i++){var pair=Read(pointer+i*2,2);if(pair[0]==0&&pair[1]==0)return Encoding.Unicode.GetString(bytes.ToArray());bytes.AddRange(pair);}
             throw new InvalidOperationException("TRACE_WSTRING_BOUNDS");
+        }
+        string AsciiString(long pointer) {
+            var bytes=new List<byte>();if(pointer==0)return "";
+            for(int i=0;i<8192;i++){byte value=Read(pointer+i,1)[0];if(value==0)return Encoding.ASCII.GetString(bytes.ToArray());if(value>127)throw new InvalidOperationException("TRACE_ASCII_UNPROVED");bytes.Add(value);}
+            throw new InvalidOperationException("TRACE_ASCII_BOUNDS");
         }
         string RegistryName(long handle,long subkey) {
             string root;
@@ -154,7 +159,9 @@ internal static class LpacReadTrace {
                     if(thread.Calls.Count==0||thread.Calls.Peek().ReturnAddress!=rip)throw new InvalidOperationException("TRACE_RETURN_MISMATCH");
                     do {
                         var call=thread.Calls.Pop();uint result=unchecked((uint)context.Read(120));
-                        Record("trace_call_return",new{call_id=call.Id,parent_call_id=call.ParentId,inside_wsa_startup=call.WithinStartup,thread=ev.Tid,api=call.Api,object_name=call.Name,desired_access="0x"+call.Access.ToString("x8"),ntstatus=call.Api.StartsWith("Nt")?"0x"+result.ToString("x8"):null,return_value=result,return_kind=call.Api.StartsWith("Nt")?"NTSTATUS":call.Api=="WSAStartup"?"Winsock error code":"Win32 error code",return_address=rip.ToString("x")});
+                        Record("trace_call_return",new{call_id=call.Id,parent_call_id=call.ParentId,inside_wsa_startup=call.WithinStartup,thread=ev.Tid,api=call.Api,object_name=call.Name,desired_access="0x"+call.Access.ToString("x8"),ntstatus=call.Api.StartsWith("Nt")?"0x"+result.ToString("x8"):null,return_value=result,return_value64=context.Read(120).ToString("x16"),return_kind=call.Api.StartsWith("Nt")?"NTSTATUS":call.Api=="CreateNamedPipeA"?"HANDLE":call.Api=="CreateProcessW"?"BOOL":call.Api=="WSAStartup"?"Winsock error code":"Win32 error code",return_address=rip.ToString("x")});
+                        if(pipeTrace&&call.Api=="NtCreateNamedPipeFile"&&result==0xc0000022&&call.Name.IndexOf("\\uv\\",StringComparison.OrdinalIgnoreCase)>=0)deniedPipes++;
+                        if(pipeTrace&&call.Api=="CreateNamedPipeA"&&result==UInt32.MaxValue&&deniedPipes>=6){Record("trace_repeated_uv_pipe_denial",new{denied_calls=deniedPipes,owner_termination_requested=true,diagnostic_only=true});stopRequested=true;}
                     }while(thread.Calls.Count!=0&&thread.Calls.Peek().ReturnAddress==rip);
                 }
                 for(int i=0;i<3;i++)if((status&(1L<<i))!=0) {
@@ -163,6 +170,8 @@ internal static class LpacReadTrace {
                     var call=new Call{Id=++callId,Api=names[i],ParentId=thread.Calls.Count==0?0:thread.Calls.Peek().Id,WithinStartup=within,ReturnAddress=BitConverter.ToInt64(Read(context.Read(152),8),0)};
                     if(call.Api=="WSAStartup"){call.Name="requested-version=0x"+(context.Read(128)&0xffff).ToString("x4");sawStartup=true;}
                     else if(call.Api=="RegOpenKeyExA"){call.Name=RegistryName(context.Read(128),context.Read(136));call.Access=unchecked((uint)context.Read(192));}
+                    else if(call.Api=="CreateNamedPipeA"){call.Name=AsciiString(context.Read(128));call.Access=unchecked((uint)context.Read(136));}
+                    else if(call.Api=="CreateProcessW"){call.Name=WideString(context.Read(128));call.Access=0;}
                     else {call.Name=ObjectName(context.Read(184));call.Access=unchecked((uint)context.Read(136));}
                     if(thread.Calls.Count>16)throw new InvalidOperationException("TRACE_NESTING_LIMIT");thread.Calls.Push(call);
                     Record("trace_call_enter",new{call_id=call.Id,parent_call_id=call.ParentId,inside_wsa_startup=call.WithinStartup,thread=ev.Tid,api=call.Api,object_name=call.Name,desired_access="0x"+call.Access.ToString("x8"),return_address=call.ReturnAddress.ToString("x")});
@@ -171,9 +180,10 @@ internal static class LpacReadTrace {
             }
         }
         internal uint Run() {
-            Record("trace_observer_started",new{pid=Pid,mechanism="hardware debug registers plus bounded ReadProcessMemory; no code patch; no permission change",apis=names,event_limit=4096,timeout_ms=120000,diagnosis_only=true});
+            int wall=pipeTrace?20000:120000;
+            Record("trace_observer_started",new{pid=Pid,mechanism="hardware debug registers plus bounded ReadProcessMemory; no code patch; no permission change",apis=names,event_limit=4096,timeout_ms=wall,diagnosis_only=true});
             for(;;) {
-                if(Elapsed()>120000)throw new TimeoutException("TRACE_WALL_LIMIT");
+                if(Elapsed()>wall)throw new TimeoutException("TRACE_WALL_LIMIT");
                 DebugEvent ev;
                 if(!WaitForDebugEvent(out ev,20)){int error=Marshal.GetLastWin32Error();if(error==121)continue;throw new Win32Exception(error,"WaitForDebugEvent");}
                 uint continuation=Continue;bool exit=false;uint exitCode=0;
@@ -198,13 +208,14 @@ internal static class LpacReadTrace {
                     if((ev.Code==3||ev.Code==6)&&ev.Handle0!=IntPtr.Zero&&ev.Handle0!=new IntPtr(-1))CloseHandle(ev.Handle0);
                     Check(ContinueDebugEvent(ev.Pid,ev.Tid,continuation),"ContinueDebugEvent");
                 }
-                if(exit){if(!installed||!sawStartup||callId==0||Array.IndexOf(entries,0L)>=0)throw new InvalidOperationException("TRACE_COVERAGE_MISSING");return exitCode;}
+                if(stopRequested&&!stopIssued){Check(TerminateJobObject(Job,125),"Terminate bounded pipe diagnostic Job");stopIssued=true;}
+                if(exit){if(!installed||(pipeTrace?deniedPipes<6:!sawStartup)||callId==0||Array.IndexOf(entries,0L)>=0)throw new InvalidOperationException("TRACE_COVERAGE_MISSING");return exitCode;}
             }
         }
     }
-    internal static uint Run(IntPtr process,IntPtr job,uint pid,Action<string,object> record,Func<long> elapsed) {
+    internal static uint Run(IntPtr process,IntPtr job,uint pid,Action<string,object> record,Func<long> elapsed,bool pipeTrace=false) {
         if(IntPtr.Size!=8||Marshal.SizeOf(typeof(DebugEvent))!=176)throw new InvalidOperationException("TRACE_ABI_MISMATCH");
-        try{return new Observer(process,job,pid,record,elapsed).Run();}
+        try{return new Observer(process,job,pid,record,elapsed,pipeTrace).Run();}
         catch(Exception error) {
             record("trace_failed",new{type=error.GetType().FullName,message=error.Message});
             TerminateJobObject(job,125);var timer=System.Diagnostics.Stopwatch.StartNew();

@@ -1,0 +1,19 @@
+{
+  "executable": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+  "args": [
+    "/nologo",
+    "/platform:x64",
+    "/target:exe",
+    "/optimize+",
+    "/reference:System.Web.Extensions.dll",
+    "/out:D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+    "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacStartupPoc.cs",
+    "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacReadTrace.cs",
+    "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacRegistryReadCapability.cs",
+    "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacRegistryReadCanary.cs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "compile-measured-export-mapping",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES=compiled same-permission observer;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-04T15:02:45.375Z"
+}

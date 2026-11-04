@@ -1,0 +1,13 @@
+# 执行前冻结：最多20秒的管道诊断
+
+HYPOTHESIS：固定Node的spawnSync默认pipe传输进入libuv的uv__pipe_server；同版本上游pipe.c 194–219行对CreateNamedPipeA的ERROR_ACCESS_DENIED按名称冲突重试，可能使内部timeout尚未生效。前一空输出不能证明本机命中该路径。本轮不改Node二进制或Windows权限，也不据此先宣称原因。
+
+已有本机内嵌源码证明child_process.spawnSync默认stdio为pipe，接入internal spawn_sync；这是精确被测二进制的JS层事实，上游C代码只作待验证解释。证据来源URL为https://raw.githubusercontent.com/nodejs/node/v24.19.0/deps/uv/src/win/pipe.c。
+
+新固定输入增加before/after require、before/after system query的有限进度标记，仍只访问原已批准的新假键与Winsock正控制。独立LPAC恰好registryRead、只读目录、Job/内存/进程/输出上限保持；将总时限降至20秒。仅新建合成PID受硬件调试寄存器观察，不改代码字节或其他进程，记录CreateNamedPipeA、NtCreateNamedPipeFile、CreateProcessW入口/真实返回和对象名。系统DLL导出及远端入口字节必须先核验。
+
+在六次目标uv管道创建拒绝及外层无效句柄返回后，由owner主动终止Job（诊断退出125），或20秒超时。两者都不能当作原命令失败断言或隔离通过，只证明相应运行事实；所有profile/假键及后代必须回收。若未观察到完整链，结论保持未知，不新增capability。
+
+只有本机证据证实传输卡点后，才考虑单独冻结继承既有stdin/stdout/stderr的固定reg.exe探针。该候选不新增管道权限或其他capability，不宣称原默认pipe命令通过；原Task与完整矩阵继续独立。实验未证明之前不实施该恢复。
+
+0005的观察器在模块解析阶段拒绝PE_EXPORT_NOT_FOUND:CreateNamedPipeA，未取得管道证据，已保留并回收。0008随后只读GetProcAddress/owner-module元数据实际证实本机CreateNamedPipeA及CreateProcessW入口属于KERNEL32.dll（RVA51664/247856），而非先前假定的KernelBase。新Attempt只修正观察器映射，远端/磁盘前16字节仍须实际匹配，不改API或权限。

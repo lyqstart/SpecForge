@@ -1,0 +1,14 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+const root=__dirname,prior=path.resolve(root,'../2026-11-04-registry-read-experiment');if(fs.existsSync(path.join(root,'authorization.json')))throw Error('EVIDENCE_DIRECTORY_COLLISION');
+const manifest=fs.readFileSync(path.join(prior,'manifest.sha256'));if(sha(manifest)!=='07832b9fa1df94ae2545e86465406d18cac1bada3bf22e750091490af6b746bc')throw Error('PRIOR_MANIFEST_DRIFT');let count=0;
+for(const line of manifest.toString().trimEnd().split('\n')){if(sha(fs.readFileSync(path.join(prior,line.slice(66))))!==line.slice(0,64))throw Error('PRIOR_MEMBER_DRIFT');count++;}
+const hashes={
+ 'docs/rule/specforge-active-development-rules.md':'de23c0d38acda18052752344805703f2df53cd502503925a51c0341573b19d74',
+ 'docs/design/SpecForge架构一致性治理最终实施方案.md':'956df3943a44d1b99636790a32e9b2a0dc266b7116f50b60b7b8c6f2614423ac',
+ 'docs/rule/specforge-execution-mode-and-evidence-protocol.md':'166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef',
+ 'docs/product-specification/authority-registry.md':'fd12e23c1434a846d79563856804f317411b68bd196e1cdba867792f48e1c206',
+ 'docs/product-specification/specforge-product-specification.md':'586015479eee087249d2a18d82f6ce5065a8aa0e54e0c5a9bbc1483fb9d28622'};
+for(const[file,expected]of Object.entries(hashes))if(sha(fs.readFileSync(file))!==expected)throw Error('RULE_DRIFT:'+file);
+const utc=new Date().toISOString();fs.writeFileSync(path.join(root,'authorization.json'),JSON.stringify({utc,mode:'CODEX_DIRECT',run_id:'CODEX-SF-20261104-CANARY-PRODUCER-DIAGNOSIS-A01',attempt_id:'CODEX-SF-20261104-CANARY-PRODUCER-DIAGNOSIS-A01-01',user_reply:'批准',interpretation:'Continue read-only producer diagnosis and compatible recovery within existing D21 only; not production adoption or another capability.',baseline:'e19dccfdb5e16eee3919fae052357763521cae1c',bootstrap:'READY/CLEAN/local=remote',prior_sealed_members:count,rule_hashes:hashes,coverage:'Same-conversation complete reads revalidated by identical hashes; current D21 and actual canary source reread. No fresh full-read claim from hash alone.'},null,2)+'\n',{flag:'wx'});
+for(const file of ['run-command.cjs','seal-receipts.cjs','verify-final-publication.cjs','seal-final.cjs']){const source=fs.readFileSync(path.join(prior,file),'utf8').replaceAll('CODEX-SF-20261104-REGISTRY-READ-EXPERIMENT-A01','CODEX-SF-20261104-CANARY-PRODUCER-DIAGNOSIS-A01');fs.writeFileSync(path.join(root,file),source,{flag:'wx'});}
+fs.writeFileSync(path.join(root,'journal.jsonl'),JSON.stringify({event:'phase_started',utc,mode:'CODEX_DIRECT',run_id:'CODEX-SF-20261104-CANARY-PRODUCER-DIAGNOSIS-A01',user_reply:'批准',prior_run:'CODEX-SF-20261104-REGISTRY-READ-EXPERIMENT-A01'})+'\n',{flag:'wx'});console.log(JSON.stringify({prior_members:count,rules:'PASS',inner_exit_code:0}));

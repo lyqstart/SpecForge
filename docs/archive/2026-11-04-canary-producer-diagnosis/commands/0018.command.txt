@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-canary-producer-diagnosis/cleanup-observation.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "independent-host-cleanup",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;PRODUCT_IMPLEMENTATION_WRITES=NONE;RUNTIME_OBSERVER_WRITES=readonly host inventory;EXTERNAL_EVIDENCE_WRITES=independent-cleanup.json and receipts",
+  "started_utc": "2026-11-04T15:10:27.623Z"
+}

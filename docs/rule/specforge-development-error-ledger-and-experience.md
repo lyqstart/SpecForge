@@ -32266,3 +32266,11 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 附带Get-Process多名称观测返回部分JSON及exit1，没有作为完整成功进程清单或“reg进程不存在”的证据；完整采集改用0020。Node官方文档页面一次不可访问，没有据此形成API行为结论。复用EXP-002/004/007/008/038/060/145/193/261/285。
 - 收尾一次多文件apply_patch带入上一阶段change-plan上下文，工具在校验阶段拒绝；独立读取确认两个文件均未改变，再用本阶段精确上下文修改。该工具拒绝没有数字进程退出码，不伪填0，也不作为产品测试失败或现场漂移。复用EXP-002/007/008。
 - 0031封存前Bootstrap的远端git只读查询在15秒内ETIMEDOUT，carrier1/inner2，停止封存/发布；0032相同宿主载体重新核验READY，本地/远端仍5bee5e5144ad02f9281f363db5dfd4d032ddfb29。失败保留，不把暂时未核验写成远端一致，不修改Bootstrap限额来绕过。
+
+### ERR-1919：LPAC下默认spawnSync管道准备重复被拒绝，观察器DLL归属也须实证
+
+- CODEX-SF-20261104-CANARY-PRODUCER-DIAGNOSIS-A01先读固定Node内嵌源码及旧raw，冻结20s有界诊断。0005错误假设CreateNamedPipeA导出位于KernelBase，实际PE_EXPORT_NOT_FOUND；保留原失败和清理。0008只读实际加载器导出解析证实该主机入口属于KERNEL32，再冻结新构建/Attempt；没有把文档列的链接库当作实际导出归属。
+- 0011/0013确认首个system-query spawnSync阶段六次NtCreateNamedPipeFile返回c0000022，五组完整CreateNamedPipeA/原生调用对、递增uv管道名字及相同Node返回点；第一个native调用无外层parent，不夸大为六组。owner按预声明阈值TerminateJob125，不是自然退出或隔离验收；没有命中所观察CreateProcessW入口不能证明所有创建API均未执行。版本化libuv源码将ERROR_ACCESS_DENIED作为名称冲突重试，机制与真实调用相互印证为CORROBORATED，不能以源码单独替代二进制证据。
+- 先冻结同权限恢复计划，再用既有stdin/stdout/stderr句柄构造独立固定查询探针。0016未调试、实际恰好registryRead/enabled4及LPAC/Job核验，系统query0、假键query1，原始stderr为拒绝访问；未输出本轮假值UTF-8/UTF-16LE，Node0/Job0。仅证明该单键；旧默认pipe命令、旧文件入口和120s失败不改称通过。0022用实际raw及空/重复/畸形/坏控制/非零应用和两编码两管道泄漏反例回放17检查通过，畸形报告仍为owner失败而非拒绝。复用EXP-002/004/007/008/017/038/060/145/193/260/261/285。
+- 0018独立64位宿主PID/profile/假键核验通过，0019原业务/治理/源码/部署156项身份未变，0020仅删除三份已核验自有Node副本。没有增加第二capability、管道权限、既有ACL修改、真实凭据读取、产品注册/安装或WI运行；完整隔离矩阵仍未验收。
+- 附带多文件显示截断后按回执退出码/时间及实际raw分段恢复，不以未显示部分证明已读；一次查询不存在的可选review-and-validation.json导致shell1，前置四个复制已成功，缺失不作为产品测试结论。其他正式非零/中断记录保留原值，不以诊断分析exit0掩盖应用125或原120s/124。

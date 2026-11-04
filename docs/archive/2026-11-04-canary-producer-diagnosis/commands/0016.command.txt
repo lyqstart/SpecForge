@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+  "args": [
+    "--synthetic-registry-read-inherited-canary",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\fb750cfffd6b4ae2a3a47b996020604b",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "inherited-stdio-fixed-canary",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;PRODUCT_IMPLEMENTATION_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned same-D21 LPAC Job fake key fixed reg queries inherited std handles20s and cleanup;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-04T15:09:14.470Z"
+}

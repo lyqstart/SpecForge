@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-canary-producer-diagnosis/preserve-attempt.cjs",
+    "fb750cfffd6b4ae2a3a47b996020604b"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-inherited-probe",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;PRODUCT_IMPLEMENTATION_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable attempt copy",
+  "started_utc": "2026-11-04T15:09:26.467Z"
+}

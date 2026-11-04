@@ -1,0 +1,1 @@
+{"confirmed_native_denials":6,"complete_pairs":5,"first_missing_step":"spawnSync default stdio pipe creation","diagnostic_exit":125,"acceptance":"NOT_ACCEPTED","inner_exit_code":0}

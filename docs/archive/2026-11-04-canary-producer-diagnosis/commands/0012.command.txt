@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-canary-producer-diagnosis/preserve-attempt.cjs",
+    "0c669834e068425692ebaa369ddcb7fd"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-complete-pipe-diagnostic",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=immutable raw diagnostic;no acceptance claim",
+  "started_utc": "2026-11-04T15:04:37.632Z"
+}

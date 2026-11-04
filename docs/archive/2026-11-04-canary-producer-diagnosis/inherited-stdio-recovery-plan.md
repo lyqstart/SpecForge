@@ -1,0 +1,11 @@
+# 同权限有限恢复计划：使用既有标准句柄
+
+前置证据：0011的真实管道观察、pipe-diagnosis.json；固定源码已完成child_process加载，进入第一个系统query；六次uv命名管道返回c0000022，其中五次完整外层CreateNamedPipeA返回INVALID_HANDLE_VALUE，对象名递增且Node调用返回点一致。owner按预声明阈值退出125。与固定版本libuv重试分支相互印证；不是R01验收通过。
+
+能力判断：默认pipe捕获方式在此LPAC边界没有合法闭环。既有合同已允许stdin NULL/stdout/stderr三个受控句柄。新独立有限探针使用`stdio: 'inherit'`复用这三个既有句柄，不创建应用新管道、不改管道/文件ACL、不加capability、不改Node二进制；同固定reg.exe参数、目标及恰好registryRead/只读LPAC/Job。原默认pipe命令及历史超时不改为passed，原Task不映射成新命令。
+
+新Attempt无调试、总时限20秒；先记录系统query开始/实际返回，只有正控制exit0、无启动错误/信号后才查询本轮新假键，修正先前未短路的probe顺序。每条query由固定Node记录真实spawnSync返回status/error/signal，reg.exe原始stdout/stderr直接进入既有有界owner管道；状态使用固定单行前缀分隔。该输出判据只适用于本次冻结第一方探针和Windows固定程序，不是供任意不可信业务自报owner回执的入口。
+
+owner必须在独立channel绑定实际源/argv/token/Job、外部原始输出中是否包含未传给应用的假值、哨兵前后字节及清理事实。出现假值可读、查询失败/超时或任何未知就不通过并停。即使单假键不可读，也只证明本次这一键；没有文件/网络/全部后代/完整恢复矩阵结论，更不能启用产品或业务。
+
+资源仍为独立新profile、只读副本、新假键和已有std句柄，没有外网或loopback服务。结束必须Job active0、PID/profile/假键宿主独立对账；原数据与部署156项复核。此恢复属于同一D21已批准范围，不重新索要权限决定。

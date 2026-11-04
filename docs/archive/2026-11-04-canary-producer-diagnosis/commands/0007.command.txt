@@ -1,0 +1,15 @@
+{
+  "executable": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+  "args": [
+    "/nologo",
+    "/platform:x64",
+    "/target:exe",
+    "/reference:System.Web.Extensions.dll",
+    "/out:D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\ResolveSystemExports.exe",
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-04-canary-producer-diagnosis\\ResolveSystemExports.cs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "compile-readonly-export-resolver",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES=.tmp metadata query executable;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-04T15:01:45.452Z"
+}

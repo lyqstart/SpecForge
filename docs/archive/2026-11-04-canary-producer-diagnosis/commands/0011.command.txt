@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+  "args": [
+    "--synthetic-registry-read-pipe-trace-canary",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\0c669834e068425692ebaa369ddcb7fd",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "observe-pipe-denial-with-measured-mapping",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned D21 readonly LPAC Job fake key bounded hardware observation20s cleanup;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-04T15:02:54.909Z"
+}

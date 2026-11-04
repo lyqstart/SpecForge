@@ -1,0 +1,19 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-canary-producer-diagnosis/set-phase.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "set-same-permission-diagnosis-phase",
+  "expected_writes": "TRUTH_SOURCE_WRITES=unique project-status;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-04T14:53:55.684Z",
+  "finished_utc": "2026-11-04T14:53:56.872Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_writes": {
+    "repository_status_before": " M .gitattributes\n?? docs/archive/2026-11-04-canary-producer-diagnosis/authorization.json\n?? docs/archive/2026-11-04-canary-producer-diagnosis/change-plan.md\n?? docs/archive/2026-11-04-canary-producer-diagnosis/commands/0001.command.txt\n?? docs/archive/2026-11-04-canary-producer-diagnosis/export-node-builtins.cjs\n?? docs/archive/2026-11-04-canary-producer-diagnosis/initialize.cjs\n?? docs/archive/2026-11-04-canary-producer-diagnosis/journal.jsonl\n?? docs/archive/2026-11-04-canary-producer-diagnosis/run-command.cjs\n?? docs/archive/2026-11-04-canary-producer-diagnosis/seal-final.cjs\n?? docs/archive/2026-11-04-canary-producer-diagnosis/seal-receipts.cjs\n?? docs/archive/2026-11-04-canary-producer-diagnosis/set-phase.cjs\n?? docs/archive/2026-11-04-canary-producer-diagnosis/verify-final-publication.cjs\n",
+    "repository_status_after": " M .gitattributes\n M docs/project-status.md\n?? docs/archive/2026-11-04-canary-producer-diagnosis/authorization.json\n?? docs/archive/2026-11-04-canary-producer-diagnosis/change-plan.md\n?? docs/archive/2026-11-04-canary-producer-diagnosis/commands/0001.command.txt\n?? docs/archive/2026-11-04-canary-producer-diagnosis/commands/0001.stderr.raw.bin\n?? docs/archive/2026-11-04-canary-producer-diagnosis/commands/0001.stderr.txt\n?? docs/archive/2026-11-04-canary-producer-diagnosis/commands/0001.stdout.raw.bin\n?? docs/archive/2026-11-04-canary-producer-diagnosis/commands/0001.stdout.txt\n?? docs/archive/2026-11-04-canary-producer-diagnosis/export-node-builtins.cjs\n?? docs/archive/2026-11-04-canary-producer-diagnosis/initialize.cjs\n?? docs/archive/2026-11-04-canary-producer-diagnosis/journal.jsonl\n?? docs/archive/2026-11-04-canary-producer-diagnosis/run-command.cjs\n?? docs/archive/2026-11-04-canary-producer-diagnosis/seal-final.cjs\n?? docs/archive/2026-11-04-canary-producer-diagnosis/seal-receipts.cjs\n?? docs/archive/2026-11-04-canary-producer-diagnosis/set-phase.cjs\n?? docs/archive/2026-11-04-canary-producer-diagnosis/verify-final-publication.cjs\n",
+    "other": "See expected writes and owner-specific receipt; status does not enumerate external runtime writes."
+  }
+}

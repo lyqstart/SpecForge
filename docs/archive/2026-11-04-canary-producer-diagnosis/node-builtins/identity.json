@@ -1,0 +1,46 @@
+{
+  "utc": "2026-11-04T14:53:59.366Z",
+  "executable": "C:\\Program Files\\nodejs\\node.exe",
+  "executable_raw_sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+  "version": "v24.19.0",
+  "method": "Embedded process.binding(natives) source strings; no module or business program executed; child env excludes NODE_OPTIONS/NODE_PATH",
+  "export_exit_code": 0,
+  "members": [
+    {
+      "name": "child_process",
+      "file": "child_process.js",
+      "bytes": 30235,
+      "sha256": "4d38d29d80ff7de19e4c82d934b6b82440be52a69048da23cd3bce22f22d03ba"
+    },
+    {
+      "name": "internal/child_process",
+      "file": "internal__child_process.js",
+      "bytes": 33952,
+      "sha256": "48f8f8d3969243c8806baa5d47c8bae5a78379ff79b7ad4691f3c405cef6da80"
+    },
+    {
+      "name": "internal/child_process/serialization",
+      "file": "internal__child_process__serialization.js",
+      "bytes": 4504,
+      "sha256": "9c0f0e248b0ff7b78023b276d120310b64e43da3f6e3b947bb5412ca18f581cf"
+    },
+    {
+      "name": "internal/crypto/random",
+      "file": "internal__crypto__random.js",
+      "bytes": 18441,
+      "sha256": "ecb915abed188ad52613f8b8b3bd055438b170386387073baf86560bbfa3d1ef"
+    },
+    {
+      "name": "internal/crypto/util",
+      "file": "internal__crypto__util.js",
+      "bytes": 30506,
+      "sha256": "e09d7b2829c4fcb7d2ce956cf15fa852a5599ecbff4ce6753e9cfc33f28f207f"
+    },
+    {
+      "name": "net",
+      "file": "net.js",
+      "bytes": 80464,
+      "sha256": "eba05bb24bdd1e208632a1df0fdeeb8e4bdf6ffc062cb19e92f0e7a8c37f60af"
+    }
+  ]
+}

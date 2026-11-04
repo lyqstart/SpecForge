@@ -1,0 +1,22 @@
+SFPROBE_STAGE:before_require
+SFPROBE_STAGE:after_require
+SFPROBE_STAGE:system_begin
+
+HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\WinSock2\Parameters
+    AutodialDLL    REG_SZ    C:\Windows\System32\rasadhlp.dll
+    NameSpace_Callout    REG_EXPAND_SZ    %SystemRoot%\System32\fwpuclnt.dll
+    WinSock_Registry_Version    REG_SZ    2.0
+    Current_NameSpace_Catalog    REG_SZ    NameSpace_Catalog5
+    Current_Protocol_Catalog    REG_SZ    Protocol_Catalog9
+
+HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\WinSock2\Parameters\AppId_Catalog
+HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\WinSock2\Parameters\NameSpace_Catalog5
+HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\WinSock2\Parameters\Protocol_Catalog9
+
+SFPROBE_STATUS:{"label":"system","pid":19008,"status":0,"signal":null,"error":null}
+SFPROBE_STAGE:target_begin
+
+SFPROBE_STATUS:{"label":"target","pid":19008,"status":1,"signal":null,"error":null}
+
+SFPROBE_REPORT:{"probe":"D21_R01_REGISTRY_CANARY_INHERITED","pid":19008,"system":{"status":0,"signal":null,"error":null},"target":{"status":1,"signal":null,"error":null}}
+SPECFORGE_REGISTRY_CANARY_READ_DENIED

@@ -1,0 +1,9 @@
+{
+  "utc": "2026-11-04T15:14:39.247Z",
+  "run_id": "CODEX-SF-20261104-CANARY-PRODUCER-DIAGNOSIS-A01",
+  "files": 282,
+  "manifest_sha256": "fc9e5ab63577c77229f6f495f8b877dbc7cd235a1ac1566c6773e0362c8f5daf",
+  "self_check": "PASS",
+  "exclusions": "Only manifest and its own check excluded to avoid recursive hash. No private credential data collected.",
+  "inner_exit_code": 0
+}

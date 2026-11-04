@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-canary-producer-diagnosis/freeze-build.cjs",
+    "build-pipe-diagnostic-02"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-measured-observer",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES=immutable source executable snapshot",
+  "started_utc": "2026-11-04T15:02:46.629Z"
+}

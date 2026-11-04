@@ -1,0 +1,37 @@
+{
+  "utc": "2026-11-04T15:02:58.732Z",
+  "seq": "0011",
+  "raw_members": {
+    "0011.command.txt": {
+      "sha256": "0a2f733785c8a91863b754040578d3db55cad31a86e85568024a85327c173793",
+      "first_line_sha256": "021fb596db81e6d02bf3d2586ee3981fe519f275c0ac9ca76bbcf2ebb4097d96",
+      "last_line_sha256": "d10b36aa74a59bcf4a88185837f658afaf3646eff2bb16c3928d0e9335e945d2"
+    },
+    "0011.stdout.txt": {
+      "sha256": "05d533db7b293b5cecca15030a650c4cbe62da39b2b1ace65b8b4d29a9a96597",
+      "first_line_sha256": "ad6904505bc0949f0ed519964f6a36ab34a691059b3178a267b6a9676d8d36a4",
+      "last_line_sha256": "ad6904505bc0949f0ed519964f6a36ab34a691059b3178a267b6a9676d8d36a4"
+    },
+    "0011.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "first_line_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "last_line_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "0011.result.json": {
+      "sha256": "8def39111900257e15a86715031b87a8c8996ac05c73dd2a632bbb04ddd47c3e",
+      "first_line_sha256": "021fb596db81e6d02bf3d2586ee3981fe519f275c0ac9ca76bbcf2ebb4097d96",
+      "last_line_sha256": "d10b36aa74a59bcf4a88185837f658afaf3646eff2bb16c3928d0e9335e945d2"
+    },
+    "0011.stdout.raw.bin": {
+      "sha256": "05d533db7b293b5cecca15030a650c4cbe62da39b2b1ace65b8b4d29a9a96597",
+      "first_line_sha256": "ad6904505bc0949f0ed519964f6a36ab34a691059b3178a267b6a9676d8d36a4",
+      "last_line_sha256": "ad6904505bc0949f0ed519964f6a36ab34a691059b3178a267b6a9676d8d36a4"
+    },
+    "0011.stderr.raw.bin": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "first_line_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "last_line_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "redactions": []
+}

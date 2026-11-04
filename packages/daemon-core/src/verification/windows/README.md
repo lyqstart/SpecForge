@@ -54,3 +54,27 @@ isolation remains INCONCLUSIVE. Subsequent file/network/descendant checks were
 stopped. The failed original receipt retains its empty-output parser exception;
 the launcher now records timeout before parsing and handles empty output without
 claiming a denial. This source correction has not been counted as a new OS run.
+
+The subsequent producer diagnosis observed six denied `NtCreateNamedPipeFile`
+calls, including five complete `CreateNamedPipeA`/native pairs with increasing
+`uv` pipe names in the first `spawnSync` query. This corroborates the versioned
+libuv collision-retry path. `--synthetic-registry-read-pipe-trace-canary` is a
+bounded 20s diagnostic; the owner stops after six denials with exit125. It cannot
+produce an accepted canary receipt. Export ownership is resolved from the actual
+system DLLs, not assumed from an API's documentation library name.
+
+`--synthetic-registry-read-inherited-canary` is a separate, frozen fixed probe.
+It uses `stdio: 'inherit'` for the same fixed `reg.exe` queries, reusing only the
+existing stdin/stdout/stderr handles. It adds no capability or application pipe
+permission. It short-circuits after a failed system control, has a 20s Job wall
+budget, and binds actual query statuses plus raw output to the owner receipt.
+The tagged JSON framing is only for this first-party probe and fixed Windows
+program, not an acceptance interface for arbitrary business output.
+
+One undebugged run completed with system query exit0, fake-key query exit1 and
+raw access-denied stderr; no fake value appeared in either pipe as UTF-8 or
+UTF-16LE. Node exited0, Job became empty, and independent host cleanup passed.
+This establishes only that single canary read result. The original file-entry
+and default-pipe commands remain failed. File/network/hostile descendants/full
+lifecycle acceptance, product adoption, deployment and WI execution remain
+unfinished. Evidence: `docs/archive/2026-11-04-canary-producer-diagnosis/`.

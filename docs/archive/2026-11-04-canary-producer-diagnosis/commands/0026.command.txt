@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "scripts/project-session-bootstrap.mjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-bootstrap-live-remote",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;PRODUCT_IMPLEMENTATION_WRITES=NONE;RUNTIME_OBSERVER_WRITES=readonly Git remote and local checks;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-04T15:14:24.104Z"
+}

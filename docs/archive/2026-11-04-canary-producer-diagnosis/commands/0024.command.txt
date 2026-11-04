@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-canary-producer-diagnosis/review-phase.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "phase-independent-evidence-review",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;PRODUCT_IMPLEMENTATION_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=scope snapshots prior1613 raw-results review regression-binary and receipts",
+  "started_utc": "2026-11-04T15:13:59.659Z"
+}

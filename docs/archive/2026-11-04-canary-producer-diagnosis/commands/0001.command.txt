@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-04-canary-producer-diagnosis/set-phase.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "set-same-permission-diagnosis-phase",
+  "expected_writes": "TRUTH_SOURCE_WRITES=unique project-status;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-04T14:53:55.684Z"
+}

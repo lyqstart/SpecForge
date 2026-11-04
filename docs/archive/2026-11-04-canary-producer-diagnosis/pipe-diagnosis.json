@@ -1,0 +1,215 @@
+{
+  "utc": "2026-11-04T15:04:39.351Z",
+  "attempt": "0c669834e068425692ebaa369ddcb7fd",
+  "confirmed": "Repeated named-pipe creations in the fixed spawnSync system-query stage were denied by the OS; five complete Win32/native pairs and six native failures observed.",
+  "stage": "after require(node:child_process), inside first system-query spawnSync before its return",
+  "native_denials": [
+    {
+      "utc": "2026-11-04T15:02:58.5094449Z",
+      "name": "trace_call_return",
+      "data": {
+        "call_id": 1,
+        "parent_call_id": 0,
+        "inside_wsa_startup": false,
+        "thread": 22632,
+        "api": "NtCreateNamedPipeFile",
+        "object_name": "\\??\\pipe\\uv\\18446744073709551615-36896",
+        "desired_access": "0xc01c0000",
+        "ntstatus": "0xc0000022",
+        "return_value": 3221225506,
+        "return_value64": "00000000c0000022",
+        "return_kind": "NTSTATUS",
+        "return_address": "7fffbcc39a75"
+      }
+    },
+    {
+      "utc": "2026-11-04T15:02:58.5103140Z",
+      "name": "trace_call_return",
+      "data": {
+        "call_id": 3,
+        "parent_call_id": 2,
+        "inside_wsa_startup": false,
+        "thread": 22632,
+        "api": "NtCreateNamedPipeFile",
+        "object_name": "\\??\\pipe\\uv\\0-36896",
+        "desired_access": "0xc01c0000",
+        "ntstatus": "0xc0000022",
+        "return_value": 3221225506,
+        "return_value64": "00000000c0000022",
+        "return_kind": "NTSTATUS",
+        "return_address": "7fffbcc39a75"
+      }
+    },
+    {
+      "utc": "2026-11-04T15:02:58.5113746Z",
+      "name": "trace_call_return",
+      "data": {
+        "call_id": 5,
+        "parent_call_id": 4,
+        "inside_wsa_startup": false,
+        "thread": 22632,
+        "api": "NtCreateNamedPipeFile",
+        "object_name": "\\??\\pipe\\uv\\1-36896",
+        "desired_access": "0xc01c0000",
+        "ntstatus": "0xc0000022",
+        "return_value": 3221225506,
+        "return_value64": "00000000c0000022",
+        "return_kind": "NTSTATUS",
+        "return_address": "7fffbcc39a75"
+      }
+    },
+    {
+      "utc": "2026-11-04T15:02:58.5133737Z",
+      "name": "trace_call_return",
+      "data": {
+        "call_id": 7,
+        "parent_call_id": 6,
+        "inside_wsa_startup": false,
+        "thread": 22632,
+        "api": "NtCreateNamedPipeFile",
+        "object_name": "\\??\\pipe\\uv\\2-36896",
+        "desired_access": "0xc01c0000",
+        "ntstatus": "0xc0000022",
+        "return_value": 3221225506,
+        "return_value64": "00000000c0000022",
+        "return_kind": "NTSTATUS",
+        "return_address": "7fffbcc39a75"
+      }
+    },
+    {
+      "utc": "2026-11-04T15:02:58.5143748Z",
+      "name": "trace_call_return",
+      "data": {
+        "call_id": 9,
+        "parent_call_id": 8,
+        "inside_wsa_startup": false,
+        "thread": 22632,
+        "api": "NtCreateNamedPipeFile",
+        "object_name": "\\??\\pipe\\uv\\3-36896",
+        "desired_access": "0xc01c0000",
+        "ntstatus": "0xc0000022",
+        "return_value": 3221225506,
+        "return_value64": "00000000c0000022",
+        "return_kind": "NTSTATUS",
+        "return_address": "7fffbcc39a75"
+      }
+    },
+    {
+      "utc": "2026-11-04T15:02:58.5153741Z",
+      "name": "trace_call_return",
+      "data": {
+        "call_id": 11,
+        "parent_call_id": 10,
+        "inside_wsa_startup": false,
+        "thread": 22632,
+        "api": "NtCreateNamedPipeFile",
+        "object_name": "\\??\\pipe\\uv\\4-36896",
+        "desired_access": "0xc01c0000",
+        "ntstatus": "0xc0000022",
+        "return_value": 3221225506,
+        "return_value64": "00000000c0000022",
+        "return_kind": "NTSTATUS",
+        "return_address": "7fffbcc39a75"
+      }
+    }
+  ],
+  "invalid_handle_returns": [
+    {
+      "utc": "2026-11-04T15:02:58.5113746Z",
+      "name": "trace_call_return",
+      "data": {
+        "call_id": 2,
+        "parent_call_id": 0,
+        "inside_wsa_startup": false,
+        "thread": 22632,
+        "api": "CreateNamedPipeA",
+        "object_name": "\\\\?\\pipe\\uv\\0-36896",
+        "desired_access": "0x400c0003",
+        "ntstatus": null,
+        "return_value": 4294967295,
+        "return_value64": "ffffffffffffffff",
+        "return_kind": "HANDLE",
+        "return_address": "7ff730c447be"
+      }
+    },
+    {
+      "utc": "2026-11-04T15:02:58.5123736Z",
+      "name": "trace_call_return",
+      "data": {
+        "call_id": 4,
+        "parent_call_id": 0,
+        "inside_wsa_startup": false,
+        "thread": 22632,
+        "api": "CreateNamedPipeA",
+        "object_name": "\\\\?\\pipe\\uv\\1-36896",
+        "desired_access": "0x400c0003",
+        "ntstatus": null,
+        "return_value": 4294967295,
+        "return_value64": "ffffffffffffffff",
+        "return_kind": "HANDLE",
+        "return_address": "7ff730c447be"
+      }
+    },
+    {
+      "utc": "2026-11-04T15:02:58.5133737Z",
+      "name": "trace_call_return",
+      "data": {
+        "call_id": 6,
+        "parent_call_id": 0,
+        "inside_wsa_startup": false,
+        "thread": 22632,
+        "api": "CreateNamedPipeA",
+        "object_name": "\\\\?\\pipe\\uv\\2-36896",
+        "desired_access": "0x400c0003",
+        "ntstatus": null,
+        "return_value": 4294967295,
+        "return_value64": "ffffffffffffffff",
+        "return_kind": "HANDLE",
+        "return_address": "7ff730c447be"
+      }
+    },
+    {
+      "utc": "2026-11-04T15:02:58.5143748Z",
+      "name": "trace_call_return",
+      "data": {
+        "call_id": 8,
+        "parent_call_id": 0,
+        "inside_wsa_startup": false,
+        "thread": 22632,
+        "api": "CreateNamedPipeA",
+        "object_name": "\\\\?\\pipe\\uv\\3-36896",
+        "desired_access": "0x400c0003",
+        "ntstatus": null,
+        "return_value": 4294967295,
+        "return_value64": "ffffffffffffffff",
+        "return_kind": "HANDLE",
+        "return_address": "7ff730c447be"
+      }
+    },
+    {
+      "utc": "2026-11-04T15:02:58.5153741Z",
+      "name": "trace_call_return",
+      "data": {
+        "call_id": 10,
+        "parent_call_id": 0,
+        "inside_wsa_startup": false,
+        "thread": 22632,
+        "api": "CreateNamedPipeA",
+        "object_name": "\\\\?\\pipe\\uv\\4-36896",
+        "desired_access": "0x400c0003",
+        "ntstatus": null,
+        "return_value": 4294967295,
+        "return_value64": "ffffffffffffffff",
+        "return_kind": "HANDLE",
+        "return_address": "7ff730c447be"
+      }
+    }
+  ],
+  "progress_stdout": "SFPROBE_STAGE:before_require\nSFPROBE_STAGE:after_require\nSFPROBE_STAGE:before_system_query\n",
+  "observed_createprocess_export_entries": 0,
+  "limits": "No calls observed at the instrumented CreateProcessW export; not a universal proof over every creation API. First native call has no observed outer parent; only the five complete pairs are claimed.",
+  "interpretation": "CORROBORATED libuv access-denied/name-collision retry mechanism: same counter progression and caller address as versioned source; explains prior high-CPU120s stall. Debug run is diagnostic, not original canary acceptance.",
+  "owner_induced_exit_code": 125,
+  "isolation_acceptance": "NOT_ACCEPTED",
+  "inner_exit_code": 0
+}
