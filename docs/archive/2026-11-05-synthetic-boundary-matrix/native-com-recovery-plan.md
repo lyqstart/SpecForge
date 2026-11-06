@@ -1,0 +1,13 @@
+# 0095原生探针恢复
+
+责任为未发布合成Execution Producer及其证据parser；没有产品或部署入口。保持D21恰好registryRead、只读新profile/输入/运行文件、无网络、普通用户broker、独立Job和原固定预算。
+
+先编译并封存显式CoInitialize/CoCreateInstance/SWbemLocator桥及固定Node宿主正控制，真实Win32_Process.Create、唯一新marker、数值退出和结束事实必须成立。对照失败先分类，不进入guest。仅固定自有目录、固定假值、无任意命令。
+
+0095无符号helper退出码由Int64读取；使用0095真实raw回归，必须正常判失败而非溢出，不将该回归算隔离通过。
+
+原计划要求breakaway创建API必定5过严，现按正式A03验收：创建被拒绝，或成功创建的固定挂起子进程均由宿主独立证明仍处于同一外层Job/LPAC/token，且从未恢复、实际终止。任何缺证、Job外成员或未知身份均失败；不允许breakaway逃出外层Job。旧0095结果仍失败，因为COM和CLR/退出事实未满足。
+
+显式COM桥通过宿主控制后，重新编译冻结launcher/helper和新Attempt。guest必须真正调用接口并取得明确E_ACCESSDENIED/WBEM_E_ACCESS_DENIED/provider2或3，helper实际exit0、无CLR收尾异常、全部文件/注册表/Job/清理证据成立。其他错误保持未知；不加权限、ACL或系统设置。
+
+四类写入：TRUTH_SOURCE_WRITES=唯一project-status进度；REPOSITORY_TRACKED_WRITES=未发布合成C#及必要回归/ERR；RUNTIME_OBSERVER_WRITES=本次新owned固定宿主控制和LPAC/Job及清理；EXTERNAL_EVIDENCE_WRITES=本阶段新编号原始回执/冻结构建/对照与回放。历史失败和构建不覆盖。

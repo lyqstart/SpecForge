@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/audit-initial-resource-proofs.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "audit-prior-resource-proof-strength",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=append-only audit excluding weak prior coverage",
+  "started_utc": "2026-11-05T03:50:41.089Z"
+}

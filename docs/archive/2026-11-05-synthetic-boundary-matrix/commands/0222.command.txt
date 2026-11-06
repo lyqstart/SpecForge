@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/preserve-node-file-attempt.cjs",
+    "555512482f544846af75432d541166f0"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-node-file-module-and-raw",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable node file raw and module",
+  "started_utc": "2026-11-06T14:18:33.092Z"
+}

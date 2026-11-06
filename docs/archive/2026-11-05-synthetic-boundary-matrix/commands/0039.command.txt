@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/freeze-build.cjs",
+    "build-resource-identities-07"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-resource-process-identity-build",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable updated source binaries",
+  "started_utc": "2026-11-05T03:44:54.365Z"
+}

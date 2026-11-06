@@ -1,0 +1,37 @@
+SFFILE_STAGE:{"role":0,"pid":30812,"stage":"ready"}
+SFFILE_POSITIVE:0
+SFFILE_STAGE:{"role":1,"pid":4320,"stage":"ready"}
+SFFILE_POSITIVE:1
+SFFILE_STAGE:{"role":2,"pid":38624,"stage":"ready"}
+SFFILE_POSITIVE:2
+SFPREG_REPORT:{"probe":"D21_PRIVATE_REGISTRY_NATIVE_V1","pid":30888,"read_hresult":0,"absent_value_query":2,"write_hresult":0,"set_value_status":0,"native_key_name_b64":"XFJlZ2lzdHJ5XFVzZXJcUy0xLTUtMjEtMTEzNDc3NDMyMy0zNDAzMjMzODEyLTIzNDAwNDYyNTgtMTAwMV9DbGFzc2VzXExvY2FsIFNldHRpbmdzXFNvZnR3YXJlXE1pY3Jvc29mdFxXaW5kb3dzXEN1cnJlbnRWZXJzaW9uXEFwcENvbnRhaW5lclxTdG9yYWdlXHNwZWNmb3JnZS5yZWdyZWFkLmUwZTc2ZWRlZTgzMTQ3NzU5MTU4MzMwYmIwNjNkYjky","write_denied":false}
+SFFILE_REPORT:{"probe":"D21_FILE_DESCENDANTS_V1","role":2,"pid":38624,"rows":[{"kind":"positive_read","ok":true},{"kind":"shadow_read","ok":true,"error":"EPERM"},{"kind":"write_0","ok":true,"error":"EPERM"},{"kind":"write_1","ok":true,"error":"EPERM"},{"kind":"write_2","ok":true,"error":"EPERM"},{"kind":"write_3","ok":true,"error":"EPERM"},{"kind":"shadow_write","ok":true,"error":"EPERM"}],"child":{"status":40,"signal":null,"error":null}}
+✔ fixed builtin node:test role 2 (0.7056ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 811.2786
+SFFILE_REPORT:{"probe":"D21_FILE_DESCENDANTS_V1","role":1,"pid":4320,"rows":[{"kind":"positive_read","ok":true},{"kind":"shadow_read","ok":true,"error":"EPERM"},{"kind":"write_0","ok":true,"error":"EPERM"},{"kind":"write_1","ok":true,"error":"EPERM"},{"kind":"write_2","ok":true,"error":"EPERM"},{"kind":"write_3","ok":true,"error":"EPERM"},{"kind":"shadow_write","ok":true,"error":"EPERM"}],"child":{"status":42,"signal":null,"error":null}}
+✔ fixed builtin node:test role 1 (0.844ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1593.2613
+SFFILE_REPORT:{"probe":"D21_FILE_DESCENDANTS_V1","role":0,"pid":30812,"rows":[{"kind":"positive_read","ok":true},{"kind":"shadow_read","ok":true,"error":"EPERM"},{"kind":"write_0","ok":true,"error":"EPERM"},{"kind":"write_1","ok":true,"error":"EPERM"},{"kind":"write_2","ok":true,"error":"EPERM"},{"kind":"write_3","ok":true,"error":"EPERM"},{"kind":"shadow_write","ok":true,"error":"EPERM"}],"child":{"status":42,"signal":null,"error":null}}
+✔ fixed builtin node:test role 0 (1.4698ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2387.8987

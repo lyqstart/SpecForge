@@ -1,0 +1,3 @@
+'use strict';const assert=require('node:assert/strict');assert.equal(2+2,4);const role=process.argv[1]||'0';console.log('SFRESOURCE_READY:'+JSON.stringify({kind:'parent-exit',pid:process.pid,role}));
+const n=Number(role);if(n<2){const c=require('node:child_process').spawn(process.execPath,['-e',process.execArgv[1],String(n+1)],{stdio:'inherit',windowsHide:true,detached:true});c.on('error',e=>{console.error('SFRESOURCE_SPAWN_ERROR:'+e.code);process.exitCode=42;});}setInterval(()=>{},1000);
+if(n===0)setTimeout(()=>{console.log('SFRESOURCE_PARENT_EXIT');process.exit(0);},2000);

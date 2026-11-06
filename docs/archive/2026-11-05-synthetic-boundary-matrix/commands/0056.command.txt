@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/run-resource-case.cjs",
+    "process",
+    "240c883e80674d449a7626debf523c32",
+    "build-resource-role-checked-08"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-resource-process-cap",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned fixed LPAC Job8-process rejection and cleanup;EXTERNAL_EVIDENCE_WRITES=receipts lab-only rejection proof",
+  "started_utc": "2026-11-05T03:49:17.058Z"
+}

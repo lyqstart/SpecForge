@@ -1,0 +1,38 @@
+{
+  "utc": "2026-11-05T03:13:53.554Z",
+  "mode": "CODEX_DIRECT",
+  "run_id": "CODEX-SF-20261105-SYNTHETIC-BOUNDARY-MATRIX-A01",
+  "attempt_id": "CODEX-SF-20261105-SYNTHETIC-BOUNDARY-MATRIX-A01-01",
+  "user_reply": "你继续，除非完成了",
+  "scope": "Continue remaining synthetic D20/D21 verification and necessary same-boundary producer repairs. D21 production adoption still requires a separate concrete decision; no arbitrary broader privileges.",
+  "baseline": "53bf7d6c33575d765b2bc23805f32e8d5d34ac6c",
+  "prior_members": 282,
+  "rule_hashes": {
+    "docs/rule/specforge-active-development-rules.md": "de23c0d38acda18052752344805703f2df53cd502503925a51c0341573b19d74",
+    "docs/design/SpecForge架构一致性治理最终实施方案.md": "956df3943a44d1b99636790a32e9b2a0dc266b7116f50b60b7b8c6f2614423ac",
+    "docs/rule/specforge-execution-mode-and-evidence-protocol.md": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef",
+    "docs/product-specification/authority-registry.md": "fd12e23c1434a846d79563856804f317411b68bd196e1cdba867792f48e1c206",
+    "docs/product-specification/specforge-product-specification.md": "586015479eee087249d2a18d82f6ce5065a8aa0e54e0c5a9bbc1483fb9d28622"
+  },
+  "coverage": "Prior complete same-conversation REQUIRED_RULES reads unchanged by raw hash. Protocol and relevant D20/D21 contract reread; no fresh full-read claim from hashes.",
+  "experience_file_read": "YES",
+  "active_rules_file_read": "YES",
+  "applicable_experience_rules": [
+    "EXP-002",
+    "EXP-004",
+    "EXP-007",
+    "EXP-008",
+    "EXP-017",
+    "EXP-038",
+    "EXP-060",
+    "EXP-082",
+    "EXP-145",
+    "EXP-193",
+    "EXP-260",
+    "EXP-261",
+    "EXP-285",
+    "EXP-287"
+  ],
+  "historical_ledger_search": "LPAC/registryRead/子进程/管道; ERR-1914..1919 and EXP-145/193/260/261/285/287",
+  "repeated_error_check": "PASS"
+}

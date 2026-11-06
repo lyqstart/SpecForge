@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-06-single-process-matrix/preserve-crash-attempt.cjs",
+    "1dbbe93e35fb4155a15b8d05e91b87f2"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-d22-launcher-crash-recovery",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=raw crash and recovery chain",
+  "started_utc": "2026-11-06T16:06:18.464Z"
+}

@@ -1,0 +1,87 @@
+// Fixed D21 synthetic file/node:test/descendant probe. No public execution API.
+using System;using System.IO;using System.Text;using System.Linq;
+using System.Collections.Generic;using System.Security.Cryptography;
+using System.Security.AccessControl;using System.Security.Principal;
+using System.Web.Script.Serialization;
+internal sealed class LpacFileBoundaryProbe {
+    readonly string root,input,runtime,profile,shadow,fake;
+    readonly Action<string,object> record;
+    readonly JavaScriptSerializer json=new JavaScriptSerializer();
+    Dictionary<string,string> baseline;
+    Dictionary<string,string> baselineAcl;
+    LpacLoopbackFixture loopback;
+    LpacAliasFixture aliases;
+    readonly bool privateRegistry;
+    readonly bool provisionedSymbolic;
+    readonly bool nativeBoundary;
+    internal LpacFileBoundaryProbe(string root,string input,string runtime,string profile,Action<string,object> record,bool privateRegistry=false,bool network=false,bool aliasProbe=false,string appSid=null,bool provisionedSymbolic=false,bool nativeBoundary=false){
+        this.nativeBoundary=nativeBoundary;
+        this.provisionedSymbolic=provisionedSymbolic;
+        this.privateRegistry=privateRegistry;
+        this.root=root;this.input=input;this.runtime=runtime;this.profile=profile;this.record=record;
+        string directory=Path.Combine(root,"shadow-home");if(Directory.Exists(directory))throw new InvalidOperationException("SHADOW_COLLISION");
+        Directory.CreateDirectory(directory);var user=WindowsIdentity.GetCurrent().User;var system=new SecurityIdentifier(WellKnownSidType.LocalSystemSid,null);
+        var acl=new DirectorySecurity();acl.SetAccessRuleProtection(true,false);var inherit=InheritanceFlags.ContainerInherit|InheritanceFlags.ObjectInherit;
+        acl.AddAccessRule(new FileSystemAccessRule(user,FileSystemRights.FullControl,inherit,PropagationFlags.None,AccessControlType.Allow));
+        acl.AddAccessRule(new FileSystemAccessRule(system,FileSystemRights.FullControl,inherit,PropagationFlags.None,AccessControlType.Allow));Directory.SetAccessControl(directory,acl);
+        shadow=Path.Combine(directory,"fake-credentials.txt");fake="SYNTHETIC-ONLY-"+Guid.NewGuid().ToString("N");
+        using(var f=new FileStream(shadow,FileMode.CreateNew,FileAccess.Write)){var bytes=Encoding.UTF8.GetBytes(fake);f.Write(bytes,0,bytes.Length);}
+        string positive=Path.Combine(input,"fixture.txt");using(var f=new FileStream(positive,FileMode.CreateNew,FileAccess.Write)){var bytes=Encoding.UTF8.GetBytes("FIXED_READ_CONTROL");f.Write(bytes,0,bytes.Length);}
+        record("file_fixture_created",new{shadow=shadow,synthetic_value=fake,positive=positive,shadow_sddl=Directory.GetAccessControl(directory).GetSecurityDescriptorSddlForm(AccessControlSections.Access|AccessControlSections.Owner),existing_acl_changed=false});
+        if(privateRegistry){string source=Path.GetFullPath(".tmp/verification-lpac-build/LpacPrivateRegistryChild.exe");File.Copy(source,Path.Combine(input,"LpacPrivateRegistryChild.exe"),false);record("private_registry_helper_copied",new{source=source,sha256=Hash(source),target=Path.Combine(input,"LpacPrivateRegistryChild.exe")});}
+        if(aliasProbe)aliases=new LpacAliasFixture(root,input,shadow,appSid,record,provisionedSymbolic);
+        if(network)loopback=new LpacLoopbackFixture(record);
+    }
+    static string Hash(string file){using(var h=SHA256.Create())return BitConverter.ToString(h.ComputeHash(File.ReadAllBytes(file))).Replace("-","").ToLowerInvariant();}
+    Dictionary<string,string> Inventory(){var files=new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);foreach(var directory in new[]{input,runtime,profile,Path.GetDirectoryName(shadow)})foreach(var file in Directory.GetFiles(directory,"*",SearchOption.AllDirectories)){if((File.GetAttributes(file)&FileAttributes.ReparsePoint)!=0)throw new InvalidOperationException("FIXTURE_REPARSE");files.Add(file,Hash(file));}return files;}
+    Dictionary<string,string> Acls(){var values=new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);foreach(var directory in new[]{input,runtime,profile,Path.GetDirectoryName(shadow)}){foreach(var dir in new[]{directory}.Concat(Directory.GetDirectories(directory,"*",SearchOption.AllDirectories)))values.Add(dir,Directory.GetAccessControl(dir).GetSecurityDescriptorSddlForm(AccessControlSections.Access|AccessControlSections.Owner));foreach(var file in Directory.GetFiles(directory,"*",SearchOption.AllDirectories))values.Add(file,File.GetAccessControl(file).GetSecurityDescriptorSddlForm(AccessControlSections.Access|AccessControlSections.Owner));}return values;}
+    internal void Freeze(){baseline=Inventory();baselineAcl=Acls();record("file_fixture_frozen",new{files=baseline.Select(p=>new{path=p.Key,sha256=p.Value}).ToArray(),acls=baselineAcl.Select(p=>new{path=p.Key,sddl=p.Value}).ToArray(),synthetic_only=true});}
+    internal string Script(){
+        string cfg=Convert.ToBase64String(Encoding.UTF8.GetBytes(json.Serialize(new{positive=Path.Combine(input,"fixture.txt"),shadow=shadow,writes=new[]{input,runtime,profile,Path.Combine(profile,"Temp")},privateRegistry=privateRegistry,helper=Path.Combine(input,"LpacPrivateRegistryChild.exe"),nonce=Path.GetFileName(root),port=loopback==null?0:loopback.Port,nativeBoundary=nativeBoundary,aliasPositive=aliases==null?new string[0]:aliases.Positive,aliasNegative=aliases==null?new string[0]:aliases.Negative})));
+        return "'use strict';const fs=require('node:fs'),assert=require('node:assert/strict'),test=require('node:test'),cp=require('node:child_process');\n"+
+            "const cfg=JSON.parse(Buffer.from('"+cfg+"','base64').toString('utf8'));const role=Number(process.argv[1]||0);if(!Number.isInteger(role)||role<0||role>2)throw Error('ROLE');\n"+
+            "console.log('SFFILE_STAGE:'+JSON.stringify({role,pid:process.pid,stage:'ready'}));\n"+
+            "async function main(){await test('fixed builtin node:test role '+role,()=>{assert.equal(2+2,4);console.log('SFFILE_POSITIVE:'+role);});const rows=[];\n"+
+            "try{rows.push({kind:'positive_read',ok:fs.readFileSync(cfg.positive,'utf8')==='FIXED_READ_CONTROL'});}catch(e){rows.push({kind:'positive_read',ok:false,error:e.code});}\n"+
+            "try{fs.readFileSync(cfg.shadow);rows.push({kind:'shadow_read',ok:false,unexpected_access:true});}catch(e){rows.push({kind:'shadow_read',ok:e.code==='EACCES'||e.code==='EPERM',error:e.code});}\n"+
+            "for(const [index,p]of cfg.writes.entries()){try{fs.writeFileSync(p+'\\\\unauthorized-role-'+role+'.txt','SYNTHETIC-WRITE',{flag:'wx'});rows.push({kind:'write_'+index,ok:false,unexpected_access:true});}catch(e){rows.push({kind:'write_'+index,ok:e.code==='EACCES'||e.code==='EPERM',error:e.code});}}\n"+
+            "try{fs.writeFileSync(cfg.shadow,'SYNTHETIC-MUTATION');rows.push({kind:'shadow_write',ok:false,unexpected_access:true});}catch(e){rows.push({kind:'shadow_write',ok:e.code==='EACCES'||e.code==='EPERM',error:e.code});}\n"+
+            "if(cfg.port)rows.push(await new Promise(resolve=>{let done=false;const socket=require('node:net').connect({host:'127.0.0.1',port:cfg.port});function end(error,connected){if(done)return;done=true;socket.destroy();resolve({kind:'loopback',ok:!connected&&(error==='EACCES'||error==='EPERM'),error,connected});}socket.once('connect',()=>end(null,true));socket.once('error',e=>end(e.code,false));socket.setTimeout(1500,()=>end('ETIMEDOUT',false));}));\n"+
+            "for(const [i,p]of cfg.aliasPositive.entries()){try{rows.push({kind:'alias_positive_'+i,ok:fs.readFileSync(p,'utf8')==='FIXED_READ_CONTROL'});}catch(e){rows.push({kind:'alias_positive_'+i,ok:false,error:e.code});}try{fs.writeFileSync(p,'SYNTHETIC-ALIAS-POSITIVE-WRITE');rows.push({kind:'alias_positive_write_'+i,ok:false,unexpected_access:true});}catch(e){rows.push({kind:'alias_positive_write_'+i,ok:e.code==='EACCES'||e.code==='EPERM',error:e.code});}}\n"+
+            "for(const [i,p]of cfg.aliasNegative.entries()){try{fs.readFileSync(p);rows.push({kind:'alias_read_'+i,ok:false,unexpected_access:true});}catch(e){rows.push({kind:'alias_read_'+i,ok:e.code==='EACCES'||e.code==='EPERM',error:e.code});}try{fs.writeFileSync(p,'SYNTHETIC-ALIAS-WRITE');rows.push({kind:'alias_write_'+i,ok:false,unexpected_access:true});}catch(e){rows.push({kind:'alias_write_'+i,ok:e.code==='EACCES'||e.code==='EPERM',error:e.code});}}\n"+
+            "let child=null;if(rows.every(r=>r.ok)&&role<2){const r=cp.spawnSync(process.execPath,['-e',process.execArgv[1],String(role+1)],{stdio:'inherit',timeout:cfg.nativeBoundary?12000:8000,windowsHide:true});child={status:r.status,signal:r.signal,error:r.error?r.error.code:null};}\n"+
+            "if(rows.every(r=>r.ok)&&role===2&&cfg.privateRegistry){const r=cp.spawnSync(cfg.helper,cfg.nativeBoundary?[cfg.nonce,'--native-boundary']:[cfg.nonce],{stdio:'inherit',timeout:cfg.nativeBoundary?8000:5000,windowsHide:true});child={status:r.status,signal:r.signal,error:r.error?r.error.code:null};}\n"+
+            "console.log('SFFILE_REPORT:'+JSON.stringify({probe:'D21_FILE_DESCENDANTS_V1',role,pid:process.pid,rows,child}));if(rows.some(r=>!r.ok)||((role<2||cfg.privateRegistry)&&(!child||child.status!==0||child.error||child.signal)))process.exitCode=42;}\n"+
+            "setTimeout(()=>main().catch(e=>{console.error('SFFILE_FAILURE:'+String(e));process.exitCode=43;}),700);\n";
+    }
+    internal bool Validate(byte[] stdout,byte[] stderr,uint exit,HashSet<uint> verified){
+        string text=Encoding.UTF8.GetString(stdout);var reports=new List<Dictionary<string,object>>();
+        foreach(var line in text.Split('\n'))if(line.StartsWith("SFFILE_REPORT:",StringComparison.Ordinal))reports.Add(json.Deserialize<Dictionary<string,object>>(line.Substring(14).TrimEnd('\r')));
+        bool noLeak=true;foreach(var bytes in new[]{stdout,stderr})foreach(var encoding in new[]{Encoding.UTF8,Encoding.Unicode})if(IndexOf(bytes,encoding.GetBytes(fake)))noLeak=false;
+        if(aliases!=null&&(aliases.RawFakeExposed(stdout)||aliases.RawFakeExposed(stderr)))noLeak=false;
+        bool valid=exit==0&&noLeak&&reports.Count==3;var roles=new HashSet<int>();
+        foreach(var data in reports){int role=Convert.ToInt32(data["role"]);roles.Add(role);var rows=((System.Collections.IEnumerable)data["rows"]).Cast<Dictionary<string,object>>().ToArray();valid&=(string)data["probe"]=="D21_FILE_DESCENDANTS_V1"&&verified.Contains(Convert.ToUInt32(data["pid"]))&&rows.Length==(7+(loopback==null?0:1)+(aliases==null?0:aliases.Positive.Length*2+aliases.Negative.Length*2))&&text.Contains("SFFILE_POSITIVE:"+role+"\n");foreach(var row in rows)valid&=row.ContainsKey("ok")&&(bool)row["ok"];if(role<2||privateRegistry){var child=data["child"] as Dictionary<string,object>;valid&=child!=null&&child["status"]!=null&&Convert.ToInt64(child["status"])==0&&child["error"]==null&&child["signal"]==null;}}
+        if(privateRegistry){var native=ReadPrivateReports(text);bool denied=native.Count==1&&(string)native[0]["probe"]=="D21_PRIVATE_REGISTRY_NATIVE_V2"&&verified.Contains(Convert.ToUInt32(native[0]["pid"]))&&(bool)native[0]["write_denied"];var acl=new List<Dictionary<string,object>>();const string prefix="SFFACL_REPORT:";foreach(var line in text.Split('\n'))if(line.StartsWith(prefix,StringComparison.Ordinal))acl.Add(json.Deserialize<Dictionary<string,object>>(line.Substring(prefix.Length).TrimEnd('\r')));bool aclDenied=acl.Count==1&&(string)acl[0]["probe"]=="D21_FILE_ACL_NATIVE_V2"&&verified.Contains(Convert.ToUInt32(acl[0]["pid"]))&&(bool)acl[0]["denied"];if(aclDenied){var aclRows=((System.Collections.IEnumerable)acl[0]["rows"]).Cast<Dictionary<string,object>>().ToArray();aclDenied=aclRows.Length==(provisionedSymbolic?9:6)&&aclRows.Select(r=>Convert.ToInt32(r["index"])).Distinct().Count()==aclRows.Length&&aclRows.All(r=>Convert.ToInt32(r["open_write_dac_error"])==5||(Convert.ToInt32(r["open_write_dac_error"])==0&&Convert.ToInt32(r["set_dacl_error"])==5));}valid&=denied&&aclDenied;record("private_registry_result",new{accepted=denied,native_reports=native.ToArray(),file_acl_denied=aclDenied,file_acl_reports=acl.ToArray(),scope="Native private-registry and file-DACL write checks only"});}
+        if(nativeBoundary){
+            const string prefix="SFNATIVE_REPORT:",childPrefix="SFNATIVE_SUSPENDED:";var native=new List<Dictionary<string,object>>();var children=new List<Dictionary<string,object>>();
+            foreach(var line in text.Split('\n')){if(line.StartsWith(prefix,StringComparison.Ordinal))native.Add(json.Deserialize<Dictionary<string,object>>(line.Substring(prefix.Length).TrimEnd('\r')));if(line.StartsWith(childPrefix,StringComparison.Ordinal))children.Add(json.Deserialize<Dictionary<string,object>>(line.Substring(childPrefix.Length).TrimEnd('\r')));}
+            bool good=native.Count==1&&(string)native[0]["probe"]=="D21_NATIVE_BOUNDARY_V2"&&verified.Contains(Convert.ToUInt32(native[0]["pid"]))&&Convert.ToInt32(native[0]["baseline_create_error"])==0&&(bool)native[0]["wmi_denied"]&&Convert.ToUInt32(native[0]["wmi_process_id"])==0;string containment="UNPROVED";
+            if(good){int code=Convert.ToInt32(native[0]["breakaway_create_error"]);int expected=code==0?2:1;good=(code==0||code==5)&&children.Count==expected&&children.Count(c=>!(bool)c["breakaway_requested"])==1&&children.Count(c=>(bool)c["breakaway_requested"])==(code==0?1:0)&&children.All(c=>(bool)c["created"]&&(bool)c["never_resumed"]&&verified.Contains(Convert.ToUInt32(c["pid"])));uint status=Convert.ToUInt32(native[0]["wmi_return_value"]);int hr=Convert.ToInt32(native[0]["wmi_hresult"]);good&=status==2||status==3||hr==unchecked((int)0x80070005)||hr==unchecked((int)0x80041003);if(good)containment=code==5?"CREATE_REJECTED":"CREATED_BUT_BROKER_PROVED_IN_OUTER_JOB_AND_LPAC";}
+            valid&=good;record("native_boundary_result",new{accepted=good,breakaway_containment=containment,reports=native.ToArray(),native_control_children=children.ToArray()});
+        }
+        valid&=roles.SetEquals(new[]{0,1,2});record("file_boundary_result",new{accepted=valid,application_exit_code=exit,raw_fake_exposed=!noLeak,reports=reports.ToArray(),independently_verified_pids=verified.ToArray(),checked_rows=new{inline_node_test=true,direct_files=true,aliases=aliases!=null,loopback=loopback!=null,private_registry=privateRegistry,native_com_breakaway=nativeBoundary},scope="Only explicitly checked finite synthetic rows; full isolation/product/deployment/WI NOT_ACCEPTED"});return valid;
+    }
+    static bool IndexOf(byte[] bytes,byte[] pattern){for(int i=0;i<=bytes.Length-pattern.Length;i++){int j=0;for(;j<pattern.Length&&bytes[i+j]==pattern[j];j++){}if(j==pattern.Length)return true;}return false;}
+    internal static List<Dictionary<string,object>> ReadPrivateReports(string text){const string prefix="SFPREG_REPORT:";var result=new List<Dictionary<string,object>>();foreach(var line in text.Split('\n'))if(line.StartsWith(prefix,StringComparison.Ordinal))result.Add(new JavaScriptSerializer().Deserialize<Dictionary<string,object>>(line.Substring(prefix.Length).TrimEnd('\r')));return result;}
+    internal bool Reconcile(){
+        bool same=false;
+        try{
+            if(baseline==null||baselineAcl==null)throw new InvalidOperationException("FIXTURE_BASELINE_MISSING");var after=Inventory();var afterAcl=Acls();bool aclSame=baselineAcl.Count==afterAcl.Count&&baselineAcl.All(p=>afterAcl.ContainsKey(p.Key)&&afterAcl[p.Key]==p.Value);
+            same=aclSame&&baseline.Count==after.Count&&baseline.All(p=>after.ContainsKey(p.Key)&&after[p.Key]==p.Value);
+            record("file_fixture_after",new{unchanged=same,acl_unchanged=aclSame,files=after.Select(p=>new{path=p.Key,sha256=p.Value}).ToArray(),acls=afterAcl.Select(p=>new{path=p.Key,sddl=p.Value}).ToArray()});
+            if(aliases!=null)same&=aliases.Reconcile();
+            if(privateRegistry){string moniker=Path.GetFileName(Path.GetDirectoryName(profile));string key="Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\CurrentVersion\\AppContainer\\Storage\\"+moniker;using(var opened=Microsoft.Win32.Registry.CurrentUser.OpenSubKey(key,false)){object value=opened==null?null:opened.GetValue("SpecForgeOwnedWriteCanary-"+Path.GetFileName(root)),aclValue=opened==null?null:opened.GetValue("SpecForgeOwnedWriteCanary-"+Path.GetFileName(root)+"-acl");record("private_registry_owner_after",new{key="HKCU\\"+key,key_present=opened!=null,write_value=value,acl_write_value=aclValue,new_owned_profile_only=true});if(value!=null||aclValue!=null)same=false;}}
+        }finally{if(loopback!=null){bool network=loopback.Finish();loopback=null;same&=network;}}
+        return same;
+    }
+}

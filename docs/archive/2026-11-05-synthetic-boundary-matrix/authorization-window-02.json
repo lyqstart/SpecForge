@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-05T09:42:05.219Z",
+  "run_id": "CODEX-SF-20261105-SYNTHETIC-BOUNDARY-MATRIX-A01",
+  "attempt_id": "CODEX-SF-20261105-SYNTHETIC-BOUNDARY-MATRIX-A01-02",
+  "user_reply": "继续",
+  "mode": "CODEX_DIRECT",
+  "baseline": "53bf7d6c33575d765b2bc23805f32e8d5d34ac6c",
+  "bootstrap": "READY; local=remote; same reviewed task changes only",
+  "rule_hashes": {
+    "docs/rule/specforge-active-development-rules.md": "de23c0d38acda18052752344805703f2df53cd502503925a51c0341573b19d74",
+    "docs/design/SpecForge架构一致性治理最终实施方案.md": "956df3943a44d1b99636790a32e9b2a0dc266b7116f50b60b7b8c6f2614423ac",
+    "docs/rule/specforge-execution-mode-and-evidence-protocol.md": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef",
+    "docs/product-specification/authority-registry.md": "fd12e23c1434a846d79563856804f317411b68bd196e1cdba867792f48e1c206",
+    "docs/product-specification/specforge-product-specification.md": "586015479eee087249d2a18d82f6ce5065a8aa0e54e0c5a9bbc1483fb9d28622"
+  },
+  "coverage": "Unchanged same-conversation complete-read coverage retained; no fresh full-read claim from hash alone.",
+  "admin_permission": "Previously explicitly approved two fixture links only; completed and independently verified. No other admin grant inferred."
+}

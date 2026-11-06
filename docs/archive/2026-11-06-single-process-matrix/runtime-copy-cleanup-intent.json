@@ -1,0 +1,125 @@
+{
+  "utc": "2026-11-06T16:10:50.446Z",
+  "proof_sha256": "68c05bce3c36b8681f7910e7a4d6d7187966885f518b45397d75b04afb714baa",
+  "files": [
+    {
+      "nonce": "0021268d174c43e78bb84d1528b425c1",
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\0021268d174c43e78bb84d1528b425c1\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "nonce": "0e422fee90074bc5800061a8ae1e9f8f",
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\0e422fee90074bc5800061a8ae1e9f8f\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "nonce": "12c59fb3d9804eb2a692ed7971fa5ce0",
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\12c59fb3d9804eb2a692ed7971fa5ce0\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "nonce": "1dbbe93e35fb4155a15b8d05e91b87f2",
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\1dbbe93e35fb4155a15b8d05e91b87f2\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "nonce": "1ded466192d244fdb13aabfea3942428",
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\1ded466192d244fdb13aabfea3942428\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "nonce": "20686db5224f4372801f1141b60d1a16",
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\20686db5224f4372801f1141b60d1a16\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "nonce": "34d2939896f84237b2adbb51cbaab150",
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\34d2939896f84237b2adbb51cbaab150\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "nonce": "3f4883ca93014324a5761d0c9e581b8d",
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\3f4883ca93014324a5761d0c9e581b8d\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "nonce": "577b7dd3dbe94ba28c8430516e0bac97",
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\577b7dd3dbe94ba28c8430516e0bac97\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "nonce": "9175fdfe184e413c92680146996c17f6",
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\9175fdfe184e413c92680146996c17f6\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "nonce": "930b420b057d45139863b5e7c6da4718",
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\930b420b057d45139863b5e7c6da4718\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "nonce": "a4019c3af132409e82c74595c4effdab",
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\a4019c3af132409e82c74595c4effdab\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "nonce": "aba2f282163a42e9bf9a2941bdf9ec81",
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\aba2f282163a42e9bf9a2941bdf9ec81\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "nonce": "b3d0371385f04e5c811b881c7511a193",
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\b3d0371385f04e5c811b881c7511a193\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "nonce": "c5ca7d727bc24d6d823cc5f89a74148e",
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac-single-host",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac-single-host\\c5ca7d727bc24d6d823cc5f89a74148e\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "nonce": "cafc592f34e34bf3902e0f77a6488e8f",
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\cafc592f34e34bf3902e0f77a6488e8f\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    }
+  ],
+  "absent": [
+    {
+      "nonce": "617f293ec5c34722b30c3fb26df29f6f",
+      "reason": "WMI host control used pinned original Node; no owned runtime copy"
+    }
+  ],
+  "method": "Exact single-file unlink only; all preflighted; no recursive delete, archive or source removal"
+}

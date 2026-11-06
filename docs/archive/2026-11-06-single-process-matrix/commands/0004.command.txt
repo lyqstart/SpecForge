@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-06-single-process-matrix/complete-rule-gate.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-current-rule-coverage-and-prior-sealed-stage",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=rule-gate.json immutable coverage and copied evidence helpers",
+  "started_utc": "2026-11-06T15:12:25.526Z"
+}

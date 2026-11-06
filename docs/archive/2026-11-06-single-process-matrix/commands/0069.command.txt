@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-06-single-process-matrix/preserve-daemon-attempt.cjs",
+    "cafc592f34e34bf3902e0f77a6488e8f"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-d22-real-daemon-lifecycle",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=raw Daemon lifecycle no handshake token files",
+  "started_utc": "2026-11-06T16:06:54.272Z"
+}

@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/preserve-attempt.cjs",
+    "bf4cd177385845389366a3a13c9d4dc7"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-native-com-breakaway-failure",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable failed native raw and fixture snapshot",
+  "started_utc": "2026-11-05T09:35:54.929Z"
+}

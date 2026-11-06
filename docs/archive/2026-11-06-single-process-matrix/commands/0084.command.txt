@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-06-single-process-matrix/final-readonly-checks.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-d22-readonly-integrity-and-audit-assets",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=audit assets and checks",
+  "started_utc": "2026-11-06T16:16:13.139Z"
+}

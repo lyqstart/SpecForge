@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+  "args": [
+    "--synthetic-registry-read-native-com-locked",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\bf4cd177385845389366a3a13c9d4dc7",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-native-com-breakaway-lpac-boundary",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned normal-user LPAC Job native suspended child breakaway WMI fixed fake-target tests20s cleanup;EXTERNAL_EVIDENCE_WRITES=raw receipts",
+  "started_utc": "2026-11-05T04:25:33.631Z"
+}

@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-06T14:34:15.024Z",
+  "nonce": "96b61a4adbab4f7b8eecb3e143225c10",
+  "root": "D:\\code\\SpecForge\\.tmp\\verification-lpac-single-host\\96b61a4adbab4f7b8eecb3e143225c10",
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-single-host\\96b61a4adbab4f7b8eecb3e143225c10\\input\\native-probe.exe",
+  "helper_sha256": "a399d027c12ac4c647b4c625a23fabe4ded3a4eeb63461c84e5262846c5ffdb6",
+  "native_exit_code": 0,
+  "signal": null,
+  "error": null,
+  "data": {
+    "pid": 8668,
+    "host_control": true,
+    "child_policy_query": true,
+    "child_policy_flags": 0,
+    "child_policy_error": 0,
+    "baseline_create_error": 0,
+    "breakaway_create_error": 0,
+    "console_allocated": true,
+    "console_error": 0,
+    "owned_console_released": true
+  },
+  "inner_exit_code": 0
+}

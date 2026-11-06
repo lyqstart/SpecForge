@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/freeze-build.cjs",
+    "build-single-process-typescript-29"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-all-current-source-native-and-node-binaries",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable build29",
+  "started_utc": "2026-11-06T14:38:32.607Z"
+}

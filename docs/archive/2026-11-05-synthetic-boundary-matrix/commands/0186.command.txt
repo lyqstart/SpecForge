@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/preserve-daemon-attempt.cjs",
+    "a2aa67b06e76458395aa963238d536d3"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-static-loader-real-daemon-failure",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable faileda2aa with actual Bun exit1",
+  "started_utc": "2026-11-06T13:49:49.572Z"
+}

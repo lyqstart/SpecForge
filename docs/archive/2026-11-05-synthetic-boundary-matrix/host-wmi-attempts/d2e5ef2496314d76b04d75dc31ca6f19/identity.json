@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-06T14:49:08.555Z",
+  "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-wmi-control\\d2e5ef2496314d76b04d75dc31ca6f19",
+  "members": [
+    {
+      "file": "receipt.json",
+      "bytes": 344,
+      "sha256": "877fa902cf2c670bacfbadc12a8964db32814e3328341e693a52cb34adb8f1a2"
+    },
+    {
+      "file": "host-control.txt",
+      "bytes": 17,
+      "sha256": "ce31f72a1353aabbf1e14284ee62a48c5f621f3d4eb75ac0cbdd48369ac639cc"
+    }
+  ],
+  "classification": "Retrospective raw preservation; failed historical PID/exit remains unknown when not recorded"
+}

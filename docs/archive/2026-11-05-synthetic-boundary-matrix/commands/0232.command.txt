@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+  "args": [
+    "--synthetic-resource-wall",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\779fcd9338a44b588b5f08fd55dc9d55",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-resource-wall",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned same-D21 resource Job real bounded rejection and cleanup;EXTERNAL_EVIDENCE_WRITES=raw receipts",
+  "started_utc": "2026-11-06T14:20:23.090Z"
+}

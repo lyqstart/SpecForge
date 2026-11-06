@@ -1,0 +1,10 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\SingleProcessReportRegression.exe",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "replay-real-single-process-native-and-forged-reports",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=raw regression receipts",
+  "started_utc": "2026-11-06T14:45:18.374Z"
+}

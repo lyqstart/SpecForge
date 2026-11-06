@@ -1,0 +1,11 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacPrivateRegistryChild.exe",
+  "args": [
+    "--host-native-control",
+    "b1ad5f2c1a90494bb867b01c5e16e138"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-normal-user-wmi-positive-control",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=normal-user local WMI fixed Node writes only new owned marker and exits no app verification;EXTERNAL_EVIDENCE_WRITES=raw control receipts",
+  "started_utc": "2026-11-05T04:20:44.881Z"
+}

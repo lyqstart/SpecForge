@@ -1,0 +1,17 @@
+{
+  "executable": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+  "args": [
+    "/nologo",
+    "/platform:x64",
+    "/target:exe",
+    "/optimize+",
+    "/main:LpacPrivateRegistryChild",
+    "/out:D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacPrivateRegistryChild.exe",
+    "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacPrivateRegistryChild.cs",
+    "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacFileAclAttack.cs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "compile-symbolic-fixture-acl-child",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=fixed9-target native child binary;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-05T04:05:03.788Z"
+}

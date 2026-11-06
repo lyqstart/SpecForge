@@ -1,0 +1,9 @@
+{
+  "utc": "2026-11-06T15:03:42.953Z",
+  "run_id": "CODEX-SF-20261105-SYNTHETIC-BOUNDARY-MATRIX-A01",
+  "files": 3403,
+  "manifest_sha256": "ec9b58210f3d3771402e2d9b6f490d5e988058309947d2fb5450f7a1767ced5d",
+  "self_check": "PASS",
+  "exclusions": "Only manifest and its own check excluded to avoid recursive hash. No private credential data collected.",
+  "inner_exit_code": 0
+}

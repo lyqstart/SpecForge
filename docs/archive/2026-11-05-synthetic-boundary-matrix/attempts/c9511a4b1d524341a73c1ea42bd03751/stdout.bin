@@ -1,0 +1,36 @@
+SFFILE_STAGE:{"role":0,"pid":23584,"stage":"ready"}
+SFFILE_POSITIVE:0
+SFFILE_STAGE:{"role":1,"pid":25592,"stage":"ready"}
+SFFILE_POSITIVE:1
+SFFILE_STAGE:{"role":2,"pid":28136,"stage":"ready"}
+SFFILE_POSITIVE:2
+SFFILE_REPORT:{"probe":"D21_FILE_DESCENDANTS_V1","role":2,"pid":28136,"rows":[{"kind":"positive_read","ok":true},{"kind":"shadow_read","ok":true,"error":"EPERM"},{"kind":"write_0","ok":true,"error":"EPERM"},{"kind":"write_1","ok":true,"error":"EPERM"},{"kind":"write_2","ok":true,"error":"EPERM"},{"kind":"write_3","ok":true,"error":"EPERM"},{"kind":"shadow_write","ok":true,"error":"EPERM"}],"child":null}
+✔ fixed builtin node:test role 2 (0.7365ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6.9817
+SFFILE_REPORT:{"probe":"D21_FILE_DESCENDANTS_V1","role":1,"pid":25592,"rows":[{"kind":"positive_read","ok":true},{"kind":"shadow_read","ok":true,"error":"EPERM"},{"kind":"write_0","ok":true,"error":"EPERM"},{"kind":"write_1","ok":true,"error":"EPERM"},{"kind":"write_2","ok":true,"error":"EPERM"},{"kind":"write_3","ok":true,"error":"EPERM"},{"kind":"shadow_write","ok":true,"error":"EPERM"}],"child":{"status":0,"signal":null,"error":null}}
+✔ fixed builtin node:test role 1 (0.6943ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 783.0999
+SFFILE_REPORT:{"probe":"D21_FILE_DESCENDANTS_V1","role":0,"pid":23584,"rows":[{"kind":"positive_read","ok":true},{"kind":"shadow_read","ok":true,"error":"EPERM"},{"kind":"write_0","ok":true,"error":"EPERM"},{"kind":"write_1","ok":true,"error":"EPERM"},{"kind":"write_2","ok":true,"error":"EPERM"},{"kind":"write_3","ok":true,"error":"EPERM"},{"kind":"shadow_write","ok":true,"error":"EPERM"}],"child":{"status":0,"signal":null,"error":null}}
+✔ fixed builtin node:test role 0 (0.8226ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1561.8949

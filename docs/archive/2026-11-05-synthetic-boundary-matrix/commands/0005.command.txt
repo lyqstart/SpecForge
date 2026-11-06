@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/preserve-attempt.cjs",
+    "c9511a4b1d524341a73c1ea42bd03751"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-file-descendant-attempt",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable attempt raw copy",
+  "started_utc": "2026-11-05T03:17:06.990Z"
+}

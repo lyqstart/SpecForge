@@ -1,0 +1,19 @@
+{
+  "executable": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+  "args": [
+    "/nologo",
+    "/platform:x64",
+    "/target:exe",
+    "/optimize+",
+    "/reference:System.Web.Extensions.dll",
+    "/main:SyntheticDaemonRecovery",
+    "/out:D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\SyntheticDaemonRecovery.exe",
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix\\SyntheticLauncherCrash.cs",
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix\\SyntheticDaemonCrash.cs",
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix\\SyntheticDaemonRecovery.cs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "compile-interrupted-daemon-profile-recovery-owner",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=compiled controlled recovery helper;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-06T14:01:56.022Z"
+}

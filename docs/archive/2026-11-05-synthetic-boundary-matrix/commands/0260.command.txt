@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+  "args": [
+    "--synthetic-registry-read-single-process-typescript",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\f0af87ae838741dcbee8f1b91752358f",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-single-process-typescript-esm-builtin-test",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned restricted-child single-process TypeScript LPAC profile Job and cleanup;EXTERNAL_EVIDENCE_WRITES=raw receipts",
+  "started_utc": "2026-11-06T14:38:39.860Z"
+}

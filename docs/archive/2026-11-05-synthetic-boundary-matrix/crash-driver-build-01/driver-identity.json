@@ -1,0 +1,35 @@
+{
+  "utc": "2026-11-06T13:22:27.267Z",
+  "hash_domain": "raw filesystem bytes",
+  "members": [
+    {
+      "source": "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix\\SyntheticLauncherCrash.cs",
+      "file": "SyntheticLauncherCrash.cs",
+      "bytes": 18421,
+      "sha256": "b0151d89ba0fcbc45aea4106f404fab2980111f8bb1d7af064026816374643e1"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\SyntheticLauncherCrash.exe",
+      "file": "SyntheticLauncherCrash.exe",
+      "bytes": 46080,
+      "sha256": "2f18b242d45958e93336af3d1db2df0eb1d608f5c6939d140a035cdc2b136d0a"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix\\launcher-crash-recovery-plan.md",
+      "file": "launcher-crash-recovery-plan.md",
+      "bytes": 2189,
+      "sha256": "5fa0317dff72a264f18786b4b67452e95bdda2c8c14b716fb4f8ba22073c30b2"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix\\build-crash-owner-21\\identity.json",
+      "file": "identity.json",
+      "bytes": 5222,
+      "sha256": "ac6d96eee42512f07a3b173df1c5eb09d46a4510544a95809d67dc598e746e22"
+    }
+  ],
+  "compile_receipts": [
+    "0157",
+    "0158"
+  ],
+  "scope": "Fixed synthetic launcher crash and hash-bound profile recovery only; no daemon/business acceptance."
+}

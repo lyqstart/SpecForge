@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\SyntheticLauncherCrash.exe",
+  "args": [
+    "recover",
+    "5fd454ea6d1848dcb10ea99757cb1894",
+    "123a7e595ba5b928e196e251eb153fdd2b6277acae2ed7b9a4cbd381dd4a0169"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-new-process-recovery-after-intent-crash",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=hash-bound cleanup of owned profile5fd only;EXTERNAL_EVIDENCE_WRITES=actual recovery result",
+  "started_utc": "2026-11-06T13:23:33.616Z"
+}

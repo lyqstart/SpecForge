@@ -1,0 +1,87 @@
+{
+  "utc": "2026-11-05T03:50:41.717Z",
+  "rows": [
+    {
+      "attempt": "b4b6b3aa9d3a4399ac2dc5e99644999f",
+      "kind": "cancel",
+      "actual_application_exit": 130,
+      "prior_owner_outcome": {
+        "kind": "cancel",
+        "expected_rejection_proved": true,
+        "application_passed": false,
+        "application_exit_code": 130,
+        "job_all_ended": true,
+        "timed_out": false,
+        "owner_cancelled": true,
+        "parent_exit_with_live_descendants": false,
+        "independently_verified_processes": 3,
+        "peak_active_processes": 3,
+        "stdout_overflow": false,
+        "stderr_overflow": false,
+        "job_messages": [
+          6,
+          7,
+          4,
+          6,
+          6,
+          6,
+          4
+        ],
+        "scope": "Synthetic expected rejection only; not a passed production execution or full isolation acceptance"
+      },
+      "raw_ready_lines": [
+        "SFRESOURCE_READY:{\"kind\":\"cancel\",\"pid\":21456,\"role\":\"0\"}"
+      ],
+      "audit_status": "NOT_COVERED_BY_THIS_ATTEMPT",
+      "reason": "Owner counted conhost plus one not-yet-ready child as three processes; raw output has only role0. Previous expected_rejection_proved=true is rejected for three-Node cancellation coverage.",
+      "old_receipts_unchanged": true
+    },
+    {
+      "attempt": "240c883e80674d449a7626debf523c32",
+      "kind": "process",
+      "actual_application_exit": 1,
+      "prior_owner_outcome": {
+        "kind": "process",
+        "expected_rejection_proved": false,
+        "application_passed": false,
+        "application_exit_code": 1,
+        "job_all_ended": true,
+        "timed_out": false,
+        "owner_cancelled": false,
+        "parent_exit_with_live_descendants": false,
+        "independently_verified_processes": 4,
+        "ready_node_roles_independently_bound": 1,
+        "peak_active_processes": 4,
+        "stdout_overflow": false,
+        "stderr_overflow": false,
+        "job_messages": [
+          6,
+          7,
+          4,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          3,
+          7,
+          7,
+          4
+        ],
+        "scope": "Synthetic expected rejection only; not a passed production execution or full isolation acceptance"
+      },
+      "raw_ready_lines": [
+        "SFRESOURCE_READY:{\"kind\":\"process\",\"pid\":33340,\"role\":\"0\"}"
+      ],
+      "audit_status": "NOT_COVERED_BY_THIS_ATTEMPT",
+      "reason": "Native Job message3 observed, but synchronous spawn UNKNOWN escaped event-only handler. Parent exited1 before complete peak/token sampling. Previous expected_rejection_proved=false remains false.",
+      "old_receipts_unchanged": true
+    }
+  ],
+  "correction": "New actual-role/PID/image-bound acceptance and cancellation trigger; new process script catches native synchronous throws without changing limit. Parent-exit probe uses detached:true solely to keep descendants alive; same outer Job/token must be independently proven.",
+  "inner_exit_code": 0
+}

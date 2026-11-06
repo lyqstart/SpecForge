@@ -1,0 +1,10 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\InputIdentityFilesystemProbe.exe",
+  "args": [
+    "2c6da749a0f4488fa1f76baa1ea728c1"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "sp-a01-physical-input-rejection-and-real-junction-after-path-fix",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned normal-user hardlink and junction fixtures; existing symbolic links readonly; no profile or application;EXTERNAL_EVIDENCE_WRITES=raw metadata and source identity",
+  "started_utc": "2026-11-06T15:46:57.316Z"
+}

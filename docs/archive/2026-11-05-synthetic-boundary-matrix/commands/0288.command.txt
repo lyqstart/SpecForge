@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/finalize-phase.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "finalize-old-profile-facts-and-approved-scope-handoff",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=phase-result immutable user decision binding review append",
+  "started_utc": "2026-11-06T15:02:53.884Z"
+}

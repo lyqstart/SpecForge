@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+  "args": [
+    "--synthetic-registry-read-single-process-native",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\930b420b057d45139863b5e7c6da4718",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "run-d22-native-boundary",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=fresh owned native primary profile registry filesystem and network controls;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-06T16:00:44.897Z"
+}

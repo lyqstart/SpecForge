@@ -4,6 +4,8 @@ CONTRACT_ID=windows-lpac-node-readonly/v1
 AUTHORITY=SPS-1.0 §9.2.1 / Registry D20
 IMPLEMENTATION_STATUS=ACCEPTANCE_REQUIRED
 
+2026-11-06合成复核仍未完成完整验收：原生进程限额8的真实Job曾有9或15个活成员。现有owner补齐全成员独立计数、超预算立即终止及非passed回执，但20ms采样不能证明严格瞬时总成员上限，不能用这项改动冒充固定进程上限已成立。其余有限探针的执行事实见归档acceptance-review；归档不改变本合同。D21生产采用、public接线、安装部署与原WI均继续禁止，直至缺口解决且所需独立产品裁决成立。
+
 本合同从属于 SPS/Registry。D20 来自用户对 proposal-001 的明确答复“批准有限方案，先完成隔离验收”。归档仅保存决定来源，不能授权本合同以外的执行。
 
 ## 分阶段生效
@@ -51,3 +53,27 @@ Node 命令只承接 node:test 及已冻结内联探针。POSIX 静态命令须�
 SPS §9.2.2 / Registry D21 仅授权独立实验profile `windows-lpac-node-readonly-registry-read-experiment/v1`，不改变上述D20 profile的零capability合同或未验收状态。只由Windows `DeriveCapabilitySidsFromName("registryRead")` 派生恰好一个能力SID；实际普通AppContainer挂起对照和LPAC token均逐项核对数量、SID与启用位，LPAC有效权限对照仍必需。未知、额外能力或API错误在恢复前拒绝。
 
 先以固定Node/原正例在未调试进程取得真实启动结果，不能启动就停止，不追加其他能力；成功后才进入固定假哨兵检查。真实凭据与原业务不是夹具。新增registryRead可能扩大注册表读取面，不是单键白名单；假哨兵读取/写入、文件写入、网络通达、未知边界或资源残留均不得通过。新夹具只能在本次唯一owner标记路径/新键创建及回收，不改已有键/ACL。完整生产验收及后续采用仍按SPS §9.2.2，不由合成结果自动启用。
+
+## D22 当前单进程首期合成验收合同
+
+CANDIDATE_PROFILE=windows-lpac-node-single-process-readonly/v1
+AUTHORITY=SPS §9.2.3 / Registry D22
+ACCEPTANCE_STATUS=REQUIRED
+BUSINESS_PROFILE_REGISTERED=NO
+
+用户已选择单进程首期方案。旧多进程矩阵仍NOT_ACCEPTED，原生预算8出现9/15的事实不修改。新候选仅在自有合成环境使用固定Node24.19、恰好registryRead、LPAC有效权限、从零构造环境、只读输入/runtime/profile/私有注册表及无网络边界。DETACHED挂起创建；恢复前独立核验child policy实际flags恰为1、正确token/SID/LPAC及Job。Node禁止native addons，应用不得取得特权父进程或控制句柄；创建前子进程限制不能被可关闭的应用自报开关代替。
+
+固定上限为进程1、总提交1GiB、每管道1MiB和墙钟120s，合成限额试验显式更低。任何实际额外成员、控制台/override绕行、未知策略或残留均不能passed，不能放宽计数或仅凭采样后终止通过。原声明与实际argv、完整输入/资产原字节、真实数值退出、输出和终止事实均绑定owner回执；归一化不自动证明原Task语义。
+
+| 行 | 新配置实际执行对象与通过条件 |
+|---|---|
+| SP-P01 | 固定CJS及嵌套目录的ESM/TypeScript本地import、Node内置测试与冻结内联正例；实际exit0、断言/完整输出、输入不变、实际child policy1、LPAC/Job1/全树结束 |
+| SP-A01 | 输入直接读正控制；所有影子/假home/凭据、绝对/UNC/硬链接/目录联接/真实符号链接边界外读写拒绝，宿主前后正控制与原始字节/ACL不变；拒绝输入中的链接和硬链接。已有两条链接可只读作为边界外路径，当前新SID对两条均须拒绝，不改旧ACL、不新增管理员链接 |
+| SP-A02 | runtime/input/profile/temp文件与WRITE_DAC拒绝；宿主假键读写和私有Storage持久写/WRITE_DAC拒绝；最低系统注册表读取正控制；无新写面、假值不泄漏、原始字节/ACL不变 |
+| SP-A03 | loopback与固定外部TCP/UNC原生拒绝及宿主前后正控制；COM拒绝或受控隔离；普通/breakaway/child-policy override创建、控制台分配均实际拒绝；可信直接父进程的CREATE_PROCESS、VM_WRITE+OPERATION、DUP_HANDLE均拒绝且实际PID/父身份绑定 |
+| SP-L01 | 子进程被创建前拒绝且实际成员不超过1；真实launcher关闭最后Job句柄后，原主进程稳定句柄结束且独立无本轮成员；不将未创建后代称为执行过孤儿试验 |
+| SP-L02 | 进程1创建前限制实测；墙钟/内存/输出限额和取消真实发生、不能passed、完整主进程/Job终止；限额回执与成功执行严格区分 |
+| SP-L03 | 当前单进程配置的真实launcher/Daemon崩溃、实际新Daemon重启/鉴权正常停止、清理意图阶段中断与新owner幂等恢复；缺回执保留中断而非补造通过 |
+| SP-I01/SP-D01 | 隔离验收和独立D21生产采用后才实施；真实public producer/共同消费者一致拒绝篡改、角色/状态/HardStop/许可冲突，并完成固定资产构建安装和新Daemon真实正反例 |
+
+SP-P01至SP-L03任一不足即INCOMPLETE。初步CJS/TypeScript/原生拒绝证据只证明相应有限事实，不能代替新候选身份的完整矩阵。D21生产采用仍需完整证据后独立决定；产品工具、Gate、部署及原WI继续不启用。

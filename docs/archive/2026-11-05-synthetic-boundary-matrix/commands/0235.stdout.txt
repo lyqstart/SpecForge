@@ -1,0 +1,2 @@
+MATRIX_CLEANUP attempts=37 pid_observations=288 problems=1 EXIT=1
+RECORDED_PID_QUERY_UNKNOWN:8008:D:\code\SpecForge\docs\archive\2026-11-05-synthetic-boundary-matrix\attempts\6314a77b77ca4941a47b3e817106491d\events.jsonl

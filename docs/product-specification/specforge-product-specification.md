@@ -693,6 +693,18 @@ Changed Files Audit 必须绑定本次读取的 Write Guard、HardStop resolutio
 
 该实验profile不得被业务Plan选择，不接生产工具、Gate、部署或原WI，不推进工作流或放行代码权限。实验成功不等于完整隔离矩阵通过；是否采用进产品须依据完整证据重新裁决，D18只读与D20生产边界仍有效。
 
+### 9.2.3 严格单进程首期候选（D22）
+
+产品负责人选择单进程首期方案，取代未通过的多进程首期候选；旧D20零capability和D21多进程实验及其失败保留。新的合成候选标识为 `windows-lpac-node-single-process-readonly/v1`，尚不注册为业务profile。只支持不创建子进程、无第三方依赖的只读Node内置测试及能证明原证据语义的冻结内联验收；需要子进程、原生扩展、第三方框架、文件写入、服务或网络的命令明确拒绝，不自动切换普通宿主。
+
+仅Windows x64和已固定原始字节的Node24.19。独立LPAC SID/profile、恰好由系统派生并核验的registryRead一个capability、最小环境、无应用文件写入和网络边界沿用D21；该能力不是注册表白名单，不追加其他能力、不修改已有系统/业务ACL。以DETACHED_PROCESS挂起创建，在恢复前核验实际LPAC、Job和child-process restriction的NoChildProcessCreation=1，未知值或额外策略位不得通过；只继承空stdin和有界stdout/stderr，不能向应用泄露特权进程/控制句柄，Node禁止native addons。Job进程上限1、总提交内存1GiB、stdout/stderr各1MiB、墙钟至多120s，合成限额测试可更低。控制台或其他绕行创建、额外成员、失效策略、未知退出或资源残留一律不能passed；采样后终止不替代创建前限制。
+
+单文件内置测试可采用显式冻结的相对输入路径、preserve-symlinks、TAP和 `--test-isolation=none` 等必要归一化，但必须同时记录原声明、实际argv、冻结输入和证据语义核验；该参数不对所有原命令自动等价。不能证明原Task证据语义时保留not_executed，由原owner处理合同冲突，不手改封存Task、源码测试或降低验收。源/计划/资产/回执的新鲜度、真实owner、权威状态、HardStop、独立验证许可、共同Gate/Evidence/Formal Version/Close消费及部署资产要求继续沿用§9.2.1。
+
+新配置须独立完成固定CJS/ESM/TypeScript正例、所有文件/别名/假凭据和注册表拒绝、网络/COM/native创建、策略override/可信父进程特权句柄/控制台绕行拒绝、进程1及墙钟/内存/输出/取消、最后Job句柄关闭、真实launcher/Daemon崩溃重启和清理中断恢复。禁止将旧多进程后代正例计为新配置覆盖；新配置禁止创建后代，须实际证明拒绝并确认没有额外成员。需要管理员的新夹具仍须单独具体授权；可只读复用已核验的边界外链接，不改旧ACL，以宿主可读和当前输入正控制区分有效拒绝与夹具缺失。
+
+先更新从属合同并通过完整新矩阵，再依据完整证据作D21要求的独立生产采用裁决，之后才接产品工具、共同消费者、发布部署及原WI。本次范围决定本身不启用产品执行，也不代表原Task005或整体规格已经通过。
+
 ## 9.3 HardStop
 
 HardStop 是 recoverable safety latch，不是“任务永久结束”。

@@ -1,0 +1,7 @@
+# 45eb失败现场的受控合成恢复
+
+仅合成D20/D21资源owner。初始reservation证明本轮目录/profile/Storage不存在；prekill和真实broker事件固定SID、父/launcher/四成员及创建时间。0198没有最终producer receipt，原broker/member数值退出未落盘仍未知，不生成替代passed。
+
+恢复输入只接受本阶段固定目录的UUID和reservation raw SHA256。新普通用户进程独立确认原PID已退出或创建身份已变化、无本轮映像；复核真实profile_created SID、目录Windows owner、创建时间在attempt_reserved与prekill之间、当前Storage SDDL精确匹配本次owner写出的原始ACL事件。未知身份/活进程/部分资源/哈希/ACL漂移均拒绝。首次删除前写不可覆盖intent绑定全部来源，再仅调用DeleteAppContainerProfile该moniker并独立复核无目录/Storage/原成员。intent后中断可重查并完成，已完成只读复核。原始失败、无回执及未知数值退出均保留。
+
+这是补齐本轮自有测试资源的受控恢复，不复用或写业务Project Recovery状态，不修改现有ACL/系统设置，不授予app新能力。只编译冻结第一方恢复程序后执行。四类写入仅本阶段archive、owned fixture事务记录及该唯一新profile删除。

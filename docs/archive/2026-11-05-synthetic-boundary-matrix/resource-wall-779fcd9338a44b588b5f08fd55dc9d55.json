@@ -1,0 +1,39 @@
+{
+  "utc": "2026-11-06T14:20:32.372Z",
+  "kind": "wall",
+  "attempt": "779fcd9338a44b588b5f08fd55dc9d55",
+  "launcher_direct_exit": 1,
+  "application_exit_code": 124,
+  "expected_rejection_proved": true,
+  "production_execution_passed": false,
+  "owner_outcome": {
+    "kind": "wall",
+    "expected_rejection_proved": true,
+    "application_passed": false,
+    "application_exit_code": 124,
+    "job_all_ended": true,
+    "timed_out": true,
+    "owner_cancelled": false,
+    "parent_exit_with_live_descendants": false,
+    "process_budget_exceeded": false,
+    "configured_process_limit": 32,
+    "strict_instantaneous_process_ceiling_proved": false,
+    "independently_verified_processes": 4,
+    "ready_node_roles_independently_bound": 3,
+    "peak_active_processes": 4,
+    "stdout_overflow": false,
+    "stderr_overflow": false,
+    "job_messages": [
+      6,
+      7,
+      4,
+      6,
+      6,
+      6,
+      6,
+      4
+    ],
+    "scope": "Synthetic expected rejection only; no strict instantaneous total-member ceiling or full isolation/product acceptance claimed"
+  },
+  "inner_exit_code": 0
+}

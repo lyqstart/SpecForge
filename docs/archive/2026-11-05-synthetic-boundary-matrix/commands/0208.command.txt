@@ -1,0 +1,11 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\SyntheticDaemonCrash.exe",
+  "args": [
+    "daemon-kill",
+    "f03aa992e3794850ae70e314bc78bcb4"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-independent-broker-real-daemon-crash",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new real Daemon and D21 fixture f03aa992e3794850ae70e314bc78bcb4 trusted broker independent host lifetime;EXTERNAL_EVIDENCE_WRITES=actual stable exit facts and producer failure receipt",
+  "started_utc": "2026-11-06T14:08:39.675Z"
+}

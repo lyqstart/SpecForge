@@ -1,0 +1,17 @@
+{
+  "executable": "C:\\Users\\lyq\\AppData\\Roaming\\npm\\node_modules\\bun\\bin\\bun.exe",
+  "args": [
+    "build",
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/real-daemon-harness.ts",
+    "--target",
+    "bun",
+    "--define",
+    "__SPECFORGE_BUILD_VERSION__=\"1.0.21\"",
+    "--outfile",
+    ".tmp/verification-lpac-build/daemon-harness-bundle/real-daemon-harness.js"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "bundle-native-owner-profile-aligned-harness",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=owned temporary bundle only;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-06T13:56:07.438Z"
+}

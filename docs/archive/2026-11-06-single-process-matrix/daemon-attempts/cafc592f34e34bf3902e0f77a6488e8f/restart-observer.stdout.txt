@@ -1,0 +1,53 @@
+Handshake file written to: D:\code\SpecForge\.tmp\verification-lpac-daemon\cafc592f34e34bf3902e0f77a6488e8f\opencode\sf-user\runtime\handshake.json
+[EventBus] Started
+[EventBus] Subscribe: session.* (handler: xkozexgyroemw563eua)
+[EventBus] Subscribe: project.updated (handler: uhv6c0y0cksmw563eua)
+[EXTENSIONS] Loading extensions...
+[EventBus] Publish: load {
+  eventId: "ext-skill-1793981212642",
+  projectId: undefined,
+  source: "daemon",
+  timestamp: "2026-11-06T16:06:52.642Z",
+}
+[EventBus] Publish: load {
+  eventId: "ext-tool-1793981212643",
+  projectId: undefined,
+  source: "daemon",
+  timestamp: "2026-11-06T16:06:52.643Z",
+}
+[EventBus] Publish: load {
+  eventId: "ext-workflow-1793981212647",
+  projectId: undefined,
+  source: "daemon",
+  timestamp: "2026-11-06T16:06:52.647Z",
+}
+[EventBus] Publish: load {
+  eventId: "ext-gate-1793981212648",
+  projectId: undefined,
+  source: "daemon",
+  timestamp: "2026-11-06T16:06:52.648Z",
+}
+[EXTENSIONS] All extensions loaded successfully in 6ms
+Daemon Core started on port 55140
+[API] admin/stop 鈥?initiating graceful shutdown
+Daemon Core shutting down...
+[GracefulShutdown] Starting shutdown: daemon.stop()
+[GracefulShutdown] Executing priority: stop-accepting (1 tasks)
+[SHUTDOWN] Step 1: Stopping HTTP accept...
+[GracefulShutdown] Executing priority: drain (1 tasks)
+[SHUTDOWN] Step 2: Draining Event Bus...
+[GracefulShutdown] Executing priority: flush (1 tasks)
+[SHUTDOWN] Step 3: Flush events (no-op, eventLogger removed)...
+[GracefulShutdown] Executing priority: close (1 tasks)
+[SHUTDOWN] Step 4: Closing SSE connections...
+[GracefulShutdown] Executing priority: release (1 tasks)
+[SHUTDOWN] Step 5: Disposing extensions...
+[GracefulShutdown] Shutdown sequence completed successfully
+[GracefulShutdown] Resources disposed
+[EventBus] Unsubscribe: project.updated (handler: uhv6c0y0cksmw563eua)
+[EventBus] Unsubscribe: session.* (handler: xkozexgyroemw563eua)
+[EventBus] Stopped
+Cleaning up handshake file and releasing lock...
+Handshake file deleted: D:\code\SpecForge\.tmp\verification-lpac-daemon\cafc592f34e34bf3902e0f77a6488e8f\opencode\sf-user\runtime\handshake.json
+Cleanup completed
+Daemon Core stopped

@@ -1,0 +1,8 @@
+{
+  "utc": "2026-11-06T14:24:41.850Z",
+  "deleted_files": 18,
+  "deleted_bytes": 1670857488,
+  "unchanged_evidence": true,
+  "inner_exit_code": 0
+}
+

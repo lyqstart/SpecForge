@@ -1,0 +1,31 @@
+{
+  "utc": "2026-11-05T04:20:44.7209979Z",
+  "compile_receipt": "0085",
+  "hash_domain": "raw bytes",
+  "members": [
+    {
+      "source": "packages/daemon-core/src/verification/windows/LpacPrivateRegistryChild.cs",
+      "file": "LpacPrivateRegistryChild.cs",
+      "sha256": "7da5a33de9e292a9f85f9a2a5816e96346889d97cd4d79f37ae30ca79dafe1c4",
+      "bytes": 5126
+    },
+    {
+      "source": "packages/daemon-core/src/verification/windows/LpacFileAclAttack.cs",
+      "file": "LpacFileAclAttack.cs",
+      "sha256": "c6ce80b29f258701f1dd4098c307af1b98419fd9006c566dbbce50810e5b5839",
+      "bytes": 3875
+    },
+    {
+      "source": "packages/daemon-core/src/verification/windows/LpacNativeBoundaryProbe.cs",
+      "file": "LpacNativeBoundaryProbe.cs",
+      "sha256": "058cfa8d7cab4fed075d5af38cf9de2912c61d4ef87b4e0f28626a478f4c0d3d",
+      "bytes": 7605
+    },
+    {
+      "source": ".tmp/verification-lpac-build/LpacPrivateRegistryChild.exe",
+      "file": "LpacPrivateRegistryChild.exe",
+      "sha256": "c6b99033dcdb5fb8252d233853b782b4e01ad6540bdf2eaf964c4a3260ab465d",
+      "bytes": 27136
+    }
+  ]
+}

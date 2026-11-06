@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/preserve-daemon-attempt.cjs",
+    "45ebdd1197f64cb184f9512b0c633277"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-interrupted-daemon-and-controlled-recovery",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable failed45eb and successful owned recovery",
+  "started_utc": "2026-11-06T14:07:06.786Z"
+}

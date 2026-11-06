@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/freeze-build.cjs",
+    "build-provisioned-symbolic-11"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-provisioned-symbolic-build",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable normal-user launcher native child source binary",
+  "started_utc": "2026-11-05T04:05:28.253Z"
+}

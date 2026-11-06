@@ -1,0 +1,9 @@
+# A02 私有注册表真实后代检查
+
+沿用已成功的固定父/子/孙文件探针，增加冻结第一方x64 .NET Framework helper，仅由孙进程按固定路径继承std句柄启动，参数只有本轮nonce。helper的源/二进制和复制后的hash在恢复前封存，宿主仍从Job PID独立核验实际后代token/SID/capability/LPAC。无新capability、网络或既有ACL变化，20s/32进程/1GiB/各管道1MiB不变。
+
+helper在真实AppContainer进程调用微软GetAppContainerRegistryLocation(KEY_QUERY_VALUE)，RegQueryValueEx核验独有SpecForgeOwnedWriteCanary-<nonce>尚不存在，并用NtQueryKey记录返回句柄实际键名；这是正控制。随后只对同API返回的本次新profile存储请求KEY_SET_VALUE，若成功则真实RegSetValueEx写固定假值。没有读取真实凭据，也不向其他位置写入。拒绝必须是HRESULT E_ACCESSDENIED或原生RegSetValueEx ERROR_ACCESS_DENIED；其他错误或未执行/输出缺失均未知、不通过。真实允许写入则保存失败，不在应用内删除来隐藏结果。
+
+宿主在删本次profile前只读核对与该唯一moniker对应的已知新storage路径和值。若实际API键名与该路径不一致，不从猜测路径否认写入；保存实际原始报告后在同一owned边界取证。正常文件集合/hash仍须一致；.NET启动失败/系统自治写入也按实际分类，不宣称原生检查通过。
+
+官方接口依据：[GetAppContainerRegistryLocation](https://learn.microsoft.com/en-us/windows/win32/api/userenv/nf-userenv-getappcontainerregistrylocation)描述当前profile存储句柄和所需访问权；不据该文档预判本机API返回或写隔离。实际结果以本轮未调试进程原始管道、数值退出和宿主对账为准。

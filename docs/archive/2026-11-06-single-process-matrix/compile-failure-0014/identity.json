@@ -1,0 +1,14 @@
+{
+  "utc": "2026-11-06T15:25:44.391Z",
+  "members": [
+    {
+      "file": "LpacStartupPoc.cs",
+      "sha256": "6c0f3be55fa4ca70a1c637ad25811198fe9b7af7f378e5fb63397a43b71dcc7a"
+    },
+    {
+      "file": "LpacNodeFileProbe.cs",
+      "sha256": "6c5710262ed70942cea8d82fd127b1203e77f7d1d00ee3ed84fdfc9de37c2f61"
+    }
+  ],
+  "classification": "Retrospective preserved exact compile-failure source before correction; no runtime attempt started"
+}

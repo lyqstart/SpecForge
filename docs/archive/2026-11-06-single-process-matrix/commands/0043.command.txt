@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-06-single-process-matrix/preserve-attempt.cjs",
+    "930b420b057d45139863b5e7c6da4718"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-d22-native-boundary",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=raw native attempt",
+  "started_utc": "2026-11-06T16:01:11.325Z"
+}

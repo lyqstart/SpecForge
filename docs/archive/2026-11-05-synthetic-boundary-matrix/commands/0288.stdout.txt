@@ -1,0 +1,1 @@
+{"phase_result":"NOT_ACCEPTED_FOR_OLD_MULTI_PROCESS_PROFILE","next_run_id":"CODEX-SF-20261106-SINGLE-PROCESS-MATRIX-A01","narrow_scope_approved":true,"product_enabled":false,"inner_exit_code":0}

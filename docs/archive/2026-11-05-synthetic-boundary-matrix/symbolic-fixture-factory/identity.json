@@ -1,0 +1,45 @@
+{
+  "utc": "2026-11-05T03:37:11.492Z",
+  "members": [
+    {
+      "source": "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix\\OwnedSymbolicFixtureFactory.cs",
+      "file": "OwnedSymbolicFixtureFactory.cs",
+      "sha256": "ab146c36584b7036dbef1568f255621e705612f30d1a2d9155e09800e65c097d",
+      "bytes": 7834
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\OwnedSymbolicFixtureFactory.exe",
+      "file": "OwnedSymbolicFixtureFactory.exe",
+      "sha256": "98d8b28eef446c5f1f702e48188935aae896296b22d738078d7998804e8612f7",
+      "bytes": 17920
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-symbolic\\b138f0060a5249768b420dd94a6ff798\\plan.json",
+      "file": "plan.json",
+      "sha256": "32406b5a5c46cccbe50973f223f8963516eb5c3168dd7d14b9b201105f264ffe",
+      "bytes": 605
+    }
+  ],
+  "hash_domain": "raw bytes",
+  "negative_checks": [
+    {
+      "seq": "0031",
+      "direct_executable_exit": 65,
+      "outer_powershell_tool_exit": 1,
+      "result": "ELEVATED_ADMINISTRATOR_REQUIRED"
+    },
+    {
+      "seq": "0032",
+      "direct_executable_exit": 65,
+      "outer_powershell_tool_exit": 1,
+      "result": "PLAN_HASH_MISMATCH"
+    }
+  ],
+  "carrier_note": "Inherited helper labels direct spawn status as carrier_exit_code; these two outer PowerShell tool exits were1. Original receipts unchanged. Future invocations explicitly exit LASTEXITCODE.",
+  "unchanged_owned_files": [
+    "plan.json",
+    "positive.txt",
+    "shadow.txt"
+  ],
+  "admin_execution": "NOT_EXECUTED"
+}

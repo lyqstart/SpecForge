@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/preserve-attempt.cjs",
+    "e39d54f9809f46a7ad4539e1c9c97441"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-locked-storage-attempt",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable attempt copy",
+  "started_utc": "2026-11-05T03:24:18.718Z"
+}

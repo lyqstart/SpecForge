@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+  "args": [
+    "--synthetic-single-resource-memory",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\a4019c3af132409e82c74595c4effdab",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "single-resource-memory",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=owned single-process synthetic attempt;EXTERNAL_EVIDENCE_WRITES=raw receipts",
+  "started_utc": "2026-11-06T16:04:00.929Z"
+}

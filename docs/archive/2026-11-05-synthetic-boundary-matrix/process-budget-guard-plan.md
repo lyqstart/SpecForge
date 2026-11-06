@@ -1,0 +1,9 @@
+# 总成员预算的失败关闭补齐
+
+CONFIRMED：原生Job配置8仍出现9或15个实际活成员，owner已观测到却只等墙钟8s；首次偏离在未发布执行owner的预算消费，不能靠忽略conhost或提高峰值判据掩盖。当前支持为PARTIALLY_SUPPORTED。
+
+保持Job原生process8、1GiB、8s和每管道1MiB；恢复原CREATE_NO_WINDOW标志。补齐独立计数的执行边界：任何实测活成员数超过固定预算（含conhost），立即记录原始计数/预算，TerminateJobObject(139)，后续只能产生非passed回执。采样仍20ms，真实退出、输出与Job空必须核验。不是等墙钟后将消息3解释为过程限额成功。
+
+L02正式判据是限额真实触发受控终止、不能passed及完整全树结束。新的lab结果区分实际预算终止证明与严格瞬时创建上限：前者可由真实139/owner事件/Job0证明，后者不能从采样或本机Job配置推出，必须显式保留strict_instantaneous_process_ceiling_proved=false。完整隔离采用审核不得将这一不足隐藏；本轮不注册生产、不宣称产品具备严格总成员创建时上限。原9/15/124失败保持原样。
+
+源变更只涉及C#共同观测循环、明确失败回执、resource结果消费和对应真实raw反例回归。宿主/public Tool/部署/原WI不执行；无新增权限或系统设置。新构建先冻结，再新Attempt；四类写入同当前阶段合成scope。

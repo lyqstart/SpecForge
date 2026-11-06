@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\OwnedSymbolicFixtureFactory.exe",
+  "args": [
+    "--create",
+    "b138f0060a5249768b420dd94a6ff798",
+    "32406b5a5c46cccbe50973f223f8963516eb5c3168dd7d14b9b201105f264ffe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "reject-symbolic-factory-nonadmin-execution",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=expected readonly nonadmin rejection no fixture changes;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-05T03:36:23.034Z"
+}

@@ -1,0 +1,13 @@
+# 创建前子进程限制的同权限合成实验
+
+CODEX_DIRECT，同RUN/window03。CONFIRMED：全成员采样终止并非瞬时上限；现D21多进程配置仍未验收。微软UpdateProcThreadAttribute文档给出CHILD_PROCESS_POLICY/RESTRICTED=1；该约束在AppContainer且无法取得其他进程特权句柄时才有效。DETACHED_PROCESS本身不阻止后续AllocConsole，所以不能只改创建flag便宣称没有额外进程。
+
+HYPOTHESIS：固定Node文件/内置测试可在DETACHED_PROCESS、创建前child policy=1、原生Job进程预算1的更窄配置中运行，并在内核创建前拒绝应用子进程。只进行两个新固定合成模式：一个运行已通过的固定文件测试，一个运行第一方原生攻击探针，检查实际child policy、原生普通/请求breakaway创建及AllocConsole。原生对照只请求挂起的固定Node，任何意外创建均不恢复并立即清理。控制台若分配成功则明确判失败并清理；启动信息隐藏本轮自有窗口。主机正常用户、恰好单registryRead、无应用文件写入、无网络、私有Storage保护、Job关闭回收保持，进程预算降至1、20s/1GiB/输出各1MiB。固定源/二进制先冻结，不开放调用者脚本或argv。
+
+首次支持判断INSUFFICIENT_EVIDENCE。禁止把更窄配置的结果冒充旧多进程profile已通过；即使成功，也须完整新矩阵及具体产品范围决定，才可改变正式支持。原8预算出现9/15的失败不改，既有readonlyNode文件原结果不变。若AllocConsole或其他创建仍能越限，不放宽上限，也不改系统设备/ACL，不安装驱动。
+
+四类写入：TRUTH_SOURCE_WRITES=project-status；REPOSITORY_TRACKED_WRITES=未发布C#模式/第一方原生probe及freeze脚本/经验；RUNTIME_OBSERVER_WRITES=唯一新Attempt/profile/input/runtime/Job及精确清理；EXTERNAL_EVIDENCE_WRITES=本根新计划/构建/数值退出/原始输出。未注册工具、未部署、未运行原WI。
+
+一手参考：https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute ，https://learn.microsoft.com/en-us/windows/win32/procthread/process-creation-flags 。文档不是本机运行证明。
+
+下一固定probe还验证微软明示的绕行条件：只请求本轮可信直接父进程的PROCESS_CREATE_PROCESS/VM_WRITE+OPERATION/DUP_HANDLE句柄，获得即只关闭，不写内存、不复制句柄、不改父进程。guest三项必须5；同用户host正控制三项必须0。请求CHILD_PROCESS_OVERRIDE=2创建固定挂起Node，host须0且实际125终止/等待，guest须在属性设置成功后明确5或367拒绝。父PID从本进程NtQueryInformationProcess原生取得，owner独立绑定实际直接父和主PID；没有任意PID或命令入口。新host脚本、计划和原生二进制一起在执行前冻结；不以旧脚本未单独快照的host0253替代新正控制。

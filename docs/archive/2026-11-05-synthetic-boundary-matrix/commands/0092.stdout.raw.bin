@@ -1,0 +1,4 @@
+packages\daemon-core\src\verification\windows\LpacFileBoundaryProbe.cs(66,227): error CS1003: 语法错误，应输入“(”
+packages\daemon-core\src\verification\windows\LpacFileBoundaryProbe.cs(66,228): error CS1026: 应输入 )
+packages\daemon-core\src\verification\windows\LpacFileBoundaryProbe.cs(66,220): error CS0746: 无效的匿名类型成员声明符。匿名类型成员必须使用赋值、简单名称或成员访问来声明。
+packages\daemon-core\src\verification\windows\LpacFileBoundaryProbe.cs(66,228): error CS0746: 无效的匿名类型成员声明符。匿名类型成员必须使用赋值、简单名称或成员访问来声明。

@@ -1,0 +1,1 @@
+packages\daemon-core\src\verification\windows\LpacStartupPoc.cs(316,63): error CS0019: 运算符“==”无法应用于“方法组”和“int”类型的操作数

@@ -1,0 +1,41 @@
+{
+  "utc": "2026-11-06T13:04:09.567Z",
+  "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\962a06f4e0214f52a555906c0684fb99",
+  "members": [
+    {
+      "file": "events.jsonl",
+      "bytes": 53357,
+      "sha256": "2afa44322827b7d2d4b01618a88bce6de04d06533faec2d569cfefb61d1393ed"
+    },
+    {
+      "file": "receipt.json",
+      "bytes": 1148,
+      "sha256": "8ad849b0406effe9e7a88702a45057611c1ccbfc0d462d7a3c9816fa4833dd1c"
+    },
+    {
+      "file": "stdout.bin",
+      "bytes": 975,
+      "sha256": "09e8cea0834ccc71e30ba19030a19ba293a90cc85547de4ac5e703e92d045d28"
+    },
+    {
+      "file": "stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "input/positive.cjs",
+      "bytes": 6189,
+      "sha256": "030a9e6eaf1d4696203cb17a97d850e40f00d8234741f360e8f7ef419fb4956e"
+    },
+    {
+      "file": "input/fixture.txt",
+      "bytes": 18,
+      "sha256": "90f0c37b288cb06aea3311d9ad3a921feaf436ab7d0465e818488a2c2c150f07"
+    },
+    {
+      "file": "shadow-home/fake-credentials.txt",
+      "bytes": 47,
+      "sha256": "823166b7e1d85082c7ad8e634b774d9d24cf20c40c505e572ea0ca36a6146c8c"
+    }
+  ]
+}

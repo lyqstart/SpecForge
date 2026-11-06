@@ -1,0 +1,42 @@
+{
+  "utc": "2026-11-06T14:53:53.832Z",
+  "members": [
+    {
+      "source": "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix\\InspectMatrixCleanupPostSingle.cs",
+      "file": "InspectMatrixCleanupPostSingle.cs",
+      "bytes": 11302,
+      "sha256": "abeb149d2794de2e4328500a83e8b6e8b15dd496e33e7ccc43f1715572fd2b58"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\InspectMatrixCleanupPostSingle.exe",
+      "file": "InspectMatrixCleanupPostSingle.exe",
+      "bytes": 28672,
+      "sha256": "1e7ee8133a3afe33920c31ad60a8a79d26752ba5d9e2dd2e8fc5d2710efd7840"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix\\InspectHostWmiControls.cs",
+      "file": "InspectHostWmiControls.cs",
+      "bytes": 2656,
+      "sha256": "7bbc3b7d88465814555ec9c1e61b5df7d5643e6d3bc350b41a5a496642a395a6"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\InspectHostWmiControls.exe",
+      "file": "InspectHostWmiControls.exe",
+      "bytes": 11264,
+      "sha256": "623aa3ccc02d868603e7933e12e25526acdc4d6b894cf077678cef9ed35d45ac"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix\\SingleProcessReportRegression.cs",
+      "file": "SingleProcessReportRegression.cs",
+      "bytes": 3201,
+      "sha256": "e480877da65bef4c6a189b5e348854dfd7a6fdf4437612569acdb5cbcacaaedd"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\SingleProcessReportRegression.exe",
+      "file": "SingleProcessReportRegression.exe",
+      "bytes": 23552,
+      "sha256": "a1bddd7d95f811d355b39a2f34cf6482b0d9b4e2fbd6d06901616472c531f7c4"
+    }
+  ],
+  "purpose": "Freeze current exact readonly inventory inputs/binaries before final reconciliation; regression snapshot retrospective"
+}

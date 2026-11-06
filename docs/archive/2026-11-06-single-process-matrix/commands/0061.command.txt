@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-06-single-process-matrix/freeze-daemon-fixture.cjs",
+    "08"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-d22-lifecycle-fixture-current-bundle",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=frozen lifecycle sources assets runtime binding",
+  "started_utc": "2026-11-06T16:05:29.312Z"
+}

@@ -1,0 +1,11 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacPrivateRegistryChild.exe",
+  "args": [
+    "--host-native-control",
+    "fc2d957c7f70402bb0d88ab2337a1ae0"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-normal-user-wmi-staged-native-exit-control",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=normal-user local WMI fixed marker control native handle exit facts no application verification;EXTERNAL_EVIDENCE_WRITES=raw staged receipts old failures retained",
+  "started_utc": "2026-11-05T04:23:30.421Z"
+}

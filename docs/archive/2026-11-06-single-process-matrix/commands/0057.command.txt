@@ -1,0 +1,13 @@
+{
+  "executable": "C:\\Users\\lyq\\AppData\\Roaming\\npm\\node_modules\\bun\\bin\\bun.exe",
+  "args": [
+    "build",
+    "docs/archive/2026-11-06-single-process-matrix/real-daemon-harness.ts",
+    "--target=bun",
+    "--outdir=.tmp/verification-lpac-build/daemon-harness-bundle"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "bundle-d22-real-daemon",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=private synthetic bundle;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-06T16:05:00.883Z"
+}

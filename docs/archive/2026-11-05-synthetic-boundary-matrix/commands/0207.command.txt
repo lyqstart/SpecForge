@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/freeze-daemon-fixture.cjs",
+    "05"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-independent-trusted-broker-fixture",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable fixture05",
+  "started_utc": "2026-11-06T14:08:25.874Z"
+}

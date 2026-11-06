@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261106-SINGLE-PROCESS-MATRIX-A01",
+  "execution_mode": "CODEX_DIRECT",
+  "result": "ACCEPTED_FOR_D22_FINITE_SYNTHETIC_MATRIX",
+  "prior_multi_process_result": "NOT_ACCEPTED",
+  "production_adoption": "USER_DECISION_REQUIRED_BY_SPS_9_2_2_AND_9_2_3",
+  "concrete_proposal": "production-adoption-proposal.md",
+  "next_phase_if_approved": "Formal product adoption, controlled public producer/common consumers, SP-I01/SP-D01 and original WI owner recovery",
+  "product_tools_registered": false,
+  "deployment_changed": false,
+  "original_wi_executed": false,
+  "overall_sps_acceptance": false,
+  "reusable_evidence": "acceptance-review.md;matrix-integrity-0001.json;cleanup-0001.json;runtime-copy-cleanup.json;unaffected-verification-post-d22-01.json",
+  "invalid_build": "daemon-fixture-build-07 contains old bundle after0057 failed compile; retained but never eligible for execution. Actual lifecycle uses08 after0059/60/61.",
+  "write_classification": {
+    "TRUTH_SOURCE_WRITES": "Formal Registry D22/SPS9.2.3/subordinate contract and unique project-status; no business truth writes",
+    "REPOSITORY_TRACKED_WRITES": "Unpublished synthetic C# producer and finite probes, README, experience ledger/rules, LF/archive attributes",
+    "RUNTIME_OBSERVER_WRITES": "New owned synthetic filesystem/profile/registry/Job/process/network fixtures; exact resource recovery and16 copied Node single-file cleanup",
+    "EXTERNAL_EVIDENCE_WRITES": "This phase immutable raw evidence plus initial sealing of prior3403-member archive; no subsequent modification to prior archive"
+  },
+  "inner_exit_code": 0
+}

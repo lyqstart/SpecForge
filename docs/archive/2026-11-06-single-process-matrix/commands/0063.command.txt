@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\SyntheticDaemonCrash.exe",
+  "args": [
+    "recover-intent-crash",
+    "1dbbe93e35fb4155a15b8d05e91b87f2",
+    "0ab416076a9618f572a9595d87e8edf3529e1f5c3de77c78348052f6b8d1746f"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "run-d22-recovery-intent-interruption",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=owned recovery intent and self-termination198;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-06T16:06:06.294Z"
+}

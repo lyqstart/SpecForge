@@ -1,0 +1,1 @@
+{"utc":"2026-11-06T13:42:00.6494767Z","type":"InvalidOperationException","message":"REAL_DAEMON_EXITED_BEFORE_READY","hresult":-2146233079,"application_passed":false,"inner_exit_code":1}

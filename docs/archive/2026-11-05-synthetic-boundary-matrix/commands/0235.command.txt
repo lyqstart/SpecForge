@@ -1,0 +1,11 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\InspectMatrixCleanup.exe",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix",
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/cleanup-matrix-checkpoint-0002.json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "independent-all-matrix-crash-daemon-resource-reconciliation",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=cleanup-matrix-checkpoint-0002.json and receipts",
+  "started_utc": "2026-11-06T14:21:46.425Z"
+}

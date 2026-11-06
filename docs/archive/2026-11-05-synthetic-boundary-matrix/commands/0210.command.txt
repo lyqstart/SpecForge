@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/preserve-daemon-attempt.cjs",
+    "f03aa992e3794850ae70e314bc78bcb4"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-real-daemon-crash-restart-and-stop",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable successful real daemonf03a lifecycle",
+  "started_utc": "2026-11-06T14:12:01.253Z"
+}

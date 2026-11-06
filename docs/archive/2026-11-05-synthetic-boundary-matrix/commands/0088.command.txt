@@ -1,0 +1,11 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacPrivateRegistryChild.exe",
+  "args": [
+    "--host-native-control",
+    "c9d241fb55b34b31a38dfd2c82d02d9c"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-normal-user-wmi-positive-showwindow-only",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=normal-user local WMI fixed marker control hidden via ShowWindow0 only no app verification;EXTERNAL_EVIDENCE_WRITES=raw receipts old21 preserved",
+  "started_utc": "2026-11-05T04:21:50.081Z"
+}

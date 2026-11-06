@@ -1,0 +1,11 @@
+{
+  "executable": "C:\\Program Files\\nodejs\\node.exe",
+  "args": [
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-06-single-process-matrix\\preserve-attempt.cjs",
+    "a4019c3af132409e82c74595c4effdab"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-single-resource-memory",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=owned single-process synthetic attempt;EXTERNAL_EVIDENCE_WRITES=raw receipts",
+  "started_utc": "2026-11-06T16:04:06.469Z"
+}

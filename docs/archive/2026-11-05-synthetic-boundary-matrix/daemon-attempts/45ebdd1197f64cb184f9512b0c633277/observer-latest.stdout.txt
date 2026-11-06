@@ -1,0 +1,31 @@
+Handshake file written to: D:\code\SpecForge\.tmp\verification-lpac-daemon\45ebdd1197f64cb184f9512b0c633277\opencode\sf-user\runtime\handshake.json
+[EventBus] Started
+[EventBus] Subscribe: session.* (handler: 3wbsxn44g1smw51fnmv)
+[EventBus] Subscribe: project.updated (handler: r84vzu2xbujmw51fnmw)
+[EXTENSIONS] Loading extensions...
+[EventBus] Publish: load {
+  eventId: "ext-skill-1793973385832",
+  projectId: undefined,
+  source: "daemon",
+  timestamp: "2026-11-06T13:56:25.832Z",
+}
+[EventBus] Publish: load {
+  eventId: "ext-tool-1793973385833",
+  projectId: undefined,
+  source: "daemon",
+  timestamp: "2026-11-06T13:56:25.833Z",
+}
+[EventBus] Publish: load {
+  eventId: "ext-workflow-1793973385835",
+  projectId: undefined,
+  source: "daemon",
+  timestamp: "2026-11-06T13:56:25.835Z",
+}
+[EventBus] Publish: load {
+  eventId: "ext-gate-1793973385836",
+  projectId: undefined,
+  source: "daemon",
+  timestamp: "2026-11-06T13:56:25.836Z",
+}
+[EXTENSIONS] All extensions loaded successfully in 4ms
+Daemon Core started on port 4579

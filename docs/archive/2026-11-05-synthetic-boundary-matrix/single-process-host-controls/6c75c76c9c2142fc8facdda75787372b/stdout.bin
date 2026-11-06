@@ -1,0 +1,2 @@
+SFSINGLE_BYPASS:{"pid":17764,"parent_pid":10700,"host_control":true,"parent_privileged_access":[128,40,64],"parent_privileged_open_errors":[0,0,0],"override_attribute_error":0,"override_create_error":0}
+SFSINGLE_NATIVE:{"pid":17764,"host_control":true,"child_policy_query":true,"child_policy_flags":0,"child_policy_error":0,"baseline_create_error":0,"breakaway_create_error":0,"console_allocated":true,"console_error":0,"owned_console_released":true}

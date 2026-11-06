@@ -1,0 +1,29 @@
+{
+  "utc": "2026-11-06T16:07:29.503Z",
+  "members": [
+    {
+      "source": ".tmp/verification-lpac-build/LpacSingleHostControl.exe",
+      "file": "LpacSingleHostControl.exe",
+      "bytes": 20480,
+      "sha256": "d0838b6aac02afa22985c4bea9371142cd869490d02a490749f00fb4e59768be"
+    },
+    {
+      "source": "packages/daemon-core/src/verification/windows/LpacSingleProcessProbe.cs",
+      "file": "LpacSingleProcessProbe.cs",
+      "bytes": 10907,
+      "sha256": "c9ffcd3ec1c8aa24c928b40fdd22cb458bab860b0d5cbb6f68dc76617ebec912"
+    },
+    {
+      "source": "packages/daemon-core/src/verification/windows/LpacProbeJson.cs",
+      "file": "LpacProbeJson.cs",
+      "bytes": 2471,
+      "sha256": "bed808509ae4271841ff398845c016f5ad2d74294dabcd054d86f3b63481ab24"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\docs\\archive\\2026-11-06-single-process-matrix\\run-single-process-host-control.cjs",
+      "file": "run-single-process-host-control.cjs",
+      "bytes": 2919,
+      "sha256": "8e56d82adeb379c0cf52a456dca6dbc880a1c59d9fe0f9170239871d1af69a78"
+    }
+  ]
+}

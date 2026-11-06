@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/verify-close-integrity.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "independent-old-phase-close-integrity-check",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=close-integrity.json and sealed receipts",
+  "started_utc": "2026-11-06T15:00:31.356Z"
+}

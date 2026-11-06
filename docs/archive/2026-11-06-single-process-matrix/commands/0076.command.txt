@@ -1,0 +1,17 @@
+{
+  "executable": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+  "args": [
+    "/nologo",
+    "/platform:x64",
+    "/target:exe",
+    "/optimize+",
+    "/reference:System.Web.Extensions.dll",
+    "/main:InspectSingleCleanup",
+    "/out:D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\InspectSingleCleanup.exe",
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-06-single-process-matrix\\InspectSingleCleanup.cs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "compile-d22-independent-cleanup-audit",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=readonly audit binary;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-06T16:09:17.109Z"
+}

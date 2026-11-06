@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/freeze-build.cjs",
+    "build-private-registry-02"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-private-registry-build",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=source and both executables immutable snapshot",
+  "started_utc": "2026-11-05T03:19:55.591Z"
+}

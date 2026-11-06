@@ -32274,3 +32274,177 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 先冻结同权限恢复计划，再用既有stdin/stdout/stderr句柄构造独立固定查询探针。0016未调试、实际恰好registryRead/enabled4及LPAC/Job核验，系统query0、假键query1，原始stderr为拒绝访问；未输出本轮假值UTF-8/UTF-16LE，Node0/Job0。仅证明该单键；旧默认pipe命令、旧文件入口和120s失败不改称通过。0022用实际raw及空/重复/畸形/坏控制/非零应用和两编码两管道泄漏反例回放17检查通过，畸形报告仍为owner失败而非拒绝。复用EXP-002/004/007/008/017/038/060/145/193/260/261/285。
 - 0018独立64位宿主PID/profile/假键核验通过，0019原业务/治理/源码/部署156项身份未变，0020仅删除三份已核验自有Node副本。没有增加第二capability、管道权限、既有ACL修改、真实凭据读取、产品注册/安装或WI运行；完整隔离矩阵仍未验收。
 - 附带多文件显示截断后按回执退出码/时间及实际raw分段恢复，不以未显示部分证明已读；一次查询不存在的可选review-and-validation.json导致shell1，前置四个复制已成功，缺失不作为产品测试结论。其他正式非零/中断记录保留原值，不以诊断分析exit0掩盖应用125或原120s/124。
+
+### ERR-1920：合成私有注册表仍可写，报告前缀错误掩盖主要失败
+
+- 合成矩阵0009的原生helper实际向本次新profile私有注册表写入成功，宿主读回假值；仅收紧文件ACL没有形成完整持久写入边界。应用42，owner又因SFPREG_REPORT前缀长度错误产生JSON异常。两者分别属于隔离producer缺陷和证据parser缺陷，不能以parser修复代替隔离修复。
+- 0012使用真实raw回放修正前缀；0016在新profile创建后、应用恢复前由owner核验归属并收紧其新建Storage/Children键，实际直接写与WRITE_DAC拒绝、宿主值不存在、Job空及profile回收。旧0009保持失败。复用EXP-004/007/008/145/285；新profile文件及注册表写面必须分别实测，未检查的面不得推断安全。
+
+### ERR-1921：符号链接权限与管理员夹具载体失败
+
+- 0025在应用启动前创建自有符号链接返回Windows1314；0027权限清单未含SeCreateSymbolicLinkPrivilege。未启用开发者模式或扩展应用权限。用户随后精确批准仅管理员创建两条固定夹具链接；0031非管理员与0032错误计划哈希返回65是预期拒绝，PowerShell外围返回1与内部65分别保留。
+- 0070载体在UAC之前因Get-FileHash不可用失败；0071改用同载体.NET SHA和固定hash程序，真实UAC/工厂0。0075普通用户独立核验两条链接；0079普通用户LPAC运行54项文件检查和9个DACL目标通过。批准不授予应用管理员身份。EXP-002/007/018/145/263；宿主权限不足不能算应用拒绝或跳过验收。
+
+### ERR-1922：进程数量包含conhost，最初取消覆盖被误判
+
+- 0040/0041初始取消仅看到三成员，其中含conhost，raw只有role0准备完成；因此不能证明父子孙均已就绪。旧lab proof被0059明确撤销覆盖，应用拒绝回执不改写。
+- 0044以真实raw拒绝该假阳性；0047/0048绑定三个不同Node角色、真实映像、Job和token后取消130、Job空。EXP-007/038/193；角色覆盖必须由真实输出与独立身份共同证明，不能用总PID数量代替。
+
+### ERR-1923：进程上限探针同步异常与尚未解释的配额计数差异
+
+- 0056/0057在Node spawn同步抛UNKNOWN时尚未安装事件处理，未得到完整上限证明；后续同时捕获同步异常和异步错误，未增加预算。0062/0063及0067/0068实际配置8、收到Job消息3，但独立观测9个存活成员（8个Node加conhost）；增加创建/退出时间观测仍未消除此差异。
+- 进程上限保持NOT_ACCEPTED，原因INSUFFICIENT_EVIDENCE；不能把活成员猜成已退出、放宽预期峰值或忽略conhost计入通过。后续应对照原生Accounting和PID列表及稳定时间线，保持原始预算。EXP-007/008/038/145/193。
+
+### ERR-1924：WMI正控制参数不支持与退出采集失败
+
+- 0086普通用户WMI连接成功但Win32_Process.Create返回21、PID0；原控制没有成立。去除Win32_ProcessStartup文档未列的CREATE_NO_WINDOW后，0088出现marker但托管Process退出采集InvalidOperationException，确切发生点当时证据不足，不补写exit0。
+- 0089冻结分阶段采集和原生进程句柄；0090真实Create0、PID37828、marker和payloadExit0，普通用户正控制成立。EXP-002/007/008/145；API flags必须按实际消费接口核验，marker与数值退出事实分开记录。
+
+### ERR-1925：原生COM探针未初始化、CLR收尾异常与无符号退出码溢出
+
+- 0092编译把C#保留字checked用作匿名字段，未生成新launcher；0093改为checked_rows后编译成功。0095 guest实际COM HRESULT0x800401F0；stderr另有TimerQueue.DeleteAppDomainTimer/0x8007001F终结异常，helper状态3762504530。owner Convert.ToInt32再次溢出掩盖主要失败。未初始化和数值位宽有直接raw依据；TimerQueue异常的完整因果仍INSUFFICIENT_EVIDENCE。
+- 0095两个固定挂起原生子进程（含breakaway请求）均被宿主实际核验处于同一外层Job及LPAC，随后终止；不能把创建API成功等同外层逃逸。A03正式合同允许实际拒绝或同边界证明；实验计划过严判据须先明确修订，不能静默改成功标准。
+- 当前修复为保留旧失败、64位读取Windows无符号退出事实、显式CoInitialize/直接COM/释放，并先以同桥普通用户正控制验真实接口，再新Attempt检查guest；尚未取得新成功证据，不宣称修复完成。EXP-002/004/007/008/145/193/285。
+
+### ERR-1926：恢复读取被显示预算截断及PowerShell花括号参数失败
+
+- 2026-11-06恢复时一次多文件/650行规则读取被显示预算截断；没有按该结果声明全文完成，后续按重叠小块读到EOF并记录覆盖哈希。一次PowerShell命令误用POSIX花括号路径，解析阶段Missing argument，未执行任何子命令；改为rg目录加多个-g选择器。
+- 截断ledger显示仅用于定位，实际1914..1919正文在既有同会话完整证据与本轮可见尾段分别核验；不将截断输出当新的全文读取。EXP-002/007/060/261；控制每次输出预算并保留真实失败，不把检索失败当资源缺失。
+- 一次apply_patch试图在同一patch删除并新增相同freeze-build.cjs路径，被工具校验拒绝；没有修改、没有执行后续冻结命令。改为单个Update File完整替换其小型正文，不伪造数字进程退出码。EXP-014/063/169。
+- 一次rg接收不存在的daemon*字面路径，返回Windows123；改为实际daemon目录/文件清单检索，没有据此判断daemon能力缺失。EXP-002/007。
+
+### ERR-1927：显式COM桥宿主控制类型不匹配
+
+- 0102普通用户新控制66a72810dd084216b06579edb2e968bd实际返回DISP_E_TYPEMISMATCH/0x80020005，未记录Create成功或PID；该正控制失败，禁止据此运行guest。最初host catch未消费桥的native_com_stage，具体失败成员尚未证明；不能归因LPAC权限。
+- 后续按已读取官方方法签名省略可选参数，不向COM接口参数传通用null；同时在每个反射调用附加方法和阶段、由host catch保留。先重编译冻结，再用新普通用户控制验真。EXP-002/007/008/145/193。旧0102保持失败；本轮一次查询猜测的ReplayPrivateReport.cs不存在，已改用rg文件清单，未作为产品结论。
+
+### ERR-1928：显式COM在LPAC拒绝初始化，Framework终结异常仍存在
+
+- 0105同一显式COM桥普通用户实际Create0/payloadExit0；0107真实历史unsigned状态回归4项通过。新0110的a9ea9cfb7bda40ddad27fcf7c3a908ed在co_initialize阶段返回E_ACCESSDENIED，helper随后仍因Framework TimerQueue终结异常以3762504530退出，Node42，owner明确拒绝FILE_DESCENDANT_BOUNDARY_NOT_PROVED；不再发生Int32溢出。
+- 两个固定挂起原生子进程含breakaway均被宿主核验处于同外层Job/LPAC；这一子事实不代替完整A03通过。0111封存raw，profile删除0/Job空。不能因为原生报告denied=true而忽略非零helper退出或声称实际调用到了WMI Create。
+- 当前停止复用托管COM路径进行验收，先区分原生COM返回事实与Framework生命周期兼容问题；没有安装C/C++编译器的可见证据，已定向核验PATH和常见固定工具目录，dotnet SDK存在不等于原生编译链齐备。EXP-002/007/008/019/038/145/285。并行未决的进程限额只增加Accounting/PID实际观察，原预算和失败判据不放宽。
+
+### ERR-1929：增加Accounting观测后原进程上限仍不通过
+
+- 0114/0115的5e0877abc30f462cb1965145b17a893c仍实际峰值9/原限额8、应用124、全树结束；0116封存。raw记录conhost15376与8个实际Node，batch20已完成。原标准不变，lab proof仍false，不能用限额通知3替代峰值证明。
+- 待验证假设：CREATE_NO_WINDOW路径仍产生console host，DETACHED_PROCESS可避免该额外进程。微软creation-flags文档仅说明两种flag的控制台语义，不能证明本机结果或内部配额原因；下一独立固定新构建只替换resource-process的创建flag并采集真实全成员。若仍9则排除该办法；若8须再验证正常输出、继承、取消和清理，不能外推全部矩阵。EXP-007/008/019/038/145/193。
+- 0119/0120新对照40aa3815f3ee49cbb1867de19714b739实际峰值15/限额8、应用124/Job空，0121封存；仅主进程分离不能满足总成员预算，排除该办法，不能作为修复保留。后续还原该实验标志；进程上限仍NOT_ACCEPTED，停止只换控制台flag重试。
+
+### ERR-1930：Node将UNC失败表达为UNKNOWN，不能直接当权限拒绝
+
+- 0124的962a06f4e0214f52a555906c0684fb99宿主UNC两路径前后真实读与ReadWrite-open成功、字节/ACL未变；外部1.1.1.1:443前后TCP控制成功且应用未发送数据，guest role0外部/loopback均EACCES。但四个UNC操作均Node UNKNOWN，脚本按原判据中止后代、Node42、owner拒绝，0125封存。
+- UNKNOWN不是权限拒绝证明，未验收UNC或父子孙完整外部网络。下一步先增加固定原生CreateFileW同路径读写打开对照，获取具体Win32错误；正常宿主必须0。诊断阶段仍保持UNKNOWN失败，只有实际明确政策拒绝并独立验证后才可形成新的精确消费规则。EXP-002/007/008/145/193。
+
+### ERR-1931：UNC真实错误为65，原生报告序列化路径亦触发CLR终结异常
+
+- 0129同一原生helper宿主四次CreateFileW均0。0130/0131新0f114cae4c2f43c6b05047c46ca558f4父子孙各四次实际Win32返回65，三个helper PID均由外部broker核验同LPAC/Job；微软系统错误表明确65为ERROR_NETWORK_ACCESS_DENIED。原helper仅接受5/1260的判据不完整，不应把65当未知权限语义。
+- 三个UNC helper在报告后仍出现与COM路径相同的TimerQueue终结异常，3762504530；本次不执行COM，故“必定由COM本身导致”的归因被排除。源码差异线索：既有正常私有注册表/文件ACL报告使用有限手工JSON，失败UNC/COM路径实例化System.Web JavaScriptSerializer。这是待验证假设，不能直接认定根因。
+- 下一新构建将仅guest报告序列化改为无System.Web的有限primitive/array/object JSON writer，并做实际round-trip回归；同权限重跑UNC/COM取得真实退出事实。保持旧失败，UNKNOWN继续不直接接受；65只在真实原生报告、实际PID/token/Job及宿主正控制共同核验时使用。EXP-004/007/008/019/145/193。
+- 0133真实UNC/COM报告和primitive round-trip5项通过。0138/0139同权限UNC三个helper实际退出0、stderr空，保留Node诊断42；0140宿主COM Create0/实际payloadExit0，0141/0142新f371的guest实际exit0、stderr空、COM初始化E_ACCESSDENIED、两个原生挂起子进程均在外层Job/LPAC、Job空/profile删除0。只能确认替换序列化依赖后这两条路径不再出现终结异常；内部TimerQueue完整因果未追踪，标CORROBORATED，不宣称Windows缺陷已定位。
+
+### ERR-1932：Bun固定入口与受限工具环境的父目录读取
+
+- Get-Command bun.exe未命中PATH，随后发现当前入口为npm bun.ps1且固定npm目录bun.exe真实存在；0168直接exe --version返回1.3.14/0。不能把PATH无命中当成编译器缺失，也不能直接CreateProcess运行PowerShell shim。
+- 0170真实daemon driver编译0；0171在默认受限工具范围解析harness，Bun实际返回Cannot read directory D:\\code\\: EPERM/1，harness未执行。该错误不能归为Daemon生命周期或LPAC应用隔离失败，不改变父目录ACL；下一相同固定parse命令在主机范围复核，保留旧失败。
+- EXP-002/007/008/135/145/193。运行时解析器的观察者边界与D21 guest边界分别取证，不增加应用capability或安装工具。
+
+### ERR-1933：真实Daemon测试harness的动态异步入口与混合模块加载失败
+
+- 0179的92ef74bc047c4199aca6594b50e808ad在健康见证之前退出；原始observer stderr为Bun1.3.14从configuration/dist/constants.js同步require types/dist/user-level-paths.js时报告async module unsupported。实际types文件是ESM，所读正文没有top-level await；configuration产物为CommonJS。不能把这个错误直接定位为types存在异步语句或已发布Daemon失效。
+- 失败harness使用top-level await加动态import实际Daemon，尚未写daemon-ready/worker-spawned，LPAC应用未启动。driver未记录该失败Bun进程的原生退出码，保留为未知，不能根据stderr补填1；外层driver实际exit1已封存。
+- 下一步只修正测试入口为静态导入、显式async main/catch，保持真实Daemon类、原模块与部署字节不变；新增失败finally中的稳定句柄退出事实。先封存旧失败，再冻结新fixture重试新UUID。若仍失败，改用现有正式bundle路径做同环境对照，不修改产品来迎合测试。EXP-002/007/008/019/038/145/193。
+- 0185新a2aa静态入口仍为同一require async module错误；新增observer真实记录Bun PID9916/实际exit1，仍没有daemon-ready、worker或LPAC。静态入口本身不足以解除该加载冲突，停止继续改同一未打包载体。
+- 已核对正式release-runtime-artifact-producer使用Bun build的完整bundle与__SPECFORGE_BUILD_VERSION__；下一对照将同一真实Daemon/harness完整打包后由相同固定Bun运行，不改产品模块，不将第三方runtime loader问题当已发布二进制失败。package与dist身份继续冻结、旧失败保留。bundle-only只改变私有测试装载形式，不新增LPAC后端/能力或产品工具。
+
+### ERR-1934：真实Daemon已启动，测试重定向环境触发profile归属拒绝
+
+- 0191的eed635完整bundle真实Daemon健康200、扩展加载成功，写出daemon-ready与worker-spawned；C#实际parent_lifetime_bound成立。随后CreateProfile和私有Storage保护成功，但PROFILE_OWNERSHIP_MISMATCH在应用创建前拒绝；profile cleanup0，Node未启动，不算生命周期通过。
+- CONFIRMED：GetAppContainerFolderPath记录的profile在真实用户LocalAppData/Packages；测试harness将LOCALAPPDATA/USERPROFILE重定向到自有假目录，launcher用Environment.GetFolderPath构造另一归属根。错误前未输出具体expected root，因此精确展开过程仍待验证，不将推断冒充API trace。
+- 下一独立对照只为可信C# broker恢复由原始driver窄读取的本用户LocalAppData/UserProfile路径值；Daemon自身HOME/配置/缓存仍全部隔离，Node环境仍由launcher从零构造且只指向本轮私有profile。保留原ownership guard，不修改系统/现有ACL、不授予应用真实用户目录访问。若仍拒绝再原生读取路径来源，不降低guard。EXP-002/007/008/145/193。
+- 0198的45eb父绑定/归属/LPAC/Job及三角色均成立，说明该窄环境调整使原guard正常闭合；不宣称已经逐API追踪路径展开。下一失败发生在服务硬终止后的回执消费，见ERR-1935。
+
+### ERR-1935：Daemon硬终止连带结束launcher，不能预设一定存在最终回执
+
+- 0198真实Daemon已健康，prekill稳定记录Daemon15432、broker6188及三Node/一conhost；daemon-observer-exit真实记录Daemon199。driver越过broker与全部成员等待和独立scope空清单后，读取不存在receipt.json产生FileNotFound，整体exit1。原始broker/member数值退出未在异常前落盘，保持未知，不补造140或0。
+- 原假设“launcher一定继续存活并写140回执”不成立；真实机制的内部Job归属尚未追踪，不能直接认定Bun或某系统Job为根因。无最终receipt必须分类为中断，不能把应用可能的0退出变成passed。该次真实profile/Storage仍在，需要由有归属证明的受控恢复清理。
+- 先扩展仅合成owner的失败恢复：绑定初始reservation/prekill/events/实际SID及目录时间线，独立确认原PID已退出或明确复用、无本轮映像、Windows owner与Storage ACL匹配后，只DeleteAppContainerProfile该唯一moniker；保留无回执和未知退出事实。随后新driver在尝试读最终回执之前持久化全部稳定句柄退出事实，明确支持正常140失败回执或launcher被连带中断后的恢复路径，不伪造原producer成功。EXP-004/007/008/019/038/145/193/285。
+
+### ERR-1936：固定文件程序退出0，但默认spec输出不符合冻结TAP消费合同
+
+- 0214/0215的9a7125同权限文件入口实际exit0，完成本地模块读取和写拒绝断言，Job0/profile删除0；原始输出为Node默认Unicode spec reporter，owner只接受TAP，故真实owner1，正确未计通过。脚本和模块hash均未变。
+- 首次偏离是合成命令未显式选择与consumer一致的reporter，不能修改旧回执或放宽为任意含pass的文本。下一固定命令两种模式均加入--test-reporter=tap；保留真实exit/完整TAP/marker/空stderr/输入不变判据。EXP-002/007/008/015/019/193。
+
+### ERR-1937：Node --test的绝对pattern没有发现已存在输入
+
+- 0218的0ff4文件直接入口明确TAP、app/owner均0；0219/0222的5555使用--test --test-isolation=none加绝对文件pattern时，实际app1并报告Could not find，原文件与模块真实存在且hash保留。不能据此声称文件缺失或测试运行器可用。
+- 0223原生内置源码取证已输出createTestFileList，再因natives中的非string项访问indexOf导致载体1；0224按固定模块类型校验重新取证0。此前一次读取误写不存在build-resource-guard-20，真实目录为build-resource-total-budget-20，保留工具输出，不冒充成功读取。
+- 固定Node内置源码直接证明CLI先Glob(pattern,cwd)，绝对pattern走路径分段；这是定位线索，尚不等于已追踪每个Win32访问。下一同边界命令只将--test固定pattern改为positive.cjs，cwd仍冻结input，避免从盘根遍历；不改ACL、不扩大权限。若仍失败保留失败并取证。EXP-002/007/008/015/019/193。
+
+### ERR-1938：清理复核遇到已复用但当前查询受保护的历史PID
+
+- 0235独立只读清单核对37个Attempt/288项PID观察，所有profile/Storage/假键均无残留；历史输出限额Attempt的PID8008当前访问被拒绝，完整清单正确返回1。不能将query unknown直接写成当前进程不存在。
+- 已封存0082原始清单SHA256=6b4eed2f93ac0e9ce2e052aff6f22c9b742ef6232338f684c2329da54fb911cd，直接证明6314...的原PID8008在2026-11-05T04:11:16.026953Z已经独立查询不存在；当前同号PID不能复活原进程。该连续身份判断不需要管理员读取系统进程。
+- 新消费者先固定hash校验旧清单/成功状态，严格匹配nonce+PID且旧缺席时间晚于原事件，保留当前query错误和未知创建身份，单独记录历史缺席证明。未知且没有这种证据仍失败。出生时间已证明不同的PID不再强求映像读取，映像错误另存。EXP-002/004/007/008/015/019/193。
+- 本轮几次读取根据摘要猜错归档文件名，真实目录清单已纠正；不存在文件的工具错误保留，不计入证据覆盖。后续先rg --files或目录清单再读取。
+
+### ERR-1939：只读身份复核调用的标签漏了合同前缀
+
+- 0239向verify-unaffected传post-matrix，被既有严格LABEL检查拒绝，真实exit1，未写新结果。0240改为已声明的-post-matrix后156项原始身份全部一致、原业务权限仍撤销。
+- helper参数合同是执行前检查项，不能凭标签字面猜测；拒绝与正确重试各自封存，不把前者抹除。EXP-002/007/008/015/019/193；严格参数检查已自动防护。
+
+### ERR-1940：创建前子进程限制已拒绝，探针却预设了过窄的具体错误顺序
+
+- 0245的33d6在DETACHED/实际child policy1/Job预算1下固定Node文件测试真实app/owner0、峰值1、Job0。0246/0248的857b实际policy1，普通CreateProcess367、请求breakaway5、AllocConsole367且未分配；没有后代、峰值1、Job0，但旧探针预期breakaway367和console5故实际app40/owner1，保持失败。
+- 微软win32metadata原始SDK头直接定义ERROR_CHILD_PROCESS_BLOCKED=367；GetProcessMitigationPolicy实际NoChildProcessCreation=1与精确API结果共同解释拒绝。5和367均明确拒绝，不能把其他错误或UNKNOWN概括接受。没有逐个追踪内核检查先后，不能断言内部拒绝顺序。
+- 新探针保留普通创建必须367，实际policy必须1；仅breakaway/AllocConsole接受5或367且console必须false。先冻结并运行同原生helper在普通用户独立自有目录的正控制，要求普通创建0/挂起子进程被实际终止、AllocConsole真实成功且只释放本轮控制台，再新guest运行。更窄配置仍不是旧多进程矩阵通过或产品范围决定。EXP-002/004/007/008/015/019/193/291/292。
+
+### ERR-1941：重复使用工具已拒绝的同目标delete/add补丁载体
+
+- 本窗口曾再次提交同一apply_patch内删除并新增LpacSingleProcessProbe.cs，被工具在任何写入前拒绝；没有进程退出码，不补造数字。ERR-1926已记录相同限制，本次属于重复载体错误，不能继续称未发生重复。
+- 已核对实际源仍匹配build29封存raw身份；改为归档内受控生成器，以固定旧hash和精确替换次数为前置条件，任何漂移拒绝，再立即编译。活动EXP-014增加明确禁用该载体及替换防护。原失败工具记录保留，未删除源码或覆盖封存构建。
+
+### ERR-1942：新增清理清单也遇到系统复用PID，最低原生查询仍被拒绝
+
+- 0274/0279核验50个资源身份/306项PID观察，唯一未知为f0af的挂起对照PID12184；其control_terminated_never_resumed在14:38:44已有真实记录。旧0082缺席清单不覆盖本轮，不能硬套旧PID8008的证明。
+- 初次.NET查询和随后PROCESS_QUERY_LIMITED_INFORMATION(0x1000)均5，源/二进制分别冻结readonly-inventory03/04，失败原样保留。不能申请管理员或将unknown置为缺席。
+- 0280独立本机提供者只读取该PID的名称/创建时间（无CommandLine/内存）：当前SearchProtocolHost.exe创建于2026-11-06T14:44:31.9379770Z，晚于原对照事件。raw SHA256=34f64678e446538b0ed929b28620f496fa2c9177206107c15060ba5c058bc10b。旧进程不能复活为这个后创建的身份。
+- 新清单绑定原始封存查询的固定hash、数值退出、PID和创建/采集时间线，原生查询未知仍保留。未知且无匹配独立身份记录仍失败。活动EXP-294同步该类防护。另0275本机WMI self正对照1、六nonce当前匹配0、不可用Node命令行0；旧c9d未知历史PID/退出不补写。
+
+### 本轮后续实证补记（保留原失败）
+
+- ERR-1935：0201/0202按归属恢复45eb资源且幂等；可信broker改用detached生命周期后，0208真实Daemon199、broker1、application140、四成员结束、Job0/profile删除0；0209实际新Daemon健康200、鉴权stop200、exit0/握手清理。未改变应用Job的breakaway禁止。
+- ERR-1936/1937：0218固定文件显式TAP0，0227相对pattern的Node内置runner0；0260在禁止子进程/Job1/--no-addons下原生TypeScript/ESM导入和写拒绝0。旧命令失败不改。
+- ERR-1940：0265宿主三类父句柄/override创建/控制台正控制实际0；0266 guest三句柄5、普通创建367、breakaway5、override367、console367且未分配，app/owner0、峰值1/Job0/profile0；0269真实报告和PID/父绑定/退出/协议/绕行反例18项通过。窄范围用户已明确采用，正式合同与完整新矩阵另阶段实施，不构成D21生产采用。
+- 默认工具环境的一次git ls-remote返回DNS解析失败/1；随后主机只读查询明确远端main仍53bf7d6c33575d765b2bc23805f32e8d5d34ac6c，核验前未继续修改。未更改remote或Git网络设置。EXP-002/007/008/145/193。
+
+### ERR-1943：新阶段Bootstrap在受限工具网络再次DNS失败
+
+- 新阶段0002只读Bootstrap真实exit2/REMOTE_MAIN_UNAVAILABLE；未继续运行新实验。0003同一Node/Bootstrap载体在主机网络只读核验main53bf7d6c33575d765b2bc23805f32e8d5d34ac6c后READY/0。没有改remote、网络设置或应用权限。
+- 后续需要远端的Bootstrap/Git核验使用已证实可用的主机网络上下文；这是外部工具网络隔离差异，不能归为LPAC应用能力或远端仓库缺失。EXP-002/007/008/145/193。
+
+### ERR-1944：旧A01汇总错误声称目录联接覆盖
+
+- 复核冻结LpacAliasFixture源码与实际事件：创建的是硬链接和两条真实符号链接，第三负路径是Windows扩展绝对路径；没有mount-point reparse tag/目录联接创建证据。旧acceptance-review将directory junction列入CONFIRMED属于过度结论。
+- 旧阶段整体仍NOT_ACCEPTED且没有产品采用，原封存3403成员不改；新阶段prior-evidence-corrections.json明确目录联接NOT_PROVED。D22 SP-A01将补真实目录联接及宿主目标正控制，核验原生reparse tag而非路径名称。EXP-002/004/007/008/015/193。
+
+### ERR-1945：新内联判据把MemoryStream当集合使用Count
+
+- 新阶段0014实际C#编译CS0019/1；stderr.Bytes的真实声明为MemoryStream，Count解析为扩展方法组，不能与0比较。错误在编译前置被拦，没有启动新profile或测试，不使用旧exe冒充新构建。
+- 精确改为MemoryStream.Length，失败源另存compile-failure-0014；重编译成功后才冻结/执行。对新增字符串的取证同时确认C#换行转义实际均为一个反斜杠，没有根据显示转义猜测并额外修改。EXP-002/007/008/014/015/019/292；编译前置与实际新命令正例为类防护。
+
+### ERR-1946：普通宿主元数据检查被.NET Framework旧扩展路径处理拦截
+
+- 新阶段0028原生退出位值3762504530（PowerShell外层显示同一32位值为-532462766），原始stderr为FileIOPermission/Path.GetFullPath的ArgumentException非法路径字符；不是此前LPAC TimerQueue终结错误。该检查没有启动profile/应用，不更改系统权限。
+- 使用原生CreateFileW读取已冻结的本地扩展路径时，仅对\\?\本地盘符前缀作明确处理，避免将该前缀送入旧BCL规范化；普通路径规则不放宽。失败源/二进制保存在input-identity-build01，修正版build02执行0030真实exit0：普通单链接正例、实际nlink2硬链接拒绝、真实mount-point tag0xA0000003/目标正控制与拒绝、两个旧symbolic tag0xA000000C只读拒绝、扩展路径tag0均成立。旧失败和未完成夹具保留，未复用UUID。
+- 输入校验拒绝祖先和末端reparse后才读内容，不提前跟随未知目标；新owner同时绑定物理文件身份、完整集合与原字节hash并在结束后复核。活动EXP-295固化对象类型与读取顺序防护。另一次补丁上下文误写为独立environment释放行被工具整体拒绝，核对无写入后按真实组合行位置修正，未补造进程退出码。EXP-002/007/008/014/015/019/193/295。
+
+### ERR-1947：多目标补丁失败后现场已有部分目标变化
+
+- D22新注册表/资源接线两次工具调用返回未找到旧上下文；随后的实际逐文件读取确认：Canary/OwnedRegistryGuard、ResourceProbe已含目标变化，StartupPoc仍缺后续接线。失败输出不能证明整个工作区无写入，未确认的内部工具行为不作为根因。
+- 按实际文件仅补齐StartupPoc，复杂剩余接线使用固定旧raw哈希de5c222c及严格替换次数的生成器0044，编译0039/40及0045成功才冻结运行。EXP-014加入失败后逐目标实读防护；保留工具原错误，不补造进程退出码。
+
+### ERR-1948：Daemon合成bundle在受限终端编译失败，后续冻结曾包含旧bundle
+
+- 0057实际Bun编译exit1，原始错误Cannot read directory D:\\code\\ EPERM；0058冻结目录07包含此前残留bundle，不具本轮新harness构建来源，明确INVALID_FOR_EXECUTION，未用于测试。
+- 普通宿主上下文0059重试同一构建命令成功/0，545模块；随后0060重编译绑定新label08的驱动，0061冻结08，才执行0062及0067的真实launcher/Daemon试验。旧失败及无资格快照07全部保留。没有扩张LPAC权限或更新部署。
+- 类防护：依赖构建必须按真实数值退出码逐步放行；对冻结文件同时核验本轮生产来源，不能只证明磁盘文件存在。EXP-007/008/014/016/193/292。另有只读检索误猜历史清理脚本和build路径，真实文件不存在错误保留；改用rg --files库存选取真实文件，未作任何写入或用空输出断言能力缺失。

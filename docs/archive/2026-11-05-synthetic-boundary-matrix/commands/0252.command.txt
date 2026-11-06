@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/freeze-build.cjs",
+    "build-single-process-27"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-exact-child-policy-denial-reports",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable build27",
+  "started_utc": "2026-11-06T14:33:56.030Z"
+}

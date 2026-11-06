@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/freeze-build.cjs",
+    "build-network-unc-16"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-network-unc-build",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable build16",
+  "started_utc": "2026-11-06T13:03:40.891Z"
+}

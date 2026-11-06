@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/preserve-attempt.cjs",
+    "64df4b4d3707424eae3a9c0e33133353"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-rejected-unbound-parent",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable prestart negative64df",
+  "started_utc": "2026-11-06T13:41:06.295Z"
+}

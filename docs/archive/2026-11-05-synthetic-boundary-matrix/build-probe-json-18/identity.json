@@ -1,0 +1,120 @@
+{
+  "utc": "2026-11-06T13:09:04.130Z",
+  "hash_domain": "raw filesystem bytes",
+  "members": [
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacStartupPoc.cs",
+      "file": "LpacStartupPoc.cs",
+      "bytes": 44273,
+      "sha256": "b4c99f80f7ee5b2084d003cbfcf1df047f1a983e0a4a2d319dd2446fef3ccb06"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacReadTrace.cs",
+      "file": "LpacReadTrace.cs",
+      "bytes": 22122,
+      "sha256": "328dc7734b34c650f54b69c7bf8df72dae8865babb9240c5ae306919be8af171"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacRegistryReadCapability.cs",
+      "file": "LpacRegistryReadCapability.cs",
+      "bytes": 2599,
+      "sha256": "0b8bbdfb852bbf9474a7cfe532d51239e5560af9942b158a4d70ef719fd6370f"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacRegistryReadCanary.cs",
+      "file": "LpacRegistryReadCanary.cs",
+      "bytes": 11530,
+      "sha256": "a8bd361c6e42039e2756b32e36a1a8b3ac821c31a290cb24aab6c202fd13f937"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacFileBoundaryProbe.cs",
+      "file": "LpacFileBoundaryProbe.cs",
+      "bytes": 18448,
+      "sha256": "6e00c215f747ef8b1c2fa1b3decab11f62aa487e4beeae5718c47e7a0e885626"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacNativeWmiCom.cs",
+      "file": "LpacNativeWmiCom.cs",
+      "bytes": 4004,
+      "sha256": "d7faac752aef3a20524a58efd5f0098813d55604273c3c07f081974806708584"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacNativeBoundaryProbe.cs",
+      "file": "LpacNativeBoundaryProbe.cs",
+      "bytes": 9230,
+      "sha256": "4423fd8fd90016584866bac52b196786db07a9ae9bb2477fc1ce60655c0f8547"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacNetworkAndUncFixture.cs",
+      "file": "LpacNetworkAndUncFixture.cs",
+      "bytes": 2307,
+      "sha256": "fe863dd12b1b7504bee86dfc7df119f35268d1b36a940c5d4bd77adb8842730b"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacUncProbe.cs",
+      "file": "LpacUncProbe.cs",
+      "bytes": 2012,
+      "sha256": "7f239e7d348687ef0488390d79496e6bccefe03203a99b338a8f8c86fa1cec7b"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacJobNotifications.cs",
+      "file": "LpacJobNotifications.cs",
+      "bytes": 2381,
+      "sha256": "e6f08c6a8460f66d088cc0577279f6b8d060c8e20d424e283814ce6ab66c540e"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacResourceProbe.cs",
+      "file": "LpacResourceProbe.cs",
+      "bytes": 4897,
+      "sha256": "b2f884469c57b25394b7e4460178f31f77f8e94ab180a59417a976e8351d3a56"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacAliasFixture.cs",
+      "file": "LpacAliasFixture.cs",
+      "bytes": 5611,
+      "sha256": "f910b543c3ac18ab9a6581c172e5387193bc48a6df9a7894ff4c209b58e58ecd"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacLoopbackFixture.cs",
+      "file": "LpacLoopbackFixture.cs",
+      "bytes": 2197,
+      "sha256": "b3d2eff55f5be447b3200d4479e1500d15e7e1f1a8785c87381723a7cb4cfe67"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacFileAclAttack.cs",
+      "file": "LpacFileAclAttack.cs",
+      "bytes": 3875,
+      "sha256": "c6ce80b29f258701f1dd4098c307af1b98419fd9006c566dbbce50810e5b5839"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacOwnedRegistryGuard.cs",
+      "file": "LpacOwnedRegistryGuard.cs",
+      "bytes": 3259,
+      "sha256": "98bd09137cbb73df0e27e65519285aab1890e49829963363fd5200607cc2e7c1"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacPrivateRegistryChild.cs",
+      "file": "LpacPrivateRegistryChild.cs",
+      "bytes": 5498,
+      "sha256": "4861c2266a2d0f6aeb8b5f1bb6c973156f3f7e4bc32dcd39d6ebeb3432b38092"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacPrivateRegistryChild.exe",
+      "file": "LpacPrivateRegistryChild.exe",
+      "bytes": 40448,
+      "sha256": "ab0cd69228afccf3c1990bcbea7cba093df18e20197e5bec916acace3dc7518e"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+      "file": "LpacRegistryReadPoc.exe",
+      "bytes": 229888,
+      "sha256": "5cccf1daa05c54ba92fe35ab3c9fe990654cace0fecc2225b8ced7a5b47e0df4"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacProbeJson.cs",
+      "file": "LpacProbeJson.cs",
+      "bytes": 2471,
+      "sha256": "bed808509ae4271841ff398845c016f5ad2d74294dabcd054d86f3b63481ab24"
+    }
+  ]
+}

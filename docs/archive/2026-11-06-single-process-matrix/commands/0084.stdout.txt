@@ -1,0 +1,1 @@
+{"utc":"2026-11-06T16:16:16.513Z","audit_members":5,"cjs_syntax_checked":26,"diff_check_exit":0,"failed_bundle07_identified_and_excluded":true,"source_byte_domain":"Raw frozen files are preserved verbatim in archive; Git C# source uses LF text normalization. Archived binary/run identity is never replaced by a normalized Git blob hash.","inner_exit_code":0}

@@ -1,0 +1,36 @@
+{
+  "utc": "2026-11-05T03:47:51.581Z",
+  "kind": "cancel",
+  "attempt": "9075df3505724281994501717056e45b",
+  "launcher_direct_exit": 1,
+  "application_exit_code": 130,
+  "expected_rejection_proved": true,
+  "production_execution_passed": false,
+  "owner_outcome": {
+    "kind": "cancel",
+    "expected_rejection_proved": true,
+    "application_passed": false,
+    "application_exit_code": 130,
+    "job_all_ended": true,
+    "timed_out": false,
+    "owner_cancelled": true,
+    "parent_exit_with_live_descendants": false,
+    "independently_verified_processes": 4,
+    "ready_node_roles_independently_bound": 3,
+    "peak_active_processes": 4,
+    "stdout_overflow": false,
+    "stderr_overflow": false,
+    "job_messages": [
+      6,
+      7,
+      4,
+      6,
+      6,
+      6,
+      6,
+      4
+    ],
+    "scope": "Synthetic expected rejection only; not a passed production execution or full isolation acceptance"
+  },
+  "inner_exit_code": 0
+}

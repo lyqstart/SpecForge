@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/seal-final.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "seal-prior-incomplete-multi-process-evidence",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=old immutable manifest and check; new phase command receipt",
+  "started_utc": "2026-11-06T15:03:37.027Z"
+}

@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/run-resource-case.cjs",
+    "process",
+    "2c4f61785c104984bdbf9f9d8c7d92d5",
+    "build-resource-liveness-10"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-resource-process-native-liveness",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned8-process LPAC Job with independent live versus listed PID evidence and cleanup;EXTERNAL_EVIDENCE_WRITES=receipts expected rejection proof only",
+  "started_utc": "2026-11-05T03:53:41.453Z"
+}

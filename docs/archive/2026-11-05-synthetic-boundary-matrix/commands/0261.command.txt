@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/preserve-node-file-attempt.cjs",
+    "f0af87ae838741dcbee8f1b91752358f"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-single-process-typescript-esm-inputs",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable TypeScript package module test and raw",
+  "started_utc": "2026-11-06T14:39:20.019Z"
+}

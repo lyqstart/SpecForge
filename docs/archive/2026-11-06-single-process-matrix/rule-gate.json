@@ -1,0 +1,281 @@
+{
+  "utc": "2026-11-06T15:12:29.198Z",
+  "run_id": "CODEX-SF-20261106-SINGLE-PROCESS-MATRIX-A01",
+  "attempt_id": "CODEX-SF-20261106-SINGLE-PROCESS-MATRIX-A01-01",
+  "mode": "CODEX_DIRECT",
+  "bootstrap": "0003 READY with actual host-network remote main53bf7d6c; planned registry metadata version/role update subsequently read",
+  "experience_file_read": "YES",
+  "active_experience_rules_file_read": "YES",
+  "applicable_experience_rules": [
+    "EXP-002",
+    "EXP-004",
+    "EXP-007",
+    "EXP-008",
+    "EXP-014",
+    "EXP-015",
+    "EXP-017",
+    "EXP-038",
+    "EXP-145",
+    "EXP-193",
+    "EXP-260",
+    "EXP-261",
+    "EXP-285",
+    "EXP-287",
+    "EXP-291",
+    "EXP-292",
+    "EXP-293",
+    "EXP-294"
+  ],
+  "historical_ledger_search": "LPAC/child process/AllocConsole/override/resource owner; ERR-1920..1942 headers and applicable actual raw cases; EXP-291..294",
+  "repeated_error_check": "PASS",
+  "prior_repeated_error": "ERR-1941 preserved; no repeated delete/add carrier; exact source-hash/replace-count guard used",
+  "required_rule_read_composition": [
+    {
+      "file": "docs/rule/specforge-active-development-rules.md",
+      "prior_complete_read_raw_sha256": "de23c0d38acda18052752344805703f2df53cd502503925a51c0341573b19d74",
+      "current_raw_sha256": "c373b396d28364c567e90b08890375f36b5573e0ab14bd1c3596fee3fc7cf137",
+      "current_total_lines": 2627,
+      "changed_line_ranges": [
+        {
+          "first": 102,
+          "last": 103
+        },
+        {
+          "first": 2606,
+          "last": 2627
+        }
+      ],
+      "current_delta_actual_read_ranges": [
+        [
+          99,
+          118
+        ],
+        [
+          2581,
+          2627
+        ]
+      ],
+      "coverage": "Unchanged text covered by verified same-conversation complete window03 reads; changed text actually read in this stage. No new full-read claim inferred from hashes alone.",
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 200,
+          "raw_sha256": "0d892ad88c6790f9ec44f1886391a7cd98af3250524cd83fb1c38d692813a458"
+        },
+        {
+          "first_line": 201,
+          "last_line": 400,
+          "raw_sha256": "2d5d13555319e7fadbfc8bd4ec3f3870d6fa62b088cf7d69b528f46684b04e94"
+        },
+        {
+          "first_line": 401,
+          "last_line": 600,
+          "raw_sha256": "2958243ed933f6cd9a1ac84e581e93723ad8b0a148f050e6f8f7ad94e9e0a2bd"
+        },
+        {
+          "first_line": 601,
+          "last_line": 800,
+          "raw_sha256": "8f6653f9a39b8a0c1cc1cc9643c0fc5c488fb94e025fdee8c187cbcc2362562d"
+        },
+        {
+          "first_line": 801,
+          "last_line": 1000,
+          "raw_sha256": "611de3477bc2bf0434dd3961c69e5d8dc2967b88a1eae04af85a111d535ed1d8"
+        },
+        {
+          "first_line": 1001,
+          "last_line": 1200,
+          "raw_sha256": "b4608e62e94f27a8eee7f3ab60ba72e72474457e6aa5111c409d233272b21f93"
+        },
+        {
+          "first_line": 1201,
+          "last_line": 1400,
+          "raw_sha256": "86bbcbb73072c124c652b0fb57752a239ea84c76d0ac3ff89623cf0327da6d48"
+        },
+        {
+          "first_line": 1401,
+          "last_line": 1600,
+          "raw_sha256": "1fef28af42004520c48b77bd83d4fced05b3df7f6c09d9d077e79e5b512828df"
+        },
+        {
+          "first_line": 1601,
+          "last_line": 1800,
+          "raw_sha256": "8bfd3d83cd2cbb212f88cabc682e560fd867000ed0d3e1078eb78c9c93fe1489"
+        },
+        {
+          "first_line": 1801,
+          "last_line": 2000,
+          "raw_sha256": "67d81310bcc2e4aa87c1f3a8c14336e79bb3e2ad1ce54b0f6c73f19a90e9a575"
+        },
+        {
+          "first_line": 2001,
+          "last_line": 2200,
+          "raw_sha256": "bf1567286111aff6c15e0a169613fbb2504a077aaa3de72fa90198d492e4f088"
+        },
+        {
+          "first_line": 2201,
+          "last_line": 2400,
+          "raw_sha256": "4fa9361ebf5d17e29ce72d0a33581a2ea12789c68adae7f1aeb53ccd7b0f30ba"
+        },
+        {
+          "first_line": 2401,
+          "last_line": 2600,
+          "raw_sha256": "e740ee5a4cf1f22c84d650c691f9ffb9cff1ab190847ac1cfe5233289c310e47"
+        },
+        {
+          "first_line": 2601,
+          "last_line": 2627,
+          "raw_sha256": "6c786fbe05e647378cf5b633cb2ad7930cbc5e9f2a348fd9c27c632234c2efee"
+        }
+      ],
+      "reconstructed_bytes_equal": true
+    },
+    {
+      "file": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "prior_complete_read_raw_sha256": "956df3943a44d1b99636790a32e9b2a0dc266b7116f50b60b7b8c6f2614423ac",
+      "current_raw_sha256": "956df3943a44d1b99636790a32e9b2a0dc266b7116f50b60b7b8c6f2614423ac",
+      "current_total_lines": 232,
+      "changed_line_ranges": [],
+      "current_delta_actual_read_ranges": [],
+      "coverage": "Unchanged text covered by verified same-conversation complete window03 reads; changed text actually read in this stage. No new full-read claim inferred from hashes alone.",
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 200,
+          "raw_sha256": "cfa23aceeb8da999fe640308a4b9bd0b482cb09cb6236c7edc249c58a5e415bb"
+        },
+        {
+          "first_line": 201,
+          "last_line": 232,
+          "raw_sha256": "411ddf6a969864a3c8205ffad3c94ad3af0f1fd029b4420a105bede7b97cd640"
+        }
+      ],
+      "reconstructed_bytes_equal": true
+    },
+    {
+      "file": "docs/rule/specforge-execution-mode-and-evidence-protocol.md",
+      "prior_complete_read_raw_sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef",
+      "current_raw_sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef",
+      "current_total_lines": 182,
+      "changed_line_ranges": [],
+      "current_delta_actual_read_ranges": [],
+      "coverage": "Unchanged text covered by verified same-conversation complete window03 reads; changed text actually read in this stage. No new full-read claim inferred from hashes alone.",
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 182,
+          "raw_sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef"
+        }
+      ],
+      "reconstructed_bytes_equal": true
+    },
+    {
+      "file": "docs/product-specification/authority-registry.md",
+      "prior_complete_read_raw_sha256": "fd12e23c1434a846d79563856804f317411b68bd196e1cdba867792f48e1c206",
+      "current_raw_sha256": "a72b7a645b559f81592ac20e5b44a25cb5c14ecab40fc837d6a5f44420493c33",
+      "current_total_lines": 143,
+      "changed_line_ranges": [
+        {
+          "first": 7,
+          "last": 7
+        },
+        {
+          "first": 46,
+          "last": 46
+        },
+        {
+          "first": 73,
+          "last": 73
+        }
+      ],
+      "current_delta_actual_read_ranges": [
+        [
+          1,
+          143
+        ]
+      ],
+      "coverage": "Unchanged text covered by verified same-conversation complete window03 reads; changed text actually read in this stage. No new full-read claim inferred from hashes alone.",
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 143,
+          "raw_sha256": "a72b7a645b559f81592ac20e5b44a25cb5c14ecab40fc837d6a5f44420493c33"
+        }
+      ],
+      "reconstructed_bytes_equal": true
+    },
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "prior_complete_read_raw_sha256": "586015479eee087249d2a18d82f6ce5065a8aa0e54e0c5a9bbc1483fb9d28622",
+      "current_raw_sha256": "671e15e6c578d74d7c16ae466ee191251a9ac903789143fadb8eeb5791ce2aea",
+      "current_total_lines": 1671,
+      "changed_line_ranges": [
+        {
+          "first": 696,
+          "last": 707
+        }
+      ],
+      "current_delta_actual_read_ranges": [
+        [
+          674,
+          718
+        ]
+      ],
+      "coverage": "Unchanged text covered by verified same-conversation complete window03 reads; changed text actually read in this stage. No new full-read claim inferred from hashes alone.",
+      "chunks": [
+        {
+          "first_line": 1,
+          "last_line": 200,
+          "raw_sha256": "38df706d2d2635e86386d2128682c47ed50d0f583819660d71835f20f4d4f848"
+        },
+        {
+          "first_line": 201,
+          "last_line": 400,
+          "raw_sha256": "48815d0532e7baaa46f7c3b5a8d36649a217ba171af91d95a77648293e65da4f"
+        },
+        {
+          "first_line": 401,
+          "last_line": 600,
+          "raw_sha256": "25d1d98047f2eb1cf803c3522f349ec105b63b73e1f17a052397c80523edfb54"
+        },
+        {
+          "first_line": 601,
+          "last_line": 800,
+          "raw_sha256": "27ebe8edc3ceac951b35d8bc2c87c47f226d8b2cb51dc3a2ef101ceecd021d9e"
+        },
+        {
+          "first_line": 801,
+          "last_line": 1000,
+          "raw_sha256": "812bd9210d7a41659da3bc1f656ae98ff503210a728418ffda14938795b492fd"
+        },
+        {
+          "first_line": 1001,
+          "last_line": 1200,
+          "raw_sha256": "0b16ebbf275dd3365911ae104e6d46f0913c8d38ef8e5e2af36c85de2dcff8fa"
+        },
+        {
+          "first_line": 1201,
+          "last_line": 1400,
+          "raw_sha256": "279d5382a652aa152e70341ad7dabb3e254bf7a00c23fafa33c1d74dbaaade05"
+        },
+        {
+          "first_line": 1401,
+          "last_line": 1600,
+          "raw_sha256": "8ca3e6e599fd96bda88c5f3f0f121aa9076a9958aa31a0036078f979ebf7a314"
+        },
+        {
+          "first_line": 1601,
+          "last_line": 1671,
+          "raw_sha256": "617f4ec8aeddb66d993facb83b0bec8dc0f45bf6a94c30b60875335593388cc4"
+        }
+      ],
+      "reconstructed_bytes_equal": true
+    }
+  ],
+  "subordinate_contract_read": "Full current file actually read after D22 update",
+  "prior_sealed_members_verified": 3403,
+  "installer_templates_deployment": "Unchanged: prototype not wired or registered. Only synthetic source/authority/evidence changes in this phase.",
+  "product_enabled": false,
+  "original_wi_executed": false,
+  "inner_exit_code": 0
+}

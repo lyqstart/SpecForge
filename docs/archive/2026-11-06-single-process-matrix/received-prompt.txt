@@ -1,0 +1,5 @@
+继续修，除非能说“按规格已经能正常运行”
+
+是否采用这份[单进程首期方案](D:/code/SpecForge/docs/archive/2026-11-05-synthetic-boundary-matrix/single-process-scope-proposal.md)：首期只支持不创建子进程的只读 Node 内置测试，需要子进程的测试明确拒绝；保持严格进程上限，先更新正式规格并完成新配置的全部隔离验收，暂不启用产品执行？原多进程方案仍记为未通过。
+
+采用单进程首期方案

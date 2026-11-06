@@ -1,0 +1,17 @@
+SFFILE_TEST_ASSERTIONS_PASSED
+TAP version 13
+# Subtest: fixed readonly file and builtin modules
+ok 1 - fixed readonly file and builtin modules
+  ---
+  duration_ms: 2.3672
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 15.701

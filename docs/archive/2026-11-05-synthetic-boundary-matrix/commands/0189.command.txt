@@ -1,0 +1,18 @@
+{
+  "executable": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+  "args": [
+    "/nologo",
+    "/platform:x64",
+    "/target:exe",
+    "/optimize+",
+    "/reference:System.Web.Extensions.dll",
+    "/main:SyntheticLauncherCrash",
+    "/out:D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\SyntheticDaemonCrash.exe",
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix\\SyntheticLauncherCrash.cs",
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix\\SyntheticDaemonCrash.cs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "compile-full-bundle-daemon-driver",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=unpublished driver;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-06T13:50:51.908Z"
+}

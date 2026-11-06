@@ -1,0 +1,1 @@
+{"binary_sha256":"98d8b28eef446c5f1f702e48188935aae896296b22d738078d7998804e8612f7","plan_sha256":"32406b5a5c46cccbe50973f223f8963516eb5c3168dd7d14b9b201105f264ffe","negative_guards":"CONFIRMED_REJECTION","owned_files_unchanged":true,"admin_execution":"NOT_EXECUTED","inner_exit_code":0}

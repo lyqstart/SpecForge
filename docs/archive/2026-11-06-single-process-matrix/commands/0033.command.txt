@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+  "args": [
+    "--synthetic-registry-read-single-process-typescript",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\9175fdfe184e413c92680146996c17f6",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "sp-p01-nested-ts-with-physical-identity-before-after",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned D22 single-process profile Job and cleanup;EXTERNAL_EVIDENCE_WRITES=raw before-after physical file identities and hashes",
+  "started_utc": "2026-11-06T15:51:08.698Z"
+}

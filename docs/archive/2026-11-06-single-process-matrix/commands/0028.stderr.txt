@@ -1,0 +1,6 @@
+
+δ���������쳣:  System.ArgumentException: ·���о��зǷ��ַ���
+   �� System.Security.Permissions.FileIOPermission.EmulateFileIOPermissionChecks(String fullPath)
+   �� System.Security.Permissions.FileIOPermission.QuickDemand(FileIOPermissionAccess access, String fullPath, Boolean checkForDuplicates, Boolean needFullPath)
+   �� LpacInputIdentity.Inspect(String path, Boolean resolveTarget)
+   �� InputIdentityFilesystemProbe.Main(String[] args)

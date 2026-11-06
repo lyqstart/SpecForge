@@ -8,6 +8,7 @@
 *.jsx text eol=lf
 *.mjs text eol=lf
 *.cjs text eol=lf
+packages/daemon-core/src/verification/windows/*.cs text eol=lf
 
 # SpecForge generated workflow Skill docs are rendered and compared byte-for-byte.
 setup/userlevel-opencode/skills/sf-workflow-*/SKILL.md text eol=lf
@@ -49,3 +50,5 @@ docs/archive/2026-10-19-config-activation-loss-evidence/** -text -diff
 /docs/archive/2026-11-04-winsock-isolation-diagnosis/** -text -diff
 /docs/archive/2026-11-04-registry-read-experiment/** -text -diff
 /docs/archive/2026-11-04-canary-producer-diagnosis/** -text -diff
+/docs/archive/2026-11-05-synthetic-boundary-matrix/** -text -diff
+/docs/archive/2026-11-06-single-process-matrix/** -text -diff

@@ -1,0 +1,29 @@
+{
+  "executable": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+  "args": [
+    "/nologo",
+    "/platform:x64",
+    "/target:exe",
+    "/optimize+",
+    "/reference:System.Web.Extensions.dll",
+    "/out:D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+    "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacStartupPoc.cs",
+    "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacReadTrace.cs",
+    "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacRegistryReadCapability.cs",
+    "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacRegistryReadCanary.cs",
+    "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacFileBoundaryProbe.cs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "compile-file-descendant-probe",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=compiled same-D21 fixed probe;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-05T03:16:24.745Z",
+  "finished_utc": "2026-11-05T03:16:25.525Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_writes": {
+    "repository_status_before": " M .gitattributes\n M docs/project-status.md\n M packages/daemon-core/src/verification/windows/LpacStartupPoc.cs\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/authorization.json\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/change-plan.md\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0001.command.txt\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0001.manifest.sha256\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0001.receipt-seal.json\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0001.result.json\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0001.stderr.raw.bin\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0001.stderr.txt\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0001.stdout.raw.bin\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0001.stdout.txt\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0002.command.txt\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/file-descendant-plan.md\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/freeze-build.cjs\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/initialize.cjs\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/journal.jsonl\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/preserve-attempt.cjs\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/run-command.cjs\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/seal-final.cjs\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/seal-receipts.cjs\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/set-phase.cjs\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/verify-final-publication.cjs\n?? packages/daemon-core/src/verification/windows/LpacFileBoundaryProbe.cs\n",
+    "repository_status_after": " M .gitattributes\n M docs/project-status.md\n M packages/daemon-core/src/verification/windows/LpacStartupPoc.cs\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/authorization.json\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/change-plan.md\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0001.command.txt\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0001.manifest.sha256\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0001.receipt-seal.json\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0001.result.json\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0001.stderr.raw.bin\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0001.stderr.txt\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0001.stdout.raw.bin\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0001.stdout.txt\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0002.command.txt\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0002.stderr.raw.bin\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0002.stderr.txt\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0002.stdout.raw.bin\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/commands/0002.stdout.txt\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/file-descendant-plan.md\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/freeze-build.cjs\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/initialize.cjs\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/journal.jsonl\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/preserve-attempt.cjs\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/run-command.cjs\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/seal-final.cjs\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/seal-receipts.cjs\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/set-phase.cjs\n?? docs/archive/2026-11-05-synthetic-boundary-matrix/verify-final-publication.cjs\n?? packages/daemon-core/src/verification/windows/LpacFileBoundaryProbe.cs\n",
+    "other": "See expected writes and owner-specific receipt; status does not enumerate external runtime writes."
+  }
+}

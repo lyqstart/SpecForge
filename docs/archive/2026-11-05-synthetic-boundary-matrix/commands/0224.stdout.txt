@@ -1,0 +1,530 @@
+internal/fs/glob:20
+} = primordials;
+
+const {
+  lstatSync,
+  readdirSync,
+  realpathSync,
+  statSync,
+} = require('fs');
+const {
+internal/fs/glob:22
+const {
+  lstatSync,
+  readdirSync,
+  realpathSync,
+  statSync,
+} = require('fs');
+const {
+  lstat,
+  readdir,
+internal/fs/glob:23
+  lstatSync,
+  readdirSync,
+  realpathSync,
+  statSync,
+} = require('fs');
+const {
+  lstat,
+  readdir,
+  realpath,
+internal/fs/glob:28
+const {
+  lstat,
+  readdir,
+  realpath,
+  stat,
+} = require('fs/promises');
+const { join, resolve, basename, isAbsolute, dirname } = require('path');
+
+const {
+internal/fs/glob:81
+function getDirentSync(path) {
+  let stat;
+  try {
+    stat = lstatSync(path);
+  } catch {
+    return null;
+  }
+  return new DirentFromStats(basename(path), stat, dirname(path));
+}
+internal/fs/glob:140
+  #statsCache = new SafeMap();
+  #followStatsCache = new SafeMap();
+  #readdirCache = new SafeMap();
+  #realpathCache = new SafeMap();
+
+  stat(path) {
+    const cached = this.#statsCache.get(path);
+    if (cached) {
+      return cached;
+internal/fs/glob:151
+    this.#statsCache.set(path, promise);
+    return promise;
+  }
+  statSync(path) {
+    const cached = this.#statsCache.get(path);
+    // Do not return a promise from a sync function.
+    if (cached && !(cached instanceof Promise)) {
+      return cached;
+    }
+internal/fs/glob:177
+    }
+    let val;
+    try {
+      val = statSync(path);
+    } catch {
+      val = null;
+    }
+    this.#followStatsCache.set(path, val);
+    return val;
+internal/fs/glob:184
+    this.#followStatsCache.set(path, val);
+    return val;
+  }
+  realpath(path) {
+    const cached = this.#realpathCache.get(path);
+    if (cached) {
+      return cached;
+    }
+    const promise = PromisePrototypeThen(realpath(path), null, () => null);
+internal/fs/glob:185
+    return val;
+  }
+  realpath(path) {
+    const cached = this.#realpathCache.get(path);
+    if (cached) {
+      return cached;
+    }
+    const promise = PromisePrototypeThen(realpath(path), null, () => null);
+    this.#realpathCache.set(path, promise);
+internal/fs/glob:189
+    if (cached) {
+      return cached;
+    }
+    const promise = PromisePrototypeThen(realpath(path), null, () => null);
+    this.#realpathCache.set(path, promise);
+    return promise;
+  }
+  realpathSync(path) {
+    const cached = this.#realpathCache.get(path);
+internal/fs/glob:190
+      return cached;
+    }
+    const promise = PromisePrototypeThen(realpath(path), null, () => null);
+    this.#realpathCache.set(path, promise);
+    return promise;
+  }
+  realpathSync(path) {
+    const cached = this.#realpathCache.get(path);
+    if (cached && !(cached instanceof Promise)) {
+internal/fs/glob:193
+    this.#realpathCache.set(path, promise);
+    return promise;
+  }
+  realpathSync(path) {
+    const cached = this.#realpathCache.get(path);
+    if (cached && !(cached instanceof Promise)) {
+      return cached;
+    }
+    let val;
+internal/fs/glob:194
+    return promise;
+  }
+  realpathSync(path) {
+    const cached = this.#realpathCache.get(path);
+    if (cached && !(cached instanceof Promise)) {
+      return cached;
+    }
+    let val;
+    try {
+internal/fs/glob:200
+    }
+    let val;
+    try {
+      val = realpathSync(path);
+    } catch {
+      val = null;
+    }
+    this.#realpathCache.set(path, val);
+    return val;
+internal/fs/glob:204
+    } catch {
+      val = null;
+    }
+    this.#realpathCache.set(path, val);
+    return val;
+  }
+  addToStatCache(path, val) {
+    this.#statsCache.set(path, val);
+  }
+internal/fs/glob:253
+  #globStrings;
+  indexes;
+  symlinks;
+  realpaths;
+  last;
+
+  constructor(pattern, globStrings, indexes, symlinks, realpaths = new SafeSet()) {
+    this.#pattern = pattern;
+    this.#globStrings = globStrings;
+internal/fs/glob:256
+  realpaths;
+  last;
+
+  constructor(pattern, globStrings, indexes, symlinks, realpaths = new SafeSet()) {
+    this.#pattern = pattern;
+    this.#globStrings = globStrings;
+    this.indexes = indexes;
+    this.symlinks = symlinks;
+    this.realpaths = realpaths;
+internal/fs/glob:261
+    this.#globStrings = globStrings;
+    this.indexes = indexes;
+    this.symlinks = symlinks;
+    this.realpaths = realpaths;
+    this.last = pattern.length - 1;
+  }
+
+  isLast(isDirectory) {
+    return this.indexes.has(this.last) ||
+internal/fs/glob:279
+  at(index) {
+    return ArrayPrototypeAt(this.#pattern, index);
+  }
+  child(indexes, symlinks = new SafeSet(), realpaths = this.realpaths) {
+    return new Pattern(this.#pattern, this.#globStrings, indexes, symlinks, realpaths);
+  }
+  test(index, path) {
+    if (index > this.#pattern.length) {
+      return false;
+internal/fs/glob:280
+    return ArrayPrototypeAt(this.#pattern, index);
+  }
+  child(indexes, symlinks = new SafeSet(), realpaths = this.realpaths) {
+    return new Pattern(this.#pattern, this.#globStrings, indexes, symlinks, realpaths);
+  }
+  test(index, path) {
+    if (index > this.#pattern.length) {
+      return false;
+    }
+internal/fs/glob:396
+    }
+    return ArrayFrom(
+      this.#results,
+      this.#withFileTypes ? (path) => this.#cache.statSync(
+        isAbsolute(path) ?
+          path :
+          join(this.#root, path),
+      ) : undefined,
+    );
+internal/fs/glob:429
+  }
+  #nextRealpathsSync(path, isDirectory, pattern) {
+    if (!this.#followSymlinks || !isDirectory) {
+      return pattern.realpaths;
+    }
+    const real = this.#cache.realpathSync(path);
+    if (real === null) {
+      return pattern.realpaths;
+    }
+internal/fs/glob:431
+    if (!this.#followSymlinks || !isDirectory) {
+      return pattern.realpaths;
+    }
+    const real = this.#cache.realpathSync(path);
+    if (real === null) {
+      return pattern.realpaths;
+    }
+    const realpaths = cloneSet(pattern.realpaths);
+    realpaths.add(real);
+internal/fs/glob:433
+    }
+    const real = this.#cache.realpathSync(path);
+    if (real === null) {
+      return pattern.realpaths;
+    }
+    const realpaths = cloneSet(pattern.realpaths);
+    realpaths.add(real);
+    return realpaths;
+  }
+internal/fs/glob:435
+    if (real === null) {
+      return pattern.realpaths;
+    }
+    const realpaths = cloneSet(pattern.realpaths);
+    realpaths.add(real);
+    return realpaths;
+  }
+  async #nextRealpaths(path, isDirectory, pattern) {
+    if (!this.#followSymlinks || !isDirectory) {
+internal/fs/glob:436
+      return pattern.realpaths;
+    }
+    const realpaths = cloneSet(pattern.realpaths);
+    realpaths.add(real);
+    return realpaths;
+  }
+  async #nextRealpaths(path, isDirectory, pattern) {
+    if (!this.#followSymlinks || !isDirectory) {
+      return pattern.realpaths;
+internal/fs/glob:437
+    }
+    const realpaths = cloneSet(pattern.realpaths);
+    realpaths.add(real);
+    return realpaths;
+  }
+  async #nextRealpaths(path, isDirectory, pattern) {
+    if (!this.#followSymlinks || !isDirectory) {
+      return pattern.realpaths;
+    }
+internal/fs/glob:441
+  }
+  async #nextRealpaths(path, isDirectory, pattern) {
+    if (!this.#followSymlinks || !isDirectory) {
+      return pattern.realpaths;
+    }
+    const real = await this.#cache.realpath(path);
+    if (real === null) {
+      return pattern.realpaths;
+    }
+internal/fs/glob:443
+    if (!this.#followSymlinks || !isDirectory) {
+      return pattern.realpaths;
+    }
+    const real = await this.#cache.realpath(path);
+    if (real === null) {
+      return pattern.realpaths;
+    }
+    const realpaths = cloneSet(pattern.realpaths);
+    realpaths.add(real);
+internal/fs/glob:445
+    }
+    const real = await this.#cache.realpath(path);
+    if (real === null) {
+      return pattern.realpaths;
+    }
+    const realpaths = cloneSet(pattern.realpaths);
+    realpaths.add(real);
+    return realpaths;
+  }
+internal/fs/glob:447
+    if (real === null) {
+      return pattern.realpaths;
+    }
+    const realpaths = cloneSet(pattern.realpaths);
+    realpaths.add(real);
+    return realpaths;
+  }
+  async #isCyclic(path, isDirectory, pattern) {
+    if (!this.#followSymlinks || !isDirectory) {
+internal/fs/glob:448
+      return pattern.realpaths;
+    }
+    const realpaths = cloneSet(pattern.realpaths);
+    realpaths.add(real);
+    return realpaths;
+  }
+  async #isCyclic(path, isDirectory, pattern) {
+    if (!this.#followSymlinks || !isDirectory) {
+      return false;
+internal/fs/glob:449
+    }
+    const realpaths = cloneSet(pattern.realpaths);
+    realpaths.add(real);
+    return realpaths;
+  }
+  async #isCyclic(path, isDirectory, pattern) {
+    if (!this.#followSymlinks || !isDirectory) {
+      return false;
+    }
+internal/fs/glob:455
+    if (!this.#followSymlinks || !isDirectory) {
+      return false;
+    }
+    const real = await this.#cache.realpath(path);
+    return real !== null && pattern.realpaths.has(real);
+  }
+  #isCyclicSync(path, isDirectory, pattern) {
+    if (!this.#followSymlinks || !isDirectory) {
+      return false;
+internal/fs/glob:456
+      return false;
+    }
+    const real = await this.#cache.realpath(path);
+    return real !== null && pattern.realpaths.has(real);
+  }
+  #isCyclicSync(path, isDirectory, pattern) {
+    if (!this.#followSymlinks || !isDirectory) {
+      return false;
+    }
+internal/fs/glob:462
+    if (!this.#followSymlinks || !isDirectory) {
+      return false;
+    }
+    const real = this.#cache.realpathSync(path);
+    return real !== null && pattern.realpaths.has(real);
+  }
+  #addSubpattern(path, pattern) {
+    if (this.#isExcluded(path)) {
+      return;
+internal/fs/glob:463
+      return false;
+    }
+    const real = this.#cache.realpathSync(path);
+    return real !== null && pattern.realpaths.has(real);
+  }
+  #addSubpattern(path, pattern) {
+    if (this.#isExcluded(path)) {
+      return;
+    }
+internal/fs/glob:472
+    const fullpath = resolve(this.#root, path);
+
+    // If path is a directory, add trailing slash and test patterns again.
+    if (this.#isExcluded(`${fullpath}/`) && this.#cache.statSync(fullpath).isDirectory()) {
+      return;
+    }
+
+    if (this.#exclude) {
+      if (this.#withFileTypes) {
+internal/fs/glob:478
+
+    if (this.#exclude) {
+      if (this.#withFileTypes) {
+        const stat = this.#cache.statSync(path);
+        if (stat !== null) {
+          if (this.#exclude(stat)) {
+            return;
+          }
+        }
+internal/fs/glob:500
+      return;
+    }
+    const fullpath = resolve(this.#root, path);
+    const stat = this.#cache.statSync(fullpath);
+    const last = pattern.last;
+    const isDirectory = this.#isDirectorySync(fullpath, stat, pattern);
+    const isLast = pattern.isLast(isDirectory);
+    const isFirst = pattern.isFirst();
+
+internal/fs/glob:533
+    if (isLast && typeof pattern.at(-1) === 'string') {
+      // Add result if it exists
+      const p = pattern.at(-1);
+      const stat = this.#cache.statSync(join(fullpath, p));
+      if (stat && (p || isDirectory)) {
+        this.#results.add(join(path, p));
+      }
+      if (pattern.indexes.size === 1 && pattern.indexes.has(last)) {
+        return;
+internal/fs/glob:556
+    let children;
+    const firstPattern = pattern.indexes.size === 1 && pattern.at(pattern.indexes.values().next().value);
+    if (typeof firstPattern === 'string') {
+      const stat = this.#cache.statSync(join(fullpath, firstPattern));
+      if (stat) {
+        stat.name = firstPattern;
+        children = [stat];
+      } else {
+        return;
+internal/fs/glob:870
+                this.#cache.add(path, pattern.child(new SafeSet().add(nextIndex)));
+                if (!this.#results.has(path)) {
+                  if (this.#results.add(path)) {
+                    yield this.#withFileTypes ? this.#cache.statSync(fullpath) : path;
+                  }
+                }
+              }
+              if (!this.#cache.seen(path, pattern, nextIndex) || !this.#cache.seen(parent, pattern, nextIndex)) {
+                this.#cache.add(parent, pattern.child(new SafeSet().add(nextIndex)));
+internal/fs/glob:878
+                this.#cache.add(parent, pattern.child(new SafeSet().add(nextIndex)));
+                if (!this.#results.has(parent)) {
+                  if (this.#results.add(parent)) {
+                    yield this.#withFileTypes ? this.#cache.statSync(join(this.#root, parent)) : parent;
+                  }
+                }
+              }
+            }
+          }
+internal/test_runner/runner:152
+  }
+}
+
+function createTestFileList(patterns, cwd) {
+  const hasUserSuppliedPattern = patterns != null;
+  if (!patterns || patterns.length === 0) {
+    patterns = [kDefaultPattern];
+  }
+  const glob = new Glob(patterns, {
+internal/test_runner/runner:632
+  // Watch for changes in current filtered files
+  const onChanged = ({ owners, eventType }) => {
+    if (!opts.hasFiles && (eventType === 'rename' || eventType === 'change')) {
+      const updatedTestFiles = createTestFileList(opts.globPatterns, opts.cwd);
+      const newFileName = ArrayPrototypeFind(updatedTestFiles, (x) => !ArrayPrototypeIncludes(testFiles, x));
+      const previousFileName = ArrayPrototypeFind(testFiles, (x) => !ArrayPrototypeIncludes(updatedTestFiles, x));
+
+      testFiles = updatedTestFiles;
+
+internal/test_runner/runner:655
+    opts.root.reporter[kEmitMessage]('test:watch:restarted');
+
+    // Restart test files
+    if (opts.isolation === 'none') {
+      PromisePrototypeThen(restartTestFile(kIsolatedProcessName), undefined, (error) => {
+        triggerUncaughtException(error, true /* fromPromise */);
+      });
+    } else {
+      watcher.unfilterFilesOwnedBy(owners);
+internal/test_runner/runner:909
+  if (env != null) {
+    validateObject(env);
+
+    if (isolation === 'none') {
+      throw new ERR_INVALID_ARG_VALUE('options.env', env, 'is not supported with isolation=\'none\'');
+    }
+  }
+
+  const rootTestOptions = { __proto__: null, concurrency, timeout, signal };
+internal/test_runner/runner:936
+  };
+
+  const root = createTestTree(rootTestOptions, globalOptions);
+  let testFiles = files ?? createTestFileList(globPatterns, cwd);
+  const { isTestRunner } = globalOptions;
+
+  if (randomize) {
+    root.diagnostic(`Randomized test order seed: ${randomSeed}`);
+  }
+internal/test_runner/runner:989
+    execArgv,
+    rerunFailuresFilePath,
+    env,
+    workerIdPool: isolation === 'process' ? workerIdPool : null,
+    randomize,
+    randomSeed,
+    testFiles,
+  };
+
+internal/test_runner/runner:995
+    testFiles,
+  };
+
+  if (isolation === 'process') {
+    if (process.env.NODE_TEST_CONTEXT !== undefined) {
+      process.emitWarning('node:test run() is being called recursively within a test file. skipping running files.');
+      root.postRun();
+      return root.reporter;
+    }
+internal/test_runner/runner:1018
+        return subtest;
+      });
+    };
+  } else if (isolation === 'none') {
+    // For isolation=none, set worker ID to 1 in the current process
+    process.env.NODE_TEST_WORKER_ID = '1';
+    debug('Set NODE_TEST_WORKER_ID=1 for isolation=none');
+
+    if (watch) {

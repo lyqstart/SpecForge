@@ -1,0 +1,11 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\SyntheticDaemonRecovery.exe",
+  "args": [
+    "45ebdd1197f64cb184f9512b0c633277",
+    "0a65fe136c05f22a86408625c1edf5318372eb04abd6cb4966de326f03f2774e"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-idempotent-interrupted-profile-recovery",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE completed recovery recheck;EXTERNAL_EVIDENCE_WRITES=immutable recheck",
+  "started_utc": "2026-11-06T14:06:29.017Z"
+}

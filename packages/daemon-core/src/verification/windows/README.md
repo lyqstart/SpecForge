@@ -1,23 +1,62 @@
-# Synthetic LPAC startup probe
+# Synthetic LPAC acceptance probes
+
+Current checkpoint (2026-11-07): these sources remain experimental and are not
+registered, bundled into release assets, installed, or callable by a WI.
+The new D22 strict single-process finite synthetic matrix has passed, including
+CJS/ESM/TypeScript/inline positives, file/alias/registry/network denials, native
+child/override/console/parent-handle denials, resource limits, launcher/real Daemon
+crash and restart, interrupted cleanup and independent resource reconciliation.
+Evidence: `docs/archive/2026-11-06-single-process-matrix/acceptance-review.md`.
+The earlier multi-process profile remains NOT_ACCEPTED: native process limits
+allowed extra live Job members. Sampling termination139 does not prove a strict
+ceiling. D22 instead uses DETACHED creation, actual child policy1, Job1 and Node
+no-addons. The independent D21 production-adoption decision, public tools,
+common consumers, installation assets and original WI verification remain pending.
+
+Compile all `.cs` files in this directory with the existing x64 .NET Framework
+compiler, `/reference:System.Web.Extensions.dll`, `/reference:System.Management.dll`
+and explicit `/main:LpacStartupPoc`. The private native helper uses explicit
+`/main:LpacPrivateRegistryChild` and its frozen source set. Preserve each build
+and its raw hashes before execution; do not substitute a newer executable for
+an archived attempt. Guest native reports use `LpacProbeJson`, avoiding the
+observed guest finalizer failures associated with the System.Web reporting path.
+
+The D22 primary native boundary helper uses `/main:LpacSingleNativeBoundary`;
+it performs the fixed native API calls directly in the single primary process.
+`--synthetic-single-files` is the fixed file/alias/network probe, and
+`--synthetic-single-resource-{wall,cancel,output,memory,crash,daemon-crash}` are
+finite resource/lifecycle probes. Resource rejection intentionally returns owner1;
+the lab driver proves expected rejection without turning it into application success.
+
+`--synthetic-registry-read-node-file-locked` and
+`--synthetic-registry-read-node-test-file-locked` accept only their fixed
+first-party probe. Both preserve symlink paths and select TAP explicitly; the
+second uses `--test --test-isolation=none positive.cjs` in the frozen input cwd.
+Real application/owner exits were0, the module stayed unchanged and its write
+was denied. This does not turn the old unflagged file/default-pipe commands into
+successful executions. Product command normalization and trusted receipts remain
+separate unimplemented integration work.
+
+The detailed evidence and limitations are in
+`docs/archive/2026-11-05-synthetic-boundary-matrix/acceptance-review.md`.
+The following startup notes describe earlier configurations and retained failures.
 
 `LpacStartupPoc.cs` is an experimental, first-party x64 Windows acceptance probe
 under SPS §9.2.1 / D20. It is not registered as a tool, imported by the daemon,
 included in release assets, or installed. It only creates a fixed synthetic
 assertion, then attempts to execute a frozen Node copy under LPAC and a Job.
 
-Build `LpacStartupPoc.cs`, `LpacReadTrace.cs`, `LpacRegistryReadCapability.cs`, and
-`LpacRegistryReadCanary.cs` with the existing .NET Framework x64 C# compiler and
-`/reference:System.Web.Extensions.dll`. Use absolute Windows source/output paths.
+The initial build contained only the startup, trace, capability and canary sources;
+the current build requires the complete source set described above.
+Use absolute Windows source/output paths.
 The CLI accepts `--synthetic-p01 NEW_UUID_ROOT PINNED_NODE_EXE`, where the fresh
 root must be a UUID leaf below `<cwd>/.tmp/verification-lpac`. Creating the
 AppContainer profile and changing only its owned ACLs is an explicit host action.
 No arbitrary test script, environment, stdin, command, or original project is
 accepted. Preserve the source/binary hash before every distinct run.
 
-The probe is intentionally incomplete. The startup result is never an isolation
-acceptance receipt. It does not implement the full hostile-process, registry,
-resource-limit, broker-crash or recovery matrix, and cannot be used to run a WI.
-All such rows remain NOT_EXECUTED until independently demonstrated by the owner.
+The startup result is never a full isolation acceptance receipt and cannot run a WI.
+Earlier startup-only receipts do not establish coverage of the later matrix.
 See the subordinate contract for the frozen matrix and production prerequisites.
 
 On the initial tested Windows host, Node v24.19.0 failed during Winsock startup

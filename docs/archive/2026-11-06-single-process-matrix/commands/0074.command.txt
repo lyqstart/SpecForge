@@ -1,0 +1,11 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacPrivateRegistryChild.exe",
+  "args": [
+    "--host-native-com-control",
+    "617f293ec5c34722b30c3fb26df29f6f"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "run-d22-native-com-host-control",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=fresh owned fixed WMI host control Node marker only;EXTERNAL_EVIDENCE_WRITES=raw receipt",
+  "started_utc": "2026-11-06T16:07:43.499Z"
+}

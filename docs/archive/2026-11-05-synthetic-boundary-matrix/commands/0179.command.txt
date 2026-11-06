@@ -1,0 +1,11 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\SyntheticDaemonCrash.exe",
+  "args": [
+    "daemon-kill",
+    "92ef74bc047c4199aca6594b50e808ad"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-real-daemon-hard-crash-and-worker-termination",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned real Daemon and D21 worker attempt 92ef74bc047c4199aca6594b50e808ad isolated config no business or models;EXTERNAL_EVIDENCE_WRITES=raw real process lifecycle result",
+  "started_utc": "2026-11-06T13:41:19.307Z"
+}

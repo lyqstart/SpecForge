@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/freeze-build.cjs",
+    "build-native-com-13"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-explicit-com-native-build",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable build13",
+  "started_utc": "2026-11-06T12:55:44.463Z"
+}

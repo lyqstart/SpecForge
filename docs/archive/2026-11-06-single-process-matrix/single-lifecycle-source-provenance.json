@@ -1,0 +1,105 @@
+{
+  "utc": "2026-11-06T16:04:56.304Z",
+  "proof": [
+    {
+      "file": "SyntheticLauncherCrash.cs",
+      "prior_sha256": "5edb5e2999be7b839ff0d8b287c5f3221bcbb257fae3256920738fa04a5fc7bd",
+      "current_sha256": "eda63a4e2a6d295479d19e181eab7d796a05f4ab2444f2695dddbe8aee014805",
+      "replacements": [
+        {
+          "from": "\"2026-11-05-synthetic-boundary-matrix\",\"build-crash-owner-21\"",
+          "to": "\"2026-11-06-single-process-matrix\",\"build-single-resource-06\"",
+          "count": 1
+        },
+        {
+          "from": "--synthetic-resource-crash ",
+          "to": "--synthetic-single-resource-crash ",
+          "count": 1
+        },
+        {
+          "from": "Convert.ToInt32(data[\"ready_node_roles\"])==3",
+          "to": "Convert.ToInt32(data[\"ready_node_roles\"])==1",
+          "count": 1
+        },
+        {
+          "from": "role>=0&&role<=2",
+          "to": "role==0",
+          "count": 1
+        },
+        {
+          "from": "roles.Count==3&&roles.Values.Distinct().Count()==3",
+          "to": "roles.Count==1&&roles.Values.Distinct().Count()==1",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "SyntheticDaemonCrash.cs",
+      "prior_sha256": "a035f9f79f6673cf99a1f476eba3003f3b510dd2be712db4fe6d4a0c1ef74135",
+      "current_sha256": "f6cc5aca7bd8f63da1c1b0b58be73587fac06a4a3b6eb824658447f8ed13bc68",
+      "replacements": [
+        {
+          "from": "daemon-fixture-build-05",
+          "to": "daemon-fixture-build-07",
+          "count": 1
+        },
+        {
+          "from": "2026-11-05-synthetic-boundary-matrix",
+          "to": "2026-11-06-single-process-matrix",
+          "count": 1
+        },
+        {
+          "from": "role>=0&&role<=2",
+          "to": "role==0",
+          "count": 1
+        },
+        {
+          "from": "roles.Count==3&&roles.Values.Distinct().Count()==3",
+          "to": "roles.Count==1&&roles.Values.Distinct().Count()==1",
+          "count": 1
+        },
+        {
+          "from": "brokerExit==1&&Convert.ToInt32(receipt[\"inner_exit_code\"])==1",
+          "to": "brokerExit==1&&(string)receipt[\"profile_id\"]==\"windows-lpac-node-single-process-readonly/v1\"&&Convert.ToInt32(receipt[\"inner_exit_code\"])==1",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "real-daemon-harness.ts",
+      "prior_sha256": "5b57be80384a775a48f8c3d41535565d25fd0d2840d34650e0d73f1b5f5e6aed",
+      "current_sha256": "6fbbd03d87f2d51d4e8ce0636960f3762bff22afc78e419fcf82e883c6256f65",
+      "replacements": [
+        {
+          "from": "docs/archive/2026-11-05-synthetic-boundary-matrix/build-daemon-owner-22/",
+          "to": "docs/archive/2026-11-06-single-process-matrix/build-single-resource-06/",
+          "count": 1
+        },
+        {
+          "from": "--synthetic-resource-daemon-crash",
+          "to": "--synthetic-single-resource-daemon-crash",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "freeze-daemon-fixture.cjs",
+      "prior_sha256": "63fcd65c2dd32d9cdabc4e0a9fa00b21c4b9156787210c2a10d9277af82b321d",
+      "current_sha256": "63fcd65c2dd32d9cdabc4e0a9fa00b21c4b9156787210c2a10d9277af82b321d",
+      "replacements": []
+    },
+    {
+      "file": "preserve-crash-attempt.cjs",
+      "prior_sha256": "12a801de594209e3895d2511d3f5fa3ffe1c6480d4e810e5c6cb01a416ddabe5",
+      "current_sha256": "12a801de594209e3895d2511d3f5fa3ffe1c6480d4e810e5c6cb01a416ddabe5",
+      "replacements": []
+    },
+    {
+      "file": "preserve-daemon-attempt.cjs",
+      "prior_sha256": "d9389d85ab6ec528218cc28c97d054ed50c4b7660443a8bf2e67918504447ab5",
+      "current_sha256": "d9389d85ab6ec528218cc28c97d054ed50c4b7660443a8bf2e67918504447ab5",
+      "replacements": []
+    }
+  ],
+  "scope": "Fresh current D22 single-process lifecycle; no old matrix success reused"
+}

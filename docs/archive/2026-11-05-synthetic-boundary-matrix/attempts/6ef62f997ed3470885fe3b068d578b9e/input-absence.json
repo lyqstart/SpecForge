@@ -1,0 +1,7 @@
+{
+  "utc": "2026-11-05T03:34:08.937Z",
+  "file": "input/positive.cjs",
+  "exists": false,
+  "process_started": false,
+  "reason": "Initialization failed before source creation; no empty input fabricated"
+}

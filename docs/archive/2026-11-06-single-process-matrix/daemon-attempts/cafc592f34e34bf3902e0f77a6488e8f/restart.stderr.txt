@@ -1,0 +1,1 @@
+[SessionRegistry] WAL not injected 鈥?running in memory-only mode

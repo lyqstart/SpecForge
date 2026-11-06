@@ -1,0 +1,15 @@
+
+未经处理的异常:  System.ApplicationException: 连到系统上的设备没有发挥作用。 (异常来自 HRESULT:0x8007001F)
+   在 System.Threading.TimerQueue.DeleteAppDomainTimer(IntPtr handle)
+   在 System.Runtime.InteropServices.SafeHandle.InternalFinalize()
+   在 System.Runtime.InteropServices.SafeHandle.Finalize()
+
+未经处理的异常:  System.ApplicationException: 连到系统上的设备没有发挥作用。 (异常来自 HRESULT:0x8007001F)
+   在 System.Threading.TimerQueue.DeleteAppDomainTimer(IntPtr handle)
+   在 System.Runtime.InteropServices.SafeHandle.InternalFinalize()
+   在 System.Runtime.InteropServices.SafeHandle.Finalize()
+
+未经处理的异常:  System.ApplicationException: 连到系统上的设备没有发挥作用。 (异常来自 HRESULT:0x8007001F)
+   在 System.Threading.TimerQueue.DeleteAppDomainTimer(IntPtr handle)
+   在 System.Runtime.InteropServices.SafeHandle.InternalFinalize()
+   在 System.Runtime.InteropServices.SafeHandle.Finalize()

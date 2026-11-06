@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/preserve-attempt.cjs",
+    "0b5690cf0cef4508b5d874e78c154f39"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-wall-limit-attempt",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable actual rejection raw copy",
+  "started_utc": "2026-11-05T03:43:26.023Z"
+}

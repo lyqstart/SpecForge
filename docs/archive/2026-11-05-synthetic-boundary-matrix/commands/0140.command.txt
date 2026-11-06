@@ -1,0 +1,11 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacPrivateRegistryChild.exe",
+  "args": [
+    "--host-native-com-control",
+    "d2e5ef2496314d76b04d75dc31ca6f19"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-pure-report-com-host-control",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new ordinary-user fixed WMI control d2e5ef2496314d76b04d75dc31ca6f19;EXTERNAL_EVIDENCE_WRITES=raw normal-user result",
+  "started_utc": "2026-11-06T13:09:53.880Z"
+}

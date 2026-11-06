@@ -1,0 +1,11 @@
+{
+  "executable": "C:\\Program Files\\nodejs\\node.exe",
+  "args": [
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix\\preserve-attempt.cjs",
+    "40aa3815f3ee49cbb1867de19714b739"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-resource-process",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable actual resource attempt raw",
+  "started_utc": "2026-11-06T13:00:12.431Z"
+}

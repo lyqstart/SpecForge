@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/run-single-process-host-control.cjs",
+    "96b61a4adbab4f7b8eecb3e143225c10"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "positive-host-native-child-and-console-control",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=unique normal-user owned host fixture fixed suspended Node children and own hidden console cleanup;EXTERNAL_EVIDENCE_WRITES=raw host control receipts",
+  "started_utc": "2026-11-06T14:34:11.393Z"
+}

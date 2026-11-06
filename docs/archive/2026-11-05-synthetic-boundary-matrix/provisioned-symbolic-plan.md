@@ -1,0 +1,9 @@
+# 普通用户消费已批准夹具
+
+用户明确同意“同意仅管理员创建这两条夹具链接”。0070的PowerShell Get-FileHash缺失发生在管理员启动前，原始失败保留；0071使用同载体.NET API验证完全相同binary/plan哈希后启动固定factory，真实exit0。管理员只创建两条链接和creation-receipt，没有应用、系统设置或ACL写入。0075普通用户独立lstat/realpath/目标raw哈希复核通过。
+
+本次唯一新应用Attempt nonce=b138f0060a5249768b420dd94a6ff798。新CLI模式--synthetic-registry-read-provisioned-symbolic-locked只消费同nonce的新owned外部夹具；计划SHA-256恰好32406b5a5c46cccbe50973f223f8963516eb5c3168dd7d14b9b201105f264ffe，factory98d8b28eef446c5f1f702e48188935aae896296b22d738078d7998804e8612f7。实际owner、root、App SID、原始target及结果逐项检查，未知即停。不在应用启动中调用管理员程序，不创建其他管理员链接。
+
+launcher显式记录当前broker身份并拒绝管理员token；后代仍保持标准用户LPAC/单registryRead/只读文件/同Job。实际新AppRoot中的硬链接由普通owner创建，符号链接指向已封存的新正/负target。父/子/孙各18检查：原7条、loopback1、两正别名读取及覆盖4、三负别名/扩展路径读写6。两个不同owned假值均做raw泄漏检查，不传入应用。
+
+原生helper额外测试外部夹具positive/shadow/root的WRITE_DAC，完整9个固定目标都必须明确拒绝；owner验证实际row count/index/error，内容与本地ACL前后对账，外部计划/target/链接由独立普通用户复核。没有UNC、COM/WMI、breakaway、完整中断恢复结论；不把本次别名通过当作完整矩阵通过。

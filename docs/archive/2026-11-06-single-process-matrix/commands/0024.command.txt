@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-06-single-process-matrix/preserve-node-file-attempt.cjs",
+    "0021268d174c43e78bb84d1528b425c1"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-sp-p01-fixed-input-and-actual-output",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable fixed case input/module/package and raw",
+  "started_utc": "2026-11-06T15:27:21.816Z"
+}

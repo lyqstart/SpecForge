@@ -1,0 +1,17 @@
+{
+  "executable": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+  "args": [
+    "/nologo",
+    "/platform:x64",
+    "/target:exe",
+    "/optimize+",
+    "/reference:System.Web.Extensions.dll",
+    "/main:InspectMatrixCleanupPostSingle",
+    "/out:D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\InspectMatrixCleanupPostSingle.exe",
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix\\InspectMatrixCleanupPostSingle.cs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "compile-query-limited-native-identity-inventory",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=private readonly inventory binary;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-06T14:51:11.682Z"
+}

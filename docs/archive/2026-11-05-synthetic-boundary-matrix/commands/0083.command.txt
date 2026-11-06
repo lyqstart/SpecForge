@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/verify-unaffected.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-original-and-installed-checkpoint",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=readonly original/source/installed156 identity checks;EXTERNAL_EVIDENCE_WRITES=unaffected-verification.json and receipts",
+  "started_utc": "2026-11-05T04:12:58.534Z"
+}

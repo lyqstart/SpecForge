@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/invoke-admin-symbolic.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "approved-admin-owned-symbolic-factory",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=explicitly approved exact hash factory UAC two new owned symbolic links only no app elevation;EXTERNAL_EVIDENCE_WRITES=approval and invocation receipts",
+  "started_utc": "2026-11-05T03:58:23.404Z"
+}

@@ -1,0 +1,49 @@
+{
+  "utc": "2026-11-06T14:55:31.929Z",
+  "proof_raw_sha256": "db2f149766097b5ba7e07717e8144699b5563592ce8f7f563b7363a5ff9d60d9",
+  "files": [
+    {
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\33d6e678e9554707a8fc78c79d212d87\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\857b512b65cb4fe4934a6378cc99994d\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\d5e307f476c240108faaaf5691d8206e\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\f0af87ae838741dcbee8f1b91752358f\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\b4fb38d2b37b4f5ab9443cdbac2edca5\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac-single-host",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac-single-host\\96b61a4adbab4f7b8eecb3e143225c10\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "scope": "D:\\code\\SpecForge\\.tmp\\verification-lpac-single-host",
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac-single-host\\6c75c76c9c2142fc8facdda75787372b\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    }
+  ],
+  "method": "All exact owned files preflighted before first unlink; no recursive deletion"
+}

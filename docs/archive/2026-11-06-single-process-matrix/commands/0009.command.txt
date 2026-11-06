@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+  "args": [
+    "--synthetic-registry-read-single-process-file",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\b3d0371385f04e5c811b881c7511a193",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "sp-p01-cjs-file-under-current-d22-identity",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned D22 single-process profile Job and cleanup;EXTERNAL_EVIDENCE_WRITES=raw candidate receipts",
+  "started_utc": "2026-11-06T15:16:57.959Z"
+}

@@ -1,0 +1,11 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\InspectCleanup.exe",
+  "args": [
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix",
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix\\cleanup-checkpoint-0001.json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "independent-host-cleanup-checkpoint",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=readonly host PID profile private registry and owned-key inventory;EXTERNAL_EVIDENCE_WRITES=cleanup-checkpoint-0001.json and receipts",
+  "started_utc": "2026-11-05T04:11:15.396Z"
+}

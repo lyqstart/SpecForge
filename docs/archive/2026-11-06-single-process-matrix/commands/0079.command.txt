@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-06-single-process-matrix/verify-unaffected.cjs",
+    "-post-d22-01"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-business-and-installed-unchanged-d22",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=unaffected identity proof",
+  "started_utc": "2026-11-06T16:09:43.167Z"
+}

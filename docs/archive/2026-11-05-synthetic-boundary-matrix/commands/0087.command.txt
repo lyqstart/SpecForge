@@ -1,0 +1,20 @@
+{
+  "executable": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+  "args": [
+    "/nologo",
+    "/platform:x64",
+    "/target:exe",
+    "/optimize+",
+    "/reference:System.Web.Extensions.dll",
+    "/reference:System.Management.dll",
+    "/main:LpacPrivateRegistryChild",
+    "/out:D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacPrivateRegistryChild.exe",
+    "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacPrivateRegistryChild.cs",
+    "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacFileAclAttack.cs",
+    "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacNativeBoundaryProbe.cs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "compile-wmi-showwindow-only-control",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=fixed native helper binary removes unlisted WMI creation flag keeps hidden ShowWindow0;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-05T04:21:42.707Z"
+}

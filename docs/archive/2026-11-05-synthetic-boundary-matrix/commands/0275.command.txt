@@ -1,0 +1,11 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\InspectHostWmiControls.exe",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix",
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/host-wmi-reconciliation-0001.json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "independent-owned-wmi-payload-current-absence",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=local readonly WMI query;EXTERNAL_EVIDENCE_WRITES=host-wmi-reconciliation-0001.json and receipts",
+  "started_utc": "2026-11-06T14:49:46.903Z"
+}

@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-06T14:49:08.546Z",
+  "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-wmi-control\\66a72810dd084216b06579edb2e968bd",
+  "members": [
+    {
+      "file": "receipt.json",
+      "bytes": 423,
+      "sha256": "57b22791ad6cbb8f5680516a9c2c91910f31257a153cb8903c50c6eb34da842d"
+    }
+  ],
+  "classification": "Retrospective raw preservation; failed historical PID/exit remains unknown when not recorded"
+}

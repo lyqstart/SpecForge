@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/freeze-build.cjs",
+    "build-resource-limits-06"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-resource-build",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable resource source binary snapshot",
+  "started_utc": "2026-11-05T03:42:30.868Z"
+}

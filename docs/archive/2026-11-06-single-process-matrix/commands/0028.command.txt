@@ -1,0 +1,10 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\InputIdentityFilesystemProbe.exe",
+  "args": [
+    "5ce18078104b40e488398445a15ec566"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "sp-a01-real-physical-input-link-and-junction-admission",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned normal-user regular hardlink and directory-junction fixtures; readonly existing two symbolic links; no profile or application;EXTERNAL_EVIDENCE_WRITES=raw physical identity report",
+  "started_utc": "2026-11-06T15:44:16.923Z"
+}

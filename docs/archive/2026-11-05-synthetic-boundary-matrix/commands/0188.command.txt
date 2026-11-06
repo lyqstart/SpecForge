@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/revise-daemon-fixture-03.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "bind-full-bundle-daemon-fixture",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=private test driver only;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-06T13:50:49.807Z"
+}

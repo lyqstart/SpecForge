@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-06-single-process-matrix/cleanup-single-runtime-copies.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "cleanup-d22-owned-runtime-copies",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=exact independently proven owned Node copies removed nonrecursively;EXTERNAL_EVIDENCE_WRITES=cleanup intent journal result",
+  "started_utc": "2026-11-06T16:10:48.529Z"
+}

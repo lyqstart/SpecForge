@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/freeze-readonly-inventory.cjs",
+    "readonly-inventory-build-04"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-query-limited-native-identity-inventory",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=readonly-inventory-build04 source and binaries",
+  "started_utc": "2026-11-06T14:51:13.928Z"
+}

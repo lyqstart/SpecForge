@@ -1,0 +1,42 @@
+{
+  "utc": "2026-11-06T15:27:16.943Z",
+  "nonce": "3f4883ca93014324a5761d0c9e581b8d",
+  "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\3f4883ca93014324a5761d0c9e581b8d",
+  "members": [
+    {
+      "file": "input/tests/positive.test.ts",
+      "bytes": 611,
+      "sha256": "889929ac18406f4d33f0897d6266306c2fd5070f256143924884e690dd0adde8"
+    },
+    {
+      "file": "input/src/fixed-module.ts",
+      "bytes": 35,
+      "sha256": "295f23647fe2237fae0561e136996c6778b92225656b085290edba9bc37de4b9"
+    },
+    {
+      "file": "input/package.json",
+      "bytes": 18,
+      "sha256": "1239d4d885dcad42201a27ed9324f8f0f760b78700d8db9ced39a511cffe7eae"
+    },
+    {
+      "file": "events.jsonl",
+      "bytes": 24716,
+      "sha256": "78a9cecebca569039d4583d98744170f3e5b50e289dce80f67f8f9a57d75401d"
+    },
+    {
+      "file": "receipt.json",
+      "bytes": 1090,
+      "sha256": "ecce3bc29fdd854bb8fd52ec8608d2798f04eb60a3441f42628aa5e456f336ff"
+    },
+    {
+      "file": "stdout.bin",
+      "bytes": 287,
+      "sha256": "5fa2694f890c96726f74d9f8b19da8af85715d9a02ee2d4c7f5b275d1bd14600"
+    },
+    {
+      "file": "stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

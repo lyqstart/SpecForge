@@ -1,0 +1,11 @@
+# 合成launcher硬中断及独立进程恢复
+
+只在本阶段自有合成边界检验L01/L03，不称为真实daemon验收。新固定resource-crash脚本仅创建三个Node角色并等待，原生预算32/1GiB、墙钟20s、输出各1MiB；与现有LPAC/registryRead/只读/Job核验相同。owner在三个角色输出与独立PID核验成立后独占写出不可覆盖raw stdout见证，随后受信外部driver才能硬终止launcher。
+
+driver必须预先冻结新UUID、普通用户SID、固定Node/launcher原始hash、profile/Storage不存在。硬终止前持有所有已核验活成员的查询/等待句柄，记录各PID创建时间和映像。driver不复制Job句柄、不将其遗留给其他进程；launcher实际199退出后，每个稳定句柄必须真实结束，并枚举检查无本轮运行映像。Job句柄已销毁不能伪造QueryInformationJobObject=0，以句柄消失及全部成员结束分别报告。缺失launcher正式回执保持缺失，不补写passed或exit0。
+
+硬终止后profile可能保留。独立恢复进程仅消费哈希绑定的不可变kill-completed见证，复核原预留/实际SID、唯一新profile路径及Windows owner、Storage归属、原PIDs已退出或明确被复用，才可调用DeleteAppContainerProfile。先写不可覆盖恢复intent；第一次恢复故意以198硬终止，证明清理中断。下一独立进程重新取证，消费相同intent与见证，删除该profile、复核目录/Storage/PID，独占写completed。重复恢复只读复核，不覆写历史。
+
+拒绝未知模式、非UUID、错误见证hash、路径/owner/SID漂移、活成员、已有目标冲突或不完整证据。不得手改业务真相源、删除未知资源、改变现有ACL、借driver运行任何业务命令；不以此冒充daemon接线或I01/D01。新同权限合成能力不新增capability。
+
+TRUTH_SOURCE_WRITES=唯一project-status进度；REPOSITORY_TRACKED_WRITES=未发布launcher固定观察与必要回归；RUNTIME_OBSERVER_WRITES=新自有driver目录/LPAC/profile/Job/进程与受控回收；EXTERNAL_EVIDENCE_WRITES=新构建、原始命令、终止/恢复各阶段见证。成功和失败均立即封存。

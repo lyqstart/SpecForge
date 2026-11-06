@@ -1,0 +1,946 @@
+{
+  "utc": "2026-11-06T16:09:44.407Z",
+  "checks": [
+    {
+      "category": "original-business",
+      "path": "README.md",
+      "sha256": "d57538d59da2a671680fc5cd6d0df95ccea742eaeed77bc5adb7e408a96d169b",
+      "unchanged": true
+    },
+    {
+      "category": "original-business",
+      "path": "package.json",
+      "sha256": "35aab8937d4634f75182a1b812f0b71cf9e23ede47488b317b3a7ac89fc35494",
+      "unchanged": true
+    },
+    {
+      "category": "original-business",
+      "path": "tsconfig.json",
+      "sha256": "20b50fa167f1c62b27fc036eec23d39284041111d212b751b45e6b4e0a67d014",
+      "unchanged": true
+    },
+    {
+      "category": "original-business",
+      "path": "src/greet.ts",
+      "sha256": "7b8ddcc05cf84afed746d56e978563429b0ac79e03598ed359270ecd50993ec4",
+      "unchanged": true
+    },
+    {
+      "category": "original-business",
+      "path": "tests/greet.test.ts",
+      "sha256": "26d14693eccb088b0964e06f04dba9a4ea1eafc1090f73467019209d5b414981",
+      "unchanged": true
+    },
+    {
+      "category": "original-business",
+      "path": ".specforge/project/spec_manifest.json",
+      "sha256": "b4025249f22fb43bd340db05f53ffe7174bbf53e33a3caabf2b005d097cf6fde",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/candidate_manifest.json",
+      "sha256": "c1098af5ec6c5b232eaa936aabf077edcc8e1826163ee32d5e3942611cc77ab7",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/candidates/project/architecture.candidate.md",
+      "sha256": "e85982f289bb6da764e06986b4df109d78c0bb8112544292ca2c7891e3714936",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/candidates/project/data_model.candidate.md",
+      "sha256": "d0618cfb3b00b944b3e9ea6fa771e51e20b9743b0a4f6cf67258b646ebb05991",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/candidates/project/extension_registry.json",
+      "sha256": "b2d0a3984b195c50965939be3efb65471b1c84096bb86589fe1b1af5083599bd",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/candidates/project/modules/CORE/contracts.candidate.json",
+      "sha256": "7c44cb3891a74b4551b9427aeb2104cc42baae522a5f665e0a97dafdb8986245",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/candidates/project/modules/CORE/design.candidate.md",
+      "sha256": "f440d149e7651ab446c346d5689fcd90d07c2f3d06559d746de70db62524a022",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/candidates/project/modules/CORE/module.candidate.json",
+      "sha256": "d70d5364fcc2b23c68044f0c61e20f931d1b31569d6ddde529de771ab708e6ea",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/candidates/project/modules/CORE/requirements.candidate.md",
+      "sha256": "c3aee7cb3eb8eb36e4ecc181283c67fec9ce3de00e63ab771f0e3a6ffad677e6",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/candidates/tasks.md",
+      "sha256": "0b73306b4a56b505b1cdc59f062fbe83f76d1d39ad2534cc1597faa61d1feae2",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/candidates/trace_delta.md",
+      "sha256": "2c85b03ebbb1cfa4434430628dc715bf089ede722675d1d62491f57abe844ee7",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/change_classification.md",
+      "sha256": "25c98a79b599e007324d0669fe171084cb11a64bfcbfada88b7e1b1288c1befd",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/changed_files_audit.md",
+      "sha256": "1215ed98f641bdc4e97edc4e686d320161b09a25028d5bae6932ad5d12ed753c",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/filesystem_baseline.json",
+      "sha256": "ac69098dd8b0c4128dd7a5fd6946584251f4fbe53b7c06eb74d4f739c2e400a4",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/attempt-result.json",
+      "sha256": "a0f4bcd03b972f6543eda1800e275b8a477aa30685f84fc9a65e5b1f0974a96c",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/attempt-start.json",
+      "sha256": "cc2ff7f41bbac9695ab8673f64b7c4e5c292a5a7f9e9ecdf574b14eda552426d",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gate_summary.md",
+      "sha256": "71c88154d8125d3a353361e8b842a3efb9ab0aa06a2a39abbd3909b7d6f3496a",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/candidate_manifest_gate.json",
+      "sha256": "402fc792c80859635dda682ecb5eeeaaa8be255aea1c95b2b19a7e83a8e889f9",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/contract_integrity_gate.json",
+      "sha256": "89c3bf6db4dcb87e34eeb079a82e090e98464689d20cbcb84890b2767357988b",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/entry_gate.json",
+      "sha256": "9e328f86938477672cfc2043f58ed9fa0ae698ddc0937ec013748e7824df24ba",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/path_policy_gate.json",
+      "sha256": "929caf7b6ce5ae379dd9354375ed863c3b66e798cb0a0322198fc87b4b6a4e72",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/required_files_gate.json",
+      "sha256": "e0353029957bf4cee54305404b3819fa50fc5f81e324bda8501beb1f2e79279d",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/schema_gate.json",
+      "sha256": "83e19b23f9d237821e5a729b0fb6b3444c07dfef17820d70ab35755ee15c08cd",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/spec_consistency_gate.json",
+      "sha256": "bb0a40e6fac061ba1d48f25b49088640e15789f1e41e5cd29ff36ed6212be8c9",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/trace_gate.json",
+      "sha256": "b22e6579da6ce72ff607f971f1c394db3e26730385fb433d357c74aec8080f9b",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/workflow_selection_gate.json",
+      "sha256": "2a48b875fe0d7b7f0417b56c67c0d27fc4f160ea9677a8b25afabdf93d5166b1",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/workflow_specific_gate.json",
+      "sha256": "c55bc6d291bf31f127b7fccd164ddd0c8e8e7d11d84bbc98311815d9cdd1a25d",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/input-snapshot.json",
+      "sha256": "f36fff149b8db46111db7f86304f08d4302f8954221eb14b818e40edc1805a07",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/attempt-result.json",
+      "sha256": "7a417af5846d354486d6abccb00edf0c32a53744802f29d2c364d98b2f093e17",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/attempt-start.json",
+      "sha256": "913cbb74b09771d3ea18e572eb7cf037baebd79c3bf5332917a15477e79e85cb",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gate_summary.md",
+      "sha256": "6a824ac46b4d58f308e2ed2daf1c20dccf044ff0464d90831c89a7e4619bee59",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/candidate_manifest_gate.json",
+      "sha256": "af5ab52e157503a76656d4366fb93ea5cbf8a12d4c53821a4d91a36efb48c496",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/contract_integrity_gate.json",
+      "sha256": "f521a60cb73ecee8515c11d14d7f1969fe5dcff65ab4b3b0b7cfc6cd0d400945",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/entry_gate.json",
+      "sha256": "025b5118fcc813dd59f1cf3e234c60070fac716c7daffa175a5a7b3f42a4ddcc",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/path_policy_gate.json",
+      "sha256": "f2e36498b5181a6b60edc2bea9ead136349137d0d32f9020dbacefbb2c925d47",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/required_files_gate.json",
+      "sha256": "ba2beee57df8ea24cb2a89e5382c33a4a188b92f7feb33deebabab006c2c0987",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/schema_gate.json",
+      "sha256": "06827d768e1aaafc44f567ef0e616872de02ed20cd0e93a7e20c729ec2d86805",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/spec_consistency_gate.json",
+      "sha256": "bb8ce3952ed514cbd3634e1cd1771d7cac0d1a1c28fcb0d7b762caf9abefb45e",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/trace_gate.json",
+      "sha256": "ff711b16afc20adeb0393febd514a82269b5a5ab58ad814932ed5f0af3603fcc",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/workflow_selection_gate.json",
+      "sha256": "4b5c3d9afbe78bd2326ac7d0b3a3229b7262b6aff516b6bc30eba262301792e4",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/workflow_specific_gate.json",
+      "sha256": "33b6cf7ade589ac1ae2f3339d54c9203fa67b8db386a22e74f8165019b09a055",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/input-snapshot.json",
+      "sha256": "b7c053695e51e3ae22a2c9665d29fb494bbf19793ab37c2450c359659b129ef2",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/attempt-result.json",
+      "sha256": "171770685412ad65cc3e8fb7c1fe6fe3afff21c683f2c4bda404f28e0b4fe1ac",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/attempt-start.json",
+      "sha256": "e79d304a5340785e63ca00cb19426f774cc39a5f5b7f3733534c035b5c8965d2",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gate_summary.md",
+      "sha256": "b4c814523c90661ef4f743da2cc5ad851f944b0f185f92d6a1a33140c3826cda",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/candidate_manifest_gate.json",
+      "sha256": "e080b8af4e34261559efecdc4e039578299691c8b6f4f67ce5763e01d1900b9e",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/contract_integrity_gate.json",
+      "sha256": "3c94031f0700ff6e07f01933260585fca5b2bbbbc0e910e7899f8040b880dc69",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/entry_gate.json",
+      "sha256": "9d31e1823247ce0517f89c59885242033e844544fccd401c2370630d87482f72",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/path_policy_gate.json",
+      "sha256": "f9275ccee949abbdbbd53300bb6a78f5200fd27290c5df0e141e565665f2bdad",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/required_files_gate.json",
+      "sha256": "8f84e7628cc4e553115621991477a851c172ce8d629cf22bf96723511ab8b106",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/schema_gate.json",
+      "sha256": "d77c13a71f1dd7bac7eee887117ea67f0c191da79b17b1dca32e1fcec8c4f11a",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/spec_consistency_gate.json",
+      "sha256": "ee59b7e84de850cdef7ff4a41e97f407cc07c52ef9dc923a6eb2767130e520d3",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/trace_gate.json",
+      "sha256": "b51df6505121ede735ae60b1fb8786aa435460b0c2bf22cc5955b5f890fc5fe2",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/workflow_selection_gate.json",
+      "sha256": "ddfba159001a78b155e92d413d3dca18fafa632c5b13eda8bbf0a9e749d6f124",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/workflow_specific_gate.json",
+      "sha256": "91bfbcd91e085497d79105d708d68f1d6b033f1f6d65c6baf44219dd6e912b21",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/input-snapshot.json",
+      "sha256": "18de5b98c7e4ca5cf3c1df38dcb48c1c83e0167f4ba13e59e66584cd2bc98424",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/attempt-result.json",
+      "sha256": "be2ded54dc93bab5fec2483fd2b869860cbcc0ad68eda5b58ab13bf64752c170",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/attempt-start.json",
+      "sha256": "43a0acef5937af0e152805c64abc6f61326ffbe4b7e71fca97c3b846a9a63ecc",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gate_summary.md",
+      "sha256": "9073404dd344c981534d51249ec4a96b63eecc93e51165fdd3d3c103db7c2e9f",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/candidate_manifest_gate.json",
+      "sha256": "aa2b58b4fef8938b709f74970d0dc71eaa0d48cbf67117db634e35e0df4843fe",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/contract_integrity_gate.json",
+      "sha256": "88f80fd778433842e8f9c44a1eeab2f040073c84f55732ab4d4a49feb1fe1d64",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/entry_gate.json",
+      "sha256": "79a8d022049e2482b5cad7b8147046269daced7d5891a210c0ba8999d03e85fc",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/path_policy_gate.json",
+      "sha256": "9e5c5684e40f5e729111255d8f7f3803b18b8f7433564c2430d40c98eab7a18d",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/required_files_gate.json",
+      "sha256": "00fa47dfeeedaa5bed2c572f2c57486441a007aac7ed420e38667af70651bc06",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/schema_gate.json",
+      "sha256": "813a9387dd3133efea5d0a6b830b0f1ff9ab3968760c19dc346ec235463e6836",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/spec_consistency_gate.json",
+      "sha256": "c13cee8bb59482fa9ac86d9367bd61646553c0a5497102e68709706227a91ab5",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/trace_gate.json",
+      "sha256": "3efea0428c80e845891a8471adf1610ec3cdcbc46b6b8ff35d15a4e951036e8e",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/workflow_selection_gate.json",
+      "sha256": "7cd4cf0f1dde1a95a1e7a2be606b8bfb4cb5ae7b576a06d3cb3d2524cc30ed5b",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/workflow_specific_gate.json",
+      "sha256": "8dcab725c5c548f5a925d3b09980924e9fc1abb61c740f171f1af99b23448ba0",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/input-snapshot.json",
+      "sha256": "23ed6247a5754986c5e9773045d118e6e073279e69dda011708cb9ac70d55b9c",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/attempt-result.json",
+      "sha256": "6070218e55681bf2c7d971d6af4faadd519be4e1a87b36ccb61520a75331fa08",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/attempt-start.json",
+      "sha256": "d25824012c94089f00b1aeab6402eae27d91204b478f7a8244f42b1085c314e0",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gate_summary.md",
+      "sha256": "30c9daf5b8b6307c97ef27da3282428328a5ed4f3cecb6ff6ba1863a9b0dcaf4",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/candidate_manifest_gate.json",
+      "sha256": "bbfbf64c2713ac54d057242e98ac5f7cf2c62d20b7cc1b17371bf6c7861f225a",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/contract_integrity_gate.json",
+      "sha256": "38dfe80576b61f93eeb5fc15fbb57d8f4595af0976a716f8c6ab44e11c4f7a9d",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/entry_gate.json",
+      "sha256": "c125086de4dfd2c351e45ac24d9941a9e50b9c90bca064aef5c581ed6783d217",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/path_policy_gate.json",
+      "sha256": "b239087960464c274e06effd3448fcc37bc3341be6830c4bbb8b82abe70e4143",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/required_files_gate.json",
+      "sha256": "b46143c4038f270bb5707e0e84e8c45f761795f08664431fe57d730fb56fc18f",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/schema_gate.json",
+      "sha256": "0ea5478a393d938769a378c41d7a874afaa57d98c1bd987d4f17ad7215e47003",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/spec_consistency_gate.json",
+      "sha256": "b8c63dee7356805d608871e365fba4edd868d026b5349279204f6fb093f63887",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/trace_gate.json",
+      "sha256": "02250c207b08361a52e50894fc9045a24ee17dafe7ea93b6dc7fed25655e1430",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/workflow_selection_gate.json",
+      "sha256": "98fbaff81435715e58211b43a9574cd7619dfae7c743bdddd4dd26e55075fd38",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/workflow_specific_gate.json",
+      "sha256": "5e65afdc0c56cbe9c63283d8d5a4014a872603ed51774221e1c343f243d20757",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/input-snapshot.json",
+      "sha256": "3012dc9895dd145465dc5a704411fb1b04ad22e9fa990d745b744e18970bca54",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0006/attempt-result.json",
+      "sha256": "62237314bad7f84b113df8fdad28455ad6629e0f70600b5df63b70d976337633",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0006/attempt-start.json",
+      "sha256": "1016f01c860ef7a483dc95c10fa29573901af66f461066d1e723d2241d424d89",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0006/gate_summary.md",
+      "sha256": "be835dea7ec30bc66a38bafe4c81d04efb77a07b773efd995b4dedb46708f756",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0006/gates/post_merge_gate.json",
+      "sha256": "5cc9ab5684c54ac8ecc799cb8e8d6d365031e35112841ba095f9c21ed8540a57",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0006/input-snapshot.json",
+      "sha256": "bb5b87424455b1216013ddccbf2ed65ae61dfb71ebf1d34da004d16d276bcb7c",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gate_summary.md",
+      "sha256": "be835dea7ec30bc66a38bafe4c81d04efb77a07b773efd995b4dedb46708f756",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gates/candidate_manifest_gate.json",
+      "sha256": "bbfbf64c2713ac54d057242e98ac5f7cf2c62d20b7cc1b17371bf6c7861f225a",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gates/contract_integrity_gate.json",
+      "sha256": "38dfe80576b61f93eeb5fc15fbb57d8f4595af0976a716f8c6ab44e11c4f7a9d",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gates/entry_gate.json",
+      "sha256": "c125086de4dfd2c351e45ac24d9941a9e50b9c90bca064aef5c581ed6783d217",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gates/path_policy_gate.json",
+      "sha256": "b239087960464c274e06effd3448fcc37bc3341be6830c4bbb8b82abe70e4143",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gates/post_merge_gate.json",
+      "sha256": "5cc9ab5684c54ac8ecc799cb8e8d6d365031e35112841ba095f9c21ed8540a57",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gates/required_files_gate.json",
+      "sha256": "b46143c4038f270bb5707e0e84e8c45f761795f08664431fe57d730fb56fc18f",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gates/schema_gate.json",
+      "sha256": "0ea5478a393d938769a378c41d7a874afaa57d98c1bd987d4f17ad7215e47003",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gates/spec_consistency_gate.json",
+      "sha256": "b8c63dee7356805d608871e365fba4edd868d026b5349279204f6fb093f63887",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gates/trace_gate.json",
+      "sha256": "02250c207b08361a52e50894fc9045a24ee17dafe7ea93b6dc7fed25655e1430",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gates/workflow_selection_gate.json",
+      "sha256": "98fbaff81435715e58211b43a9574cd7619dfae7c743bdddd4dd26e55075fd38",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/gates/workflow_specific_gate.json",
+      "sha256": "5e65afdc0c56cbe9c63283d8d5a4014a872603ed51774221e1c343f243d20757",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/git_bootstrap/f7c1fe5dfe60741054b396cc7fb906aa990d05c2b902aa644dd25c876cf649ca/commands.jsonl",
+      "sha256": "92be98ad5e13df11101cf98d3569b17cea38a39fb7b8d84dc3704ad029d0e38d",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/git_bootstrap/f7c1fe5dfe60741054b396cc7fb906aa990d05c2b902aa644dd25c876cf649ca/completed.json",
+      "sha256": "01fc5741948bc7c3c20492e6398584d4a5c9052255df257762b9e74c28a6364b",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/git_bootstrap/f7c1fe5dfe60741054b396cc7fb906aa990d05c2b902aa644dd25c876cf649ca/intent.json",
+      "sha256": "ee291376c73a6f66d2372112deb845439effb2698dda6651f4065fb13ee6d8c5",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/git_bootstrap/plans/f7c1fe5dfe60741054b396cc7fb906aa990d05c2b902aa644dd25c876cf649ca.json",
+      "sha256": "f7c1fe5dfe60741054b396cc7fb906aa990d05c2b902aa644dd25c876cf649ca",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/git_context.json",
+      "sha256": "b4f175882a927e6ac725c5efc72768a0058b4dc48f1b8ef46f4a3002190174b2",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/governance_scope.json",
+      "sha256": "dfc6e141d712dacceeb6c829046d32c904e0a552d3087ea351971432bb76723b",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/handoff_validation_state.json",
+      "sha256": "a0d5a8ca4cba4a6ded6e8727f269b2c8ee6b46fcc8f4913636a8ce12fe26035c",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1792907413595_7696c9a77469_0.json",
+      "sha256": "7696c9a774693f196772295e05a70663bef4944db6ffb3946f5235bdfc0d4107",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1793709765455_184d510bc3f3_0.json",
+      "sha256": "184d510bc3f34bfeba47d6bf345036885b2db8f80d2b8cf338b3aa060f3299a5",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1793711464843_76b7bd32dbf2_0.json",
+      "sha256": "76b7bd32dbf2f4106e6e175c38b5f854c2fbf7ff7b845015862eecb23205f95c",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1793712267542_83bdbc0b903e_0.json",
+      "sha256": "83bdbc0b903e04394480f6f68bd19a6222fff6c27d5201351587362e989b7f30",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1793714169917_aa831ae1c478_0.json",
+      "sha256": "aa831ae1c47821770c1a824fd8bafaf87284900b1148307e8a0b9e007abe3197",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-executor_implementation_1793720470026_5b48264412b5_0.json",
+      "sha256": "5b48264412b5e01fcd2c5944e60acabe4cf3bcb86be24458d376bc087d0b01ec",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-executor_implementation_1793720476585_7d92b94b7ce0_0.json",
+      "sha256": "7d92b94b7ce0d8efb813b37b5d1849478fcdc73bdace5623f681fee17adf5bbf",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-executor_implementation_1793720568759_772e983c6dd7_0.json",
+      "sha256": "772e983c6dd79041cbc840ab5eadeb3af2c7323ed5805e2354e9d9d99f3c27fa",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-executor_implementation_1793720578522_52dcb3d0c0a7_0.json",
+      "sha256": "52dcb3d0c0a73e9bc42e57c5d4824fe6781d6444637d28b68ffcd460e9bc007a",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-executor_implementation_running-fix-round-task-wi-0001-004_1793720850902_be1a6f98db6c_0.json",
+      "sha256": "be1a6f98db6c95168bba189cd68f72b00bc5c7c9e06fffc7773d748f2d804b19",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-requirements_candidate_requirements_1792906288040_16e75c9feacf_0.json",
+      "sha256": "16e75c9feacfa5d79a43b40e39e8b80b05518bbfeada57137e0df653a05c74b3",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-requirements_candidate_requirements_1793708450063_3cfbc48a4bc7_0.json",
+      "sha256": "3cfbc48a4bc71ba911bad3022e0f321409366def86a86acb8b4312a2574ea264",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-reviewer_review_1793720744141_855f85f7e6fe_0.json",
+      "sha256": "855f85f7e6fe9747f48d561c60f0693fcfe226b8f536a93bc369d6ffa774da33",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-task-planner_candidate_tasks_1792908279507_15ec6734671a_0.json",
+      "sha256": "15ec6734671a40ab64c9e09d27c1fe57ff8bdf5b20292575bc530c1d408338c8",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-task-planner_candidate_tasks_1793710908531_614e22c407c2_0.json",
+      "sha256": "614e22c407c266a3c8f21d7202f0b3bdf797d29529e2629c90bf47e0061d9bcf",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-task-planner_candidate_tasks_1793711555074_56255b211e83_0.json",
+      "sha256": "56255b211e83d67713bb19a9ea22bbf7da9ff47db4fc5cd1a9cc0281d1e6a068",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-task-planner_candidate_tasks_1793714308631_7a18a4bb25d7_0.json",
+      "sha256": "7a18a4bb25d713942dd92afcfe05c1380801a9fccb595701e4e24730f66bca7e",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/hard_stop_resolution.jsonl",
+      "sha256": "679f6e76d6e60312d063c2743cc9076ec9e6cae12834a07537c41972ccd42d6e",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/impact_analysis.md",
+      "sha256": "8cfd357ac3daf215d3f47db1a64df31e6a3562859ec7c4d3454e672a27ef0542",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/implementation_baseline.json",
+      "sha256": "cd9a8c79b993f61dfb51f5f642af96eb953219fe9948545732a2bd6da6325994",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/intake.md",
+      "sha256": "0bcbcfe50f18c49915d9ccc2a57a3c209894d8547cb2781d5f141f35eb31c9e3",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/merge_report.md",
+      "sha256": "5d892dd9e1ef6bc7fd14142d287f664eb8bacf9fe9766ba5e07962e2cc5d95f8",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/trigger_result.json",
+      "sha256": "f3923902ccf53fe2fc8d9edca9a1ebc456e084b90e4200bef2f57530f12f0abb",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/user_decision.json",
+      "sha256": "3a98030a90b7534eca2daa18399179c5929b4c0552ffdbfcf166d47c2f5d13ea",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/work_item.json",
+      "sha256": "e2e7b8400ade8311f91b8e8a79a6d8a47cb830125c137dc290b9e544080a4fd0",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/work-items/WI-0001/write_guard_log.jsonl",
+      "sha256": "67c9a0678ba923b3ff4a00e2bbac5b5753c5edad38f20d1a660c401f815e941b",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/runtime/events.jsonl",
+      "sha256": "7fc5ecd27893217a915becf41e66eef0c6b2d9d866464a8ac9fd67b5dd0d72c2",
+      "unchanged": true
+    },
+    {
+      "category": "original-governance",
+      "path": ".specforge/runtime/state.json",
+      "sha256": "18fa881eb1082e882ed676e213161f9eed4915c00132ff84793fa2e0a94c7b3e",
+      "unchanged": true
+    },
+    {
+      "category": "existing-source",
+      "path": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "sha256": "8533e51576685f3867fe891cc8c93fe32415942b5ed444d79f514c431c984a0d",
+      "unchanged": true
+    },
+    {
+      "category": "existing-source",
+      "path": "packages/daemon-core/src/tools/lib/sf_safe_bash_executor.ts",
+      "sha256": "a32462eef8a42464633ce2061e98fee53fed123dfb69046bd61f18e17ea2cb00",
+      "unchanged": true
+    },
+    {
+      "category": "existing-source",
+      "path": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "sha256": "aa2baef9938c782a48c055a8d1b5eacb196ef3da9ae7eccc473cf889382a4df7",
+      "unchanged": true
+    },
+    {
+      "category": "existing-source",
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-verification.ts",
+      "sha256": "16171b587b80d434354e9d312d47f4dffbd1465403056e1b996b51e27182006f",
+      "unchanged": true
+    },
+    {
+      "category": "existing-source",
+      "path": "packages/daemon-core/src/tools/lib/verification-report-contract.ts",
+      "sha256": "4763a34f76be66ec4024e6543b841a4113e41616ffe1021cdf8687205ac9f609",
+      "unchanged": true
+    },
+    {
+      "category": "existing-source",
+      "path": "packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts",
+      "sha256": "fda2e3572799762ad283cff69f1280b3a54b55f7ac020b4ef4c2b1df28377953",
+      "unchanged": true
+    },
+    {
+      "category": "existing-source",
+      "path": "packages/daemon-core/src/tools/lib/verification-governance-contract.ts",
+      "sha256": "9c9ba683a93275a1234bd9bb3668d15e1a59d2a695733e29eccea850531c0f73",
+      "unchanged": true
+    },
+    {
+      "category": "existing-source",
+      "path": "setup/userlevel-opencode/tools/lib/sf_safe_bash_executor.ts",
+      "sha256": "a32462eef8a42464633ce2061e98fee53fed123dfb69046bd61f18e17ea2cb00",
+      "unchanged": true
+    },
+    {
+      "category": "existing-source",
+      "path": "setup/userlevel-opencode/tools/lib/sf_verifier_execution_core.ts",
+      "sha256": "e4524e455d5aa8583437cc2c8073bdc3d940eb9c0670c7b8dae13db0c239a890",
+      "unchanged": true
+    },
+    {
+      "category": "existing-source",
+      "path": "setup/userlevel-opencode/agents/sf-verifier.md",
+      "sha256": "4359196a3caf53445cefdd75870c15ef5b962ed08079fb6d9b5b0aada79d9766",
+      "unchanged": true
+    },
+    {
+      "category": "existing-source",
+      "path": "setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md",
+      "sha256": "e8bef07d383f7469282510048d5d75e5bcf681cc55cc27e90f0a4196946be9d6",
+      "unchanged": true
+    },
+    {
+      "category": "installed",
+      "path": "C:/Users/lyq/.config/opencode/sf-user/bin/specforged.exe",
+      "sha256": "fcf5ce5ebc6c399cfec2aa405ebbd2c236bd0ad44792a20b0efbce06b91fe710",
+      "unchanged": true
+    },
+    {
+      "category": "installed",
+      "path": "C:/Users/lyq/.config/opencode/tools/lib/sf_safe_bash_executor.ts",
+      "sha256": "a32462eef8a42464633ce2061e98fee53fed123dfb69046bd61f18e17ea2cb00",
+      "unchanged": true
+    },
+    {
+      "category": "installed",
+      "path": "C:/Users/lyq/.config/opencode/tools/lib/sf_verifier_execution_core.ts",
+      "sha256": "e4524e455d5aa8583437cc2c8073bdc3d940eb9c0670c7b8dae13db0c239a890",
+      "unchanged": true
+    },
+    {
+      "category": "installed",
+      "path": "C:/Users/lyq/.config/opencode/agents/sf-verifier.md",
+      "sha256": "4359196a3caf53445cefdd75870c15ef5b962ed08079fb6d9b5b0aada79d9766",
+      "unchanged": true
+    }
+  ],
+  "original_head": "f5fed085a8609f593592eca5e8035b2d1c958759",
+  "git_exit_code": 0,
+  "permission_revoked": true,
+  "authority_note": "No formal HTTP tool or role context injected. Authoritative event bytes and work-item metadata equal prior formal read; this is file identity verification, not a fresh StateManager execution.",
+  "inner_exit_code": 0
+}

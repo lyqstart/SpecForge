@@ -1,0 +1,11 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\InspectSingleCleanup.exe",
+  "args": [
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-06-single-process-matrix",
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-06-single-process-matrix\\cleanup-0001.json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "run-d22-independent-cleanup-audit",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=cleanup-0001 raw inventory",
+  "started_utc": "2026-11-06T16:09:39.673Z"
+}

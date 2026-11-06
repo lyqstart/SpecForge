@@ -1,0 +1,1 @@
+{"probe":"D21_HOST_WMI_CONTROL_V1","utc":"2026-11-05T04:21:51.4520396Z","type":"InvalidOperationException","hresult":-2146233079,"management_status":null,"root":"D:\\code\\SpecForge\\.tmp\\verification-lpac-wmi-control\\c9d241fb55b34b31a38dfd2c82d02d9c","positive_control":false,"inner_exit_code":1}

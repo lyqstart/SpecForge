@@ -1,0 +1,1 @@
+let disabled=false;try{process.dlopen({exports:{}},'SYNTHETIC-UNAVAILABLE.node');}catch(e){disabled=e.code==='ERR_DLOPEN_DISABLED';}if(!disabled)process.exit(43);import('./src/fixed-module.ts').then(m=>{if(m.meaning!==42)process.exit(41);console.log('SFINLINE_IMPORT_PASSED');}).catch(()=>process.exit(42));

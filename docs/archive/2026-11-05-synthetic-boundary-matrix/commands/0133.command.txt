@@ -1,0 +1,11 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\ProbeJsonRegression.exe",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/attempts/0f114cae4c2f43c6b05047c46ca558f4/stdout.bin",
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/attempts/a9ea9cfb7bda40ddad27fcf7c3a908ed/stdout.bin"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-raw-probe-json-roundtrip",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=raw regression receipt",
+  "started_utc": "2026-11-06T13:08:47.325Z"
+}

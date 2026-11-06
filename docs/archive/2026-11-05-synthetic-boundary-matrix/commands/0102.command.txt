@@ -1,0 +1,11 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacPrivateRegistryChild.exe",
+  "args": [
+    "--host-native-com-control",
+    "66a72810dd084216b06579edb2e968bd"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-explicit-com-normal-user-control",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned WMI control 66a72810dd084216b06579edb2e968bd fixed marker Node no elevation;EXTERNAL_EVIDENCE_WRITES=raw control receipt",
+  "started_utc": "2026-11-06T12:53:39.582Z"
+}

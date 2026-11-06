@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-06T15:46:52.698Z",
+  "members": [
+    {
+      "source": "docs\\archive\\2026-11-06-single-process-matrix\\InputIdentityFilesystemProbe.cs",
+      "file": "InputIdentityFilesystemProbe.cs",
+      "bytes": 4889,
+      "sha256": "dab14b21f9f92e9d99cf59002ee5dd39067f597bde8e43c4f9f251115e7dd5e2"
+    },
+    {
+      "source": "packages/daemon-core/src/verification/windows/LpacInputIdentity.cs",
+      "file": "LpacInputIdentity.cs",
+      "bytes": 7156,
+      "sha256": "456e9e1108fced3abc8f66d25bc75ce9c1bae76fe734138efd8981d4df9e3173"
+    },
+    {
+      "source": ".tmp/verification-lpac-build/InputIdentityFilesystemProbe.exe",
+      "file": "InputIdentityFilesystemProbe.exe",
+      "bytes": 19968,
+      "sha256": "862b292655a0bca0f77f86e1c12ee1d289a5e88494c7e091013e48d0ea3f90f6"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+  "args": [
+    "--synthetic-registry-read-network-unc-locked",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\962a06f4e0214f52a555906c0684fb99",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-external-tcp-and-unc-boundary",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned D21 readonly attempt 962a06f4e0214f52a555906c0684fb99 fixed externalTCP and ownUNC;EXTERNAL_EVIDENCE_WRITES=raw control and guest results",
+  "started_utc": "2026-11-06T13:03:55.240Z"
+}

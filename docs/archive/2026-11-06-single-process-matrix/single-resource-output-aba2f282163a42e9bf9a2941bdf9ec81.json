@@ -1,0 +1,36 @@
+{
+  "utc": "2026-11-06T16:03:55.633Z",
+  "kind": "output",
+  "nonce": "aba2f282163a42e9bf9a2941bdf9ec81",
+  "build": "build-single-resource-06",
+  "launcher_exit": 1,
+  "application_exit": 137,
+  "expected_rejection_proved": true,
+  "application_passed": false,
+  "outcome": {
+    "kind": "output",
+    "expected_rejection_proved": true,
+    "application_passed": false,
+    "application_exit_code": 137,
+    "job_all_ended": true,
+    "timed_out": false,
+    "owner_cancelled": false,
+    "parent_exit_with_live_descendants": false,
+    "process_budget_exceeded": false,
+    "configured_process_limit": 1,
+    "strict_instantaneous_process_ceiling_proved": false,
+    "independently_verified_processes": 1,
+    "ready_node_roles_independently_bound": 1,
+    "peak_active_processes": 1,
+    "stdout_overflow": true,
+    "stderr_overflow": false,
+    "job_messages": [
+      6,
+      7,
+      4,
+      6
+    ],
+    "scope": "Synthetic expected rejection only; no strict instantaneous total-member ceiling or full isolation/product acceptance claimed"
+  },
+  "inner_exit_code": 0
+}

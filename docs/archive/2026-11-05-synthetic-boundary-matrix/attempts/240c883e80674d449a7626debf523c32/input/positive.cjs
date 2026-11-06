@@ -1,0 +1,2 @@
+'use strict';const assert=require('node:assert/strict');assert.equal(2+2,4);const role=process.argv[1]||'0';console.log('SFRESOURCE_READY:'+JSON.stringify({kind:'process',pid:process.pid,role}));
+if(role==='0'){const cp=require('node:child_process');for(let i=0;i<20;i++){const c=cp.spawn(process.execPath,['-e',process.execArgv[1],'idle'],{stdio:'inherit',windowsHide:true});c.on('error',e=>console.log('SFRESOURCE_SPAWN_ERROR:'+JSON.stringify({code:e.code})));}}setInterval(()=>{},1000);

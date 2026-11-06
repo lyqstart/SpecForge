@@ -1,0 +1,1 @@
+packages\daemon-core\src\verification\windows\LpacStartupPoc.cs(316,63): error CS0019: �������==���޷�Ӧ���ڡ������顱�͡�int�����͵Ĳ�����

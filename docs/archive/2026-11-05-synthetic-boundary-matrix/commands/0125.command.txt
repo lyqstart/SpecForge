@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/preserve-attempt.cjs",
+    "962a06f4e0214f52a555906c0684fb99"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-external-tcp-unc-failure",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable attempt962a",
+  "started_utc": "2026-11-06T13:04:08.926Z"
+}

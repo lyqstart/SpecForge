@@ -1,0 +1,43 @@
+{
+  "utc": "2026-11-06T12:54:49.178Z",
+  "members": [
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacPrivateRegistryChild.cs",
+      "file": "LpacPrivateRegistryChild.cs",
+      "bytes": 5248,
+      "sha256": "7da93907abc3df8ebeac9f84e608b5bceb192fd2290b58a9eaca4affc873cbb9"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacFileAclAttack.cs",
+      "file": "LpacFileAclAttack.cs",
+      "bytes": 3875,
+      "sha256": "c6ce80b29f258701f1dd4098c307af1b98419fd9006c566dbbce50810e5b5839"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacNativeBoundaryProbe.cs",
+      "file": "LpacNativeBoundaryProbe.cs",
+      "bytes": 9244,
+      "sha256": "1b6688991b8cd8ef0cebedb6ceb0635447fdc7ce0d7599a3df074319caa1a594"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacNativeWmiCom.cs",
+      "file": "LpacNativeWmiCom.cs",
+      "bytes": 4004,
+      "sha256": "d7faac752aef3a20524a58efd5f0098813d55604273c3c07f081974806708584"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacPrivateRegistryChild.exe",
+      "file": "LpacPrivateRegistryChild.exe",
+      "bytes": 34304,
+      "sha256": "93e76da115192e3534462b3b8a3cbdab474a0de30585c3b8395e258c1d9fcad4"
+    }
+  ],
+  "compile_receipt": "0103",
+  "hash_domain": "raw filesystem bytes",
+  "primary_api_sources": [
+    "https://learn.microsoft.com/en-us/windows/win32/wmisdk/swbemlocator-connectserver",
+    "https://learn.microsoft.com/en-us/windows/win32/wmisdk/swbemservices-execmethod",
+    "https://learn.microsoft.com/en-us/windows/win32/wmisdk/swbemobject-spawninstance-"
+  ],
+  "review": "Only required scripting parameters; explicit COM initialization and fixed marker control. Prior frozen build04 remains immutable."
+}

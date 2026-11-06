@@ -1,0 +1,10 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\PrivateReportRegression.exe",
+  "args": [
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix\\attempts\\e0e76edee83147759158330bb063db92\\stdout.bin"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "replay-actual-private-write-report",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-05T03:23:14.178Z"
+}

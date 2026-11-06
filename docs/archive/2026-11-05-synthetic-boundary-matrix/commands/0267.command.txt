@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/preserve-attempt.cjs",
+    "b4fb38d2b37b4f5ab9443cdbac2edca5"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-native-bypass-and-parent-handle-denials",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable native bypass attempt",
+  "started_utc": "2026-11-06T14:44:32.619Z"
+}

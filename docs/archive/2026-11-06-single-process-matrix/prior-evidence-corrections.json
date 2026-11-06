@@ -1,0 +1,8 @@
+{
+  "prior_manifest_sha256": "ec9b58210f3d3771402e2d9b6f490d5e988058309947d2fb5450f7a1767ced5d",
+  "correction": "Prior acceptance-review A01 overstated directory-junction coverage. The actual frozen LpacAliasFixture creates hard links and symbolic links; its third negative path is a Windows extended absolute path, not a directory junction.",
+  "source": "Prior build-single-process-bypass-30/LpacAliasFixture.cs and actual 0079 fixture events",
+  "directory_junction_status_in_prior_phase": "NOT_PROVED",
+  "current_action": "Preserve old sealed report and failure status; require actual mount-point reparse tag/target and positive controls for SP-A01.",
+  "old_multi_process_acceptance": "Still NOT_ACCEPTED; correction grants no product permission"
+}

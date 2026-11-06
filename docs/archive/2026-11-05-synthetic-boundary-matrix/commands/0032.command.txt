@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\OwnedSymbolicFixtureFactory.exe",
+  "args": [
+    "--create",
+    "b138f0060a5249768b420dd94a6ff798",
+    "0000000000000000000000000000000000000000000000000000000000000000"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "reject-symbolic-factory-plan-hash-drift",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=expected readonly rejection no fixture changes;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-05T03:36:23.035Z"
+}

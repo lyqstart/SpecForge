@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/run-resource-case.cjs",
+    "cancel",
+    "b4b6b3aa9d3a4399ac2dc5e99644999f",
+    "build-resource-identities-07"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-resource-cancel",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned finite cancel test via frozen launcher and cleanup;EXTERNAL_EVIDENCE_WRITES=receipts lab-proof only",
+  "started_utc": "2026-11-05T03:44:59.379Z"
+}

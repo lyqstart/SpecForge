@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+  "args": [
+    "--synthetic-registry-read-network-unc-locked",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\0f114cae4c2f43c6b05047c46ca558f4",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-native-unc-error-diagnosis",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new D21 readonly owned diagnostic 0f114cae4c2f43c6b05047c46ca558f4 no extra rights;EXTERNAL_EVIDENCE_WRITES=raw actual errors UNKNOWN remains failure",
+  "started_utc": "2026-11-06T13:06:58.501Z"
+}

@@ -1,0 +1,10 @@
+{
+  "source": "User reply to request_user_input_async call_1780ff6664334776ba174a0fad892faf",
+  "question": "是否采用这份[单进程首期方案](D:/code/SpecForge/docs/archive/2026-11-05-synthetic-boundary-matrix/single-process-scope-proposal.md)：首期只支持不创建子进程的只读 Node 内置测试，需要子进程的测试明确拒绝；保持严格进程上限，先更新正式规格并完成新配置的全部隔离验收，暂不启用产品执行？原多进程方案仍记为未通过。",
+  "answer": "采用单进程首期方案",
+  "proposal": "single-process-scope-proposal.md",
+  "authorizes": "Formal narrow scope and complete new synthetic acceptance; does not authorize production adoption, deployment or original WI execution",
+  "timestamp_note": "No user-message UTC was supplied; no guessed timestamp added. Subsequent command receipts record real collection UTC.",
+  "proposal_sha256": "7027cd9a96eb835cdd3525577f0d5c4711ce20cc614105b5e3343f7178bfc16d",
+  "collected_utc": "2026-11-06T15:02:54.596Z"
+}

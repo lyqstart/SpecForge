@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/preserve-attempt.cjs",
+    "d5e307f476c240108faaaf5691d8206e"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-proved-native-child-and-console-denials",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable native single-process attempt",
+  "started_utc": "2026-11-06T14:35:21.198Z"
+}

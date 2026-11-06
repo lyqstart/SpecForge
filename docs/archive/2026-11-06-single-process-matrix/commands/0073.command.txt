@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-06-single-process-matrix/run-single-process-host-control.cjs",
+    "c5ca7d727bc24d6d823cc5f89a74148e"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "run-d22-native-host-controls",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=owned host-positive native fixture and immediately terminated suspended children;EXTERNAL_EVIDENCE_WRITES=host control receipts",
+  "started_utc": "2026-11-06T16:07:34.715Z"
+}

@@ -1,0 +1,36 @@
+{
+  "utc": "2026-11-05T03:34:08.941Z",
+  "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\6ef62f997ed3470885fe3b068d578b9e",
+  "members": [
+    {
+      "file": "events.jsonl",
+      "bytes": 6048,
+      "sha256": "daedf5695ec59af25eadf8c8616366af27b0ee7f8d78cde819a67cb5a8fbabb9"
+    },
+    {
+      "file": "receipt.json",
+      "bytes": 1182,
+      "sha256": "70b88403493914b16760d11ffbc3ed25fb730ad5f91f6f007a39830694a35512"
+    },
+    {
+      "file": "stdout.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "input/fixture.txt",
+      "bytes": 18,
+      "sha256": "90f0c37b288cb06aea3311d9ad3a921feaf436ab7d0465e818488a2c2c150f07"
+    },
+    {
+      "file": "shadow-home/fake-credentials.txt",
+      "bytes": 47,
+      "sha256": "1748e4c10122735e177bd9d0f6e69fc2f86fc63898af6931fd55e5f593799bb0"
+    }
+  ]
+}

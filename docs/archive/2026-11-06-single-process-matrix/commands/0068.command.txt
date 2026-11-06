@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\SyntheticDaemonCrash.exe",
+  "args": [
+    "daemon-restart",
+    "cafc592f34e34bf3902e0f77a6488e8f",
+    "bae44ed2632286bb04167dac0709b5af6ed7c5b871b3a7b32a3d40c965f62c6a"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "run-d22-real-daemon-restart-stop",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=owned new real Daemon restart authenticated stop and handshake cleanup;EXTERNAL_EVIDENCE_WRITES=receipts no token export",
+  "started_utc": "2026-11-06T16:06:51.548Z"
+}

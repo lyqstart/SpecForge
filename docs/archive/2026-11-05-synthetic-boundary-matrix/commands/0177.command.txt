@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+  "args": [
+    "--synthetic-resource-daemon-crash",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\64df4b4d3707424eae3a9c0e33133353",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "reject-unbound-non-bun-daemon-parent",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned prestart negative64df root only no profile or application;EXTERNAL_EVIDENCE_WRITES=negative lifecycle receipt",
+  "started_utc": "2026-11-06T13:40:40.380Z"
+}

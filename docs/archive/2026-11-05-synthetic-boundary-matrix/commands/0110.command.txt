@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+  "args": [
+    "--synthetic-registry-read-native-com-locked",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\a9ea9cfb7bda40ddad27fcf7c3a908ed",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-explicit-com-lpac-native-boundary",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned D21 readonly profile and Job a9ea9cfb7bda40ddad27fcf7c3a908ed native fixed probes and cleanup;EXTERNAL_EVIDENCE_WRITES=raw events and receipts",
+  "started_utc": "2026-11-06T12:55:55.717Z"
+}

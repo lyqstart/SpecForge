@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+  "args": [
+    "--synthetic-registry-read-provisioned-symbolic-locked",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\b138f0060a5249768b420dd94a6ff798",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-provisioned-symbolic-normal-user-boundary",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=normal-user same-D21 new profile Job consumes approved two owned symbolic links hardlink and native controls20s cleanup;EXTERNAL_EVIDENCE_WRITES=raw receipts",
+  "started_utc": "2026-11-05T04:05:33.669Z"
+}

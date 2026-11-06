@@ -1,0 +1,14 @@
+{
+  "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+  "args": [
+    "-NoLogo",
+    "-NoProfile",
+    "-NonInteractive",
+    "-Command",
+    "$ErrorActionPreference='Stop'\ntry {\n  $row=Get-CimInstance -ClassName Win32_Process -Filter 'ProcessId = 12184' -Property ProcessId,CreationDate,Name\n  $out=[ordered]@{utc=[DateTime]::UtcNow.ToString('o');method='Local provider metadata for one previously recorded PID; no command line or memory requested';pid=12184;present=($null -ne $row);name=$row.Name;created_utc=if($null -ne $row){$row.CreationDate.ToUniversalTime().ToString('o')}else{$null};created_filetime=if($null -ne $row){$row.CreationDate.ToUniversalTime().ToFileTimeUtc()}else{$null};inner_exit_code=0}\n  $out|ConvertTo-Json -Compress\n  exit 0\n} catch {Write-Error $_;exit 1}"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "independently-query-reused-protected-pid-metadata",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=local readonly metadata query;EXTERNAL_EVIDENCE_WRITES=raw PID creation observation",
+  "started_utc": "2026-11-06T14:52:17.084Z"
+}

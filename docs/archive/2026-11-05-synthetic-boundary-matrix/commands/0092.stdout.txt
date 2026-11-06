@@ -1,0 +1,4 @@
+packages\daemon-core\src\verification\windows\LpacFileBoundaryProbe.cs(66,227): error CS1003: �﷨����Ӧ���롰(��
+packages\daemon-core\src\verification\windows\LpacFileBoundaryProbe.cs(66,228): error CS1026: Ӧ���� )
+packages\daemon-core\src\verification\windows\LpacFileBoundaryProbe.cs(66,220): error CS0746: ��Ч���������ͳ�Ա���������������ͳ�Ա����ʹ�ø�ֵ�������ƻ��Ա������������
+packages\daemon-core\src\verification\windows\LpacFileBoundaryProbe.cs(66,228): error CS0746: ��Ч���������ͳ�Ա���������������ͳ�Ա����ʹ�ø�ֵ�������ƻ��Ա������������

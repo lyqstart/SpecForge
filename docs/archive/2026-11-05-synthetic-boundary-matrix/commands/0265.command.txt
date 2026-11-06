@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/run-single-process-host-control.cjs",
+    "6c75c76c9c2142fc8facdda75787372b"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "host-positive-parent-handles-and-child-policy-override",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=unique normal-user host fixture read-only parent-handle requests fixed suspended children and own hidden console;EXTERNAL_EVIDENCE_WRITES=raw host controls",
+  "started_utc": "2026-11-06T14:42:46.692Z"
+}

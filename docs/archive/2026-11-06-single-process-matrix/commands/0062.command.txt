@@ -1,0 +1,11 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\SyntheticDaemonCrash.exe",
+  "args": [
+    "kill",
+    "1dbbe93e35fb4155a15b8d05e91b87f2"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "run-d22-launcher-hard-crash",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=owned synthetic launcher primary profile killed with199 recovery pending;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-06T16:05:40.958Z"
+}

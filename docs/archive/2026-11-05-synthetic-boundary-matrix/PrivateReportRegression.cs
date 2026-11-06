@@ -1,0 +1,4 @@
+using System;using System.IO;using System.Text;
+internal static class PrivateReportRegression {
+    internal static int Main(string[] args){if(args.Length!=1)return 64;string text=File.ReadAllText(args[0],Encoding.UTF8);var rows=LpacFileBoundaryProbe.ReadPrivateReports(text);if(rows.Count!=1)return 1;var row=rows[0];if((string)row["probe"]!="D21_PRIVATE_REGISTRY_NATIVE_V1"||Convert.ToInt32(row["write_hresult"])!=0||Convert.ToInt32(row["set_value_status"])!=0||(bool)row["write_denied"])return 2;string name=Encoding.UTF8.GetString(Convert.FromBase64String((string)row["native_key_name_b64"]));if(!name.EndsWith("\\specforge.regread.e0e76edee83147759158330bb063db92",StringComparison.OrdinalIgnoreCase))return 3;if(LpacFileBoundaryProbe.ReadPrivateReports("").Count!=0||LpacFileBoundaryProbe.ReadPrivateReports(text+text).Count!=2)return 4;Console.WriteLine("ACTUAL_PRIVATE_WRITE_AND_FRAMING_FAILURE_REPLAY_CONFIRMED;EXIT=0;NO_OS_RESOURCES");return 0;}
+}

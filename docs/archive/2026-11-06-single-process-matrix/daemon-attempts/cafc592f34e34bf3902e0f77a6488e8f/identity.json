@@ -1,0 +1,151 @@
+{
+  "utc": "2026-11-06T16:06:55.132Z",
+  "nonce": "cafc592f34e34bf3902e0f77a6488e8f",
+  "members": [
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\cafc592f34e34bf3902e0f77a6488e8f\\reservation.json",
+      "file": "reservation.json",
+      "bytes": 697,
+      "sha256": "33f848af87f9f1614f0d53c3984a682e5c8448191a18414f143932e9cbabf056"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\cafc592f34e34bf3902e0f77a6488e8f\\daemon-ready.json",
+      "file": "daemon-ready.json",
+      "bytes": 372,
+      "sha256": "89d2051553de1cd59fafb48fb46c137df46deb38ff49d53cba8d7ff98cf030e7"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\cafc592f34e34bf3902e0f77a6488e8f\\worker-spawned.json",
+      "file": "worker-spawned.json",
+      "bytes": 263,
+      "sha256": "94450ecb883709a6f6a606e8000c0279cf2ce19e229cf0c4c9acbdbf03c80af4"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\cafc592f34e34bf3902e0f77a6488e8f\\prekill.json",
+      "file": "prekill.json",
+      "bytes": 870,
+      "sha256": "accfab389b4004016ae86d583555ed9bec93d869932113bdac2b127bcb17eaef"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\cafc592f34e34bf3902e0f77a6488e8f\\daemon.stdout.txt",
+      "file": "daemon.stdout.txt",
+      "bytes": 2184,
+      "sha256": "f48cb3b816ff45522901664de8959b94965ff1aa750295014ba018e00dbf8cdb"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\cafc592f34e34bf3902e0f77a6488e8f\\daemon.stderr.txt",
+      "file": "daemon.stderr.txt",
+      "bytes": 67,
+      "sha256": "39b00c12f788a9c0294eed29d275bcf89cc66faa4ab5fefcf9ac47f08a88e9d5"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\cafc592f34e34bf3902e0f77a6488e8f\\observer-latest.stdout.txt",
+      "file": "observer-latest.stdout.txt",
+      "bytes": 2184,
+      "sha256": "f48cb3b816ff45522901664de8959b94965ff1aa750295014ba018e00dbf8cdb"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\cafc592f34e34bf3902e0f77a6488e8f\\observer-latest.stderr.txt",
+      "file": "observer-latest.stderr.txt",
+      "bytes": 67,
+      "sha256": "39b00c12f788a9c0294eed29d275bcf89cc66faa4ab5fefcf9ac47f08a88e9d5"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\cafc592f34e34bf3902e0f77a6488e8f\\daemon-observer-exit.json",
+      "file": "daemon-observer-exit.json",
+      "bytes": 170,
+      "sha256": "c6a42ae0a7f98a43c4a3b4019f9dc00dc8b07431e803fabdab0abc329b299029"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\cafc592f34e34bf3902e0f77a6488e8f\\daemon-native-exit-facts.json",
+      "file": "daemon-native-exit-facts.json",
+      "bytes": 238,
+      "sha256": "2f2163d2fcf460460c57a56ec027cacdcd58473e78350fda7b9661e1a7102806"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\cafc592f34e34bf3902e0f77a6488e8f\\daemon-kill-completed.json",
+      "file": "daemon-kill-completed.json",
+      "bytes": 695,
+      "sha256": "bae44ed2632286bb04167dac0709b5af6ed7c5b871b3a7b32a3d40c965f62c6a"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\cafc592f34e34bf3902e0f77a6488e8f\\daemon-restarted.json",
+      "file": "daemon-restarted.json",
+      "bytes": 374,
+      "sha256": "73bca3e97b4b43d4db7469bf3650d9a6e6503308c035c7da620809a21b5eb844"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\cafc592f34e34bf3902e0f77a6488e8f\\restart.stdout.txt",
+      "file": "restart.stdout.txt",
+      "bytes": 2171,
+      "sha256": "75847513c06f59e64960f8705b12f6202102fa227bcf8015bedb48cb69b7610d"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\cafc592f34e34bf3902e0f77a6488e8f\\restart.stderr.txt",
+      "file": "restart.stderr.txt",
+      "bytes": 67,
+      "sha256": "39b00c12f788a9c0294eed29d275bcf89cc66faa4ab5fefcf9ac47f08a88e9d5"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\cafc592f34e34bf3902e0f77a6488e8f\\restart-observer.stdout.txt",
+      "file": "restart-observer.stdout.txt",
+      "bytes": 2171,
+      "sha256": "75847513c06f59e64960f8705b12f6202102fa227bcf8015bedb48cb69b7610d"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\cafc592f34e34bf3902e0f77a6488e8f\\restart-observer.stderr.txt",
+      "file": "restart-observer.stderr.txt",
+      "bytes": 67,
+      "sha256": "39b00c12f788a9c0294eed29d275bcf89cc66faa4ab5fefcf9ac47f08a88e9d5"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\cafc592f34e34bf3902e0f77a6488e8f\\daemon-restart-completed.json",
+      "file": "daemon-restart-completed.json",
+      "bytes": 329,
+      "sha256": "543aafc93b4394e582bbc5d44e62e7d298b4190f817358a0950db921813136da"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\cafc592f34e34bf3902e0f77a6488e8f\\events.jsonl",
+      "file": "launcher/events.jsonl",
+      "bytes": 26065,
+      "sha256": "39d66697f71d92d9fa1587b8a1bfdd37eb13d066565f584a1fc52057246c5075"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\cafc592f34e34bf3902e0f77a6488e8f\\crash-stdout-witness.bin",
+      "file": "launcher/crash-stdout-witness.bin",
+      "bytes": 64,
+      "sha256": "cd284ab91fdacee2c78345ef946c2dbf91df51b5c23116885c6097ba91ff7e17"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\cafc592f34e34bf3902e0f77a6488e8f\\input\\positive.cjs",
+      "file": "launcher/input/positive.cjs",
+      "bytes": 338,
+      "sha256": "b294ac7acea74208d0eb35b0b797ecb2131e948d3e2c7349526879d9f1bc074b"
+    }
+  ],
+  "availability": {
+    "reservation.json": true,
+    "daemon-ready.json": true,
+    "worker-spawned.json": true,
+    "prekill.json": true,
+    "daemon.stdout.txt": true,
+    "daemon.stderr.txt": true,
+    "observer-latest.stdout.txt": true,
+    "observer-latest.stderr.txt": true,
+    "daemon-observer-exit.json": true,
+    "daemon-native-exit-facts.json": true,
+    "daemon-kill-completed.json": true,
+    "daemon-restarted.json": true,
+    "restart.stdout.txt": true,
+    "restart.stderr.txt": true,
+    "restart-observer.stdout.txt": true,
+    "restart-observer.stderr.txt": true,
+    "daemon-restart-completed.json": true,
+    "interrupted-profile-recovery-intent.json": false,
+    "interrupted-profile-recovery-completed.json": false
+  },
+  "lpac_attempt_directory_present": true,
+  "daemon_exit_fact_available": true,
+  "handshake_token_files_copied": false,
+  "scope": "Preserved actual synthetic Daemon attempt. Availability does not assert success; absent native exit facts remain unknown."
+}

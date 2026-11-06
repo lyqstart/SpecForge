@@ -1,0 +1,7 @@
+// Narrow, checked revision of the private test driver; frozen build01 is untouched.
+const fs=require('node:fs'),path=require('node:path');const file=path.join(__dirname,'SyntheticDaemonCrash.cs');let source=fs.readFileSync(file,'utf8');
+const old='"daemon-fixture-build-01"';if(source.split(old).length-1!==2)throw Error('FIXTURE_BINDING_COUNT');source=source.replaceAll(old,'"daemon-fixture-build-02"');
+const start=source.indexOf('static int DaemonKill('),end=source.indexOf('static int DaemonRestart(');if(start<0||end<=start)throw Error('FUNCTION_SCOPE');const section=source.slice(start,end);
+const anchor='File.WriteAllText(Path.Combine(fixture,"observer-latest.stderr.txt"),errors.ToString(),new UTF8Encoding(false));';if(section.split(anchor).length-1!==1)throw Error('OBSERVER_ANCHOR');
+const replacement=anchor+'uint observedExit=0;bool daemonEnded=WaitForSingleObject(daemon.Handle,0)==0;bool known=daemonEnded&&GetExitCodeProcess(daemon.Handle,out observedExit);Save(Path.Combine(fixture,"daemon-observer-exit.json"),new{utc=DateTime.UtcNow.ToString("o"),pid=daemon.Id,created_filetime=Created(daemon.Handle),ended=daemonEnded,actual_exit_code=known?(uint?)observedExit:null,exit_known=known,application_passed=false});';
+source=source.slice(0,start)+section.replace(anchor,replacement)+source.slice(end);fs.writeFileSync(file,source);console.log(JSON.stringify({private_driver_fixture:'02',native_exit_capture:true,inner_exit_code:0}));

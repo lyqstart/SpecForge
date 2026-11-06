@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/resume-window-03.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "record-window-03-resume",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=prior ERR backfill and evidence helpers;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=authorization and read coverage",
+  "started_utc": "2026-11-06T12:52:42.997Z"
+}

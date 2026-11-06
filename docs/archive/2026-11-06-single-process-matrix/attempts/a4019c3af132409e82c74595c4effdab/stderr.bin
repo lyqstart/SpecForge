@@ -1,0 +1,19 @@
+node:internal/buffer:1104
+  return new FastBuffer(createUnsafeArrayBuffer(size));
+                        ^
+
+RangeError: Failed to allocate memory
+    at createUnsafeBuffer (node:internal/buffer:1104:25)
+    at Buffer.alloc (node:buffer:443:17)
+    at [eval]:2:43
+    at runScriptInThisContext (node:internal/vm:219:10)
+    at node:internal/process/execution:451:12
+    at [eval]-wrapper:6:24
+    at runScriptInContext (node:internal/process/execution:449:60)
+    at evalFunction (node:internal/process/execution:283:30)
+    at evalTypeScript (node:internal/process/execution:295:3)
+    at node:internal/main/eval_string:71:3 {
+  code: 'ERR_MEMORY_ALLOCATION_FAILED'
+}
+
+Node.js v24.19.0

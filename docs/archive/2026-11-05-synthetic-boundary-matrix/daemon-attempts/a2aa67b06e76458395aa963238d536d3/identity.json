@@ -1,0 +1,52 @@
+{
+  "utc": "2026-11-06T13:49:50.374Z",
+  "nonce": "a2aa67b06e76458395aa963238d536d3",
+  "members": [
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\a2aa67b06e76458395aa963238d536d3\\reservation.json",
+      "file": "reservation.json",
+      "bytes": 602,
+      "sha256": "ee9dd174acf77a44252b3acdf55b383a23e2b4cd01d39cb22390fd03e2558a61"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\a2aa67b06e76458395aa963238d536d3\\observer-latest.stdout.txt",
+      "file": "observer-latest.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\a2aa67b06e76458395aa963238d536d3\\observer-latest.stderr.txt",
+      "file": "observer-latest.stderr.txt",
+      "bytes": 783,
+      "sha256": "29412912430402409b940edc200eb8bb364e403f46f8b9b319f9d7c2baf2729e"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\a2aa67b06e76458395aa963238d536d3\\daemon-observer-exit.json",
+      "file": "daemon-observer-exit.json",
+      "bytes": 167,
+      "sha256": "919cf2ab3901de8231952607f19544d97698de31809b34d0a3c2f0a64204a139"
+    }
+  ],
+  "availability": {
+    "reservation.json": true,
+    "daemon-ready.json": false,
+    "worker-spawned.json": false,
+    "prekill.json": false,
+    "daemon.stdout.txt": false,
+    "daemon.stderr.txt": false,
+    "observer-latest.stdout.txt": true,
+    "observer-latest.stderr.txt": true,
+    "daemon-observer-exit.json": true,
+    "daemon-kill-completed.json": false,
+    "daemon-restarted.json": false,
+    "restart.stdout.txt": false,
+    "restart.stderr.txt": false,
+    "restart-observer.stdout.txt": false,
+    "restart-observer.stderr.txt": false,
+    "daemon-restart-completed.json": false
+  },
+  "lpac_attempt_directory_present": false,
+  "daemon_exit_fact_available": true,
+  "handshake_token_files_copied": false,
+  "scope": "Preserved actual synthetic Daemon attempt. Availability does not assert success; absent native exit facts remain unknown."
+}

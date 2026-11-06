@@ -1,0 +1,1 @@
+{"build":"build-single-resource-06","members":26,"inner_exit_code":0}

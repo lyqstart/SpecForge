@@ -1,0 +1,97 @@
+{
+  "utc": "2026-11-05T04:13:07.457Z",
+  "method": "Exact owned single-file unlink after hash/path/nlink/process/profile checks; no recursive deletion.",
+  "facts": [
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\0b5690cf0cef4508b5d874e78c154f39\\runtime\\node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "bytes": 92825416,
+      "deleted": true
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\240c883e80674d449a7626debf523c32\\runtime\\node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "bytes": 92825416,
+      "deleted": true
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\2c4f61785c104984bdbf9f9d8c7d92d5\\runtime\\node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "bytes": 92825416,
+      "deleted": true
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\42c9100580b64d17ba74c9d59b773e82\\runtime\\node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "bytes": 92825416,
+      "deleted": true
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\51ef0d0d745a4c26a2c6d71c944123f3\\runtime\\node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "bytes": 92825416,
+      "deleted": true
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\6314a77b77ca4941a47b3e817106491d\\runtime\\node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "bytes": 92825416,
+      "deleted": true
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\6ef62f997ed3470885fe3b068d578b9e\\runtime\\node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "bytes": 92825416,
+      "deleted": true
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\9075df3505724281994501717056e45b\\runtime\\node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "bytes": 92825416,
+      "deleted": true
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\9134733c5fbd42ca968978e83c4e3a34\\runtime\\node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "bytes": 92825416,
+      "deleted": true
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\9dd2f55f44fc41f5b111df7b4876496d\\runtime\\node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "bytes": 92825416,
+      "deleted": true
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\b138f0060a5249768b420dd94a6ff798\\runtime\\node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "bytes": 92825416,
+      "deleted": true
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\b4b6b3aa9d3a4399ac2dc5e99644999f\\runtime\\node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "bytes": 92825416,
+      "deleted": true
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\c9511a4b1d524341a73c1ea42bd03751\\runtime\\node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "bytes": 92825416,
+      "deleted": true
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\e0e76edee83147759158330bb063db92\\runtime\\node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "bytes": 92825416,
+      "deleted": true
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\e39d54f9809f46a7ad4539e1c9c97441\\runtime\\node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "bytes": 92825416,
+      "deleted": true
+    }
+  ],
+  "inner_exit_code": 0
+}

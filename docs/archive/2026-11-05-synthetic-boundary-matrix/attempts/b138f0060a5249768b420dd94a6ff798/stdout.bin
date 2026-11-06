@@ -1,0 +1,38 @@
+SFFILE_STAGE:{"role":0,"pid":9960,"stage":"ready"}
+SFFILE_POSITIVE:0
+✔ fixed builtin node:test role 0 (0.7051ms)
+SFFILE_STAGE:{"role":1,"pid":34124,"stage":"ready"}
+SFFILE_POSITIVE:1
+✔ fixed builtin node:test role 1 (0.7128ms)
+SFFILE_STAGE:{"role":2,"pid":12308,"stage":"ready"}
+SFFILE_POSITIVE:2
+✔ fixed builtin node:test role 2 (0.7496ms)
+SFPREG_REPORT:{"probe":"D21_PRIVATE_REGISTRY_NATIVE_V2","pid":24528,"read_hresult":0,"absent_value_query":2,"write_hresult":-2147024891,"set_value_status":-1,"write_dac_hresult":-2147024891,"set_dac_status":-1,"after_dac_write_status":-1,"native_key_name_b64":"XFJlZ2lzdHJ5XFVzZXJcUy0xLTUtMjEtMTEzNDc3NDMyMy0zNDAzMjMzODEyLTIzNDAwNDYyNTgtMTAwMV9DbGFzc2VzXExvY2FsIFNldHRpbmdzXFNvZnR3YXJlXE1pY3Jvc29mdFxXaW5kb3dzXEN1cnJlbnRWZXJzaW9uXEFwcENvbnRhaW5lclxTdG9yYWdlXHNwZWNmb3JnZS5yZWdyZWFkLmIxMzhmMDA2MGE1MjQ5NzY4YjQyMGRkOTRhNmZmNzk4","write_denied":true}
+SFFACL_REPORT:{"probe":"D21_FILE_ACL_NATIVE_V2","pid":24528,"denied":true,"rows":[{"index":0,"open_write_dac_error":5,"set_dacl_error":-1,"after_dacl_write_error":-1},{"index":1,"open_write_dac_error":5,"set_dacl_error":-1,"after_dacl_write_error":-1},{"index":2,"open_write_dac_error":5,"set_dacl_error":-1,"after_dacl_write_error":-1},{"index":3,"open_write_dac_error":5,"set_dacl_error":-1,"after_dacl_write_error":-1},{"index":4,"open_write_dac_error":5,"set_dacl_error":-1,"after_dacl_write_error":-1},{"index":5,"open_write_dac_error":5,"set_dacl_error":-1,"after_dacl_write_error":-1},{"index":6,"open_write_dac_error":5,"set_dacl_error":-1,"after_dacl_write_error":-1},{"index":7,"open_write_dac_error":5,"set_dacl_error":-1,"after_dacl_write_error":-1},{"index":8,"open_write_dac_error":5,"set_dacl_error":-1,"after_dacl_write_error":-1}]}
+SFFILE_REPORT:{"probe":"D21_FILE_DESCENDANTS_V1","role":2,"pid":12308,"rows":[{"kind":"positive_read","ok":true},{"kind":"shadow_read","ok":true,"error":"EPERM"},{"kind":"write_0","ok":true,"error":"EPERM"},{"kind":"write_1","ok":true,"error":"EPERM"},{"kind":"write_2","ok":true,"error":"EPERM"},{"kind":"write_3","ok":true,"error":"EPERM"},{"kind":"shadow_write","ok":true,"error":"EPERM"},{"kind":"loopback","ok":true,"error":"EACCES","connected":false},{"kind":"alias_positive_0","ok":true},{"kind":"alias_positive_write_0","ok":true,"error":"EPERM"},{"kind":"alias_positive_1","ok":true},{"kind":"alias_positive_write_1","ok":true,"error":"EPERM"},{"kind":"alias_read_0","ok":true,"error":"EPERM"},{"kind":"alias_write_0","ok":true,"error":"EPERM"},{"kind":"alias_read_1","ok":true,"error":"EPERM"},{"kind":"alias_write_1","ok":true,"error":"EPERM"},{"kind":"alias_read_2","ok":true,"error":"EPERM"},{"kind":"alias_write_2","ok":true,"error":"EPERM"}],"child":{"status":0,"signal":null,"error":null}}
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 875.4855
+SFFILE_REPORT:{"probe":"D21_FILE_DESCENDANTS_V1","role":1,"pid":34124,"rows":[{"kind":"positive_read","ok":true},{"kind":"shadow_read","ok":true,"error":"EPERM"},{"kind":"write_0","ok":true,"error":"EPERM"},{"kind":"write_1","ok":true,"error":"EPERM"},{"kind":"write_2","ok":true,"error":"EPERM"},{"kind":"write_3","ok":true,"error":"EPERM"},{"kind":"shadow_write","ok":true,"error":"EPERM"},{"kind":"loopback","ok":true,"error":"EACCES","connected":false},{"kind":"alias_positive_0","ok":true},{"kind":"alias_positive_write_0","ok":true,"error":"EPERM"},{"kind":"alias_positive_1","ok":true},{"kind":"alias_positive_write_1","ok":true,"error":"EPERM"},{"kind":"alias_read_0","ok":true,"error":"EPERM"},{"kind":"alias_write_0","ok":true,"error":"EPERM"},{"kind":"alias_read_1","ok":true,"error":"EPERM"},{"kind":"alias_write_1","ok":true,"error":"EPERM"},{"kind":"alias_read_2","ok":true,"error":"EPERM"},{"kind":"alias_write_2","ok":true,"error":"EPERM"}],"child":{"status":0,"signal":null,"error":null}}
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1676.539
+SFFILE_REPORT:{"probe":"D21_FILE_DESCENDANTS_V1","role":0,"pid":9960,"rows":[{"kind":"positive_read","ok":true},{"kind":"shadow_read","ok":true,"error":"EPERM"},{"kind":"write_0","ok":true,"error":"EPERM"},{"kind":"write_1","ok":true,"error":"EPERM"},{"kind":"write_2","ok":true,"error":"EPERM"},{"kind":"write_3","ok":true,"error":"EPERM"},{"kind":"shadow_write","ok":true,"error":"EPERM"},{"kind":"loopback","ok":true,"error":"EACCES","connected":false},{"kind":"alias_positive_0","ok":true},{"kind":"alias_positive_write_0","ok":true,"error":"EPERM"},{"kind":"alias_positive_1","ok":true},{"kind":"alias_positive_write_1","ok":true,"error":"EPERM"},{"kind":"alias_read_0","ok":true,"error":"EPERM"},{"kind":"alias_write_0","ok":true,"error":"EPERM"},{"kind":"alias_read_1","ok":true,"error":"EPERM"},{"kind":"alias_write_1","ok":true,"error":"EPERM"},{"kind":"alias_read_2","ok":true,"error":"EPERM"},{"kind":"alias_write_2","ok":true,"error":"EPERM"}],"child":{"status":0,"signal":null,"error":null}}
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2463.3457

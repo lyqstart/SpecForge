@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+  "args": [
+    "--synthetic-single-process-esm",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\0021268d174c43e78bb84d1528b425c1",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "sp-p01-fixed-cjs-ts-esm-inline-with-effective-addon-denial",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned D22 single-process profile Job and cleanup;EXTERNAL_EVIDENCE_WRITES=raw candidate receipts",
+  "started_utc": "2026-11-06T15:27:17.317Z"
+}

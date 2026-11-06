@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-06-single-process-matrix/preserve-node-file-attempt.cjs",
+    "9175fdfe184e413c92680146996c17f6"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-ts-physical-identity-before-after",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable TS input and physical identity evidence",
+  "started_utc": "2026-11-06T15:51:13.572Z"
+}

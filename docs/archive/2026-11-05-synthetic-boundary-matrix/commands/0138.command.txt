@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacRegistryReadPoc.exe",
+  "args": [
+    "--synthetic-registry-read-network-unc-locked",
+    "D:\\code\\SpecForge\\.tmp\\verification-lpac\\f071a1e20c5045a08fd40ce3d1e7496a",
+    "C:\\Program Files\\nodejs\\node.exe"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-unc-pure-report-compatibility",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new D21 readonly diagnostic f071a1e20c5045a08fd40ce3d1e7496a same boundary;EXTERNAL_EVIDENCE_WRITES=raw diagnostics UNKNOWN still rejected",
+  "started_utc": "2026-11-06T13:09:21.959Z"
+}

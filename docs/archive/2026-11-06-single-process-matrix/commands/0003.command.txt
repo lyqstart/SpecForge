@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "scripts/project-session-bootstrap.mjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "bootstrap-new-scope-with-verified-host-network",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=readonly bootstrap retry with actual remote verification",
+  "started_utc": "2026-11-06T15:08:48.135Z"
+}

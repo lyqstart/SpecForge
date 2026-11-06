@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/run-resource-case.cjs",
+    "parent-exit",
+    "9dd2f55f44fc41f5b111df7b4876496d",
+    "build-resource-liveness-10"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-resource-parent-exit-inherited-job",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned LPAC Job parent0 live detached descendants then wall8s cleanup;EXTERNAL_EVIDENCE_WRITES=receipts lab-only rejection proof",
+  "started_utc": "2026-11-05T04:00:03.135Z"
+}

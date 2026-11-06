@@ -1,0 +1,38 @@
+{
+  "utc": "2026-11-06T14:03:13.249Z",
+  "compile_receipt": "0199",
+  "hash_domain": "raw filesystem bytes",
+  "members": [
+    {
+      "source": "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix\\SyntheticLauncherCrash.cs",
+      "file": "SyntheticLauncherCrash.cs",
+      "bytes": 18625,
+      "sha256": "5edb5e2999be7b839ff0d8b287c5f3221bcbb257fae3256920738fa04a5fc7bd"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix\\SyntheticDaemonCrash.cs",
+      "file": "SyntheticDaemonCrash.cs",
+      "bytes": 13987,
+      "sha256": "05aebca0b6343d292c9f786575de41ad300688adfbabd2956b03ca70c1e61e72"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix\\SyntheticDaemonRecovery.cs",
+      "file": "SyntheticDaemonRecovery.cs",
+      "bytes": 5707,
+      "sha256": "6f73ac3c7b3651af2b83126b67c98afc39ea3d5dc8ad502ca0adab2f6c637d91"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\docs\\archive\\2026-11-05-synthetic-boundary-matrix\\interrupted-daemon-profile-recovery-plan.md",
+      "file": "interrupted-daemon-profile-recovery-plan.md",
+      "bytes": 1297,
+      "sha256": "1db037040f095b28feec86a0aca18a19602d1661405123b1903cc981d5e20952"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\SyntheticDaemonRecovery.exe",
+      "file": "SyntheticDaemonRecovery.exe",
+      "bytes": 85504,
+      "sha256": "c729190270a556e574759a398127404329447f5f1723ab7b57cd342f286fb3ea"
+    }
+  ],
+  "scope": "Only hash-bound owned synthetic Daemon interruption profile recovery."
+}

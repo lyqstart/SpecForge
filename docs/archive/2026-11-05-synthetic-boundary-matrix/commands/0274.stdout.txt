@@ -1,0 +1,2 @@
+MATRIX_CLEANUP attempts=50 pid_observations=306 problems=1 EXIT=1
+RECORDED_PID_QUERY_UNKNOWN:12184:D:\code\SpecForge\docs\archive\2026-11-05-synthetic-boundary-matrix\node-file-attempts\f0af87ae838741dcbee8f1b91752358f\events.jsonl

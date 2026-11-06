@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/verify-owned-symbolic-factory.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "independent-normal-user-symbolic-factory-verification",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=readonly actual link type target and raw identity checks;EXTERNAL_EVIDENCE_WRITES=factory receipt copy independent verification",
+  "started_utc": "2026-11-05T04:02:39.611Z"
+}

@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/run-resource-case.cjs",
+    "cancel",
+    "9075df3505724281994501717056e45b",
+    "build-resource-role-checked-08"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-resource-cancel-role-checked",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned bounded cancel after three real Node roles and cleanup;EXTERNAL_EVIDENCE_WRITES=receipts lab-only rejection proof",
+  "started_utc": "2026-11-05T03:47:46.363Z"
+}

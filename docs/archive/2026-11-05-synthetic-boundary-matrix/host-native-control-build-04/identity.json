@@ -1,0 +1,43 @@
+{
+  "utc": "2026-11-06T12:53:27.021Z",
+  "members": [
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacPrivateRegistryChild.cs",
+      "file": "LpacPrivateRegistryChild.cs",
+      "bytes": 5248,
+      "sha256": "7da93907abc3df8ebeac9f84e608b5bceb192fd2290b58a9eaca4affc873cbb9"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacFileAclAttack.cs",
+      "file": "LpacFileAclAttack.cs",
+      "bytes": 3875,
+      "sha256": "c6ce80b29f258701f1dd4098c307af1b98419fd9006c566dbbce50810e5b5839"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacNativeBoundaryProbe.cs",
+      "file": "LpacNativeBoundaryProbe.cs",
+      "bytes": 9163,
+      "sha256": "35c922868975a721451b3f8484b0d6aa2de8d404022fa6ad555d4504a7202a0a"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacNativeWmiCom.cs",
+      "file": "LpacNativeWmiCom.cs",
+      "bytes": 3864,
+      "sha256": "b5a70ec024fff32ede80d559999baab61b75dc12c416a14d99cbf2bbf2dbdd11"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacPrivateRegistryChild.exe",
+      "file": "LpacPrivateRegistryChild.exe",
+      "bytes": 34304,
+      "sha256": "3c35964c1ce92730297e3b6c386298624d3bcced84518781c58babda815f603e"
+    }
+  ],
+  "compile_receipt": "0100",
+  "hash_domain": "raw filesystem bytes",
+  "primary_api_sources": [
+    "https://learn.microsoft.com/en-us/windows/win32/wmisdk/swbemlocator-connectserver",
+    "https://learn.microsoft.com/en-us/windows/win32/wmisdk/swbemservices-execmethod",
+    "https://learn.microsoft.com/en-us/windows/win32/wmisdk/swbemobject-spawninstance-"
+  ],
+  "review": "SpawnInstance_ accepts one optional flags argument; corrected before host execution. Explicit COM initialization and fixed marker control only."
+}

@@ -1,0 +1,17 @@
+{
+  "executable": "C:\\Users\\lyq\\AppData\\Roaming\\npm\\node_modules\\bun\\bin\\bun.exe",
+  "args": [
+    "build",
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/real-daemon-harness.ts",
+    "--target",
+    "bun",
+    "--external",
+    "@specforge/*",
+    "--outdir",
+    ".tmp/verification-lpac-build/daemon-harness-static-parse"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "parse-static-real-daemon-harness",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=owned temporary parse output;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-06T13:47:10.132Z"
+}

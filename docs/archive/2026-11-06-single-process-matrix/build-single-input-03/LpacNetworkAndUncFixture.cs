@@ -1,0 +1,11 @@
+// Finite ordinary-user controls for existing local UNC and one public TCP endpoint.
+using System;using System.IO;using System.Net;using System.Net.Sockets;using System.Security.Cryptography;using System.Collections.Generic;
+internal sealed class LpacNetworkAndUncFixture {
+    internal const string Host="1.1.1.1";internal const int Port=443;
+    internal readonly string[] Paths;readonly Dictionary<string,string> hashes=new Dictionary<string,string>();readonly Action<string,object> record;
+    static string Hash(byte[] bytes){using(var sha=SHA256.Create())return BitConverter.ToString(sha.ComputeHash(bytes)).Replace("-","").ToLowerInvariant();}
+    static string Unc(string file){string absolute=Path.GetFullPath(file);if(!absolute.StartsWith("D:\\code\\SpecForge\\.tmp\\verification-lpac\\",StringComparison.OrdinalIgnoreCase))throw new InvalidOperationException("UNC_OWNERSHIP");return "\\\\localhost\\D$\\"+absolute.Substring(3);}
+    internal LpacNetworkAndUncFixture(string positive,string shadow,Action<string,object> record){this.record=record;Paths=new[]{Unc(positive),Unc(shadow)};foreach(var file in Paths){hashes.Add(file,Hash(File.ReadAllBytes(file)));using(var stream=File.Open(file,FileMode.Open,FileAccess.ReadWrite,FileShare.ReadWrite)){} }record("unc_host_control_before",new{paths=Paths,read_and_write_open=true,bytes_written=false,hashes=hashes});Connect("before");}
+    void Connect(string phase){using(var socket=new TcpClient(AddressFamily.InterNetwork)){var async=socket.BeginConnect(IPAddress.Parse(Host),Port,null,null);try{if(!async.AsyncWaitHandle.WaitOne(2000))throw new TimeoutException("EXTERNAL_TCP_POSITIVE_CONTROL_TIMEOUT");socket.EndConnect(async);if(!socket.Connected)throw new InvalidOperationException("EXTERNAL_TCP_POSITIVE_CONTROL_UNKNOWN");record("external_tcp_host_control",new{phase=phase,host=Host,port=Port,connected=true,application_bytes_sent=0});}finally{async.AsyncWaitHandle.Close();}}}
+    internal bool Finish(){bool same=true;foreach(var file in Paths){same&=Hash(File.ReadAllBytes(file))==hashes[file];using(var stream=File.Open(file,FileMode.Open,FileAccess.ReadWrite,FileShare.ReadWrite)){} }record("unc_host_control_after",new{paths=Paths,read_and_write_open=true,bytes_written=false,raw_hashes_unchanged=same});Connect("after");return same;}
+}

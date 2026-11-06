@@ -1,0 +1,11 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\UnsignedExitRegression.exe",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/attempts/c9511a4b1d524341a73c1ea42bd03751/stdout.bin",
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/attempts/bf4cd177385845389366a3a13c9d4dc7/stdout.bin"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "replay-actual-unsigned-exit-and-positive",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=regression receipts",
+  "started_utc": "2026-11-06T12:55:36.341Z"
+}

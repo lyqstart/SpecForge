@@ -1,0 +1,18 @@
+{
+  "executable": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+  "args": [
+    "/nologo",
+    "/platform:x64",
+    "/target:exe",
+    "/optimize+",
+    "/reference:System.Web.Extensions.dll",
+    "/main:LpacSingleProcessProbe",
+    "/out:D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\LpacSingleHostControl.exe",
+    "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacSingleProcessProbe.cs",
+    "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacProbeJson.cs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "compile-d22-host-positive-native",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=unpublished host control binary;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-06T16:07:24.951Z"
+}

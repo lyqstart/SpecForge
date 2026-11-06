@@ -1,0 +1,18 @@
+{
+  "executable": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+  "args": [
+    "/nologo",
+    "/platform:x64",
+    "/target:exe",
+    "/optimize+",
+    "/reference:System.Web.Extensions.dll",
+    "/main:SyntheticLauncherCrash",
+    "/out:D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\SyntheticDaemonCrash.exe",
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-06-single-process-matrix\\SyntheticLauncherCrash.cs",
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-06-single-process-matrix\\SyntheticDaemonCrash.cs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "compile-d22-lifecycle-driver",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=synthetic lifecycle driver;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-06T16:04:58.172Z"
+}

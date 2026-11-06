@@ -1,0 +1,10 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\UncNativeReportRegression.exe",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/attempts/f071a1e20c5045a08fd40ce3d1e7496a/stdout.bin"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "replay-real-unc-native-denial-and-negative-reports",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=raw regression receipts",
+  "started_utc": "2026-11-06T13:12:08.641Z"
+}

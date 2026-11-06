@@ -1,0 +1,18 @@
+{
+  "executable": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+  "args": [
+    "/nologo",
+    "/platform:x64",
+    "/target:exe",
+    "/optimize+",
+    "/reference:System.Web.Extensions.dll",
+    "/main:InputIdentityFilesystemProbe",
+    "/out:D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\InputIdentityFilesystemProbe.exe",
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-06-single-process-matrix\\InputIdentityFilesystemProbe.cs",
+    "D:\\code\\SpecForge\\packages\\daemon-core\\src\\verification\\windows\\LpacInputIdentity.cs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "compile-physical-input-and-real-junction-filesystem-probe",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=private normal-user filesystem probe;EXTERNAL_EVIDENCE_WRITES=receipts",
+  "started_utc": "2026-11-06T15:43:34.080Z"
+}

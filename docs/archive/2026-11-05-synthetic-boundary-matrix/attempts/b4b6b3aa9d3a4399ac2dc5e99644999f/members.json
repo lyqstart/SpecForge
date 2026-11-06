@@ -1,0 +1,31 @@
+{
+  "utc": "2026-11-05T03:45:04.210Z",
+  "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\b4b6b3aa9d3a4399ac2dc5e99644999f",
+  "members": [
+    {
+      "file": "events.jsonl",
+      "bytes": 26100,
+      "sha256": "8dee9b9f6510c7db3e7234ed2fb67479a742c4fbfa33e1fcb0af160c7a807609"
+    },
+    {
+      "file": "receipt.json",
+      "bytes": 1130,
+      "sha256": "a33a96dabcce1a4c816915f6dac64b119770c5b3eff2171973dbf7573bd36b2e"
+    },
+    {
+      "file": "stdout.bin",
+      "bytes": 58,
+      "sha256": "43655d8af11bc4279b0e161b27f44efa0905508ca37641e3b8a170d75e9ecc7d"
+    },
+    {
+      "file": "stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "input/positive.cjs",
+      "bytes": 475,
+      "sha256": "31a54266f2656d937417433c92de2164d49596ccc7d521c68c3370acf3039e71"
+    }
+  ]
+}

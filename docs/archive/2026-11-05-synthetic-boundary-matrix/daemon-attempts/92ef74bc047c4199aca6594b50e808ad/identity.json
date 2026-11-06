@@ -1,0 +1,46 @@
+{
+  "utc": "2026-11-06T13:45:29.960Z",
+  "nonce": "92ef74bc047c4199aca6594b50e808ad",
+  "members": [
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\92ef74bc047c4199aca6594b50e808ad\\reservation.json",
+      "file": "reservation.json",
+      "bytes": 602,
+      "sha256": "9e7a7cba01d50c89e3448fdd9276c4888c7492c83eb30da7e36ea1ae428f0e86"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\92ef74bc047c4199aca6594b50e808ad\\observer-latest.stdout.txt",
+      "file": "observer-latest.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-daemon\\92ef74bc047c4199aca6594b50e808ad\\observer-latest.stderr.txt",
+      "file": "observer-latest.stderr.txt",
+      "bytes": 783,
+      "sha256": "29412912430402409b940edc200eb8bb364e403f46f8b9b319f9d7c2baf2729e"
+    }
+  ],
+  "availability": {
+    "reservation.json": true,
+    "daemon-ready.json": false,
+    "worker-spawned.json": false,
+    "prekill.json": false,
+    "daemon.stdout.txt": false,
+    "daemon.stderr.txt": false,
+    "observer-latest.stdout.txt": true,
+    "observer-latest.stderr.txt": true,
+    "daemon-observer-exit.json": false,
+    "daemon-kill-completed.json": false,
+    "daemon-restarted.json": false,
+    "restart.stdout.txt": false,
+    "restart.stderr.txt": false,
+    "restart-observer.stdout.txt": false,
+    "restart-observer.stderr.txt": false,
+    "daemon-restart-completed.json": false
+  },
+  "lpac_attempt_directory_present": false,
+  "daemon_exit_fact_available": false,
+  "handshake_token_files_copied": false,
+  "scope": "Preserved actual synthetic Daemon attempt. Availability does not assert success; absent native exit facts remain unknown."
+}

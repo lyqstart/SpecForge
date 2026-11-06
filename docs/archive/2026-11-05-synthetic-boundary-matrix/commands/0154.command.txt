@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/run-resource-case.cjs",
+    "process",
+    "e37198e953944e15b5ca2e8b1d355f55",
+    "build-resource-total-budget-20"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-total-process-budget-termination",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned D21 readonly resource e37198e953944e15b5ca2e8b1d355f55 strict ceiling still unproved;EXTERNAL_EVIDENCE_WRITES=raw controlled rejection and separate lab proof",
+  "started_utc": "2026-11-06T13:17:04.597Z"
+}

@@ -1,0 +1,53 @@
+Handshake file written to: D:\code\SpecForge\.tmp\verification-lpac-daemon\eed635589c1a4c439e55189d730a8a62\opencode\sf-user\runtime\handshake.json
+[EventBus] Started
+[EventBus] Subscribe: session.* (handler: 7h1n3dwmrremw5190jl)
+[EventBus] Subscribe: project.updated (handler: v3io6kvggjlmw5190jl)
+[EXTENSIONS] Loading extensions...
+[EventBus] Publish: load {
+  eventId: "ext-skill-1793973075969",
+  projectId: undefined,
+  source: "daemon",
+  timestamp: "2026-11-06T13:51:15.969Z",
+}
+[EventBus] Publish: load {
+  eventId: "ext-tool-1793973075970",
+  projectId: undefined,
+  source: "daemon",
+  timestamp: "2026-11-06T13:51:15.970Z",
+}
+[EventBus] Publish: load {
+  eventId: "ext-workflow-1793973075981",
+  projectId: undefined,
+  source: "daemon",
+  timestamp: "2026-11-06T13:51:15.981Z",
+}
+[EventBus] Publish: load {
+  eventId: "ext-gate-1793973075981",
+  projectId: undefined,
+  source: "daemon",
+  timestamp: "2026-11-06T13:51:15.981Z",
+}
+[EXTENSIONS] All extensions loaded successfully in 12ms
+Daemon Core started on port 10305
+{"schema":"synthetic-lpac-startup/1","started_utc":"2026-11-06T13:51:16.9368222Z","finished_utc":"2026-11-06T13:51:17.4898920Z","duration_ms":552,"root":"D:\\code\\SpecForge\\.tmp\\verification-lpac\\eed635589c1a4c439e55189d730a8a62","moniker":"specforge.regread.eed635589c1a4c439e55189d730a8a62","sid":"S-1-15-2-1513502949-3342138618-3346309934-2332432700-2880747096-2836249880-725176276","profile":"C:\\Users\\lyq\\AppData\\Local\\Packages\\specforge.regread.eed635589c1a4c439e55189d730a8a62\\AC","process_started":false,"process_resumed":false,"application_exit_code":null,"job_all_ended":false,"timed_out":false,"scope":"Synthetic resource expected rejection only; never a passed execution","debug_observer":false,"execution_kind":"node_inline_frozen_resource_daemon-crash","capability_sid":"S-1-15-3-1024-1065365936-1281604716-3511738428-1654721687-432734479-3232135806-4053264122-3456934681","profile_id":"windows-lpac-node-readonly-registry-read-experiment/v1","startup_result":"FAILED","isolation_acceptance":"INCOMPLETE","error":"InvalidOperationException:PROFILE_OWNERSHIP_MISMATCH","inner_exit_code":1}
+Daemon Core shutting down...
+[GracefulShutdown] Starting shutdown: daemon.stop()
+[GracefulShutdown] Executing priority: stop-accepting (1 tasks)
+[SHUTDOWN] Step 1: Stopping HTTP accept...
+[GracefulShutdown] Executing priority: drain (1 tasks)
+[SHUTDOWN] Step 2: Draining Event Bus...
+[GracefulShutdown] Executing priority: flush (1 tasks)
+[SHUTDOWN] Step 3: Flush events (no-op, eventLogger removed)...
+[GracefulShutdown] Executing priority: close (1 tasks)
+[SHUTDOWN] Step 4: Closing SSE connections...
+[GracefulShutdown] Executing priority: release (1 tasks)
+[SHUTDOWN] Step 5: Disposing extensions...
+[GracefulShutdown] Shutdown sequence completed successfully
+[GracefulShutdown] Resources disposed
+[EventBus] Unsubscribe: project.updated (handler: v3io6kvggjlmw5190jl)
+[EventBus] Unsubscribe: session.* (handler: 7h1n3dwmrremw5190jl)
+[EventBus] Stopped
+Cleaning up handshake file and releasing lock...
+Handshake file deleted: D:\code\SpecForge\.tmp\verification-lpac-daemon\eed635589c1a4c439e55189d730a8a62\opencode\sf-user\runtime\handshake.json
+Cleanup completed
+Daemon Core stopped

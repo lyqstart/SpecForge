@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/resume-window-02.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "record-verified-window-02-resume",
+  "expected_writes": "TRUTH_SOURCE_WRITES=unique project-status checkpoint;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=append resume authorization and journal",
+  "started_utc": "2026-11-05T09:42:04.559Z"
+}

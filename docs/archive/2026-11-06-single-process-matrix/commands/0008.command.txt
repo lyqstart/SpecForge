@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-06-single-process-matrix/freeze-build.cjs",
+    "build-single-p01-01"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-d22-p01-candidate-assets",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable build-single-p01-01",
+  "started_utc": "2026-11-06T15:16:25.491Z"
+}

@@ -1,0 +1,1 @@
+{"utc":"2026-11-06T14:52:18.0725765Z","method":"Local provider metadata for one previously recorded PID; no command line or memory requested","pid":12184,"present":true,"name":"SearchProtocolHost.exe","created_utc":"2026-11-06T14:44:31.9379770Z","created_filetime":134384498719379770,"inner_exit_code":0}

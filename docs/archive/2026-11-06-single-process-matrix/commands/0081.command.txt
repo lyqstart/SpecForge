@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-06-single-process-matrix/verify-matrix-integrity.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-d22-matrix-integrity",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=raw matrix integrity proof",
+  "started_utc": "2026-11-06T16:12:19.110Z"
+}

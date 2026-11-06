@@ -1,0 +1,36 @@
+{
+  "utc": "2026-11-06T15:02:54.597Z",
+  "run_id": "CODEX-SF-20261105-SYNTHETIC-BOUNDARY-MATRIX-A01",
+  "mode": "CODEX_DIRECT",
+  "result": "NOT_ACCEPTED_FOR_OLD_MULTI_PROCESS_PROFILE",
+  "stop_reason": "User approved a narrower first-phase scope; preserve old failures and move to formal D22 authority plus separate complete single-process matrix",
+  "old_strict_total_process_ceiling_proved": false,
+  "narrow_scope_user_reply": "采用单进程首期方案",
+  "narrow_scope_proposal_sha256": "7027cd9a96eb835cdd3525577f0d5c4711ce20cc614105b5e3343f7178bfc16d",
+  "next_run_id": "CODEX-SF-20261106-SINGLE-PROCESS-MATRIX-A01",
+  "next_evidence_root": "docs/archive/2026-11-06-single-process-matrix",
+  "new_scope_matrix_accepted": false,
+  "product_execution_enabled": false,
+  "original_wi_task005": "NOT_EXECUTED",
+  "deployment": "1.0.21_UNCHANGED",
+  "original_identity_checks": 156,
+  "cleanup_resources_checked": 50,
+  "cleanup_pid_observations": 306,
+  "cleanup_problem_count": 0,
+  "copy_cleanup_total_files": 40,
+  "copy_cleanup_total_bytes": 3713016640,
+  "write_categories": {
+    "TRUTH_SOURCE_WRITES": "Only current project-status checkpoint during this phase; no business truth source writes",
+    "REPOSITORY_TRACKED_WRITES": "Experimental C# acceptance probes/README, subordinate contract status, active rules/ledger, .gitattributes, project-status",
+    "RUNTIME_OBSERVER_WRITES": "Owned synthetic input/runtime/profile/registry/Job/process/network controls and precise proven cleanup; raw fixtures retained",
+    "EXTERNAL_EVIDENCE_WRITES": "This evidence root; immutable attempts, frozen builds, command receipts, regressions and independent reconciliation"
+  },
+  "limitations": [
+    "Old process8 budget observed9/15;139 sampling termination is not a strict ceiling",
+    "Guest COM denied at initialization; guest WMI Create not reached",
+    "Fixed external TCP endpoint only, not every network protocol",
+    "Historical unrecorded exit/PID facts remain unknown",
+    "New narrowed scope needs formal authority and complete new matrix before any separate D21 product adoption"
+  ],
+  "inner_exit_code": 0
+}

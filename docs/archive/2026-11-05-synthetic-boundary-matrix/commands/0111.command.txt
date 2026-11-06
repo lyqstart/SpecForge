@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/preserve-attempt.cjs",
+    "a9ea9cfb7bda40ddad27fcf7c3a908ed"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-explicit-com-guest-failure",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable attempt a9ea9cfb7bda40ddad27fcf7c3a908ed",
+  "started_utc": "2026-11-06T12:56:31.108Z"
+}

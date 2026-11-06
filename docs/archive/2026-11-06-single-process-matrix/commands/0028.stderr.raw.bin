@@ -1,0 +1,6 @@
+
+未经处理的异常:  System.ArgumentException: 路径中具有非法字符。
+   在 System.Security.Permissions.FileIOPermission.EmulateFileIOPermissionChecks(String fullPath)
+   在 System.Security.Permissions.FileIOPermission.QuickDemand(FileIOPermissionAccess access, String fullPath, Boolean checkForDuplicates, Boolean needFullPath)
+   在 LpacInputIdentity.Inspect(String path, Boolean resolveTarget)
+   在 InputIdentityFilesystemProbe.Main(String[] args)

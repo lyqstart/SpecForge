@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-06T14:08:41.092Z",
+  "mode": "serve",
+  "nonce": "f03aa992e3794850ae70e314bc78bcb4",
+  "pid": 25804,
+  "port": 48168,
+  "real_daemon_class": true,
+  "actual_http_health": 200,
+  "version": "1.0.21",
+  "handshake_sha256": "e65c8d6cffe0dd53ec13c2771889123b6e95f859ed4f0bc5c7239c784f099660",
+  "no_project_registered": true,
+  "no_model_requested": true
+}

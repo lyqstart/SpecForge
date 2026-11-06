@@ -1,0 +1,208 @@
+{
+  "utc": "2026-11-06T14:24:39.801Z",
+  "method": "Validated exact owned file paths, no recursive operation, complete preflight before first unlink",
+  "proof": "cleanup-matrix-checkpoint-0003.json",
+  "files": [
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\0f114cae4c2f43c6b05047c46ca558f4\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "nlink": 1
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\0ff42a277e0f4059b791052afda7f5cc\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "nlink": 1
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\2638f59c31b24274a1aa33e5a4a069f0\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "nlink": 1
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\40aa3815f3ee49cbb1867de19714b739\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "nlink": 1
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\45ebdd1197f64cb184f9512b0c633277\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "nlink": 1
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\555512482f544846af75432d541166f0\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "nlink": 1
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\5e0877abc30f462cb1965145b17a893c\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "nlink": 1
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\5fd454ea6d1848dcb10ea99757cb1894\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "nlink": 1
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\779fcd9338a44b588b5f08fd55dc9d55\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "nlink": 1
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\962a06f4e0214f52a555906c0684fb99\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "nlink": 1
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\9a712579e17142e1bbc9ef8cf01d75ba\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "nlink": 1
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\a9ea9cfb7bda40ddad27fcf7c3a908ed\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "nlink": 1
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\abb9b566a39f419bad6d4c5bacf07c59\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "nlink": 1
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\bf4cd177385845389366a3a13c9d4dc7\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "nlink": 1
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\e37198e953944e15b5ca2e8b1d355f55\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "nlink": 1
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\f03aa992e3794850ae70e314bc78bcb4\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "nlink": 1
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\f071a1e20c5045a08fd40ce3d1e7496a\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "nlink": 1
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\f371b63743c943328d5b0fdc5761de59\\runtime\\node.exe",
+      "bytes": 92825416,
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "nlink": 1
+    }
+  ],
+  "absent": [
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\0b5690cf0cef4508b5d874e78c154f39\\runtime\\node.exe",
+      "reason": "Previously proven deleted",
+      "proof": "runtime-copy-cleanup-checkpoint-0001.json"
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\240c883e80674d449a7626debf523c32\\runtime\\node.exe",
+      "reason": "Previously proven deleted",
+      "proof": "runtime-copy-cleanup-checkpoint-0001.json"
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\2c4f61785c104984bdbf9f9d8c7d92d5\\runtime\\node.exe",
+      "reason": "Previously proven deleted",
+      "proof": "runtime-copy-cleanup-checkpoint-0001.json"
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\42c9100580b64d17ba74c9d59b773e82\\runtime\\node.exe",
+      "reason": "Previously proven deleted",
+      "proof": "runtime-copy-cleanup-checkpoint-0001.json"
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\51ef0d0d745a4c26a2c6d71c944123f3\\runtime\\node.exe",
+      "reason": "Previously proven deleted",
+      "proof": "runtime-copy-cleanup-checkpoint-0001.json"
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\6314a77b77ca4941a47b3e817106491d\\runtime\\node.exe",
+      "reason": "Previously proven deleted",
+      "proof": "runtime-copy-cleanup-checkpoint-0001.json"
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\64df4b4d3707424eae3a9c0e33133353\\runtime\\node.exe",
+      "reason": "No application started and no copied runtime present"
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\6ef62f997ed3470885fe3b068d578b9e\\runtime\\node.exe",
+      "reason": "Previously proven deleted",
+      "proof": "runtime-copy-cleanup-checkpoint-0001.json"
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\9075df3505724281994501717056e45b\\runtime\\node.exe",
+      "reason": "Previously proven deleted",
+      "proof": "runtime-copy-cleanup-checkpoint-0001.json"
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\9134733c5fbd42ca968978e83c4e3a34\\runtime\\node.exe",
+      "reason": "Previously proven deleted",
+      "proof": "runtime-copy-cleanup-checkpoint-0001.json"
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\92ef74bc047c4199aca6594b50e808ad\\runtime\\node.exe",
+      "reason": "No application started and no copied runtime present"
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\9dd2f55f44fc41f5b111df7b4876496d\\runtime\\node.exe",
+      "reason": "Previously proven deleted",
+      "proof": "runtime-copy-cleanup-checkpoint-0001.json"
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\a2aa67b06e76458395aa963238d536d3\\runtime\\node.exe",
+      "reason": "No application started and no copied runtime present"
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\b138f0060a5249768b420dd94a6ff798\\runtime\\node.exe",
+      "reason": "Previously proven deleted",
+      "proof": "runtime-copy-cleanup-checkpoint-0001.json"
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\b4b6b3aa9d3a4399ac2dc5e99644999f\\runtime\\node.exe",
+      "reason": "Previously proven deleted",
+      "proof": "runtime-copy-cleanup-checkpoint-0001.json"
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\c9511a4b1d524341a73c1ea42bd03751\\runtime\\node.exe",
+      "reason": "Previously proven deleted",
+      "proof": "runtime-copy-cleanup-checkpoint-0001.json"
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\e0e76edee83147759158330bb063db92\\runtime\\node.exe",
+      "reason": "Previously proven deleted",
+      "proof": "runtime-copy-cleanup-checkpoint-0001.json"
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\e39d54f9809f46a7ad4539e1c9c97441\\runtime\\node.exe",
+      "reason": "Previously proven deleted",
+      "proof": "runtime-copy-cleanup-checkpoint-0001.json"
+    },
+    {
+      "file": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\eed635589c1a4c439e55189d730a8a62\\runtime\\node.exe",
+      "reason": "No application started and no copied runtime present"
+    }
+  ]
+}

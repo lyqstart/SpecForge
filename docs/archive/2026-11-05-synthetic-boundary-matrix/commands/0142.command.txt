@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/preserve-attempt.cjs",
+    "f371b63743c943328d5b0fdc5761de59"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-successful-native-com-boundary",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable attemptf371",
+  "started_utc": "2026-11-06T13:10:44.779Z"
+}

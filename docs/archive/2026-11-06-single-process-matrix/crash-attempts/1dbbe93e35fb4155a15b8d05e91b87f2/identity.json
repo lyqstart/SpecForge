@@ -1,0 +1,81 @@
+{
+  "utc": "2026-11-06T16:06:19.412Z",
+  "nonce": "1dbbe93e35fb4155a15b8d05e91b87f2",
+  "members": [
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\1dbbe93e35fb4155a15b8d05e91b87f2\\events.jsonl",
+      "file": "launcher/events.jsonl",
+      "bytes": 22550,
+      "sha256": "f719a966641b4b903c9db35b2f2aed3dd19237603e0e672c0fdecd1579d85bdb"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\1dbbe93e35fb4155a15b8d05e91b87f2\\crash-stdout-witness.bin",
+      "file": "launcher/crash-stdout-witness.bin",
+      "bytes": 57,
+      "sha256": "a4cfd221b327b5da308abf4d5b049939d2f28e87fdb80edc61a9f9cdbd877a62"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac\\1dbbe93e35fb4155a15b8d05e91b87f2\\input\\positive.cjs",
+      "file": "launcher/input/positive.cjs",
+      "bytes": 331,
+      "sha256": "b582ac77b5e5eaaaab17d7ed2961b86d9419a8a29c25e1c92423726b4896f041"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-crash-driver\\1dbbe93e35fb4155a15b8d05e91b87f2\\reservation.json",
+      "file": "driver/reservation.json",
+      "bytes": 868,
+      "sha256": "2c5d4fc77de051e709a6ec8d18dc6bbfe87f40055cf3f8910899d8eff027807b"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-crash-driver\\1dbbe93e35fb4155a15b8d05e91b87f2\\recovery.lock",
+      "file": "driver/recovery.lock",
+      "bytes": 105,
+      "sha256": "62bb410f76fc993e63e9495f97d99fbad4208bd3238405573b71d0609a9122aa"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-crash-driver\\1dbbe93e35fb4155a15b8d05e91b87f2\\prekill.json",
+      "file": "driver/prekill.json",
+      "bytes": 447,
+      "sha256": "9cfb67a3a0abb9b691af7ba54f7b40cc653fb8f1467492f88f2e40cfdd3921e0"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-crash-driver\\1dbbe93e35fb4155a15b8d05e91b87f2\\kill-completed.json",
+      "file": "driver/kill-completed.json",
+      "bytes": 1508,
+      "sha256": "0ab416076a9618f572a9595d87e8edf3529e1f5c3de77c78348052f6b8d1746f"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-crash-driver\\1dbbe93e35fb4155a15b8d05e91b87f2\\launcher.stdout.txt",
+      "file": "driver/launcher.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-crash-driver\\1dbbe93e35fb4155a15b8d05e91b87f2\\launcher.stderr.txt",
+      "file": "driver/launcher.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-crash-driver\\1dbbe93e35fb4155a15b8d05e91b87f2\\recovery-intent.json",
+      "file": "driver/recovery-intent.json",
+      "bytes": 304,
+      "sha256": "68df553ba69b50a7866e8cd07e6be6f5740e1f700320f7a5f5bf210531b1c25c"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-crash-driver\\1dbbe93e35fb4155a15b8d05e91b87f2\\recovery-completed.json",
+      "file": "driver/recovery-completed.json",
+      "bytes": 499,
+      "sha256": "fe0b234e5bcb01fb16e8f293cd5388020dcff3fc36555ad91b3fbd39e70a67a2"
+    }
+  ],
+  "absence": {
+    "receipt.json": true,
+    "stdout.bin": true,
+    "stderr.bin": true
+  },
+  "producer_result": "CRASHED_WITHOUT_FINAL_RECEIPT",
+  "application_passed": false,
+  "job_query_after_close": "UNAVAILABLE_NO_HANDLE_HELD",
+  "scope": "Real launcher crash/owned profile recovery; not daemon lifecycle or product/business verification."
+}

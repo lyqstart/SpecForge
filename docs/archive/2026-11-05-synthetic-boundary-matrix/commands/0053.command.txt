@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/run-resource-case.cjs",
+    "memory",
+    "51ef0d0d745a4c26a2c6d71c944123f3",
+    "build-resource-role-checked-08"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-resource-memory-cap",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned fixed LPAC Job256MiB memory rejection and cleanup;EXTERNAL_EVIDENCE_WRITES=receipts lab-only rejection proof",
+  "started_utc": "2026-11-05T03:48:44.027Z"
+}

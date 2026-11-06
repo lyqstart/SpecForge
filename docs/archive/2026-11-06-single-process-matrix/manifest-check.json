@@ -1,0 +1,9 @@
+{
+  "utc": "2026-11-06T16:16:21.200Z",
+  "run_id": "CODEX-SF-20261106-SINGLE-PROCESS-MATRIX-A01",
+  "files": 1058,
+  "manifest_sha256": "96f10ce2972a5e8818400ffe02dc7fdf0d12f85fb43d39eb8f5c8447869ec76f",
+  "self_check": "PASS",
+  "exclusions": "Only manifest and its own check excluded to avoid recursive hash. No private credential data collected.",
+  "inner_exit_code": 0
+}

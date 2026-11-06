@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/run-resource-case.cjs",
+    "wall",
+    "779fcd9338a44b588b5f08fd55dc9d55",
+    "build-resource-node-test-25"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-current-wall-timeout-three-roles",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned same-D21 resource profile Job and cleanup;EXTERNAL_EVIDENCE_WRITES=raw receipts and expected-rejection proof",
+  "started_utc": "2026-11-06T14:20:22.744Z"
+}

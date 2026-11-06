@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-06-single-process-matrix/fix-inline-stream-length.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "fix-inline-memory-stream-type-after-preserving-failure",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=unpublished inline predicate correction;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=exact failed source snapshot and receipt",
+  "started_utc": "2026-11-06T15:25:43.677Z"
+}

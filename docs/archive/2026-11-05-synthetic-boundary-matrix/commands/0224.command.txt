@@ -1,0 +1,11 @@
+{
+  "executable": "C:\\Program Files\\nodejs\\node.exe",
+  "args": [
+    "-e",
+    "const n=process.binding(\"natives\");for(const k of [\"internal/fs/glob\",\"internal/test_runner/runner\"]){const s=n[k];if(typeof s!==\"string\")throw Error(\"MISSING_BUILTIN_SOURCE\");const lines=s.split(\"\\n\");for(let i=0;i<lines.length;i++)if(/realpath|lstatSync|statSync|createTestFileList|isolation ===|isolation:/.test(lines[i]))console.log(k+\":\"+(i+1)+\"\\n\"+lines.slice(Math.max(0,i-3),i+6).join(\"\\n\"));}"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "inspect-pinned-node-glob-stat-paths",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=raw builtin source excerpts",
+  "started_utc": "2026-11-06T14:19:00.466Z"
+}

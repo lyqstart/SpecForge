@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/run-resource-case.cjs",
+    "output",
+    "6314a77b77ca4941a47b3e817106491d",
+    "build-resource-role-checked-08"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-resource-output-cap",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new owned fixed LPAC Job output cap rejection and cleanup;EXTERNAL_EVIDENCE_WRITES=receipts lab-only rejection proof",
+  "started_utc": "2026-11-05T03:48:34.922Z"
+}

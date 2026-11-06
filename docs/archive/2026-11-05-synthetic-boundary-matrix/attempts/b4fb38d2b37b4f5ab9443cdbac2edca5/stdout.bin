@@ -1,0 +1,2 @@
+SFSINGLE_BYPASS:{"pid":33132,"parent_pid":28988,"host_control":false,"parent_privileged_access":[128,40,64],"parent_privileged_open_errors":[5,5,5],"override_attribute_error":0,"override_create_error":367}
+SFSINGLE_NATIVE:{"pid":33132,"host_control":false,"child_policy_query":true,"child_policy_flags":1,"child_policy_error":0,"baseline_create_error":367,"breakaway_create_error":5,"console_allocated":false,"console_error":367,"owned_console_released":true}

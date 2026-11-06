@@ -1,0 +1,2 @@
+SF_HOST_WMI_CREATE_RESULT:{"return_value":0,"pid":15440,"direct_com":true,"utc":"2026-11-06T13:09:54.3394681Z"}
+{"probe":"D21_HOST_WMI_CONTROL_V1","utc":"2026-11-06T13:09:55.1040671Z","connected":true,"direct_com":true,"return_value":0,"pid":15440,"payload_exit_code":0,"payload_ended":true,"marker_written":true,"root":"D:\\code\\SpecForge\\.tmp\\verification-lpac-wmi-control\\d2e5ef2496314d76b04d75dc31ca6f19","administrator":false,"inner_exit_code":0}

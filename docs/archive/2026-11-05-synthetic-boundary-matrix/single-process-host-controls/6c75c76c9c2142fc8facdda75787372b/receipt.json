@@ -1,0 +1,41 @@
+{
+  "utc": "2026-11-06T14:42:50.271Z",
+  "nonce": "6c75c76c9c2142fc8facdda75787372b",
+  "root": "D:\\code\\SpecForge\\.tmp\\verification-lpac-single-host\\6c75c76c9c2142fc8facdda75787372b",
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-single-host\\6c75c76c9c2142fc8facdda75787372b\\input\\native-probe.exe",
+  "helper_sha256": "c8a7274c236a2a5ba9f62112cefda7c4543cfe13ebbd0585a8ef7c53f4abba63",
+  "native_pid": 17764,
+  "native_exit_code": 0,
+  "signal": null,
+  "error": null,
+  "data": {
+    "pid": 17764,
+    "host_control": true,
+    "child_policy_query": true,
+    "child_policy_flags": 0,
+    "child_policy_error": 0,
+    "baseline_create_error": 0,
+    "breakaway_create_error": 0,
+    "console_allocated": true,
+    "console_error": 0,
+    "owned_console_released": true
+  },
+  "bypass": {
+    "pid": 17764,
+    "parent_pid": 10700,
+    "host_control": true,
+    "parent_privileged_access": [
+      128,
+      40,
+      64
+    ],
+    "parent_privileged_open_errors": [
+      0,
+      0,
+      0
+    ],
+    "override_attribute_error": 0,
+    "override_create_error": 0
+  },
+  "inner_exit_code": 0
+}

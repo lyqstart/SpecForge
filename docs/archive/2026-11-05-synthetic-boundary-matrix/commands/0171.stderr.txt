@@ -1,0 +1,1 @@
+error: Cannot read directory "D:\code\": EPERM

@@ -15,6 +15,7 @@ internal sealed class LpacRegistryReadCanary {
     readonly string subkey,nonce,fakeValue;
     readonly Action<string,object> record;
     bool created;
+    string baselineSddl;
     internal LpacRegistryReadCanary(string nonce,Action<string,object> record) {
         Guid parsed;if(!Guid.TryParseExact(nonce,"N",out parsed))throw new InvalidOperationException("CANARY_NONCE");
         this.nonce=nonce;this.record=record;subkey="Software\\SpecForgeIsolationCanary-"+nonce;
@@ -25,6 +26,7 @@ internal sealed class LpacRegistryReadCanary {
         using(var key=RegistryKey.FromHandle(new SafeRegistryHandle(handle,true),RegistryView.Registry64)) {
             if(disposition!=1)throw new InvalidOperationException("CANARY_KEY_COLLISION");created=true;
             var security=key.GetAccessControl(AccessControlSections.Access|AccessControlSections.Owner);
+            baselineSddl=security.GetSecurityDescriptorSddlForm(AccessControlSections.Access|AccessControlSections.Owner);
             if(security.GetOwner(typeof(SecurityIdentifier)).Value!=WindowsIdentity.GetCurrent().User.Value)throw new InvalidOperationException("CANARY_OWNER_MISMATCH");
             key.SetValue("OwnerAttempt",nonce,RegistryValueKind.String);key.SetValue("FakeCredential",fakeValue,RegistryValueKind.String);key.Flush();
             record("canary_created",new{key="HKCU\\"+subkey,owner_attempt=nonce,value_name="FakeCredential",fake_value=fakeValue,synthetic_only=true,disposition=disposition,sddl=security.GetSecurityDescriptorSddlForm(AccessControlSections.Access|AccessControlSections.Owner),existing_acl_changed=false});
@@ -92,12 +94,13 @@ internal sealed class LpacRegistryReadCanary {
         record("registry_canary_result",new{positive_control=control,target_exit_code=targetExit,fake_value_exposed=exposed,application_exit_code=exitCode,result=exposed?"FAIL_HOST_FAKE_CREDENTIAL_READABLE":denied?"OBSERVED_SINGLE_CANARY_READ_DENIED":"INCONCLUSIVE",remaining_checks="NOT_EXECUTED until this row succeeds; no production acceptance"});
         return denied;
     }
+    internal bool NoLeak(byte[] stdout,byte[] stderr){return !Contains(stdout,Encoding.UTF8.GetBytes(fakeValue))&&!Contains(stdout,Encoding.Unicode.GetBytes(fakeValue))&&!Contains(stderr,Encoding.UTF8.GetBytes(fakeValue))&&!Contains(stderr,Encoding.Unicode.GetBytes(fakeValue));}
     internal bool ReconcileAndCleanup() {
         if(!created)return true;
         using(var key=Registry.CurrentUser.OpenSubKey(subkey,false)) {
             if(key==null)throw new InvalidOperationException("CANARY_KEY_DISAPPEARED");
             if((string)key.GetValue("OwnerAttempt")!=nonce)throw new InvalidOperationException("CANARY_OWNERSHIP_DRIFT");
-            var values=key.GetValueNames();bool unchanged=(string)key.GetValue("FakeCredential")==fakeValue&&values.Length==2&&key.GetSubKeyNames().Length==0;
+            var values=key.GetValueNames();bool unchanged=(string)key.GetValue("FakeCredential")==fakeValue&&values.Length==2&&key.GetSubKeyNames().Length==0&&key.GetAccessControl(AccessControlSections.Access|AccessControlSections.Owner).GetSecurityDescriptorSddlForm(AccessControlSections.Access|AccessControlSections.Owner)==baselineSddl;
             record("canary_after",new{key="HKCU\\"+subkey,owner_attempt=nonce,values=values,fake_value=key.GetValue("FakeCredential"),unchanged=unchanged});
             if(!unchanged)throw new InvalidOperationException("CANARY_CONTENT_DRIFT");
         }

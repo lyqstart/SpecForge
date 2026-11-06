@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/prepare-factory-review.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-reviewable-symbolic-factory",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=readonly fixture identity verification;EXTERNAL_EVIDENCE_WRITES=frozen source binary plan identity and specific admin proposal",
+  "started_utc": "2026-11-05T03:37:10.881Z"
+}

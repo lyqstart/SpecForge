@@ -1,0 +1,11 @@
+{
+  "executable": "C:\\Program Files\\nodejs\\node.exe",
+  "args": [
+    "-e",
+    "const n=process.binding(\"natives\");for(const [k,s]of Object.entries(n)){const p=s.indexOf(\"Could not find\");if(p>=0&&k.includes(\"test\")){console.log(k);console.log(s.slice(Math.max(0,p-2500),p+1000));}}"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "inspect-pinned-node-test-discovery-source",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=raw builtin source excerpts",
+  "started_utc": "2026-11-06T14:18:51.007Z"
+}

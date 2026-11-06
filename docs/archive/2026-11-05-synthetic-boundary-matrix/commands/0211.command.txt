@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-05-synthetic-boundary-matrix/preserve-attempt.cjs",
+    "f03aa992e3794850ae70e314bc78bcb4"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-real-daemon-parent-death-producer-failure",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable failed execution receiptf03a application140 and complete cleanup",
+  "started_utc": "2026-11-06T14:12:03.427Z"
+}

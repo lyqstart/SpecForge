@@ -1,0 +1,12 @@
+{
+  "executable": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\SyntheticDaemonCrash.exe",
+  "args": [
+    "daemon-restart",
+    "f03aa992e3794850ae70e314bc78bcb4",
+    "6364713bd4d2e2dd7467d1821516dd1709e36c9ac4b08387a06fd9fec2ee1ff2"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-real-daemon-restart-and-authenticated-stop",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=new real Daemon process on same ownedf03a configuration and normal stop only;EXTERNAL_EVIDENCE_WRITES=actual stale-lock recovery health and stop results",
+  "started_utc": "2026-11-06T14:09:45.661Z"
+}

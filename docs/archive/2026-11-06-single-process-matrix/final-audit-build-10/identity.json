@@ -1,0 +1,35 @@
+{
+  "utc": "2026-11-06T16:16:13.993Z",
+  "members": [
+    {
+      "source": "D:\\code\\SpecForge\\docs\\archive\\2026-11-06-single-process-matrix\\InspectSingleCleanup.cs",
+      "file": "InspectSingleCleanup.cs",
+      "bytes": 5878,
+      "sha256": "9c080da1b7533cf3de01e5636198e081f6c1fef32c25688851d105269dd01ebb"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\docs\\archive\\2026-11-06-single-process-matrix\\SingleNativeReportRegression.cs",
+      "file": "SingleNativeReportRegression.cs",
+      "bytes": 2886,
+      "sha256": "a6a510ca5db73318b0a3412abdff1901b59d413bcbf17c77eb8f613feda4ac6e"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\InspectSingleCleanup.exe",
+      "file": "InspectSingleCleanup.exe",
+      "bytes": 18944,
+      "sha256": "01d735fd8cbca9bb1f91d7a964d15851fbf3ea50fda1f37b3b6907b758b3c181"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\SingleNativeReportRegression.exe",
+      "file": "SingleNativeReportRegression.exe",
+      "bytes": 309248,
+      "sha256": "881bacd62771319f2080676ebb23e542284763b45d037ac7b3bb0c0649ce59a9"
+    },
+    {
+      "source": "D:\\code\\SpecForge\\docs\\archive\\2026-11-06-single-process-matrix\\verify-matrix-integrity.cjs",
+      "file": "verify-matrix-integrity.cjs",
+      "bytes": 6783,
+      "sha256": "b23678324d386c2cf9c79f1992251040454b2961284865bb7bb5c13b6a2bb287"
+    }
+  ]
+}
