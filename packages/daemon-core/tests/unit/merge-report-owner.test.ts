@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import '../../src/tools/handlers/sf-artifact-write.js';
 import { getHandler } from '../../src/tools/ToolDispatcher.js';
 import { evaluateMergeReport } from '@specforge/types';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, rm, access, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { createWorkItem } from '../../src/tools/lib/work-item-lifecycle-v11.js';
@@ -24,7 +24,7 @@ describe('Merge Report owner boundary', () => {
     expect((result as any).retry_allowed).toBe(false);
   });
 
-  it('rejects a disguised work_log after canonical file-type inference', async () => {
+  it('keeps work_log separate from the Merge Runner report even when its run_id says merge-report', async () => {
     const projectRoot = await mkdtemp(path.join(tmpdir(), 'sf-merge-owner-'));
     try {
       await createWorkItem({
@@ -43,8 +43,10 @@ describe('Merge Report owner boundary', () => {
         {},
       );
 
-      expect((result as any).success).toBe(false);
-      expect((result as any).error).toBe('MERGE_REPORT_OWNED_BY_MERGE_RUNNER');
+      expect((result as any).success).toBe(true);
+      expect((result as any).path).toBe('.specforge/archive/agent_runs/merge-report/work_log.md');
+      expect(await readFile(path.join(projectRoot, (result as any).path), 'utf8')).toBe('# forged report');
+      await expect(access(path.join(projectRoot, '.specforge/work-items/WI-0001/merge_report.md'))).rejects.toMatchObject({ code: 'ENOENT' });
     } finally {
       await rm(projectRoot, { recursive: true, force: true });
     }

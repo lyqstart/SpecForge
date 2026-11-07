@@ -47,4 +47,46 @@ describe('controlled verification evidence producer', () => {
     state = 'closed';
     expect((await write() as any).error).toBe('VERIFICATION_EVIDENCE_STATE_FROZEN');
   });
+
+  it.each(['verification_running', 'verification_done'])('keeps a real-style evidence alignment work_log in its archive at %s', async currentState => {
+    state = currentState;
+    const target = path.join(root, '.specforge/work-items', workItemId, 'evidence/evidence_manifest.json');
+    const original = JSON.stringify({ schema_version: '1.0', work_item_id: workItemId,
+      entries: Array.from({ length: 22 }, (_, i) => ({ evidence_id: `EV-${i + 1}`, type: 'command_output',
+        path: `evidence/source/facts-${i + 1}.txt`, description: 'Retained synthetic evidence identity',
+        created_at: '2026-11-07T00:00:00.000Z', status: 'blocked' })) });
+    await fs.mkdir(path.dirname(target), { recursive: true });
+    await fs.writeFile(target, original);
+    const runId = 'verifier-wi0001-manifest-align';
+    const content = JSON.stringify({ run_id: runId, work_item_id: workItemId, agent: 'sf-verifier',
+      action: 'evidence_manifest_supports_alignment', details: 'Log of already completed Evidence Manifest alignment' });
+    const result = await write({ file_type: 'work_log', run_id: runId, content }) as any;
+    expect(result.success, JSON.stringify(result)).toBe(true);
+    expect(result.path).toBe(`.specforge/archive/agent_runs/${runId}/work_log.md`);
+    expect(await fs.readFile(target, 'utf8')).toBe(original);
+    expect(await fs.readFile(path.join(root, result.path), 'utf8')).toBe(content);
+  });
+
+  it.each(['trigger-result', 'candidate-manifest', 'trace-delta', 'impact-analysis', 'change-classification', 'task-plan', 'merge-report', 'evidence-manifest'])(
+    'never treats a work_log topic %s as a canonical artifact selector', async topic => {
+      const content = `Completed review of ${topic}; this is an execution log.`;
+      const result = await write({ file_type: 'work_log', run_id: topic, content }) as any;
+      expect(result.success, JSON.stringify(result)).toBe(true);
+      expect(result.path).toBe(`.specforge/archive/agent_runs/${topic}/work_log.md`);
+      expect(await fs.readdir(path.join(root, '.specforge/work-items', workItemId))).toEqual(['work_item.json']);
+    });
+
+  it('does not invent an empty entries array for an explicit incomplete Evidence Manifest', async () => {
+    state = 'verification_running';
+    const target = path.join(root, '.specforge/work-items', workItemId, 'evidence/evidence_manifest.json');
+    const before = JSON.stringify({ schema_version: '1.0', work_item_id: workItemId,
+      entries: [{ evidence_id: 'EV-RETAINED', type: 'command_output', path: 'evidence/source/facts.txt',
+        description: 'Existing registered evidence', created_at: '2026-11-07T00:00:00.000Z' }] });
+    await fs.mkdir(path.dirname(target), { recursive: true }); await fs.writeFile(target, before);
+    const result = await write({ file_type: 'evidence_manifest', content: JSON.stringify({
+      schema_version: '1.0', work_item_id: workItemId, action: 'evidence_manifest_supports_alignment',
+    }) }) as any;
+    expect(result.success).toBe(false); expect(result.error).toBe('INVALID_ARTIFACT_JSON');
+    expect(await fs.readFile(target, 'utf8')).toBe(before);
+  });
 });

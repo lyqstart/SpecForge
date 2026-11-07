@@ -319,39 +319,12 @@ function projectModuleTargetPath(
   return path.relative(baseDir, absolutePath).replace(/\\/g, '/');
 }
 
-function normalizeToken(value: unknown): string {
-  return String(value ?? '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-');
-}
 function stringifyArtifactContent(value: unknown, fallback?: unknown): string {
   const chosen = value ?? fallback ?? '';
   if (typeof chosen === 'string') return chosen;
   if (Buffer.isBuffer(chosen)) return chosen.toString('utf-8');
   if (typeof chosen === 'object') return JSON.stringify(chosen, null, 2);
   return String(chosen);
-}
-function inferCanonicalFileType(args: Record<string, unknown>): string | null {
-  const fileType = String(args['file_type'] ?? '');
-  const runId = normalizeToken(args['run_id']);
-  const template = normalizeToken(args['template']);
-  const content = stringifyArtifactContent(args['content'], args['agent_content']);
-  const contentToken = normalizeToken(content.slice(0, 400));
-  const probe = `${runId} ${template} ${contentToken}`;
-  if (fileType !== 'work_log') return null;
-  if (probe.includes('trigger-result') || probe.includes('trigger-result-json'))
-    return 'trigger_result';
-  if (probe.includes('candidate-manifest') || probe.includes('candidate-manifest-json'))
-    return 'candidate_manifest';
-  if (probe.includes('trace-delta')) return 'trace_delta';
-  if (probe.includes('impact-analysis')) return 'impact_analysis';
-  if (probe.includes('change-classification') || probe.includes('intake-classification'))
-    return 'change_classification';
-  if (probe.includes('tasks-md') || probe.includes('task-plan') || probe.includes('task-planning'))
-    return 'tasks';
-  if (probe.includes('merge-report')) return 'merge_report';
-  if (probe.includes('evidence-manifest')) return 'evidence_manifest';
-  return null;
 }
 function resolveTargetFilename(
   fileType: string,
@@ -901,6 +874,8 @@ function normalizeCoreJsonArtifact(
     return JSON.stringify(normalized, null, 2);
   }
   if (filename === 'evidence_manifest.json') {
+    // Missing required evidence is not proof of an intentionally empty manifest.
+    if (!Array.isArray(parsed.entries) && !Array.isArray(parsed.evidence_items) && !Array.isArray(parsed.evidence)) return content;
     const entries = Array.isArray(parsed.entries)
       ? parsed.entries
       : Array.isArray(parsed.evidence_items)
@@ -1047,7 +1022,7 @@ function rejectExecutorGovernanceArtifact(fileType: string, context: any): any |
 registerHandler('sf_artifact_write', async (args, context, deps) => {
   const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
-  let fileType = args['file_type'] as string;
+  const fileType = args['file_type'] as string;
   let content = stringifyArtifactContent(args['content'], args['agent_content']);
 
   const initialControlOwnerRejection = rejectControlToolOwnedArtifact(fileType);
@@ -1081,15 +1056,8 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
     };
   }
 
-  const inferred = inferCanonicalFileType(args);
-  if (inferred) fileType = inferred;
-
-  const inferredControlOwnerRejection = rejectControlToolOwnedArtifact(fileType);
-  if (inferredControlOwnerRejection) return inferredControlOwnerRejection;
-  const inferredExecutorRejection = rejectExecutorGovernanceArtifact(fileType, context);
-  if (inferredExecutorRejection) return inferredExecutorRejection;
-  const inferredOwnershipRejection = rejectProfessionalArtifactOwnership(fileType, context);
-  if (inferredOwnershipRejection) return inferredOwnershipRejection;
+  // The caller's explicit canonical selector owns routing. A log may discuss a
+  // required artifact; neither its run_id nor its prose can change its target.
   if (fileType === 'verification_evidence') {
     const state = await readAuthoritativeState({ deps, projectRoot: baseDir, workItemId });
     if (!['implementation_ready', 'implementation_done', 'verification_running'].includes(

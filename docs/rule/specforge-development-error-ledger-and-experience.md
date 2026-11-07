@@ -32733,3 +32733,19 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 ### ERR-1990 / ERR-1992 补充：恢复取证仍重复输出巨型JSON及猜测尚不存在的stdout
 
 - 本轮恢复直接打印含工作树全量清单的0320/321 receipt和活动规则导致展示截断，不能计作完整读取；原会话已完成的前置全文读取不被这些截断替代。随后仅投影数值退出/目的/UTC及最终测试摘要，确认0320为51文件748项通过、0321为33路径版本提交身份核验通过。读取活动0319尚不存在的stdout产生ENOENT，未改变现场。0322受限本机fetch TypeError后0323同一只读观察在已授权宿主成功；不把受限载体连接失败当作产品失败。后续先检查存在性并解析选定字段。EXP-007/008/021/193/296。
+
+### ERR-2001：Runtime按日志主题猜测正式产物类型，导致日志覆盖Evidence Manifest
+
+- 0351实际sf-verifier输入file_type=work_log、run_id=verifier-wi0001-manifest-align，正文action含evidence_manifest_supports_alignment；真实handler返回success=true、file_type=evidence_manifest、规范路径及395字节。此前两个显式Manifest请求各含22条。源码inferCanonicalFileType把run_id/template/前400字符主题猜测为正式类型，normalizeCoreJsonArtifact又把缺失entries补空数组；角色相同与基础Schema通过不能证明调用者请求了该写入。
+- 0352只abort本轮两个自有会话，不手改真相源。载体固定reason文本仍写“重复合同拒绝”，本次真实停因以命令purpose及原始request/response为准，不能改写该旧记录。停止后采集时规范文件已回到22条；旧空文件原始字节未封存，不补造。0353错误把瞬时0条写成前置不变量，因实读22而停止，部分目录保留；0354在新目录冻结实际请求/返回、当前22条和3份旧源，明确时间差。
+- 0355真实原source复现11项失败。移除八类work_log主题猜测，显式file_type决定唯一目标；保留前置角色/控制owner及正式输入冻结。显式Evidence缺少entries及已支持数组别名时，不再补空数组使错误输入合法。0356一个新增夹具本身缺旧Schema，先被SCHEMA_ID_MISSING拒绝；修成有效既存Schema后0357三文件25项、0358完整类型、0359当前51文件748项通过。当前1.0.22用户Daemon仍含旧缺陷；0331原生候选也早于修复，不能标作最终发布。EXP-004/007/008/017/022/025/031/298。
+
+### ERR-2002：完整Daemon测试入口与环境不完整，且维护测试暴露真实消费闭环缺口
+
+- 0337误用Bun参数位置，只打印帮助并exit0，没有测试覆盖；0338改明确Node/Vitest/cwd后真实运行236文件2326项，227文件2306项通过、9文件20项失败（失败hook额外显示不等于25个测试）。原始结果全部保留，不把完整测试失败掩盖为root绿色。
+- configuration-activation/runtime-history进程夹具明确依赖npm_execpath指向Bun，直接Node入口缺失；git-detached五项10秒超时及后续EBUSY另记，不能未测即归因相同。0360只补固定已核实Bun路径后重跑三份未改测试，不放宽断言/预算，结果须独立核验。
+- 其余失败涉及当前D23执行凭据消费、旧Formal Version夹具与文档静态断言；尚待逐项对照实际失败payload、当前权威和基线，不预先统一归类为产品缺陷或过期测试。原生候选0331/安装fixture18有限正式矩阵0348退出0，39次工具调用及481成员在0361独立封存，但不替代本次失败或修复后原生验收。EXP-002/004/007/008/009/016/022/026/193。
+
+### ERR-1990 / ERR-1992 补充：路径猜测、PowerShell内联引号与依赖执行顺序再次失败
+
+- 恢复期间猜测不存在build-native-release/credential-scan文件、Windows rg通配路径及内联嵌套引号造成只读/载体错误，未据此形成产品结论。0340 Bun读取父目录被EPERM拒绝，但随后安装夹具17已启动，沿用了原有旧fixture bundle；没有将其认作新source producer验收。0344宿主同命令重建成功后，另建fixture18，0345/347/348绑定新bundle，旧17保留。后续依赖动作只在前一步实际成功后启动，不能仅因顺序await就忽略exit失败。显示截断仍不计完整读取。EXP-007/008/014/021/193/296。

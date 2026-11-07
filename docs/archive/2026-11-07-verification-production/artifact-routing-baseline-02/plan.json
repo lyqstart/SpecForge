@@ -1,0 +1,30 @@
+{
+  "utc": "2026-11-07T07:44:21.335Z",
+  "classification": "RUNTIME_DEFECT",
+  "first_deviation": "Tool Handler inferCanonicalFileType reinterprets work_log text/run_id and routes it to a canonical governance artifact; normalizer supplies empty entries",
+  "members": [
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "sha256": "f1a2106827c25c2121a05ad29446c622f79006fc9d51978e23c42fe97954f22f",
+      "size": 60722
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/merge-report-owner.test.ts",
+      "sha256": "6ada258ff40874694083f81a24e1ae2e9a52f67afef450e0e8c2cb133b70c3eb",
+      "size": 2955
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/verification-evidence-producer.test.ts",
+      "sha256": "b11ac109b31219746e055e49b7f5035ce50dd7f32acc147aba60ff8b23179d0c",
+      "size": 2579
+    }
+  ],
+  "canonical_sha256": "504dd4fda524a992d244de3655bc0d01b5d26ff37d34ecdecbda49ef56b3590e",
+  "current_canonical_entries": 22,
+  "earlier_empty_manifest_raw_snapshot": "Unavailable:0353 preserved failure because canonical had returned to22 by capture time; exact actual work_log input/response proves wrong canonical target and395-byte success. Do not relabel present22 as empty.",
+  "existing_path": "Canonical file_type already exists; remove ambiguous routing, retain explicit owner/freeze/schema checks",
+  "contract": "Tool already requires canonical file_type; work_log stays its archive/agent_runs path and never fulfills a required artifact",
+  "validation": "Reproduce actual request; verify unchanged canonical22 bytes and actual work_log archive path, preserve direct Merge Runner ownership and explicit verification freeze",
+  "original_stopped": "0352 only owned R05 sessions; no manual truth edit",
+  "native_candidate0331_superseded_for_final_delivery": true
+}
