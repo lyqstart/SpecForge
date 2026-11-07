@@ -1,0 +1,261 @@
+<!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:START -->
+## SpecForge Current Governance Contract
+
+This Agent/Skill must follow the current governance contract below. Product scope comes from SPS-1.0; these are executable Runtime rules, not independent product authority.
+
+### 1. State authority
+
+- `StateManager/events.jsonl` is the only authoritative workflow state source.
+- `runtime/state.json` is only a projection cache.
+- work_item.json is metadata only. `work_item.json` must not be used as the actual state source.
+- Do not write, repair, or advance governance state by editing `work_item.json.status`.
+- Do not call or instruct use of `workflowEngine.transitionFull()` for v1.1 governance transitions.
+- All state movement must go through approved SpecForge tools and the final state machine.
+
+### 2. Final state machine
+
+Use only the current states:
+
+`created`, `intake_ready`, `impact_analyzing`, `impact_analyzed`, `workflow_selected`, `candidate_preparing`, `candidate_prepared`, `gates_running`, `gates_failed`, `approval_required`, `approved`, `merge_ready`, `merging`, `merged`, `post_merge_verified`, `implementation_ready`, `implementation_running`, `implementation_done`, `verification_running`, `verification_done`, `closed`, `blocked`, `rejected`, `superseded`.
+
+The legacy mainline states `development`, `review`, `implementation`, `done`, `completed`, `intake`, `requirements`, and `design` must not be used as workflow states.
+
+### 3. Workflow identity
+
+- Every newly created current-release Work Item uses `workflow_type=feature_spec`.
+- `workflow_path` is the fact-derived governance route and must not create a second workflow identity.
+- Requirement, design, architecture, task, contract and code-only routes remain inside the same `feature_spec` lifecycle.
+- Built-not-enabled or historical workflow names must fail with `UNSUPPORTED_CURRENT_RELEASE_WORKFLOW`; do not translate or persist them.
+- Existing historical Work Items may be read for governed recovery, but their identity must not be copied into a new Work Item.
+
+### 4. Approval authority
+
+- User approval must be recorded only through `sf_user_decision_record`.
+- `user_approved` requires top-level `user_response_quote` containing the user's explicit approval of the current Candidate; task prompts, recovery instructions, and standing authorization are not approval evidence.
+- `auto_approved` requires `auto_approval_policy_id`.
+- `comments` and `reason` are notes only. They must not be treated as structured approval evidence.
+- `work_item.json` must never carry approval fields such as `decision_status`, `decision_type`, `user_response_quote`, `auto_approval_policy_id`, `approved`, `approval`, `approval_status`, `user_decision`, `decision_id`, `decided_by`, `decision_scope`, or `waivers`.
+
+### 5. Candidate and merge authority
+
+- Candidate artifacts must stay under the current Work Item `candidates/**` tree.
+- `candidate_manifest.entries` must reference canonical candidate paths.
+- For `feature_spec` on `code_only_fast_path`, `candidate_manifest.entries` must be `[]`.
+- For `code_only_fast_path`, `merge_report.status=not_applicable` is valid.
+- After `approved`, call `sf_merge_run`; do not manually force `approved -> merge_ready`.
+- `sf_merge_run` owns `approved -> merge_ready -> merging -> merged`.
+
+### 6. Code permission and executor boundary
+
+- Implementation requires `sf_code_permission`.
+- For the final code-only path, `sf_code_permission` owns `post_merge_verified -> implementation_ready -> implementation_running`.
+- Executor may only modify files explicitly granted by code permission.
+- Executor must not write `.specforge/work-items/**` or governance artifacts.
+- `sf_changed_files_audit` must pass with `unresolved_blocked_write_attempts=0`, no audit violations and no out-of-scope writes before implementation can complete. Historical/resolved blocked write attempts remain visible and need not be zero; never erase them or reinterpret a resolved denial as a current violation. Audit source changes require a fresh owner audit before Gate/Close consumption.
+
+### 7. Verification and close gate
+
+- Verification must produce required evidence before close.
+- `verification_gate` owns the subsequent `formal_version_gate`; a
+  Git-governed implementation is eligible only when the current branch matches
+  `git_context`, every observed implementation file is committed, and none of
+  those files has staged, unstaged, or untracked changes.
+- A legacy Work Item with no frozen version-control mode must fail closed. If
+  Runtime proves that its filesystem baseline and governance scope predate a
+  later unborn/untracked Git repository, only
+  `sf_code_permission(action="recover_legacy_filesystem_mode")` may record the
+  filesystem recovery. Do not create a branch, commit files, or turn the late
+  `git init` into Git Governance. After recovery, rerun verification and keep
+  Git delivery inapplicable for that Work Item.
+- `sf_close_gate` may close only from authoritative `verification_done`.
+- `sf_close_gate` must require `formal_version_gate=passed` for every
+  Git/governance-scope Work Item except explicit investigation/rollback paths.
+- If authoritative state is not `verification_done`, `sf_close_gate` must fail fast with `AUTHORITATIVE_STATE_MISMATCH`.
+- `closed` must be written only by `close_gate`.
+
+### 8. Required behavior on uncertainty
+
+If a requested action conflicts with this contract, stop and report the conflict instead of using an old workflow, direct file edits, shell bypass, or hand-written governance JSON.
+
+### 9. 可恢复 HardStop 协议
+
+- HardStop 是 `recoverable safety latch`（可恢复安全锁存），不是终止工作流的结果。它只阻断危险动作及依赖写入/状态推进，不得丢弃已完成工作或永久停止开发。
+- 专业 Agent 收到 `hard_stop=true`、`HARD_STOP_ACTIVE` 或发现未解决 `hard_stop.json` 后，必须停止被阻断动作及其依赖动作，不得绕过，也不得调用 `sf_hard_stop_resolve`。
+- 专业 Agent 必须向 `sf-orchestrator` 返回 `hard_stop_id`、触发 Tool、被阻断动作/目标、原因、最后成功步骤、阻断步骤、安全替代 Tool 和 `resume_from_step`。
+- `sf-orchestrator` 必须在存在安全且不扩大权限的恢复路径时，于同一工作流轮次完成分类和恢复。`operator_error`、`prohibited_action_replaced` 必须放弃原动作，改走合法 Tool，不等待用户重复批准，也不得扩大授权。
+- `scope_expanded`、`user_authorized_retry`、`risk_accepted` 或安装任何新授权时，必须引用当前真实 `user_response_quote`；任务提示、业务目标、Agent 转述或历史泛化同意均不能代替用户决定。
+- 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
+- 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
+
+<!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
+
+
+## SpecForge 产品开发经验前置门禁
+
+当当前仓库是 SpecForge 产品仓库，或任务涉及修改 SpecForge 自身时，以仓库根 AGENTS.md 为稳定入口。先读取执行模式与证据协议并运行只读 Bootstrap，完整读取其 REQUIRED_RULES，再从唯一 docs/project-status.md 的 NEXT_LEGAL_ACTION 恢复。任何修改前必须完整读取：
+
+```text
+docs/rule/specforge-active-development-rules.md
+```
+
+按任务关键词、模块及适用 EXP 定向检索 docs/rule/specforge-development-error-ledger-and-experience.md，核对历史错误及重复风险；不把历史摘要或旧实现当产品权威。在工作记录中写明：
+
+```text
+EXPERIENCE_FILE_READ=YES
+ACTIVE_EXPERIENCE_RULES_FILE_READ=YES
+APPLICABLE_EXPERIENCE_RULES=EXP-...（至少一项）
+REPEATED_ERROR_CHECK=PASS
+HISTORICAL_LEDGER_SEARCH=关键词及命中 EXP/ERR，或 NONE_WITH_JUSTIFICATION
+```
+
+无法访问该文件或无法完成检查时，必须 fail closed，不得修改文件、生成写操作命令或以旧经验继续。
+
+该规则只约束 SpecForge 产品开发；不得把 SpecForge 自身纳入 SpecForge 的业务项目自治理流程。
+
+# SpecForge Agent Rules
+
+> This file defines the SpecForge agent system rules for this project.
+> All SpecForge agents must follow these rules during execution.
+
+---
+
+## Overview
+
+This project uses **SpecForge** — a spec-driven development framework with specialized agents.
+Each agent has a defined role, permissions, and workflow responsibilities.
+
+## Agent System
+
+- **Orchestrator** (sf-orchestrator): Primary agent that manages workflows, dispatches sub-agents, and communicates with users.
+- **Sub-Agents**: Specialized agents (sf-requirements, sf-design, sf-task-planner, sf-executor, sf-debugger, sf-reviewer, sf-verifier, sf-knowledge) that handle specific phases.
+
+## Core Rules
+
+1. All agents must follow the Agent Constitution defined in `_AGENT_BASE.md` (user-level)
+2. State movement belongs to its current Runtime owner: creation, merge, code permission, Gates and Close use their respective controlled tools; only Orchestrator may call `sf_state_transition`, which cannot substitute for another owner's transition.
+3. Gate checks (requirements, design, tasks, verification) must not be bypassed
+4. Sub-agents cannot dispatch other agents — only the Orchestrator can
+
+## Workflow
+
+Only `feature_spec` is a current-release workflow identity. The main legal Runtime chain is:
+```
+created → intake_ready → impact_analyzing → impact_analyzed → workflow_selected
+→ candidate_preparing → candidate_prepared → gates_running → approval_required
+→ approved → merge_ready → merging → merged → post_merge_verified
+→ implementation_ready → implementation_running → implementation_done
+→ verification_running → verification_done → closed
+```
+
+The built-in workflow contract governs each transition, its owner, required evidence and recoverable branches. Professional review is not an invented `review_running` or `review_done` Runtime state. Never hand-write state or copy a historical workflow identity.
+
+## Runtime Data
+
+Current project authority uses `.specforge/project/spec_manifest.json` and its registered Project Spec files. Work Item artifacts are under `.specforge/work-items/`; authoritative events and projection cache are under `.specforge/runtime/`; configuration is under `.specforge/config/`. A root `.specforge/manifest.json` is a retired layout, not a current fallback.
+
+OpenCode public assets use its config root's `agents/tools/plugins/skills` directories. SpecForge private binaries and runtime data use `<OpenCode config>/sf-user/`; `~/.specforge` is not a current write root. The shared Daemon does not create a second workflow state authority.
+
+## D23 controlled readonly verification
+
+Real `sf-orchestrator` creates an independent readonly plan with `sf_verification_plan` from an approved Task. Real `sf-verifier` uses `sf_verification_run` prepare/run; cancel/recover refer to the same Attempt. Code permission remains separate and is never reopened for verification. Only the fixed Windows x64 single-process readonly Node profile and proved finite static-to-Node normalization are supported; unknown declarations stay not_executed/blocked, with no shell fallback. `sf_safe_bash` remains D18 readonly.
+
+Runtime verifies the actual running call throughout execution and signs an immutable invocation lease and execution receipt. Report/Evidence/Gates/Formal Version/Close use the same owner checks. Aborted, stale, tampered, incomplete or cleanup-unknown results cannot pass. Independent manual observations require their own actual evidence and cannot relabel executable checks. Execution does not itself advance workflow state.
+
+<!-- BEGIN: directory-layout -->
+> ⚠️ 本文档由 `scripts/render-layout.ts` 从 `packages/types/src/directory-layout.ts` 自动生成。
+> 角色：DERIVED REFERENCE，不是产品权威。不要手动编辑；产品边界先由 SPS/已登记 Contract 决定。
+
+## 项目目录名
+
+```
+SPEC_DIR_NAME = '.specforge'
+```
+
+## Current Active Paths (.specforge/)
+
+### committed 区（提交到 Git）
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| config | `config` | 项目配置目录 — `<root>/.specforge/config/` |
+| project | `project` | 项目级正式规格目录 — `<root>/.specforge/project/` |
+| workItems | `work-items` | Work Item 事务根目录 — `<root>/.specforge/work-items/` |
+
+### configFiles 分组
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| configFiles.projectRules | `config/project-rules.md` | — |
+| configFiles.prodEnv | `config/prod-environment.md` | — |
+| configFiles.project | `config/project.json` | — |
+
+### projectFiles 分组
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| projectFiles.specManifest | `project/spec_manifest.json` | — |
+| projectFiles.extensionRegistry | `project/extension_registry.json` | — |
+| projectFiles.requirementsIndex | `project/requirements_index.md` | — |
+| projectFiles.designIndex | `project/design_index.md` | — |
+| projectFiles.architecture | `project/architecture.md` | — |
+| projectFiles.glossary | `project/glossary.md` | — |
+| projectFiles.decisions | `project/decisions.md` | — |
+| projectFiles.traceMatrix | `project/trace_matrix.md` | — |
+| projectFiles.modulesRoot | `project/modules` | — |
+
+### workItemFiles 分组
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| workItemFiles.workItemJson | `work_item.json` | — |
+| workItemFiles.intake | `intake.md` | — |
+| workItemFiles.changeClassification | `change_classification.md` | — |
+| workItemFiles.impactAnalysis | `impact_analysis.md` | — |
+| workItemFiles.triggerResult | `trigger_result.json` | — |
+| workItemFiles.requirements | `requirements.md` | — |
+| workItemFiles.design | `design.md` | — |
+| workItemFiles.requirementsDelta | `requirements_delta.md` | — |
+| workItemFiles.designDelta | `design_delta.md` | — |
+| workItemFiles.domainAnalysis | `domain_analysis.md` | — |
+| workItemFiles.moduleBoundaryAnalysis | `module_boundary_analysis.md` | — |
+| workItemFiles.architectureMigrationMap | `architecture_migration_map.md` | — |
+| workItemFiles.projectSpecVersionBefore | `project_spec_version_before.json` | — |
+| workItemFiles.projectSpecVersionAfter | `project_spec_version_after.json` | — |
+| workItemFiles.tasks | `tasks.md` | — |
+| workItemFiles.traceDelta | `trace_delta.md` | — |
+| workItemFiles.candidateManifest | `candidate_manifest.json` | — |
+| workItemFiles.candidates | `candidates` | — |
+| workItemFiles.candidateFiles.project | `project` | — |
+| workItemFiles.candidateFiles.modulesRoot | `project/modules` | — |
+| workItemFiles.candidateFiles.requirements | `requirements.candidate.md` | — |
+| workItemFiles.candidateFiles.design | `design.candidate.md` | — |
+| workItemFiles.candidateFiles.tasks | `tasks.md` | — |
+| workItemFiles.candidateFiles.traceDelta | `trace_delta.md` | — |
+| workItemFiles.gates | `gates` | — |
+| workItemFiles.gateSummary | `gate_summary.md` | — |
+| workItemFiles.userDecision | `user_decision.json` | — |
+| workItemFiles.verificationReport | `verification_report.md` | — |
+| workItemFiles.mergeReport | `merge_report.md` | — |
+| workItemFiles.evidence | `evidence` | — |
+| workItemFiles.evidenceManifest | `evidence/evidence_manifest.json` | — |
+| workItemFiles.extensionRequest | `extension_request.json` | — |
+| workItemFiles.extensionDelta | `extension_delta.md` | — |
+
+### gitignored 区（运行时数据）
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| runtime | `runtime` | 运行时状态目录（gitignored）— `<root>/.specforge/runtime/` |
+
+### runtimeFiles 分组
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| runtimeFiles.events | `runtime/events.jsonl` | — |
+| runtimeFiles.state | `runtime/state.json` | — |
+| runtimeFiles.checkpoints | `runtime/checkpoints` | — |
+| runtimeFiles.logs | `runtime/logs` | — |
+
+
+---
+<!-- END: directory-layout -->

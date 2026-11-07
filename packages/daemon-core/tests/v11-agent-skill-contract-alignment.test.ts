@@ -1,7 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { isValidV11TransitionForWorkflow } from '../src/tools/lib/state-machine-v11';
+import { evaluateChangedFilesAuditVerdict } from '../src/tools/lib/changed-files-audit-verdict';
+import { compileNodeCommand } from '../src/verification/node-command-contract';
 
 const CONTRACT_START = '<!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:START -->';
 const CONTRACT_END = '<!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->';
@@ -89,6 +92,64 @@ function withoutContract(text: string): string {
 }
 
 describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
+  it('keeps every shared audit paragraph consistent with resolved-history Runtime verdicts', () => {
+    const audit = [
+      '# Changed Files Audit', 'Contract: changed-files-audit/v1', 'Work Item: WI-0001',
+      '## Result: PASS', '- Out of scope: 0', '- Violations: 0',
+      '- Blocked write attempts: 1', '- Historical/resolved blocked write attempts: 1',
+      '- Unresolved blocked write attempts: 0',
+    ].join('\n');
+    const accepted = evaluateChangedFilesAuditVerdict(audit, { expectedWorkItemId: 'WI-0001' });
+    expect(accepted.passed).toBe(true);
+    expect(accepted.blocked_write_attempts).toBe(1);
+    expect(accepted.unresolved_blocked_write_attempts).toBe(0);
+    expect(evaluateChangedFilesAuditVerdict(audit.replace('Unresolved blocked write attempts: 0',
+      'Unresolved blocked write attempts: 1')).passed).toBe(false);
+    const consumers = targetMarkdownFiles().map(file => ({
+      file, body: contractBody(readFileSync(file, 'utf8')),
+    })).filter(({ body }) => body.includes('sf_changed_files_audit'));
+    expect(consumers.length).toBeGreaterThan(0);
+    for (const { file, body } of consumers) {
+      expect(body, relativeToRepo(file)).toMatch(/\bunresolved_blocked_write_attempts\s*=\s*0\b/);
+      expect(body, relativeToRepo(file)).not.toMatch(/\bblocked_write_attempts\s*=\s*0\b/);
+    }
+  });
+
+  it('compiles positive planning command examples with the real finite execution grammar', () => {
+    const planner = readFileSync(path.join(USERLEVEL_ROOT, 'agents/sf-task-planner.md'), 'utf8');
+    const writing = readFileSync(path.join(USERLEVEL_ROOT, 'skills/superpowers-writing-plans/SKILL.md'), 'utf8');
+    const section = planner.split('## verification_commands Format')[1]?.split('<!-- SpecForge V7')[0];
+    expect(section).toBeDefined();
+    const commands = [...(section! + '\n' + writing).matchAll(/^\s*- `([^`\r\n]+)`[ \t]*$/gm)].map(m => m[1]!);
+    commands.push(...[...section!.matchAll(/^\|[^|\r\n]+\|[ \t]*`([^`\r\n]+)`[ \t]*\|/gm)].map(m => m[1]!));
+    commands.push(...[...section!.matchAll(/"command"\s*:\s*"([^"\r\n]+)"/g)].map(m => m[1]!));
+    expect(commands.length).toBeGreaterThan(0);
+    for (const command of commands) {
+      const entry = command.match(/ ([A-Za-z0-9_.\/-]+)$/)?.[1];
+      const content = command.startsWith('node --test ')
+        ? "import { test } from 'node:test'; import assert from 'node:assert/strict'; test('example', () => { assert.equal(1, 1); });"
+        : 'export function foo() { return 1; }\n';
+      const sources = entry ? [{ path: entry, content, sha256: createHash('sha256').update(content).digest('hex') }] : [];
+      expect(() => compileNodeCommand(command, sources), command).not.toThrow();
+    }
+    for (const command of ['bun test tests/unit/example.test.ts', 'tsc --noEmit',
+      'node src/server.mjs &; sleep 1; curl -sf localhost:3000/health']) {
+      expect(() => compileNodeCommand(command, []), command).toThrow('NODE_COMMAND_UNSUPPORTED');
+    }
+  });
+
+  it('makes planning consumers state the current independent execution owners and unsupported boundary', () => {
+    for (const file of ['setup/userlevel-opencode/agents/sf-task-planner.md',
+      'setup/userlevel-opencode/skills/superpowers-writing-plans/SKILL.md']) {
+      const text = read(file);
+      expect(text, file).toContain('sf_verification_plan');
+      expect(text, file).toContain('sf_verification_run');
+      expect(text, file).toContain('not_executed');
+      expect(text, file).toContain('blocked');
+      expect(text, file).toContain('D23');
+    }
+  });
+
   it('keeps positive formal-verification delegation aligned with the D23 entry and consumer prerequisites', () => {
     expect(isValidV11TransitionForWorkflow('implementation_done', 'verification_running', 'feature_spec')).toBe(true);
     const skill = read('setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md');

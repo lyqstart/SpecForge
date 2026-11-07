@@ -32826,3 +32826,23 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 
 - 主封存13977成员/1258431026字节SHA清单856c4f5181648c91cbffea6c963e55d2690196806baf6b8964f66ff3d6b0ea39自检通过；publication-live0003显式白名单git add因嵌套原始baseline文件Filename too long以128退出，载体退出1。独立cached清单为空，未提交、原封存未变。
 - 只对后续Git进程使用-c core.longpaths=true，不修改用户/系统配置、不移动/删除/缩短证据。恢复入口重新核对原封存每个SHA、原精确pathspec、main d8fc和空index后执行同一白名单；实际数字回执保存在同RUN/EVIDENCE_ROOT的reserved publication-live。产品及业务项目不受此Git归档路径限制影响。EXP-007/008/014/193。
+
+### ERR-2015：只读复核的Windows路径glob和缺失入口查询失败
+
+- 前轮复核将packages/*/src、v11*.test.ts等含glob的字面路径传给Windows rg，并查询不存在的render-v11-final-governance-contract.mjs，真实返回路径语法或缺失错误；部分组合显示还发生截断。均为取证载体问题，未修改产品/业务文件，不作为产品缺陷或完整读取证据。后续改为已存在目录加-g过滤或明确实际文件，必要段落单独重读，最终结论回到实际源码/安装字节。当前完整活动规则读取补上EXP253..264截断段，固定2650行覆盖和SHA，不以显示截断冒充全文。EXP-002/007/008/261/296。
+
+### ERR-2016：以已通过业务链和汇总行数过早宣告全部消费者合规
+
+- 当前主线0995f0c5的多个已安装Agent/基础模板共享块仍要求blocked_write_attempts=0，而真实audit consumer允许历史resolved保留且只阻断unresolved；原WI真实PASS为total1/resolved1/unresolved0。TaskPlanner/WritingPlans正向推荐bun、tsc和服务/网络组合，真实有限Node grammar拒绝；唯一状态同时COMPLETE与SP-I01/SP-D01/originalWI remain later。117部署与源码一致，故非仅归档残留。
+- 上轮build-sps-final-review.cjs统一把20行改为PASS，已通过执行/Gate/安装证据仅证明各自范围，不能替代全部正文/示例/模板/状态消费者的独立验收。旧汇总和原始成功/失败保持不可变，当前整体完成断言被本轮复核撤回；原业务closed/localmain交付有效，不重开、不重跑。责任层为Agent/Skill派生消费者、测试覆盖及状态/验收记录。按既有SPS修下游，不修改产品范围。新增回归须直接对照真实audit判据和有限命令compiler，并覆盖完整模板集合。EXP-004/007/022/025/026/033/035/036/193/251/276/287。
+
+### ERR-2017：修复回归首轮未收集测试而由Bun报告当前目录不可读
+
+- consumer-conformance命令0003在正式daemon-core包cwd经固定Bun入口执行，真实退出1，stderr为error loading current directory / CouldntReadCurrentDirectory，未发现或运行测试。该结果不是预期的产品缺陷红例，不计基线测试覆盖。源码/模板未改变，保留完整四件套和源码seal。下一步仅对同一源码、cwd和命令使用宿主允许的执行环境做对照；在取得成功收集前原因保持INSUFFICIENT_EVIDENCE，不归因运行时或用零测试代替回归。EXP-002/007/008/016/117/140。
+
+- ERR-2017对照：0004相同固定Bun/包cwd/源码在宿主环境真实收集16项，3项新增缺陷回归失败、原13项通过；支持执行环境差异，具体拒绝机制未取证，不声称产品测试因cwd缺陷失败。之后相关Bun验证固定使用已成功的宿主入口。
+
+### ERR-2018：共享审计指令回归误要求无审计职责Agent复制审计条款
+
+- 0006规划两项回归已通过，审计用例却在只读sf-analyst的精简合同中要求unresolved字段。实读该Agent不包含sf_changed_files_audit判据，也不负责实现收口；权威要求纠正真实审计指令消费者，不能把“全部Agent”扩大为所有角色都必须复制审计规则。责任是新增测试作用域过宽，不是新运行时缺陷。
+- 维护回归仍遍历完整Agent/Skill合同集合，但只对实际包含sf_changed_files_audit规则的合同验证zero-unresolved和禁止zero-total，并要求该消费集合非空；真实Runtime的历史resolved正例和unresolved反例继续保留，不修改sf-analyst角色或降低已存在审计规则。失败原件与源码seal保持。EXP-007/022/025/036/044/251。

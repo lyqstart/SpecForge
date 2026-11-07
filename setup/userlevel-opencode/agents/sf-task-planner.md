@@ -63,7 +63,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 - For the final code-only path, `sf_code_permission` owns `post_merge_verified -> implementation_ready -> implementation_running`.
 - Executor may only modify files explicitly granted by code permission.
 - Executor must not write `.specforge/work-items/**` or governance artifacts.
-- `sf_changed_files_audit` must pass with `blocked_write_attempts=0` and no out-of-scope writes before implementation can complete.
+- `sf_changed_files_audit` must pass with `unresolved_blocked_write_attempts=0`, no audit violations and no out-of-scope writes before implementation can complete. Historical/resolved blocked write attempts remain visible and need not be zero; never erase them or reinterpret a resolved denial as a current violation. Audit source changes require a fresh owner audit before Gate/Close consumption.
 
 ### 7. Verification and close gate
 
@@ -192,7 +192,7 @@ Layer 3 ✅：sf-executor 拿到任意 task 都能独立执行，verification_co
 - **Done When**:
   - calculate_discount(100, 10) === 10
   - calculate_discount(-1, 10) throws Error
-  - bun test src/billing.test.ts 全部通过
+  - node --test src/billing.test.ts 全部通过
 ```
 
 **判定**：executor 只读 context_block 就够动手，不需要回查 design.md → context 充分。
@@ -479,6 +479,14 @@ Task Planner 在提交 tasks.md 前，必须对每个 task 逐一检查：
 
 当前执行合同对 `verification_commands` 的格式有严格要求，确保每条命令都是机器可执行、结果可判定的。
 
+### 当前验证能力边界（SPS §9.2.4 / D23）
+
+当前只支持固定 Windows x64 单进程只读 Node 内置测试，以及已证明原判定/输出语义的有限文件存在性和 grep 检查。Node 测试还须满足受限语法、依赖和输入冻结合同；`node --test` 的命令名本身不是可执行性证明。
+
+Task Planner 只规划新 Task 的原始验证声明，不执行命令。已批准 Task 由真实 `sf-orchestrator` 使用 `sf_verification_plan` 创建独立只读计划，真实 `sf-verifier` 使用 `sf_verification_run` prepare/run；代码写许可不能代替验证许可，`sf_safe_bash` 仍只读。类别 `integration`/`e2e` 不自动授权服务器、联网或子进程。
+
+Bun、第三方测试框架、tsc、ESLint、构建、服务/网络、文件写入和需要子进程的检查不属于当前执行范围。若原验收确实需要这些能力，保留原要求并在候选批准前返回 `blocked` / `not_executed` finding，由 Orchestrator 处理能力缺口；不得换解释器、转普通宿主、以 grep 替代类型检查或降低验收。不得修改已封存 Task 来适配本能力。
+
 ### 命令格式要求
 
 1. **必须使用类型化映射**：合法键只有 `unit`、`property`、`integration`、`e2e`、`regression`；禁止平铺旧列表
@@ -491,23 +499,20 @@ Task Planner 在提交 tasks.md 前，必须对每个 task 逐一检查：
 ```markdown
 - **verification_commands**:
   - unit:
-    - `bun test tests/unit/example.test.ts`
+    - `node --test tests/unit/example.test.ts`
   - integration:
-    - `bun test tests/integration/example.test.ts`
+    - `node --test tests/integration/example.test.ts`
   - regression:
-    - `bun test tests/regression/example.test.ts`
+    - `node --test tests/regression/example.test.ts`
 ```
 
 ### 推荐的命令类型
 
 | 类型 | 示例 | 适用场景 |
 |------|------|----------|
-| **测试运行** | `bun test src/foo.test.ts` | 函数/模块的单元测试 |
-| **文件存在检查** | `test -f src/foo.ts` | 文件创建验证 |
-| **内容检查** | `grep -c "export function foo" src/foo.ts` | 函数/接口存在性验证 |
-| **类型检查** | `tsc --noEmit` | TypeScript 类型正确性 |
-| **集成测试** | `node src/server.mjs &; sleep 1; curl -sf localhost:3000/health` | 端到端验证 |
-| **Lint 检查** | `eslint src/foo.ts` | 代码规范检查 |
+| **测试运行** | `node --test src/foo.test.ts` | 满足受限语义的只读内置测试 |
+| **文件存在检查** | `test -f src/foo.ts` | 经有限 predicate 证明后归一化到隔离 Node |
+| **内容检查** | `grep -c "export function foo" src/foo.ts` | 有限匹配和实际冻结输入的输出语义已证明 |
 
 ### verification_evidence_expected 格式
 
@@ -515,9 +520,9 @@ Task Planner 在提交 tasks.md 前，必须对每个 task 逐一检查：
 
 ```json
 {
-  "command": "bun test src/foo.test.ts",
+  "command": "node --test src/foo.test.ts",
   "expected_exit_code": 0,
-  "expected_output_pattern": "all tests passed",
+  "expected_output_pattern": "# fail 0",
   "evidence_type": "test_output"
 }
 ```

@@ -1,0 +1,204 @@
+{
+  "utc": "2026-11-07T13:25:52.364Z",
+  "baseline_head": "0995f0c5e5bf2192aa38ee9b874f6decbe4e0ed3",
+  "source_paths": [
+    ".gitattributes",
+    ".gitignore",
+    "docs/project-status.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md",
+    "packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts",
+    "setup/userlevel-opencode/AGENTS.md",
+    "setup/userlevel-opencode/agents/_AGENT_BASE.md",
+    "setup/userlevel-opencode/agents/sf-debugger.md",
+    "setup/userlevel-opencode/agents/sf-design.md",
+    "setup/userlevel-opencode/agents/sf-evidence-collector.md",
+    "setup/userlevel-opencode/agents/sf-executor.md",
+    "setup/userlevel-opencode/agents/sf-extension.md",
+    "setup/userlevel-opencode/agents/sf-investigator.md",
+    "setup/userlevel-opencode/agents/sf-knowledge.md",
+    "setup/userlevel-opencode/agents/sf-requirements.md",
+    "setup/userlevel-opencode/agents/sf-reviewer.md",
+    "setup/userlevel-opencode/agents/sf-task-planner.md",
+    "setup/userlevel-opencode/agents/sf-verifier.md",
+    "setup/userlevel-opencode/skills/sf-intake/SKILL.md",
+    "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md",
+    "setup/userlevel-opencode/skills/superpowers-writing-plans/SKILL.md"
+  ],
+  "members": [
+    {
+      "path": ".gitattributes",
+      "current": "0000.current.raw",
+      "head": "0000.head.raw",
+      "raw_sha256": "50aba6d9a0913f7a48b3f444564b6d3a47af07fbb6bd6a7bb337e1ae14838717",
+      "head_sha256": "4f6515a69b6acde223867f0330ba8db9e070dc64bbcf73f4ccfeb0a78e226472",
+      "expected_index_oid": "bf673d370151ac22224cce17b7910c3bfe1276b3"
+    },
+    {
+      "path": ".gitignore",
+      "current": "0001.current.raw",
+      "head": "0001.head.raw",
+      "raw_sha256": "8f3743bdaf6a60c3544f251923e7977926bcf47bb6362543e7e9eea1c2a40dcc",
+      "head_sha256": "dfec3f8088eecbafdc35b7338450085d7f8764ff0c4b7ab4b892a8278ab02309",
+      "expected_index_oid": "ca0057559407ead7113f72ad0c7eaa2067d71227"
+    },
+    {
+      "path": "docs/project-status.md",
+      "current": "0002.current.raw",
+      "head": "0002.head.raw",
+      "raw_sha256": "7421f7bef4221e072dde7256a3097aff762872dc06acad91a65d8971d32d54d5",
+      "head_sha256": "3f6c7ba917c407c28319b1e6f2d1467893e40500dbfe2e2ab095169e5e9cc1fc",
+      "expected_index_oid": "6010709dd0504fb5c96a216e4d7930754677e72b"
+    },
+    {
+      "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "current": "0003.current.raw",
+      "head": "0003.head.raw",
+      "raw_sha256": "74d89e84bf959b85285080bd259884475b3966e9ab16973ad7688f3532f222cc",
+      "head_sha256": "81a6386fc40b05862fefc5ae260caea9051eef61d4a90ded7de826482a9c9875",
+      "expected_index_oid": "cc41eb18a38448beb859ee9511c68e6a6c887fbe"
+    },
+    {
+      "path": "packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts",
+      "current": "0004.current.raw",
+      "head": "0004.head.raw",
+      "raw_sha256": "6feec1c5db5218a6cbd4b4a95be2208aaa3000e61eeed714f63072165b0caf06",
+      "head_sha256": "08fdaef689d2368511a89fb67bf7daf98bcabcb8335e73baa203498d4e90b1b8",
+      "expected_index_oid": "000815902e5353ba6fea3dfa3d82830a63005cd4"
+    },
+    {
+      "path": "setup/userlevel-opencode/AGENTS.md",
+      "current": "0005.current.raw",
+      "head": "0005.head.raw",
+      "raw_sha256": "3c08cee9ecb1c2408c482463e1c77193a37f1855725de01b8bcebab2bd3d18e4",
+      "head_sha256": "cfe202aeb06137d2fbb45f7d14ab6f128f7cacec7944de4efa42d86dd2f08395",
+      "expected_index_oid": "c2f6dfd7f4646d7b09cf430f2dcda7baab344f36"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/_AGENT_BASE.md",
+      "current": "0006.current.raw",
+      "head": "0006.head.raw",
+      "raw_sha256": "f54949a123c3bba25bf041f7b2be6677864361caa6f87e40c1a1eaff5a7c6665",
+      "head_sha256": "27705781982c93ee30bec5cf1ec57dd917c29cf4ff8085a9b3ea483d0a23806c",
+      "expected_index_oid": "f92e7c5e668b3c03008db85b5227f50560ad1820"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-debugger.md",
+      "current": "0007.current.raw",
+      "head": "0007.head.raw",
+      "raw_sha256": "9ca7dbf84b72fa4a974fb732090adf37e4a62dbc695efdfb8df4aea364ea9b36",
+      "head_sha256": "73d0a3c55d6e12a1b208e07e02d8e6de8dd9dfacc5afc0df58f8b94407ae3fa6",
+      "expected_index_oid": "7b320ac52223dd4a390e72bbc19b7f0116ba9ed5"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-design.md",
+      "current": "0008.current.raw",
+      "head": "0008.head.raw",
+      "raw_sha256": "92be5c515f2f47399aaebabdfcd5abc731367c66d43ce85bf288d0d4d2f3af33",
+      "head_sha256": "3ab24da36090611758857143226230391bf88aaf1cc99b6f94bacb57788003ce",
+      "expected_index_oid": "7f71b194de4d678d82358a8b0ecd486c73f87230"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-evidence-collector.md",
+      "current": "0009.current.raw",
+      "head": "0009.head.raw",
+      "raw_sha256": "b1fb57bdaad02454bce5aba90f133f4f8e3abab2c1f4b6a49fa251a26c19d8ae",
+      "head_sha256": "c3bb9c4d1d2faa1e0a9a8b115d340df5e63a8f8b3ad5675eb9a401b73ba70701",
+      "expected_index_oid": "58e49db3a2894d7c6392cc2dd531a51c2da6ed9d"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-executor.md",
+      "current": "0010.current.raw",
+      "head": "0010.head.raw",
+      "raw_sha256": "ae271040a4fba22f29678afc817ee38eee534ff7bc8f4d51ac694f25d7d49b5a",
+      "head_sha256": "0bbf011c91c714a62002df212a938362d7919d8423c7044451d1a2d4c1c72bee",
+      "expected_index_oid": "38056b33c871f636b4a3bef56577c141ad4ab7a6"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-extension.md",
+      "current": "0011.current.raw",
+      "head": "0011.head.raw",
+      "raw_sha256": "06f5c894100fd906d437dc5d3475b74bb893ccc204edea116f2739037328a3d8",
+      "head_sha256": "1c6928ffcb9e8e21e93bd7c4ea9f558505e1d3baa6e8fc52cd14db7964ffa9ef",
+      "expected_index_oid": "07bfc269d9bb9ae87c5b669e7f3023bb4b1c8779"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-investigator.md",
+      "current": "0012.current.raw",
+      "head": "0012.head.raw",
+      "raw_sha256": "87d23859f17b40e8d6cb6a993e1caef8bd7202335590ba0cd5b0e081d0e0fe0c",
+      "head_sha256": "97e8b9c386e1c05c72877e659ad76da30cace38fb229424984653820c043cbdf",
+      "expected_index_oid": "bb65080a27cfa3a9c2c5155131a6e2346ddb1915"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-knowledge.md",
+      "current": "0013.current.raw",
+      "head": "0013.head.raw",
+      "raw_sha256": "0a12dd035fa6b554b081d168b82105a5bce8f029025f02139ba144873b15d041",
+      "head_sha256": "09de74ee26a0471f0801e5b5e18781ada28997a6d30a002c970acdcff21f75fc",
+      "expected_index_oid": "07f448ce9c14d3bd5dbd7df21e44842df566b5d9"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-requirements.md",
+      "current": "0014.current.raw",
+      "head": "0014.head.raw",
+      "raw_sha256": "5a5f5a7205e2c505119fb32b7a26675cd345a74da5ace3806fd3c43b81b00172",
+      "head_sha256": "d43f294b4bbf5246785f7aaa9499082a0871d00c9736c0641d88816d23690042",
+      "expected_index_oid": "f470a82e76de06b63e35e25cfaeaa9b4b76bc2b1"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-reviewer.md",
+      "current": "0015.current.raw",
+      "head": "0015.head.raw",
+      "raw_sha256": "00b33a3366a5b16de1714babff4a2e3508170cba6fe4db72814af535fb632d71",
+      "head_sha256": "0c82a6acf90274ac53c5b1051a8211e9e4a87271ed848783e5df63ac17f47589",
+      "expected_index_oid": "f42ca55fe95ffd212b7f9f5e4fcad0fc993081e4"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-task-planner.md",
+      "current": "0016.current.raw",
+      "head": "0016.head.raw",
+      "raw_sha256": "44621b040d25b2c90f9ae77386484b0144885677fee99b6cf2a3d4bbf156f8c9",
+      "head_sha256": "9cfbd6c21067dadcde2c8085394669adddd5ed2ae6ee5a437b56d56e3166b824",
+      "expected_index_oid": "23500581439cf02bd6492196613db6cd242c5804"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-verifier.md",
+      "current": "0017.current.raw",
+      "head": "0017.head.raw",
+      "raw_sha256": "87dfe943573df61f64240f11fea3240443d865d4580a7ea4c06f9db8723a2bff",
+      "head_sha256": "9080216c04584f29638afdced3214afe7da77f67e2f519d66103727939350ea5",
+      "expected_index_oid": "c258b5723c73f3b9238bb785d0bce2d3bef71c19"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/sf-intake/SKILL.md",
+      "current": "0018.current.raw",
+      "head": "0018.head.raw",
+      "raw_sha256": "c67a3701da465671fee261928ff3b55a519170401459913fe4572fcff3880bc8",
+      "head_sha256": "049dbbee78e023a99c88e1ad0b57210719b8931082cc0768dba0c7f092eded1e",
+      "expected_index_oid": "6c5961a49ca6c18b189170d362e73ffebe56440d"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md",
+      "current": "0019.current.raw",
+      "head": "0019.head.raw",
+      "raw_sha256": "7446e472084d12226fddb1a3560368bdd8ad571db480e27255cf60bf792cd06b",
+      "head_sha256": "5e59ced0b55bb23a89556b787082a0514112d9b49ee8ecb97c6b29b475720523",
+      "expected_index_oid": "f8644d4eb6faf11ac97cc2573f43d84dca7e8d9a"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/superpowers-writing-plans/SKILL.md",
+      "current": "0020.current.raw",
+      "head": "0020.head.raw",
+      "raw_sha256": "c7339c34506cc8d7de1862054bed264dcbda3e68e03933c1267f0b17e75879f1",
+      "head_sha256": "b7d91c331ed67237bc8d86c66703d9af3fa59c063ddb60036134a209a481f9ef",
+      "expected_index_oid": "5595a37d77b9c336d493aa61dfb90c8b8b5f55b8"
+    }
+  ],
+  "accepted_tests": [
+    "0007",
+    "0008",
+    "0009",
+    "0010"
+  ],
+  "scope": "Only the three authorized derived consumer gaps; no Runtime/native/product authority ororiginal business writes"
+}

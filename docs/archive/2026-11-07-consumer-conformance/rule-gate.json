@@ -1,0 +1,75 @@
+{
+  "utc": "2026-11-07T13:18:34.347Z",
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "mode": "CODEX_DIRECT",
+  "attempt": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01-01",
+  "EXPERIENCE_FILE_READ": "YES",
+  "ACTIVE_EXPERIENCE_RULES_FILE_READ": "YES",
+  "APPLICABLE_EXPERIENCE_RULES": [
+    "EXP-001",
+    "EXP-004",
+    "EXP-007",
+    "EXP-008",
+    "EXP-022",
+    "EXP-025",
+    "EXP-026",
+    "EXP-033",
+    "EXP-035",
+    "EXP-036",
+    "EXP-060",
+    "EXP-103",
+    "EXP-193",
+    "EXP-251",
+    "EXP-261",
+    "EXP-276",
+    "EXP-283",
+    "EXP-287"
+  ],
+  "REPEATED_ERROR_CHECK": "PASS",
+  "HISTORICAL_LEDGER_SEARCH": "Agent/Skill, audit blocked_write_attempts, D23 planning, status reconciliation; EXP287, ERR2007/2010/2011/2013/2014",
+  "prior_failure_reconciliation": "Earlier assessment had Windows rg literal-wildcard/missing-path query errors and display truncation; corrected read-only queries supplied direct evidence. Backfill before product edits; do not mistake query failures for product defects.",
+  "active_read": {
+    "sha256": "678d838160f2ab80146d60d5921f2604bf456ae93e1cd63a3e7706f730a82272",
+    "lines": 2650,
+    "chunks": [
+      {
+        "first": 1,
+        "last": 490,
+        "sha256_utf8_normalized_lf": "b7bc61d261d6b5ced7ed645f7c65c61a54e6220ae3e77f22c4ecc2493c9f420e"
+      },
+      {
+        "first": 491,
+        "last": 990,
+        "sha256_utf8_normalized_lf": "4a3c2947a8be4a18c815d57124f3a6a081caf88f802274ba6f83e8f49e34d858"
+      },
+      {
+        "first": 991,
+        "last": 1540,
+        "sha256_utf8_normalized_lf": "8099d027c1300777174cade4a9a8c6659432ea98b559d4b8d5050330b1a90af0"
+      },
+      {
+        "first": 1541,
+        "last": 2090,
+        "sha256_utf8_normalized_lf": "1b6e3cb005423244b2f49e333357a18c1d79940c9d32da4ecbf47c4150afd5cf"
+      },
+      {
+        "first": 2091,
+        "last": 2650,
+        "sha256_utf8_normalized_lf": "94afc8d335d85c2782e0000d735809a73a259e2c3a569de0f7a30516630a9d95"
+      },
+      {
+        "first": 2396,
+        "last": 2525,
+        "sha256_utf8_normalized_lf": "0f83c5ad9aaa977595ce0732c5b622a41eefb2965fd20ccd36f204dc0a9287a4"
+      }
+    ],
+    "supplement": "2396..2525 reread replaces the omitted display segment around EXP253..264; complete content through EOF read. Chunk hashes are normalized UTF8/LF, source SHA is raw bytes."
+  },
+  "authority_hashes": {
+    "docs/product-specification/authority-registry.md": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e",
+    "docs/product-specification/specforge-product-specification.md": "0cf3cef264e84b198746852b340cb8d6b2b88562472357a78fa7850c83816d31",
+    "docs/design/SpecForge架构一致性治理最终实施方案.md": "956df3943a44d1b99636790a32e9b2a0dc266b7116f50b60b7b8c6f2614423ac",
+    "docs/rule/specforge-execution-mode-and-evidence-protocol.md": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef"
+  },
+  "authority_read": "Complete current SPS1691 lines,Registry144 andsubordinatecontract232 already read in the immediately preceding assessment in this same conversation; unchanged hashes independently checked by fresh Bootstrap."
+}

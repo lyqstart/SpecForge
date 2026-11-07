@@ -63,7 +63,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 - For the final code-only path, `sf_code_permission` owns `post_merge_verified -> implementation_ready -> implementation_running`.
 - Executor may only modify files explicitly granted by code permission.
 - Executor must not write `.specforge/work-items/**` or governance artifacts.
-- `sf_changed_files_audit` must pass with `blocked_write_attempts=0` and no out-of-scope writes before implementation can complete.
+- `sf_changed_files_audit` must pass with `unresolved_blocked_write_attempts=0`, no audit violations and no out-of-scope writes before implementation can complete. Historical/resolved blocked write attempts remain visible and need not be zero; never erase them or reinterpret a resolved denial as a current violation. Audit source changes require a fresh owner audit before Gate/Close consumption.
 
 ### 7. Verification and close gate
 

@@ -88,3 +88,6 @@ packages/observability/test-data/observability-req-[0-9]*/
 # Post-seal transport receipts stay locally under the same evidence root. Their
 # independent per-command seals avoid recursive self-commits of Git publication.
 /docs/archive/2026-11-07-verification-production/publication-live/
+
+# Same-run post-seal publication receipts have independent local seals.
+/docs/archive/2026-11-07-consumer-conformance/publication-live/

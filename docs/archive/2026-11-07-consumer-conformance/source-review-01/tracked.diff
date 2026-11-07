@@ -1,0 +1,465 @@
+diff --git a/.gitattributes b/.gitattributes
+index 1df02904..bf673d37 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -53,3 +53,5 @@ docs/archive/2026-10-19-config-activation-loss-evidence/** -text -diff
+ /docs/archive/2026-11-05-synthetic-boundary-matrix/** -text -diff
+ /docs/archive/2026-11-06-single-process-matrix/** -text -diff
+ /docs/archive/2026-11-07-verification-production/** -text -diff
++
++/docs/archive/2026-11-07-consumer-conformance/** -text -diff
+diff --git a/.gitignore b/.gitignore
+index 82919d1c..ca005755 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -88,3 +88,6 @@ packages/observability/test-data/observability-req-[0-9]*/
+ # Post-seal transport receipts stay locally under the same evidence root. Their
+ # independent per-command seals avoid recursive self-commits of Git publication.
+ /docs/archive/2026-11-07-verification-production/publication-live/
++
++# Same-run post-seal publication receipts have independent local seals.
++/docs/archive/2026-11-07-consumer-conformance/publication-live/
+diff --git a/docs/project-status.md b/docs/project-status.md
+index bd363436..6010709d 100644
+--- a/docs/project-status.md
++++ b/docs/project-status.md
+@@ -9,27 +9,27 @@
+ <!-- SPECFORGE_PROJECT_STATUS:START -->
+ PROJECT_STATUS_SCHEMA=2
+ PROJECT_STATUS_DECLARATION=ACTIVE
+-ACTIVE_INITIATIVE=VERIFIER_GUIDANCE_AND_SPS_CONFORMANCE
+-OBJECTIVE=Repair verifier D18 guidance, deploy and verify; audit SPS clauses and real OpenCode chain with implemented/unimplemented/insufficient evidence results.
+-CURRENT_PHASE=COMPLETED_APPROVED_SPS_1_0_23_ACCEPTANCE
++ACTIVE_INITIATIVE=CONSUMER_CONFORMANCE_REPAIR
++OBJECTIVE=Repair three independently confirmed subordinate consumer gaps: resolved audit history, finite planning commands, and unique status reconciliation; preserve original closed business delivery.
++CURRENT_PHASE=CONSUMER_SOURCE_VERIFIED_INSTALL_PENDING
+ OWNER_DECISIONS=AR-DEC-01:APPROVED;AR-DEC-02:APPROVED_WITH_ARCHIVE_CONSOLIDATION;AR-DEC-03:APPROVED_WITH_KIRO_RETIREMENT;AR-DEC-04:APPROVED_WITH_SINGLE_PROJECT_STATUS;AR-DEC-05:ONLY_TWO_EXTERNAL_EXECUTION_MODES_CODEX_DIRECT_AND_WORKBUDDY_COORDINATED;AR-DEC-06:ACTIVE_RULES_SEPARATED_FROM_HISTORICAL_LEDGER;D05:OPENCODE_ADAPTER_ENABLED;D10:NSSM_REMOVED_WINDOWS_DIRECT_DAEMON_ONLY;D11:GLOBAL_ONLY_THIN_PLUGIN_SINGLE_EXPORT;VR-DEC-01:NEW_EPOCH_1_0_0;VR-DEC-02:TAG_PREFIX_SPECFORGE_V;VR-DEC-03:INDEPENDENT_CONTRACT_VERSIONS;VR-DEC-04:ACTIVE_REFERENCES_CONVERGE_HISTORY_PRESERVED;D18:INTERNAL_READ_ONLY_COMMAND_CONTAINMENT;D20:BOUNDED_WINDOWS_LPAC_READONLY_NODE_APPROVED_ACCEPTANCE_FIRST;D21:REGISTRY_READ_SINGLE_CAPABILITY_SYNTHETIC_EXPERIMENT_ONLY;D22:STRICT_SINGLE_PROCESS_FIRST_PHASE_SCOPE_APPROVED_ACCEPTANCE_FIRST;D23:PRODUCTION_ADOPTION_AND_COMPLETE_CONTROLLED_VERIFICATION_IMPLEMENTATION_APPROVED
+ EXECUTION_MODE=CODEX_DIRECT
+-EXECUTION_STATE=COMPLETE
++EXECUTION_STATE=IN_PROGRESS
+ EXECUTION_PROTOCOL=docs/rule/specforge-execution-mode-and-evidence-protocol.md
+ EXECUTION_PLANNER=CODEX
+ EXECUTION_ACTOR=CODEX
+ EXECUTION_AUDITOR=CODEX
+-EXECUTION_RUN_ID=CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01
+-EXECUTION_EVIDENCE_ROOT=D:/code/SpecForge/docs/archive/2026-11-07-verification-production
+-LAST_EXECUTION_CHECKPOINT=Checkpoint16: current approvedWindowsx64 singleprocess SPS20 accepted0520;installed1.0.23/117 synchronized0511;exact documentedinteractive4096 actualupdated Agent+Skill0515 exited0,independentDaemon33388 healthy0519,coldStateManager replaysclosed. OriginalWI0001 actualVerification/FormalVersion/Close passed anduser-approved localmain28c8e3d delivered;no businessremote push. Public archive sealed andall committedraw members independentlyverified;published rootmain evidencecommit 18762bec6571cb5a0c03ffd7ca29f3f22e80355d. Final unique-status commit/tag/post-pushBootstrap are finishing publication checks inthis same run.
+-NEXT_EXECUTION_STOP=COMPLETE_APPROVED_PRODUCT_VERIFICATION_CHAIN_SP_I01_SP_D01_AND_ORIGINAL_WI_SPS_ACCEPTANCE_OR_EVIDENCED_HARD_STOP
+-LAST_COMPLETED_CHECKPOINT=All requested repair, current approvedproductSPS acceptance,actual installed lifecycle andsame originalWI governed delivery arecomplete. Sealed public evidencecommit 18762bec6571cb5a0c03ffd7ca29f3f22e80355d published toorigin/main;176 native rawreasoning message originals retained privately withhash-bound publictool derivatives. Historical failedruns andolddata-loss INSUFFICIENT_EVIDENCE retained.
+-CURRENT_BLOCKER=NONE
+-NEXT_LEGAL_ACTION=No remaining repair,originalWI action orbusinessapproval. Future requests start withprotocol andread-onlyBootstrap,inheritCODEX_DIRECT unlessexplicitly switched. Preserve closed originalWI/localmain28c8e3d,currentinstalled1.0.23/117 andqualifiednative tuple;do not rerun successfulverification orpushbusinessremote withoutnewauthorization.
++EXECUTION_RUN_ID=CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01
++EXECUTION_EVIDENCE_ROOT=D:/code/SpecForge/docs/archive/2026-11-07-consumer-conformance
++LAST_EXECUTION_CHECKPOINT=Shared audit mirrors andplanning examples corrected in16 templatefiles;actual Runtime historical-resolved positive/unresolved negative andfinitecommand positive/negative compile checks pass. Maintained suite0007 all16;related7files89 checks0010;Root51files748 checks0009;workflow renderer0008 pass. Original businessWI remains closed/localmain delivered. Official installation andfreshloader stillpending.
++NEXT_EXECUTION_STOP=ALL_THREE_CONSUMER_GAPS_INDEPENDENTLY_VERIFIED_INSTALLED_AND_PUBLISHED_OR_EVIDENCED_HARD_BLOCKER
++LAST_COMPLETED_CHECKPOINT=Original WI0001 governed Verification/FormalVersion/Close anduser-approved localmain28c8e3d delivery remain completed. Prior product physical117 anddocumented interactive4096/coldReplay evidence remain valid within their observed scope;previous overall consumer-complete conclusion is superseded by this direct reassessment.
++CURRENT_BLOCKER=SOURCE_REVIEW_MAIN_INTEGRATION_OFFICIAL_GUIDANCE_SYNC_AND_FINAL_RECONCILIATION_PENDING
++NEXT_LEGAL_ACTION=Review andcommit exact21 modifiedsource/status/ledger/transport paths plusimmutable raw baselines,integrate verifiedcodex branch tolocalmain afterfreshremote check. Regenerate/precheck117 manifest usingphysical mainbytes;official guidance-only upgrade/verify with unchangednative tuple andownerstore/originalpreservation. Prove actual freshOpenCode loader withoutmodelprompt,then independently reconcile3 gaps,update unique finalstatus,seal/publication andBootstrapREADY. Never modify originalclosedWI orretag1.0.23.
+ ALLOWED_SCOPE=AGENTS.md;README.md;.gitattributes;.gitignore;package.json;bun.lock;docs/project-status.md;docs/product-specification/**;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/archive/**;docs/adr/**;docs/cli/**;docs/conventions/**;docs/user/**;docs/plugins/**;docs/tools/**;docs/engineering-lessons/**;docs/rule/**;scripts/**;setup/**;packages/**/package.json;packages/service-management/src/**;packages/configuration/src/**;packages/opencode-adapter/src/**;packages/permission-engine/src/**;packages/daemon-core/src/**;packages/cli/src/**;packages/types/src/**;packages/observability/src/**;packages/observability/examples/**;packages/workflow-runtime/src/**;packages/workflow-runtime/tsconfig.json;packages/workflow-runtime/examples/**;packages/workflow-runtime/vitest.config.ts;packages/**/README.md;packages/**/DEVELOPMENT.md;packages/**/docs/**;packages/**/src/**/*.md;packages/**/tests/**;tests/**;docs/design/windows-lpac-node-readonly-contract.md;packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md;packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md
+ PROHIBITED=Deleting ADR ERR audit or report evidence;creating another active handoff current-status or recovery-status file;modifying D:\code\t3 outside a separately authorized controlled recovery phase;reading or modifying D:\code\t2 during SpecForge repair;creating a SpecForge Work Item for SpecForge product self-development;using archive evidence as a current product contract
+ REQUIRED_RULES=docs/rule/specforge-active-development-rules.md;docs/product-specification/authority-registry.md;docs/product-specification/specforge-product-specification.md;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/rule/specforge-execution-mode-and-evidence-protocol.md
+-REQUIRED_VALIDATION=D22 formal authority and frozen SP-P01..SP-L03 matrix;actual single-process candidate identity/token/SID/LPAC/child policy1/Job1 before resume;CJS/ESM/TS and inline positives;file/alias/registry/network/COM/native/override/console/parent-handle denials;resource/cancel/launcher/Daemon crash restart recovery;immutable raw receipts and independent cleanup. SP-I01/SP-D01 and original WI remain later independent gates.
++REQUIRED_VALIDATION=Current maintained Agent/Skill mirrors must require zero unresolved rather than total historical blocks,matching real audit parser positive/negative results. Every positive TaskPlanner/WritingPlans verification example must compile under current finite Node/static grammar;unsupported classes andlegalplan/run owners explicit. Workflow generatedblocks,related audit/command tests,root regression,exact117 install/native identity,actual freshloader andunique status no obsolete pending tasks;originalWI close/localmain preserved. No old20-row aggregate PASS is accepted as a substitute.
+ <!-- SPECFORGE_PROJECT_STATUS:END -->
+ 
+ ## Resume guidance
+diff --git a/docs/rule/specforge-development-error-ledger-and-experience.md b/docs/rule/specforge-development-error-ledger-and-experience.md
+index 8e4f486d..cc41eb18 100644
+--- a/docs/rule/specforge-development-error-ledger-and-experience.md
++++ b/docs/rule/specforge-development-error-ledger-and-experience.md
+@@ -32826,3 +32826,23 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制
+ 
+ - 主封存13977成员/1258431026字节SHA清单856c4f5181648c91cbffea6c963e55d2690196806baf6b8964f66ff3d6b0ea39自检通过；publication-live0003显式白名单git add因嵌套原始baseline文件Filename too long以128退出，载体退出1。独立cached清单为空，未提交、原封存未变。
+ - 只对后续Git进程使用-c core.longpaths=true，不修改用户/系统配置、不移动/删除/缩短证据。恢复入口重新核对原封存每个SHA、原精确pathspec、main d8fc和空index后执行同一白名单；实际数字回执保存在同RUN/EVIDENCE_ROOT的reserved publication-live。产品及业务项目不受此Git归档路径限制影响。EXP-007/008/014/193。
++
++### ERR-2015：只读复核的Windows路径glob和缺失入口查询失败
++
++- 前轮复核将packages/*/src、v11*.test.ts等含glob的字面路径传给Windows rg，并查询不存在的render-v11-final-governance-contract.mjs，真实返回路径语法或缺失错误；部分组合显示还发生截断。均为取证载体问题，未修改产品/业务文件，不作为产品缺陷或完整读取证据。后续改为已存在目录加-g过滤或明确实际文件，必要段落单独重读，最终结论回到实际源码/安装字节。当前完整活动规则读取补上EXP253..264截断段，固定2650行覆盖和SHA，不以显示截断冒充全文。EXP-002/007/008/261/296。
++
++### ERR-2016：以已通过业务链和汇总行数过早宣告全部消费者合规
++
++- 当前主线0995f0c5的多个已安装Agent/基础模板共享块仍要求blocked_write_attempts=0，而真实audit consumer允许历史resolved保留且只阻断unresolved；原WI真实PASS为total1/resolved1/unresolved0。TaskPlanner/WritingPlans正向推荐bun、tsc和服务/网络组合，真实有限Node grammar拒绝；唯一状态同时COMPLETE与SP-I01/SP-D01/originalWI remain later。117部署与源码一致，故非仅归档残留。
++- 上轮build-sps-final-review.cjs统一把20行改为PASS，已通过执行/Gate/安装证据仅证明各自范围，不能替代全部正文/示例/模板/状态消费者的独立验收。旧汇总和原始成功/失败保持不可变，当前整体完成断言被本轮复核撤回；原业务closed/localmain交付有效，不重开、不重跑。责任层为Agent/Skill派生消费者、测试覆盖及状态/验收记录。按既有SPS修下游，不修改产品范围。新增回归须直接对照真实audit判据和有限命令compiler，并覆盖完整模板集合。EXP-004/007/022/025/026/033/035/036/193/251/276/287。
++
++### ERR-2017：修复回归首轮未收集测试而由Bun报告当前目录不可读
++
++- consumer-conformance命令0003在正式daemon-core包cwd经固定Bun入口执行，真实退出1，stderr为error loading current directory / CouldntReadCurrentDirectory，未发现或运行测试。该结果不是预期的产品缺陷红例，不计基线测试覆盖。源码/模板未改变，保留完整四件套和源码seal。下一步仅对同一源码、cwd和命令使用宿主允许的执行环境做对照；在取得成功收集前原因保持INSUFFICIENT_EVIDENCE，不归因运行时或用零测试代替回归。EXP-002/007/008/016/117/140。
++
++- ERR-2017对照：0004相同固定Bun/包cwd/源码在宿主环境真实收集16项，3项新增缺陷回归失败、原13项通过；支持执行环境差异，具体拒绝机制未取证，不声称产品测试因cwd缺陷失败。之后相关Bun验证固定使用已成功的宿主入口。
++
++### ERR-2018：共享审计指令回归误要求无审计职责Agent复制审计条款
++
++- 0006规划两项回归已通过，审计用例却在只读sf-analyst的精简合同中要求unresolved字段。实读该Agent不包含sf_changed_files_audit判据，也不负责实现收口；权威要求纠正真实审计指令消费者，不能把“全部Agent”扩大为所有角色都必须复制审计规则。责任是新增测试作用域过宽，不是新运行时缺陷。
++- 维护回归仍遍历完整Agent/Skill合同集合，但只对实际包含sf_changed_files_audit规则的合同验证zero-unresolved和禁止zero-total，并要求该消费集合非空；真实Runtime的历史resolved正例和unresolved反例继续保留，不修改sf-analyst角色或降低已存在审计规则。失败原件与源码seal保持。EXP-007/022/025/036/044/251。
+diff --git a/packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts b/packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts
+index 2838fb8e..00081590 100644
+--- a/packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts
++++ b/packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts
+@@ -1,7 +1,10 @@
+ import { describe, it, expect } from 'vitest';
+ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+ import path from 'node:path';
++import { createHash } from 'node:crypto';
+ import { isValidV11TransitionForWorkflow } from '../src/tools/lib/state-machine-v11';
++import { evaluateChangedFilesAuditVerdict } from '../src/tools/lib/changed-files-audit-verdict';
++import { compileNodeCommand } from '../src/verification/node-command-contract';
+ 
+ const CONTRACT_START = '<!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:START -->';
+ const CONTRACT_END = '<!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->';
+@@ -89,6 +92,64 @@ function withoutContract(text: string): string {
+ }
+ 
+ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
++  it('keeps every shared audit paragraph consistent with resolved-history Runtime verdicts', () => {
++    const audit = [
++      '# Changed Files Audit', 'Contract: changed-files-audit/v1', 'Work Item: WI-0001',
++      '## Result: PASS', '- Out of scope: 0', '- Violations: 0',
++      '- Blocked write attempts: 1', '- Historical/resolved blocked write attempts: 1',
++      '- Unresolved blocked write attempts: 0',
++    ].join('\n');
++    const accepted = evaluateChangedFilesAuditVerdict(audit, { expectedWorkItemId: 'WI-0001' });
++    expect(accepted.passed).toBe(true);
++    expect(accepted.blocked_write_attempts).toBe(1);
++    expect(accepted.unresolved_blocked_write_attempts).toBe(0);
++    expect(evaluateChangedFilesAuditVerdict(audit.replace('Unresolved blocked write attempts: 0',
++      'Unresolved blocked write attempts: 1')).passed).toBe(false);
++    const consumers = targetMarkdownFiles().map(file => ({
++      file, body: contractBody(readFileSync(file, 'utf8')),
++    })).filter(({ body }) => body.includes('sf_changed_files_audit'));
++    expect(consumers.length).toBeGreaterThan(0);
++    for (const { file, body } of consumers) {
++      expect(body, relativeToRepo(file)).toMatch(/\bunresolved_blocked_write_attempts\s*=\s*0\b/);
++      expect(body, relativeToRepo(file)).not.toMatch(/\bblocked_write_attempts\s*=\s*0\b/);
++    }
++  });
++
++  it('compiles positive planning command examples with the real finite execution grammar', () => {
++    const planner = readFileSync(path.join(USERLEVEL_ROOT, 'agents/sf-task-planner.md'), 'utf8');
++    const writing = readFileSync(path.join(USERLEVEL_ROOT, 'skills/superpowers-writing-plans/SKILL.md'), 'utf8');
++    const section = planner.split('## verification_commands Format')[1]?.split('<!-- SpecForge V7')[0];
++    expect(section).toBeDefined();
++    const commands = [...(section! + '\n' + writing).matchAll(/^\s*- `([^`\r\n]+)`[ \t]*$/gm)].map(m => m[1]!);
++    commands.push(...[...section!.matchAll(/^\|[^|\r\n]+\|[ \t]*`([^`\r\n]+)`[ \t]*\|/gm)].map(m => m[1]!));
++    commands.push(...[...section!.matchAll(/"command"\s*:\s*"([^"\r\n]+)"/g)].map(m => m[1]!));
++    expect(commands.length).toBeGreaterThan(0);
++    for (const command of commands) {
++      const entry = command.match(/ ([A-Za-z0-9_.\/-]+)$/)?.[1];
++      const content = command.startsWith('node --test ')
++        ? "import { test } from 'node:test'; import assert from 'node:assert/strict'; test('example', () => { assert.equal(1, 1); });"
++        : 'export function foo() { return 1; }\n';
++      const sources = entry ? [{ path: entry, content, sha256: createHash('sha256').update(content).digest('hex') }] : [];
++      expect(() => compileNodeCommand(command, sources), command).not.toThrow();
++    }
++    for (const command of ['bun test tests/unit/example.test.ts', 'tsc --noEmit',
++      'node src/server.mjs &; sleep 1; curl -sf localhost:3000/health']) {
++      expect(() => compileNodeCommand(command, []), command).toThrow('NODE_COMMAND_UNSUPPORTED');
++    }
++  });
++
++  it('makes planning consumers state the current independent execution owners and unsupported boundary', () => {
++    for (const file of ['setup/userlevel-opencode/agents/sf-task-planner.md',
++      'setup/userlevel-opencode/skills/superpowers-writing-plans/SKILL.md']) {
++      const text = read(file);
++      expect(text, file).toContain('sf_verification_plan');
++      expect(text, file).toContain('sf_verification_run');
++      expect(text, file).toContain('not_executed');
++      expect(text, file).toContain('blocked');
++      expect(text, file).toContain('D23');
++    }
++  });
++
+   it('keeps positive formal-verification delegation aligned with the D23 entry and consumer prerequisites', () => {
+     expect(isValidV11TransitionForWorkflow('implementation_done', 'verification_running', 'feature_spec')).toBe(true);
+     const skill = read('setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md');
+diff --git a/setup/userlevel-opencode/AGENTS.md b/setup/userlevel-opencode/AGENTS.md
+index 1887a79c..c2f6dfd7 100644
+--- a/setup/userlevel-opencode/AGENTS.md
++++ b/setup/userlevel-opencode/AGENTS.md
+@@ -51,7 +51,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
+ - For the final code-only path, `sf_code_permission` owns `post_merge_verified -> implementation_ready -> implementation_running`.
+ - Executor may only modify files explicitly granted by code permission.
+ - Executor must not write `.specforge/work-items/**` or governance artifacts.
+-- `sf_changed_files_audit` must pass with `blocked_write_attempts=0` and no out-of-scope writes before implementation can complete.
++- `sf_changed_files_audit` must pass with `unresolved_blocked_write_attempts=0`, no audit violations and no out-of-scope writes before implementation can complete. Historical/resolved blocked write attempts remain visible and need not be zero; never erase them or reinterpret a resolved denial as a current violation. Audit source changes require a fresh owner audit before Gate/Close consumption.
+ 
+ ### 7. Verification and close gate
+ 
+diff --git a/setup/userlevel-opencode/agents/_AGENT_BASE.md b/setup/userlevel-opencode/agents/_AGENT_BASE.md
+index f390cd80..f92e7c5e 100644
+--- a/setup/userlevel-opencode/agents/_AGENT_BASE.md
++++ b/setup/userlevel-opencode/agents/_AGENT_BASE.md
+@@ -51,7 +51,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
+ - For the final code-only path, `sf_code_permission` owns `post_merge_verified -> implementation_ready -> implementation_running`.
+ - Executor may only modify files explicitly granted by code permission.
+ - Executor must not write `.specforge/work-items/**` or governance artifacts.
+-- `sf_changed_files_audit` must pass with `blocked_write_attempts=0` and no out-of-scope writes before implementation can complete.
++- `sf_changed_files_audit` must pass with `unresolved_blocked_write_attempts=0`, no audit violations and no out-of-scope writes before implementation can complete. Historical/resolved blocked write attempts remain visible and need not be zero; never erase them or reinterpret a resolved denial as a current violation. Audit source changes require a fresh owner audit before Gate/Close consumption.
+ 
+ ### 7. Verification and close gate
+ 
+diff --git a/setup/userlevel-opencode/agents/sf-debugger.md b/setup/userlevel-opencode/agents/sf-debugger.md
+index 5646b8aa..7b320ac5 100644
+--- a/setup/userlevel-opencode/agents/sf-debugger.md
++++ b/setup/userlevel-opencode/agents/sf-debugger.md
+@@ -63,7 +63,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
+ - For the final code-only path, `sf_code_permission` owns `post_merge_verified -> implementation_ready -> implementation_running`.
+ - Executor may only modify files explicitly granted by code permission.
+ - Executor must not write `.specforge/work-items/**` or governance artifacts.
+-- `sf_changed_files_audit` must pass with `blocked_write_attempts=0` and no out-of-scope writes before implementation can complete.
++- `sf_changed_files_audit` must pass with `unresolved_blocked_write_attempts=0`, no audit violations and no out-of-scope writes before implementation can complete. Historical/resolved blocked write attempts remain visible and need not be zero; never erase them or reinterpret a resolved denial as a current violation. Audit source changes require a fresh owner audit before Gate/Close consumption.
+ 
+ ### 7. Verification and close gate
+ 
+diff --git a/setup/userlevel-opencode/agents/sf-design.md b/setup/userlevel-opencode/agents/sf-design.md
+index 02920431..7f71b194 100644
+--- a/setup/userlevel-opencode/agents/sf-design.md
++++ b/setup/userlevel-opencode/agents/sf-design.md
+@@ -64,7 +64,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
+ - For the final code-only path, `sf_code_permission` owns `post_merge_verified -> implementation_ready -> implementation_running`.
+ - Executor may only modify files explicitly granted by code permission.
+ - Executor must not write `.specforge/work-items/**` or governance artifacts.
+-- `sf_changed_files_audit` must pass with `blocked_write_attempts=0` and no out-of-scope writes before implementation can complete.
++- `sf_changed_files_audit` must pass with `unresolved_blocked_write_attempts=0`, no audit violations and no out-of-scope writes before implementation can complete. Historical/resolved blocked write attempts remain visible and need not be zero; never erase them or reinterpret a resolved denial as a current violation. Audit source changes require a fresh owner audit before Gate/Close consumption.
+ 
+ ### 7. Verification and close gate
+ 
+diff --git a/setup/userlevel-opencode/agents/sf-evidence-collector.md b/setup/userlevel-opencode/agents/sf-evidence-collector.md
+index 58ca232c..58e49db3 100644
+--- a/setup/userlevel-opencode/agents/sf-evidence-collector.md
++++ b/setup/userlevel-opencode/agents/sf-evidence-collector.md
+@@ -63,7 +63,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
+ - For the final code-only path, `sf_code_permission` owns `post_merge_verified -> implementation_ready -> implementation_running`.
+ - Executor may only modify files explicitly granted by code permission.
+ - Executor must not write `.specforge/work-items/**` or governance artifacts.
+-- `sf_changed_files_audit` must pass with `blocked_write_attempts=0` and no out-of-scope writes before implementation can complete.
++- `sf_changed_files_audit` must pass with `unresolved_blocked_write_attempts=0`, no audit violations and no out-of-scope writes before implementation can complete. Historical/resolved blocked write attempts remain visible and need not be zero; never erase them or reinterpret a resolved denial as a current violation. Audit source changes require a fresh owner audit before Gate/Close consumption.
+ 
+ ### 7. Verification and close gate
+ 
+diff --git a/setup/userlevel-opencode/agents/sf-executor.md b/setup/userlevel-opencode/agents/sf-executor.md
+index da26f507..38056b33 100644
+--- a/setup/userlevel-opencode/agents/sf-executor.md
++++ b/setup/userlevel-opencode/agents/sf-executor.md
+@@ -65,7 +65,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
+ - For the final code-only path, `sf_code_permission` owns `post_merge_verified -> implementation_ready -> implementation_running`.
+ - Executor may only modify files explicitly granted by code permission.
+ - Executor must not write `.specforge/work-items/**` or governance artifacts.
+-- `sf_changed_files_audit` must pass with `blocked_write_attempts=0` and no out-of-scope writes before implementation can complete.
++- `sf_changed_files_audit` must pass with `unresolved_blocked_write_attempts=0`, no audit violations and no out-of-scope writes before implementation can complete. Historical/resolved blocked write attempts remain visible and need not be zero; never erase them or reinterpret a resolved denial as a current violation. Audit source changes require a fresh owner audit before Gate/Close consumption.
+ 
+ ### 7. Verification and close gate
+ 
+diff --git a/setup/userlevel-opencode/agents/sf-extension.md b/setup/userlevel-opencode/agents/sf-extension.md
+index f5236586..07bfc269 100644
+--- a/setup/userlevel-opencode/agents/sf-extension.md
++++ b/setup/userlevel-opencode/agents/sf-extension.md
+@@ -63,7 +63,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
+ - For the final code-only path, `sf_code_permission` owns `post_merge_verified -> implementation_ready -> implementation_running`.
+ - Executor may only modify files explicitly granted by code permission.
+ - Executor must not write `.specforge/work-items/**` or governance artifacts.
+-- `sf_changed_files_audit` must pass with `blocked_write_attempts=0` and no out-of-scope writes before implementation can complete.
++- `sf_changed_files_audit` must pass with `unresolved_blocked_write_attempts=0`, no audit violations and no out-of-scope writes before implementation can complete. Historical/resolved blocked write attempts remain visible and need not be zero; never erase them or reinterpret a resolved denial as a current violation. Audit source changes require a fresh owner audit before Gate/Close consumption.
+ 
+ ### 7. Verification and close gate
+ 
+diff --git a/setup/userlevel-opencode/agents/sf-investigator.md b/setup/userlevel-opencode/agents/sf-investigator.md
+index eacae4cc..bb65080a 100644
+--- a/setup/userlevel-opencode/agents/sf-investigator.md
++++ b/setup/userlevel-opencode/agents/sf-investigator.md
+@@ -63,7 +63,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
+ - For the final code-only path, `sf_code_permission` owns `post_merge_verified -> implementation_ready -> implementation_running`.
+ - Executor may only modify files explicitly granted by code permission.
+ - Executor must not write `.specforge/work-items/**` or governance artifacts.
+-- `sf_changed_files_audit` must pass with `blocked_write_attempts=0` and no out-of-scope writes before implementation can complete.
++- `sf_changed_files_audit` must pass with `unresolved_blocked_write_attempts=0`, no audit violations and no out-of-scope writes before implementation can complete. Historical/resolved blocked write attempts remain visible and need not be zero; never erase them or reinterpret a resolved denial as a current violation. Audit source changes require a fresh owner audit before Gate/Close consumption.
+ 
+ ### 7. Verification and close gate
+ 
+diff --git a/setup/userlevel-opencode/agents/sf-knowledge.md b/setup/userlevel-opencode/agents/sf-knowledge.md
+index 072b54dc..07f448ce 100644
+--- a/setup/userlevel-opencode/agents/sf-knowledge.md
++++ b/setup/userlevel-opencode/agents/sf-knowledge.md
+@@ -60,7 +60,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
+ - For the final code-only path, `sf_code_permission` owns `post_merge_verified -> implementation_ready -> implementation_running`.
+ - Executor may only modify files explicitly granted by code permission.
+ - Executor must not write `.specforge/work-items/**` or governance artifacts.
+-- `sf_changed_files_audit` must pass with `blocked_write_attempts=0` and no out-of-scope writes before implementation can complete.
++- `sf_changed_files_audit` must pass with `unresolved_blocked_write_attempts=0`, no audit violations and no out-of-scope writes before implementation can complete. Historical/resolved blocked write attempts remain visible and need not be zero; never erase them or reinterpret a resolved denial as a current violation. Audit source changes require a fresh owner audit before Gate/Close consumption.
+ 
+ ### 7. Verification and close gate
+ 
+diff --git a/setup/userlevel-opencode/agents/sf-requirements.md b/setup/userlevel-opencode/agents/sf-requirements.md
+index 89bfcf83..f470a82e 100644
+--- a/setup/userlevel-opencode/agents/sf-requirements.md
++++ b/setup/userlevel-opencode/agents/sf-requirements.md
+@@ -63,7 +63,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
+ - For the final code-only path, `sf_code_permission` owns `post_merge_verified -> implementation_ready -> implementation_running`.
+ - Executor may only modify files explicitly granted by code permission.
+ - Executor must not write `.specforge/work-items/**` or governance artifacts.
+-- `sf_changed_files_audit` must pass with `blocked_write_attempts=0` and no out-of-scope writes before implementation can complete.
++- `sf_changed_files_audit` must pass with `unresolved_blocked_write_attempts=0`, no audit violations and no out-of-scope writes before implementation can complete. Historical/resolved blocked write attempts remain visible and need not be zero; never erase them or reinterpret a resolved denial as a current violation. Audit source changes require a fresh owner audit before Gate/Close consumption.
+ 
+ ### 7. Verification and close gate
+ 
+diff --git a/setup/userlevel-opencode/agents/sf-reviewer.md b/setup/userlevel-opencode/agents/sf-reviewer.md
+index 64e6995a..f42ca55f 100644
+--- a/setup/userlevel-opencode/agents/sf-reviewer.md
++++ b/setup/userlevel-opencode/agents/sf-reviewer.md
+@@ -63,7 +63,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
+ - For the final code-only path, `sf_code_permission` owns `post_merge_verified -> implementation_ready -> implementation_running`.
+ - Executor may only modify files explicitly granted by code permission.
+ - Executor must not write `.specforge/work-items/**` or governance artifacts.
+-- `sf_changed_files_audit` must pass with `blocked_write_attempts=0` and no out-of-scope writes before implementation can complete.
++- `sf_changed_files_audit` must pass with `unresolved_blocked_write_attempts=0`, no audit violations and no out-of-scope writes before implementation can complete. Historical/resolved blocked write attempts remain visible and need not be zero; never erase them or reinterpret a resolved denial as a current violation. Audit source changes require a fresh owner audit before Gate/Close consumption.
+ 
+ ### 7. Verification and close gate
+ 
+diff --git a/setup/userlevel-opencode/agents/sf-task-planner.md b/setup/userlevel-opencode/agents/sf-task-planner.md
+index 76baa740..23500581 100644
+--- a/setup/userlevel-opencode/agents/sf-task-planner.md
++++ b/setup/userlevel-opencode/agents/sf-task-planner.md
+@@ -63,7 +63,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
+ - For the final code-only path, `sf_code_permission` owns `post_merge_verified -> implementation_ready -> implementation_running`.
+ - Executor may only modify files explicitly granted by code permission.
+ - Executor must not write `.specforge/work-items/**` or governance artifacts.
+-- `sf_changed_files_audit` must pass with `blocked_write_attempts=0` and no out-of-scope writes before implementation can complete.
++- `sf_changed_files_audit` must pass with `unresolved_blocked_write_attempts=0`, no audit violations and no out-of-scope writes before implementation can complete. Historical/resolved blocked write attempts remain visible and need not be zero; never erase them or reinterpret a resolved denial as a current violation. Audit source changes require a fresh owner audit before Gate/Close consumption.
+ 
+ ### 7. Verification and close gate
+ 
+@@ -192,7 +192,7 @@ Layer 3 ✅：sf-executor 拿到任意 task 都能独立执行，verification_co
+ - **Done When**:
+   - calculate_discount(100, 10) === 10
+   - calculate_discount(-1, 10) throws Error
+-  - bun test src/billing.test.ts 全部通过
++  - node --test src/billing.test.ts 全部通过
+ ```
+ 
+ **判定**：executor 只读 context_block 就够动手，不需要回查 design.md → context 充分。
+@@ -479,6 +479,14 @@ Task Planner 在提交 tasks.md 前，必须对每个 task 逐一检查：
+ 
+ 当前执行合同对 `verification_commands` 的格式有严格要求，确保每条命令都是机器可执行、结果可判定的。
+ 
++### 当前验证能力边界（SPS §9.2.4 / D23）
++
++当前只支持固定 Windows x64 单进程只读 Node 内置测试，以及已证明原判定/输出语义的有限文件存在性和 grep 检查。Node 测试还须满足受限语法、依赖和输入冻结合同；`node --test` 的命令名本身不是可执行性证明。
++
++Task Planner 只规划新 Task 的原始验证声明，不执行命令。已批准 Task 由真实 `sf-orchestrator` 使用 `sf_verification_plan` 创建独立只读计划，真实 `sf-verifier` 使用 `sf_verification_run` prepare/run；代码写许可不能代替验证许可，`sf_safe_bash` 仍只读。类别 `integration`/`e2e` 不自动授权服务器、联网或子进程。
++
++Bun、第三方测试框架、tsc、ESLint、构建、服务/网络、文件写入和需要子进程的检查不属于当前执行范围。若原验收确实需要这些能力，保留原要求并在候选批准前返回 `blocked` / `not_executed` finding，由 Orchestrator 处理能力缺口；不得换解释器、转普通宿主、以 grep 替代类型检查或降低验收。不得修改已封存 Task 来适配本能力。
++
+ ### 命令格式要求
+ 
+ 1. **必须使用类型化映射**：合法键只有 `unit`、`property`、`integration`、`e2e`、`regression`；禁止平铺旧列表
+@@ -491,23 +499,20 @@ Task Planner 在提交 tasks.md 前，必须对每个 task 逐一检查：
+ ```markdown
+ - **verification_commands**:
+   - unit:
+-    - `bun test tests/unit/example.test.ts`
++    - `node --test tests/unit/example.test.ts`
+   - integration:
+-    - `bun test tests/integration/example.test.ts`
++    - `node --test tests/integration/example.test.ts`
+   - regression:
+-    - `bun test tests/regression/example.test.ts`
++    - `node --test tests/regression/example.test.ts`
+ ```
+ 
+ ### 推荐的命令类型
+ 
+ | 类型 | 示例 | 适用场景 |
+ |------|------|----------|
+-| **测试运行** | `bun test src/foo.test.ts` | 函数/模块的单元测试 |
+-| **文件存在检查** | `test -f src/foo.ts` | 文件创建验证 |
+-| **内容检查** | `grep -c "export function foo" src/foo.ts` | 函数/接口存在性验证 |
+-| **类型检查** | `tsc --noEmit` | TypeScript 类型正确性 |
+-| **集成测试** | `node src/server.mjs &; sleep 1; curl -sf localhost:3000/health` | 端到端验证 |
+-| **Lint 检查** | `eslint src/foo.ts` | 代码规范检查 |
++| **测试运行** | `node --test src/foo.test.ts` | 满足受限语义的只读内置测试 |
++| **文件存在检查** | `test -f src/foo.ts` | 经有限 predicate 证明后归一化到隔离 Node |
++| **内容检查** | `grep -c "export function foo" src/foo.ts` | 有限匹配和实际冻结输入的输出语义已证明 |
+ 
+ ### verification_evidence_expected 格式
+ 
+@@ -515,9 +520,9 @@ Task Planner 在提交 tasks.md 前，必须对每个 task 逐一检查：
+ 
+ ```json
+ {
+-  "command": "bun test src/foo.test.ts",
++  "command": "node --test src/foo.test.ts",
+   "expected_exit_code": 0,
+-  "expected_output_pattern": "all tests passed",
++  "expected_output_pattern": "# fail 0",
+   "evidence_type": "test_output"
+ }
+ ```
+diff --git a/setup/userlevel-opencode/agents/sf-verifier.md b/setup/userlevel-opencode/agents/sf-verifier.md
+index 5d4109f1..c258b572 100644
+--- a/setup/userlevel-opencode/agents/sf-verifier.md
++++ b/setup/userlevel-opencode/agents/sf-verifier.md
+@@ -63,7 +63,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
+ - For the final code-only path, `sf_code_permission` owns `post_merge_verified -> implementation_ready -> implementation_running`.
+ - Executor may only modify files explicitly granted by code permission.
+ - Executor must not write `.specforge/work-items/**` or governance artifacts.
+-- `sf_changed_files_audit` must pass with `blocked_write_attempts=0` and no out-of-scope writes before implementation can complete.
++- `sf_changed_files_audit` must pass with `unresolved_blocked_write_attempts=0`, no audit violations and no out-of-scope writes before implementation can complete. Historical/resolved blocked write attempts remain visible and need not be zero; never erase them or reinterpret a resolved denial as a current violation. Audit source changes require a fresh owner audit before Gate/Close consumption.
+ 
+ ### 7. Verification and close gate
+ 
+diff --git a/setup/userlevel-opencode/skills/sf-intake/SKILL.md b/setup/userlevel-opencode/skills/sf-intake/SKILL.md
+index 3f40a253..6c5961a4 100644
+--- a/setup/userlevel-opencode/skills/sf-intake/SKILL.md
++++ b/setup/userlevel-opencode/skills/sf-intake/SKILL.md
+@@ -56,7 +56,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
+ - For the final code-only path, `sf_code_permission` owns `post_merge_verified -> implementation_ready -> implementation_running`.
+ - Executor may only modify files explicitly granted by code permission.
+ - Executor must not write `.specforge/work-items/**` or governance artifacts.
+-- `sf_changed_files_audit` must pass with `blocked_write_attempts=0` and no out-of-scope writes before implementation can complete.
++- `sf_changed_files_audit` must pass with `unresolved_blocked_write_attempts=0`, no audit violations and no out-of-scope writes before implementation can complete. Historical/resolved blocked write attempts remain visible and need not be zero; never erase them or reinterpret a resolved denial as a current violation. Audit source changes require a fresh owner audit before Gate/Close consumption.
+ 
+ ### 7. Verification and close gate
+ 
+diff --git a/setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md b/setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md
+index 0e77efbf..f8644d4e 100644
+--- a/setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md
++++ b/setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md
+@@ -60,7 +60,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
+ - For the final code-only path, `sf_code_permission` owns `post_merge_verified -> implementation_ready -> implementation_running`.
+ - Executor may only modify files explicitly granted by code permission.
+ - Executor must not write `.specforge/work-items/**` or governance artifacts.
+-- `sf_changed_files_audit` must pass with `blocked_write_attempts=0` and no out-of-scope writes before implementation can complete.
++- `sf_changed_files_audit` must pass with `unresolved_blocked_write_attempts=0`, no audit violations and no out-of-scope writes before implementation can complete. Historical/resolved blocked write attempts remain visible and need not be zero; never erase them or reinterpret a resolved denial as a current violation. Audit source changes require a fresh owner audit before Gate/Close consumption.
+ - A newly discovered business-code path must use `sf_code_permission(action="extend", revision_reason="...")` and remain inside the existing governance scope. A dependency lockfile or other known regenerable artifact must use the governed Git-ignore route; it must not be added to Module code paths merely to satisfy audit.
+ 
+ ### 7. Verification and close gate
+diff --git a/setup/userlevel-opencode/skills/superpowers-writing-plans/SKILL.md b/setup/userlevel-opencode/skills/superpowers-writing-plans/SKILL.md
+index 61a0496d..5595a37d 100644
+--- a/setup/userlevel-opencode/skills/superpowers-writing-plans/SKILL.md
++++ b/setup/userlevel-opencode/skills/superpowers-writing-plans/SKILL.md
+@@ -8,6 +8,14 @@ phases:
+ 
+ # Superpowers Writing Plans
+ 
++### 当前验证能力边界（SPS §9.2.4 / D23）
++
++当前只支持固定 Windows x64 单进程只读 Node 内置测试，以及已证明原判定/输出语义的有限文件存在性和 grep 检查。Node 测试还须满足受限语法、依赖和输入冻结合同；`node --test` 的命令名本身不是可执行性证明。
++
++Task Planner 只规划新 Task 的原始验证声明，不执行命令。已批准 Task 由真实 `sf-orchestrator` 使用 `sf_verification_plan` 创建独立只读计划，真实 `sf-verifier` 使用 `sf_verification_run` prepare/run；代码写许可不能代替验证许可，`sf_safe_bash` 仍只读。类别 `integration`/`e2e` 不自动授权服务器、联网或子进程。
++
++Bun、第三方测试框架、tsc、ESLint、构建、服务/网络、文件写入和需要子进程的检查不属于当前执行范围。若原验收确实需要这些能力，保留原要求并在候选批准前返回 `blocked` / `not_executed` finding，由 Orchestrator 处理能力缺口；不得换解释器、转普通宿主、以 grep 替代类型检查或降低验收。不得修改已封存 Task 来适配本能力。
++
+ ## 指令
+ 
+ 在为每个 task 生成执行计划时，你必须包含以下四个部分：
+@@ -37,9 +45,9 @@ phases:
+ - **refs**: [REQ-EXAMPLE-001, DD-EXAMPLE-001]
+ - **verification_commands**:
+   - unit:
+-    - `bun test tests/unit/example.test.ts`
++    - `node --test tests/unit/example.test.ts`
+   - integration:
+-    - `bun test tests/integration/example.test.ts`
++    - `node --test tests/integration/example.test.ts`
+ ```
+ 
+ ## 粒度控制

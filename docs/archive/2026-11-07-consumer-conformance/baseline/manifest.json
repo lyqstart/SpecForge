@@ -1,0 +1,134 @@
+{
+  "utc": "2026-11-07T13:18:34.384Z",
+  "run_id": "CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01",
+  "head": "0995f0c5e5bf2192aa38ee9b874f6decbe4e0ed3",
+  "members": [
+    {
+      "path": ".gitattributes",
+      "file": "0000.raw",
+      "size": 2993,
+      "sha256": "423d537a00aa4043924d6422d318a78d895977c73f2fa6096ee4a747e39ea561"
+    },
+    {
+      "path": ".gitignore",
+      "file": "0001.raw",
+      "size": 3576,
+      "sha256": "2a22aa04cb12223be7c4807d5ce2f00bc7b5fb133e2ac55963d447d067958245"
+    },
+    {
+      "path": "docs/project-status.md",
+      "file": "0002.raw",
+      "size": 6311,
+      "sha256": "ce97b949a2087ea6e7fd538b91257c048b5fb27a4810768987a77ecf64df56b9"
+    },
+    {
+      "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "file": "0003.raw",
+      "size": 4476156,
+      "sha256": "0f6edc1bba9aa44e788ef95c7bb2917b153c04f260a43e2893add59da9bd5891"
+    },
+    {
+      "path": "packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts",
+      "file": "0004.raw",
+      "size": 17656,
+      "sha256": "08fdaef689d2368511a89fb67bf7daf98bcabcb8335e73baa203498d4e90b1b8"
+    },
+    {
+      "path": "setup/userlevel-opencode/AGENTS.md",
+      "file": "0005.raw",
+      "size": 16223,
+      "sha256": "1d50c91e376e3cdeb49c508afcf391488cb3a0c0b9fb49732c06602c6261540c"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/_AGENT_BASE.md",
+      "file": "0006.raw",
+      "size": 27700,
+      "sha256": "c7b13eee1cd62d36ce85b3dde088b2d4e52be1043828528fe8a8214be5e3b559"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-debugger.md",
+      "file": "0007.raw",
+      "size": 14940,
+      "sha256": "b087c2be2077ee6f6c7dfbbaba69209b50a86517dca24cdc8534dc66336fbd3d"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-design.md",
+      "file": "0008.raw",
+      "size": 44598,
+      "sha256": "087cc70b1a72677991ca0e99e0ca64d95540116b0b423fc62a196ca0a2fd4327"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-evidence-collector.md",
+      "file": "0009.raw",
+      "size": 8472,
+      "sha256": "91c4be80ebde35d00a54a80a4996cca37f6853bcf7c7ceda2946163bca458bec"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-executor.md",
+      "file": "0010.raw",
+      "size": 31583,
+      "sha256": "2c997efdba9a926229c2062903b6c34437ebdf1ec5ec316972c58d78693c6452"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-extension.md",
+      "file": "0011.raw",
+      "size": 18271,
+      "sha256": "d2036a7c9d715dda4b5cfb886a33e01662f21dc6c938afc322c56acd3e560ce5"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-investigator.md",
+      "file": "0012.raw",
+      "size": 22286,
+      "sha256": "28aba66bba5f144896ee841ce534e0fa8418bcfce0e417188df4e70ae7b4e760"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-knowledge.md",
+      "file": "0013.raw",
+      "size": 12169,
+      "sha256": "133007e202114a211388aee517edc29f13f8121f0489870058a0143e2414309e"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-requirements.md",
+      "file": "0014.raw",
+      "size": 25795,
+      "sha256": "57fd49bd4c626b2ebfef917c468d88edbeec339670726edaffc80ea2e5753ab2"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-reviewer.md",
+      "file": "0015.raw",
+      "size": 18019,
+      "sha256": "3d4273ffd5bdd97e1ff7618f820658ba1d48b8b00f90a64fdbf6e4cd8077cf24"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-task-planner.md",
+      "file": "0016.raw",
+      "size": 34113,
+      "sha256": "a83cfbe07b99871fd2390646a6da2c4bdc396c043e9e19813002489ebd50b476"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-verifier.md",
+      "file": "0017.raw",
+      "size": 40260,
+      "sha256": "9080216c04584f29638afdced3214afe7da77f67e2f519d66103727939350ea5"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/sf-intake/SKILL.md",
+      "file": "0018.raw",
+      "size": 17654,
+      "sha256": "44d62765426054f3bdf484eec46a79cfb71c8d7789a35e8c1f05e52d866b307e"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md",
+      "file": "0019.raw",
+      "size": 48593,
+      "sha256": "5e59ced0b55bb23a89556b787082a0514112d9b49ee8ecb97c6b29b475720523"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/superpowers-writing-plans/SKILL.md",
+      "file": "0020.raw",
+      "size": 1791,
+      "sha256": "a74cade726014388939c0295f173767862a4b28a54053aae044ec32859ab12bf"
+    }
+  ],
+  "installed_manifest_sha256": "1c69109823ffd0098a4cb7bfd5e31d8cd096699a87c07c033fa46072fa7c171d"
+}

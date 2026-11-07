@@ -1,0 +1,93 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+release/bin/
+release/release-manifest.json
+# Retained local raw provider-error receipt; only its redacted copy is versioned.
+/docs/archive/2026-11-03-sps-conformance-repair/native-compaction-result.json
+*.tsbuildinfo
+
+# SpecForge project runtime (Plugin auto-generated)
+specforge/
+
+# SpecForge v1.1 runtime data (gitignored per directory-layout)
+.specforge/logs/
+.specforge/cas/
+.specforge/runtime/
+.specforge/archive/
+.specforge/sessions/
+
+# SpecForge runtime data in nested package test projects
+**/.specforge/runtime/
+
+# SpecForge runtime logs in nested packages
+**/.specforge/logs/
+**/.specforge/logs/*.jsonl
+packages/daemon-core/.specforge/logs/telemetry.jsonl
+
+# Temporary / debug artifacts
+test_log/
+.backup/
+test_output.txt
+test-output.txt
+test-results.txt
+.tmp/
+.kiro.zip
+*.log
+
+# Kiro PBT runtime state (written to spec dirs by update_pbt_status /
+# set-pbt; runtime only, not source of truth)
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# npm lock file (project uses bun exclusively)
+package-lock.json
+packages/*/package-lock.json
+pnpm-lock.yaml
+
+# 忽略所有 .bak 备份文件
+*.bak
+
+# SpecForge generated test artifacts
+tests/unit/artifacts/
+tests/integration/fixtures/sf_v6_arch_check/backup/
+test-project-path
+packages/daemon-core/test-project-path
+packages/observability/test-data/observability-[0-9]*/
+packages/observability/test-data/observability-req-[0-9]*/
+
+# Local native-model source receipts; publish hash-bound derivatives without reasoning text.
+/docs/archive/2026-11-03-original-wi-archive-restore/native-resume/inspection-*.json
+!/docs/archive/2026-11-03-original-wi-archive-restore/native-resume/inspection-*-redacted.json
+/docs/archive/2026-11-03-original-wi-archive-restore/native-resume/new-messages.json
+/docs/archive/2026-11-03-original-wi-archive-restore/commands/0048.stdout.txt
+/docs/archive/2026-11-03-original-wi-archive-restore/native-resume-*/inspection-*.json
+!/docs/archive/2026-11-03-original-wi-archive-restore/native-resume-*/inspection-*-redacted.json
+/docs/archive/2026-11-03-original-wi-archive-restore/native-resume-*/new-messages.json
+# Original approved implementation: private native reasoning copies.
+/docs/archive/2026-11-03-original-wi-approved-implementation/native-resume-approval/new-messages.json
+/docs/archive/2026-11-03-original-wi-approved-implementation/native-resume-approval/inspection-*.json
+!/docs/archive/2026-11-03-original-wi-approved-implementation/native-resume-approval/inspection-*-redacted.json
+/docs/archive/2026-11-03-original-wi-approved-implementation/native-resume-*/new-messages.json
+/docs/archive/2026-11-03-original-wi-approved-implementation/native-resume-*/inspection-*.json
+!/docs/archive/2026-11-03-original-wi-approved-implementation/native-resume-*/inspection-*-redacted.json
+# Current verification: preserve local native-model reasoning copies; publish
+# immutable hash-bound tool/evidence derivatives instead.
+/docs/archive/2026-11-07-verification-production/original-verification-run-*/messages-*.json
+/docs/archive/2026-11-07-verification-production/original-verification-run-*/final-new-messages.json
+/docs/archive/2026-11-07-verification-production/original-verification-run-*/child-ses_*.json
+# Post-seal transport receipts stay locally under the same evidence root. Their
+# independent per-command seals avoid recursive self-commits of Git publication.
+/docs/archive/2026-11-07-verification-production/publication-live/
+
+# Same-run post-seal publication receipts have independent local seals.
+/docs/archive/2026-11-07-consumer-conformance/publication-live/

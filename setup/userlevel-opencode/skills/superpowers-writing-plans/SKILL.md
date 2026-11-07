@@ -8,6 +8,14 @@ phases:
 
 # Superpowers Writing Plans
 
+### 当前验证能力边界（SPS §9.2.4 / D23）
+
+当前只支持固定 Windows x64 单进程只读 Node 内置测试，以及已证明原判定/输出语义的有限文件存在性和 grep 检查。Node 测试还须满足受限语法、依赖和输入冻结合同；`node --test` 的命令名本身不是可执行性证明。
+
+Task Planner 只规划新 Task 的原始验证声明，不执行命令。已批准 Task 由真实 `sf-orchestrator` 使用 `sf_verification_plan` 创建独立只读计划，真实 `sf-verifier` 使用 `sf_verification_run` prepare/run；代码写许可不能代替验证许可，`sf_safe_bash` 仍只读。类别 `integration`/`e2e` 不自动授权服务器、联网或子进程。
+
+Bun、第三方测试框架、tsc、ESLint、构建、服务/网络、文件写入和需要子进程的检查不属于当前执行范围。若原验收确实需要这些能力，保留原要求并在候选批准前返回 `blocked` / `not_executed` finding，由 Orchestrator 处理能力缺口；不得换解释器、转普通宿主、以 grep 替代类型检查或降低验收。不得修改已封存 Task 来适配本能力。
+
 ## 指令
 
 在为每个 task 生成执行计划时，你必须包含以下四个部分：
@@ -37,9 +45,9 @@ phases:
 - **refs**: [REQ-EXAMPLE-001, DD-EXAMPLE-001]
 - **verification_commands**:
   - unit:
-    - `bun test tests/unit/example.test.ts`
+    - `node --test tests/unit/example.test.ts`
   - integration:
-    - `bun test tests/integration/example.test.ts`
+    - `node --test tests/integration/example.test.ts`
 ```
 
 ## 粒度控制
