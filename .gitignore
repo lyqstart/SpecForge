@@ -80,3 +80,11 @@ packages/observability/test-data/observability-req-[0-9]*/
 /docs/archive/2026-11-03-original-wi-approved-implementation/native-resume-*/new-messages.json
 /docs/archive/2026-11-03-original-wi-approved-implementation/native-resume-*/inspection-*.json
 !/docs/archive/2026-11-03-original-wi-approved-implementation/native-resume-*/inspection-*-redacted.json
+# Current verification: preserve local native-model reasoning copies; publish
+# immutable hash-bound tool/evidence derivatives instead.
+/docs/archive/2026-11-07-verification-production/original-verification-run-*/messages-*.json
+/docs/archive/2026-11-07-verification-production/original-verification-run-*/final-new-messages.json
+/docs/archive/2026-11-07-verification-production/original-verification-run-*/child-ses_*.json
+# Post-seal transport receipts stay locally under the same evidence root. Their
+# independent per-command seals avoid recursive self-commits of Git publication.
+/docs/archive/2026-11-07-verification-production/publication-live/

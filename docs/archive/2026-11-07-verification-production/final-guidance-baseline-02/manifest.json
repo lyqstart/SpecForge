@@ -1,0 +1,36 @@
+{
+  "utc": "2026-11-07T10:05:57.420Z",
+  "members": [
+    {
+      "source_path": "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md",
+      "snapshot_path": "0000.raw",
+      "size": 45940,
+      "sha256": "b1f06f2466cf30ee1ca6338689a3346306647b8be7c8be28cb893338fa0c1b75"
+    },
+    {
+      "source_path": "setup/userlevel-opencode/agents/sf-orchestrator.md",
+      "snapshot_path": "0001.raw",
+      "size": 49661,
+      "sha256": "ba85220e0fbb9f05fe1c68910007975ee104f4ef7e58f0ac032371163159c82b"
+    },
+    {
+      "source_path": "packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts",
+      "snapshot_path": "0002.raw",
+      "size": 15756,
+      "sha256": "5adbda20f08a5272187635ed4d23dd2c97fb6699d8c7ae18b6d8cda392e8405d"
+    },
+    {
+      "source_path": "packages/daemon-core/src/tools/handlers/sf-state-transition.ts",
+      "snapshot_path": "0003.raw",
+      "size": 30116,
+      "sha256": "335119f32c56de678a02eaaae551de78bf9cfb3d37904b971a9439fc4fcde9d6"
+    },
+    {
+      "source_path": "packages/daemon-core/src/verification/authority-snapshot.ts",
+      "snapshot_path": "0004.raw",
+      "size": 8577,
+      "sha256": "8128318ed76f08d66be26eeb5a7b54c95957a62010064282e2edc530cfd89271"
+    }
+  ],
+  "scope": "Raw source before repairing D23 delegation/closure-order consumer conflicts; verifier role audit restriction is valid and retained; Runtime source is read-only evidence"
+}

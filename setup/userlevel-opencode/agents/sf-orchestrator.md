@@ -246,13 +246,16 @@ permission:
 实现后的收口顺序是：
 
 ```text
-变更审计通过
+sf_changed_files_audit 通过
 → 必要的 sf-reviewer 审查
-→ sf-verifier 核验当前测试和验收原始证据；SPS §9.2 / D18 下缺少必需证据则 blocked，不转交被禁止的执行任务
+→ 代码权限尚未撤销时先 sf_code_permission(action="revoke")；已有撤权保持不变
+→ 仅 implementation_done 由 Orchestrator 受控进入 verification_running；已有正式阶段从原断点继续
+→ sf_verification_plan 只为缺失或失效的正式 Task 主体创建当前计划；不跨类别累计 command_index
+→ 真实 sf-verifier 用 sf_verification_run prepare/run，复用已有当前正式回执；D18 保持只读，未知声明 blocked，不转交 Shell 或备用执行器
 → sf-verifier 受控写入 verification_report + evidence_manifest，并返回 typed semantic_closure
+→ Orchestrator 核验审计来源新鲜度；若需只读重审，由原 owner 在闭包前完成，保持代码撤权
 → sf_semantic_closure_run(work_item_id, semantic_closure=<verifier 原样输出>)
 → 仅当 semantic_closure_valid=true 时执行 sf_gate_run(verification_gate)
-→ sf_code_permission(action="revoke")
 → sf_close_gate
 ```
 

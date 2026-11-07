@@ -32760,3 +32760,55 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 
 - 0386正式完整套件234文件2336项通过，2项失败：design-governance所有权测试仍把work_log正文当task候选；Git clean-filter组合仍用默认10秒。消费者检索确认两份测试调用detached bootstrap。同步前者为日志确实归档且全部已写规范产物字节不变，显式错误专业owner仍被拒绝；后者采用相同60秒组合上限，不改生产30秒Git预算或filter拒绝证明。0388两文件18项通过，filter实际12033ms。
 - 0389正式Bun/Vitest3完整236文件2338项一次全绿。0359 Root51文件748项已通过；0385修复后全12包重新构建通过。0384新安装1.0.23原生正式矩阵39工具调用通过，0387真实共同Verification/FormalVersion/Close的认证正例、篡改拒绝/恢复与HardStop取消恢复通过；其上游为合成seed，未提升为完整原业务Gate成功。0392冻结24组最新666成员，自验PASS、无owner.key。0390正式卸载自有闲置fixture17删除117受管文件，保留私有哨兵和非受管SDK，不触及用户或原项目。EXP-004/007/008/022/026/193。
+
+### ERR-2005：续跑取证脚本误读嵌套state投影，且旧覆盖器默认混入历史R01
+
+- R06准备补丁首次因缺失Add File行前缀被apply_patch整体拒绝，工具没有进程退出码，不补造receipt；Test-Path证明两个目标未创建。按逐行生成补丁后0410把owner观察器顶层当权威state，实为state.current_state；断言失败只留下空capture目录，无原项目写入。读取真实keys后新目录02封存24份规范产物，0411通过，五个代码文件/Git heads未变，权限仍revoked。EXP-007/008/014/021。
+- 0418旧coverage helper按既有设计合入R01本机历史，显示implementation1/五次旧参数拒绝；未向模型传旧历史，formal9均来自本轮。不能将混合统计称为当前资产覆盖。另建current-only helper保留旧源，0422仅R06明确implementation0/formal14/拒绝0；当前覆盖仍不是MAC或整组Gate通过证明。EXP-001/007/017/193。
+- 0419普通CLI status在受限网络载体显示daemon_unreachable；0420相同命令在普通用户宿主实际返回status=ok、PID35544/version1.0.23。属于已知localhost边界复现，不归因产品连接故障。PATH解析已核实落到受管exe，0417真实--version1.0.23，不要求用户额外PATH操作。EXP-002/007/008/016/193。
+
+### 当前1.0.23部署与原WI新资产重验事实（非错误结论）
+
+- 0397测试消费者25路径已提交4d891569；0399先封存145份平面raw源，0400/401按根AGENTS切main并ff-only集成，未推远端。0402逐源Git blob及五个native成员重验；13份raw换行转换保留前快照，README/目录文档只刷新已证明同blob的index统计，文件字节未覆盖，tracked clean。0404最终main发布预检通过；0405新私有fixture20实际117文件校验，唯一相对native fixture19的物理差异是AGENTS.md CRLF，规范文本一致。0406绑定全部部署前置证据。
+- 0407官方事务升级1.0.22→1.0.23：先固定旧进程身份/health并CLI正常停机、证明旧身份结束，再upgrade/verify117。安装期间原项目全快照不变，现有owner非秘密文件逐哈希不变，owner.key等敏感文件仅lstat元数据且从不属于安装目标，无内容读取。0408真实新PID/版本/117文件/专业Agent及自有HardStop负例通过，原项目未作负例。0409新StateManager仍verification_running。旧44个真实成功保留，资产tuple变化使其不再作为当前验收；0412新空最小GLM会话06合法重取22条formal，不回退实施、不重开代码权限、不重复WI、不授权业务main合并。
+
+### ERR-2006：恢复取证时假定Bun安装路径，导致载体未启动子进程
+
+- 0426错误使用不存在的C:/Users/lyq/.bun/bin/bun.exe；spawnSync返回ENOENT、inner_exit_code=null，保留真实未启动事实，不补造应用失败码。读取0422已核验executable后0427/430/435成功。后续入口路径优先消费既有命令回执，不能凭常见安装位置猜测。EXP-002/007/008/013。
+- 0425全档案12047文件约861MB初步扫描：无敏感命名文件、5个候选。两项是扫描器自身PRIVATE KEY检测字面；三项authorization是已核验用户/根AGENTS授权说明，不是HTTP凭据。保留候选清单与各值哈希，不把关键词命中称为泄漏。实际隐藏推理仅见原生会话快照；原件继续本地保留，新增精确ignore边界与带原文哈希的工具证据派生器，不改原件、不以派生器声称完成Gate。最终仍须完整复扫及Git对象字节核验。EXP-007/193/289。
+
+### 当前原WI新资产22主体取证检查点（非完整验收）
+
+- 0435当前R06独立覆盖22/22，成功原生执行回执23份（存在重复主体，完整保留），本轮run拒绝0；未混入旧44。0436沿生产consumer依赖图封存320成员、23份真实receipt，native原始输出/事件/inspection/config及签名对象contentId均逐哈希核验；未读取owner.key，离线封存不冒充MAC验证，须由真实Verification/FV/Close共同消费者另验。原项目仍待真实专业报告及完整关卡。
+- 0432旧~/.specforge只采集140项lstat/目录名，不读host-profile或其他私有内容；当前最新mtime仍2026-10-08。0433本机OpenCode帮助明确TUI默认port=0；尚未以真实交互启动证明文档可用，后续必须在R06 Kernel结束后核对，不能凭默认4096服务测试替代。
+
+### ERR-2007：共享关闭禁令之外仍保留相反的正向Close操作步骤
+
+- 当前Feature Skill阶段11正向通过分支仍要求sf_state_transition(to_state=closed)，并将closed绝对描述为不能恢复；同文后段及SPS正式合同则明确Close owner独占推进、专用无效关闭/规格恢复可补偿。既有测试只查共享合同/旧状态名，未查正向步骤。0440封存Skill、维护测试和Quick Start三份raw；0441新增实际正向步骤回归先失败（其余10项通过），修正为Close owner写事件、StateManager读取确认和专用恢复边界后0442全部11项通过。0444 renderer生成块检查通过，保留负例中的禁止手动关闭示例。未改变Runtime或当前native tuple；该Skill草稿尚未安装，待原WI结束后受控同步。EXP-004/007/022/025/026/287。
+
+### ERR-2008：当前Verifier漏登记执行关联字段，编排者在closure之后刷新审计导致输入过期
+
+- R06首轮聚合发现Task001 handoff没有receipt id而正确不写；Orchestrator从本轮真实tool结果提供原5条receipt，无重新执行。随后两次Manifest owner写入成功但输入只含source/sha256，缺execution_receipt_id/hash，末项e2e还错误使用跨类别index1。两次Report共同消费者均实际拒绝：21条missing_from_manifest及command21拒绝。Agent将其解释为Runtime注册表问题只是自述，不作为根因。独立对照actual输入/规范Manifest及共同consumer字段证明关联缺失；0449给同一sf-verifier/GLM发送一次noReply精确合同事实，前后核对真实agent/model/message绑定，不送旧会话或凭据。其后第三次Manifest与Report真实owner成功0451；0452按同一原Task精确匹配当前22主体、Receipt、Schema及原命令，conclusion=pass。未重跑应用、未改Task/权限。EXP-001/007/008/017/193/290。
+- R06真实semantic_closure_run和changed_files_audit都返回成功，但编排顺序是closure在先、audit在后。0456真实Verification Gate因此拒绝SEMANTIC_CLOSURE_INPUT_STALE: changed_files_audit.md changed after closure generation；另缺src/greet.ts对PI-CORE-001的正式contract_reviews技术审查登记，FV因上游Verification未过失败。不是22项执行失败，不放宽Gate；应由真实Verifier补实际逐文件技术审查，再按专业产物→审计→closure→Gate/FV→Close顺序。不能将Agent技术review写成人类用户验收。EXP-004/007/017/022/026/193。
+- 0412在45分钟观察窗口到期以真实1退出，Kernel本轮SIGTERM，agent_returned=false，未声称关闭；0455之后读取Kernel出现TypeError与已停止现场一致，不能归因服务运行缺陷。0457直接StateManager重放读仍verification_running。0454窗口前封存11份当前真实会话API响应的哈希派生器（推理文本不发布）；0456保存实际failed Gates。0458只携当前规范20件、当前23回执事实和两项failed原因准备新空最小上下文，不导入旧聊天；0459语法通过，0460实际R07继续同一WI、90分钟有界观察，不准重新执行22个已成功主体、修改业务代码或合并main。
+
+### ERR-2009：专业报告修订两次将既有64位receipt ID抄成65位
+
+- R07两次sf_artifact_write均被正式verification-report/v1拒绝verification_commands[15].execution_receipt_id；原规范报告未落盘覆盖。独立对照实际两份请求均为65位，当前Manifest EV-0016与0435/436真实回执均为同一64位ID。0465向同一真实sf-verifier/GLM显式绑定角色、模型、message的noReply控制消息仅补准确当前字段事实，不代写专业结论，不送旧会话/私钥、不重跑应用。第三次Report真实owner成功0466，0467独立Schema/22主体关联复验通过，技术contract_reviews由真实专业owner形成。
+- R07随后真实Audit→SemanticClosure→Verification/FV→Close成功；0470完整三个Gate均passed，0471独立StateManager重放closed。两次旧字段拒绝、漏handoff escalation_signals的实际拒绝/修正及全部历史failed保留，不将Runtime fail-closed说成注册表缺陷。EXP-001/007/017/193/290。
+
+### ERR-2010：D23顶层约束未同步正向委派正文、正式入口及权限/闭包顺序
+
+- 独立检查发现当前Feature Skill阶段10仍向子Agent转交D18全面禁止测试文字，Orchestrator收口序列也未列D23受控执行；后段还把合法implementation_done→verification_running入口与手工verification_done一起废止。真实state transition handler/当前state table允许Orchestrator受控进入正式阶段，authority-snapshot新执行仅允许implementation_running或verification_running；MetadataBasis只剔除时间戳，权限布尔/清单仍绑定。因此正式计划前应冻结撤权事实，不能在取得正式回执后改变权限依据。无需改Runtime或扩权，只修正当前两份指令消费者和原维护测试。0477封存5份原件，0479两项新正向用例真实失败后，0483三项新用例及原10项全13通过，0484生成块同步。
+- 最初把仅约束Verifier的禁止审计条款读成所有角色一概禁止，复读明确主体后撤回该判断，原Verifier限制保留；真正修正为Orchestrator核验审计新鲜度、必要只读重审在closure之前完成。0478第二测试还因通用read helper剔除反引号而误读围栏，改为保留raw Markdown后0479确认真实D23遗漏。失败分类分别保留，不能把观察器错误归因产品。
+- 关闭已获三个完整Gate并非当前未完成点：0472封存204份原业务规范/事件/code及真实can_merge=true计划（207路径，5实现+202治理）。用户明确原话“批准本地合并”单独封存；初始准备提示用了泛称sf_git_merge，0474在启动前核对正式wrapper后新文件更正为sf_git_merge_run，未执行不存在工具、不扩张授权。0476真实空上下文sf-orchestrator完成confirmed=true、pull_first=false的受控合并和只读post_merge_verify；0481独立复验main28c8e3d两父8a692e88/6e917aec、5份raw实现及9件验收原件未变、clean、closed_and_git_merged；未推/拉业务远端、未新执行应用、未重开权限。EXP-004/007/008/017/022/025/026/193/287。
+
+### ERR-2011：文档直接opencode启动TUI没有开放当前Adapter所需默认端口
+
+- 0485先封存正常命令解析、CLI83567c13指纹、无原OpenCode进程的成功CIM基线；实际exec_command PTY在原项目main执行无参数opencode，界面1.18.35和Thin Plugin Daemon connected真实出现，未输入模型提示。0486独立CIM确认自有PID32852/对应镜像创建时间，完整TCP查询确认该进程无listener，4096 health失败；源码Daemon/HTTP client当前默认base4096，CLI0433实际help TUI默认port0。只见Daemon connected不能证明Adapter能反向核验当前Kernel。责任为Derived Operating Docs/Deployment endpoint配置，现有--port能力足够。
+- 自有PTY经ESC拒绝可选OpenCode更新提示、Ctrl+C数字0退出；0487成功CIM确认自有进程结束。终端响应按真实tool传输（合并stdout/stderr、含局部截断元数据）保存，不冒称完整原生pipe。0488封存5份raw/观察器绑定；0489新增真实默认client请求对照文档用例先失败，其余4通过。README和Quick Start显式opencode --port4096后0490两文件18项全绿；实际修正后的交互启动仍须在最终安装同步后复核，不提前接受。EXP-002/007/008/012/025/026/193。
+
+### ERR-2012：Git暂存检查脚本多余右括号在模块解析阶段失败
+
+- 0494的stage-final-guidance-source.cjs在Node模块编译阶段SyntaxError，真实退出1；未执行其branch/index动作。独立Git查询确认仍main4d891569、cached paths为空。原代码与0492 review01保持；没有把失败称为已暂存或提交。
+- 修正多余括号后，两个关键Git载体先通过node --check并固定源码SHA；在账本追加这次事实后，用新review02重新冻结9份源，不复用已因账本变化失效的review01绑定。旧review01和失败回执完整保留。后续Git变更先执行语法预检，再用精确清单及index blob身份验证，不使用整树add。EXP-007/008/014/193。

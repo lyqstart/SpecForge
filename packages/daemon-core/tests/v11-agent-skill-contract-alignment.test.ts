@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
+import { isValidV11TransitionForWorkflow } from '../src/tools/lib/state-machine-v11';
 
 const CONTRACT_START = '<!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:START -->';
 const CONTRACT_END = '<!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->';
@@ -88,6 +89,42 @@ function withoutContract(text: string): string {
 }
 
 describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
+  it('keeps positive formal-verification delegation aligned with the D23 entry and consumer prerequisites', () => {
+    expect(isValidV11TransitionForWorkflow('implementation_done', 'verification_running', 'feature_spec')).toBe(true);
+    const skill = read('setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md');
+    const section = skill.match(/### 阶段 10：[\s\S]*?(?=### 阶段 11：)/)?.[0];
+    expect(section).toBeDefined();
+    expect(section).toContain('sf_verification_plan');
+    expect(section).toContain('sf_verification_run');
+    expect(section!.indexOf('sf_code_permission')).toBeLessThan(section!.indexOf('sf_verification_plan'));
+    expect(section).toContain('contract_reviews');
+    expect(section).not.toContain('D18 禁止脚本、测试和构建执行');
+    expect(section!.indexOf('sf_changed_files_audit')).toBeGreaterThanOrEqual(0);
+    expect(section!.indexOf('sf_changed_files_audit')).toBeLessThan(section!.indexOf('sf_semantic_closure_run'));
+  });
+
+  it('keeps the orchestrator positive closure sequence on the same D23 and audit owners', () => {
+    const orchestrator = readFileSync(path.join(REPO_ROOT, 'setup/userlevel-opencode/agents/sf-orchestrator.md'), 'utf8').replace(/\r\n/g, '\n');
+    const sequence = orchestrator.match(/实现后的收口顺序是：[\s\S]*?```text\n([\s\S]*?)```/)?.[1];
+    expect(sequence).toBeDefined();
+    expect(sequence).toContain('sf_verification_plan');
+    expect(sequence).toContain('sf_verification_run');
+    expect(sequence!.indexOf('sf_code_permission')).toBeLessThan(sequence!.indexOf('sf_verification_plan'));
+    expect(sequence!.indexOf('sf_changed_files_audit')).toBeGreaterThanOrEqual(0);
+    expect(sequence!.indexOf('sf_changed_files_audit')).toBeLessThan(sequence!.indexOf('sf_semantic_closure_run'));
+  });
+
+  it('keeps the positive feature workflow Close steps owned by Close Gate', () => {
+    const skill = read('setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md');
+    const section = skill.match(/### 阶段 11：[\s\S]*?(?=<!-- SPECFORGE_V11_GOVERNANCE_POLICY_START -->)/)?.[0];
+    expect(section, 'current positive Close instructions must exist').toBeDefined();
+    expect(section).toContain('sf_close_gate');
+    expect(section).toContain('sf_state_read');
+    expect(section, 'Close Gate owns the closed event; no extra manual transition').not.toContain('sf_state_transition');
+    expect(section).not.toMatch(/to_state\s*[:=]\s*["']closed["']/);
+    expect(section, 'dedicated invalid-closure recovery must remain possible').not.toContain('一旦进入不可回退');
+  });
+
   it('has target Agent/Skill markdown files to govern', () => {
     const files = targetMarkdownFiles().map(relativeToRepo);
     expect(files.length).toBeGreaterThan(0);

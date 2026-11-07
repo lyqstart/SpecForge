@@ -8,8 +8,10 @@
 specforge daemon start --detach
 specforge daemon status
 cd <你的项目>
-opencode
+opencode --port 4096
 ```
+
+默认连接使用本机 4096 端口；显式指定端口，让当前 OpenCode 交互会话提供 SpecForge Adapter 所需的接口。
 
 在 OpenCode 中切换到 `sf-orchestrator`，直接描述业务目标。Orchestrator 会先初始化 `.specforge/project/`（若尚未初始化），读取 Runtime 权威状态，再创建或恢复同一个 Work Item。
 

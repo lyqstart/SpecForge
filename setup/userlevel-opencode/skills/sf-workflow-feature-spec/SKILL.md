@@ -134,7 +134,7 @@ Feature Spec 是规格优先工作流，验证强度最高。必须保证用户�
    `verification_report` / `evidence_manifest` 外不得写文件，也不得调用
    `sf_changed_files_audit`。如果需要审计证据，应读取或引用已有
    `changed_files_audit.md`，不得重跑审计。
-9. 如果 `sf_changed_files_audit` 在 revoke 后被误调用，daemon 应使用 `allowed_write_files_snapshot` 做只读审计，不得触发 `CODE_PERMISSION_NOT_ENABLED`。
+9. Orchestrator 依据审计来源新鲜度决定是否需要重审；已有审计仍有效时复用。撤权后需要重审时，由 `sf_changed_files_audit` owner 使用 `allowed_write_files_snapshot` 做只读审计，代码权限保持撤销；Verifier 仍不得调用审计。审计必须完成后再生成语义闭包。
 # Feature Spec 当前工作流执行协议（Requirements-First）
 
 ## 工作流状态总览
@@ -471,13 +471,14 @@ Orchestrator 随后只读最终 `candidate_manifest.json`，确认 required cand
 **目标：** 执行验证，确认所有验收标准满足
 
 **执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `implementation_done`
-2. 调用 `sf_state_transition`（from_state="implementation_done"，to_state="verification_running"，evidence="starting verification"）
+1. 调用 `sf_state_read` 确认当前合法断点；`implementation_done` 进入正式验证，已有 `verification_running` 从原断点继续，不重复实施或创建 WI。代码权限若尚未撤销，先由 `sf_code_permission(action="revoke")` 撤销；已有撤权保持不变，在冻结正式验证计划后不得重新放行或改变其权限依据。
+2. 仅当当前为 `implementation_done` 时，由 Orchestrator 调用受控 `sf_state_transition`（from_state="implementation_done"，to_state="verification_running"，evidence="starting verification"）；已有 `verification_running` 不重复转换。D23 正式计划只在该合法阶段创建，不能用实施目的的回执替代正式验证。
 3. **使用 `task` 工具调度子 Agent `sf-verifier`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
    - tasks.md 的路径（含 verification_commands）
    - requirements.md 的路径（含验收标准）
-   - 指令：加载 `superpowers-verification-before-completion` skill，逐项核验当前原始证据与验收标准。SPS §9.2 / D18 禁止脚本、测试和构建执行；不得绕过。必需证据缺失时返回 blocked，命令记 skipped、required evidence 记 not_executed
+   - 指令：加载 `superpowers-verification-before-completion` skill，逐项核验当前原始证据与验收标准。D18 的 `sf_safe_bash` 保持只读；D23 支持的固定单进程只读 Node 验证，只由真实 Orchestrator 用 `sf_verification_plan` 从正式 Task 选择主体，再交真实 Verifier 用 `sf_verification_run` prepare/run。已有当前且可消费的正式回执复用，不重跑；owner 证明缺失或失效时才创建新计划。未知或不支持的声明保持 blocked/skipped/not_executed，不转交 Shell 或备用执行器。
+   - 给出对应 plan_id、task_id、verification_type 与该类别内从 0 开始的 command_index；序号不得跨验证类别累计。handoff 与报告必须原样保留 Runtime 返回的 receipt_id、attempt_record_id、主体、数值退出、完整输出和清理事实，不重新生成或手工改造标识。
    - **必须明确告知返回验证 JSON 的完整要求**：
      ```
      你必须返回验证 JSON 对象，包含以下字段：
@@ -487,9 +488,11 @@ Orchestrator 随后只读最终 `candidate_manifest.json`，确认 required cand
      4. e2e_tests: 端到端测试结果
      5. side_effects: 无副作用检查
      6. summary: 验证总结
+     7. semantic_closure: 同一专业报告的完整 typed 对象
+     8. contract_reviews: 对不能机器证明的实际 Contract 消费者，登记真实技术 reviewer、files/modules、review_method、结论及 Evidence ID；不得冒称用户亲自验收
      ```
 4. 等待 sf-verifier 完成；确认其已受控写入 `verification_report` 与 `evidence_manifest`，获取包含 typed `semantic_closure` 的验证 JSON
-5. **调用 `sf_semantic_closure_run`**（work_item_id=<id>, semantic_closure=<验证 JSON 中的原样对象>）；闭包无效时重新调度 verifier，不得继续 Gate
+5. Orchestrator 先核验 `sf_changed_files_audit` 的来源新鲜度；需要重审时由原审计 owner 只读重审，保持代码撤权。专业报告、Evidence Manifest 和审计全部完成后，**调用 `sf_semantic_closure_run`**（work_item_id=<id>, semantic_closure=<验证 JSON 中的原样对象>）。任何被绑定输入随后更新都会使闭包失效，必须重新生成闭包后再继续 Gate；不得删除 provenance 或改造专业结论。
 6. **调用 `sf_artifact_write`** 写入工作日志：
    - `sf_artifact_write`（work_item_id=<id>, file_type="work_log", run_id=<run_id>, agent_content=<验证 JSON 的 summary>）
 7. 如果闭包有效：调用 `sf_gate_run(gate_ids=["verification_gate"])`；Gate Runner 通过后自动推进 `verification_done`
@@ -510,14 +513,14 @@ Orchestrator 随后只读最终 `candidate_manifest.json`，确认 required cand
 2. **调用 `sf_close_gate`**（work_item_id=<id>）
    - Close Gate 验证：所有 Spec 文件存在、验证报告通过、无未解决的 blocking_issues
 3. 根据 Close Gate 结果路由：
-   - **通过** → 调用 `sf_state_transition`（from_state="verification_done"，to_state="closed"，evidence="close gate passed, workflow complete"）
-   - **失败** → 回退到对应阶段修复问题（具体回退目标由 Close Gate 返回的 blocking_issues 决定）
+   - **通过** → Close Gate owner 写入 `closed` 事件；调用 `sf_state_read` 核验权威状态与关闭证据，继续消费原结果
+   - **失败** → 依据 Close Gate 返回的 blocking_issues，从相应 owner 提供的合法恢复入口继续修复
 
 **工具：** `sf_close_gate`
 
 **⚠️ 重要规则：**
-- 必须先调用 `sf_close_gate` 确认通过后，才能流转到 `closed` 状态
-- `closed` 是终态，一旦进入不可回退
+- 只有 `sf_close_gate` 可以推进到 `closed`；不得额外手动推进关闭状态
+- `closed` 是普通状态机的终态；无效关闭或规格级恢复只能走相应专用 owner 合同，不得用通用状态入口回退
 
 <!-- SPECFORGE_V11_GOVERNANCE_POLICY_START -->
 
@@ -534,7 +537,7 @@ Orchestrator 随后只读最终 `candidate_manifest.json`，确认 required cand
 7. 不得因当前 Work Item 卡住就新建 WI 绕过阻塞。
 8. 状态滞后时必须调用受控 tool 读取或推进状态，不得手工猜状态、手写状态文件或伪造报告。
 9. 每阶段最多一次修复；失败后报告阻塞事实、失败证据和下一步需要的用户决策。
-10. code_permission 必须在实现和验证后 revoke。
+10. 实施及其验证完成后，必须在冻结 D23 正式验证计划前 revoke code_permission；已有撤权保持不变，不能在正式回执产生后重新放行或改变其权限依据。
 11. close_gate 是正式关闭入口，不能用“实际已完成”替代 closed。
 12. 只读调查分类必须禁止进入 code_permission。
 13. `feature_spec` 的 `code_only_fast_path` 必须保持 fast-path boundary，不得把小改动扩大成未审批的设计变更或重构。
@@ -619,7 +622,7 @@ Orchestrator 不定义固定 manifest schema 子集，不手工维护 candidate 
 
 ## 阶段 8：merged → post_merge_verified
 
-旧行为：
+废止的完成方式：
 
 ```text
 sf_state_transition merged → post_merge_verified
@@ -679,8 +682,6 @@ sf_code_permission(
 旧行为：
 
 ```text
-sf_state_transition implementation_done → verification_running
-调度 sf-verifier
 sf_state_transition verification_running → verification_done
 ```
 
@@ -690,9 +691,14 @@ sf_state_transition verification_running → verification_done
 
 ```text
 implementation_running → implementation_done
+代码权限尚未撤销时先 sf_code_permission(action="revoke")，已有撤权保持不变
+仅 implementation_done 由 Orchestrator 受控进入 verification_running，已有正式阶段复用
+sf_verification_plan 仅为缺失或失效的正式 Task 主体创建当前计划
 调度 sf-verifier
+sf_verification_run prepare/run；复用已有当前正式回执，未知声明不执行
 sf_artifact_write verification_report
 sf_artifact_write evidence_manifest
+Orchestrator 核验审计新鲜度；必要的只读重审必须在下述闭包之前完成
 sf_semantic_closure_run(work_item_id=WI-XXXX, semantic_closure=<verifier 原样输出>)
 sf_gate_run(work_item_id=WI-XXXX, gate_ids=["verification_gate"])
 ```
@@ -705,8 +711,8 @@ sf_gate_run(work_item_id=WI-XXXX, gate_ids=["verification_gate"])
    不得调用 changed_files_audit；
 3. verification_report、evidence_manifest 和 changed_files_audit 完成后，必须先调用 semantic_closure_run；
 4. 只有 semantic_closure_valid=true 才能调用 verification_gate；
-5. verification_gate 通过后，由 gate_runner 自动推进 implementation_done → verification_running → verification_done；
-6. 不得手动推进 verification_done；Gate 后若需修改验证输入，必须先恢复到 implementation_ready。
+5. D23 正式执行前由 Orchestrator 通过受控入口进入 verification_running；verification_gate 通过后仅由 gate_runner 推进 verification_done；
+6. 不得手动推进 verification_done；失败且未冻结的验证输入由原 owner 在当前合法断点修正。未关闭但 Verification Gate 已通过或输入已冻结时，必须先使用正式 owner 的恢复入口，再修订输入和重建受影响的闭包/Gate；已关闭时只走专用 Close 恢复合同，不直接改冻结产物。
 ```
 
 ## 阶段 11：verification_done → closed
@@ -716,7 +722,7 @@ sf_gate_run(work_item_id=WI-XXXX, gate_ids=["verification_gate"])
 正确顺序：
 
 ```text
-sf_code_permission(action="revoke")
+确认 code_permission_revoked=true，正式计划前已撤销的权限保持不变
 sf_close_gate(work_item_id=WI-XXXX)
 ```
 

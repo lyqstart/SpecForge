@@ -1,0 +1,38 @@
+{
+  "utc": "2026-11-07T10:19:54.520Z",
+  "members": [
+    {
+      "path": "README.md",
+      "snapshot": "0000.raw",
+      "size": 9451,
+      "sha256": "2ae93b98ef2a7b1b8acd2bfe8a4ba45d3477597d769a59e17cdc6e6ac3cacc00"
+    },
+    {
+      "path": "docs/user/quick-start.md",
+      "snapshot": "0001.raw",
+      "size": 816,
+      "sha256": "8b46aff1e9bf9d6c11e010f83b99df89a0739fa1cec1c577aa92f8be5cecda56"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/daemon-startup-readme-contract.test.ts",
+      "snapshot": "0002.raw",
+      "size": 3302,
+      "sha256": "e9905c6f1bbf775c1229cf1df4220dc8c01b65841b1733cb2a9bbde69dd09176"
+    },
+    {
+      "path": "packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts",
+      "snapshot": "0003.raw",
+      "size": 15295,
+      "sha256": "2ec9c8140acba54118355026207bdb16becca882ea6c9c5725b92ea8b4fa7439"
+    },
+    {
+      "path": "packages/daemon-core/src/daemon/Daemon.ts",
+      "snapshot": "0004.raw",
+      "size": 10285,
+      "sha256": "78593c960023ae0147eda151d4d4ec037836b0612e96314135c2cc3feaaff4be"
+    }
+  ],
+  "actual_default_tui_observation": "quickstart-smoke-01/running.json",
+  "observation_sha256": "81dfe0351cd8a79cddb0319fac5766251b5a087cd1235657fa33d3c4a6a533cf",
+  "classification": "CONFIRMED derived startup documentation/endpoint mismatch: normal TUI initialized with no TCP listener while current Adapter endpoint is fixed4096; no model or application prompt used"
+}

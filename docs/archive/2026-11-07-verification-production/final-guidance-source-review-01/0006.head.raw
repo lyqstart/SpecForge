@@ -1,0 +1,324 @@
+import { describe, it, expect } from 'vitest';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import path from 'node:path';
+
+const CONTRACT_START = '<!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:START -->';
+const CONTRACT_END = '<!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->';
+
+function daemonRoot(): string {
+  const cwd = process.cwd();
+  if (existsSync(path.join(cwd, 'src', 'tools'))) return cwd;
+  const fromRepo = path.join(cwd, 'packages', 'daemon-core');
+  if (existsSync(path.join(fromRepo, 'src', 'tools'))) return fromRepo;
+  throw new Error(`Cannot locate packages/daemon-core from cwd=${cwd}`);
+}
+
+const DAEMON_ROOT = daemonRoot();
+const REPO_ROOT = path.resolve(DAEMON_ROOT, '..', '..');
+const USERLEVEL_ROOT = path.join(REPO_ROOT, 'setup', 'userlevel-opencode');
+
+function normalizeText(text: string): string {
+  return text.replace(/\r\n/g, '\n').replace(/`/g, '');
+}
+
+function read(relativePath: string): string {
+  const filePath = path.join(REPO_ROOT, relativePath);
+  expect(existsSync(filePath), `missing file: ${relativePath}`).toBe(true);
+  return normalizeText(readFileSync(filePath, 'utf8'));
+}
+
+function walkMarkdown(dir: string): string[] {
+  if (!existsSync(dir)) return [];
+  const out: string[] = [];
+  for (const entry of readdirSync(dir)) {
+    const full = path.join(dir, entry);
+    const stat = statSync(full);
+    if (stat.isDirectory()) {
+      out.push(...walkMarkdown(full));
+    } else if (entry.endsWith('.md')) {
+      out.push(full);
+    }
+  }
+  return out;
+}
+
+function relativeToRepo(filePath: string): string {
+  return path.relative(REPO_ROOT, filePath).replace(/\\/g, '/');
+}
+
+function targetMarkdownFiles(): string[] {
+  const files: string[] = [];
+
+  const agentsDir = path.join(USERLEVEL_ROOT, 'agents');
+  files.push(...walkMarkdown(agentsDir));
+
+  const rootAgents = path.join(USERLEVEL_ROOT, 'AGENTS.md');
+  if (existsSync(rootAgents)) files.push(rootAgents);
+
+  const skillsDir = path.join(USERLEVEL_ROOT, 'skills');
+  if (existsSync(skillsDir)) {
+    for (const entry of readdirSync(skillsDir)) {
+      if (!entry.startsWith('sf-')) continue;
+      const full = path.join(skillsDir, entry);
+      if (statSync(full).isDirectory()) {
+        files.push(...walkMarkdown(full));
+      }
+    }
+  }
+
+  return [...new Set(files)].sort();
+}
+
+function contractBody(text: string): string {
+  const start = text.indexOf(CONTRACT_START);
+  const end = text.indexOf(CONTRACT_END);
+  expect(start, 'missing contract start marker').toBeGreaterThanOrEqual(0);
+  expect(end, 'missing contract end marker').toBeGreaterThan(start);
+  return normalizeText(text.slice(start, end + CONTRACT_END.length));
+}
+
+function withoutContract(text: string): string {
+  return text.replace(
+    new RegExp(
+      `${CONTRACT_START.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[\\s\\S]*?${CONTRACT_END.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`,
+      'g'
+    ),
+    ''
+  );
+}
+
+describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
+  it('has target Agent/Skill markdown files to govern', () => {
+    const files = targetMarkdownFiles().map(relativeToRepo);
+    expect(files.length).toBeGreaterThan(0);
+    expect(files.some(f => f.endsWith('setup/userlevel-opencode/agents/sf-orchestrator.md'))).toBe(
+      true
+    );
+    expect(
+      files.some(f => f.includes('setup/userlevel-opencode/skills/sf-workflow-feature-spec/'))
+    ).toBe(true);
+  });
+
+  it('task planning examples use typed verification_commands', () => {
+    const planner = read('setup/userlevel-opencode/agents/sf-task-planner.md');
+    const requirements = read('setup/userlevel-opencode/agents/sf-requirements.md');
+    const design = read('setup/userlevel-opencode/agents/sf-design.md');
+    const writingPlans = read(
+      'setup/userlevel-opencode/skills/superpowers-writing-plans/SKILL.md'
+    );
+    for (const text of [planner, writingPlans]) {
+      expect(text).toContain('- unit:');
+      expect(text).toContain('- integration:');
+      expect(text).toContain('property');
+      expect(text).toContain('CP-<MODULE_CODE>-<NNN>');
+    }
+    expect(planner).not.toContain('- 检查 server.mjs 文件存在');
+    expect(requirements).toContain('REQ-<MODULE_CODE>-<NNN>');
+    expect(design).toContain('DD-<MODULE_CODE>-<NNN>');
+    expect(planner).toContain('TASK-WI-NNNN-NNN');
+    expect(planner).toContain('- **refs**: [DD-WEB-001, REQ-WEB-001]');
+  });
+
+  it('injects the final governance contract into every userlevel SpecForge Agent and Skill markdown file', () => {
+    const required = [
+      'StateManager/events.jsonl',
+      'runtime/state.json',
+      'workflow_type',
+      'workflow_path',
+      'sf_user_decision_record',
+      'sf_code_permission',
+      'AUTHORITATIVE_STATE_MISMATCH',
+      'closed',
+      'sf_hard_stop_resolve',
+    ];
+
+    for (const file of targetMarkdownFiles()) {
+      const rel = relativeToRepo(file);
+      const text = normalizeText(readFileSync(file, 'utf8'));
+      expect(text, `${rel} missing contract start`).toContain(CONTRACT_START);
+      expect(text, `${rel} missing contract end`).toContain(CONTRACT_END);
+
+      const body = contractBody(text);
+      for (const needle of required) {
+        expect(body, `${rel} contract missing ${needle}`).toContain(needle);
+      }
+
+      expect(
+        body.includes('work_item.json is metadata only') ||
+          body.includes('work_item.json 只保存元数据'),
+        `${rel} contract missing work_item metadata-only rule`
+      ).toBe(true);
+    }
+  });
+
+  it('does not leave explicit legacy mainline transition instructions in governed Agent/Skill prose outside the contract block', () => {
+    const forbiddenPatterns = [
+      /\bdevelopment\s*[-=]+>\s*review\b/i,
+      /\breview\s*[-=]+>\s*implementation\b/i,
+      /\bimplementation\s*[-=]+>\s*done\b/i,
+      /\bto_state\s*[:=]\s*['"]development['"]/i,
+      /\bto_state\s*[:=]\s*['"]review['"]/i,
+      /\bto_state\s*[:=]\s*['"]implementation['"]/i,
+      /\bto_state\s*[:=]\s*['"]done['"]/i,
+      /\bmanual(?:ly)?\s+advance\s+approved\s*[-=]+>\s*merge_ready\b/i,
+      /\bwork_item\.json\.status\s+is\s+the\s+(?:source of truth|authoritative state)\b/i,
+      /\bcomments\s+as\s+user_response_quote\b/i,
+      /\breason\s+as\s+user_response_quote\b/i,
+    ];
+
+    for (const file of targetMarkdownFiles()) {
+      const rel = relativeToRepo(file);
+      const text = withoutContract(normalizeText(readFileSync(file, 'utf8')));
+      for (const pattern of forbiddenPatterns) {
+        expect(text, `${rel} contains forbidden legacy instruction ${pattern}`).not.toMatch(
+          pattern
+        );
+      }
+    }
+  });
+
+  it('keeps professional Candidate writers on controlled Tools and Runtime-owned Manifest materialization', () => {
+    const design = read('setup/userlevel-opencode/agents/sf-design.md');
+    const requirements = read('setup/userlevel-opencode/agents/sf-requirements.md');
+    const taskPlanner = read('setup/userlevel-opencode/agents/sf-task-planner.md');
+    const orchestrator = read('setup/userlevel-opencode/agents/sf-orchestrator.md');
+    const featureSkill = read(
+      'setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md'
+    );
+
+    expect(design).toContain('本 Agent 不得调用 sf_safe_bash');
+    expect(design).toContain('Candidate 写入只能调用 sf_artifact_write');
+    expect(design).toContain('candidate_manifest.json 由 Runtime');
+    expect(featureSkill).toContain('candidate_manifest.entries');
+    expect(featureSkill).toContain('candidate_preparing → candidate_prepared');
+    expect(featureSkill).not.toContain(
+      '主编排代理在正确阶段通过受控写入形成 candidate_manifest.json'
+    );
+    for (const professional of [requirements, design, taskPlanner]) {
+      expect(professional).toContain('sf_handoff(action=write)');
+    }
+    expect(orchestrator).toContain('sf_handoff(action=validate_all, expected_agent=');
+  });
+
+  it('keeps sf-orchestrator on read-only evidence tools in restricted states', () => {
+    const orchestrator = read('setup/userlevel-opencode/agents/sf-orchestrator.md');
+
+    expect(orchestrator).toContain('只能使用 read/debug 工具');
+    expect(orchestrator).toContain('不得调用 sf_safe_bash');
+    expect(orchestrator).toContain('certutil -hashfile');
+    expect(orchestrator).toContain('Get-FileHash');
+    expect(orchestrator).toContain('HASH_EVIDENCE_UNAVAILABLE');
+    expect(orchestrator).toContain('完整内容快照');
+    expect(orchestrator).toContain('用户提示中的“记录哈希”不能覆盖 Runtime 的 Tool 边界');
+    expect(orchestrator).toContain('子任务必须显式重复以下工具边界');
+    expect(orchestrator).toContain('不得把“只读验证”作为省略该边界的理由');
+  });
+
+  it('keeps setup wrappers aligned with final governance fields', () => {
+    const transitionWrapper = read('setup/userlevel-opencode/tools/sf_state_transition.ts');
+    expect(transitionWrapper).toContain('workflow_type');
+    expect(transitionWrapper).toContain('workflow_path');
+
+    const decisionWrapper = read('setup/userlevel-opencode/tools/sf_user_decision_record.ts');
+    expect(decisionWrapper).toContain('user_response_quote');
+    expect(decisionWrapper).toContain('auto_approval_policy_id');
+    expect(decisionWrapper).toContain('comments');
+    expect(decisionWrapper).toContain('reason');
+
+    const mergeWrapper = read('setup/userlevel-opencode/tools/sf_merge_run.ts');
+    expect(mergeWrapper).toContain('work_item_id');
+
+    const permissionWrapper = read('setup/userlevel-opencode/tools/sf_code_permission.ts');
+    expect(permissionWrapper).toContain('allowed_write_files');
+    expect(permissionWrapper).toContain('recover_legacy_filesystem_mode');
+    expect(permissionWrapper).toContain('confirm_legacy_filesystem_recovery');
+    expect(permissionWrapper).toContain('recovery_reason');
+
+    const closeWrapper = read('setup/userlevel-opencode/tools/sf_close_gate.ts');
+    expect(closeWrapper).toContain('work_item_id');
+
+    const handoffWrapper = read('setup/userlevel-opencode/tools/sf_handoff.ts');
+    expect(handoffWrapper).toContain('daemon.invokeTool("sf_handoff"');
+    expect(handoffWrapper).toContain('"write"');
+    expect(handoffWrapper).toContain('"validate_all"');
+  });
+
+  it('keeps daemon handlers aligned with the contract-enforced workflow', () => {
+    const stateTransition = read('packages/daemon-core/src/tools/handlers/sf-state-transition.ts');
+    expect(stateTransition).not.toMatch(/workflowEngine\.transitionFull\s*\(/);
+    expect(stateTransition).toContain('workflow_engine_transition_full_used: false');
+    expect(stateTransition).toContain('WORKFLOW_TYPE_PATH_CONFLICT');
+
+    const merge = read('packages/daemon-core/src/tools/handlers/sf-v11-merge.ts');
+    expect(merge).toContain('merge_not_applicable');
+    expect(merge).toContain('approved');
+    expect(merge).toContain('merge_ready');
+    expect(merge).toContain('merging');
+    expect(merge).toContain('merged');
+
+    const decision = read('packages/daemon-core/src/tools/handlers/sf-v11-decision.ts');
+    expect(decision).toContain('USER_APPROVED_REQUIRES_EXPLICIT_USER_RESPONSE_QUOTE');
+    expect(decision).toContain('AUTO_APPROVED_REQUIRES_POLICY_ID');
+
+    const metadataContract = read('packages/types/src/work-item-metadata-contract.ts');
+    expect(metadataContract).toContain('WORK_ITEM_CANNOT_CARRY_USER_DECISION');
+    expect(metadataContract).toContain('WORK_ITEM_STATUS_MUTATION_FORBIDDEN');
+
+    const artifactSchemaAdapter = read(
+      'packages/daemon-core/src/tools/lib/artifact-schema-validation.ts'
+    );
+    expect(artifactSchemaAdapter).toContain('validateCurrentWorkItemMetadataJson');
+    expect(artifactSchemaAdapter).toContain(
+      'return validateCurrentWorkItemMetadataJson(content, expectedWorkItemId)'
+    );
+
+    const closeGate = read('packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts');
+    expect(closeGate).toContain('AUTHORITATIVE_STATE_MISMATCH');
+    expect(closeGate).toContain('current_state_not_verification_done');
+
+    const orchestrator = read('setup/userlevel-opencode/agents/sf-orchestrator.md');
+    expect(orchestrator).toContain('recover_legacy_filesystem_mode');
+    expect(orchestrator).toContain('不得调用 sf_git_branch_create');
+    expect(orchestrator).toContain('filesystem 或 legacy-recovered filesystem WI 不进入 Git 交付链');
+  });
+
+  it('keeps Contract consumer truth-source and manual-review rules aligned in Agents and Skills', () => {
+    const design = read('setup/userlevel-opencode/agents/sf-design.md');
+    const planner = read('setup/userlevel-opencode/agents/sf-task-planner.md');
+    const verifier = read('setup/userlevel-opencode/agents/sf-verifier.md');
+    const feature = read('setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md');
+
+    expect(design).toContain('DD-* constrained_by Contract-ID');
+    expect(design).toContain('Trace 唯一真相源');
+    const traceOwnerSection = design.split('# Contract 消费者与 Trace 唯一真相源')[1]?.split(/\n# /)[0] ?? '';
+    expect(traceOwnerSection).toContain('sf-task-planner');
+    expect(traceOwnerSection).toContain('candidates/trace_delta.md');
+    expect(traceOwnerSection).toMatch(/\bADD\b/);
+    expect(traceOwnerSection).toMatch(/\bREMOVE\b/);
+    expect(planner).toContain('全部消费 DD');
+    expect(planner).toContain('allowed_write_files');
+    expect(verifier).toContain('verification_report.contract_reviews');
+    expect(verifier).toContain('NO_CONTRACT_USAGE');
+    expect(verifier).toContain('Fail Closed');
+    expect(feature).toContain('Current Governance Relations + ADD - REMOVE');
+    expect(feature).toContain('Module trace.md');
+  });
+
+  it('aligns detached bootstrap fields across actual wrappers, handlers, orchestrator and workflow', () => {
+    const plan = read('setup/userlevel-opencode/tools/sf_git_branch_plan.ts');
+    const create = read('setup/userlevel-opencode/tools/sf_git_branch_create.ts');
+    const planHandler = read('packages/daemon-core/src/tools/handlers/sf-git-branch-plan.ts');
+    const createHandler = read('packages/daemon-core/src/tools/handlers/sf-git-branch-create.ts');
+    const orchestrator = read('setup/userlevel-opencode/agents/sf-orchestrator.md');
+    const workflow = read('setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md');
+    for (const field of ['bootstrap_from_detached', 'expected_head', 'base_branch', 'branch_name']) {
+      expect(plan).toContain(field + ': tool.schema.'); expect(planHandler).toContain("args['" + field + "']");
+      expect(orchestrator).toContain(field); expect(workflow).toContain(field);
+    }
+    for (const field of ['bootstrap_plan_sha256', 'bootstrap_confirmation_quote']) {
+      expect(create).toContain(field + ': tool.schema.'); expect(createHandler).toContain("args['" + field + "']");
+      expect(orchestrator).toContain(field); expect(workflow).toContain(field);
+    }
+  });
+
+});

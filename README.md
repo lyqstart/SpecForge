@@ -72,8 +72,10 @@ bun run packages/daemon-core/src/index.ts
 
 ```bash
 cd <你的项目>
-opencode
+opencode --port 4096
 ```
+
+默认连接使用本机 4096 端口；显式指定端口，让当前 OpenCode 交互会话同时提供 SpecForge Adapter 所需的接口。
 
 切换到 `sf-orchestrator` 并直接描述业务目标。不要手工创建 `.specforge` 文件，不要让 Plugin 管理 daemon，也不要为非 Git 项目预先执行 `git init`。SpecForge 会在实施前按现场冻结 Git 或 filesystem 模式。
 
