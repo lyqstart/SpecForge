@@ -32696,3 +32696,19 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 第二个真实Verifier仅传action/work_item_id/attempt_record_id后，同一安装版成功返回ec2d84148c29a89b8053897a378f1c7bbbfce17b4003d29e0050f47c1922ab27，exit0、cleanup/output完整。首批错误归于Tool Schema/Agent调用指引的可用性，不能误报LPAC或Runtime执行缺陷。外部审计者0253本机abort仅停止本轮父子会话以防无意义重派，原首条成功和五次拒绝都保留，WI仍implementation_running。
 - 最小修复在真实工具description/字段describe、Verifier Agent、验证Skill及从属合同明确严格动作字段集；Runtime不放宽。0254新增unit证明多余plan_id在native/start reservation前拒绝、同一Attempt仍可受控取消，9项通过。第二轮0257使用新空会话、精确JSON及既有receipt事实继续；不加载旧消息，未为Task001 index0重复成功步骤。0262只读真实child投影确认其余4条均exit0/cleanup_proved，Task001五条implementation执行结果齐全；共同Gate消费和完整WI尚未通过。
 - 提供方在首轮出现真实账户速率限制后恢复，保留progress原文，不扩并发、不切提供方或补造成功。用户级工具/Agent/Skill改动尚待后续正式安装；本轮纠正提示不冒充该部署已完成。EXP-004/007/008/016/026/031/298。
+
+### ERR-1994：模块消费者修复方案与允许范围投影漏列两个根目录说明文件
+
+- 0267源码提交包含EVENT_REPLAY_COMPLETION_SUMMARY.md、STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md的历史指针修订；方案包含旧文档消费者，但0241更新ALLOWED_SCOPE时只扩src/examples等，未加入这两个module-root文件。0264准备器仅按workflow-runtime前缀校验，不能替代唯一状态的精确glob，遗漏直到0274复核才被发现。不得回写旧证据或宣称提交前该投影完整。
+- 0274对66个已审查路径和15个版本路径的80个去重路径逐一使用真实ALLOWED_SCOPE的glob，恰发现两个遗漏。各旧raw按原路径Git clean归一化后与父提交对象完全相同，且27份原字节已封存；不存在覆盖用户独立内容的证据，原业务/部署未受此修订影响。已停止新产品修改，先在既有SPS8用户修复授权及明确文档消费者范围内补正唯一status的两个精确路径；不扩大产品功能或业务权限。
+- 后续source准备/提交检查必须直接消费唯一status的literal/glob集合，覆盖tracked删除、新增、归档与版本文件，不能用更宽的模块前缀冒充范围合同。scope审计保留before/after独立记录，补正不抹去先前越过范围投影的错误。EXP-004/006/007/017/031/193。
+
+### ERR-1995：证据载体把进程未启动映射成了目标退出码1，且外层PowerShell未显式传递非1退出
+
+- 0245目标bun ENOENT未产生子进程，原载体把null status同时映为carrier/inner1。旧回执不覆盖；carrier-exit-facts-verification.json明确补充真实inner不可用，不计该行产品覆盖。新载体记录process_started、child_pid、spawn_error及numeric availability；启动失败或信号无数值退出时inner=null、载体失败1，禁止补造应用退出。
+- 0280实际child7与0281不存在程序(null)是刻意证据探针，不是产品失败；0282独立校验通过。0280外层PowerShell默认退出1与内部Node/child7分属不同域。0283显式exit $LASTEXITCODE后exec_command真实返回7，原始返回对象保存于carrier-powershell-exit-observation.json。后续PowerShell调用显式传递LASTEXITCODE。EXP-002/007/193。
+
+### ERR-1996：新原WI联测入口未沿用启动前源码冻结
+
+- 私有Kernel联测载体已有逐次source freeze，但新resume-original-verification入口01/02漏掉该步骤；01之后文件有修改，不能用后来同名文件声称旧入口可精确重建。02当前源在0284后续修改前作了明确AFTER_INVOCATION_BEGIN的late capture，不冒充启动前快照。实际Kernel tool parts、native owner回执与后续共同消费者是独立证据，不把载体自述当鉴真。
+- 从0284起，通用carrier在目标启动前冻结自身和存在的脚本参数原字节，command记录SHA，立即receipt seal包括这些文件；0286独立核验hash及封存成员通过。未来原WI入口也在Kernel/模型启动前独立冻结driver及prompt。旧缺口如实保留，不回填或伪造时间。EXP-007/032/193/298。

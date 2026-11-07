@@ -1,0 +1,94 @@
+{
+  "utc": "2026-11-07T05:59:24.990Z",
+  "parent": "6be12495582540d5b55f322924829a93a62e6b9a",
+  "product_source_version": "1.0.23",
+  "previous": "1.0.22",
+  "changes": [
+    {
+      "path": "package.json",
+      "before_sha256": "c44304090780142cce0efa0caa49489f1bd1bc8c1effe1170fd930a85303bf8d",
+      "after_sha256": "f6f2d1f5a4a4c1932e1eb4238aee90458f0ef5f3370fb6189d0bfd7e69bd6ba0"
+    },
+    {
+      "path": "packages/cli/package.json",
+      "before_sha256": "1725a183922ada023fb465934baa084ace9b2016a3e11c84d47153f461929364",
+      "after_sha256": "13819361399cd243cbb08b7091509e3bcd322ee94607af2ed50e0b414b60a8b0"
+    },
+    {
+      "path": "packages/configuration/package.json",
+      "before_sha256": "0a9b7e94f4efb62061099a5bfedbe4a0c3a306de80d9dd65b775c226275512f2",
+      "after_sha256": "37430e312528dcab305692994d39af3c035dfa8a107dc68a2669f8e831ca7036"
+    },
+    {
+      "path": "packages/daemon-core/package.json",
+      "before_sha256": "dd3203350543b147e4a40004ed17379fefcc4d0b640841322d38b91c9b8a01b6",
+      "after_sha256": "d6cef585df5f43eef9df7534dd42923338bd7fef0ec084a3db9a701584971e4d"
+    },
+    {
+      "path": "packages/host-profile/package.json",
+      "before_sha256": "eac582a676dbaf75f16b24e29065377f74b7808072691700db98b2a1ba78ba14",
+      "after_sha256": "fa1e7da49aaba119da836add89a992b2eaa9c8215aa00155d4a4fc87155c3ba1"
+    },
+    {
+      "path": "packages/observability/package.json",
+      "before_sha256": "fc327469fa683526f3157570fb2ca671be01cc88703896f4a45739dc76ef8e13",
+      "after_sha256": "ed29b6ac0b87e60fdf308c9f886e0bd89c827a100c5875dca7a0b6145f2397ad"
+    },
+    {
+      "path": "packages/opencode-adapter/package.json",
+      "before_sha256": "02fbcaa7af83c8dafdfc2c9b2a352eb2874a39ea3a8e25eb562dccdc0d090dc4",
+      "after_sha256": "73f9e116ebcde11c30fb5a81c88d01450587402ff0ad1a0702b7f702e5631241"
+    },
+    {
+      "path": "packages/permission-engine/package.json",
+      "before_sha256": "4206146195e13a05cfefa8fb6638efddc2b50de3993751f7a9861b34d9842bbc",
+      "after_sha256": "b22ddb6cf6fe2e7218b0618a106030276b072ed747b884375f2811b9cc4303b4"
+    },
+    {
+      "path": "packages/scope-gate/package.json",
+      "before_sha256": "0b2ac1b96e149d4c6c155bc6f4f82db778ce51268ca617e702afdee55b622b82",
+      "after_sha256": "2e64ff5956659e530d80f216a74d7de54bb8eaf3991362ce256406cdd1f5e4dc"
+    },
+    {
+      "path": "packages/service-management/package.json",
+      "before_sha256": "0dc4db804da2fccc69ed9d1bad5d165066eed671040547f8458f648035e6f431",
+      "after_sha256": "fe6c25069a3e5e5060c867d8d038b499bdf760a29b8827056c93b387658b48e0"
+    },
+    {
+      "path": "packages/types/package.json",
+      "before_sha256": "8a94e020cc55805ef14058a2cd310e5ce44ba83bb38f3838b11765f961b065ec",
+      "after_sha256": "f06bd9e03ba21bdf5dca0d0f50ccb0c71fbdf0ba8c635fa32a4ea38a34a06907"
+    },
+    {
+      "path": "packages/version-unification/package.json",
+      "before_sha256": "0943a9aff9cf630c101281757e795b03c5edb897887e0ce89b85e4bf45b3f1bb",
+      "after_sha256": "a5d9a71dbc0e80e04967ad9a040e01f9dcd048f965bad4f2bcbb8d3e6c4fe543"
+    },
+    {
+      "path": "packages/workflow-runtime/package.json",
+      "before_sha256": "cb7fbee2a963438c2fed2f3e709cffc4cf01e7ad6b1db053a97b651fbe6bbb45",
+      "after_sha256": "1ce10dd161292957a8db767a599b88e08b28dc7c3705e899b13639504789e6f8"
+    },
+    {
+      "path": "bun.lock",
+      "before_sha256": "dfc4911cadbed27c18da3aa277fda685395341bf6adb8d709df71e18bc343b3a",
+      "after_sha256": "7d1c96e74775fc7cb3ad83a99d5c38a1f0f3b4860ed1f6be447ee4d3d208ba3a"
+    },
+    {
+      "path": "docs/product-specification/specforge-product-specification.md",
+      "before_sha256": "14174cbe448d3b4964208623fc70f54f4aa573eec4231267ee7d244be2dff524",
+      "after_sha256": "0cf3cef264e84b198746852b340cb8d6b2b88562472357a78fa7850c83816d31"
+    }
+  ],
+  "workspace_packages": 12,
+  "lock_changes": "Exactly12 workspace version fields; full parsed non-version content unchanged; no dependency resolution or install.",
+  "remote_tag_check_receipt": "0269",
+  "deployment": "Installed user runtime remains1.0.22 exact0208/a918. No native rebuild, install, tag or publication performed here.",
+  "experience": {
+    "EXPERIENCE_FILE_READ": "YES",
+    "ACTIVE_EXPERIENCE_RULES_FILE_READ": "YES",
+    "APPLICABLE_EXPERIENCE_RULES": "EXP-004/017/101/193/276",
+    "REPEATED_ERROR_CHECK": "PASS",
+    "HISTORICAL_LEDGER_SEARCH": "version alignment/workspace/product release; ERR-1966 directed version-lock precedent"
+  }
+}
