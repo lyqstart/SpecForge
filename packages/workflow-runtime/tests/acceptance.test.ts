@@ -6,16 +6,13 @@
  * - WorkflowEngine 能够加载和执行基础 workflow
  * - GateRunner 能够执行单个 Gate
  * - 事件系统能够记录和发布 workflow 事件
- * - 能够从崩溃中恢复 workflow 状态
+ * - 编排失败处理与内存暂停恢复（持久化恢复由Daemon验收）
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { WorkflowEngine, WorkflowEvent } from '../src/WorkflowEngine.js';
 import { SimpleGateRunner, CompositeGateRunner, createGateRunner } from '../src/GateRunner.js';
 import { EventPublisher, createEventPublisher } from '../src/EventPublisher.js';
-import { StateRecoveryManager, createStateRecoveryManager } from '../src/StateRecoveryManager.js';
-import { WorkflowPersistence } from '../src/WorkflowPersistence.js';
-import { createEventLogReader } from '../src/events/EventLogReader.js';
 import {
   WorkflowDefinition,
   WorkflowInstance,
@@ -518,7 +515,7 @@ describe('Acceptance Tests - Task 5.1', () => {
    * Test Suite 4: 能够从崩溃中恢复 workflow 状态
    * Validates: Requirements 5.1 - 5.4
    */
-  describe('Workflow State Recovery from Crash', () => {
+  describe('Workflow Execution Failure and In-Memory Resume', () => {
     it('AC-5.1: 应该能够处理 Gate 执行失败的情况', async () => {
       const engine = new WorkflowEngine();
       
@@ -625,45 +622,9 @@ describe('Acceptance Tests - Task 5.1', () => {
       expect(runner.isRetryEnabled()).toBe(true);
       expect(runner.getRetryConfig()?.maxAttempts).toBe(3);
     });
+    // Historical independent persistence AC-5.4 is archived; current owner/replay
+    // acceptance lives in root feature-spec-e2e and daemon-core recovery tests.
 
-    it('AC-5.4: 应该支持从崩溃中恢复 workflow 状态', async () => {
-      // Create persistence with event replay enabled
-      const { createEnhancedWorkflowPersistence } = await import('../src/WorkflowPersistence.js');
-      const persistence = createEnhancedWorkflowPersistence(storageDir, true, storageDir);
-      await persistence.initialize();
-
-      // Create and save a workflow instance
-      const instance: WorkflowInstance = {
-        schema_version: '1.0',
-        id: 'crash-recovery-test',
-        workflowId: 'test-workflow',
-        currentState: 'processing',
-        status: 'running',
-        history: [
-          {
-            type: 'workflow.started',
-            instanceId: 'crash-recovery-test',
-            timestamp: new Date(),
-            data: { workflowId: 'test-workflow' },
-          },
-        ],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      await persistence.saveInstance(instance);
-
-      // Perform crash recovery
-      const result = await persistence.performCrashRecovery();
-
-      // Verify successful recovery from crash
-      expect(result.recoveredInstances).toBeDefined();
-      const recovered = result.recoveredInstances.find(i => i.id === 'crash-recovery-test');
-      expect(recovered).toBeDefined();
-      expect(recovered?.id).toBe('crash-recovery-test');
-      expect(recovered?.currentState).toBe('processing');
-      expect(recovered?.status).toBe('running');
-    });
   });
 
   /**

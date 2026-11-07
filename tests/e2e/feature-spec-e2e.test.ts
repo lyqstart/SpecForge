@@ -8,18 +8,20 @@
  * - 使用 WorkflowEngine + in-memory mock（不依赖真实 daemon 进程）
  * - 验证四个 Gate 按顺序执行（Requirements→Design→Tasks→Verification）
  * - 验证每个 Gate 执行后产生对应 workflow 事件
- * - 验证 WorkflowPersistence 能保存和恢复 workflow 实例状态
+ * - 验证真实Daemon StateManager/WAL的状态委派、重启恢复与项目隔离；有限集成不冒充完整业务验收
  *
  * REQ-W3-1: feature_spec 端到端集成测试
  */
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest"
-import { mkdtemp, rm } from "node:fs/promises"
+import { mkdtemp, rm, readFile, unlink } from "node:fs/promises"
 import { join } from "node:path"
 import { tmpdir } from "node:os"
 
 import { WorkflowEngine, type WorkflowEvent } from "../../packages/workflow-runtime/src/WorkflowEngine.js"
-import { WorkflowPersistence } from "../../packages/workflow-runtime/src/WorkflowPersistence.js"
+import { existsSync } from "node:fs"
+import { StateManager } from "../../packages/daemon-core/src/state/StateManager.js"
+import { PersonalPathResolver } from "../../packages/daemon-core/src/daemon/path-resolver.js"
 import type {
   WorkflowDefinition,
   WorkflowInstance,
@@ -170,7 +172,7 @@ describe("feature_spec 端到端测试", () => {
   let capturedEvents: WorkflowEvent[]
 
   beforeEach(async () => {
-    // 创建临时目录用于 WorkflowPersistence
+    // 创建自有项目根用于Daemon持久化owner
     tempDir = await mkdtemp(join(tmpdir(), "feature-spec-e2e-"))
 
     // 初始化 in-memory event bus
@@ -370,181 +372,85 @@ describe("feature_spec 端到端测试", () => {
     })
   })
 
-  // ───────────────────────────────────────────────────────────────────────────
-  // AC-4: workflow 实例状态持久化（WorkflowPersistence）
-  // ───────────────────────────────────────────────────────────────────────────
-
-  describe("AC-4: workflow 实例状态持久化", () => {
-    it("应能将 workflow 实例保存到持久化存储", async () => {
-      const persistence = new WorkflowPersistence({
-        storageDir: tempDir,
-        enableEventReplay: false,
-      })
-      await persistence.initialize()
-
-      engine.loadWorkflow(buildFeatureSpecWorkflow())
-      const instance = engine.createInstance("feature_spec")
-
-      // 保存实例
-      await persistence.saveInstance(instance)
-
-      // 验证能从存储中加载
-      const loaded = await persistence.loadInstance(instance.id)
-      expect(loaded).not.toBeNull()
-      expect(loaded!.id).toBe(instance.id)
-      expect(loaded!.workflowId).toBe("feature_spec")
-      expect(loaded!.currentState).toBe("intake")
-      expect(loaded!.status).toBe("pending")
-    })
-
-    it("执行完成后应能持久化最终状态", async () => {
-      const persistence = new WorkflowPersistence({
-        storageDir: tempDir,
-        enableEventReplay: false,
-      })
-      await persistence.initialize()
-
-      engine.loadWorkflow(buildFeatureSpecWorkflow())
-      const instance = engine.createInstance("feature_spec")
-
-      // 执行 workflow
-      const finalInstance = await engine.execute(instance.id)
-
-      // 保存最终状态
-      await persistence.saveInstance(finalInstance)
-
-      // 从存储恢复
-      const recovered = await persistence.loadInstance(instance.id)
-      expect(recovered).not.toBeNull()
-      expect(recovered!.status).toBe("completed")
-      expect(recovered!.currentState).toBe("verification")
-    })
-
-    it("应能通过 recoverState 恢复 workflow 实例", async () => {
-      const persistence = new WorkflowPersistence({
-        storageDir: tempDir,
-        enableEventReplay: false,
-      })
-      await persistence.initialize()
-
-      engine.loadWorkflow(buildFeatureSpecWorkflow())
-      const instance = engine.createInstance("feature_spec")
-      const finalInstance = await engine.execute(instance.id)
-      await persistence.saveInstance(finalInstance)
-
-      // 模拟重启：通过 recoverState 恢复
-      const recovered = await persistence.recoverState(instance.id)
-      expect(recovered).not.toBeNull()
-      expect(recovered!.id).toBe(instance.id)
-      expect(recovered!.workflowId).toBe("feature_spec")
-      expect(recovered!.status).toBe("completed")
-      expect(recovered!.currentState).toBe("verification")
-    })
-
-    it("持久化的实例应包含正确的时间戳", async () => {
-      const persistence = new WorkflowPersistence({
-        storageDir: tempDir,
-        enableEventReplay: false,
-      })
-      await persistence.initialize()
-
-      engine.loadWorkflow(buildFeatureSpecWorkflow())
-      const instance = engine.createInstance("feature_spec")
-      await persistence.saveInstance(instance)
-
-      const loaded = await persistence.loadInstance(instance.id)
-      expect(loaded!.createdAt).toBeInstanceOf(Date)
-      expect(loaded!.updatedAt).toBeInstanceOf(Date)
-    })
-
-    it("listInstances 应返回所有已保存的实例", async () => {
-      const persistence = new WorkflowPersistence({
-        storageDir: tempDir,
-        enableEventReplay: false,
-      })
-      await persistence.initialize()
-
-      engine.loadWorkflow(buildFeatureSpecWorkflow())
-
-      // 创建并保存两个实例
-      const instance1 = engine.createInstance("feature_spec")
-      const instance2 = engine.createInstance("feature_spec")
-      await persistence.saveInstance(instance1)
-      await persistence.saveInstance(instance2)
-
-      const allInstances = await persistence.listInstances()
-      expect(allInstances).toHaveLength(2)
-      const ids = allInstances.map(i => i.id)
-      expect(ids).toContain(instance1.id)
-      expect(ids).toContain(instance2.id)
-    })
-
-    it("删除实例后 loadInstance 应返回 null", async () => {
-      const persistence = new WorkflowPersistence({
-        storageDir: tempDir,
-        enableEventReplay: false,
-      })
-      await persistence.initialize()
-
-      engine.loadWorkflow(buildFeatureSpecWorkflow())
-      const instance = engine.createInstance("feature_spec")
-      await persistence.saveInstance(instance)
-
-      const deleted = await persistence.deleteInstance(instance.id, { force: true })
-      expect(deleted).toBe(true)
-
-      const loaded = await persistence.loadInstance(instance.id)
-      expect(loaded).toBeNull()
-    })
-  })
-
-  // ───────────────────────────────────────────────────────────────────────────
-  // 完整端到端流程：加载 → 创建 → 执行 → 持久化 → 恢复
-  // ───────────────────────────────────────────────────────────────────────────
-
-  describe("完整端到端流程", () => {
-    it("应完成 feature_spec workflow 的完整生命周期", async () => {
-      const persistence = new WorkflowPersistence({
-        storageDir: tempDir,
-        enableEventReplay: false,
-      })
-      await persistence.initialize()
-
-      // Step 1: 加载 workflow 定义
+  // SPS §8: finite orchestration/Daemon-owner integration, not full WI/Gate acceptance.
+  describe("AC-4: Daemon StateManager owns persisted state", () => {
+    const resolver = new PersonalPathResolver()
+    async function owned(project = tempDir) {
+      const state = new StateManager(resolver, project)
+      await state.initialize()
+      return state
+    }
+    function orchestration(state?: StateManager) {
+      const workflow = new WorkflowEngine(state ? {
+        onTransition: p => state.transition(p.workItemId, p.fromState, p.toState, "system", p.workflowType),
+      } : undefined)
       const definition = buildFeatureSpecWorkflow()
-      engine.loadWorkflow(definition)
-      expect(engine.getWorkflow("feature_spec")).toBeDefined()
+      definition.stateMachine.initial = "created"
+      definition.stateMachine.states.created = { agent: "none", skills: [], next: "intake_ready" }
+      definition.stateMachine.states.intake_ready = { agent: "none", skills: [], next: "impact_analyzing" }
+      definition.stateMachine.states.impact_analyzing = { agent: "none", skills: [] }
+      workflow.loadWorkflow(definition)
+      return workflow
+    }
+    const advance = (workflow: WorkflowEngine, id: string, fromState: string, toState: string) =>
+      workflow.transitionFull({ workItemId: id, fromState, toState, actor: "system", workflowType: "feature_spec" })
 
-      // Step 2: 创建实例
-      const instance = engine.createInstance("feature_spec")
-      expect(instance.currentState).toBe("intake")
-      expect(instance.status).toBe("pending")
+    it("orchestration without a state capability does not create physical persistence", async () => {
+      await advance(orchestration(), "WI-OWNER-1", "", "created")
+      expect(existsSync(resolver.resolveEventsPath(tempDir))).toBe(false)
+      expect(existsSync(resolver.resolveStatePath(tempDir))).toBe(false)
+    })
 
-      // Step 3: 执行 workflow（四个 Gate 顺序执行）
-      const finalInstance = await engine.execute(instance.id)
-      expect(finalInstance.status).toBe("completed")
-      expect(finalInstance.currentState).toBe("verification")
+    it("delegates creation to the real Daemon owner and reloads its WAL", async () => {
+      const state = await owned()
+      await advance(orchestration(state), "WI-OWNER-2", "", "created")
+      const restarted = await owned()
+      expect(restarted.getState("WI-OWNER-2")?.current_state).toBe("created")
+      const events = (await readFile(resolver.resolveEventsPath(tempDir), "utf8")).trim().split("\n").map(line => JSON.parse(line))
+      expect(events).toHaveLength(1)
+      expect(events[0].action).toBe("state.transition")
+      expect(events[0].payload.to_state).toBe("created")
+    })
 
-      // Step 4: 持久化最终状态
-      await persistence.saveInstance(finalInstance)
+    it("preserves ordered orchestration transitions through a new StateManager", async () => {
+      const state = await owned(), workflow = orchestration(state)
+      await advance(workflow, "WI-OWNER-3", "", "created")
+      await advance(workflow, "WI-OWNER-3", "created", "intake_ready")
+      await advance(workflow, "WI-OWNER-3", "intake_ready", "impact_analyzing")
+      expect((await owned()).getState("WI-OWNER-3")?.current_state).toBe("impact_analyzing")
+      const events = (await readFile(resolver.resolveEventsPath(tempDir), "utf8")).trim().split("\n").map(line => JSON.parse(line))
+      expect(events.map(event => event.payload.to_state)).toEqual(["created", "intake_ready", "impact_analyzing"])
+    })
 
-      // Step 5: 验证事件序列完整
-      const gateEvents = capturedEvents.filter(e => e.type === "workflow.gate_executed")
-      const stateChanges = capturedEvents.filter(e => e.type === "workflow.state_changed")
-      expect(gateEvents).toHaveLength(5)
-      expect(stateChanges).toHaveLength(4)
+    it("rebuilds a missing checkpoint from the Daemon WAL", async () => {
+      const state = await owned(), workflow = orchestration(state)
+      await advance(workflow, "WI-OWNER-4", "", "created")
+      await advance(workflow, "WI-OWNER-4", "created", "intake_ready")
+      const before = await readFile(resolver.resolveEventsPath(tempDir))
+      await unlink(resolver.resolveStatePath(tempDir))
+      const restarted = await owned()
+      expect(restarted.getState("WI-OWNER-4")?.current_state).toBe("intake_ready")
+      expect(await readFile(resolver.resolveEventsPath(tempDir))).toEqual(before)
+      expect(existsSync(resolver.resolveStatePath(tempDir))).toBe(true)
+    })
 
-      // Step 6: 模拟重启，从持久化存储恢复
-      const recovered = await persistence.recoverState(instance.id)
-      expect(recovered).not.toBeNull()
-      expect(recovered!.status).toBe("completed")
-      expect(recovered!.currentState).toBe("verification")
+    it("retains the owner's optimistic state guard without appending rejected transitions", async () => {
+      const state = await owned()
+      await advance(orchestration(state), "WI-OWNER-5", "", "created")
+      const before = await readFile(resolver.resolveEventsPath(tempDir))
+      await expect(state.transition("WI-OWNER-5", "intake_ready", "impact_analyzing", "system")).rejects.toThrow("Optimistic lock")
+      expect(await readFile(resolver.resolveEventsPath(tempDir))).toEqual(before)
+      expect((await owned()).getState("WI-OWNER-5")?.current_state).toBe("created")
+    })
 
-      console.log(`\n✅ feature_spec E2E 完整流程通过：`)
-      console.log(`   实例 ID: ${instance.id}`)
-      console.log(`   最终状态: ${finalInstance.currentState} (${finalInstance.status})`)
-      console.log(`   Gate 执行次数: ${gateEvents.length}`)
-      console.log(`   状态转换次数: ${stateChanges.length}`)
+    it("keeps the same WI identity isolated across two owned project roots", async () => {
+      const a = await owned(join(tempDir, "a")), b = await owned(join(tempDir, "b"))
+      const workflow = orchestration(a)
+      await advance(workflow, "WI-OWNER-6", "", "created")
+      await advance(workflow, "WI-OWNER-6", "created", "intake_ready")
+      await advance(orchestration(b), "WI-OWNER-6", "", "created")
+      expect((await owned(join(tempDir, "a"))).getState("WI-OWNER-6")?.current_state).toBe("intake_ready")
+      expect((await owned(join(tempDir, "b"))).getState("WI-OWNER-6")?.current_state).toBe("created")
     })
   })
 })

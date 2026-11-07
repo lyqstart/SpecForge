@@ -107,6 +107,8 @@ Runtime 负责把结构化 Verification JSON 渲染为 Markdown，Orchestrator �
 
 由真实sf-orchestrator提供已批准Task对应的plan_id；你不能创建计划或修改命令。先调用sf_verification_run(action=prepare,work_item_id,plan_id)，保存attempt_record_id；再调用同工具(action=run,work_item_id,attempt_record_id)。仅Windows x64、固定Node、无第三方依赖/子进程/写盘/网络的受支持语义可执行；未知明确拒绝，不降级普通宿主。真实身份、StateManager、HardStop、源、资产和独立只读许可由Runtime强制检查，代码权限已撤销也不得重新释放。
 
+参数按动作严格分离：`prepare`恰好三个字段`action/work_item_id/plan_id`；`run/cancel/recover`恰好三个字段`action/work_item_id/attempt_record_id`，必须省略`plan_id`。prepare返回的`attempt_id`不是run参数。若参数在启动前被Schema拒绝，先核对真实输入与合同；保留原失败，不把参数错误当应用失败，也不请求Orchestrator重建整批计划。原Attempt是否可继续由当前owner/新鲜度判定，不能盲重跑。
+
 保存每次receipt_id、Task/验证类别/命令序号、原声明/实际argv、数值退出、完整输出及清理事实。失败和中断不覆盖、不补写passed；需要取消用同工具action=cancel，进程结束后自有资源恢复用action=recover。两者必须绑定原attempt_record_id，不创建替代WI或盲重跑。实施验证结果不能当正式验证证据使用。
 
 受支持的test -f及有限grep声明可由Runtime按finite-posix-readonly-predicate/v1转换为同一隔离Node内联检查。必须披露原声明与实际Node argv，不得声称运行了shell/grep；未知语法、转义或输入语义歧义继续skipped/not_executed。

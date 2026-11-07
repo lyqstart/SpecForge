@@ -7,7 +7,7 @@
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "bun ../../scripts/build-workflow-runtime.ts",
     "build:watch": "tsc --watch",
     "clean": "rimraf dist",
     "lint": "eslint src/**/*.ts tests/**/*.ts",
@@ -62,5 +62,15 @@
   "bugs": {
     "url": "https://github.com/specforge/specforge/issues"
   },
-  "homepage": "https://github.com/specforge/specforge#readme"
+  "homepage": "https://github.com/specforge/specforge#readme",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js",
+      "require": "./dist/src/index.js"
+    }
+  },
+  "files": [
+    "dist/src"
+  ]
 }

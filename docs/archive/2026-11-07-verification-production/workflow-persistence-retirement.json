@@ -1,0 +1,139 @@
+{
+  "utc": "2026-11-07T05:41:44.811Z",
+  "basis": "SPS8 existing Daemon state ownership",
+  "baseline_manifest_sha256": "2b23b913bd2ba0b8277ae448ca9f4b2efdf17737504338c9c0ccdcb3bb7c9aaa",
+  "changes": [
+    {
+      "path": "packages/workflow-runtime/src/index.ts",
+      "operation": "replace",
+      "sha256": "268bed6a7251cf277787a7f1f708f67d39b4340b37816faa6b959746871b1047"
+    },
+    {
+      "path": "packages/workflow-runtime/package.json",
+      "operation": "replace",
+      "sha256": "cb7fbee2a963438c2fed2f3e709cffc4cf01e7ad6b1db053a97b651fbe6bbb45"
+    },
+    {
+      "path": "packages/workflow-runtime/src/WorkflowPersistence.ts",
+      "operation": "retire_with_raw_archive",
+      "archive": "workflow-persistence-baseline/original/packages/workflow-runtime/src/WorkflowPersistence.ts"
+    },
+    {
+      "path": "packages/workflow-runtime/src/StateRecoveryManager.ts",
+      "operation": "retire_with_raw_archive",
+      "archive": "workflow-persistence-baseline/original/packages/workflow-runtime/src/StateRecoveryManager.ts"
+    },
+    {
+      "path": "packages/workflow-runtime/src/events/EventLogReader.ts",
+      "operation": "retire_with_raw_archive",
+      "archive": "workflow-persistence-baseline/original/packages/workflow-runtime/src/events/EventLogReader.ts"
+    },
+    {
+      "path": "packages/workflow-runtime/src/storage/index.ts",
+      "operation": "retire_with_raw_archive",
+      "archive": "workflow-persistence-baseline/original/packages/workflow-runtime/src/storage/index.ts"
+    },
+    {
+      "path": "packages/workflow-runtime/src/storage/WorkflowInstanceStorage.ts",
+      "operation": "retire_with_raw_archive",
+      "archive": "workflow-persistence-baseline/original/packages/workflow-runtime/src/storage/WorkflowInstanceStorage.ts"
+    },
+    {
+      "path": "packages/workflow-runtime/src/storage/AtomicWorkflowInstanceStorage.ts",
+      "operation": "retire_with_raw_archive",
+      "archive": "workflow-persistence-baseline/original/packages/workflow-runtime/src/storage/AtomicWorkflowInstanceStorage.ts"
+    },
+    {
+      "path": "packages/workflow-runtime/tests/unit/WorkflowPersistence.test.ts",
+      "operation": "retire_with_raw_archive",
+      "archive": "workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/WorkflowPersistence.test.ts"
+    },
+    {
+      "path": "packages/workflow-runtime/tests/unit/WorkflowInstanceStorage.test.ts",
+      "operation": "retire_with_raw_archive",
+      "archive": "workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/WorkflowInstanceStorage.test.ts"
+    },
+    {
+      "path": "packages/workflow-runtime/tests/unit/StateRecoveryManager.test.ts",
+      "operation": "retire_with_raw_archive",
+      "archive": "workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/StateRecoveryManager.test.ts"
+    },
+    {
+      "path": "packages/workflow-runtime/tests/unit/AtomicWorkflowInstanceStorage.test.ts",
+      "operation": "retire_with_raw_archive",
+      "archive": "workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/AtomicWorkflowInstanceStorage.test.ts"
+    },
+    {
+      "path": "packages/workflow-runtime/tests/unit/EventLogReader.test.ts",
+      "operation": "retire_with_raw_archive",
+      "archive": "workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/EventLogReader.test.ts"
+    },
+    {
+      "path": "packages/workflow-runtime/tests/integration/persistence-comprehensive.test.ts",
+      "operation": "retire_with_raw_archive",
+      "archive": "workflow-persistence-baseline/original/packages/workflow-runtime/tests/integration/persistence-comprehensive.test.ts"
+    },
+    {
+      "path": "packages/workflow-runtime/tests/integration/crash-recovery.test.ts",
+      "operation": "retire_with_raw_archive",
+      "archive": "workflow-persistence-baseline/original/packages/workflow-runtime/tests/integration/crash-recovery.test.ts"
+    },
+    {
+      "path": "packages/workflow-runtime/examples/storage-example.ts",
+      "operation": "retire_with_raw_archive",
+      "archive": "workflow-persistence-baseline/original/packages/workflow-runtime/examples/storage-example.ts"
+    },
+    {
+      "path": "packages/workflow-runtime/examples/state-recovery-example.ts",
+      "operation": "retire_with_raw_archive",
+      "archive": "workflow-persistence-baseline/original/packages/workflow-runtime/examples/state-recovery-example.ts"
+    },
+    {
+      "path": "packages/workflow-runtime/tests/acceptance.test.ts",
+      "operation": "replace",
+      "sha256": "795203b678ac4b58298b15e3dda13276b747fab429ac89a8bf0e9b35e3eb6c44"
+    },
+    {
+      "path": "tests/e2e/feature-spec-e2e.test.ts",
+      "operation": "replace",
+      "sha256": "f49a83aa96aab0f8604f5d1ef08b14853e6af16c9991d5c885b43a0a7814e5c1"
+    },
+    {
+      "path": "packages/workflow-runtime/docs/storage-implementation.md",
+      "operation": "replace",
+      "sha256": "732c9cfa15daf61d453ee3254133837f9f3f0640b9a0dec012a3c1d088a0776b"
+    },
+    {
+      "path": "packages/workflow-runtime/docs/state-recovery-mechanism.md",
+      "operation": "replace",
+      "sha256": "daf08306e02884fc7fc21b50b9e1ff45e45b87dec40f7056d30bc899949cb35b"
+    },
+    {
+      "path": "packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md",
+      "operation": "replace",
+      "sha256": "efb031c4d447728d43bcb005eaf99cfe76b6e7c94aa17016f3c6ea0e326669fd"
+    },
+    {
+      "path": "packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md",
+      "operation": "replace",
+      "sha256": "ee8f4751b8e4cfe55b911bdfaf5ad710e4ece14764642941667826f37300a764"
+    },
+    {
+      "path": "packages/workflow-runtime/docs/API.md",
+      "operation": "replace",
+      "sha256": "86d5e6a7dc632eb39b47196fba9b1c5de350d6fc76eb67dce2da071f8974dad1"
+    },
+    {
+      "path": "packages/workflow-runtime/docs/DEPLOYMENT.md",
+      "operation": "replace",
+      "sha256": "8c81be1829d631d0adbd79c0ebf7e8cde0ac0a3930fc4d962828eaac42da2bd7"
+    },
+    {
+      "path": "packages/workflow-runtime/docs/EXAMPLES.md",
+      "operation": "replace",
+      "sha256": "876592c72daeb39fab4aa4dc4bd8862e7c88d7325d83adf9056c510b325125af"
+    }
+  ],
+  "original_business_writes": false,
+  "installed_daemon_writes": false
+}

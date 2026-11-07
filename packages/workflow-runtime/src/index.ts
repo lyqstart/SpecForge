@@ -53,22 +53,6 @@ export {
   type FilterCriteria,
 } from './event-filter.js';
 
-// Persistence exports
-export {
-  WorkflowPersistence,
-  createWorkflowPersistence,
-  type PersistenceConfig,
-  type StoredWorkflowInstance,
-  type EventReplayResult,
-} from './WorkflowPersistence.js';
-
-// Storage interface exports
-export {
-  createWorkflowInstanceStorage,
-  type WorkflowInstanceStorage,
-  type StorageConfig,
-} from './storage/index.js';
-
 // Error handling exports
 export {
   WorkflowErrorHandler,
@@ -141,16 +125,6 @@ export {
   unsubscribeFromWorkflowEvents,
   type EventBusIntegrationConfig,
 } from './event-integration.js';
-
-// State Recovery exports
-export {
-  StateRecoveryManager,
-  createStateRecoveryManager,
-  type StateRecoveryOptions,
-  type ConsistencyValidationResult,
-  type StateInconsistency,
-  type CrashRecoveryResult,
-} from './StateRecoveryManager.js';
 
 
 // Agent Workflow Engine exports

@@ -32652,3 +32652,47 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 0206完整类型0，0207源/Runtime/隐私17项通过。0208重建；0211真实117文件安装/verify，0213无proxy完整原场景0：broker真实198、两次清理、新plan成功、Daemon真实199、新实例重启、两次恢复且应用不通过；0216冻结137成员完整安装/源/见证/native证据，自验PASS。该对照支持首个同步Git兼容层偏离已由异步实现修复，未声称已证明Bun内部缺陷机制。
 - 0214/215独立Bun/Node实际execFile预算正反控制均0：100ms等待任务约137/129ms被SIGTERM、1KiB输出cap触发MAXBUFFER并停止，fallback未触发、callback与close都完成。只证明进程API预算兼容，不冒充LPAC验收。
 - 0210前只读核实证据Git status856223字节、0209前后快照843336/855982完整，尚未超默认1MiB；为后续持续增长把证据carrier快照显式升至32MiB并检查status/error，失败即停止，不静默采信截断。历史回执不回写。
+
+### ERR-1986：冷Kernel枚举超时和SDK初始化版本不能冒充产品执行失败或最终加载版本
+
+- 0219在Agent枚举180秒超时，发生于Daemon/验证应用启动前；0224同安装配置预热后正式矩阵通过。具体冷启动机制仍INSUFFICIENT_EVIDENCE，未放宽应用预算或将超时行计通过。初始fixture的tool_sdk_version只说明复制版本1.18.16；Kernel实际初始化到1.18.35，后续载体记录真实before/after。0240独立比较global1.18.16与fixture1.18.35的dist/index.js和dist/tool.js两份入口原字节相同，仅证明这两文件兼容，不宣称包整体相同。EXP-001/007/008/016/298。
+
+### ERR-1987：实际安装夹具被误套历史手工复制见证
+
+- 0231在消费者启动前错误要求PRIOR_COPY_WITNESS_REQUIRED；实际夹具来自117文件正式安装。修复联测载体使用实际安装metadata、封存install proof和字节身份后0233通过，原失败保留；未删除产品HardStop或共同校验。EXP-004/007/022。
+
+### ERR-1988：部署证据写入类别使用了协议未定义名称
+
+- 0235实际授权安装成功，但其载体expected字段用了DEPLOYMENT_WRITES，协议仅有四分类。补充deployment-write-classification-0235.json明确逐项归入既有四类，未覆盖原回执或伪造安装结果。后续载体必须直接使用正式四分类。EXP-007/017/193。
+
+### ERR-1989：联测误用前台Daemon启动及未等待握手就绪
+
+- 0236用真实CLI默认前台daemon start后同步等待90秒造成载体超时；随后一度读取未被实际CLI入口采用的旧command文件，不据此归因。真实入口daemon-client.ts及文档要求detach。0237改--detach后启动退出0但立即status返回1；0238后续status0，0239等待新握手/健康PID/版本就绪、独立CIM创建时间/路径/hash及117文件后通过。确切内部握手竞态未证明，未宣称修复产品CLI。原WI载体同步采用相同就绪检查，尚未启动模型。EXP-001/007/008/038/298。
+
+### ERR-1990：大文件检索、无界输出和猜测路径造成重复取证错误
+
+- 多次把大量独立读取合到同一输出预算，active rules和含超长JSON行的历史账本结果被截断；这些调用不得计作全文读取。此前已完成的完整前置读取仍以原回执为据，不用本轮截断替代。另猜测daemon/services路径、checkpoint-05文件名及不存在README造成读取错误；均为载体/路径发现问题，未证明产品缺陷、未改变现场。
+- 改为先rg --files定位，账本rg显式--max-columns并只返回标题/短投影，JSON用解析后指定字段，必要全文按连续行块各自返回。0240独立hash核验成功不冒充源码正文读取。截断或找不到路径即明确未完成该取证，不据此作事实结论。EXP-001/007/008/021/193。
+
+### ERR-1991：当前测试仍把旧模块持久化当作SPS8验收依据
+
+- 源码直接证明Workflow Runtime入口公开独立文件存储/恢复，当前tsconfig收录该实现，root CURRENT_HERMETIC feature-spec-e2e仍调用旧WorkflowPersistence。SPS8明令该模块不拥有独立workflow-state persistence；现有测试通过不是这条规格的正向证明。
+- 当前daemon-core/cli/setup/scripts检索无旧类/工厂生产调用，ProjectManager使用真实Daemon StateManager；据此只确认公开模块/构建边界缺陷，不能声称当前Daemon实际双写。按workflow-persistence-boundary-repair-plan先封存旧字节，退出当前生产面，并把当前状态持久化/恢复验收放到Daemon真实owner；扩展唯一status的合法源范围，不新增产品能力或业务WI。EXP-004/007/017/022/031。
+
+### ERR-1991 补充：真实公开包边界已修复，部署与完整业务验收仍分开
+
+- 0244封存27份未改原始source/test/example/document并逐文件自验，manifest=2b23b913bd2ba0b8277ae448ca9f4b2efdf17737504338c9c0ccdcb3bb7c9aaa。0247普通用户宿主从真实public index加载，三个边界断言均重现失败。0248按固定旧hash验证后退役6个生产实现/入口、7个旧测试和2个示例，原字节仍在baseline；不删除历史证据。
+- 当前package只开放根导出，固定构建入口清除24个已退役dist产物再tsc，不递归清理或接受外部路径。root有限集成改用真实Daemon StateManager/WAL及neutral callback，覆盖无capability不落盘、顺序委派/重启/缺checkpoint恢复/拒绝前态不append/双项目隔离。0249边界3项、0250当前集成17项、0251完整Daemon类型、0252包构建、0255全部12包构建、0258保留编排+边界18项、0259注册root49文件739项均0。0260真实Node24.19加载全新package main，24旧输出不存在、4深层路径ERR_PACKAGE_PATH_NOT_EXPORTED，编排入口保留。
+- 739与上一版740的差异来自旧“完整流程”持久化用例及旧AC4整体替换，不把不同版本用例数冒充同一覆盖。真实业务Gate/FV/Close、最终native重新打包/用户部署和整体SPS验收仍未完成；当前用户Daemon仍是0208/a918来源，不声称新模块已进入该二进制。
+
+### ERR-1992：包cwd下错误使用根相对载体路径、不可用bun及已知受限缓存
+
+- 一次命令从workflow-runtime cwd调用根相对证据carrier，Node在载体启动前MODULE_NOT_FOUND，没有命令四件套，不能捏造seq/退出；随后0245 spawn bun ENOENT，0246 Vitest缓存rename EPERM，均未进入目标断言。保留失败；0252/255使用已核实固定Bun.exe，0247普通用户宿主同Node Vitest目标才复现三项预期失败。后续一律载体/runner绝对路径，并按已证宿主限制选择执行环境。此处属于重复EXP-002/007/008/193及ERR-1984/1990，不能声称本段重复错误检查无问题。
+- 额外几次只读检索仍使用猜测文件名、Windows rg通配路径、PowerShell双引号正则造成MODULE_NOT_FOUND/regex错误；这些失败只证明载体输入不正确，未作为产品结论。改用rg --files、已存在路径及固定字面搜索。
+
+### ERR-1993：真实Verifier混传动作专用字段，flat工具描述不足以阻止无效调用
+
+- 用户0242明确授权最小上下文GLM-5.3及同WI验证/Gate/Close，不授权旧历史/密钥或业务main。0243真实新空会话/专业Agent/用户Daemon执行中，首批五次prepare成功，run均多传prepare专用plan_id，被Runtime严格VERIFICATION_SCHEMA_FIELDS_INVALID拒绝，未形成应用退出或passed。模型handoff是线索，根因依据原始child tool parts的真实input/output与VerificationRuntime.run的精确字段校验，不以Agent总结代替。
+- 第二个真实Verifier仅传action/work_item_id/attempt_record_id后，同一安装版成功返回ec2d84148c29a89b8053897a378f1c7bbbfce17b4003d29e0050f47c1922ab27，exit0、cleanup/output完整。首批错误归于Tool Schema/Agent调用指引的可用性，不能误报LPAC或Runtime执行缺陷。外部审计者0253本机abort仅停止本轮父子会话以防无意义重派，原首条成功和五次拒绝都保留，WI仍implementation_running。
+- 最小修复在真实工具description/字段describe、Verifier Agent、验证Skill及从属合同明确严格动作字段集；Runtime不放宽。0254新增unit证明多余plan_id在native/start reservation前拒绝、同一Attempt仍可受控取消，9项通过。第二轮0257使用新空会话、精确JSON及既有receipt事实继续；不加载旧消息，未为Task001 index0重复成功步骤。0262只读真实child投影确认其余4条均exit0/cleanup_proved，Task001五条implementation执行结果齐全；共同Gate消费和完整WI尚未通过。
+- 提供方在首轮出现真实账户速率限制后恢复，保留progress原文，不扩并发、不切提供方或补造成功。用户级工具/Agent/Skill改动尚待后续正式安装；本轮纠正提示不冒充该部署已完成。EXP-004/007/008/016/026/031/298。

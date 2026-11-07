@@ -1,0 +1,142 @@
+{
+  "utc": "2026-11-07T05:38:46.834Z",
+  "source_commit": "a918b49c62e7dfaf3c0bfc57961ffe3bbaa99ba3",
+  "scope": "Unmodified source/test/example/document bytes before SPS8 legacy persistence retirement; archival tests describe historical contracts, not current acceptance.",
+  "members": [
+    {
+      "path": "packages/workflow-runtime/src/index.ts",
+      "sha256": "7af98213deb3be1b864cbac06b19b98af452fcbad47afd39f59b497af67db209",
+      "size": 3974
+    },
+    {
+      "path": "packages/workflow-runtime/package.json",
+      "sha256": "595aae781854d6165d00e88a34e88e854441deb9d39b6a7c68b01c6a46e75f1b",
+      "size": 2069
+    },
+    {
+      "path": "packages/workflow-runtime/tsconfig.json",
+      "sha256": "327e0a2f4c1717bccd2ec87f350830b48f15df8ac10c8ff89925bf7414b41276",
+      "size": 1130
+    },
+    {
+      "path": "packages/workflow-runtime/src/WorkflowPersistence.ts",
+      "sha256": "d6007f568316ad188d2ca761b202cb8e62cc0c0ab0a52ccb8592ea5b0c67ee25",
+      "size": 13473
+    },
+    {
+      "path": "packages/workflow-runtime/src/StateRecoveryManager.ts",
+      "sha256": "ceec29944fec5c12109162c0ae6c892b1b0856d5c714d03f1532432503e81e91",
+      "size": 17510
+    },
+    {
+      "path": "packages/workflow-runtime/src/events/EventLogReader.ts",
+      "sha256": "f5273d34df6d0ada812ae626fc0853bd44680630173dd9536faebb8f997369f5",
+      "size": 7245
+    },
+    {
+      "path": "packages/workflow-runtime/src/storage/index.ts",
+      "sha256": "eb1624f2a2aead3c5bd9164f3e6d62b420b3aad84f55d1b873b53267ea44f157",
+      "size": 486
+    },
+    {
+      "path": "packages/workflow-runtime/src/storage/WorkflowInstanceStorage.ts",
+      "sha256": "48ae0adf5ea0326f06b14a5327a05eea71279efde989399ce56b6d7eb5d8001e",
+      "size": 2630
+    },
+    {
+      "path": "packages/workflow-runtime/src/storage/AtomicWorkflowInstanceStorage.ts",
+      "sha256": "f4e15fcdedef2195a5cff3010e7bd64d9f1fff576ac8c9caaca1928b81281fc1",
+      "size": 16219
+    },
+    {
+      "path": "packages/workflow-runtime/tests/unit/WorkflowPersistence.test.ts",
+      "sha256": "b3b53fb9d8c6d0c5e3b39c16a307bc200757ab67d8893899503d4ff02f056cf5",
+      "size": 15045
+    },
+    {
+      "path": "packages/workflow-runtime/tests/unit/WorkflowInstanceStorage.test.ts",
+      "sha256": "de03b46c844749446a9cea564caed8130804dbd6ff41815af388ecaa9998f6fe",
+      "size": 9138
+    },
+    {
+      "path": "packages/workflow-runtime/tests/unit/StateRecoveryManager.test.ts",
+      "sha256": "77f3cc88b634bd31c2d33342a39bf11f08d9dd1c41ceb033cc580a07303f9785",
+      "size": 18041
+    },
+    {
+      "path": "packages/workflow-runtime/tests/unit/AtomicWorkflowInstanceStorage.test.ts",
+      "sha256": "66807a3db4ac6cdb7553cf5c9577f95fcb64b1113f73379e794d307c5e28dc15",
+      "size": 17921
+    },
+    {
+      "path": "packages/workflow-runtime/tests/unit/EventLogReader.test.ts",
+      "sha256": "a0244214c2e1f046bcc5b5ae755780f81a4298a43da7578e2eb7bf652cbff0db",
+      "size": 15861
+    },
+    {
+      "path": "packages/workflow-runtime/tests/integration/persistence-comprehensive.test.ts",
+      "sha256": "75e84318c5084f896e934291882a00f6529cc5519a1515b440b3f69b24328bd9",
+      "size": 25674
+    },
+    {
+      "path": "packages/workflow-runtime/tests/integration/crash-recovery.test.ts",
+      "sha256": "816f716663cea1dd80f2677c6e67619cc08cd1ea68fac82bff46a970b33c567f",
+      "size": 15693
+    },
+    {
+      "path": "packages/workflow-runtime/tests/acceptance.test.ts",
+      "sha256": "61a9ab4eaf573d8c3bc1914bd2f2e7d57c3201dc6649902c1cb4947aa5b06bc2",
+      "size": 24991
+    },
+    {
+      "path": "packages/workflow-runtime/examples/storage-example.ts",
+      "sha256": "0e243e1bfccdf1966fbcae2924d35aab889f9c3820663cf9256eb9d46419cc86",
+      "size": 4432
+    },
+    {
+      "path": "packages/workflow-runtime/examples/state-recovery-example.ts",
+      "sha256": "717adfdab4b9d4e46a2348da70aa9467a3fb311bd94a6428c8b9fe3a8833214a",
+      "size": 8244
+    },
+    {
+      "path": "packages/workflow-runtime/docs/API.md",
+      "sha256": "81bc4e5b7fc9f0ff1dd2e13f2c66abf70ef7489310aaa68621d41e80a9c2c2e6",
+      "size": 18103
+    },
+    {
+      "path": "packages/workflow-runtime/docs/DEPLOYMENT.md",
+      "sha256": "7a080402caa7701e6c87a34422528c6a8131f932d77ecf9e337f777eabf8d226",
+      "size": 14882
+    },
+    {
+      "path": "packages/workflow-runtime/docs/EXAMPLES.md",
+      "sha256": "68e7d83dc39fa0041a44ec468c77f651390fedd8d6addc670086714c3003b314",
+      "size": 19813
+    },
+    {
+      "path": "packages/workflow-runtime/docs/storage-implementation.md",
+      "sha256": "a27662a3d0e88e068a7f8e55c1d6ba034b2951fc383bcf88b8d37540ab9db26c",
+      "size": 5586
+    },
+    {
+      "path": "packages/workflow-runtime/docs/state-recovery-mechanism.md",
+      "sha256": "7f25bb6f998f14c1872e37e7f710d6c1ffedfccf119d0a3c3521e5a13dc837f1",
+      "size": 6720
+    },
+    {
+      "path": "packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md",
+      "sha256": "9d4602fa43a2a9bc5a34f5af3b7e89372af158427e28e6e5a113a60aacc6e01c",
+      "size": 5252
+    },
+    {
+      "path": "packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md",
+      "sha256": "a4e9aa2e2c191d21cc7dddb069676606332717080d1f76ee96678717ae69704b",
+      "size": 4018
+    },
+    {
+      "path": "tests/e2e/feature-spec-e2e.test.ts",
+      "sha256": "928d5d7beb857c59a35f2c107e22a2c88acb6c114490ef8403b277eb83618b57",
+      "size": 23183
+    }
+  ]
+}

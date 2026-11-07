@@ -2,9 +2,9 @@
 
 CONTRACT_ID=windows-lpac-node-readonly/v1
 AUTHORITY=SPS-1.0 §9.2.1 / Registry D20
-IMPLEMENTATION_STATUS=D20_NOT_ACCEPTED_D22_SYNTHETIC_ACCEPTED_D23_PRODUCT_INTEGRATION_REQUIRED
+IMPLEMENTATION_STATUS=D20_NOT_ACCEPTED_D22_SYNTHETIC_ACCEPTED_D23_PRODUCT_INTEGRATED
 
-2026-11-06合成复核仍未完成完整验收：原生进程限额8的真实Job曾有9或15个活成员。现有owner补齐全成员独立计数、超预算立即终止及非passed回执，但20ms采样不能证明严格瞬时总成员上限，不能用这项改动冒充固定进程上限已成立。其余有限探针的执行事实见归档acceptance-review；归档不改变本合同。D21生产采用、public接线、安装部署与原WI均继续禁止，直至缺口解决且所需独立产品裁决成立。
+历史D20多进程配置未通过完整验收：原生进程限额8的真实Job曾有9或15个活成员。全成员计数与超预算终止不能证明严格瞬时上限，该配置仍不得采用。D22独立单进程配置已完成其冻结合成矩阵，D23已取得独立生产采用决定；后续生产接线与部署按本文D23合同执行，不由旧多进程失败或合成结果单独决定。
 
 本合同从属于 SPS/Registry。D20 来自用户对 proposal-001 的明确答复“批准有限方案，先完成隔离验收”。归档仅保存决定来源，不能授权本合同以外的执行。
 
@@ -58,10 +58,10 @@ SPS §9.2.2 / Registry D21 仅授权独立实验profile `windows-lpac-node-reado
 
 CANDIDATE_PROFILE=windows-lpac-node-single-process-readonly/v1
 AUTHORITY=SPS §9.2.3 / Registry D22
-ACCEPTANCE_STATUS=REQUIRED
-BUSINESS_PROFILE_REGISTERED=NO
+ACCEPTANCE_STATUS=SYNTHETIC_ACCEPTED
+BUSINESS_PROFILE_REGISTERED=YES
 
-D23已基于完整新合成矩阵批准进入产品接线及验收阶段。此处NO表示实现登记尚未完成，不再表示缺少产品采用授权；生产入口/共同消费者/安装资产通过SP-I01/SP-D01前仍不得接原业务。历史D20/D21及多进程失败保持原结论。
+D23生产入口、共同回执校验与Windows资产现已登记。真实安装的专业Agent/Plugin与原生执行正反例、崩溃恢复、共同消费者篡改/恢复及HardStop检查已完成；用户级1.0.22共117个受管文件和新Daemon身份已独立核验。实现与部署证据见本轮归档`2026-11-07-verification-production`的命令0213、0224、0233、0235、0239及独立对账0240。该归档仅证明对应执行事实，产品边界仍以SPS/Registry及本合同为准。合成夹具的上游审批/Gate数据不证明真实业务工作流已通过；原WI真实提供方验证、正式Gate/FV/Close与整体SPS验收仍待完成。历史D20/D21及多进程失败保持原结论。
 
 用户已选择单进程首期方案。旧多进程矩阵仍NOT_ACCEPTED，原生预算8出现9/15的事实不修改。新候选仅在自有合成环境使用固定Node24.19、恰好registryRead、LPAC有效权限、从零构造环境、只读输入/runtime/profile/私有注册表及无网络边界。DETACHED挂起创建；恢复前独立核验child policy实际flags恰为1、正确token/SID/LPAC及Job。Node禁止native addons，应用不得取得特权父进程或控制句柄；创建前子进程限制不能被可关闭的应用自报开关代替。
 
@@ -104,3 +104,5 @@ Task是WI-owned产物，使用directory-layout定义的canonical `candidates/tas
 独立人工观测不得携带`execution_receipt_id/task_id/verification_type/command_index`执行主体，也不能以加上`manual:`前缀把可执行Task结果当成人工通过；其独立manual_acceptance来源仍由原有source/time owner核验。人工观测条目不提供Task执行完成证明。
 
 上述为实现合同，不是完成声明。实际登记、发布集合、安装器、模板/Agent/Skill和真实部署结果须由SP-I01/SP-D01证据分别验收。
+
+`sf_verification_run`按动作使用严格字段集：prepare恰为`action/work_item_id/plan_id`；run、cancel、recover恰为`action/work_item_id/attempt_record_id`，不得带plan_id或把attempt_id代替attempt_record_id。额外字段在启动前拒绝，不产生应用退出码或passed；参数拒绝不等于应用执行失败，原Attempt的后续使用仍须满足owner、新鲜度和一次性消费约束。

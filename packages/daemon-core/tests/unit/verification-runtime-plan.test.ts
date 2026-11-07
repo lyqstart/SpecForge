@@ -101,6 +101,19 @@ describe('verification Runtime plan/permission owner (unit dependencies)',()=>{
     expect(cancellation).toEqual({attempt_id:prepared.attempt_id,plan_id:plan.plan_id});
     await expect(fs.stat(path.join(f.store.root,'runs',prepared.attempt_id as string))).rejects.toMatchObject({code:'ENOENT'});
   });
+  it('rejects prepare-only plan_id on run before native start and preserves the Attempt for controlled cancellation',async()=>{
+    const f=await fixture(),plan=await f.service.plan(f.args,f.context('grant'));
+    const prepared=await f.service.run({action:'prepare',work_item_id:wi,plan_id:plan.plan_id},f.context('prepare'));
+    const native=vi.spyOn(f.service.native,'execute').mockRejectedValue(Error('UNEXPECTED_NATIVE_START'));
+    await expect(f.service.run({action:'run',work_item_id:wi,attempt_record_id:prepared.attempt_record_id,plan_id:plan.plan_id},f.context('extraPrepareField'))).rejects.toThrow('VERIFICATION_SCHEMA_FIELDS_INVALID');
+    expect(native).not.toHaveBeenCalled();
+    expect(await f.store.has('start',hash(prepared.attempt_id as string))).toBe(false);
+    expect(await f.service.getAttempt(prepared.attempt_record_id as string)).toMatchObject({planId:plan.plan_id});
+    const cancelled=await f.service.run({action:'cancel',work_item_id:wi,attempt_record_id:prepared.attempt_record_id},f.context('cancelSameAttempt'));
+    expect(cancelled.cancellation_requested).toBe(true);
+    expect(cancelled.application_passed).toBe(false);
+    expect(native).not.toHaveBeenCalled();
+  });
   it('recovers an authenticated interrupted preparation and refuses unknown extra files',async()=>{
     const f=await fixture();
     const spy=vi.spyOn(f.service as any,'freeze').mockRejectedValueOnce(Error('Synthetic preparation interruption'));
