@@ -1,10 +1,15 @@
 import { describe, expect, it } from 'vitest';
+import { mkdtempSync, rmdirSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import {
   EXECUTION_PROTOCOL_PATH,
+  collectBootstrap,
   findLegacyActiveStatusPaths,
   parseNulRecords,
   parseProjectStatus,
   sha256,
+  run,
   validateProjectStatus,
 } from '../../../../scripts/project-session-bootstrap.mjs';
 
@@ -132,5 +137,44 @@ describe('project session bootstrap contract', () => {
       ' M tracked.md',
       '?? untracked.md',
     ]);
+  });
+
+  it('captures a complete NUL path inventory larger than 1 MiB', () => {
+    const result = run(process.execPath, ['-e',
+      "process.stdout.write(('docs/archive/'+'x'.repeat(128)+'\\0').repeat(10000)+'final-path\\0')",
+    ], process.cwd());
+    expect(result.ok).toBe(true);
+    expect(result.status).toBe(0);
+    expect(Buffer.byteLength(result.stdout)).toBeGreaterThan(1024 * 1024);
+    const paths = parseNulRecords(result.stdout);
+    expect(paths).toHaveLength(10001);
+    expect(paths.at(-1)).toBe('final-path');
+  });
+
+  it('rejects truncated output exceeding the bounded buffer', () => {
+    const result = run(process.execPath, ['-e',
+      "process.stdout.write(Buffer.alloc(33*1024*1024,120))",
+    ], process.cwd());
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain('ENOBUFS');
+  });
+
+  it('keeps a nonzero command exit failed despite complete large output', () => {
+    const result = run(process.execPath, ['-e',
+      "process.stdout.write('x'.repeat(2*1024*1024),()=>process.exit(7))",
+    ], process.cwd());
+    expect(result.status).toBe(7);
+    expect(result.ok).toBe(false);
+  });
+
+  it('keeps bootstrap blocked when Git cannot provide the inventory', () => {
+    const directory = mkdtempSync(path.join(tmpdir(), 'sf-bootstrap-git-failure-'));
+    try {
+      const receipt = collectBootstrap(directory, { offline: true });
+      expect(receipt.bootstrapStatus).toBe('BLOCKED');
+      expect(receipt.issues).toContain('TRACKED_FILE_LIST_UNAVAILABLE');
+    } finally {
+      rmdirSync(directory);
+    }
   });
 });

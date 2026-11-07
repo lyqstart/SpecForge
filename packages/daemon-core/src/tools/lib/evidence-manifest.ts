@@ -21,6 +21,15 @@ export interface EvidenceManifest {
     description?: string;
     hash?: string;
     created_at?: string;
+    status?: 'passed'|'failed'|'skipped';
+    evidence_type?: string;
+    level?: string;
+    execution_receipt_id?: string;
+    task_id?: string;
+    verification_type?: 'unit'|'property'|'integration'|'e2e'|'regression';
+    command_index?: number;
+    command?: string;
+    hash_domain?: 'canonical-json:verification-execution/v1';
   }>;
 }
 

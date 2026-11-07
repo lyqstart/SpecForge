@@ -199,6 +199,7 @@ function reportEvidenceAlignment(
 }
 
 export async function evaluateVerificationGovernanceContract(input: {
+  executionEvidenceConsumer?: import('../../verification/execution-evidence-consumer').ExecutionEvidenceConsumer;
   workItemDir: string;
   workItemId?: string;
   workflowType?: string;
@@ -226,6 +227,7 @@ export async function evaluateVerificationGovernanceContract(input: {
 
   const checks: GateReportCheck[] = [];
   const integrity = await inspectVerificationEvidenceIntegrity({
+    executionEvidenceConsumer:input.executionEvidenceConsumer,
     projectRoot: path.resolve(input.workItemDir, '..', '..', '..'),
     workItemDir: input.workItemDir,
     workItemId: evidenceWorkItemId,

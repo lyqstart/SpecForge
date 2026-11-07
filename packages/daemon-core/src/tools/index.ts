@@ -11,6 +11,7 @@ import './handlers/sf-requirements-gate';
 import './handlers/sf-design-gate';
 import './handlers/sf-tasks-gate';
 import './handlers/sf-verification-gate';
+import './handlers/sf-verification-execution';
 import './handlers/sf-safe-bash';
 import './handlers/sf-batch-verify';
 import './handlers/sf-doctor';

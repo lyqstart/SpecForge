@@ -2,6 +2,17 @@ import { describe, it, expect } from "vitest"
 import { lintToolSchemaSource } from "../../../scripts/lib/verify-tool-schemas"
 
 describe("lintToolSchemaSource — Zod v4 record arity guardrail", () => {
+  it('rejects a raw descriptor at any top-level args field before installation',()=>{
+    const source='export default tool({args:{first:tool.schema.string(),work_item_id:{description:"WI",type:"string"}},execute(){}})'
+    expect(lintToolSchemaSource('tools/sf_bad.ts',source).map(i=>i.code)).toEqual(['ZOD_RAW_ARGS_DESCRIPTOR'])
+  })
+  it('ignores schema-looking text/comments and accepts nested Zod shapes',()=>{
+    const source='const text="args: {bad: {type: string}}"; /* args: {bad: {}} */ export default tool({args:{value:tool.schema.object({nested:tool.schema.string()})}})'
+    expect(lintToolSchemaSource('tools/sf_ok.ts',source)).toEqual([])
+  })
+  it('also checks a quoted raw field key',()=>{
+    expect(lintToolSchemaSource('tools/sf_bad.ts',`tool({args:{"work_item_id":{type:"string"}}})`)[0]?.code).toBe('ZOD_RAW_ARGS_DESCRIPTOR')
+  })
   it("flags single-arg .record()", () => {
     const src = `
       export default tool({

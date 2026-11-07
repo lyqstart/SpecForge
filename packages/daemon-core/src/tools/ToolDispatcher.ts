@@ -15,6 +15,7 @@ import { readAuthoritativeWorkItems } from './lib/authoritative-work-items';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { isVerificationRecoveryRequest, VERIFICATION_REQUEST_ABORT } from '../verification/request-context';
 
 export interface ToolInvokeRequest {
   tool: string;
@@ -22,6 +23,9 @@ export interface ToolInvokeRequest {
   context?:
     | {
         sessionID?: string;
+        messageID?: string;
+        callID?: string;
+        [VERIFICATION_REQUEST_ABORT]?: AbortSignal;
         agent?: string;
         directory?: string;
         worktree?: string;
@@ -32,6 +36,7 @@ export interface ToolInvokeRequest {
 }
 
 export interface ToolDeps {
+  verificationRuntime?: import('../verification/VerificationRuntime').VerificationRuntime;
   acceptedConfiguration?: import('@specforge/configuration').MergedConfig;
   stateManager: any;
   workflowEngine: any;
@@ -293,11 +298,12 @@ export class ToolDispatcher {
     }
 
     const projectRoot = resolveProjectRoot(ctx);
+    const verificationRecovery = isVerificationRecoveryRequest(req.tool, req.args);
 
     let acceptedConfiguration = this.deps.acceptedConfiguration;
     // Configuration repair must remain reachable when the current document is corrupt.
     // Its owner validates prospective data and enforces the same activation boundary.
-    if (req.tool !== 'sf_project_config' && this.deps.projectManager?.getProjectConfiguration) {
+    if (req.tool !== 'sf_project_config' && !verificationRecovery && this.deps.projectManager?.getProjectConfiguration) {
       try { acceptedConfiguration = await this.deps.projectManager.getProjectConfiguration(projectRoot); }
       catch (error) { return { success: false, error: error instanceof Error ? error.message : 'CONFIGURATION_ACCEPTANCE_FAILED' }; }
     }
@@ -305,8 +311,8 @@ export class ToolDispatcher {
 
     // Project-scoped HardStop is independent of WI resolution and must be
     // enforced even when no active WI exists or several WIs are active.
-    const projectHardStopGuard = guardHardStop(projectRoot, '', req.tool);
-    if (!projectHardStopGuard.allowed) {
+    const projectHardStopGuard = verificationRecovery ? { allowed:true } : guardHardStop(projectRoot, '', req.tool);
+    if (!projectHardStopGuard.allowed && !verificationRecovery) {
       const result = {
         success: false,
         error: projectHardStopGuard.error,
@@ -332,10 +338,10 @@ export class ToolDispatcher {
     // A work-item-scoped HardStop must not be bypassed merely because several
     // active WIs make implicit context resolution ambiguous. The caller can
     // still operate on an unrelated WI by passing that WI explicitly.
-    if (hardStopContext.unavailable && !isHardStopRecoveryTool(req.tool)) {
+    if (hardStopContext.unavailable && !isHardStopRecoveryTool(req.tool) && !verificationRecovery) {
       return { success: false, denied: true, error: 'AUTHORITATIVE_STATE_UNAVAILABLE' };
     }
-    if (!work_item_id && hardStopContext.activeWorkItemIds.length > 1) {
+    if (!verificationRecovery && !work_item_id && hardStopContext.activeWorkItemIds.length > 1) {
       const blockedWorkItemIds = hardStopContext.activeWorkItemIds.filter(
         activeWorkItemId => !guardHardStop(projectRoot, activeWorkItemId, req.tool).allowed
       );
@@ -368,8 +374,8 @@ export class ToolDispatcher {
     }
 
     const relevantWorkItemId = hardStopContext.resolvedWorkItemId;
-    const hardStopGuard = guardHardStop(projectRoot, relevantWorkItemId ?? '', req.tool);
-    if (!hardStopGuard.allowed) {
+    const hardStopGuard = verificationRecovery ? { allowed:true } : guardHardStop(projectRoot, relevantWorkItemId ?? '', req.tool);
+    if (!hardStopGuard.allowed && !verificationRecovery) {
       const result = {
         success: false,
         error: hardStopGuard.error,

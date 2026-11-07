@@ -4,6 +4,28 @@
  * This client never starts or stops either OpenCode or the SpecForge Daemon.
  */
 import type { OpenCodeModelCapabilities } from '../types';
+import path from 'node:path';
+import { createHash } from 'node:crypto';
+import type { TrustedToolInvocationRequest, TrustedToolInvocationProof } from '@specforge/types/trusted-tool-invocation';
+
+export type OpenCodeToolInvocationRequest = TrustedToolInvocationRequest;
+export type OpenCodeToolInvocationProof = TrustedToolInvocationProof;
+
+function canonicalJson(value: unknown): string {
+  if (value === null || typeof value === 'string' || typeof value === 'boolean') return JSON.stringify(value);
+  if (typeof value === 'number' && Number.isFinite(value)) return JSON.stringify(value);
+  if (Array.isArray(value)) return '[' + value.map(canonicalJson).join(',') + ']';
+  if (typeof value === 'object' && value !== null) {
+    const record = value as Record<string, unknown>;
+    return '{' + Object.keys(record).sort().map(key => JSON.stringify(key) + ':' + canonicalJson(record[key])).join(',') + '}';
+  }
+  throw new OpenCodeRuntimeError('TOOL_INVOCATION_NON_JSON_INPUT');
+}
+
+const sameDirectory = (left: string, right: string): boolean => {
+  const a = path.resolve(left), b = path.resolve(right);
+  return process.platform === 'win32' ? a.toLowerCase() === b.toLowerCase() : a === b;
+};
 
 export interface OpenCodeRuntimeSession {
   id: string;
@@ -65,6 +87,51 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
       throw new OpenCodeRuntimeError('OpenCode health response is missing healthy/version fields');
     }
     return value['version'];
+  }
+
+  /** Verify the actual running tool part from the configured Runtime. Caller agent is never an input. */
+  async verifyToolInvocation(input: OpenCodeToolInvocationRequest): Promise<OpenCodeToolInvocationProof> {
+    const expectedAgent = input.tool === 'sf_verification_plan' ? 'sf-orchestrator' :
+      input.tool === 'sf_verification_run' ? 'sf-verifier' : null;
+    if (!expectedAgent || !/^ses_[A-Za-z0-9]+$/.test(input.sessionId) || !/^msg_[A-Za-z0-9]+$/.test(input.messageId) ||
+        !path.isAbsolute(input.directory) || !this.isRecord(input.args)) {
+      throw new OpenCodeRuntimeError('TOOL_INVOCATION_IDENTITY_REQUIRED');
+    }
+    const sessionPath = `/session/${encodeURIComponent(input.sessionId)}`;
+    const session = this.unwrap(await this.requestJson('GET', this.withDirectory(sessionPath, input.directory)));
+    if (!this.isRecord(session) || session['id'] !== input.sessionId || typeof session['directory'] !== 'string' ||
+        !sameDirectory(session['directory'], input.directory)) throw new OpenCodeRuntimeError('TOOL_INVOCATION_PROJECT_MISMATCH');
+    const body = this.unwrap(await this.requestJson('GET', this.withDirectory(
+      `${sessionPath}/message/${encodeURIComponent(input.messageId)}`, input.directory)));
+    if (!this.isRecord(body) || !this.isRecord(body['info']) || !Array.isArray(body['parts'])) {
+      throw new OpenCodeRuntimeError('TOOL_INVOCATION_RUNTIME_RECORD_INVALID');
+    }
+    const info = body['info'];
+    if (info['id'] !== input.messageId || info['sessionID'] !== input.sessionId || info['role'] !== 'assistant' ||
+        info['agent'] !== expectedAgent || info['error'] !== undefined || !this.isRecord(info['path']) ||
+        typeof info['path']['cwd'] !== 'string' || !sameDirectory(info['path']['cwd'], input.directory)) {
+      throw new OpenCodeRuntimeError('TOOL_INVOCATION_OWNER_NOT_PROVED');
+    }
+    const serializedInput = canonicalJson(input.args);
+    const matches = body['parts'].filter(part => this.isRecord(part) && part['type'] === 'tool' &&
+      part['sessionID'] === input.sessionId && part['messageID'] === input.messageId && part['tool'] === input.tool &&
+      this.isRecord(part['state']) && part['state']['status'] === 'running' &&
+      this.isRecord(part['state']['input']) && canonicalJson(part['state']['input']) === serializedInput);
+    if (matches.length !== 1 || !this.isRecord(matches[0])) throw new OpenCodeRuntimeError('TOOL_INVOCATION_RUNNING_CALL_REQUIRED');
+    const part = matches[0], state = part['state'] as Record<string, unknown>;
+    const time = state['time'];
+    if (typeof part['callID'] !== 'string' || !part['callID'] || !this.isRecord(time) ||
+        typeof time['start'] !== 'number' || !Number.isSafeInteger(time['start']) ||
+        time['start'] > Date.now() || Date.now() - time['start'] > 300_000) {
+      throw new OpenCodeRuntimeError('TOOL_INVOCATION_FRESHNESS_REQUIRED');
+    }
+    const hash = (value: string): string => createHash('sha256').update(value).digest('hex');
+    const projection: Omit<OpenCodeToolInvocationProof, 'source' | 'observedAt' | 'runtimeProjectionSha256'> = {
+      sessionId: input.sessionId, messageId: input.messageId, callId: part['callID'],
+      agent: expectedAgent, directory: path.resolve(input.directory), tool: input.tool,
+      inputSha256: hash(serializedInput), startedAt: time['start'] };
+    return { source: 'runtime-tool-invocation/v1', ...projection, observedAt: new Date().toISOString(),
+      runtimeProjectionSha256: hash(canonicalJson(projection)) };
   }
 
   async getModelCapabilities(model: string): Promise<OpenCodeModelCapabilities> {

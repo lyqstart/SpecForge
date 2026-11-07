@@ -53,6 +53,8 @@ export type {
   OpenCodeRuntimeSession,
   OpenCodeRuntimePrompt,
   OpenCodeHttpRuntimeClientOptions,
+  OpenCodeToolInvocationRequest,
+  OpenCodeToolInvocationProof,
 } from './integration/OpenCodeHttpRuntimeClient';
 export type {
   ThinPluginClientConfig,

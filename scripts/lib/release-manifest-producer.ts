@@ -7,6 +7,7 @@ import type { ArtifactSurfaceReport } from '../../packages/scope-gate/src/releas
 import type { ArtifactItem } from '../../packages/scope-gate/src/release-set-validator';
 import {
   SHARED_COMPONENT_REGISTRY,
+  isRegistryEntryApplicable,
   resolveRegistryEntryPath,
   resolveRegistryReleaseItemIds,
   resolveRegistrySourcePath,
@@ -45,6 +46,7 @@ export interface ReleaseManifestProducerOptions {
   releaseId: string;
   candidateId: string;
   platform?: NodeJS.Platform;
+  architecture?: string;
   registry?: readonly ComponentEntry[];
   outputPath?: string;
 }
@@ -258,6 +260,7 @@ export async function produceReleaseManifest(
   const installFiles: ReleaseInstallFile[] = [];
 
   for (const entry of registry) {
+    if (!isRegistryEntryApplicable(entry,platform,options.architecture??process.arch)) continue;
     const sourcePath = resolveRegistrySourcePath(entry, platform);
     const source = await readBoundArtifact(candidateRoot, sourcePath, 'release_manifest', errors);
     if (!source) continue;

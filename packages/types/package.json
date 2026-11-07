@@ -1,6 +1,6 @@
 {
   "name": "@specforge/types",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "description": "Shared TypeScript types for SpecForge modules",
   "type": "module",
   "main": "dist/index.js",
@@ -51,6 +51,11 @@
       "import": "./dist/schema-contract.js",
       "require": "./dist/schema-contract.js"
     },
+    "./trusted-tool-invocation": {
+      "types": "./dist/trusted-tool-invocation.d.ts",
+      "import": "./dist/trusted-tool-invocation.js",
+      "require": "./dist/trusted-tool-invocation.js"
+    },
     "./llm-kernel-contract": {
       "types": "./dist/llm-kernel-contract.d.ts",
       "import": "./dist/llm-kernel-contract.js",
@@ -87,6 +92,9 @@
       ],
       "schema-contract": [
         "dist/schema-contract.d.ts"
+      ],
+      "trusted-tool-invocation": [
+        "dist/trusted-tool-invocation.d.ts"
       ],
       "llm-kernel-contract": [
         "dist/llm-kernel-contract.d.ts"

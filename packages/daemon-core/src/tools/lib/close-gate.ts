@@ -745,6 +745,7 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
   }
 
   const evidenceIntegrity = await inspectVerificationEvidenceIntegrity({
+    executionEvidenceConsumer:ctx.executionEvidenceConsumer,
     projectRoot: ctx.projectRoot,
     workItemDir: ctx.workItemDir,
     workItemId: ctx.workItemId,

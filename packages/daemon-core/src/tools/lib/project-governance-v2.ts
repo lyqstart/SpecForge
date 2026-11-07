@@ -40,6 +40,7 @@ import {
 } from '@specforge/types/directory-layout';
 import { validateTaskArtifactContract } from './sf_markdown_verification_parser.js';
 import { sameResolvedPath } from './path-identity.js';
+import { inspectVerificationEvidenceIntegrity } from './verification-evidence-integrity.js';
 
 const execFileAsync = promisify(execFile);
 const SPEC_DIR = '.specforge';
@@ -3149,6 +3150,7 @@ export async function assertSpecMigrationProjectSpecGitDiffUnchanged(input: {
 }
 
 export async function checkFormalVersionEligibility(input: {
+  executionEvidenceConsumer?: import('../../verification/execution-evidence-consumer').ExecutionEvidenceConsumer;
   projectRoot: string;
   workItemDir: string;
   workItemId: string;
@@ -3157,6 +3159,9 @@ export async function checkFormalVersionEligibility(input: {
   const checks: GovernanceCheck[] = [];
   const inputFiles: string[] = [];
   const specMigrationNoCode = isSpecMigrationNoCodeWorkflow('', input.workflowPath);
+  const executionIntegrity = await inspectVerificationEvidenceIntegrity({projectRoot:input.projectRoot,workItemDir:input.workItemDir,
+    workItemId:input.workItemId,executionEvidenceConsumer:input.executionEvidenceConsumer});
+  addCheck(checks,'formal_execution_evidence_integrity','Execution evidence is authentic, current and completely terminated',executionIntegrity.invalidity_reasons.length===0,executionIntegrity.invalidity_reasons.join('; ')||undefined);
 
   const readGate = async (gateId: string) => {
     const gatePath = path.join(input.workItemDir, 'gates', `${gateId}.json`);

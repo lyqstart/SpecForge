@@ -28,6 +28,7 @@ export type GateReportV11 = SharedGateReport;
 export type CandidateGatePhaseV11 = 'design' | 'requirements' | 'tasks' | 'full';
 
 export interface GateContext {
+  executionEvidenceConsumer?: import('../../verification/execution-evidence-consumer').ExecutionEvidenceConsumer;
   workItemId: string;
   workItemDir: string;
   projectRoot: string;

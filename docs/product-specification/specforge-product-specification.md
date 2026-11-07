@@ -4,7 +4,7 @@
 >
 > Specification ID: SPS-1.0
 >
-> Product release version: 1.0.21
+> Product release version: 1.0.22
 >
 > Product version epoch: 1
 >
@@ -291,6 +291,8 @@ OpenCode 配置根解析顺序：
 - specforge-manifest.json 位于 OpenCode config 根，不位于 sf-user。
 - daemon.json 位于 OpenCode config 根。
 - 用户级目录只承载用户/部署资产，不成为 Project Spec 权威。
+
+D23有限验证的固定运行资产放在`sf-user/bin/verification/{assets.json,node.exe,specforge-verify.exe}`，并绑定同级bin中的`specforged.exe`身份；不可变计划、输入副本、Attempt、可信回执和恢复记录由`sf-user/runtime/verification-owner`拥有。该私有存储不是Project Spec或工作流状态源，不允许Agent通过普通artifact写入。
 
 ## 4.2 项目级 .specforge
 
@@ -704,6 +706,22 @@ Changed Files Audit 必须绑定本次读取的 Write Guard、HardStop resolutio
 新配置须独立完成固定CJS/ESM/TypeScript正例、所有文件/别名/假凭据和注册表拒绝、网络/COM/native创建、策略override/可信父进程特权句柄/控制台绕行拒绝、进程1及墙钟/内存/输出/取消、最后Job句柄关闭、真实launcher/Daemon崩溃重启和清理中断恢复。禁止将旧多进程后代正例计为新配置覆盖；新配置禁止创建后代，须实际证明拒绝并确认没有额外成员。需要管理员的新夹具仍须单独具体授权；可只读复用已核验的边界外链接，不改旧ACL，以宿主可读和当前输入正控制区分有效拒绝与夹具缺失。
 
 先更新从属合同并通过完整新矩阵，再依据完整证据作D21要求的独立生产采用裁决，之后才接产品工具、共同消费者、发布部署及原WI。本次范围决定本身不启用产品执行，也不代表原Task005或整体规格已经通过。
+
+### 9.2.4 严格单进程能力的产品采用（D23）
+
+产品负责人依据D22完整合成隔离矩阵，批准将 `windows-lpac-node-single-process-readonly/v1` 接入产品并继续完成正式工具、共同消费者、安装部署及原WI验证。D20零capability和旧多进程失败原样保留；本采用决定不把合成launcher变成业务工具，也不宣称产品验收已完成。D22固定Node24.19、Windows x64/LPAC/单registryRead、创建前child policy1、DETACHED、no-addons、Job1及文件/网络/预算边界保持不变；未知或不支持的命令不得降级执行。
+
+sf_verification_plan只能由实际sf-orchestrator创建；sf_verification_run只能由实际sf-verifier消费，强制身份核验不依赖enableRBAC，不信任调用参数或context自报agent。身份必须从Runtime已有绑定或经可信OpenCode运行事实证明，绑定项目、会话及实际调用；无法核验即拒绝。Plan绑定已批准Task及独立只读验证许可，与代码写许可分离，只在implementation_running/verification_running合法阶段工作，不推进状态。真实StateManager、HardStop、项目/WI/PSV/Manifest、Git提交/分支、完整输入和执行资产在计划、运行前后及消费时一致；源或许可漂移使结果失效。
+
+执行期间持续复核实际工具调用的running归属；取消、调用结束或归属无法核验时，Runtime必须沿受控取消路径停止任务，不能仅依赖宿主HTTP断连事件。版本化不可变调用lease与执行回执共同绑定，由共同消费者核验；没有完整有效lease的执行不能作为passed证据。
+
+Runtime验证owner保留不可覆盖的计划、Attempt、原始输出及受信回执，禁止Agent通过artifact写入或不可信stdout伪造。运行只消费已校验计划和固定资产，调用者不能指定宿主程序、脚本、环境、cwd或额外预算。原命令、有限解析版本、实际argv及其验收语义一并保存；不能证明语义保持则not_executed。取消、超限、崩溃、清理未知和无数值退出不能通过；恢复须先核验资源归属、稳定进程身份和历史链，不覆盖失败或补写成功。
+
+对已批准Task的只读文件存在性与有限grep检查，可以按从属合同`finite-posix-readonly-predicate/v1`证明当前冻结输入的原判定和输出语义，再归一化为同一受限Node内联验收。必须显式记录归一化，实际数值退出来自隔离Node，不能冒称已运行shell/grep；不支持或有歧义的声明继续拒绝，sf_safe_bash边界不变。
+
+Verification Report、Evidence Manifest、Verification Gate、Formal Version和Close必须使用共同执行证据校验器，核验计划/源/资产/回执身份、新鲜度、实际owner/状态/许可及完整终止，真实拒绝篡改、复制、越权、HardStop和陈旧结果。完成SP-I01及固定编译资产/模板/Agent/Skill/登记/安装器一致性的SP-D01、安装后新Daemon真实正反例与中断恢复后，方可在原业务启用。优先恢复原WI，由合法owner重新核验Task005及其余验收的原命令语义，不创建重复WI、不手改封存Task、不自动补写implementation_done/verification_done或跳过Gate/Audit/Merge/Close。
+
+另批准一次Bootstrap自身故障的有限恢复：真实跟踪文件清单超出spawnSync默认缓冲引发ENOBUFS时，仅为该自修复将输出上限显式设为32MiB，并验证大于1MiB完整清单及超限/失败仍阻断；真实READY前不进行其他产品写入。此恢复不放宽后续Bootstrap门禁。
 
 ## 9.3 HardStop
 
@@ -1245,7 +1263,9 @@ Scope Gate 只能从本块读取 current release classification，并将 source 
         "tool:sf_tasks_gate",
         "tool:sf_trace_matrix",
         "tool:sf_user_decision_record",
-        "tool:sf_verification_gate"
+        "tool:sf_verification_gate",
+        "tool:sf_verification_plan",
+        "tool:sf_verification_run"
       ],
       "classification": "CURRENT_RELEASE_CORE",
       "requiredSurfaces": [

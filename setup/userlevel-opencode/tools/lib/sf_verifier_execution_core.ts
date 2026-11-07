@@ -179,9 +179,9 @@ export async function executeCommand(cmd: CollectedCommand): Promise<Verificatio
 }
 
 /**
- * Execute a shell command and return stdout, stderr, and exit code.
- * Resolves even on non-zero exit codes (collect-all strategy).
- * Rejects only when the command cannot be spawned at all.
+ * Legacy finite in-process reads only; it never spawns a shell or Node.
+ * D23 execution requires the genuine public plan/run tool call and its frozen Task identity.
+ * A command string alone cannot obtain that independent permission or produce an accepted receipt.
  */
 async function execPromise(command: string): Promise<{ stdout: string; stderr: string; exitCode: number }> {
   const result = await executeReadOnlyCommand({command, cwd: process.cwd(), timeoutMs: 120000, outputLimit: 65536});

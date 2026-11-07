@@ -30,6 +30,39 @@ export interface SchemaLintIssue {
 
 const WRAPPER_DIRS = ["tools", "tools/lib", "plugins"]
 
+/** Source-only lexical guard for plain JSON descriptors in a tool args shape.
+ * This is not a substitute for real SDK/Kernel schema conversion acceptance. */
+function rawArgsDescriptors(source:string):number[] {
+  const tokens:Array<{value:string;index:number}>=[]
+  for(let i=0;i<source.length;){
+    const c=source[i]!
+    if(/\s/.test(c)){i++;continue}
+    if(c==='/'&&source[i+1]==='/'){const end=source.indexOf('\n',i+2);i=end<0?source.length:end;continue}
+    if(c==='/'&&source[i+1]==='*'){const end=source.indexOf('*/',i+2);i=end<0?source.length:end+2;continue}
+    if(c==='"'||c==="'"||c==='`'){
+      const start=i++,quote=c
+      while(i<source.length){if(source[i]==='\\'){i+=2;continue}if(source[i++]===quote)break}
+      // A quoted key remains one token; quoted source text is never scanned as code.
+      tokens.push({value:'<literal>',index:start});continue
+    }
+    const name=/^[A-Za-z_$][A-Za-z0-9_$]*/.exec(source.slice(i))
+    if(name){tokens.push({value:name[0],index:i});i+=name[0].length}
+    else{tokens.push({value:c,index:i});i++}
+  }
+  const issues:number[]=[]
+  for(let i=0;i<tokens.length-2;i++){
+    if(tokens[i]!.value!=='args'||tokens[i+1]!.value!==':'||tokens[i+2]!.value!=='{')continue
+    let depth=1
+    for(let n=i+3;n<tokens.length&&depth>0;n++){
+      const token=tokens[n]!
+      if(depth===1&&tokens[n+1]?.value===':'&&tokens[n+2]?.value==='{')issues.push(token.index)
+      if(token.value==='{')depth++
+      if(token.value==='}')depth--
+    }
+  }
+  return [...new Set(issues)]
+}
+
 /**
  * Return the top-level argument count of the call whose argument list starts at
  * `open` (index of the "(" that follows the callee). Commas nested inside
@@ -127,6 +160,7 @@ export function lintToolSchemaSource(relativePath: string, source: string): Sche
     }
   }
 
+  for(const index of rawArgsDescriptors(source))issues.push({relativePath,line:lineOf(index),code:'ZOD_RAW_ARGS_DESCRIPTOR',message:'Tool args fields must be Zod schemas built with tool.schema; a plain JSON descriptor cannot be converted by the public SDK.'})
   return issues
 }
 

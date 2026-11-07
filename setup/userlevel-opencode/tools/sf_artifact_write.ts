@@ -10,20 +10,9 @@ export default tool({
     " 项目配置只能由 sf-orchestrator 在 intake_ready 使用 project_prod_environment 或 project_rules 写入 .specforge/config/，不得在 Write Guard 拒绝后改用原生写入。" +
     " file_type=work_item 时内容至少应包含 schema_version、work_item_id、status、workflow_type、workflow_path。",
   args: {
-    work_item_id: {
-      description: "Work Item ID，例如 WI-20260614-0001",
-      type: "string",
-    },
-    module_id: {
-      description:
-        "模块级 Candidate 的明确 MODULE_CODE。多模块或新增模块场景必须填写，例如 DOMAIN；用于 candidate_requirements、candidate_design、candidate_module_definition、candidate_module_contract、candidate_module_trace。",
-      type: "string",
-    },
-    file_type: {
-      description:
-        "文件类型。正式 WI 产物使用 canonical 类型，例如 trigger_result、tasks、candidate_manifest、merge_report、evidence_manifest；设计治理 Candidate 使用 candidate_architecture、candidate_data_model、candidate_module_definition、candidate_design、candidate_module_contract；Investigation 专业产物使用 investigation_plan、findings_report；work_log 仅用于 Agent Run 过程日志。",
-      type: "string",
-      enum: [
+    work_item_id: tool.schema.string().describe("Work Item ID，例如 WI-0001"),
+    module_id: tool.schema.string().optional().describe("模块级 Candidate 的明确 MODULE_CODE；多模块或新增模块场景必填。"),
+    file_type: tool.schema.enum([
         "work_item",
         "intake",
         "change_classification",
@@ -55,36 +44,13 @@ export default tool({
         "agent_run_result",
         "project_prod_environment",
         "project_rules",
-      ],
-    },
-    content: {
-      description:
-        "文件内容。JSON artifact 必须传合法 JSON 字符串；不要传 JavaScript 对象字面量。work_item JSON 至少包含 schema_version、work_item_id、status、workflow_type、workflow_path。",
-      type: "string",
-    },
-    artifact_name: {
-      description: "verification_evidence 专用：不可覆盖的原始证据文件名（txt/jsonl/png/jpg/webp），禁止路径分隔符。",
-      type: "string",
-    },
-    content_encoding: {
-      description: "verification_evidence 专用：utf8 或 base64；图片须使用 base64。",
-      type: "string",
-      enum: ["utf8", "base64"],
-    },
-    run_id: {
-      description: "Run ID（work_log 和 agent_run_result 时必填）",
-      type: "string",
-    },
-    template: {
-      description:
-        "verification_report 的规范渲染器；输入必须是结构化 Verification JSON 字符串",
-      type: "string",
-      enum: ["verification_report"],
-    },
-    agent_content: {
-      description: "Agent 报告内容（work_log 时可选，用于自动合并 trace 统计）",
-      type: "string",
-    },
+      ]).describe("正式产物必须使用 canonical 类型；work_log 仅用于 Agent Run 过程日志。"),
+    content: tool.schema.string().describe("文件内容；JSON artifact 必须传合法 JSON 字符串。验证通过条目必须引用真实 Runtime receipt 和 Task 主体。"),
+    artifact_name: tool.schema.string().optional().describe("verification_evidence 不可覆盖的文件名，禁止路径分隔符。"),
+    content_encoding: tool.schema.enum(["utf8", "base64"]).optional().describe("verification_evidence 编码；图片须 base64。"),
+    run_id: tool.schema.string().optional().describe("work_log 和 agent_run_result 必填。"),
+    template: tool.schema.enum(["verification_report"]).optional().describe("verification_report 必填；content 为结构化 Verification JSON。"),
+    agent_content: tool.schema.string().optional().describe("work_log 可选 Agent 报告内容。"),
   },
   async execute(args, context) {
     const result = await daemon.invokeTool("sf_artifact_write", args, context);

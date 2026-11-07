@@ -318,6 +318,7 @@ async function main(): Promise<void> {
   const markerTargets = [
     'README.md',
     'AGENTS.md',
+    'setup/userlevel-opencode/AGENTS.md',
   ];
 
   const markerContent = markdown

@@ -10,11 +10,14 @@ import { ToolDispatcher } from '../../packages/daemon-core/src/tools/index';
 import { WorkflowLoader } from '../../packages/workflow-runtime/src/engine/WorkflowLoader';
 import {
   SHARED_COMPONENT_REGISTRY,
+  isRegistryEntryApplicable,
   resolveRegistryReleaseItemIds,
   resolveRegistrySourcePath,
 } from './registry';
 
 export interface RepositoryOwnerSnapshotOptions {
+  platform?: NodeJS.Platform;
+  architecture?: string;
   candidateRoot: string;
   releaseId: string;
   candidateId: string;
@@ -200,7 +203,8 @@ async function produceInstallerReport(
   if (registrySource) sources.push(registrySource);
 
   for (const entry of SHARED_COMPONENT_REGISTRY) {
-    const sourcePath = resolveRegistrySourcePath(entry);
+    if (!isRegistryEntryApplicable(entry,options.platform??process.platform,options.architecture??process.arch)) continue;
+    const sourcePath = resolveRegistrySourcePath(entry,options.platform??process.platform);
     const source = await bindSource(
       options.candidateRoot,
       sourcePath,
@@ -209,7 +213,7 @@ async function produceInstallerReport(
     );
     if (!source) continue;
     sources.push(source);
-    for (const id of resolveRegistryReleaseItemIds(entry)) {
+    for (const id of resolveRegistryReleaseItemIds(entry,options.platform??process.platform)) {
       items.push({ id, sourcePath, dependencies: [] });
     }
   }

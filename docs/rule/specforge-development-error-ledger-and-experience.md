@@ -32448,3 +32448,170 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 - 0057实际Bun编译exit1，原始错误Cannot read directory D:\\code\\ EPERM；0058冻结目录07包含此前残留bundle，不具本轮新harness构建来源，明确INVALID_FOR_EXECUTION，未用于测试。
 - 普通宿主上下文0059重试同一构建命令成功/0，545模块；随后0060重编译绑定新label08的驱动，0061冻结08，才执行0062及0067的真实launcher/Daemon试验。旧失败及无资格快照07全部保留。没有扩张LPAC权限或更新部署。
 - 类防护：依赖构建必须按真实数值退出码逐步放行；对冻结文件同时核验本轮生产来源，不能只证明磁盘文件存在。EXP-007/008/014/016/193/292。另有只读检索误猜历史清理脚本和build路径，真实文件不存在错误保留；改用rg --files库存选取真实文件，未作任何写入或用空输出断言能力缺失。
+
+### ERR-1949：Bootstrap 默认进程缓冲不足使真实清单被截断
+
+- D23前置及本阶段0001实际BLOCKED；跟踪文件清单超过spawnSync默认1MiB，ENOBUFS不能作为完整清单或READY。用户明确批准仅Bootstrap自身的有界32MiB自修复，真实READY前未开展其他产品修改。
+- run()显式maxBuffer=32MiB；0002真实本地/远端main一致且READY，0005包级回归15项通过，包括超过1MiB的NUL清单、超过32MiB失败及非零Git仍阻断。EXP-007/008/011/199与新增EXP-296；不以无限缓冲或忽略错误兜底。
+
+### ERR-1950：测试入口版本及空目录清理夹具不匹配
+
+- 0003从根Vitest4.1.5传minWorkers被拒绝，未运行测试；0004改参数后14通过、1因rmSync空目录EISDIR失败。不是Bootstrap产品回归。已改包级Vitest3.2.4入口及rmdirSync，0005同目标15项通过，旧失败保留。
+- 每次运行先核对所属包script/版本，目录清理按实际对象类型；EXP-016/055/117/137。后续定向测试固定包工作目录和本地运行器，不下载工具。
+
+### ERR-1951：新增身份核验返回值的字符串字面量被拓宽
+
+- 0008 Adapter类型检查实际TS错误/2，返回对象agent推断string而非正式角色联合，未执行产品工具。显式绑定可信核验后的正式角色类型，0009类型检查0、0007真实HTTP接口夹具22项通过。接口夹具不是实际OpenCode产品验收。
+- 身份合同与返回类型共同校验，未知角色仍拒绝；EXP-004/011/052/091。不能用类型强制把调用者agent变成可信证据。
+
+### ERR-1952：原生适配生成器预检替换基数错误
+
+- 0020生成器匹配数与实际源码不符，预检exit1，源raw哈希确认未变。失败生成器保存在独立文件；0022先完整预检两文件再统一写入，0023等编译0，0027只解析/复制29项通过；没有据此宣称真实profile执行已通过。
+- EXP-014/063/065/114；文本转换须以实际源、固定哈希及全部预检为前提。多目标apply_patch失败仍须逐文件检查，不以工具失败假定零写入。
+
+### ERR-1953：续跑只读输出包含巨型状态字段而发生展示截断
+
+- 一次读取0029.result.json全对象把完整Git状态清单带入显示，工具提示输出截断；0029本身类型检查实际exit0且原回执已封存，展示截断不是执行失败。另有历史账本宽泛关键词及猜测路径读取的问题，原工具错误保留，不能计完整读取。
+- 后续只投影需要的回执字段，原始大清单留在原件；检索先rg --files，账本使用结构标题或--max-columns并限定范围。EXP-007/008/021/261/296。当前受限网络Bootstrap DNS失败后同命令主机只读核验READY，未改网络或应用权限，归于既有ERR-1943环境类别。
+
+### ERR-1954：合成Git夹具在受限宿主临时目录不能创建配置
+
+- 0031 Node语义33项通过，四个source夹具在git init前置全部Permission denied，尚未执行被测snapshot；目录位于工具sandbox私有Temp，不是原业务或LPAC产品运行。原始错误及数值exit1已封存。
+- 同命令在普通用户宿主范围复核，保持产品权限与测试不变；不改ACL、不以跳过Git夹具替代。EXP-002/008/016/117/193；以后含真实Git元数据写入的自有临时夹具使用已核验宿主上下文。
+
+### ERR-1955：Runtime真实调用消费新增messageID但Dispatcher类型未同步
+
+- 0036类型检查实际TS2339/2：新Runtime读取context.messageID，既有ToolInvokeRequest具体分支未声明该字段。工具尚未登记，没有业务执行。补齐正式上下文字段与HTTP可信取消通道，类型检查作为必需前置，不用any掩盖遗漏。
+- EXP-004/011/052/091；真实调用字段必须覆盖Adapter、Daemon、Thin wrapper、Context最小化和回归。0034/35先前类型成功只适用各自较小源码集，不能覆盖后续新增服务。
+- 0040进一步发现HTTP新增的process-local AbortSignal symbol未在同一具体Context分支声明，TS2322/2；属于同一消费者同步缺口的续发，不把部分修复称闭环。0041 Adapter22项仍通过。补齐Symbol字段后重新复核完整Daemon类型与HTTP回归。
+
+### ERR-1956：原型验证计划直接引用OpenCode专用proof类型
+
+- 接线审查确认未发布的verification-plan/Runtime/schema直接导入Adapter专用类型，与SPS §2.2/10.2的中立边界冲突；没有对外启用或原WI执行。首次归属为Contract/Daemon composition，而非Node隔离能力。
+- 将TrustedToolInvocationRequest/Proof及Verifier接口移至types中立合同，Provider ID格式仍只由OpenCode Adapter核验；核心只消费有界不透明身份，Daemon注入具体provider。同步实际消费者、类型构建和Adapter回归，增加依赖边界回归。EXP-004/017/031/193/276。
+- 本窗口几次只读读取仍误猜下划线/横线和根目录路径，工具错误保留，归于ERR-1953重复检索纪律问题；未知文件不计已读取，不据空结果修改产品。
+
+### ERR-1957：新增中立类型使用根入口与现有typesVersions解析不兼容
+
+- 0037 types声明构建0且新d.ts真实存在；0038 Adapter真实TS2307/2。已读取Adapter tsconfig为moduleResolution=node，types包已有根types与通配typesVersions，不能把该错误归为声明未生成，也不能临时合成编译参数。
+- 遵循已有llm-kernel-contract子路径模式，新增明确trusted-tool-invocation exports/typesVersions并同步消费者导入，先构建声明生产者再复核Adapter与Daemon。EXP-004/052/101/137；公开类型必须连同实际包解析与正式构建一起验证。
+
+### ERR-1958：单进程语义证书允许反射与跨作用域名称洗白
+
+- 0044实际解析器回归4项全部失败：getOwnPropertyDescriptor反射链、无调用函数中声明process/console后在外层引用、ClassExpression都被误接受。测试只调用compileNodeCommand，没有执行供给的JavaScript；未启用业务或宣称隔离失效。首次偏离是命令语义证明器，而非LPAC/Job边界。
+- 原型以全文件声明名称集合替代词法绑定，且反射黑名单不完整。改为不读取宿主文件的TypeScript Program真实局部符号绑定，拒绝ambient/type-only运行值、Object/Reflect/原型反射、ClassExpression及特殊宿主名字别名；只保留显式支持的内联process.exit/console.log。新负例与原Node正例共同回归，不执行攻击载荷。
+- EXP-007/008/010/046/193/292及新增EXP-297。修复前失败作为一手证据保留；语义证书不等于通用JavaScript分析器，未知结构继续拒绝。
+- 0045四个新负例已拒绝，原33正反例中CJS对象简写`{sum}`被误拒绝，36通过/1失败。真实TypeScript checker在简写处返回属性symbol，须使用getShorthandAssignmentValueSymbol取得其词法值绑定；不能直接把所有简写当成合法或退回全文件名称集合。保留合法CJS正例后再重跑。
+
+### ERR-1959：原型Task读取器错误要求Spec Merge Manifest包含Task
+
+- 只读源码与原Manifest核验：resolveFrozenManifestArtifacts只消费Merge entries；原Manifest八项均为Project Spec目的地，没有Task。directory-layout正式定义candidates/tasks.md为WI-owned权威路径，且当前完整candidates内容hash与原User Decision实际一致。原型调用将返回零，不代表合法Task不存在。
+- 改为严格canonical Candidate Tasks，并先校验Decision Schema/批准主体、完整候选内容hash、成功Merge Report和当前PSV。0048自有unit fixture使用无Task merge条目，真实计划生成、漂移拒绝、撤权、取消及准备恢复6项通过；身份/状态/资产为明确单元double，不计SP-I01或原WI运行。EXP-004/044/053/193，保留任务所有权回归，不手补原Manifest。
+
+### ERR-1960：C#回归编译失败后误执行磁盘既有harness
+
+- 0052实际csc exit1/CS1504，命令中的harness源使用D:/形式，诊断解析为仓库根NativeProductPlanRegression.cs，源文件实际存在于归档。其余source argv为真实Windows反斜杠绝对路径。确切内部路径解析待对照，不以推断认定根因。
+- 随后0053错误消费了磁盘既有exe；虽然其29项实际通过且明确没有profile/应用，不能算当前源码回归。该结果标UNQUALIFIED_STALE_EXECUTABLE，保留失败和现有二进制身份，不覆盖历史。属于ERR-1948所述依赖成功门禁纪律复发，不能声称未重复。
+- 改用Resolve-Path得到真实Windows源路径；编译和测试分独立调用，必须先检查数字退出码及本轮二进制/source哈希再执行。EXP-007/008/014/016/193/292；受控检查记录0052/53不合格用途，后续用新seq。
+
+### ERR-1961：自有公共链路夹具源多一个右括号被编译前置拒绝
+
+- 0064实际Bun编译exit1，create-public-fixture.ts读取reservation的JSON.parse行多一个右括号，未生成有资格bundle，也未运行夹具、profile或应用。编译前置正确阻断，没有消费磁盘旧文件。
+- 按实际源码删去额外括号，重新独立编译并核验本轮成功和字节身份后才运行。EXP-007/008/010/091/193/249；夹具本身也须先解析/类型/实际owner检查，不以预期文件名当作产物已生成。
+
+### ERR-1962：恢复读取再次猜测源码路径，公共夹具遗漏配置登记前置
+
+- 继续窗口只读Get-Content错误猜测daemon/main.ts和opencode-adapter/src/tools，两项路径不存在；未计作成功读取。随后按rg --files定位真实setup工具与DaemonConfig。属于ERR1953/1956检索纪律续发，不能声称重复错误检查完全通过。
+- 对fixture01原始文件与ProjectManager实际代码核验：configuration-activation.json缺失，夹具已seed活动WI；正式owner对缺失接受记录且有活动WI明确拒绝。尚未启动Kernel/Daemon或创建profile，不能把该前置缺失记作产品隔离运行失败。
+- 保留fixture01，不手补其真相源。新fixture02通过真实ProjectManager.getProjectConfiguration在seed活动状态前登记，并由同一StateManager继续。EXP-002/004/008/193/282；配置接受必须按实际owner时序完成。
+- 0070 Bun构建在sandbox读取D:\code目录被EPERM拒绝；0071普通用户宿主构建成功。0073 fixture02在StateManager构造时因遗漏必需projectPath拒绝，尚未配置登记或seed事件，也未启动profile。与实际构造合同核对后传入自有project，保留失败夹具并新建fixture03；不能把未完成fixture02称为登记成功。
+
+### ERR-1963：真实公共链路夹具遗漏Daemon CLI的start子命令
+
+- 0077真实Kernel已启动并读取实际agent；Daemon以单独--foreground启动，入口明确UNSUPPORTED_SPECFORGED_COMMAND/1，尚未创建profile或执行产品Node。夹具错误不计SP-I01隔离失败。
+- 回到specforged.ts及CLI正式消费者核验，使用start --foreground。保留全部失败和自有Kernel退出证据，不改产品入口以迎合错误夹具。EXP-004/008/016/091/193。只读schema目录猜测同属ERR1962检索续发；改用文件库存。
+
+### ERR-1964：有限静态命令编译器的never箭头未触发当前TS控制流收窄
+
+- 0082实际普通Node语义单元56项通过；0083完整Daemon类型检查TS18047/2，parse分支调用const箭头fail后match仍被视为可空。单元通过不代表类型/构建通过；尚未部署该扩展或运行原WI。
+- 改为具名never返回函数，保留精确类型和失败路径，不加非空断言掩盖解析合同。再独立复核正式tsconfig。EXP-007/008/052/193/297。本窗口几次组合只读输出显示截断均不计完整读取；沙箱本地HTTP/CIM的EACCES已用宿主只读取证复核，未借此放宽产品隔离。
+
+### ERR-1965：静态grep原型未拒绝双引号内的反斜杠转换
+
+- 0088解析器负例实际1失败/16通过：双引号内成对反斜杠或反斜杠美元符会被POSIX shell转换，而原型把原字面量直接解释为正则，可能认证不同模式。未执行负例代码、未部署此扩展或在原WI运行。
+- 明确拒绝这些转换，只保留已证明不被shell转换的字面模式；不增加shell执行或猜测转义。保留失败再复核57项语义及完整类型，正式合同未知继续拒绝。EXP-007/008/010/193/297。
+
+### ERR-1966：发布版本核对发现现有bun.lock workspace元数据滞后
+
+- 只读JSONC解析证实根及12个workspace package均1.0.21，bun.lock对应12项仍1.0.8。该事实不证明已安装二进制版本错误，但说明锁元数据未同步，必须在新发行前修正。
+- 下一修复发行源版本1.0.22，远端精确标签只读查询exit0且不存在。机械更新根、12个package、SPS发布头及锁文件对应workspace版本；解析前后除这12项外整个lock对象必须相同，不解析新依赖、不借机升级依赖、不宣称已部署。EXP-004/017/101/193/276。
+
+### ERR-1967：旧治理单元夹具仅以自由文本声明命令通过
+
+- 0092实际24项中4失败，均为verification-governance-contract旧正例新增execution_reference_invalid:command-0。夹具的command=test/status=pass没有真实receipt引用，未注入共同consumer；其余20项通过。新失败边界符合D23，不能降低产品校验使旧夹具变绿。
+- 仅在该图/Schema单元夹具显式提供execution reference与标明的consumer double；保留实际公共链路验收的独立责任，不将double计SP-I01或真实执行。负例仍检查完整治理拒绝；原业务不变。EXP-004/008/010/193/282。
+
+### ERR-1968：产物Thin Tool仍使用JSON字段描述而真实SDK要求Zod
+
+- 实际@opencode-ai/plugin1.18.16的tool.d.ts要求ZodRawShape、tool.schema=z；源码库存中sf_artifact_write是唯一仍使用type:string原始字段描述的公共wrapper。0095在私有副本调用实际Zod4.1.8 schema转换，真实TypeError schema._zod.def/exit1；没有调用写入工具或profile。该实验直接证明SDK转换不兼容，不冒称已经观测到Kernel整条调用失败。
+- 责任Tool Schema/部署模板。把该wrapper转换为与现有其余工具一致的tool.schema，保留字段、枚举和正式handler规则；必需WI/file_type/content，条件字段optional仍由owner验证。随后用新私有fixture和真实Kernel调用产物工具验收，不用只改handler替代上游Schema修复。EXP-004/011/052/091/193/282。
+
+### ERR-1969：正式阶段夹具把审查Agent阶段误当StateManager状态
+
+- 0099实际StateManager拒绝review_running，exit1，夹具停在implementation_done，未运行Kernel/profile。真实状态枚举不存在review_running/review_done；专业审查流程不能凭名称捏造为Runtime状态。
+- 仅修夹具seed为实际implementation_done→verification_running，仍明确不是完整Workflow/审查验收。保留fixture04与错误，再新建fixture05。EXP-004/008/017/193/282；状态必须回到实际枚举和owner读取，不能从聊天阶段名称推断。
+
+### ERR-1970：根测试未先核验运行器与测试角色，误跑历史安装器测试
+
+- 0106受限环境Vitest缓存rename EPERM，未收集用例；0107普通用户宿主同测试8项通过。0111选择六文件，其中四文件39项通过，planner/generated_files真实导入bun:test导致两suite无法加载。
+- 0112改用Bun后planner22项及generated_files9项通过，generated_files三项要求删除upgrade_journal失败。回查正式root-test-role-registry：两文件均HISTORICAL_EVIDENCE；真实当前generated_files只清理partial_commit，不能为历史预期重新删除审计日志。本次属于误选历史测试，不作为当前安装回归结论，也不改旧测试冒充当前覆盖。
+- 后续先核验CURRENT_HERMETIC及真实import，再选择对应运行器；正式当前Scope/Manifest测试0110的12项及开发发布预检0109均通过。EXP-002/004/008/016/193/282；没有把本次carrier和角色选择纪律称为未重复。
+
+### ERR-1971：Close静态结构测试禁止增加合法依赖参数
+
+- 0115实际75项中74通过；唯一失败为code-only-close-gate-overlay源码正则要求runCloseGate对象参数恰好五项，新增executionEvidenceConsumer即误判。正式Close handler与common consumer真实调用另行验收，不能为正则删除依赖。
+- 保留必需项目/WI/workflow字段及职责断言，允许对象含额外依赖参数，避免把参数列表文本当封闭产品合同。EXP-004/008/010/193；运行行为和实际消费仍由原有行为测试及真实公共链路证明。
+
+### ERR-1972：当前版本合同测试重复硬编码旧patch版本
+
+- 0116正式CURRENT_HERMETIC根集740项，738通过、两项仍把1.0.21作为第二真相源，分别错误拒绝当前1.0.22根身份与12个workspace。不是运行器或安装版本错误。
+- 测试改以正式SPS发布头与根身份相互核对，并检查所有workspace与根身份一致；epoch/releaseId/tagPrefix继续固定原正式规则，不为新patch重复维护次级版本常量。EXP-004/008/017/101/193；源码版更新不等同已安装或已发布。
+
+### ERR-1973：联测夹具的一次性准备误放入每次模型请求回调
+
+- 0114真实Kernel第一条Manifest调用成功，第二条Report无工具part；保存的assistant APIError直接指出本地provider EXTENSION_COLLISION。核对夹具代码确认追加官方Audit wrapper的setup被补丁匹配到provider请求回调的try，后续请求重复创建而拒绝。未执行新应用或原业务，未计共同消费者覆盖；合成Manifest已更新而Report未更新的中间状态如实保留。
+- 将setup移到main的一次性启动前，并只按0114已保存来源/hash复用相同自有副本，不覆盖碰撞。保留失败Kernel消息/provider错误和命令数值exit1。此为夹具责任，不将其称产品Runtime缺陷；重新执行受影响的真实消费链。EXP-007/008/014/016/193。
+
+### ERR-1974：拒绝测试错误要求必经更下游的返回形状
+
+- 0121真实implementation_done状态拒绝已成功，owner根未创建。sf_safe_bash的Node测试更早被ToolDispatcher Write Guard拒绝，返回policy_violation/SHELL_EXECUTION_UNAVAILABLE/retry_allowed=false；夹具却要求更下游handler才返回的rejected/shell字段，因此exit1。没有程序执行或产品绕过。
+- 按实际首次拒绝层断言政策拒绝及私有验证owner未创建，不修改上游Guard让请求到达下游。复用0121已绑定的同一只读wrapper副本，保留失败后新seq核验。EXP-004/008/010/193/282；拒绝要按真实入口/责任层验证，不把测试预想的调用链当架构事实。
+
+### ERR-1975：真实Kernel取消未及时传达隔离运行，停机兜底才取消
+
+- 0124真实Kernel session abort返回true、工具part03:10:36.943Z标Tool execution aborted；Node已03:10:36.227Z恢复。40s内未形成中断回执，夹具exit1。实际owner_cancel直到finally的admin stop在03:11:20.685Z触发，随后exit130、完整回执及独立cleanup成立、Daemon正常0退出。没有残留或原业务写入，但不能把停机兜底称HTTP取消已经通过。
+- 首次偏离暂在Kernel SDK→Thin HTTP→Daemon request lifetime链，具体断点INSUFFICIENT_EVIDENCE。先封存原始Kernel/Native/Owner时间线，再用独立Node/Bun loopback运输矩阵和真实上下文观测区分信号未发、连接未断与Daemon未消费；未确认前不基于猜测扩大权限或宣称修复。EXP-004/007/008/016/193/282/292。
+- 0126独立四组合真实loopback矩阵：Node/Bun客户端均约300ms AbortError，Node服务端均收到response_close/socket_close，Bun1.3.14的node:http服务端两组均没有对应事件且socket_destroyed仍false。直接确认兼容层这类观察缺失；与0124生产Daemon使用同Bun构建及仅监听这些事件共同构成CORROBORATED原因链，未额外声称SDK内部每个事件已观测。
+- 首次可证偏离在HTTP transport/lifetime观察。最小完整修复归Runtime调用归属：复用既有可信InvocationVerifier，开始/执行期/结束复核同一真实running调用，丢失即受控取消；不可变认证lease绑定回执及所有共同消费者。应用权限、平台和预算均不扩大。先正式合同，再单元及原真实失败场景复验，0124仍FAILED。
+- 0127租约/owner/Runtime单元28项及0128完整类型通过；0129重建。0133真实Kernel取消在tool结束349ms后触发owner_cancel，03:29:23.937Z已形成cancelled/cleanupProved回执；lease实际lost且reason=TOOL_INVOCATION_OWNER_NOT_PROVED。活动任务admin stop也在回执完成后Daemon0退出、handshake消失。0134独立封存并自验91项，原0124失败不覆盖。新增EXP-298固化真实宿主生命周期与每次载体源冻结纪律。
+
+### ERR-1976：全局Agent模板保留旧状态/路径及过时经验门禁，布局生成器遗漏该部署投影
+
+- 完整读取setup/userlevel-opencode/AGENTS.md确认：顶部现行合同与下方development/review/completed链、specforge/路径、旧根manifest生成块冲突，经验门禁仍要求历史账本全文片段。当前LAYOUT源码已是canonical project/spec_manifest，render-layout的markerTargets却未包含该部署模板。责任为Workflow/Agent文档投影及生成入口，不能让旧模板决定产品行为。
+- AUTHORITY_CONFLICT限于模板与正式SPS/Registry及当前Root指令不一致；产品权威本身没有分裂。修正非生成说明到当前feature_spec状态/owner、路径、D23与AR-DEC-06门禁；生成区域通过实际render-layout owner更新，不手补旧表，也不改变LAYOUT API或复活排除的setup/userlevel-scripts-lib发行面。EXP-004/017/101/193/282。
+
+### ERR-1977：人工观测分支允许以manual前缀携带可执行Task主体
+
+- 0137实际负例1失败/18通过：同一execution Task/receipt主体改command为manual前缀并给manual_acceptance引用后，公共检查返回空reasons，绕过执行consumer。仅单元数据，未运行载荷或部署；不能把前缀当人工来源证明。
+- 限定独立人工观测不携带任何执行主体字段，不授予Task执行完成信用；保留真正独立人工条目的来源/时间检查。同步从属合同/Verifier说明，保留失败再复核合法执行引用及人工观测正反例。EXP-004/007/008/010/193/282。
+- 0138修复后执行consumer/lease/指导边界29项通过，0144完整Daemon类型通过；0139重建最新产品资产。尚不能替代最新真实成功回执与共同消费者复验。
+
+### ERR-1978：恢复取证重复猜路径且未按字段投影大型回执
+
+- 本窗口首次只读探测误把commands下的0136/0138回执当证据根成员、误写packages/daemon而非daemon-core；随后虽定位实际路径，又对包含超长Git状态行的result取前28行，造成展示截断。均为读取失败/输出问题，无产品或业务状态写入，未把截断输出当完整核验。
+- 已改为实际目录清单与ConvertFrom-Json字段投影，核实0136/0138数字退出码均0，并独立读取短stdout摘要；后续不得用行数界限替代字段长度界限。复用EXP-001/004/007及ERR-1953/1962/1970。
+
+### ERR-1979：SP-D安装夹具新增reservation类型未同步初始化器
+
+- 0148真实install/verify均0、117文件raw hash一致；0149初始化在mkdir(project)前因既有builder只接受PUBLIC_KERNEL_FIXTURE而返回FIXTURE_RESERVATION。只读核实fixture10 project不存在；无产品运行/资源残留，也非安装器产品故障。
+- 修正自有测试载体对恰好两种明确reservation的识别，并对安装类型独立重验安装证明、release身份及每个managed字节。旧fixture10及其封存旧bundle不修改，重编后新建下一夹具重做正式安装，失败不覆盖。EXP-004/007/008/017/193/298。

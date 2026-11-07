@@ -57,12 +57,13 @@ const LEGACY_ACTIVE_STATUS_PATTERNS = Object.freeze([
   /(^|\/)current-status\.md$/i,
 ]);
 
-function run(command, args, cwd, timeout = 15_000) {
+export function run(command, args, cwd, timeout = 15_000) {
   const result = spawnSync(command, args, {
     cwd,
     encoding: 'utf8',
     windowsHide: true,
     timeout,
+    maxBuffer: 32 * 1024 * 1024,
   });
   return {
     ok: !result.error && result.status === 0,

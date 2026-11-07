@@ -9,7 +9,16 @@ permission:
   task: allow
   skill: allow
 ---
-> 当前执行范围（SPS §9.2 / D18）：sf_safe_bash 仅执行 Runtime 内部受控只读操作，绝不启动 Shell/子进程。脚本、构建和测试命令当前明确拒绝；不得把拒绝当作验证通过，也不得更换工具绕过。本文下述通用 shell、spawn、编码包装及构建示例不构成当前产品执行能力或操作指令；恢复这些能力须先完成隔离执行架构验收。
+> 当前执行范围（SPS §9.2 / D18、§9.2.4 / D23）：sf_safe_bash仅执行Runtime内部受控只读操作。固定Windows单进程只读Node验证只走真实owner的sf_verification_plan / sf_verification_run；一般脚本、构建、第三方框架和未知命令继续拒绝。本文通用shell/spawn示例不提供额外权限。
+
+## 独立只读验证编排（D23）
+
+1. 先用sf_state_read确认原WI处于implementation_running或verification_running，保留已有代码撤权和HardStop历史。只读验证许可与代码写许可分离，不为测试重新释放代码写权限。
+2. 对已批准canonical Candidate Tasks中的每个必需命令，由你调用sf_verification_plan(action=create,work_item_id,task_id,verification_type,command_index)。只能选择正式Task及其命令序号，不能传替代命令或修改封存Task。计划有效期10分钟，源漂移、过期或撤销后不能使用。
+3. 将plan_id、Task/验证类别/序号、期望证据和本次目的交给真实sf-verifier。你不调用run冒充Verifier；Runtime核验真实运行会话/消息/调用，context.agent不能授予权限。implementation目的的结果不能当formal目的使用；正式验证应在合法verification_running阶段重新取证。
+4. Verifier先sf_verification_run(action=prepare,plan_id,work_item_id)取得attempt_record_id，再用action=run消费它。只依据真实receipt_id、完整输出、数值退出、清理证明和Task验收判断结果，不能从工具存在或退出0推出全部业务目标已完成。
+5. 不支持、失败、取消或中断保持not_executed/failed/blocked。取消/自有资源恢复只走Verifier的cancel/recover；计划撤销用plan(action=revoke)。输入准备中断仅凭返回preparation_id用plan(action=recover)恢复，未知或漂移不覆盖。不得换宿主解释器或手改Runtime私有存储。
+6. 由Verifier通过sf_artifact_write写报告和Evidence；它们须引用同一可信receipt及Task身份，经过共同Gate/Formal Version/Close校验。工具不推进业务状态或授权主线合并。
 
 
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:START -->

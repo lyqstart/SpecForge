@@ -1,21 +1,21 @@
-# Synthetic LPAC acceptance probes
+# Windows readonly verification broker and synthetic probes
 
-Current checkpoint (2026-11-07): these sources remain experimental and are not
-registered, bundled into release assets, installed, or callable by a WI.
-The new D22 strict single-process finite synthetic matrix has passed, including
-CJS/ESM/TypeScript/inline positives, file/alias/registry/network denials, native
-child/override/console/parent-handle denials, resource limits, launcher/real Daemon
-crash and restart, interrupted cleanup and independent resource reconciliation.
-Evidence: `docs/archive/2026-11-06-single-process-matrix/acceptance-review.md`.
-The earlier multi-process profile remains NOT_ACCEPTED: native process limits
-allowed extra live Job members. Sampling termination139 does not prove a strict
-ceiling. D22 instead uses DETACHED creation, actual child policy1, Job1 and Node
-no-addons. The independent D21 production-adoption decision, public tools,
-common consumers, installation assets and original WI verification remain pending.
+SPS §9.2.4 / D23 defines the product boundary. `LpacVerificationMain` accepts only
+the Runtime-private frozen plan and hash, fixed Node/Daemon assets and limits.
+It provides execution, independent inspection and owned recovery; application
+output is separate from trusted control receipts. Current acceptance and any
+uncompleted deployment work belong in `docs/project-status.md`.
+
+The public broker uses DETACHED creation, actual child policy1, Job1 and Node
+no-addons. Job association is atomic at creation and verified before resume.
+The legacy synthetic entry points retain their original profiles and evidence;
+their existence does not register them as product execution backends.
 
 Compile all `.cs` files in this directory with the existing x64 .NET Framework
 compiler, `/reference:System.Web.Extensions.dll`, `/reference:System.Management.dll`
-and explicit `/main:LpacStartupPoc`. The private native helper uses explicit
+and explicit `/main:LpacVerificationMain` for the product. The build-time producer
+is `scripts/lib/verification-asset-producer.ts`; Runtime never compiles code.
+For synthetic probes only, select `/main:LpacStartupPoc`. The private native helper uses explicit
 `/main:LpacPrivateRegistryChild` and its frozen source set. Preserve each build
 and its raw hashes before execution; do not substitute a newer executable for
 an archived attempt. Guest native reports use `LpacProbeJson`, avoiding the

@@ -145,21 +145,24 @@ internal static class LpacStartupPoc {
         }finally{Marshal.FreeHGlobal(buffer);}
     }
     static string Quote(string s) {if(s.IndexOf('"')>=0 || s.EndsWith("\\"))throw new InvalidOperationException("UNSUPPORTED_ARGUMENT");return "\""+s+"\"";}
+    [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)][return:MarshalAs(UnmanagedType.Bool)]static extern bool CreateDirectoryW(string path,IntPtr security);
     public static int Main(string[] args) {
-        // Fixed P01 probe; no caller-supplied script/argv/environment.
+        // Product entry accepts only its Runtime-private validated plan; legacy modes remain synthetic.
+        LpacProductionPlan product=args.Length==3&&args[0]=="--verification-plan"?LpacProductionPlan.Read(args[1],args[2]):null;
+        if(product!=null)args=new[]{"--product-single-process",product.AttemptRoot,product.NodePath};
         bool singleResource=args.Length>0&&LpacResourceProbe.SingleMode(args[0]);string resourceKind=args.Length==0?null:LpacResourceProbe.Kind(singleResource?args[0].Replace("--synthetic-single-resource-","--synthetic-resource-"):args[0]);bool resourceProbe=resourceKind!=null;
         var acceptedModes=new HashSet<string>(new[]{"--synthetic-p01","--synthetic-trace","--synthetic-registry-read-p01","--synthetic-registry-read-inline-p01","--synthetic-registry-read-canary","--synthetic-registry-read-pipe-trace-canary","--synthetic-registry-read-inherited-canary","--synthetic-registry-read-file-descendants","--synthetic-registry-read-private-registry","--synthetic-registry-read-private-registry-locked","--synthetic-registry-read-network-locked","--synthetic-registry-read-aliases-locked","--synthetic-registry-read-provisioned-symbolic-locked","--synthetic-registry-read-native-com-locked","--synthetic-registry-read-network-unc-locked"});
         acceptedModes.Add("--synthetic-registry-read-node-file-locked");acceptedModes.Add("--synthetic-registry-read-node-test-file-locked");
         acceptedModes.Add("--synthetic-registry-read-single-process-file");acceptedModes.Add("--synthetic-registry-read-single-process-native");
         acceptedModes.Add("--synthetic-registry-read-single-process-typescript");acceptedModes.Add("--synthetic-single-process-esm");acceptedModes.Add("--synthetic-single-process-inline");
         acceptedModes.Add("--synthetic-single-files");
-        if(args.Length!=3 || (!resourceProbe&&!acceptedModes.Contains(args[0])) || IntPtr.Size!=8) {Console.Error.WriteLine("usage: synthetic mode NEW_ATTEMPT_ROOT PINNED_NODE_EXE");return 64;}
+        if(args.Length!=3 || (product==null&&!resourceProbe&&!acceptedModes.Contains(args[0])) || IntPtr.Size!=8) {Console.Error.WriteLine("usage: synthetic mode NEW_ATTEMPT_ROOT PINNED_NODE_EXE");return 64;}
         bool nodeEsm=args[0]=="--synthetic-single-process-esm",singleInline=args[0]=="--synthetic-single-process-inline",singleBoundaryNode=args[0]=="--synthetic-single-files";
         bool nodeTypeScript=args[0]=="--synthetic-registry-read-single-process-typescript"||singleInline;
-        string scriptName=singleInline?"positive.cjs":nodeTypeScript?"tests/positive.test.ts":nodeEsm?"tests/positive.test.mjs":"positive.cjs",moduleName=nodeTypeScript?"src/fixed-module.ts":nodeEsm?"src/fixed-module.mjs":"fixed-module.cjs";
-        bool singleProcess=args[0]=="--synthetic-registry-read-single-process-file"||args[0]=="--synthetic-registry-read-single-process-native"||nodeTypeScript||nodeEsm||singleBoundaryNode||singleResource;
+        string scriptName=product!=null?product.ScriptName:singleInline?"positive.cjs":nodeTypeScript?"tests/positive.test.ts":nodeEsm?"tests/positive.test.mjs":"positive.cjs",moduleName=nodeTypeScript?"src/fixed-module.ts":nodeEsm?"src/fixed-module.mjs":"fixed-module.cjs";
+        bool singleProcess=args[0]=="--synthetic-registry-read-single-process-file"||args[0]=="--synthetic-registry-read-single-process-native"||nodeTypeScript||nodeEsm||singleBoundaryNode||singleResource||product!=null;
         bool singleProcessNative=args[0]=="--synthetic-registry-read-single-process-native";
-        bool nodeFileProbe=args[0]=="--synthetic-registry-read-node-file-locked"||args[0]=="--synthetic-registry-read-node-test-file-locked"||singleProcess&&!singleProcessNative&&!singleBoundaryNode&&!singleResource;
+        bool nodeFileProbe=args[0]=="--synthetic-registry-read-node-file-locked"||args[0]=="--synthetic-registry-read-node-test-file-locked"||singleProcess&&!singleProcessNative&&!singleBoundaryNode&&!singleResource&&product==null;
         bool nodeTestRunner=nodeFileProbe&&!singleInline&&(args[0]=="--synthetic-registry-read-node-test-file-locked"||singleProcess);
         bool extendedNetwork=args[0]=="--synthetic-registry-read-network-unc-locked";
         bool nativeBoundary=args[0]=="--synthetic-registry-read-native-com-locked";
@@ -174,18 +177,18 @@ internal static class LpacStartupPoc {
         bool traceMode=args[0]=="--synthetic-trace"||pipeTrace;
         bool canaryProbe=args[0]=="--synthetic-registry-read-canary"||pipeTrace||inheritTransport;
         bool registryExperiment=args[0]=="--synthetic-registry-read-p01"||args[0]=="--synthetic-registry-read-inline-p01"||canaryProbe||fileProbe||resourceProbe||nodeFileProbe||singleProcess;
-        bool inlineProbe=args[0]=="--synthetic-registry-read-inline-p01"||canaryProbe||fileProbe||resourceProbe||singleInline||singleBoundaryNode;
+        bool inlineProbe=args[0]=="--synthetic-registry-read-inline-p01"||canaryProbe||fileProbe||resourceProbe||singleInline||singleBoundaryNode||product!=null&&product.Kind=="node-inline";
         string profileId=singleProcess?"windows-lpac-node-single-process-readonly/v1":registryExperiment?"windows-lpac-node-readonly-registry-read-experiment/v1":"windows-lpac-node-readonly/v1";
-        int wallMs=resourceKind=="crash"||resourceKind=="daemon-crash"?20000:resourceProbe?8000:pipeTrace||inheritTransport||fileProbe||nodeFileProbe||singleProcess?20000:120000;
+        int wallMs=product!=null?product.WallMs:resourceKind=="crash"||resourceKind=="daemon-crash"?20000:resourceProbe?8000:pipeTrace||inheritTransport||fileProbe||nodeFileProbe||singleProcess?20000:120000;
         uint processLimit=singleProcess?1u:resourceKind=="process"?8u:32u;ulong memoryLimit=resourceKind=="memory"?268435456ul:1073741824ul;
         string root=Path.GetFullPath(args[1]),sourceNode=Path.GetFullPath(args[2]);
         if(Directory.Exists(root) || File.Exists(root)) {Console.Error.WriteLine("ATTEMPT_COLLISION");return 65;}
         // Only a new UUID leaf in this exact synthetic scope is eligible for ACL edits.
-        string parent=Path.GetFullPath(Path.Combine(Environment.CurrentDirectory,".tmp","verification-lpac"));
+        string parent=product!=null?Path.Combine(product.OwnerRoot,"runs"):Path.GetFullPath(Path.Combine(Environment.CurrentDirectory,".tmp","verification-lpac"));
         Guid nonce;
         if(Path.GetDirectoryName(root)!=parent || !Guid.TryParseExact(Path.GetFileName(root),"N",out nonce))return 66;
         Directory.CreateDirectory(parent);NoLinks(parent);NoLinks(sourceNode);
-        Directory.CreateDirectory(root);eventFile=Path.Combine(root,"events.jsonl");
+        if(product==null)Directory.CreateDirectory(root);else{if(!CreateDirectoryW(root,IntPtr.Zero))throw new Win32Exception(Marshal.GetLastWin32Error(),"Reserve exclusive product attempt");}eventFile=Path.Combine(root,"events.jsonl");
         string moniker=(registryExperiment?"specforge.regread.":"specforge.poc.")+nonce.ToString("N"),sidText=null,profile=null;
         bool profileCreated=false,started=false,allEnded=false,resumed=false,timedOut=false;
         uint? exit=null;int result=1;string error=null;
@@ -205,8 +208,9 @@ internal static class LpacStartupPoc {
         try {
             bool brokerAdmin=new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);using(var broker=Process.GetCurrentProcess())Record("broker_identity",new{pid=broker.Id,created_filetime=broker.StartTime.ToUniversalTime().ToFileTimeUtc(),user_sid=WindowsIdentity.GetCurrent().User.Value,administrator=brokerAdmin});if(registryExperiment&&brokerAdmin)throw new InvalidOperationException("SYNTHETIC_BROKER_MUST_REMAIN_UNELEVATED");
             if(registryExperiment){if(Hash(sourceNode)!="3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237")throw new InvalidOperationException("PINNED_NODE_DRIFT");capability=LpacRegistryReadCapability.Derive();Record("experiment_capability_derived",new{name="registryRead",sid=capability.Sid,count=1,profile_id=profileId,debugger=traceMode});}
-            if(resourceKind=="daemon-crash")parentLifetime=new LpacParentLifetime(Record);
+            if(resourceKind=="daemon-crash"||product!=null)parentLifetime=new LpacParentLifetime(Record,product==null?null:product.DaemonPath,product==null?null:product.DaemonHash);
             if(lockPrivateRegistry)LpacOwnedRegistryGuard.AssertAbsent(moniker,Record);
+            if(product!=null){string expectedProfile=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"Packages",moniker);if(Directory.Exists(expectedProfile)||File.Exists(expectedProfile))throw new InvalidOperationException("PRODUCT_PROFILE_COLLISION");Record("product_resource_absence",new{plan_id=product.PlanId,attempt_id=product.AttemptId,config_sha256=product.ConfigHash,profile_absent=true,storage_absent=true,job_name=product.JobName});}
             int hr=CreateAppContainerProfile(moniker,moniker,"SpecForge synthetic readonly acceptance",capability==null?IntPtr.Zero:capability.Attributes,capability==null?0u:1u,out sid);
             if(hr!=0)throw new COMException("CreateAppContainerProfile",hr);profileCreated=true;sidText=SidText(sid);
             Record("profile_created",new {moniker=moniker,sid=sidText});
@@ -225,7 +229,7 @@ internal static class LpacStartupPoc {
             if(singleBoundaryNode||singleProcessNative){singleFiles=new LpacSingleBoundaryFixture(root,input,runtime,profile,sidText,Record);files=singleFiles.Files;}
             if(nodeTypeScript||nodeEsm){Directory.CreateDirectory(Path.Combine(input,"tests"));Directory.CreateDirectory(Path.Combine(input,"src"));}
             string probeScript=singleInline?LpacNodeFileProbe.InlineScript():nodeEsm?LpacNodeFileProbe.EsmScript():LpacNodeFileProbe.Script(nodeTypeScript),probeModule=nodeEsm?LpacNodeFileProbe.EsmModule():LpacNodeFileProbe.Module(nodeTypeScript);
-            NewFile(Path.Combine(input,scriptName),singleBoundaryNode?singleFiles.NodeScript():nodeFileProbe?probeScript:resourceProbe?LpacResourceProbe.Script(resourceKind,singleResource):fileProbe?files.Script():canaryProbe?canary.Script(pipeTrace,inheritTransport):"'use strict';const assert=require('node:assert/strict');assert.equal(2+2,4);console.log('SPECFORGE_SYNTHETIC_P01');\n");
+            if(product!=null)product.CopyInputs(input);else NewFile(Path.Combine(input,scriptName),singleBoundaryNode?singleFiles.NodeScript():nodeFileProbe?probeScript:resourceProbe?LpacResourceProbe.Script(resourceKind,singleResource):fileProbe?files.Script():canaryProbe?canary.Script(pipeTrace,inheritTransport):"'use strict';const assert=require('node:assert/strict');assert.equal(2+2,4);console.log('SPECFORGE_SYNTHETIC_P01');\n");
             if(nodeFileProbe)NewFile(Path.Combine(input,moduleName),probeModule);
             if(nodeTypeScript||nodeEsm)NewFile(Path.Combine(input,"package.json"),"{\"type\":\"module\"}\n");
             string application=node;
@@ -236,7 +240,7 @@ internal static class LpacStartupPoc {
             if(singleFiles!=null)singleFiles.Freeze();
             if(singleProcess){registryBefore=LpacOwnedRegistryGuard.Snapshot(moniker);Record("single_storage_before",new{members=registryBefore});}
             Record("input_frozen",new {node_sha256=Hash(node),input_sha256=Hash(Path.Combine(input,scriptName)),script=Path.Combine(input,scriptName)});
-            job=CreateJobObjectW(IntPtr.Zero,null);Check(job!=IntPtr.Zero,"CreateJobObject");
+            job=CreateJobObjectW(IntPtr.Zero,product==null?null:product.JobName);int jobCreateError=Marshal.GetLastWin32Error();Check(job!=IntPtr.Zero,"CreateJobObject");if(product!=null&&jobCreateError==183)throw new InvalidOperationException("PRODUCT_JOB_COLLISION");
             if(resourceProbe)notifications=new LpacJobNotifications(job,Record);
             var limits=new ExtendedLimit();limits.Basic.LimitFlags=KillOnClose|ActiveLimit|JobMemory;limits.Basic.ActiveProcessLimit=processLimit;limits.JobMemoryLimit=new UIntPtr(memoryLimit);
             Check(SetInformationJobObject(job,9,ref limits,(uint)Marshal.SizeOf(typeof(ExtendedLimit))),"SetJobLimits");
@@ -250,8 +254,9 @@ internal static class LpacStartupPoc {
             Check(CreatePipe(out errRead,out errWrite,ref sa,0),"stderr pipe");handles.Add(errRead);handles.Add(errWrite);
             Check(SetHandleInformation(errRead,1,0),"stderr no inherit");
             IntPtr stdin=CreateFileW("NUL",0x80000000,3,ref sa,3,0,IntPtr.Zero);Check(stdin!=new IntPtr(-1),"stdin NUL");handles.Add(stdin);
-            int attributeCount=singleProcess?4:3;UIntPtr attrBytes=UIntPtr.Zero;InitializeProcThreadAttributeList(IntPtr.Zero,attributeCount,0,ref attrBytes);
+            int attributeCount=product!=null?5:singleProcess?4:3;UIntPtr attrBytes=UIntPtr.Zero;InitializeProcThreadAttributeList(IntPtr.Zero,attributeCount,0,ref attrBytes);
             attributes=Marshal.AllocHGlobal(checked((int)attrBytes.ToUInt64()));Check(InitializeProcThreadAttributeList(attributes,attributeCount,0,ref attrBytes),"InitializeAttributes");
+            if(product!=null){var jobList=Marshal.AllocHGlobal(IntPtr.Size);allocations.Add(jobList);Marshal.WriteIntPtr(jobList,job);Attribute(attributes,0x2000D,jobList,IntPtr.Size);Record("job_at_creation_requested",new{jobs=1,job_handle_inherited=false});}
             if(singleProcess){var childPolicy=Marshal.AllocHGlobal(4);allocations.Add(childPolicy);Marshal.WriteInt32(childPolicy,1);Attribute(attributes,0x2000E,childPolicy,4);Record("child_creation_policy_requested",new{flags=1,process_budget=1,detached_console=true});}
             var caps=new SecurityCapabilities();caps.AppContainerSid=sid;
             if(capability!=null){caps.Capabilities=capability.Attributes;caps.CapabilityCount=1;}
@@ -265,10 +270,11 @@ internal static class LpacStartupPoc {
             string env="APPDATA="+profile+"\0LOCALAPPDATA="+profile+"\0SystemRoot="+systemRoot+"\0TEMP="+Path.Combine(profile,"Temp")+"\0TMP="+Path.Combine(profile,"Temp")+"\0USERPROFILE="+profile+"\0WINDIR="+systemRoot+"\0\0";
             environment=Marshal.StringToHGlobalUni(env);
             string inlineSource=inlineProbe?File.ReadAllText(Path.Combine(input,scriptName),new UTF8Encoding(false)):null;
-            string command=Quote(node)+(singleInline||singleBoundaryNode||singleResource?" --no-addons --preserve-symlinks --preserve-symlinks-main -e "+Quote(inlineSource):nodeFileProbe?(singleProcess?" --no-addons":"")+" --preserve-symlinks --preserve-symlinks-main --test-reporter=tap"+(nodeTestRunner?" --test --test-isolation=none":"")+" "+Quote(nodeTestRunner?scriptName:Path.Combine(input,scriptName)):inlineProbe?" -e "+Quote(inlineSource):" "+Quote(Path.Combine(input,scriptName)));
+            string command=product!=null?product.CommandLine():Quote(node)+(singleInline||singleBoundaryNode||singleResource?" --no-addons --preserve-symlinks --preserve-symlinks-main -e "+Quote(inlineSource):nodeFileProbe?(singleProcess?" --no-addons":"")+" --preserve-symlinks --preserve-symlinks-main --test-reporter=tap"+(nodeTestRunner?" --test --test-isolation=none":"")+" "+Quote(nodeTestRunner?scriptName:Path.Combine(input,scriptName)):inlineProbe?" -e "+Quote(inlineSource):" "+Quote(Path.Combine(input,scriptName)));
             if(singleProcessNative)command=Quote(application);
+            if(product!=null){command=product.CommandLine();Record("product_plan_bound",new{plan_id=product.PlanId,attempt_id=product.AttemptId,config_sha256=product.ConfigHash,kind=product.Kind,argv=product.Argv});}
             if(nodeFileProbe)Record("node_file_probe_frozen",new{test_runner=nodeTestRunner,typescript=nodeTypeScript,esm=nodeEsm,inline=singleInline,module_sha256=Hash(Path.Combine(input,moduleName)),script_sha256=Hash(Path.Combine(input,scriptName)),package_sha256=nodeTypeScript||nodeEsm?Hash(Path.Combine(input,"package.json")):null,original_unflagged_command_passed=false});
-            Record("execution_identity",new{kind=singleProcessNative?"native_single_process_attack":singleBoundaryNode?"node_inline_single_files":singleResource?"node_inline_single_resource_"+resourceKind:singleInline?"node_inline_single_process":singleProcess?"node_file_single_process":nodeFileProbe?"node_file_fixed_flags":resourceProbe?"node_inline_frozen_resource_"+resourceKind:fileProbe?"node_inline_frozen_file_descendants":inheritTransport?"node_inline_frozen_inherited_stdio_probe":inlineProbe?"node_inline_frozen":"node_script_file",source_sha256=Hash(Path.Combine(input,scriptName)),actual_command_line=command,original_file_entry_passed=false,original_default_pipe_command_passed=false});
+            Record("execution_identity",new{kind=product!=null?"product_"+product.Kind:singleProcessNative?"native_single_process_attack":singleBoundaryNode?"node_inline_single_files":singleResource?"node_inline_single_resource_"+resourceKind:singleInline?"node_inline_single_process":singleProcess?"node_file_single_process":nodeFileProbe?"node_file_fixed_flags":resourceProbe?"node_inline_frozen_resource_"+resourceKind:fileProbe?"node_inline_frozen_file_descendants":inheritTransport?"node_inline_frozen_inherited_stdio_probe":inlineProbe?"node_inline_frozen":"node_script_file",source_sha256=Hash(Path.Combine(input,scriptName)),actual_command_line=command,original_file_entry_passed=false,original_default_pipe_command_passed=false});
             uint creationFlags=singleProcess?0x0008040cu:0x08080404u;
             Record("create_suspended_requested",new {executable=application,command_line=command,cwd=input,environment_keys=new[]{"APPDATA","LOCALAPPDATA","SystemRoot","TEMP","TMP","USERPROFILE","WINDIR"},creation_flags=creationFlags});
             // Negative control is ordinary AppContainer but NEVER resumed. Same executable,
@@ -277,8 +283,8 @@ internal static class LpacStartupPoc {
             var control=new ProcessInformation();
             try {
                 Check(CreateProcessW(application,new StringBuilder(command),IntPtr.Zero,IntPtr.Zero,true,creationFlags,environment,input,ref si,out control),"Create ordinary AppContainer suspended control");
-                Record("control_created_suspended",new{pid=control.ProcessId});
-                Check(AssignProcessToJobObject(job,control.Process),"Assign control Job");VerifyToken(control.Process,sidText,false,capability==null?null:capability.Sid);
+                long controlCreated,controlEnded,controlKernel,controlUser;Check(GetProcessTimes(control.Process,out controlCreated,out controlEnded,out controlKernel,out controlUser),"Control creation identity");Record("control_created_suspended",new{pid=control.ProcessId,created_filetime=controlCreated.ToString(System.Globalization.CultureInfo.InvariantCulture)});
+                if(product==null)Check(AssignProcessToJobObject(job,control.Process),"Assign control Job");else{bool controlInJob;Check(IsProcessInJob(control.Process,job,out controlInJob),"Atomic control Job query");if(!controlInJob)throw new InvalidOperationException("CONTROL_ATOMIC_JOB_MISSING");Record("job_at_creation_observed",new{pid=control.ProcessId,ordinary_control=true,associated=true});}VerifyToken(control.Process,sidText,false,capability==null?null:capability.Sid);
                 if(singleProcess)LpacSingleProcessProbe.RequirePolicy(control.Process,Record);
             } finally {
                 if(control.Process!=IntPtr.Zero) {Check(TerminateProcess(control.Process,125),"Terminate control");Check(WaitForSingleObject(control.Process,5000)==0,"Wait control termination");CloseHandle(control.Process);CloseHandle(control.Thread);Record("control_terminated_never_resumed",new{pid=control.ProcessId});}
@@ -288,9 +294,10 @@ internal static class LpacStartupPoc {
             Record("actual_creation_flags",new{flags=actualFlags,diagnostic_debugger=traceMode});
             Check(CreateProcessW(application,new StringBuilder(command),IntPtr.Zero,IntPtr.Zero,true,actualFlags,environment,input,ref si,out pi),"CreateProcessW LPAC suspended");started=true;
             if(traceMode){observationHandle=LpacReadTrace.DuplicateOwnedHandle(pi.Process);handles.Add(observationHandle);}
-            Record("process_created_suspended",new {pid=pi.ProcessId,thread_id=pi.ThreadId});
-            Check(AssignProcessToJobObject(job,pi.Process),"AssignProcessToJobObject");
+            long applicationCreated,applicationEnded,applicationKernel,applicationUser;Check(GetProcessTimes(pi.Process,out applicationCreated,out applicationEnded,out applicationKernel,out applicationUser),"Application creation identity");Record("process_created_suspended",new {pid=pi.ProcessId,thread_id=pi.ThreadId,created_filetime=applicationCreated.ToString(System.Globalization.CultureInfo.InvariantCulture)});
+            if(product==null)Check(AssignProcessToJobObject(job,pi.Process),"AssignProcessToJobObject");
             bool inJob;Check(IsProcessInJob(pi.Process,job,out inJob),"IsProcessInJob");if(!inJob)throw new InvalidOperationException("JOB_ASSOCIATION_MISSING");
+            if(product!=null)Record("job_at_creation_observed",new{pid=pi.ProcessId,ordinary_control=false,associated=true});
             VerifyToken(pi.Process,sidText,true,capability==null?null:capability.Sid);Record("pre_resume_checks",new {job_association=true,actual_token_checked=true,acl_readback=true,ordinary_appcontainer_control_verified=true});
             if(singleProcess)LpacSingleProcessProbe.RequirePolicy(pi.Process,Record);
             verifiedPids.Add(pi.ProcessId);
@@ -298,11 +305,13 @@ internal static class LpacStartupPoc {
             foreach(var h in new[]{outWrite,errWrite,stdin}) {CloseHandle(h);handles.Remove(h);}
             stdout.Start(outRead,job);handles.Remove(outRead);stderr.Start(errRead,job);handles.Remove(errRead);
             if(parentLifetime!=null)parentLifetime.RequireAlive();
+            if(product!=null&&product.CancellationRequested()){cancelled=true;Record("owner_cancel",new{termination_code=130,plan_id=product.PlanId,before_resume=true});Check(TerminateJobObject(job,130),"Cancel before resume");throw new InvalidOperationException("PRODUCT_CANCELLED_BEFORE_RESUME");}
             Check(ResumeThread(pi.Thread)!=UInt32.MaxValue,"ResumeThread");resumed=true;Record("process_resumed",new {pid=pi.ProcessId});
             if(traceMode){uint traceExit=LpacReadTrace.Run(observationHandle,job,pi.ProcessId,Record,delegate{return timer.ElapsedMilliseconds;},pipeTrace);Record("diagnostic_trace_complete",new{exit_code=traceExit,isolation_acceptance="INCOMPLETE"});}
             for(;;) {
                 if(notifications!=null)notifications.Drain();
                 if(parentLifetime!=null&&!parentLost&&parentLifetime.Ended){parentLost=true;Record("parent_lifetime_ended",new{termination_code=140,observed_utc=DateTime.UtcNow.ToString("o"),observation_period_ms=20});Check(TerminateJobObject(job,140),"Terminate Job after daemon parent death");}
+                if(product!=null&&!cancelled&&product.CancellationRequested()){cancelled=true;Check(TerminateJobObject(job,130),"Terminate product owner cancel");Record("owner_cancel",new{termination_code=130,plan_id=product.PlanId});}
                 if((fileProbe||resourceProbe||nodeFileProbe||singleProcess)&&!parentLost){int active=ObserveOwnedDescendants(job,sidText,capability.Sid,verifiedPids);if(active>peakActive){peakActive=active;Record("job_peak_active_observed",new{active=active});}if(active>processLimit&&!processBudgetExceeded){processBudgetExceeded=true;Record("process_budget_exceeded",new{observed_live=active,configured_limit=processLimit,termination_code=139,observation_period_ms=20,all_members_counted=true});Check(TerminateJobObject(job,139),"Terminate Job observed process budget exceeded");}}
                 var count=Accounting(job);
                 if(count.ActiveProcesses==0) {allEnded=true;Record("job_empty",new {active=count.ActiveProcesses,total=count.TotalProcesses,terminated=count.TotalTerminatedProcesses});break;}
@@ -320,7 +329,8 @@ internal static class LpacStartupPoc {
             if(timedOut){Record("experiment_outcome",new{result="INCONCLUSIVE_WALL_LIMIT",application_exit_code=code,canary_checks_completed=false});throw new TimeoutException("SYNTHETIC_WALL_LIMIT");}
             string output=Encoding.UTF8.GetString(stdout.Bytes.ToArray());
             if(pipeTrace)throw new InvalidOperationException("PIPE_DIAGNOSTIC_NOT_AN_ACCEPTANCE_RUN");
-            if(singleProcessNative){if(!LpacSingleNativeBoundary.Validate(stdout.Bytes.ToArray(),stderr.Bytes.ToArray(),code,pi.ProcessId,(uint)Process.GetCurrentProcess().Id,Record)||!files.SingleNoLeak(stdout.Bytes.ToArray(),stderr.Bytes.ToArray())||!canary.NoLeak(stdout.Bytes.ToArray(),stderr.Bytes.ToArray()))throw new InvalidOperationException("SINGLE_PROCESS_NATIVE_BOUNDARY_NOT_PROVED");}
+            if(product!=null){if(code!=0||parentLost||cancelled||processBudgetExceeded)throw new InvalidOperationException("PRODUCT_EXECUTION_FAILED");Record("product_execution_observed",new{plan_id=product.PlanId,application_exit_code=code,output_complete=true});}
+            else if(singleProcessNative){if(!LpacSingleNativeBoundary.Validate(stdout.Bytes.ToArray(),stderr.Bytes.ToArray(),code,pi.ProcessId,(uint)Process.GetCurrentProcess().Id,Record)||!files.SingleNoLeak(stdout.Bytes.ToArray(),stderr.Bytes.ToArray())||!canary.NoLeak(stdout.Bytes.ToArray(),stderr.Bytes.ToArray()))throw new InvalidOperationException("SINGLE_PROCESS_NATIVE_BOUNDARY_NOT_PROVED");}
             else if(singleBoundaryNode){if(!singleFiles.Validate(stdout.Bytes.ToArray(),stderr.Bytes.ToArray(),code,pi.ProcessId))throw new InvalidOperationException("SINGLE_PROCESS_FILES_NOT_PROVED");}
             else if(nodeFileProbe){if(!(singleInline?code==0&&stderr.Bytes.Length==0&&output=="SFINLINE_IMPORT_PASSED\n":LpacNodeFileProbe.Validate(stdout.Bytes.ToArray(),stderr.Bytes.ToArray(),code))||Hash(Path.Combine(input,moduleName))!=HashText(probeModule)||Hash(Path.Combine(input,scriptName))!=HashText(probeScript)||(nodeTypeScript||nodeEsm)&&Hash(Path.Combine(input,"package.json"))!=HashText("{\"type\":\"module\"}\n"))throw new InvalidOperationException("FIXED_NODE_FILE_TEST_NOT_PROVED");Record("node_file_probe_validated",new{test_runner=nodeTestRunner,typescript=nodeTypeScript,actual_exit_code=code,input_bytes_unchanged=true});}
             else if(fileProbe){if(!files.Validate(stdout.Bytes.ToArray(),stderr.Bytes.ToArray(),code,verifiedPids))throw new InvalidOperationException("FILE_DESCENDANT_BOUNDARY_NOT_PROVED");}
@@ -350,8 +360,10 @@ internal static class LpacStartupPoc {
             if(sid!=IntPtr.Zero)FreeSid(sid);
             if(capability!=null)capability.Dispose();
             if(canary!=null&&(!started||allEnded))try{canary.ReconcileAndCleanup();}catch(Exception cleanup){Record("canary_cleanup_failed",new{type=cleanup.GetType().FullName,message=cleanup.Message});result=1;}
+            if(stdout.Thread!=null)stdout.Thread.Join(5000);if(stderr.Thread!=null)stderr.Thread.Join(5000);
+            if(product!=null)Record("product_output_status",new{stdout_complete=stdout.Thread!=null&&!stdout.Thread.IsAlive&&!stdout.Overflow&&stdout.Error==null,stderr_complete=stderr.Thread!=null&&!stderr.Thread.IsAlive&&!stderr.Overflow&&stderr.Error==null,stdout_overflow=stdout.Overflow,stderr_overflow=stderr.Overflow});
             File.WriteAllBytes(Path.Combine(root,"stdout.bin"),stdout.Bytes.ToArray());File.WriteAllBytes(Path.Combine(root,"stderr.bin"),stderr.Bytes.ToArray());
-            var receipt=new {schema="synthetic-lpac-startup/1",started_utc=startedUtc,finished_utc=DateTime.UtcNow.ToString("o"),duration_ms=timer.ElapsedMilliseconds,root=root,moniker=moniker,sid=sidText,profile=profile,process_started=started,process_resumed=resumed,application_exit_code=exit,job_all_ended=allEnded,timed_out=timedOut,scope=singleProcess?"D22 single-process synthetic evidence only; full new matrix and product adoption not accepted":resourceProbe?"Synthetic resource expected rejection only; never a passed execution":fileProbe?"P01 inline node:test parent child grandchild and direct-path files only; remaining matrix NOT_ACCEPTED":pipeTrace?"Bounded pipe diagnosis only; not canary acceptance":canaryProbe?"D21 registry canary only; remaining isolation checks NOT_EXECUTED":registryExperiment?"D21 synthetic startup experiment only; not product acceptance":traceMode?"Diagnostic observation only; not isolation acceptance":"P01 startup only; other matrix rows NOT_EXECUTED",debug_observer=traceMode,execution_kind=singleProcessNative?"native_single_process_attack":singleBoundaryNode?"node_inline_single_files":singleResource?"node_inline_single_resource_"+resourceKind:singleInline?"node_inline_single_process":singleProcess?"node_file_single_process":nodeFileProbe?"node_file_fixed_flags":resourceProbe?"node_inline_frozen_resource_"+resourceKind:fileProbe?"node_inline_frozen_file_descendants":inheritTransport?"node_inline_frozen_inherited_stdio_probe":inlineProbe?"node_inline_frozen":"node_script_file",capability_sid=capability==null?null:capability.Sid,profile_id=profileId,startup_result=result==0?(singleProcess?"D22_SINGLE_PROCESS_FINITE_PROBE_OBSERVED":fileProbe?"INLINE_NODE_TEST_AND_DIRECT_FILE_DESCENDANTS_OBSERVED":canaryProbe?"SINGLE_CANARY_READ_DENIAL_OBSERVED":"P01_STARTUP_OBSERVED"):"FAILED",isolation_acceptance="INCOMPLETE",error=error,inner_exit_code=result};
+            var receipt=new {schema="synthetic-lpac-startup/1",started_utc=startedUtc,finished_utc=DateTime.UtcNow.ToString("o"),duration_ms=timer.ElapsedMilliseconds,root=root,moniker=moniker,sid=sidText,profile=profile,process_started=started,process_resumed=resumed,application_exit_code=exit,job_all_ended=allEnded,timed_out=timedOut,scope=product!=null?"D23 product native control receipt; common Runtime consumer verification required":singleProcess?"D22 single-process synthetic evidence only; full new matrix and product adoption not accepted":resourceProbe?"Synthetic resource expected rejection only; never a passed execution":fileProbe?"P01 inline node:test parent child grandchild and direct-path files only; remaining matrix NOT_ACCEPTED":pipeTrace?"Bounded pipe diagnosis only; not canary acceptance":canaryProbe?"D21 registry canary only; remaining isolation checks NOT_EXECUTED":registryExperiment?"D21 synthetic startup experiment only; not product acceptance":traceMode?"Diagnostic observation only; not isolation acceptance":"P01 startup only; other matrix rows NOT_EXECUTED",debug_observer=traceMode,execution_kind=product!=null?"product_"+product.Kind:singleProcessNative?"native_single_process_attack":singleBoundaryNode?"node_inline_single_files":singleResource?"node_inline_single_resource_"+resourceKind:singleInline?"node_inline_single_process":singleProcess?"node_file_single_process":nodeFileProbe?"node_file_fixed_flags":resourceProbe?"node_inline_frozen_resource_"+resourceKind:fileProbe?"node_inline_frozen_file_descendants":inheritTransport?"node_inline_frozen_inherited_stdio_probe":inlineProbe?"node_inline_frozen":"node_script_file",capability_sid=capability==null?null:capability.Sid,profile_id=profileId,startup_result=result==0?(product!=null?"D23_EXECUTION_OBSERVED":singleProcess?"D22_SINGLE_PROCESS_FINITE_PROBE_OBSERVED":fileProbe?"INLINE_NODE_TEST_AND_DIRECT_FILE_DESCENDANTS_OBSERVED":canaryProbe?"SINGLE_CANARY_READ_DENIAL_OBSERVED":"P01_STARTUP_OBSERVED"):"FAILED",isolation_acceptance=product!=null?(resumed?"D23_PROFILE_ENFORCED":"NOT_EXECUTED"):"INCOMPLETE",error=error,inner_exit_code=result};
             NewFile(Path.Combine(root,"receipt.json"),Json.Serialize(receipt)+"\n");Console.WriteLine(Json.Serialize(receipt));
         }
         return result;

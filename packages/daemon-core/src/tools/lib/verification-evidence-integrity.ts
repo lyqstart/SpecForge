@@ -3,6 +3,7 @@ import * as path from 'node:path';
 import { createHash } from 'node:crypto';
 import { extractStructuredVerificationReport } from './verification-report-contract.js';
 import { WAL } from '../../wal/WAL.js';
+import { inspectExecutionEvidence, type ExecutionEvidenceConsumer } from '../../verification/execution-evidence-consumer';
 
 export interface VerificationEvidenceIntegrity {
   invalidity_reasons: string[];
@@ -51,6 +52,7 @@ export async function inspectVerificationEvidenceIntegrity(input: {
   workItemId: string;
   closed?: boolean;
   now?: Date;
+  executionEvidenceConsumer?: ExecutionEvidenceConsumer;
 }): Promise<VerificationEvidenceIntegrity> {
   const reportPath = path.join(input.workItemDir, 'verification_report.md');
   const manifestPath = path.join(input.workItemDir, 'evidence', 'evidence_manifest.json');
@@ -90,6 +92,8 @@ export async function inspectVerificationEvidenceIntegrity(input: {
   }
   if (!Array.isArray(manifest.entries)) reasons.push('evidence_manifest_entries_missing');
   const entries = Array.isArray(manifest.entries) ? manifest.entries : [];
+  reasons.push(...await inspectExecutionEvidence({projectRoot:input.projectRoot,workItemId:input.workItemId,report,manifest,
+    consumer:input.executionEvidenceConsumer,historicalClosed:input.closed}));
   for (const entry of entries) {
     if (entry && typeof entry === 'object') {
       const entryId = String(entry.evidence_id ?? entry.id ?? 'unknown');

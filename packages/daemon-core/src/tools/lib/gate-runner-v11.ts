@@ -1168,6 +1168,7 @@ registerGate('verification_gate', 'hard_gate', true, async ctx => {
   }
 
   const verificationContract = await evaluateVerificationGovernanceContract({
+    executionEvidenceConsumer:ctx.executionEvidenceConsumer,
     workItemDir: ctx.workItemDir,
     workItemId: ctx.workItemId,
     workflowType: ctx.workflowType,
@@ -1433,6 +1434,7 @@ registerGate('verification_gate', 'hard_gate', true, async ctx => {
  */
 registerGate('formal_version_gate', 'hard_gate', true, async ctx => {
   const result = await checkFormalVersionEligibility({
+    executionEvidenceConsumer:ctx.executionEvidenceConsumer,
     projectRoot: ctx.projectRoot,
     workItemDir: ctx.workItemDir,
     workItemId: ctx.workItemId,

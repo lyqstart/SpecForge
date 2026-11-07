@@ -1245,6 +1245,7 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
       }
     }
     const ctx = {
+      executionEvidenceConsumer:deps.verificationRuntime,
       workItemId,
       workItemDir,
       projectRoot,

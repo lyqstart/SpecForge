@@ -39,6 +39,7 @@ import { readWorkItemMetadata } from '../tools/lib/work-item-metadata';
 import { checkNativeTool } from '../tools/lib/native-write-boundary';
 import { readAuthoritativeWorkItems } from '../tools/lib/authoritative-work-items';
 import type { LLMKernelAdapter, UserMessage } from '@specforge/types/llm-kernel-contract';
+import { VERIFICATION_REQUEST_ABORT } from '../verification/request-context';
 
 interface HTTPWriteGuardContext extends WriteGuardContext {
   metadata_error?: string;
@@ -1170,7 +1171,11 @@ export class HTTPServer {
 
     // Try real dispatcher first
     if (this.deps.toolDispatcher) {
+      const controller = new AbortController();
+      const onDisconnect = () => { if (!res.writableEnded) controller.abort(); };
+      _req.once('aborted', onDisconnect); res.once('close', onDisconnect);
       try {
+        request.context = { ...(request.context ?? {}), [VERIFICATION_REQUEST_ABORT]:controller.signal };
         const result = await this.deps.toolDispatcher.dispatch(request as DispatcherRequest);
         this.sendJsonResponse(res, 200, this.successBody(result));
       } catch (err) {
@@ -1182,7 +1187,7 @@ export class HTTPServer {
         } else {
           this.sendJsonResponse(res, 500, this.errorBody('TOOL_ERROR', msg));
         }
-      }
+      } finally { _req.off('aborted', onDisconnect); res.off('close', onDisconnect); }
       return;
     }
 

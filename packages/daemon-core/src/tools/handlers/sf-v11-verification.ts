@@ -12,6 +12,7 @@ import {
 } from '../lib/verification-evidence-v11';
 import * as path from 'node:path';
 import { readFile } from 'node:fs/promises';
+import { inspectExecutionEvidence } from '../../verification/execution-evidence-consumer';
 import { resolveWorkItemSpecArtifacts } from '../lib/governance-invariants-v11';
 import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
 import {
@@ -23,7 +24,7 @@ import {
   precheckEvidenceManifestSchema,
 } from '../lib/evidence-manifest';
 
-registerHandler('sf_v11_verification', async (args, context, _deps) => {
+registerHandler('sf_v11_verification', async (args, context, deps) => {
   const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const action = (args['action'] as string) || 'validate';
 
@@ -71,12 +72,13 @@ registerHandler('sf_v11_verification', async (args, context, _deps) => {
       const structured = extractStructuredVerificationReport(reportContent);
       if (structured) {
         const contractResult = validateVerificationReportContract(structured);
+        const executionErrors=await inspectExecutionEvidence({projectRoot,workItemId,report:structured,consumer:deps.verificationRuntime});
         return {
           success: true,
           action,
           validator: 'verification-report-contract/v1',
-          valid: contractResult.valid,
-          errors: contractResult.errors,
+          valid: contractResult.valid&&executionErrors.length===0,
+          errors: [...contractResult.errors,...executionErrors],
           ...(contractResult.report ? { conclusion: contractResult.report.conclusion } : {}),
         };
       }
@@ -87,6 +89,9 @@ registerHandler('sf_v11_verification', async (args, context, _deps) => {
         action,
         validator: 'legacy-markdown-fallback',
         ...result,
+        valid:false,
+        errors:[...result.errors,'STRUCTURED_VERIFICATION_REPORT_REQUIRED'],
+        execution_verified:false,
       };
     }
 
@@ -105,13 +110,15 @@ registerHandler('sf_v11_verification', async (args, context, _deps) => {
           const raw = await readFile(path.join(wiDir, 'evidence', 'evidence_manifest.json'), 'utf-8');
           const parsed = JSON.parse(raw);
           const result = validateEvidenceManifest(parsed, workItemId);
-          return { success: true, action, ...result };
+          const executionErrors=await inspectExecutionEvidence({projectRoot,workItemId,manifest:parsed,consumer:deps.verificationRuntime});
+          return { success: true, action, ...result,valid:result.valid&&executionErrors.length===0,errors:[...result.errors,...executionErrors] };
         } catch {
           return { success: false, error: 'evidence_manifest.json not found and no manifest provided' };
         }
       }
       const result = validateEvidenceManifest(manifest, workItemId);
-      return { success: true, action, ...result };
+      const executionErrors=await inspectExecutionEvidence({projectRoot,workItemId,manifest,consumer:deps.verificationRuntime});
+      return { success: true, action, ...result,valid:result.valid&&executionErrors.length===0,errors:[...result.errors,...executionErrors] };
     }
 
     if (action === 'check_trace_chain') {

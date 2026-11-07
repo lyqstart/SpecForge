@@ -404,3 +404,5 @@ export type {
   ModelCapabilities,
   OutputFormat,
 } from './llm-kernel-contract.js';
+
+export type { TrustedToolInvocationRequest, TrustedToolInvocationProof, ToolInvocationVerifier } from './trusted-tool-invocation.js';

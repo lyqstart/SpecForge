@@ -92,18 +92,20 @@ If a requested action conflicts with this contract, stop and report the conflict
 
 ## SpecForge 产品开发经验前置门禁
 
-当当前仓库是 SpecForge 产品仓库，或任务涉及修改 SpecForge 的代码、测试、文档、配置、脚本、命令、补丁、安装器或验证流程时，在任何修改前必须读取：
+当当前仓库是 SpecForge 产品仓库，或任务涉及修改 SpecForge 自身时，以仓库根 AGENTS.md 为稳定入口。先读取执行模式与证据协议并运行只读 Bootstrap，完整读取其 REQUIRED_RULES，再从唯一 docs/project-status.md 的 NEXT_LEGAL_ACTION 恢复。任何修改前必须完整读取：
 
 ```text
-docs/rule/specforge-development-error-ledger-and-experience.md
+docs/rule/specforge-active-development-rules.md
 ```
 
-必须完整阅读第三部分“工程经验总则”和第四部分“修改前强制检查”，并在工作记录中写明：
+按任务关键词、模块及适用 EXP 定向检索 docs/rule/specforge-development-error-ledger-and-experience.md，核对历史错误及重复风险；不把历史摘要或旧实现当产品权威。在工作记录中写明：
 
 ```text
 EXPERIENCE_FILE_READ=YES
+ACTIVE_EXPERIENCE_RULES_FILE_READ=YES
 APPLICABLE_EXPERIENCE_RULES=EXP-...（至少一项）
 REPEATED_ERROR_CHECK=PASS
+HISTORICAL_LEDGER_SEARCH=关键词及命中 EXP/ERR，或 NONE_WITH_JUSTIFICATION
 ```
 
 无法访问该文件或无法完成检查时，必须 fail closed，不得修改文件、生成写操作命令或以旧经验继续。
@@ -130,30 +132,38 @@ Each agent has a defined role, permissions, and workflow responsibilities.
 ## Core Rules
 
 1. All agents must follow the Agent Constitution defined in `_AGENT_BASE.md` (user-level)
-2. State transitions must go through the `sf_state_transition` tool (only Orchestrator may call it)
+2. State movement belongs to its current Runtime owner: creation, merge, code permission, Gates and Close use their respective controlled tools; only Orchestrator may call `sf_state_transition`, which cannot substitute for another owner's transition.
 3. Gate checks (requirements, design, tasks, verification) must not be bypassed
 4. Sub-agents cannot dispatch other agents — only the Orchestrator can
 
 ## Workflow
 
-The standard feature spec workflow follows:
+Only `feature_spec` is a current-release workflow identity. The main legal Runtime chain is:
 ```
-intake → requirements → design → tasks → development → review → verification → completed
+created → intake_ready → impact_analyzing → impact_analyzed → workflow_selected
+→ candidate_preparing → candidate_prepared → gates_running → approval_required
+→ approved → merge_ready → merging → merged → post_merge_verified
+→ implementation_ready → implementation_running → implementation_done
+→ verification_running → verification_done → closed
 ```
 
-Each phase transition requires passing a quality gate.
+The built-in workflow contract governs each transition, its owner, required evidence and recoverable branches. Professional review is not an invented `review_running` or `review_done` Runtime state. Never hand-write state or copy a historical workflow identity.
 
 ## Runtime Data
 
-Project runtime data is stored in `specforge/`:
-- `specforge/runtime/` — State and checkpoints
-- `specforge/config/` — Project configuration
-- `specforge/logs/` — Execution logs and traces
-- `specforge/sessions/` — Session archives
+Current project authority uses `.specforge/project/spec_manifest.json` and its registered Project Spec files. Work Item artifacts are under `.specforge/work-items/`; authoritative events and projection cache are under `.specforge/runtime/`; configuration is under `.specforge/config/`. A root `.specforge/manifest.json` is a retired layout, not a current fallback.
+
+OpenCode public assets use its config root's `agents/tools/plugins/skills` directories. SpecForge private binaries and runtime data use `<OpenCode config>/sf-user/`; `~/.specforge` is not a current write root. The shared Daemon does not create a second workflow state authority.
+
+## D23 controlled readonly verification
+
+Real `sf-orchestrator` creates an independent readonly plan with `sf_verification_plan` from an approved Task. Real `sf-verifier` uses `sf_verification_run` prepare/run; cancel/recover refer to the same Attempt. Code permission remains separate and is never reopened for verification. Only the fixed Windows x64 single-process readonly Node profile and proved finite static-to-Node normalization are supported; unknown declarations stay not_executed/blocked, with no shell fallback. `sf_safe_bash` remains D18 readonly.
+
+Runtime verifies the actual running call throughout execution and signs an immutable invocation lease and execution receipt. Report/Evidence/Gates/Formal Version/Close use the same owner checks. Aborted, stale, tampered, incomplete or cleanup-unknown results cannot pass. Independent manual observations require their own actual evidence and cannot relabel executable checks. Execution does not itself advance workflow state.
 
 <!-- BEGIN: directory-layout -->
 > ⚠️ 本文档由 `scripts/render-layout.ts` 从 `packages/types/src/directory-layout.ts` 自动生成。
-> 不要手动编辑。
+> 角色：DERIVED REFERENCE，不是产品权威。不要手动编辑；产品边界先由 SPS/已登记 Contract 决定。
 
 ## 项目目录名
 
@@ -161,16 +171,15 @@ Project runtime data is stored in `specforge/`:
 SPEC_DIR_NAME = '.specforge'
 ```
 
-## 项目级路径 (.specforge/)
+## Current Active Paths (.specforge/)
 
 ### committed 区（提交到 Git）
 
 | Key | 路径 | 说明 |
 |-----|------|------|
-| manifest | `manifest.json` | Project manifest（committed）— `<root>/.specforge/manifest.json` |
-| config | `config` | 项目配置目录（committed）— `<root>/.specforge/config/` |
-| specs | `work-items` | Work Item 规格目录（committed）— `<root>/.specforge/work-items/` |
-| specsReadme | `work-items/README.md` | work-items 目录的 README（committed）— `<root>/.specforge/work-items/README.md` |
+| config | `config` | 项目配置目录 — `<root>/.specforge/config/` |
+| project | `project` | 项目级正式规格目录 — `<root>/.specforge/project/` |
+| workItems | `work-items` | Work Item 事务根目录 — `<root>/.specforge/work-items/` |
 
 ### configFiles 分组
 
@@ -180,39 +189,73 @@ SPEC_DIR_NAME = '.specforge'
 | configFiles.prodEnv | `config/prod-environment.md` | — |
 | configFiles.project | `config/project.json` | — |
 
+### projectFiles 分组
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| projectFiles.specManifest | `project/spec_manifest.json` | — |
+| projectFiles.extensionRegistry | `project/extension_registry.json` | — |
+| projectFiles.requirementsIndex | `project/requirements_index.md` | — |
+| projectFiles.designIndex | `project/design_index.md` | — |
+| projectFiles.architecture | `project/architecture.md` | — |
+| projectFiles.glossary | `project/glossary.md` | — |
+| projectFiles.decisions | `project/decisions.md` | — |
+| projectFiles.traceMatrix | `project/trace_matrix.md` | — |
+| projectFiles.modulesRoot | `project/modules` | — |
+
+### workItemFiles 分组
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| workItemFiles.workItemJson | `work_item.json` | — |
+| workItemFiles.intake | `intake.md` | — |
+| workItemFiles.changeClassification | `change_classification.md` | — |
+| workItemFiles.impactAnalysis | `impact_analysis.md` | — |
+| workItemFiles.triggerResult | `trigger_result.json` | — |
+| workItemFiles.requirements | `requirements.md` | — |
+| workItemFiles.design | `design.md` | — |
+| workItemFiles.requirementsDelta | `requirements_delta.md` | — |
+| workItemFiles.designDelta | `design_delta.md` | — |
+| workItemFiles.domainAnalysis | `domain_analysis.md` | — |
+| workItemFiles.moduleBoundaryAnalysis | `module_boundary_analysis.md` | — |
+| workItemFiles.architectureMigrationMap | `architecture_migration_map.md` | — |
+| workItemFiles.projectSpecVersionBefore | `project_spec_version_before.json` | — |
+| workItemFiles.projectSpecVersionAfter | `project_spec_version_after.json` | — |
+| workItemFiles.tasks | `tasks.md` | — |
+| workItemFiles.traceDelta | `trace_delta.md` | — |
+| workItemFiles.candidateManifest | `candidate_manifest.json` | — |
+| workItemFiles.candidates | `candidates` | — |
+| workItemFiles.candidateFiles.project | `project` | — |
+| workItemFiles.candidateFiles.modulesRoot | `project/modules` | — |
+| workItemFiles.candidateFiles.requirements | `requirements.candidate.md` | — |
+| workItemFiles.candidateFiles.design | `design.candidate.md` | — |
+| workItemFiles.candidateFiles.tasks | `tasks.md` | — |
+| workItemFiles.candidateFiles.traceDelta | `trace_delta.md` | — |
+| workItemFiles.gates | `gates` | — |
+| workItemFiles.gateSummary | `gate_summary.md` | — |
+| workItemFiles.userDecision | `user_decision.json` | — |
+| workItemFiles.verificationReport | `verification_report.md` | — |
+| workItemFiles.mergeReport | `merge_report.md` | — |
+| workItemFiles.evidence | `evidence` | — |
+| workItemFiles.evidenceManifest | `evidence/evidence_manifest.json` | — |
+| workItemFiles.extensionRequest | `extension_request.json` | — |
+| workItemFiles.extensionDelta | `extension_delta.md` | — |
+
 ### gitignored 区（运行时数据）
 
 | Key | 路径 | 说明 |
 |-----|------|------|
 | runtime | `runtime` | 运行时状态目录（gitignored）— `<root>/.specforge/runtime/` |
-| runtimeEvents | `runtime/events.jsonl` | 权威工作流事件日志（gitignored）— `<root>/.specforge/runtime/events.jsonl` |
-| runtimeState | `runtime/state.json` | 持久化状态（gitignored）— `<root>/.specforge/runtime/state.json` |
-| runtimeCheckpoints | `runtime/checkpoints` | 状态快照目录（gitignored）— `<root>/.specforge/runtime/checkpoints/` |
-| logs | `logs` | 日志目录（gitignored）— `<root>/.specforge/logs/` |
-| logsTelemetry | `logs/telemetry.jsonl` | 遥测日志（gitignored）— `<root>/.specforge/logs/telemetry.jsonl` |
-| logsTrace | `logs/trace.jsonl` | 追踪日志（gitignored）— `<root>/.specforge/runtime/logs/trace.jsonl` |
-| logsToolCalls | `logs/tool_calls.jsonl` | 工具调用日志（gitignored）— `<root>/.specforge/logs/tool_calls.jsonl` |
-| logsCost | `logs/cost.jsonl` | 成本日志（gitignored）— `<root>/.specforge/logs/cost.jsonl` |
-| logsConversations | `logs/conversations.jsonl` | 会话日志（gitignored）— `<root>/.specforge/logs/conversations.jsonl` |
-| archive | `archive` | Agent Run 归档根目录（gitignored）— `<root>/.specforge/archive/` |
-| archiveAgentRuns | `archive/agent_runs` | Agent Run 归档子目录（gitignored）— `<root>/.specforge/archive/agent_runs/` |
-| sessions | `sessions` | 会话归档目录（gitignored）— `<root>/.specforge/sessions/` |
-| cas | `cas` | 内容寻址存储（gitignored）— `<root>/.specforge/cas/` |
 
-## 用户级路径 (<OpenCode config>/sf-user/)
+### runtimeFiles 分组
 
 | Key | 路径 | 说明 |
 |-----|------|------|
-| runtime | `runtime` | 运行时状态目录 — `<OpenCode config>/sf-user/runtime/` |
-| runtimeHandshake | `runtime/handshake.json` | 握手文件 — `<OpenCode config>/sf-user/runtime/handshake.json` |
-| runtimeState | `runtime/state.json` | 持久化状态 — `<OpenCode config>/sf-user/runtime/state.json` |
-| runtimeEvents | `runtime/events.jsonl` | 事件日志 — `<OpenCode config>/sf-user/runtime/events.jsonl` |
-| runtimeDaemonLock | `runtime/daemon.lock` | Daemon 锁文件 — `<OpenCode config>/sf-user/runtime/daemon.lock` |
-| hostProfile | `host-profile.json` | 主机配置文件 — `<OpenCode config>/sf-user/host-profile.json` |
-| logs | `logs` | 日志目录 — `<OpenCode config>/sf-user/logs/` |
-| projects | `projects` | 项目目录 — `<OpenCode config>/sf-user/projects/` |
-| templates | `templates` | 模板目录 — `<OpenCode config>/sf-user/templates/` |
-| backups | `backups` | 备份目录 — `<OpenCode config>/sf-user/backups/` |
+| runtimeFiles.events | `runtime/events.jsonl` | — |
+| runtimeFiles.state | `runtime/state.json` | — |
+| runtimeFiles.checkpoints | `runtime/checkpoints` | — |
+| runtimeFiles.logs | `runtime/logs` | — |
+
 
 ---
 <!-- END: directory-layout -->

@@ -125,7 +125,7 @@ Feature Spec 是规格优先工作流，验证强度最高。必须保证用户�
 4. 专业 Candidate 文件必须通过 `sf_artifact_write` 写入 `requirements`、`design`、`tasks` / `candidate_tasks`、`trace_delta`；`candidate_manifest` 由 Runtime 在正式封存时生成，Agent 不得手写清单或绑定哈希；不得使用 shell/helper 写 `.specforge`。
 5. Gate 阶段不得创建 placeholder 的 `verification_report`、`merge_report`、`evidence_manifest` 来通过当前阶段。
 6. 每个阶段最多一次自检、一次修正、一次继续；仍失败则报告阻塞事实。
-7. 写权限撤销顺序固定为：实现完成后先运行一次 `sf_changed_files_audit`，再调度 `sf-verifier`，再写入 `verification_report` 与 `evidence_manifest`，最后在 close_gate 前调用 `sf_code_permission revoke`。不得在验证前 revoke。
+7. 实现完成后先由sf_changed_files_audit核验范围，再调度真实sf-verifier形成验证产物。D23只读验证使用独立plan/run许可，与代码写许可分离；已有代码撤权保持撤销，不为运行测试重新放行。Close仍要求代码权限已撤销、审计及所有验证/Gate通过，不能由验证工具自动推进状态。
 8. `sf-verifier` 对业务源码和其他专业产物只读；除自己拥有的
    `verification_report` / `evidence_manifest` 外不得写文件，也不得调用
    `sf_changed_files_audit`。如果需要审计证据，应读取或引用已有

@@ -6,10 +6,21 @@ import { renderVerificationReport } from '../../src/tools/lib/sf_artifact_write_
 import type { SemanticClosureManifest } from '../../src/tools/lib/semantic-closure-core.js';
 import { captureSemanticClosureProvenance } from '../../src/tools/lib/semantic-closure-provenance.js';
 import {
-  evaluateVerificationGovernanceContract,
+  evaluateVerificationGovernanceContract as evaluateActualVerificationGovernanceContract,
   extractStructuredVerificationReport,
 } from '../../src/tools/lib/verification-governance-contract.js';
-import { runGate } from '../../src/tools/lib/gate-runner-v11.js';
+import { runGate as runActualGate } from '../../src/tools/lib/gate-runner-v11.js';
+import type {ExecutionEvidenceConsumer} from '../../src/verification/execution-evidence-consumer';
+// Graph/schema unit fixture only. Native execution and receipt authenticity have
+// separate real public-chain acceptance; this explicit dependency is a test double.
+const unitConsumer={consume:async()=>({})} as ExecutionEvidenceConsumer;
+const executionReference={execution_receipt_id:'a'.repeat(64),task_id:'TASK-WI-9301-001',verification_type:'unit',command_index:0,command:'node --test tests/owned.test.mjs'};
+function evaluateVerificationGovernanceContract(input:Parameters<typeof evaluateActualVerificationGovernanceContract>[0]){
+  return evaluateActualVerificationGovernanceContract({...input,executionEvidenceConsumer:unitConsumer});
+}
+function runGate(name:Parameters<typeof runActualGate>[0],input:Parameters<typeof runActualGate>[1]){
+  return runActualGate(name,{...input,executionEvidenceConsumer:unitConsumer});
+}
 
 function closure(workItemId: string): SemanticClosureManifest {
   return {
@@ -78,7 +89,7 @@ describe('verification governance contract', () => {
           L9_compatibility: 'not_applicable',
           L10_uat: 'not_applicable',
         },
-        verification_commands: [{ command: 'test', status: 'pass', output_summary: 'passed' }],
+        verification_commands: [{...executionReference,status:'pass',output_summary:'unit fixture declaration, not an execution claim'}],
         acceptance_criteria: [{ req_id: 'REQ-1', name: 'works', status: 'pass', evidence: 'EV-1' }],
         e2e_tests: [{ name: 'e2e', status: 'pass', evidence: 'EV-1' }],
         side_effects: 'none',
@@ -105,7 +116,10 @@ describe('verification governance contract', () => {
               status: 'passed',
               level: 'L5',
               type: 'behavioral_e2e',
-              path: 'evidence/e2e.txt',
+              ...executionReference,
+              path: 'verification-owner:receipt:'+executionReference.execution_receipt_id,
+              hash:'sha256:'+executionReference.execution_receipt_id,
+              hash_domain:'canonical-json:verification-execution/v1',
               supports: ['OUT-1', 'REQ-1', 'DD-1', 'TASK-1'],
             },
           ],

@@ -10,6 +10,7 @@
 import path from 'path';
 import * as fs from 'node:fs';
 import { createHash } from 'node:crypto';
+import { inspectExecutionEvidence } from '../../verification/execution-evidence-consumer';
 import { registerHandler } from '../ToolDispatcher';
 import { renderVerificationReport, writeArtifact } from '../lib/sf_artifact_write_core';
 import {
@@ -1231,7 +1232,12 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
           'Use the sf-verifier Required Output contract exactly, then retry.',
       };
     }
-    const rendered = renderVerificationReport(content);
+    let manifest:unknown;
+    try { manifest=JSON.parse(fs.readFileSync(path.join(workItemRoot(baseDir,workItemId),'evidence','evidence_manifest.json'),'utf8')); } catch { /* Required manual references fail below; runtime references validate independently before paired Gate checks. */ }
+    const executionErrors=await inspectExecutionEvidence({projectRoot:baseDir,workItemId,report:validation.report,manifest,consumer:deps.verificationRuntime});
+    if(executionErrors.length) return {success:false,error:'VERIFICATION_EXECUTION_EVIDENCE_REJECTED',validation_errors:executionErrors,hard_stop:false,retry_allowed:true};
+    validation.report!['verification_execution_contract']='verification-execution/v1';
+    const rendered = renderVerificationReport(JSON.stringify(validation.report));
     if (rendered === null) {
       return {
         success: false,
@@ -1501,6 +1507,10 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
     }
   }
   const wiDir = workItemRoot(baseDir, workItemId);
+  if(targetFilename==='evidence_manifest.json') {
+    const executionErrors=await inspectExecutionEvidence({projectRoot:baseDir,workItemId,manifest:JSON.parse(content),consumer:deps.verificationRuntime});
+    if(executionErrors.length)return {success:false,error:'VERIFICATION_EXECUTION_EVIDENCE_REJECTED',validation_errors:executionErrors,hard_stop:false,retry_allowed:true};
+  }
   fs.mkdirSync(wiDir, { recursive: true });
   let targetPath: string;
   if (targetFilename === 'evidence_manifest.json') {

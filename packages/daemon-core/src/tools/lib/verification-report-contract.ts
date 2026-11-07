@@ -34,6 +34,13 @@ export interface VerificationCommand {
   command: string;
   status: (typeof VERIFICATION_COMMAND_STATUSES)[number];
   output_summary: string;
+  /** Live acceptance requires the common Runtime consumer, not this structural validator alone. */
+  execution_kind?: 'verification-execution/v1'|'manual-observation/v1';
+  execution_receipt_id?: string;
+  task_id?: string;
+  verification_type?: 'unit'|'property'|'integration'|'e2e'|'regression';
+  command_index?: number;
+  evidence_refs?: string[];
 }
 
 export interface VerificationClaim {
@@ -173,6 +180,12 @@ export function validateVerificationReportContract(
       if (!isNonEmptyString(command.output_summary)) {
         errors.push(`MISSING_FIELD: ${itemPath}.output_summary must be a non-empty string`);
       }
+      if(command.execution_kind!==undefined&&!['verification-execution/v1','manual-observation/v1'].includes(String(command.execution_kind)))errors.push(`INVALID_VALUE: ${itemPath}.execution_kind`);
+      if(command.execution_receipt_id!==undefined&&(typeof command.execution_receipt_id!=='string'||! /^[a-f0-9]{64}$/.test(command.execution_receipt_id)))errors.push(`INVALID_VALUE: ${itemPath}.execution_receipt_id`);
+      if(command.task_id!==undefined&&(typeof command.task_id!=='string'||! /^TASK-WI-[0-9]{4,}-[0-9]{3}$/.test(command.task_id)))errors.push(`INVALID_VALUE: ${itemPath}.task_id`);
+      if(command.verification_type!==undefined&&!['unit','property','integration','e2e','regression'].includes(String(command.verification_type)))errors.push(`INVALID_VALUE: ${itemPath}.verification_type`);
+      if(command.command_index!==undefined&&(!Number.isSafeInteger(command.command_index)||(command.command_index as number)<0||(command.command_index as number)>63))errors.push(`INVALID_VALUE: ${itemPath}.command_index`);
+      if(command.evidence_refs!==undefined&&(!Array.isArray(command.evidence_refs)||command.evidence_refs.length===0||!command.evidence_refs.every(id=>typeof id==='string'&&EVIDENCE_ID_PATTERN.test(id))))errors.push(`INVALID_VALUE: ${itemPath}.evidence_refs`);
     }
   }
 

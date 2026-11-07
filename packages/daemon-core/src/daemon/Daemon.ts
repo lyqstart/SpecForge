@@ -24,6 +24,7 @@ import {
 } from '@specforge/service-management';
 import { OpenCodeAdapter, OpenCodeHttpRuntimeClient } from '@specforge/opencode-adapter';
 import type { LLMKernelAdapter } from '@specforge/types/llm-kernel-contract';
+import { VerificationRuntime } from '../verification/VerificationRuntime';
 
 export class Daemon {
   private httpServer: HTTPServer;
@@ -40,6 +41,7 @@ export class Daemon {
   private workflowEngine: WorkflowEngine;
   private gracefulShutdownHandler: GracefulShutdownHandler;
   private llmKernelAdapter: LLMKernelAdapter;
+  private verificationRuntime: VerificationRuntime;
 
   constructor(
     config: DaemonConfig = new DaemonConfig(),
@@ -76,11 +78,12 @@ export class Daemon {
     this.extensionLoader.setWorkflowEngine(this.workflowEngine);
 
     this.permissionEngine = new PermissionEngine({ projectId: 'default-project' });
-    this.llmKernelAdapter = llmKernelAdapter ?? new OpenCodeAdapter({
-      runtimeClient: new OpenCodeHttpRuntimeClient({
-        baseUrl: process.env.OPENCODE_SERVER_URL?.trim() || 'http://127.0.0.1:4096',
-      }),
+    const openCodeRuntime = new OpenCodeHttpRuntimeClient({
+      baseUrl: process.env.OPENCODE_SERVER_URL?.trim() || 'http://127.0.0.1:4096',
     });
+    this.llmKernelAdapter = llmKernelAdapter ?? new OpenCodeAdapter({ runtimeClient:openCodeRuntime });
+    const verificationRuntime = new VerificationRuntime({ projectManager:this.projectManager,stateManager:undefined },openCodeRuntime);
+    this.verificationRuntime=verificationRuntime;
     // NOTE: workflowEngine is already created above — do NOT create a second instance
 
     this.httpServer = new HTTPServer({
@@ -96,6 +99,7 @@ export class Daemon {
       llmKernelAdapter: this.llmKernelAdapter,
       requestShutdown: () => this.stop(),
       toolDispatcher: new ToolDispatcher({
+        verificationRuntime,
         stateManager: undefined,
         workflowEngine: this.workflowEngine,
         projectManager: this.projectManager,
@@ -233,6 +237,7 @@ export class Daemon {
     }
 
     console.log('Daemon Core shutting down...');
+    await this.verificationRuntime.shutdown();
 
     // Trigger graceful shutdown through GracefulShutdownHandler
     // This ensures proper order and timeout handling

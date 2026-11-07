@@ -20,6 +20,9 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
     sourcePath: "release/bin/specforged",
     platformExecutable: true,
   },
+  { path:"sf-user/bin/verification/assets.json",type:"other",sourcePath:"release/bin/verification/assets.json",platformConstraint:"windows-x64" },
+  { path:"sf-user/bin/verification/node.exe",type:"other",sourcePath:"release/bin/verification/node.exe",platformConstraint:"windows-x64" },
+  { path:"sf-user/bin/verification/specforge-verify.exe",type:"other",sourcePath:"release/bin/verification/specforge-verify.exe",platformConstraint:"windows-x64" },
 
   // Agent 定义
   { path: "agents/sf-orchestrator.md", type: "agent" },
@@ -52,6 +55,8 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/sf_tasks_gate.ts", type: "tool" },
   { path: "tools/sf_trace_matrix.ts", type: "tool" },
   { path: "tools/sf_verification_gate.ts", type: "tool" },
+  { path: "tools/sf_verification_plan.ts", type: "tool" },
+  { path: "tools/sf_verification_run.ts", type: "tool" },
   { path: "tools/sf_safe_bash.ts", type: "tool" },
   { path: "tools/sf_project_init.ts", type: "tool" },
   { path: "tools/sf_semantic_closure_run.ts", type: "tool" },
@@ -173,6 +178,10 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "sf-user/templates/project-rules/languages/nodejs.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/nodejs.md" },
   { path: "sf-user/templates/project-rules/languages/python.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/python.md" },
 ]
+
+export function isRegistryEntryApplicable(entry:ComponentEntry,platform:NodeJS.Platform=process.platform,architecture:string=process.arch):boolean {
+  return entry.platformConstraint===undefined || entry.platformConstraint==="windows-x64"&&platform==="win32"&&architecture==="x64"
+}
 
 function withExecutableSuffix(value: string, platform: NodeJS.Platform): string {
   return platform === "win32" ? `${value}.exe` : value

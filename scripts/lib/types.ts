@@ -56,6 +56,8 @@ export interface ComponentEntry {
   sourcePath?: string
   /** Append the platform executable suffix (for example .exe on Windows). */
   platformExecutable?: boolean
+  /** First bounded verification backend; unsupported targets omit these subordinate files. */
+  platformConstraint?: "windows-x64"
 }
 
 /** User-level manifest (specforge-manifest.json) */

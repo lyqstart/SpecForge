@@ -2,7 +2,7 @@
 
 CONTRACT_ID=windows-lpac-node-readonly/v1
 AUTHORITY=SPS-1.0 §9.2.1 / Registry D20
-IMPLEMENTATION_STATUS=ACCEPTANCE_REQUIRED
+IMPLEMENTATION_STATUS=D20_NOT_ACCEPTED_D22_SYNTHETIC_ACCEPTED_D23_PRODUCT_INTEGRATION_REQUIRED
 
 2026-11-06合成复核仍未完成完整验收：原生进程限额8的真实Job曾有9或15个活成员。现有owner补齐全成员独立计数、超预算立即终止及非passed回执，但20ms采样不能证明严格瞬时总成员上限，不能用这项改动冒充固定进程上限已成立。其余有限探针的执行事实见归档acceptance-review；归档不改变本合同。D21生产采用、public接线、安装部署与原WI均继续禁止，直至缺口解决且所需独立产品裁决成立。
 
@@ -61,6 +61,8 @@ AUTHORITY=SPS §9.2.3 / Registry D22
 ACCEPTANCE_STATUS=REQUIRED
 BUSINESS_PROFILE_REGISTERED=NO
 
+D23已基于完整新合成矩阵批准进入产品接线及验收阶段。此处NO表示实现登记尚未完成，不再表示缺少产品采用授权；生产入口/共同消费者/安装资产通过SP-I01/SP-D01前仍不得接原业务。历史D20/D21及多进程失败保持原结论。
+
 用户已选择单进程首期方案。旧多进程矩阵仍NOT_ACCEPTED，原生预算8出现9/15的事实不修改。新候选仅在自有合成环境使用固定Node24.19、恰好registryRead、LPAC有效权限、从零构造环境、只读输入/runtime/profile/私有注册表及无网络边界。DETACHED挂起创建；恢复前独立核验child policy实际flags恰为1、正确token/SID/LPAC及Job。Node禁止native addons，应用不得取得特权父进程或控制句柄；创建前子进程限制不能被可关闭的应用自报开关代替。
 
 固定上限为进程1、总提交1GiB、每管道1MiB和墙钟120s，合成限额试验显式更低。任何实际额外成员、控制台/override绕行、未知策略或残留均不能passed，不能放宽计数或仅凭采样后终止通过。原声明与实际argv、完整输入/资产原字节、真实数值退出、输出和终止事实均绑定owner回执；归一化不自动证明原Task语义。
@@ -76,4 +78,29 @@ BUSINESS_PROFILE_REGISTERED=NO
 | SP-L03 | 当前单进程配置的真实launcher/Daemon崩溃、实际新Daemon重启/鉴权正常停止、清理意图阶段中断与新owner幂等恢复；缺回执保留中断而非补造通过 |
 | SP-I01/SP-D01 | 隔离验收和独立D21生产采用后才实施；真实public producer/共同消费者一致拒绝篡改、角色/状态/HardStop/许可冲突，并完成固定资产构建安装和新Daemon真实正反例 |
 
-SP-P01至SP-L03任一不足即INCOMPLETE。初步CJS/TypeScript/原生拒绝证据只证明相应有限事实，不能代替新候选身份的完整矩阵。D21生产采用仍需完整证据后独立决定；产品工具、Gate、部署及原WI继续不启用。
+SP-P01至SP-L03任一不足即INCOMPLETE。初步CJS/TypeScript/原生拒绝证据只证明相应有限事实，不能代替新候选身份的完整矩阵。此处以上保留D22合成阶段合同；D23已提供其要求的独立生产采用决定，后续生效顺序见下节。
+
+## D23 产品执行与恢复实现合同
+
+上位权威为SPS §9.2.4。此前D20/D21多进程预算与禁止采用的描述仅适用于其历史配置；当前产品候选只采用D22的进程1配置。实施授权已成立，真实SP-I01/SP-D01完成前仍不在原业务执行。
+
+- 用户级固定资产位于既有sf-user根：`bin/verification/{assets.json,node.exe,specforge-verify.exe}`；Daemon仍是`bin/specforged.exe`。唯一Runtime验证owner私有存储为`runtime/verification-owner`，不是Project Spec或第二workflow state。
+
+这三份文件是现有Daemon/验证工具的从属物理运行资产，不是独立产品模块。精确安装登记以windows-x64条件包含它们，由正式release runtime构建入口编译和固定Node复制，再由同一Release Manifest/Installer逐文件验收。其他平台省略这些物理文件，公共工具对不支持的Node后端保持明确拒绝；不扩大首期平台支持，也不破坏既有Daemon/CLI构建与安装面。
+- `sf_verification_plan`只接受动作、WI/Task/验证类别/命令序号，或既有计划/准备记录身份；不接受命令正文。create由真实sf-orchestrator从已批准冻结Task和StateManager派生只读许可，revoke只追加撤销记录，recover只完成可核验的中断准备。`sf_verification_run`只接受既有计划、Attempt身份及run/cancel/recover动作，由真实sf-verifier消费。恢复动作只终止/回收自有运行资源、保留历史，不启动新应用或推进业务状态。
+- 真实角色来自配置的OpenCode Runtime中当前assistant message的agent、实际running工具part及输入，与session/project/message/call共同绑定。自报context.agent或关闭RBAC不提供权限；每个实际调用只能保留一次不可变调用预约。无法取得真实运行记录时拒绝，不用mock冒充产品验收。
+- 计划、回执、调用预约和撤销使用版本化严格JSON结构和Runtime私有认证内容身份；固定hash域为canonical JSON或明确的原始bytes。原始输入只复制字面量可达的本地代码依赖和所需祖先package.json，不把无关tracked文件、凭据、Git或治理树带入应用。有限AST证明拒绝主机观察、未支持依赖及语法；声明、实际argv和证明共同冻结。
+
+静态Task声明的有限归一化合同为`finite-posix-readonly-predicate/v1`：只接受相对普通tracked文件的`test -f PATH`及其`&&`合取，或单个`grep -c/-cE/-q/-qE QUOTED_PATTERN PATH`，允许对quiet grep施加单个`!`。不调用shell、test或grep程序。模式仅支持ASCII字面量、点通配、行首/尾锚点及ERE非空备选；重复量词、其余语法、扩展、重定向和变量拒绝。按冻结原始UTF-8文件的LF行界、grep计数/quiet/否定的0或1结果，生成不读宿主的冻结Node内联断言；同时核验字节匹配与Unicode标量匹配的计数相同，语义有歧义即拒绝。输入严格限于声明路径，生成内联连同内容不得超过既有32KiB原生上限。计划保留原声明、版本化证明、输入hash和实际Node argv；回执退出码来自实际隔离Node进程，明确不得声称曾运行原shell或grep可执行文件。该归一化复用相同LPAC/Job/角色/独立许可/消费者，不增加执行器或权限。
+
+Task是WI-owned产物，使用directory-layout定义的canonical `candidates/tasks.md`，以已批准User Decision的完整candidates内容hash证明其字节被批准；Spec Merge Manifest只枚举Project Spec目的地，不能凭其中没有Task条目否认合法Task。正式Decision Schema、批准主体、完整Candidate内容hash、成功Merge Report、当前PSV及权威状态须共同成立，不回退到未批准的WI/legacy tasks或手补Manifest。状态/Close owner正常刷新updated_at与code_permission_revoked_at不改变许可和规格主体；其余metadata和全部正式权威字节继续绑定。
+- 原生入口只消费固定私有native-plan文件及其raw哈希，固定路径/Node/Daemon/预算/完整输入集合重新校验。挂起创建时用Job List属性原子关联唯一命名Job，再独立查询实际关联、token/LPAC/child policy后恢复；应用不继承Job或控制句柄。独立具名owner互斥覆盖launcher全部生命周期及恢复，防止重启后同时接管同一Attempt。
+- 取消意图在`cancellations/<Attempt>.json`不可覆盖保存并绑定计划；创建目录前和Resume前均可识别，正常循环继续检查。墙钟和输出等限额继续拒绝通过。应用输出只进入受限二进制管道文件，与受信控制事件/回执分别保存。
+
+执行期还须维护`verification-invocation-lease/v1`：从实际Runtime复核同一session/message/call、角色、项目及输入的running归属，开始前、执行期间至回执发布前均核验。周期不超过500ms，单次可信API读取沿用有界超时；状态结束、身份漂移、无法核验或请求取消均触发同一不可覆盖取消意图，不依赖HTTP兼容层必定报告断连。只使用既有中立InvocationVerifier，不向调用者开放续租或额外参数。结束时把有界观测、原始owner主体、Attempt/Plan和结束原因保存为私有认证不可变lease记录；执行回执必须绑定lease内容身份，passed还要求完整有效lease，所有共同消费者同验。Daemon停机仍先取消并等待最终回执；丢失回执或无法核验不能补造passed。
+- 独立inspect/recover入口只消费同一已验证native-plan，不恢复应用。先取得该Attempt互斥，查询唯一Job及所有已记录PID的真实创建时间/结束事实；查询未知或仍活动时拒绝。清理还须初始资源不存在见证、计划/config身份、实际SID、目录创建时间及文件/注册表owner/ACL证据。清理意图与完成记录追加不可变，部分清理按原意图重验、漂移拒绝；缺原最终回执仍是interrupted，不能补造passed。
+- 公共消费者必须重新验证计划/回执完整结构及认证、WI/Task/目的、输入/权威/资产、独立许可与撤销、源新鲜度、实际数值退出/完整输出/Job终止与独立清理证明。Report/Evidence/Gate/Formal Version/Close共用同一判据，不能用自由文本替代执行证据。
+
+独立人工观测不得携带`execution_receipt_id/task_id/verification_type/command_index`执行主体，也不能以加上`manual:`前缀把可执行Task结果当成人工通过；其独立manual_acceptance来源仍由原有source/time owner核验。人工观测条目不提供Task执行完成证明。
+
+上述为实现合同，不是完成声明。实际登记、发布集合、安装器、模板/Agent/Skill和真实部署结果须由SP-I01/SP-D01证据分别验收。

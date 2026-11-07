@@ -135,10 +135,14 @@ export class DaemonClient {
       rawContext?: Record<string, unknown>;
       sentContext?: Record<string, unknown>;
     },
+    options?: { signal?: AbortSignal; retry?: boolean },
   ): Promise<T> {
     const url = `${this.baseUrl}${urlPath}`;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+    const cancel = () => controller.abort();
+    options?.signal?.addEventListener('abort', cancel, { once:true });
+    if (options?.signal?.aborted) cancel();
     const trace_id = observation?.trace_id ?? createSfTraceId();
 
     const requestBody = body === undefined ? undefined : JSON.stringify(body);
@@ -230,17 +234,17 @@ export class DaemonClient {
       });
 
       if ((err as Error).name === "AbortError") {
-        throw new Error("Daemon request timed out (30s)");
+        throw new Error(options?.signal?.aborted ? "Daemon request cancelled" : `Daemon request timed out (${this.timeoutMs}ms)`);
       }
 
-      if (isConnectionError(err as Error)) {
+      if (isConnectionError(err as Error) && options?.retry !== false) {
         try {
           this.reload();
         } catch {
           // daemon may not be running
         }
         try {
-          return await this.call<T>(method, urlPath, body, { ...observation, trace_id });
+          return await this.call<T>(method, urlPath, body, { ...observation, trace_id }, { ...options, retry:false });
         } catch (retryErr) {
           throw retryErr;
         }
@@ -249,6 +253,7 @@ export class DaemonClient {
       throw new Error(`Daemon connection failed: ${(err as Error).message}`);
     } finally {
       clearTimeout(timer);
+      options?.signal?.removeEventListener('abort', cancel);
     }
   }
 
@@ -256,6 +261,7 @@ export class DaemonClient {
     toolName: string,
     args: Record<string, unknown>,
     context?: Record<string, unknown>,
+    options?: { signal?: AbortSignal; retry?: boolean },
   ): Promise<T> {
     const trace_id =
       (typeof context?.trace_id === "string" && context.trace_id) ||
@@ -305,6 +311,7 @@ export class DaemonClient {
         rawContext: context,
         sentContext: minimalContext,
       },
+      options,
     );
   }
 

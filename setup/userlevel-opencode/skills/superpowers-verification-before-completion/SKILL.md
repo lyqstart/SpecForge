@@ -9,7 +9,11 @@ description: 声明完成前逐项核验当前原始证据，缺少必需证据�
 
 本 Skill 服从 SPS §9.2 / D18，不授予额外工具权限。`sf_safe_bash` 仅支持 Runtime 内部有限只读操作；脚本、测试、构建、lint、类型检查、安装依赖和启动应用均不可由它执行。不得转到 Shell、解释器、其他工具或另一个 Agent 绕过限制。
 
-验证要求不等于执行能力。只可通过现有受控读取入口核验合法产生的原始证据；如果当前没有获取某项必需证据的合法路径，返回 `blocked` 和缺失项，命令记为 `skipped`，required evidence 记为 `not_executed`。不得自行豁免、伪造结果或把拒绝当作通过。
+D23支持的固定单进程只读Node验证只走真实sf-orchestrator的sf_verification_plan及真实sf-verifier的sf_verification_run。先prepare取得Attempt，再run；源、Task、目的、独立许可、完整退出与清理由共同消费者重验。不能为只读验证重新释放代码权限，实施目的结果不能替代formal目的结果。失败/中断保留原Attempt，取消及自有资源回收走cancel/recover，不盲重跑或换宿主。
+
+有限test -f/grep可以由Runtime按finite-posix-readonly-predicate/v1证明并转换为同一隔离Node检查；记录原声明和实际argv，不称作shell/grep程序执行。未支持或不能证明语义的声明继续拒绝。
+
+验证要求不等于执行能力。其余验证只能通过受控读取入口核验合法原始证据；没有合法获取路径时返回blocked，命令记skipped、required evidence记not_executed。通过的执行条目必须引用可信receipt_id及Task/类别/序号，Evidence绑定同一内容身份；不能以自由文本、旧输出或不可信stdout生成通过结论。
 
 ## 逐项证据核验
 

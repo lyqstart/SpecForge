@@ -4,7 +4,7 @@
 >
 > Effective date: 2026-10-11
 >
-> Registry version: 1.13
+> Registry version: 1.14
 >
 > Product owner: SpecForge 产品负责人
 >
@@ -43,7 +43,7 @@ SPS-1.0
 | docs/rule/specforge-active-development-rules.md | 当前活动开发规则（新会话必须完整读取）；经验规则唯一当前载体 | NO（DEVELOPMENT RULE） |
 | docs/rule/specforge-development-error-ledger-and-experience.md | 开发错误台账：历史错误、审计与经验演化证据；不再要求每会话全文读取，按任务关键词定向检索 | NO（HISTORICAL EVIDENCE + TARGETED SEARCH） |
 | docs/design/SpecForge架构一致性治理最终实施方案.md | 架构一致性与契约治理的从属技术合同 | NO |
-| docs/design/windows-lpac-node-readonly-contract.md | SPS §9.2.1–§9.2.3 / D20–D22 的有限隔离验证与严格单进程候选从属实施及验收合同；验收不完整时不得启用产品执行 | NO |
+| docs/design/windows-lpac-node-readonly-contract.md | SPS §9.2.1–§9.2.4 / D20–D23 的有限隔离验证、单进程生产采用与受控工具/共同消费者/部署从属合同；各阶段门禁不得跳过 | NO |
 | docs/archive/design/SpecForge架构一致性治理最终实施方案.full-history-20261006.md | 2026-10-06 前完整治理实施方案的原样历史快照；只用于追溯规则演进 | NO（HISTORICAL EVIDENCE） |
 | docs/conventions/** | 当前实现合同的派生说明；必须可追溯到 SPS、已登记 Contract 或真实代码，不得独立定义产品 | NO（DERIVED REFERENCE） |
 | docs/user/**, docs/cli/** | 面向用户和运维者的当前版本使用说明；必须与已发布入口、安装器和运行合同一致 | NO（DERIVED OPERATING DOCUMENTATION） |
@@ -72,6 +72,7 @@ SPS-1.0
 | D21 | 仅授权自有合成环境的 `windows-lpac-node-readonly-registry-read-experiment/v1` 实验：在D20相同LPAC/Job/固定Node/无文件写入及无网络/COM边界上增加恰好registryRead一个capability，以真实token/SID、系统读取、假用户配置/凭据哨兵、继承和回收证据判定结果。该能力不是少数键白名单，拒绝或未知不能算通过；不追加其他能力或修改已有ACL。先正式合同后合成实验，不注册为业务profile，不部署，不运行原WI。采用进产品须基于完整实验和隔离矩阵另行裁决；D18及D20生产边界保持不变。对应SPS §9.2.2。 |
 | D22 | 用户选择“采用单进程首期方案”：首期候选收窄为 Windows x64 `windows-lpac-node-single-process-readonly/v1`，仅不创建子进程的只读 Node 内置测试和可证明原证据语义的冻结内联验收。固定 Node24.19、恰好 registryRead、真实 LPAC、创建前 child-process restriction 并读回1、DETACHED、禁止 native addons、Job进程1/总内存1GiB/每管道1MiB/墙钟至多120s；无应用写入和网络，不扩大系统权限。需要子进程或不能证明命令语义的测试明确拒绝/not_executed，不改封存Task、不降验收、不转普通宿主。先完成新的完整合成矩阵，旧多进程9/15超额和未验收结果保留，不能借旧较弱配置充数。该决定不批准产品执行；D21完整证据后的独立生产采用、public接线、共同消费者和部署门禁继续有效。对应SPS §9.2.3。 |
 | PO-001 | Migration 模块退出当前产品；schema validation 保留为文件 owner / contract 责任，不等同 Migration |
+| D23 | 用户明确“批准两项，继续完成全部修复”：允许在Bootstrap的ENOBUFS阻断下仅修复自身32MiB有界输出及回归，恢复真实READY后继续；依据D22完整单进程合成矩阵采用 `windows-lpac-node-single-process-readonly/v1` 进入产品闭环实施。先正式合同，再sf-orchestrator拥有的plan与sf-verifier拥有的run、不可关闭真实身份/状态/HardStop/独立验证许可、受信producer与不可变回执、共同消费者SP-I01、固定资产安装部署SP-D01，全部通过后才由原WI owner恢复同一WI。限制沿用D22，sf_safe_bash仍只读；不自动放行代码权限、宣告状态或合并业务。该决定批准实施和验收后部署，不声称产品链路已通过。对应SPS §9.2.4。 |
 | D01 | events.jsonl 是持久化工作流状态事实源；state.json 是可重建 checkpoint/projection |
 | D02 | Daemon 是独立共享服务；生命周期由部署环境、CLI 或 service manager 管理；Thin Plugin 不启动/停止/重启 Daemon |
 | D03 | 当前用户级数据根为 <OpenCode config>/sf-user；用户主目录 ~/.specforge 退役为非当前写入目标 |

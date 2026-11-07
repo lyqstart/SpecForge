@@ -27,14 +27,17 @@ describe('current product version contract', () => {
 
   it('defines the new product epoch from the root package identity', async () => {
     const identity = await loadProductIdentity(ROOT);
+    const specification=await readFile(resolve(ROOT,'docs/product-specification/specforge-product-specification.md'),'utf8');
+    const declaredVersion=/^> Product release version: (\S+)\s*$/m.exec(specification)?.[1];
+    expect(declaredVersion).toMatch(/^\d+\.\d+\.\d+$/);
 
     expect(identity).toEqual({
-      version: '1.0.21',
+      version: declaredVersion,
       releaseId: 'specforge-current',
       tagPrefix: 'specforge-v',
       versionEpoch: 1,
     });
-    expect(expectedProductTag(identity)).toBe('specforge-v1.0.21');
+    expect(expectedProductTag(identity)).toBe('specforge-v'+declaredVersion);
   });
 
   it('keeps every current workspace package on the product version', async () => {
@@ -58,7 +61,7 @@ describe('current product version contract', () => {
           }
         }),
     )).filter((version): version is string => version !== undefined);
-    expect(new Set(versions)).toEqual(new Set(['1.0.21']));
+    expect(new Set(versions)).toEqual(new Set([identity.version]));
   });
 
   it('projects the same release identity through current authority and release entrypoints', async () => {

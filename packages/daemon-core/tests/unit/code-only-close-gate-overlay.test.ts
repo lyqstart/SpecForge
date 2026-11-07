@@ -48,7 +48,7 @@ describe('Close Gate workflow artifact applicability', () => {
 
     expect(handler).toContain('import { runCloseGate, type CloseGateResult }');
     expect(handler).toMatch(
-      /runCloseGate\(\{\s*workItemId,\s*workItemDir,\s*projectRoot,\s*workflowPath: effectiveWorkflowPath,\s*workflowType: effectiveWorkflowType,\s*\}\)/s,
+      /runCloseGate\(\{[^}]*\bworkItemId,\s*workItemDir,\s*projectRoot,\s*workflowPath: effectiveWorkflowPath,\s*workflowType: effectiveWorkflowType,[^}]*\}\)/s,
     );
     expect(gateChain).not.toContain('filterCloseGateChecksForWorkflow');
     expect(gateChain).not.toContain('CODE_ONLY_CLOSE_EXCLUDED_CHECK_IDS');

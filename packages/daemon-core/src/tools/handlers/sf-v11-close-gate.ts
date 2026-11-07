@@ -1214,6 +1214,7 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
     if (finalAuditRefresh) result.changed_files_audit = finalAuditRefresh;
 
     const closeGateResult = await runCloseGate({
+      executionEvidenceConsumer:deps.verificationRuntime,
       workItemId,
       workItemDir,
       projectRoot,
