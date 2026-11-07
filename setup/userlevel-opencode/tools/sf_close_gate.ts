@@ -1,5 +1,5 @@
 import { tool } from "@opencode-ai/plugin"
-import { daemon } from "./lib/thin-client"
+import { invokeVerificationConsumerTool } from "./lib/thin-client"
 
 export default tool({
   description:
@@ -35,12 +35,7 @@ export default tool({
       .describe("兼容字段：标记为 not_applicable 的检查项。最终判定必须以 daemon close_gate workflow_path 规则为准。"),
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool("sf_close_gate", args, {
-      sessionID: context.sessionID,
-      agent: context.agent,
-      directory: context.directory,
-      worktree: context.worktree,
-    })
+    const result = await invokeVerificationConsumerTool("sf_close_gate", args, context)
 
     if (typeof result === "string") return result
     return JSON.stringify(result, null, 2)

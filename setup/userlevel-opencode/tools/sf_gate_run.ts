@@ -1,5 +1,5 @@
 import { tool } from "@opencode-ai/plugin";
-import { daemon } from "./lib/thin-client";
+import { invokeVerificationConsumerTool } from "./lib/thin-client";
 
 const GATE_IDS = [
   "entry_gate",
@@ -80,12 +80,7 @@ reconcile_attempt_id: tool.schema
 
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool("sf_gate_run", args, {
-      sessionID: context.sessionID,
-      agent: context.agent,
-      directory: context.directory,
-      worktree: context.worktree,
-    });
+    const result = await invokeVerificationConsumerTool("sf_gate_run", args, context);
 
     if (typeof result === "string") return result;
     return JSON.stringify(result, null, 2);

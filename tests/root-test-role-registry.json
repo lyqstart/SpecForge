@@ -33,9 +33,9 @@
         "tests/unit/installer/atomic.test.ts",
         "tests/unit/installer/canonicalize.test.ts",
         "tests/unit/installer/cli_args.test.ts",
-        "tests/unit/installer/command_path.test.ts",
         "tests/unit/installer/cmdInstall.test.ts",
         "tests/unit/installer/cmdVerify.test.ts",
+        "tests/unit/installer/command_path.test.ts",
         "tests/unit/installer/commit.test.ts",
         "tests/unit/installer/deploy-version-unification.test.ts",
         "tests/unit/installer/installer_manifest_path_contract.test.ts",
@@ -55,7 +55,9 @@
         "tests/unit/installer/upgrade.test.ts",
         "tests/unit/installer/verify-tool-schemas.test.ts",
         "tests/unit/installer/verify.test.ts",
-        "tests/unit/installer/verify_new.test.ts"
+        "tests/unit/installer/verify_new.test.ts",
+        "tests/unit/verification-consumer-http.test.ts",
+        "tests/unit/verifier-evidence-manifest-example.test.ts"
       ]
     },
     "CURRENT_ENVIRONMENTAL": {

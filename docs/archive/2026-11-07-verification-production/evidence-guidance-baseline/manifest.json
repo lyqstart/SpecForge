@@ -1,0 +1,195 @@
+{
+  "utc": "2026-11-07T06:34:00.468Z",
+  "parent": "759cd2ffede4bd942db7bd9a0025c96cd02bac1e",
+  "members": [
+    {
+      "path": "setup/userlevel-opencode/tools/sf_artifact_write.ts",
+      "sha256": "eef723b8e37ddd5287fded63a9a4d5b8f4c1bc0fa9879b12373dd2a75a739358"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-verifier.md",
+      "sha256": "ac27b94d1a17bc3b16b7bed5214d2986d4de59a8deeecfb869d1fcfcee950357"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md",
+      "sha256": "f9056b569a83005c3dc4a751fd21a35af49bade8f8600e378a7e4b9c4fc62044"
+    },
+    {
+      "path": "docs/design/windows-lpac-node-readonly-contract.md",
+      "sha256": "a56c36b239d5558275d880d286269f3564a61085c9e080bdcca8c26be5f73647"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "sha256": "f1a2106827c25c2121a05ad29446c622f79006fc9d51978e23c42fe97954f22f"
+    }
+  ],
+  "actual_handler_regex": "^[A-Za-z0-9][A-Za-z0-9._-]{0,100}\\.(?:jsonl|txt|png|webp|jpg|jpeg)$",
+  "checks": {
+    "facts.txt": true,
+    "facts.jsonl": true,
+    "facts.png": true,
+    "facts.json": false,
+    "../facts.txt": false,
+    "a/b.txt": false
+  },
+  "actual_rejected_inputs": [
+    {
+      "input": {
+        "artifact_name": "evidence-t001-formal.json",
+        "content": "{\"work_item_id\":\"WI-0001\",\"task_id\":\"TASK-WI-0001-001\",\"purpose\":\"formal\",\"recorded_at\":\"2026-11-07T00:50:00Z\",\"collected_by\":\"sf-verifier\",\"normalization_profile\":\"finite-posix-readonly-predicate/v1 -> D23 single-process readonly Node inline checks; original declarations disclosed, no shell/grep actually executed\",\"entries\":[{\"verification_type\":\"unit\",\"command_index\":0,\"original_command\":\"test -f package.json && test -f tsconfig.json\",\"plan_id\":\"14149f004802f001c30fa2125925a42ca08a493fe5235162c0abac023a67c43f\",\"attempt_record_id\":\"2ea6b689544bd43736bf139a917a7f6a012a1aee52e13e66f1d5b37c6c78cf9b\",\"receipt_id\":\"ba1f4b337c784b7aae9627b940740ae1e5d7842f56bd8133956f67bfa23f7333\",\"exit_code\":0,\"output_summary\":\"stdout empty; both files proven present\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":1,\"original_command\":\"grep -c '\\\"dependencies\\\": {}' package.json\",\"plan_id\":\"588352bf998def3809e578a542f7a61f0d4ffab7beae69cec469bedec395bb8c\",\"attempt_record_id\":\"b058573d2ed582e98c97debcc44a0f50547630147f69617acc6b0c0c14df9ab3\",\"receipt_id\":\"a39a587ad7f256a823c141be8e8346ef4a29dd54a1f91d033a6384d706ec7d8c\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — dependencies explicit empty object\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":2,\"original_command\":\"grep -c '\\\"test\\\": \\\"node --test tests/greet.test.ts\\\"' package.json\",\"plan_id\":\"968dd0df9fa8d74739d8f3ba56ec8ff148724811bd37c7f1dadf92e2c2d76b47\",\"attempt_record_id\":\"6db27f3469aface7ff31641185f351b64ba1cc7cac7052e03810f9a9fd855788\",\"receipt_id\":\"35ce1c4da752abf007c72c5836b22374aae246f274880a45087e3e61523da4c2\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — scripts.test is DD-CORE-003 main-path command\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":3,\"original_command\":\"grep -c '\\\"type\\\": \\\"module\\\"' package.json\",\"plan_id\":\"ec2090526c70d55c54f3ddf74ff13696710eafbac2a283ac6f3df328111139b1\",\"attempt_record_id\":\"ddc506156d83ebe5320c587f06e0358e5aae7bf26dc1a3e90fce47b8be3aed33\",\"receipt_id\":\"a56d6d8432c5e28610379c5538f071d94a548112f1256726ac3fd4cf750f8268\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — ESM type module declared\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":4,\"original_command\":\"grep -cE '\\\"noEmit\\\": true|\\\"allowImportingTsExtensions\\\": true' tsconfig.json\",\"plan_id\":\"884899d62b29dc59a5792df5475eb9bc8944b552a807841af86969ff555096b6\",\"attempt_record_id\":\"1911ee459ac6c5accfde43b493eebcb6b2588f974d5300ae15e438031594fbc6\",\"receipt_id\":\"725eaeeffc0472a805dfa80e3042f1efd6449082888ebb5c15ce7883cceee4fd\",\"exit_code\":0,\"output_summary\":\"stdout='2\\\\n' — both compilerOptions present (noEmit + allowImportingTsExtensions)\",\"cleanup_proved\":true}]}",
+        "file_type": "verification_evidence",
+        "work_item_id": "WI-0001"
+      },
+      "result": {
+        "success": false,
+        "error": "VERIFICATION_EVIDENCE_NAME_INVALID",
+        "retry_allowed": true
+      }
+    },
+    {
+      "input": {
+        "artifact_name": "evidence-t002-formal.json",
+        "content": "{\"work_item_id\":\"WI-0001\",\"task_id\":\"TASK-WI-0001-002\",\"purpose\":\"formal\",\"recorded_at\":\"2026-11-07T00:50:00Z\",\"collected_by\":\"sf-verifier\",\"normalization_profile\":\"finite-posix-readonly-predicate/v1 -> D23 single-process readonly Node inline checks; original declarations disclosed, no shell/grep actually executed\",\"entries\":[{\"verification_type\":\"unit\",\"command_index\":0,\"original_command\":\"test -f src/greet.ts\",\"plan_id\":\"eb0895f1a2520be4da59dee2d485582b1b1b39cd9591b4098bf582ed939caa9f\",\"attempt_record_id\":\"01c6af9e93e7696506e5af5dd09ea125b9ed84b68afd897f406d58e5953b77e6\",\"receipt_id\":\"290bf68c482afbf68cbb38639492980aade04b82ae7d5d6d984b0bb0249436d5\",\"exit_code\":0,\"output_summary\":\"stdout empty; src/greet.ts present\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":1,\"original_command\":\"grep -c \\\"export function greet(name: string): string\\\" src/greet.ts\",\"plan_id\":\"40bac342f0c35e83fa743ab53280a1a9fcf22731c646164d7ad802adc85d2b1d\",\"attempt_record_id\":\"a328c0252f1a9cc3286e84657fff4ba3d98ccb0394d3ed3ab476f05fab16da02\",\"receipt_id\":\"0246951140b7a562a278ef97bdb06ff4419c133ed6f051df5af7263eee15db45\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — exact PI-CORE-001 signature present\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":2,\"original_command\":\"grep -c \\\"Hello, world!\\\" src/greet.ts\",\"plan_id\":\"7b0e6d17a5cc57df23a2e7a4939e1dba78ca7648fdd60e1c63ed6e1a662854f6\",\"attempt_record_id\":\"2d9ca3803c6d7859d7b259e033ff92a1fc17d7ec068bf9d83f7bee115d9c4f34\",\"receipt_id\":\"43096710781324aab9afd8b45b6f827f685a398bb9336f06c20268f0afc22d9e\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — empty-name constant branch present\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":3,\"original_command\":\"! grep -qE \\\"^import |^import\\\\{|require\\\\(\\\" src/greet.ts\",\"plan_id\":\"caacb71d2d8e802c30989451b611cfb85fce16856f095d9b23a2e07799b45d1b\",\"attempt_record_id\":\"6940a8b48dd4139771a0a3107f6d08562c785d7855e3437082194a9444942733\",\"receipt_id\":\"9abce60b2d876d97ad08425b7f67b287a1d7f3d02f49c3ff481a7c73f97a7aa7\",\"exit_code\":0,\"output_summary\":\"stdout empty; negated grep exit 0 — zero import/require in src/greet.ts\",\"cleanup_proved\":true}]}",
+        "file_type": "verification_evidence",
+        "work_item_id": "WI-0001"
+      },
+      "result": {
+        "success": false,
+        "error": "VERIFICATION_EVIDENCE_NAME_INVALID",
+        "retry_allowed": true
+      }
+    },
+    {
+      "input": {
+        "artifact_name": "evidence-t003-formal.json",
+        "content": "{\"work_item_id\":\"WI-0001\",\"task_id\":\"TASK-WI-0001-003\",\"purpose\":\"formal\",\"recorded_at\":\"2026-11-07T00:50:00Z\",\"collected_by\":\"sf-verifier\",\"normalization_profile\":\"unit idx0-3: finite-posix-readonly-predicate/v1 -> readonly Node inline checks; integration idx0: fixed single-process readonly Node --test execution\",\"entries\":[{\"verification_type\":\"unit\",\"command_index\":0,\"original_command\":\"test -f tests/greet.test.ts\",\"plan_id\":\"fb2c7793aca80277d492bc2c5b8a95b051dc0e67dd4ef1918fd89fa956274c10\",\"attempt_record_id\":\"74b03b11face45e141550529ad3aa99a0cea2768cb5e9e7885d5cf724e0ce04c\",\"receipt_id\":\"11650444ba0b308497eb5b418e00448f1b0356f1e867da5c9b4751538b6aeaa2\",\"exit_code\":0,\"output_summary\":\"stdout empty; tests/greet.test.ts present\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":1,\"original_command\":\"grep -c \\\"node:test\\\" tests/greet.test.ts\",\"plan_id\":\"7a05b2f7c0107c16fd1643ee5745f93bd510ded1fbffb15acea4cb87e0282f7f\",\"attempt_record_id\":\"e95f3cc81c65369dd083344c4668e20516a85a5a1a8fcc1b9c36de4ffd253b35\",\"receipt_id\":\"019d28117b3b3420a8e60268cc337cc7b537373f4a43691495ddaded2f8213bf\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — node:test import present\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":2,\"original_command\":\"grep -c \\\"node:assert/strict\\\" tests/greet.test.ts\",\"plan_id\":\"2de09470285c3cfbb9f4847f075e069b51149d4565f9165c23d8003eaee2028d\",\"attempt_record_id\":\"fdedaef14b09c528c4cb5e3d6058da607ef41cc40567d9ab0cd2f434afb064b9\",\"receipt_id\":\"0d9908e31e2c080ebc9722a84573ff78e68add94044fa688f5602df37958ef39\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — node:assert/strict import present\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":3,\"original_command\":\"grep -c \\\"strictEqual\\\" tests/greet.test.ts\",\"plan_id\":\"c5e2553e28efd4430c90232cf4fd865fe83628231775434d5d8414848fa66352\",\"attempt_record_id\":\"6119926114272a1d5e39662372641e0c1e9110b860905790b20de62b15ef7075\",\"receipt_id\":\"ab4b192ce7969882ccbf5d395ba057ec5296327410b154661c003906540c3e06\",\"exit_code\":0,\"output_summary\":\"stdout='4\\\\n' — 4 strictEqual assertions (A1-A4)\",\"cleanup_proved\":true},{\"verification_type\":\"integration\",\"command_index\":0,\"original_command\":\"node --test tests/greet.test.ts\",\"plan_id\":\"5ea7a91527b18f7df2b4ba21315b232adff13262014e15b2f468b135a8654416\",\"attempt_record_id\":\"b1825c4a7c1ed9c6dc1af65f9f2681b374a6cd92071da91d121cf45cecf6eb6a\",\"receipt_id\":\"99535bcd60677e21214aa72c85c9ecb7c9928ff329bddcdeaa9a1d4dbd2cf911\",\"exit_code\":0,\"output_summary\":\"TAP v13 full output: ok 1-4 (A1 greet('Ada')='Hello, Ada!'; A2 greet('Grace')='Hello, Grace!'; A3 greet('')='Hello, world!'; A4 greet('  ')='Hello, '+name+'!' form); # tests 4 / # pass 4 / # fail 0 / # cancelled 0 / # skipped 0 / # todo 0; duration_ms 87.9315; output_complete=true no truncation\",\"cleanup_proved\":true}]}",
+        "file_type": "verification_evidence",
+        "work_item_id": "WI-0001"
+      },
+      "result": {
+        "success": false,
+        "error": "VERIFICATION_EVIDENCE_NAME_INVALID",
+        "retry_allowed": true
+      }
+    },
+    {
+      "input": {
+        "artifact_name": "evidence-t004-formal.json",
+        "content": "{\"work_item_id\":\"WI-0001\",\"task_id\":\"TASK-WI-0001-004\",\"purpose\":\"formal\",\"recorded_at\":\"2026-11-07T00:50:00Z\",\"collected_by\":\"sf-verifier\",\"normalization_profile\":\"finite-posix-readonly-predicate/v1 -> D23 single-process readonly Node inline checks; original declarations disclosed, no shell/grep actually executed; attempt_record_ids not recorded in formal handoff t004, receipts+plan_ids authoritative\",\"entries\":[{\"verification_type\":\"unit\",\"command_index\":0,\"original_command\":\"grep -c \\\"^# Greeting Library\\\" README.md\",\"plan_id\":\"8386d2ea5bf4e3949cec302f46b5a13cb9f727138a3abf2014a525ff7c216d85\",\"receipt_id\":\"da62f46687f3084b0ffa4b16ff8271962b224a7f753281043d2571d429e8429d\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — existing heading preserved byte-exact\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":1,\"original_command\":\"grep -c \\\"A synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\\\" README.md\",\"plan_id\":\"73749384ec353d31768f7a8194ca5281d17eef58942730f594da26b576cf8a08\",\"receipt_id\":\"4cab13ba7c2fedea7d4b10029c9c35f87d1e8a51276d37e6ca39a05d534e88aa\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — existing body line preserved byte-exact\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":2,\"original_command\":\"grep -c \\\"greet(name: string): string\\\" README.md\",\"plan_id\":\"5fa1c481cd3a578827e16969ba36e4ed239f87b2a92b31fb57f7d4b734e35877\",\"receipt_id\":\"5a84eaab42fe00810f87806a541c6a6cd4e7eed9f96a594b14ab60fe96f41e72\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' (>=1) — call convention + signature element present\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":3,\"original_command\":\"grep -cE \\\"Hello, Ada!|Hello, Grace!\\\" README.md\",\"plan_id\":\"9f533f75702965865beeee18de3b1f9324662d97dc4301fd86df177fe042e783\",\"receipt_id\":\"3fe42ac343427279031822573062fd9da1577b285d83701fa7116e6db429cc21\",\"exit_code\":0,\"output_summary\":\"stdout='2\\\\n' (>=1) — non-empty behavior examples present\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":4,\"original_command\":\"grep -c \\\"Hello, world!\\\" README.md\",\"plan_id\":\"d032b596cee58580e28ffc7726b82ab5b0b2b5b1d0ee3da0e937497e5926f7a3\",\"receipt_id\":\"75552a2e0033a798b2615e2f92c4bf535f529aa3a5a5160efcb649909fd4aa09\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' (>=1) — empty-name behavior example present\",\"cleanup_proved\":true},{\"verification_type\":\"regression\",\"command_index\":0,\"original_command\":\"grep -c \\\"No production data.\\\" README.md\",\"plan_id\":\"f59ef509548e0e964c45e6d7a102a7faa7ea6281d5b75a269a42c243c49858e2\",\"receipt_id\":\"931cff1070577c035b8b0f7cdb4bbaa52bd40be73e9ac4d02f223099cf8bf920\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — append-only modification did not break existing declaration\",\"cleanup_proved\":true}]}",
+        "file_type": "verification_evidence",
+        "work_item_id": "WI-0001"
+      },
+      "result": {
+        "success": false,
+        "error": "VERIFICATION_EVIDENCE_NAME_INVALID",
+        "retry_allowed": true
+      }
+    },
+    {
+      "input": {
+        "artifact_name": "evidence-t005-formal.json",
+        "content": "{\"work_item_id\":\"WI-0001\",\"task_id\":\"TASK-WI-0001-005\",\"purpose\":\"formal\",\"recorded_at\":\"2026-11-07T00:50:00Z\",\"collected_by\":\"sf-verifier\",\"normalization_profile\":\"D23 fixed single-process readonly Node execution (Node --test semantics and inline import() consumer check); each Attempt consumed exactly once\",\"entries\":[{\"verification_type\":\"integration\",\"command_index\":0,\"original_command\":\"node --test tests/greet.test.ts\",\"plan_id\":\"d493273f56b77c14473465dfb3b922ec2b64a6c4a48b3b6dfef45ec09e31481e\",\"attempt_record_id\":\"7ce9f5e935b5e9339229f462acaaac48456da6bbbac7798aa6661871c4ab4dc1\",\"receipt_id\":\"575a36f175b7cfe4a22df649867a7c4e70e0869710a3d64587b9a8e1440cb344\",\"exit_code\":0,\"output_summary\":\"TAP: tests 4 / pass 4 / fail 0 / cancelled 0 / skipped 0 (A1 'Hello, Ada!'; A2 'Hello, Grace!'; A3 'Hello, world!'; A4 whitespace name kept 'Hello, '+name+'!' form); output complete, no truncation\",\"cleanup_proved\":true},{\"verification_type\":\"e2e\",\"command_index\":0,\"original_command\":\"node -e \\\"import('./src/greet.ts').then(m => { const a = m.greet('Ada'); const b = m.greet(''); if (a !== 'Hello, Ada!' || b !== 'Hello, world!') { process.exit(1); } console.log('E2E-OK'); }).catch(() => process.exit(1))\\\"\",\"plan_id\":\"2cb87c906f881b8cbae88ed36ba41a795df0558240567cd9427cb4b66135b3ba\",\"attempt_record_id\":\"55b7594fb6594186d2e971e95fc05734393a621a6a2387f6c2bd15f08e931248\",\"receipt_id\":\"25074708ec87917bc53d6a1310b08144413b7ae70c1fa3f89249a3512e6c87ab\",\"exit_code\":0,\"output_summary\":\"stdout='E2E-OK\\\\n', stderr empty — real dynamic import of public API satisfies both behavior contracts (consumer view, EVREQ-1B)\",\"cleanup_proved\":true}]}",
+        "file_type": "verification_evidence",
+        "work_item_id": "WI-0001"
+      },
+      "result": {
+        "success": false,
+        "error": "VERIFICATION_EVIDENCE_NAME_INVALID",
+        "retry_allowed": true
+      }
+    },
+    {
+      "input": {
+        "artifact_name": "evidence-t001-formal",
+        "content": "{\"work_item_id\":\"WI-0001\",\"task_id\":\"TASK-WI-0001-001\",\"purpose\":\"formal\",\"recorded_at\":\"2026-11-07T00:50:00Z\",\"collected_by\":\"sf-verifier\",\"normalization_profile\":\"finite-posix-readonly-predicate/v1 -> D23 single-process readonly Node inline checks; original declarations disclosed, no shell/grep actually executed\",\"entries\":[{\"verification_type\":\"unit\",\"command_index\":0,\"original_command\":\"test -f package.json && test -f tsconfig.json\",\"plan_id\":\"14149f004802f001c30fa2125925a42ca08a493fe5235162c0abac023a67c43f\",\"attempt_record_id\":\"2ea6b689544bd43736bf139a917a7f6a012a1aee52e13e66f1d5b37c6c78cf9b\",\"receipt_id\":\"ba1f4b337c784b7aae9627b940740ae1e5d7842f56bd8133956f67bfa23f7333\",\"exit_code\":0,\"output_summary\":\"stdout empty; both files proven present\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":1,\"original_command\":\"grep -c '\\\"dependencies\\\": {}' package.json\",\"plan_id\":\"588352bf998def3809e578a542f7a61f0d4ffab7beae69cec469bedec395bb8c\",\"attempt_record_id\":\"b058573d2ed582e98c97debcc44a0f50547630147f69617acc6b0c0c14df9ab3\",\"receipt_id\":\"a39a587ad7f256a823c141be8e8346ef4a29dd54a1f91d033a6384d706ec7d8c\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — dependencies explicit empty object\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":2,\"original_command\":\"grep -c '\\\"test\\\": \\\"node --test tests/greet.test.ts\\\"' package.json\",\"plan_id\":\"968dd0df9fa8d74739d8f3ba56ec8ff148724811bd37c7f1dadf92e2c2d76b47\",\"attempt_record_id\":\"6db27f3469aface7ff31641185f351b64ba1cc7cac7052e03810f9a9fd855788\",\"receipt_id\":\"35ce1c4da752abf007c72c5836b22374aae246f274880a45087e3e61523da4c2\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — scripts.test is DD-CORE-003 main-path command\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":3,\"original_command\":\"grep -c '\\\"type\\\": \\\"module\\\"' package.json\",\"plan_id\":\"ec2090526c70d55c54f3ddf74ff13696710eafbac2a283ac6f3df328111139b1\",\"attempt_record_id\":\"ddc506156d83ebe5320c587f06e0358e5aae7bf26dc1a3e90fce47b8be3aed33\",\"receipt_id\":\"a56d6d8432c5e28610379c5538f071d94a548112f1256726ac3fd4cf750f8268\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — ESM type module declared\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":4,\"original_command\":\"grep -cE '\\\"noEmit\\\": true|\\\"allowImportingTsExtensions\\\": true' tsconfig.json\",\"plan_id\":\"884899d62b29dc59a5792df5475eb9bc8944b552a807841af86969ff555096b6\",\"attempt_record_id\":\"1911ee459ac6c5accfde43b493eebcb6b2588f974d5300ae15e438031594fbc6\",\"receipt_id\":\"725eaeeffc0472a805dfa80e3042f1efd6449082888ebb5c15ce7883cceee4fd\",\"exit_code\":0,\"output_summary\":\"stdout='2\\\\n' — both compilerOptions present (noEmit + allowImportingTsExtensions)\",\"cleanup_proved\":true}]}",
+        "file_type": "verification_evidence",
+        "work_item_id": "WI-0001"
+      },
+      "result": {
+        "success": false,
+        "error": "VERIFICATION_EVIDENCE_NAME_INVALID",
+        "retry_allowed": true
+      }
+    },
+    {
+      "input": {
+        "artifact_name": "evidence-t001-formal.md",
+        "content": "{\"work_item_id\":\"WI-0001\",\"task_id\":\"TASK-WI-0001-001\",\"purpose\":\"formal\",\"recorded_at\":\"2026-11-07T00:50:00Z\",\"collected_by\":\"sf-verifier\",\"normalization_profile\":\"finite-posix-readonly-predicate/v1 -> D23 single-process readonly Node inline checks; original declarations disclosed, no shell/grep actually executed\",\"entries\":[{\"verification_type\":\"unit\",\"command_index\":0,\"original_command\":\"test -f package.json && test -f tsconfig.json\",\"plan_id\":\"14149f004802f001c30fa2125925a42ca08a493fe5235162c0abac023a67c43f\",\"attempt_record_id\":\"2ea6b689544bd43736bf139a917a7f6a012a1aee52e13e66f1d5b37c6c78cf9b\",\"receipt_id\":\"ba1f4b337c784b7aae9627b940740ae1e5d7842f56bd8133956f67bfa23f7333\",\"exit_code\":0,\"output_summary\":\"stdout empty; both files proven present\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":1,\"original_command\":\"grep -c '\\\"dependencies\\\": {}' package.json\",\"plan_id\":\"588352bf998def3809e578a542f7a61f0d4ffab7beae69cec469bedec395bb8c\",\"attempt_record_id\":\"b058573d2ed582e98c97debcc44a0f50547630147f69617acc6b0c0c14df9ab3\",\"receipt_id\":\"a39a587ad7f256a823c141be8e8346ef4a29dd54a1f91d033a6384d706ec7d8c\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — dependencies explicit empty object\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":2,\"original_command\":\"grep -c '\\\"test\\\": \\\"node --test tests/greet.test.ts\\\"' package.json\",\"plan_id\":\"968dd0df9fa8d74739d8f3ba56ec8ff148724811bd37c7f1dadf92e2c2d76b47\",\"attempt_record_id\":\"6db27f3469aface7ff31641185f351b64ba1cc7cac7052e03810f9a9fd855788\",\"receipt_id\":\"35ce1c4da752abf007c72c5836b22374aae246f274880a45087e3e61523da4c2\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — scripts.test is DD-CORE-003 main-path command\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":3,\"original_command\":\"grep -c '\\\"type\\\": \\\"module\\\"' package.json\",\"plan_id\":\"ec2090526c70d55c54f3ddf74ff13696710eafbac2a283ac6f3df328111139b1\",\"attempt_record_id\":\"ddc506156d83ebe5320c587f06e0358e5aae7bf26dc1a3e90fce47b8be3aed33\",\"receipt_id\":\"a56d6d8432c5e28610379c5538f071d94a548112f1256726ac3fd4cf750f8268\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — ESM type module declared\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":4,\"original_command\":\"grep -cE '\\\"noEmit\\\": true|\\\"allowImportingTsExtensions\\\": true' tsconfig.json\",\"plan_id\":\"884899d62b29dc59a5792df5475eb9bc8944b552a807841af86969ff555096b6\",\"attempt_record_id\":\"1911ee459ac6c5accfde43b493eebcb6b2588f974d5300ae15e438031594fbc6\",\"receipt_id\":\"725eaeeffc0472a805dfa80e3042f1efd6449082888ebb5c15ce7883cceee4fd\",\"exit_code\":0,\"output_summary\":\"stdout='2\\\\n' — both compilerOptions present (noEmit + allowImportingTsExtensions)\",\"cleanup_proved\":true}]}",
+        "file_type": "verification_evidence",
+        "work_item_id": "WI-0001"
+      },
+      "result": {
+        "success": false,
+        "error": "VERIFICATION_EVIDENCE_NAME_INVALID",
+        "retry_allowed": true
+      }
+    },
+    {
+      "input": {
+        "artifact_name": "evidence-t001-formal-1794032679204",
+        "content": "{\"work_item_id\":\"WI-0001\",\"task_id\":\"TASK-WI-0001-001\",\"purpose\":\"formal\",\"recorded_at\":\"2026-11-07T00:50:00Z\",\"collected_by\":\"sf-verifier\",\"normalization_profile\":\"finite-posix-readonly-predicate/v1 -> D23 single-process readonly Node inline checks; original declarations disclosed, no shell/grep actually executed\",\"entries\":[{\"verification_type\":\"unit\",\"command_index\":0,\"original_command\":\"test -f package.json && test -f tsconfig.json\",\"plan_id\":\"14149f004802f001c30fa2125925a42ca08a493fe5235162c0abac023a67c43f\",\"attempt_record_id\":\"2ea6b689544bd43736bf139a917a7f6a012a1aee52e13e66f1d5b37c6c78cf9b\",\"receipt_id\":\"ba1f4b337c784b7aae9627b940740ae1e5d7842f56bd8133956f67bfa23f7333\",\"exit_code\":0,\"output_summary\":\"stdout empty; both files proven present\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":1,\"original_command\":\"grep -c '\\\"dependencies\\\": {}' package.json\",\"plan_id\":\"588352bf998def3809e578a542f7a61f0d4ffab7beae69cec469bedec395bb8c\",\"attempt_record_id\":\"b058573d2ed582e98c97debcc44a0f50547630147f69617acc6b0c0c14df9ab3\",\"receipt_id\":\"a39a587ad7f256a823c141be8e8346ef4a29dd54a1f91d033a6384d706ec7d8c\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — dependencies explicit empty object\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":2,\"original_command\":\"grep -c '\\\"test\\\": \\\"node --test tests/greet.test.ts\\\"' package.json\",\"plan_id\":\"968dd0df9fa8d74739d8f3ba56ec8ff148724811bd37c7f1dadf92e2c2d76b47\",\"attempt_record_id\":\"6db27f3469aface7ff31641185f351b64ba1cc7cac7052e03810f9a9fd855788\",\"receipt_id\":\"35ce1c4da752abf007c72c5836b22374aae246f274880a45087e3e61523da4c2\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — scripts.test is DD-CORE-003 main-path command\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":3,\"original_command\":\"grep -c '\\\"type\\\": \\\"module\\\"' package.json\",\"plan_id\":\"ec2090526c70d55c54f3ddf74ff13696710eafbac2a283ac6f3df328111139b1\",\"attempt_record_id\":\"ddc506156d83ebe5320c587f06e0358e5aae7bf26dc1a3e90fce47b8be3aed33\",\"receipt_id\":\"a56d6d8432c5e28610379c5538f071d94a548112f1256726ac3fd4cf750f8268\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — ESM type module declared\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":4,\"original_command\":\"grep -cE '\\\"noEmit\\\": true|\\\"allowImportingTsExtensions\\\": true' tsconfig.json\",\"plan_id\":\"884899d62b29dc59a5792df5475eb9bc8944b552a807841af86969ff555096b6\",\"attempt_record_id\":\"1911ee459ac6c5accfde43b493eebcb6b2588f974d5300ae15e438031594fbc6\",\"receipt_id\":\"725eaeeffc0472a805dfa80e3042f1efd6449082888ebb5c15ce7883cceee4fd\",\"exit_code\":0,\"output_summary\":\"stdout='2\\\\n' — both compilerOptions present (noEmit + allowImportingTsExtensions)\",\"cleanup_proved\":true}]}",
+        "file_type": "verification_evidence",
+        "work_item_id": "WI-0001"
+      },
+      "result": {
+        "success": false,
+        "error": "VERIFICATION_EVIDENCE_NAME_INVALID",
+        "retry_allowed": true
+      }
+    },
+    {
+      "input": {
+        "artifact_name": "EV-T001-FORMAL",
+        "content": "{\"work_item_id\":\"WI-0001\",\"task_id\":\"TASK-WI-0001-001\",\"purpose\":\"formal\",\"recorded_at\":\"2026-11-07T00:50:00Z\",\"collected_by\":\"sf-verifier\",\"normalization_profile\":\"finite-posix-readonly-predicate/v1 -> D23 single-process readonly Node inline checks; original declarations disclosed, no shell/grep actually executed\",\"entries\":[{\"verification_type\":\"unit\",\"command_index\":0,\"original_command\":\"test -f package.json && test -f tsconfig.json\",\"plan_id\":\"14149f004802f001c30fa2125925a42ca08a493fe5235162c0abac023a67c43f\",\"attempt_record_id\":\"2ea6b689544bd43736bf139a917a7f6a012a1aee52e13e66f1d5b37c6c78cf9b\",\"receipt_id\":\"ba1f4b337c784b7aae9627b940740ae1e5d7842f56bd8133956f67bfa23f7333\",\"exit_code\":0,\"output_summary\":\"stdout empty; both files proven present\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":1,\"original_command\":\"grep -c '\\\"dependencies\\\": {}' package.json\",\"plan_id\":\"588352bf998def3809e578a542f7a61f0d4ffab7beae69cec469bedec395bb8c\",\"attempt_record_id\":\"b058573d2ed582e98c97debcc44a0f50547630147f69617acc6b0c0c14df9ab3\",\"receipt_id\":\"a39a587ad7f256a823c141be8e8346ef4a29dd54a1f91d033a6384d706ec7d8c\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — dependencies explicit empty object\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":2,\"original_command\":\"grep -c '\\\"test\\\": \\\"node --test tests/greet.test.ts\\\"' package.json\",\"plan_id\":\"968dd0df9fa8d74739d8f3ba56ec8ff148724811bd37c7f1dadf92e2c2d76b47\",\"attempt_record_id\":\"6db27f3469aface7ff31641185f351b64ba1cc7cac7052e03810f9a9fd855788\",\"receipt_id\":\"35ce1c4da752abf007c72c5836b22374aae246f274880a45087e3e61523da4c2\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — scripts.test is DD-CORE-003 main-path command\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":3,\"original_command\":\"grep -c '\\\"type\\\": \\\"module\\\"' package.json\",\"plan_id\":\"ec2090526c70d55c54f3ddf74ff13696710eafbac2a283ac6f3df328111139b1\",\"attempt_record_id\":\"ddc506156d83ebe5320c587f06e0358e5aae7bf26dc1a3e90fce47b8be3aed33\",\"receipt_id\":\"a56d6d8432c5e28610379c5538f071d94a548112f1256726ac3fd4cf750f8268\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — ESM type module declared\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":4,\"original_command\":\"grep -cE '\\\"noEmit\\\": true|\\\"allowImportingTsExtensions\\\": true' tsconfig.json\",\"plan_id\":\"884899d62b29dc59a5792df5475eb9bc8944b552a807841af86969ff555096b6\",\"attempt_record_id\":\"1911ee459ac6c5accfde43b493eebcb6b2588f974d5300ae15e438031594fbc6\",\"receipt_id\":\"725eaeeffc0472a805dfa80e3042f1efd6449082888ebb5c15ce7883cceee4fd\",\"exit_code\":0,\"output_summary\":\"stdout='2\\\\n' — both compilerOptions present (noEmit + allowImportingTsExtensions)\",\"cleanup_proved\":true}]}",
+        "file_type": "verification_evidence",
+        "work_item_id": "WI-0001"
+      },
+      "result": {
+        "success": false,
+        "error": "VERIFICATION_EVIDENCE_NAME_INVALID",
+        "retry_allowed": true
+      }
+    },
+    {
+      "input": {
+        "artifact_name": "ba1f4b337c784b7aae9627b940740ae1e5d7842f56bd8133956f67bfa23f7333",
+        "content": "{\"work_item_id\":\"WI-0001\",\"task_id\":\"TASK-WI-0001-001\",\"purpose\":\"formal\",\"recorded_at\":\"2026-11-07T00:50:00Z\",\"collected_by\":\"sf-verifier\",\"normalization_profile\":\"finite-posix-readonly-predicate/v1 -> D23 single-process readonly Node inline checks; original declarations disclosed, no shell/grep actually executed\",\"entries\":[{\"verification_type\":\"unit\",\"command_index\":0,\"original_command\":\"test -f package.json && test -f tsconfig.json\",\"plan_id\":\"14149f004802f001c30fa2125925a42ca08a493fe5235162c0abac023a67c43f\",\"attempt_record_id\":\"2ea6b689544bd43736bf139a917a7f6a012a1aee52e13e66f1d5b37c6c78cf9b\",\"receipt_id\":\"ba1f4b337c784b7aae9627b940740ae1e5d7842f56bd8133956f67bfa23f7333\",\"exit_code\":0,\"output_summary\":\"stdout empty; both files proven present\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":1,\"original_command\":\"grep -c '\\\"dependencies\\\": {}' package.json\",\"plan_id\":\"588352bf998def3809e578a542f7a61f0d4ffab7beae69cec469bedec395bb8c\",\"attempt_record_id\":\"b058573d2ed582e98c97debcc44a0f50547630147f69617acc6b0c0c14df9ab3\",\"receipt_id\":\"a39a587ad7f256a823c141be8e8346ef4a29dd54a1f91d033a6384d706ec7d8c\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — dependencies explicit empty object\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":2,\"original_command\":\"grep -c '\\\"test\\\": \\\"node --test tests/greet.test.ts\\\"' package.json\",\"plan_id\":\"968dd0df9fa8d74739d8f3ba56ec8ff148724811bd37c7f1dadf92e2c2d76b47\",\"attempt_record_id\":\"6db27f3469aface7ff31641185f351b64ba1cc7cac7052e03810f9a9fd855788\",\"receipt_id\":\"35ce1c4da752abf007c72c5836b22374aae246f274880a45087e3e61523da4c2\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — scripts.test is DD-CORE-003 main-path command\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":3,\"original_command\":\"grep -c '\\\"type\\\": \\\"module\\\"' package.json\",\"plan_id\":\"ec2090526c70d55c54f3ddf74ff13696710eafbac2a283ac6f3df328111139b1\",\"attempt_record_id\":\"ddc506156d83ebe5320c587f06e0358e5aae7bf26dc1a3e90fce47b8be3aed33\",\"receipt_id\":\"a56d6d8432c5e28610379c5538f071d94a548112f1256726ac3fd4cf750f8268\",\"exit_code\":0,\"output_summary\":\"stdout='1\\\\n' — ESM type module declared\",\"cleanup_proved\":true},{\"verification_type\":\"unit\",\"command_index\":4,\"original_command\":\"grep -cE '\\\"noEmit\\\": true|\\\"allowImportingTsExtensions\\\": true' tsconfig.json\",\"plan_id\":\"884899d62b29dc59a5792df5475eb9bc8944b552a807841af86969ff555096b6\",\"attempt_record_id\":\"1911ee459ac6c5accfde43b493eebcb6b2588f974d5300ae15e438031594fbc6\",\"receipt_id\":\"725eaeeffc0472a805dfa80e3042f1efd6449082888ebb5c15ce7883cceee4fd\",\"exit_code\":0,\"output_summary\":\"stdout='2\\\\n' — both compilerOptions present (noEmit + allowImportingTsExtensions)\",\"cleanup_proved\":true}]}",
+        "file_type": "verification_evidence",
+        "work_item_id": "WI-0001"
+      },
+      "result": {
+        "success": false,
+        "error": "VERIFICATION_EVIDENCE_NAME_INVALID",
+        "retry_allowed": true
+      }
+    },
+    {
+      "input": {
+        "artifact_name": "evidence",
+        "content": "probe",
+        "file_type": "verification_evidence",
+        "work_item_id": "WI-0001"
+      },
+      "result": {
+        "success": false,
+        "error": "VERIFICATION_EVIDENCE_NAME_INVALID",
+        "retry_allowed": true
+      }
+    },
+    {
+      "input": {
+        "artifact_name": "t001.json",
+        "content": "probe",
+        "file_type": "verification_evidence",
+        "work_item_id": "WI-0001"
+      },
+      "result": {
+        "success": false,
+        "error": "VERIFICATION_EVIDENCE_NAME_INVALID",
+        "retry_allowed": true
+      }
+    }
+  ],
+  "classification": "CONFIRMED Tool Schema/Agent guidance gap: actual names use unsupported .json/.md/no extension, while description omits supported suffixes and blanket source-file wording conflicts with D23 direct receipt evidence. Runtime filename matching is correct; no LPAC/application failure.",
+  "plan": "Clarify direct D23 receipt versus independent observation source, publish exact current filename rules in tool/Agent/Skill/derived contract. Preserve Runtime guard; reuse all22 formal and22 implementation successes through genuine Artifact owners. No wrapper/probe evidence for executed Tasks."
+}

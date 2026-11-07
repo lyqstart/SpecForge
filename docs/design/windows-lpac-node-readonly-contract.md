@@ -106,3 +106,7 @@ Task是WI-owned产物，使用directory-layout定义的canonical `candidates/tas
 上述为实现合同，不是完成声明。实际登记、发布集合、安装器、模板/Agent/Skill和真实部署结果须由SP-I01/SP-D01证据分别验收。
 
 `sf_verification_run`按动作使用严格字段集：prepare恰为`action/work_item_id/plan_id`；run、cancel、recover恰为`action/work_item_id/attempt_record_id`，不得带plan_id或把attempt_id代替attempt_record_id。额外字段在启动前拒绝，不产生应用退出码或passed；参数拒绝不等于应用执行失败，原Attempt的后续使用仍须满足owner、新鲜度和一次性消费约束。
+
+D23执行Evidence的独立来源就是Runtime私有认证回执；evidence_manifest直接引用`verification-owner:receipt:<id>`和`canonical-json:verification-execution/v1`身份，不要求复制为verification_evidence文件，也不得用probe或人工观测替代。verification_evidence仅承接另有合同要求的独立观测源，沿用现有受控文件名规则：ASCII字母数字开头，主体仅字母数字._-且最多101字符，扩展名限jsonl/txt/png/webp/jpg/jpeg，禁止路径分隔符或覆盖。此说明不扩大写入口或改动Runtime命名判据。
+
+共同消费者可核验整组执行回执，不能套用轻量写入的30秒客户端假设。Verification Report/Evidence Manifest及Verification/Gate/Close入口使用有界180秒HTTP等待，关闭传输层自动重发；这不改变原生120秒墙钟或任何隔离/验真预算。传输截止或取消后的已提交请求结果为unknown，必须只读对账规范产物、Gate与StateManager后再决定动作；unknown不等于失败/回滚，也不能当pass。请求前握手失败保持原fail closed。Verifier不越权对账Runtime trace，Orchestrator保留原操作和实际owner结果。

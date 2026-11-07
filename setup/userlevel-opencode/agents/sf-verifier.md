@@ -115,6 +115,8 @@ Runtime 负责把结构化 Verification JSON 渲染为 Markdown，Orchestrator �
 
 每个通过的verification_commands条目必须包含command、status、output_summary及execution_receipt_id、task_id、verification_type、command_index。Evidence中对应条目使用同一身份，path为`verification-owner:receipt:<receipt_id>`，hash为`sha256:<receipt_id>`，hash_domain为`canonical-json:verification-execution/v1`，status为passed；报告引用该Evidence ID。先写Evidence再写Report，共同消费者会重验身份和新鲜度。人工观测用明确`execution_kind=manual-observation/v1`、`command=manual:...`及独立manual_acceptance Evidence，不能把可执行命令改名为人工观察。
 
+上述D23执行条目直接进入`evidence_manifest`，不为每个已有receipt再调用`verification_evidence`复制包装，也不创建probe内容充当观测。仅在合同另要求独立人工/合法观测源时写`verification_evidence`；其artifact_name须以ASCII字母数字开始，主体只含字母数字`._-`且最多101字符，扩展名仅`jsonl/txt/png/webp/jpg/jpeg`，例如`facts.txt`。`.json`、`.md`、无扩展名或路径分隔符均不合法。名称/Schema拒绝时先按已公布合同核对一次；不要盲猜名称或循环重试。
+
 人工观测条目不携带执行receipt/Task/类别/命令序号，不提供可执行Task的完成证明。
 
 **⚠️ 核心产出优先级**：你必须写入完整的结构化验证产物，并把完整
@@ -225,6 +227,8 @@ verification_report.md 必须引用可复核的原始证据，说明哪些验收
 - **内部只读操作参数错误**：只在该受控操作支持的语法内修正；外部执行被拒绝时不得换工具重试
 - **检查模式未匹配**：这是正常验证结果（可能是 FAIL），不需要停止
 - **通用原则**：使用现有受控读取入口核验原始证据；目标项目的测试命令是待核验的证据对象，不构成当前可执行权限
+
+- **产物调用超时或`DAEMON_OPERATION_OUTCOME_UNKNOWN`**：不等于未写入或已回滚。不得盲重试、重新执行已成功命令或创建替代证据；向Orchestrator返回原操作、目标、错误和已知事实，由其核验规范产物、Gate/StateManager及真实owner结果。Verifier不通过读取自己禁止的Runtime trace证明自身动作。握手等已知请求前失败仍按原fail-closed路径处理。
 
 ### 验证只读工具路由（强制）
 
@@ -536,15 +540,18 @@ Verification report 中的 `evidence_refs` 必须与 `evidence_manifest.json` �
   "entries": [
     {
       "id": "EV-...",
+      "evidence_id": "EV-...",
+      "type": "test_output",
       "status": "passed | failed | blocked",
       "level": "L3 | L4 | L5",
       "evidence_type": "behavioral | integration | e2e",
       "supports": ["OUT-...", "REQ-...", "DD-...", "TASK-..."],
-      "artifact_type": "test_output | command_output | file_snapshot | screenshot | log | other",
       "description": "<证据描述>",
       "collected_by": "sf-verifier",
       "timestamp": "<ISO 8601>",
+      "created_at": "<ISO 8601>",
       "location": "<文件路径>",
+      "path": "<文件路径或verification-owner:receipt:身份>",
       "related_refs": {
         "req_ids": ["<REQ-xx>"],
         "task_ids": ["<TASK-xx>"]
@@ -557,6 +564,8 @@ Verification report 中的 `evidence_refs` 必须与 `evidence_manifest.json` �
 其中 `id`、`status`、`level`、`evidence_type`、`supports` 是 Semantic Closure 对账
 字段，必须与 `semantic_closure.evidence` 中同 ID 条目一致；其余字段描述原始证据
 的存储和采集信息。
+
+基本Schema的必填项是`evidence_id/type/path/description/created_at`；`id/location/timestamp`等语义或展示字段不能替代它们，双ID必须相同。`type`是物理载体分类，只能是`test_output/build_log/review_record/screenshot/command_output/write_guard_log/changed_files_audit/gate_report/merge_report/other`之一；`evidence_type`是语义分类，`artifact_type`也不是`type`别名。D23执行条目还须按本Agent前文绑定真实receipt及Task主体，不需要创建独立verification_evidence副本。
 
 当前 Runtime 的 `evidence_manifest` schema 为 `1.0`。`L5/manual_acceptance`
 标记为通过时，先用 `sf_artifact_write(file_type="verification_evidence", artifact_name=..., content=..., content_encoding="utf8"|"base64")` 保存不可覆盖的原始操作记录或截图，再把返回的 `path` 与 `sha256` 写入清单；不得指向验证报告/清单自身，不得把 Agent 浏览器测试写成

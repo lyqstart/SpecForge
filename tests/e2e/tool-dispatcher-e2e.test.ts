@@ -36,11 +36,12 @@ describe('Tool Dispatcher E2E', () => {
     for (const file of files) {
       const content = fs.readFileSync(path.join(TOOLS_DIR, file), 'utf-8');
       const passesContextToDaemon = /daemon\.invokeTool\([\s\S]*?,\s*args,\s*context\s*\)/.test(content);
+      const passesContextToConsumer = /invokeVerificationConsumerTool\([\s\S]*?,\s*args,\s*context\s*\)/.test(content);
       const passesProjectPath = /context\.directory|context\.worktree|projectPath:\s*context\.directory/.test(content);
 
       expect(
-        passesContextToDaemon || passesProjectPath,
-        `${file} should pass OpenCode context to daemon.invokeTool or derive projectPath from context`,
+        passesContextToDaemon || passesContextToConsumer || passesProjectPath,
+        `${file} should pass OpenCode context to the shared daemon client or derive projectPath from context`,
       ).toBe(true);
     }
   });

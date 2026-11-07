@@ -13,6 +13,10 @@ D23支持的固定单进程只读Node验证只走真实sf-orchestrator的sf_veri
 
 sf_verification_run的动作参数不混传：prepare仅`action/work_item_id/plan_id`，run/cancel/recover仅`action/work_item_id/attempt_record_id`且省略plan_id。所有字段由真实输入证明，不靠自述；启动前参数拒绝不产生应用退出码或通过回执，须先纠正调用合同。
 
+已有D23执行回执直接以`verification-owner:receipt:<id>`进入evidence_manifest，共同消费者验真；不另造verification_evidence包装或probe。verification_evidence只承载另有合同要求的独立观测，文件名主体ASCII字母数字开头、仅字母数字._-、最多101字符，扩展名仅jsonl/txt/png/webp/jpg/jpeg。未公布或不满足的字段先核对合同，连续同类拒绝即停止，不盲猜。
+
+客户端超时或DAEMON_OPERATION_OUTCOME_UNKNOWN不等于owner操作失败或回滚；停止重发，由Orchestrator只读核验规范产物、Gate与StateManager实际结果，复用已完成步骤。缺少确定结果时保持unknown，不能再造证据或把执行重做当作对账。
+
 有限test -f/grep可以由Runtime按finite-posix-readonly-predicate/v1证明并转换为同一隔离Node检查；记录原声明和实际argv，不称作shell/grep程序执行。未支持或不能证明语义的声明继续拒绝。
 
 验证要求不等于执行能力。其余验证只能通过受控读取入口核验合法原始证据；没有合法获取路径时返回blocked，命令记skipped、required evidence记not_executed。通过的执行条目必须引用可信receipt_id及Task/类别/序号，Evidence绑定同一内容身份；不能以自由文本、旧输出或不可信stdout生成通过结论。

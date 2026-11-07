@@ -333,6 +333,34 @@ export class DaemonClient {
   }
 }
 
+export const VERIFICATION_CONSUMER_HTTP_TIMEOUT_MS = 180000;
+type VerificationConsumerTool = 'sf_artifact_write' | 'sf_verification_gate' | 'sf_gate_run' | 'sf_close_gate';
+
+/** A timeout is not a rollback: the accepted owner request may have committed. */
+export async function invokeVerificationConsumerTool(
+  toolName: VerificationConsumerTool,
+  args: Record<string, unknown>,
+  context?: Record<string, unknown>,
+): Promise<unknown> {
+  // Handshake/contract failures are known pre-request failures, not unknown commits.
+  const client = new DaemonClient(VERIFICATION_CONSUMER_HTTP_TIMEOUT_MS);
+  const signal = context?.abort as AbortSignal | undefined;
+  try {
+    return await client.invokeTool(toolName, args, context, { signal, retry: false });
+  } catch {
+    return {
+      success: false,
+      error: 'DAEMON_OPERATION_OUTCOME_UNKNOWN',
+      operation: toolName,
+      work_item_id: args.work_item_id,
+      retry_allowed: false,
+      reconciliation_required: true,
+      client_cancelled: signal?.aborted === true,
+      message: 'The owner request may already have committed. Read the canonical artifact/Gate result and authoritative StateManager before deciding whether to retry; do not repeat it blindly.',
+    };
+  }
+}
+
 let _instance: DaemonClient | null = null;
 
 export function getDaemonClient(): DaemonClient {

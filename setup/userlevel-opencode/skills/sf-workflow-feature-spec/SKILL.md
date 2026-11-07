@@ -3,6 +3,10 @@ name: sf-workflow-feature-spec
 description: 当前 Feature Spec（Requirements-First）工作流的阶段执行协议，包含 created 到 closed 的状态、执行步骤和 Skill 绑定矩阵
 ---
 
+## 已发出请求的未知结果对账
+
+Verification Report/Evidence Manifest与Verification/Gate/Close客户端使用有界等待并禁止传输层自动重发。`DAEMON_OPERATION_OUTCOME_UNKNOWN`、客户端超时或连接中断不证明owner未执行或已回滚；Orchestrator须先通过正式读取入口核对规范产物、Gate报告、StateManager和必要的Runtime审计。已完成操作继续消费原结果，不重复写专业产物、重派Verifier或执行已成功测试。无法证明结果时保留unknown并说明缺少证据，不能补写pass。专业Verifier只返回原请求和事实，不越权读取自己的Runtime trace或代替Orchestrator推进状态。
+
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:START -->
 ## SpecForge Current Governance Contract
 
