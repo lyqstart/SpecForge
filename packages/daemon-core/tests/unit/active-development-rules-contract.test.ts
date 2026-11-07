@@ -135,8 +135,12 @@ describe('active development rules contract — semantic purity (FIX2)', () => {
   const part34 = content.slice(0, migratedStart);
   const sections = sectionsOf(content);
 
-  it('whole file contains no concrete ERR-[0-9]+ ids', () => {
-    expect(content.match(/ERR-[0-9]+/g) ?? []).toHaveLength(0);
+  it('keeps provenance references resolvable without turning incidents into active rule headings', () => {
+    const ledger = read(resolve(repoRoot, 'docs/rule/specforge-development-error-ledger-and-experience.md'));
+    for (const id of new Set(content.match(/ERR-[0-9]+/g) ?? [])) {
+      expect(ledger, id).toMatch(new RegExp(`^#{1,6}[^\\r\\n]*\\b${id}\\b`, 'm'));
+    }
+    expect(content.match(/^#{1,6}\s+ERR-[0-9]+/gm) ?? []).toHaveLength(0);
   });
 
   it('whole file contains no ^ERR-N= status lines', () => {

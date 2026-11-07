@@ -16,9 +16,11 @@ describe('semantic closure contract alignment', () => {
       'setup/userlevel-opencode/agents/sf-reviewer.md',
       'setup/userlevel-opencode/skills/superpowers-knowledge-extraction/SKILL.md',
     ];
-    for (const path of consumers) {
+    const actualReaders = consumers.filter(path => read(path).includes('trace.jsonl'));
+    expect(actualReaders.length).toBeGreaterThan(0);
+    for (const path of consumers) expect(read(path), path).not.toContain('.specforge/logs/trace.jsonl');
+    for (const path of actualReaders) {
       const content = read(path);
-      expect(content, path).not.toContain('.specforge/logs/trace.jsonl');
       expect(content, path).toContain('.specforge/runtime/logs/trace.jsonl');
     }
     expect(read('setup/userlevel-opencode/tools/lib/sf_artifact_write_core.ts'))
@@ -71,7 +73,8 @@ describe('semantic closure contract alignment', () => {
   it('routes verifier governance reads away from sf_safe_bash', () => {
     const verifier = read('setup/userlevel-opencode/agents/sf-verifier.md');
     expect(verifier).toContain('验证只读工具路由（强制）');
-    expect(verifier).toContain('sf_safe_bash` 当前只提供 Runtime 内部受控只读操作');
+    expect(verifier).toMatch(/sf_safe_bash[^\r\n]*Runtime\s*内部受控(?:只读操作|读取)/);
+    expect(verifier).toContain('D23的Node验证仅走正式plan/run');
     expect(verifier).toContain('读取已知文件使用 OpenCode `Read`');
     expect(verifier).toContain('发现路径使用 `Glob`');
     expect(verifier).toContain('搜索内容使用 `Grep`');

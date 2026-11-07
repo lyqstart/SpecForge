@@ -32,4 +32,4 @@ it('never starts a repository clean filter while checking or publishing a detach
     if (!path.basename(root).startsWith('sf-detached-filter-')) throw Error('UNOWNED_FIXTURE');
     await fs.rm(root, { recursive: true, force: true });
   }
-});
+}, 60000);

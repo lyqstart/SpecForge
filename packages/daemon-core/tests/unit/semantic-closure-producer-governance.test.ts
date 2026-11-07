@@ -8,26 +8,29 @@ import { buildSemanticClosureFromArtifacts } from '../../src/tools/lib/semantic-
 
 function verificationPayload(workItemId: string) {
   return {
-    conclusion: 'pass',
+    conclusion: 'blocked',
     test_matrix: {
-      L1_unit: 'pass',
-      L2_integration: 'pass',
+      L1_unit: 'skip',
+      L2_integration: 'skip',
       L3_pbt: 'not_applicable',
-      L4_e2e: 'pass',
-      L5_smoke: 'pass',
+      L4_e2e: 'skip',
+      L5_smoke: 'skip',
       L6_regression: 'not_applicable',
       L7_performance: 'not_applicable',
       L8_security: 'not_applicable',
       L9_compatibility: 'not_applicable',
       L10_uat: 'not_applicable',
     },
-    verification_commands: [{ command: 'test', status: 'pass', output_summary: 'passed' }],
+    // Renderer unit input makes no execution claim. Native and authenticated
+    // command acceptance have their own Runtime/installed integration coverage.
+    verification_commands: [{ command: 'node --test tests/owned.test.mjs', status: 'skipped',
+      output_summary: 'Renderer unit fixture; no command executed' }] as Array<Record<string, unknown>>,
     acceptance_criteria: [
-      { req_id: 'REQ-1', name: 'works', status: 'pass', evidence_refs: ['EV-1'] },
+      { req_id: 'REQ-1', name: 'works', status: 'fail', evidence_refs: ['EV-1'] },
     ],
-    e2e_tests: [{ name: 'e2e', status: 'pass', evidence_refs: ['EV-1'] }],
+    e2e_tests: [{ name: 'e2e', status: 'not_applicable', evidence_refs: ['EV-1'] }],
     side_effects: 'none',
-    summary: 'verified',
+    summary: 'Blocked renderer fixture; execution evidence is intentionally unavailable',
     semantic_closure: {
       schema_version: '1.0',
       work_item_id: workItemId,
@@ -89,7 +92,7 @@ describe('semantic closure producer governance', () => {
       {} as any
     );
 
-    expect((result as any).success).toBe(true);
+    expect((result as any).success, JSON.stringify(result)).toBe(true);
     const report = await fs.readFile(
       path.join(projectRoot, '.specforge', 'work-items', workItemId, 'verification_report.md'),
       'utf-8'
@@ -101,6 +104,17 @@ describe('semantic closure producer governance', () => {
       verificationReportMd: report,
     });
     expect(build.source).toBe('verification_report_json');
+  });
+
+  it('rejects the former free-text passed command instead of treating renderer data as an execution receipt', async () => {
+    const input = verificationPayload(workItemId);
+    input.verification_commands = [{ command: 'test', status: 'pass', output_summary: 'unexecuted fixture claim' }];
+    const result = await getHandler('sf_artifact_write')!({ work_item_id: workItemId,
+      file_type: 'verification_report', template: 'verification_report', content: input },
+      { directory: projectRoot, agent: 'sf-verifier' }, depsWithState('verification_running')) as any;
+    expect(result.success).toBe(false);
+    expect(result.error).toBe('VERIFICATION_EXECUTION_EVIDENCE_REJECTED');
+    await expect(fs.access(path.join(projectRoot, '.specforge/work-items', workItemId, 'verification_report.md'))).rejects.toMatchObject({ code: 'ENOENT' });
   });
 
   it('rejects Orchestrator attempts to author verifier-owned artifacts', async () => {

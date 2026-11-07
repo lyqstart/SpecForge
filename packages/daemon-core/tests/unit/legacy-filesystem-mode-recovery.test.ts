@@ -7,6 +7,7 @@ import { promisify } from 'node:util';
 
 import { getHandler, type ToolDeps } from '../../src/tools/ToolDispatcher';
 import '../../src/tools/index';
+import { UnitExecutionConsumer } from '../helpers/unit-execution-consumer';
 import {
   assertFilesystemFormalVersionSnapshotCurrent,
   checkFormalVersionEligibility,
@@ -211,11 +212,18 @@ Work Item: WI-0001
       work_item_id: 'WI-0001',
       status: 'valid',
     });
+    // Low-level version-control eligibility unit: upstream gate/state are seeded;
+    // this dependency model does not assert native execution or workflow acceptance.
+    const unitExecution = new UnitExecutionConsumer(projectRoot);
+    const artifacts = unitExecution.minimalArtifacts('WI-0001');
+    await writeJson(path.join(workItemDir, 'evidence/evidence_manifest.json'), artifacts.manifest);
+    await fs.writeFile(path.join(workItemDir, 'verification_report.md'), artifacts.report, 'utf8');
     const formal = await checkFormalVersionEligibility({
       projectRoot,
       workItemDir,
       workItemId: 'WI-0001',
       workflowPath: 'requirement_change_path',
+      executionEvidenceConsumer: unitExecution.consumer,
     });
     expect(
       formal.checks.find(check => check.check_id === 'formal_version_control_mode_evidence'),
@@ -226,7 +234,7 @@ Work Item: WI-0001
     expect(
       formal.checks.find(check => check.check_id === 'formal_git_context'),
     ).toMatchObject({ passed: true });
-    expect(formal.passed).toBe(true);
+    expect(formal.passed, JSON.stringify(formal.checks.filter(check => !check.passed))).toBe(true);
     const snapshot = JSON.parse(
       await fs.readFile(path.join(workItemDir, 'formal_version_snapshot.json'), 'utf8'),
     );

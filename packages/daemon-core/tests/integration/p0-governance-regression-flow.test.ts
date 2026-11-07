@@ -20,6 +20,7 @@ import { ToolDispatcher, type ToolDeps } from '../../src/tools/ToolDispatcher';
 import { renderVerificationReport } from '../../src/tools/lib/sf_artifact_write_core';
 import { sealPassingCandidateAttemptFixture } from '../helpers/candidate-generation-fixture';
 import { materializeImplementationBaseline } from '../../src/tools/lib/implementation-baseline';
+import { UnitExecutionConsumer } from '../helpers/unit-execution-consumer';
 import '../../src/tools/index';
 
 const execFileAsync = promisify(execFile);
@@ -36,6 +37,7 @@ const DEFAULT_WORKFLOW_PATH: WorkflowPath = 'requirement_change_path';
 
 let projectRoot: string;
 let dispatcher: ToolDispatcher;
+let unitExecution: UnitExecutionConsumer;
 
 async function git(args: string[]): Promise<void> {
   await execFileAsync('git', args, { cwd: projectRoot });
@@ -180,6 +182,7 @@ async function transitionRuntimeState(workItemId: string, fromState: string, toS
 
 function makeDeps(): ToolDeps {
   return {
+    verificationRuntime: unitExecution.consumer as unknown as ToolDeps['verificationRuntime'],
     stateManager: {},
     workflowEngine: {
       transitionFull: async (input: Record<string, unknown>) => ({ success: true, ...input }),
@@ -350,6 +353,7 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
     ],
   });
 
+  const execution = unitExecution.register(workItemId);
   await writeJson(path.join(dir, 'evidence', 'evidence_manifest.json'), {
     schema_version: '1.0',
     work_item_id: workItemId,
@@ -360,10 +364,8 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
         type: 'test_output',
         evidence_type: 'behavioral_e2e',
         level: 'L5',
-        path: 'verification_report.md',
-        description: 'Current P0 behavioral E2E evidence',
-        hash: 'sha256:fixture',
-        created_at: '2026-09-04T00:00:00.000Z',
+        ...execution.entry,
+        description: 'Synthetic upstream execution-consumer model; not native E2E evidence',
         status: 'passed',
         supports: ['OUT-1', 'REQ-CORE-001', 'DD-1', 'TASK-001'],
       },
@@ -407,6 +409,7 @@ async function approveAndMergeFixture(workItemId: string): Promise<void> {
 describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
   beforeEach(async () => {
     projectRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-p0-governance-'));
+    unitExecution = new UnitExecutionConsumer(projectRoot);
     await git(['init', '-b', 'main']);
     await git(['config', 'user.name', 'SpecForge Test']);
     await git(['config', 'user.email', 'specforge-test@example.invalid']);
@@ -635,9 +638,7 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
           L9_compatibility: 'not_applicable',
           L10_uat: 'not_applicable',
         },
-        verification_commands: [
-          { command: 'p0-governance-regression', status: 'pass', output_summary: 'passed' },
-        ],
+        verification_commands: [unitExecution.register(workItemId).command],
         acceptance_criteria: [
           { req_id: 'REQ-CORE-001', name: 'governed lifecycle', status: 'pass', evidence: 'EV-1' },
         ],

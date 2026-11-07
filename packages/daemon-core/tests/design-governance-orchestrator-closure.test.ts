@@ -827,6 +827,7 @@ describe('Orchestrator governance execution closure', () => {
       ['trace_delta', 'sf-task-planner'],
     ] as const;
 
+    const canonicalBytes = new Map<string, string>();
     for (const [fileType, requiredAgent] of ownershipCases) {
       const denied = (await getHandler('sf_artifact_write')!(
         {
@@ -855,6 +856,7 @@ describe('Orchestrator governance execution closure', () => {
 
       expect(written.success, JSON.stringify(written, null, 2)).toBe(true);
       expect(existsSync(path.join(projectRoot, written.path))).toBe(true);
+      canonicalBytes.set(written.path, await readFile(path.join(projectRoot, written.path), 'utf8'));
     }
 
     const missingCaller = (await getHandler('sf_artifact_write')!(
@@ -871,7 +873,7 @@ describe('Orchestrator governance execution closure', () => {
     expect(missingCaller.caller_agent).toBe('unknown');
     expect(missingCaller.required_agent).toBe('sf-design');
 
-    const inferredBypass = (await getHandler('sf_artifact_write')!(
+    const archivedLog = (await getHandler('sf_artifact_write')!(
       {
         work_item_id: workItemId,
         file_type: 'work_log',
@@ -881,9 +883,11 @@ describe('Orchestrator governance execution closure', () => {
       { directory: projectRoot, agent: 'sf-orchestrator' },
       {} as any
     )) as any;
-    expect(inferredBypass.success).toBe(false);
-    expect(inferredBypass.error).toBe('ARTIFACT_OWNER_MISMATCH');
-    expect(inferredBypass.required_agent).toBe('sf-task-planner');
+    expect(archivedLog.success).toBe(true);
+    expect(archivedLog.path).toBe('.specforge/archive/agent_runs/task-planning/work_log.md');
+    for (const [relative, before] of canonicalBytes) {
+      expect(await readFile(path.join(projectRoot, relative), 'utf8')).toBe(before);
+    }
   });
 
   it('requires the create owner to persist a non-empty original request before intake_ready', async () => {

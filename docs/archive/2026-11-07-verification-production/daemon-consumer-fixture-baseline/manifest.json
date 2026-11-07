@@ -1,0 +1,66 @@
+{
+  "utc": "2026-11-07T08:01:32.678Z",
+  "source_commit": "27d46badeab50b351bc96a3aa83de73f769a703c",
+  "members": [
+    {
+      "path": "packages/daemon-core/tests/v11-section21-acceptance.test.ts",
+      "size": 58509,
+      "sha256": "d67eac7e36a2e44c9b89c13cb89bb705aade73f1d5650d943203dd193a40b09b"
+    },
+    {
+      "path": "packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts",
+      "size": 26777,
+      "sha256": "78dc62e3b611c9bee4c8ce5df9fcfffe0f5f2ae2abb93c521cb42ac0ae903770"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/active-development-rules-contract.test.ts",
+      "size": 10104,
+      "sha256": "79513c0e7b10cd02f2a7b8ad896a540ee061c2040538140db4004ea5b192b830"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/configuration-activation-loss.test.ts",
+      "size": 7971,
+      "sha256": "e1a959efa5a138a195854525e13ef1325db4a71bab6401e3aca8c7e62da9fd0c"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/git-detached-bootstrap.test.ts",
+      "size": 15661,
+      "sha256": "2cf11433f79d5aef06497cef8d4f58ae225e3f6a16034ead23faf85591ba6f17"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/legacy-filesystem-mode-recovery.test.ts",
+      "size": 16847,
+      "sha256": "3056c9a2e0f8220a7784a907eb7f376758df7564ed1a90f60b5b2416db86970f"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/runtime-history-integrity.test.ts",
+      "size": 8876,
+      "sha256": "fbdd687d661a0f39ce71285f99724bf01efd229597acfb61c4a9492b7dcea8fe"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/semantic-closure-contract-alignment.test.ts",
+      "size": 5861,
+      "sha256": "c3f155e118750ebb88205cda2d212df89a68a51fcea07d3f556a4850d8536c58"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/semantic-closure-producer-governance.test.ts",
+      "size": 8087,
+      "sha256": "6e0e3c228bfbfb7b16692f91c9aa34ca034ed74c731e6233705198e87d78ca79"
+    }
+  ],
+  "confirmed": {
+    "0338": "Root Vitest4 direct entry:20 failures/2306 passed",
+    "0367": "Canonical Bun/Vitest3:configuration/history process cases pass;5 Git10s timeouts remain",
+    "0373": "Canonical Bun/Vitest3:3 static and1 renderer-producer failure remain",
+    "0374": "Diagnostic only:unchanged first Git lifecycle passes in15858ms with120s outer observer cap; production30s unchanged"
+  },
+  "repair_plan": [
+    "Use package test entry and Bun npm_execpath, no process assertion changes",
+    "Bound multi-command Git composition tests at60s; keep exact source/index/ref/hook assertions and production30s per-command budget",
+    "Replace obsolete blanket provenance-reference/static-wording tests with current semantic checks; verify referenced ledger headings exist",
+    "Renderer unit fixture must not claim an unexecuted passed command; add explicit rejection regression",
+    "Seed execution-consumer interfaces only in clearly labeled in-process governance tests; use exact registered-subject test double, never describe it as native authenticated execution; retain separate real installed/native and original-WI acceptance",
+    "Reconcile minimal legacy filesystem eligibility fixture with required upstream evidence; no hand-written PASS promoted to full acceptance"
+  ],
+  "product_boundary": "No production Gate/MAC/owner/native-budget change allowed in this fixture repair"
+}

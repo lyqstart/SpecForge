@@ -21,7 +21,8 @@ import { checkWrite, performChangedFilesAudit } from '../src/tools/lib/write-gua
 import type { WriteGuardContext, AuditResult } from '../src/tools/lib/write-guard-v11';
 import { recordUserDecision, invalidateUserDecision } from '../src/tools/lib/user-decision-recorder-v11';
 import type { UserDecisionV11 } from '../src/tools/lib/user-decision-recorder-v11';
-import { runGate, runRequiredGates } from '../src/tools/lib/gate-runner-v11';
+import { runGate, runRequiredGates as runProductionRequiredGates } from '../src/tools/lib/gate-runner-v11';
+import { UnitExecutionConsumer } from './helpers/unit-execution-consumer';
 import type { GateContext, GateReportV11 } from '../src/tools/lib/gate-runner-v11';
 import { executeMerge } from '../src/tools/lib/merge-runner-v11';
 import { validateTraceDelta, validateVerificationReport, validateEvidenceManifest, checkTraceChain, writeEvidenceManifestTemplate } from '../src/tools/lib/verification-evidence-v11';
@@ -42,10 +43,18 @@ let tempDir: string;
 let projectRoot: string;
 let workItemsRoot: string;
 let projectDir: string;
+let unitExecution: UnitExecutionConsumer;
+
+// This suite composes production gates over seeded upstream dependency models.
+// Real Kernel, owner authentication and native execution are tested separately.
+function runRequiredGates(ids: Parameters<typeof runProductionRequiredGates>[0], ctx: GateContext) {
+  return runProductionRequiredGates(ids, { ...ctx, executionEvidenceConsumer: unitExecution.consumer });
+}
 
 beforeEach(async () => {
   tempDir = path.join(os.tmpdir(), `sf-s21-${Date.now()}-${Math.random().toString(36).slice(2)}`);
   projectRoot = tempDir;
+  unitExecution = new UnitExecutionConsumer(projectRoot);
   workItemsRoot = path.join(tempDir, '.specforge', 'work-items');
   projectDir = path.join(tempDir, '.specforge', 'project');
   await fs.mkdir(workItemsRoot, { recursive: true });
@@ -282,7 +291,8 @@ async function buildCompleteWI(
     );
   }
 
-  // Register Evidence in both the legacy file schema and the active Verification Contract.
+  // Explicit unit dependency model; never a free-text claim that bun test ran.
+  const execution = unitExecution.register(wiId);
   const evidenceDir = path.join(wiDir, 'evidence');
   await fs.mkdir(evidenceDir, { recursive: true });
   await fs.writeFile(
@@ -304,10 +314,8 @@ async function buildCompleteWI(
             level: 'L5',
             type: 'test_output',
             evidence_type: 'behavioral_e2e',
-            path: 'evidence/test-output.txt',
-            description: 'Behavioral end-to-end verification evidence',
-            hash: 'sha256:abc123',
-            created_at: new Date().toISOString(),
+            ...execution.entry,
+            description: 'Synthetic in-process governance dependency; not native end-to-end evidence',
             supports: ['OUT-1', 'REQ-1', 'DD-1', 'TASK-1'],
           },
         ],
@@ -333,13 +341,7 @@ async function buildCompleteWI(
       L9_compatibility: 'not_applicable',
       L10_uat: 'not_applicable',
     },
-    verification_commands: [
-      {
-        command: 'bun test section21 fixture',
-        status: 'pass',
-        output_summary: 'passed',
-      },
-    ],
+    verification_commands: [execution.command],
     acceptance_criteria: [
       {
         req_id: 'REQ-1',

@@ -36,7 +36,9 @@ async function unchanged(f: Awaited<ReturnType<typeof fixture>>) {
   expect(await git(f.root, 'rev-parse', 'HEAD')).toBe(f.head);
 }
 
-describe('controlled detached Git bootstrap', () => {
+// This composes many real Git operations and durable snapshots. The unchanged
+// first lifecycle takes ~16s on this host; each production Git call retains30s.
+describe('controlled detached Git bootstrap', { timeout: 60000 }, () => {
   it('plans without creating refs, atomically binds two new branches and standard context, then retries idempotently', async () => {
     const f = await prepared(); expect(await git(f.root, 'for-each-ref', '--format=%(refname)')).toBe(''); await unchanged(f);
     const result = await executeDetachedGitBootstrap(f.execute);
