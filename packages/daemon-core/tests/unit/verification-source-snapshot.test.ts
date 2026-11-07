@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import * as fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
@@ -28,6 +28,15 @@ afterEach(async () => {
 });
 
 describe('verification raw source and Git identity', () => {
+  it('records a bounded stage for a failed Git read without logging the project path', async () => {
+    const root=await fixture();git(root,['switch','--detach','HEAD']);
+    const log=vi.spyOn(console,'error').mockImplementation(()=>{});
+    try{
+      await expect(captureVerificationSource(root)).rejects.toThrow();
+      const diagnostic=log.mock.calls.map(row=>JSON.parse(String(row[0]))).find(v=>v.stage==='source_git_read');
+      expect(diagnostic.git_operation).toBe('symbolic-ref');expect(JSON.stringify(diagnostic)).not.toContain(root);
+    }finally{log.mockRestore();}
+  });
   it('captures current raw input and rejects a changed source without invoking clean filters', async () => {
     const root = await fixture();
     const first = await captureVerificationSource(root);

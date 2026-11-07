@@ -11,6 +11,7 @@ import { captureVerificationSource, readFrozenVerificationInputs } from './sourc
 import { loadVerificationAssets } from './verification-assets';
 import { VerificationNativeExecutor, nativeConfigPath, nativeRunRoot, requestVerificationCancellation, writeVerificationPrivate, type NativeExecutionFacts } from './native-executor';
 import { VerificationInvocationLease } from './invocation-lease';
+import { verificationRejectionDiagnostic } from './rejection-diagnostic';
 import { validateVerificationPlan, validateVerificationAttempt, validateVerificationReceipt, validateVerificationInvocationLease, validateTrustedInvocationProof, verificationRecord as record,
   verificationRequire as requireFact, verificationHash, sameVerificationPath } from './verification-schema';
 import { VERIFICATION_PLAN_CONTRACT, VERIFICATION_RECEIPT_CONTRACT, VERIFICATION_PROFILE, VERIFICATION_BUDGET,
@@ -167,21 +168,34 @@ export class VerificationRuntime {
   }
 
   async plan(args: Record<string,unknown>, context: Context): Promise<Record<string,unknown>> {
+    let diagnosticStage='project_context';
+    try {
     const action = args.action, root = this.project(context);
+    diagnosticStage='invocation_owner';
     const proof = await this.owner('sf_verification_plan', args, context);
     if (action === 'create') {
       requireFact(!this.stopping,'DAEMON_STOPPING');
       record(args,['action','work_item_id','task_id','verification_type','command_index']);
+      diagnosticStage='authority';
       const authority = await captureVerificationAuthority({ projectRoot:root,deps:this.deps,workItemId:args.work_item_id as string,
         taskId:args.task_id as string,verificationType:args.verification_type as string,commandIndex:args.command_index as number });
-      const inventory = await captureVerificationSource(root,[]), selected = await collectNodeCommandInputs(root,authority.command,inventory.trackedPaths);
-      const command = compileNodeCommand(authority.command,selected.sources), source = await captureVerificationSource(root,selected.inputPaths);
+      diagnosticStage='source_inventory';
+      const inventory = await captureVerificationSource(root,[]);
+      diagnosticStage='input_graph';
+      const selected = await collectNodeCommandInputs(root,authority.command,inventory.trackedPaths);
+      diagnosticStage='command_proof';
+      const command = compileNodeCommand(authority.command,selected.sources);
+      diagnosticStage='source_inputs';
+      const source = await captureVerificationSource(root,selected.inputPaths);
       const createdAt = new Date().toISOString();
+      diagnosticStage='fixed_assets';
       const plan: VerificationPlan = { contract:VERIFICATION_PLAN_CONTRACT,createdAt,expiresAt:new Date(Date.parse(createdAt)+600000).toISOString(),projectRoot:root,workItemId:authority.workItemId,
         authority,source,command,assets:await this.assets(),profile:VERIFICATION_PROFILE,budget:VERIFICATION_BUDGET,
         permission:{kind:'independent-readonly-verification/v1',grantee:'sf-verifier',codeWriteGranted:false},owner:proof };
+      diagnosticStage='validate_and_read_inputs';
       validateVerificationPlan(plan); const id = hash(json(plan)), inputs = await readFrozenVerificationInputs(source);
       for (const [name, identity] of Object.entries(command.semanticProof.inputHashes)) requireFact(hash(inputs.get(name)!) === identity, 'INPUT_CHANGED_DURING_PLANNING');
+      diagnosticStage='claim_invocation';
       const preparation = await this.claim(proof,'prepare-plan',{plan,planId:id});
       try {
         await this.freeze(id,inputs,false); await this.assertFresh(id,plan);
@@ -210,6 +224,11 @@ export class VerificationRuntime {
       return {success:true,plan_id:args.plan_id,verification_permission_revoked:true,code_write_granted:false};
     }
     throw new Error('VERIFICATION_PLAN_ACTION_INVALID');
+    } catch(error) {
+      const message=error instanceof Error?error.message:'';
+      if(!/^(?:VERIFICATION|TOOL_INVOCATION|NODE_COMMAND)_[A-Z_]+$/.test(message))console.error(JSON.stringify({...verificationRejectionDiagnostic(error),stage:diagnosticStage}));
+      throw error;
+    }
   }
 
   async run(args: Record<string,unknown>, context: Context, signal?: AbortSignal): Promise<Record<string,unknown>> {

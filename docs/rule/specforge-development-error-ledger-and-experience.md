@@ -32615,3 +32615,40 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 
 - 0148真实install/verify均0、117文件raw hash一致；0149初始化在mkdir(project)前因既有builder只接受PUBLIC_KERNEL_FIXTURE而返回FIXTURE_RESERVATION。只读核实fixture10 project不存在；无产品运行/资源残留，也非安装器产品故障。
 - 修正自有测试载体对恰好两种明确reservation的识别，并对安装类型独立重验安装证明、release身份及每个managed字节。旧fixture10及其封存旧bundle不修改，重编后新建下一夹具重做正式安装，失败不覆盖。EXP-004/007/008/017/193/298。
+
+### ERR-1980：新增安装reservation未同步独立崩溃见证器
+
+- 0165在真实应用已resumed后，旧0085独立C#见证器仅识别旧夹具类型，返回RESERVATION/1，未执行目标TerminateProcess。finally正常Daemon stop完成cancelled回执/独立cleanup，Daemon0退出；未将其计作crash通过。与0149同一新增类型传播遗漏，应在改入口时完整检索所有消费者。
+- 保留旧见证器源码/二进制和失败trial。新增仅适用于真实安装夹具的独立见证器，须核验metadata已冻结的安装证明raw hash及release绑定，再从其managed_identities复核目标二进制；所有普通用户/固定根/稳定PID创建时间/句柄/限定目标/无Job句柄约束不变。新编译成功后才复验，source与binary均在新trial冻结。EXP-004/007/008/017/193/298。
+- 0158/0168旧用户级CLI status/stop为daemon_unreachable/1，是已保存的部署前观察结果，不是通过或源码回归失败；0159独立CIM只见本轮私有安装Daemon，未见用户安装路径。升级仍须重新核对进程身份和全部112文件无用户漂移，不手工删除handshake或强杀未知进程。
+
+### ERR-1981：计划只读取证脚本错用已不再采信的stateManager依赖入口
+
+- 0171安装版broker真实kill198、两次public recover清理通过后，下一Daemon场景plan返回VERIFICATION_REQUEST_REJECTED，原因仍INSUFFICIENT_EVIDENCE；finally正常stop/0，没有把整体crash试验计通过。0172拟按阶段只读取证却只传deps.stateManager，而实际readAuthoritativeState明确要求ProjectManager.getProjectStateManager，故返回AUTHORITATIVE_STATE_REQUIRED。这是探针接线错误，不能当原拒绝原因。
+- 新探针复用真实ProjectManager/EventBus及StateManager，不发布计划、不伪造Invocation，保留0172失败；原生崩溃结论仅限已证broker，Daemon场景仍待真实复验。EXP-004/007/008/017/193/298。
+- 0173真实ProjectManager只读各阶段全部通过；0175透明loopback转发只记录真实Kernel状态与耗时，后续Daemon plan/prepare/run均成功、已恢复应用，未重现0171计划拒绝，不能据此声称0171根因已定位或修复。
+
+### ERR-1982：同一trial两个崩溃目标重复使用WX源码快照名
+
+- 0175第二个目标已真实resumed，写installed-crash-witness-source.cs时EEXIST，故在Daemon TerminateProcess前停止；finally取消完整回执和cleanup、Daemon0退出。真实broker崩溃和真实Runtime查询200可以各自计有限事实，完整crash场景仍FAILED。
+- 改快照名加入已冻结的broker/daemon目标枚举，保持WX与源/二进制哈希，不覆写或删除第一次见证。回到无proxy真实配置复验；失败证据独立封存，未以测试载体bug宣称产品修复。EXP-004/007/008/017/193/298。
+
+### ERR-1983：安装版crash后新计划重复被泛化拒绝，缺少可定位的脱敏原始错误类别
+
+- 0177无proxy真实配置再次在broker kill198及两次recover之后的Daemon plan返回VERIFICATION_REQUEST_REJECTED；没有启动第二应用。0171同点失败、0175透明转发下同点成功，原始因果仍INSUFFICIENT_EVIDENCE，不能把proxy成功称问题已修复。暂停用户部署与原WI执行。
+- 已有公开handler把非枚举异常泛化、且未记录原错误类别；最小取证扩展仅在原Daemon私有stderr记录有界错误name/系统code/syscall/http status/消息family/transport category/消息sha256。禁止完整message、responseBody、stack、任意path/provider数据；不改变公开拒绝、权限、计划、状态或重试规则。先隐私回归和类型检查再重建，在新安装夹具复现。EXP-004/007/008/016/193/298。
+
+### ERR-1984：已知Git临时目录限制下误以受限载体启动Runtime单元
+
+- 0179新增隐私四项通过，Runtime八项均在git init写sandbox临时.git/config阶段Permission denied，尚未到产品断言。0180完整类型0；不把八项视为代码失败或跳过。既有0070/0106/ERR-1970的宿主执行经验未落实，属于重复执行环境选择错误。
+- 保留0179，再以普通用户宿主执行同一测试命令与断言，范围仅自有临时fixture；不提升为管理员，不扩大应用token/ACL。EXP-001/004/007/017/193。
+- 0181宿主同命令12/12通过。0187新诊断真实复现拒绝，私有stderr确认SystemError/code=ETIMEDOUT，无HTTP status。0189/0190固定等待子进程后Git--version对照，Node与Bun各9次通过/8自有子进程均结束；不支持泛化为所有子进程退出必坏。下一步仅在既有source Git读取catch记录同一脱敏诊断及固定操作名，不改命令、timeout或失败判据，定位是否首次偏离于该步骤。
+
+### ERR-1985：真实恢复后同步Git读取立即ETIMEDOUT，首次偏离已定位到source snapshot内部进程层
+
+- 0205安装版真实复现：broker kill198与两次recover通过后，下一plan在04:23:21.377Z记录stage=source_git_read/git_operation=rev-parse、SystemError/ETIMEDOUT，相邻Runtime stage=source_inventory；本次request从04:23:20.552Z起，未耗尽固定15秒预算。原HTTP/角色/状态前置已完成；未启动第二应用，finally清理后Daemon0退出。0171/177/187同点失败保留。
+- 0194/195普通自然exit198后，Node/Bun各9次生产参数Git正控制均通过，排除“所有非零子进程退出必坏”的泛化；具体Bun/Windows内部原因仍未证明。已证责任层是Daemon source snapshot同步Git读取，不是业务代码、审批或LPAC权限不足。
+- 最小实现改用同一node:child_process的有界异步execFile，保留同argv/env/15s/16MiB/no-shell和所有前后Git/物理输入漂移检查；任何错误仍拒绝，不自动重试、不放宽预算。先类型/源与Runtime回归，再原无proxy真实安装崩溃→新计划→Daemon kill199/重启/幂等恢复复验；通过前不部署用户或接原WI。EXP-004/007/008/016/193/298。
+- 0206完整类型0，0207源/Runtime/隐私17项通过。0208重建；0211真实117文件安装/verify，0213无proxy完整原场景0：broker真实198、两次清理、新plan成功、Daemon真实199、新实例重启、两次恢复且应用不通过；0216冻结137成员完整安装/源/见证/native证据，自验PASS。该对照支持首个同步Git兼容层偏离已由异步实现修复，未声称已证明Bun内部缺陷机制。
+- 0214/215独立Bun/Node实际execFile预算正反控制均0：100ms等待任务约137/129ms被SIGTERM、1KiB输出cap触发MAXBUFFER并停止，fallback未触发、callback与close都完成。只证明进程API预算兼容，不冒充LPAC验收。
+- 0210前只读核实证据Git status856223字节、0209前后快照843336/855982完整，尚未超默认1MiB；为后续持续增长把证据carrier快照显式升至32MiB并检查status/error，失败即停止，不静默采信截断。历史回执不回写。
