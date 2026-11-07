@@ -1,0 +1,865 @@
+{
+  "utc": "2026-11-07T10:52:21.429Z",
+  "authority": "docs/product-specification/specforge-product-specification.md",
+  "spec_sha256": "0cf3cef264e84b198746852b340cb8d6b2b88562472357a78fa7850c83816d31",
+  "source_commit": "d8fc418cab14cde5c0e06ad7fd8c602b451f868b",
+  "version": "1.0.23",
+  "profile": "Windows x64; approved fixed single-process read-only Node24.19 SP-I01/SP-D01; arbitrary scripts/build/npm/multiprocess remain refused",
+  "method": "Exact20 current SPS19 clauses; prior primary-source/catalog bindings retained and current sources rehashed. Original genuine production chain plus final installed/interactive/cold-replay evidence close previous five pending rows. No future capability added.",
+  "catalogs": {
+    "authority": {
+      "sources": [
+        "docs/product-specification/authority-registry.md",
+        "scripts/project-session-bootstrap.mjs",
+        "scripts/lib/current-release-precheck.ts"
+      ],
+      "receipts": [
+        "0359",
+        "0404"
+      ],
+      "scope": "Single current product authority and release-surface inventory; historical documents are not behavior authority",
+      "source_identity": [
+        {
+          "path": "docs/product-specification/authority-registry.md",
+          "sha256": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e",
+          "size": 19052
+        },
+        {
+          "path": "scripts/project-session-bootstrap.mjs",
+          "sha256": "51ddf3830add187bd281f04f1452838247c5407a1d67e9d35cb7baa910abd34e",
+          "size": 13804
+        },
+        {
+          "path": "scripts/lib/current-release-precheck.ts",
+          "sha256": "b1528e723429d7f964a5e3fe2c1691660f2a57d228b0a3973601dd8aaf872057",
+          "size": 3257
+        }
+      ],
+      "current_source_identity": [
+        {
+          "path": "docs/product-specification/authority-registry.md",
+          "sha256": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e",
+          "size": 19052
+        },
+        {
+          "path": "scripts/project-session-bootstrap.mjs",
+          "sha256": "51ddf3830add187bd281f04f1452838247c5407a1d67e9d35cb7baa910abd34e",
+          "size": 13804
+        },
+        {
+          "path": "scripts/lib/current-release-precheck.ts",
+          "sha256": "b1528e723429d7f964a5e3fe2c1691660f2a57d228b0a3973601dd8aaf872057",
+          "size": 3257
+        }
+      ]
+    },
+    "paths": {
+      "sources": [
+        "packages/types/src/user-level-paths.ts",
+        "packages/daemon-core/src/daemon/path-resolver.ts",
+        "setup/userlevel-opencode/tools/lib/thin-client.ts"
+      ],
+      "receipts": [
+        "0389",
+        "0407",
+        "0408"
+      ],
+      "scope": "Current source path owners and controlled lifecycle observation: 140 legacy-home metadata entries unchanged; config-root managed117/private sf-user verified. This finite acceptance does not assert observations of arbitrary future programs.",
+      "source_identity": [
+        {
+          "path": "packages/types/src/user-level-paths.ts",
+          "sha256": "9f4c4bc477812a94ac56a167d1cb5fbf4b050d842dcc5000608a8681a0da073f",
+          "size": 2356
+        },
+        {
+          "path": "packages/daemon-core/src/daemon/path-resolver.ts",
+          "sha256": "3bdd72e5281deaf8051405991e81fdcea9db31ff7977c46b210e10cca3a2d235",
+          "size": 8725
+        },
+        {
+          "path": "setup/userlevel-opencode/tools/lib/thin-client.ts",
+          "sha256": "8a45f8971e18e9eca99851167f3d72655b23820e1f3a9a934cdb0bff1e5096f5",
+          "size": 12067
+        }
+      ],
+      "current_source_identity": [
+        {
+          "path": "packages/types/src/user-level-paths.ts",
+          "sha256": "9f4c4bc477812a94ac56a167d1cb5fbf4b050d842dcc5000608a8681a0da073f",
+          "size": 2356
+        },
+        {
+          "path": "packages/daemon-core/src/daemon/path-resolver.ts",
+          "sha256": "3bdd72e5281deaf8051405991e81fdcea9db31ff7977c46b210e10cca3a2d235",
+          "size": 8725
+        },
+        {
+          "path": "setup/userlevel-opencode/tools/lib/thin-client.ts",
+          "sha256": "8a45f8971e18e9eca99851167f3d72655b23820e1f3a9a934cdb0bff1e5096f5",
+          "size": 12067
+        }
+      ],
+      "final_evidence": [
+        "legacy-home-metadata-before-quickstart.json",
+        "legacy-home-metadata-after-quickstart.json",
+        "post-interactive-preservation-01.json"
+      ]
+    },
+    "plugin": {
+      "sources": [
+        "setup/userlevel-opencode/plugins/sf_specforge.ts",
+        "setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts"
+      ],
+      "receipts": [
+        "0389",
+        "0408"
+      ],
+      "scope": "Thin plugin boundaries; explicit CLI-started independent shared Daemon and fail-closed consumers",
+      "source_identity": [
+        {
+          "path": "setup/userlevel-opencode/plugins/sf_specforge.ts",
+          "sha256": "fe4bf0ee410ebb993576e783a6102621dbdabe38d2d5882ed105097449c32b7c",
+          "size": 1696
+        },
+        {
+          "path": "setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts",
+          "sha256": "f7e392aaf2022cb0595c05dc262736f99b3ec3bcf1fc7b804145256f93c7c8c6",
+          "size": 7811
+        }
+      ],
+      "current_source_identity": [
+        {
+          "path": "setup/userlevel-opencode/plugins/sf_specforge.ts",
+          "sha256": "fe4bf0ee410ebb993576e783a6102621dbdabe38d2d5882ed105097449c32b7c",
+          "size": 1696
+        },
+        {
+          "path": "setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts",
+          "sha256": "f7e392aaf2022cb0595c05dc262736f99b3ec3bcf1fc7b804145256f93c7c8c6",
+          "size": 7811
+        }
+      ]
+    },
+    "state": {
+      "sources": [
+        "packages/daemon-core/src/state/StateManager.ts",
+        "packages/daemon-core/src/wal/WAL.ts",
+        "packages/daemon-core/src/tools/lib/work-item-metadata.ts",
+        "packages/workflow-runtime/src/index.ts"
+      ],
+      "receipts": [
+        "0250",
+        "0260",
+        "0389",
+        "0409"
+      ],
+      "scope": "Independent fresh Daemon StateManager owner explicitly reported rebuilt_from_events=true,current_state=closed andsame update time;work_item.json is not stateauthority. Historical retired public persistence evidence retained.",
+      "source_identity": [
+        {
+          "path": "packages/daemon-core/src/state/StateManager.ts",
+          "sha256": "29984ed4a3729c120e7522d7dcb1aa49ad1961f08f1bd99fcb8d7ea99d95b171",
+          "size": 24119
+        },
+        {
+          "path": "packages/daemon-core/src/wal/WAL.ts",
+          "sha256": "578471380e8372ba5e216ca04855fb891d0058bfe045ca38b66fb78e335407d1",
+          "size": 7123
+        },
+        {
+          "path": "packages/daemon-core/src/tools/lib/work-item-metadata.ts",
+          "sha256": "134164e8843453265ce0394087f5bf0fb83930444508fbec74024e2353af5996",
+          "size": 3560
+        },
+        {
+          "path": "packages/workflow-runtime/src/index.ts",
+          "sha256": "268bed6a7251cf277787a7f1f708f67d39b4340b37816faa6b959746871b1047",
+          "size": 3370
+        }
+      ],
+      "current_source_identity": [
+        {
+          "path": "packages/daemon-core/src/state/StateManager.ts",
+          "sha256": "29984ed4a3729c120e7522d7dcb1aa49ad1961f08f1bd99fcb8d7ea99d95b171",
+          "size": 24119
+        },
+        {
+          "path": "packages/daemon-core/src/wal/WAL.ts",
+          "sha256": "578471380e8372ba5e216ca04855fb891d0058bfe045ca38b66fb78e335407d1",
+          "size": 7123
+        },
+        {
+          "path": "packages/daemon-core/src/tools/lib/work-item-metadata.ts",
+          "sha256": "134164e8843453265ce0394087f5bf0fb83930444508fbec74024e2353af5996",
+          "size": 3560
+        },
+        {
+          "path": "packages/workflow-runtime/src/index.ts",
+          "sha256": "268bed6a7251cf277787a7f1f708f67d39b4340b37816faa6b959746871b1047",
+          "size": 3370
+        }
+      ],
+      "final_evidence": [
+        "post-interactive-preservation-01.json"
+      ]
+    },
+    "project": {
+      "sources": [
+        "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+        "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+        "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+        "packages/daemon-core/src/tools/lib/user-decision-recorder-v11.ts"
+      ],
+      "receipts": [
+        "0389",
+        "0409"
+      ],
+      "scope": "Same original PSV0002 Candidate/Gate/explicit Decision/controlled merge and original WI0001 current Verification/FormalVersion/Close passed; user-approved local business main delivery independently verified, no business push.",
+      "source_identity": [
+        {
+          "path": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+          "sha256": "68c5c8ea19b9c285f30f26b2b7e6d4d87535e0a7569ca5dbd207170e72b19f03",
+          "size": 20643
+        },
+        {
+          "path": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+          "sha256": "aed459ce70d2a43522a0fa9736ade3a4b7a167d28036763ccb2cdc851aebf62e",
+          "size": 136386
+        },
+        {
+          "path": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+          "sha256": "76c09466dd3bb883bb87b6b0777893bfa2dc0611e7f66807bfd39e42cc4ec54a",
+          "size": 39444
+        },
+        {
+          "path": "packages/daemon-core/src/tools/lib/user-decision-recorder-v11.ts",
+          "sha256": "e31da10f14902880af0c90f384842dc4ae2a0cc5f11cda61d879e9652762aa11",
+          "size": 8729
+        }
+      ],
+      "current_source_identity": [
+        {
+          "path": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+          "sha256": "68c5c8ea19b9c285f30f26b2b7e6d4d87535e0a7569ca5dbd207170e72b19f03",
+          "size": 20643
+        },
+        {
+          "path": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+          "sha256": "aed459ce70d2a43522a0fa9736ade3a4b7a167d28036763ccb2cdc851aebf62e",
+          "size": 136386
+        },
+        {
+          "path": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+          "sha256": "76c09466dd3bb883bb87b6b0777893bfa2dc0611e7f66807bfd39e42cc4ec54a",
+          "size": 39444
+        },
+        {
+          "path": "packages/daemon-core/src/tools/lib/user-decision-recorder-v11.ts",
+          "sha256": "e31da10f14902880af0c90f384842dc4ae2a0cc5f11cda61d879e9652762aa11",
+          "size": 8729
+        }
+      ],
+      "final_evidence": [
+        "approved-business-delivery-01/result.json",
+        "closed-original-and-merge-review-01/manifest.json"
+      ]
+    },
+    "guard": {
+      "sources": [
+        "packages/daemon-core/src/tools/lib/native-write-boundary.ts",
+        "packages/daemon-core/src/tools/lib/code-permission-service-v11.ts",
+        "packages/daemon-core/src/tools/lib/write-guard-audit-binding.ts",
+        "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts"
+      ],
+      "receipts": [
+        "0376",
+        "0387",
+        "0389",
+        "0408"
+      ],
+      "scope": "Actual native role/read-only/HardStop negatives and explicit canonical routing; retains original historical denied operations rather than claiming zero historical refusals",
+      "source_identity": [
+        {
+          "path": "packages/daemon-core/src/tools/lib/native-write-boundary.ts",
+          "sha256": "e2691ccb101a8dd93b0a4d6ec1fab16d162af741bbae03ff1fc218662760a393",
+          "size": 4176
+        },
+        {
+          "path": "packages/daemon-core/src/tools/lib/code-permission-service-v11.ts",
+          "sha256": "4546f5ee9981be9a94aefa657ce582d13cc268199b8b698432126e918a9b82e7",
+          "size": 11411
+        },
+        {
+          "path": "packages/daemon-core/src/tools/lib/write-guard-audit-binding.ts",
+          "sha256": "08e6d2a0fe7c41b990d8e082e28a858eee08fe5a59f02ece1d494278ee90b32b",
+          "size": 4622
+        },
+        {
+          "path": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+          "sha256": "c6d8262eadd511d7974a989e22b8c8cd9703b384c6ced61ffe05518e8640121c",
+          "size": 59170
+        }
+      ],
+      "current_source_identity": [
+        {
+          "path": "packages/daemon-core/src/tools/lib/native-write-boundary.ts",
+          "sha256": "e2691ccb101a8dd93b0a4d6ec1fab16d162af741bbae03ff1fc218662760a393",
+          "size": 4176
+        },
+        {
+          "path": "packages/daemon-core/src/tools/lib/code-permission-service-v11.ts",
+          "sha256": "4546f5ee9981be9a94aefa657ce582d13cc268199b8b698432126e918a9b82e7",
+          "size": 11411
+        },
+        {
+          "path": "packages/daemon-core/src/tools/lib/write-guard-audit-binding.ts",
+          "sha256": "08e6d2a0fe7c41b990d8e082e28a858eee08fe5a59f02ece1d494278ee90b32b",
+          "size": 4622
+        },
+        {
+          "path": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+          "sha256": "c6d8262eadd511d7974a989e22b8c8cd9703b384c6ced61ffe05518e8640121c",
+          "size": 59170
+        }
+      ]
+    },
+    "release": {
+      "sources": [
+        "scripts/lib/registry.ts",
+        "scripts/lib/current-release-precheck.ts",
+        "scripts/lib/release-manifest-producer.ts",
+        "packages/version-unification/package.json",
+        "packages/scope-gate/package.json"
+      ],
+      "receipts": [
+        "0359",
+        "0385",
+        "0404"
+      ],
+      "scope": "Current twelve-package release/build/installation set and disabled/future boundaries; not an automatic claim that future capabilities are implemented",
+      "source_identity": [
+        {
+          "path": "scripts/lib/registry.ts",
+          "sha256": "0ef48cffc26f2412d8ee463a941bd4e95833a5b17786708a1336fdb77db81c77",
+          "size": 15173
+        },
+        {
+          "path": "scripts/lib/current-release-precheck.ts",
+          "sha256": "b1528e723429d7f964a5e3fe2c1691660f2a57d228b0a3973601dd8aaf872057",
+          "size": 3257
+        },
+        {
+          "path": "scripts/lib/release-manifest-producer.ts",
+          "sha256": "1add54ca0a510d37d892b05f1c7d9ad52974d16a87c7425ab5c3900121c2a4e1",
+          "size": 21801
+        },
+        {
+          "path": "packages/version-unification/package.json",
+          "sha256": "a5d9a71dbc0e80e04967ad9a040e01f9dcd048f965bad4f2bcbb8d3e6c4fe543",
+          "size": 607
+        },
+        {
+          "path": "packages/scope-gate/package.json",
+          "sha256": "2e64ff5956659e530d80f216a74d7de54bb8eaf3991362ce256406cdd1f5e4dc",
+          "size": 2254
+        }
+      ],
+      "current_source_identity": [
+        {
+          "path": "scripts/lib/registry.ts",
+          "sha256": "0ef48cffc26f2412d8ee463a941bd4e95833a5b17786708a1336fdb77db81c77",
+          "size": 15173
+        },
+        {
+          "path": "scripts/lib/current-release-precheck.ts",
+          "sha256": "b1528e723429d7f964a5e3fe2c1691660f2a57d228b0a3973601dd8aaf872057",
+          "size": 3257
+        },
+        {
+          "path": "scripts/lib/release-manifest-producer.ts",
+          "sha256": "1add54ca0a510d37d892b05f1c7d9ad52974d16a87c7425ab5c3900121c2a4e1",
+          "size": 21801
+        },
+        {
+          "path": "packages/version-unification/package.json",
+          "sha256": "a5d9a71dbc0e80e04967ad9a040e01f9dcd048f965bad4f2bcbb8d3e6c4fe543",
+          "size": 607
+        },
+        {
+          "path": "packages/scope-gate/package.json",
+          "sha256": "2e64ff5956659e530d80f216a74d7de54bb8eaf3991362ce256406cdd1f5e4dc",
+          "size": 2254
+        }
+      ]
+    },
+    "adapter": {
+      "sources": [
+        "packages/opencode-adapter/src/OpenCodeAdapter.ts",
+        "packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts",
+        "packages/daemon-core/src/daemon/Daemon.ts",
+        "packages/daemon-core/src/http/HTTPServer.ts"
+      ],
+      "receipts": [
+        "0384",
+        "0387",
+        "0408"
+      ],
+      "scope": "Actual installed Daemon production consumer, genuine GLM5.3 professional Agent execution on same original WI,22 current native subjects/23 receipts,actual accepted Gates and Close; real TUI owns4096. No substitute-fixture claim for this original chain.",
+      "source_identity": [
+        {
+          "path": "packages/opencode-adapter/src/OpenCodeAdapter.ts",
+          "sha256": "498baae3f5da0963d4ec261f3cad6a02e4b347610e32961d4aa5de77a32aebd4",
+          "size": 40846
+        },
+        {
+          "path": "packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts",
+          "sha256": "2ec9c8140acba54118355026207bdb16becca882ea6c9c5725b92ea8b4fa7439",
+          "size": 15295
+        },
+        {
+          "path": "packages/daemon-core/src/daemon/Daemon.ts",
+          "sha256": "78593c960023ae0147eda151d4d4ec037836b0612e96314135c2cc3feaaff4be",
+          "size": 10285
+        },
+        {
+          "path": "packages/daemon-core/src/http/HTTPServer.ts",
+          "sha256": "92ddb2bec7d2e16ece4dbe4d7c84dd8e638903b5cd1b8ad3ef7838130c62ad21",
+          "size": 75842
+        }
+      ],
+      "current_source_identity": [
+        {
+          "path": "packages/opencode-adapter/src/OpenCodeAdapter.ts",
+          "sha256": "498baae3f5da0963d4ec261f3cad6a02e4b347610e32961d4aa5de77a32aebd4",
+          "size": 40846
+        },
+        {
+          "path": "packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts",
+          "sha256": "2ec9c8140acba54118355026207bdb16becca882ea6c9c5725b92ea8b4fa7439",
+          "size": 15295
+        },
+        {
+          "path": "packages/daemon-core/src/daemon/Daemon.ts",
+          "sha256": "78593c960023ae0147eda151d4d4ec037836b0612e96314135c2cc3feaaff4be",
+          "size": 10285
+        },
+        {
+          "path": "packages/daemon-core/src/http/HTTPServer.ts",
+          "sha256": "92ddb2bec7d2e16ece4dbe4d7c84dd8e638903b5cd1b8ad3ef7838130c62ad21",
+          "size": 75842
+        }
+      ],
+      "final_evidence": [
+        "original-verification-run-07/result.json",
+        "original-verification-run-08/result.json",
+        "original-current-native-evidence-01/manifest.json",
+        "final-interactive-runtime-01/result.json"
+      ]
+    },
+    "installer": {
+      "sources": [
+        "scripts/sf-installer.ts",
+        "scripts/lib/upgrade-journal.ts",
+        "scripts/lib/command-path.ts"
+      ],
+      "receipts": [
+        "0359",
+        "0390",
+        "0405",
+        "0407",
+        "0408"
+      ],
+      "scope": "Official install/upgrade/verify/uninstall retained; final same-version guidance transaction upgraded2/skipped115 and verified117,original installation interval and owner storage preserved without reading keys.",
+      "source_identity": [
+        {
+          "path": "scripts/sf-installer.ts",
+          "sha256": "e6c186adbfdb985e3b96518949eeb6d9560c8d5314d35fcc43a8a5279a3da629",
+          "size": 25678
+        },
+        {
+          "path": "scripts/lib/upgrade-journal.ts",
+          "sha256": "491fac15a03bef0353cd0fb81ed7a568fa8c987d0d1068ee2d8fb490021b297c",
+          "size": 14349
+        },
+        {
+          "path": "scripts/lib/command-path.ts",
+          "sha256": "7fe7f9413e0841052627dd98ee5f0925b423dd001a5719dd51f7bacda6b075cf",
+          "size": 3249
+        }
+      ],
+      "current_source_identity": [
+        {
+          "path": "scripts/sf-installer.ts",
+          "sha256": "e6c186adbfdb985e3b96518949eeb6d9560c8d5314d35fcc43a8a5279a3da629",
+          "size": 25678
+        },
+        {
+          "path": "scripts/lib/upgrade-journal.ts",
+          "sha256": "491fac15a03bef0353cd0fb81ed7a568fa8c987d0d1068ee2d8fb490021b297c",
+          "size": 14349
+        },
+        {
+          "path": "scripts/lib/command-path.ts",
+          "sha256": "7fe7f9413e0841052627dd98ee5f0925b423dd001a5719dd51f7bacda6b075cf",
+          "size": 3249
+        }
+      ],
+      "final_evidence": [
+        "user-guidance-upgrade-1.0.23/result.json",
+        "post-interactive-preservation-01.json"
+      ]
+    },
+    "alignment": {
+      "sources": [
+        "README.md",
+        "docs/user/quick-start.md",
+        "setup/userlevel-opencode/AGENTS.md",
+        "setup/userlevel-opencode/agents/sf-verifier.md",
+        "setup/userlevel-opencode/tools/sf_artifact_write.ts",
+        "docs/design/windows-lpac-node-readonly-contract.md"
+      ],
+      "receipts": [
+        "0359",
+        "0389",
+        "0402",
+        "0404",
+        "0405",
+        "0408"
+      ],
+      "scope": "Final maintained instruction consumers16files120 checks andRoot51files748 checks passed; actual documented opencode --port4096 UI loaded exact new Orchestrator/Skill,exited0; independentDaemon remained healthy. Runtime/native tuple unchanged from qualified build0368.",
+      "source_identity": [
+        {
+          "path": "README.md",
+          "sha256": "2ae93b98ef2a7b1b8acd2bfe8a4ba45d3477597d769a59e17cdc6e6ac3cacc00",
+          "size": 9451
+        },
+        {
+          "path": "docs/user/quick-start.md",
+          "sha256": "8b46aff1e9bf9d6c11e010f83b99df89a0739fa1cec1c577aa92f8be5cecda56",
+          "size": 816
+        },
+        {
+          "path": "setup/userlevel-opencode/AGENTS.md",
+          "sha256": "1d50c91e376e3cdeb49c508afcf391488cb3a0c0b9fb49732c06602c6261540c",
+          "size": 16223
+        },
+        {
+          "path": "setup/userlevel-opencode/agents/sf-verifier.md",
+          "sha256": "9080216c04584f29638afdced3214afe7da77f67e2f519d66103727939350ea5",
+          "size": 40260
+        },
+        {
+          "path": "setup/userlevel-opencode/tools/sf_artifact_write.ts",
+          "sha256": "06e3f0b6945bd5c458cd834e9608c3ac980f77b4319c6ad1ca68682bc0170742",
+          "size": 5487
+        },
+        {
+          "path": "docs/design/windows-lpac-node-readonly-contract.md",
+          "sha256": "75312b393fd26c3b4ead623fc61600d6fe5304e04bb0cd394fbe62fd0a98e097",
+          "size": 20506
+        }
+      ],
+      "current_source_identity": [
+        {
+          "path": "README.md",
+          "sha256": "549c967e604841f0fd3ce656d4e6d8f491bd1d12d3da0fa61b7b3f0230b43e4b",
+          "size": 9704
+        },
+        {
+          "path": "docs/user/quick-start.md",
+          "sha256": "c7e2344870a61d0540539bcb95b063537138965d549e6c4770b7a3a2ef800e6d",
+          "size": 966
+        },
+        {
+          "path": "setup/userlevel-opencode/AGENTS.md",
+          "sha256": "1d50c91e376e3cdeb49c508afcf391488cb3a0c0b9fb49732c06602c6261540c",
+          "size": 16223
+        },
+        {
+          "path": "setup/userlevel-opencode/agents/sf-verifier.md",
+          "sha256": "9080216c04584f29638afdced3214afe7da77f67e2f519d66103727939350ea5",
+          "size": 40260
+        },
+        {
+          "path": "setup/userlevel-opencode/tools/sf_artifact_write.ts",
+          "sha256": "06e3f0b6945bd5c458cd834e9608c3ac980f77b4319c6ad1ca68682bc0170742",
+          "size": 5487
+        },
+        {
+          "path": "docs/design/windows-lpac-node-readonly-contract.md",
+          "sha256": "75312b393fd26c3b4ead623fc61600d6fe5304e04bb0cd394fbe62fd0a98e097",
+          "size": 20506
+        }
+      ],
+      "final_evidence": [
+        "commands/0502.result.json",
+        "commands/0503.result.json",
+        "quickstart-smoke-02/running.json",
+        "quickstart-smoke-02/result.json",
+        "final-interactive-runtime-01/loaded-agents.json",
+        "final-interactive-runtime-01/loaded-skill.json",
+        "post-interactive-preservation-01.json"
+      ]
+    }
+  },
+  "rows": [
+    {
+      "number": 1,
+      "requirement": "Authority Registry 只指向一份 Product Specification，不再存在并列产品 authority。",
+      "id": "SPS19-01",
+      "catalog": "authority",
+      "status": "PASS_WITHIN_CURRENT_APPROVED_PROFILE",
+      "scope": "Single current product authority and release-surface inventory; historical documents are not behavior authority",
+      "final_evidence": [
+        "commands/0359.result.json",
+        "commands/0404.result.json"
+      ]
+    },
+    {
+      "number": 2,
+      "requirement": "release precheck、Scope Gate 和 architecture-governance tests 不再把 .kiro V6 requirements/design 当作产品 authority。",
+      "id": "SPS19-02",
+      "catalog": "authority",
+      "status": "PASS_WITHIN_CURRENT_APPROVED_PROFILE",
+      "scope": "Single current product authority and release-surface inventory; historical documents are not behavior authority",
+      "final_evidence": [
+        "commands/0359.result.json",
+        "commands/0404.result.json"
+      ]
+    },
+    {
+      "number": 3,
+      "requirement": "当前运行代码对 ~/.specforge 的写入为零。",
+      "id": "SPS19-03",
+      "catalog": "paths",
+      "status": "PASS_WITHIN_CURRENT_APPROVED_PROFILE",
+      "scope": "Current source path owners and controlled lifecycle observation: 140 legacy-home metadata entries unchanged; config-root managed117/private sf-user verified. This finite acceptance does not assert observations of arbitrary future programs.",
+      "final_evidence": [
+        "legacy-home-metadata-before-quickstart.json",
+        "legacy-home-metadata-after-quickstart.json",
+        "post-interactive-preservation-01.json"
+      ]
+    },
+    {
+      "number": 4,
+      "requirement": "user-level Manifest 位于 OpenCode config root；私有数据位于 sf-user。",
+      "id": "SPS19-04",
+      "catalog": "paths",
+      "status": "PASS_WITHIN_CURRENT_APPROVED_PROFILE",
+      "scope": "Current source path owners and controlled lifecycle observation: 140 legacy-home metadata entries unchanged; config-root managed117/private sf-user verified. This finite acceptance does not assert observations of arbitrary future programs.",
+      "final_evidence": [
+        "legacy-home-metadata-before-quickstart.json",
+        "legacy-home-metadata-after-quickstart.json",
+        "post-interactive-preservation-01.json"
+      ]
+    },
+    {
+      "number": 5,
+      "requirement": "Thin Plugin 不启动、停止或重启 Daemon。",
+      "id": "SPS19-05",
+      "catalog": "plugin",
+      "status": "PASS_WITHIN_CURRENT_APPROVED_PROFILE",
+      "scope": "Thin plugin boundaries; explicit CLI-started independent shared Daemon and fail-closed consumers",
+      "final_evidence": [
+        "commands/0389.result.json",
+        "commands/0408.result.json"
+      ]
+    },
+    {
+      "number": 6,
+      "requirement": "Daemon 可作为独立共享服务运行，客户端连接失败时治理写入 fail closed。",
+      "id": "SPS19-06",
+      "catalog": "plugin",
+      "status": "PASS_WITHIN_CURRENT_APPROVED_PROFILE",
+      "scope": "Thin plugin boundaries; explicit CLI-started independent shared Daemon and fail-closed consumers",
+      "final_evidence": [
+        "commands/0389.result.json",
+        "commands/0408.result.json"
+      ]
+    },
+    {
+      "number": 7,
+      "requirement": "Project workflow state 可以从 events.jsonl 重放重建；state.json 只是 checkpoint/projection。",
+      "id": "SPS19-07",
+      "catalog": "state",
+      "status": "PASS_WITHIN_CURRENT_APPROVED_PROFILE",
+      "scope": "Independent fresh Daemon StateManager owner explicitly reported rebuilt_from_events=true,current_state=closed andsame update time;work_item.json is not stateauthority. Historical retired public persistence evidence retained.",
+      "final_evidence": [
+        "post-interactive-preservation-01.json"
+      ]
+    },
+    {
+      "number": 8,
+      "requirement": "不再存在 runtime/wal.jsonl 当前合同或生产 consumer。",
+      "id": "SPS19-08",
+      "catalog": "state",
+      "status": "PASS_WITHIN_CURRENT_APPROVED_PROFILE",
+      "scope": "Independent fresh Daemon StateManager owner explicitly reported rebuilt_from_events=true,current_state=closed andsame update time;work_item.json is not stateauthority. Historical retired public persistence evidence retained.",
+      "final_evidence": [
+        "post-interactive-preservation-01.json"
+      ]
+    },
+    {
+      "number": 9,
+      "requirement": "Project Spec 初始化只创建当前 Core 文件；不会默认创建 D09 暂缓的 multi-view/ADR Detail 文件。",
+      "id": "SPS19-09",
+      "catalog": "project",
+      "status": "PASS_WITHIN_CURRENT_APPROVED_PROFILE",
+      "scope": "Same original PSV0002 Candidate/Gate/explicit Decision/controlled merge and original WI0001 current Verification/FormalVersion/Close passed; user-approved local business main delivery independently verified, no business push.",
+      "final_evidence": [
+        "approved-business-delivery-01/result.json",
+        "closed-original-and-merge-review-01/manifest.json"
+      ]
+    },
+    {
+      "number": 10,
+      "requirement": "Project Spec 修改必须通过 Candidate/Gate/Decision/Merge 受控链路。",
+      "id": "SPS19-10",
+      "catalog": "project",
+      "status": "PASS_WITHIN_CURRENT_APPROVED_PROFILE",
+      "scope": "Same original PSV0002 Candidate/Gate/explicit Decision/controlled merge and original WI0001 current Verification/FormalVersion/Close passed; user-approved local business main delivery independently verified, no business push.",
+      "final_evidence": [
+        "approved-business-delivery-01/result.json",
+        "closed-original-and-merge-review-01/manifest.json"
+      ]
+    },
+    {
+      "number": 11,
+      "requirement": "Work Item authoritative state 不保存在 work_item.json。",
+      "id": "SPS19-11",
+      "catalog": "state",
+      "status": "PASS_WITHIN_CURRENT_APPROVED_PROFILE",
+      "scope": "Independent fresh Daemon StateManager owner explicitly reported rebuilt_from_events=true,current_state=closed andsame update time;work_item.json is not stateauthority. Historical retired public persistence evidence retained.",
+      "final_evidence": [
+        "post-interactive-preservation-01.json"
+      ]
+    },
+    {
+      "number": 12,
+      "requirement": "Write Guard / code permission 覆盖真实写入口，越权写入可审计并拒绝。",
+      "id": "SPS19-12",
+      "catalog": "guard",
+      "status": "PASS_WITHIN_CURRENT_APPROVED_PROFILE",
+      "scope": "Actual native role/read-only/HardStop negatives and explicit canonical routing; retains original historical denied operations rather than claiming zero historical refusals",
+      "final_evidence": [
+        "commands/0376.result.json",
+        "commands/0387.result.json",
+        "commands/0389.result.json",
+        "commands/0408.result.json"
+      ]
+    },
+    {
+      "number": 13,
+      "requirement": "Migration 模块退出当前 release surface；仍有效 schema validation 已迁移到中立/owner contract。",
+      "id": "SPS19-13",
+      "catalog": "release",
+      "status": "PASS_WITHIN_CURRENT_APPROVED_PROFILE",
+      "scope": "Current twelve-package release/build/installation set and disabled/future boundaries; not an automatic claim that future capabilities are implemented",
+      "final_evidence": [
+        "commands/0359.result.json",
+        "commands/0385.result.json",
+        "commands/0404.result.json"
+      ]
+    },
+    {
+      "number": 14,
+      "requirement": "Multimodal、Self-Healing、third-party Plugin Loader、OpenClaw 不出现在 current release 正向运行/安装集合。",
+      "id": "SPS19-14",
+      "catalog": "release",
+      "status": "PASS_WITHIN_CURRENT_APPROVED_PROFILE",
+      "scope": "Current twelve-package release/build/installation set and disabled/future boundaries; not an automatic claim that future capabilities are implemented",
+      "final_evidence": [
+        "commands/0359.result.json",
+        "commands/0385.result.json",
+        "commands/0404.result.json"
+      ]
+    },
+    {
+      "number": 15,
+      "requirement": "OpenCode Adapter 存在真实 Daemon production consumer 和端到端验证后，方可从 REQUIRED_NOT_YET_ENABLED 升为 ENABLED。",
+      "id": "SPS19-15",
+      "catalog": "adapter",
+      "status": "PASS_WITHIN_CURRENT_APPROVED_PROFILE",
+      "scope": "Actual installed Daemon production consumer, genuine GLM5.3 professional Agent execution on same original WI,22 current native subjects/23 receipts,actual accepted Gates and Close; real TUI owns4096. No substitute-fixture claim for this original chain.",
+      "final_evidence": [
+        "original-verification-run-07/result.json",
+        "original-verification-run-08/result.json",
+        "original-current-native-evidence-01/manifest.json",
+        "final-interactive-runtime-01/result.json"
+      ]
+    },
+    {
+      "number": 16,
+      "requirement": "Version Unification 不再承担 Migration、release scope 或 installer ownership。",
+      "id": "SPS19-16",
+      "catalog": "release",
+      "status": "PASS_WITHIN_CURRENT_APPROVED_PROFILE",
+      "scope": "Current twelve-package release/build/installation set and disabled/future boundaries; not an automatic claim that future capabilities are implemented",
+      "final_evidence": [
+        "commands/0359.result.json",
+        "commands/0385.result.json",
+        "commands/0404.result.json"
+      ]
+    },
+    {
+      "number": 17,
+      "requirement": "Installer 只安装 release manifest 批准的物理集合，并支持可验证的 install/upgrade/verify/uninstall。",
+      "id": "SPS19-17",
+      "catalog": "installer",
+      "status": "PASS_WITHIN_CURRENT_APPROVED_PROFILE",
+      "scope": "Official install/upgrade/verify/uninstall retained; final same-version guidance transaction upgraded2/skipped115 and verified117,original installation interval and owner storage preserved without reading keys.",
+      "final_evidence": [
+        "user-guidance-upgrade-1.0.23/result.json",
+        "post-interactive-preservation-01.json"
+      ]
+    },
+    {
+      "number": 18,
+      "requirement": "Scope Gate 只验证 release/build，不作为业务 Runtime。",
+      "id": "SPS19-18",
+      "catalog": "release",
+      "status": "PASS_WITHIN_CURRENT_APPROVED_PROFILE",
+      "scope": "Current twelve-package release/build/installation set and disabled/future boundaries; not an automatic claim that future capabilities are implemented",
+      "final_evidence": [
+        "commands/0359.result.json",
+        "commands/0385.result.json",
+        "commands/0404.result.json"
+      ]
+    },
+    {
+      "number": 19,
+      "requirement": "代码、README、错误提示、帮助文本、模板、测试和安装资产与当前路径和 lifecycle 模型一致。",
+      "id": "SPS19-19",
+      "catalog": "alignment",
+      "status": "PASS_WITHIN_CURRENT_APPROVED_PROFILE",
+      "scope": "Final maintained instruction consumers16files120 checks andRoot51files748 checks passed; actual documented opencode --port4096 UI loaded exact new Orchestrator/Skill,exited0; independentDaemon remained healthy. Runtime/native tuple unchanged from qualified build0368.",
+      "final_evidence": [
+        "commands/0502.result.json",
+        "commands/0503.result.json",
+        "quickstart-smoke-02/running.json",
+        "quickstart-smoke-02/result.json",
+        "final-interactive-runtime-01/loaded-agents.json",
+        "final-interactive-runtime-01/loaded-skill.json",
+        "post-interactive-preservation-01.json"
+      ]
+    },
+    {
+      "number": 20,
+      "requirement": "Future Capability Registry 中的内容不会仅因“文档存在”进入当前验收范围。",
+      "id": "SPS19-20",
+      "catalog": "release",
+      "status": "PASS_WITHIN_CURRENT_APPROVED_PROFILE",
+      "scope": "Current twelve-package release/build/installation set and disabled/future boundaries; not an automatic claim that future capabilities are implemented",
+      "final_evidence": [
+        "commands/0359.result.json",
+        "commands/0385.result.json",
+        "commands/0404.result.json"
+      ]
+    }
+  ],
+  "overall_sps_accepted": true,
+  "scope_limit": "Current approved Windows x64 fixed single-process read-only Node verification and current release surface. Arbitrary scripts/build/third-party framework/multiprocess are outside this approved implementation; historical multiprocess failure remains failed.",
+  "original_business_delivery": "28c8e3d850c81218af4598928569bf5420814372",
+  "final_installed117": true,
+  "publication_state": "Acceptance complete; immutable public seal and root main/tag/Bootstrap publication still to execute",
+  "old_data_loss_cause": "INSUFFICIENT_EVIDENCE; restored archive/Git baseline does not prove byte-exact pre-probe reconstruction"
+}

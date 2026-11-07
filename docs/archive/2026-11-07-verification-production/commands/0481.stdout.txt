@@ -1,0 +1,1 @@
+{"state":"closed","delivery":"closed_and_git_merged","head":"28c8e3d850c81218af4598928569bf5420814372","parents":["8a692e88c0823984647622294f5199c18bb0c587","6e917aec62788a35013f02a340c8d60edaa76ae9"],"implementation_raw_unchanged":5,"canonical_acceptance_members_unchanged":9,"worktree_clean":true,"business_remote_push":false,"new_app_execution":false}

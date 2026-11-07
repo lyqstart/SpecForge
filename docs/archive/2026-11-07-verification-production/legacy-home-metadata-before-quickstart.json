@@ -1,0 +1,1268 @@
+{
+  "utc": "2026-11-07T09:16:10.721Z",
+  "root": "C:\\Users\\lyq\\.specforge",
+  "exists": true,
+  "method": "lstat and directory names only; no file content read, no link traversal, no protected/private profile content collected",
+  "entries": [
+    {
+      "path": "",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1791426829033.0017,
+      "birthtime_ms": 1788411123375.0166,
+      "ino": 23643898044214004,
+      "dev": 2591198719
+    },
+    {
+      "path": "AGENTS.md",
+      "type": "file",
+      "size": 12368,
+      "mtime_ms": 1788171758701.8347,
+      "birthtime_ms": 1789116336000.7546,
+      "ino": 23925373020655750,
+      "dev": 2591198719
+    },
+    {
+      "path": "agents",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116336404.4688,
+      "birthtime_ms": 1789116294326.1443,
+      "ino": 41376821576713440,
+      "dev": 2591198719
+    },
+    {
+      "path": "agents/_AGENT_BASE.md",
+      "type": "file",
+      "size": 26244,
+      "mtime_ms": 1788171506770.6243,
+      "birthtime_ms": 1789116336041.1663,
+      "ino": 10133099161829986,
+      "dev": 2591198719
+    },
+    {
+      "path": "agents/sf-analyst.md",
+      "type": "file",
+      "size": 3572,
+      "mtime_ms": 1787793136863.7412,
+      "birthtime_ms": 1789116336070.3264,
+      "ino": 53480245575272616,
+      "dev": 2591198719
+    },
+    {
+      "path": "agents/sf-debugger.md",
+      "type": "file",
+      "size": 14667,
+      "mtime_ms": 1786456692125.395,
+      "birthtime_ms": 1789116336098.8208,
+      "ino": 7036874418015050,
+      "dev": 2591198719
+    },
+    {
+      "path": "agents/sf-design.md",
+      "type": "file",
+      "size": 42644,
+      "mtime_ms": 1788080648252.0112,
+      "birthtime_ms": 1789116336133.7703,
+      "ino": 14355223812492212,
+      "dev": 2591198719
+    },
+    {
+      "path": "agents/sf-executor.md",
+      "type": "file",
+      "size": 30215,
+      "mtime_ms": 1786456692128.3936,
+      "birthtime_ms": 1789116336168.1062,
+      "ino": 40250921669873940,
+      "dev": 2591198719
+    },
+    {
+      "path": "agents/sf-knowledge.md",
+      "type": "file",
+      "size": 11904,
+      "mtime_ms": 1788172144260.7305,
+      "birthtime_ms": 1789116336198.2334,
+      "ino": 28428972648026390,
+      "dev": 2591198719
+    },
+    {
+      "path": "agents/sf-orchestrator.md",
+      "type": "file",
+      "size": 40119,
+      "mtime_ms": 1788497258620.7358,
+      "birthtime_ms": 1789116336233.5876,
+      "ino": 23080948090523948,
+      "dev": 2591198719
+    },
+    {
+      "path": "agents/sf-requirements.md",
+      "type": "file",
+      "size": 24636,
+      "mtime_ms": 1786456692133.3955,
+      "birthtime_ms": 1789116336267.1084,
+      "ino": 66991044457386296,
+      "dev": 2591198719
+    },
+    {
+      "path": "agents/sf-reviewer.md",
+      "type": "file",
+      "size": 17681,
+      "mtime_ms": 1786456692133.3955,
+      "birthtime_ms": 1789116336301.7676,
+      "ino": 5910974511174046,
+      "dev": 2591198719
+    },
+    {
+      "path": "agents/sf-task-planner.md",
+      "type": "file",
+      "size": 32054,
+      "mtime_ms": 1788172143328.3784,
+      "birthtime_ms": 1789116336343.5327,
+      "ino": 16888498602889644,
+      "dev": 2591198719
+    },
+    {
+      "path": "agents/sf-verifier.md",
+      "type": "file",
+      "size": 37479,
+      "mtime_ms": 1789072359052.4395,
+      "birthtime_ms": 1789116336387.0874,
+      "ino": 26740122787762784,
+      "dev": 2591198719
+    },
+    {
+      "path": "backups",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116341213.8684,
+      "birthtime_ms": 1789116335975.0579,
+      "ino": 28991922601629060,
+      "dev": 2591198719
+    },
+    {
+      "path": "bin",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116337618.58,
+      "birthtime_ms": 1789116294541.0984,
+      "ino": 7881299348148888,
+      "dev": 2591198719
+    },
+    {
+      "path": "bin/specforge.exe",
+      "type": "file",
+      "size": 90132480,
+      "mtime_ms": 1789098393191.9941,
+      "birthtime_ms": 1789116336771.061,
+      "ino": 6473924464595606,
+      "dev": 2591198719
+    },
+    {
+      "path": "bin/specforged.exe",
+      "type": "file",
+      "size": 100282368,
+      "mtime_ms": 1789098394074.1318,
+      "birthtime_ms": 1789116337388.5825,
+      "ino": 29554872554869404,
+      "dev": 2591198719
+    },
+    {
+      "path": "config",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1788411195341.8882,
+      "birthtime_ms": 1788411195338.5984,
+      "ino": 2533274790494834,
+      "dev": 2591198719
+    },
+    {
+      "path": "config/plugin-grants.json",
+      "type": "file",
+      "size": 211,
+      "mtime_ms": 1788411195390.2246,
+      "birthtime_ms": 1788411195341.8882,
+      "ino": 29836347531878704,
+      "dev": 2591198719
+    },
+    {
+      "path": "host-profile.json",
+      "type": "file",
+      "size": 4317,
+      "mtime_ms": 1788411123376.5315,
+      "birthtime_ms": 1788411123376.5315,
+      "ino": 64457769667259760,
+      "dev": 2591198719
+    },
+    {
+      "path": "integrations",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116295030.5686,
+      "birthtime_ms": 1789116295030.5686,
+      "ino": 84442493013447380,
+      "dev": 2591198719
+    },
+    {
+      "path": "integrations/opencode",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116337687.1013,
+      "birthtime_ms": 1789116295030.5686,
+      "ino": 103864266406483250,
+      "dev": 2591198719
+    },
+    {
+      "path": "integrations/opencode/sf_specforge.ts",
+      "type": "file",
+      "size": 8948,
+      "mtime_ms": 1788174669097.327,
+      "birthtime_ms": 1789116337658.8018,
+      "ino": 54887620458828460,
+      "dev": 2591198719
+    },
+    {
+      "path": "lib",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116337760.4905,
+      "birthtime_ms": 1789116295074.6797,
+      "ino": 103019841476352460,
+      "dev": 2591198719
+    },
+    {
+      "path": "lib/sf_plugin_client.ts",
+      "type": "file",
+      "size": 14230,
+      "mtime_ms": 1788192071448.813,
+      "birthtime_ms": 1789116337726.7532,
+      "ino": 6473924464596434,
+      "dev": 2591198719
+    },
+    {
+      "path": "logs",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1791426829037.0132,
+      "birthtime_ms": 1791426829033.0017,
+      "ino": 2533274790681104,
+      "dev": 2591198719
+    },
+    {
+      "path": "logs/telemetry.jsonl",
+      "type": "file",
+      "size": 256,
+      "mtime_ms": 1791426829072.5073,
+      "birthtime_ms": 1791426829037.0132,
+      "ino": 2251799813970450,
+      "dev": 2591198719
+    },
+    {
+      "path": "skills",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116295239.299,
+      "birthtime_ms": 1789116295116.0571,
+      "ino": 4222124650929124,
+      "dev": 2591198719
+    },
+    {
+      "path": "skills/sf-intake",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116337791.1572,
+      "birthtime_ms": 1789116295116.0571,
+      "ino": 10977524091984876,
+      "dev": 2591198719
+    },
+    {
+      "path": "skills/sf-intake/SKILL.md",
+      "type": "file",
+      "size": 16615,
+      "mtime_ms": 1788080649630.7004,
+      "birthtime_ms": 1789116337775.0808,
+      "ino": 133419138961103840,
+      "dev": 2591198719
+    },
+    {
+      "path": "skills/sf-workflow-feature-spec",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116337833.9695,
+      "birthtime_ms": 1789116295136.0935,
+      "ino": 77968568549121090,
+      "dev": 2591198719
+    },
+    {
+      "path": "skills/sf-workflow-feature-spec/SKILL.md",
+      "type": "file",
+      "size": 41213,
+      "mtime_ms": 1789094664969.0007,
+      "birthtime_ms": 1789116337815.922,
+      "ino": 37154696926075950,
+      "dev": 2591198719
+    },
+    {
+      "path": "skills/superpowers-brainstorming",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116337852.443,
+      "birthtime_ms": 1789116295158.0283,
+      "ino": 14073748835802756,
+      "dev": 2591198719
+    },
+    {
+      "path": "skills/superpowers-brainstorming/SKILL.md",
+      "type": "file",
+      "size": 3584,
+      "mtime_ms": 1786456692155.0881,
+      "birthtime_ms": 1789116337850.2415,
+      "ino": 6192449487904220,
+      "dev": 2591198719
+    },
+    {
+      "path": "skills/superpowers-code-review",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116337873.431,
+      "birthtime_ms": 1789116295175.4558,
+      "ino": 20829148276858644,
+      "dev": 2591198719
+    },
+    {
+      "path": "skills/superpowers-code-review/SKILL.md",
+      "type": "file",
+      "size": 1442,
+      "mtime_ms": 1786456692156.0935,
+      "birthtime_ms": 1789116337870.7253,
+      "ino": 32651097298706110,
+      "dev": 2591198719
+    },
+    {
+      "path": "skills/superpowers-knowledge-extraction",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116337893.7158,
+      "birthtime_ms": 1789116295191.537,
+      "ino": 67272519434117150,
+      "dev": 2591198719
+    },
+    {
+      "path": "skills/superpowers-knowledge-extraction/SKILL.md",
+      "type": "file",
+      "size": 7602,
+      "mtime_ms": 1788171543327.5947,
+      "birthtime_ms": 1789116337891.704,
+      "ino": 20829148276858864,
+      "dev": 2591198719
+    },
+    {
+      "path": "skills/superpowers-systematic-debugging",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116337913.5444,
+      "birthtime_ms": 1789116295206.9321,
+      "ino": 9007199255036534,
+      "dev": 2591198719
+    },
+    {
+      "path": "skills/superpowers-systematic-debugging/SKILL.md",
+      "type": "file",
+      "size": 1450,
+      "mtime_ms": 1786456692158.0918,
+      "birthtime_ms": 1789116337911.958,
+      "ino": 782781910232629600,
+      "dev": 2591198719
+    },
+    {
+      "path": "skills/superpowers-verification-before-completion",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116337935.3916,
+      "birthtime_ms": 1789116295223.8147,
+      "ino": 5629499534512638,
+      "dev": 2591198719
+    },
+    {
+      "path": "skills/superpowers-verification-before-completion/SKILL.md",
+      "type": "file",
+      "size": 2186,
+      "mtime_ms": 1786456692159.0942,
+      "birthtime_ms": 1789116337933.3098,
+      "ino": 55732045389009140,
+      "dev": 2591198719
+    },
+    {
+      "path": "skills/superpowers-writing-plans",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116337958.828,
+      "birthtime_ms": 1789116295238.2842,
+      "ino": 11821949022147392,
+      "dev": 2591198719
+    },
+    {
+      "path": "skills/superpowers-writing-plans/SKILL.md",
+      "type": "file",
+      "size": 1791,
+      "mtime_ms": 1786456692159.0942,
+      "birthtime_ms": 1789116337955.3035,
+      "ino": 29836347531629130,
+      "dev": 2591198719
+    },
+    {
+      "path": "specforge-manifest.json",
+      "type": "file",
+      "size": 20243,
+      "mtime_ms": 1789116341162.7656,
+      "birthtime_ms": 1789116341162.7656,
+      "ino": 3940649674426923,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116338430.619,
+      "birthtime_ms": 1789116295256.0344,
+      "ino": 6192449487934283,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/README.md",
+      "type": "file",
+      "size": 3463,
+      "mtime_ms": 1786456692225.1353,
+      "birthtime_ms": 1789116338426.2625,
+      "ino": 30680772461762644,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/dev-environment.md",
+      "type": "file",
+      "size": 10821,
+      "mtime_ms": 1786456692225.1353,
+      "birthtime_ms": 1789116337975.209,
+      "ino": 15481123719385924,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/prod-environment.md",
+      "type": "file",
+      "size": 13342,
+      "mtime_ms": 1786456692226.1372,
+      "birthtime_ms": 1789116338002.0808,
+      "ino": 10414574138594128,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116338036.9592,
+      "birthtime_ms": 1789116295288.5913,
+      "ino": 12666373952279388,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules/_BASE.md",
+      "type": "file",
+      "size": 5619,
+      "mtime_ms": 1786456692227.1409,
+      "birthtime_ms": 1789116338033.6924,
+      "ino": 21955048183731030,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules/databases",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116338143.6096,
+      "birthtime_ms": 1789116295307.7065,
+      "ino": 9851624185172836,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules/databases/mongodb.md",
+      "type": "file",
+      "size": 1077,
+      "mtime_ms": 1786456692228.1316,
+      "birthtime_ms": 1789116338053.8684,
+      "ino": 8162774324908896,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules/databases/mysql.md",
+      "type": "file",
+      "size": 1221,
+      "mtime_ms": 1786456692229.14,
+      "birthtime_ms": 1789116338075.777,
+      "ino": 8725724278330283,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules/databases/postgresql.md",
+      "type": "file",
+      "size": 2130,
+      "mtime_ms": 1786456692230.1377,
+      "birthtime_ms": 1789116338096.9048,
+      "ino": 7036874418066528,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules/databases/redis.md",
+      "type": "file",
+      "size": 1239,
+      "mtime_ms": 1786456692230.1377,
+      "birthtime_ms": 1789116338119.191,
+      "ino": 46724846134117630,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules/databases/sqlite.md",
+      "type": "file",
+      "size": 1236,
+      "mtime_ms": 1786456692230.9956,
+      "birthtime_ms": 1789116338139.6118,
+      "ino": 8725724278330467,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules/frameworks",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116338228.1038,
+      "birthtime_ms": 1789116295397.387,
+      "ino": 7881299348198544,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules/frameworks/fastapi.md",
+      "type": "file",
+      "size": 1636,
+      "mtime_ms": 1786456692232.135,
+      "birthtime_ms": 1789116338160.6074,
+      "ino": 7599824371487885,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules/frameworks/react.md",
+      "type": "file",
+      "size": 2328,
+      "mtime_ms": 1786456692232.6487,
+      "birthtime_ms": 1789116338179.5354,
+      "ino": 8725724278330514,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules/frameworks/spring-boot.md",
+      "type": "file",
+      "size": 1816,
+      "mtime_ms": 1786456692233.158,
+      "birthtime_ms": 1789116338199.468,
+      "ino": 8162774324909206,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules/frameworks/vue.md",
+      "type": "file",
+      "size": 1788,
+      "mtime_ms": 1786456692233.158,
+      "birthtime_ms": 1789116338225.0989,
+      "ino": 1970324837474270,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules/infra",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116338271.8694,
+      "birthtime_ms": 1789116295483.562,
+      "ino": 7318349394777244,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules/infra/ci-github-actions.md",
+      "type": "file",
+      "size": 1461,
+      "mtime_ms": 1786456692234.171,
+      "birthtime_ms": 1789116338244.5964,
+      "ino": 7881299348198552,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules/infra/docker.md",
+      "type": "file",
+      "size": 1513,
+      "mtime_ms": 1786456692235.1902,
+      "birthtime_ms": 1789116338268.8677,
+      "ino": 7599824371487908,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules/languages",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116338405.3916,
+      "birthtime_ms": 1789116295523.3496,
+      "ino": 8444249301619897,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules/languages/go.md",
+      "type": "file",
+      "size": 2939,
+      "mtime_ms": 1786456692235.8252,
+      "birthtime_ms": 1789116338287.0854,
+      "ino": 8444249301619895,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules/languages/java.md",
+      "type": "file",
+      "size": 3371,
+      "mtime_ms": 1786456692236.3347,
+      "birthtime_ms": 1789116338314.519,
+      "ino": 8444249301619911,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules/languages/nodejs.md",
+      "type": "file",
+      "size": 4125,
+      "mtime_ms": 1786456692236.3347,
+      "birthtime_ms": 1789116338371.817,
+      "ino": 15481123719386396,
+      "dev": 2591198719
+    },
+    {
+      "path": "templates/project-rules/languages/python.md",
+      "type": "file",
+      "size": 4308,
+      "mtime_ms": 1786456692236.3347,
+      "birthtime_ms": 1789116338399.6118,
+      "ino": 61924494876645390,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116340860.691,
+      "birthtime_ms": 1789116295619.693,
+      "ino": 8162774324952363,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116339706.792,
+      "birthtime_ms": 1789116295619.693,
+      "ino": 7881299348242203,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf-observability-config.ts",
+      "type": "file",
+      "size": 5027,
+      "mtime_ms": 1788139134252.5608,
+      "birthtime_ms": 1789116339541.301,
+      "ino": 29836347531761024,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf-observability.ts",
+      "type": "file",
+      "size": 22379,
+      "mtime_ms": 1789072354628.8044,
+      "birthtime_ms": 1789116339583.502,
+      "ino": 84161018036609100,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf_artifact_write_core.ts",
+      "type": "file",
+      "size": 19021,
+      "mtime_ms": 1788171408809.3723,
+      "birthtime_ms": 1789116338450.6116,
+      "ino": 5629499534540986,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf_batch_verify_core.ts",
+      "type": "file",
+      "size": 3804,
+      "mtime_ms": 1786456692165.0854,
+      "birthtime_ms": 1789116338480.7458,
+      "ino": 6473924464691503,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf_design_gate_core.ts",
+      "type": "file",
+      "size": 32893,
+      "mtime_ms": 1788171016634.184,
+      "birthtime_ms": 1789116338521.17,
+      "ino": 16325548649567296,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf_doc_lint_core.ts",
+      "type": "file",
+      "size": 84881,
+      "mtime_ms": 1789094532190.3298,
+      "birthtime_ms": 1789116338600.1865,
+      "ino": 9570149208511584,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf_doctor_core.ts",
+      "type": "file",
+      "size": 3748,
+      "mtime_ms": 1788050627956.8157,
+      "birthtime_ms": 1789116338668.1802,
+      "ino": 50665495808310560,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf_ears_parser.ts",
+      "type": "file",
+      "size": 26566,
+      "mtime_ms": 1786456692168.4072,
+      "birthtime_ms": 1789116338715.6663,
+      "ino": 36873221949491520,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf_ears_types.ts",
+      "type": "file",
+      "size": 9033,
+      "mtime_ms": 1786456692169.424,
+      "birthtime_ms": 1789116338767.3926,
+      "ino": 26458647811199736,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf_gate_types.ts",
+      "type": "file",
+      "size": 1038,
+      "mtime_ms": 1788171332088.1343,
+      "birthtime_ms": 1789116338802.546,
+      "ino": 12947848929090452,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf_knowledge_base_core.ts",
+      "type": "file",
+      "size": 30128,
+      "mtime_ms": 1786456692169.424,
+      "birthtime_ms": 1789116338833.8557,
+      "ino": 37436171902918590,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf_markdown_verification_parser.ts",
+      "type": "file",
+      "size": 9937,
+      "mtime_ms": 1786456692171.4236,
+      "birthtime_ms": 1789116338899.76,
+      "ino": 175921860444312060,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf_requirements_gate_core.ts",
+      "type": "file",
+      "size": 22034,
+      "mtime_ms": 1788171330233.221,
+      "birthtime_ms": 1789116338960.7483,
+      "ino": 19984723346859216,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf_safe_bash_core.ts",
+      "type": "file",
+      "size": 11903,
+      "mtime_ms": 1786456692172.423,
+      "birthtime_ms": 1789116339034.1995,
+      "ino": 6192449488051708,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf_safe_bash_executor.ts",
+      "type": "file",
+      "size": 10234,
+      "mtime_ms": 1786456692172.423,
+      "birthtime_ms": 1789116339083.257,
+      "ino": 7881299348324129,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf_safe_bash_rules.ts",
+      "type": "file",
+      "size": 23260,
+      "mtime_ms": 1786456692172.423,
+      "birthtime_ms": 1789116339118.8762,
+      "ino": 89790517571130050,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf_safe_bash_types.ts",
+      "type": "file",
+      "size": 2912,
+      "mtime_ms": 1786456692172.423,
+      "birthtime_ms": 1789116339150.0076,
+      "ino": 3659174697669330,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf_tasks_gate_core.ts",
+      "type": "file",
+      "size": 12647,
+      "mtime_ms": 1788171014803.9392,
+      "birthtime_ms": 1789116339174.1616,
+      "ino": 3659174697669332,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf_trace_matrix_core.ts",
+      "type": "file",
+      "size": 13195,
+      "mtime_ms": 1786456692173.4224,
+      "birthtime_ms": 1789116339244.921,
+      "ino": 3659174697669333,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf_verification_gate_core.ts",
+      "type": "file",
+      "size": 25928,
+      "mtime_ms": 1788171015726.1313,
+      "birthtime_ms": 1789116339327.925,
+      "ino": 3659174697669334,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf_verification_types.ts",
+      "type": "file",
+      "size": 8691,
+      "mtime_ms": 1786456692174.4207,
+      "birthtime_ms": 1789116339417.7395,
+      "ino": 3659174697669344,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/sf_verifier_execution_core.ts",
+      "type": "file",
+      "size": 12941,
+      "mtime_ms": 1786456692175.4194,
+      "birthtime_ms": 1789116339493.8286,
+      "ino": 14355223812674472,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/thin-client.ts",
+      "type": "file",
+      "size": 9909,
+      "mtime_ms": 1788192569819.2344,
+      "birthtime_ms": 1789116339655.388,
+      "ino": 37999121856185560,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/lib/utils.ts",
+      "type": "file",
+      "size": 3769,
+      "mtime_ms": 1788018536958.114,
+      "birthtime_ms": 1789116339703.7888,
+      "ino": 10696049115437404,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_artifact_write.ts",
+      "type": "file",
+      "size": 4228,
+      "mtime_ms": 1786456692176.4224,
+      "birthtime_ms": 1789116339729.9214,
+      "ino": 7881299348339044,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_batch_verify.ts",
+      "type": "file",
+      "size": 1052,
+      "mtime_ms": 1786456692176.4224,
+      "birthtime_ms": 1789116339754.7217,
+      "ino": 27303072741382532,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_changed_files_audit.ts",
+      "type": "file",
+      "size": 2669,
+      "mtime_ms": 1786456692176.4224,
+      "birthtime_ms": 1789116339776.7666,
+      "ino": 39969446693362056,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_close_gate.ts",
+      "type": "file",
+      "size": 1675,
+      "mtime_ms": 1786456692177.4238,
+      "birthtime_ms": 1789116339801.3916,
+      "ino": 72057594038377020,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_code_permission.ts",
+      "type": "file",
+      "size": 1208,
+      "mtime_ms": 1786456692177.4238,
+      "birthtime_ms": 1789116339819.9377,
+      "ino": 14355223812692616,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_contract_register.ts",
+      "type": "file",
+      "size": 3627,
+      "mtime_ms": 1786456692180.4253,
+      "birthtime_ms": 1789116339852.3752,
+      "ino": 12384898975718102,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_design_gate.ts",
+      "type": "file",
+      "size": 906,
+      "mtime_ms": 1786456692181.4246,
+      "birthtime_ms": 1789116339883.3755,
+      "ino": 85849867897199490,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_doc_lint.ts",
+      "type": "file",
+      "size": 703,
+      "mtime_ms": 1786456692182.424,
+      "birthtime_ms": 1789116339913.4136,
+      "ino": 19703248370195350,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_doctor.ts",
+      "type": "file",
+      "size": 575,
+      "mtime_ms": 1786456692182.424,
+      "birthtime_ms": 1789116339945.6675,
+      "ino": 58546795156266880,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_gate_run.ts",
+      "type": "file",
+      "size": 2815,
+      "mtime_ms": 1786456692183.4204,
+      "birthtime_ms": 1789116339971.746,
+      "ino": 5629499534663812,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_git_agent_lock_acquire.ts",
+      "type": "file",
+      "size": 1081,
+      "mtime_ms": 1786456692184.4216,
+      "birthtime_ms": 1789116340007.8438,
+      "ino": 18014398509932976,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_git_agent_lock_release.ts",
+      "type": "file",
+      "size": 857,
+      "mtime_ms": 1786456692184.4216,
+      "birthtime_ms": 1789116340032.845,
+      "ino": 7599824371640235,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_git_auth_profile_config.ts",
+      "type": "file",
+      "size": 1459,
+      "mtime_ms": 1786456692185.4202,
+      "birthtime_ms": 1789116340067.761,
+      "ino": 4785074604533968,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_git_branch_create.ts",
+      "type": "file",
+      "size": 1122,
+      "mtime_ms": 1788190867871.0461,
+      "birthtime_ms": 1789116340098.1572,
+      "ino": 6755399441508566,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_git_branch_plan.ts",
+      "type": "file",
+      "size": 961,
+      "mtime_ms": 1786456692186.4214,
+      "birthtime_ms": 1789116340123.9507,
+      "ino": 2533274790870398,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_git_checkpoint_commit.ts",
+      "type": "file",
+      "size": 1268,
+      "mtime_ms": 1786456692188.4253,
+      "birthtime_ms": 1789116340151.6975,
+      "ino": 239816680157953660,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_git_ignore_analyze.ts",
+      "type": "file",
+      "size": 975,
+      "mtime_ms": 1786456692188.4253,
+      "birthtime_ms": 1789116340172.5972,
+      "ino": 3659174697713645,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_git_ignore_decision_record.ts",
+      "type": "file",
+      "size": 1029,
+      "mtime_ms": 1786456692188.4253,
+      "birthtime_ms": 1789116340195.8625,
+      "ino": 3940649674424304,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_git_merge_plan.ts",
+      "type": "file",
+      "size": 870,
+      "mtime_ms": 1786456692189.4265,
+      "birthtime_ms": 1789116340220.876,
+      "ino": 3659174697716000,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_git_merge_run.ts",
+      "type": "file",
+      "size": 1127,
+      "mtime_ms": 1786456692189.4265,
+      "birthtime_ms": 1789116340255.3362,
+      "ino": 3940649674426659,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_git_post_merge_verify.ts",
+      "type": "file",
+      "size": 865,
+      "mtime_ms": 1786456692190.428,
+      "birthtime_ms": 1789116340290.2808,
+      "ino": 3659174697716010,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_git_preflight.ts",
+      "type": "file",
+      "size": 757,
+      "mtime_ms": 1786456692191.427,
+      "birthtime_ms": 1789116340322.4424,
+      "ino": 4222124651137323,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_git_push_branch.ts",
+      "type": "file",
+      "size": 848,
+      "mtime_ms": 1786456692192.421,
+      "birthtime_ms": 1789116340358.9912,
+      "ino": 3659174697716025,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_git_release_tag_create.ts",
+      "type": "file",
+      "size": 894,
+      "mtime_ms": 1786456692193.4219,
+      "birthtime_ms": 1789116340393.2852,
+      "ino": 3659174697716028,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_git_release_tag_plan.ts",
+      "type": "file",
+      "size": 983,
+      "mtime_ms": 1786456692193.4219,
+      "birthtime_ms": 1789116340424.1924,
+      "ino": 3377699721005419,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_git_remote_config.ts",
+      "type": "file",
+      "size": 1179,
+      "mtime_ms": 1786456692193.4219,
+      "birthtime_ms": 1789116340457.7268,
+      "ino": 3377699721005425,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_git_remote_probe.ts",
+      "type": "file",
+      "size": 681,
+      "mtime_ms": 1786456692194.4277,
+      "birthtime_ms": 1789116340488.959,
+      "ino": 3940649674426767,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_hard_stop_resolve.ts",
+      "type": "file",
+      "size": 4965,
+      "mtime_ms": 1786456692196.6548,
+      "birthtime_ms": 1789116340516.8179,
+      "ino": 8725724278507930,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_knowledge_base.ts",
+      "type": "file",
+      "size": 2965,
+      "mtime_ms": 1786456692196.6548,
+      "birthtime_ms": 1789116340542.1016,
+      "ino": 3377699721005471,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_merge_run.ts",
+      "type": "file",
+      "size": 1031,
+      "mtime_ms": 1786456692198.6565,
+      "birthtime_ms": 1789116340576.3313,
+      "ino": 3659174697716136,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_project_init.ts",
+      "type": "file",
+      "size": 603,
+      "mtime_ms": 1786456692199.6604,
+      "birthtime_ms": 1789116340602.1687,
+      "ino": 5066549581269420,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_requirements_gate.ts",
+      "type": "file",
+      "size": 992,
+      "mtime_ms": 1786456692199.6604,
+      "birthtime_ms": 1789116340631.9397,
+      "ino": 3659174697716152,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_safe_bash.ts",
+      "type": "file",
+      "size": 2297,
+      "mtime_ms": 1786456692200.6587,
+      "birthtime_ms": 1789116340659.6868,
+      "ino": 4222124651137466,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_semantic_closure_run.ts",
+      "type": "file",
+      "size": 5093,
+      "mtime_ms": 1786456692201.6565,
+      "birthtime_ms": 1789116340694.9673,
+      "ino": 3377699721005504,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_state_read.ts",
+      "type": "file",
+      "size": 889,
+      "mtime_ms": 1786456692203.6526,
+      "birthtime_ms": 1789116340723.3186,
+      "ino": 3377699721005517,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_state_transition.ts",
+      "type": "file",
+      "size": 1727,
+      "mtime_ms": 1786456692204.657,
+      "birthtime_ms": 1789116340749.6514,
+      "ino": 3377699721005533,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_tasks_gate.ts",
+      "type": "file",
+      "size": 597,
+      "mtime_ms": 1786456692205.657,
+      "birthtime_ms": 1789116340784.757,
+      "ino": 3377699721005539,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_trace_matrix.ts",
+      "type": "file",
+      "size": 607,
+      "mtime_ms": 1786456692205.657,
+      "birthtime_ms": 1789116340805.1023,
+      "ino": 3377699721005542,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_user_decision_record.ts",
+      "type": "file",
+      "size": 3685,
+      "mtime_ms": 1786456692206.6543,
+      "birthtime_ms": 1789116340825.191,
+      "ino": 3659174697716231,
+      "dev": 2591198719
+    },
+    {
+      "path": "tools/sf_verification_gate.ts",
+      "type": "file",
+      "size": 787,
+      "mtime_ms": 1786456692206.6543,
+      "birthtime_ms": 1789116340857.692,
+      "ino": 3940649674426898,
+      "dev": 2591198719
+    },
+    {
+      "path": "workflows",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116297128.9053,
+      "birthtime_ms": 1789116297128.9053,
+      "ino": 3096224744294949,
+      "dev": 2591198719
+    },
+    {
+      "path": "workflows/builtin",
+      "type": "directory",
+      "size": 0,
+      "mtime_ms": 1789116340905.7593,
+      "birthtime_ms": 1789116297128.9053,
+      "ino": 2814749767584295,
+      "dev": 2591198719
+    },
+    {
+      "path": "workflows/builtin/feature_spec.json",
+      "type": "file",
+      "size": 12119,
+      "mtime_ms": 1786456689882.9595,
+      "birthtime_ms": 1789116340890.266,
+      "ino": 3659174697716245,
+      "dev": 2591198719
+    }
+  ]
+}

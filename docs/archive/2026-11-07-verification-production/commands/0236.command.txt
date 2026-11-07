@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/verify-fresh-user-runtime.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-local-fresh-user-Daemon-no-model-or-original-context",
+  "expected_writes": "TRUTH_SOURCE_WRITES user Daemon lifecycle handshake and owned fixture16 policy-check caches only; REPOSITORY_TRACKED_WRITES NONE; RUNTIME_OBSERVER_WRITES official CLI fresh installed Daemon local Kernel in empty owned Temp and local health checks; EXTERNAL_EVIDENCE_WRITES provenance; no model prompt or original project context",
+  "started_utc": "2026-11-07T05:07:11.950Z"
+}

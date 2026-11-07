@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/prepare-guidance-upgrade-driver.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Prove exactly2 managed guidance changes,all115 other identities/native unchanged,andprepare official transaction from verified main",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=read-only installed/source verification;EXTERNAL_EVIDENCE_WRITES=concrete deployment readiness and frozen driver",
+  "started_utc": "2026-11-07T10:44:20.559Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\prepare-guidance-upgrade-driver.cjs",
+      "sha256": "62c64a7a78195a2cabb8d0cccb0508d1ceeb6c2b20077fd0f256f8be672f8c48",
+      "size": 5070,
+      "extension": ".cjs"
+    }
+  ]
+}

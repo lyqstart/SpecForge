@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/verify-local-main-integration.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Verify local-main integration and exact native tuple; refresh only proven-identical README index metadata",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES index-stat refresh for2 hash-proven identical files, no source-byte changes; EXTERNAL_EVIDENCE_WRITES full canonical/raw reconciliation; no original/global writes",
+  "started_utc": "2026-11-07T08:37:24.070Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\verify-local-main-integration.cjs",
+      "sha256": "8fd7dd84bf32e4e6faa8eb0f43b37017b0d6792f908b2fca7152dd86c3402ec9",
+      "size": 2612,
+      "extension": ".cjs"
+    }
+  ]
+}

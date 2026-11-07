@@ -1,0 +1,77 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > plans without creating refs, atomically binds two new branches and standard context, then retries idempotently
+Error: Test timed out in 10000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/unit/git-detached-bootstrap.test.ts:40:3
+     38|
+     39| describe('controlled detached Git bootstrap', () => {
+     40|   it('plans without creating refs, atomically binds two new branches a…
+       |   ^
+     41|     const f = await prepared(); expect(await git(f.root, 'for-each-ref…
+     42|     const result = await executeDetachedGitBootstrap(f.execute);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯
+
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > plans without creating refs, atomically binds two new branches and standard context, then retries idempotently
+Error: EBUSY: resource busy or locked, rmdir 'C:\Users\lyq\AppData\Local\Temp\sf-detached-owner-LrfTFx'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯
+
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > recovers an interrupted owner at refs_created without rewriting business/index or duplicating refs
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > recovers an interrupted owner at refs_and_head_bound without rewriting business/index or duplicating refs
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > recovers an interrupted owner at context_bound without rewriting business/index or duplicating refs
+Error: Test timed out in 10000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/unit/git-detached-bootstrap.test.ts:53:68
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/12]⎯
+
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > recovers an interrupted owner at refs_created without rewriting business/index or duplicating refs
+Error: EBUSY: resource busy or locked, rmdir 'C:\Users\lyq\AppData\Local\Temp\sf-detached-owner-fSCmPD'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/12]⎯
+
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > recovers an interrupted owner at refs_and_head_bound without rewriting business/index or duplicating refs
+Error: EBUSY: resource busy or locked, rmdir 'C:\Users\lyq\AppData\Local\Temp\sf-detached-owner-dxyIDu'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/12]⎯
+
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > recovers an interrupted owner at context_bound without rewriting business/index or duplicating refs
+Error: EBUSY: resource busy or locked, rmdir 'C:\Users\lyq\AppData\Local\Temp\sf-detached-owner-pSangR'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/12]⎯
+
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > holds Git HEAD.lock against an actual concurrent commit, then completes safely
+Error: Test timed out in 10000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/unit/git-detached-bootstrap.test.ts:97:3
+     95|     expect(await git(f.root, 'for-each-ref', '--format=%(refname)')).t…
+     96|   });
+     97|   it('holds Git HEAD.lock against an actual concurrent commit, then co…
+       |   ^
+     98|     const f = await prepared();
+     99|     expect((await executeDetachedGitBootstrap(f.execute, { onCheckpoin…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/12]⎯
+
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > holds Git HEAD.lock against an actual concurrent commit, then completes safely
+Error: EBUSY: resource busy or locked, rmdir 'C:\Users\lyq\AppData\Local\Temp\sf-detached-owner-p4GR4j'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/12]⎯
+
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > does not execute repository hooks or change the index
+Error: Test timed out in 10000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/unit/git-detached-bootstrap.test.ts:134:3
+    132|     expect(await fs.readFile(alias)).toEqual(f.bytes); expect(await gi…
+    133|   });
+    134|   it('does not execute repository hooks or change the index', async ()…
+       |   ^
+    135|     const f = await fixture(), hook = path.join(f.root, '.git/hooks/re…
+    136|     await fs.writeFile(hook, '#!/bin/sh\necho ran > "$(git rev-parse -…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/12]⎯
+
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > does not execute repository hooks or change the index
+Error: EBUSY: resource busy or locked, rmdir 'C:\Users\lyq\AppData\Local\Temp\sf-detached-owner-dUwAIj'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/12]⎯
+

@@ -1,0 +1,29 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/verification-governance-contract.test.ts (12 tests | 4 failed) 620ms
+   × verification governance contract > passes only when report, Evidence, audit, closure and provenance agree 61ms
+     → expected [ { …(5) } ] to deeply equal []
+   × verification governance contract > is enforced by the active verification_gate before state advancement 58ms
+     → expected 'failed' to be 'passed' // Object.is equality
+   ✓ verification governance contract > makes verification_gate fail closed on an unknown Evidence Manifest schema 41ms
+   ✓ verification governance contract > makes verification_gate reject a self-referential L5 manual acceptance claim 40ms
+   ✓ verification governance contract > makes the active verification gate fail when semantic closure is missing 38ms
+   ✓ verification governance contract > fails when verification artifacts change after closure generation 32ms
+   ✓ verification governance contract > rejects failed acceptance criteria and unregistered report Evidence 34ms
+   ✓ verification governance contract > uses the shared report contract to reject structurally incomplete fenced JSON 28ms
+   × verification governance contract > reconciles an actual machine-verified consumer with formal Trace 89ms
+     → expected 'failed' to be 'passed' // Object.is equality
+   ✓ verification governance contract > blocks an actual Contract consumer that formal Trace does not declare 72ms
+   × verification governance contract > accepts unsupported source only with structured manual-review Evidence 64ms
+     → expected 'failed' to be 'passed' // Object.is equality
+   ✓ verification governance contract > blocks unsupported source when structured manual-review Evidence is absent 61ms
+ ✓ tests/unit/verification-evidence-integrity.test.ts (4 tests) 94ms
+ ✓ tests/unit/verification-evidence-producer.test.ts (2 tests) 29ms
+ ✓ tests/verification-report-contract-delegation.test.ts (6 tests) 4ms
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  4 failed | 20 passed (24)
+   Start at  10:36:54
+   Duration  4.49s (transform 1.21s, setup 0ms, collect 2.60s, tests 747ms, environment 1ms, prepare 436ms)
+

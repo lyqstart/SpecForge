@@ -1,0 +1,270 @@
+[SessionRegistry] WAL not injected — running in memory-only mode
+Handshake file written to: D:\code\SpecForge\.tmp\verification-public-kernel\dfa9692df8254ad0b094e86b1b4af80e\config\sf-user\runtime\handshake.json
+[EventBus] Started
+[EventBus] Subscribe: session.* (handler: 2z86ffgo90xmw5uffca)
+[EventBus] Subscribe: project.updated (handler: 61xq5rez5vgmw5uffca)
+[EXTENSIONS] Loading extensions...
+[EventBus] Publish: load {
+  eventId: "ext-skill-1794022083946",
+  projectId: undefined,
+  source: "daemon",
+  timestamp: "2026-11-07T03:28:03.946Z",
+}
+[EventBus] Publish: load {
+  eventId: "ext-tool-1794022083947",
+  projectId: undefined,
+  source: "daemon",
+  timestamp: "2026-11-07T03:28:03.947Z",
+}
+[EventBus] Publish: load {
+  eventId: "ext-workflow-1794022083949",
+  projectId: undefined,
+  source: "daemon",
+  timestamp: "2026-11-07T03:28:03.949Z",
+}
+[EventBus] Publish: load {
+  eventId: "ext-gate-1794022083949",
+  projectId: undefined,
+  source: "daemon",
+  timestamp: "2026-11-07T03:28:03.949Z",
+}
+[EXTENSIONS] All extensions loaded successfully in 3ms
+Daemon Core started on port 12260
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+[API] admin/stop — initiating graceful shutdown
+Daemon Core shutting down...
+[GracefulShutdown] Starting shutdown: daemon.stop()
+[GracefulShutdown] Executing priority: stop-accepting (1 tasks)
+[SHUTDOWN] Step 1: Stopping HTTP accept...
+[GracefulShutdown] Executing priority: drain (1 tasks)
+[SHUTDOWN] Step 2: Draining Event Bus...
+[GracefulShutdown] Executing priority: flush (1 tasks)
+[SHUTDOWN] Step 3: Flush events (no-op, eventLogger removed)...
+[GracefulShutdown] Executing priority: close (1 tasks)
+[SHUTDOWN] Step 4: Closing SSE connections...
+[GracefulShutdown] Executing priority: release (1 tasks)
+[SHUTDOWN] Step 5: Disposing extensions...
+[GracefulShutdown] Shutdown sequence completed successfully
+[GracefulShutdown] Resources disposed
+[EventBus] Unsubscribe: project.updated (handler: 61xq5rez5vgmw5uffca)
+[EventBus] Unsubscribe: session.* (handler: 2z86ffgo90xmw5uffca)
+[EventBus] Stopped
+Cleaning up handshake file and releasing lock...
+Handshake file deleted: D:\code\SpecForge\.tmp\verification-public-kernel\dfa9692df8254ad0b094e86b1b4af80e\config\sf-user\runtime\handshake.json
+Cleanup completed
+Daemon Core stopped

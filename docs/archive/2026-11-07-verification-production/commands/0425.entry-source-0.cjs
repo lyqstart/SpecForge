@@ -1,0 +1,17 @@
+// Read-only inventory and conservative credential candidates; never print values.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),assert=require('node:assert/strict');
+const label=process.argv[2];assert.match(label,/^\d{2}$/);const root=__dirname,sha=b=>crypto.createHash('sha256').update(b).digest('hex'),files=[],sensitive_names=[],candidates=[],reasoning=[];
+function walk(dir,prefix=''){for(const e of fs.readdirSync(dir,{withFileTypes:true})){const rel=prefix+e.name,full=path.join(dir,e.name);assert.ok(!e.isSymbolicLink(),'PUBLICATION_SYMLINK:'+rel);if(e.isDirectory())walk(full,rel+'/');else{assert.ok(e.isFile());const stat=fs.statSync(full);files.push({path:rel,size:stat.size});}}}
+walk(root);
+const credentialName=/(?:^|\/)(?:owner\.key|auth\.json|credentials(?:\.json)?|\.env(?:\..*)?|host-profile\.json)$/i;
+function inspect(value,file,field='$'){if(Array.isArray(value)){for(let i=0;i<value.length;i++)inspect(value[i],file,field+'['+i+']');return;}if(!value||typeof value!=='object')return;
+ if(value.type==='reasoning'&&typeof value.text==='string'&&value.text.length)reasoning.push({path:file,field,size:value.text.length,sha256:sha(value.text)});
+ for(const[k,v]of Object.entries(value)){const next=field+'.'+k;if(/^(?:authorization|token|api_key|apiKey|cookie|set-cookie|access_token|refresh_token|password|secret)$/i.test(k)&&typeof v==='string'&&v.length>12&&!/redact|placeholder|example|dummy|synthetic|sentinel|never|withheld|^\*+$/i.test(v))candidates.push({path:file,field:next,kind:'SENSITIVE_FIELD_STRING',size:v.length,sha256:sha(v)});inspect(v,file,next);}}
+for(const item of files){if(credentialName.test(item.path)){sensitive_names.push(item);continue;}const bytes=fs.readFileSync(path.join(root,item.path));
+ if(bytes.includes(Buffer.from('-----BEGIN PRIVATE KEY-----'))||bytes.includes(Buffer.from('-----BEGIN RSA PRIVATE KEY-----')))candidates.push({path:item.path,kind:'PRIVATE_KEY_MARKER',sha256:sha(bytes)});
+ const text=bytes.toString('utf8');for(const m of text.matchAll(/\b(?:sk-[A-Za-z0-9_-]{32,}|gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{40,})\b/g))candidates.push({path:item.path,kind:'KNOWN_TOKEN_SHAPE',offset:m.index,sha256:sha(m[0])});
+ if(/\.json$/i.test(item.path)){try{inspect(JSON.parse(text),item.path);}catch(e){if(!(e instanceof SyntaxError))throw e;}}
+}
+const groups={};for(const f of files){const group=f.path.includes('/')?f.path.split('/')[0]:'[root]';groups[group]??={files:0,bytes:0};groups[group].files++;groups[group].bytes+=f.size;}
+const value={utc:new Date().toISOString(),method:'Read-only complete current archive regular-file inventory, named credential exclusions, known token/private-key shapes and parsed sensitive JSON fields. Candidate values are withheld. Pattern scan alone cannot prove absence of every possible credential.',files:files.length,bytes:files.reduce((n,f)=>n+f.size,0),groups,largest:[...files].sort((a,b)=>b.size-a.size).slice(0,20),sensitive_names,candidates,reasoning_parts:reasoning.length,reasoning,source_read_scope:'Evidence root only; no private owner key or provider credential source read',active_archive:true};
+const name='publication-inventory-'+label+'.json';fs.writeFileSync(path.join(root,name),JSON.stringify(value,null,2)+'\n',{flag:'wx'});console.log(JSON.stringify({snapshot:name,files:value.files,bytes:value.bytes,sensitive_names:sensitive_names.length,candidates:candidates.length,reasoning_parts:reasoning.length,largest:value.largest.slice(0,5)}));

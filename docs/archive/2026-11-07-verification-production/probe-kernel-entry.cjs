@@ -1,0 +1,8 @@
+const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process'),crypto=require('node:crypto');
+const root=path.resolve(__dirname,'../../..'),fixture=path.join(root,'.tmp','verification-public-kernel-help',crypto.randomUUID().replace(/-/g,''));fs.mkdirSync(fixture,{recursive:true});
+const executable='C:\\Users\\lyq\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe';
+const env={};for(const key of ['PATH','SystemRoot','WINDIR','USERPROFILE','LOCALAPPDATA','APPDATA','SYSTEMDRIVE','PATHEXT'])if(process.env[key]!==undefined)env[key]=process.env[key];
+for(const [key,dir]of Object.entries({HOME:'home',TEMP:'temp',TMP:'temp',XDG_CONFIG_HOME:'xdg-config',XDG_DATA_HOME:'data',XDG_CACHE_HOME:'cache',XDG_STATE_HOME:'state',OPENCODE_CONFIG_DIR:'config'})){env[key]=path.join(fixture,dir);fs.mkdirSync(env[key],{recursive:true});}
+const results=[];for(const args of [['--version'],['serve','--help']]){const result=cp.spawnSync(executable,args,{cwd:fixture,env,windowsHide:true,timeout:20000,maxBuffer:1048576});results.push({args,exit_code:Number.isInteger(result.status)?result.status:null,stdout:(result.stdout??Buffer.alloc(0)).toString('utf8'),stderr:(result.stderr??Buffer.alloc(0)).toString('utf8'),error:result.error?.message??null});}
+const value={utc:new Date().toISOString(),fixture,executable,sha256:crypto.createHash('sha256').update(fs.readFileSync(executable)).digest('hex'),results,original_user_configuration_modified:false,profile_created:false};
+fs.writeFileSync(path.join(__dirname,'kernel-entry-probe.json'),JSON.stringify(value,null,2)+'\n',{flag:'wx'});console.log(JSON.stringify(value));process.exitCode=results.every(r=>r.exit_code===0)?0:1;

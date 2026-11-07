@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/public-kernel-chain.cjs",
+    "16",
+    "formal"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-installed16-formal-retest-with-actual-SDK-identity",
+  "expected_writes": "TRUTH_SOURCE_WRITES owned fixture16 Report Evidence Gate projections only; RUNTIME_OBSERVER_WRITES actual installed professional Agents warm Kernel new Daemon native matrix; EXTERNAL_EVIDENCE_WRITES SDK before/after and frozen driver; no original/user install",
+  "started_utc": "2026-11-07T04:36:12.296Z"
+}

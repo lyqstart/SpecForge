@@ -1,0 +1,8 @@
+{"timestamp":"2026-11-03T14:45:45.266Z","path":".specforge/**","operation":"modify","actor":"agent","allowed":false,"violations":["SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN"],"tool":"sf_safe_bash","command":"Get-FileHash -Algorithm SHA256 \"C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\gate_attempts\\attempt-0005\\input-snapshot.json\"","hard_stop_id":"HS-1793717145264"}
+{"timestamp":"2026-11-03T15:40:41.102Z","path":"package.json","operation":"create","actor":"agent","allowed":true,"violations":[],"tool":"write"}
+{"timestamp":"2026-11-03T15:40:42.482Z","path":"tsconfig.json","operation":"create","actor":"agent","allowed":true,"violations":[],"tool":"write"}
+{"timestamp":"2026-11-03T15:40:45.568Z","path":"src/greet.ts","operation":"create","actor":"agent","allowed":true,"violations":[],"tool":"write"}
+{"timestamp":"2026-11-03T15:42:11.890Z","path":"tests/greet.test.ts","operation":"create","actor":"agent","allowed":true,"violations":[],"tool":"write"}
+{"timestamp":"2026-11-03T15:42:19.436Z","path":"README.md","operation":"modify","actor":"agent","allowed":true,"violations":[],"tool":"write"}
+{"timestamp":"2026-11-03T15:46:27.947Z","path":"README.md","operation":"modify","actor":"agent","allowed":true,"violations":[],"tool":"edit"}
+{"timestamp":"2026-11-03T15:46:34.319Z","path":"README.md","operation":"modify","actor":"agent","allowed":true,"violations":[],"tool":"edit"}

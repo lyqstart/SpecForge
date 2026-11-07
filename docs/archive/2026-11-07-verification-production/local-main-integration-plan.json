@@ -1,0 +1,1029 @@
+{
+  "utc": "2026-11-07T08:34:55.323Z",
+  "mode": "CODEX_DIRECT",
+  "source_branch": "codex/verification-production",
+  "source_head": "4d891569fb9e497bd1cfad498b0de79ae80c6b0a",
+  "old_main": "6fc9de2a844ecae27543c6c672319907105b578b",
+  "remote_main": "6fc9de2a844ecae27543c6c672319907105b578b",
+  "action": "git switch main then git merge --ff-only codex/verification-production",
+  "authorization": "Root AGENTS single-maintainer direct-local-main integration; product implementation authorized; no PR",
+  "raw_checkout_sensitive_sources": [
+    {
+      "path": ".gitattributes",
+      "file": "0000.raw",
+      "size": 2993,
+      "sha256": "423d537a00aa4043924d6422d318a78d895977c73f2fa6096ee4a747e39ea561",
+      "git_blob": "1df0290420aac5cb90801a02e84178a648e49ccd"
+    },
+    {
+      "path": "README.md",
+      "file": "0001.raw",
+      "size": 9451,
+      "sha256": "2ae93b98ef2a7b1b8acd2bfe8a4ba45d3477597d769a59e17cdc6e6ac3cacc00",
+      "git_blob": "2dbdf3b128c2ea24acbb0b3ab3fd7b8ffc5a0776"
+    },
+    {
+      "path": "bun.lock",
+      "file": "0002.raw",
+      "size": 366461,
+      "sha256": "7d1c96e74775fc7cb3ad83a99d5c38a1f0f3b4860ed1f6be447ee4d3d208ba3a",
+      "git_blob": "80b6dc93aa2e399e2d1385ae3a90ab4a95bcf7c3"
+    },
+    {
+      "path": "docs/conventions/directory-layout.md",
+      "file": "0003.raw",
+      "size": 4241,
+      "sha256": "11b9241efc071ea992801c58496e4399cd4a2c6cde974bfbddf427a0ee434bd4",
+      "git_blob": "5235b71a0cee3d3c07a44afd9f024301a33c621c"
+    },
+    {
+      "path": "docs/design/windows-lpac-node-readonly-contract.md",
+      "file": "0004.raw",
+      "size": 20506,
+      "sha256": "75312b393fd26c3b4ead623fc61600d6fe5304e04bb0cd394fbe62fd0a98e097",
+      "git_blob": "98aede894e57ca16e7010c0857be19f8b1790237"
+    },
+    {
+      "path": "docs/product-specification/authority-registry.md",
+      "file": "0005.raw",
+      "size": 19052,
+      "sha256": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e",
+      "git_blob": "72e77914796ab7dc21937375712026cbdfa49e36"
+    },
+    {
+      "path": "docs/product-specification/specforge-product-specification.md",
+      "file": "0006.raw",
+      "size": 89704,
+      "sha256": "0cf3cef264e84b198746852b340cb8d6b2b88562472357a78fa7850c83816d31",
+      "git_blob": "89bdc745b168c183965f43aa21693b2cd3eff7cf"
+    },
+    {
+      "path": "docs/project-status.md",
+      "file": "0007.raw",
+      "size": 7518,
+      "sha256": "b365a52f8c6109c9da324f9670ce210c66a4941f7d878bc88de6932077dd7d94",
+      "git_blob": "155375d5f43e717e47b08ec1e642198b259d8552"
+    },
+    {
+      "path": "docs/rule/specforge-active-development-rules.md",
+      "file": "0008.raw",
+      "size": 174951,
+      "sha256": "678d838160f2ab80146d60d5921f2604bf456ae93e1cd63a3e7706f730a82272",
+      "git_blob": "f659728dcc4a65776e739da4a10ae4007365a36f"
+    },
+    {
+      "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "file": "0009.raw",
+      "size": 4460708,
+      "sha256": "b386b7a32009bc17ad1c40633610d40b226c32b39b44f96866e9cf8ad0dbf531",
+      "git_blob": "fe302309054fed679482c00549680f21159b2e9d"
+    },
+    {
+      "path": "package.json",
+      "file": "0010.raw",
+      "size": 2611,
+      "sha256": "f6f2d1f5a4a4c1932e1eb4238aee90458f0ef5f3370fb6189d0bfd7e69bd6ba0",
+      "git_blob": "49cffd87ad0db7ac23e2e9147939943bbeb99d5c"
+    },
+    {
+      "path": "packages/cli/package.json",
+      "file": "0011.raw",
+      "size": 1604,
+      "sha256": "13819361399cd243cbb08b7091509e3bcd322ee94607af2ed50e0b414b60a8b0",
+      "git_blob": "ff12a9941fcbd99a5a864d6e4c2778ef7b35c73f"
+    },
+    {
+      "path": "packages/configuration/package.json",
+      "file": "0012.raw",
+      "size": 1243,
+      "sha256": "37430e312528dcab305692994d39af3c035dfa8a107dc68a2669f8e831ca7036",
+      "git_blob": "e51dd1646070440f1c399e48ab95f9289a363d50"
+    },
+    {
+      "path": "packages/daemon-core/package.json",
+      "file": "0013.raw",
+      "size": 1890,
+      "sha256": "d6cef585df5f43eef9df7534dd42923338bd7fef0ec084a3db9a701584971e4d",
+      "git_blob": "f148eec50e0fdfdbcc596a12070be7946141a690"
+    },
+    {
+      "path": "packages/daemon-core/src/daemon/Daemon.ts",
+      "file": "0014.raw",
+      "size": 10285,
+      "sha256": "78593c960023ae0147eda151d4d4ec037836b0612e96314135c2cc3feaaff4be",
+      "git_blob": "40030d89b8b7d5e60cdcf36d3ff95d1f5af15de6"
+    },
+    {
+      "path": "packages/daemon-core/src/http/HTTPServer.ts",
+      "file": "0015.raw",
+      "size": 75842,
+      "sha256": "92ddb2bec7d2e16ece4dbe4d7c84dd8e638903b5cd1b8ad3ef7838130c62ad21",
+      "git_blob": "6fe007ac7c02c5deb1d99f931f59f2e69c1ba8cb"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/ToolDispatcher.ts",
+      "file": "0016.raw",
+      "size": 14241,
+      "sha256": "5ee444384b94fa614721341608f3ff9857dc050ba17bd3fe9f3294e985862a17",
+      "git_blob": "4e253370cec60986906e1efb2228a23b6b8c618b"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "file": "0017.raw",
+      "size": 59170,
+      "sha256": "c6d8262eadd511d7974a989e22b8c8cd9703b384c6ced61ffe05518e8640121c",
+      "git_blob": "b61c878c66ac3746271bf10cb5a019d36e0a3666"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts",
+      "file": "0018.raw",
+      "size": 48714,
+      "sha256": "b2d13209700c040690bbdbedcb03fa36155d8780220c5e56d3ac2a6821c07b24",
+      "git_blob": "0ede91abb7dc9b78c247cb1230559d042a43492a"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts",
+      "file": "0019.raw",
+      "size": 43334,
+      "sha256": "b565bb409a07fb4b541d9be85c022dc8675603d4fd8cc613bccf838e70a8183d",
+      "git_blob": "7afd03cbf50f8f5c870c871c666c5efdb86bdd5f"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-verification.ts",
+      "file": "0020.raw",
+      "size": 6212,
+      "sha256": "d8e15e323805aa6df9360e7b89ad33071e4db52c9da9233185db2b5ae1d9a6f2",
+      "git_blob": "76a496202ac771df7ad3eebbd2e9f9bb106938df"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-verification-execution.ts",
+      "file": "0021.raw",
+      "size": 1208,
+      "sha256": "6b843d93706604061567af38f40ea3956b29d59aa8c04a1d83affdbd7b53b05d",
+      "git_blob": "5611d5282b1ff9f1493f589551b667c02905886d"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-verification-gate.ts",
+      "file": "0022.raw",
+      "size": 1578,
+      "sha256": "3a6f9eb6bf4362c7943827382d41c9397889cb3e91f8690bb6ce9edff03f617d",
+      "git_blob": "1ab9dc3a00c9fe399080799da96eb4d2ce29b54b"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/index.ts",
+      "file": "0023.raw",
+      "size": 3609,
+      "sha256": "da124c0c68984bc0e14afb88efb8476b37d059521071bd7e75f93664bb10d006",
+      "git_blob": "db008013046f3a2b2504929645f047595e0b0cd3"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/close-gate.ts",
+      "file": "0024.raw",
+      "size": 34364,
+      "sha256": "dd1ed7308e94becdf4f7aa35c7baff09cc5e72e5201e126cf1e80563875e154f",
+      "git_blob": "63f68a99919eac1d12233b91cc191f4d265f658d"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/evidence-manifest.ts",
+      "file": "0025.raw",
+      "size": 4196,
+      "sha256": "a7c5706bb21d46721d0122dc5380c4433a2f3d01f41a8162b40bc39d9c832d0c",
+      "git_blob": "e3ce923afe19cc524482d3e7089f47c585ef9471"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/gate-report.ts",
+      "file": "0026.raw",
+      "size": 4949,
+      "sha256": "e2e79e32d2f6c75d099228c1face186be3c9aeaeaa1ca538cf39d49c5042fc2c",
+      "git_blob": "aeb54f4d217cf8e7365be3b230959f4672c51b50"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "file": "0027.raw",
+      "size": 71549,
+      "sha256": "da579fb63009c79632c8a05b2c0a29fd87ba6909af3c594fb0b0bd57c1428af2",
+      "git_blob": "43b01c8d06fbc8e073454d8ae0a7050ddbcdf4ad"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "file": "0028.raw",
+      "size": 136386,
+      "sha256": "aed459ce70d2a43522a0fa9736ade3a4b7a167d28036763ccb2cdc851aebf62e",
+      "git_blob": "208eaae2a64b1afabf1652fd307cfba58bebb834"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts",
+      "file": "0029.raw",
+      "size": 7183,
+      "sha256": "dae174002aba2d5118c1a25456fd8dcea016779c6f4e3ee7e554da9a7e703146",
+      "git_blob": "ff19af7c804db7ba28b61bb1ce890ad89a1986d0"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/verification-governance-contract.ts",
+      "file": "0030.raw",
+      "size": 15028,
+      "sha256": "4a208f8e4128e9e3e40c196f9d1bcfa7976a35e6bb07a1d69965545156f32d67",
+      "git_blob": "05219a576336ba8ae1687d822912e8f21a7ba31c"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/verification-report-contract.ts",
+      "file": "0031.raw",
+      "size": 12338,
+      "sha256": "2233e78b8a88bf8a826e2930c3724474a8bdeb9c70201b5d02f2ad89a08308dd",
+      "git_blob": "656b32f63bfb7f0d10f10b04ce4c452b5ee6566d"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/VerificationRuntime.ts",
+      "file": "0032.raw",
+      "size": 28198,
+      "sha256": "cd80ac1879a87991a745f00e8d28f8a4badff28a692976c496be1dd492678d9c",
+      "git_blob": "8042254984adc63cb2f412b1cca80cddb1c7c94c"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/authority-snapshot.ts",
+      "file": "0033.raw",
+      "size": 8577,
+      "sha256": "8128318ed76f08d66be26eeb5a7b54c95957a62010064282e2edc530cfd89271",
+      "git_blob": "9d7629226638876ccd8a4ed24667686cb247dcb4"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/execution-evidence-consumer.ts",
+      "file": "0034.raw",
+      "size": 4612,
+      "sha256": "cabf35e2304977eea8d9748b0c98f73be37973b392f1f93861221c5a0e3200aa",
+      "git_blob": "35702b7b2c7e078b3ce1005cce92961c365166d4"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/invocation-lease.ts",
+      "file": "0035.raw",
+      "size": 3302,
+      "sha256": "5d8b669279222e93e9071807c88324b21dd8366b631e0d913d6ee4900ab4bfa5",
+      "git_blob": "ea83d6bb6a3dd77cc1321ef24fcea8c19e788904"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/native-executor.ts",
+      "file": "0036.raw",
+      "size": 15054,
+      "sha256": "0424ce9c0810c40f80810af9a521cb76a646b6aa299f4b72c4c10a74edb496ba",
+      "git_blob": "f0d0801936c9a24bb8efc5f0b7ef1f70a5b6de30"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "file": "0037.raw",
+      "size": 14625,
+      "sha256": "fca4bbe28811e01af347b5b78e1504d7dc84676e23a7f302dfc7699bfb819a58",
+      "git_blob": "c637afbde96b874d825e97605bb0abf246bc8f9c"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/owner-store.ts",
+      "file": "0038.raw",
+      "size": 7237,
+      "sha256": "321c1bc5519bd9c681b823bafa62f1e1da01bddc40881965cbe42b6aa512fcd2",
+      "git_blob": "db0c0f742b36f304df65788b11a0da41166ad69c"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/rejection-diagnostic.ts",
+      "file": "0039.raw",
+      "size": 1309,
+      "sha256": "28863f32b203ddc5d1dbe6c45e637534e0c3c3be057125c1f07afa18175432c9",
+      "git_blob": "45d6648396f0f9abbcb63fbb4beaad1df497a90e"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/request-context.ts",
+      "file": "0040.raw",
+      "size": 873,
+      "sha256": "878a611dba059c196a774665051f06d7e17b43fccd99060a14b813667530a24a",
+      "git_blob": "991b063d0a8cd00110aa4cfcdb98c56a06670c0f"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/source-snapshot.ts",
+      "file": "0041.raw",
+      "size": 6783,
+      "sha256": "53feab9b435256ed38ed824dcc79d50ed85181cba0333f46bee99f5d43a0141b",
+      "git_blob": "39debbb4480f166d3a7c71473b409f37155b121c"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/static-task-command.ts",
+      "file": "0042.raw",
+      "size": 6204,
+      "sha256": "2815a701ed6f918d65e0e41a9e7bcdf631d26130689311b3cbba1b42f69bb324",
+      "git_blob": "6b1c403a3dbc956bc7611af80dbe1cd812a593ca"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/verification-assets.ts",
+      "file": "0043.raw",
+      "size": 2352,
+      "sha256": "eb42833a7a4af46587c674009c41a59bcb78198fccc7b32680cc358e0342d0e0",
+      "git_blob": "b1d3e7f3c1963b2a6ef9fb5b12b80b1e7c702ba6"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/verification-plan.ts",
+      "file": "0044.raw",
+      "size": 3802,
+      "sha256": "a8e0214d581813d2d42afb96c3272c5f2e7bbf7e935f150175990866cb947442",
+      "git_blob": "f3c76e1c3006715d11f5fb953872fae9eff59126"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/verification-schema.ts",
+      "file": "0045.raw",
+      "size": 14703,
+      "sha256": "a8f77606598816d36113a3b8719bbd1a16f3e97ba055e75942fbfd96d2277973",
+      "git_blob": "33d41d8c991989a7ca8a33555d33a3fa187c404f"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/windows/LpacInputIdentity.cs",
+      "file": "0046.raw",
+      "size": 9236,
+      "sha256": "f8d893b0987d53c053ebc5948033775436b9ec39e1acd099b5fd6e48815826ff",
+      "git_blob": "5c65792964a36451675e617879f64ff7bf5440b2"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/windows/LpacParentLifetime.cs",
+      "file": "0047.raw",
+      "size": 5262,
+      "sha256": "bf66eb97a15510df75cce7d3020bd5c1ea10b9f61645596614b029c6bcf8a066",
+      "git_blob": "9144564fe85763e69bc63a7716eb2907a6aa9576"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/windows/LpacProductionPlan.cs",
+      "file": "0048.raw",
+      "size": 9784,
+      "sha256": "98bd69fc7391631cbb857b0fcb0af090992f33affc470d5cae88389c01a26b70",
+      "git_blob": "41bb8bb41c6ff40b6309dd4779e5a074dcd07069"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/windows/LpacProductionRecovery.cs",
+      "file": "0049.raw",
+      "size": 11282,
+      "sha256": "07c0734e1b4bc789245582d9acd4de6fdf01cf3b958b4a91f929b12410de7c30",
+      "git_blob": "5bd8004feb53c5200fc985b28d79ef1c6e0066eb"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/windows/LpacStartupPoc.cs",
+      "file": "0050.raw",
+      "size": 59184,
+      "sha256": "18e083c84eb898271fe130086480db28a4ba416091412fa5d5da3c779ec15d96",
+      "git_blob": "be360cf721d5a737e7a56091fd7cbf3adde7cb35"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/windows/README.md",
+      "file": "0051.raw",
+      "size": 7979,
+      "sha256": "22ced91be203647158e75915e9d2119151b5a1aca81386bee8c17feb291d0453",
+      "git_blob": "72ab6bf169631c297e87aa795fb75b3d100d7170"
+    },
+    {
+      "path": "packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts",
+      "file": "0052.raw",
+      "size": 47664,
+      "sha256": "1bae724375f7e1ad2d8cf948e89e548feb4eee02de4b180d3ad8aadd50a32bba",
+      "git_blob": "b7151543f3409ecf15e7a8b0fdf6d25caec7477f"
+    },
+    {
+      "path": "packages/daemon-core/tests/helpers/unit-execution-consumer.ts",
+      "file": "0053.raw",
+      "size": 3497,
+      "sha256": "088131f8aab00d63c153ebd519cb012219d855428674112bebf83dac4acc49a4",
+      "git_blob": "d118a773aa6ca8cd47084ed3c0b8bd5a0ea6f36e"
+    },
+    {
+      "path": "packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts",
+      "file": "0054.raw",
+      "size": 26988,
+      "sha256": "d38918c8292349dfaa26b7708cad954efd6d02e0f21161bdad5c69f9c822a652",
+      "git_blob": "f48311ffe7da7ad28becb1aacebfb383d64c6f75"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/active-development-rules-contract.test.ts",
+      "file": "0055.raw",
+      "size": 10426,
+      "sha256": "717277a79e85c8dd81d4b720af69feddc21dfe7f22b9ea00cf806beb4f2cf843",
+      "git_blob": "52de5c1e15a938dc1047cb894ab3d77c2b6fedad"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/code-only-close-gate-overlay.test.ts",
+      "file": "0056.raw",
+      "size": 2124,
+      "sha256": "d1744f1e4b0539965382509ca3c474aadb5805a314206066a11fdf4c978f5b2a",
+      "git_blob": "c3ea283201660cc1e0ec510adddfd2e6ebe9cdbd"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/execution-evidence-consumer.test.ts",
+      "file": "0057.raw",
+      "size": 5991,
+      "sha256": "aa41dd5bf228add5033081f92778f53e9c7cd0591de0dc2bb048054df1a114fb",
+      "git_blob": "eab2627e0784318233c7a5139bb3aae175bf3ae1"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/git-detached-bootstrap.test.ts",
+      "file": "0058.raw",
+      "size": 15841,
+      "sha256": "16d443389ef3fec8a07c1774e834f1c79febbd0fc00ad867d53de072746787ff",
+      "git_blob": "6d63563dccf444a8febdc41f5bf718f6d0871e1f"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/git-detached-filter-exclusion.test.ts",
+      "file": "0059.raw",
+      "size": 2791,
+      "sha256": "2e7749b69c4246fb36f128dd4975566a7904b31d42fca6a133fed8ef3b675b46",
+      "git_blob": "3ef0d0dcaf00f3f031c8e43b7db17317ced62038"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/invocation-lease.test.ts",
+      "file": "0060.raw",
+      "size": 4620,
+      "sha256": "24ad8c88f3d87f1b7e74ca93d797cf4a078b1613f780d380ae01fee220486cde",
+      "git_blob": "868b01939dfb3a82d6624dc3f83ecba31d2058f5"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/legacy-filesystem-mode-recovery.test.ts",
+      "file": "0061.raw",
+      "size": 17542,
+      "sha256": "e3aa2e1b08c34474e2ce6782d1d12eb9e2b41e957df763fff5dc53b7f1a8ba4a",
+      "git_blob": "0f7f2c0e1e2b0af1616a8fb872b63a3f10314cb7"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/merge-report-owner.test.ts",
+      "file": "0062.raw",
+      "size": 3269,
+      "sha256": "6afaf6e96cd2193afecf10c4e50351c9381c7b8ede2ccf8fa9d4e710eb4782d0",
+      "git_blob": "7a1604d6f1a9c2966a72f545ebff45deadd1df39"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/node-command-contract.test.ts",
+      "file": "0063.raw",
+      "size": 5123,
+      "sha256": "e19f3b06078b7d72dc189664b12562edf434959dd419ebfd7f1ebc3a71df3353",
+      "git_blob": "9b23a32aadbd036973d39ac4b9d739b4773f2c42"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/node-command-proof-boundary.test.ts",
+      "file": "0064.raw",
+      "size": 1389,
+      "sha256": "e6a271f4faadc8266e27f116ceaed5888acccaafd48d729236407750ab28900a",
+      "git_blob": "fde0bb69e963892d0b0ed4d7b887c6c340c89229"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/project-session-bootstrap.test.ts",
+      "file": "0065.raw",
+      "size": 6410,
+      "sha256": "953333db3438970c7ebe7f96a0dcbf7b41a23dbb1b6f2207e4466efb92d2b704",
+      "git_blob": "3e9e06dbd1385d26e039598033683ffe7a49a1ed"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/semantic-closure-contract-alignment.test.ts",
+      "file": "0066.raw",
+      "size": 6110,
+      "sha256": "36ba85ee1dd3c73ef785526390ebfbcace1e82c659a1f42fdff894dc8a5f5eee",
+      "git_blob": "04e9ba7128f8e37811d3565ecab2ecf9c2c38ab2"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/semantic-closure-producer-governance.test.ts",
+      "file": "0067.raw",
+      "size": 9307,
+      "sha256": "b47fbb4ae5ff4db86b368745bea821b00fc40b707de492a163f0b77cfd98ca17",
+      "git_blob": "e843b6f0118de4e5e094cc030944b2af273f931e"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/static-task-command.test.ts",
+      "file": "0068.raw",
+      "size": 4212,
+      "sha256": "7f88dfc3f68950dad60102446686e48abd6de02a3667f63dd5af1ee34d1d96f5",
+      "git_blob": "d964de299bfe79839c74b3364dcb9aff2a28abe2"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/verification-evidence-producer.test.ts",
+      "file": "0069.raw",
+      "size": 5714,
+      "sha256": "b632495f69c8d4eb032b84daf6404012262505120dd28cf6899fb6260f4b5d8a",
+      "git_blob": "c9f4bbf42c812477a80851344a887ce3eb559289"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/verification-governance-contract.test.ts",
+      "file": "0070.raw",
+      "size": 18231,
+      "sha256": "2eea4da112db58b18c88fe608e366d13216f3fcfbf7f3a7cce092f5cfc40e516",
+      "git_blob": "9e514992c90be2e726b9d69e588ef9ee520eb71e"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/verification-owner-store.test.ts",
+      "file": "0071.raw",
+      "size": 4679,
+      "sha256": "a4697d5ab5abb97c776278ed2fe85acc5733ab32a1172cc4734c0652354057ff",
+      "git_blob": "e09460d059d395fec89c7ae4477c24980d55d2f8"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/verification-rejection-diagnostic.test.ts",
+      "file": "0072.raw",
+      "size": 1973,
+      "sha256": "6d66d2c177973d58b452c826c53640f99844133082614cf9294ffcecde73a6c0",
+      "git_blob": "9eb053d2d84a19c725ca279bf5d2471e82df02e1"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/verification-runtime-plan.test.ts",
+      "file": "0073.raw",
+      "size": 14507,
+      "sha256": "e5a7d4e32f6d23ed0d4960399a079c3439747697d148730897378acc323cf7e4",
+      "git_blob": "346a829dad144b16bc57ec950d06e8e81e45908e"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/verification-source-snapshot.test.ts",
+      "file": "0074.raw",
+      "size": 5438,
+      "sha256": "61b84db0a65ea4241599916964ac91336c8c6a015802db69d734699e168ebffe",
+      "git_blob": "6072dac245545f053c97e48744ef1c1ad9098432"
+    },
+    {
+      "path": "packages/daemon-core/tests/v11-section21-acceptance.test.ts",
+      "file": "0075.raw",
+      "size": 58944,
+      "sha256": "ef83ab834c6aa5290a96907fbe9be9baf10e706629197edbb487a65be2d55737",
+      "git_blob": "49245f82318ea194282995b565ea5483709ef529"
+    },
+    {
+      "path": "packages/host-profile/package.json",
+      "file": "0076.raw",
+      "size": 583,
+      "sha256": "fa1e7da49aaba119da836add89a992b2eaa9c8215aa00155d4a4fc87155c3ba1",
+      "git_blob": "7c16bb7c57935cb74fb7deeb5d79c50b69ca55b5"
+    },
+    {
+      "path": "packages/observability/package.json",
+      "file": "0077.raw",
+      "size": 2007,
+      "sha256": "ed29b6ac0b87e60fdf308c9f886e0bd89c827a100c5875dca7a0b6145f2397ad",
+      "git_blob": "fa211a0bf4ff8215352efc32d982a060b9ab2c9f"
+    },
+    {
+      "path": "packages/opencode-adapter/package.json",
+      "file": "0078.raw",
+      "size": 1817,
+      "sha256": "73f9e116ebcde11c30fb5a81c88d01450587402ff0ad1a0702b7f702e5631241",
+      "git_blob": "72a4c035e4a5273cee0bcad7ecce3aba5d922682"
+    },
+    {
+      "path": "packages/opencode-adapter/src/index.ts",
+      "file": "0079.raw",
+      "size": 3020,
+      "sha256": "e7811d81280ce928ef2dda960c194b1582de38f511688bb52c61c074b50d9756",
+      "git_blob": "36246f6a285c339e24e3ac639cfe8a970f271e0d"
+    },
+    {
+      "path": "packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts",
+      "file": "0080.raw",
+      "size": 15295,
+      "sha256": "2ec9c8140acba54118355026207bdb16becca882ea6c9c5725b92ea8b4fa7439",
+      "git_blob": "2699e9be8c40ee81ddff7348c84f03e33220897f"
+    },
+    {
+      "path": "packages/opencode-adapter/tests/OpenCodeToolInvocation.test.ts",
+      "file": "0081.raw",
+      "size": 4235,
+      "sha256": "a932e519d29a33e1a0317635d826b46a9f41cb21e98259a188aa2ffe0d743f39",
+      "git_blob": "082d8ebc5fb4d2393ac3c03b68f064fd09e550bc"
+    },
+    {
+      "path": "packages/permission-engine/package.json",
+      "file": "0082.raw",
+      "size": 2040,
+      "sha256": "b22ddb6cf6fe2e7218b0618a106030276b072ed747b884375f2811b9cc4303b4",
+      "git_blob": "18d7c278ebfdf388b80385fe5303d7e42bdcf4aa"
+    },
+    {
+      "path": "packages/scope-gate/package.json",
+      "file": "0083.raw",
+      "size": 2254,
+      "sha256": "2e64ff5956659e530d80f216a74d7de54bb8eaf3991362ce256406cdd1f5e4dc",
+      "git_blob": "b87f054340541ef6d14ca5918e15d7030a5e6280"
+    },
+    {
+      "path": "packages/service-management/package.json",
+      "file": "0084.raw",
+      "size": 2008,
+      "sha256": "fe6c25069a3e5e5060c867d8d038b499bdf760a29b8827056c93b387658b48e0",
+      "git_blob": "4e6a83a5447513ef883d5bf827cd8b13cbe83a83"
+    },
+    {
+      "path": "packages/types/package.json",
+      "file": "0085.raw",
+      "size": 2890,
+      "sha256": "f06bd9e03ba21bdf5dca0d0f50ccb0c71fbdf0ba8c635fa32a4ea38a34a06907",
+      "git_blob": "1b871be974e654b624089c22eb70a33b6ea6c47e"
+    },
+    {
+      "path": "packages/types/src/index.ts",
+      "file": "0086.raw",
+      "size": 11936,
+      "sha256": "db8cffa5aba330c4a1f645e2ca813de4515fbc24eeda869ab33bd4f8e8444158",
+      "git_blob": "bf41d32ea4e7d75a92d77061fa04dfdd3d4d55fe"
+    },
+    {
+      "path": "packages/types/src/trusted-tool-invocation.ts",
+      "file": "0087.raw",
+      "size": 802,
+      "sha256": "2139271f6bf7a5dad55dccd8812349b8b8d1a0f75a66140e57fe9f8b9c3ae978",
+      "git_blob": "2704c9bb723ed9eb83e580ab8451bae649d57db8"
+    },
+    {
+      "path": "packages/version-unification/package.json",
+      "file": "0088.raw",
+      "size": 607,
+      "sha256": "a5d9a71dbc0e80e04967ad9a040e01f9dcd048f965bad4f2bcbb8d3e6c4fe543",
+      "git_blob": "069baa7f605a2f10829c231437b8afa100be651c"
+    },
+    {
+      "path": "packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md",
+      "file": "0089.raw",
+      "size": 518,
+      "sha256": "ee8f4751b8e4cfe55b911bdfaf5ad710e4ece14764642941667826f37300a764",
+      "git_blob": "6e747016fd24696dffcf9d6871f4884e85d08adf"
+    },
+    {
+      "path": "packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md",
+      "file": "0090.raw",
+      "size": 524,
+      "sha256": "efb031c4d447728d43bcb005eaf99cfe76b6e7c94aa17016f3c6ea0e326669fd",
+      "git_blob": "b066b61f22279eb8996708f250c45d2895dd28a4"
+    },
+    {
+      "path": "packages/workflow-runtime/docs/API.md",
+      "file": "0091.raw",
+      "size": 1401,
+      "sha256": "86d5e6a7dc632eb39b47196fba9b1c5de350d6fc76eb67dce2da071f8974dad1",
+      "git_blob": "afb4d53aa6a30ea4567d6ae9bc9a333cc7d02b5e"
+    },
+    {
+      "path": "packages/workflow-runtime/docs/DEPLOYMENT.md",
+      "file": "0092.raw",
+      "size": 1015,
+      "sha256": "8c81be1829d631d0adbd79c0ebf7e8cde0ac0a3930fc4d962828eaac42da2bd7",
+      "git_blob": "19dbe56d48c5b8b92ad266e314cae315f619c979"
+    },
+    {
+      "path": "packages/workflow-runtime/docs/EXAMPLES.md",
+      "file": "0093.raw",
+      "size": 899,
+      "sha256": "876592c72daeb39fab4aa4dc4bd8862e7c88d7325d83adf9056c510b325125af",
+      "git_blob": "4d8545186d25b3d5f82e993e2cccae847b08db2f"
+    },
+    {
+      "path": "packages/workflow-runtime/docs/state-recovery-mechanism.md",
+      "file": "0094.raw",
+      "size": 519,
+      "sha256": "daf08306e02884fc7fc21b50b9e1ff45e45b87dec40f7056d30bc899949cb35b",
+      "git_blob": "9acbe5415ecfe2a0d4927b1e2d6663c251572ca6"
+    },
+    {
+      "path": "packages/workflow-runtime/docs/storage-implementation.md",
+      "file": "0095.raw",
+      "size": 517,
+      "sha256": "732c9cfa15daf61d453ee3254133837f9f3f0640b9a0dec012a3c1d088a0776b",
+      "git_blob": "cc0bae8bbd2fd763c1a604e2f1acec204550825a"
+    },
+    {
+      "path": "packages/workflow-runtime/examples/state-recovery-example.ts",
+      "kind": "ABSENT_IN_VERIFIED_FEATURE_TREE",
+      "blob_available_in_base": "6fc9de2a844ecae27543c6c672319907105b578b"
+    },
+    {
+      "path": "packages/workflow-runtime/examples/storage-example.ts",
+      "kind": "ABSENT_IN_VERIFIED_FEATURE_TREE",
+      "blob_available_in_base": "6fc9de2a844ecae27543c6c672319907105b578b"
+    },
+    {
+      "path": "packages/workflow-runtime/package.json",
+      "file": "0098.raw",
+      "size": 2231,
+      "sha256": "1ce10dd161292957a8db767a599b88e08b28dc7c3705e899b13639504789e6f8",
+      "git_blob": "2230ea49e3908af113892dedba7de275af4cf96b"
+    },
+    {
+      "path": "packages/workflow-runtime/src/StateRecoveryManager.ts",
+      "kind": "ABSENT_IN_VERIFIED_FEATURE_TREE",
+      "blob_available_in_base": "6fc9de2a844ecae27543c6c672319907105b578b"
+    },
+    {
+      "path": "packages/workflow-runtime/src/WorkflowPersistence.ts",
+      "kind": "ABSENT_IN_VERIFIED_FEATURE_TREE",
+      "blob_available_in_base": "6fc9de2a844ecae27543c6c672319907105b578b"
+    },
+    {
+      "path": "packages/workflow-runtime/src/events/EventLogReader.ts",
+      "kind": "ABSENT_IN_VERIFIED_FEATURE_TREE",
+      "blob_available_in_base": "6fc9de2a844ecae27543c6c672319907105b578b"
+    },
+    {
+      "path": "packages/workflow-runtime/src/index.ts",
+      "file": "0102.raw",
+      "size": 3370,
+      "sha256": "268bed6a7251cf277787a7f1f708f67d39b4340b37816faa6b959746871b1047",
+      "git_blob": "e4f5e22e96c8a63a724bb98141dbd62dc5f75044"
+    },
+    {
+      "path": "packages/workflow-runtime/src/storage/AtomicWorkflowInstanceStorage.ts",
+      "kind": "ABSENT_IN_VERIFIED_FEATURE_TREE",
+      "blob_available_in_base": "6fc9de2a844ecae27543c6c672319907105b578b"
+    },
+    {
+      "path": "packages/workflow-runtime/src/storage/WorkflowInstanceStorage.ts",
+      "kind": "ABSENT_IN_VERIFIED_FEATURE_TREE",
+      "blob_available_in_base": "6fc9de2a844ecae27543c6c672319907105b578b"
+    },
+    {
+      "path": "packages/workflow-runtime/src/storage/index.ts",
+      "kind": "ABSENT_IN_VERIFIED_FEATURE_TREE",
+      "blob_available_in_base": "6fc9de2a844ecae27543c6c672319907105b578b"
+    },
+    {
+      "path": "packages/workflow-runtime/tests/acceptance.test.ts",
+      "file": "0106.raw",
+      "size": 23498,
+      "sha256": "795203b678ac4b58298b15e3dda13276b747fab429ac89a8bf0e9b35e3eb6c44",
+      "git_blob": "43d0e0f8e30765053def1a22db59f3c1bdad2738"
+    },
+    {
+      "path": "packages/workflow-runtime/tests/integration/crash-recovery.test.ts",
+      "kind": "ABSENT_IN_VERIFIED_FEATURE_TREE",
+      "blob_available_in_base": "6fc9de2a844ecae27543c6c672319907105b578b"
+    },
+    {
+      "path": "packages/workflow-runtime/tests/integration/persistence-comprehensive.test.ts",
+      "kind": "ABSENT_IN_VERIFIED_FEATURE_TREE",
+      "blob_available_in_base": "6fc9de2a844ecae27543c6c672319907105b578b"
+    },
+    {
+      "path": "packages/workflow-runtime/tests/unit/AtomicWorkflowInstanceStorage.test.ts",
+      "kind": "ABSENT_IN_VERIFIED_FEATURE_TREE",
+      "blob_available_in_base": "6fc9de2a844ecae27543c6c672319907105b578b"
+    },
+    {
+      "path": "packages/workflow-runtime/tests/unit/EventLogReader.test.ts",
+      "kind": "ABSENT_IN_VERIFIED_FEATURE_TREE",
+      "blob_available_in_base": "6fc9de2a844ecae27543c6c672319907105b578b"
+    },
+    {
+      "path": "packages/workflow-runtime/tests/unit/StateRecoveryManager.test.ts",
+      "kind": "ABSENT_IN_VERIFIED_FEATURE_TREE",
+      "blob_available_in_base": "6fc9de2a844ecae27543c6c672319907105b578b"
+    },
+    {
+      "path": "packages/workflow-runtime/tests/unit/WorkflowInstanceStorage.test.ts",
+      "kind": "ABSENT_IN_VERIFIED_FEATURE_TREE",
+      "blob_available_in_base": "6fc9de2a844ecae27543c6c672319907105b578b"
+    },
+    {
+      "path": "packages/workflow-runtime/tests/unit/WorkflowPersistence.test.ts",
+      "kind": "ABSENT_IN_VERIFIED_FEATURE_TREE",
+      "blob_available_in_base": "6fc9de2a844ecae27543c6c672319907105b578b"
+    },
+    {
+      "path": "packages/workflow-runtime/tests/unit/persistence-owner-boundary.test.ts",
+      "file": "0114.raw",
+      "size": 1840,
+      "sha256": "736e09e86f282517a3bc876641436aaf7b0c15461424c1f843ebe34fa3272dd3",
+      "git_blob": "e57f88da33b99b90e0db2c8e7086c2e8b5456496"
+    },
+    {
+      "path": "scripts/build-release-runtime-artifacts.ts",
+      "file": "0115.raw",
+      "size": 578,
+      "sha256": "c40cda5ca88e7672e3073bba539427db1a97b873f016315f6080ff1f1b73ce12",
+      "git_blob": "4bc51842a117a2908815b09a61ac4c1d5553e8db"
+    },
+    {
+      "path": "scripts/build-workflow-runtime.ts",
+      "file": "0116.raw",
+      "size": 1406,
+      "sha256": "65104374b2021a1feb1b673704d9a73f70ea202c4852b046ed2e3c08bef604c1",
+      "git_blob": "bc0442808b1049b5b01045a8c86f1e0ef85141cc"
+    },
+    {
+      "path": "scripts/lib/registry.ts",
+      "file": "0117.raw",
+      "size": 15173,
+      "sha256": "0ef48cffc26f2412d8ee463a941bd4e95833a5b17786708a1336fdb77db81c77",
+      "git_blob": "dc0538090e81d941d9aca11f37444f7b7278d92a"
+    },
+    {
+      "path": "scripts/lib/release-manifest-producer.ts",
+      "file": "0118.raw",
+      "size": 21801,
+      "sha256": "1add54ca0a510d37d892b05f1c7d9ad52974d16a87c7425ab5c3900121c2a4e1",
+      "git_blob": "094fe0e0e0a957d4649e30024a5d3fa1acd8a1f7"
+    },
+    {
+      "path": "scripts/lib/release-owner-snapshot-producers.ts",
+      "file": "0119.raw",
+      "size": 7957,
+      "sha256": "307b916d28ea9157bdcdf7ad4378d9a6fd202a7b5327a66b0cb83307aa551e35",
+      "git_blob": "26d3836795f81f41378596df4c8d0f616e62a090"
+    },
+    {
+      "path": "scripts/lib/types.ts",
+      "file": "0120.raw",
+      "size": 5309,
+      "sha256": "0a5e82e66967ecfbd023438d7579adfc4d3f62aecce6e0cfa9414ea95a541c98",
+      "git_blob": "6061ce64fe7df3a3e236d1331ab18cc399d89caa"
+    },
+    {
+      "path": "scripts/lib/verification-asset-producer.ts",
+      "file": "0121.raw",
+      "size": 4631,
+      "sha256": "b762c531619ea22e3b7c2353c9629735179c45b18518b7d1e39cd5053ec8e408",
+      "git_blob": "88380f3fec93be4272d184b4bef3861daf16eca4"
+    },
+    {
+      "path": "scripts/lib/verify-tool-schemas.ts",
+      "file": "0122.raw",
+      "size": 6726,
+      "sha256": "26f500882c615d211d2f5176380b15de96e0996747ce57ef0c1dce6ebbc32676",
+      "git_blob": "ffee63bb1cc280dfb67cbc41ddcea36100804fd8"
+    },
+    {
+      "path": "scripts/project-session-bootstrap.mjs",
+      "file": "0123.raw",
+      "size": 13804,
+      "sha256": "51ddf3830add187bd281f04f1452838247c5407a1d67e9d35cb7baa910abd34e",
+      "git_blob": "795078e5a15e5a59c218ae9c225ac0e9eca3c3e4"
+    },
+    {
+      "path": "scripts/render-layout.ts",
+      "file": "0124.raw",
+      "size": 10983,
+      "sha256": "fd04ca724fba3a1f3dd8bfc77a76488870e6a809345f3be6e4e92ab113b844cb",
+      "git_blob": "bfe77437cce2ad1855bfc03cbb4faa08bbad7444"
+    },
+    {
+      "path": "setup/userlevel-opencode/AGENTS.md",
+      "file": "0125.raw",
+      "size": 16126,
+      "sha256": "c110d70a7eed41f8a30e8b6ce1577a7454ce3df180bb3464dd5864cda7bd342b",
+      "git_blob": "1887a79ccc06a42d8630a7aeb612b05262e515b4"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-orchestrator.md",
+      "file": "0126.raw",
+      "size": 49661,
+      "sha256": "ba85220e0fbb9f05fe1c68910007975ee104f4ef7e58f0ac032371163159c82b",
+      "git_blob": "98d56dd098b77faaef698234be3308220d512805"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-verifier.md",
+      "file": "0127.raw",
+      "size": 40260,
+      "sha256": "9080216c04584f29638afdced3214afe7da77f67e2f519d66103727939350ea5",
+      "git_blob": "5d4109f1ae3303f9441366d1aebe32861830f060"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md",
+      "file": "0128.raw",
+      "size": 45856,
+      "sha256": "f5371ab581e08b457061f2c9bd04d03a139787a3e8181ad633ccb0e5dd696d04",
+      "git_blob": "9a641b1659e37b355aa6d426cdfab91cdc90acbf"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md",
+      "file": "0129.raw",
+      "size": 4467,
+      "sha256": "9694011bc3b86f8a51b2493f56c321e6c9858accda7a94d9f51edd1c78c5fa27",
+      "git_blob": "3e14c87d3df92a24d3b762ce48e20d69e1f0ab7b"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/lib/sf_verifier_execution_core.ts",
+      "file": "0130.raw",
+      "size": 12093,
+      "sha256": "7b9ad7b6c3adf2653cea17b2a2bbb4b2045c9306e66c821929b837bc45f8baef",
+      "git_blob": "af7aa9cb7c0de0a13333798edae969b951db6ca7"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/lib/thin-client.ts",
+      "file": "0131.raw",
+      "size": 12067,
+      "sha256": "8a45f8971e18e9eca99851167f3d72655b23820e1f3a9a934cdb0bff1e5096f5",
+      "git_blob": "aa55fd2e523287d357d375792c2a2b4e9d0b243f"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_artifact_write.ts",
+      "file": "0132.raw",
+      "size": 5487,
+      "sha256": "06e3f0b6945bd5c458cd834e9608c3ac980f77b4319c6ad1ca68682bc0170742",
+      "git_blob": "e2cf1c1808fa09f0fa4e06156ed5f3ed98ba99bb"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_close_gate.ts",
+      "file": "0133.raw",
+      "size": 2118,
+      "sha256": "fd004996a56dcd6844e82b5dc88feb49928cce263eea52e6c9e329e6f7cc527b",
+      "git_blob": "7877f6078f1a6d602f1823855b435bb3efb9399c"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_gate_run.ts",
+      "file": "0134.raw",
+      "size": 2718,
+      "sha256": "1acfcd238f8affabdefa64eff62e0b6eb56bacd2a8eae2bdaa41423b7d75f2f0",
+      "git_blob": "ea3079ec07b214bb71cf5e7a8de4aa8a9ee9e860"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_verification_gate.ts",
+      "file": "0135.raw",
+      "size": 690,
+      "sha256": "7f7c9a926ef07f50b39a13f805e97849b4b1faac606845ff46a32bff1e27936e",
+      "git_blob": "073cddeeed61e8e37fa1cf23e87abf6b16a876e1"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_verification_plan.ts",
+      "file": "0136.raw",
+      "size": 1072,
+      "sha256": "5e07a58933b7a038bb0fc4bdcf70b418ea060b607406b823b737253a1ed191a3",
+      "git_blob": "2a3869e251f56cbe67c0c722c333a99871591d32"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_verification_run.ts",
+      "file": "0137.raw",
+      "size": 1216,
+      "sha256": "0ab67a9a6ee97eebdc0b6597fd3ba30b9fbf79a2b4a58b91d1db81efcab9e141",
+      "git_blob": "51204c0691126d2e76514d67e7b95aff14b9eeb6"
+    },
+    {
+      "path": "tests/e2e/feature-spec-e2e.test.ts",
+      "file": "0138.raw",
+      "size": 20782,
+      "sha256": "f49a83aa96aab0f8604f5d1ef08b14853e6af16c9991d5c885b43a0a7814e5c1",
+      "git_blob": "556a6b9e8fbd95a956d1dd54b5a0fba347960485"
+    },
+    {
+      "path": "tests/e2e/tool-dispatcher-e2e.test.ts",
+      "file": "0139.raw",
+      "size": 2651,
+      "sha256": "8598c73aa152ef7dddc1399070e20ad61a3491885882fcb2c15765a38b33b887",
+      "git_blob": "33a763ca064682b000684901ae82f6f3a064590d"
+    },
+    {
+      "path": "tests/root-test-role-registry.json",
+      "file": "0140.raw",
+      "size": 17313,
+      "sha256": "cdc93794891d0e3a3ce2072536cf27647a6149b53ed6da722a2a2ff276ee057d",
+      "git_blob": "bc56eb96906a7a404787e91f1d552e4189af11cf"
+    },
+    {
+      "path": "tests/unit/current-product-version-contract.test.ts",
+      "file": "0141.raw",
+      "size": 4445,
+      "sha256": "eae996aee190fd643418da418bf02a8ebce7a630231ae26fff8959cf79deb31b",
+      "git_blob": "973ac15300b9029cb5e41b091257728dffa57ac2"
+    },
+    {
+      "path": "tests/unit/installer/verify-tool-schemas.test.ts",
+      "file": "0142.raw",
+      "size": 2569,
+      "sha256": "1c18eda8367f394799f66ee6e1d84e61eee00a6463e7ca92606708d4cbb28fa4",
+      "git_blob": "90a8af8a193cf5db5d71e577fe7a34bc868913e9"
+    },
+    {
+      "path": "tests/unit/verification-consumer-http.test.ts",
+      "file": "0143.raw",
+      "size": 7128,
+      "sha256": "8bafd0e651ae7611dd7c48e320bb86f065f8bfab6cec0f32a1dd3e04977523be",
+      "git_blob": "2524908e6d604dd97ca27e95474f773e7290c6f7"
+    },
+    {
+      "path": "tests/unit/verifier-evidence-manifest-example.test.ts",
+      "file": "0144.raw",
+      "size": 2229,
+      "sha256": "0604a505cdb800339e805738513e421135effa064bd38f08dccff257db842b53",
+      "git_blob": "1b596c4111f58637b9ddcb27fe5775e81a4d1823"
+    }
+  ],
+  "native_assets_must_remain_exact": [
+    {
+      "id": "runtime:specforge",
+      "path": "release/bin/specforge.exe",
+      "sha256": "4e60c6b592434421240f92006abf63691a41dd9736967eeec39c45482d60ee8d",
+      "size": 99623936
+    },
+    {
+      "id": "runtime:specforged",
+      "path": "release/bin/specforged.exe",
+      "sha256": "003faf31d46f30a440c65037acae46dd8a9ab7df82e395160100ba44798daca8",
+      "size": 110921216
+    },
+    {
+      "path": "release/bin/verification/node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "size": 92825416
+    },
+    {
+      "path": "release/bin/verification/specforge-verify.exe",
+      "sha256": "5cb378826469834143067b551108f2fc295e1e3e9a04dadb4d7293bc77a41d7f",
+      "size": 343040
+    },
+    {
+      "path": "release/bin/verification/assets.json",
+      "sha256": "28ee6f93f9a72a4e058004ade5cb79a22aacdbb3459090eee95ab04532bebc59",
+      "size": 494
+    }
+  ],
+  "tracked_diff_empty": true,
+  "scope": "SpecForge product repository only; original business main untouched",
+  "next": "Verify resulting HEAD/index and native hashes; regenerate/precheck final physical manifest; do not Bootstrap/push prematurely"
+}

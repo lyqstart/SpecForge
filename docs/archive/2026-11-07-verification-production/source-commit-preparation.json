@@ -1,0 +1,425 @@
+{
+  "utc": "2026-11-07T03:55:39.158Z",
+  "branch": "codex/verification-production",
+  "parent": "6fc9de2a844ecae27543c6c672319907105b578b",
+  "sources": {
+    ".gitattributes": {
+      "raw_sha256": "423d537a00aa4043924d6422d318a78d895977c73f2fa6096ee4a747e39ea561",
+      "size": 2993
+    },
+    "bun.lock": {
+      "raw_sha256": "dfc4911cadbed27c18da3aa277fda685395341bf6adb8d709df71e18bc343b3a",
+      "size": 366461
+    },
+    "docs/design/windows-lpac-node-readonly-contract.md": {
+      "raw_sha256": "0a831b9b417d7d629aa1207214296c3297ac13433b08f64a8a356b96426dd993",
+      "size": 18588
+    },
+    "docs/product-specification/authority-registry.md": {
+      "raw_sha256": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e",
+      "size": 19052
+    },
+    "docs/product-specification/specforge-product-specification.md": {
+      "raw_sha256": "14174cbe448d3b4964208623fc70f54f4aa573eec4231267ee7d244be2dff524",
+      "size": 89704
+    },
+    "docs/project-status.md": {
+      "raw_sha256": "79c6a1127de097383e6d53f18d8d9d25226ab9beb21018d7758689e2f7a01341",
+      "size": 6799
+    },
+    "docs/rule/specforge-active-development-rules.md": {
+      "raw_sha256": "90fb7fd7b11385188e7133b18bd5de3b3242eb32056dfbd11542e7b54315856b",
+      "size": 174590
+    },
+    "docs/rule/specforge-development-error-ledger-and-experience.md": {
+      "raw_sha256": "4963742f9af0ed54a2e255b1d4c5e3276154365449b5d2f1f188b299ff5be3b4",
+      "size": 4432939
+    },
+    "package.json": {
+      "raw_sha256": "c44304090780142cce0efa0caa49489f1bd1bc8c1effe1170fd930a85303bf8d",
+      "size": 2611
+    },
+    "packages/cli/package.json": {
+      "raw_sha256": "1725a183922ada023fb465934baa084ace9b2016a3e11c84d47153f461929364",
+      "size": 1604
+    },
+    "packages/configuration/package.json": {
+      "raw_sha256": "0a9b7e94f4efb62061099a5bfedbe4a0c3a306de80d9dd65b775c226275512f2",
+      "size": 1243
+    },
+    "packages/daemon-core/package.json": {
+      "raw_sha256": "dd3203350543b147e4a40004ed17379fefcc4d0b640841322d38b91c9b8a01b6",
+      "size": 1890
+    },
+    "packages/daemon-core/src/daemon/Daemon.ts": {
+      "raw_sha256": "78593c960023ae0147eda151d4d4ec037836b0612e96314135c2cc3feaaff4be",
+      "size": 10285
+    },
+    "packages/daemon-core/src/http/HTTPServer.ts": {
+      "raw_sha256": "92ddb2bec7d2e16ece4dbe4d7c84dd8e638903b5cd1b8ad3ef7838130c62ad21",
+      "size": 75842
+    },
+    "packages/daemon-core/src/tools/ToolDispatcher.ts": {
+      "raw_sha256": "5ee444384b94fa614721341608f3ff9857dc050ba17bd3fe9f3294e985862a17",
+      "size": 14241
+    },
+    "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts": {
+      "raw_sha256": "f1a2106827c25c2121a05ad29446c622f79006fc9d51978e23c42fe97954f22f",
+      "size": 60722
+    },
+    "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts": {
+      "raw_sha256": "b2d13209700c040690bbdbedcb03fa36155d8780220c5e56d3ac2a6821c07b24",
+      "size": 48714
+    },
+    "packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts": {
+      "raw_sha256": "b565bb409a07fb4b541d9be85c022dc8675603d4fd8cc613bccf838e70a8183d",
+      "size": 43334
+    },
+    "packages/daemon-core/src/tools/handlers/sf-v11-verification.ts": {
+      "raw_sha256": "d8e15e323805aa6df9360e7b89ad33071e4db52c9da9233185db2b5ae1d9a6f2",
+      "size": 6212
+    },
+    "packages/daemon-core/src/tools/handlers/sf-verification-execution.ts": {
+      "raw_sha256": "1628411a4df2f153fcb64dc0917b97f9e24d521ead9af34455883c90cda61238",
+      "size": 998
+    },
+    "packages/daemon-core/src/tools/handlers/sf-verification-gate.ts": {
+      "raw_sha256": "3a6f9eb6bf4362c7943827382d41c9397889cb3e91f8690bb6ce9edff03f617d",
+      "size": 1578
+    },
+    "packages/daemon-core/src/tools/index.ts": {
+      "raw_sha256": "da124c0c68984bc0e14afb88efb8476b37d059521071bd7e75f93664bb10d006",
+      "size": 3609
+    },
+    "packages/daemon-core/src/tools/lib/close-gate.ts": {
+      "raw_sha256": "dd1ed7308e94becdf4f7aa35c7baff09cc5e72e5201e126cf1e80563875e154f",
+      "size": 34364
+    },
+    "packages/daemon-core/src/tools/lib/evidence-manifest.ts": {
+      "raw_sha256": "a7c5706bb21d46721d0122dc5380c4433a2f3d01f41a8162b40bc39d9c832d0c",
+      "size": 4196
+    },
+    "packages/daemon-core/src/tools/lib/gate-report.ts": {
+      "raw_sha256": "e2e79e32d2f6c75d099228c1face186be3c9aeaeaa1ca538cf39d49c5042fc2c",
+      "size": 4949
+    },
+    "packages/daemon-core/src/tools/lib/gate-runner-v11.ts": {
+      "raw_sha256": "da579fb63009c79632c8a05b2c0a29fd87ba6909af3c594fb0b0bd57c1428af2",
+      "size": 71549
+    },
+    "packages/daemon-core/src/tools/lib/project-governance-v2.ts": {
+      "raw_sha256": "aed459ce70d2a43522a0fa9736ade3a4b7a167d28036763ccb2cdc851aebf62e",
+      "size": 136386
+    },
+    "packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts": {
+      "raw_sha256": "dae174002aba2d5118c1a25456fd8dcea016779c6f4e3ee7e554da9a7e703146",
+      "size": 7183
+    },
+    "packages/daemon-core/src/tools/lib/verification-governance-contract.ts": {
+      "raw_sha256": "4a208f8e4128e9e3e40c196f9d1bcfa7976a35e6bb07a1d69965545156f32d67",
+      "size": 15028
+    },
+    "packages/daemon-core/src/tools/lib/verification-report-contract.ts": {
+      "raw_sha256": "2233e78b8a88bf8a826e2930c3724474a8bdeb9c70201b5d02f2ad89a08308dd",
+      "size": 12338
+    },
+    "packages/daemon-core/src/verification/VerificationRuntime.ts": {
+      "raw_sha256": "0198f496e783f8ebc26c1dc208e657b9bb96019a7b3325ff43f6ee389acbd567",
+      "size": 27398
+    },
+    "packages/daemon-core/src/verification/authority-snapshot.ts": {
+      "raw_sha256": "8128318ed76f08d66be26eeb5a7b54c95957a62010064282e2edc530cfd89271",
+      "size": 8577
+    },
+    "packages/daemon-core/src/verification/execution-evidence-consumer.ts": {
+      "raw_sha256": "cabf35e2304977eea8d9748b0c98f73be37973b392f1f93861221c5a0e3200aa",
+      "size": 4612
+    },
+    "packages/daemon-core/src/verification/invocation-lease.ts": {
+      "raw_sha256": "5d8b669279222e93e9071807c88324b21dd8366b631e0d913d6ee4900ab4bfa5",
+      "size": 3302
+    },
+    "packages/daemon-core/src/verification/native-executor.ts": {
+      "raw_sha256": "0424ce9c0810c40f80810af9a521cb76a646b6aa299f4b72c4c10a74edb496ba",
+      "size": 15054
+    },
+    "packages/daemon-core/src/verification/node-command-contract.ts": {
+      "raw_sha256": "fca4bbe28811e01af347b5b78e1504d7dc84676e23a7f302dfc7699bfb819a58",
+      "size": 14625
+    },
+    "packages/daemon-core/src/verification/owner-store.ts": {
+      "raw_sha256": "321c1bc5519bd9c681b823bafa62f1e1da01bddc40881965cbe42b6aa512fcd2",
+      "size": 7237
+    },
+    "packages/daemon-core/src/verification/request-context.ts": {
+      "raw_sha256": "878a611dba059c196a774665051f06d7e17b43fccd99060a14b813667530a24a",
+      "size": 873
+    },
+    "packages/daemon-core/src/verification/source-snapshot.ts": {
+      "raw_sha256": "b1f7a83abaf2881f4b8c5cba580b2cfab8114aa47e2811a7dc5a55a9577f8cec",
+      "size": 6384
+    },
+    "packages/daemon-core/src/verification/static-task-command.ts": {
+      "raw_sha256": "2815a701ed6f918d65e0e41a9e7bcdf631d26130689311b3cbba1b42f69bb324",
+      "size": 6204
+    },
+    "packages/daemon-core/src/verification/verification-assets.ts": {
+      "raw_sha256": "eb42833a7a4af46587c674009c41a59bcb78198fccc7b32680cc358e0342d0e0",
+      "size": 2352
+    },
+    "packages/daemon-core/src/verification/verification-plan.ts": {
+      "raw_sha256": "a8e0214d581813d2d42afb96c3272c5f2e7bbf7e935f150175990866cb947442",
+      "size": 3802
+    },
+    "packages/daemon-core/src/verification/verification-schema.ts": {
+      "raw_sha256": "a8f77606598816d36113a3b8719bbd1a16f3e97ba055e75942fbfd96d2277973",
+      "size": 14703
+    },
+    "packages/daemon-core/src/verification/windows/LpacInputIdentity.cs": {
+      "raw_sha256": "f8d893b0987d53c053ebc5948033775436b9ec39e1acd099b5fd6e48815826ff",
+      "size": 9236
+    },
+    "packages/daemon-core/src/verification/windows/LpacParentLifetime.cs": {
+      "raw_sha256": "bf66eb97a15510df75cce7d3020bd5c1ea10b9f61645596614b029c6bcf8a066",
+      "size": 5262
+    },
+    "packages/daemon-core/src/verification/windows/LpacProductionPlan.cs": {
+      "raw_sha256": "98bd69fc7391631cbb857b0fcb0af090992f33affc470d5cae88389c01a26b70",
+      "size": 9784
+    },
+    "packages/daemon-core/src/verification/windows/LpacProductionRecovery.cs": {
+      "raw_sha256": "07c0734e1b4bc789245582d9acd4de6fdf01cf3b958b4a91f929b12410de7c30",
+      "size": 11282
+    },
+    "packages/daemon-core/src/verification/windows/LpacStartupPoc.cs": {
+      "raw_sha256": "18e083c84eb898271fe130086480db28a4ba416091412fa5d5da3c779ec15d96",
+      "size": 59184
+    },
+    "packages/daemon-core/src/verification/windows/README.md": {
+      "raw_sha256": "22ced91be203647158e75915e9d2119151b5a1aca81386bee8c17feb291d0453",
+      "size": 7979
+    },
+    "packages/daemon-core/tests/unit/code-only-close-gate-overlay.test.ts": {
+      "raw_sha256": "d1744f1e4b0539965382509ca3c474aadb5805a314206066a11fdf4c978f5b2a",
+      "size": 2124
+    },
+    "packages/daemon-core/tests/unit/execution-evidence-consumer.test.ts": {
+      "raw_sha256": "aa41dd5bf228add5033081f92778f53e9c7cd0591de0dc2bb048054df1a114fb",
+      "size": 5991
+    },
+    "packages/daemon-core/tests/unit/invocation-lease.test.ts": {
+      "raw_sha256": "24ad8c88f3d87f1b7e74ca93d797cf4a078b1613f780d380ae01fee220486cde",
+      "size": 4620
+    },
+    "packages/daemon-core/tests/unit/node-command-contract.test.ts": {
+      "raw_sha256": "e19f3b06078b7d72dc189664b12562edf434959dd419ebfd7f1ebc3a71df3353",
+      "size": 5123
+    },
+    "packages/daemon-core/tests/unit/node-command-proof-boundary.test.ts": {
+      "raw_sha256": "e6a271f4faadc8266e27f116ceaed5888acccaafd48d729236407750ab28900a",
+      "size": 1389
+    },
+    "packages/daemon-core/tests/unit/project-session-bootstrap.test.ts": {
+      "raw_sha256": "953333db3438970c7ebe7f96a0dcbf7b41a23dbb1b6f2207e4466efb92d2b704",
+      "size": 6410
+    },
+    "packages/daemon-core/tests/unit/static-task-command.test.ts": {
+      "raw_sha256": "7f88dfc3f68950dad60102446686e48abd6de02a3667f63dd5af1ee34d1d96f5",
+      "size": 4212
+    },
+    "packages/daemon-core/tests/unit/verification-governance-contract.test.ts": {
+      "raw_sha256": "2eea4da112db58b18c88fe608e366d13216f3fcfbf7f3a7cce092f5cfc40e516",
+      "size": 18231
+    },
+    "packages/daemon-core/tests/unit/verification-owner-store.test.ts": {
+      "raw_sha256": "a4697d5ab5abb97c776278ed2fe85acc5733ab32a1172cc4734c0652354057ff",
+      "size": 4679
+    },
+    "packages/daemon-core/tests/unit/verification-runtime-plan.test.ts": {
+      "raw_sha256": "080dbccd214554cbcd91c162b3f850531d44e5eb11b03cbcd0c033d4dd4b5b27",
+      "size": 13298
+    },
+    "packages/daemon-core/tests/unit/verification-source-snapshot.test.ts": {
+      "raw_sha256": "25261b2a683825f6e8d09b1e1f2b9952b865a01d3dd96343ea38d212d391fc23",
+      "size": 4846
+    },
+    "packages/host-profile/package.json": {
+      "raw_sha256": "eac582a676dbaf75f16b24e29065377f74b7808072691700db98b2a1ba78ba14",
+      "size": 583
+    },
+    "packages/observability/package.json": {
+      "raw_sha256": "fc327469fa683526f3157570fb2ca671be01cc88703896f4a45739dc76ef8e13",
+      "size": 2007
+    },
+    "packages/opencode-adapter/package.json": {
+      "raw_sha256": "02fbcaa7af83c8dafdfc2c9b2a352eb2874a39ea3a8e25eb562dccdc0d090dc4",
+      "size": 1817
+    },
+    "packages/opencode-adapter/src/index.ts": {
+      "raw_sha256": "e7811d81280ce928ef2dda960c194b1582de38f511688bb52c61c074b50d9756",
+      "size": 3020
+    },
+    "packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts": {
+      "raw_sha256": "2ec9c8140acba54118355026207bdb16becca882ea6c9c5725b92ea8b4fa7439",
+      "size": 15295
+    },
+    "packages/opencode-adapter/tests/OpenCodeToolInvocation.test.ts": {
+      "raw_sha256": "a932e519d29a33e1a0317635d826b46a9f41cb21e98259a188aa2ffe0d743f39",
+      "size": 4235
+    },
+    "packages/permission-engine/package.json": {
+      "raw_sha256": "4206146195e13a05cfefa8fb6638efddc2b50de3993751f7a9861b34d9842bbc",
+      "size": 2040
+    },
+    "packages/scope-gate/package.json": {
+      "raw_sha256": "0b2ac1b96e149d4c6c155bc6f4f82db778ce51268ca617e702afdee55b622b82",
+      "size": 2254
+    },
+    "packages/service-management/package.json": {
+      "raw_sha256": "0dc4db804da2fccc69ed9d1bad5d165066eed671040547f8458f648035e6f431",
+      "size": 2008
+    },
+    "packages/types/package.json": {
+      "raw_sha256": "8a94e020cc55805ef14058a2cd310e5ce44ba83bb38f3838b11765f961b065ec",
+      "size": 2890
+    },
+    "packages/types/src/index.ts": {
+      "raw_sha256": "db8cffa5aba330c4a1f645e2ca813de4515fbc24eeda869ab33bd4f8e8444158",
+      "size": 11936
+    },
+    "packages/types/src/trusted-tool-invocation.ts": {
+      "raw_sha256": "2139271f6bf7a5dad55dccd8812349b8b8d1a0f75a66140e57fe9f8b9c3ae978",
+      "size": 802
+    },
+    "packages/version-unification/package.json": {
+      "raw_sha256": "0943a9aff9cf630c101281757e795b03c5edb897887e0ce89b85e4bf45b3f1bb",
+      "size": 607
+    },
+    "packages/workflow-runtime/package.json": {
+      "raw_sha256": "595aae781854d6165d00e88a34e88e854441deb9d39b6a7c68b01c6a46e75f1b",
+      "size": 2069
+    },
+    "scripts/build-release-runtime-artifacts.ts": {
+      "raw_sha256": "c40cda5ca88e7672e3073bba539427db1a97b873f016315f6080ff1f1b73ce12",
+      "size": 578
+    },
+    "scripts/lib/registry.ts": {
+      "raw_sha256": "0ef48cffc26f2412d8ee463a941bd4e95833a5b17786708a1336fdb77db81c77",
+      "size": 15173
+    },
+    "scripts/lib/release-manifest-producer.ts": {
+      "raw_sha256": "1add54ca0a510d37d892b05f1c7d9ad52974d16a87c7425ab5c3900121c2a4e1",
+      "size": 21801
+    },
+    "scripts/lib/release-owner-snapshot-producers.ts": {
+      "raw_sha256": "307b916d28ea9157bdcdf7ad4378d9a6fd202a7b5327a66b0cb83307aa551e35",
+      "size": 7957
+    },
+    "scripts/lib/types.ts": {
+      "raw_sha256": "0a5e82e66967ecfbd023438d7579adfc4d3f62aecce6e0cfa9414ea95a541c98",
+      "size": 5309
+    },
+    "scripts/lib/verification-asset-producer.ts": {
+      "raw_sha256": "b762c531619ea22e3b7c2353c9629735179c45b18518b7d1e39cd5053ec8e408",
+      "size": 4631
+    },
+    "scripts/lib/verify-tool-schemas.ts": {
+      "raw_sha256": "26f500882c615d211d2f5176380b15de96e0996747ce57ef0c1dce6ebbc32676",
+      "size": 6726
+    },
+    "scripts/project-session-bootstrap.mjs": {
+      "raw_sha256": "51ddf3830add187bd281f04f1452838247c5407a1d67e9d35cb7baa910abd34e",
+      "size": 13804
+    },
+    "scripts/render-layout.ts": {
+      "raw_sha256": "fd04ca724fba3a1f3dd8bfc77a76488870e6a809345f3be6e4e92ab113b844cb",
+      "size": 10983
+    },
+    "setup/userlevel-opencode/AGENTS.md": {
+      "raw_sha256": "c110d70a7eed41f8a30e8b6ce1577a7454ce3df180bb3464dd5864cda7bd342b",
+      "size": 16126
+    },
+    "setup/userlevel-opencode/agents/sf-orchestrator.md": {
+      "raw_sha256": "ba85220e0fbb9f05fe1c68910007975ee104f4ef7e58f0ac032371163159c82b",
+      "size": 49661
+    },
+    "setup/userlevel-opencode/agents/sf-verifier.md": {
+      "raw_sha256": "66d8605c5f8dcd9c8310948ba1c389dd434fbfc3fa96804ea68daf3d9f383389",
+      "size": 38163
+    },
+    "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md": {
+      "raw_sha256": "74408a1882ae5ac7057e9aba2453d118deef5c544c0e62cb7f1e6aaea36a869f",
+      "size": 45168
+    },
+    "setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md": {
+      "raw_sha256": "d5a34443bac290ec10c988854ddda7b187d99db8b2b589c17c2c98ded3014064",
+      "size": 3424
+    },
+    "setup/userlevel-opencode/tools/lib/sf_verifier_execution_core.ts": {
+      "raw_sha256": "7b9ad7b6c3adf2653cea17b2a2bbb4b2045c9306e66c821929b837bc45f8baef",
+      "size": 12093
+    },
+    "setup/userlevel-opencode/tools/lib/thin-client.ts": {
+      "raw_sha256": "9e59075095bafd18e7cf80ea1d6b2d68481b485e1ce0566bd0bfa7c507e148cb",
+      "size": 10825
+    },
+    "setup/userlevel-opencode/tools/sf_artifact_write.ts": {
+      "raw_sha256": "eef723b8e37ddd5287fded63a9a4d5b8f4c1bc0fa9879b12373dd2a75a739358",
+      "size": 4194
+    },
+    "setup/userlevel-opencode/tools/sf_verification_plan.ts": {
+      "raw_sha256": "5e07a58933b7a038bb0fc4bdcf70b418ea060b607406b823b737253a1ed191a3",
+      "size": 1072
+    },
+    "setup/userlevel-opencode/tools/sf_verification_run.ts": {
+      "raw_sha256": "28cff1f753defb0e6ccf6888a8e6a756f813660c526a3af8f7891d5303de1b65",
+      "size": 876
+    },
+    "tests/unit/current-product-version-contract.test.ts": {
+      "raw_sha256": "eae996aee190fd643418da418bf02a8ebce7a630231ae26fff8959cf79deb31b",
+      "size": 4445
+    },
+    "tests/unit/installer/verify-tool-schemas.test.ts": {
+      "raw_sha256": "1c18eda8367f394799f66ee6e1d84e61eee00a6463e7ca92606708d4cbb28fa4",
+      "size": 2569
+    }
+  },
+  "exact_build_receipt": "0139",
+  "build": {
+    "schema_version": "1.0",
+    "platform": "win32-x64",
+    "artifacts": [
+      {
+        "id": "runtime:specforge",
+        "path": "release/bin/specforge.exe",
+        "sha256": "9b77bdfecce52647b78ceb975ab22ae4c6ba472386ac9d0a6c5ffe74d911c776",
+        "size": 99623936
+      },
+      {
+        "id": "runtime:specforged",
+        "path": "release/bin/specforged.exe",
+        "sha256": "b1545ec314a2d3aa2d83ec5752d7c55a40d0016359a2975c141ae46bc1dfc4ec",
+        "size": 110957056
+      }
+    ],
+    "verification_assets": [
+      {
+        "path": "release/bin/verification/node.exe",
+        "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+        "size": 92825416
+      },
+      {
+        "path": "release/bin/verification/specforge-verify.exe",
+        "sha256": "ef80aa50c57797c3d3afafd5287549c0b8f371068efe747478dd0e8f48445f77",
+        "size": 343040
+      },
+      {
+        "path": "release/bin/verification/assets.json",
+        "sha256": "99f12316a16dcc7cbe63be3fc73e7a84722892a89d961a0a1a5cedde4bd0a68f",
+        "size": 494
+      }
+    ]
+  },
+  "hash_domains": "raw_sha256 means actual working bytes used by build or asset copy; Git blob normalization is independently identified after staging. No equality between domains is assumed.",
+  "scope": "D23 current source and documentation; execution evidence remains unsealed and is excluded from this source commit; not full SPS or original WI acceptance"
+}

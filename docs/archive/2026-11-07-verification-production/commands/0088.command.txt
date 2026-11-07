@@ -1,0 +1,14 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/static-task-command.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "static-double-quoted-pattern-transformation-negative",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES parser-only unit; no profiles/original; EXTERNAL_EVIDENCE_WRITES receipts",
+  "started_utc": "2026-11-07T02:32:59.160Z"
+}

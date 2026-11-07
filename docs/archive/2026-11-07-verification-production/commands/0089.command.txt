@@ -1,0 +1,17 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/static-task-command.test.ts",
+    "tests/unit/node-command-contract.test.ts",
+    "tests/unit/node-command-proof-boundary.test.ts",
+    "tests/unit/execution-evidence-consumer.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "static-normalization-quoted-expansion-fixed-regression",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES actual ordinary Node unit children only; no profiles/original; EXTERNAL_EVIDENCE_WRITES receipts",
+  "started_utc": "2026-11-07T02:33:34.512Z"
+}

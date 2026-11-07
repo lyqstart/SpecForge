@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/reconcile-integration-06.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Reconcile verified deployment facts, prior failures and SPS8 owner-boundary repair scope",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES docs/project-status.md and historical ledger; EXTERNAL_EVIDENCE_WRITES reconciliation and command receipts; no original or installation writes",
+  "started_utc": "2026-11-07T05:35:58.887Z"
+}

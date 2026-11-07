@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/verify-version-source-commit.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Verify committed1.0.23 metadata and before-version archives against reviewed33 raw/canonical bindings",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable source provenance and sealed receipts only; source/index/original/deployment read-only",
+  "started_utc": "2026-11-07T07:21:24.770Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\verify-version-source-commit.cjs",
+      "sha256": "437faef130d0834c5d639b6a40436955516dba519a72e4b9d5da93ef9ff091cc",
+      "size": 1673,
+      "extension": ".cjs"
+    }
+  ]
+}

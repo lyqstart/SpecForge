@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/prepare-original-continuation-03.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Prepare fresh minimal-context report/Gate-only original continuation from all44 real results without authoring professional artifacts",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES new prompt/input provenance and sealed receipts only; no model request or original writes",
+  "started_utc": "2026-11-07T06:41:36.455Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\prepare-original-continuation-03.cjs",
+      "sha256": "0ab7b3b5fd0606e281907960e7ae110af3ae1da78aebc9b83b30d90c2968a24a",
+      "size": 6598,
+      "extension": ".cjs"
+    }
+  ]
+}

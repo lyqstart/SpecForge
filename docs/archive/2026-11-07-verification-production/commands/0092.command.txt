@@ -1,0 +1,17 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/verification-governance-contract.test.ts",
+    "tests/unit/verification-evidence-integrity.test.ts",
+    "tests/unit/verification-evidence-producer.test.ts",
+    "tests/verification-report-contract-delegation.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "formal-report-common-consumer-affected-regression-discovery",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned unit temp fixtures; EXTERNAL_EVIDENCE_WRITES receipts; no actual profiles or original",
+  "started_utc": "2026-11-07T02:36:54.047Z"
+}

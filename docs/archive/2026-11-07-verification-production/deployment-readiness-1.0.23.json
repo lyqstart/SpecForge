@@ -1,0 +1,27 @@
+{
+  "utc": "2026-11-07T08:44:30.618Z",
+  "kind": "AUTHORIZED_DEPLOYMENT_PRECONDITIONS_NOT_OVERALL_SPS_ACCEPTANCE",
+  "source_commit": "4d891569fb9e497bd1cfad498b0de79ae80c6b0a",
+  "version": "1.0.23",
+  "release_manifest_sha256": "5f8ef73f1c5f01dcff5f465318b1021a1cddfe81f6a53ee7abeaf6123e649683",
+  "native_build_receipt": "0368",
+  "native_current_acceptance": [
+    "0384 formal",
+    "0387 common consumers",
+    "0376 routing"
+  ],
+  "full_daemon": "0389 236/2338",
+  "root": "0359 51/748",
+  "final_release_precheck": "0404",
+  "final_physical_install": "0405 117 files",
+  "source_member_difference_from_native_fixture": [
+    {
+      "path": "AGENTS.md",
+      "change": "CRLF normalization only; exact final installed bytes verified0405"
+    }
+  ],
+  "approved_decision": "D23 production implementation/install/deploy/original-WI validation approved by user",
+  "original_plan": "Retain old44 successful facts; asset replacement invalidates their live consumption. SameWI verification_running legally obtains fresh22 formal results with no code write permission or duplicateWI.",
+  "business_main_merge_authorized": false,
+  "owner_key_content_read": false
+}

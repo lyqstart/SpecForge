@@ -1,0 +1,11 @@
+[
+  {
+    "utc": "2026-11-07T05:47:04.054Z",
+    "pid": 14576,
+    "port": 43540,
+    "http_status": 200,
+    "reported_pid": 14576,
+    "status": "ok",
+    "version": "1.0.22"
+  }
+]

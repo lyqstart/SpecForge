@@ -1,0 +1,225 @@
+{
+  "utc": "2026-11-07T01:10:34.566Z",
+  "mode": "CODEX_DIRECT",
+  "run_id": "CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01",
+  "attempt_id": "CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01-01",
+  "bootstrap": "Actual host-network READY; local and remote main6fc9de2a match; sandbox DNS failure retained in tool output",
+  "prior_receipts_verified": 29,
+  "prior_failure_reconciliation": "PASS",
+  "backfilled_error_ids": [
+    "ERR-1949",
+    "ERR-1950",
+    "ERR-1951",
+    "ERR-1952",
+    "ERR-1953"
+  ],
+  "unrecorded_failures": 0,
+  "EXPERIENCE_FILE_READ": "YES",
+  "ACTIVE_EXPERIENCE_RULES_FILE_READ": "YES",
+  "APPLICABLE_EXPERIENCE_RULES": [
+    "EXP-002",
+    "EXP-004",
+    "EXP-007",
+    "EXP-008",
+    "EXP-014",
+    "EXP-015",
+    "EXP-016",
+    "EXP-031",
+    "EXP-117",
+    "EXP-193",
+    "EXP-260",
+    "EXP-261",
+    "EXP-285",
+    "EXP-291",
+    "EXP-292",
+    "EXP-293",
+    "EXP-295",
+    "EXP-296"
+  ],
+  "HISTORICAL_LEDGER_SEARCH": "ERR1940..1953 actual bounded sections, LPAC/production adoption, EXP291..296; no truncated body counted as a full read",
+  "REPEATED_ERROR_CHECK": "PASS: no delete/add carrier, bounded read projections, actual package runner, dependency output checked before freeze",
+  "worktree_classification": "All listed changes are current authorized phase; preserve source and archive changes. No user business changes overwritten.",
+  "required_rule_reads": [
+    {
+      "file": "docs/rule/specforge-active-development-rules.md",
+      "raw_sha256": "b10a0cbd3c51a452147aa700698ff669df8896357a44ae9ae22045381782aaaa",
+      "lines": 2638,
+      "chunks": [
+        {
+          "first": 1,
+          "last": 200,
+          "sha256": "498f889ae27bf5938bf620f6a02e185cfdb0000251a1e624dbf7616e12facfa3"
+        },
+        {
+          "first": 201,
+          "last": 400,
+          "sha256": "9821b3df54439f4b25357256512ad16a4e754a6b23effc5b9f682525e3641a9c"
+        },
+        {
+          "first": 401,
+          "last": 600,
+          "sha256": "4fdde9787b88d8db43dbab84cb0b765164b4477f27887c9d8da8127dc370eba5"
+        },
+        {
+          "first": 601,
+          "last": 800,
+          "sha256": "f7f016b24544ec089ad1e55b39ce87802c9392ac805b29296ad3089398c4ab83"
+        },
+        {
+          "first": 801,
+          "last": 1000,
+          "sha256": "d9c8b36c726bf901c89e16ab5cf7387a3caf139c21f5f2523e0bac5779d376b5"
+        },
+        {
+          "first": 1001,
+          "last": 1200,
+          "sha256": "b32e1129b7b59a72cd06e42786689cac91e7d67a111bcbb72692696fbb62bc13"
+        },
+        {
+          "first": 1201,
+          "last": 1400,
+          "sha256": "0bc2e59bf130bc324969fd60d88fd6e68a344e16f363c667f979e67dd7e8376b"
+        },
+        {
+          "first": 1401,
+          "last": 1600,
+          "sha256": "9c51a768a7da513777c62980d88443dda0426cbc2bca18ebe15ed12d9baf78e7"
+        },
+        {
+          "first": 1601,
+          "last": 1800,
+          "sha256": "67564f3aea625102625c8b8ff6a4182e6605f4b333bc1267ebdb807e59bd448d"
+        },
+        {
+          "first": 1801,
+          "last": 2000,
+          "sha256": "4c7a74759d269c3f7c1de096082d5f07f99318d3d8213a2c1b176859e5c6c03c"
+        },
+        {
+          "first": 2001,
+          "last": 2200,
+          "sha256": "1739150836c996434ee7648e69a71af57d29691ee3f91105fe45bf111e0f4538"
+        },
+        {
+          "first": 2201,
+          "last": 2400,
+          "sha256": "7ed1b71838f14433316c847d36833082a4086d4195fabf2b19c3fe34273f6a60"
+        },
+        {
+          "first": 2401,
+          "last": 2600,
+          "sha256": "7beca75445df53495ba5b80846fdce202a82db4a25c6c20fe11c015dfa1fea94"
+        },
+        {
+          "first": 2601,
+          "last": 2638,
+          "sha256": "48742bbccf8b64a1c6720ec9914880d2a475602a0ec6dad1408637301040df73"
+        }
+      ],
+      "coverage": "EOF_AND_ROUNDTRIP",
+      "provenance": "Same-conversation full rule reads retained; current blocks re-read and exact changes read in this continuation. Hashes bind content, not independent proof of model reading."
+    },
+    {
+      "file": "docs/product-specification/authority-registry.md",
+      "raw_sha256": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e",
+      "lines": 144,
+      "chunks": [
+        {
+          "first": 1,
+          "last": 144,
+          "sha256": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e"
+        }
+      ],
+      "coverage": "EOF_AND_ROUNDTRIP",
+      "provenance": "Same-conversation full rule reads retained; current blocks re-read and exact changes read in this continuation. Hashes bind content, not independent proof of model reading."
+    },
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "raw_sha256": "61b8233b7c5b36c5fbd15e701d2e73702f4b8947628075fc69e9dcf96472705e",
+      "lines": 1683,
+      "chunks": [
+        {
+          "first": 1,
+          "last": 200,
+          "sha256": "38df706d2d2635e86386d2128682c47ed50d0f583819660d71835f20f4d4f848"
+        },
+        {
+          "first": 201,
+          "last": 400,
+          "sha256": "48815d0532e7baaa46f7c3b5a8d36649a217ba171af91d95a77648293e65da4f"
+        },
+        {
+          "first": 401,
+          "last": 600,
+          "sha256": "25d1d98047f2eb1cf803c3522f349ec105b63b73e1f17a052397c80523edfb54"
+        },
+        {
+          "first": 601,
+          "last": 800,
+          "sha256": "7e72736a071aec60c169434ac59f06cc4ec7fd2c1cd1bb080e3a78ada1ac38a8"
+        },
+        {
+          "first": 801,
+          "last": 1000,
+          "sha256": "0d3760ce56e3ee025720db51c3862352741203bed3dcc76c93f7e2a483952fc4"
+        },
+        {
+          "first": 1001,
+          "last": 1200,
+          "sha256": "7a9e483caf30a327c7eb40a1a911df0cd15633475204245813e55aad744e3b8e"
+        },
+        {
+          "first": 1201,
+          "last": 1400,
+          "sha256": "02368df55a7b33509fd64b18b7b6016d5e7bd155297e53ac7b2b8ab3255b2d05"
+        },
+        {
+          "first": 1401,
+          "last": 1600,
+          "sha256": "5bcc1e823139d331f929709585ad7dfa3aba6846466eb86b3142822e06e3a801"
+        },
+        {
+          "first": 1601,
+          "last": 1683,
+          "sha256": "ff1ec300714cfd6baeecd2ec306c7b05cb740c397765a3c7e01da68d2bc0d9af"
+        }
+      ],
+      "coverage": "EOF_AND_ROUNDTRIP",
+      "provenance": "Same-conversation full rule reads retained; current blocks re-read and exact changes read in this continuation. Hashes bind content, not independent proof of model reading."
+    },
+    {
+      "file": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "raw_sha256": "956df3943a44d1b99636790a32e9b2a0dc266b7116f50b60b7b8c6f2614423ac",
+      "lines": 232,
+      "chunks": [
+        {
+          "first": 1,
+          "last": 200,
+          "sha256": "cfa23aceeb8da999fe640308a4b9bd0b482cb09cb6236c7edc249c58a5e415bb"
+        },
+        {
+          "first": 201,
+          "last": 232,
+          "sha256": "411ddf6a969864a3c8205ffad3c94ad3af0f1fd029b4420a105bede7b97cd640"
+        }
+      ],
+      "coverage": "EOF_AND_ROUNDTRIP",
+      "provenance": "Same-conversation full rule reads retained; current blocks re-read and exact changes read in this continuation. Hashes bind content, not independent proof of model reading."
+    },
+    {
+      "file": "docs/rule/specforge-execution-mode-and-evidence-protocol.md",
+      "raw_sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef",
+      "lines": 182,
+      "chunks": [
+        {
+          "first": 1,
+          "last": 182,
+          "sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef"
+        }
+      ],
+      "coverage": "EOF_AND_ROUNDTRIP",
+      "provenance": "Same-conversation full rule reads retained; current blocks re-read and exact changes read in this continuation. Hashes bind content, not independent proof of model reading."
+    }
+  ],
+  "next": "Dependency-scoped input regression, Runtime-private plan/run service, native cancellation/recovery, public wiring and common consumers; do not execute original WI before SP-I01/SP-D01"
+}

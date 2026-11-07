@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/verify-source-commit.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-committed-source-and-exact-build-binding",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES independent Git blob and raw source provenance only; no product/original changes",
+  "started_utc": "2026-11-07T03:57:21.112Z"
+}

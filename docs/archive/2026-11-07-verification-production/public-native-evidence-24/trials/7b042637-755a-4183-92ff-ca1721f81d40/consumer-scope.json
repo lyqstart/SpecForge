@@ -1,0 +1,13 @@
+{
+  "actual_common_projections": [
+    "Report",
+    "Evidence",
+    "Verification Gate",
+    "Formal Version Gate",
+    "Close Gate"
+  ],
+  "positive_and_tamper_rejection": true,
+  "full_business_workflow_accepted": false,
+  "fixture_hard_stop": "ALLOWED_WRITE_FILES_EMPTY retained intentionally; no original or user installation affected",
+  "prepared_application_never_started": true
+}

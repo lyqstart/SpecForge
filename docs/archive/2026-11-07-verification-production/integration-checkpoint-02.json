@@ -1,0 +1,566 @@
+{
+  "utc": "2026-11-07T02:36:47.351Z",
+  "mode": "CODEX_DIRECT",
+  "run_id": "CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01",
+  "attempt_id": "CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01-01",
+  "status": "IN_PROGRESS",
+  "receipts": {
+    "0001": {
+      "purpose": "capture-approved-bootstrap-self-repair-baseline",
+      "inner_exit_code": 2,
+      "receipt_sha256": "c9da10c474012672e32816ae3fbe29aa84cd49cad9305168a8a3026ddde95ba0"
+    },
+    "0002": {
+      "purpose": "bootstrap-restored-live-remote",
+      "inner_exit_code": 0,
+      "receipt_sha256": "ba979e70e8485a4e3380a1b83153624dbae1f819ca29df02fae092b1d7243ef3"
+    },
+    "0003": {
+      "purpose": "bootstrap-buffer-regressions",
+      "inner_exit_code": 1,
+      "receipt_sha256": "c4266bffb54af7842e9a754837b3c02959bc454f547e766a3f7b484899b6026b"
+    },
+    "0004": {
+      "purpose": "bootstrap-buffer-regressions-cli-corrected",
+      "inner_exit_code": 1,
+      "receipt_sha256": "c7e3821a935d9e76457e5e2e4e8a05ce8e79de987669d87d14bf3e1cbfbbfb60"
+    },
+    "0005": {
+      "purpose": "bootstrap-buffer-regressions-package-vitest",
+      "inner_exit_code": 0,
+      "receipt_sha256": "fe2c3cfc9e1990dba63a58571c4ac8edcd345b6b4753c6102691f94e85398ba8"
+    },
+    "0006": {
+      "purpose": "activate-approved-d23-phase",
+      "inner_exit_code": 0,
+      "receipt_sha256": "2f41537977b4f0df5297c9abb1f32ce3cbff2ea848beb13f6fded568a7f47d79"
+    },
+    "0007": {
+      "purpose": "trusted-invocation-unit-tests",
+      "inner_exit_code": 0,
+      "receipt_sha256": "60e2f1bfeea018e4127a13474ddc634f0b9904c02af6b0d5c4c7e02c50547169"
+    },
+    "0008": {
+      "purpose": "trusted-invocation-typecheck",
+      "inner_exit_code": 2,
+      "receipt_sha256": "7fabbd2cafe28aa406a639c5b59b574472402ad6519e993669d8c90072459dbb"
+    },
+    "0009": {
+      "purpose": "trusted-invocation-typecheck-corrected",
+      "inner_exit_code": 0,
+      "receipt_sha256": "269a782a69f6bd79c865742f1d2969a868f955e9481c862579e058385a593516"
+    },
+    "0010": {
+      "purpose": "node-command-semantic-contract-tests",
+      "inner_exit_code": 0,
+      "receipt_sha256": "1be022304c3fab15f607992c0db0523a106f6e8e18cb6d09b3f76cd83491aacf"
+    },
+    "0011": {
+      "purpose": "daemon-core-typecheck-after-node-contract",
+      "inner_exit_code": 0,
+      "receipt_sha256": "f43339acbf64c8e20fd5a37dc618fe935dcf12b310d8fa019bf1ebc1798c10ae"
+    },
+    "0012": {
+      "purpose": "verification-owner-store-tests",
+      "inner_exit_code": 0,
+      "receipt_sha256": "fc282f8e8bfb8d674a32c7f723e2433a81c5e5216ec38176e0e044f0b831d4ce"
+    },
+    "0013": {
+      "purpose": "daemon-typecheck-owner-store",
+      "inner_exit_code": 0,
+      "receipt_sha256": "4cfb039514bde910ac086a46f92affe4ea044499f56cbacc67b284c511abe672"
+    },
+    "0014": {
+      "purpose": "verification-source-snapshot-tests",
+      "inner_exit_code": 0,
+      "receipt_sha256": "b48c0d6e8e207f2cd51af1bced5100d4060291e25ad637d68268dece1d9edae1"
+    },
+    "0015": {
+      "purpose": "daemon-typecheck-source-snapshot",
+      "inner_exit_code": 0,
+      "receipt_sha256": "280f2203bcba15c6b35e6ad9067d6fd98537974466d6290e00e01414adc9d5bb"
+    },
+    "0016": {
+      "purpose": "exact-file-identity-and-owner-store-regressions",
+      "inner_exit_code": 0,
+      "receipt_sha256": "2d3d41c2ed8c17b290871590f009e2a39b0fbe28d6f5c48c2d7dfe20b0d83dbf"
+    },
+    "0017": {
+      "purpose": "build-opencode-adapter-for-new-proof-types",
+      "inner_exit_code": 0,
+      "receipt_sha256": "165d7e1e9a00e53747f1441dc1ba55693c738805a8c6f1a563944053b2ca8d32"
+    },
+    "0018": {
+      "purpose": "daemon-authority-snapshot-typecheck",
+      "inner_exit_code": 0,
+      "receipt_sha256": "534c829f5f22405fb3b528427dab2ea1de23e57441d268546b8d10399e167502"
+    },
+    "0019": {
+      "purpose": "verified-assets-and-plan-typecheck",
+      "inner_exit_code": 0,
+      "receipt_sha256": "9510c2720b08ab8d0280a6743bfc72d61604b51efe255105a2a073a1384b42da"
+    },
+    "0020": {
+      "purpose": "adapt-native-product-entry",
+      "inner_exit_code": 1,
+      "receipt_sha256": "179d25a3a59bf0bd93b33b09260ca80a3fe84e73d50e58554aac286d22ee0674"
+    },
+    "0021": {
+      "purpose": "preserve-native-adapter-generator-precondition-failure",
+      "inner_exit_code": 0,
+      "receipt_sha256": "015a0b68b50cb647971c66cbdaf298c289840fc2bb71e9aeab62e918be90af66"
+    },
+    "0022": {
+      "purpose": "adapt-native-product-entry-preflight-corrected",
+      "inner_exit_code": 0,
+      "receipt_sha256": "ff44233a416c5f60d4566d796439675cbd04e6bfae3925e30fe184a51fccb7c5"
+    },
+    "0023": {
+      "purpose": "compile-d23-native-product-entry",
+      "inner_exit_code": 0,
+      "receipt_sha256": "7afaa28a1ac06d0ebba010812fdffa1846cdb50f37247329f647f125c3c2eadf"
+    },
+    "0024": {
+      "purpose": "compile-d23-native-atomic-job",
+      "inner_exit_code": 0,
+      "receipt_sha256": "103455e77367531182b84c773f0ea3af83a7ca5cffa348a51e5308d21510d9f0"
+    },
+    "0025": {
+      "purpose": "distinguish-unstarted-native-profile-status",
+      "inner_exit_code": 0,
+      "receipt_sha256": "20ca904b7a74af3b350f746e45ee4939597346794b22149337446144e08b690c"
+    },
+    "0026": {
+      "purpose": "compile-native-product-plan-regression",
+      "inner_exit_code": 0,
+      "receipt_sha256": "6934613fe13f1881598ff1e0468a4696b87c7e436965ef92c16c5cc51b36273b"
+    },
+    "0027": {
+      "purpose": "run-native-product-plan-regression",
+      "inner_exit_code": 0,
+      "receipt_sha256": "34a9db3aa98e9dccc7ff75791b64152c405d54b329389af7ada3dfa2f1fb9f42"
+    },
+    "0028": {
+      "purpose": "compile-current-native-product-launcher",
+      "inner_exit_code": 0,
+      "receipt_sha256": "dc24c44295d171d0fe6a2f99e00abee0bad2534a6efe10817d9d31c3cdb5907d"
+    },
+    "0029": {
+      "purpose": "dependency-scoped-snapshot-typecheck",
+      "inner_exit_code": 0,
+      "receipt_sha256": "ee4c0a8f3d41c288d03feabd09b18ad6daaf39fd4eec7cb886f696fb248a88eb"
+    },
+    "0030": {
+      "purpose": "integration-recovery-gate",
+      "inner_exit_code": 0,
+      "receipt_sha256": "d0cdbc575793257eff615b010b9868c093973fd3776d4b10a13a927e23b4f146"
+    },
+    "0031": {
+      "purpose": "dependency-input-regression",
+      "inner_exit_code": 1,
+      "receipt_sha256": "30eb410d5b80e21180857f1717ecd69e8fe80c47dda024a00fa669062f584757"
+    },
+    "0032": {
+      "purpose": "dependency-input-regression-host",
+      "inner_exit_code": 0,
+      "receipt_sha256": "68e1a39adce7496c0ad94fe6b772286d1ad630cb4362232a73c659140215165a"
+    },
+    "0033": {
+      "purpose": "compile-native-cancellation-recovery",
+      "inner_exit_code": 0,
+      "receipt_sha256": "0d8e26a614bc785d0773cff78fb61b507fb1df5814f97ce58eaf98a4e46558bd"
+    },
+    "0034": {
+      "purpose": "strict-verification-schema-typecheck",
+      "inner_exit_code": 0,
+      "receipt_sha256": "4de4aab2ec18a5a66c78a68bf64b5b362d291eab5ae43499e59089aa9132e161"
+    },
+    "0035": {
+      "purpose": "native-executor-typecheck",
+      "inner_exit_code": 0,
+      "receipt_sha256": "421832e99d9a2418465413b51addf32eb4d6d96469f3e9165c48068eafb632c2"
+    },
+    "0036": {
+      "purpose": "verification-runtime-typecheck",
+      "inner_exit_code": 2,
+      "receipt_sha256": "a6f1a41e23bb076a8f32b55cc3ae74bfd3f6263d0bc179d1b2efbf53033d4976"
+    },
+    "0037": {
+      "purpose": "build-neutral-invocation-contract",
+      "inner_exit_code": 0,
+      "receipt_sha256": "a836792c72910b44d3b30908483c15d019cd3cadf0ff1a0e943c92e509d5124c"
+    },
+    "0038": {
+      "purpose": "build-adapter-neutral-invocation",
+      "inner_exit_code": 2,
+      "receipt_sha256": "a435404a38cad0641d205b7fe478accddbf0a1f1c0d8c32dde25ab971eb29b00"
+    },
+    "0039": {
+      "purpose": "build-adapter-neutral-subpath",
+      "inner_exit_code": 0,
+      "receipt_sha256": "2bd0c665ce9f9adadb6929fdd7fa3c10abb70f4901b418cb7bff0959f7f64241"
+    },
+    "0040": {
+      "purpose": "daemon-public-verification-typecheck",
+      "inner_exit_code": 2,
+      "receipt_sha256": "c5e01ec7b97ec67443faf5a0f05dbefbc54e0308af6678cb96f10e6955292a63"
+    },
+    "0041": {
+      "purpose": "adapter-invocation-neutral-regression",
+      "inner_exit_code": 0,
+      "receipt_sha256": "7300fefd27d20c1edb95d496d0cbf37a1f131441d25ced68eb263d7f48e7379d"
+    },
+    "0042": {
+      "purpose": "public-runtime-owner-typecheck",
+      "inner_exit_code": 0,
+      "receipt_sha256": "bf278c38d10381b5cbb35b038323aa46956df182bdeee01584c6b3440be9bec6"
+    },
+    "0043": {
+      "purpose": "common-consumer-wiring-typecheck",
+      "inner_exit_code": 0,
+      "receipt_sha256": "a46770b2a606f1ecb166ff84286b99a6a1d90b8b5067aac07944f686e9fd03ab"
+    },
+    "0044": {
+      "purpose": "semantic-proof-negative-before-fix",
+      "inner_exit_code": 1,
+      "receipt_sha256": "b40990835f7a4da75f5e8bf5216c002a55fea1e1abcae10bb3f5c71675fa940a"
+    },
+    "0045": {
+      "purpose": "semantic-proof-boundary-after-fix",
+      "inner_exit_code": 1,
+      "receipt_sha256": "b25482a87b707b9ad615046d490495ff1c647e1e4bdf29549a19610de7739242"
+    },
+    "0046": {
+      "purpose": "semantic-proof-complete-regression",
+      "inner_exit_code": 0,
+      "receipt_sha256": "f8f076376044f962ac45151ac10f657f58da15ef07ea05dac51102dd30ecb784"
+    },
+    "0047": {
+      "purpose": "common-consumer-reference-regression",
+      "inner_exit_code": 0,
+      "receipt_sha256": "059356b81457e6911d567dd82c3339d71828498b5569543c961b3e4f38c11ee7"
+    },
+    "0048": {
+      "purpose": "runtime-plan-unit-regression",
+      "inner_exit_code": 0,
+      "receipt_sha256": "001db37105a577822fae0c1171a7746d1f09fab4e6898bfa85628be6e3792d0e"
+    },
+    "0049": {
+      "purpose": "complete-current-daemon-typecheck",
+      "inner_exit_code": 0,
+      "receipt_sha256": "82c17807f0fa3bdfb2ab521ff0b2225fdba008ac7f072fe2df3aadfb6367219b"
+    },
+    "0050": {
+      "purpose": "verification-installer-types",
+      "inner_exit_code": 0,
+      "receipt_sha256": "40379127895978ce05dc9e6742456d3891d78a00a8d73ef01856d38eda0a7ea0"
+    },
+    "0051": {
+      "purpose": "compile-product-broker-current",
+      "inner_exit_code": 0,
+      "receipt_sha256": "eb7069e6decd8634a085fa088c8e34e55adf887b35ae3fe32935ebf842d3422e"
+    },
+    "0052": {
+      "purpose": "compile-current-native-parser-regression",
+      "inner_exit_code": 1,
+      "receipt_sha256": "94d50cfbb29ea983e355f1beb4329ab81141326983c39092927a3121e2cf3f91"
+    },
+    "0053": {
+      "purpose": "current-native-plan-parser-regression",
+      "inner_exit_code": 0,
+      "receipt_sha256": "c9a33ed584e7379dbbcaf47a26c9c8bd449ff648ab6b4183fd3c155e62888898"
+    },
+    "0054": {
+      "purpose": "record-stale-harness-rejection",
+      "inner_exit_code": 0,
+      "receipt_sha256": "d559121af7d4d75be93789a4c0632bc479c7955996d0726ca22f9150a58f41e1"
+    },
+    "0055": {
+      "purpose": "compile-native-parser-resolved-source",
+      "inner_exit_code": 0,
+      "receipt_sha256": "30d3b60c80c073e5817b3967b62862f1063bc14a5a6bdfff5213ef996143a9cb"
+    },
+    "0056": {
+      "purpose": "freeze-qualified-current-native-build",
+      "inner_exit_code": 0,
+      "receipt_sha256": "3ed597cbc3a670bcbb4192af2d9b56f3ebf568e9a57324d5aa17bdc98cf83b19"
+    },
+    "0057": {
+      "purpose": "qualified-native-parser-regression",
+      "inner_exit_code": 0,
+      "receipt_sha256": "f21de7253da4f46db36f50396d43fb7c647a40279a341602e67760ac51859c0f"
+    },
+    "0058": {
+      "purpose": "release-and-asset-chain-typecheck",
+      "inner_exit_code": 0,
+      "receipt_sha256": "2fdbe1acaf0249b5482bb87704e96966fa2a88434c11b003b0dfcc61a66f898e"
+    },
+    "0059": {
+      "purpose": "build-product-runtimes-and-fixed-assets",
+      "inner_exit_code": 0,
+      "receipt_sha256": "97f68a323235b5c773fc62afcbf65825e781ca0a9699f1059d4f9d2b498cd17b"
+    },
+    "0060": {
+      "purpose": "record-public-chain-progress",
+      "inner_exit_code": 0,
+      "receipt_sha256": "f731564a7c03f8bb7629b163fe635a4c1bdee9b7395793e2c2fc355d385f6b0b"
+    },
+    "0061": {
+      "purpose": "actual-kernel-entry-preflight",
+      "inner_exit_code": 0,
+      "receipt_sha256": "14f88db9c4a77726a74295eb5e0506ccd8e0850ff1cfc707ef09f04fe80bcfd6"
+    },
+    "0062": {
+      "purpose": "graceful-runtime-and-route-typecheck",
+      "inner_exit_code": 0,
+      "receipt_sha256": "ab608af435eef0b0c13fe1610f8efe0bf79c6fb2b8c939366bc7c846d322f180"
+    },
+    "0063": {
+      "purpose": "runtime-shutdown-route-store-regression",
+      "inner_exit_code": 0,
+      "receipt_sha256": "1e40e6a7a17355ea3b471dd438f9355baeb62d7833527642d1aee66448db0f11"
+    },
+    "0064": {
+      "purpose": "compile-owned-public-fixture-builder",
+      "inner_exit_code": 1,
+      "receipt_sha256": "21f60822f173f9c7130bf56a7f40cf08fef48928a3f4404fa32cfb35bda3bd1b"
+    },
+    "0065": {
+      "purpose": "compile-owned-public-fixture-builder-fixed",
+      "inner_exit_code": 0,
+      "receipt_sha256": "6d9a27a5e8c97969e4034a84b9c210602d171d2c1bab397739b53c7fcb90e2df"
+    },
+    "0066": {
+      "purpose": "rebuild-current-product-runtime-assets",
+      "inner_exit_code": 0,
+      "receipt_sha256": "c861f7661da041d2d3f66c674f6dff29e3d05b83d17ad38a9a6a4b51fa0fae5a"
+    },
+    "0067": {
+      "purpose": "initialize-owned-kernel-fixture",
+      "inner_exit_code": 0,
+      "receipt_sha256": "35b0c7266f20fcf6aff59938986117eb6d27f857bcf7a3a7163ef7978c9b66ec"
+    },
+    "0068": {
+      "purpose": "create-owned-real-state-fixture",
+      "inner_exit_code": 0,
+      "receipt_sha256": "ab83017a35ab91bb3653c76786393a00f8bc8fcf579fda3f127eb893bf82881d"
+    },
+    "0069": {
+      "purpose": "Continuation read-only Bootstrap and remote main verification",
+      "inner_exit_code": 0,
+      "receipt_sha256": "dcecf26a7a40f4dfc6693e65a2d48340c5b016568f0aa27ba8685498c1914f9b"
+    },
+    "0070": {
+      "purpose": "compile-owned-public-fixture-owner-order",
+      "inner_exit_code": 1,
+      "receipt_sha256": "f44f87ff98da02420bb955cc3eac64079afd92a8247a2f4466c24a9a563ce232"
+    },
+    "0071": {
+      "purpose": "compile-owned-public-fixture-owner-order-host",
+      "inner_exit_code": 0,
+      "receipt_sha256": "66e2a3281ecfa480b6308f0f08d5dc098bbcee2120bf0a099c39862008a5f691"
+    },
+    "0072": {
+      "purpose": "reserve-owned-public-kernel-fixture02",
+      "inner_exit_code": 0,
+      "receipt_sha256": "c026386729af20425945cec4638ce38c96639757d59c4915445760922a02985a"
+    },
+    "0073": {
+      "purpose": "create-public-fixture02-real-config-before-state",
+      "inner_exit_code": 1,
+      "receipt_sha256": "f5ed0689b6ef4b425d0a2c9ec03c363c24ddb3912bf80f98bbe39d1635f457d6"
+    },
+    "0074": {
+      "purpose": "compile-public-fixture-project-scoped-state",
+      "inner_exit_code": 0,
+      "receipt_sha256": "513d74649b3cfff6dde526132c3156954964d0bab506545039fc6ec833ce2ea3"
+    },
+    "0075": {
+      "purpose": "reserve-public-fixture03-qualified-owner-builder",
+      "inner_exit_code": 0,
+      "receipt_sha256": "430c3e7f1475e4dd573124026a321038ddd8b1ea065140ca943b6ecedfaea136"
+    },
+    "0076": {
+      "purpose": "create-public-fixture03-config-owner-and-state",
+      "inner_exit_code": 0,
+      "receipt_sha256": "c7964a2af2f423639105291e4396333605f48cda961fa91924f59db9acb9e1d2"
+    },
+    "0077": {
+      "purpose": "real-kernel-public-chain03-positive01",
+      "inner_exit_code": 1,
+      "receipt_sha256": "4365474e98754d4e345181ae466523a92d7fccfa60411aace5fb3d6d92f61521"
+    },
+    "0078": {
+      "purpose": "real-kernel-public-chain03-positive02-correct-cli",
+      "inner_exit_code": 0,
+      "receipt_sha256": "540551f3296ca3904d2eec2de43a3e865808c033da6bace318ddc9c29fbb5716"
+    },
+    "0079": {
+      "purpose": "freeze-first-genuine-public-native-positive",
+      "inner_exit_code": 0,
+      "receipt_sha256": "c3403970b122eeb71f9774602b660c1af528bbcbee5d0bef5e158b6b66dc43c4"
+    },
+    "0080": {
+      "purpose": "real-kernel-public-chain03-matrix01",
+      "inner_exit_code": 0,
+      "receipt_sha256": "e6b3c697e9622c429bb7b9425e310c8f0fb58991ecc004baa557c435c7c057e8"
+    },
+    "0081": {
+      "purpose": "freeze-genuine-public-native-role-revoke-cancel-drift-matrix",
+      "inner_exit_code": 0,
+      "receipt_sha256": "6b557fa4d8a43d80bf84d05e95286c04b1c128707fc5909e645e987ea711426e"
+    },
+    "0082": {
+      "purpose": "static-normalization-and-existing-node-semantic-unit",
+      "inner_exit_code": 0,
+      "receipt_sha256": "8127e3e88bdbb42edeee1ce339a5f457af742915430dd2957e65761b8b1bf7e2"
+    },
+    "0083": {
+      "purpose": "static-task-runtime-full-typecheck",
+      "inner_exit_code": 2,
+      "receipt_sha256": "45368d6246dd2bbc83aa1a929691aa946975cc8f60da9b84d8d9f353ae47c62e"
+    },
+    "0084": {
+      "purpose": "static-task-runtime-typecheck-fixed-never-narrowing",
+      "inner_exit_code": 0,
+      "receipt_sha256": "5cb55c336b9515410940e3e3b6ab860ed3892c9574ec69441bee2b14e4f7bca0"
+    },
+    "0085": {
+      "purpose": "compile-ordinary-stable-product-crash-witness",
+      "inner_exit_code": 0,
+      "receipt_sha256": "db693c234bd852eb78d5cb8638780e4027cfe8221d32d49477b328e7161bba15"
+    },
+    "0086": {
+      "purpose": "genuine-public-launcher-daemon-crash-restart-recovery01",
+      "inner_exit_code": 0,
+      "receipt_sha256": "b844a95cbe3fc9a514085bd39b02c925f3a403d8914691bc91441682e36a9849"
+    },
+    "0087": {
+      "purpose": "freeze-public-stable-crash-restart-recovery-chain",
+      "inner_exit_code": 0,
+      "receipt_sha256": "042f986975115b98b7d076343a43d1f8679018ecc3d3b37b7c42d9060de47d08"
+    },
+    "0088": {
+      "purpose": "static-double-quoted-pattern-transformation-negative",
+      "inner_exit_code": 1,
+      "receipt_sha256": "395f7f4438ba9b3ef5c58c4c0c625486979b5b1fd3e3b6e73c5b90358af2660c"
+    },
+    "0089": {
+      "purpose": "static-normalization-quoted-expansion-fixed-regression",
+      "inner_exit_code": 0,
+      "receipt_sha256": "edca14d3711b8c1b80f27194e9ab83e51c3f1fb9995866579fd6de4d07a270c3"
+    },
+    "0090": {
+      "purpose": "prepare-source-release-version1.0.22-with-lock-metadata",
+      "inner_exit_code": 0,
+      "receipt_sha256": "24a2615253fe95d4c68b1055a8ac2d4db27fbef7d47e5cb6e38028db379fd2b1"
+    }
+  },
+  "current_source_hashes": {
+    "bun.lock": "dfc4911cadbed27c18da3aa277fda685395341bf6adb8d709df71e18bc343b3a",
+    "docs/design/windows-lpac-node-readonly-contract.md": "ce8c295012f14c45f6123a0beda1d67872da1b127011125ca06dc91d0664702a",
+    "docs/product-specification/authority-registry.md": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e",
+    "docs/product-specification/specforge-product-specification.md": "ada9b9926e71565ff6cd1594246a82ef047fb537d3974ba37c868a10ddcf254e",
+    "docs/project-status.md": "315d401d9a2061ae2b9cd28e2c4f4b8fbd55553fce49bf26b954c9190b489053",
+    "docs/rule/specforge-active-development-rules.md": "a8deb6359ee9550ae75f74b52da3c4b963477d067b7cff3d602000589dc3e1e4",
+    "docs/rule/specforge-development-error-ledger-and-experience.md": "dba7fcb6387ce45efc7be0104179a9f0b4ddaf3f00d4a480eb69465cde24e30e",
+    "package.json": "c44304090780142cce0efa0caa49489f1bd1bc8c1effe1170fd930a85303bf8d",
+    "packages/cli/package.json": "1725a183922ada023fb465934baa084ace9b2016a3e11c84d47153f461929364",
+    "packages/configuration/package.json": "0a9b7e94f4efb62061099a5bfedbe4a0c3a306de80d9dd65b775c226275512f2",
+    "packages/daemon-core/package.json": "dd3203350543b147e4a40004ed17379fefcc4d0b640841322d38b91c9b8a01b6",
+    "packages/daemon-core/src/daemon/Daemon.ts": "78593c960023ae0147eda151d4d4ec037836b0612e96314135c2cc3feaaff4be",
+    "packages/daemon-core/src/http/HTTPServer.ts": "92ddb2bec7d2e16ece4dbe4d7c84dd8e638903b5cd1b8ad3ef7838130c62ad21",
+    "packages/daemon-core/src/tools/ToolDispatcher.ts": "5ee444384b94fa614721341608f3ff9857dc050ba17bd3fe9f3294e985862a17",
+    "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts": "f1a2106827c25c2121a05ad29446c622f79006fc9d51978e23c42fe97954f22f",
+    "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts": "b2d13209700c040690bbdbedcb03fa36155d8780220c5e56d3ac2a6821c07b24",
+    "packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts": "b565bb409a07fb4b541d9be85c022dc8675603d4fd8cc613bccf838e70a8183d",
+    "packages/daemon-core/src/tools/handlers/sf-v11-verification.ts": "d8e15e323805aa6df9360e7b89ad33071e4db52c9da9233185db2b5ae1d9a6f2",
+    "packages/daemon-core/src/tools/handlers/sf-verification-execution.ts": "1628411a4df2f153fcb64dc0917b97f9e24d521ead9af34455883c90cda61238",
+    "packages/daemon-core/src/tools/handlers/sf-verification-gate.ts": "3a6f9eb6bf4362c7943827382d41c9397889cb3e91f8690bb6ce9edff03f617d",
+    "packages/daemon-core/src/tools/index.ts": "da124c0c68984bc0e14afb88efb8476b37d059521071bd7e75f93664bb10d006",
+    "packages/daemon-core/src/tools/lib/close-gate.ts": "dd1ed7308e94becdf4f7aa35c7baff09cc5e72e5201e126cf1e80563875e154f",
+    "packages/daemon-core/src/tools/lib/evidence-manifest.ts": "a7c5706bb21d46721d0122dc5380c4433a2f3d01f41a8162b40bc39d9c832d0c",
+    "packages/daemon-core/src/tools/lib/gate-report.ts": "e2e79e32d2f6c75d099228c1face186be3c9aeaeaa1ca538cf39d49c5042fc2c",
+    "packages/daemon-core/src/tools/lib/gate-runner-v11.ts": "da579fb63009c79632c8a05b2c0a29fd87ba6909af3c594fb0b0bd57c1428af2",
+    "packages/daemon-core/src/tools/lib/project-governance-v2.ts": "aed459ce70d2a43522a0fa9736ade3a4b7a167d28036763ccb2cdc851aebf62e",
+    "packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts": "dae174002aba2d5118c1a25456fd8dcea016779c6f4e3ee7e554da9a7e703146",
+    "packages/daemon-core/src/tools/lib/verification-governance-contract.ts": "4a208f8e4128e9e3e40c196f9d1bcfa7976a35e6bb07a1d69965545156f32d67",
+    "packages/daemon-core/src/tools/lib/verification-report-contract.ts": "2233e78b8a88bf8a826e2930c3724474a8bdeb9c70201b5d02f2ad89a08308dd",
+    "packages/daemon-core/src/verification/VerificationRuntime.ts": "c7d660f624a49b4da7e17e49ad774f5a57bd5db8ed5d63e3ffd8d8980e6c64ca",
+    "packages/daemon-core/src/verification/authority-snapshot.ts": "8128318ed76f08d66be26eeb5a7b54c95957a62010064282e2edc530cfd89271",
+    "packages/daemon-core/src/verification/execution-evidence-consumer.ts": "fdb40c8a8e9f868416813985e9f9f0d6b3c7bcb215de037b35b0154102cebc52",
+    "packages/daemon-core/src/verification/native-executor.ts": "0424ce9c0810c40f80810af9a521cb76a646b6aa299f4b72c4c10a74edb496ba",
+    "packages/daemon-core/src/verification/node-command-contract.ts": "fca4bbe28811e01af347b5b78e1504d7dc84676e23a7f302dfc7699bfb819a58",
+    "packages/daemon-core/src/verification/owner-store.ts": "c5e6ef4128bf0efd9d0d383f9d4f3bdc32a868c86b786c45480ad811aaf66942",
+    "packages/daemon-core/src/verification/request-context.ts": "878a611dba059c196a774665051f06d7e17b43fccd99060a14b813667530a24a",
+    "packages/daemon-core/src/verification/source-snapshot.ts": "b1f7a83abaf2881f4b8c5cba580b2cfab8114aa47e2811a7dc5a55a9577f8cec",
+    "packages/daemon-core/src/verification/static-task-command.ts": "2815a701ed6f918d65e0e41a9e7bcdf631d26130689311b3cbba1b42f69bb324",
+    "packages/daemon-core/src/verification/verification-assets.ts": "eb42833a7a4af46587c674009c41a59bcb78198fccc7b32680cc358e0342d0e0",
+    "packages/daemon-core/src/verification/verification-plan.ts": "f4ca94fb937313854089166ec1ef18bd8008d02574cbd9b2509642bc1b14228e",
+    "packages/daemon-core/src/verification/verification-schema.ts": "e07a362c74b745d70710b50beedd30e05f01d13f56218d9c5054985ab583bf96",
+    "packages/daemon-core/src/verification/windows/LpacInputIdentity.cs": "f8d893b0987d53c053ebc5948033775436b9ec39e1acd099b5fd6e48815826ff",
+    "packages/daemon-core/src/verification/windows/LpacParentLifetime.cs": "bf66eb97a15510df75cce7d3020bd5c1ea10b9f61645596614b029c6bcf8a066",
+    "packages/daemon-core/src/verification/windows/LpacProductionPlan.cs": "98bd69fc7391631cbb857b0fcb0af090992f33affc470d5cae88389c01a26b70",
+    "packages/daemon-core/src/verification/windows/LpacProductionRecovery.cs": "07c0734e1b4bc789245582d9acd4de6fdf01cf3b958b4a91f929b12410de7c30",
+    "packages/daemon-core/src/verification/windows/LpacStartupPoc.cs": "18e083c84eb898271fe130086480db28a4ba416091412fa5d5da3c779ec15d96",
+    "packages/daemon-core/src/verification/windows/README.md": "22ced91be203647158e75915e9d2119151b5a1aca81386bee8c17feb291d0453",
+    "packages/daemon-core/tests/unit/execution-evidence-consumer.test.ts": "5fc029ee27a28534b83312519f2189fc9a7685437b732037d0e404d807b3ac7f",
+    "packages/daemon-core/tests/unit/node-command-contract.test.ts": "e19f3b06078b7d72dc189664b12562edf434959dd419ebfd7f1ebc3a71df3353",
+    "packages/daemon-core/tests/unit/node-command-proof-boundary.test.ts": "e6a271f4faadc8266e27f116ceaed5888acccaafd48d729236407750ab28900a",
+    "packages/daemon-core/tests/unit/project-session-bootstrap.test.ts": "953333db3438970c7ebe7f96a0dcbf7b41a23dbb1b6f2207e4466efb92d2b704",
+    "packages/daemon-core/tests/unit/static-task-command.test.ts": "7f88dfc3f68950dad60102446686e48abd6de02a3667f63dd5af1ee34d1d96f5",
+    "packages/daemon-core/tests/unit/verification-owner-store.test.ts": "a4697d5ab5abb97c776278ed2fe85acc5733ab32a1172cc4734c0652354057ff",
+    "packages/daemon-core/tests/unit/verification-runtime-plan.test.ts": "d90e8a888a20e646fecd7eb7af905e2a1780773045fcdf8b3670bfd7ba0578ce",
+    "packages/daemon-core/tests/unit/verification-source-snapshot.test.ts": "25261b2a683825f6e8d09b1e1f2b9952b865a01d3dd96343ea38d212d391fc23",
+    "packages/host-profile/package.json": "eac582a676dbaf75f16b24e29065377f74b7808072691700db98b2a1ba78ba14",
+    "packages/observability/package.json": "fc327469fa683526f3157570fb2ca671be01cc88703896f4a45739dc76ef8e13",
+    "packages/opencode-adapter/package.json": "02fbcaa7af83c8dafdfc2c9b2a352eb2874a39ea3a8e25eb562dccdc0d090dc4",
+    "packages/opencode-adapter/src/index.ts": "e7811d81280ce928ef2dda960c194b1582de38f511688bb52c61c074b50d9756",
+    "packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts": "2ec9c8140acba54118355026207bdb16becca882ea6c9c5725b92ea8b4fa7439",
+    "packages/opencode-adapter/tests/OpenCodeToolInvocation.test.ts": "a932e519d29a33e1a0317635d826b46a9f41cb21e98259a188aa2ffe0d743f39",
+    "packages/permission-engine/package.json": "4206146195e13a05cfefa8fb6638efddc2b50de3993751f7a9861b34d9842bbc",
+    "packages/scope-gate/package.json": "0b2ac1b96e149d4c6c155bc6f4f82db778ce51268ca617e702afdee55b622b82",
+    "packages/service-management/package.json": "0dc4db804da2fccc69ed9d1bad5d165066eed671040547f8458f648035e6f431",
+    "packages/types/package.json": "8a94e020cc55805ef14058a2cd310e5ce44ba83bb38f3838b11765f961b065ec",
+    "packages/types/src/index.ts": "db8cffa5aba330c4a1f645e2ca813de4515fbc24eeda869ab33bd4f8e8444158",
+    "packages/types/src/trusted-tool-invocation.ts": "2139271f6bf7a5dad55dccd8812349b8b8d1a0f75a66140e57fe9f8b9c3ae978",
+    "packages/version-unification/package.json": "0943a9aff9cf630c101281757e795b03c5edb897887e0ce89b85e4bf45b3f1bb",
+    "packages/workflow-runtime/package.json": "595aae781854d6165d00e88a34e88e854441deb9d39b6a7c68b01c6a46e75f1b",
+    "scripts/build-release-runtime-artifacts.ts": "c40cda5ca88e7672e3073bba539427db1a97b873f016315f6080ff1f1b73ce12",
+    "scripts/lib/registry.ts": "0ef48cffc26f2412d8ee463a941bd4e95833a5b17786708a1336fdb77db81c77",
+    "scripts/lib/release-manifest-producer.ts": "1add54ca0a510d37d892b05f1c7d9ad52974d16a87c7425ab5c3900121c2a4e1",
+    "scripts/lib/release-owner-snapshot-producers.ts": "307b916d28ea9157bdcdf7ad4378d9a6fd202a7b5327a66b0cb83307aa551e35",
+    "scripts/lib/types.ts": "0a5e82e66967ecfbd023438d7579adfc4d3f62aecce6e0cfa9414ea95a541c98",
+    "scripts/lib/verification-asset-producer.ts": "b762c531619ea22e3b7c2353c9629735179c45b18518b7d1e39cd5053ec8e408",
+    "scripts/project-session-bootstrap.mjs": "51ddf3830add187bd281f04f1452838247c5407a1d67e9d35cb7baa910abd34e",
+    "setup/userlevel-opencode/agents/sf-orchestrator.md": "ba85220e0fbb9f05fe1c68910007975ee104f4ef7e58f0ac032371163159c82b",
+    "setup/userlevel-opencode/agents/sf-verifier.md": "96cac9102b01f20b7aa838ae4db498d06070c40c86f548ef43fad2bf9d3faa68",
+    "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md": "74408a1882ae5ac7057e9aba2453d118deef5c544c0e62cb7f1e6aaea36a869f",
+    "setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md": "d5a34443bac290ec10c988854ddda7b187d99db8b2b589c17c2c98ded3014064",
+    "setup/userlevel-opencode/tools/lib/sf_verifier_execution_core.ts": "7b9ad7b6c3adf2653cea17b2a2bbb4b2045c9306e66c821929b837bc45f8baef",
+    "setup/userlevel-opencode/tools/lib/thin-client.ts": "9e59075095bafd18e7cf80ea1d6b2d68481b485e1ce0566bd0bfa7c507e148cb",
+    "setup/userlevel-opencode/tools/sf_verification_plan.ts": "5e07a58933b7a038bb0fc4bdcf70b418ea060b607406b823b737253a1ed191a3",
+    "setup/userlevel-opencode/tools/sf_verification_run.ts": "28cff1f753defb0e6ccf6888a8e6a756f813660c526a3af8f7891d5303de1b65"
+  },
+  "acceptance": {
+    "SP_I01": "PARTIAL_REAL_PUBLIC_NATIVE_PROVEN_FORMAL_CONSUMERS_PENDING",
+    "SP_D01": "NOT_ACCEPTED",
+    "original_WI": "NOT_EXECUTED"
+  },
+  "source_version": "1.0.22",
+  "tested_product_build": "0066 development1.0.21 before static normalization",
+  "installed_version": "1.0.21 unchanged",
+  "original_business_writes": "NONE",
+  "all_private_profiles_from_qualified_public_trials": "Independent public recovery/inspection cleanup_proved=true; cancelled/interrupted never promoted",
+  "known_failures_preserved": [
+    "0070",
+    "0073",
+    "0077",
+    "0083",
+    "0088",
+    "0052",
+    "0053_UNQUALIFIED"
+  ],
+  "ledger_through": "ERR-1966",
+  "qualification": "Finite local model transport and seeded upstream baseline, genuine Kernel and public invocation/native execution; not real provider or full business workflow acceptance"
+}

@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/public-kernel-chain.cjs",
+    "05",
+    "consumers"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "real-common-consumers-hardstop-fixed-one-time-fixture-setup",
+  "expected_writes": "TRUTH_SOURCE_WRITES self-owned Report/Evidence/Gates and intentional audit-owner HardStop; RUNTIME_OBSERVER_WRITES real Kernel/Daemon and pending-attempt recovery; bounded receipt tamper restored; EXTERNAL_EVIDENCE_WRITES receipts; original/user install untouched",
+  "started_utc": "2026-11-07T03:00:52.104Z"
+}

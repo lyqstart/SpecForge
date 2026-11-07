@@ -1,0 +1,18 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/installer/verify-tool-schemas.test.ts",
+    "tests/unit/installer/planner.test.ts",
+    "tests/unit/installer/manifest_validate.test.ts",
+    "tests/unit/installer/generated_files.test.ts",
+    "tests/unit/installer/installer_manifest_path_contract.test.ts",
+    "tests/unit/installer/deploy-version-unification.test.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "installer-scope-manifest-planner-and-schema-regressions",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES self-owned root installer unit fixtures/cache; EXTERNAL_EVIDENCE_WRITES receipts; user install/original untouched",
+  "started_utc": "2026-11-07T02:50:59.453Z"
+}

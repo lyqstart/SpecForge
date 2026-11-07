@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/verify-boundary-stage.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Verify exact66 staged paths, all raw and canonical blobs, full staged patch and whitespace before source commit",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES staged review and complete diff plus receipts; repository index and all projects read-only",
+  "started_utc": "2026-11-07T05:54:36.307Z"
+}

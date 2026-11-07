@@ -1,0 +1,14 @@
+{
+  "executable": "git",
+  "args": [
+    "commit",
+    "-m",
+    "fix(verification): reconcile timed-out consumer operations and canonical evidence guidance"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Commit verified shared verification client outcome handling and canonical Evidence guidance",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES Git commit only for reviewed27 paths; EXTERNAL_EVIDENCE_WRITES sealed receipt",
+  "started_utc": "2026-11-07T07:27:46.608Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": []
+}

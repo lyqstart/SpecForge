@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-public-trials.cjs",
+    "07",
+    "07"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-fixed-http-abort-active-stop-lease-evidence",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable source-frozen trial/lease/native evidence; no private key/Node copies; original unchanged",
+  "started_utc": "2026-11-07T03:33:17.077Z"
+}

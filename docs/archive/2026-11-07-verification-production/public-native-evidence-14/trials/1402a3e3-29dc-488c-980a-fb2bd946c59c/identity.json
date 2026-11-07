@@ -1,0 +1,19 @@
+{
+  "utc": "2026-11-07T04:04:43.014Z",
+  "trial": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\624733f825af4301b89c0307be140ecb\\trials\\1402a3e3-29dc-488c-980a-fb2bd946c59c",
+  "fixture": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\624733f825af4301b89c0307be140ecb",
+  "kernel": {
+    "pid": 13212,
+    "base": "http://127.0.0.1:4096",
+    "executable": "C:\\Users\\lyq\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe",
+    "sha256": "83567c13cc5e361ded7e48351cb024cd4503285960d82c30fc585194da46d757"
+  },
+  "daemon": {
+    "pid": 26320,
+    "path": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\624733f825af4301b89c0307be140ecb\\config\\sf-user\\bin\\specforged.exe",
+    "sha256": "b1545ec314a2d3aa2d83ec5752d7c55a40d0016359a2975c141ae46bc1dfc4ec",
+    "port": 12221
+  },
+  "scope": "REAL_KERNEL_PUBLIC_TOOLS_AND_NATIVE;FINITE_MODEL_TRANSPORT;SEEDED_UPSTREAM_BASELINE",
+  "original_business_touched": false
+}

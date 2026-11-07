@@ -1,0 +1,12 @@
+{
+  "executable": "C:/Users/lyq/.config/opencode/sf-user/bin/specforge.exe",
+  "args": [
+    "daemon",
+    "stop",
+    "--json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "controlled-old-user-Daemon-stop-before-upgrade",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES official CLI lifecycle of user installation only; EXTERNAL_EVIDENCE_WRITES stop result; no original business changes",
+  "started_utc": "2026-11-07T03:57:56.836Z"
+}

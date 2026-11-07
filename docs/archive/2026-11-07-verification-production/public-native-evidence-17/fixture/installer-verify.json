@@ -1,0 +1,10 @@
+{
+  "utc": "2026-11-07T04:21:15.507Z",
+  "args": [
+    "scripts/sf-installer.ts",
+    "verify"
+  ],
+  "status": 0,
+  "stdout": "🔍 正在校验 SpecForge 共享组件完整性...\n   OpenCode 配置根: D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\8a982ca253364a8188f931573c9de83e\\config\n\n🔍 SpecForge 安装完整性校验\n==================================================\n✅ 校验通过（117 个文件完整）\n",
+  "stderr": ""
+}

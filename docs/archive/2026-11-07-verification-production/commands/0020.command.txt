@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/adapt-native-product-entry.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "adapt-native-product-entry",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=owned native producer source and parent lifetime;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=before snapshots and exact adaptation receipts",
+  "started_utc": "2026-11-07T00:46:02.185Z"
+}

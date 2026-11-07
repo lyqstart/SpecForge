@@ -1,0 +1,519 @@
+{
+  "closure_profile": "standard",
+  "design_decisions": [
+    {
+      "description": "公共 API 设计（greet 签名与导出）",
+      "id": "DD-CORE-001",
+      "requirement_refs": [
+        "REQ-CORE-001",
+        "REQ-CORE-002",
+        "REQ-CORE-003"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-002",
+        "TASK-WI-0001-005"
+      ]
+    },
+    {
+      "description": "两条行为规则与定义域分支",
+      "id": "DD-CORE-002",
+      "requirement_refs": [
+        "REQ-CORE-002",
+        "REQ-CORE-003"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-002"
+      ]
+    },
+    {
+      "description": "node:test 零安装执行路径与降级链",
+      "id": "DD-CORE-003",
+      "requirement_refs": [
+        "REQ-CORE-004",
+        "REQ-CORE-006"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-001",
+        "TASK-WI-0001-003",
+        "TASK-WI-0001-005"
+      ]
+    },
+    {
+      "description": "最小工程配置（package.json/tsconfig）",
+      "id": "DD-CORE-004",
+      "requirement_refs": [
+        "REQ-CORE-001",
+        "REQ-CORE-006"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-001"
+      ]
+    },
+    {
+      "description": "README 追加式使用说明",
+      "id": "DD-CORE-005",
+      "requirement_refs": [
+        "REQ-CORE-005"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-004"
+      ]
+    },
+    {
+      "description": "断言与验证钩子设计（A1–A4）",
+      "id": "DD-CORE-006",
+      "requirement_refs": [
+        "REQ-CORE-002",
+        "REQ-CORE-003",
+        "REQ-CORE-004"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-003"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "description": "node --test tests/greet.test.ts 真实运行（TASK-WI-0001-003 integration#0，receipt 54fda4bf…），TAP 4 pass 0 fail，套件真实 import ../src/greet.ts；运行路径仅 Node 内置模块与本地文件 import，零第三方包",
+      "evidence_type": "integration",
+      "id": "EV-0014",
+      "level": "L4",
+      "outcome_refs": [
+        "OUT-1",
+        "OUT-2",
+        "OUT-3",
+        "OUT-4",
+        "OUT-6"
+      ],
+      "requirement_refs": [
+        "REQ-CORE-001",
+        "REQ-CORE-002",
+        "REQ-CORE-003",
+        "REQ-CORE-004",
+        "REQ-CORE-006"
+      ],
+      "status": "passed",
+      "supports": [
+        "OUT-1",
+        "OUT-2",
+        "OUT-3",
+        "OUT-4",
+        "OUT-6",
+        "REQ-CORE-001",
+        "REQ-CORE-002",
+        "REQ-CORE-003",
+        "REQ-CORE-004",
+        "REQ-CORE-006",
+        "TASK-WI-0001-001",
+        "TASK-WI-0001-002",
+        "TASK-WI-0001-003"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-001",
+        "TASK-WI-0001-002",
+        "TASK-WI-0001-003"
+      ]
+    },
+    {
+      "description": "node --test tests/greet.test.ts 集成闭环重跑（TASK-WI-0001-005 integration#0，receipt 17b75cad…），TAP 4 pass 0 fail，含行为回归；加载器→真实源文件 import→A1–A4 断言单一链路在零第三方包运行路径上接通",
+      "evidence_type": "integration",
+      "id": "EV-0021",
+      "level": "L4",
+      "outcome_refs": [
+        "OUT-1",
+        "OUT-2",
+        "OUT-3",
+        "OUT-4",
+        "OUT-6"
+      ],
+      "requirement_refs": [
+        "REQ-CORE-001",
+        "REQ-CORE-002",
+        "REQ-CORE-003",
+        "REQ-CORE-004",
+        "REQ-CORE-006"
+      ],
+      "status": "passed",
+      "supports": [
+        "OUT-1",
+        "OUT-2",
+        "OUT-3",
+        "OUT-4",
+        "OUT-6",
+        "REQ-CORE-001",
+        "REQ-CORE-002",
+        "REQ-CORE-003",
+        "REQ-CORE-004",
+        "REQ-CORE-006",
+        "TASK-WI-0001-001",
+        "TASK-WI-0001-002",
+        "TASK-WI-0001-005"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-001",
+        "TASK-WI-0001-002",
+        "TASK-WI-0001-005"
+      ]
+    },
+    {
+      "description": "调用方视角动态导入 e2e（TASK-WI-0001-005 e2e#0，receipt 2a83a293…），E2E-OK：greet('Ada')==='Hello, Ada!' 且 greet('')==='Hello, world!'，与文档示例逐字符一致；动态 import 仅消费本地源文件，零第三方包运行路径",
+      "evidence_type": "e2e",
+      "id": "EV-0022",
+      "level": "L5",
+      "outcome_refs": [
+        "OUT-1",
+        "OUT-2",
+        "OUT-3",
+        "OUT-5",
+        "OUT-6"
+      ],
+      "requirement_refs": [
+        "REQ-CORE-001",
+        "REQ-CORE-002",
+        "REQ-CORE-003",
+        "REQ-CORE-005",
+        "REQ-CORE-006"
+      ],
+      "status": "passed",
+      "supports": [
+        "OUT-1",
+        "OUT-2",
+        "OUT-3",
+        "OUT-5",
+        "OUT-6",
+        "REQ-CORE-001",
+        "REQ-CORE-002",
+        "REQ-CORE-003",
+        "REQ-CORE-005",
+        "REQ-CORE-006",
+        "TASK-WI-0001-004",
+        "TASK-WI-0001-005"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-004",
+        "TASK-WI-0001-005"
+      ]
+    }
+  ],
+  "outcomes": [
+    {
+      "description": "greet 导出契约达成：src/greet.ts 提供唯一具名导出且被真实 import 消费",
+      "id": "OUT-1",
+      "requirement_refs": [
+        "REQ-CORE-001"
+      ],
+      "required_evidence_refs": [
+        "EV-0014",
+        "EV-0021",
+        "EV-0022"
+      ]
+    },
+    {
+      "description": "非空名称个性化问候行为达成：A1/A2 断言真实运行通过，name 原样保留",
+      "id": "OUT-2",
+      "requirement_refs": [
+        "REQ-CORE-002"
+      ],
+      "required_evidence_refs": [
+        "EV-0014",
+        "EV-0021",
+        "EV-0022"
+      ]
+    },
+    {
+      "description": "空名称默认问候行为达成：A3 断言真实运行通过且常量精确 13 字符",
+      "id": "OUT-3",
+      "requirement_refs": [
+        "REQ-CORE-003"
+      ],
+      "required_evidence_refs": [
+        "EV-0014",
+        "EV-0021",
+        "EV-0022"
+      ]
+    },
+    {
+      "description": "自动化测试交付并在合法执行边界内全部通过（A1–A4，4 pass 0 fail）",
+      "id": "OUT-4",
+      "requirement_refs": [
+        "REQ-CORE-004"
+      ],
+      "required_evidence_refs": [
+        "EV-0014",
+        "EV-0021"
+      ]
+    },
+    {
+      "description": "README 使用说明交付且与实现行为逐字符一致（既有内容追加式保留）",
+      "id": "OUT-5",
+      "requirement_refs": [
+        "REQ-CORE-005"
+      ],
+      "required_evidence_refs": [
+        "EV-0022"
+      ]
+    },
+    {
+      "description": "零运行时第三方依赖约束（Should 级）行为面达成：node --test 与动态 import e2e 均在零第三方包、仅 Node 内置模块与本地文件 import 的运行路径上真实执行成功（exit 0）；专用静态面证据（EV-0002/0009/0011/0012，L1/static）仍登记于 evidence_manifest 作为辅助",
+      "id": "OUT-6",
+      "requirement_refs": [
+        "REQ-CORE-006"
+      ],
+      "required_evidence_refs": [
+        "EV-0014",
+        "EV-0021",
+        "EV-0022"
+      ]
+    }
+  ],
+  "project_integration": {
+    "refs": [
+      ".specforge/work-items/WI-0001/merge_report.md",
+      ".specforge/work-items/WI-0001/changed_files_audit.md"
+    ],
+    "required": true,
+    "status": "merged"
+  },
+  "requirements": [
+    {
+      "description": "greet 导出契约（Must）",
+      "design_refs": [
+        "DD-CORE-001",
+        "DD-CORE-004"
+      ],
+      "id": "REQ-CORE-001",
+      "outcome_refs": [
+        "OUT-1"
+      ],
+      "required_evidence_refs": [
+        "EV-0014",
+        "EV-0021",
+        "EV-0022"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-001",
+        "TASK-WI-0001-002",
+        "TASK-WI-0001-005"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "非空名称问候行为（Must）",
+      "design_refs": [
+        "DD-CORE-001",
+        "DD-CORE-002",
+        "DD-CORE-006"
+      ],
+      "id": "REQ-CORE-002",
+      "outcome_refs": [
+        "OUT-2"
+      ],
+      "required_evidence_refs": [
+        "EV-0014",
+        "EV-0021",
+        "EV-0022"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-002",
+        "TASK-WI-0001-003"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "空名称默认问候行为（Must）",
+      "design_refs": [
+        "DD-CORE-002",
+        "DD-CORE-006"
+      ],
+      "id": "REQ-CORE-003",
+      "outcome_refs": [
+        "OUT-3"
+      ],
+      "required_evidence_refs": [
+        "EV-0014",
+        "EV-0021",
+        "EV-0022"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-002",
+        "TASK-WI-0001-003"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "两条行为规则的自动化测试交付物（Must）",
+      "design_refs": [
+        "DD-CORE-003",
+        "DD-CORE-006"
+      ],
+      "id": "REQ-CORE-004",
+      "outcome_refs": [
+        "OUT-4"
+      ],
+      "required_evidence_refs": [
+        "EV-0014",
+        "EV-0021"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-001",
+        "TASK-WI-0001-003",
+        "TASK-WI-0001-005"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "使用说明交付物（Must）",
+      "design_refs": [
+        "DD-CORE-005"
+      ],
+      "id": "REQ-CORE-005",
+      "outcome_refs": [
+        "OUT-5"
+      ],
+      "required_evidence_refs": [
+        "EV-0022"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-004"
+      ],
+      "type": "MUST"
+    },
+    {
+      "description": "零运行时第三方依赖约束（Should 级；行为面由零依赖运行路径下的 node --test/e2e 真实执行承载，静态面证据另登记于 manifest）",
+      "design_refs": [
+        "DD-CORE-003",
+        "DD-CORE-004"
+      ],
+      "id": "REQ-CORE-006",
+      "outcome_refs": [
+        "OUT-6"
+      ],
+      "required_evidence_refs": [
+        "EV-0014",
+        "EV-0021",
+        "EV-0022"
+      ],
+      "task_refs": [
+        "TASK-WI-0001-001",
+        "TASK-WI-0001-002"
+      ],
+      "type": "SHOULD"
+    }
+  ],
+  "schema_version": "1.0",
+  "tasks": [
+    {
+      "description": "创建最小工程配置（type:module 与 TS 加载环境在 EV-0014/0021 的 node --test 真实运行路径中被实际消费；静态面证据 EV-0001~EV-0005 另登记于 manifest）",
+      "design_refs": [
+        "DD-CORE-003",
+        "DD-CORE-004"
+      ],
+      "evidence_refs": [
+        "EV-0014",
+        "EV-0021"
+      ],
+      "id": "TASK-WI-0001-001",
+      "requirement_refs": [
+        "REQ-CORE-001",
+        "REQ-CORE-004",
+        "REQ-CORE-006"
+      ]
+    },
+    {
+      "description": "实现 greet 纯函数（实现被 EV-0014/0021 真实 import 链路行为性消费，A1–A4 通过；静态面证据 EV-0006~EV-0009 另登记于 manifest）",
+      "design_refs": [
+        "DD-CORE-001",
+        "DD-CORE-002"
+      ],
+      "evidence_refs": [
+        "EV-0014",
+        "EV-0021"
+      ],
+      "id": "TASK-WI-0001-002",
+      "requirement_refs": [
+        "REQ-CORE-001",
+        "REQ-CORE-002",
+        "REQ-CORE-003",
+        "REQ-CORE-006"
+      ]
+    },
+    {
+      "description": "编写行为断言测试",
+      "design_refs": [
+        "DD-CORE-003",
+        "DD-CORE-006"
+      ],
+      "evidence_refs": [
+        "EV-0014"
+      ],
+      "id": "TASK-WI-0001-003",
+      "requirement_refs": [
+        "REQ-CORE-002",
+        "REQ-CORE-003",
+        "REQ-CORE-004"
+      ]
+    },
+    {
+      "description": "README 追加使用说明（文档-行为一致性由 EV-0022 e2e 输出与 README 示例逐字符一致行为性锚定；静态面证据 EV-0015~EV-0020 另登记于 manifest）",
+      "design_refs": [
+        "DD-CORE-005"
+      ],
+      "evidence_refs": [
+        "EV-0022"
+      ],
+      "id": "TASK-WI-0001-004",
+      "requirement_refs": [
+        "REQ-CORE-005"
+      ]
+    },
+    {
+      "description": "集成闭环验证（T2C）",
+      "design_refs": [
+        "DD-CORE-001",
+        "DD-CORE-003",
+        "DD-CORE-006"
+      ],
+      "evidence_refs": [
+        "EV-0021",
+        "EV-0022"
+      ],
+      "id": "TASK-WI-0001-005",
+      "requirement_refs": [
+        "REQ-CORE-001",
+        "REQ-CORE-002",
+        "REQ-CORE-003",
+        "REQ-CORE-004"
+      ]
+    }
+  ],
+  "work_item_id": "WI-0001",
+  "workflow_type": "feature_spec",
+  "provenance": {
+    "contract_id": "semantic-closure/v1",
+    "generated_at": "2026-11-07T09:54:41.256Z",
+    "source": "tool_argument",
+    "semantic_payload_sha256": "sha256:0b38f661da1fe8ff32cda044e97560258cfc87cea91e02875a8185a861fcf4fa",
+    "inputs": [
+      {
+        "path": "candidates/trace_delta.md",
+        "sha256": "sha256:2c85b03ebbb1cfa4434430628dc715bf089ede722675d1d62491f57abe844ee7"
+      },
+      {
+        "path": "verification_report.md",
+        "sha256": "sha256:3c11f166064f34070d13533fde6bf1f359332bec36e5bd5c4e8447c8672e1d14"
+      },
+      {
+        "path": "evidence/evidence_manifest.json",
+        "sha256": "sha256:f422d618bc876afd97ab4ee7dc646595b6cafa555d5485ba00816e0915b4affb"
+      },
+      {
+        "path": "merge_report.md",
+        "sha256": "sha256:5d892dd9e1ef6bc7fd14142d287f664eb8bacf9fe9766ba5e07962e2cc5d95f8"
+      },
+      {
+        "path": "changed_files_audit.md",
+        "sha256": "sha256:1b0e974f54ab2952918559be8e6a47f90b28629b8119f4f0713237549048d101"
+      }
+    ]
+  }
+}

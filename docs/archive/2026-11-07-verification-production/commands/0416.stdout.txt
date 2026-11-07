@@ -1,0 +1,1 @@
+{"current_criteria":20,"source_catalogs":10,"overall_sps_accepted":false,"current_original_completion_pending":true}

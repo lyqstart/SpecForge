@@ -1,0 +1,1 @@
+{"snapshot":"original-state-observation-1794041467436.json","success":true,"rebuilt_from_events":true,"work_item_id":"WI-0001","workflow_type":"feature_spec","current_state":"verification_running","created_at":1792905467014,"updated_at":1794031583349}

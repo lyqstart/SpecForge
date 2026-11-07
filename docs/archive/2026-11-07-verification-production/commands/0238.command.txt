@@ -1,0 +1,12 @@
+{
+  "executable": "C:/Users/lyq/.config/opencode/sf-user/bin/specforge.exe",
+  "args": [
+    "daemon",
+    "status",
+    "--json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "read-actual-user-daemon-health-after-background-start",
+  "expected_writes": "TRUTH_SOURCE_WRITES NONE; REPOSITORY_TRACKED_WRITES NONE; RUNTIME_OBSERVER_WRITES readonly CLI health; EXTERNAL_EVIDENCE_WRITES status; no model or original context",
+  "started_utc": "2026-11-07T05:13:02.176Z"
+}

@@ -1,0 +1,11 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/collect-original-execution-coverage.ts",
+    "02"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Independently join actual professional-Agent plans/prepare/run receipts to all approved canonical Task command selectors",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable coverage snapshot and receipts; original Tasks and local Kernel GET read-only; no model prompt or business invocation",
+  "started_utc": "2026-11-07T06:07:05.175Z"
+}

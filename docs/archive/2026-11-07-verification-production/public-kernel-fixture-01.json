@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-07T02:09:17.475Z",
+  "fixture": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\8ab3867f707e4726a0571e214ad0345f",
+  "nonce": "8ab3867f707e4726a0571e214ad0345f",
+  "config": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\8ab3867f707e4726a0571e214ad0345f\\config",
+  "project": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\8ab3867f707e4726a0571e214ad0345f\\project",
+  "reservation_sha256": "13a209cda795ac4dca77709adc41e4a251ad163e4d55fdc7e492073e9cb074a2",
+  "fixture_bundle_sha256": "dc2698924e6e5d7180157a3cf30a791e15e96a30e943943cf93d923f8fd0afea",
+  "tool_sdk_version": "1.18.16",
+  "actual_kernel_version": "1.18.35",
+  "profile_created": false,
+  "build_identities": {
+    "sf-user/bin/specforged.exe": "7d72d4e1ee32459e6ed53228c82ce42b3827e9655fd08f931ad95a0aa35bb710",
+    "sf-user/bin/verification/node.exe": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+    "sf-user/bin/verification/specforge-verify.exe": "323e1a4d720a8738d6ed1025a8154f54742b87cf03707a3ec1d221893039b401",
+    "sf-user/bin/verification/assets.json": "7abcfe2c428390e90df6aa362485fb1cbe0e1808ec2ae13b5b1badc36817e0d5",
+    "tools/sf_verification_plan.ts": "5e07a58933b7a038bb0fc4bdcf70b418ea060b607406b823b737253a1ed191a3",
+    "tools/sf_verification_run.ts": "28cff1f753defb0e6ccf6888a8e6a756f813660c526a3af8f7891d5303de1b65",
+    "tools/lib/thin-client.ts": "9e59075095bafd18e7cf80ea1d6b2d68481b485e1ce0566bd0bfa7c507e148cb",
+    "tools/lib/sf-observability.ts": "82a23d21cacf440c93a59e73a088eae24c7043ef86c73efc4ba1051b17a8a658",
+    "tools/lib/sf-observability-config.ts": "e4051e796895fd5375b3fcfab955b368e7b03e3bd7789684fc17cbb8fd4d10c7"
+  }
+}

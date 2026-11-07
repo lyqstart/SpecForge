@@ -1,0 +1,15 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/persistence-owner-boundary.test.ts",
+    "--config",
+    "vitest.config.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\workflow-runtime",
+  "purpose": "Reproduce SPS8 boundary with identical Node Vitest test on ordinary-user host after sandbox cache rename EPERM",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES receipts; RUNTIME_OBSERVER_WRITES owned Vitest temp/cache; unchanged production source; expected failing owner-boundary assertions",
+  "started_utc": "2026-11-07T05:40:00.919Z"
+}

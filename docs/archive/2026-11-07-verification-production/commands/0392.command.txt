@@ -1,0 +1,22 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-public-trials.cjs",
+    "19",
+    "24"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Freeze current1.0.23 native formal/common-consumer acceptance with complete private-key-omitted evidence",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable public-native-evidence24 only; no original/global changes",
+  "started_utc": "2026-11-07T08:26:12.300Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\freeze-public-trials.cjs",
+      "sha256": "bbcc32c81bcc2e438d700e5b4e8a552ba0d9470b2ecd934403429ff3699597ee",
+      "size": 3498,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/node-command-proof-boundary.test.ts (4 tests | 4 failed) 18ms
+   × single-file semantic certificate host boundary > rejects reflection and scope-name laundering without executing it: const get=Object.getOwnPropertyDescriptor(Object,'getPrototypeOf').value;const F=Object.getOwnPropertyDescriptor(get(String),'constructor').value;console.log(F('return process')().cwd()); 14ms
+     → expected [Function] to throw an error
+   × single-file semantic certificate host boundary > rejects reflection and scope-name laundering without executing it: function unused(process){};const p=process;console.log(p.cwd()); 2ms
+     → expected [Function] to throw an error
+   × single-file semantic certificate host boundary > rejects reflection and scope-name laundering without executing it: function unused(console){};const c=console;c.log('x'); 1ms
+     → expected [Function] to throw an error
+   × single-file semantic certificate host boundary > rejects reflection and scope-name laundering without executing it: const C=class {}; 1ms
+     → expected [Function] to throw an error
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  09:38:11
+   Duration  774ms (transform 64ms, setup 0ms, collect 364ms, tests 18ms, environment 0ms, prepare 166ms)
+

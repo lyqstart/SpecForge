@@ -1,0 +1,21 @@
+{
+  "executable": "node",
+  "args": [
+    "--check",
+    "docs/archive/2026-11-07-verification-production/resume-original-verification-1.0.23-continuation.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Validate frozen longer observation driver before same-WI continuation",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=syntax receipt",
+  "started_utc": "2026-11-07T09:41:59.766Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 1,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\resume-original-verification-1.0.23-continuation.cjs",
+      "sha256": "7bf78e127fea52c1bba392c067d38a9b5448412903ea8dbe2541c1446deee800",
+      "size": 14237,
+      "extension": ".cjs"
+    }
+  ]
+}

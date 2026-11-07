@@ -1,0 +1,369 @@
+{
+  "utc": "2026-11-07T02:25:14.435Z",
+  "trial": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\b1cf9d5575484f519b266e6b2673a421\\trials\\d3241c38-e3ca-4946-9be8-98170f75c8c1",
+  "records": [
+    {
+      "name": "positive-plan",
+      "session": "ses_e4c2e1c58ffeik0GF1AYxONVLW",
+      "message": "msg_1b3d1e6110010oxGhuMSVgnegO",
+      "call": "call_9ab9a14b80cd438c90ce368baf2e1bad",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "04d6bd4fa0cc03cba39f46c0023610f965de4f196211ab697ab2ad71394727bb",
+        "preparation_id": "1900b5f202e658535308e86c69680fabe1bca10e49e2b695b4ec8d8f3021b02b",
+        "expires_at": "2026-11-07T02:34:03.703Z",
+        "purpose": "implementation",
+        "original_command": "node --test tests/positive.test.cjs",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "--test-reporter=tap",
+          "--test",
+          "--test-isolation=none",
+          "tests/positive.test.cjs"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "positive-prepare",
+      "session": "ses_e4c2e0106ffeMtpDMwqXPk1Tru",
+      "message": "msg_1b3d1ff550019C00x6RAaVhdcw",
+      "call": "call_f2663973fa0546e791d1eb13b9e2e5bf",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "f3f413bd201de433573ff1912f3aecc79c6b8068b9e42f2478f2cc12d70369e2",
+        "attempt_id": "71ae217ee90e4fc6a47856f5c381eb72",
+        "plan_id": "04d6bd4fa0cc03cba39f46c0023610f965de4f196211ab697ab2ad71394727bb",
+        "application_started": false
+      }
+    },
+    {
+      "name": "positive-run",
+      "session": "ses_e4c2df5c8ffekA8CeSAvZ7rq3M",
+      "message": "msg_1b3d20a76001Btfvd0Cn6G9xBN",
+      "call": "call_62dc9a20d2a946fbbe4154513dfd2bf5",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "receipt_id": "4180dd8038b4b23afd706395d3f74f7f3c5a221bd947e8bfd8df77ba1579356f",
+        "attempt_record_id": "f3f413bd201de433573ff1912f3aecc79c6b8068b9e42f2478f2cc12d70369e2",
+        "attempt_id": "71ae217ee90e4fc6a47856f5c381eb72",
+        "plan_id": "04d6bd4fa0cc03cba39f46c0023610f965de4f196211ab697ab2ad71394727bb",
+        "outcome": "passed",
+        "exit_code": 0,
+        "cleanup_proved": true,
+        "failure": null,
+        "stdout": "TAP version 13\n# Subtest: salute\nok 1 - salute\n  ---\n  duration_ms: 1.4763\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 26.2019\n",
+        "stderr": "",
+        "output_preview_truncated": false,
+        "output_complete": true
+      }
+    },
+    {
+      "name": "inline-plan",
+      "session": "ses_e4c2dd196ffe3RpexEaJX1PDpq",
+      "message": "msg_1b3d22ea4001M91coEDxbMTScy",
+      "call": "call_d54a71c1253949da89b09f53e13ca30e",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "bd47b0852a2f36eeeb0c4a63b5ac60366ad8fcf0ad2ed9d99c1bb3e96f0f4e46",
+        "preparation_id": "dc5093691a64475b407dbb3e79f997b6fa303df1846a4b28fb3216f26361f90c",
+        "expires_at": "2026-11-07T02:34:20.001Z",
+        "purpose": "implementation",
+        "original_command": "node -e \"const {salute}=require('./src/library.cjs');if(salute('Ada')!=='hi Ada')process.exit(1);console.log('SF_PRODUCT_INLINE_OK');\"",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "-e",
+          "const {salute}=require('./src/library.cjs');if(salute('Ada')!=='hi Ada')process.exit(1);console.log('SF_PRODUCT_INLINE_OK');"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "inline-prepare",
+      "session": "ses_e4c2dc151ffe4czqZPhNvYMHmS",
+      "message": "msg_1b3d23efd001Ig0Pe4mB82B1NU",
+      "call": "call_42021ab2a6374ac4a8cbbf753574ae16",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "54492fa56f69fa30e991d3024f416320f9051c471a755c335dfb719a654796f2",
+        "attempt_id": "c8c3c6e2c65a49c191f9d47a2ee35461",
+        "plan_id": "bd47b0852a2f36eeeb0c4a63b5ac60366ad8fcf0ad2ed9d99c1bb3e96f0f4e46",
+        "application_started": false
+      }
+    },
+    {
+      "name": "inline-run",
+      "session": "ses_e4c2db65fffebOLyn2um23bxaN",
+      "message": "msg_1b3d249db001RUP6ar1p8U1065",
+      "call": "call_86dc2ca994e74ceb9971998d12d43b86",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "receipt_id": "e2168c98db890b35620d5b506dabe3d5570b2d62f07176b8386188e3d02e1cc7",
+        "attempt_record_id": "54492fa56f69fa30e991d3024f416320f9051c471a755c335dfb719a654796f2",
+        "attempt_id": "c8c3c6e2c65a49c191f9d47a2ee35461",
+        "plan_id": "bd47b0852a2f36eeeb0c4a63b5ac60366ad8fcf0ad2ed9d99c1bb3e96f0f4e46",
+        "outcome": "passed",
+        "exit_code": 0,
+        "cleanup_proved": true,
+        "failure": null,
+        "stdout": "SF_PRODUCT_INLINE_OK\n",
+        "stderr": "",
+        "output_preview_truncated": false,
+        "output_complete": true
+      }
+    },
+    {
+      "name": "wrong-real-agent",
+      "session": "ses_e4c2d9349ffexDb6JuGry87Ii3",
+      "message": "msg_1b3d26cee0011024VxibfgFTyf",
+      "call": "call_f471145a4a6043369dd4e8f66ad438a7",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": false,
+        "error": "TOOL_INVOCATION_OWNER_NOT_PROVED",
+        "application_passed": false
+      }
+    },
+    {
+      "name": "same-attempt-cannot-reexecute",
+      "session": "ses_e4c2d8b51ffeUo3TqWkj4O1kHn",
+      "message": "msg_1b3d274f1001PoeTXzf1zqXKh3",
+      "call": "call_b117e515cd6f425cb131287471561557",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": false,
+        "error": "VERIFICATION_REQUEST_REJECTED",
+        "application_passed": false
+      }
+    },
+    {
+      "name": "revoked-plan",
+      "session": "ses_e4c2d8051ffeNe9FcrgCMxFJWg",
+      "message": "msg_1b3d27fe6001A8vUn3GBojYS55",
+      "call": "call_edcc2e6b23254795ad114e3202b090fd",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "0bf863d9f543243d05569c6ef2b97e90bb2c5285d0e1bc2249ac194c12345459",
+        "preparation_id": "10ade433d7cb91c07d400bbe64adf00ab6555cf3c10aced50c4a2ac20baa4272",
+        "expires_at": "2026-11-07T02:34:40.811Z",
+        "purpose": "implementation",
+        "original_command": "node --test tests/positive.test.cjs",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "--test-reporter=tap",
+          "--test",
+          "--test-isolation=none",
+          "tests/positive.test.cjs"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "revoke-plan",
+      "session": "ses_e4c2d7044ffeJ0enomUflGG4UL",
+      "message": "msg_1b3d28ff1001HbG90YIiT6Z74h",
+      "call": "call_9af3588a564345aba23b4bb13381e5d5",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "0bf863d9f543243d05569c6ef2b97e90bb2c5285d0e1bc2249ac194c12345459",
+        "verification_permission_revoked": true,
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "revoked-plan-denied",
+      "session": "ses_e4c2d682cffepeMsMZ80iD36Lu",
+      "message": "msg_1b3d2981a001B0psO0rI7e9F5Q",
+      "call": "call_7d38c4208c75467eb4f403ae23671e8d",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": false,
+        "error": "VERIFICATION_VERIFICATION_PERMISSION_REVOKED",
+        "application_passed": false
+      }
+    },
+    {
+      "name": "cancel-plan",
+      "session": "ses_e4c2d6094ffelSuN0biIIt6Qqp",
+      "message": "msg_1b3d29fa9001P87BPLcALPyq90",
+      "call": "call_479addbfa49b45d4b0fb3b61993ad7b7",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "fd5ae4f6dc5e0c932ca479321cff36d5e1d9177e45e842cf98a3835e3f81e555",
+        "preparation_id": "9c1d2964517a0c5a991b501cff88de20eace12c08f3eeea698bf1112ad6b3eca",
+        "expires_at": "2026-11-07T02:34:48.905Z",
+        "purpose": "implementation",
+        "original_command": "node --test tests/waiting.test.cjs",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "--test-reporter=tap",
+          "--test",
+          "--test-isolation=none",
+          "tests/waiting.test.cjs"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "cancel-prepare",
+      "session": "ses_e4c2d4ee2ffepoh6u50gbj238w",
+      "message": "msg_1b3d2b15d001Mxi1RJd5qk0yUD",
+      "call": "call_694dbea4a4f948b893c7514c65fbd959",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "8e64cbda9232f786d3ca5fc4b1c3d46825f7efa1dc5019b8aa7f7a82531c1dd7",
+        "attempt_id": "e52e399c26004ebe921cf896571bbc23",
+        "plan_id": "fd5ae4f6dc5e0c932ca479321cff36d5e1d9177e45e842cf98a3835e3f81e555",
+        "application_started": false
+      }
+    },
+    {
+      "name": "cancel-after-resume",
+      "session": "ses_e4c2d2ac3ffegj49m97Ny44rub",
+      "message": "msg_1b3d2d56f0016ETjCvBC5EoACU",
+      "call": "call_d01b9cc4ae804269bb4685f3f641d163",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "8e64cbda9232f786d3ca5fc4b1c3d46825f7efa1dc5019b8aa7f7a82531c1dd7",
+        "cancellation_requested": true,
+        "application_passed": false
+      }
+    },
+    {
+      "name": "cancel-target-run",
+      "session": "ses_e4c2d4320ffejbKigZpZsDVCJ5",
+      "message": "msg_1b3d2bd13001Qicz4DY7JzYALE",
+      "call": "call_1852c175837a481b9bac3e93019b0ff9",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": false,
+        "receipt_id": "1701813ca2ad40bea286865efc46bba2fa54870e97bc971f86779bd655efbc7b",
+        "attempt_record_id": "8e64cbda9232f786d3ca5fc4b1c3d46825f7efa1dc5019b8aa7f7a82531c1dd7",
+        "attempt_id": "e52e399c26004ebe921cf896571bbc23",
+        "plan_id": "fd5ae4f6dc5e0c932ca479321cff36d5e1d9177e45e842cf98a3835e3f81e555",
+        "outcome": "cancelled",
+        "exit_code": 130,
+        "cleanup_proved": true,
+        "failure": "CANCELLED",
+        "stdout": "",
+        "stderr": "",
+        "output_preview_truncated": false,
+        "output_complete": true
+      }
+    },
+    {
+      "name": "recover-cancelled",
+      "session": "ses_e4c2d1e2effe7Q5ZH6JCgGH4TD",
+      "message": "msg_1b3d2e200001eWoGRe0fnFrXRq",
+      "call": "call_d579079538374defa6ba50c4512ddede",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "recovery_id": "d024e933f4da0e43edf37086f5b2f304be6ef64f25c9523982e1d7ce5ba7982b",
+        "attempt_record_id": "8e64cbda9232f786d3ca5fc4b1c3d46825f7efa1dc5019b8aa7f7a82531c1dd7",
+        "cleanup_proved": true,
+        "application_passed": false
+      }
+    },
+    {
+      "name": "source-drift-plan",
+      "session": "ses_e4c2d1314ffeKa1HDUuiZ9gEFe",
+      "message": "msg_1b3d2ed1a0019JhW8xAv5U9Na9",
+      "call": "call_e9ffddf53a254a1393a88d76a43a0740",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "ef126365f67f194ac2bfc2df60d0576ad43f59b20ae6d84b733172097bb0b21e",
+        "preparation_id": "00685da3851c86d2272fab3892b68f4fa1ebd9c2a0418c1654b25da3a058c9b0",
+        "expires_at": "2026-11-07T02:35:08.761Z",
+        "purpose": "implementation",
+        "original_command": "node --test tests/positive.test.cjs",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "--test-reporter=tap",
+          "--test",
+          "--test-isolation=none",
+          "tests/positive.test.cjs"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "source-drift-denied",
+      "session": "ses_e4c2d02d5ffeP6BTiPsIYoWpXy",
+      "message": "msg_1b3d2fd61001okoVvj2NMgSvDc",
+      "call": "call_7561eef00022424088939c194570993d",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": false,
+        "error": "VERIFICATION_SOURCE_CHANGED",
+        "application_passed": false
+      }
+    },
+    {
+      "child": "kernel",
+      "pid": 40276,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-11-07T02:25:14.433Z"
+      }
+    },
+    {
+      "child": "daemon",
+      "pid": 39720,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "utc": "2026-11-07T02:25:14.361Z"
+      }
+    }
+  ],
+  "failure": null,
+  "exit_code": 0,
+  "original_business_touched": false
+}

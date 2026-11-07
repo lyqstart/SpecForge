@@ -1,0 +1,202 @@
+{
+  "schema_version": "1.0",
+  "attempt_id": "attempt-0002",
+  "work_item_id": "WI-0001",
+  "captured_at": "2026-11-03T13:14:00.582Z",
+  "inputs": [
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\architecture.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "8d975c562c022cc9d809c04f613e91ee0673bdeef39ed096c68e735b66e6400c",
+      "size": 38,
+      "mtime_ms": 1793707934752.7446
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\data_model.md",
+      "exists": false,
+      "kind": "missing"
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\extension_registry.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "17589ed8069ea7a8e8df0bce877782e6e0861807e0439dde315b50a504258bad",
+      "size": 395,
+      "mtime_ms": 1793707934774.7139
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\modules\\CORE\\contracts.json",
+      "exists": false,
+      "kind": "missing"
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\modules\\CORE\\design.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "8d975c562c022cc9d809c04f613e91ee0673bdeef39ed096c68e735b66e6400c",
+      "size": 38,
+      "mtime_ms": 1793707934782.991
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\modules\\CORE\\module.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "944f4ccbd3e0f1d9878fa448f60e964068c132c5dd3c184ae03bb87ac313fd55",
+      "size": 77,
+      "mtime_ms": 1793707934788.1719
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\modules\\CORE\\trace.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "8d975c562c022cc9d809c04f613e91ee0673bdeef39ed096c68e735b66e6400c",
+      "size": 38,
+      "mtime_ms": 1793707934798.3435
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\spec_manifest.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "d7a425f52746590f08c6da9a3806a931453b7feac2636766eb10b72543061c16",
+      "size": 955,
+      "mtime_ms": 1793707934806.1099
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "8d975c562c022cc9d809c04f613e91ee0673bdeef39ed096c68e735b66e6400c",
+      "size": 38,
+      "mtime_ms": 1793707934813.309
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidate_manifest.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "c1098af5ec6c5b232eaa936aabf077edcc8e1826163ee32d5e3942611cc77ab7",
+      "size": 2543,
+      "mtime_ms": 1793711624675.2988
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\architecture.candidate.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "4bb9e111ee78a59b00d1d2c439ce3791adca9194f19663e3c02257c7dbedbb9f",
+      "size": 7574,
+      "mtime_ms": 1793711349164.9978
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\data_model.candidate.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "dcf5764df623ff740891fc2693da8e33b2de2a4dc5c191e749d4b688e2e37502",
+      "size": 5387,
+      "mtime_ms": 1793708937480.883
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\extension_registry.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "b2d0a3984b195c50965939be3efb65471b1c84096bb86589fe1b1af5083599bd",
+      "size": 1981,
+      "mtime_ms": 1793711141012.4705
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\contracts.candidate.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "7c44cb3891a74b4551b9427aeb2104cc42baae522a5f665e0a97dafdb8986245",
+      "size": 3428,
+      "mtime_ms": 1793709664080.4846
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\design.candidate.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "f440d149e7651ab446c346d5689fcd90d07c2f3d06559d746de70db62524a022",
+      "size": 27848,
+      "mtime_ms": 1793709415821.6233
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\module.candidate.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "d70d5364fcc2b23c68044f0c61e20f931d1b31569d6ddde529de771ab708e6ea",
+      "size": 310,
+      "mtime_ms": 1793709425987.693
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\requirements.candidate.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "c3aee7cb3eb8eb36e4ecc181283c67fec9ce3de00e63ab771f0e3a6ffad677e6",
+      "size": 19190,
+      "mtime_ms": 1793708311350.4946
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\tasks.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "0b73306b4a56b505b1cdc59f062fbe83f76d1d39ad2534cc1597faa61d1feae2",
+      "size": 31725,
+      "mtime_ms": 1793710781898.3982
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\trace_delta.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "ff50de930383b544b5a6c352494d43209321e01e8ab005b39a46e884bbe79bfa",
+      "size": 11572,
+      "mtime_ms": 1793711528612.4753
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\change_classification.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "25c98a79b599e007324d0669fe171084cb11a64bfcbfada88b7e1b1288c1befd",
+      "size": 2547,
+      "mtime_ms": 1793707934878.4766
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\impact_analysis.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "8cfd357ac3daf215d3f47db1a64df31e6a3562859ec7c4d3454e672a27ef0542",
+      "size": 4135,
+      "mtime_ms": 1793707934908.2632
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\implementation_baseline.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "572ecb5bba7aa0e9d0945db24c5fa1b47e983c43b151fbcd6b3db4e75de27a13",
+      "size": 1110,
+      "mtime_ms": 1793711253065.8264
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\intake.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "0bcbcfe50f18c49915d9ccc2a57a3c209894d8547cb2781d5f141f35eb31c9e3",
+      "size": 5724,
+      "mtime_ms": 1793707934919.5327
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\trigger_result.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "f3923902ccf53fe2fc8d9edca9a1ebc456e084b90e4200bef2f57530f12f0abb",
+      "size": 1357,
+      "mtime_ms": 1793707934923.5352
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\work_item.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "60ad6b5aa55e62d68d95fd0a7de967e0525ed9257a56307a37db87fbcacdb63f",
+      "size": 324,
+      "mtime_ms": 1793707934927.8247
+    }
+  ]
+}

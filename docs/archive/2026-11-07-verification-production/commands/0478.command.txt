@@ -1,0 +1,18 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "--cwd",
+    "packages/daemon-core",
+    "test",
+    "--",
+    "tests/v11-agent-skill-contract-alignment.test.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Reproduce D23 omissions in actual positive verifier delegation and orchestrator closure sequence",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=two regression cases already declared;RUNTIME_OBSERVER_WRITES=Vitest cache;EXTERNAL_EVIDENCE_WRITES=raw failing regression",
+  "started_utc": "2026-11-07T10:06:19.826Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": []
+}

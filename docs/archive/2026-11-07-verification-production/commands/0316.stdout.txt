@@ -1,0 +1,9 @@
+
+ RUN  v4.1.5 D:/code/SpecForge
+
+
+ Test Files  3 passed (3)
+      Tests  14 passed (14)
+   Start at  15:17:01
+   Duration  2.94s (transform 491ms, setup 0ms, import 1.40s, tests 434ms, environment 0ms)
+

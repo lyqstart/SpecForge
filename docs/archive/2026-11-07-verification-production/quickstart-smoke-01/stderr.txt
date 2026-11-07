@@ -1,0 +1,2 @@
+PTY exposes a merged stream; separate stderr is unavailable. See terminal-tool-response.json.
+

@@ -1,0 +1,21 @@
+{
+  "executable": "node",
+  "args": [
+    "--check",
+    "docs/archive/2026-11-07-verification-production/prepare-publication-derivatives.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Syntax-check bounded publication scripts and reasoning-copy ignore boundary;no seal yet",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=.gitignore already declared;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=command receipts",
+  "started_utc": "2026-11-07T09:14:34.666Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 1,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\prepare-publication-derivatives.cjs",
+      "sha256": "dffecf874635b66b90497af02054aa7c602bab85c788b3cc45ffc31ecfde30a8",
+      "size": 2751,
+      "extension": ".cjs"
+    }
+  ]
+}

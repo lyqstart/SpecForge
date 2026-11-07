@@ -1,0 +1,64 @@
+{
+  "upstream_baseline": "SEEDED_ONLY",
+  "complete_business_gate_acceptance": false,
+  "gate_status": "failed",
+  "executed": [
+    {
+      "task": "001",
+      "outcome": "passed",
+      "receipt_id": "19872fd97abe1a2e44e015b876abaec480b483d499283c080a61f96cc18698c2"
+    },
+    {
+      "task": "002",
+      "outcome": "passed",
+      "receipt_id": "c7675088f84626f149129ed2633112e29d8b2f334b1fe9eaf25a4e0cf1056595"
+    },
+    {
+      "task": "004",
+      "outcome": "passed",
+      "receipt_id": "de72e8aff4bc2023eee52f5ee317325f45b875afa8fed2a90de6d5668fd53d90"
+    },
+    {
+      "task": "005",
+      "outcome": "passed",
+      "receipt_id": "e158ef44c224ed3e135afb8b7a3453514f43b941fbdf5f79a9bc2dd8a7b25cbb"
+    },
+    {
+      "task": "006",
+      "outcome": "passed",
+      "receipt_id": "a53e9b2fea203d8e08b194d3906f71c08f56a413b1deb9d0403860664feded01"
+    },
+    {
+      "task": "007",
+      "outcome": "passed",
+      "receipt_id": "11d0177ea86af1a4b65de82935576ab935d9f3d9dfb2940ba745b58e6ca6dd14"
+    },
+    {
+      "task": "008",
+      "outcome": "passed",
+      "receipt_id": "c82715aa01344f801583de07ae79581a97f8d83db5a100d44f55c91294dc9851"
+    },
+    {
+      "task": "009",
+      "outcome": "passed",
+      "receipt_id": "67eee4cb11c1f31e688ca69c6767db4cb25ac0da6e5ec16764dc4a7dc4b6386e"
+    },
+    {
+      "task": "010",
+      "outcome": "failed",
+      "receipt_id": "529381a56a69649d09fbfd997bc2de14e63549c36e2ecf7d430aa1652f620d32"
+    },
+    {
+      "task": "012",
+      "outcome": "failed",
+      "receipt_id": "1f2e56c98aa495101d47f24fc006d2610298dc5a725d02b5ad50cf9c23126c31"
+    },
+    {
+      "task": "013",
+      "outcome": "failed",
+      "receipt_id": "6512b2f6e60d3b33f2b1b61cd50fb336854f81b273c95ab8da6cec21eb64a2f2"
+    }
+  ],
+  "report_and_manifest_actual_kernel": true,
+  "private_key_archived": false
+}

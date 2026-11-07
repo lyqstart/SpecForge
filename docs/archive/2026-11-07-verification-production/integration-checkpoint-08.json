@@ -1,0 +1,1556 @@
+{
+  "utc": "2026-11-07T06:23:25.474Z",
+  "run_id": "CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01",
+  "attempt_id": "CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01-01",
+  "mode": "CODEX_DIRECT",
+  "status": "IN_PROGRESS",
+  "receipts": {
+    "0001": {
+      "inner_exit_code": 2,
+      "carrier_exit_code": 2,
+      "sha256": "c9da10c474012672e32816ae3fbe29aa84cd49cad9305168a8a3026ddde95ba0"
+    },
+    "0002": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "ba979e70e8485a4e3380a1b83153624dbae1f819ca29df02fae092b1d7243ef3"
+    },
+    "0003": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "c4266bffb54af7842e9a754837b3c02959bc454f547e766a3f7b484899b6026b"
+    },
+    "0004": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "c7e3821a935d9e76457e5e2e4e8a05ce8e79de987669d87d14bf3e1cbfbbfb60"
+    },
+    "0005": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "fe2c3cfc9e1990dba63a58571c4ac8edcd345b6b4753c6102691f94e85398ba8"
+    },
+    "0006": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "2f41537977b4f0df5297c9abb1f32ce3cbff2ea848beb13f6fded568a7f47d79"
+    },
+    "0007": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "60e2f1bfeea018e4127a13474ddc634f0b9904c02af6b0d5c4c7e02c50547169"
+    },
+    "0008": {
+      "inner_exit_code": 2,
+      "carrier_exit_code": 2,
+      "sha256": "7fabbd2cafe28aa406a639c5b59b574472402ad6519e993669d8c90072459dbb"
+    },
+    "0009": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "269a782a69f6bd79c865742f1d2969a868f955e9481c862579e058385a593516"
+    },
+    "0010": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "1be022304c3fab15f607992c0db0523a106f6e8e18cb6d09b3f76cd83491aacf"
+    },
+    "0011": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "f43339acbf64c8e20fd5a37dc618fe935dcf12b310d8fa019bf1ebc1798c10ae"
+    },
+    "0012": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "fc282f8e8bfb8d674a32c7f723e2433a81c5e5216ec38176e0e044f0b831d4ce"
+    },
+    "0013": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "4cfb039514bde910ac086a46f92affe4ea044499f56cbacc67b284c511abe672"
+    },
+    "0014": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "b48c0d6e8e207f2cd51af1bced5100d4060291e25ad637d68268dece1d9edae1"
+    },
+    "0015": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "280f2203bcba15c6b35e6ad9067d6fd98537974466d6290e00e01414adc9d5bb"
+    },
+    "0016": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "2d3d41c2ed8c17b290871590f009e2a39b0fbe28d6f5c48c2d7dfe20b0d83dbf"
+    },
+    "0017": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "165d7e1e9a00e53747f1441dc1ba55693c738805a8c6f1a563944053b2ca8d32"
+    },
+    "0018": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "534c829f5f22405fb3b528427dab2ea1de23e57441d268546b8d10399e167502"
+    },
+    "0019": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "9510c2720b08ab8d0280a6743bfc72d61604b51efe255105a2a073a1384b42da"
+    },
+    "0020": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "179d25a3a59bf0bd93b33b09260ca80a3fe84e73d50e58554aac286d22ee0674"
+    },
+    "0021": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "015a0b68b50cb647971c66cbdaf298c289840fc2bb71e9aeab62e918be90af66"
+    },
+    "0022": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "ff44233a416c5f60d4566d796439675cbd04e6bfae3925e30fe184a51fccb7c5"
+    },
+    "0023": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "7afaa28a1ac06d0ebba010812fdffa1846cdb50f37247329f647f125c3c2eadf"
+    },
+    "0024": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "103455e77367531182b84c773f0ea3af83a7ca5cffa348a51e5308d21510d9f0"
+    },
+    "0025": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "20ca904b7a74af3b350f746e45ee4939597346794b22149337446144e08b690c"
+    },
+    "0026": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "6934613fe13f1881598ff1e0468a4696b87c7e436965ef92c16c5cc51b36273b"
+    },
+    "0027": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "34a9db3aa98e9dccc7ff75791b64152c405d54b329389af7ada3dfa2f1fb9f42"
+    },
+    "0028": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "dc24c44295d171d0fe6a2f99e00abee0bad2534a6efe10817d9d31c3cdb5907d"
+    },
+    "0029": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "ee4c0a8f3d41c288d03feabd09b18ad6daaf39fd4eec7cb886f696fb248a88eb"
+    },
+    "0030": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "d0cdbc575793257eff615b010b9868c093973fd3776d4b10a13a927e23b4f146"
+    },
+    "0031": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "30eb410d5b80e21180857f1717ecd69e8fe80c47dda024a00fa669062f584757"
+    },
+    "0032": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "68e1a39adce7496c0ad94fe6b772286d1ad630cb4362232a73c659140215165a"
+    },
+    "0033": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "0d8e26a614bc785d0773cff78fb61b507fb1df5814f97ce58eaf98a4e46558bd"
+    },
+    "0034": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "4de4aab2ec18a5a66c78a68bf64b5b362d291eab5ae43499e59089aa9132e161"
+    },
+    "0035": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "421832e99d9a2418465413b51addf32eb4d6d96469f3e9165c48068eafb632c2"
+    },
+    "0036": {
+      "inner_exit_code": 2,
+      "carrier_exit_code": 2,
+      "sha256": "a6f1a41e23bb076a8f32b55cc3ae74bfd3f6263d0bc179d1b2efbf53033d4976"
+    },
+    "0037": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "a836792c72910b44d3b30908483c15d019cd3cadf0ff1a0e943c92e509d5124c"
+    },
+    "0038": {
+      "inner_exit_code": 2,
+      "carrier_exit_code": 2,
+      "sha256": "a435404a38cad0641d205b7fe478accddbf0a1f1c0d8c32dde25ab971eb29b00"
+    },
+    "0039": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "2bd0c665ce9f9adadb6929fdd7fa3c10abb70f4901b418cb7bff0959f7f64241"
+    },
+    "0040": {
+      "inner_exit_code": 2,
+      "carrier_exit_code": 2,
+      "sha256": "c5e01ec7b97ec67443faf5a0f05dbefbc54e0308af6678cb96f10e6955292a63"
+    },
+    "0041": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "7300fefd27d20c1edb95d496d0cbf37a1f131441d25ced68eb263d7f48e7379d"
+    },
+    "0042": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "bf278c38d10381b5cbb35b038323aa46956df182bdeee01584c6b3440be9bec6"
+    },
+    "0043": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "a46770b2a606f1ecb166ff84286b99a6a1d90b8b5067aac07944f686e9fd03ab"
+    },
+    "0044": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "b40990835f7a4da75f5e8bf5216c002a55fea1e1abcae10bb3f5c71675fa940a"
+    },
+    "0045": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "b25482a87b707b9ad615046d490495ff1c647e1e4bdf29549a19610de7739242"
+    },
+    "0046": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "f8f076376044f962ac45151ac10f657f58da15ef07ea05dac51102dd30ecb784"
+    },
+    "0047": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "059356b81457e6911d567dd82c3339d71828498b5569543c961b3e4f38c11ee7"
+    },
+    "0048": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "001db37105a577822fae0c1171a7746d1f09fab4e6898bfa85628be6e3792d0e"
+    },
+    "0049": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "82c17807f0fa3bdfb2ab521ff0b2225fdba008ac7f072fe2df3aadfb6367219b"
+    },
+    "0050": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "40379127895978ce05dc9e6742456d3891d78a00a8d73ef01856d38eda0a7ea0"
+    },
+    "0051": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "eb7069e6decd8634a085fa088c8e34e55adf887b35ae3fe32935ebf842d3422e"
+    },
+    "0052": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "94d50cfbb29ea983e355f1beb4329ab81141326983c39092927a3121e2cf3f91"
+    },
+    "0053": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "c9a33ed584e7379dbbcaf47a26c9c8bd449ff648ab6b4183fd3c155e62888898"
+    },
+    "0054": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "d559121af7d4d75be93789a4c0632bc479c7955996d0726ca22f9150a58f41e1"
+    },
+    "0055": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "30d3b60c80c073e5817b3967b62862f1063bc14a5a6bdfff5213ef996143a9cb"
+    },
+    "0056": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "3ed597cbc3a670bcbb4192af2d9b56f3ebf568e9a57324d5aa17bdc98cf83b19"
+    },
+    "0057": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "f21de7253da4f46db36f50396d43fb7c647a40279a341602e67760ac51859c0f"
+    },
+    "0058": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "2fdbe1acaf0249b5482bb87704e96966fa2a88434c11b003b0dfcc61a66f898e"
+    },
+    "0059": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "97f68a323235b5c773fc62afcbf65825e781ca0a9699f1059d4f9d2b498cd17b"
+    },
+    "0060": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "f731564a7c03f8bb7629b163fe635a4c1bdee9b7395793e2c2fc355d385f6b0b"
+    },
+    "0061": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "14f88db9c4a77726a74295eb5e0506ccd8e0850ff1cfc707ef09f04fe80bcfd6"
+    },
+    "0062": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "ab608af435eef0b0c13fe1610f8efe0bf79c6fb2b8c939366bc7c846d322f180"
+    },
+    "0063": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "1e40e6a7a17355ea3b471dd438f9355baeb62d7833527642d1aee66448db0f11"
+    },
+    "0064": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "21f60822f173f9c7130bf56a7f40cf08fef48928a3f4404fa32cfb35bda3bd1b"
+    },
+    "0065": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "6d9a27a5e8c97969e4034a84b9c210602d171d2c1bab397739b53c7fcb90e2df"
+    },
+    "0066": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "c861f7661da041d2d3f66c674f6dff29e3d05b83d17ad38a9a6a4b51fa0fae5a"
+    },
+    "0067": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "35b0c7266f20fcf6aff59938986117eb6d27f857bcf7a3a7163ef7978c9b66ec"
+    },
+    "0068": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "ab83017a35ab91bb3653c76786393a00f8bc8fcf579fda3f127eb893bf82881d"
+    },
+    "0069": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "dcecf26a7a40f4dfc6693e65a2d48340c5b016568f0aa27ba8685498c1914f9b"
+    },
+    "0070": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "f44f87ff98da02420bb955cc3eac64079afd92a8247a2f4466c24a9a563ce232"
+    },
+    "0071": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "66e2a3281ecfa480b6308f0f08d5dc098bbcee2120bf0a099c39862008a5f691"
+    },
+    "0072": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "c026386729af20425945cec4638ce38c96639757d59c4915445760922a02985a"
+    },
+    "0073": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "f5ed0689b6ef4b425d0a2c9ec03c363c24ddb3912bf80f98bbe39d1635f457d6"
+    },
+    "0074": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "513d74649b3cfff6dde526132c3156954964d0bab506545039fc6ec833ce2ea3"
+    },
+    "0075": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "430c3e7f1475e4dd573124026a321038ddd8b1ea065140ca943b6ecedfaea136"
+    },
+    "0076": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "c7964a2af2f423639105291e4396333605f48cda961fa91924f59db9acb9e1d2"
+    },
+    "0077": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "4365474e98754d4e345181ae466523a92d7fccfa60411aace5fb3d6d92f61521"
+    },
+    "0078": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "540551f3296ca3904d2eec2de43a3e865808c033da6bace318ddc9c29fbb5716"
+    },
+    "0079": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "c3403970b122eeb71f9774602b660c1af528bbcbee5d0bef5e158b6b66dc43c4"
+    },
+    "0080": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "e6b3c697e9622c429bb7b9425e310c8f0fb58991ecc004baa557c435c7c057e8"
+    },
+    "0081": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "6b557fa4d8a43d80bf84d05e95286c04b1c128707fc5909e645e987ea711426e"
+    },
+    "0082": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "8127e3e88bdbb42edeee1ce339a5f457af742915430dd2957e65761b8b1bf7e2"
+    },
+    "0083": {
+      "inner_exit_code": 2,
+      "carrier_exit_code": 2,
+      "sha256": "45368d6246dd2bbc83aa1a929691aa946975cc8f60da9b84d8d9f353ae47c62e"
+    },
+    "0084": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "5cb55c336b9515410940e3e3b6ab860ed3892c9574ec69441bee2b14e4f7bca0"
+    },
+    "0085": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "db693c234bd852eb78d5cb8638780e4027cfe8221d32d49477b328e7161bba15"
+    },
+    "0086": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "b844a95cbe3fc9a514085bd39b02c925f3a403d8914691bc91441682e36a9849"
+    },
+    "0087": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "042f986975115b98b7d076343a43d1f8679018ecc3d3b37b7c42d9060de47d08"
+    },
+    "0088": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "395f7f4438ba9b3ef5c58c4c0c625486979b5b1fd3e3b6e73c5b90358af2660c"
+    },
+    "0089": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "edca14d3711b8c1b80f27194e9ab83e51c3f1fb9995866579fd6de4d07a270c3"
+    },
+    "0090": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "24a2615253fe95d4c68b1055a8ac2d4db27fbef7d47e5cb6e38028db379fd2b1"
+    },
+    "0091": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "53677fdf1b5ab800bca540c50d67e3cfcfb1dcc1fdd42472a80398451f695827"
+    },
+    "0092": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "a9ef37c833aedd5b6b2f51120e710c9a802caf110b60cec155dc7660aa05a267"
+    },
+    "0093": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "19afb0dd076119ba68b2d3656419a1a5f9248c1b5d2ae05941250bb52054387f"
+    },
+    "0094": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "d91ff8e6394311f5d401c64492df6eed908685e8590aa1055b9929e87dc04d06"
+    },
+    "0095": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "dd4422884ced5af56e197853b350daacf50455cb4a4130be5f1436c39fa30f97"
+    },
+    "0096": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "11eea588cf4fb7ff77af25a25e67d25a0832cf8ab204e9b58ac175696f938a3b"
+    },
+    "0097": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "56767c82a6d38fdd114ebaf80469a68af3fb1782ed50268f1c89ed62fa0ae94c"
+    },
+    "0098": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "03da5dc544a54536517c721a01e5708940885415cb18b68715cda77ad842c472"
+    },
+    "0099": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "2f29a56c20b9f457fce8f3c16a5643854beb34a8fd66b5d788859a9daf7cc12e"
+    },
+    "0100": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "493cbe171dc7ca936444358d72598ee8bb408d528e5d17562b317407414afa27"
+    },
+    "0101": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "c8291ee27c4ff28203ebab0a41d2a2c2e2afed138df4e92608c3f55dc715770f"
+    },
+    "0102": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "6d891cc4640876315c8a75c1f3887d7384efcdd1d09c9294b5104d2e0b203114"
+    },
+    "0103": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "22b7beba9ed7991fff26176e7d4bfa743c7bb641d283d4a247f2d98cfa587fca"
+    },
+    "0104": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "24714be198d252997c7ab7f64b92de27d212a0d10079ff2d010339b78e614190"
+    },
+    "0105": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "98358ca5f3e70f1554d86a23aedb782631cb0c90ec554bf3ccccc0cc130fde93"
+    },
+    "0106": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "4be4d939fea33594adc4b1881ae1ebb2353322ab1b7c07ff7941279cd862374b"
+    },
+    "0107": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "4ea96fffb44fd4599293ac2de2baf44b4780bd7e2da8825ac36a7c31c4bb4319"
+    },
+    "0108": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "0603f5d9f25831009744d9bf97478cdde49efa868b81bd83af2ff5f02d5bbcea"
+    },
+    "0109": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "5969a102c96e96020b1819f41e4113cc901370d33743f63ae83f31109127e172"
+    },
+    "0110": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "78b0ba084d7f70eb89bed18ced4af3702096eb8daec8957aaac9d1305c0a2a83"
+    },
+    "0111": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "d5f1b740a8edb141bc625c037c971b190ef779e12f84d115cd227da7918f55c2"
+    },
+    "0112": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "574de8643a7cdce9d6d641640e09564b14377b56bbd844d0304283d8044d0578"
+    },
+    "0113": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "d81da6945efe35f38d4e96241381aacffc5fdb5a29cd8a2f1353b534869a0aa9"
+    },
+    "0114": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "fa6aa1c3018cfaeb1add949026ff8a8aa2b9ed7f6973ab9bed5a413a92766964"
+    },
+    "0115": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "1b0ab3834c3b45fcc58fe99b8645177165d525b7e2add4261d031ac5975403e3"
+    },
+    "0116": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "ceb0fed294bd2bf35c532d3e63c1c66026d51b1150764202866bc04adb67d452"
+    },
+    "0117": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "6e842d951ca1e46ff4111e95e3c8140d013d9503e4d5328e0cf8e63a8267d39a"
+    },
+    "0118": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "d669d6f3fa93be116216726855427a3655b52a89e78e9d0815dcbb8b4a396710"
+    },
+    "0119": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "aaf0e6799697160f1b866cef9068b2c9db5c7d8a7e0c354ec331ba61e85c68f7"
+    },
+    "0120": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "8436ab1c6e2846a0cf9db0f16ff98543acf17e0776fab2b9b5452534db2345d5"
+    },
+    "0121": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "7bb94e2e7afe1849da8b2b98815e8cfbcd77272f127c78dc77f046e126c7a0e1"
+    },
+    "0122": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "f8039482a541a527c21096316605de1bbb53e7b66267cb188d5f364d5fa18f37"
+    },
+    "0123": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "90e0ec7a3e107eac0332c50de46697c3bad102cc1069a9f11e192e313e8e0ce3"
+    },
+    "0124": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "b1277874177f3a5a52b7560edc5a1a6469215d66fef915a76846a0cf1e9b971c"
+    },
+    "0125": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "83b412328ada86cc928f5871d20c676e9b57f5f40619a869ec758864aa3f9d07"
+    },
+    "0126": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "1ef1f60ae72d04815cd341c17d69e802ac0885f735937c3e52548be5ab8ffdbe"
+    },
+    "0127": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "569eec4e18d00a70eb2acc3ecc361a3b1ca1fb8dd2a4a2f58c156a95badeca74"
+    },
+    "0128": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "87ae93240ad31540b721c27586396c05259559faa86fe0cbd4ab17bf385e2cb7"
+    },
+    "0129": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "110d10de55e43c9a4036798034c8f95c452dd8808b07eee09ef346b9b3e5b91e"
+    },
+    "0130": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "578e817eae1e34e0631c2568960bf1875bb5226460162ac34ad4851116a9a2ae"
+    },
+    "0131": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "888cb9d4381dde7e9c6cfb176ad8d659a849a40832e7db30ead065c992dbf875"
+    },
+    "0132": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "d6185af88c3fe16ac2e9af9d791743be24736627f435a665511cd3f2bd3edfea"
+    },
+    "0133": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "3d04b8837e7e93d2ab468be9a35c9106f0c83294b5a36d15c89b0414f822d268"
+    },
+    "0134": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "4167f3ccc339652338c4ca739edf412f5042217c073da8b6b48be72dff4320b8"
+    },
+    "0135": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "0399908b9100e8a7389e7fba6f45ba81581beba9fdcbb7349e7a0957eab6b479"
+    },
+    "0136": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "59b371758fa1a57f8d211688ab637ee380563ed93c5f160bc9ac26451fe99d81"
+    },
+    "0137": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "aeaf70dcdd965d59b4a6662eb51cb381837040757e632ec9c3f9d311448c161a"
+    },
+    "0138": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "c3b4310316ea4221868dc7298fcab38e998ca4aaa6b63d4a41bce39b9df762bd"
+    },
+    "0139": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "8697370c9b66eb725be4da8bf2d6515248f76b5012981ae80bfc66c76c458a1d"
+    },
+    "0140": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "1c96fe8a0bf545ac4772a73b80e5943ad167153a4e70b62df38b16bbc98bf839"
+    },
+    "0141": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "87d26750e5167f1be5729388b68eb9c0c088a601c98ba509ea4b642e12dbf895"
+    },
+    "0142": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "361c0e137b59fd6784acb2b6844ef04dc10b67d25a5bc6081aa9b54e10903a6c"
+    },
+    "0143": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "0d4c518895913fa5148d052b2c344dc2814677f7df03c6987f71ebecf4c9642a"
+    },
+    "0144": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "0370a73e9bbe9f84261d16890df21a1d4c8fc2fa191431143db7e8b62434204d"
+    },
+    "0145": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "d2f61c69fcd5fbc4f978d5c252f3adf17466ca8a5a5b20b82b4389ed1ed2b7a8"
+    },
+    "0146": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "7e144bce1f6d30e0d374a600d04eab3641e71cc7542cd6967b044694b41a50c7"
+    },
+    "0147": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "c30713a552da9ab475b59e8c3fab66960c5714e9752f2505eedab5050963ee66"
+    },
+    "0148": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "e01139350befa437f8327a4fd73671045f338e381f64fa990fd6a7766188584d"
+    },
+    "0149": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "5d478621f85040dbacf8ccc8aac052fc53c5ce8dbf4b6c4077137ea3476fcfaf"
+    },
+    "0150": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "3c78f4b9ed28599aef4617a293947368fd6851dc654caff108c2c3a382c644e5"
+    },
+    "0151": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "a5dcdd996c8b86b60755c6777052892f06bfd82c4c681b6c8f0f91caff2ae436"
+    },
+    "0152": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "c54bffe954e6d38db477ef4f0a2d508fc872d16edf93a01379c8d1e65b6a06e3"
+    },
+    "0153": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "be41c40d09f98f698cb12c6e37f679a53af4860e6e5d80efd1540ede43c8cdd5"
+    },
+    "0154": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "4c843d1f70571c41c0eb6e37cdcddea48a43b4f978854b46ad86937b9ee21cd5"
+    },
+    "0155": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "2926843d2fb00637fe9eb66fe25162abbdc119c8516d95e9b0174897663d957b"
+    },
+    "0156": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "1e58661480d537fc95d6d5eac04476c0f2c927d228e877a720facbb39ddb787d"
+    },
+    "0157": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "1a53a8d24d919c69ecc3e4ff2b797f5ba02a112f826a6f397e779f9f71b412b3"
+    },
+    "0158": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "31cc1cf1ac9b6b5f2b19f010242524a82b9b8857831dfed1c0e6356b25ebd39f"
+    },
+    "0159": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "c3948ed0a1ac97383e064d0adf8109a976a60a3a849e1638949a83ec4db14dbf"
+    },
+    "0160": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "522abd283c79feae4be15488fe6d20108ec1854ea4850d3973b9dcb7ebebf3b6"
+    },
+    "0161": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "89591c21e33d79558a0f62916c239fbc0906389ffb6f26f8438d33abc7024212"
+    },
+    "0162": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "2dd5db6ad0fb7f4ac595ae68467821bc14bb8ced282e65b93f874912304afbc4"
+    },
+    "0163": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "2e41f6bfe0155bb63fd2cc5f07a4fb941cb6d405a82f99b1856fa94b08dc6079"
+    },
+    "0164": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "dacfcb681039123701c1cc7e0307d494866f5cd397ccfd5122c318434e1434f0"
+    },
+    "0165": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "21e2476355e749d3dc4a74ed9a7dc3558c379b2613ff6ce01c4992adf471ee12"
+    },
+    "0166": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "144d8449fd00ab324d97b0e7365254229610112d8a3db811246ad51f367f62e0"
+    },
+    "0167": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "a01de9c34616bb7d89f1fb0c4732e69dd7c47c1ed79407b3216b5ecd456e4d47"
+    },
+    "0168": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "15b06248335d48fb38299131b9957c5891f4e8e3ed2e3112be047bd21b293aff"
+    },
+    "0169": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "4863fc609decfd608772ec995b9d687928f3491ac2309cad48e73d00edeb9fc9"
+    },
+    "0170": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "40a413f934ae30ba2f2f738a82e04f6774e79d6a9df1bcd6567d8fb43550a15d"
+    },
+    "0171": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "780a3ac952041665db68c8b167f2c85f71b3dcd8a3c16f2a359ac2a6bd337736"
+    },
+    "0172": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "a9374ac83a56556173c5088fd7873b3e7a0124a7b44986a7f286078f982a18ef"
+    },
+    "0173": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "1380945a09d3ada7b10e2cb9f9f1fa833fee1d9c5661bcc572aeea11681707d6"
+    },
+    "0174": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "381febf323dbe86c9d59036daf948dae971b01cfd74e04dc1ea62004ebf45e98"
+    },
+    "0175": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "54c9970d5a554390311b202245889b9683701ebd4388cdd481d239b637b3a9ef"
+    },
+    "0176": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "77a36cff167fc65fc884aa3e4449991f5151fe9f0aa7bf26f2fcc22bec23675e"
+    },
+    "0177": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "6f5bbe764395d9fc5e750a464e04b69974038fcc517ae184e5e788084263b845"
+    },
+    "0178": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "3daf98d6b2270c660fa70cf32c58e466f2ac57895f2a9d8b81c6226c9534cbd5"
+    },
+    "0179": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "e11ea78390bf20bd930dac51c7e2c1750585e0ee8f59e44f24ff2c03c5688585"
+    },
+    "0180": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "a324212db359dd36f91a8950a57ea8445c30ddc30363309a8b4d3243c25a00e7"
+    },
+    "0181": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "3db4feddda51c6f7a841b7d9506855011608fba3d1422befac71bcac99c5f01a"
+    },
+    "0182": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "b2ff0335ed0e3305a3df2abc62ba0ad5b46ae70a895d77fe00d37e31abceb49a"
+    },
+    "0183": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "dbaffa560a46dd3ed2227b24051cccec2e893d1961ffdc936d22705fbbdeff38"
+    },
+    "0184": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "bc8d84853d066bdcd150037dbc3a986517a3ebb9754f244c00099e4e9d6e9f89"
+    },
+    "0185": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "9166d9e06446b1f355c57192b30d648ce562c480ee0cb6b08964c068a85d42cd"
+    },
+    "0186": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "30aaae656268b805b776aeee000ebf95d25282370b182e8a39e608ddaae0e109"
+    },
+    "0187": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "d8b2bdb87195e6f0103465755dac3102f19714c07de9897d8de600ab6cbfad95"
+    },
+    "0188": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "36eb009341452f34856e5235feb91561b025f335097a602b7ab3467e725e3c5c"
+    },
+    "0189": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "ff9cfdb73a76fd7682db590c912e89b3c823e6bce89dcd9acfb294113df2278d"
+    },
+    "0190": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "33acfd865f914a2f8d8960d00e500fd72c5fcf285b48c90553e56704b5ecd53a"
+    },
+    "0191": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "239bd120701593415b26615a9ee31abc94779f318a08800bb5dffb28d5f495cd"
+    },
+    "0192": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "8db2e60a3f24cfd727b3f31a2ee7f86a6615450af8cfedd2a84c4b79831b3616"
+    },
+    "0193": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "7e00e91a2bd4b09967395e319a62d855f93b27d209e7b2ce307766d68f328ee7"
+    },
+    "0194": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "f6fccd717d5b690d8fe615c06c7c7b89c0ca7d92d65c7805368b84bf74d609cf"
+    },
+    "0195": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "c995a804929eb6b4bc2fd22e06a2b485b2693128a85f9f57a20e2caf81c20083"
+    },
+    "0196": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "1532f06575244aae1e288d04d9b1f92c0e866e9f26d2333342b433ec7a45182c"
+    },
+    "0197": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "d451ca669541ff57e51dd39c6f4ae85efb03be514a556d078409ed0aa680d6f3"
+    },
+    "0198": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "7c99e50535dfdfccf2166f2669d2b13963115ebd750c38a56d550ae2e1070e0f"
+    },
+    "0199": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "0d3d475414466d01909ec1206c8a76cf94887aefa7bbbec68c54257cb9b58772"
+    },
+    "0200": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "3b7ef004165efeb43bfc264c27ae61fce85fbcbe8f3f652ab6efb0a265797bd2"
+    },
+    "0201": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "d7579e831580bd64333b4ea1c3d07bfe882e0b68f8b17bfdfb270348cca46a00"
+    },
+    "0202": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "2dc0a26a85811e6293227c46ece88deb3de35c179c8acf84f9dea2192f6904ec"
+    },
+    "0203": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "b4e98816d0731335365ddfbb44b373331c50c6fdb77ddbbe481c317799a23116"
+    },
+    "0204": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "b0f0b4721d48f78db1cca68d5e76544f5073a7b40322277ebb7d42d54d5dd8a9"
+    },
+    "0205": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "dc4b92c34f94528a164d45bcc10be54870949b7385dbfce585b7cf9c9e07a7ea"
+    },
+    "0206": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "ec4700feb99fa6b8493e81402574bb2714c84c363b1e95218cdf451b9515ba94"
+    },
+    "0207": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "f5e7fcd249d748c48a2a59662e3afc8f2967a709bbd304ed1ab35364aa68881f"
+    },
+    "0208": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "a4b42cd3c6db9ee6fd3c6f303e3d64cf5460dfc2cb8b4ae870bc443c1d1c8633"
+    },
+    "0209": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "3397713bc9af964bb0125fc06a38f7ed61d430197f78a25edd2f8fd1ed0fd516"
+    },
+    "0210": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "8085bf426688620c01cf3e8df4d5719dbaff704936e554f5fd68baeb6f9a0c1b"
+    },
+    "0211": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "ea4888414946814f84b1d49fd8c75d9f1ff0e1cacf7174ea0b3bfc2209bfab68"
+    },
+    "0212": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "823205f62912ee0789351e8db121e32e693c91c712ee03c2abae49b4dcde6a4a"
+    },
+    "0213": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "09c4cc650c87dd541a51a4582a02454d2fbc61b0aa29dcb70f62a46a16fcaced"
+    },
+    "0214": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "24e41439355c358ff5d79e1b303aa65262c706f51dfc326fb3f44b02c6d6083c"
+    },
+    "0215": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "c6d64aa28b717c21e23128e1477c04495941d7c1951984645f97e1a14e40afbf"
+    },
+    "0216": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "cea84aea08157c2d56208206fd232410c9182f20fa7fc9591816a47bd58edcf2"
+    },
+    "0217": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "bd72da80638eb80499afd88dbc2dd8430dc914fa0ba0fb35e6d74ff8cdb88f6a"
+    },
+    "0218": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "c0e6f8b9b68cf302225323564473269c2b6b104a024ccfe927e04b3527357d88"
+    },
+    "0219": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "883e461a854cbbfc18a54a44b3d99f73346470783966d6236e985a68dc9dedb6"
+    },
+    "0220": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "6419ae6db3d28bcc23d85e688b20e07f09b6ebcf5d458bfb9821af8855147bd0"
+    },
+    "0221": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "143c24658d07fd4222c0fd76736a0b6a150ca1c5206d68bf1dcd948d3ecfb290"
+    },
+    "0222": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "9efe80d23e57ed07e3b9fb9e590c9f9ffb2251d2c433b77ee39ed63863873350"
+    },
+    "0223": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "035202869871a3ceb57b08caae15617e23b29a5d9ffea67f138258fbd935d485"
+    },
+    "0224": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "5c9bb44c912c0cbd81b8ff8b235d27af5c889a328c470f667a3df8be4c2b26e7"
+    },
+    "0225": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "382ca2d58d92bfdaed6f321b93ee8f6f674ff6ebca60f736c7d01c03dc4aabbf"
+    },
+    "0226": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "08c0ba57086078a6612a1b437688b5cb06670536fa607697d3b9297fcd011894"
+    },
+    "0227": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "ac19ba755c5d8fa009ae91bdb4b3b464cb3447beca194a6f5797ab78c3a00a5e"
+    },
+    "0228": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "f55b79d12cda8036c8ab948b2907c106769b96bfcdb395bfbb58d8912f92479c"
+    },
+    "0229": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "4ba48ee093a8edd71763f415ba5cffbea96105d495bbce53204320f9a9b37d21"
+    },
+    "0230": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "9f02e4afec079a3ca644db33f51361afdeeee9cb2c8b002345c55befbd57e748"
+    },
+    "0231": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "8dc367cfa13ec0021fce1658eaa9370d467954f40be3d98d5e9630e6088ca82a"
+    },
+    "0232": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "0479ad1c5e8829e00172e9ed00349f93d6d128521ff095ef8bc0dff09cf29c4f"
+    },
+    "0233": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "f816bb7697b0d0682be4661a5ced8ce65fd0c10f527f3dbd44889032d9208359"
+    },
+    "0234": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "41e97f8faef4eaed9317bfd10bff02232d5c4f55681c05ed73fa01797e89c361"
+    },
+    "0235": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "df4b11ce1c16aa5cd53ff10755ed8d0f5f268d4db36002da062ad9e7ec43676a"
+    },
+    "0236": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "6c0e5f27172a3b08c569e128ea0863849cc1d6b474502088aabbc82efa1584ae"
+    },
+    "0237": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "d7c960b3adb8d1e7b3011289ab240e8d032b3e373f4b4b11c09a02fe3aa32252"
+    },
+    "0238": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "2c9ac9f691a56aeb1c7683aa0c0bcaeca941f9986810ede238c5c989fc1fd6c9"
+    },
+    "0239": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "9b05a2125e28bcdb1d78ca2fa48c3c920991da41047dd6d5e5174d616bfd1c50"
+    },
+    "0240": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "324c4f5f3942021391b94bbdba58a581e019eb205324c4354e0e7ff147e73ea2"
+    },
+    "0241": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "12a5cde92a9bdf59ba10cd4bb256e3036f43328da3335d044df4a06b6c913dfa"
+    },
+    "0242": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "17eb082ad1b3b8c454f78ad99f96611bb4d80dd838ad7b78929ff69f80b4196c"
+    },
+    "0243": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "bbbb837d0543ac9dd37826a2746c6f18adb3498ac90467b4dee4a912bf5676e5"
+    },
+    "0244": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "c89af592a73f57d6786cf27ebc9700ded8a855f1821f40a370851cedd09496aa"
+    },
+    "0245": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "a01d568f5b49a727115c6f5871ee83a71c419d3703218f03c53f9fe19726c064"
+    },
+    "0246": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "d210140844eca2dbad07749fb22ef697e12c612cde1eb3b9e440417a3a5a9df5"
+    },
+    "0247": {
+      "inner_exit_code": 1,
+      "carrier_exit_code": 1,
+      "sha256": "c90819c36102b80e135c7c203606e4235d3223985738121c4acaf78803b061f7"
+    },
+    "0248": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "7a5248057232f056f2b094bb8338bf92e20274c09f3c34d2c1993849028ed20c"
+    },
+    "0249": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "d60e3724ed356bed62c783f5d40be571293077e5ea03ef415451a5a2aabbbca7"
+    },
+    "0250": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "39cdec602a6a09b6b19ccece4d54ae3c57d6e74d5034671f112443d37cde6b4f"
+    },
+    "0251": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "e342f7f10467c45fca95246e42afc21a062b0d116173f8b99a65efeeae7dd937"
+    },
+    "0252": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "138b8c68bb7628ae3d8b6508cfb041c4d4448dd52aeb5142a342410a9a73b71b"
+    },
+    "0253": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "59fd7b38321e1ea4e61d10ace02ff283c767e4add222289e29e685ba73b25dea"
+    },
+    "0254": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "f8c1bc9724b844331641f86473de26982afffb026a31201a59ff0fb978617086"
+    },
+    "0255": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "da0a31879634d9eb7af054e47239e45e635ebec984244b06f559fe3a38afad4e"
+    },
+    "0256": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "c42f9d3505e647ef08414cdf5f45c461b2435f2bed4d878148331aed0736814e"
+    },
+    "0258": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "0b8745dede526d4fc62b6c88cae2a6eac11bb6ca8d059b23cc72c435176a0b35"
+    },
+    "0259": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "97ff48b7034769d32e6dea0de56b56dbe09fdc7b594e9ca443ee845eac16c87b"
+    },
+    "0260": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "adc4af7c1bb16930c8b461c238fbbcb6a9f450ffd36fec82d10060658c22f029"
+    },
+    "0261": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "1fa45ca5b1667d1e6383cea4dd2cf7e032f976977858a4890e08766ab6a45654"
+    },
+    "0262": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "dea4ebc3006ac888c33162107676dc556e7d6b3557b22ca9fa5686e1f136fa09"
+    },
+    "0263": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "6f955b497bd781dfaa3c7a6c7004fca4c3d1d161204f4bf2bf5143ebeb95b8c1"
+    },
+    "0264": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "1092baa7abf152c7b2d71a57f9bd2ce8dfe2509f95f487ceeec03737a20875c6"
+    },
+    "0265": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "7e4c4e736c7b34ad29ebbcf51587e200cca56dfe0de3cbc1352bcb4ee9eb3d36"
+    },
+    "0266": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "02d631ad369ce2290141476c230052a8117232b89e8e09650257a5fd02d4b10e"
+    },
+    "0267": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "23e03259bda30a94220b8bde9410f5e241a495ea54222f639fcfff5ccb098b51"
+    },
+    "0268": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "137a36e2f7b2db95267d11ff0b31745d8f6f65e6c6747f4a4f679ce7a5ebecce"
+    },
+    "0269": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "13ecba3f3801c50b656a9bf2b791c3b67d42c739e1f998294b916c304dcacf22"
+    },
+    "0270": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "c195c9d3ba4f14634938d027f426c2bc0f98560a719ded7c4acb10d932e20ac6"
+    },
+    "0271": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "642d36609826d7462325a14dfd02bdf15f5465f84c69fc93a95f87a2d4770ab0"
+    },
+    "0272": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "109a273b5408234ee99522b33659ad7a64b1fd549a52555e0fe6bd3d26341af3"
+    },
+    "0273": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "682e2175d70af6939b3f58873de1cd83a32a171cca5b6c3d08a415599ab9ddba"
+    },
+    "0274": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "0c7714bd0b791d24ea011cc554f3ab1853368ae3268dd002ea874484819611c6"
+    },
+    "0275": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "4e5ce371016703df8febf3217832dda5a676f37ccbc725fda80bfaf5dd5ec4b3"
+    },
+    "0276": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "64babbc6391dab162b7af7f64d1c1fcbc9958f545f363547edc840c1e4732096"
+    },
+    "0277": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "4008937df97ed46189f3fe80a0c0d57d2b7ff2a9c4101d3f74476da2ac9bc5cc"
+    },
+    "0278": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "3c6ab2006fbc951a67cf9f10737ef0ef9ce071e56fe8c9ef94bfb4d6bed0faf7"
+    },
+    "0279": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "8d8aeb0fdfbdcd2a3a2a39fcdbd21388a315acef23c0e7092bbc5384ea1565c7"
+    },
+    "0280": {
+      "inner_exit_code": 7,
+      "carrier_exit_code": 7,
+      "sha256": "7d0c3c19b265ad9abb2d203bf93708b867695143bd954f1a734d1766cfde47b1"
+    },
+    "0281": {
+      "inner_exit_code": null,
+      "carrier_exit_code": 1,
+      "sha256": "fcfba6db4f61f0bbb79d8c7c945e294f57026fb2bdce96a62ef5957505d0c374"
+    },
+    "0282": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "65b0e3bea4b54c33676df43e43b5808066a0e20b42f37bb3d3ea2228d7737718"
+    },
+    "0283": {
+      "inner_exit_code": 7,
+      "carrier_exit_code": 7,
+      "sha256": "1d84371747937bb959fe54ac721c24d9177e0755788d1a393fb596cdb30fa206"
+    },
+    "0284": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "5447834d658209db05c02b40c7e580c237c5aec78f9d1854ddce8ce5409b5b37"
+    },
+    "0285": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "ac3bc3fcb23a3e90cf370ee3d466205d61ef9500795fb17d0bfea867df29be8b"
+    },
+    "0286": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "f3da329c3076aee2592450034079eff7fad08b25cb4e00c0651d0c99b7f4e752"
+    },
+    "0287": {
+      "inner_exit_code": 0,
+      "carrier_exit_code": 0,
+      "sha256": "e1493566d61604a07a7429a2fd85bf5525ff1e06f2c5ea9551753ef7311b7b28"
+    }
+  },
+  "active_commands": [
+    "0257"
+  ],
+  "frozen": {
+    "10": {
+      "members": 579,
+      "manifest_sha256": "df294edc32976d4b01d7d03ca6e7a9b8a618a4d39635a36a9347cf855cdc0cba"
+    },
+    "11": {
+      "members": 192,
+      "manifest_sha256": "97201a23b03be84277d04933adc917c887e625ae03ec9ed8a3f1bdf293dfc34a"
+    },
+    "12": {
+      "members": 243,
+      "manifest_sha256": "9ecc6513a926160476cc6b97b729e4bf3b70372b56cea618a2effbf7f6dd2837"
+    },
+    "13": {
+      "members": 319,
+      "manifest_sha256": "6d80cafad5800e847719ddf3923a8c8f1e33c708bed50e102a9507cd4f91f395"
+    },
+    "14": {
+      "members": 430,
+      "manifest_sha256": "1943d31e89ccee2292d2bfc2ba1791c69cac1982574c72984e6f1240ad9bdac3"
+    },
+    "15": {
+      "members": 506,
+      "manifest_sha256": "f1018b1d79bdb4a13338f87c01b021ff7af2c1135f8c28f0415aba23f976f10c"
+    },
+    "16": {
+      "members": 76,
+      "manifest_sha256": "eb09838aa6a7a7345f56fc4ecd3f222299862d903e71ceb6f5d5fe8240d8dcee"
+    },
+    "17": {
+      "members": 85,
+      "manifest_sha256": "85536e37e27f0cb952322ce395f1a68fe2b84794765142e26e3abeb78952683e"
+    },
+    "18": {
+      "members": 137,
+      "manifest_sha256": "aea6fd8761aff490cd65b7c42ae5fa8c823a4bd4d2fe38cfb6cc5e6426ce4d70"
+    },
+    "19": {
+      "members": 14,
+      "manifest_sha256": "a3d30dc505bf7a73d68b8659c6bc4b97f14ab4baa2d55a242a58bad0ec95ac9d"
+    },
+    "20": {
+      "members": 486,
+      "manifest_sha256": "b5ab007d6a3aec69d1c6cace28da0514624ce457b3f36010ba3026404e0a929a"
+    },
+    "21": {
+      "members": 604,
+      "manifest_sha256": "f97f3642a12222b8f3372d0e6c19868e2dd565972ccf5a0eda3c6b9af9cc2d9a"
+    },
+    "01": {
+      "members": 51,
+      "manifest_sha256": "608d4f0c40822c25d5af15e28a46d4978d30610ddc6a12d5ef97a60e2f1135ec"
+    },
+    "02": {
+      "members": 237,
+      "manifest_sha256": "8d2f9233a43a343e861b1261a5d3d57c4e15548a76919d960ee5a6169d59a769"
+    },
+    "03": {
+      "members": 357,
+      "manifest_sha256": "f4aaa69514eba940f0c0f4f0d07416dcacce215d050d3800d8b84189fa1e4b8b"
+    },
+    "04": {
+      "members": 455,
+      "manifest_sha256": "a55117c6fe2c6c0accfd22836261da28e4fdf579b3610c85007888e5d4903a0e"
+    },
+    "05": {
+      "members": 592,
+      "manifest_sha256": "6ce0a513f05f612c7f81cbf14b2f3294abe69f1ecdd938f14f471711fd44b40e"
+    },
+    "06": {
+      "members": 46,
+      "manifest_sha256": "2fead573c2a2caf3834d77ea7dc46b8c7d94ee4071714a19c0aa969ca3330093"
+    },
+    "07": {
+      "members": 91,
+      "manifest_sha256": "6ffaee8926eb481255ffd3f4306306b42c6fadda086ec9dcb6982bcfa3122e3a"
+    },
+    "08": {
+      "members": 40,
+      "manifest_sha256": "f8e3ffd35c81e96104219400fa12adc78f1090f003b4dd04f258f295fc1430b3"
+    },
+    "09": {
+      "members": 468,
+      "manifest_sha256": "d821d113dba5a177676f2061fc1171362f305058170cd70c42f7d6a40c0e7d3a"
+    }
+  },
+  "source_commit": "6be12495582540d5b55f322924829a93a62e6b9a",
+  "planned_product_source_version": "1.0.23",
+  "installed_version": "1.0.22",
+  "installed_managed_files_verified": 117,
+  "original_code_files_verified_unchanged": 5,
+  "coverage_snapshot": "original-execution-coverage-1794032494408.json",
+  "coverage": {
+    "implementation": 22,
+    "formal": 19,
+    "declared": 22
+  },
+  "original_full_file_set_unchanged_claimed": false,
+  "ledger_through": "ERR-1996",
+  "write_classification_supplement_0270": {
+    "TRUTH_SOURCE_WRITES": [
+      "docs/product-specification/specforge-product-specification.md release-version header only"
+    ],
+    "REPOSITORY_TRACKED_WRITES": "Other14 root/workspace/lock identity files",
+    "RUNTIME_OBSERVER_WRITES": [],
+    "EXTERNAL_EVIDENCE_WRITES": "Version originals/manifest and receipts"
+  },
+  "pending": [
+    "version metadata source commit",
+    "remaining formal and genuine full Gates/FV/Close",
+    "new1.0.23 native build/installation/current-profile acceptance",
+    "SPS matrix and product Git delivery"
+  ],
+  "stop_reason": null
+}

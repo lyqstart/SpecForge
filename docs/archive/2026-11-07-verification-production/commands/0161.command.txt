@@ -1,0 +1,12 @@
+{
+  "executable": "git",
+  "args": [
+    "add",
+    "--pathspec-from-file=docs/archive/2026-11-07-verification-production/source-pathspec.nul",
+    "--pathspec-file-nul"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "stage-verified-D23-source-exact-pathspec",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES Git index exactly95 classified source paths; evidence not staged; no original/install",
+  "started_utc": "2026-11-07T03:56:01.066Z"
+}

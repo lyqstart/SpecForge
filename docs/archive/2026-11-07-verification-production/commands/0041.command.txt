@@ -1,0 +1,15 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/OpenCodeToolInvocation.test.ts",
+    "tests/OpenCodeHttpRuntimeClient.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\opencode-adapter",
+  "purpose": "adapter-invocation-neutral-regression",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=test HTTP fixtures;EXTERNAL_EVIDENCE_WRITES=test raw receipts",
+  "started_utc": "2026-11-07T01:29:09.662Z"
+}

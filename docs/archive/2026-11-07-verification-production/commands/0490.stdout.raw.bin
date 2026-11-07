@@ -1,0 +1,11 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/daemon-startup-readme-contract.test.ts (5 tests) 15ms
+ ✓ tests/v11-agent-skill-contract-alignment.test.ts (13 tests) 90ms
+
+ Test Files  2 passed (2)
+      Tests  18 passed (18)
+   Start at  18:20:24
+   Duration  1.87s (transform 500ms, setup 0ms, collect 946ms, tests 104ms, environment 0ms, prepare 302ms)
+

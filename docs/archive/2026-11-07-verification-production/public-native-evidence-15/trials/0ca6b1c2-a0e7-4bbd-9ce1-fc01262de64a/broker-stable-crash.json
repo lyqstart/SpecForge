@@ -1,0 +1,5 @@
+{
+  "status": 0,
+  "stdout": "{\"utc\":\"2026-11-07T03:59:49.4725302Z\",\"fixture\":\"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\624733f825af4301b89c0307be140ecb\",\"attempt_id\":\"f8db7dadbe6940c0a444ec934944766b\",\"target\":\"broker\",\"target_exit\":198,\"broker_exit\":198,\"application_exit\":0,\"stable_handles_ended\":true,\"job_handle_duplicated\":false,\"events_sha256\":\"370ff45a9bb10b3b00c10bd918180c643e4a771262a6d3e7f6651e85f2913095\",\"application_passed\":false}\r\n",
+  "stderr": ""
+}

@@ -1,0 +1,199 @@
+{
+  "utc": "2026-11-07T07:27:02.155Z",
+  "parent": "759cd2ffede4bd942db7bd9a0025c96cd02bac1e",
+  "sourcePaths": [
+    "docs/design/windows-lpac-node-readonly-contract.md",
+    "docs/project-status.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md",
+    "setup/userlevel-opencode/agents/sf-verifier.md",
+    "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md",
+    "setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md",
+    "setup/userlevel-opencode/tools/lib/thin-client.ts",
+    "setup/userlevel-opencode/tools/sf_artifact_write.ts",
+    "setup/userlevel-opencode/tools/sf_close_gate.ts",
+    "setup/userlevel-opencode/tools/sf_gate_run.ts",
+    "setup/userlevel-opencode/tools/sf_verification_gate.ts",
+    "tests/e2e/tool-dispatcher-e2e.test.ts",
+    "tests/root-test-role-registry.json",
+    "tests/unit/verification-consumer-http.test.ts",
+    "tests/unit/verifier-evidence-manifest-example.test.ts"
+  ],
+  "paths": [
+    "docs/archive/2026-11-07-verification-production/consumer-client-baseline/manifest.json",
+    "docs/archive/2026-11-07-verification-production/consumer-client-baseline/setup/userlevel-opencode/tools/lib/thin-client.ts",
+    "docs/archive/2026-11-07-verification-production/consumer-client-baseline/setup/userlevel-opencode/tools/sf_artifact_write.ts",
+    "docs/archive/2026-11-07-verification-production/consumer-client-baseline/setup/userlevel-opencode/tools/sf_close_gate.ts",
+    "docs/archive/2026-11-07-verification-production/consumer-client-baseline/setup/userlevel-opencode/tools/sf_gate_run.ts",
+    "docs/archive/2026-11-07-verification-production/consumer-client-baseline/setup/userlevel-opencode/tools/sf_verification_gate.ts",
+    "docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/docs/design/windows-lpac-node-readonly-contract.md",
+    "docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/manifest.json",
+    "docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+    "docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/agents/sf-verifier.md",
+    "docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md",
+    "docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/tools/sf_artifact_write.ts",
+    "docs/design/windows-lpac-node-readonly-contract.md",
+    "docs/project-status.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md",
+    "setup/userlevel-opencode/agents/sf-verifier.md",
+    "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md",
+    "setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md",
+    "setup/userlevel-opencode/tools/lib/thin-client.ts",
+    "setup/userlevel-opencode/tools/sf_artifact_write.ts",
+    "setup/userlevel-opencode/tools/sf_close_gate.ts",
+    "setup/userlevel-opencode/tools/sf_gate_run.ts",
+    "setup/userlevel-opencode/tools/sf_verification_gate.ts",
+    "tests/e2e/tool-dispatcher-e2e.test.ts",
+    "tests/root-test-role-registry.json",
+    "tests/unit/verification-consumer-http.test.ts",
+    "tests/unit/verifier-evidence-manifest-example.test.ts"
+  ],
+  "bindings": {
+    "docs/archive/2026-11-07-verification-production/consumer-client-baseline/manifest.json": {
+      "raw_sha256": "3cb39d0bef4992695ee90cba9217878dd02c00f4cb1c5843a95e37a50cd64555",
+      "size": 1063
+    },
+    "docs/archive/2026-11-07-verification-production/consumer-client-baseline/setup/userlevel-opencode/tools/lib/thin-client.ts": {
+      "raw_sha256": "9e59075095bafd18e7cf80ea1d6b2d68481b485e1ce0566bd0bfa7c507e148cb",
+      "size": 10825
+    },
+    "docs/archive/2026-11-07-verification-production/consumer-client-baseline/setup/userlevel-opencode/tools/sf_artifact_write.ts": {
+      "raw_sha256": "5c3b9b6823f54561ac39de20921832a006cc55d39b641fe056f4887ec0ddb111",
+      "size": 5144
+    },
+    "docs/archive/2026-11-07-verification-production/consumer-client-baseline/setup/userlevel-opencode/tools/sf_close_gate.ts": {
+      "raw_sha256": "851ae6a9cb1fd840896673f4c7d52eda490f354be556d05749b8dd81608e8e59",
+      "size": 2215
+    },
+    "docs/archive/2026-11-07-verification-production/consumer-client-baseline/setup/userlevel-opencode/tools/sf_gate_run.ts": {
+      "raw_sha256": "d99e06e9d59f72e2128ab147612b828874baf1804fda3c1b9d3bc8a7c713080c",
+      "size": 2815
+    },
+    "docs/archive/2026-11-07-verification-production/consumer-client-baseline/setup/userlevel-opencode/tools/sf_verification_gate.ts": {
+      "raw_sha256": "073f45d6562a4e54495964c47cc09e42d7528a6938a53d66fd1df6660c67dc38",
+      "size": 787
+    },
+    "docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/docs/design/windows-lpac-node-readonly-contract.md": {
+      "raw_sha256": "a56c36b239d5558275d880d286269f3564a61085c9e080bdcca8c26be5f73647",
+      "size": 19314
+    },
+    "docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/manifest.json": {
+      "raw_sha256": "8a1102acbe3a701680b7815140971dcf77eda8feee7e1d59b0162168bb5a66ad",
+      "size": 33738
+    },
+    "docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/packages/daemon-core/src/tools/handlers/sf-artifact-write.ts": {
+      "raw_sha256": "f1a2106827c25c2121a05ad29446c622f79006fc9d51978e23c42fe97954f22f",
+      "size": 60722
+    },
+    "docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/agents/sf-verifier.md": {
+      "raw_sha256": "ac27b94d1a17bc3b16b7bed5214d2986d4de59a8deeecfb869d1fcfcee950357",
+      "size": 38651
+    },
+    "docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md": {
+      "raw_sha256": "f9056b569a83005c3dc4a751fd21a35af49bade8f8600e378a7e4b9c4fc62044",
+      "size": 3734
+    },
+    "docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/tools/sf_artifact_write.ts": {
+      "raw_sha256": "eef723b8e37ddd5287fded63a9a4d5b8f4c1bc0fa9879b12373dd2a75a739358",
+      "size": 4194
+    },
+    "docs/design/windows-lpac-node-readonly-contract.md": {
+      "raw_sha256": "75312b393fd26c3b4ead623fc61600d6fe5304e04bb0cd394fbe62fd0a98e097",
+      "size": 20506,
+      "parent_blob_oid": "49c9b32037a12b5762de5c72b577349b05929359",
+      "parent_blob_sha256": "a3d7b50042814cf2cf4a456999da5b93fb4500f01ad33b085cb25a05698df610"
+    },
+    "docs/project-status.md": {
+      "raw_sha256": "48c6ec40b03d93ba03a44389c3af71f428c47eea3642b77891a26048b411d9cf",
+      "size": 7006,
+      "parent_blob_oid": "668cbc82fd1122677e18a3cdd52c1592078aeb42",
+      "parent_blob_sha256": "4e92f65902442bd2ffabb4908c1d4870b4f9aba3bb427a44a91c4ed984c105b5"
+    },
+    "docs/rule/specforge-development-error-ledger-and-experience.md": {
+      "raw_sha256": "4b8aadd44bfa8883495e3fe3717cf02302a02010e66f0b6ee5e96c322d98b111",
+      "size": 4454170,
+      "parent_blob_oid": "147f3baaedd1dab743235680a486ac95c8584151",
+      "parent_blob_sha256": "ec3c8fa68a12ab2c90a5f0cc587692bc969fc9054715d1e6f54f71ab1095d8cc"
+    },
+    "setup/userlevel-opencode/agents/sf-verifier.md": {
+      "raw_sha256": "9080216c04584f29638afdced3214afe7da77f67e2f519d66103727939350ea5",
+      "size": 40260,
+      "parent_blob_oid": "bff574b263486c71bc68d7bcf5a67a0fd37ca88b",
+      "parent_blob_sha256": "ac27b94d1a17bc3b16b7bed5214d2986d4de59a8deeecfb869d1fcfcee950357"
+    },
+    "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md": {
+      "raw_sha256": "f5371ab581e08b457061f2c9bd04d03a139787a3e8181ad633ccb0e5dd696d04",
+      "size": 45856,
+      "parent_blob_oid": "df13a9cbdc0854ed56a08c827d53ef7ce091d5d2",
+      "parent_blob_sha256": "74408a1882ae5ac7057e9aba2453d118deef5c544c0e62cb7f1e6aaea36a869f"
+    },
+    "setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md": {
+      "raw_sha256": "9694011bc3b86f8a51b2493f56c321e6c9858accda7a94d9f51edd1c78c5fa27",
+      "size": 4467,
+      "parent_blob_oid": "ac7f2c65487b2ee91a953491e82fe0f6843b1053",
+      "parent_blob_sha256": "f9056b569a83005c3dc4a751fd21a35af49bade8f8600e378a7e4b9c4fc62044"
+    },
+    "setup/userlevel-opencode/tools/lib/thin-client.ts": {
+      "raw_sha256": "8a45f8971e18e9eca99851167f3d72655b23820e1f3a9a934cdb0bff1e5096f5",
+      "size": 12067,
+      "parent_blob_oid": "33fbb9eba50f2972fc16c2755c4897ce768f154e",
+      "parent_blob_sha256": "9e59075095bafd18e7cf80ea1d6b2d68481b485e1ce0566bd0bfa7c507e148cb"
+    },
+    "setup/userlevel-opencode/tools/sf_artifact_write.ts": {
+      "raw_sha256": "f799ed1fb567024c9e175101c1c71c0809ad1c606e441c1427c90a1d07cc2f93",
+      "size": 5335,
+      "parent_blob_oid": "3aeaf6523fa2097630d4cd59e1f8f69c189f54b8",
+      "parent_blob_sha256": "eef723b8e37ddd5287fded63a9a4d5b8f4c1bc0fa9879b12373dd2a75a739358"
+    },
+    "setup/userlevel-opencode/tools/sf_close_gate.ts": {
+      "raw_sha256": "fd004996a56dcd6844e82b5dc88feb49928cce263eea52e6c9e329e6f7cc527b",
+      "size": 2118,
+      "parent_blob_oid": "843b7af791c09eeb111f12d1672cc0d0e2971826",
+      "parent_blob_sha256": "851ae6a9cb1fd840896673f4c7d52eda490f354be556d05749b8dd81608e8e59"
+    },
+    "setup/userlevel-opencode/tools/sf_gate_run.ts": {
+      "raw_sha256": "1acfcd238f8affabdefa64eff62e0b6eb56bacd2a8eae2bdaa41423b7d75f2f0",
+      "size": 2718,
+      "parent_blob_oid": "f0951e226760a0f3084a28e25528593efaa65474",
+      "parent_blob_sha256": "d99e06e9d59f72e2128ab147612b828874baf1804fda3c1b9d3bc8a7c713080c"
+    },
+    "setup/userlevel-opencode/tools/sf_verification_gate.ts": {
+      "raw_sha256": "7f7c9a926ef07f50b39a13f805e97849b4b1faac606845ff46a32bff1e27936e",
+      "size": 690,
+      "parent_blob_oid": "e50dccdfd798604d6fc9b10610e02b220599a9ab",
+      "parent_blob_sha256": "073f45d6562a4e54495964c47cc09e42d7528a6938a53d66fd1df6660c67dc38"
+    },
+    "tests/e2e/tool-dispatcher-e2e.test.ts": {
+      "raw_sha256": "8598c73aa152ef7dddc1399070e20ad61a3491885882fcb2c15765a38b33b887",
+      "size": 2651,
+      "parent_blob_oid": "c34c1d4bd0b2c3a4e377c414ac3469ba6fe28f63",
+      "parent_blob_sha256": "2dd7bf819adc665fc1a8ed68e3afcfec329ae01646ed25fcc76dcc943b589d3e"
+    },
+    "tests/root-test-role-registry.json": {
+      "raw_sha256": "cdc93794891d0e3a3ce2072536cf27647a6149b53ed6da722a2a2ff276ee057d",
+      "size": 17313,
+      "parent_blob_oid": "11ef93c1e3a5980a44b4875a1b2832dd53b43e8f",
+      "parent_blob_sha256": "8d1166886ec66f02becefb3497e6990960e88061e0c8249ba7f8d0df8ac53692"
+    },
+    "tests/unit/verification-consumer-http.test.ts": {
+      "raw_sha256": "8bafd0e651ae7611dd7c48e320bb86f065f8bfab6cec0f32a1dd3e04977523be",
+      "size": 7128
+    },
+    "tests/unit/verifier-evidence-manifest-example.test.ts": {
+      "raw_sha256": "0604a505cdb800339e805738513e421135effa064bd38f08dccff257db842b53",
+      "size": 2229
+    }
+  },
+  "initialStaged": [
+    "tests/unit/verification-consumer-http.test.ts",
+    "tests/unit/verifier-evidence-manifest-example.test.ts"
+  ],
+  "validation": [
+    "0297 producer2",
+    "0316 consumer/context/example14",
+    "0317 real professional artifacts22",
+    "0320 current51/748",
+    "0321 metadata commit33"
+  ],
+  "deployed": false,
+  "original_gate_acceptance": false
+}

@@ -1,0 +1,23 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/resume-original-approved-local-merge.cjs",
+    "08",
+    "original-verification-prompt-09.txt",
+    "closed"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Execute explicitly approved local-only business delivery using genuine minimum-context sf-orchestrator and exact merge_run owner",
+  "expected_writes": "TRUTH_SOURCE_WRITES=approved business main merge and governed delivery owner only;REPOSITORY_TRACKED_WRITES=NONE in SpecForge;RUNTIME_OBSERVER_WRITES=owned Kernel/authorized GLM session and Daemon logs;EXTERNAL_EVIDENCE_WRITES=actual owner outcomes;no business remote push,new app run or credentials/history input",
+  "started_utc": "2026-11-07T10:04:42.737Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\resume-original-approved-local-merge.cjs",
+      "sha256": "73a4df5cb39260d0ba8d0cb65e556acb25b3277bb9c70fef10af1104c399d11c",
+      "size": 14616,
+      "extension": ".cjs"
+    }
+  ]
+}

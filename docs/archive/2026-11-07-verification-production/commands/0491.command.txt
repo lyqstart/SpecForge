@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/record-integration-checkpoint-14.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Reconcile completed original closure/local delivery and actual final guidance/endpoint delta in single status",
+  "expected_writes": "TRUTH_SOURCE_WRITES=unique project status/history ledger;REPOSITORY_TRACKED_WRITES=status/ledger only;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=checkpoint and immutable receipts",
+  "started_utc": "2026-11-07T10:26:38.138Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\record-integration-checkpoint-14.cjs",
+      "sha256": "39847c57693a965f7cab18419f507781b8471dc6ffb6889862eb050f9b19eb6d",
+      "size": 9613,
+      "extension": ".cjs"
+    }
+  ]
+}

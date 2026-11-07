@@ -1,0 +1,9 @@
+# 验证共同消费者的客户端截止与未知结果恢复
+
+CONFIRMED：0310封存了真实dispatcher、按SHA存放的handler response与规范产物。原WI Evidence Manifest在30157ms、Verification Report在33511ms返回handler_success=true并写入规范路径；OpenCode客户端在30000ms先报超时。`dispatch.status=success`未被单独当作写成功，结论依据response.payload.success及实际字节。
+
+首次偏离属于Tool Client，尚无证据把这33秒内部耗时归因到某个具体hash/Git步骤。现有DaemonClient支持有界deadline、AbortSignal及禁止重试；D23 run已使用180秒。方案复用现有client，在会消费整组执行回执的Artifact/Verification/Gate/Close入口使用180秒且关闭自动重试；不改变Node墙钟、Job、权限、回执/新鲜度或Gate判据。普通Artifact仍使用既有客户端。
+
+传输失联或客户端取消后的已提交请求不能直接判为业务失败。对这四个入口提供统一的`DAEMON_OPERATION_OUTCOME_UNKNOWN`、`retry_allowed=false`与`reconciliation_required=true`；先读真实规范产物、Gate报告和StateManager，再决定是否重试。初始化handshake失败发生在请求前，保持原有fail closed错误。
+
+验证：实际公共wrapper路由测试；真实DaemonClient配合可控时钟与HTTP响应模拟，重现旧30秒失败/后端晚提交、新180秒等待成功、到期与连接失联不自动重复、明确owner拒绝原样返回；完整当前root回归和安装后真实owner验收。当前原WI保留已成功44条执行与两份专业产物，不以客户端报错要求重做。原生资产更新仍须处理未关闭WI的回执新鲜度边界。

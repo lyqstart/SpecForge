@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/run-public-fixture-builder.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "create-owned-real-state-fixture",
+  "expected_writes": "TRUTH_SOURCE_WRITES=only self-owned synthetic fixture through Project Init and StateManager baseline seeding;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=owned Git/config/host-profile fixture no original business;EXTERNAL_EVIDENCE_WRITES=creation raw receipts",
+  "started_utc": "2026-11-07T02:10:12.425Z"
+}

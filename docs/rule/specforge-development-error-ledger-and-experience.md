@@ -32812,3 +32812,17 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 
 - 0494的stage-final-guidance-source.cjs在Node模块编译阶段SyntaxError，真实退出1；未执行其branch/index动作。独立Git查询确认仍main4d891569、cached paths为空。原代码与0492 review01保持；没有把失败称为已暂存或提交。
 - 修正多余括号后，两个关键Git载体先通过node --check并固定源码SHA；在账本追加这次事实后，用新review02重新冻结9份源，不复用已因账本变化失效的review01绑定。旧review01和失败回执完整保留。后续Git变更先执行语法预检，再用精确清单及index blob身份验证，不使用整树add。EXP-007/008/014/193。
+
+### ERR-2013：公开扫描候选复核误把授权文本限制为包含固定英文关键词
+
+- 0522对实际公开选择13902文件扫描，原176份模型消息排除且有哈希派生；公开reasoning文本0、命名凭据文件0。22项候选为用户授权字段、扫描器PRIVATE KEY字面量和真实Git --stat把Task文件名前缀截为...sk-001-formal等，均逐上下文核验。0523首版分类器要求授权值包含approved/authoriz，未涵盖已封存的Same explicit decision及GLM_MINIMUM_CONTEXT标识，真实assert退出1；未落通过报告、未发布。责任为证据分类器，不是产品或凭据泄漏。0524改为独立复读五份原授权值后精确SHA允许清单，并验证每个Git缩略文件名上下文；22项全分类、未解决0。旧失败/源码与原始证据保持。EXP-007/008/193。
+
+### 最终当前规格范围验收与原任务交付检查点
+
+- 0502最终相关Daemon消费者16文件120检查和0503Root51文件748检查通过；前完整Daemon236/2338、12workspace build及原生隔离/共同consumer验收保留，未将新聚焦用例冒充全套重跑。0505本地main快进d8fc，0507最终物理117 releaseprecheck通过。
+- 0511正式installer同版本upgrade仅2份指令，跳过115并verify117；owner非密钥哈希/密钥仅元数据保持，完整原项目安装区间无写。0512无Kernel的正常CLI冷启动成功；0514真实文档opencode --port4096自有进程监听4096/health200。0515从实际loader核验新Agent/Skill，0519核对Skill正文哈希；界面未发模型提示、退出0，Daemon独立继续，旧~/.specforge140项元数据未变。0516冷StateManager直接read重放closed，业务main28c8e3d、5代码/9验收保持，未重复原任务、未业务push。0520当前SPS19精确20项在已批准Windows单进程只读Node范围接受；旧多进程失败、数据缺失根因INSUFFICIENT_EVIDENCE、历史failed仍保留。
+
+### ERR-2014：封存证据嵌套路径超过Windows Git默认路径上限
+
+- 主封存13977成员/1258431026字节SHA清单856c4f5181648c91cbffea6c963e55d2690196806baf6b8964f66ff3d6b0ea39自检通过；publication-live0003显式白名单git add因嵌套原始baseline文件Filename too long以128退出，载体退出1。独立cached清单为空，未提交、原封存未变。
+- 只对后续Git进程使用-c core.longpaths=true，不修改用户/系统配置、不移动/删除/缩短证据。恢复入口重新核对原封存每个SHA、原精确pathspec、main d8fc和空index后执行同一白名单；实际数字回执保存在同RUN/EVIDENCE_ROOT的reserved publication-live。产品及业务项目不受此Git归档路径限制影响。EXP-007/008/014/193。

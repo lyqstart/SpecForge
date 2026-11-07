@@ -1,0 +1,31 @@
+[codex/verification-production 488cd34c] feat: add governed single-process verification execution
+ 95 files changed, 3047 insertions(+), 207 deletions(-)
+ create mode 100644 packages/daemon-core/src/tools/handlers/sf-verification-execution.ts
+ create mode 100644 packages/daemon-core/src/verification/VerificationRuntime.ts
+ create mode 100644 packages/daemon-core/src/verification/authority-snapshot.ts
+ create mode 100644 packages/daemon-core/src/verification/execution-evidence-consumer.ts
+ create mode 100644 packages/daemon-core/src/verification/invocation-lease.ts
+ create mode 100644 packages/daemon-core/src/verification/native-executor.ts
+ create mode 100644 packages/daemon-core/src/verification/node-command-contract.ts
+ create mode 100644 packages/daemon-core/src/verification/owner-store.ts
+ create mode 100644 packages/daemon-core/src/verification/request-context.ts
+ create mode 100644 packages/daemon-core/src/verification/source-snapshot.ts
+ create mode 100644 packages/daemon-core/src/verification/static-task-command.ts
+ create mode 100644 packages/daemon-core/src/verification/verification-assets.ts
+ create mode 100644 packages/daemon-core/src/verification/verification-plan.ts
+ create mode 100644 packages/daemon-core/src/verification/verification-schema.ts
+ create mode 100644 packages/daemon-core/src/verification/windows/LpacProductionPlan.cs
+ create mode 100644 packages/daemon-core/src/verification/windows/LpacProductionRecovery.cs
+ create mode 100644 packages/daemon-core/tests/unit/execution-evidence-consumer.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/invocation-lease.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/node-command-contract.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/node-command-proof-boundary.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/static-task-command.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/verification-owner-store.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/verification-runtime-plan.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/verification-source-snapshot.test.ts
+ create mode 100644 packages/opencode-adapter/tests/OpenCodeToolInvocation.test.ts
+ create mode 100644 packages/types/src/trusted-tool-invocation.ts
+ create mode 100644 scripts/lib/verification-asset-producer.ts
+ create mode 100644 setup/userlevel-opencode/tools/sf_verification_plan.ts
+ create mode 100644 setup/userlevel-opencode/tools/sf_verification_run.ts

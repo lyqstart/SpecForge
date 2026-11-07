@@ -1,0 +1,10 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/diagnose-installed-plan.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "readonly-diagnose-installed-plan-preclaim-stages",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES staged diagnosis only; RUNTIME_OBSERVER_WRITES StateManager read initialization if needed in owned fixture11; no plan claim application or original/user install",
+  "started_utc": "2026-11-07T04:02:21.157Z"
+}

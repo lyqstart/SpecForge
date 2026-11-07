@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0001",
+  "captured_at": "2026-11-03T13:57:13.346Z",
+  "snapshot_id": "sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722",
+  "planned_code_paths": [
+    "README.md",
+    "package.json",
+    "src/greet.ts",
+    "tests/greet.test.ts",
+    "tsconfig.json"
+  ],
+  "current_file_count": 1,
+  "all_planned_paths_missing": false,
+  "entries": [
+    {
+      "scope_path": "README.md",
+      "scope_kind": "file",
+      "matched_files": [
+        {
+          "path": "README.md",
+          "size": 123,
+          "sha256": "sha256:757ee94ea46933c3dd7092c04d15a32546a3f54e609b9c6e66351eeafe8fdf40"
+        }
+      ]
+    },
+    {
+      "scope_path": "package.json",
+      "scope_kind": "file",
+      "matched_files": []
+    },
+    {
+      "scope_path": "src/greet.ts",
+      "scope_kind": "file",
+      "matched_files": []
+    },
+    {
+      "scope_path": "tests/greet.test.ts",
+      "scope_kind": "file",
+      "matched_files": []
+    },
+    {
+      "scope_path": "tsconfig.json",
+      "scope_kind": "file",
+      "matched_files": []
+    }
+  ]
+}

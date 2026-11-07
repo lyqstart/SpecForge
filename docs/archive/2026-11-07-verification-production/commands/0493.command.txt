@@ -1,0 +1,14 @@
+{
+  "executable": "git",
+  "args": [
+    "ls-remote",
+    "origin",
+    "refs/heads/main"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Freshly verify root remote main before final local guidance branch and integration",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=read-only Git remote query;EXTERNAL_EVIDENCE_WRITES=exact remote main receipt",
+  "started_utc": "2026-11-07T10:27:44.972Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": []
+}

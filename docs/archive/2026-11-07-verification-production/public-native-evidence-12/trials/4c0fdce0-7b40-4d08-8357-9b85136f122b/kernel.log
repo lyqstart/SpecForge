@@ -1,0 +1,6 @@
+Warning: OPENCODE_SERVER_PASSWORD is not set; server is unsecured.
+opencode server listening on http://127.0.0.1:4096
+[sf:specforge] Daemon unavailable; lifecycle is externally managed: Daemon handshake not found
+[sf:specforge] Daemon connection recovered.
+[specforge] Daemon unreachable for over 60 seconds, entering degraded mode. See 'specforge daemon status' for details.
+[sf:specforge] Daemon reconnecting: degraded.

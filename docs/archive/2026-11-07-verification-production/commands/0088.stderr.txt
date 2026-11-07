@@ -1,0 +1,16 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/static-task-command.test.ts > finite readonly static Task normalization > rejects double-quoted shell backslash transformations instead of certifying another pattern
+AssertionError: expected [Function] to throw an error
+ ❯ tests/unit/static-task-command.test.ts:49:101
+     47|  it('rejects double-quoted shell backslash transformations instead of …
+     48|   for(const pattern of [String.fromCharCode(92).repeat(2),String.fromC…
+     49|    expect(()=>compileNodeCommand('grep -qE "'+pattern+'" input.md',[fi…
+       |                                                                                                     ^
+     50|   }
+     51|  });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

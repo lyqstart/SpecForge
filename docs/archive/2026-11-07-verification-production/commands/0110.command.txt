@@ -1,0 +1,16 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/release-runtime-artifact-producer.test.ts",
+    "tests/release-manifest-and-runtime-entry-producers.test.ts",
+    "tests/current-release-path-projections.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\scope-gate",
+  "purpose": "release-registry-runtime-asset-contract-regressions",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned scope/release unit fixtures; EXTERNAL_EVIDENCE_WRITES receipts; no install/original",
+  "started_utc": "2026-11-07T02:49:37.866Z"
+}

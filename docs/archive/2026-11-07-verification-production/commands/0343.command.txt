@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/inspect-original-gates.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Independently snapshot actual canonical original Gate results after30s client timeout",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable Gate snapshots/hashes and sealed receipt; original read only",
+  "started_utc": "2026-11-07T07:35:36.636Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\inspect-original-gates.cjs",
+      "sha256": "92e67f891ed8b0f1f4cd276351a722621e0b57dcbae2586b17e3ccdb33e7d7db",
+      "size": 1174,
+      "extension": ".cjs"
+    }
+  ]
+}

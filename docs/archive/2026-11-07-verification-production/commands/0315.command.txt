@@ -1,0 +1,22 @@
+{
+  "executable": "node",
+  "args": [
+    "scripts/run-root-tests.mjs",
+    "current",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Run exact registered51-file current root suite after adding the two individually verified test sources to tracked inventory",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES source-sealed receipts; RUNTIME_OBSERVER_WRITES owned test fixtures/cache only; no original/deployment writes",
+  "started_utc": "2026-11-07T07:13:49.505Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\scripts\\run-root-tests.mjs",
+      "sha256": "35d93a02e3888e286d1076e06d44a48b1e581b3f2b6e7279ed5a3375c9ad5a9c",
+      "size": 5208,
+      "extension": ".mjs"
+    }
+  ]
+}

@@ -1,0 +1,1743 @@
+{
+  "utc": "2026-11-07T06:20:44.813Z",
+  "attempt": "02",
+  "parent": {
+    "session": "ses_e4b742829ffel12umYMGJQ5nqZ",
+    "status": {
+      "type": "busy"
+    }
+  },
+  "children": [
+    {
+      "session": "ses_e4b736232ffe1S7Rh815AIixkl",
+      "status": {
+        "type": "idle"
+      },
+      "tools": [
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_8063f3ec4f394713bbfa237c",
+          "input": {
+            "action": "prepare",
+            "plan_id": "799ca8fa1434daceee30d1a57c69acfeaed32ba9e1fac4e0a59fa23e7682972b",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "a7ca86b54704950744ddde22fc68d81036baebb2212af2ada1dcc68e8c72cc25",
+            "attempt_id": "23eab2ab46e945f9b549f8d6b2b1178d",
+            "plan_id": "799ca8fa1434daceee30d1a57c69acfeaed32ba9e1fac4e0a59fa23e7682972b",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_24f4e827ef394b0da50b9ed3",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "a7ca86b54704950744ddde22fc68d81036baebb2212af2ada1dcc68e8c72cc25",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "a26316c97406bbb3045fb22d2f5dc99dd0c76bbb43c1c28868d5b1986ae432c3",
+            "attempt_record_id": "a7ca86b54704950744ddde22fc68d81036baebb2212af2ada1dcc68e8c72cc25",
+            "attempt_id": "23eab2ab46e945f9b549f8d6b2b1178d",
+            "plan_id": "799ca8fa1434daceee30d1a57c69acfeaed32ba9e1fac4e0a59fa23e7682972b",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_e999aa4d333d4151aca3ac0d",
+          "input": {
+            "action": "prepare",
+            "plan_id": "7cd166ac41b863d0ae9b19b3eb6ed70d2b764aee9a134e634ad65bfa66b6c2da",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "7ad6c3b4667b5c481d40e20b4fc4896e8147d65ddee4a8548b60e3573764cc77",
+            "attempt_id": "33df0f7a140c4eb999ddfde910bea377",
+            "plan_id": "7cd166ac41b863d0ae9b19b3eb6ed70d2b764aee9a134e634ad65bfa66b6c2da",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_a31104cfaa7d4f60a0b31234",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "7ad6c3b4667b5c481d40e20b4fc4896e8147d65ddee4a8548b60e3573764cc77",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "bf02c8e9a546535109b8f78f3c76f0e1d21ad9f7d9f2a73b158888169df02c0b",
+            "attempt_record_id": "7ad6c3b4667b5c481d40e20b4fc4896e8147d65ddee4a8548b60e3573764cc77",
+            "attempt_id": "33df0f7a140c4eb999ddfde910bea377",
+            "plan_id": "7cd166ac41b863d0ae9b19b3eb6ed70d2b764aee9a134e634ad65bfa66b6c2da",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_ff022cd21a31433f8cdbe74b",
+          "input": {
+            "action": "prepare",
+            "plan_id": "206f658718f7e2c3fa78e4f1ecec85c7ec0b42b03d87260e5863ed1f2ebe7443",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "2153099d661adbb3f7b233b5a43f5d8f1a1461739749a44a78a402342acc44d3",
+            "attempt_id": "0ff2b6758e9e4874993c96cf06ab2124",
+            "plan_id": "206f658718f7e2c3fa78e4f1ecec85c7ec0b42b03d87260e5863ed1f2ebe7443",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_62820dbf27e34621bda72a80",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "2153099d661adbb3f7b233b5a43f5d8f1a1461739749a44a78a402342acc44d3",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "673495007620c5bb591e523c14895897162793e86b60904ee53b88ca9765e513",
+            "attempt_record_id": "2153099d661adbb3f7b233b5a43f5d8f1a1461739749a44a78a402342acc44d3",
+            "attempt_id": "0ff2b6758e9e4874993c96cf06ab2124",
+            "plan_id": "206f658718f7e2c3fa78e4f1ecec85c7ec0b42b03d87260e5863ed1f2ebe7443",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_f492fdcad23d44fe8719fe04",
+          "input": {
+            "action": "prepare",
+            "plan_id": "9109cfb691102dd1d73865e88025b0ca963a218942d1b920a41a360362f73eec",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "f6edd5aee3c1be88041ba5cc26b8470c3bc6784820f2789f694581a6382e863d",
+            "attempt_id": "bdb649ef345842cca323d8c9ee2150fe",
+            "plan_id": "9109cfb691102dd1d73865e88025b0ca963a218942d1b920a41a360362f73eec",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_8c6f4631a9b04e848ff252f4",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "f6edd5aee3c1be88041ba5cc26b8470c3bc6784820f2789f694581a6382e863d",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "00e9cd65a1a6325f1cf07166825e4fb36b7337502f89a583346bc11e4c1a0a70",
+            "attempt_record_id": "f6edd5aee3c1be88041ba5cc26b8470c3bc6784820f2789f694581a6382e863d",
+            "attempt_id": "bdb649ef345842cca323d8c9ee2150fe",
+            "plan_id": "9109cfb691102dd1d73865e88025b0ca963a218942d1b920a41a360362f73eec",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "2\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        }
+      ]
+    },
+    {
+      "session": "ses_e4b703542ffe3PaJIUyWDnaBqL",
+      "status": {
+        "type": "idle"
+      },
+      "tools": [
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_0d49d70f42b04c4bb9b7338d",
+          "input": {
+            "action": "prepare",
+            "plan_id": "13193249c19aef1645687f8be079b0885879d4b5089ac6dbc6a23e61985507b2",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "1bec86d3f526340968089cc771cfd9185bada1deec2e9d25609811fbdc894ce0",
+            "attempt_id": "8a5399f56fe5451b8028e32104b4968e",
+            "plan_id": "13193249c19aef1645687f8be079b0885879d4b5089ac6dbc6a23e61985507b2",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_59288016a86041e3aa642b71",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "1bec86d3f526340968089cc771cfd9185bada1deec2e9d25609811fbdc894ce0",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "3fe122ba6c28b01d8afc5b5f2a743653a75bc7499ddc26f1d30c6dabdb0ae088",
+            "attempt_record_id": "1bec86d3f526340968089cc771cfd9185bada1deec2e9d25609811fbdc894ce0",
+            "attempt_id": "8a5399f56fe5451b8028e32104b4968e",
+            "plan_id": "13193249c19aef1645687f8be079b0885879d4b5089ac6dbc6a23e61985507b2",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_8b5bc6aea48a40e393279f01",
+          "input": {
+            "action": "prepare",
+            "plan_id": "bfa66679f48491902a87e25df7472e47fa520514891c7c08cade5ab2d59947fc",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "fd84e9f4812ffa719ef37f0b680e38a1470b79deb4de045a750c532bad1d33a5",
+            "attempt_id": "887ef346965e43ad91f506decba3a1f3",
+            "plan_id": "bfa66679f48491902a87e25df7472e47fa520514891c7c08cade5ab2d59947fc",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_512b00fb045d4ed49712b68d",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "fd84e9f4812ffa719ef37f0b680e38a1470b79deb4de045a750c532bad1d33a5",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "f5b2992046d2baf3e4e3698ca7bdf1f9ea793e4e637c866af2a891078459dc81",
+            "attempt_record_id": "fd84e9f4812ffa719ef37f0b680e38a1470b79deb4de045a750c532bad1d33a5",
+            "attempt_id": "887ef346965e43ad91f506decba3a1f3",
+            "plan_id": "bfa66679f48491902a87e25df7472e47fa520514891c7c08cade5ab2d59947fc",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_18b695f9fc6340f685e96a62",
+          "input": {
+            "action": "prepare",
+            "plan_id": "ebebda367f2635ff8b6a629cb80cf72cfced1ef60712d1bff8a7798bf824ed08",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "7cc9654d2c981eb2a0adb948233633026e7f426e9883016c0db5c85dc5fcd598",
+            "attempt_id": "5842c0f6a3fb437587a4d642099e40cc",
+            "plan_id": "ebebda367f2635ff8b6a629cb80cf72cfced1ef60712d1bff8a7798bf824ed08",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_691c3b8d3c004d1d8d65640d",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "7cc9654d2c981eb2a0adb948233633026e7f426e9883016c0db5c85dc5fcd598",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "025a4148643cbb6fe155cb3e6975ce6631d26d312aab290a1de54c36f2f05cca",
+            "attempt_record_id": "7cc9654d2c981eb2a0adb948233633026e7f426e9883016c0db5c85dc5fcd598",
+            "attempt_id": "5842c0f6a3fb437587a4d642099e40cc",
+            "plan_id": "ebebda367f2635ff8b6a629cb80cf72cfced1ef60712d1bff8a7798bf824ed08",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_552c77b8a6704bcfa786f679",
+          "input": {
+            "action": "prepare",
+            "plan_id": "db00fda91e93e1f43341ea132550e03624375d1a7506052b127ced8c7569bde6",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "f6a74d1422e229b19739bb8e952b35324a370b5c6b37d39fa64b15d8ffec63d7",
+            "attempt_id": "aa30f890de55402089b8ea0aa20ca8c2",
+            "plan_id": "db00fda91e93e1f43341ea132550e03624375d1a7506052b127ced8c7569bde6",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_934e4b07fb0d4bc29cd3ba0d",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "f6a74d1422e229b19739bb8e952b35324a370b5c6b37d39fa64b15d8ffec63d7",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "a4489be1fb529a47c203256ed9e986d63651ed8a800b7d9d696571be3901f818",
+            "attempt_record_id": "f6a74d1422e229b19739bb8e952b35324a370b5c6b37d39fa64b15d8ffec63d7",
+            "attempt_id": "aa30f890de55402089b8ea0aa20ca8c2",
+            "plan_id": "db00fda91e93e1f43341ea132550e03624375d1a7506052b127ced8c7569bde6",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        }
+      ]
+    },
+    {
+      "session": "ses_e4b6d9952ffeWDsGtLlTJgH5IV",
+      "status": {
+        "type": "idle"
+      },
+      "tools": [
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_e0c8df86fc65483d99ef8118",
+          "input": {
+            "action": "prepare",
+            "plan_id": "9ba0719c0a55cc7f2ef807afd9a2869b3b4377326985f7741073b323e9447426",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "bae2b2b09d54b20c7dc39248622bc8437016131e8bd833ba4234f881bbedaece",
+            "attempt_id": "769c028f003842d0bc752fd30e05f5b4",
+            "plan_id": "9ba0719c0a55cc7f2ef807afd9a2869b3b4377326985f7741073b323e9447426",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_d5ad23aa8c3145ccb877f797",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "bae2b2b09d54b20c7dc39248622bc8437016131e8bd833ba4234f881bbedaece",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "5a3b4225f62c20b98c101e6d5646bf770ea5fa538d014920f4b97dd4801fadd8",
+            "attempt_record_id": "bae2b2b09d54b20c7dc39248622bc8437016131e8bd833ba4234f881bbedaece",
+            "attempt_id": "769c028f003842d0bc752fd30e05f5b4",
+            "plan_id": "9ba0719c0a55cc7f2ef807afd9a2869b3b4377326985f7741073b323e9447426",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_ad04045aa7d24981bad85dad",
+          "input": {
+            "action": "prepare",
+            "plan_id": "4d483ce75b63349b4113cb84930a32cf21814a6ef512049eb28e6abe3ee8110a",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "f38d4bbffad55d5bd7d147deb4c92d7ccd3a96db9421704acaac5df513891369",
+            "attempt_id": "af597e6db4cf42fcb4308e1a382ade1a",
+            "plan_id": "4d483ce75b63349b4113cb84930a32cf21814a6ef512049eb28e6abe3ee8110a",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_5b00a88b51414a0689d929a8",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "f38d4bbffad55d5bd7d147deb4c92d7ccd3a96db9421704acaac5df513891369",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "6dded82ea63e35c76790991380bf8bc60dbed2ab852b078891700d681d66c3ab",
+            "attempt_record_id": "f38d4bbffad55d5bd7d147deb4c92d7ccd3a96db9421704acaac5df513891369",
+            "attempt_id": "af597e6db4cf42fcb4308e1a382ade1a",
+            "plan_id": "4d483ce75b63349b4113cb84930a32cf21814a6ef512049eb28e6abe3ee8110a",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_10c00b7cd98b40a488010cda",
+          "input": {
+            "action": "prepare",
+            "plan_id": "36f9b948ce1b46e2888bab91970d0de1ba0de0643c8802cd2d160833fd24d57d",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "d112ec8788f6f8888c99961df62849f06690143770ff9ac4159d77f235279419",
+            "attempt_id": "93ade1749f354518a7d84ca508b73753",
+            "plan_id": "36f9b948ce1b46e2888bab91970d0de1ba0de0643c8802cd2d160833fd24d57d",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_c9670bb893c348418e2074b6",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "d112ec8788f6f8888c99961df62849f06690143770ff9ac4159d77f235279419",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "d54a21706964fb5af6a4eefb17ae9e5669bc77d3498b955042b767331627cb2f",
+            "attempt_record_id": "d112ec8788f6f8888c99961df62849f06690143770ff9ac4159d77f235279419",
+            "attempt_id": "93ade1749f354518a7d84ca508b73753",
+            "plan_id": "36f9b948ce1b46e2888bab91970d0de1ba0de0643c8802cd2d160833fd24d57d",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_f0abb946ba6e482393fd59a0",
+          "input": {
+            "action": "prepare",
+            "plan_id": "8548667a5002756ca795bb11c67840b7887dc76c0253fa20ff2d253f304d48bf",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "2aeee49b361260910c8cfa819483940d3555c709b11088763ea757b865378192",
+            "attempt_id": "41fb04a1f42d408dabe010ef916a6e79",
+            "plan_id": "8548667a5002756ca795bb11c67840b7887dc76c0253fa20ff2d253f304d48bf",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_25f1995ee17048aeb143fcbb",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "2aeee49b361260910c8cfa819483940d3555c709b11088763ea757b865378192",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "3c9295cbf337ba34732a6ca02871b156a0da619d9502ee7e7bf571a832a1747d",
+            "attempt_record_id": "2aeee49b361260910c8cfa819483940d3555c709b11088763ea757b865378192",
+            "attempt_id": "41fb04a1f42d408dabe010ef916a6e79",
+            "plan_id": "8548667a5002756ca795bb11c67840b7887dc76c0253fa20ff2d253f304d48bf",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "4\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_fd1bcff1c11544e1a91cd4b0",
+          "input": {
+            "action": "prepare",
+            "plan_id": "df06153d385112f1758269c9b92c493a83e7f8769324fb52f74b4f39ca2792e8",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "30424b4a830c3143975d44b013cc2747dcfbaebfbe58f0a27b197acb25c3f308",
+            "attempt_id": "df242b8b95094b3c8abbae4adb98e6a0",
+            "plan_id": "df06153d385112f1758269c9b92c493a83e7f8769324fb52f74b4f39ca2792e8",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_1de4538847f64d4cb0e5fc12",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "30424b4a830c3143975d44b013cc2747dcfbaebfbe58f0a27b197acb25c3f308",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "b2409493c39b98faa240d92f40913eeb67dbdd4a9e6a077fc88e16c8a8e96839",
+            "attempt_record_id": "30424b4a830c3143975d44b013cc2747dcfbaebfbe58f0a27b197acb25c3f308",
+            "attempt_id": "df242b8b95094b3c8abbae4adb98e6a0",
+            "plan_id": "df06153d385112f1758269c9b92c493a83e7f8769324fb52f74b4f39ca2792e8",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "TAP version 13\n# Subtest: A1: greet('Ada') strictly equals 'Hello, Ada!'\nok 1 - A1: greet('Ada') strictly equals 'Hello, Ada!'\n  ---\n  duration_ms: 1.1711\n  type: 'test'\n  ...\n# Subtest: A2: greet('Grace') strictly equals 'Hello, Grace!'\nok 2 - A2: greet('Grace') strictly equals 'Hello, Grace!'\n  ---\n  duration_ms: 0.2085\n  type: 'test'\n  ...\n# Subtest: A3: greet('') strictly equals 'Hello, world!'\nok 3 - A3: greet('') strictly equals 'Hello, world!'\n  ---\n  duration_ms: 0.1424\n  type: 'test'\n  ...\n# Subtest: A4: greet('  ') strictly equals 'Hello, ' + name + '!' form\nok 4 - A4: greet('  ') strictly equals 'Hello, ' + name + '!' form\n  ---\n  duration_ms: 0.1258\n  type: 'test'\n  ...\n1..4\n# tests 4\n# suites 0\n# pass 4\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 85.655\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        }
+      ]
+    },
+    {
+      "session": "ses_e4b69dd07ffeddAieswn13Rszu",
+      "status": {
+        "type": "idle"
+      },
+      "tools": [
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_f514bcf4866c410187574aad",
+          "input": {
+            "action": "prepare",
+            "plan_id": "928b32f78fd9af2b868aba73ba52b85f4bc958c56de37324f7b9c38c544c95be",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "72b950ecbca4ce25db77a31c4da5ea6486953283cc60833fae182bb68f2ee0d0",
+            "attempt_id": "6dc02134d7234ecf9363cc421fc6ba6e",
+            "plan_id": "928b32f78fd9af2b868aba73ba52b85f4bc958c56de37324f7b9c38c544c95be",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_6ec593069be849c98bc0eb2e",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "72b950ecbca4ce25db77a31c4da5ea6486953283cc60833fae182bb68f2ee0d0",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "dc02cb1cf3cf9d951432ad86e1ae37a1ded04b63c700eedd348d50731ad4c65d",
+            "attempt_record_id": "72b950ecbca4ce25db77a31c4da5ea6486953283cc60833fae182bb68f2ee0d0",
+            "attempt_id": "6dc02134d7234ecf9363cc421fc6ba6e",
+            "plan_id": "928b32f78fd9af2b868aba73ba52b85f4bc958c56de37324f7b9c38c544c95be",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_f0ef19d3a49649999c610d26",
+          "input": {
+            "action": "prepare",
+            "plan_id": "851cb65c078371aaf3816e6842b35e50a1497339b4765f2a3eb826b058f00cf2",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "71c05371a2ec4f23650fb2fac5f8a3487cc786f880c5fc12ce4ed1e04cfb22c0",
+            "attempt_id": "7785239b0644406eb86934d2d979c603",
+            "plan_id": "851cb65c078371aaf3816e6842b35e50a1497339b4765f2a3eb826b058f00cf2",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_d152a82eeb5d455eaeceb5f2",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "71c05371a2ec4f23650fb2fac5f8a3487cc786f880c5fc12ce4ed1e04cfb22c0",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "5d2f99fcf8411b99f07c4aa0d980c544aa556b43b177516ac1a27685d1d0e934",
+            "attempt_record_id": "71c05371a2ec4f23650fb2fac5f8a3487cc786f880c5fc12ce4ed1e04cfb22c0",
+            "attempt_id": "7785239b0644406eb86934d2d979c603",
+            "plan_id": "851cb65c078371aaf3816e6842b35e50a1497339b4765f2a3eb826b058f00cf2",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_816596ba433f4fef8f6c2bce",
+          "input": {
+            "action": "prepare",
+            "plan_id": "32ae5b6411335829f36c74565ebcc03ac433ea1ad4aff0c15d9b883fc9e5bcc5",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "1bc855a025545ae49aff95a5122fe4066b44a60d505c1f3ff03fcd72d8577e0b",
+            "attempt_id": "8a8989f80d8742bc86bd335bfa066b2a",
+            "plan_id": "32ae5b6411335829f36c74565ebcc03ac433ea1ad4aff0c15d9b883fc9e5bcc5",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_662f34b867b2486186b52ea7",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "1bc855a025545ae49aff95a5122fe4066b44a60d505c1f3ff03fcd72d8577e0b",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "62fc588d6e29f1203712c807c38409292c410b8ec37237a04492a8a44c1d122f",
+            "attempt_record_id": "1bc855a025545ae49aff95a5122fe4066b44a60d505c1f3ff03fcd72d8577e0b",
+            "attempt_id": "8a8989f80d8742bc86bd335bfa066b2a",
+            "plan_id": "32ae5b6411335829f36c74565ebcc03ac433ea1ad4aff0c15d9b883fc9e5bcc5",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_e9ba18942996463ea9fa8529",
+          "input": {
+            "action": "prepare",
+            "plan_id": "87b0ef450204e74d1a0c9757920d1e01ce296e2b11ed4dc8ed567f9ecf4c775d",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "a3859ac8bb52bbdf1dc232f2dc6a1d7c4a824105df0e8c7a5c7b5790153c15c2",
+            "attempt_id": "98a1e555a9ac40f9ba9e5261f3ea4d7b",
+            "plan_id": "87b0ef450204e74d1a0c9757920d1e01ce296e2b11ed4dc8ed567f9ecf4c775d",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_e1a3f9550e24473683ad20ec",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "a3859ac8bb52bbdf1dc232f2dc6a1d7c4a824105df0e8c7a5c7b5790153c15c2",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "ba1dff2adfa79535b14f4e3b4ea24aeaaa31a9b53f9d42e79471015c794ddfcc",
+            "attempt_record_id": "a3859ac8bb52bbdf1dc232f2dc6a1d7c4a824105df0e8c7a5c7b5790153c15c2",
+            "attempt_id": "98a1e555a9ac40f9ba9e5261f3ea4d7b",
+            "plan_id": "87b0ef450204e74d1a0c9757920d1e01ce296e2b11ed4dc8ed567f9ecf4c775d",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "2\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_94995e7810474577bd2d89bf",
+          "input": {
+            "action": "prepare",
+            "plan_id": "f4dbd7336f5aac3437f5696abedff37046acf4922e34bcaadc5bb6793ca7a8c0",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "e37a0a531c1ada28ce93a6d3e489cc9394404a7e603918369bf4172d6ded42d2",
+            "attempt_id": "0a87913628394e8da8b3aec7a970632a",
+            "plan_id": "f4dbd7336f5aac3437f5696abedff37046acf4922e34bcaadc5bb6793ca7a8c0",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_ac3b679b02ee4fd58419c526",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "e37a0a531c1ada28ce93a6d3e489cc9394404a7e603918369bf4172d6ded42d2",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "1f407a8b6f0e5845319ffc3387c7223188d3fa7e2badb510041f20646fdd5c4b",
+            "attempt_record_id": "e37a0a531c1ada28ce93a6d3e489cc9394404a7e603918369bf4172d6ded42d2",
+            "attempt_id": "0a87913628394e8da8b3aec7a970632a",
+            "plan_id": "f4dbd7336f5aac3437f5696abedff37046acf4922e34bcaadc5bb6793ca7a8c0",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_29fd79b4da7f485c991e88b7",
+          "input": {
+            "action": "prepare",
+            "plan_id": "4a9a8ddb73969d34b258594f8d0c37bda4c530a29ea5b02ed5fdcc781ef72d55",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "c1aa3e8f1119966d07d9a3712ed07f0bb2cbc8f9a2076b20948ebced705e08a6",
+            "attempt_id": "76b96d752ccf477996e4081ff617a964",
+            "plan_id": "4a9a8ddb73969d34b258594f8d0c37bda4c530a29ea5b02ed5fdcc781ef72d55",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_9f3cf4b072854309835e4657",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "c1aa3e8f1119966d07d9a3712ed07f0bb2cbc8f9a2076b20948ebced705e08a6",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "ae2fbd6bb1df0b46d04647f1692992a0bbeade46fea5ec8b04fdfe47790bec5a",
+            "attempt_record_id": "c1aa3e8f1119966d07d9a3712ed07f0bb2cbc8f9a2076b20948ebced705e08a6",
+            "attempt_id": "76b96d752ccf477996e4081ff617a964",
+            "plan_id": "4a9a8ddb73969d34b258594f8d0c37bda4c530a29ea5b02ed5fdcc781ef72d55",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        }
+      ]
+    },
+    {
+      "session": "ses_e4b64b0f8ffeuWjTbyWe8LUZMH",
+      "status": {
+        "type": "idle"
+      },
+      "tools": [
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_3fba6e771f4746598532c3a2",
+          "input": {
+            "action": "prepare",
+            "plan_id": "77d838a02c3166ae06570e67d9293fb7c7c9d32bb61d9af43b57e8f298ee684f",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "83bf91fb9ac7c8067035ccfeb87aa883931e84d4d37028268ace2e7e4546e22c",
+            "attempt_id": "54babe8d45a54d2db93a0b54f8338efa",
+            "plan_id": "77d838a02c3166ae06570e67d9293fb7c7c9d32bb61d9af43b57e8f298ee684f",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_1c967739277448099c6738a1",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "83bf91fb9ac7c8067035ccfeb87aa883931e84d4d37028268ace2e7e4546e22c",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "73014cdd12b6147b3c8c6a0135340a164e44b1fe8b337ff14314747879a2154f",
+            "attempt_record_id": "83bf91fb9ac7c8067035ccfeb87aa883931e84d4d37028268ace2e7e4546e22c",
+            "attempt_id": "54babe8d45a54d2db93a0b54f8338efa",
+            "plan_id": "77d838a02c3166ae06570e67d9293fb7c7c9d32bb61d9af43b57e8f298ee684f",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "TAP version 13\n# Subtest: A1: greet('Ada') strictly equals 'Hello, Ada!'\nok 1 - A1: greet('Ada') strictly equals 'Hello, Ada!'\n  ---\n  duration_ms: 1.0176\n  type: 'test'\n  ...\n# Subtest: A2: greet('Grace') strictly equals 'Hello, Grace!'\nok 2 - A2: greet('Grace') strictly equals 'Hello, Grace!'\n  ---\n  duration_ms: 0.1743\n  type: 'test'\n  ...\n# Subtest: A3: greet('') strictly equals 'Hello, world!'\nok 3 - A3: greet('') strictly equals 'Hello, world!'\n  ---\n  duration_ms: 0.1187\n  type: 'test'\n  ...\n# Subtest: A4: greet('  ') strictly equals 'Hello, ' + name + '!' form\nok 4 - A4: greet('  ') strictly equals 'Hello, ' + name + '!' form\n  ---\n  duration_ms: 0.1058\n  type: 'test'\n  ...\n1..4\n# tests 4\n# suites 0\n# pass 4\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 64.8999\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_34fb74bf288d4832852c836d",
+          "input": {
+            "action": "prepare",
+            "plan_id": "e9cc0a53f933aec3a6f978b396572f131bc09685925d9f651f78a69b9e71a161",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "7cce384e7b951b8af2a477d63cdc3b633206d9cf31f77c85ace2114996ca77d9",
+            "attempt_id": "01182f769bea4261af9437b78d906c55",
+            "plan_id": "e9cc0a53f933aec3a6f978b396572f131bc09685925d9f651f78a69b9e71a161",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_beae8613ee6444078351cff2",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "7cce384e7b951b8af2a477d63cdc3b633206d9cf31f77c85ace2114996ca77d9",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "924a291abdaefe1a985fc85985ab111c617c582cc1783e5cdc4ee34ea7a1a1f1",
+            "attempt_record_id": "7cce384e7b951b8af2a477d63cdc3b633206d9cf31f77c85ace2114996ca77d9",
+            "attempt_id": "01182f769bea4261af9437b78d906c55",
+            "plan_id": "e9cc0a53f933aec3a6f978b396572f131bc09685925d9f651f78a69b9e71a161",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "E2E-OK\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        }
+      ]
+    },
+    {
+      "session": "ses_e4b620b42ffeFNl27ibfHyMSqB",
+      "status": {
+        "type": "idle"
+      },
+      "tools": [
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_2ad1271b8fc7402cbfec9347",
+          "input": {
+            "action": "prepare",
+            "plan_id": "14149f004802f001c30fa2125925a42ca08a493fe5235162c0abac023a67c43f",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "2ea6b689544bd43736bf139a917a7f6a012a1aee52e13e66f1d5b37c6c78cf9b",
+            "attempt_id": "cc0ae0dcac7b46868909faffe320994d",
+            "plan_id": "14149f004802f001c30fa2125925a42ca08a493fe5235162c0abac023a67c43f",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_1bb825802e8f4376ab75331c",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "2ea6b689544bd43736bf139a917a7f6a012a1aee52e13e66f1d5b37c6c78cf9b",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "ba1f4b337c784b7aae9627b940740ae1e5d7842f56bd8133956f67bfa23f7333",
+            "attempt_record_id": "2ea6b689544bd43736bf139a917a7f6a012a1aee52e13e66f1d5b37c6c78cf9b",
+            "attempt_id": "cc0ae0dcac7b46868909faffe320994d",
+            "plan_id": "14149f004802f001c30fa2125925a42ca08a493fe5235162c0abac023a67c43f",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_5f97b1e1f5244f8f9fd1ab88",
+          "input": {
+            "action": "prepare",
+            "plan_id": "588352bf998def3809e578a542f7a61f0d4ffab7beae69cec469bedec395bb8c",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "b058573d2ed582e98c97debcc44a0f50547630147f69617acc6b0c0c14df9ab3",
+            "attempt_id": "4cd22a7ea7e94340ba4ac3675c2d6184",
+            "plan_id": "588352bf998def3809e578a542f7a61f0d4ffab7beae69cec469bedec395bb8c",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_5cab78761e2e4e5fb7a285be",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "b058573d2ed582e98c97debcc44a0f50547630147f69617acc6b0c0c14df9ab3",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "a39a587ad7f256a823c141be8e8346ef4a29dd54a1f91d033a6384d706ec7d8c",
+            "attempt_record_id": "b058573d2ed582e98c97debcc44a0f50547630147f69617acc6b0c0c14df9ab3",
+            "attempt_id": "4cd22a7ea7e94340ba4ac3675c2d6184",
+            "plan_id": "588352bf998def3809e578a542f7a61f0d4ffab7beae69cec469bedec395bb8c",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_61916dd9e7b04426b1c2e07d",
+          "input": {
+            "action": "prepare",
+            "plan_id": "968dd0df9fa8d74739d8f3ba56ec8ff148724811bd37c7f1dadf92e2c2d76b47",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "6db27f3469aface7ff31641185f351b64ba1cc7cac7052e03810f9a9fd855788",
+            "attempt_id": "46f56cbf39b54abcaa0f361bed26042a",
+            "plan_id": "968dd0df9fa8d74739d8f3ba56ec8ff148724811bd37c7f1dadf92e2c2d76b47",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_7103aa49225c486b835fb380",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "6db27f3469aface7ff31641185f351b64ba1cc7cac7052e03810f9a9fd855788",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "35ce1c4da752abf007c72c5836b22374aae246f274880a45087e3e61523da4c2",
+            "attempt_record_id": "6db27f3469aface7ff31641185f351b64ba1cc7cac7052e03810f9a9fd855788",
+            "attempt_id": "46f56cbf39b54abcaa0f361bed26042a",
+            "plan_id": "968dd0df9fa8d74739d8f3ba56ec8ff148724811bd37c7f1dadf92e2c2d76b47",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_ea273681ae1f43cb90a8e60d",
+          "input": {
+            "action": "prepare",
+            "plan_id": "ec2090526c70d55c54f3ddf74ff13696710eafbac2a283ac6f3df328111139b1",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "ddc506156d83ebe5320c587f06e0358e5aae7bf26dc1a3e90fce47b8be3aed33",
+            "attempt_id": "6ae10a76d4284df7bb8fb971bedb66dd",
+            "plan_id": "ec2090526c70d55c54f3ddf74ff13696710eafbac2a283ac6f3df328111139b1",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_cc0d827595cc4ff4896958fb",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "ddc506156d83ebe5320c587f06e0358e5aae7bf26dc1a3e90fce47b8be3aed33",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "a56d6d8432c5e28610379c5538f071d94a548112f1256726ac3fd4cf750f8268",
+            "attempt_record_id": "ddc506156d83ebe5320c587f06e0358e5aae7bf26dc1a3e90fce47b8be3aed33",
+            "attempt_id": "6ae10a76d4284df7bb8fb971bedb66dd",
+            "plan_id": "ec2090526c70d55c54f3ddf74ff13696710eafbac2a283ac6f3df328111139b1",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_fd3ecce6411f40049e6ee1c5",
+          "input": {
+            "action": "prepare",
+            "plan_id": "884899d62b29dc59a5792df5475eb9bc8944b552a807841af86969ff555096b6",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "1911ee459ac6c5accfde43b493eebcb6b2588f974d5300ae15e438031594fbc6",
+            "attempt_id": "c0dc8f20bd50486db92f87dfb6556c13",
+            "plan_id": "884899d62b29dc59a5792df5475eb9bc8944b552a807841af86969ff555096b6",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_c0c605750e154970aa950181",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "1911ee459ac6c5accfde43b493eebcb6b2588f974d5300ae15e438031594fbc6",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "725eaeeffc0472a805dfa80e3042f1efd6449082888ebb5c15ce7883cceee4fd",
+            "attempt_record_id": "1911ee459ac6c5accfde43b493eebcb6b2588f974d5300ae15e438031594fbc6",
+            "attempt_id": "c0dc8f20bd50486db92f87dfb6556c13",
+            "plan_id": "884899d62b29dc59a5792df5475eb9bc8944b552a807841af86969ff555096b6",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "2\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        }
+      ]
+    },
+    {
+      "session": "ses_e4b5e326effeHShnHAetUYzOez",
+      "status": {
+        "type": "idle"
+      },
+      "tools": [
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_d99c3a86529b4006948784b4",
+          "input": {
+            "action": "prepare",
+            "plan_id": "eb0895f1a2520be4da59dee2d485582b1b1b39cd9591b4098bf582ed939caa9f",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "01c6af9e93e7696506e5af5dd09ea125b9ed84b68afd897f406d58e5953b77e6",
+            "attempt_id": "73629d88000d42a69d6832d170fce4f4",
+            "plan_id": "eb0895f1a2520be4da59dee2d485582b1b1b39cd9591b4098bf582ed939caa9f",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_eb6ec7692cca4de88349d99c",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "01c6af9e93e7696506e5af5dd09ea125b9ed84b68afd897f406d58e5953b77e6",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "290bf68c482afbf68cbb38639492980aade04b82ae7d5d6d984b0bb0249436d5",
+            "attempt_record_id": "01c6af9e93e7696506e5af5dd09ea125b9ed84b68afd897f406d58e5953b77e6",
+            "attempt_id": "73629d88000d42a69d6832d170fce4f4",
+            "plan_id": "eb0895f1a2520be4da59dee2d485582b1b1b39cd9591b4098bf582ed939caa9f",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_203853ce2a274edea24017b9",
+          "input": {
+            "action": "prepare",
+            "plan_id": "40bac342f0c35e83fa743ab53280a1a9fcf22731c646164d7ad802adc85d2b1d",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "a328c0252f1a9cc3286e84657fff4ba3d98ccb0394d3ed3ab476f05fab16da02",
+            "attempt_id": "f3c21dffd57c4435953bb9c629cb0b80",
+            "plan_id": "40bac342f0c35e83fa743ab53280a1a9fcf22731c646164d7ad802adc85d2b1d",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_c11622136d594257a3985442",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "a328c0252f1a9cc3286e84657fff4ba3d98ccb0394d3ed3ab476f05fab16da02",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "0246951140b7a562a278ef97bdb06ff4419c133ed6f051df5af7263eee15db45",
+            "attempt_record_id": "a328c0252f1a9cc3286e84657fff4ba3d98ccb0394d3ed3ab476f05fab16da02",
+            "attempt_id": "f3c21dffd57c4435953bb9c629cb0b80",
+            "plan_id": "40bac342f0c35e83fa743ab53280a1a9fcf22731c646164d7ad802adc85d2b1d",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_858d96eb337d4ff89b37c413",
+          "input": {
+            "action": "prepare",
+            "plan_id": "7b0e6d17a5cc57df23a2e7a4939e1dba78ca7648fdd60e1c63ed6e1a662854f6",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "2d9ca3803c6d7859d7b259e033ff92a1fc17d7ec068bf9d83f7bee115d9c4f34",
+            "attempt_id": "1d078f0098714d1dbbc1fc1fd3c26cf6",
+            "plan_id": "7b0e6d17a5cc57df23a2e7a4939e1dba78ca7648fdd60e1c63ed6e1a662854f6",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_feaa109597304075b67bc679",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "2d9ca3803c6d7859d7b259e033ff92a1fc17d7ec068bf9d83f7bee115d9c4f34",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "43096710781324aab9afd8b45b6f827f685a398bb9336f06c20268f0afc22d9e",
+            "attempt_record_id": "2d9ca3803c6d7859d7b259e033ff92a1fc17d7ec068bf9d83f7bee115d9c4f34",
+            "attempt_id": "1d078f0098714d1dbbc1fc1fd3c26cf6",
+            "plan_id": "7b0e6d17a5cc57df23a2e7a4939e1dba78ca7648fdd60e1c63ed6e1a662854f6",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_b8eaaeafa9cb4914bfdea45e",
+          "input": {
+            "action": "prepare",
+            "plan_id": "caacb71d2d8e802c30989451b611cfb85fce16856f095d9b23a2e07799b45d1b",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "6940a8b48dd4139771a0a3107f6d08562c785d7855e3437082194a9444942733",
+            "attempt_id": "8f5f731a878540d7a2a0658460d40262",
+            "plan_id": "caacb71d2d8e802c30989451b611cfb85fce16856f095d9b23a2e07799b45d1b",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_b9e73ae2fbbf456098c493b6",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "6940a8b48dd4139771a0a3107f6d08562c785d7855e3437082194a9444942733",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "9abce60b2d876d97ad08425b7f67b287a1d7f3d02f49c3ff481a7c73f97a7aa7",
+            "attempt_record_id": "6940a8b48dd4139771a0a3107f6d08562c785d7855e3437082194a9444942733",
+            "attempt_id": "8f5f731a878540d7a2a0658460d40262",
+            "plan_id": "caacb71d2d8e802c30989451b611cfb85fce16856f095d9b23a2e07799b45d1b",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        }
+      ]
+    },
+    {
+      "session": "ses_e4b5c0d13ffeVeS9rnIhLoPLY5",
+      "status": {
+        "type": "idle"
+      },
+      "tools": [
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_589c57b50b0b4dab9bd920a7",
+          "input": {
+            "action": "prepare",
+            "plan_id": "fb2c7793aca80277d492bc2c5b8a95b051dc0e67dd4ef1918fd89fa956274c10",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "74b03b11face45e141550529ad3aa99a0cea2768cb5e9e7885d5cf724e0ce04c",
+            "attempt_id": "99bd79f666304377b9d9531b19e5df83",
+            "plan_id": "fb2c7793aca80277d492bc2c5b8a95b051dc0e67dd4ef1918fd89fa956274c10",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_dc9b0f7e256c42df9669495c",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "74b03b11face45e141550529ad3aa99a0cea2768cb5e9e7885d5cf724e0ce04c",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "11650444ba0b308497eb5b418e00448f1b0356f1e867da5c9b4751538b6aeaa2",
+            "attempt_record_id": "74b03b11face45e141550529ad3aa99a0cea2768cb5e9e7885d5cf724e0ce04c",
+            "attempt_id": "99bd79f666304377b9d9531b19e5df83",
+            "plan_id": "fb2c7793aca80277d492bc2c5b8a95b051dc0e67dd4ef1918fd89fa956274c10",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_f982a82ce0c0497cbca6a256",
+          "input": {
+            "action": "prepare",
+            "plan_id": "7a05b2f7c0107c16fd1643ee5745f93bd510ded1fbffb15acea4cb87e0282f7f",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "e95f3cc81c65369dd083344c4668e20516a85a5a1a8fcc1b9c36de4ffd253b35",
+            "attempt_id": "79c979ac1684422f90644cfaa407a2fe",
+            "plan_id": "7a05b2f7c0107c16fd1643ee5745f93bd510ded1fbffb15acea4cb87e0282f7f",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_786318140a194a60a96dd0fb",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "e95f3cc81c65369dd083344c4668e20516a85a5a1a8fcc1b9c36de4ffd253b35",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "019d28117b3b3420a8e60268cc337cc7b537373f4a43691495ddaded2f8213bf",
+            "attempt_record_id": "e95f3cc81c65369dd083344c4668e20516a85a5a1a8fcc1b9c36de4ffd253b35",
+            "attempt_id": "79c979ac1684422f90644cfaa407a2fe",
+            "plan_id": "7a05b2f7c0107c16fd1643ee5745f93bd510ded1fbffb15acea4cb87e0282f7f",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_0116f46211bb41bd90521988",
+          "input": {
+            "action": "prepare",
+            "plan_id": "2de09470285c3cfbb9f4847f075e069b51149d4565f9165c23d8003eaee2028d",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "fdedaef14b09c528c4cb5e3d6058da607ef41cc40567d9ab0cd2f434afb064b9",
+            "attempt_id": "a847f9e6dff645559a4b2eca675c01b1",
+            "plan_id": "2de09470285c3cfbb9f4847f075e069b51149d4565f9165c23d8003eaee2028d",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_24140d4026f14c74a774c020",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "fdedaef14b09c528c4cb5e3d6058da607ef41cc40567d9ab0cd2f434afb064b9",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "0d9908e31e2c080ebc9722a84573ff78e68add94044fa688f5602df37958ef39",
+            "attempt_record_id": "fdedaef14b09c528c4cb5e3d6058da607ef41cc40567d9ab0cd2f434afb064b9",
+            "attempt_id": "a847f9e6dff645559a4b2eca675c01b1",
+            "plan_id": "2de09470285c3cfbb9f4847f075e069b51149d4565f9165c23d8003eaee2028d",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_fab04a413aa14d288681a6bd",
+          "input": {
+            "action": "prepare",
+            "plan_id": "c5e2553e28efd4430c90232cf4fd865fe83628231775434d5d8414848fa66352",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "6119926114272a1d5e39662372641e0c1e9110b860905790b20de62b15ef7075",
+            "attempt_id": "042c6b044a054ae7a0cc9f2dd56c27a7",
+            "plan_id": "c5e2553e28efd4430c90232cf4fd865fe83628231775434d5d8414848fa66352",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_3adc73796fdf41a3bd3f3c0c",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "6119926114272a1d5e39662372641e0c1e9110b860905790b20de62b15ef7075",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "ab4b192ce7969882ccbf5d395ba057ec5296327410b154661c003906540c3e06",
+            "attempt_record_id": "6119926114272a1d5e39662372641e0c1e9110b860905790b20de62b15ef7075",
+            "attempt_id": "042c6b044a054ae7a0cc9f2dd56c27a7",
+            "plan_id": "c5e2553e28efd4430c90232cf4fd865fe83628231775434d5d8414848fa66352",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "4\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_a95983bb78354b2e8f7f80d4",
+          "input": {
+            "action": "prepare",
+            "plan_id": "5ea7a91527b18f7df2b4ba21315b232adff13262014e15b2f468b135a8654416",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "b1825c4a7c1ed9c6dc1af65f9f2681b374a6cd92071da91d121cf45cecf6eb6a",
+            "attempt_id": "eb31347bdf654f7a966b0814dbfd79f3",
+            "plan_id": "5ea7a91527b18f7df2b4ba21315b232adff13262014e15b2f468b135a8654416",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_ecd8562bbb66482faea643aa",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "b1825c4a7c1ed9c6dc1af65f9f2681b374a6cd92071da91d121cf45cecf6eb6a",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "99535bcd60677e21214aa72c85c9ecb7c9928ff329bddcdeaa9a1d4dbd2cf911",
+            "attempt_record_id": "b1825c4a7c1ed9c6dc1af65f9f2681b374a6cd92071da91d121cf45cecf6eb6a",
+            "attempt_id": "eb31347bdf654f7a966b0814dbfd79f3",
+            "plan_id": "5ea7a91527b18f7df2b4ba21315b232adff13262014e15b2f468b135a8654416",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "TAP version 13\n# Subtest: A1: greet('Ada') strictly equals 'Hello, Ada!'\nok 1 - A1: greet('Ada') strictly equals 'Hello, Ada!'\n  ---\n  duration_ms: 1.0242\n  type: 'test'\n  ...\n# Subtest: A2: greet('Grace') strictly equals 'Hello, Grace!'\nok 2 - A2: greet('Grace') strictly equals 'Hello, Grace!'\n  ---\n  duration_ms: 0.2434\n  type: 'test'\n  ...\n# Subtest: A3: greet('') strictly equals 'Hello, world!'\nok 3 - A3: greet('') strictly equals 'Hello, world!'\n  ---\n  duration_ms: 0.1731\n  type: 'test'\n  ...\n# Subtest: A4: greet('  ') strictly equals 'Hello, ' + name + '!' form\nok 4 - A4: greet('  ') strictly equals 'Hello, ' + name + '!' form\n  ---\n  duration_ms: 0.1747\n  type: 'test'\n  ...\n1..4\n# tests 4\n# suites 0\n# pass 4\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 87.9315\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        }
+      ]
+    },
+    {
+      "session": "ses_e4b5823f5ffeXQ182MBkbglf6i",
+      "status": {
+        "type": "retry",
+        "attempt": 5,
+        "message": "您的账户已达到速率限制，请您控制请求频率",
+        "next": 1794032475516
+      },
+      "tools": [
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_2b006d7685a84e2abfd9879f",
+          "input": {
+            "action": "prepare",
+            "plan_id": "8386d2ea5bf4e3949cec302f46b5a13cb9f727138a3abf2014a525ff7c216d85",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "bc8041e20b76f08cbbcf59c47fbb79095d92d47bcda182914c0c9060d6ba72dd",
+            "attempt_id": "da2b93bb7c494275a2b637dfc266e3db",
+            "plan_id": "8386d2ea5bf4e3949cec302f46b5a13cb9f727138a3abf2014a525ff7c216d85",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_d3a133b6305d4d1c891055e1",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "bc8041e20b76f08cbbcf59c47fbb79095d92d47bcda182914c0c9060d6ba72dd",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "da62f46687f3084b0ffa4b16ff8271962b224a7f753281043d2571d429e8429d",
+            "attempt_record_id": "bc8041e20b76f08cbbcf59c47fbb79095d92d47bcda182914c0c9060d6ba72dd",
+            "attempt_id": "da2b93bb7c494275a2b637dfc266e3db",
+            "plan_id": "8386d2ea5bf4e3949cec302f46b5a13cb9f727138a3abf2014a525ff7c216d85",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_4f62c7f34cad499eaf037c51",
+          "input": {
+            "action": "prepare",
+            "plan_id": "73749384ec353d31768f7a8194ca5281d17eef58942730f594da26b576cf8a08",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "36797d63b8ea7ebd89049b251ae0200c6cb7a66437efed07dd9f2fe07952d8b8",
+            "attempt_id": "7df2b18a893647e092f6465ed3bdcfc2",
+            "plan_id": "73749384ec353d31768f7a8194ca5281d17eef58942730f594da26b576cf8a08",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_7007602c0d7447bcbfbfebfb",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "36797d63b8ea7ebd89049b251ae0200c6cb7a66437efed07dd9f2fe07952d8b8",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "4cab13ba7c2fedea7d4b10029c9c35f87d1e8a51276d37e6ca39a05d534e88aa",
+            "attempt_record_id": "36797d63b8ea7ebd89049b251ae0200c6cb7a66437efed07dd9f2fe07952d8b8",
+            "attempt_id": "7df2b18a893647e092f6465ed3bdcfc2",
+            "plan_id": "73749384ec353d31768f7a8194ca5281d17eef58942730f594da26b576cf8a08",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_7dfdf3fbfb224bf2b300f703",
+          "input": {
+            "action": "prepare",
+            "plan_id": "5fa1c481cd3a578827e16969ba36e4ed239f87b2a92b31fb57f7d4b734e35877",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "9e16fe49debdd83f0055fed2c2fbd95867aa7e570ebcde838e61b08516220d59",
+            "attempt_id": "fd3aa3dab97b438a8ccfc6ea0ce570f2",
+            "plan_id": "5fa1c481cd3a578827e16969ba36e4ed239f87b2a92b31fb57f7d4b734e35877",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_377e3bbe35934c01a1567c2d",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "9e16fe49debdd83f0055fed2c2fbd95867aa7e570ebcde838e61b08516220d59",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "5a84eaab42fe00810f87806a541c6a6cd4e7eed9f96a594b14ab60fe96f41e72",
+            "attempt_record_id": "9e16fe49debdd83f0055fed2c2fbd95867aa7e570ebcde838e61b08516220d59",
+            "attempt_id": "fd3aa3dab97b438a8ccfc6ea0ce570f2",
+            "plan_id": "5fa1c481cd3a578827e16969ba36e4ed239f87b2a92b31fb57f7d4b734e35877",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "1\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_8654b3a158194deaa77a44ed",
+          "input": {
+            "action": "prepare",
+            "plan_id": "9f533f75702965865beeee18de3b1f9324662d97dc4301fd86df177fe042e783",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "ebf5fab381d23cd7f9006032e2a314d2f0e31497fa934bce8825a7ecc5e29dab",
+            "attempt_id": "11509c451302403780141ac9d250de27",
+            "plan_id": "9f533f75702965865beeee18de3b1f9324662d97dc4301fd86df177fe042e783",
+            "application_started": false
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_04be50b22d614c5ea1a7f413",
+          "input": {
+            "action": "run",
+            "attempt_record_id": "ebf5fab381d23cd7f9006032e2a314d2f0e31497fa934bce8825a7ecc5e29dab",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "receipt_id": "3fe42ac343427279031822573062fd9da1577b285d83701fa7116e6db429cc21",
+            "attempt_record_id": "ebf5fab381d23cd7f9006032e2a314d2f0e31497fa934bce8825a7ecc5e29dab",
+            "attempt_id": "11509c451302403780141ac9d250de27",
+            "plan_id": "9f533f75702965865beeee18de3b1f9324662d97dc4301fd86df177fe042e783",
+            "outcome": "passed",
+            "exit_code": 0,
+            "cleanup_proved": true,
+            "failure": null,
+            "stdout": "2\n",
+            "stderr": "",
+            "output_preview_truncated": false,
+            "output_complete": true
+          }
+        },
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_320db5d369f648b6a368c54d",
+          "input": {
+            "action": "prepare",
+            "plan_id": "d032b596cee58580e28ffc7726b82ab5b0b2b5b1d0ee3da0e937497e5926f7a3",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "635c8493d623d29f2a3d84008158f43c119ecb2b1f22651dd1f62dcb869b88f0",
+            "attempt_id": "81ef1fc77ed24766ada39296b1eb63d2",
+            "plan_id": "d032b596cee58580e28ffc7726b82ab5b0b2b5b1d0ee3da0e937497e5926f7a3",
+            "application_started": false
+          }
+        }
+      ]
+    }
+  ],
+  "model_prompt_sent": false
+}

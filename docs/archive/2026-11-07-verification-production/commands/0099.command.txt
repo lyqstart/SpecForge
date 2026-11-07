@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/run-public-fixture-builder.cjs",
+    "04",
+    "formal"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "create-real-owner-formal-phase-fixture04",
+  "expected_writes": "TRUTH_SOURCE_WRITES self-owned ProjectInit/config/state baseline; EXTERNAL_EVIDENCE_WRITES receipts; source1.0.22 no original touch",
+  "started_utc": "2026-11-07T02:42:33.273Z"
+}

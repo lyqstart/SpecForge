@@ -1,0 +1,35 @@
+[codex/verification-production 6be12495] fix(workflow): retire legacy persistence and clarify verification actions
+ 51 files changed, 257 insertions(+), 3190 deletions(-)
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/manifest.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/API.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/DEPLOYMENT.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/EXAMPLES.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/state-recovery-mechanism.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/storage-implementation.md
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/examples/state-recovery-example.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/examples/storage-example.ts (100%)
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/package.json
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/src/StateRecoveryManager.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/src/WorkflowPersistence.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/src/events/EventLogReader.ts (100%)
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/index.ts
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/src/storage/AtomicWorkflowInstanceStorage.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/src/storage/WorkflowInstanceStorage.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/src/storage/index.ts (100%)
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/acceptance.test.ts
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/tests/integration/crash-recovery.test.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/tests/integration/persistence-comprehensive.test.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/tests/unit/AtomicWorkflowInstanceStorage.test.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/tests/unit/EventLogReader.test.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/tests/unit/StateRecoveryManager.test.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/tests/unit/WorkflowInstanceStorage.test.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/tests/unit/WorkflowPersistence.test.ts (100%)
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tsconfig.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/tests/e2e/feature-spec-e2e.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-boundary-repair-plan.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-build-verification.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-retirement.json
+ create mode 100644 packages/workflow-runtime/tests/unit/persistence-owner-boundary.test.ts
+ create mode 100644 scripts/build-workflow-runtime.ts

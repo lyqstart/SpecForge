@@ -1,0 +1,1 @@
+{"report_contract_valid":true,"manifest_basic_schema_valid":true,"formal_subjects":22,"conclusion":"pass","professional_artifact_rewritten":false,"full_gate_acceptance_claimed":false}

@@ -1,0 +1,22 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/prepare-quickstart-smoke.cjs",
+    "01",
+    "opencode"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Prepare exact normal interactive opencode startup observation after all owned workflow Kernels ended",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=read-only CIM/command resolution;EXTERNAL_EVIDENCE_WRITES=pre-start command/process identities",
+  "started_utc": "2026-11-07T10:14:08.895Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\prepare-quickstart-smoke.cjs",
+      "sha256": "778d167a57e396dc7da059fea0639ac96234a87f079f627442c2a514da1c21dd",
+      "size": 2772,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+[
+  {
+    "utc": "2026-11-07T08:47:04.217Z",
+    "error_name": "Error"
+  },
+  {
+    "utc": "2026-11-07T08:47:04.478Z",
+    "error_name": "Error"
+  },
+  {
+    "utc": "2026-11-07T08:47:04.752Z",
+    "pid": 35544,
+    "port": 2983,
+    "http_status": 200,
+    "reported_pid": 35544,
+    "status": "ok",
+    "version": "1.0.23"
+  }
+]

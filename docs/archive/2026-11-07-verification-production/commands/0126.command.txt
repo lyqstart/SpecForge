@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/http-abort-transport-probe.cjs",
+    "matrix"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "diagnose-node-bun-http-abort-transport-matrix",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned ordinary Node/Bun loopback server/client processes only, stopped after each case; EXTERNAL_EVIDENCE_WRITES transport facts; no profiles/product/original writes",
+  "started_utc": "2026-11-07T03:15:01.174Z"
+}

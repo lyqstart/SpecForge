@@ -1,0 +1,31 @@
+
+<--- Last few GCs --->
+
+[37804:0000020C50DB1000]      817 ms: Mark-Compact (reduce) 987.1 (989.9) -> 987.1 (989.9) MB, pooled: 0 MB, 35.23 / 0.00 ms  (average mu = 0.180, current mu = 0.001) last resort; GC in old space requested
+[37804:0000020C50DB1000]      823 ms: Scavenge (interleaved) 994.7 (997.5) -> 994.7 (998.5) MB, pooled: 1 MB, 0.56 / 0.00 ms  (average mu = 0.180, current mu = 0.001) allocation failure; 
+
+FATAL ERROR: Committing semi space failed. Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 00007FF6D80150BF 
+ 2: 00007FF6D6C3DD27 
+ 3: 00007FF6D6A3E567 
+ 4: 00007FF6D69D6B5B 
+ 5: 00007FF6D69AE58E 
+ 6: 00007FF6D6A41002 
+ 7: 00007FF6D6A3FFB7 
+ 8: 00007FF6D6A50EF2 
+ 9: 00007FF6D6A50A1B 
+10: 00007FF6D8337DED 
+11: 00007FF6D6A3C030 
+12: 00007FF6D6A5695E 
+13: 00007FF6D6A626E8 
+14: 00007FF6D6A79BEC 
+15: 00007FF6D6858771 
+16: 00007FF6D6858579 
+17: 00007FF6D6858211 
+18: 00007FF6D685688D 
+19: 00007FF6D676852D 
+20: 00007FF6D68455F0 
+21: 00007FF6D6642502 
+22: 0000020C1FE775FA 

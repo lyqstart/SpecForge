@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-artifact-routing-defect.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Freeze actual routing request/response and current canonical bytes with explicit late-write qualification",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES new immutable baseline02 only; original read only; previous failed capture preserved",
+  "started_utc": "2026-11-07T07:44:19.885Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\freeze-artifact-routing-defect.cjs",
+      "sha256": "b400d0075190a0a2d2f562e57d8831b1a9de7bc558d7ed2fa580930590f25c18",
+      "size": 3212,
+      "extension": ".cjs"
+    }
+  ]
+}

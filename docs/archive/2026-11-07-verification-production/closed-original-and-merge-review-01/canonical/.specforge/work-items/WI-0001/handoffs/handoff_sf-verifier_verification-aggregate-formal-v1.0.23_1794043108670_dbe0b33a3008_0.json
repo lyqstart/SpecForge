@@ -1,0 +1,46 @@
+{
+  "agent": "sf-verifier",
+  "boundary_statement": "只读聚合核验；未写入 evidence_manifest / verification_report（必需输入缺失，fail-closed），未执行新验证尝试，未推进状态，未读取 runtime trace。",
+  "duration_ms": 0,
+  "errors": [
+    "BLOCKED: TASK-WI-0001-001 fresh 1.0.23 handoff (handoff_sf-verifier_verification-task-001-formal_1794041955915_3627150ff8c1_0.json) omits receipt_id/attempt_record_id for all 5 unit commands (idx0–4); it records new plan_ids and numeric results only. Cannot bind EV-0001..EV-0005 to the current 1.0.23 asset tuple truthfully; substituting the earlier-run receipts (ba1f4b33…/a39a587a…/35ce1c4d…/a56d6d84…/725eaee…) is explicitly prohibited as stale-asset evidence."
+  ],
+  "escalation_signals": [
+    {
+      "affected_refs": [
+        "EV-0001",
+        "EV-0002",
+        "EV-0003",
+        "EV-0004",
+        "EV-0005",
+        "TASK-WI-0001-001"
+      ],
+      "description": "Fresh verification-task-001-formal handoff lacks the 5 receipt_ids required to register 1.0.23 evidence; all other 17 receipts (TASK-002..005) are complete and held ready.",
+      "recommended_action": "Orchestrator obtains the 5 missing 1.0.23 receipt_ids (e.g. re-emit corrected handoff or provide receipt ids for plan_ids cfa468db…/0eefe775…/6f9928a8…/e3444586…/9b547421…); then rerun this aggregation without re-executing attempts.",
+      "type": "missing_spec"
+    }
+  ],
+  "findings": [
+    "17 of 22 fresh 1.0.23 receipts collected and verified against handoff-recorded exit codes/outputs: TASK-002 (4), TASK-003 (5), TASK-004 (6), TASK-005 (2).",
+    "TASK-001 fresh handoff inputs_read lists new plan_ids but findings/unknowns contain no receipt_id or attempt_record_id for any of its 5 attempts.",
+    "Existing on-disk evidence/evidence_manifest.json cites the earlier-asset receipts (06:08–06:24Z) and must NOT be reused as the 1.0.23 aggregate."
+  ],
+  "inputs_read": [
+    ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-task-001-formal_1794041955915_3627150ff8c1_0.json",
+    ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-task-002-formal_1794042248213_fad48a9e7011_0.json",
+    ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-task-003-formal_1794042477866_46904ef63f6f_0.json",
+    ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-task-004-formal_1794042737163_1071e83239c9_0.json",
+    ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-task-005-formal_1794042951302_465c1986ea8c_0.json",
+    ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-formal-batch-t001_1794031831523_c235c5723fde_0.json",
+    ".specforge/work-items/WI-0001/evidence/evidence_manifest.json"
+  ],
+  "next_step_recommendation": "Provide the 5 missing TASK-WI-0001-001 1.0.23 receipt_ids (bound to plan_ids cfa468db…/0eefe775…/6f9928a8…/e3444586…/9b547421…); then resume aggregation from manifest write — the other 17 entries, verification_report and semantic_closure are fully prepared.",
+  "outputs_written": [],
+  "schema_version": "1.0",
+  "stage": "verification-aggregate-formal-v1.0.23",
+  "timestamp": "2026-11-07T09:20:00Z",
+  "unknowns": [
+    "Where the fresh TASK-001 receipt_ids were recorded (not in its handoff; runtime receipts are outside verifier read scope)."
+  ],
+  "work_item_id": "WI-0001"
+}

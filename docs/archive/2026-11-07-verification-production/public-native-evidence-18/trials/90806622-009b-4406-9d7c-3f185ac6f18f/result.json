@@ -1,0 +1,203 @@
+{
+  "utc": "2026-11-07T04:28:47.753Z",
+  "trial": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\67bef6b18b55439cbc5adc47d4481152\\trials\\90806622-009b-4406-9d7c-3f185ac6f18f",
+  "records": [
+    {
+      "name": "broker-crash-plan",
+      "session": "ses_e4bbc9b5affe7eDtxHKXcX6kcw",
+      "message": "msg_1b4436781001nre0gBCm78Ee98",
+      "call": "call_7d02a685a1cc4c5d9b810808dca80c61",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "deb8e65f4d6d9eefcd134210e153fc3e63a7c53d26f97c96f0a0031461138f92",
+        "preparation_id": "fbbea4b7f348f1b6aedb339ef3acd60da8512731fa934fe270d75a132f301a23",
+        "expires_at": "2026-11-07T04:38:04.949Z",
+        "purpose": "implementation",
+        "original_command": "node --test tests/waiting.test.cjs",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "--test-reporter=tap",
+          "--test",
+          "--test-isolation=none",
+          "tests/waiting.test.cjs"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "broker-crash-prepare",
+      "session": "ses_e4bbc7550ffekXGSA0e4HEOf1C",
+      "message": "msg_1b4438ae3001dittTL2s99vUmP",
+      "call": "call_e8869b51fc4940ac8276ce13cf0987b8",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "9c33f0f9fe84c41fca98f956ab898335f8ad3396980da377a3685dbeabb73a8b",
+        "attempt_id": "bc497d784e7e42979b1ac8bbca31833c",
+        "plan_id": "deb8e65f4d6d9eefcd134210e153fc3e63a7c53d26f97c96f0a0031461138f92",
+        "application_started": false
+      }
+    },
+    {
+      "name": "broker-crash-run",
+      "session": "ses_e4bbc6a12ffebU1qMYxsgr0M8A",
+      "message": "msg_1b4439625001hN5RDhRKxIdi7Y",
+      "call": "call_33bef279c50c4cf1bcf6ab8703b44b16",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": false,
+        "receipt_id": "73fdba63677e65cbdcaeca4e75a9d735f18bc9fdb474da9c8407559716a04cdc",
+        "attempt_record_id": "9c33f0f9fe84c41fca98f956ab898335f8ad3396980da377a3685dbeabb73a8b",
+        "attempt_id": "bc497d784e7e42979b1ac8bbca31833c",
+        "plan_id": "deb8e65f4d6d9eefcd134210e153fc3e63a7c53d26f97c96f0a0031461138f92",
+        "outcome": "interrupted",
+        "exit_code": null,
+        "cleanup_proved": false,
+        "failure": "NATIVE_RECEIPT_UNAVAILABLE_OR_INVALID",
+        "stdout": "",
+        "stderr": "",
+        "output_preview_truncated": false,
+        "output_complete": false
+      }
+    },
+    {
+      "name": "broker-crash-recover",
+      "session": "ses_e4bbc43b0ffeYJi8APPsgjdckx",
+      "message": "msg_1b443bc7d001jJBnw6jZjvPOBM",
+      "call": "call_0f9cab80ff0a4b89b22adbce8a6c5db1",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "recovery_id": "5f3144322984a9b85744a8042a80bd8fa86bf74f8749c05e9421df11da35ff6a",
+        "attempt_record_id": "9c33f0f9fe84c41fca98f956ab898335f8ad3396980da377a3685dbeabb73a8b",
+        "cleanup_proved": true,
+        "application_passed": false
+      }
+    },
+    {
+      "name": "broker-crash-recover-again",
+      "session": "ses_e4bbc38cdffe6HGkXuVppU3bzi",
+      "message": "msg_1b443c765001AbURmSkFlvNIgJ",
+      "call": "call_65a51156a04c4b3d8863bc8c13d69e86",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "recovery_id": "8de4b5d9b243c3a8aedf6e01e3c2bb125fc63ef2f5ceab38edaa9ee73971b043",
+        "attempt_record_id": "9c33f0f9fe84c41fca98f956ab898335f8ad3396980da377a3685dbeabb73a8b",
+        "cleanup_proved": true,
+        "application_passed": false
+      }
+    },
+    {
+      "name": "daemon-crash-plan",
+      "session": "ses_e4bbc2df8ffertI2eIMjdoYl8w",
+      "message": "msg_1b443d243001lNU03zospF5Mtf",
+      "call": "call_9406782f5c374feaaef2e7b9816fb0c5",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "cc027468f7a6a22173ef945389c87680bff1cd5d7914a3adcd3350e820b412f8",
+        "preparation_id": "c60a5f8dbd5ccb9c9e1c0209b6814fef7479e5da93de4e7d0fbab30fbb45e6ea",
+        "expires_at": "2026-11-07T04:38:27.720Z",
+        "purpose": "implementation",
+        "original_command": "node --test tests/waiting.test.cjs",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "--test-reporter=tap",
+          "--test",
+          "--test-isolation=none",
+          "tests/waiting.test.cjs"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "daemon-crash-prepare",
+      "session": "ses_e4bbc1cd7ffeeSbSkqg4ri0JAW",
+      "message": "msg_1b443e3600016H1z2jkRpoKR4c",
+      "call": "call_151a356e7c2f48839fb3f5c2c65caab3",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "434476b3e533aec93082540e8991546fc413ded18e0d989be0404a1a5e0617fc",
+        "attempt_id": "29c74d2c15df4ead8c6b3e3115230b55",
+        "plan_id": "cc027468f7a6a22173ef945389c87680bff1cd5d7914a3adcd3350e820b412f8",
+        "application_started": false
+      }
+    },
+    {
+      "name": "daemon-crash-recover",
+      "session": "ses_e4bbbedf1ffeXvAD7NnyUhZ6Ut",
+      "message": "msg_1b4441247001dCsu0jB9qUs5l1",
+      "call": "call_fa1f07fc45474b1788d9a29ef1cee9b8",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "recovery_id": "a0a250ebca4d8dfec7afdbe4de4c9e9a8e54e4c3b110420c227de53a756fa2ed",
+        "attempt_record_id": "434476b3e533aec93082540e8991546fc413ded18e0d989be0404a1a5e0617fc",
+        "cleanup_proved": true,
+        "application_passed": false
+      }
+    },
+    {
+      "name": "daemon-crash-recover-again",
+      "session": "ses_e4bbbe3bcffe0LBP5i4h2FVaWy",
+      "message": "msg_1b4441c7b001ZB75bPZH00PP2W",
+      "call": "call_23a156a156b74d3a9b3532b4498c9a22",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "recovery_id": "207aee3774d9c76ccc834d6952f48dd7f9dbead4a3beae8400478527ba1ff531",
+        "attempt_record_id": "434476b3e533aec93082540e8991546fc413ded18e0d989be0404a1a5e0617fc",
+        "cleanup_proved": true,
+        "application_passed": false
+      }
+    },
+    {
+      "child": "kernel",
+      "pid": 33720,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-11-07T04:28:47.752Z"
+      }
+    },
+    {
+      "child": "daemon",
+      "pid": 4928,
+      "exit": {
+        "code": 199,
+        "signal": null,
+        "utc": "2026-11-07T04:28:40.418Z"
+      }
+    },
+    {
+      "child": "daemon-restarted",
+      "pid": 16396,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "utc": "2026-11-07T04:28:47.645Z"
+      }
+    }
+  ],
+  "failure": null,
+  "exit_code": 0,
+  "original_business_touched": false
+}

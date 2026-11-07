@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/record-integration-checkpoint-10.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Reconcile full green canonical regressions,current native proof and remaining real delivery boundary in unique status",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES unique status/error ledger; EXTERNAL_EVIDENCE_WRITES checkpoint10/provenance only; no original/global writes",
+  "started_utc": "2026-11-07T08:30:04.470Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\record-integration-checkpoint-10.cjs",
+      "sha256": "2fcbd8f7325d53b083390ee13d3ad43f341fc12f04b5f97eeca477da7d318204",
+      "size": 8147,
+      "extension": ".cjs"
+    }
+  ]
+}

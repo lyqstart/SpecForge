@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/verify-workflow-persistence-build.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Independently load freshly built public package with Node and verify retired output/deep-import closure",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES build verification and receipts only; package and original read-only",
+  "started_utc": "2026-11-07T05:49:24.388Z"
+}

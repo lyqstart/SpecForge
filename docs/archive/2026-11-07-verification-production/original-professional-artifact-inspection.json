@@ -1,0 +1,30 @@
+{
+  "utc": "2026-11-07T07:18:22.201Z",
+  "project": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+  "report_sha256": "228dfddf59a04274871b4592d5442b81289ee342518352d106947b731944ea51",
+  "manifest_sha256": "31e8dbc3b80ae9334a1168f75f737d6846ff64277374ac9fcdb14f71af864006",
+  "report_contract_valid": true,
+  "manifest_basic_schema_valid": true,
+  "formal_command_subjects_matched": 22,
+  "report_conclusion": "pass",
+  "semantic_closure_present": true,
+  "actual_owner_write_records": [
+    {
+      "timestamp": "2026-11-07T06:52:35.916Z",
+      "trace_id": "sftr_20261107065205739_0c97cd6fe5c9",
+      "duration_ms": 30157,
+      "dispatch_status": "success",
+      "handler_success": true,
+      "path": ".specforge/work-items/WI-0001/evidence/evidence_manifest.json"
+    },
+    {
+      "timestamp": "2026-11-07T06:55:56.169Z",
+      "trace_id": "sftr_20261107065522626_459ea25aa8fc",
+      "duration_ms": 33511,
+      "dispatch_status": "success",
+      "handler_success": true,
+      "path": ".specforge/work-items/WI-0001/verification_report.md"
+    }
+  ],
+  "qualification": "Read-only typed/selector/hash inspection of actual professional artifacts; previous actual owner writes consumed authenticated execution evidence. This is not full Verification/Formal Version/Close Gate acceptance and does not author or rewrite professional conclusions."
+}

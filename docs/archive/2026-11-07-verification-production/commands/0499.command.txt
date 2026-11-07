@@ -1,0 +1,14 @@
+{
+  "executable": "git",
+  "args": [
+    "commit",
+    "-m",
+    "fix: align workflow guidance and interactive kernel startup"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Commit exact verified guidance/interactive endpoint changes and immutable before-after source baselines on local codex branch",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=local Git commit of reviewed65 paths;RUNTIME_OBSERVER_WRITES=Git only;EXTERNAL_EVIDENCE_WRITES=commit receipt;no remote or business writes",
+  "started_utc": "2026-11-07T10:31:43.279Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": []
+}

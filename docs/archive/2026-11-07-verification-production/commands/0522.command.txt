@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/scan-public-selection.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Scan actual public selection for credential names,token shapes,sensitive fields and reasoning before seal",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=bounded privacy candidate report without values",
+  "started_utc": "2026-11-07T10:52:50.135Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\scan-public-selection.cjs",
+      "sha256": "3f18fa60cc9332527ebce212d3acd54bf9bcef8886fc98b44c547e1baced0db3",
+      "size": 2849,
+      "extension": ".cjs"
+    }
+  ]
+}

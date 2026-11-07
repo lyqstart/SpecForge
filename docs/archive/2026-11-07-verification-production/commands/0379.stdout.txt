@@ -1,0 +1,20 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/semantic-closure-producer-governance.test.ts (7 tests | 1 failed) 77ms
+   × semantic closure producer governance > connects the active artifact handler to the verification template renderer 24ms
+     → {"success":false,"error":"INVALID_VERIFICATION_REPORT_CONTRACT","hard_stop":false,"retry_allowed":true,"contract_id":"verification-report/v1","validation_errors":["MISSING_FIELD: verification_commands must be a non-empty array"],"message":"verification_report failed verification-report/v1 validation and was NOT written to disk. Use the sf-verifier Required Output contract exactly, then retry."}: expected false to be true // Object.is equality
+   ✓ semantic closure producer governance > rejects the former free-text passed command instead of treating renderer data as an execution receipt 11ms
+   ✓ semantic closure producer governance > rejects Orchestrator attempts to author verifier-owned artifacts 5ms
+   ✓ semantic closure producer governance > rejects an unstructured verification report even from the owning Verifier 8ms
+   ✓ semantic closure producer governance > rejects the historical incomplete report shape before it reaches disk 13ms
+   ✓ semantic closure producer governance > rejects descriptive evidence text that is not an Evidence ID 8ms
+   ✓ semantic closure producer governance > freezes verification inputs after verification_gate advances state 8ms
+ ✓ tests/unit/active-development-rules-contract.test.ts (54 tests) 132ms
+ ✓ tests/unit/semantic-closure-contract-alignment.test.ts (7 tests) 19ms
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 67 passed (68)
+   Start at  16:02:18
+   Duration  2.85s (transform 788ms, setup 0ms, collect 1.45s, tests 228ms, environment 1ms, prepare 452ms)
+

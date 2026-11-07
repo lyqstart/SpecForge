@@ -1,0 +1,186 @@
+[
+  {
+    "info": {
+      "id": "msg_1b50f8a86001lV7OxwAKFC0oLB",
+      "sessionID": "ses_e4af07584ffeUKgWHJumgS0rA7",
+      "role": "user",
+      "time": {
+        "created": 1794039057030
+      },
+      "summary": {
+        "diffs": []
+      },
+      "agent": "sf-verifier",
+      "model": {
+        "providerID": "sf-fixture",
+        "modelID": "finite-model"
+      }
+    },
+    "parts": [
+      {
+        "id": "prt_1b50f8a8a001tuGZjvS2ZVWRJk",
+        "sessionID": "ses_e4af07584ffeUKgWHJumgS0rA7",
+        "messageID": "msg_1b50f8a86001lV7OxwAKFC0oLB",
+        "type": "text",
+        "text": "Execute the single requested tool once, then stop. SF_FIXTURE_REQUEST:eyJ0b29sIjoic2ZfYXJ0aWZhY3Rfd3JpdGUiLCJhcmdzIjp7IndvcmtfaXRlbV9pZCI6IldJLTk5MDEiLCJmaWxlX3R5cGUiOiJ2ZXJpZmljYXRpb25fcmVwb3J0IiwiY29udGVudCI6IntcImNvbmNsdXNpb25cIjpcInBhc3NcIixcInRlc3RfbWF0cml4XCI6e1wiTDFfdW5pdFwiOlwicGFzc1wiLFwiTDJfaW50ZWdyYXRpb25cIjpcInBhc3NcIixcIkwzX3BidFwiOlwibm90X2FwcGxpY2FibGVcIixcIkw0X2UyZVwiOlwicGFzc1wiLFwiTDVfc21va2VcIjpcInBhc3NcIixcIkw2X3JlZ3Jlc3Npb25cIjpcIm5vdF9hcHBsaWNhYmxlXCIsXCJMN19wZXJmb3JtYW5jZVwiOlwibm90X2FwcGxpY2FibGVcIixcIkw4X3NlY3VyaXR5XCI6XCJub3RfYXBwbGljYWJsZVwiLFwiTDlfY29tcGF0aWJpbGl0eVwiOlwibm90X2FwcGxpY2FibGVcIixcIkwxMF91YXRcIjpcIm5vdF9hcHBsaWNhYmxlXCJ9LFwidmVyaWZpY2F0aW9uX2NvbW1hbmRzXCI6W3tcImV4ZWN1dGlvbl9yZWNlaXB0X2lkXCI6XCIxOTg3MmZkOTdhYmUxYTJlNDRlMDE1Yjg3NmFiYWVjNDgwYjQ4M2Q0OTkyODNjMDgwYTYxZjk2Y2MxODY5OGMyXCIsXCJ0YXNrX2lkXCI6XCJUQVNLLVdJLTk5MDEtMDAyXCIsXCJ2ZXJpZmljYXRpb25fdHlwZVwiOlwidW5pdFwiLFwiY29tbWFuZF9pbmRleFwiOjAsXCJjb21tYW5kXCI6XCJub2RlIC0tdGVzdCB0ZXN0cy9wb3NpdGl2ZS50ZXN0LmNqc1wiLFwic3RhdHVzXCI6XCJwYXNzXCIsXCJvdXRwdXRfc3VtbWFyeVwiOlwiQWN0dWFsIGlzb2xhdGVkIE5vZGUgZXhpdDAgYW5kIGluZGVwZW5kZW50IGNsZWFudXA7IG5vcm1hbGl6YXRpb24gc2luZ2xlLWZpbGUtbm8taG9zdC1vYnNlcnZhdGlvbi92MVwifSx7XCJleGVjdXRpb25fcmVjZWlwdF9pZFwiOlwiYzc2NzUwODhmODQ2MjZmMTQ5MTI5ZWQyNjMzMTEyZTI5ZDhiMmYzMzRiMWZlOWVhZjI1YTRlMGNmMTA1NjU5NVwiLFwidGFza19pZFwiOlwiVEFTSy1XSS05OTAxLTAwMlwiLFwidmVyaWZpY2F0aW9uX3R5cGVcIjpcImUyZVwiLFwiY29tbWFuZF9pbmRleFwiOjAsXCJjb21tYW5kXCI6XCJub2RlIC1lIFxcXCJjb25zdCB7c2FsdXRlfT1yZXF1aXJlKCcuL3NyYy9saWJyYXJ5LmNqcycpO2lmKHNhbHV0ZSgnQWRhJykhPT0naGkgQWRhJylwcm9jZXNzLmV4aXQoMSk7Y29uc29sZS5sb2coJ1NGX1BST0RVQ1RfSU5MSU5FX09LJyk7XFxcIlwiLFwic3RhdHVzXCI6XCJwYXNzXCIsXCJvdXRwdXRfc3VtbWFyeVwiOlwiQWN0dWFsIGlzb2xhdGVkIE5vZGUgZXhpdDAgYW5kIGluZGVwZW5kZW50IGNsZWFudXA7IG5vcm1hbGl6YXRpb24gc2luZ2xlLWZpbGUtbm8taG9zdC1vYnNlcnZhdGlvbi92MVwifSx7XCJleGVjdXRpb25fcmVjZWlwdF9pZFwiOlwiZGU3MmU4YWZmNGJjMjAyM2VlZTUyZjVlZTMxNzMyNWY0NWI4NzVhZmE4ZmVkMmE5MGRlNmQ1NjY4ZmQ1M2Q5MFwiLFwidGFza19pZFwiOlwiVEFTSy1XSS05OTAxLTAwNFwiLFwidmVyaWZpY2F0aW9uX3R5cGVcIjpcInVuaXRcIixcImNvbW1hbmRfaW5kZXhcIjowLFwiY29tbWFuZFwiOlwidGVzdCAtZiBwYWNrYWdlLmpzb24gJiYgdGVzdCAtZiB0c2NvbmZpZy5qc29uXCIsXCJzdGF0dXNcIjpcInBhc3NcIixcIm91dHB1dF9zdW1tYXJ5XCI6XCJBY3R1YWwgaXNvbGF0ZWQgTm9kZSBleGl0MCBhbmQgaW5kZXBlbmRlbnQgY2xlYW51cDsgbm9ybWFsaXphdGlvbiBmaW5pdGUtcG9zaXgtcmVhZG9ubHktcHJlZGljYXRlL3YxXCJ9LHtcImV4ZWN1dGlvbl9yZWNlaXB0X2lkXCI6XCJlMTU4ZWY0NGMyMjRlZDNlMTM1YWZiOGI3YTM0NTM1MTRmNDNiOTQxZmJkZjVmNzlhOWJjMmRkOGE3YjI1Y2JiXCIsXCJ0YXNrX2lkXCI6XCJUQVNLLVdJLTk5MDEtMDA1XCIsXCJ2ZXJpZmljYXRpb25fdHlwZVwiOlwidW5pdFwiLFwiY29tbWFuZF9pbmRleFwiOjAsXCJjb21tYW5kXCI6XCJncmVwIC1jICdcXFwidHlwZVxcXCI6IFxcXCJtb2R1bGVcXFwiJyBwYWNrYWdlLmpzb25cIixcInN0YXR1c1wiOlwicGFzc1wiLFwib3V0cHV0X3N1bW1hcnlcIjpcIkFjdHVhbCBpc29sYXRlZCBOb2RlIGV4aXQwIGFuZCBpbmRlcGVuZGVudCBjbGVhbnVwOyBub3JtYWxpemF0aW9uIGZpbml0ZS1wb3NpeC1yZWFkb25seS1wcmVkaWNhdGUvdjFcIn0se1wiZXhlY3V0aW9uX3JlY2VpcHRfaWRcIjpcImE1M2U5YjJmZWEyMDNkOGUwOGIxOTRkMzkwNmY3MWMwOGY1NmE0MTNiMWRlYjlkMDQwMzg2MDY2NGZlZGVkMDFcIixcInRhc2tfaWRcIjpcIlRBU0stV0ktOTkwMS0wMDZcIixcInZlcmlmaWNhdGlvbl90eXBlXCI6XCJ1bml0XCIsXCJjb21tYW5kX2luZGV4XCI6MCxcImNvbW1hbmRcIjpcIiEgZ3JlcCAtcUUgXFxcIl5pbXBvcnQgfF5pbXBvcnRcXFxce3xyZXF1aXJlXFxcXChcXFwiIHNyYy92YWx1ZS50c1wiLFwic3RhdHVzXCI6XCJwYXNzXCIsXCJvdXRwdXRfc3VtbWFyeVwiOlwiQWN0dWFsIGlzb2xhdGVkIE5vZGUgZXhpdDAgYW5kIGluZGVwZW5kZW50IGNsZWFudXA7IG5vcm1hbGl6YXRpb24gZmluaXRlLXBvc2l4LXJlYWRvbmx5LXByZWRpY2F0ZS92MVwifSx7XCJleGVjdXRpb25fcmVjZWlwdF9pZFwiOlwiMTFkMDE3N2VhODZhZjFhNGI2NWRlODI5MzU1NzZhYjkzNWQ5ZjNkOWRmYjI5NDBiYTc0NWI1OGU2Y2E2ZGQxNFwiLFwidGFza19pZFwiOlwiVEFTSy1XSS05OTAxLTAwN1wiLFwidmVyaWZpY2F0aW9uX3R5cGVcIjpcImludGVncmF0aW9uXCIsXCJjb21tYW5kX2luZGV4XCI6MCxcImNvbW1hbmRcIjpcIm5vZGUgLS10ZXN0IHRlc3RzL3ZhbHVlLnRlc3QudHNcIixcInN0YXR1c1wiOlwicGFzc1wiLFwib3V0cHV0X3N1bW1hcnlcIjpcIkFjdHVhbCBpc29sYXRlZCBOb2RlIGV4aXQwIGFuZCBpbmRlcGVuZGVudCBjbGVhbnVwOyBub3JtYWxpemF0aW9uIHNpbmdsZS1maWxlLW5vLWhvc3Qtb2JzZXJ2YXRpb24vdjFcIn0se1wiZXhlY3V0aW9uX3JlY2VpcHRfaWRcIjpcImM4MjcxNWFhMDEzNDRmODAxNTgzZGUwN2FlNzk1ODFhOTdmOGQ4M2RiNWExMDBkNDRmNTVjOTEyOTRkYzk4NTFcIixcInRhc2tfaWRcIjpcIlRBU0stV0ktOTkwMS0wMDhcIixcInZlcmlmaWNhdGlvbl90eXBlXCI6XCJ1bml0XCIsXCJjb21tYW5kX2luZGV4XCI6MCxcImNvbW1hbmRcIjpcIm5vZGUgLS10ZXN0IHRlc3RzL2VzbS50ZXN0Lm1qc1wiLFwic3RhdHVzXCI6XCJwYXNzXCIsXCJvdXRwdXRfc3VtbWFyeVwiOlwiQWN0dWFsIGlzb2xhdGVkIE5vZGUgZXhpdDAgYW5kIGluZGVwZW5kZW50IGNsZWFudXA7IG5vcm1hbGl6YXRpb24gc2luZ2xlLWZpbGUtbm8taG9zdC1vYnNlcnZhdGlvbi92MVwifSx7XCJleGVjdXRpb25fcmVjZWlwdF9pZFwiOlwiNjdlZWU0Y2IxMWMxZjMxZTY4OGNhNjljNjc2N2RiNGNiMjVhYzBkYTZlNWVjMTY3NjRkYzRhN2RjNGI2Mzg2ZVwiLFwidGFza19pZFwiOlwiVEFTSy1XSS05OTAxLTAwOVwiLFwidmVyaWZpY2F0aW9uX3R5cGVcIjpcImUyZVwiLFwiY29tbWFuZF9pbmRleFwiOjAsXCJjb21tYW5kXCI6XCJub2RlIC1lIFxcXCJpbXBvcnQoJy4vc3JjL3ZhbHVlLnRzJykudGhlbihtPT57aWYobS5ncmVldCgnQWRhJykhPT0nSGVsbG8sIEFkYSEnfHxtLmdyZWV0KCcnKSE9PSdIZWxsbywgd29ybGQhJylwcm9jZXNzLmV4aXQoMSk7Y29uc29sZS5sb2coJ1RTX0lOTElORV9PSycpO30pLmNhdGNoKCgpPT5wcm9jZXNzLmV4aXQoMSkpXFxcIlwiLFwic3RhdHVzXCI6XCJwYXNzXCIsXCJvdXRwdXRfc3VtbWFyeVwiOlwiQWN0dWFsIGlzb2xhdGVkIE5vZGUgZXhpdDAgYW5kIGluZGVwZW5kZW50IGNsZWFudXA7IG5vcm1hbGl6YXRpb24gc2luZ2xlLWZpbGUtbm8taG9zdC1vYnNlcnZhdGlvbi92MVwifV0sXCJhY2NlcHRhbmNlX2NyaXRlcmlhXCI6W3tcInJlcV9pZFwiOlwiUkVRLURFTU8tMDAxXCIsXCJuYW1lXCI6XCJPd25lZCBsaWJyYXJ5IGNvbnN1bWVyIHJldHVybnMgaGkgQWRhXCIsXCJzdGF0dXNcIjpcInBhc3NcIixcImV2aWRlbmNlXCI6XCJFVi1OQVRJVkUtMDAyXCJ9XSxcImUyZV90ZXN0c1wiOlt7XCJuYW1lXCI6XCJBY3R1YWwgaXNvbGF0ZWQgbGlicmFyeSBwdWJsaWMgY29uc3VtZXJcIixcInN0YXR1c1wiOlwicGFzc1wiLFwiZXZpZGVuY2VcIjpcIkVWLU5BVElWRS0wMDJcIn1dLFwic2lkZV9lZmZlY3RzXCI6XCJSZWFkb25seSBpbnB1dHMgYW5kIGluZGVwZW5kZW50IG5hdGl2ZSBjbGVhbnVwIHZlcmlmaWVkXCIsXCJzdW1tYXJ5XCI6XCJQcm9kdWNlci9jb21tb24tY29uc3VtZXIgaW50ZWdyYXRpb24gZml4dHVyZSBvbmx5OyBzZWVkZWQgdXBzdHJlYW0gYmFzZWxpbmUgYW5kIGZhdWx0LWluamVjdGlvbiBUYXNrcyBhcmUgbm90IGEgY29tcGxldGVkIGJ1c2luZXNzIHdvcmtmbG93XCIsXCJzZW1hbnRpY19jbG9zdXJlXCI6e1wic2NoZW1hX3ZlcnNpb25cIjpcIjEuMFwiLFwid29ya19pdGVtX2lkXCI6XCJXSS05OTAxXCIsXCJvdXRjb21lc1wiOlt7XCJpZFwiOlwiT1VULURFTU8tMDAxXCIsXCJyZXF1aXJlbWVudF9yZWZzXCI6W1wiUkVRLURFTU8tMDAxXCJdLFwicmVxdWlyZWRfZXZpZGVuY2VfcmVmc1wiOltcIkVWLU5BVElWRS0wMDJcIl19XSxcInJlcXVpcmVtZW50c1wiOlt7XCJpZFwiOlwiUkVRLURFTU8tMDAxXCIsXCJ0eXBlXCI6XCJNVVNUXCIsXCJvdXRjb21lX3JlZnNcIjpbXCJPVVQtREVNTy0wMDFcIl0sXCJkZXNpZ25fcmVmc1wiOltcIkRELURFTU8tMDAxXCJdLFwidGFza19yZWZzXCI6W1wiVEFTSy1XSS05OTAxLTAwMlwiXSxcInJlcXVpcmVkX2V2aWRlbmNlX3JlZnNcIjpbXCJFVi1OQVRJVkUtMDAyXCJdfV0sXCJkZXNpZ25fZGVjaXNpb25zXCI6W3tcImlkXCI6XCJERC1ERU1PLTAwMVwiLFwicmVxdWlyZW1lbnRfcmVmc1wiOltcIlJFUS1ERU1PLTAwMVwiXSxcInRhc2tfcmVmc1wiOltcIlRBU0stV0ktOTkwMS0wMDJcIl19XSxcInRhc2tzXCI6W3tcImlkXCI6XCJUQVNLLVdJLTk5MDEtMDAyXCIsXCJyZXF1aXJlbWVudF9yZWZzXCI6W1wiUkVRLURFTU8tMDAxXCJdLFwiZGVzaWduX3JlZnNcIjpbXCJERC1ERU1PLTAwMVwiXSxcImV2aWRlbmNlX3JlZnNcIjpbXCJFVi1OQVRJVkUtMDAyXCJdfV0sXCJldmlkZW5jZVwiOlt7XCJpZFwiOlwiRVYtTkFUSVZFLTAwMlwiLFwic3RhdHVzXCI6XCJwYXNzZWRcIixcImxldmVsXCI6XCJMNVwiLFwiZXZpZGVuY2VfdHlwZVwiOlwiYmVoYXZpb3JhbF9lMmVcIixcInN1cHBvcnRzXCI6W1wiT1VULURFTU8tMDAxXCIsXCJSRVEtREVNTy0wMDFcIixcIkRELURFTU8tMDAxXCIsXCJUQVNLLVdJLTk5MDEtMDAyXCJdfV0sXCJwcm9qZWN0X2ludGVncmF0aW9uXCI6e1wic3RhdHVzXCI6XCJub3RfYXBwbGljYWJsZVwifX19IiwidGVtcGxhdGUiOiJ2ZXJpZmljYXRpb25fcmVwb3J0In19"
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1b50f8a9f001LCJvP8s2fLcNPB",
+      "sessionID": "ses_e4af07584ffeUKgWHJumgS0rA7",
+      "role": "assistant",
+      "time": {
+        "created": 1794039057055,
+        "completed": 1794039068174
+      },
+      "parentID": "msg_1b50f8a86001lV7OxwAKFC0oLB",
+      "modelID": "finite-model",
+      "providerID": "sf-fixture",
+      "mode": "sf-verifier",
+      "agent": "sf-verifier",
+      "path": {
+        "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\7bb83150ebf54338975311185cadfade\\project",
+        "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\7bb83150ebf54338975311185cadfade\\project"
+      },
+      "cost": 0,
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "finish": "tool-calls"
+    },
+    "parts": [
+      {
+        "id": "prt_1b50f8bd5001ZhCGTc5Pw6LbYN",
+        "sessionID": "ses_e4af07584ffeUKgWHJumgS0rA7",
+        "messageID": "msg_1b50f8a9f001LCJvP8s2fLcNPB",
+        "type": "step-start",
+        "snapshot": "46b75d9af515347bf3cf28c50ec17a509e024f8e"
+      },
+      {
+        "id": "prt_1b50f8bd70016jo3hDX19bsGbn",
+        "sessionID": "ses_e4af07584ffeUKgWHJumgS0rA7",
+        "messageID": "msg_1b50f8a9f001LCJvP8s2fLcNPB",
+        "type": "tool",
+        "callID": "call_b1a2584d53134e05a846b0f4ce63dc65",
+        "tool": "sf_artifact_write",
+        "state": {
+          "status": "completed",
+          "input": {
+            "work_item_id": "WI-9901",
+            "file_type": "verification_report",
+            "content": "{\"conclusion\":\"pass\",\"test_matrix\":{\"L1_unit\":\"pass\",\"L2_integration\":\"pass\",\"L3_pbt\":\"not_applicable\",\"L4_e2e\":\"pass\",\"L5_smoke\":\"pass\",\"L6_regression\":\"not_applicable\",\"L7_performance\":\"not_applicable\",\"L8_security\":\"not_applicable\",\"L9_compatibility\":\"not_applicable\",\"L10_uat\":\"not_applicable\"},\"verification_commands\":[{\"execution_receipt_id\":\"19872fd97abe1a2e44e015b876abaec480b483d499283c080a61f96cc18698c2\",\"task_id\":\"TASK-WI-9901-002\",\"verification_type\":\"unit\",\"command_index\":0,\"command\":\"node --test tests/positive.test.cjs\",\"status\":\"pass\",\"output_summary\":\"Actual isolated Node exit0 and independent cleanup; normalization single-file-no-host-observation/v1\"},{\"execution_receipt_id\":\"c7675088f84626f149129ed2633112e29d8b2f334b1fe9eaf25a4e0cf1056595\",\"task_id\":\"TASK-WI-9901-002\",\"verification_type\":\"e2e\",\"command_index\":0,\"command\":\"node -e \\\"const {salute}=require('./src/library.cjs');if(salute('Ada')!=='hi Ada')process.exit(1);console.log('SF_PRODUCT_INLINE_OK');\\\"\",\"status\":\"pass\",\"output_summary\":\"Actual isolated Node exit0 and independent cleanup; normalization single-file-no-host-observation/v1\"},{\"execution_receipt_id\":\"de72e8aff4bc2023eee52f5ee317325f45b875afa8fed2a90de6d5668fd53d90\",\"task_id\":\"TASK-WI-9901-004\",\"verification_type\":\"unit\",\"command_index\":0,\"command\":\"test -f package.json && test -f tsconfig.json\",\"status\":\"pass\",\"output_summary\":\"Actual isolated Node exit0 and independent cleanup; normalization finite-posix-readonly-predicate/v1\"},{\"execution_receipt_id\":\"e158ef44c224ed3e135afb8b7a3453514f43b941fbdf5f79a9bc2dd8a7b25cbb\",\"task_id\":\"TASK-WI-9901-005\",\"verification_type\":\"unit\",\"command_index\":0,\"command\":\"grep -c '\\\"type\\\": \\\"module\\\"' package.json\",\"status\":\"pass\",\"output_summary\":\"Actual isolated Node exit0 and independent cleanup; normalization finite-posix-readonly-predicate/v1\"},{\"execution_receipt_id\":\"a53e9b2fea203d8e08b194d3906f71c08f56a413b1deb9d0403860664feded01\",\"task_id\":\"TASK-WI-9901-006\",\"verification_type\":\"unit\",\"command_index\":0,\"command\":\"! grep -qE \\\"^import |^import\\\\{|require\\\\(\\\" src/value.ts\",\"status\":\"pass\",\"output_summary\":\"Actual isolated Node exit0 and independent cleanup; normalization finite-posix-readonly-predicate/v1\"},{\"execution_receipt_id\":\"11d0177ea86af1a4b65de82935576ab935d9f3d9dfb2940ba745b58e6ca6dd14\",\"task_id\":\"TASK-WI-9901-007\",\"verification_type\":\"integration\",\"command_index\":0,\"command\":\"node --test tests/value.test.ts\",\"status\":\"pass\",\"output_summary\":\"Actual isolated Node exit0 and independent cleanup; normalization single-file-no-host-observation/v1\"},{\"execution_receipt_id\":\"c82715aa01344f801583de07ae79581a97f8d83db5a100d44f55c91294dc9851\",\"task_id\":\"TASK-WI-9901-008\",\"verification_type\":\"unit\",\"command_index\":0,\"command\":\"node --test tests/esm.test.mjs\",\"status\":\"pass\",\"output_summary\":\"Actual isolated Node exit0 and independent cleanup; normalization single-file-no-host-observation/v1\"},{\"execution_receipt_id\":\"67eee4cb11c1f31e688ca69c6767db4cb25ac0da6e5ec16764dc4a7dc4b6386e\",\"task_id\":\"TASK-WI-9901-009\",\"verification_type\":\"e2e\",\"command_index\":0,\"command\":\"node -e \\\"import('./src/value.ts').then(m=>{if(m.greet('Ada')!=='Hello, Ada!'||m.greet('')!=='Hello, world!')process.exit(1);console.log('TS_INLINE_OK');}).catch(()=>process.exit(1))\\\"\",\"status\":\"pass\",\"output_summary\":\"Actual isolated Node exit0 and independent cleanup; normalization single-file-no-host-observation/v1\"}],\"acceptance_criteria\":[{\"req_id\":\"REQ-DEMO-001\",\"name\":\"Owned library consumer returns hi Ada\",\"status\":\"pass\",\"evidence\":\"EV-NATIVE-002\"}],\"e2e_tests\":[{\"name\":\"Actual isolated library public consumer\",\"status\":\"pass\",\"evidence\":\"EV-NATIVE-002\"}],\"side_effects\":\"Readonly inputs and independent native cleanup verified\",\"summary\":\"Producer/common-consumer integration fixture only; seeded upstream baseline and fault-injection Tasks are not a completed business workflow\",\"semantic_closure\":{\"schema_version\":\"1.0\",\"work_item_id\":\"WI-9901\",\"outcomes\":[{\"id\":\"OUT-DEMO-001\",\"requirement_refs\":[\"REQ-DEMO-001\"],\"required_evidence_refs\":[\"EV-NATIVE-002\"]}],\"requirements\":[{\"id\":\"REQ-DEMO-001\",\"type\":\"MUST\",\"outcome_refs\":[\"OUT-DEMO-001\"],\"design_refs\":[\"DD-DEMO-001\"],\"task_refs\":[\"TASK-WI-9901-002\"],\"required_evidence_refs\":[\"EV-NATIVE-002\"]}],\"design_decisions\":[{\"id\":\"DD-DEMO-001\",\"requirement_refs\":[\"REQ-DEMO-001\"],\"task_refs\":[\"TASK-WI-9901-002\"]}],\"tasks\":[{\"id\":\"TASK-WI-9901-002\",\"requirement_refs\":[\"REQ-DEMO-001\"],\"design_refs\":[\"DD-DEMO-001\"],\"evidence_refs\":[\"EV-NATIVE-002\"]}],\"evidence\":[{\"id\":\"EV-NATIVE-002\",\"status\":\"passed\",\"level\":\"L5\",\"evidence_type\":\"behavioral_e2e\",\"supports\":[\"OUT-DEMO-001\",\"REQ-DEMO-001\",\"DD-DEMO-001\",\"TASK-WI-9901-002\"]}],\"project_integration\":{\"status\":\"not_applicable\"}}}",
+            "template": "verification_report"
+          },
+          "output": "{\n  \"success\": false,\n  \"error\": \"VERIFICATION_EXECUTION_EVIDENCE_REJECTED\",\n  \"validation_errors\": [\n    \"execution_receipt_rejected:command-0\"\n  ],\n  \"hard_stop\": false,\n  \"retry_allowed\": true\n}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1794039057377,
+            "end": 1794039067485
+          }
+        }
+      },
+      {
+        "id": "prt_1b50fb4c5001JKDM9zDdc2UYTY",
+        "sessionID": "ses_e4af07584ffeUKgWHJumgS0rA7",
+        "messageID": "msg_1b50f8a9f001LCJvP8s2fLcNPB",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "snapshot": "46b75d9af515347bf3cf28c50ec17a509e024f8e",
+        "cost": 0,
+        "tokens": {
+          "total": 120,
+          "input": 100,
+          "output": 20,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1b50fb613001NdzrKh0Dr02bhz",
+      "sessionID": "ses_e4af07584ffeUKgWHJumgS0rA7",
+      "role": "assistant",
+      "time": {
+        "created": 1794039068179,
+        "completed": 1794039069745
+      },
+      "parentID": "msg_1b50f8a86001lV7OxwAKFC0oLB",
+      "modelID": "finite-model",
+      "providerID": "sf-fixture",
+      "mode": "sf-verifier",
+      "agent": "sf-verifier",
+      "path": {
+        "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\7bb83150ebf54338975311185cadfade\\project",
+        "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\7bb83150ebf54338975311185cadfade\\project"
+      },
+      "cost": 0,
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "finish": "stop"
+    },
+    "parts": [
+      {
+        "id": "prt_1b50fb8000017fOSgU1pocQGFO",
+        "sessionID": "ses_e4af07584ffeUKgWHJumgS0rA7",
+        "messageID": "msg_1b50fb613001NdzrKh0Dr02bhz",
+        "type": "step-start",
+        "snapshot": "46b75d9af515347bf3cf28c50ec17a509e024f8e"
+      },
+      {
+        "id": "prt_1b50fb803001xN2Uag4kqaNTmE",
+        "sessionID": "ses_e4af07584ffeUKgWHJumgS0rA7",
+        "messageID": "msg_1b50fb613001NdzrKh0Dr02bhz",
+        "type": "text",
+        "text": "SF_FIXTURE_TOOL_COMPLETE",
+        "time": {
+          "start": 1794039068675,
+          "end": 1794039068679
+        }
+      },
+      {
+        "id": "prt_1b50fba4b001opyEghjeQijJZk",
+        "sessionID": "ses_e4af07584ffeUKgWHJumgS0rA7",
+        "messageID": "msg_1b50fb613001NdzrKh0Dr02bhz",
+        "type": "step-finish",
+        "reason": "stop",
+        "snapshot": "46b75d9af515347bf3cf28c50ec17a509e024f8e",
+        "cost": 0,
+        "tokens": {
+          "total": 120,
+          "input": 100,
+          "output": 20,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    ]
+  }
+]

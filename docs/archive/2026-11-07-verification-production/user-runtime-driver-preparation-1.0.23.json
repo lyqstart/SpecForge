@@ -1,0 +1,75 @@
+{
+  "utc": "2026-11-07T08:24:11.563Z",
+  "drivers": [
+    {
+      "input": "verify-fresh-user-runtime.cjs",
+      "output": "verify-fresh-user-runtime-1.0.23.cjs",
+      "replacements": [
+        {
+          "old": "'user-installation-upgrade/result.json'",
+          "new": "'user-installation-upgrade-1.0.23/result.json'",
+          "count": 1
+        },
+        {
+          "old": "v.version==='1.0.22'",
+          "new": "v.version==='1.0.23'",
+          "count": 1
+        },
+        {
+          "old": "JSON.parse(fs.readFileSync(path.join(__dirname,'commands/0235.result.json'))).finished_utc",
+          "new": "JSON.parse(fs.readFileSync(path.join(__dirname,'user-installation-upgrade-1.0.23/result.json'))).utc",
+          "count": 1
+        },
+        {
+          "old": "'fresh-user-runtime-'+attempt",
+          "new": "'fresh-user-runtime-1.0.23-'+attempt",
+          "count": 1
+        },
+        {
+          "old": "const own=JSON.parse(fs.readFileSync(path.join(__dirname,'public-kernel-fixture-16.json')))",
+          "new": "const ownerBefore=ownerSnapshot();save('owner-before-policy-negative',{utc:new Date().toISOString(),members:ownerBefore,key_content_read:false});const own=JSON.parse(fs.readFileSync(path.join(__dirname,'public-kernel-fixture-16.json')))",
+          "count": 1
+        },
+        {
+          "old": "assert.equal(fs.existsSync(path.join(config,'sf-user/runtime/verification-owner')),false);",
+          "new": "assert.deepEqual(ownerSnapshot(),ownerBefore,'POLICY_NEGATIVE_MUTATED_OWNER');save('owner-after-policy-negative',{utc:new Date().toISOString(),members:ownerSnapshot(),key_content_read:false});",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "input": "resume-original-verification.cjs",
+      "output": "resume-original-verification-1.0.23.cjs",
+      "replacements": [
+        {
+          "old": "'user-installation-upgrade/result.json'",
+          "new": "'user-installation-upgrade-1.0.23/result.json'",
+          "count": 1
+        },
+        {
+          "old": "v.version==='1.0.22'",
+          "new": "v.version==='1.0.23'",
+          "count": 1
+        },
+        {
+          "old": "JSON.parse(fs.readFileSync(path.join(__dirname,'commands/0235.result.json'))).finished_utc",
+          "new": "JSON.parse(fs.readFileSync(path.join(__dirname,'user-installation-upgrade-1.0.23/result.json'))).utc",
+          "count": 1
+        },
+        {
+          "old": "assert.equal(installation.version,'1.0.22')",
+          "new": "assert.equal(installation.version,'1.0.23')",
+          "count": 1
+        },
+        {
+          "old": "assert.equal(consent.allow_prior_session_history,false);",
+          "new": "assert.equal(consent.allow_prior_session_history,false);assert.equal(consent.allow_credentials_or_keys,false);",
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "execution_performed": false,
+  "privacy": "No owner.key or provider credential contents read; consent and fresh empty external-model session restrictions retained",
+  "original_receipts": "Old assets invalidate consumption; future continuation must create fresh formal evidence through current owners"
+}

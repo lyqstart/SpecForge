@@ -1,0 +1,92 @@
+{
+  "utc": "2026-11-07T03:57:21.063Z",
+  "trial": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\624733f825af4301b89c0307be140ecb\\trials\\bbd45767-8e0d-4ebc-bb57-608f75d3c938",
+  "records": [
+    {
+      "name": "broker-crash-plan",
+      "session": "ses_e4bd91112ffeD1ZKCiDE9T0rGl",
+      "message": "msg_1b426f252001bqj5N8pb6XrcEE",
+      "call": "call_1c4295a0ce7a47adab15a8291b5d768e",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "c4ed5242457c06160d1096fe4c411f6249f529c30301cab15d0e4e6f38b76f58",
+        "preparation_id": "293a3d1369acb1b35fcfe88abbc7dc1bf6e00784d660826ff8d15bbfe939fdc9",
+        "expires_at": "2026-11-07T04:06:58.128Z",
+        "purpose": "implementation",
+        "original_command": "node --test tests/waiting.test.cjs",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "--test-reporter=tap",
+          "--test",
+          "--test-isolation=none",
+          "tests/waiting.test.cjs"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "broker-crash-prepare",
+      "session": "ses_e4bd8efa1ffeEWN1g4pet5b07o",
+      "message": "msg_1b42710bf001Nj2q4mImc6uC2E",
+      "call": "call_01b2b4578fd241b2b94a6b2ab9cfabb7",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "5753c4743a90ddd3c6f5df3d2dcb783df38a53cc2eed98e4d41749384fce7dc6",
+        "attempt_id": "547ebf6df6934ce0bdf8e5d579eeed60",
+        "plan_id": "c4ed5242457c06160d1096fe4c411f6249f529c30301cab15d0e4e6f38b76f58",
+        "application_started": false
+      }
+    },
+    {
+      "name": "broker-crash-run",
+      "session": "ses_e4bd8e067ffeSC5GSt857Q2Jdj",
+      "message": "msg_1b4271fd9001Lgx67DiwWDG5s2",
+      "call": "call_a2aa5a9eb3d04dcd932c4d7c8f1bc430",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": false,
+        "receipt_id": "80e58fd8e7bae67022a5d53ae0a3db8fb923f638552c774a1acfe6f4fe2110b2",
+        "attempt_record_id": "5753c4743a90ddd3c6f5df3d2dcb783df38a53cc2eed98e4d41749384fce7dc6",
+        "attempt_id": "547ebf6df6934ce0bdf8e5d579eeed60",
+        "plan_id": "c4ed5242457c06160d1096fe4c411f6249f529c30301cab15d0e4e6f38b76f58",
+        "outcome": "cancelled",
+        "exit_code": 130,
+        "cleanup_proved": true,
+        "failure": "CANCELLED",
+        "stdout": "",
+        "stderr": "",
+        "output_preview_truncated": false,
+        "output_complete": true
+      }
+    },
+    {
+      "child": "kernel",
+      "pid": 38964,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-11-07T03:57:21.061Z"
+      }
+    },
+    {
+      "child": "daemon",
+      "pid": 34796,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "utc": "2026-11-07T03:57:20.948Z"
+      }
+    }
+  ],
+  "failure": "AssertionError [ERR_ASSERTION]: {\"utc\":\"2026-11-07T03:57:12.6097546Z\",\"error\":\"RESERVATION\",\"application_passed\":false}\r\n\n\n1 !== 0\n\n    at main (D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\public-kernel-chain.cjs:192:303)",
+  "exit_code": 1,
+  "original_business_touched": false
+}

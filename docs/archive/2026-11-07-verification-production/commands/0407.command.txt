@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/upgrade-user-installation-1.0.23.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Perform authorized transactional user upgrade1.0.22-to1.0.23 after verified controlled shutdown and preserve original/owner state",
+  "expected_writes": "TRUTH_SOURCE_WRITES official user installation manifest/journal only; REPOSITORY_TRACKED_WRITES none; RUNTIME_OBSERVER_WRITES controlled Daemon stop and installer-managed117 user files; EXTERNAL_EVIDENCE_WRITES before/after hashes/receipts; no key contents or business code writes",
+  "started_utc": "2026-11-07T08:45:06.313Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\upgrade-user-installation-1.0.23.cjs",
+      "sha256": "dcbf865caa6461a3d9f306a640db302ffc6d5414603776f149176285f3574f0d",
+      "size": 7848,
+      "extension": ".cjs"
+    }
+  ]
+}

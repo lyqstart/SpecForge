@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/prepare-original-continuation-05.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Prepare minimal authorized R05 continuation after actual provider-limited R04 boundary",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES prompt/provenance and frozen receipt only; no business or installed writes",
+  "started_utc": "2026-11-07T07:31:38.344Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\prepare-original-continuation-05.cjs",
+      "sha256": "a4f82a3a4926428f366eb862d1a18ebe98789107218e43e07b8d95aa0a10baba",
+      "size": 2542,
+      "extension": ".cjs"
+    }
+  ]
+}

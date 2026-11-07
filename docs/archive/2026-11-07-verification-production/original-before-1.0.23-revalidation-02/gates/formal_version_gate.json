@@ -1,0 +1,210 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0001",
+  "gate_id": "formal_version_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "failed",
+  "input_files": [
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\extension_registry.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\spec_manifest.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\.semantic_closure.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\changed_files_audit.md",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\gates\\verification_gate.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\git_context.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\governance_scope.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\merge_report.md",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\user_decision.json"
+  ],
+  "checks": [
+    {
+      "check_id": "formal_execution_evidence_integrity",
+      "description": "Execution evidence is authentic, current and completely terminated",
+      "passed": true
+    },
+    {
+      "check_id": "formal_verification_gate",
+      "description": "Verification Gate passed",
+      "passed": false,
+      "severity": "error"
+    },
+    {
+      "check_id": "formal_changed_files_audit",
+      "description": "Changed Files Audit passed",
+      "passed": true
+    },
+    {
+      "check_id": "formal_actual_governance_scope",
+      "description": "Actual implementation files map to exactly one approved Module and do not expand governance scope",
+      "passed": true,
+      "details": "actual_modules=CORE; violations=none"
+    },
+    {
+      "check_id": "formal_version_control_mode_evidence",
+      "description": "Pre-implementation version-control mode is frozen or recovered from bound legacy evidence",
+      "passed": true,
+      "details": "source=governance_scope; mode=git; error=none"
+    },
+    {
+      "check_id": "formal_repository_mode_stable",
+      "description": "Version-control mode remains the mode frozen before implementation",
+      "passed": true,
+      "details": "frozen=git; source=governance_scope; effective=git; current=git; head=f5fed085a8609f593592eca5e8035b2d1c958759; legacy_recovery=false"
+    },
+    {
+      "check_id": "formal_git_context",
+      "description": "Git-enabled implementation is bound to WI branch and base commit",
+      "passed": true,
+      "details": "required=true; enabled=true; branch=codex/greet-library-wi-0001; base=8a692e88c0823984647622294f5199c18bb0c587"
+    },
+    {
+      "check_id": "formal_git_branch",
+      "description": "Current branch matches git_context branch",
+      "passed": true,
+      "details": "current=codex/greet-library-wi-0001; expected=codex/greet-library-wi-0001"
+    },
+    {
+      "check_id": "formal_git_base_ancestor",
+      "description": "git_context base commit is an ancestor of the implementation commit",
+      "passed": true,
+      "details": "base=8a692e88c0823984647622294f5199c18bb0c587; head=f5fed085a8609f593592eca5e8035b2d1c958759"
+    },
+    {
+      "check_id": "formal_git_actual_files_present",
+      "description": "Implementation produced observable project-file changes",
+      "passed": true,
+      "details": "expected=true; actual=README.md,package.json,src/greet.ts,tests/greet.test.ts,tsconfig.json"
+    },
+    {
+      "check_id": "formal_git_implementation_file_set_complete",
+      "description": "Formal Version implementation files exactly match the WI committed non-governance Git diff",
+      "passed": true,
+      "details": "committed=README.md,package.json,src/greet.ts,tests/greet.test.ts,tsconfig.json; unrecorded=none; absent_from_commit=none"
+    },
+    {
+      "check_id": "formal_git_implementation_committed",
+      "description": "Every observed implementation file is present in the WI committed diff",
+      "passed": true,
+      "details": "implementation_commit=f5fed085a8609f593592eca5e8035b2d1c958759; missing=none"
+    },
+    {
+      "check_id": "formal_git_implementation_worktree_clean",
+      "description": "Observed implementation files have no staged, unstaged, or untracked changes",
+      "passed": true,
+      "details": "uncommitted=none"
+    },
+    {
+      "check_id": "formal_semantic_closure",
+      "description": "Semantic closure evidence exists",
+      "passed": true
+    },
+    {
+      "check_id": "formal_spec_merge",
+      "description": "Formal Spec Candidate merge succeeded",
+      "passed": true
+    },
+    {
+      "check_id": "formal_user_decision",
+      "description": "User Decision is approved/waived",
+      "passed": true
+    },
+    {
+      "check_id": "formal_hard_gate_candidate_manifest_gate_json",
+      "description": "Hard Gate candidate_manifest_gate.json did not fail",
+      "passed": true
+    },
+    {
+      "check_id": "formal_hard_gate_contract_integrity_gate_json",
+      "description": "Hard Gate contract_integrity_gate.json did not fail",
+      "passed": true
+    },
+    {
+      "check_id": "formal_hard_gate_entry_gate_json",
+      "description": "Hard Gate entry_gate.json did not fail",
+      "passed": true
+    },
+    {
+      "check_id": "formal_hard_gate_path_policy_gate_json",
+      "description": "Hard Gate path_policy_gate.json did not fail",
+      "passed": true
+    },
+    {
+      "check_id": "formal_hard_gate_post_merge_gate_json",
+      "description": "Hard Gate post_merge_gate.json did not fail",
+      "passed": true
+    },
+    {
+      "check_id": "formal_hard_gate_required_files_gate_json",
+      "description": "Hard Gate required_files_gate.json did not fail",
+      "passed": true
+    },
+    {
+      "check_id": "formal_hard_gate_schema_gate_json",
+      "description": "Hard Gate schema_gate.json did not fail",
+      "passed": true
+    },
+    {
+      "check_id": "formal_hard_gate_spec_consistency_gate_json",
+      "description": "Hard Gate spec_consistency_gate.json did not fail",
+      "passed": true
+    },
+    {
+      "check_id": "formal_hard_gate_trace_gate_json",
+      "description": "Hard Gate trace_gate.json did not fail",
+      "passed": true
+    },
+    {
+      "check_id": "formal_hard_gate_verification_gate_json",
+      "description": "Hard Gate verification_gate.json did not fail",
+      "passed": false,
+      "severity": "error"
+    },
+    {
+      "check_id": "formal_hard_gate_workflow_selection_gate_json",
+      "description": "Hard Gate workflow_selection_gate.json did not fail",
+      "passed": true
+    },
+    {
+      "check_id": "formal_hard_gate_workflow_specific_gate_json",
+      "description": "Hard Gate workflow_specific_gate.json did not fail",
+      "passed": true
+    },
+    {
+      "check_id": "formal_project_spec_core_version_coherent",
+      "description": "Project Spec Core files agree on the authoritative project_spec_version",
+      "passed": true,
+      "details": "project_spec_version=PSV-0002"
+    },
+    {
+      "check_id": "formal_project_consistency",
+      "description": "Project Architecture/Data/Design consistency is valid",
+      "passed": true
+    },
+    {
+      "check_id": "formal_contract_integrity",
+      "description": "Project/Module Contract integrity is valid",
+      "passed": true
+    },
+    {
+      "check_id": "formal_trace_integrity",
+      "description": "Governance Trace is valid",
+      "passed": true
+    },
+    {
+      "check_id": "formal_governance_scope_frozen",
+      "description": "Implementation has a frozen governance scope",
+      "passed": true
+    }
+  ],
+  "blocking_issues": [
+    "Verification Gate passed",
+    "Hard Gate verification_gate.json did not fail"
+  ],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-11-07T07:33:43.244Z",
+  "finished_at": "2026-11-07T07:33:43.244Z",
+  "runner": "gate_runner"
+}

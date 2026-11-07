@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "data": {
+    "status": "ok",
+    "service": "daemon-core",
+    "version": "1.0.22",
+    "uptime": 0
+  },
+  "requestId": "pv4m7ysoulmw5t9xu9",
+  "timestamp": 1794020148369
+}

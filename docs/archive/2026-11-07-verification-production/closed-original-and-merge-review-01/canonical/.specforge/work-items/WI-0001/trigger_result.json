@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0001",
+  "workflow_type": "feature_spec",
+  "workflow_path": "requirement_change_path",
+  "classification": {
+    "requirement_changed": true,
+    "acceptance_criteria_changed": true,
+    "business_rule_changed": true,
+    "user_visible_behavior_changed": true,
+    "data_semantics_changed": false,
+    "design_changed": true,
+    "module_boundary_changed": false,
+    "api_contract_changed": true,
+    "architecture_changed": true,
+    "data_model_changed": true,
+    "module_contract_changed": true,
+    "contract_registry_only": false,
+    "unknowns": [
+      "项目当前无 package.json/tsconfig/测试框架配置，测试运行器与最小工程配置需由设计阶段以零依赖方案优先决策并取证",
+      "Node.js/TypeScript 具体可用版本未取证（D18 禁止外部命令；设计以零依赖方案规避，实现/验证阶段以真实运行证据确认）"
+    ]
+  },
+  "match_results": [],
+  "impact_scope": {
+    "affected_modules": [
+      "CORE"
+    ],
+    "architecture_refs": [],
+    "data_model_refs": [],
+    "design_refs": [],
+    "project_contract_refs": [],
+    "module_contract_refs": [],
+    "planned_code_paths": [
+      "src/greet.ts",
+      "tests/greet.test.ts",
+      "README.md",
+      "package.json",
+      "tsconfig.json"
+    ]
+  },
+  "status": "triggered"
+}

@@ -1,0 +1,27 @@
+{
+  "utc": "2026-11-07T07:09:17.298Z",
+  "parent": "759cd2ffede4bd942db7bd9a0025c96cd02bac1e",
+  "members": [
+    {
+      "path": "setup/userlevel-opencode/tools/lib/thin-client.ts",
+      "sha256": "9e59075095bafd18e7cf80ea1d6b2d68481b485e1ce0566bd0bfa7c507e148cb"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_artifact_write.ts",
+      "sha256": "5c3b9b6823f54561ac39de20921832a006cc55d39b641fe056f4887ec0ddb111"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_verification_gate.ts",
+      "sha256": "073f45d6562a4e54495964c47cc09e42d7528a6938a53d66fd1df6660c67dc38"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_gate_run.ts",
+      "sha256": "d99e06e9d59f72e2128ab147612b828874baf1804fda3c1b9d3bc8a7c713080c"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_close_gate.ts",
+      "sha256": "851ae6a9cb1fd840896673f4c7d52eda490f354be556d05749b8dd81608e8e59"
+    }
+  ],
+  "basis": "0310 real30157/33511ms committed writes versus30000ms client timeout; existing verification-consumer-deadline-plan.md"
+}

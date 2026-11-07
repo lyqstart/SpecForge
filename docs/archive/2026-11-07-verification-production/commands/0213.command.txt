@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/public-kernel-chain.cjs",
+    "15",
+    "crash"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "async-Git-fixed-installed15-direct-full-crash-retest",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned installed15 actual professional Agents direct Kernel new Daemon broker198 recovery followup plan and Daemon199 restart; EXTERNAL_EVIDENCE_WRITES source-frozen trial; no original/user install",
+  "started_utc": "2026-11-07T04:27:14.429Z"
+}

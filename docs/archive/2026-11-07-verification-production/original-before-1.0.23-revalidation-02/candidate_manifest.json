@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0001",
+  "workflow_path": "requirement_change_path",
+  "base_spec_version": "PSV-0001",
+  "merge_required": true,
+  "entries": [
+    {
+      "candidate_path": "candidates/project/extension_registry.json",
+      "target_path": ".specforge/project/extension_registry.json",
+      "operation": "replace",
+      "type": "extension_registry",
+      "inferred": false,
+      "normalized": true
+    },
+    {
+      "candidate_path": "candidates/project/architecture.candidate.md",
+      "target_path": ".specforge/project/architecture.md",
+      "operation": "replace",
+      "type": "architecture",
+      "inferred": false,
+      "normalized": true
+    },
+    {
+      "candidate_path": "candidates/project/data_model.candidate.md",
+      "target_path": ".specforge/project/data_model.md",
+      "operation": "replace",
+      "type": "data_model",
+      "inferred": false,
+      "normalized": true
+    },
+    {
+      "candidate_path": "candidates/project/modules/CORE/module.candidate.json",
+      "target_path": ".specforge/project/modules/CORE/module.json",
+      "operation": "replace",
+      "type": "module_definition",
+      "module_id": "CORE",
+      "inferred": false,
+      "normalized": true
+    },
+    {
+      "candidate_path": "candidates/project/modules/CORE/requirements.candidate.md",
+      "target_path": ".specforge/project/modules/CORE/requirements.md",
+      "operation": "replace",
+      "type": "requirements",
+      "module_id": "CORE",
+      "inferred": false,
+      "normalized": true
+    },
+    {
+      "candidate_path": "candidates/project/modules/CORE/design.candidate.md",
+      "target_path": ".specforge/project/modules/CORE/design.md",
+      "operation": "replace",
+      "type": "design",
+      "module_id": "CORE",
+      "inferred": false,
+      "normalized": true
+    },
+    {
+      "candidate_path": "candidates/project/modules/CORE/contracts.candidate.json",
+      "target_path": ".specforge/project/modules/CORE/contracts.json",
+      "operation": "replace",
+      "type": "module_contract",
+      "module_id": "CORE",
+      "inferred": false,
+      "normalized": true
+    },
+    {
+      "candidate_path": "candidates/trace_delta.md",
+      "target_path": ".specforge/project/trace_matrix.md",
+      "operation": "replace",
+      "type": "trace_delta",
+      "inferred": false,
+      "normalized": true
+    }
+  ],
+  "project_spec_precondition_sha256": "sha256:d7a425f52746590f08c6da9a3806a931453b7feac2636766eb10b72543061c16",
+  "workflow_type": "feature_spec"
+}

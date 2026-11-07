@@ -1,0 +1,14 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/verification-source-snapshot.test.ts (3 tests) 4008ms
+   ✓ verification raw source and Git identity > captures current raw input and rejects a changed source without invoking clean filters  1218ms
+   ✓ verification raw source and Git identity > rejects undeclared untracked code and hardlinked tracked input  770ms
+   ✓ verification raw source and Git identity > binds branch, index and repository configuration  2019ms
+ ✓ tests/unit/verification-owner-store.test.ts (13 tests) 155ms
+
+ Test Files  2 passed (2)
+      Tests  16 passed (16)
+   Start at  08:36:28
+   Duration  4.79s (transform 55ms, setup 0ms, collect 87ms, tests 4.16s, environment 0ms, prepare 204ms)
+

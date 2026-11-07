@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-07T04:32:52.285Z",
+  "trial": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\e0a7c93c26db443eb1e2100e75b8091b\\trials\\2e2512dc-9e61-4805-ab3e-2ef607101de3",
+  "records": [
+    {
+      "child": "kernel",
+      "pid": 40768,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-11-07T04:32:52.284Z"
+      }
+    }
+  ],
+  "failure": "TimeoutError: The operation was aborted due to timeout",
+  "exit_code": 1,
+  "original_business_touched": false
+}

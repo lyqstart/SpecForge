@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0001",
+  "gate_id": "post_merge_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "passed",
+  "input_files": [
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\merge_report.md",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\extension_registry.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\spec_manifest.json"
+  ],
+  "checks": [
+    {
+      "check_id": "post_merge_report_valid",
+      "description": "merge_report.md is a valid successful report for this Work Item",
+      "passed": true,
+      "details": "status=success"
+    },
+    {
+      "check_id": "post_merge_project_dir",
+      "description": ".specforge/project/ directory exists",
+      "passed": true
+    },
+    {
+      "check_id": "post_merge_project_spec_core_version_coherent",
+      "description": "Project Spec Core files agree on the authoritative project_spec_version",
+      "passed": true,
+      "details": "project_spec_version=PSV-0002"
+    }
+  ],
+  "blocking_issues": [],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-11-03T14:47:10.600Z",
+  "finished_at": "2026-11-03T14:47:10.600Z",
+  "runner": "gate_runner"
+}

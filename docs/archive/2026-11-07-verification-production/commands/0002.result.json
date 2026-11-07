@@ -1,0 +1,19 @@
+{
+  "executable": "node",
+  "args": [
+    "scripts/project-session-bootstrap.mjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "bootstrap-restored-live-remote",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=bootstrap raw readiness",
+  "started_utc": "2026-11-07T00:18:48.737Z",
+  "finished_utc": "2026-11-07T00:18:55.613Z",
+  "carrier_exit_code": 0,
+  "inner_exit_code": 0,
+  "signal": null,
+  "observed_writes": {
+    "repository_status_before": " M packages/daemon-core/tests/unit/project-session-bootstrap.test.ts\n M scripts/project-session-bootstrap.mjs\n?? docs/archive/2026-11-07-verification-production/authorization.json\n?? docs/archive/2026-11-07-verification-production/commands/0001.command.txt\n?? docs/archive/2026-11-07-verification-production/commands/0001.manifest.sha256\n?? docs/archive/2026-11-07-verification-production/commands/0001.receipt-seal.json\n?? docs/archive/2026-11-07-verification-production/commands/0001.result.json\n?? docs/archive/2026-11-07-verification-production/commands/0001.stderr.raw.bin\n?? docs/archive/2026-11-07-verification-production/commands/0001.stderr.txt\n?? docs/archive/2026-11-07-verification-production/commands/0001.stdout.raw.bin\n?? docs/archive/2026-11-07-verification-production/commands/0001.stdout.txt\n?? docs/archive/2026-11-07-verification-production/commands/0002.command.txt\n?? docs/archive/2026-11-07-verification-production/initialize.cjs\n?? docs/archive/2026-11-07-verification-production/journal.jsonl\n?? docs/archive/2026-11-07-verification-production/received-prompt.txt\n?? docs/archive/2026-11-07-verification-production/run-command.cjs\n?? docs/archive/2026-11-07-verification-production/seal-final.cjs\n?? docs/archive/2026-11-07-verification-production/seal-receipts.cjs\n?? docs/archive/2026-11-07-verification-production/verify-final-publication.cjs\n",
+    "repository_status_after": " M packages/daemon-core/tests/unit/project-session-bootstrap.test.ts\n M scripts/project-session-bootstrap.mjs\n?? docs/archive/2026-11-07-verification-production/authorization.json\n?? docs/archive/2026-11-07-verification-production/commands/0001.command.txt\n?? docs/archive/2026-11-07-verification-production/commands/0001.manifest.sha256\n?? docs/archive/2026-11-07-verification-production/commands/0001.receipt-seal.json\n?? docs/archive/2026-11-07-verification-production/commands/0001.result.json\n?? docs/archive/2026-11-07-verification-production/commands/0001.stderr.raw.bin\n?? docs/archive/2026-11-07-verification-production/commands/0001.stderr.txt\n?? docs/archive/2026-11-07-verification-production/commands/0001.stdout.raw.bin\n?? docs/archive/2026-11-07-verification-production/commands/0001.stdout.txt\n?? docs/archive/2026-11-07-verification-production/commands/0002.command.txt\n?? docs/archive/2026-11-07-verification-production/commands/0002.stderr.raw.bin\n?? docs/archive/2026-11-07-verification-production/commands/0002.stderr.txt\n?? docs/archive/2026-11-07-verification-production/commands/0002.stdout.raw.bin\n?? docs/archive/2026-11-07-verification-production/commands/0002.stdout.txt\n?? docs/archive/2026-11-07-verification-production/initialize.cjs\n?? docs/archive/2026-11-07-verification-production/journal.jsonl\n?? docs/archive/2026-11-07-verification-production/received-prompt.txt\n?? docs/archive/2026-11-07-verification-production/run-command.cjs\n?? docs/archive/2026-11-07-verification-production/seal-final.cjs\n?? docs/archive/2026-11-07-verification-production/seal-receipts.cjs\n?? docs/archive/2026-11-07-verification-production/verify-final-publication.cjs\n",
+    "other": "See expected writes and owner-specific receipt; status does not enumerate external runtime writes."
+  }
+}

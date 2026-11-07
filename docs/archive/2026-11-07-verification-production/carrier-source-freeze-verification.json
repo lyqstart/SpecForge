@@ -1,0 +1,16 @@
+{
+  "utc": "2026-11-07T06:21:25.933Z",
+  "receipt": "0284",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\capture-active-original-driver.cjs",
+      "sha256": "e732cba99465c7ca09c6eb06d0ffba1a4406a1340fbcd1a575771d52ffd38404",
+      "size": 1013,
+      "extension": ".cjs"
+    }
+  ],
+  "immediate_source_seal_verified": true,
+  "scope": "Automatic freezing applies from0284. Earlier command sources are not retroactively claimed to have been frozen. Original run02 has an explicitly qualified late capture; future original starts also freeze entry and prompt before Kernel/model launch."
+}

@@ -1,0 +1,1 @@
+{"status":"IN_PROGRESS","receipts_verified":59,"source_files":67,"SP_I01":"NOT_ACCEPTED","SP_D01":"NOT_ACCEPTED","original_WI":"NOT_EXECUTED"}

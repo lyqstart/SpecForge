@@ -1,0 +1,22 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/run-current-release-precheck.ts",
+    "--candidate-id",
+    "CODEX-SF-20261107-27D46BAD-1.0.23"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Precheck current27d46bad1.0.23 routing-repaired release candidate",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES ignored release reports; EXTERNAL_EVIDENCE_WRITES sealed raw report; no deployment",
+  "started_utc": "2026-11-07T07:54:36.079Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\scripts\\run-current-release-precheck.ts",
+      "sha256": "27186c6a6ded4982e60e721902037bfca048558843d68fc44038c26baa206a04",
+      "size": 1021,
+      "extension": ".ts"
+    }
+  ]
+}

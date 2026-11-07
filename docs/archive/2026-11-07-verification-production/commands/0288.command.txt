@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/record-integration-checkpoint-08.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Independently reconcile all completed receipts/frozen sets, actual original coverage, installed identity and remaining release scope",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES unique status and historical ledger; EXTERNAL_EVIDENCE_WRITES checkpoint and receipts; all original/installed content read-only",
+  "started_utc": "2026-11-07T06:23:06.405Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\record-integration-checkpoint-08.cjs",
+      "sha256": "b96695dff4a5603b172cd877dd87a5de099f23d0dd065b8efef82e3d71750f99",
+      "size": 8846,
+      "extension": ".cjs"
+    }
+  ]
+}

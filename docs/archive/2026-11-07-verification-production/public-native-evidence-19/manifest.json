@@ -1,0 +1,83 @@
+{
+  "utc": "2026-11-07T04:36:02.850Z",
+  "fixture": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\e0a7c93c26db443eb1e2100e75b8091b",
+  "scope": "Genuine Kernel/public/native evidence; finite model transport and seeded upstream baseline; not original WI or full SPS acceptance",
+  "members": [
+    {
+      "path": "fixture/metadata.json",
+      "size": 13551,
+      "sha256": "f64fcf485f45e7d0d71119b109d64e90ea87c240363d6c9da7cf9ea47b052718"
+    },
+    {
+      "path": "fixture/reservation.json",
+      "size": 815,
+      "sha256": "be421b69b0e17c352908ca7ddd7daeed500f0845e3396ddf5418864a9c4e62b7"
+    },
+    {
+      "path": "fixture/source-release-manifest.json",
+      "size": 56603,
+      "sha256": "e034ecde23781d3884aafcacdb7271dd61ae08688bd95001552df26dd070012a"
+    },
+    {
+      "path": "fixture/installed-byte-proof.json",
+      "size": 13200,
+      "sha256": "3ee7df0d1a62b12326fdc0af3ae8c9906db7058cab2e789b26ef336f3db6b8ec"
+    },
+    {
+      "path": "fixture/installer-install.json",
+      "size": 1255,
+      "sha256": "cf18dd9b7c3219afea7e86f0bec2789e48788170cf099844c7dc3c0dc6dc6224"
+    },
+    {
+      "path": "fixture/installer-verify.json",
+      "size": 457,
+      "sha256": "652765e4751326a6030cd06409c9beec6493d64cc58ddf66e9bf4f7ee323e28b"
+    },
+    {
+      "path": "fixture/install-driver-source.cjs",
+      "size": 5851,
+      "sha256": "e3c5c6840752e73f6f23ae1ef1e091a06378a95ccaa478b1a1f22113b44b01ae"
+    },
+    {
+      "path": "fixture/install-driver-identity.json",
+      "size": 158,
+      "sha256": "9663065a071d875e7a46d6a3225a582781ecc1bd8eae0046a688911b6f298c4a"
+    },
+    {
+      "path": "fixture/fixture.json",
+      "size": 1933,
+      "sha256": "98febf0229d22d6d92e99f45c5819472b77335ad99918a9c9daf9ffce6d7e2f4"
+    },
+    {
+      "path": "trials/2e2512dc-9e61-4805-ab3e-2ef607101de3/driver-source-identity.json",
+      "size": 289,
+      "sha256": "5efa68b543ddeff938def7c49ca516b45560d3592af1d1ba59a545acf70cdfab"
+    },
+    {
+      "path": "trials/2e2512dc-9e61-4805-ab3e-2ef607101de3/driver-source.cjs",
+      "size": 40345,
+      "sha256": "e6d6b2d4e182e9b74be963aedb6723a3cca042a43fce5bdb88517afda8cd72c0"
+    },
+    {
+      "path": "trials/2e2512dc-9e61-4805-ab3e-2ef607101de3/kernel-health.json",
+      "size": 46,
+      "sha256": "1963bd267f9cdcce0f9f2d5c4f1f2696e6dd96d18b772cba429dc0dd5410e565"
+    },
+    {
+      "path": "trials/2e2512dc-9e61-4805-ab3e-2ef607101de3/kernel.log",
+      "size": 118,
+      "sha256": "ca384972cf88c2dd5c3e1b102843584eedf0d819bf3369bd1415a86d91dc166d"
+    },
+    {
+      "path": "trials/2e2512dc-9e61-4805-ab3e-2ef607101de3/result.json",
+      "size": 509,
+      "sha256": "b45b99896aabcad3e456d31c9eed3d8eef54a5c9812ee901ed773b093f2795a6"
+    }
+  ],
+  "omitted": [
+    {
+      "path": "owner",
+      "reason": "OWNER_ROOT_ABSENT_AT_CAPTURE"
+    }
+  ]
+}

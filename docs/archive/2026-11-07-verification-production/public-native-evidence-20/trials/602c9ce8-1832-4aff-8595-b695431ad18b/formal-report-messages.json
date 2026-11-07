@@ -1,0 +1,204 @@
+[
+  {
+    "info": {
+      "id": "msg_1b44e65bf001HKqXr64799pJsX",
+      "sessionID": "ses_e4bb19a50ffe3Zwuu8Y0KgY17b",
+      "role": "user",
+      "time": {
+        "created": 1794026399167
+      },
+      "summary": {
+        "diffs": [
+          {
+            "file": ".specforge/work-items/WI-9901/verification_report.md",
+            "patch": "Index: .specforge/work-items/WI-9901/verification_report.md\n===================================================================\n--- .specforge/work-items/WI-9901/verification_report.md\t\n+++ .specforge/work-items/WI-9901/verification_report.md\t\n@@ -0,0 +1,232 @@\n+# 验证报告\n+\n+## 结果汇总\n+\n+| 指标 | 数值 |\n+|------|------|\n+| 总检查数 | 10 |\n+| 通过 | 10 |\n+| 失败 | 0 |\n+| 结论 | pass |\n+\n+## 验证命令\n+\n+| 命令 | 状态 | 输出摘要 |\n+|------|------|----------|\n+| `node --test tests/positive.test.cjs` | ✅ pass | Actual isolated Node exit0 and independent cleanup; normalization single-file-no-host-observation/v1 |\n+| `node -e \"const {salute}=require('./src/library.cjs');if(salute('Ada')!=='hi Ada')process.exit(1);console.log('SF_PRODUCT_INLINE_OK');\"` | ✅ pass | Actual isolated Node exit0 and independent cleanup; normalization single-file-no-host-observation/v1 |\n+| `test -f package.json && test -f tsconfig.json` | ✅ pass | Actual isolated Node exit0 and independent cleanup; normalization finite-posix-readonly-predicate/v1 |\n+| `grep -c '\"type\": \"module\"' package.json` | ✅ pass | Actual isolated Node exit0 and independent cleanup; normalization finite-posix-readonly-predicate/v1 |\n+| `! grep -qE \"^import |^import\\{|require\\(\" src/value.ts` | ✅ pass | Actual isolated Node exit0 and independent cleanup; normalization finite-posix-readonly-predicate/v1 |\n+| `node --test tests/value.test.ts` | ✅ pass | Actual isolated Node exit0 and independent cleanup; normalization single-file-no-host-observation/v1 |\n+| `node --test tests/esm.test.mjs` | ✅ pass | Actual isolated Node exit0 and independent cleanup; normalization single-file-no-host-observation/v1 |\n+| `node -e \"import('./src/value.ts').then(m=>{if(m.greet('Ada')!=='Hello, Ada!'||m.greet('')!=='Hello, world!')process.exit(1);console.log('TS_INLINE_OK');}).catch(()=>process.exit(1))\"` | ✅ pass | Actual isolated Node exit0 and independent cleanup; normalization single-file-no-host-observation/v1 |\n+\n+## 验收标准\n+\n+| 需求 | 名称 | 状态 | 证据 |\n+|------|------|------|------|\n+| REQ-DEMO-001 | Owned library consumer returns hi Ada | ✅ pass | EV-NATIVE-002 |\n+\n+## 端到端测试\n+\n+| 测试名称 | 状态 | 证据 |\n+|----------|------|------|\n+| Actual isolated library public consumer | ✅ pass | EV-NATIVE-002 |\n+\n+## 副作用\n+\n+Readonly inputs and independent native cleanup verified\n+\n+## 结论\n+\n+**结论：pass**\n+\n+Producer/common-consumer integration fixture only; seeded upstream baseline and fault-injection Tasks are not a completed business workflow\n+\n+## Machine-readable Verification Contract\n+\n+```json\n+{\n+  \"conclusion\": \"pass\",\n+  \"test_matrix\": {\n+    \"L1_unit\": \"pass\",\n+    \"L2_integration\": \"pass\",\n+    \"L3_pbt\": \"not_applicable\",\n+    \"L4_e2e\": \"pass\",\n+    \"L5_smoke\": \"pass\",\n+    \"L6_regression\": \"not_applicable\",\n+    \"L7_performance\": \"not_applicable\",\n+    \"L8_security\": \"not_applicable\",\n+    \"L9_compatibility\": \"not_applicable\",\n+    \"L10_uat\": \"not_applicable\"\n+  },\n+  \"verification_commands\": [\n+    {\n+      \"execution_receipt_id\": \"c4a73caf98aac5f5de413831f68a88c5ef08b95d2505587e32ecc4b2e009117e\",\n+      \"task_id\": \"TASK-WI-9901-001\",\n+      \"verification_type\": \"unit\",\n+      \"command_index\": 0,\n+      \"command\": \"node --test tests/positive.test.cjs\",\n+      \"status\": \"pass\",\n+      \"output_summary\": \"Actual isolated Node exit0 and independent cleanup; normalization single-file-no-host-observation/v1\"\n+    },\n+    {\n+      \"execution_receipt_id\": \"12a87b298e60c4e92e2539f501d4196819b4140a3a11de591c476e15f18e3dee\",\n+      \"task_id\": \"TASK-WI-9901-002\",\n+      \"verification_type\": \"e2e\",\n+      \"command_index\": 0,\n+      \"command\": \"node -e \\\"const {salute}=require('./src/library.cjs');if(salute('Ada')!=='hi Ada')process.exit(1);console.log('SF_PRODUCT_INLINE_OK');\\\"\",\n+      \"status\": \"pass\",\n+      \"output_summary\": \"Actual isolated Node exit0 and independent cleanup; normalization single-file-no-host-observation/v1\"\n+    },\n+    {\n+      \"execution_receipt_id\": \"447c13adaa403908f7380db1043a47922f153866ea4f465ba96f52afb4bd605c\",\n+      \"task_id\": \"TASK-WI-9901-004\",\n+      \"verification_type\": \"unit\",\n+      \"command_index\": 0,\n+      \"command\": \"test -f package.json && test -f tsconfig.json\",\n+      \"status\": \"pass\",\n+      \"output_summary\": \"Actual isolated Node exit0 and independent cleanup; normalization finite-posix-readonly-predicate/v1\"\n+    },\n+    {\n+      \"execution_receipt_id\": \"bc4818ec23e2ecca313342d5bc3018af74a4fb50226aa8062ae43fc307ff717b\",\n+      \"task_id\": \"TASK-WI-9901-005\",\n+      \"verification_type\": \"unit\",\n+      \"command_index\": 0,\n+      \"command\": \"grep -c '\\\"type\\\": \\\"module\\\"' package.json\",\n+      \"status\": \"pass\",\n+      \"output_summary\": \"Actual isolated Node exit0 and independent cleanup; normalization finite-posix-readonly-predicate/v1\"\n+    },\n+    {\n+      \"execution_receipt_id\": \"9e06bbc06643e2503bd6d8c29d2aff931a85647120ea1fca18501fb129a5a93c\",\n+      \"task_id\": \"TASK-WI-9901-006\",\n+      \"verification_type\": \"unit\",\n+      \"command_index\": 0,\n+      \"command\": \"! grep -qE \\\"^import |^import\\\\{|require\\\\(\\\" src/value.ts\",\n+      \"status\": \"pass\",\n+      \"output_summary\": \"Actual isolated Node exit0 and independent cleanup; normalization finite-posix-readonly-predicate/v1\"\n+    },\n+    {\n+      \"execution_receipt_id\": \"2ae7795d3f36f3c57ddfa488f0018ec46852296544be91edf9f1992394affc17\",\n+      \"task_id\": \"TASK-WI-9901-007\",\n+      \"verification_type\": \"integration\",\n+      \"command_index\": 0,\n+      \"command\": \"node --test tests/value.test.ts\",\n+      \"status\": \"pass\",\n+      \"output_summary\": \"Actual isolated Node exit0 and independent cleanup; normalization single-file-no-host-observation/v1\"\n+    },\n+    {\n+      \"execution_receipt_id\": \"f4e516473137a374709ff6bf76438fd6f219ae98ee77bb4a359fde6119d14043\",\n+      \"task_id\": \"TASK-WI-9901-008\",\n+      \"verification_type\": \"unit\",\n+      \"command_index\": 0,\n+      \"command\": \"node --test tests/esm.test.mjs\",\n+      \"status\": \"pass\",\n+      \"output_summary\": \"Actual isolated Node exit0 and independent cleanup; normalization single-file-no-host-observation/v1\"\n+    },\n+    {\n+      \"execution_receipt_id\": \"403f9edc01f348326fd502d50c6a687f3509c137a2a75d6de71a573ff4c87f13\",\n+      \"task_id\": \"TASK-WI-9901-009\",\n+      \"verification_type\": \"e2e\",\n+      \"command_index\": 0,\n+      \"command\": \"node -e \\\"import('./src/value.ts').then(m=>{if(m.greet('Ada')!=='Hello, Ada!'||m.greet('')!=='Hello, world!')process.exit(1);console.log('TS_INLINE_OK');}).catch(()=>process.exit(1))\\\"\",\n+      \"status\": \"pass\",\n+      \"output_summary\": \"Actual isolated Node exit0 and independent cleanup; normalization single-file-no-host-observation/v1\"\n+    }\n+  ],\n+  \"acceptance_criteria\": [\n+    {\n+      \"req_id\": \"REQ-DEMO-001\",\n+      \"name\": \"Owned library consumer returns hi Ada\",\n+      \"status\": \"pass\",\n+      \"evidence\": \"EV-NATIVE-002\"\n+    }\n+  ],\n+  \"e2e_tests\": [\n+    {\n+      \"name\": \"Actual isolated library public consumer\",\n+      \"status\": \"pass\",\n+      \"evidence\": \"EV-NATIVE-002\"\n+    }\n+  ],\n+  \"side_effects\": \"Readonly inputs and independent native cleanup verified\",\n+  \"summary\": \"Producer/common-consumer integration fixture only; seeded upstream baseline and fault-injection Tasks are not a completed business workflow\",\n+  \"semantic_closure\": {\n+    \"schema_version\": \"1.0\",\n+    \"work_item_id\": \"WI-9901\",\n+    \"outcomes\": [\n+      {\n+        \"id\": \"OUT-DEMO-001\",\n+        \"requirement_refs\": [\n+          \"REQ-DEMO-001\"\n+        ],\n+        \"required_evidence_refs\": [\n+          \"EV-NATIVE-002\"\n+        ]\n+      }\n+    ],\n+    \"requirements\": [\n+      {\n+        \"id\": \"REQ-DEMO-001\",\n+        \"type\": \"MUST\",\n+        \"outcome_refs\": [\n+          \"OUT-DEMO-001\"\n+        ],\n+        \"design_refs\": [\n+          \"DD-DEMO-001\"\n+        ],\n+        \"task_refs\": [\n+          \"TASK-WI-9901-002\"\n+        ],\n+        \"required_evidence_refs\": [\n+          \"EV-NATIVE-002\"\n+        ]\n+      }\n+    ],\n+    \"design_decisions\": [\n+      {\n+        \"id\": \"DD-DEMO-001\",\n+        \"requirement_refs\": [\n+          \"REQ-DEMO-001\"\n+        ],\n+        \"task_refs\": [\n+          \"TASK-WI-9901-002\"\n+        ]\n+      }\n+    ],\n+    \"tasks\": [\n+      {\n+        \"id\": \"TASK-WI-9901-002\",\n+        \"requirement_refs\": [\n+          \"REQ-DEMO-001\"\n+        ],\n+        \"design_refs\": [\n+          \"DD-DEMO-001\"\n+        ],\n+        \"evidence_refs\": [\n+          \"EV-NATIVE-002\"\n+        ]\n+      }\n+    ],\n+    \"evidence\": [\n+      {\n+        \"id\": \"EV-NATIVE-002\",\n+        \"status\": \"passed\",\n+        \"level\": \"L5\",\n+        \"evidence_type\": \"behavioral_e2e\",\n+        \"supports\": [\n+          \"OUT-DEMO-001\",\n+          \"REQ-DEMO-001\",\n+          \"DD-DEMO-001\",\n+          \"TASK-WI-9901-002\"\n+        ]\n+      }\n+    ],\n+    \"project_integration\": {\n+      \"status\": \"not_applicable\"\n+    }\n+  },\n+  \"verification_execution_contract\": \"verification-execution/v1\"\n+}\n+```\n",
+            "additions": 232,
+            "deletions": 0,
+            "status": "added"
+          }
+        ]
+      },
+      "agent": "sf-verifier",
+      "model": {
+        "providerID": "sf-fixture",
+        "modelID": "finite-model"
+      }
+    },
+    "parts": [
+      {
+        "id": "prt_1b44e65c3001B7T4fgd4yPdWfU",
+        "sessionID": "ses_e4bb19a50ffe3Zwuu8Y0KgY17b",
+        "messageID": "msg_1b44e65bf001HKqXr64799pJsX",
+        "type": "text",
+        "text": "Execute the single requested tool once, then stop. SF_FIXTURE_REQUEST:eyJ0b29sIjoic2ZfYXJ0aWZhY3Rfd3JpdGUiLCJhcmdzIjp7IndvcmtfaXRlbV9pZCI6IldJLTk5MDEiLCJmaWxlX3R5cGUiOiJ2ZXJpZmljYXRpb25fcmVwb3J0IiwiY29udGVudCI6IntcImNvbmNsdXNpb25cIjpcInBhc3NcIixcInRlc3RfbWF0cml4XCI6e1wiTDFfdW5pdFwiOlwicGFzc1wiLFwiTDJfaW50ZWdyYXRpb25cIjpcInBhc3NcIixcIkwzX3BidFwiOlwibm90X2FwcGxpY2FibGVcIixcIkw0X2UyZVwiOlwicGFzc1wiLFwiTDVfc21va2VcIjpcInBhc3NcIixcIkw2X3JlZ3Jlc3Npb25cIjpcIm5vdF9hcHBsaWNhYmxlXCIsXCJMN19wZXJmb3JtYW5jZVwiOlwibm90X2FwcGxpY2FibGVcIixcIkw4X3NlY3VyaXR5XCI6XCJub3RfYXBwbGljYWJsZVwiLFwiTDlfY29tcGF0aWJpbGl0eVwiOlwibm90X2FwcGxpY2FibGVcIixcIkwxMF91YXRcIjpcIm5vdF9hcHBsaWNhYmxlXCJ9LFwidmVyaWZpY2F0aW9uX2NvbW1hbmRzXCI6W3tcImV4ZWN1dGlvbl9yZWNlaXB0X2lkXCI6XCJjNGE3M2NhZjk4YWFjNWY1ZGU0MTM4MzFmNjhhODhjNWVmMDhiOTVkMjUwNTU4N2UzMmVjYzRiMmUwMDkxMTdlXCIsXCJ0YXNrX2lkXCI6XCJUQVNLLVdJLTk5MDEtMDAxXCIsXCJ2ZXJpZmljYXRpb25fdHlwZVwiOlwidW5pdFwiLFwiY29tbWFuZF9pbmRleFwiOjAsXCJjb21tYW5kXCI6XCJub2RlIC0tdGVzdCB0ZXN0cy9wb3NpdGl2ZS50ZXN0LmNqc1wiLFwic3RhdHVzXCI6XCJwYXNzXCIsXCJvdXRwdXRfc3VtbWFyeVwiOlwiQWN0dWFsIGlzb2xhdGVkIE5vZGUgZXhpdDAgYW5kIGluZGVwZW5kZW50IGNsZWFudXA7IG5vcm1hbGl6YXRpb24gc2luZ2xlLWZpbGUtbm8taG9zdC1vYnNlcnZhdGlvbi92MVwifSx7XCJleGVjdXRpb25fcmVjZWlwdF9pZFwiOlwiMTJhODdiMjk4ZTYwYzRlOTJlMjUzOWY1MDFkNDE5NjgxOWI0MTQwYTNhMTFkZTU5MWM0NzZlMTVmMThlM2RlZVwiLFwidGFza19pZFwiOlwiVEFTSy1XSS05OTAxLTAwMlwiLFwidmVyaWZpY2F0aW9uX3R5cGVcIjpcImUyZVwiLFwiY29tbWFuZF9pbmRleFwiOjAsXCJjb21tYW5kXCI6XCJub2RlIC1lIFxcXCJjb25zdCB7c2FsdXRlfT1yZXF1aXJlKCcuL3NyYy9saWJyYXJ5LmNqcycpO2lmKHNhbHV0ZSgnQWRhJykhPT0naGkgQWRhJylwcm9jZXNzLmV4aXQoMSk7Y29uc29sZS5sb2coJ1NGX1BST0RVQ1RfSU5MSU5FX09LJyk7XFxcIlwiLFwic3RhdHVzXCI6XCJwYXNzXCIsXCJvdXRwdXRfc3VtbWFyeVwiOlwiQWN0dWFsIGlzb2xhdGVkIE5vZGUgZXhpdDAgYW5kIGluZGVwZW5kZW50IGNsZWFudXA7IG5vcm1hbGl6YXRpb24gc2luZ2xlLWZpbGUtbm8taG9zdC1vYnNlcnZhdGlvbi92MVwifSx7XCJleGVjdXRpb25fcmVjZWlwdF9pZFwiOlwiNDQ3YzEzYWRhYTQwMzkwOGY3MzgwZGIxMDQzYTQ3OTIyZjE1Mzg2NmVhNGY0NjViYTk2ZjUyYWZiNGJkNjA1Y1wiLFwidGFza19pZFwiOlwiVEFTSy1XSS05OTAxLTAwNFwiLFwidmVyaWZpY2F0aW9uX3R5cGVcIjpcInVuaXRcIixcImNvbW1hbmRfaW5kZXhcIjowLFwiY29tbWFuZFwiOlwidGVzdCAtZiBwYWNrYWdlLmpzb24gJiYgdGVzdCAtZiB0c2NvbmZpZy5qc29uXCIsXCJzdGF0dXNcIjpcInBhc3NcIixcIm91dHB1dF9zdW1tYXJ5XCI6XCJBY3R1YWwgaXNvbGF0ZWQgTm9kZSBleGl0MCBhbmQgaW5kZXBlbmRlbnQgY2xlYW51cDsgbm9ybWFsaXphdGlvbiBmaW5pdGUtcG9zaXgtcmVhZG9ubHktcHJlZGljYXRlL3YxXCJ9LHtcImV4ZWN1dGlvbl9yZWNlaXB0X2lkXCI6XCJiYzQ4MThlYzIzZTJlY2NhMzEzMzQyZDViYzMwMThhZjc0YTRmYjUwMjI2YWE4MDYyYWU0M2ZjMzA3ZmY3MTdiXCIsXCJ0YXNrX2lkXCI6XCJUQVNLLVdJLTk5MDEtMDA1XCIsXCJ2ZXJpZmljYXRpb25fdHlwZVwiOlwidW5pdFwiLFwiY29tbWFuZF9pbmRleFwiOjAsXCJjb21tYW5kXCI6XCJncmVwIC1jICdcXFwidHlwZVxcXCI6IFxcXCJtb2R1bGVcXFwiJyBwYWNrYWdlLmpzb25cIixcInN0YXR1c1wiOlwicGFzc1wiLFwib3V0cHV0X3N1bW1hcnlcIjpcIkFjdHVhbCBpc29sYXRlZCBOb2RlIGV4aXQwIGFuZCBpbmRlcGVuZGVudCBjbGVhbnVwOyBub3JtYWxpemF0aW9uIGZpbml0ZS1wb3NpeC1yZWFkb25seS1wcmVkaWNhdGUvdjFcIn0se1wiZXhlY3V0aW9uX3JlY2VpcHRfaWRcIjpcIjllMDZiYmMwNjY0M2UyNTAzYmQ2ZDhjMjlkMmFmZjkzMWE4NTY0NzEyMGVhMWZjYTE4NTAxZmIxMjlhNWE5M2NcIixcInRhc2tfaWRcIjpcIlRBU0stV0ktOTkwMS0wMDZcIixcInZlcmlmaWNhdGlvbl90eXBlXCI6XCJ1bml0XCIsXCJjb21tYW5kX2luZGV4XCI6MCxcImNvbW1hbmRcIjpcIiEgZ3JlcCAtcUUgXFxcIl5pbXBvcnQgfF5pbXBvcnRcXFxce3xyZXF1aXJlXFxcXChcXFwiIHNyYy92YWx1ZS50c1wiLFwic3RhdHVzXCI6XCJwYXNzXCIsXCJvdXRwdXRfc3VtbWFyeVwiOlwiQWN0dWFsIGlzb2xhdGVkIE5vZGUgZXhpdDAgYW5kIGluZGVwZW5kZW50IGNsZWFudXA7IG5vcm1hbGl6YXRpb24gZmluaXRlLXBvc2l4LXJlYWRvbmx5LXByZWRpY2F0ZS92MVwifSx7XCJleGVjdXRpb25fcmVjZWlwdF9pZFwiOlwiMmFlNzc5NWQzZjM2ZjNjNTdkZGZhNDg4ZjAwMThlYzQ2ODUyMjk2NTQ0YmU5MWVkZjlmMTk5MjM5NGFmZmMxN1wiLFwidGFza19pZFwiOlwiVEFTSy1XSS05OTAxLTAwN1wiLFwidmVyaWZpY2F0aW9uX3R5cGVcIjpcImludGVncmF0aW9uXCIsXCJjb21tYW5kX2luZGV4XCI6MCxcImNvbW1hbmRcIjpcIm5vZGUgLS10ZXN0IHRlc3RzL3ZhbHVlLnRlc3QudHNcIixcInN0YXR1c1wiOlwicGFzc1wiLFwib3V0cHV0X3N1bW1hcnlcIjpcIkFjdHVhbCBpc29sYXRlZCBOb2RlIGV4aXQwIGFuZCBpbmRlcGVuZGVudCBjbGVhbnVwOyBub3JtYWxpemF0aW9uIHNpbmdsZS1maWxlLW5vLWhvc3Qtb2JzZXJ2YXRpb24vdjFcIn0se1wiZXhlY3V0aW9uX3JlY2VpcHRfaWRcIjpcImY0ZTUxNjQ3MzEzN2EzNzQ3MDlmZjZiZjc2NDM4ZmQ2ZjIxOWFlOThlZTc3YmI0YTM1OWZkZTYxMTlkMTQwNDNcIixcInRhc2tfaWRcIjpcIlRBU0stV0ktOTkwMS0wMDhcIixcInZlcmlmaWNhdGlvbl90eXBlXCI6XCJ1bml0XCIsXCJjb21tYW5kX2luZGV4XCI6MCxcImNvbW1hbmRcIjpcIm5vZGUgLS10ZXN0IHRlc3RzL2VzbS50ZXN0Lm1qc1wiLFwic3RhdHVzXCI6XCJwYXNzXCIsXCJvdXRwdXRfc3VtbWFyeVwiOlwiQWN0dWFsIGlzb2xhdGVkIE5vZGUgZXhpdDAgYW5kIGluZGVwZW5kZW50IGNsZWFudXA7IG5vcm1hbGl6YXRpb24gc2luZ2xlLWZpbGUtbm8taG9zdC1vYnNlcnZhdGlvbi92MVwifSx7XCJleGVjdXRpb25fcmVjZWlwdF9pZFwiOlwiNDAzZjllZGMwMWYzNDgzMjZmZDUwMmQ1MGM2YTY4N2YzNTA5YzEzN2EyYTc1ZDZkZTcxYTU3M2ZmNGM4N2YxM1wiLFwidGFza19pZFwiOlwiVEFTSy1XSS05OTAxLTAwOVwiLFwidmVyaWZpY2F0aW9uX3R5cGVcIjpcImUyZVwiLFwiY29tbWFuZF9pbmRleFwiOjAsXCJjb21tYW5kXCI6XCJub2RlIC1lIFxcXCJpbXBvcnQoJy4vc3JjL3ZhbHVlLnRzJykudGhlbihtPT57aWYobS5ncmVldCgnQWRhJykhPT0nSGVsbG8sIEFkYSEnfHxtLmdyZWV0KCcnKSE9PSdIZWxsbywgd29ybGQhJylwcm9jZXNzLmV4aXQoMSk7Y29uc29sZS5sb2coJ1RTX0lOTElORV9PSycpO30pLmNhdGNoKCgpPT5wcm9jZXNzLmV4aXQoMSkpXFxcIlwiLFwic3RhdHVzXCI6XCJwYXNzXCIsXCJvdXRwdXRfc3VtbWFyeVwiOlwiQWN0dWFsIGlzb2xhdGVkIE5vZGUgZXhpdDAgYW5kIGluZGVwZW5kZW50IGNsZWFudXA7IG5vcm1hbGl6YXRpb24gc2luZ2xlLWZpbGUtbm8taG9zdC1vYnNlcnZhdGlvbi92MVwifV0sXCJhY2NlcHRhbmNlX2NyaXRlcmlhXCI6W3tcInJlcV9pZFwiOlwiUkVRLURFTU8tMDAxXCIsXCJuYW1lXCI6XCJPd25lZCBsaWJyYXJ5IGNvbnN1bWVyIHJldHVybnMgaGkgQWRhXCIsXCJzdGF0dXNcIjpcInBhc3NcIixcImV2aWRlbmNlXCI6XCJFVi1OQVRJVkUtMDAyXCJ9XSxcImUyZV90ZXN0c1wiOlt7XCJuYW1lXCI6XCJBY3R1YWwgaXNvbGF0ZWQgbGlicmFyeSBwdWJsaWMgY29uc3VtZXJcIixcInN0YXR1c1wiOlwicGFzc1wiLFwiZXZpZGVuY2VcIjpcIkVWLU5BVElWRS0wMDJcIn1dLFwic2lkZV9lZmZlY3RzXCI6XCJSZWFkb25seSBpbnB1dHMgYW5kIGluZGVwZW5kZW50IG5hdGl2ZSBjbGVhbnVwIHZlcmlmaWVkXCIsXCJzdW1tYXJ5XCI6XCJQcm9kdWNlci9jb21tb24tY29uc3VtZXIgaW50ZWdyYXRpb24gZml4dHVyZSBvbmx5OyBzZWVkZWQgdXBzdHJlYW0gYmFzZWxpbmUgYW5kIGZhdWx0LWluamVjdGlvbiBUYXNrcyBhcmUgbm90IGEgY29tcGxldGVkIGJ1c2luZXNzIHdvcmtmbG93XCIsXCJzZW1hbnRpY19jbG9zdXJlXCI6e1wic2NoZW1hX3ZlcnNpb25cIjpcIjEuMFwiLFwid29ya19pdGVtX2lkXCI6XCJXSS05OTAxXCIsXCJvdXRjb21lc1wiOlt7XCJpZFwiOlwiT1VULURFTU8tMDAxXCIsXCJyZXF1aXJlbWVudF9yZWZzXCI6W1wiUkVRLURFTU8tMDAxXCJdLFwicmVxdWlyZWRfZXZpZGVuY2VfcmVmc1wiOltcIkVWLU5BVElWRS0wMDJcIl19XSxcInJlcXVpcmVtZW50c1wiOlt7XCJpZFwiOlwiUkVRLURFTU8tMDAxXCIsXCJ0eXBlXCI6XCJNVVNUXCIsXCJvdXRjb21lX3JlZnNcIjpbXCJPVVQtREVNTy0wMDFcIl0sXCJkZXNpZ25fcmVmc1wiOltcIkRELURFTU8tMDAxXCJdLFwidGFza19yZWZzXCI6W1wiVEFTSy1XSS05OTAxLTAwMlwiXSxcInJlcXVpcmVkX2V2aWRlbmNlX3JlZnNcIjpbXCJFVi1OQVRJVkUtMDAyXCJdfV0sXCJkZXNpZ25fZGVjaXNpb25zXCI6W3tcImlkXCI6XCJERC1ERU1PLTAwMVwiLFwicmVxdWlyZW1lbnRfcmVmc1wiOltcIlJFUS1ERU1PLTAwMVwiXSxcInRhc2tfcmVmc1wiOltcIlRBU0stV0ktOTkwMS0wMDJcIl19XSxcInRhc2tzXCI6W3tcImlkXCI6XCJUQVNLLVdJLTk5MDEtMDAyXCIsXCJyZXF1aXJlbWVudF9yZWZzXCI6W1wiUkVRLURFTU8tMDAxXCJdLFwiZGVzaWduX3JlZnNcIjpbXCJERC1ERU1PLTAwMVwiXSxcImV2aWRlbmNlX3JlZnNcIjpbXCJFVi1OQVRJVkUtMDAyXCJdfV0sXCJldmlkZW5jZVwiOlt7XCJpZFwiOlwiRVYtTkFUSVZFLTAwMlwiLFwic3RhdHVzXCI6XCJwYXNzZWRcIixcImxldmVsXCI6XCJMNVwiLFwiZXZpZGVuY2VfdHlwZVwiOlwiYmVoYXZpb3JhbF9lMmVcIixcInN1cHBvcnRzXCI6W1wiT1VULURFTU8tMDAxXCIsXCJSRVEtREVNTy0wMDFcIixcIkRELURFTU8tMDAxXCIsXCJUQVNLLVdJLTk5MDEtMDAyXCJdfV0sXCJwcm9qZWN0X2ludGVncmF0aW9uXCI6e1wic3RhdHVzXCI6XCJub3RfYXBwbGljYWJsZVwifX19IiwidGVtcGxhdGUiOiJ2ZXJpZmljYXRpb25fcmVwb3J0In19"
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1b44e65d8001HUCnqNbztOzcT7",
+      "sessionID": "ses_e4bb19a50ffe3Zwuu8Y0KgY17b",
+      "role": "assistant",
+      "time": {
+        "created": 1794026399192,
+        "completed": 1794026408503
+      },
+      "parentID": "msg_1b44e65bf001HKqXr64799pJsX",
+      "modelID": "finite-model",
+      "providerID": "sf-fixture",
+      "mode": "sf-verifier",
+      "agent": "sf-verifier",
+      "path": {
+        "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\e0a7c93c26db443eb1e2100e75b8091b\\project",
+        "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\e0a7c93c26db443eb1e2100e75b8091b\\project"
+      },
+      "cost": 0,
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "finish": "tool-calls"
+    },
+    "parts": [
+      {
+        "id": "prt_1b44e6819001xx6u3lBwLhBw0A",
+        "sessionID": "ses_e4bb19a50ffe3Zwuu8Y0KgY17b",
+        "messageID": "msg_1b44e65d8001HUCnqNbztOzcT7",
+        "type": "step-start",
+        "snapshot": "ccf9966e7cb66efaa1043062823cd40dfad5c82a"
+      },
+      {
+        "id": "prt_1b44e681b001kCjG7quNkv2V6z",
+        "sessionID": "ses_e4bb19a50ffe3Zwuu8Y0KgY17b",
+        "messageID": "msg_1b44e65d8001HUCnqNbztOzcT7",
+        "type": "tool",
+        "callID": "call_3157c0a7fbd1447c9ab597f0526d42a5",
+        "tool": "sf_artifact_write",
+        "state": {
+          "status": "completed",
+          "input": {
+            "work_item_id": "WI-9901",
+            "file_type": "verification_report",
+            "content": "{\"conclusion\":\"pass\",\"test_matrix\":{\"L1_unit\":\"pass\",\"L2_integration\":\"pass\",\"L3_pbt\":\"not_applicable\",\"L4_e2e\":\"pass\",\"L5_smoke\":\"pass\",\"L6_regression\":\"not_applicable\",\"L7_performance\":\"not_applicable\",\"L8_security\":\"not_applicable\",\"L9_compatibility\":\"not_applicable\",\"L10_uat\":\"not_applicable\"},\"verification_commands\":[{\"execution_receipt_id\":\"c4a73caf98aac5f5de413831f68a88c5ef08b95d2505587e32ecc4b2e009117e\",\"task_id\":\"TASK-WI-9901-001\",\"verification_type\":\"unit\",\"command_index\":0,\"command\":\"node --test tests/positive.test.cjs\",\"status\":\"pass\",\"output_summary\":\"Actual isolated Node exit0 and independent cleanup; normalization single-file-no-host-observation/v1\"},{\"execution_receipt_id\":\"12a87b298e60c4e92e2539f501d4196819b4140a3a11de591c476e15f18e3dee\",\"task_id\":\"TASK-WI-9901-002\",\"verification_type\":\"e2e\",\"command_index\":0,\"command\":\"node -e \\\"const {salute}=require('./src/library.cjs');if(salute('Ada')!=='hi Ada')process.exit(1);console.log('SF_PRODUCT_INLINE_OK');\\\"\",\"status\":\"pass\",\"output_summary\":\"Actual isolated Node exit0 and independent cleanup; normalization single-file-no-host-observation/v1\"},{\"execution_receipt_id\":\"447c13adaa403908f7380db1043a47922f153866ea4f465ba96f52afb4bd605c\",\"task_id\":\"TASK-WI-9901-004\",\"verification_type\":\"unit\",\"command_index\":0,\"command\":\"test -f package.json && test -f tsconfig.json\",\"status\":\"pass\",\"output_summary\":\"Actual isolated Node exit0 and independent cleanup; normalization finite-posix-readonly-predicate/v1\"},{\"execution_receipt_id\":\"bc4818ec23e2ecca313342d5bc3018af74a4fb50226aa8062ae43fc307ff717b\",\"task_id\":\"TASK-WI-9901-005\",\"verification_type\":\"unit\",\"command_index\":0,\"command\":\"grep -c '\\\"type\\\": \\\"module\\\"' package.json\",\"status\":\"pass\",\"output_summary\":\"Actual isolated Node exit0 and independent cleanup; normalization finite-posix-readonly-predicate/v1\"},{\"execution_receipt_id\":\"9e06bbc06643e2503bd6d8c29d2aff931a85647120ea1fca18501fb129a5a93c\",\"task_id\":\"TASK-WI-9901-006\",\"verification_type\":\"unit\",\"command_index\":0,\"command\":\"! grep -qE \\\"^import |^import\\\\{|require\\\\(\\\" src/value.ts\",\"status\":\"pass\",\"output_summary\":\"Actual isolated Node exit0 and independent cleanup; normalization finite-posix-readonly-predicate/v1\"},{\"execution_receipt_id\":\"2ae7795d3f36f3c57ddfa488f0018ec46852296544be91edf9f1992394affc17\",\"task_id\":\"TASK-WI-9901-007\",\"verification_type\":\"integration\",\"command_index\":0,\"command\":\"node --test tests/value.test.ts\",\"status\":\"pass\",\"output_summary\":\"Actual isolated Node exit0 and independent cleanup; normalization single-file-no-host-observation/v1\"},{\"execution_receipt_id\":\"f4e516473137a374709ff6bf76438fd6f219ae98ee77bb4a359fde6119d14043\",\"task_id\":\"TASK-WI-9901-008\",\"verification_type\":\"unit\",\"command_index\":0,\"command\":\"node --test tests/esm.test.mjs\",\"status\":\"pass\",\"output_summary\":\"Actual isolated Node exit0 and independent cleanup; normalization single-file-no-host-observation/v1\"},{\"execution_receipt_id\":\"403f9edc01f348326fd502d50c6a687f3509c137a2a75d6de71a573ff4c87f13\",\"task_id\":\"TASK-WI-9901-009\",\"verification_type\":\"e2e\",\"command_index\":0,\"command\":\"node -e \\\"import('./src/value.ts').then(m=>{if(m.greet('Ada')!=='Hello, Ada!'||m.greet('')!=='Hello, world!')process.exit(1);console.log('TS_INLINE_OK');}).catch(()=>process.exit(1))\\\"\",\"status\":\"pass\",\"output_summary\":\"Actual isolated Node exit0 and independent cleanup; normalization single-file-no-host-observation/v1\"}],\"acceptance_criteria\":[{\"req_id\":\"REQ-DEMO-001\",\"name\":\"Owned library consumer returns hi Ada\",\"status\":\"pass\",\"evidence\":\"EV-NATIVE-002\"}],\"e2e_tests\":[{\"name\":\"Actual isolated library public consumer\",\"status\":\"pass\",\"evidence\":\"EV-NATIVE-002\"}],\"side_effects\":\"Readonly inputs and independent native cleanup verified\",\"summary\":\"Producer/common-consumer integration fixture only; seeded upstream baseline and fault-injection Tasks are not a completed business workflow\",\"semantic_closure\":{\"schema_version\":\"1.0\",\"work_item_id\":\"WI-9901\",\"outcomes\":[{\"id\":\"OUT-DEMO-001\",\"requirement_refs\":[\"REQ-DEMO-001\"],\"required_evidence_refs\":[\"EV-NATIVE-002\"]}],\"requirements\":[{\"id\":\"REQ-DEMO-001\",\"type\":\"MUST\",\"outcome_refs\":[\"OUT-DEMO-001\"],\"design_refs\":[\"DD-DEMO-001\"],\"task_refs\":[\"TASK-WI-9901-002\"],\"required_evidence_refs\":[\"EV-NATIVE-002\"]}],\"design_decisions\":[{\"id\":\"DD-DEMO-001\",\"requirement_refs\":[\"REQ-DEMO-001\"],\"task_refs\":[\"TASK-WI-9901-002\"]}],\"tasks\":[{\"id\":\"TASK-WI-9901-002\",\"requirement_refs\":[\"REQ-DEMO-001\"],\"design_refs\":[\"DD-DEMO-001\"],\"evidence_refs\":[\"EV-NATIVE-002\"]}],\"evidence\":[{\"id\":\"EV-NATIVE-002\",\"status\":\"passed\",\"level\":\"L5\",\"evidence_type\":\"behavioral_e2e\",\"supports\":[\"OUT-DEMO-001\",\"REQ-DEMO-001\",\"DD-DEMO-001\",\"TASK-WI-9901-002\"]}],\"project_integration\":{\"status\":\"not_applicable\"}}}",
+            "template": "verification_report"
+          },
+          "output": "{\n  \"success\": true,\n  \"path\": \".specforge/work-items/WI-9901/verification_report.md\",\n  \"size\": 8510,\n  \"file_type\": \"verification_report\",\n  \"controlled_artifact\": true,\n  \"normalized\": false\n}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1794026399776,
+            "end": 1794026407516
+          }
+        }
+      },
+      {
+        "id": "prt_1b44e8883001xYL9kzruuUU6mw",
+        "sessionID": "ses_e4bb19a50ffe3Zwuu8Y0KgY17b",
+        "messageID": "msg_1b44e65d8001HUCnqNbztOzcT7",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "snapshot": "1d1ae52d07525ca1eca8985d3ec6d23c958b74f0",
+        "cost": 0,
+        "tokens": {
+          "total": 120,
+          "input": 100,
+          "output": 20,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      },
+      {
+        "id": "prt_1b44e8a32001y6o9wxxPR1G9sk",
+        "sessionID": "ses_e4bb19a50ffe3Zwuu8Y0KgY17b",
+        "messageID": "msg_1b44e65d8001HUCnqNbztOzcT7",
+        "type": "patch",
+        "hash": "ccf9966e7cb66efaa1043062823cd40dfad5c82a",
+        "files": [
+          "D:/code/SpecForge/.tmp/verification-public-kernel/e0a7c93c26db443eb1e2100e75b8091b/project/.specforge/work-items/WI-9901/verification_report.md"
+        ]
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1b44e8a3d0018FW4q91QuP7x8p",
+      "sessionID": "ses_e4bb19a50ffe3Zwuu8Y0KgY17b",
+      "role": "assistant",
+      "time": {
+        "created": 1794026408509,
+        "completed": 1794026410092
+      },
+      "parentID": "msg_1b44e65bf001HKqXr64799pJsX",
+      "modelID": "finite-model",
+      "providerID": "sf-fixture",
+      "mode": "sf-verifier",
+      "agent": "sf-verifier",
+      "path": {
+        "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\e0a7c93c26db443eb1e2100e75b8091b\\project",
+        "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\e0a7c93c26db443eb1e2100e75b8091b\\project"
+      },
+      "cost": 0,
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "finish": "stop"
+    },
+    "parts": [
+      {
+        "id": "prt_1b44e8bee001OdJlNGCtpCNcs9",
+        "sessionID": "ses_e4bb19a50ffe3Zwuu8Y0KgY17b",
+        "messageID": "msg_1b44e8a3d0018FW4q91QuP7x8p",
+        "type": "step-start",
+        "snapshot": "1d1ae52d07525ca1eca8985d3ec6d23c958b74f0"
+      },
+      {
+        "id": "prt_1b44e8bf1001bj51B6KUJR11m5",
+        "sessionID": "ses_e4bb19a50ffe3Zwuu8Y0KgY17b",
+        "messageID": "msg_1b44e8a3d0018FW4q91QuP7x8p",
+        "type": "text",
+        "text": "SF_FIXTURE_TOOL_COMPLETE",
+        "time": {
+          "start": 1794026408946,
+          "end": 1794026408949
+        }
+      },
+      {
+        "id": "prt_1b44e8ef2001h4FHTEqRb7Mhcc",
+        "sessionID": "ses_e4bb19a50ffe3Zwuu8Y0KgY17b",
+        "messageID": "msg_1b44e8a3d0018FW4q91QuP7x8p",
+        "type": "step-finish",
+        "reason": "stop",
+        "snapshot": "1d1ae52d07525ca1eca8985d3ec6d23c958b74f0",
+        "cost": 0,
+        "tokens": {
+          "total": 120,
+          "input": 100,
+          "output": 20,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    ]
+  }
+]

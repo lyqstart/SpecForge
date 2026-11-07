@@ -1,0 +1,366 @@
+{
+  "schema_version": "1.0",
+  "validations": {
+    "10de449f98d38c6a990a72d67b1277174694fd3830496e2e280dc30152688b95": {
+      "key": "10de449f98d38c6a990a72d67b1277174694fd3830496e2e280dc30152688b95",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-requirements",
+        "expectedStage": "candidate_requirements",
+        "createdAfter": "2026-10-25T05:23:36.228Z"
+      },
+      "total": 1,
+      "valid": 1,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-10-25T05:32:00.513Z"
+    },
+    "3d2dabd079e475202bb4cbe767469d32f346fab0782065b28aa51200f06850e1": {
+      "key": "3d2dabd079e475202bb4cbe767469d32f346fab0782065b28aa51200f06850e1",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-design",
+        "expectedStage": "candidate_design",
+        "createdAfter": "2026-10-25T05:31:28.068Z"
+      },
+      "total": 2,
+      "valid": 2,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-10-25T05:50:48.360Z"
+    },
+    "2b07bec9df90c4802ecc4ebbad3dd4d1934243a0db101ec86358bdaf00ed5b36": {
+      "key": "2b07bec9df90c4802ecc4ebbad3dd4d1934243a0db101ec86358bdaf00ed5b36",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-task-planner",
+        "expectedStage": "candidate_tasks",
+        "createdAfter": "2026-10-25T05:50:13.614Z"
+      },
+      "total": 3,
+      "valid": 3,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-10-25T06:05:16.154Z"
+    },
+    "df8719447150a521ac484ce894ccdfd7685fb19513b7f8b695555eb4c64e5d44": {
+      "key": "df8719447150a521ac484ce894ccdfd7685fb19513b7f8b695555eb4c64e5d44",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-design",
+        "expectedStage": "candidate_design",
+        "createdAfter": "2026-11-03T00:00:00.000Z"
+      },
+      "total": 5,
+      "valid": 5,
+      "invalid": 0,
+      "matching": 2,
+      "validated_at": "2026-11-03T12:44:50.392Z"
+    },
+    "33313ef02cd4348e103a25b0f6dbb439318f6ad6adbaeb6210f5f840ceec4e31": {
+      "key": "33313ef02cd4348e103a25b0f6dbb439318f6ad6adbaeb6210f5f840ceec4e31",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-task-planner",
+        "expectedStage": "candidate_tasks",
+        "createdAfter": "2026-11-03T12:42:45.455Z"
+      },
+      "total": 6,
+      "valid": 6,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-11-03T13:03:04.997Z"
+    },
+    "8e7555eb1d81a93602132b4caed05923c049535d38a0947a2cb201ece9e37db3": {
+      "key": "8e7555eb1d81a93602132b4caed05923c049535d38a0947a2cb201ece9e37db3",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-design",
+        "expectedStage": "candidate_design",
+        "createdAfter": "2026-11-03T13:07:33.076Z"
+      },
+      "total": 8,
+      "valid": 8,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-11-03T13:13:36.312Z"
+    },
+    "3efbbfeb164f904febfee2d9a3aead500af58fe31995d2ccff32d1fe466a9736": {
+      "key": "3efbbfeb164f904febfee2d9a3aead500af58fe31995d2ccff32d1fe466a9736",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-task-planner",
+        "expectedStage": "candidate_tasks",
+        "createdAfter": "2026-11-03T13:07:33.076Z"
+      },
+      "total": 8,
+      "valid": 8,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-11-03T13:13:36.850Z"
+    },
+    "7e2fb4a43b185a102fd051005eefaca173f84a6d4af10a393456881a029e1a50": {
+      "key": "7e2fb4a43b185a102fd051005eefaca173f84a6d4af10a393456881a029e1a50",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-design",
+        "expectedStage": "candidate_design",
+        "createdAfter": "2026-11-03T13:18:26.129Z"
+      },
+      "total": 9,
+      "valid": 9,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-11-03T13:24:46.349Z"
+    },
+    "f69c10e3185528e0986fc2ba1048268c03a7834f89bf60e688065dc532838c11": {
+      "key": "f69c10e3185528e0986fc2ba1048268c03a7834f89bf60e688065dc532838c11",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-design",
+        "expectedStage": "candidate_design",
+        "createdAfter": "2026-11-03T13:52:05.488Z"
+      },
+      "total": 10,
+      "valid": 10,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-11-03T13:56:26.959Z"
+    },
+    "358bea9b3240b8416578066b554bd6200e8e745d90ac887a264233738acc8270": {
+      "key": "358bea9b3240b8416578066b554bd6200e8e745d90ac887a264233738acc8270",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-task-planner",
+        "expectedStage": "candidate_tasks",
+        "createdAfter": "2026-11-03T13:57:13.363Z"
+      },
+      "total": 11,
+      "valid": 11,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-11-03T13:58:49.999Z"
+    },
+    "7ac1c118660d08b67e0eb18dc84d2dbd1ae0720230c2a96644da86e108a211c8": {
+      "key": "7ac1c118660d08b67e0eb18dc84d2dbd1ae0720230c2a96644da86e108a211c8",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-executor",
+        "expectedStage": "implementation",
+        "createdAfter": "2026-11-03T15:40:05.884Z"
+      },
+      "total": 15,
+      "valid": 15,
+      "invalid": 0,
+      "matching": 4,
+      "validated_at": "2026-11-03T15:43:39.529Z"
+    },
+    "6af623c51bbf5fefeed4b81dd7b548a083647b027a608c12b477cabe949b5b7b": {
+      "key": "6af623c51bbf5fefeed4b81dd7b548a083647b027a608c12b477cabe949b5b7b",
+      "status": "failed",
+      "filters": {
+        "expectedAgent": "sf-verifier",
+        "expectedStage": "verification",
+        "createdAfter": "2026-11-07T05:40:00.000Z"
+      },
+      "total": 18,
+      "valid": 18,
+      "invalid": 0,
+      "matching": 0,
+      "error": "HANDOFF_EXPECTATION_NOT_MET",
+      "validated_at": "2026-11-07T05:40:13.691Z"
+    },
+    "c23048a28718c2f06e83f268c9eba8def6700dc6b62145326fc27a2aa7f9e7ed": {
+      "key": "c23048a28718c2f06e83f268c9eba8def6700dc6b62145326fc27a2aa7f9e7ed",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-verifier",
+        "expectedStage": "verification",
+        "createdAfter": "2026-11-07T05:39:00.000Z"
+      },
+      "total": 18,
+      "valid": 18,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-11-07T05:40:23.318Z"
+    },
+    "1dc933d403f65b9708e54a4013f9839024bb26eb1b148421e464e464525c5299": {
+      "key": "1dc933d403f65b9708e54a4013f9839024bb26eb1b148421e464e464525c5299",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-verifier",
+        "expectedStage": "verification-implementation-batch-t001-unit",
+        "createdAfter": "2026-11-07T05:40:00Z"
+      },
+      "total": 19,
+      "valid": 19,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-11-07T05:51:07.146Z"
+    },
+    "28ccc0e445530a57ecdcd23b7e067dc618279c6839f15ebdfd7a7ed7c7b2d099": {
+      "key": "28ccc0e445530a57ecdcd23b7e067dc618279c6839f15ebdfd7a7ed7c7b2d099",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-verifier",
+        "expectedStage": "verification-implementation-batch-t002-unit",
+        "createdAfter": "2026-11-07T05:50:45Z"
+      },
+      "total": 20,
+      "valid": 20,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-11-07T05:53:49.260Z"
+    },
+    "c42a6c320df1018b95db7c7f868a5204327fedcb92856955e0c7e4f794065f67": {
+      "key": "c42a6c320df1018b95db7c7f868a5204327fedcb92856955e0c7e4f794065f67",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-verifier",
+        "expectedStage": "verification-implementation-batch-t005",
+        "createdAfter": "2026-11-07T05:58:00Z"
+      },
+      "total": 23,
+      "valid": 23,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-11-07T06:05:45.406Z"
+    },
+    "786f446760f9f6bafa7beee40141a8248946663e6b59208f2f2bb468665412a4": {
+      "key": "786f446760f9f6bafa7beee40141a8248946663e6b59208f2f2bb468665412a4",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-verifier",
+        "expectedStage": "verification-formal-batch-t005",
+        "createdAfter": "2026-11-07T06:10:00Z"
+      },
+      "total": 28,
+      "valid": 28,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-11-07T06:25:06.882Z"
+    },
+    "21414e2b2762176c8de5c167fd6860310774c6205c8a4383fa8a35c6ab6696c2": {
+      "key": "21414e2b2762176c8de5c167fd6860310774c6205c8a4383fa8a35c6ab6696c2",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-verifier",
+        "expectedStage": "semantic_closure_repair",
+        "createdAfter": "2026-11-07T06:30:00.000Z"
+      },
+      "total": 29,
+      "valid": 29,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-11-07T07:23:29.548Z"
+    },
+    "e328fd9d71ca7624848d0f0cd53dad48f8a091901af0f2ed90b2dcd8046993e4": {
+      "key": "e328fd9d71ca7624848d0f0cd53dad48f8a091901af0f2ed90b2dcd8046993e4",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-verifier",
+        "expectedStage": "verification-task-001-formal",
+        "createdAfter": "2026-11-07T08:54:01.325Z"
+      },
+      "total": 31,
+      "valid": 31,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-11-07T08:59:37.391Z"
+    },
+    "16fad58e14e0dffea653f5f36763a848457825b9455faec1022d2830933198a4": {
+      "key": "16fad58e14e0dffea653f5f36763a848457825b9455faec1022d2830933198a4",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-verifier",
+        "expectedStage": "verification-task-002-formal",
+        "createdAfter": "2026-11-07T08:59:15.915Z"
+      },
+      "total": 32,
+      "valid": 32,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-11-07T09:04:24.598Z"
+    },
+    "73807804ae30e14b228b491eff481c8137ad718a01902e399ca67d692673bc43": {
+      "key": "73807804ae30e14b228b491eff481c8137ad718a01902e399ca67d692673bc43",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-verifier",
+        "expectedStage": "verification-task-003-formal",
+        "createdAfter": "2026-11-07T09:04:08.213Z"
+      },
+      "total": 33,
+      "valid": 33,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-11-07T09:08:14.118Z"
+    },
+    "33e8170613f275708b4ae1a7872317838f2a23eea907bfa50072d1b8e026ba79": {
+      "key": "33e8170613f275708b4ae1a7872317838f2a23eea907bfa50072d1b8e026ba79",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-verifier",
+        "expectedStage": "verification-task-004-formal",
+        "createdAfter": "2026-11-07T09:07:57.867Z"
+      },
+      "total": 34,
+      "valid": 34,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-11-07T09:12:41.753Z"
+    },
+    "9aee01b80a1693ea74c4f024f388dd3c59beeb455b02e3c2535dd04ed77364d4": {
+      "key": "9aee01b80a1693ea74c4f024f388dd3c59beeb455b02e3c2535dd04ed77364d4",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-verifier",
+        "expectedStage": "verification-task-005-formal",
+        "createdAfter": "2026-11-07T09:12:17.163Z"
+      },
+      "total": 35,
+      "valid": 35,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-11-07T09:16:17.407Z"
+    },
+    "a8aa6c0b953704412b08e1f9959d61ca29fea8ac9e97551275cdabbdd5a7e56f": {
+      "key": "a8aa6c0b953704412b08e1f9959d61ca29fea8ac9e97551275cdabbdd5a7e56f",
+      "status": "passed",
+      "filters": {},
+      "total": 36,
+      "valid": 36,
+      "invalid": 0,
+      "matching": 36,
+      "validated_at": "2026-11-07T09:19:26.640Z"
+    },
+    "e0f798eb3fce1a1f6dba40f945bc76ccda641d5d9fd379f6966c0a4a1ad784f7": {
+      "key": "e0f798eb3fce1a1f6dba40f945bc76ccda641d5d9fd379f6966c0a4a1ad784f7",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-verifier",
+        "expectedStage": "verification-aggregate-formal-v1.0.23-resume",
+        "createdAfter": "2026-11-07T09:15:51.302Z"
+      },
+      "total": 38,
+      "valid": 38,
+      "invalid": 0,
+      "matching": 2,
+      "validated_at": "2026-11-07T09:37:46.826Z"
+    },
+    "ec90d0c27aa166ccd0faa37d3e522343c342e07759b9b38331a23a4352b11eeb": {
+      "key": "ec90d0c27aa166ccd0faa37d3e522343c342e07759b9b38331a23a4352b11eeb",
+      "status": "passed",
+      "filters": {
+        "expectedAgent": "sf-verifier",
+        "expectedStage": "verification-contract-review",
+        "createdAfter": "2026-11-07T09:41:31.790Z"
+      },
+      "total": 39,
+      "valid": 39,
+      "invalid": 0,
+      "matching": 1,
+      "validated_at": "2026-11-07T09:52:48.275Z"
+    }
+  }
+}

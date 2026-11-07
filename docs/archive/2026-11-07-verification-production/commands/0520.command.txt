@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/build-sps-final-review.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Close exact20 current SPS19 criteria from final genuine chain,physical117,interactive andcold replay evidence",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=current bounded20clause acceptance review",
+  "started_utc": "2026-11-07T10:52:20.021Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\build-sps-final-review.cjs",
+      "sha256": "3abc50b438ac33e0e7774a2e4b8fc25b44a80175c01354b7bb16b2597e82dac6",
+      "size": 5895,
+      "extension": ".cjs"
+    }
+  ]
+}

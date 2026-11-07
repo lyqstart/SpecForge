@@ -1,0 +1,129 @@
+{
+  "utc": "2026-11-07T00:46:49.819Z",
+  "results": [
+    {
+      "file": "packages/daemon-core/src/verification/windows/LpacStartupPoc.cs",
+      "before": "91d52ef9d3c97d497fc600b8ef762eb8d008b9ccf4d527a849e5953fc61159d8",
+      "after": "f7f5914f3751d28b74b12c0dc4be8407d7215e0705e970d1a3e5250546d6deb4",
+      "changes": [
+        {
+          "from": "// Fixed P01 probe; no caller-supplied script/argv/environment.",
+          "to": "// Product entry accepts only its Runtime-private validated plan; legacy modes remain synthetic.\n        LpacProductionPlan product=args.Length==3&&args[0]==\"--verification-plan\"?LpacProductionPlan.Read(args[1],args[2]):null;\n        if(product!=null)args=new[]{\"--product-single-process\",product.AttemptRoot,product.NodePath};",
+          "count": 1
+        },
+        {
+          "from": "if(args.Length!=3 || (!resourceProbe&&!acceptedModes.Contains(args[0]))",
+          "to": "if(args.Length!=3 || (product==null&&!resourceProbe&&!acceptedModes.Contains(args[0]))",
+          "count": 1
+        },
+        {
+          "from": "string scriptName=singleInline?",
+          "to": "string scriptName=product!=null?product.ScriptName:singleInline?",
+          "count": 1
+        },
+        {
+          "from": "||singleBoundaryNode||singleResource;",
+          "to": "||singleBoundaryNode||singleResource||product!=null;",
+          "count": 1
+        },
+        {
+          "from": "||resourceProbe||singleInline||singleBoundaryNode;",
+          "to": "||resourceProbe||singleInline||singleBoundaryNode||product!=null&&product.Kind==\"node-inline\";",
+          "count": 1
+        },
+        {
+          "from": "&&!singleBoundaryNode&&!singleResource;",
+          "to": "&&!singleBoundaryNode&&!singleResource&&product==null;",
+          "count": 1
+        },
+        {
+          "from": "int wallMs=resourceKind==",
+          "to": "int wallMs=product!=null?product.WallMs:resourceKind==",
+          "count": 1
+        },
+        {
+          "from": "string parent=Path.GetFullPath(Path.Combine(Environment.CurrentDirectory,\".tmp\",\"verification-lpac\"));",
+          "to": "string parent=product!=null?Path.Combine(product.OwnerRoot,\"runs\"):Path.GetFullPath(Path.Combine(Environment.CurrentDirectory,\".tmp\",\"verification-lpac\"));",
+          "count": 1
+        },
+        {
+          "from": "Directory.CreateDirectory(root);eventFile=",
+          "to": "if(product==null)Directory.CreateDirectory(root);else{if(!CreateDirectoryW(root,IntPtr.Zero))throw new Win32Exception(Marshal.GetLastWin32Error(),\"Reserve exclusive product attempt\");}eventFile=",
+          "count": 1
+        },
+        {
+          "from": "if(resourceKind==\"daemon-crash\")parentLifetime=new LpacParentLifetime(Record);",
+          "to": "if(resourceKind==\"daemon-crash\"||product!=null)parentLifetime=new LpacParentLifetime(Record,product==null?null:product.DaemonPath,product==null?null:product.DaemonHash);",
+          "count": 1
+        },
+        {
+          "from": "NewFile(Path.Combine(input,scriptName),singleBoundaryNode?",
+          "to": "if(product!=null)product.CopyInputs(input);else NewFile(Path.Combine(input,scriptName),singleBoundaryNode?",
+          "count": 1
+        },
+        {
+          "from": "if(singleProcessNative)command=Quote(application);",
+          "to": "if(singleProcessNative)command=Quote(application);\n            if(product!=null){command=product.CommandLine();Record(\"product_plan_bound\",new{plan_id=product.PlanId,attempt_id=product.AttemptId,config_sha256=product.ConfigHash,kind=product.Kind,argv=product.Argv});}",
+          "count": 1
+        },
+        {
+          "from": "kind=singleProcessNative?",
+          "to": "kind=product!=null?\"product_\"+product.Kind:singleProcessNative?",
+          "count": 2
+        },
+        {
+          "from": "scope=singleProcess?",
+          "to": "scope=product!=null?\"D23 product native control receipt; common Runtime consumer verification required\":singleProcess?",
+          "count": 1
+        },
+        {
+          "from": "startup_result=result==0?(singleProcess?",
+          "to": "startup_result=result==0?(product!=null?\"D23_EXECUTION_OBSERVED\":singleProcess?",
+          "count": 1
+        },
+        {
+          "from": "isolation_acceptance=\"INCOMPLETE\",error=error",
+          "to": "isolation_acceptance=product!=null?\"D23_PROFILE_ENFORCED\":\"INCOMPLETE\",error=error",
+          "count": 1
+        },
+        {
+          "from": "if(singleProcessNative){if(!LpacSingleNativeBoundary.Validate",
+          "to": "if(product!=null){if(code!=0||parentLost||cancelled||processBudgetExceeded)throw new InvalidOperationException(\"PRODUCT_EXECUTION_FAILED\");Record(\"product_execution_observed\",new{plan_id=product.PlanId,application_exit_code=code,output_complete=true});}\n            else if(singleProcessNative){if(!LpacSingleNativeBoundary.Validate",
+          "count": 1
+        },
+        {
+          "from": "if((fileProbe||resourceProbe||nodeFileProbe||singleProcess)&&!parentLost)",
+          "to": "if(product!=null&&!cancelled&&File.Exists(Path.Combine(root,\"cancel.json\"))){var cancel=new JavaScriptSerializer().Deserialize<Dictionary<string,string>>(File.ReadAllText(Path.Combine(root,\"cancel.json\")));if(cancel.Count!=2||cancel[\"plan_id\"]!=product.PlanId||cancel[\"attempt_id\"]!=product.AttemptId)throw new InvalidOperationException(\"PRODUCT_CANCEL_IDENTITY\");cancelled=true;Check(TerminateJobObject(job,130),\"Terminate product owner cancel\");Record(\"owner_cancel\",new{termination_code=130,plan_id=product.PlanId});}\n                if((fileProbe||resourceProbe||nodeFileProbe||singleProcess)&&!parentLost)",
+          "count": 1
+        },
+        {
+          "from": "public static int Main(string[] args) {",
+          "to": "[DllImport(\"kernel32.dll\",CharSet=CharSet.Unicode,SetLastError=true)][return:MarshalAs(UnmanagedType.Bool)]static extern bool CreateDirectoryW(string path,IntPtr security);\n    public static int Main(string[] args) {",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "packages/daemon-core/src/verification/windows/LpacParentLifetime.cs",
+      "before": "ad272e2f06e084dc27031d0e1236a4267df59b5db685efd0cc4298c42db16225",
+      "after": "bf66eb97a15510df75cce7d3020bd5c1ea10b9f61645596614b029c6bcf8a066",
+      "changes": [
+        {
+          "from": "internal LpacParentLifetime(Action<string,object> record){",
+          "to": "internal LpacParentLifetime(Action<string,object> record,string productParent=null,string productHash=null){",
+          "count": 1
+        },
+        {
+          "from": "string expected=\"C:\\\\Users\\\\lyq\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\\\\bun\\\\bin\\\\bun.exe\";",
+          "to": "string expected=productParent??\"C:\\\\Users\\\\lyq\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\\\\bun\\\\bin\\\\bun.exe\";",
+          "count": 1
+        },
+        {
+          "from": "Hash(expected)!=\"0187f68d843f825a72ada4a7eca60db896ed753759a7f8252edcd31ac1bf1b9c\"",
+          "to": "Hash(expected)!=(productHash??\"0187f68d843f825a72ada4a7eca60db896ed753759a7f8252edcd31ac1bf1b9c\")",
+          "count": 1
+        }
+      ]
+    }
+  ]
+}

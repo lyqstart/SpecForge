@@ -1,0 +1,974 @@
+[
+  {
+    "agent": "sf-orchestrator",
+    "provider": "zhipuai-coding-plan",
+    "model": "glm-5.3",
+    "message": "msg_1b577c8e3001TN0h2Xwv1PekJ9",
+    "call_id": "call_729c68c2dd3d473fb12b39f4",
+    "tool": "sf_state_read",
+    "status": "completed",
+    "input": {
+      "work_item_id": "WI-0001"
+    },
+    "result": {
+      "success": true,
+      "rebuilt_from_events": true,
+      "work_item_id": "WI-0001",
+      "workflow_type": "feature_spec",
+      "current_state": "closed",
+      "created_at": 1792905467014,
+      "updated_at": 1794045358653
+    }
+  },
+  {
+    "agent": "sf-orchestrator",
+    "provider": "zhipuai-coding-plan",
+    "model": "glm-5.3",
+    "message": "msg_1b577fa0f0011u95Q5GyOcszBo",
+    "call_id": "call_35b3450f93b041b297640e1d",
+    "tool": "sf_git_preflight",
+    "status": "completed",
+    "input": {},
+    "result": {
+      "success": true,
+      "project_root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+      "inside_work_tree": true,
+      "current_branch": "codex/greet-library-wi-0001",
+      "head_commit": "6e917aec62788a35013f02a340c8d60edaa76ae9",
+      "default_branch": "main",
+      "on_default_branch": false,
+      "worktree_clean": true,
+      "status_entries": [],
+      "remotes": [],
+      "warnings": [],
+      "errors": []
+    }
+  },
+  {
+    "agent": "sf-orchestrator",
+    "provider": "zhipuai-coding-plan",
+    "model": "glm-5.3",
+    "message": "msg_1b5780fbb001s47LsDV5Pk3OlE",
+    "call_id": "call_312caa0e96854d7b9e23c7a1",
+    "tool": "sf_git_merge_plan",
+    "status": "completed",
+    "input": {
+      "work_item_id": "WI-0001"
+    },
+    "result": {
+      "success": true,
+      "work_item_id": "WI-0001",
+      "branch_name": "codex/greet-library-wi-0001",
+      "base_branch": "main",
+      "base_commit": "8a692e88c0823984647622294f5199c18bb0c587",
+      "current_branch": "codex/greet-library-wi-0001",
+      "authoritative_state": "closed",
+      "worktree_clean": true,
+      "ignored_unrelated_work_item_files": [],
+      "changed_files": [
+        {
+          "status": "A",
+          "path": ".specforge/.gitignore"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/config/observability.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/config/prod-environment.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/config/project-rules.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/config/project.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/project/architecture.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/project/data_model.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/project/decisions.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/project/design_index.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/project/extension_registry.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/project/glossary.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/project/modules/CORE/contracts.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/project/modules/CORE/design.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/project/modules/CORE/module.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/project/modules/CORE/requirements.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/project/modules/CORE/trace.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/project/requirements_index.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/project/spec_manifest.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/project/trace_matrix.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/.semantic_closure.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/candidate_manifest.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/candidates/project/architecture.candidate.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/candidates/project/data_model.candidate.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/candidates/project/extension_registry.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/candidates/project/modules/CORE/contracts.candidate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/candidates/project/modules/CORE/design.candidate.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/candidates/project/modules/CORE/module.candidate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/candidates/project/modules/CORE/requirements.candidate.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/candidates/tasks.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/candidates/trace_delta.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/change_classification.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/changed_files_audit.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/close_gate.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/evidence/evidence_manifest.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/filesystem_baseline.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/filesystem_diff_evidence.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/formal_version_snapshot.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/attempt-result.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/attempt-start.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gate_summary.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/candidate_manifest_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/contract_integrity_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/entry_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/path_policy_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/required_files_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/schema_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/spec_consistency_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/trace_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/workflow_selection_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/workflow_specific_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0001/input-snapshot.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/attempt-result.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/attempt-start.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gate_summary.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/candidate_manifest_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/contract_integrity_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/entry_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/path_policy_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/required_files_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/schema_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/spec_consistency_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/trace_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/workflow_selection_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/workflow_specific_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0002/input-snapshot.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/attempt-result.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/attempt-start.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gate_summary.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/candidate_manifest_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/contract_integrity_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/entry_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/path_policy_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/required_files_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/schema_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/spec_consistency_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/trace_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/workflow_selection_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/workflow_specific_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0003/input-snapshot.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/attempt-result.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/attempt-start.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gate_summary.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/candidate_manifest_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/contract_integrity_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/entry_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/path_policy_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/required_files_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/schema_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/spec_consistency_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/trace_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/workflow_selection_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/workflow_specific_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0004/input-snapshot.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/attempt-result.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/attempt-start.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gate_summary.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/candidate_manifest_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/contract_integrity_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/entry_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/path_policy_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/required_files_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/schema_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/spec_consistency_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/trace_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/workflow_selection_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/workflow_specific_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0005/input-snapshot.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0006/attempt-result.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0006/attempt-start.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0006/gate_summary.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0006/gates/post_merge_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0006/input-snapshot.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0007/attempt-result.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0007/attempt-start.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0007/gate_summary.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0007/gates/formal_version_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0007/gates/verification_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0007/input-snapshot.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0008/attempt-result.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0008/attempt-start.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0008/gate_summary.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0008/gates/formal_version_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0008/gates/verification_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0008/input-snapshot.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0009/attempt-result.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0009/attempt-start.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0009/gate_summary.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0009/gates/formal_version_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0009/gates/verification_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_attempts/attempt-0009/input-snapshot.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gate_summary.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gates/candidate_manifest_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gates/close_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gates/contract_integrity_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gates/entry_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gates/formal_version_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gates/path_policy_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gates/post_merge_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gates/required_files_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gates/schema_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gates/spec_consistency_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gates/trace_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gates/verification_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gates/workflow_selection_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/gates/workflow_specific_gate.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/git_bootstrap/f7c1fe5dfe60741054b396cc7fb906aa990d05c2b902aa644dd25c876cf649ca/commands.jsonl"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/git_bootstrap/f7c1fe5dfe60741054b396cc7fb906aa990d05c2b902aa644dd25c876cf649ca/completed.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/git_bootstrap/f7c1fe5dfe60741054b396cc7fb906aa990d05c2b902aa644dd25c876cf649ca/intent.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/git_bootstrap/plans/f7c1fe5dfe60741054b396cc7fb906aa990d05c2b902aa644dd25c876cf649ca.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/git_context.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/governance_scope.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoff_validation_state.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1792907413595_7696c9a77469_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1793709765455_184d510bc3f3_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1793711464843_76b7bd32dbf2_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1793712267542_83bdbc0b903e_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1793714169917_aa831ae1c478_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-executor_implementation_1793720470026_5b48264412b5_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-executor_implementation_1793720476585_7d92b94b7ce0_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-executor_implementation_1793720568759_772e983c6dd7_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-executor_implementation_1793720578522_52dcb3d0c0a7_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-executor_implementation_running-fix-round-task-wi-0001-004_1793720850902_be1a6f98db6c_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-requirements_candidate_requirements_1792906288040_16e75c9feacf_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-requirements_candidate_requirements_1793708450063_3cfbc48a4bc7_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-reviewer_review_1793720744141_855f85f7e6fe_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-task-planner_candidate_tasks_1792908279507_15ec6734671a_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-task-planner_candidate_tasks_1793710908531_614e22c407c2_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-task-planner_candidate_tasks_1793711555074_56255b211e83_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-task-planner_candidate_tasks_1793714308631_7a18a4bb25d7_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_semantic_closure_repair_1794036164351_57f06130d189_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_semantic_closure_repair_round2_1794036347399_0605099e7a3d_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-aggregate-formal-v1.0.23-resume_1794043903478_782f0161d350_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-aggregate-formal-v1.0.23-resume_1794044171820_dfd2cc541974_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-aggregate-formal-v1.0.23_1794043108670_dbe0b33a3008_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-contract-review_1794045144634_8a93e2656ec3_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-formal-batch-t001_1794031831523_c235c5723fde_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-formal-batch-t002_1794031966140_91275cc17549_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-formal-batch-t003_1794032214937_fe72403efc21_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-formal-batch-t004_1794032567067_9e60d88c61fe_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-formal-batch-t005_1794032679204_0c135b8b9028_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-implementation-batch-t001-unit_1794030644339_21cb1559396d_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-implementation-batch-t002-unit_1794030813206_0ecd125cc466_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-implementation-batch-t003_1794031062330_c8800e1f85be_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-implementation-batch-t004_1794031390604_e9acf0fa6fa2_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-implementation-batch-t005_1794031495409_5d78abeeb39f_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-task-001-formal_1794041955915_3627150ff8c1_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-task-002-formal_1794042248213_fad48a9e7011_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-task-003-formal_1794042477866_46904ef63f6f_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-task-004-formal_1794042737163_1071e83239c9_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-task-005-formal_1794042951302_465c1986ea8c_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification_1794029989882_6ab546c02541_0.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/hard_stop_resolution.jsonl"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/impact_analysis.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/implementation_baseline.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/intake.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/merge_report.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/semantic_closure_report.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/trigger_result.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/user_decision.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/verification_report.md"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/work_item.json"
+        },
+        {
+          "status": "A",
+          "path": ".specforge/work-items/WI-0001/write_guard_log.jsonl"
+        },
+        {
+          "status": "M",
+          "path": "README.md"
+        },
+        {
+          "status": "A",
+          "path": "package.json"
+        },
+        {
+          "status": "A",
+          "path": "src/greet.ts"
+        },
+        {
+          "status": "A",
+          "path": "tests/greet.test.ts"
+        },
+        {
+          "status": "A",
+          "path": "tsconfig.json"
+        }
+      ],
+      "blocking_issues": [],
+      "can_merge": true,
+      "repository_delivery_state": "governance_closed_pending_user_confirmed_git_merge",
+      "required_next_step": "explicit_user_confirmation_before_merge_to_default_branch"
+    }
+  },
+  {
+    "agent": "sf-orchestrator",
+    "provider": "zhipuai-coding-plan",
+    "model": "glm-5.3",
+    "message": "msg_1b5784601001GUBgE42xaSv6xJ",
+    "call_id": "call_8679159e28174301a5712f72",
+    "tool": "sf_git_merge_run",
+    "status": "completed",
+    "input": {
+      "confirmed": true,
+      "message": "Merge WI-0001 (codex/greet-library-wi-0001) into main: approved local delivery of 5 implementation files and 202 governance evidence artifacts",
+      "pull_first": false,
+      "work_item_id": "WI-0001"
+    },
+    "result": {
+      "success": true,
+      "work_item_id": "WI-0001",
+      "authoritative_state": "closed",
+      "merged_branch": "codex/greet-library-wi-0001",
+      "feature_head": "6e917aec62788a35013f02a340c8d60edaa76ae9",
+      "target_branch": "main",
+      "target_head": "28c8e3d850c81218af4598928569bf5420814372",
+      "pull_performed": false,
+      "ignored_unrelated_work_item_files": [],
+      "remote_name": null,
+      "repository_delivery_state": "git_merged_pending_post_merge_verify",
+      "stdout": "Merge made by the 'ort' strategy.\n .specforge/.gitignore                              |    9 +\n .specforge/config/observability.json               |    4 +\n .specforge/config/prod-environment.md              |    9 +\n .specforge/config/project-rules.md                 |    8 +\n .specforge/config/project.json                     |    3 +\n .specforge/project/architecture.md                 |  131 ++\n .specforge/project/data_model.md                   |   90 ++\n .specforge/project/decisions.md                    |    1 +\n .specforge/project/design_index.md                 |    1 +\n .specforge/project/extension_registry.json         |   36 +\n .specforge/project/glossary.md                     |    1 +\n .specforge/project/modules/CORE/contracts.json     |   50 +\n .specforge/project/modules/CORE/design.md          |  276 ++++\n .specforge/project/modules/CORE/module.json        |   13 +\n .specforge/project/modules/CORE/requirements.md    |  256 ++++\n .specforge/project/modules/CORE/trace.md           |   43 +\n .specforge/project/requirements_index.md           |    1 +\n .specforge/project/spec_manifest.json              |   46 +\n .specforge/project/trace_matrix.md                 |  116 ++\n .../work-items/WI-0001/.semantic_closure.json      |  519 +++++++\n .../work-items/WI-0001/candidate_manifest.json     |   79 +\n .../candidates/project/architecture.candidate.md   |  131 ++\n .../candidates/project/data_model.candidate.md     |   90 ++\n .../candidates/project/extension_registry.json     |   36 +\n .../project/modules/CORE/contracts.candidate.json  |   50 +\n .../project/modules/CORE/design.candidate.md       |  276 ++++\n .../project/modules/CORE/module.candidate.json     |   13 +\n .../project/modules/CORE/requirements.candidate.md |  256 ++++\n .specforge/work-items/WI-0001/candidates/tasks.md  |  305 ++++\n .../work-items/WI-0001/candidates/trace_delta.md   |  118 ++\n .../work-items/WI-0001/change_classification.md    |   29 +\n .../work-items/WI-0001/changed_files_audit.md      |   56 +\n .specforge/work-items/WI-0001/close_gate.md        |   57 +\n .../WI-0001/evidence/evidence_manifest.json        |  770 ++++++++++\n .../work-items/WI-0001/filesystem_baseline.json    |  128 ++\n .../WI-0001/filesystem_diff_evidence.json          |   40 +\n .../WI-0001/formal_version_snapshot.json           |   20 +\n .../gate_attempts/attempt-0001/attempt-result.json |   46 +\n .../gate_attempts/attempt-0001/attempt-start.json  |   19 +\n .../gate_attempts/attempt-0001/gate_summary.md     |   77 +\n .../gates/candidate_manifest_gate.json             |  256 ++++\n .../gates/contract_integrity_gate.json             |  353 +++++\n .../attempt-0001/gates/entry_gate.json             |   31 +\n .../attempt-0001/gates/path_policy_gate.json       |   24 +\n .../attempt-0001/gates/required_files_gate.json    |   84 ++\n .../attempt-0001/gates/schema_gate.json            |   48 +\n .../attempt-0001/gates/spec_consistency_gate.json  |  713 +++++++++\n .../attempt-0001/gates/trace_gate.json             |  371 +++++\n .../gates/workflow_selection_gate.json             |   31 +\n .../attempt-0001/gates/workflow_specific_gate.json |   31 +\n .../gate_attempts/attempt-0001/input-snapshot.json |  202 +++\n .../gate_attempts/attempt-0002/attempt-result.json |   46 +\n .../gate_attempts/attempt-0002/attempt-start.json  |   19 +\n .../gate_attempts/attempt-0002/gate_summary.md     |   72 +\n .../gates/candidate_manifest_gate.json             |  256 ++++\n .../gates/contract_integrity_gate.json             |  342 +++++\n .../attempt-0002/gates/entry_gate.json             |   31 +\n .../attempt-0002/gates/path_policy_gate.json       |   24 +\n .../attempt-0002/gates/required_files_gate.json    |   84 ++\n .../attempt-0002/gates/schema_gate.json            |   48 +\n .../attempt-0002/gates/spec_consistency_gate.json  |  738 ++++++++++\n .../attempt-0002/gates/trace_gate.json             |  371 +++++\n .../gates/workflow_selection_gate.json             |   31 +\n .../attempt-0002/gates/workflow_specific_gate.json |   80 ++\n .../gate_attempts/attempt-0002/input-snapshot.json |  202 +++\n .../gate_attempts/attempt-0003/attempt-result.json |   46 +\n .../gate_attempts/attempt-0003/attempt-start.json  |   19 +\n .../gate_attempts/attempt-0003/gate_summary.md     |   63 +\n .../gates/candidate_manifest_gate.json             |  256 ++++\n .../gates/contract_integrity_gate.json             |  342 +++++\n .../attempt-0003/gates/entry_gate.json             |   31 +\n .../attempt-0003/gates/path_policy_gate.json       |   24 +\n .../attempt-0003/gates/required_files_gate.json    |   84 ++\n .../attempt-0003/gates/schema_gate.json            |   48 +\n .../attempt-0003/gates/spec_consistency_gate.json  |  738 ++++++++++\n .../attempt-0003/gates/trace_gate.json             |  371 +++++\n .../gates/workflow_selection_gate.json             |   31 +\n .../attempt-0003/gates/workflow_specific_gate.json |   28 +\n .../gate_attempts/attempt-0003/input-snapshot.json |  202 +++\n .../gate_attempts/attempt-0004/attempt-result.json |   46 +\n .../gate_attempts/attempt-0004/attempt-start.json  |   19 +\n .../gate_attempts/attempt-0004/gate_summary.md     |   63 +\n .../gates/candidate_manifest_gate.json             |  256 ++++\n .../gates/contract_integrity_gate.json             |  342 +++++\n .../attempt-0004/gates/entry_gate.json             |   31 +\n .../attempt-0004/gates/path_policy_gate.json       |   24 +\n .../attempt-0004/gates/required_files_gate.json    |   84 ++\n .../attempt-0004/gates/schema_gate.json            |   48 +\n .../attempt-0004/gates/spec_consistency_gate.json  |  738 ++++++++++\n .../attempt-0004/gates/trace_gate.json             |  371 +++++\n .../gates/workflow_selection_gate.json             |   31 +\n .../attempt-0004/gates/workflow_specific_gate.json |   28 +\n .../gate_attempts/attempt-0004/input-snapshot.json |  202 +++\n .../gate_attempts/attempt-0005/attempt-result.json |   46 +\n .../gate_attempts/attempt-0005/attempt-start.json  |   19 +\n .../gate_attempts/attempt-0005/gate_summary.md     |   61 +\n .../gates/candidate_manifest_gate.json             |  256 ++++\n .../gates/contract_integrity_gate.json             |  342 +++++\n .../attempt-0005/gates/entry_gate.json             |   31 +\n .../attempt-0005/gates/path_policy_gate.json       |   24 +\n .../attempt-0005/gates/required_files_gate.json    |   84 ++\n .../attempt-0005/gates/schema_gate.json            |   48 +\n .../attempt-0005/gates/spec_consistency_gate.json  |  750 ++++++++++\n .../attempt-0005/gates/trace_gate.json             |  374 +++++\n .../gates/workflow_selection_gate.json             |   31 +\n .../attempt-0005/gates/workflow_specific_gate.json |   28 +\n .../gate_attempts/attempt-0005/input-snapshot.json |  202 +++\n .../gate_attempts/attempt-0006/attempt-result.json |   19 +\n .../gate_attempts/attempt-0006/attempt-start.json  |   10 +\n .../gate_attempts/attempt-0006/gate_summary.md     |   16 +\n .../attempt-0006/gates/post_merge_gate.json        |   40 +\n .../gate_attempts/attempt-0006/input-snapshot.json |  144 ++\n .../gate_attempts/attempt-0007/attempt-result.json |   22 +\n .../gate_attempts/attempt-0007/attempt-start.json  |   11 +\n .../gate_attempts/attempt-0007/gate_summary.md     |   26 +\n .../attempt-0007/gates/formal_version_gate.json    |  210 +++\n .../attempt-0007/gates/verification_gate.json      | 1512 +++++++++++++++++++\n .../gate_attempts/attempt-0007/input-snapshot.json |  280 ++++\n .../gate_attempts/attempt-0008/attempt-result.json |   22 +\n .../gate_attempts/attempt-0008/attempt-start.json  |   11 +\n .../gate_attempts/attempt-0008/gate_summary.md     |   27 +\n .../attempt-0008/gates/formal_version_gate.json    |  210 +++\n .../attempt-0008/gates/verification_gate.json      | 1515 ++++++++++++++++++++\n .../gate_attempts/attempt-0008/input-snapshot.json |  280 ++++\n .../gate_attempts/attempt-0009/attempt-result.json |   22 +\n .../gate_attempts/attempt-0009/attempt-start.json  |   11 +\n .../gate_attempts/attempt-0009/gate_summary.md     |   21 +\n .../attempt-0009/gates/formal_version_gate.json    |  206 +++\n .../attempt-0009/gates/verification_gate.json      | 1508 +++++++++++++++++++\n .../gate_attempts/attempt-0009/input-snapshot.json |  288 ++++\n .specforge/work-items/WI-0001/gate_summary.md      |   21 +\n .../WI-0001/gates/candidate_manifest_gate.json     |  256 ++++\n .../work-items/WI-0001/gates/close_gate.json       |  233 +++\n .../WI-0001/gates/contract_integrity_gate.json     |  342 +++++\n .../work-items/WI-0001/gates/entry_gate.json       |   31 +\n .../WI-0001/gates/formal_version_gate.json         |  206 +++\n .../work-items/WI-0001/gates/path_policy_gate.json |   24 +\n .../work-items/WI-0001/gates/post_merge_gate.json  |   40 +\n .../WI-0001/gates/required_files_gate.json         |   84 ++\n .../work-items/WI-0001/gates/schema_gate.json      |   48 +\n .../WI-0001/gates/spec_consistency_gate.json       |  750 ++++++++++\n .../work-items/WI-0001/gates/trace_gate.json       |  374 +++++\n .../WI-0001/gates/verification_gate.json           | 1508 +++++++++++++++++++\n .../WI-0001/gates/workflow_selection_gate.json     |   31 +\n .../WI-0001/gates/workflow_specific_gate.json      |   28 +\n .../commands.jsonl                                 |  147 ++\n .../completed.json                                 |   15 +\n .../intent.json                                    |    7 +\n ...cc7fb906aa990d05c2b902aa644dd25c876cf649ca.json |  337 +++++\n .specforge/work-items/WI-0001/git_context.json     |   13 +\n .../work-items/WI-0001/governance_scope.json       |   47 +\n .../WI-0001/handoff_validation_state.json          |  366 +++++\n ...didate_design_1792907413595_7696c9a77469_0.json |   51 +\n ...didate_design_1793709765455_184d510bc3f3_0.json |   53 +\n ...didate_design_1793711464843_76b7bd32dbf2_0.json |   22 +\n ...didate_design_1793712267542_83bdbc0b903e_0.json |   25 +\n ...didate_design_1793714169917_aa831ae1c478_0.json |   21 +\n ...mplementation_1793720470026_5b48264412b5_0.json |   24 +\n ...mplementation_1793720476585_7d92b94b7ce0_0.json |   23 +\n ...mplementation_1793720568759_772e983c6dd7_0.json |   25 +\n ...mplementation_1793720578522_52dcb3d0c0a7_0.json |   23 +\n ...k-wi-0001-004_1793720850902_be1a6f98db6c_0.json |   25 +\n ..._requirements_1792906288040_16e75c9feacf_0.json |   36 +\n ..._requirements_1793708450063_3cfbc48a4bc7_0.json |   31 +\n ...viewer_review_1793720744141_855f85f7e6fe_0.json |   36 +\n ...ndidate_tasks_1792908279507_15ec6734671a_0.json |   41 +\n ...ndidate_tasks_1793710908531_614e22c407c2_0.json |   32 +\n ...ndidate_tasks_1793711555074_56255b211e83_0.json |   28 +\n ...ndidate_tasks_1793714308631_7a18a4bb25d7_0.json |   20 +\n ...losure_repair_1794036164351_57f06130d189_0.json |   41 +\n ...repair_round2_1794036347399_0605099e7a3d_0.json |   26 +\n ...1.0.23-resume_1794043903478_782f0161d350_0.json |   55 +\n ...1.0.23-resume_1794044171820_dfd2cc541974_0.json |   31 +\n ...ormal-v1.0.23_1794043108670_dbe0b33a3008_0.json |   46 +\n ...ntract-review_1794045144634_8a93e2656ec3_0.json |   29 +\n ...al-batch-t001_1794031831523_c235c5723fde_0.json |   26 +\n ...al-batch-t002_1794031966140_91275cc17549_0.json |   32 +\n ...al-batch-t003_1794032214937_fe72403efc21_0.json |   24 +\n ...al-batch-t004_1794032567067_9e60d88c61fe_0.json |   30 +\n ...al-batch-t005_1794032679204_0c135b8b9028_0.json |   22 +\n ...tch-t001-unit_1794030644339_21cb1559396d_0.json |   29 +\n ...tch-t002-unit_1794030813206_0ecd125cc466_0.json |   28 +\n ...on-batch-t003_1794031062330_c8800e1f85be_0.json |   28 +\n ...on-batch-t004_1794031390604_e9acf0fa6fa2_0.json |   32 +\n ...on-batch-t005_1794031495409_5d78abeeb39f_0.json |   23 +\n ...sk-001-formal_1794041955915_3627150ff8c1_0.json |   30 +\n ...sk-002-formal_1794042248213_fad48a9e7011_0.json |   27 +\n ...sk-003-formal_1794042477866_46904ef63f6f_0.json |   27 +\n ...sk-004-formal_1794042737163_1071e83239c9_0.json |   25 +\n ...sk-005-formal_1794042951302_465c1986ea8c_0.json |   22 +\n ..._verification_1794029989882_6ab546c02541_0.json |   40 +\n .../work-items/WI-0001/hard_stop_resolution.jsonl  |    1 +\n .specforge/work-items/WI-0001/impact_analysis.md   |   58 +\n .../WI-0001/implementation_baseline.json           |   48 +\n .specforge/work-items/WI-0001/intake.md            |   76 +\n .specforge/work-items/WI-0001/merge_report.md      |   37 +\n .../work-items/WI-0001/semantic_closure_report.md  |  131 ++\n .specforge/work-items/WI-0001/trigger_result.json  |   43 +\n .specforge/work-items/WI-0001/user_decision.json   |   22 +\n .../work-items/WI-0001/verification_report.md      | 1053 ++++++++++++++\n .specforge/work-items/WI-0001/work_item.json       |  324 +++++\n .../work-items/WI-0001/write_guard_log.jsonl       |    8 +\n README.md                                          |   22 +\n package.json                                       |   10 +\n src/greet.ts                                       |    7 +\n tests/greet.test.ts                                |   21 +\n tsconfig.json                                      |   11 +\n 207 files changed, 29939 insertions(+)\n create mode 100644 .specforge/.gitignore\n create mode 100644 .specforge/config/observability.json\n create mode 100644 .specforge/config/prod-environment.md\n create mode 100644 .specforge/config/project-rules.md\n create mode 100644 .specforge/config/project.json\n create mode 100644 .specforge/project/architecture.md\n create mode 100644 .specforge/project/data_model.md\n create mode 100644 .specforge/project/decisions.md\n create mode 100644 .specforge/project/design_index.md\n create mode 100644 .specforge/project/extension_registry.json\n create mode 100644 .specforge/project/glossary.md\n create mode 100644 .specforge/project/modules/CORE/contracts.json\n create mode 100644 .specforge/project/modules/CORE/design.md\n create mode 100644 .specforge/project/modules/CORE/module.json\n create mode 100644 .specforge/project/modules/CORE/requirements.md\n create mode 100644 .specforge/project/modules/CORE/trace.md\n create mode 100644 .specforge/project/requirements_index.md\n create mode 100644 .specforge/project/spec_manifest.json\n create mode 100644 .specforge/project/trace_matrix.md\n create mode 100644 .specforge/work-items/WI-0001/.semantic_closure.json\n create mode 100644 .specforge/work-items/WI-0001/candidate_manifest.json\n create mode 100644 .specforge/work-items/WI-0001/candidates/project/architecture.candidate.md\n create mode 100644 .specforge/work-items/WI-0001/candidates/project/data_model.candidate.md\n create mode 100644 .specforge/work-items/WI-0001/candidates/project/extension_registry.json\n create mode 100644 .specforge/work-items/WI-0001/candidates/project/modules/CORE/contracts.candidate.json\n create mode 100644 .specforge/work-items/WI-0001/candidates/project/modules/CORE/design.candidate.md\n create mode 100644 .specforge/work-items/WI-0001/candidates/project/modules/CORE/module.candidate.json\n create mode 100644 .specforge/work-items/WI-0001/candidates/project/modules/CORE/requirements.candidate.md\n create mode 100644 .specforge/work-items/WI-0001/candidates/tasks.md\n create mode 100644 .specforge/work-items/WI-0001/candidates/trace_delta.md\n create mode 100644 .specforge/work-items/WI-0001/change_classification.md\n create mode 100644 .specforge/work-items/WI-0001/changed_files_audit.md\n create mode 100644 .specforge/work-items/WI-0001/close_gate.md\n create mode 100644 .specforge/work-items/WI-0001/evidence/evidence_manifest.json\n create mode 100644 .specforge/work-items/WI-0001/filesystem_baseline.json\n create mode 100644 .specforge/work-items/WI-0001/filesystem_diff_evidence.json\n create mode 100644 .specforge/work-items/WI-0001/formal_version_snapshot.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0001/attempt-result.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0001/attempt-start.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gate_summary.md\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/candidate_manifest_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/contract_integrity_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/entry_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/path_policy_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/required_files_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/schema_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/spec_consistency_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/trace_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/workflow_selection_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0001/gates/workflow_specific_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0001/input-snapshot.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0002/attempt-result.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0002/attempt-start.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gate_summary.md\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/candidate_manifest_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/contract_integrity_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/entry_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/path_policy_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/required_files_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/schema_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/spec_consistency_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/trace_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/workflow_selection_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0002/gates/workflow_specific_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0002/input-snapshot.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0003/attempt-result.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0003/attempt-start.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gate_summary.md\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/candidate_manifest_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/contract_integrity_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/entry_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/path_policy_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/required_files_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/schema_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/spec_consistency_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/trace_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/workflow_selection_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0003/gates/workflow_specific_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0003/input-snapshot.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0004/attempt-result.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0004/attempt-start.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gate_summary.md\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/candidate_manifest_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/contract_integrity_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/entry_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/path_policy_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/required_files_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/schema_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/spec_consistency_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/trace_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/workflow_selection_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0004/gates/workflow_specific_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0004/input-snapshot.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0005/attempt-result.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0005/attempt-start.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gate_summary.md\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/candidate_manifest_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/contract_integrity_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/entry_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/path_policy_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/required_files_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/schema_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/spec_consistency_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/trace_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/workflow_selection_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0005/gates/workflow_specific_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0005/input-snapshot.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0006/attempt-result.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0006/attempt-start.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0006/gate_summary.md\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0006/gates/post_merge_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0006/input-snapshot.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0007/attempt-result.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0007/attempt-start.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0007/gate_summary.md\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0007/gates/formal_version_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0007/gates/verification_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0007/input-snapshot.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0008/attempt-result.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0008/attempt-start.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0008/gate_summary.md\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0008/gates/formal_version_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0008/gates/verification_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0008/input-snapshot.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0009/attempt-result.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0009/attempt-start.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0009/gate_summary.md\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0009/gates/formal_version_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0009/gates/verification_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gate_attempts/attempt-0009/input-snapshot.json\n create mode 100644 .specforge/work-items/WI-0001/gate_summary.md\n create mode 100644 .specforge/work-items/WI-0001/gates/candidate_manifest_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gates/close_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gates/contract_integrity_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gates/entry_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gates/formal_version_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gates/path_policy_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gates/post_merge_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gates/required_files_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gates/schema_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gates/spec_consistency_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gates/trace_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gates/verification_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gates/workflow_selection_gate.json\n create mode 100644 .specforge/work-items/WI-0001/gates/workflow_specific_gate.json\n create mode 100644 .specforge/work-items/WI-0001/git_bootstrap/f7c1fe5dfe60741054b396cc7fb906aa990d05c2b902aa644dd25c876cf649ca/commands.jsonl\n create mode 100644 .specforge/work-items/WI-0001/git_bootstrap/f7c1fe5dfe60741054b396cc7fb906aa990d05c2b902aa644dd25c876cf649ca/completed.json\n create mode 100644 .specforge/work-items/WI-0001/git_bootstrap/f7c1fe5dfe60741054b396cc7fb906aa990d05c2b902aa644dd25c876cf649ca/intent.json\n create mode 100644 .specforge/work-items/WI-0001/git_bootstrap/plans/f7c1fe5dfe60741054b396cc7fb906aa990d05c2b902aa644dd25c876cf649ca.json\n create mode 100644 .specforge/work-items/WI-0001/git_context.json\n create mode 100644 .specforge/work-items/WI-0001/governance_scope.json\n create mode 100644 .specforge/work-items/WI-0001/handoff_validation_state.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1792907413595_7696c9a77469_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1793709765455_184d510bc3f3_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1793711464843_76b7bd32dbf2_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1793712267542_83bdbc0b903e_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-design_candidate_design_1793714169917_aa831ae1c478_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-executor_implementation_1793720470026_5b48264412b5_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-executor_implementation_1793720476585_7d92b94b7ce0_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-executor_implementation_1793720568759_772e983c6dd7_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-executor_implementation_1793720578522_52dcb3d0c0a7_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-executor_implementation_running-fix-round-task-wi-0001-004_1793720850902_be1a6f98db6c_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-requirements_candidate_requirements_1792906288040_16e75c9feacf_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-requirements_candidate_requirements_1793708450063_3cfbc48a4bc7_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-reviewer_review_1793720744141_855f85f7e6fe_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-task-planner_candidate_tasks_1792908279507_15ec6734671a_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-task-planner_candidate_tasks_1793710908531_614e22c407c2_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-task-planner_candidate_tasks_1793711555074_56255b211e83_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-task-planner_candidate_tasks_1793714308631_7a18a4bb25d7_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_semantic_closure_repair_1794036164351_57f06130d189_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_semantic_closure_repair_round2_1794036347399_0605099e7a3d_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-aggregate-formal-v1.0.23-resume_1794043903478_782f0161d350_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-aggregate-formal-v1.0.23-resume_1794044171820_dfd2cc541974_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-aggregate-formal-v1.0.23_1794043108670_dbe0b33a3008_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-contract-review_1794045144634_8a93e2656ec3_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-formal-batch-t001_1794031831523_c235c5723fde_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-formal-batch-t002_1794031966140_91275cc17549_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-formal-batch-t003_1794032214937_fe72403efc21_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-formal-batch-t004_1794032567067_9e60d88c61fe_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-formal-batch-t005_1794032679204_0c135b8b9028_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-implementation-batch-t001-unit_1794030644339_21cb1559396d_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-implementation-batch-t002-unit_1794030813206_0ecd125cc466_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-implementation-batch-t003_1794031062330_c8800e1f85be_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-implementation-batch-t004_1794031390604_e9acf0fa6fa2_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-implementation-batch-t005_1794031495409_5d78abeeb39f_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-task-001-formal_1794041955915_3627150ff8c1_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-task-002-formal_1794042248213_fad48a9e7011_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-task-003-formal_1794042477866_46904ef63f6f_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-task-004-formal_1794042737163_1071e83239c9_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-task-005-formal_1794042951302_465c1986ea8c_0.json\n create mode 100644 .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification_1794029989882_6ab546c02541_0.json\n create mode 100644 .specforge/work-items/WI-0001/hard_stop_resolution.jsonl\n create mode 100644 .specforge/work-items/WI-0001/impact_analysis.md\n create mode 100644 .specforge/work-items/WI-0001/implementation_baseline.json\n create mode 100644 .specforge/work-items/WI-0001/intake.md\n create mode 100644 .specforge/work-items/WI-0001/merge_report.md\n create mode 100644 .specforge/work-items/WI-0001/semantic_closure_report.md\n create mode 100644 .specforge/work-items/WI-0001/trigger_result.json\n create mode 100644 .specforge/work-items/WI-0001/user_decision.json\n create mode 100644 .specforge/work-items/WI-0001/verification_report.md\n create mode 100644 .specforge/work-items/WI-0001/work_item.json\n create mode 100644 .specforge/work-items/WI-0001/write_guard_log.jsonl\n create mode 100644 package.json\n create mode 100644 src/greet.ts\n create mode 100644 tests/greet.test.ts\n create mode 100644 tsconfig.json\n",
+      "stderr": "",
+      "code": 0
+    }
+  },
+  {
+    "agent": "sf-orchestrator",
+    "provider": "zhipuai-coding-plan",
+    "model": "glm-5.3",
+    "message": "msg_1b5788d9c001oTFDoLhvMSd1H7",
+    "call_id": "call_98b0780e2bfe4aecaa8fec56",
+    "tool": "sf_git_post_merge_verify",
+    "status": "completed",
+    "input": {
+      "work_item_id": "WI-0001"
+    },
+    "result": {
+      "success": true,
+      "work_item_id": "WI-0001",
+      "authoritative_state": "closed",
+      "target_branch": "main",
+      "merged_branch": "codex/greet-library-wi-0001",
+      "head_commit": "28c8e3d850c81218af4598928569bf5420814372",
+      "worktree_clean": true,
+      "ignored_unrelated_work_item_files": [],
+      "work_item_branch_is_ancestor": true,
+      "merge_commit": true,
+      "formal_version": {
+        "work_item_id": "WI-0001",
+        "close_gate_passed": true,
+        "formal_version_gate_passed": true,
+        "snapshot_present": true,
+        "implementation_commit": "f5fed085a8609f593592eca5e8035b2d1c958759",
+        "implementation_commit_ancestor": true,
+        "implementation_file_set_matches": true,
+        "implementation_tree_matches": true,
+        "base_diff_matches": true
+      },
+      "verification_mode": "actual_git_merge_verification",
+      "commands": [],
+      "repository_delivery_complete": true,
+      "repository_delivery_state": "closed_and_git_merged"
+    }
+  }
+]

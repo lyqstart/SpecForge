@@ -1,0 +1,11 @@
+{
+  "utc": "2026-11-07T08:11:40.211Z",
+  "session": "ses_e4aefccd0ffeFD5M8ooMOc02jx",
+  "agent": "sf-orchestrator",
+  "tool": "sf_verification_plan",
+  "args": {
+    "action": "revoke",
+    "work_item_id": "WI-9901",
+    "plan_id": "418f153ef26ac4c8734273bb3dc2f8e2ebe8a5de4b1cc1c619e4d0e6b672c9cb"
+  }
+}

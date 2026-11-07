@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/prepare-original-continuation-06.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Freeze original canonical outputs and prepare approved minimum-context current-version formal revalidation",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES preserved canonical bytes/prompt/provenance only; original truth read only",
+  "started_utc": "2026-11-07T08:53:30.682Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\prepare-original-continuation-06.cjs",
+      "sha256": "224b6e1f2c2a7c9af367b4654b3bc31f2709102ef99407ac896fe9097b9191aa",
+      "size": 3813,
+      "extension": ".cjs"
+    }
+  ]
+}

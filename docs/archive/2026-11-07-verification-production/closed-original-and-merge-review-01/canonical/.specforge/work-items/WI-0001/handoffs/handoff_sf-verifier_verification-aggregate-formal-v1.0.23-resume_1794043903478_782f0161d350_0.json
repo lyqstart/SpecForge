@@ -1,0 +1,55 @@
+{
+  "agent": "sf-verifier",
+  "boundary_statement": "只读聚合与受控写入；未重新执行任何 verification attempt，未修改业务代码，未调用 Gate/State 工具，未读取 runtime trace，未触碰他人所有权产物。evidence_manifest 已按 canonical 路径成功写入两次（receipt 绑定格式已按已公布合同核对并纠正一次），verification_report 两次被 Runtime 校验拒绝，失败原样保留。",
+  "duration_ms": 0,
+  "errors": [
+    "VERIFICATION_EXECUTION_EVIDENCE_REJECTED (sf_artifact_write file_type=verification_report, attempt 1 @ sha256 bare form, attempt 2 @ sha256:<id> prefixed form — 字节级相同错误集): execution_receipt_rejected:command-21; execution_receipt_missing_from_manifest×21 (eec14729…, 7cf28707…, 22677de5…, 484bc425…, 0e8c96ed…, d02452cd…, deb2e153…, 64065f2b…, 19ab1722…, ad881302…, f43bdeec…, 907e1765…, 8cce832f…, 54fda4bf…, 802ce365…, d4b02894…, ef2ac84e…, fc3038a3…, 0360e529…, b95a9028…, 17b75cad…)"
+  ],
+  "findings": [
+    "恢复条件已满足：TASK-WI-0001-001 的 5 条 1.0.23 receipt 已由 Orchestrator 逐字提供并与 blocked 聚合记录中的 plan_ids 一一对应；另 17 条 receipt 已从本 Agent 自有 fresh handoffs（verification-task-002..005-formal）复核。",
+    "evidence_manifest（EV-0001..EV-0022，canonical 顺序，22 条，全部绑定 verification-owner:receipt:<id> / sha256:<id> / canonical-json:verification-execution/v1）已成功写入 .specforge/work-items/WI-0001/evidence/evidence_manifest.json（第一次 size 32551，第二次含 sha256: 前缀 size 32705，均 success/normalized）。",
+    "verification_report 两次写入均被 VERIFICATION_EXECUTION_EVIDENCE_REJECTED 拒绝且错误集完全相同：command-21（TASK-WI-0001-005 e2e#0，receipt 2a83a293a5b44f56b29b34a852f4acc9df2c2faf9efdce2922412d91a188e0e5，plan 17f1e2de…，attempt_record 0cd79df9…，来自本 Agent 09:15:51Z fresh handoff）被 Runtime 执行注册表层面拒绝；其余 21 条 receipt 报 missing_from_manifest，尽管它们已持久化于 canonical manifest 路径且含完整 receipt 绑定字段。",
+    "sha256 字段格式修正（裸 id → sha256:<id>）不改变错误集，排除该格式假设；错误不是简单的 schema 格式问题。",
+    "两种互斥解释均超出本 Agent 可读证据范围：(a) receipt 2a83a293… 在 Runtime 执行注册表中不可消费/失效，且 manifest↔report 对账使用了非我所写 manifest 的接收绑定契约；(b) 校验器读取的 manifest 快照或绑定字段与 sf_artifact_write 持久化结果不一致。Runtime 注册表、plan 原始声明与 trace 属 Orchestrator/Runtime 所有权，本 Agent 禁止读取自证。",
+    "报告未落盘 → 本次 resume 聚合结论为 blocked；既有 verification_report.md（1.0.22 代）仍在盘上，不构成 1.0.23 当前通过证据；权威状态仍为 verification_running。"
+  ],
+  "inputs_read": [
+    "sf_state_read(WI-0001) → verification_running",
+    "sf_handoff validate_all → 36/36 valid",
+    ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-task-002-formal_1794042248213_fad48a9e7011_0.json",
+    ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-task-003-formal_1794042477866_46904ef63f6f_0.json",
+    ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-task-004-formal_1794042737163_1071e83239c9_0.json",
+    ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-task-005-formal_1794042951302_465c1986ea8c_0.json",
+    ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-aggregate-formal-v1.0.23_1794043108670_dbe0b33a3008_0.json",
+    ".specforge/work-items/WI-0001/candidates/project/modules/CORE/requirements.candidate.md (REQ/AC 冻结结构)",
+    ".specforge/work-items/WI-0001/candidates/tasks.md (22 条声明性命令原文)",
+    ".specforge/work-items/WI-0001/.semantic_closure.json (canonical 语义闭包结构)",
+    ".specforge/work-items/WI-0001/evidence/evidence_manifest.json (两次写后复核)"
+  ],
+  "next_step_recommendation": "由 Orchestrator（Runtime/registry 所有权方）核验：(1) receipt 2a83a293a5b44f56b29b34a852f4acc9df2c2faf9efdce2922412d91a188e0e5 在执行注册表中的真实状态与被拒原因（是否已被消费/失效/绑定不一致）；(2) verification_report Artifact Writer 对 evidence_manifest 中 receipt 绑定所期待的确切字段契约（与 sf_artifact_write 持久化结果比对）。修复后本 Agent 可在不重新执行任何 attempt 的前提下重发同一份 Verification JSON。在报告落盘前不得推进 verification_gate/semantic_closure/close。",
+  "outputs_written": [
+    ".specforge/work-items/WI-0001/evidence/evidence_manifest.json (sf_artifact_write file_type=evidence_manifest, 22 entries EV-0001..EV-0022, success ×2)"
+  ],
+  "escalation_signals": [
+    {
+      "affected_refs": [
+        "verification_report.md (1.0.23, 未落盘)",
+        "evidence/evidence_manifest.json",
+        "EV-0022",
+        "TASK-WI-0001-005 e2e#0",
+        "receipt 2a83a293a5b44f56b29b34a852f4acc9df2c2faf9efdce2922412d91a188e0e5"
+      ],
+      "description": "sf_artifact_write(verification_report) 两次被 VERIFICATION_EXECUTION_EVIDENCE_REJECTED 拒绝：receipt 2a83a293…（command-21/e2e，源自本 Agent fresh handoff）被 Runtime 执行注册表拒绝；其余 21 条已写入 manifest 的 receipt 报 missing_from_manifest。无法用可读证据解释，需要 Runtime 所有权方核验注册表状态与 manifest 绑定对账契约。",
+      "recommended_action": "Orchestrator 向 Runtime/registry owner 核验 receipt 2a83a293… 的可消费性与 report↔manifest receipt 绑定契约后，指示本 Agent 原样重发同一 Verification JSON；不得重新执行 attempts，不得改写 receipt 或命令原文。",
+      "type": "missing_spec"
+    }
+  ],
+  "schema_version": "1.0",
+  "stage": "verification-aggregate-formal-v1.0.23-resume",
+  "timestamp": "2026-11-07T09:41:00Z",
+  "unknowns": [
+    "Runtime 执行注册表中 receipt 2a83a293… 的真实状态与拒绝原因（registry 只读范围外）",
+    "verification_report Artifact Writer 用于在 evidence_manifest 中定位 receipt 绑定的确切字段/格式契约（已公布合同中未见更精确定义；sha256 前缀修正无效）"
+  ],
+  "work_item_id": "WI-0001"
+}

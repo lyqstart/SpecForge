@@ -1,0 +1,21 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/prepare-routing-source.cjs",
+    "prepare"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Freeze complete explicit-routing repair with current raw bytes,parent blobs,full patch and exact allowed scope",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable source review/hash/pathspec; no original/deployed writes",
+  "started_utc": "2026-11-07T07:50:33.912Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\prepare-routing-source.cjs",
+      "sha256": "6afcec814235fe19e27d66de6a6950edf33ce4f02964598c53c68bf5145e67ef",
+      "size": 3878,
+      "extension": ".cjs"
+    }
+  ]
+}

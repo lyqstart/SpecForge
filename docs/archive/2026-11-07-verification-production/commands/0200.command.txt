@@ -1,0 +1,15 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/verification-runtime-plan.test.ts",
+    "tests/unit/verification-rejection-diagnostic.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "bounded-plan-stage-diagnostic-regression",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned host Git fixtures; EXTERNAL_EVIDENCE_WRITES Runtime and privacy tests; no native/original/user install",
+  "started_utc": "2026-11-07T04:19:16.549Z"
+}

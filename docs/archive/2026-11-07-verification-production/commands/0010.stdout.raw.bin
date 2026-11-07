@@ -1,0 +1,10 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/node-command-contract.test.ts (30 tests) 26ms
+
+ Test Files  1 passed (1)
+      Tests  30 passed (30)
+   Start at  08:29:36
+   Duration  634ms (transform 41ms, setup 0ms, collect 329ms, tests 26ms, environment 0ms, prepare 103ms)
+

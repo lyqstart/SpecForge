@@ -1,0 +1,9 @@
+{
+  "receipt": "0235",
+  "purpose": "Clarify the immutable command's informal DEPLOYMENT_WRITES label using exactly the protocol's four classes. No command receipt is overwritten.",
+  "TRUTH_SOURCE_WRITES": "Release/Installer-owned actual user managed asset and user Manifest replacement at C:/Users/lyq/.config/opencode, verified1.0.21 to1.0.22; original business truth sources were unchanged.",
+  "REPOSITORY_TRACKED_WRITES": "None by the installer command; source repair was already committed as a918b49c.",
+  "RUNTIME_OBSERVER_WRITES": "Installer transaction journal, rollback backups and install/verify diagnostics under the existing user installation owner; not misrepresented as original business writes.",
+  "EXTERNAL_EVIDENCE_WRITES": "Immutable command0235 and user-installation-upgrade raw source/old managed manifests, preflight, installer outputs and all117-file byte identities.",
+  "observed_result": "inner_exit_code0, all117 managed files verified, original1057-file set and bytes unchanged, Daemon not yet started at end of upgrade command."
+}

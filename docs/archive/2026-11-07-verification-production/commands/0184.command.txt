@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/install-private-fixture.cjs",
+    "12",
+    "0182"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "diagnostic-private-full-installer-fixture12",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES new owned fixture12 full117-file install verify SDK; EXTERNAL_EVIDENCE_WRITES installation proof; no original/user install",
+  "started_utc": "2026-11-07T04:11:00.782Z"
+}

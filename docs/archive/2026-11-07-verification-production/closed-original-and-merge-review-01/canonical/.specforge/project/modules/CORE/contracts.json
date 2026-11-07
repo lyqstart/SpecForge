@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "owner_module": "CORE",
+  "contracts": {
+    "shared_enums": [],
+    "invariants": [
+      {
+        "id": "INV-CORE-001",
+        "owner_module": "CORE",
+        "rule": "IF name === '' THEN greet(name) === 'Hello, world!'（精确 13 字符常量）",
+        "scope": "module",
+        "description": "作用点：src/greet.ts#greet。空字符串输入必须返回精确字符串 'Hello, world!'（13 字符：大写 H、小写 world、逗号后一个空格、结尾感叹号）。对应 REQ-CORE-003 / AC-CORE-007 / AC-CORE-008。",
+        "source_refs": ["DD-CORE-002"],
+        "enforcement": "tests/greet.test.ts 中 assert.strictEqual(greet(''), 'Hello, world!') 断言；由批准后验证阶段在合法执行边界内真实运行取证（对应 EVREQ-3A/EVREQ-4B）。"
+      },
+      {
+        "id": "INV-CORE-002",
+        "owner_module": "CORE",
+        "rule": "IF name.length >= 1 THEN greet(name) === 'Hello, ' + name + '!' AND name 逐字符原样保留（禁止 trim/大小写变换/归一化/截断/任何改写）",
+        "scope": "module",
+        "description": "作用点：src/greet.ts#greet。任意非空字符串输入（长度 ≥ 1，含纯空白字符串，按非空规则直接处理）必须返回 'Hello, ' + name + '!' 三段依序拼接结果。对应 REQ-CORE-002 / AC-CORE-004 / AC-CORE-005。",
+        "source_refs": ["DD-CORE-002"],
+        "enforcement": "tests/greet.test.ts 中不少于 2 个互不相同非空名称的 strictEqual 断言（EVREQ-2A），另含 1 个纯空白名称按非空规则处理的断言；由批准后验证阶段真实运行取证。"
+      },
+      {
+        "id": "INV-CORE-003",
+        "owner_module": "CORE",
+        "rule": "运行时依赖集 = 空集：package.json 运行时 dependencies 为空集 AND src/ 不 import/require 任何第三方包、网络资源或外部服务",
+        "scope": "module",
+        "description": "作用点：CORE 运行时路径（src/** 与 package.json.dependencies）。库运行时路径零第三方依赖；工具链组件（node:test、tsc 类型检查）仅属开发期，不计入运行时依赖。对应 REQ-CORE-006 / AC-CORE-016 / AC-CORE-017。",
+        "source_refs": ["DD-CORE-003", "DD-CORE-004"],
+        "enforcement": "静态可验证：package.json 的 dependencies 为空对象（配置证据，EVREQ-6A）+ src/greet.ts 零 import 事实（源码审查）；不依赖测试运行即可复核。"
+      }
+    ],
+    "public_interfaces": [
+      {
+        "id": "PI-CORE-001",
+        "owner_module": "CORE",
+        "name": "greet",
+        "signature": "greet(name: string): string",
+        "behavior": "name 为空字符串（长度 0）时返回精确常量 'Hello, world!'；name 为非空字符串（长度 ≥ 1，含纯空白）时返回 'Hello, ' + name + '!'（name 原样保留）。无状态、无副作用、不抛出异常。除此之外无其他承诺。",
+        "undefined_behavior": "null、undefined、非 string 类型输入的行为未定义，不属于本契约承诺（CONSTRAINT-1，不得为其编写分支）。",
+        "errors": [],
+        "source_refs": ["DD-CORE-001", "DD-CORE-002"],
+        "enforcement": "tests/greet.test.ts 两条行为断言（INV-CORE-001/002）+ TypeScript 签名静态类型检查（AC-CORE-002：恰一个 string 入参、一个 string 返回值）。"
+      }
+    ],
+    "extension_points": []
+  }
+}

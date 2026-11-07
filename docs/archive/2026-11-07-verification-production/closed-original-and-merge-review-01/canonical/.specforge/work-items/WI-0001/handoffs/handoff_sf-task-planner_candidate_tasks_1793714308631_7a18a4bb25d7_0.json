@@ -1,0 +1,20 @@
+{
+  "agent": "sf-task-planner",
+  "boundary_statement": "仅补一条 Trace 边",
+  "escalation_signals": [],
+  "findings": [
+    "补 DATA-CORE-003 constrained_by ARCH-CORE-003 一行，计数 36→37"
+  ],
+  "inputs_read": [
+    ".specforge/work-items/WI-0001/candidates/trace_delta.md"
+  ],
+  "next_step_recommendation": "重试封存并跑 attempt-0005",
+  "outputs_written": [
+    ".specforge/work-items/WI-0001/candidates/trace_delta.md"
+  ],
+  "schema_version": "1.0",
+  "stage": "candidate_tasks",
+  "timestamp": "2026-11-03T00:00:00Z",
+  "unknowns": [],
+  "work_item_id": "WI-0001"
+}

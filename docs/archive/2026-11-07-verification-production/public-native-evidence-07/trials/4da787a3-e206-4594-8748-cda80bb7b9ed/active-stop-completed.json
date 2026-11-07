@@ -1,0 +1,11 @@
+{
+  "utc": "2026-11-07T03:29:40.116Z",
+  "daemon_exit": {
+    "code": 0,
+    "signal": null,
+    "utc": "2026-11-07T03:29:38.526Z"
+  },
+  "handshake_absent": true,
+  "receipt_id": "61ece399366fc6ae29c8b230b29f5452b70935620a84f9825f60be92615402a3",
+  "receipt_sha256": "a9b5a7c8596f75cf9e72cae8fef6dfc1707fc362dc0e860ef3e6c55ebc03fcdf"
+}

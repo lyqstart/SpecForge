@@ -1,0 +1,11 @@
+{
+  "utc": "2026-11-07T04:45:10.889Z",
+  "source": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\public-kernel-chain.cjs",
+  "sha256": "5bd46e7dade100b8d98fe2dc196d01770ad8ea31b11646654a599acbb1e80085",
+  "bytes": 41264,
+  "argv": [
+    "16",
+    "consumers",
+    "602c9ce8-1832-4aff-8595-b695431ad18b"
+  ]
+}

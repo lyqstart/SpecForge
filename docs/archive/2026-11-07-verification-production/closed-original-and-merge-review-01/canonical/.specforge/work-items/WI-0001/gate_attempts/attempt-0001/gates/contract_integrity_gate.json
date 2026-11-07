@@ -1,0 +1,353 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0001",
+  "gate_id": "contract_integrity_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "failed",
+  "input_files": [
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\architecture.md",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\data_model.md",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\extension_registry.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\modules\\CORE\\contracts.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\modules\\CORE\\design.md",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\modules\\CORE\\module.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\modules\\CORE\\trace.md",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\spec_manifest.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidate_manifest.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\extension_registry.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\contracts.candidate.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\module.candidate.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\trace_delta.md",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\change_classification.md",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\trigger_result.json"
+  ],
+  "checks": [
+    {
+      "check_id": "module_contract_core_candidate_confined",
+      "description": "Module Contract candidate for CORE stays within its Work Item",
+      "passed": true
+    },
+    {
+      "check_id": "module_contract_core_candidate_integrity",
+      "description": "Module Contract candidate for CORE has owner, DD provenance, and enforcement metadata",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check_id": "contract_candidate_registry_schema",
+      "description": "Candidate Project Contract registry has unique IDs, required fields, and typed enum values",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check_id": "contract_registry_semantic_change_required",
+      "description": "Declared Project Contract change must alter namespaces or contracts, not metadata only",
+      "passed": true,
+      "details": "classification={\"api_contract_changed\":true,\"project_contract_changed\":null,\"contract_registry_only\":false}; registry_targeted=true"
+    },
+    {
+      "check_id": "contract_trace_projection_valid",
+      "description": "Prospective Trace is valid before Contract integrity decisions",
+      "passed": false,
+      "severity": "error",
+      "details": "Illegal Trace relation: DATA-CORE-003 constrained_by PI-CORE-001"
+    },
+    {
+      "check_id": "contract_reverse_dependencies_aligned",
+      "description": "Destructive Contract changes update every formal Trace consumer in the same Work Item",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check_id": "contract_trace_delta_relevant",
+      "description": "Contract integrity is evaluated against the same prospective Trace operations used by merge",
+      "passed": true
+    },
+    {
+      "check_id": "architecture_id_format",
+      "description": "Every declared Architecture ID uses ARCH-<DOMAIN>-<NNN>",
+      "passed": true,
+      "severity": "error",
+      "details": "invalid=none; valid=ARCH-CORE-001,ARCH-CORE-002,ARCH-CORE-003,ARCH-CORE-004"
+    },
+    {
+      "check_id": "data_model_id_format",
+      "description": "Every declared Data ID uses DATA-<DOMAIN>-<NNN>, or the model is explicitly not applicable",
+      "passed": true,
+      "severity": "error",
+      "details": "invalid=none; valid=DATA-CORE-001,DATA-CORE-002,DATA-CORE-003,DATA-CORE-004; not_applicable=false"
+    },
+    {
+      "check_id": "module_design_id_format",
+      "description": "Every declared Module Design ID uses DD-<DOMAIN>-<NNN>",
+      "passed": true,
+      "severity": "error",
+      "details": "invalid=none"
+    },
+    {
+      "check_id": "contract_trace_issue_0",
+      "description": "Illegal Trace relation: DATA-CORE-003 constrained_by PI-CORE-001",
+      "passed": false,
+      "severity": "error",
+      "details": "TRACE_ILLEGAL_RELATION"
+    },
+    {
+      "check_id": "contract_PI-0001_unique_truth_source",
+      "description": "Contract PI-0001 has exactly one governance-level definition",
+      "passed": true,
+      "details": "definitions=1"
+    },
+    {
+      "check_id": "contract_INV-CORE-001_unique_truth_source",
+      "description": "Contract INV-CORE-001 has exactly one governance-level definition",
+      "passed": true,
+      "details": "definitions=1"
+    },
+    {
+      "check_id": "contract_INV-CORE-002_unique_truth_source",
+      "description": "Contract INV-CORE-002 has exactly one governance-level definition",
+      "passed": true,
+      "details": "definitions=1"
+    },
+    {
+      "check_id": "contract_INV-CORE-003_unique_truth_source",
+      "description": "Contract INV-CORE-003 has exactly one governance-level definition",
+      "passed": true,
+      "details": "definitions=1"
+    },
+    {
+      "check_id": "contract_PI-CORE-001_unique_truth_source",
+      "description": "Contract PI-CORE-001 has exactly one governance-level definition",
+      "passed": true,
+      "details": "definitions=1"
+    },
+    {
+      "check_id": "module_contract_CORE_exists",
+      "description": "Module CORE has a contracts.json",
+      "passed": true
+    },
+    {
+      "check_id": "module_contract_CORE_valid",
+      "description": "Module CORE contracts.json is valid",
+      "passed": true
+    },
+    {
+      "check_id": "module_contract_CORE_owner",
+      "description": "Module CORE contracts.json owner_module matches its directory Module",
+      "passed": true,
+      "details": "owner_module=CORE"
+    },
+    {
+      "check_id": "contract_PI-0001_owner",
+      "description": "Contract PI-0001 declares a valid owner Module",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "contract_PI-0001_source_refs",
+      "description": "Contract PI-0001 declares source_refs",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-0001_enforcement",
+      "description": "Contract PI-0001 declares machine enforcement",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-0001_source_ARCH_CORE_001",
+      "description": "Contract PI-0001 source is legal: ARCH-CORE-001",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-0001_source_ARCH_CORE_003",
+      "description": "Contract PI-0001 source is legal: ARCH-CORE-003",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-0001_source_DATA_CORE_001",
+      "description": "Contract PI-0001 source is legal: DATA-CORE-001",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-0001_source_DATA_CORE_002",
+      "description": "Contract PI-0001 source is legal: DATA-CORE-002",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-001_owner",
+      "description": "Contract INV-CORE-001 declares a valid owner Module",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "contract_INV-CORE-001_source_refs",
+      "description": "Contract INV-CORE-001 declares source_refs",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-001_enforcement",
+      "description": "Contract INV-CORE-001 declares machine enforcement",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-001_source_DD_CORE_002",
+      "description": "Contract INV-CORE-001 source is legal: DD-CORE-002",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-001_consumer_DD-CORE-002",
+      "description": "Contract INV-CORE-001 consumer DD-CORE-002 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-001_consumer_DD-CORE-006",
+      "description": "Contract INV-CORE-001 consumer DD-CORE-006 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-001_internal_boundary",
+      "description": "Internal Contract INV-CORE-001 is consumed only inside owner Module CORE",
+      "passed": true,
+      "details": "all consumers are internal"
+    },
+    {
+      "check_id": "contract_INV-CORE-002_owner",
+      "description": "Contract INV-CORE-002 declares a valid owner Module",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "contract_INV-CORE-002_source_refs",
+      "description": "Contract INV-CORE-002 declares source_refs",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-002_enforcement",
+      "description": "Contract INV-CORE-002 declares machine enforcement",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-002_source_DD_CORE_002",
+      "description": "Contract INV-CORE-002 source is legal: DD-CORE-002",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-002_consumer_DD-CORE-002",
+      "description": "Contract INV-CORE-002 consumer DD-CORE-002 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-002_consumer_DD-CORE-006",
+      "description": "Contract INV-CORE-002 consumer DD-CORE-006 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-002_internal_boundary",
+      "description": "Internal Contract INV-CORE-002 is consumed only inside owner Module CORE",
+      "passed": true,
+      "details": "all consumers are internal"
+    },
+    {
+      "check_id": "contract_INV-CORE-003_owner",
+      "description": "Contract INV-CORE-003 declares a valid owner Module",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "contract_INV-CORE-003_source_refs",
+      "description": "Contract INV-CORE-003 declares source_refs",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-003_enforcement",
+      "description": "Contract INV-CORE-003 declares machine enforcement",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-003_source_DD_CORE_003",
+      "description": "Contract INV-CORE-003 source is legal: DD-CORE-003",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-003_source_DD_CORE_004",
+      "description": "Contract INV-CORE-003 source is legal: DD-CORE-004",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-003_consumer_DD-CORE-003",
+      "description": "Contract INV-CORE-003 consumer DD-CORE-003 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-003_consumer_DD-CORE-004",
+      "description": "Contract INV-CORE-003 consumer DD-CORE-004 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-003_internal_boundary",
+      "description": "Internal Contract INV-CORE-003 is consumed only inside owner Module CORE",
+      "passed": true,
+      "details": "all consumers are internal"
+    },
+    {
+      "check_id": "contract_PI-CORE-001_owner",
+      "description": "Contract PI-CORE-001 declares a valid owner Module",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "contract_PI-CORE-001_source_refs",
+      "description": "Contract PI-CORE-001 declares source_refs",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-CORE-001_enforcement",
+      "description": "Contract PI-CORE-001 declares machine enforcement",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-CORE-001_source_DD_CORE_001",
+      "description": "Contract PI-CORE-001 source is legal: DD-CORE-001",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-CORE-001_source_DD_CORE_002",
+      "description": "Contract PI-CORE-001 source is legal: DD-CORE-002",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-CORE-001_consumer_DD-CORE-001",
+      "description": "Contract PI-CORE-001 consumer DD-CORE-001 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-CORE-001_consumer_DD-CORE-002",
+      "description": "Contract PI-CORE-001 consumer DD-CORE-002 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-CORE-001_consumer_DD-CORE-006",
+      "description": "Contract PI-CORE-001 consumer DD-CORE-006 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-CORE-001_internal_boundary",
+      "description": "Internal Contract PI-CORE-001 is consumed only inside owner Module CORE",
+      "passed": true,
+      "details": "all consumers are internal"
+    }
+  ],
+  "blocking_issues": [
+    "Prospective Trace is valid before Contract integrity decisions",
+    "Illegal Trace relation: DATA-CORE-003 constrained_by PI-CORE-001"
+  ],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-11-03T13:06:23.080Z",
+  "finished_at": "2026-11-03T13:06:23.080Z",
+  "runner": "gate_runner"
+}

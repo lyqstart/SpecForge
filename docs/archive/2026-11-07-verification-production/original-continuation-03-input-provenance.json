@@ -1,0 +1,10 @@
+{
+  "utc": "2026-11-07T06:41:37.667Z",
+  "coverage_snapshot": "original-execution-coverage-1794033632326.json",
+  "coverage_sha256": "b8ed0d4316f975c954d2c40c57bf23c36cf0e25703690cf7225ae6ed10920624",
+  "expected_state": "verification_running",
+  "formal_facts": 22,
+  "history_loaded": false,
+  "professional_artifact_authored": false,
+  "model_prompt_sent": false
+}

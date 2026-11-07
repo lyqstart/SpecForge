@@ -1,0 +1,16 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/verification-source-snapshot.test.ts (5 tests) 7306ms
+   ✓ verification raw source and Git identity > records a bounded stage for a failed Git read without logging the project path  659ms
+   ✓ verification raw source and Git identity > captures current raw input and rejects a changed source without invoking clean filters  1295ms
+   ✓ verification raw source and Git identity > rejects undeclared untracked code and hardlinked tracked input  1001ms
+   ✓ verification raw source and Git identity > binds branch, index and repository configuration  2535ms
+   ✓ verification raw source and Git identity > freezes only reachable code and package metadata, without reading unrelated tracked files  1814ms
+ ✓ tests/unit/verification-rejection-diagnostic.test.ts (4 tests) 9ms
+
+ Test Files  2 passed (2)
+      Tests  9 passed (9)
+   Start at  12:16:12
+   Duration  8.51s (transform 122ms, setup 0ms, collect 498ms, tests 7.32s, environment 0ms, prepare 269ms)
+

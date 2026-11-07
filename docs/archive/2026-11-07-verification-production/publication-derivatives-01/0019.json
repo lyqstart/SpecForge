@@ -1,0 +1,1060 @@
+{
+  "source": {
+    "path": "original-verification-run-02/child-ses_e4b736232ffe1S7Rh815AIixkl.json",
+    "sha256": "7cb38c39764bc0d2d8835745a23bf6095b7b85e53e17741903fa21e94c7f1b33",
+    "size": 47827
+  },
+  "method": "Native tool/input/output/Agent metadata retained; model reasoning and nested credential fields replaced by hashes. Original local copy preserved and excluded from Git publication.",
+  "data": {
+    "raw_sha256": "f1f3f265ed560bda7e3641e9356cf082f5aba58f0abb8af29dcdffb03548bb2b",
+    "raw_path": "D:\\code\\SpecForge\\.tmp\\original-verification\\b1e06bd1-2783-40b5-a60c-9cd65e7663ee\\child-ses_e4b736232ffe1S7Rh815AIixkl.raw.json",
+    "data": [
+      {
+        "info": {
+          "id": "msg_1b48c9dec001RCYL6tiG6f9IPx",
+          "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+          "role": "user",
+          "time": {
+            "created": 1794030476782
+          },
+          "summary": {
+            "diffs": [
+              {
+                "file": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-implementation-batch-t001-unit_1794030644339_21cb1559396d_0.json",
+                "patch": "Index: .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-implementation-batch-t001-unit_1794030644339_21cb1559396d_0.json\n===================================================================\n--- .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-implementation-batch-t001-unit_1794030644339_21cb1559396d_0.json\t\n+++ .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-implementation-batch-t001-unit_1794030644339_21cb1559396d_0.json\t\n@@ -0,0 +1,29 @@\n+{\n+  \"agent\": \"sf-verifier\",\n+  \"boundary_statement\": \"只读验证执行，未修改任何业务或治理文件，未调用 Gate/状态推进工具；本批为 implementation 阶段证据补全，不构成正式验证报告结论。\",\n+  \"duration_ms\": 120000,\n+  \"escalation_signals\": [],\n+  \"findings\": [\n+    \"index 1: attempt=a7ca86b54704950744ddde22fc68d81036baebb2212af2ada1dcc68e8c72cc25, receipt=a26316c97406bbb3045fb22d2f5dc99dd0c76bbb43c1c28868d5b1986ae432c3, exit_code=0, stdout=\\\"1\\\\n\\\", cleanup_proved=true, PASS（期望 exit 0 且输出含 1）\",\n+    \"index 2: attempt=7ad6c3b4667b5c481d40e20b4fc4896e8147d65ddee4a8548b60e3573764cc77, receipt=bf02c8e9a546535109b8f78f3c76f0e1d21ad9f7d9f2a73b158888169df02c0b, exit_code=0, stdout=\\\"1\\\\n\\\", cleanup_proved=true, PASS（期望 exit 0 且输出含 1）\",\n+    \"index 3: attempt=2153099d661adbb3f7b233b5a43f5d8f1a1461739749a44a78a402342acc44d3, receipt=673495007620c5bb591e523c14895897162793e86b60904ee53b88ca9765e513, exit_code=0, stdout=\\\"1\\\\n\\\", cleanup_proved=true, PASS（期望 exit 0 且输出含 1）\",\n+    \"index 4: attempt=f6edd5aee3c1be88041ba5cc26b8470c3bc6784820f2789f694581a6382e863d, receipt=00e9cd65a1a6325f1cf07166825e4fb36b7337502f89a583346bc11e4c1a0a70, exit_code=0, stdout=\\\"2\\\\n\\\", cleanup_proved=true, PASS（期望 exit 0 且输出含 2）\",\n+    \"所有 4 个 LPAC 单进程只读 Node 内联判定均 outcome=passed、output_complete=true、output_preview_truncated=false、failure=null；未运行 shell/grep，原 grep/grep -cE 声明由 Runtime 归一化为同一隔离 Node 内联检查\",\n+    \"index 0 未重复执行（已有历史 receipt ec2d84148c29a89b8053897a378f1c7bbbfce17b4003d29e0050f47c1922ab27）\"\n+  ],\n+  \"inputs_read\": [\n+    \"plan 799ca8fa1434daceee30d1a57c69acfeaed32ba9e1fac4e0a59fa23e7682972b (index 1)\",\n+    \"plan 7cd166ac41b863d0ae9b19b3eb6ed70d2b764aee9a134e634ad65bfa66b6c2da (index 2)\",\n+    \"plan 206f658718f7e2c3fa78e4f1ecec85c7ec0b42b03d87260e5863ed1f2ebe7443 (index 3)\",\n+    \"plan 9109cfb691102dd1d73865e88025b0ca963a218942d1b920a41a360362f73eec (index 4)\"\n+  ],\n+  \"next_step_recommendation\": \"由 sf-orchestrator 将 4 条真实回执与 index 0 历史回执合并进 TASK-WI-0001-001 的 unit 证据记录；本批结果属 implementation 阶段证据补全，不直接作为正式验证报告通过依据。\",\n+  \"outputs_written\": [\n+    \"handoff:verification-implementation-batch-t001-unit\"\n+  ],\n+  \"schema_version\": \"1.0\",\n+  \"stage\": \"verification-implementation-batch-t001-unit\",\n+  \"timestamp\": \"2026-11-07T00:00:00Z\",\n+  \"unknowns\": [],\n+  \"work_item_id\": \"WI-0001\"\n+}\n",
+                "additions": 29,
+                "deletions": 0,
+                "status": "added"
+              }
+            ]
+          },
+          "agent": "sf-verifier",
+          "model": {
+            "providerID": "zhipuai-coding-plan",
+            "modelID": "glm-5.3",
+            "variant": "low"
+          }
+        },
+        "parts": [
+          {
+            "id": "prt_1b48c9df6001SlhcaoK44A5IlN",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48c9dec001RCYL6tiG6f9IPx",
+            "type": "text",
+            "text": "你是真实 sf-verifier，为 Work Item WI-0001（feature_spec，当前权威状态 implementation_running，代码权限已撤销且保持撤销）执行 D23 独立只读验证。项目根：C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7。\n\n目的：implementation（实现阶段证据补全）。这四个计划属于 TASK-WI-0001-001（创建最小工程配置）的 unit verification_commands index 1..4。index 0 已有真实回执（receipt_id=ec2d84148c29a89b8053897a378f1c7bbbfce17b4003d29e0050f47c1922ab27），不要重复执行。\n\n计划（刚创建，10分钟内有效）：\n- index 1: plan_id=799ca8fa1434daceee30d1a57c69acfeaed32ba9e1fac4e0a59fa23e7682972b，原声明 `grep -c '\"dependencies\": {}' package.json`，期望 exit 0 且输出含 1\n- index 2: plan_id=7cd166ac41b863d0ae9b19b3eb6ed70d2b764aee9a134e634ad65bfa66b6c2da，原声明 `grep -c '\"test\": \"node --test tests/greet.test.ts\"' package.json`，期望 exit 0 且输出含 1\n- index 3: plan_id=206f658718f7e2c3fa78e4f1ecec85c7ec0b42b03d87260e5863ed1f2ebe7443，原声明 `grep -c '\"type\": \"module\"' package.json`，期望 exit 0 且输出含 1\n- index 4: plan_id=9109cfb691102dd1d73865e88025b0ca963a218942d1b920a41a360362f73eec，原声明 `grep -cE '\"noEmit\": true|\"allowImportingTsExtensions\": true' tsconfig.json`，期望 exit 0 且输出含 2\n\n严格调用参数契约（上一轮定位的混传教训，必须逐字遵守）：\n- prepare 恰好传：{\"action\":\"prepare\",\"work_item_id\":\"WI-0001\",\"plan_id\":\"<plan_id>\"}\n- run 恰好传：{\"action\":\"run\",\"work_item_id\":\"WI-0001\",\"attempt_record_id\":\"<attempt_record_id>\"}\n- run/cancel/recover 必须省略 plan_id；prepare 返回的 attempt_id 字段不是 run 的参数，run 用 attempt_record_id。\n- 每个真实调用/Attempt 只消费一次。遇到 Schema 拒绝：停下，原样返回错误，不要重试循环、不要放宽参数、不要重建计划。\n\n执行方式：对每个 plan_id 依次 sf_verification_run(action=\"prepare\") 取得 attempt_record_id，再 sf_verification_run(action=\"run\")。Runtime 会把原声明归一化为同一 LPAC 单进程只读 Node 内联判定；如实记录原声明、归一化 argv、真实数值 exit_code、输出、cleanup_proved 与 receipt_id。不要声称运行了 shell/grep。\n\n完成后必须 sf_handoff(action=\"write\") 持久化交接（stage 建议 verification-implementation-batch-t001-unit），并在返回消息中给出每个 index 的：plan_id、attempt_record_id、receipt_id、exit_code、输出摘要、pass/fail 判定（对照上方期望）。失败/取消/超限/过期/清理未知都不能判 pass；只报告事实。你只读业务源码，不写任何业务或治理文件。"
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b48c9e24001TxAUlzo0w9eRhP",
+          "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+          "role": "assistant",
+          "time": {
+            "created": 1794030476836,
+            "completed": 1794030485309
+          },
+          "parentID": "msg_1b48c9dec001RCYL6tiG6f9IPx",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-verifier",
+          "agent": "sf-verifier",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 30578,
+            "input": 862,
+            "output": 70,
+            "reasoning": 14,
+            "cache": {
+              "read": 29632,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1b48cb29b001b8VXO2RfLWGfZn",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48c9e24001TxAUlzo0w9eRhP",
+            "type": "step-start",
+            "snapshot": "d41a15e9171b95ed0a140af1aa25d696204d2e60"
+          },
+          {
+            "type": "reasoning",
+            "withheld": true,
+            "original_sha256": "18e12c37f5ce3858a0d440b54cec7a2f72a68d3840fad06b1cb19cbad1340e4c",
+            "original_size": 261
+          },
+          {
+            "id": "prt_1b48cb545001DoOL91dRWfaEhE",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48c9e24001TxAUlzo0w9eRhP",
+            "type": "tool",
+            "callID": "call_8063f3ec4f394713bbfa237c",
+            "tool": "sf_verification_run",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "prepare",
+                "plan_id": "799ca8fa1434daceee30d1a57c69acfeaed32ba9e1fac4e0a59fa23e7682972b",
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\"success\":true,\"attempt_record_id\":\"a7ca86b54704950744ddde22fc68d81036baebb2212af2ada1dcc68e8c72cc25\",\"attempt_id\":\"23eab2ab46e945f9b549f8d6b2b1178d\",\"plan_id\":\"799ca8fa1434daceee30d1a57c69acfeaed32ba9e1fac4e0a59fa23e7682972b\",\"application_started\":false}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794030482769,
+                "end": 1794030484358
+              }
+            }
+          },
+          {
+            "id": "prt_1b48cbd38001OWsx0lSB4hMGm3",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48c9e24001TxAUlzo0w9eRhP",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "d41a15e9171b95ed0a140af1aa25d696204d2e60",
+            "cost": 0,
+            "tokens": {
+              "total": 30578,
+              "input": 862,
+              "output": 70,
+              "reasoning": 14,
+              "cache": {
+                "read": 29632,
+                "write": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b48cbf44001aU28I6XKq1Ebgw",
+          "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+          "role": "assistant",
+          "time": {
+            "created": 1794030485316,
+            "completed": 1794030502632
+          },
+          "parentID": "msg_1b48c9dec001RCYL6tiG6f9IPx",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-verifier",
+          "agent": "sf-verifier",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 30776,
+            "input": 243,
+            "output": 69,
+            "reasoning": 0,
+            "cache": {
+              "read": 30464,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1b48cd3aa001OLLd6SxrKDTVwb",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48cbf44001aU28I6XKq1Ebgw",
+            "type": "step-start",
+            "snapshot": "d41a15e9171b95ed0a140af1aa25d696204d2e60"
+          },
+          {
+            "id": "prt_1b48cd3b0001khPASAchZ6C3Ej",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48cbf44001aU28I6XKq1Ebgw",
+            "type": "tool",
+            "callID": "call_24f4e827ef394b0da50b9ed3",
+            "tool": "sf_verification_run",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "run",
+                "attempt_record_id": "a7ca86b54704950744ddde22fc68d81036baebb2212af2ada1dcc68e8c72cc25",
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\"success\":true,\"receipt_id\":\"a26316c97406bbb3045fb22d2f5dc99dd0c76bbb43c1c28868d5b1986ae432c3\",\"attempt_record_id\":\"a7ca86b54704950744ddde22fc68d81036baebb2212af2ada1dcc68e8c72cc25\",\"attempt_id\":\"23eab2ab46e945f9b549f8d6b2b1178d\",\"plan_id\":\"799ca8fa1434daceee30d1a57c69acfeaed32ba9e1fac4e0a59fa23e7682972b\",\"outcome\":\"passed\",\"exit_code\":0,\"cleanup_proved\":true,\"failure\":null,\"stdout\":\"1\\n\",\"stderr\":\"\",\"output_preview_truncated\":false,\"output_complete\":true}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794030490552,
+                "end": 1794030501807
+              }
+            }
+          },
+          {
+            "id": "prt_1b48d014b001tqLPnmXZ1lB3lL",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48cbf44001aU28I6XKq1Ebgw",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "d41a15e9171b95ed0a140af1aa25d696204d2e60",
+            "cost": 0,
+            "tokens": {
+              "total": 30776,
+              "input": 243,
+              "output": 69,
+              "reasoning": 0,
+              "cache": {
+                "read": 30464,
+                "write": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b48d02f0001dMk1T8Y0Y7xYpW",
+          "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+          "role": "assistant",
+          "time": {
+            "created": 1794030502640,
+            "completed": 1794030545937
+          },
+          "parentID": "msg_1b48c9dec001RCYL6tiG6f9IPx",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-verifier",
+          "agent": "sf-verifier",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 31056,
+            "input": 327,
+            "output": 73,
+            "reasoning": 0,
+            "cache": {
+              "read": 30656,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1b48da441001zTmLtfOrvXfvU0",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48d02f0001dMk1T8Y0Y7xYpW",
+            "type": "step-start",
+            "snapshot": "d41a15e9171b95ed0a140af1aa25d696204d2e60"
+          },
+          {
+            "id": "prt_1b48da447001xjf53sk5aTbSse",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48d02f0001dMk1T8Y0Y7xYpW",
+            "type": "tool",
+            "callID": "call_e999aa4d333d4151aca3ac0d",
+            "tool": "sf_verification_run",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "prepare",
+                "plan_id": "7cd166ac41b863d0ae9b19b3eb6ed70d2b764aee9a134e634ad65bfa66b6c2da",
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\"success\":true,\"attempt_record_id\":\"7ad6c3b4667b5c481d40e20b4fc4896e8147d65ddee4a8548b60e3573764cc77\",\"attempt_id\":\"33df0f7a140c4eb999ddfde910bea377\",\"plan_id\":\"7cd166ac41b863d0ae9b19b3eb6ed70d2b764aee9a134e634ad65bfa66b6c2da\",\"application_started\":false}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794030543956,
+                "end": 1794030545284
+              }
+            }
+          },
+          {
+            "id": "prt_1b48daaea001xElN7BjUiqrywu",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48d02f0001dMk1T8Y0Y7xYpW",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "d41a15e9171b95ed0a140af1aa25d696204d2e60",
+            "cost": 0,
+            "tokens": {
+              "total": 31056,
+              "input": 327,
+              "output": 73,
+              "reasoning": 0,
+              "cache": {
+                "read": 30656,
+                "write": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b48dac17001xT7kOXXRwrnWOV",
+          "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+          "role": "assistant",
+          "time": {
+            "created": 1794030545943,
+            "completed": 1794030559059
+          },
+          "parentID": "msg_1b48c9dec001RCYL6tiG6f9IPx",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-verifier",
+          "agent": "sf-verifier",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 31270,
+            "input": 216,
+            "output": 78,
+            "reasoning": 0,
+            "cache": {
+              "read": 30976,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1b48db4f70016WCVLFbbvXOXsL",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48dac17001xT7kOXXRwrnWOV",
+            "type": "step-start",
+            "snapshot": "d41a15e9171b95ed0a140af1aa25d696204d2e60"
+          },
+          {
+            "id": "prt_1b48db4fd001KInTIfwBSX84mn",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48dac17001xT7kOXXRwrnWOV",
+            "type": "tool",
+            "callID": "call_a31104cfaa7d4f60a0b31234",
+            "tool": "sf_verification_run",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "run",
+                "attempt_record_id": "7ad6c3b4667b5c481d40e20b4fc4896e8147d65ddee4a8548b60e3573764cc77",
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\"success\":true,\"receipt_id\":\"bf02c8e9a546535109b8f78f3c76f0e1d21ad9f7d9f2a73b158888169df02c0b\",\"attempt_record_id\":\"7ad6c3b4667b5c481d40e20b4fc4896e8147d65ddee4a8548b60e3573764cc77\",\"attempt_id\":\"33df0f7a140c4eb999ddfde910bea377\",\"plan_id\":\"7cd166ac41b863d0ae9b19b3eb6ed70d2b764aee9a134e634ad65bfa66b6c2da\",\"outcome\":\"passed\",\"exit_code\":0,\"cleanup_proved\":true,\"failure\":null,\"stdout\":\"1\\n\",\"stderr\":\"\",\"output_preview_truncated\":false,\"output_complete\":true}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794030548229,
+                "end": 1794030558321
+              }
+            }
+          },
+          {
+            "id": "prt_1b48dde00001aCeCBTMcdwhzzq",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48dac17001xT7kOXXRwrnWOV",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "d41a15e9171b95ed0a140af1aa25d696204d2e60",
+            "cost": 0,
+            "tokens": {
+              "total": 31270,
+              "input": 216,
+              "output": 78,
+              "reasoning": 0,
+              "cache": {
+                "read": 30976,
+                "write": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b48ddf5a001Gb32EMK77KOInd",
+          "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+          "role": "assistant",
+          "time": {
+            "created": 1794030559066,
+            "completed": 1794030566717
+          },
+          "parentID": "msg_1b48c9dec001RCYL6tiG6f9IPx",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-verifier",
+          "agent": "sf-verifier",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 31563,
+            "input": 320,
+            "output": 75,
+            "reasoning": 0,
+            "cache": {
+              "read": 31168,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1b48df394001kehVK9EtXzlF3G",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48ddf5a001Gb32EMK77KOInd",
+            "type": "step-start",
+            "snapshot": "d41a15e9171b95ed0a140af1aa25d696204d2e60"
+          },
+          {
+            "id": "prt_1b48df398001F5SCHvb7oQ8ahx",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48ddf5a001Gb32EMK77KOInd",
+            "type": "tool",
+            "callID": "call_ff022cd21a31433f8cdbe74b",
+            "tool": "sf_verification_run",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "prepare",
+                "plan_id": "206f658718f7e2c3fa78e4f1ecec85c7ec0b42b03d87260e5863ed1f2ebe7443",
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\"success\":true,\"attempt_record_id\":\"2153099d661adbb3f7b233b5a43f5d8f1a1461739749a44a78a402342acc44d3\",\"attempt_id\":\"0ff2b6758e9e4874993c96cf06ab2124\",\"plan_id\":\"206f658718f7e2c3fa78e4f1ecec85c7ec0b42b03d87260e5863ed1f2ebe7443\",\"application_started\":false}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794030564257,
+                "end": 1794030565884
+              }
+            }
+          },
+          {
+            "id": "prt_1b48dfb99001TVPi0N2uVwHeS7",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48ddf5a001Gb32EMK77KOInd",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "d41a15e9171b95ed0a140af1aa25d696204d2e60",
+            "cost": 0,
+            "tokens": {
+              "total": 31563,
+              "input": 320,
+              "output": 75,
+              "reasoning": 0,
+              "cache": {
+                "read": 31168,
+                "write": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b48dfd46001zpFAyBGr2lKiC2",
+          "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+          "role": "assistant",
+          "time": {
+            "created": 1794030566726,
+            "completed": 1794030587187
+          },
+          "parentID": "msg_1b48c9dec001RCYL6tiG6f9IPx",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-verifier",
+          "agent": "sf-verifier",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 31776,
+            "input": 277,
+            "output": 75,
+            "reasoning": 0,
+            "cache": {
+              "read": 31424,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1b48e2203001QuPuYD1S3AI6ri",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48dfd46001zpFAyBGr2lKiC2",
+            "type": "step-start",
+            "snapshot": "d41a15e9171b95ed0a140af1aa25d696204d2e60"
+          },
+          {
+            "id": "prt_1b48e2208001wG6Dfj5QD51owS",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48dfd46001zpFAyBGr2lKiC2",
+            "type": "tool",
+            "callID": "call_62820dbf27e34621bda72a80",
+            "tool": "sf_verification_run",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "run",
+                "attempt_record_id": "2153099d661adbb3f7b233b5a43f5d8f1a1461739749a44a78a402342acc44d3",
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\"success\":true,\"receipt_id\":\"673495007620c5bb591e523c14895897162793e86b60904ee53b88ca9765e513\",\"attempt_record_id\":\"2153099d661adbb3f7b233b5a43f5d8f1a1461739749a44a78a402342acc44d3\",\"attempt_id\":\"0ff2b6758e9e4874993c96cf06ab2124\",\"plan_id\":\"206f658718f7e2c3fa78e4f1ecec85c7ec0b42b03d87260e5863ed1f2ebe7443\",\"outcome\":\"passed\",\"exit_code\":0,\"cleanup_proved\":true,\"failure\":null,\"stdout\":\"1\\n\",\"stderr\":\"\",\"output_preview_truncated\":false,\"output_complete\":true}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794030576144,
+                "end": 1794030586479
+              }
+            }
+          },
+          {
+            "id": "prt_1b48e4bec0012519384KX9D8T8",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48dfd46001zpFAyBGr2lKiC2",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "d41a15e9171b95ed0a140af1aa25d696204d2e60",
+            "cost": 0,
+            "tokens": {
+              "total": 31776,
+              "input": 277,
+              "output": 75,
+              "reasoning": 0,
+              "cache": {
+                "read": 31424,
+                "write": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b48e4d3a001Oy70yeXvMw2arH",
+          "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+          "role": "assistant",
+          "time": {
+            "created": 1794030587194,
+            "completed": 1794030594534
+          },
+          "parentID": "msg_1b48c9dec001RCYL6tiG6f9IPx",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-verifier",
+          "agent": "sf-verifier",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 32063,
+            "input": 312,
+            "output": 71,
+            "reasoning": 0,
+            "cache": {
+              "read": 31680,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1b48e62860017TraOfIUqTa2b5",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48e4d3a001Oy70yeXvMw2arH",
+            "type": "step-start",
+            "snapshot": "d41a15e9171b95ed0a140af1aa25d696204d2e60"
+          },
+          {
+            "id": "prt_1b48e628b001jFS6yRzvoGWTHi",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48e4d3a001Oy70yeXvMw2arH",
+            "type": "tool",
+            "callID": "call_f492fdcad23d44fe8719fe04",
+            "tool": "sf_verification_run",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "prepare",
+                "plan_id": "9109cfb691102dd1d73865e88025b0ca963a218942d1b920a41a360362f73eec",
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\"success\":true,\"attempt_record_id\":\"f6edd5aee3c1be88041ba5cc26b8470c3bc6784820f2789f694581a6382e863d\",\"attempt_id\":\"bdb649ef345842cca323d8c9ee2150fe\",\"plan_id\":\"9109cfb691102dd1d73865e88025b0ca963a218942d1b920a41a360362f73eec\",\"application_started\":false}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794030592658,
+                "end": 1794030593923
+              }
+            }
+          },
+          {
+            "id": "prt_1b48e68a60010CKgq79wdYQ38L",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48e4d3a001Oy70yeXvMw2arH",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "d41a15e9171b95ed0a140af1aa25d696204d2e60",
+            "cost": 0,
+            "tokens": {
+              "total": 32063,
+              "input": 312,
+              "output": 71,
+              "reasoning": 0,
+              "cache": {
+                "read": 31680,
+                "write": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b48e69ec001Z5KERG8ZG2oX6y",
+          "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+          "role": "assistant",
+          "time": {
+            "created": 1794030594540,
+            "completed": 1794030615314
+          },
+          "parentID": "msg_1b48c9dec001RCYL6tiG6f9IPx",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-verifier",
+          "agent": "sf-verifier",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 32273,
+            "input": 260,
+            "output": 77,
+            "reasoning": 0,
+            "cache": {
+              "read": 31936,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1b48e91ce001lWhfME4zg4hD0l",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48e69ec001Z5KERG8ZG2oX6y",
+            "type": "step-start",
+            "snapshot": "d41a15e9171b95ed0a140af1aa25d696204d2e60"
+          },
+          {
+            "id": "prt_1b48e91d3001x60P7hp09s2n5M",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48e69ec001Z5KERG8ZG2oX6y",
+            "type": "tool",
+            "callID": "call_8c6f4631a9b04e848ff252f4",
+            "tool": "sf_verification_run",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "run",
+                "attempt_record_id": "f6edd5aee3c1be88041ba5cc26b8470c3bc6784820f2789f694581a6382e863d",
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\"success\":true,\"receipt_id\":\"00e9cd65a1a6325f1cf07166825e4fb36b7337502f89a583346bc11e4c1a0a70\",\"attempt_record_id\":\"f6edd5aee3c1be88041ba5cc26b8470c3bc6784820f2789f694581a6382e863d\",\"attempt_id\":\"bdb649ef345842cca323d8c9ee2150fe\",\"plan_id\":\"9109cfb691102dd1d73865e88025b0ca963a218942d1b920a41a360362f73eec\",\"outcome\":\"passed\",\"exit_code\":0,\"cleanup_proved\":true,\"failure\":null,\"stdout\":\"2\\n\",\"stderr\":\"\",\"output_preview_truncated\":false,\"output_complete\":true}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794030604765,
+                "end": 1794030614483
+              }
+            }
+          },
+          {
+            "id": "prt_1b48eb952001TdJr0jB5fz1A2n",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48e69ec001Z5KERG8ZG2oX6y",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "d41a15e9171b95ed0a140af1aa25d696204d2e60",
+            "cost": 0,
+            "tokens": {
+              "total": 32273,
+              "input": 260,
+              "output": 77,
+              "reasoning": 0,
+              "cache": {
+                "read": 31936,
+                "write": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b48ebb19001SVaX3bd072kLW3",
+          "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+          "role": "assistant",
+          "time": {
+            "created": 1794030615321,
+            "completed": 1794030631216
+          },
+          "parentID": "msg_1b48c9dec001RCYL6tiG6f9IPx",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-verifier",
+          "agent": "sf-verifier",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 33569,
+            "input": 296,
+            "output": 1072,
+            "reasoning": 9,
+            "cache": {
+              "read": 32192,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1b48ed0e4001eoIMHJk8QtBtVM",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48ebb19001SVaX3bd072kLW3",
+            "type": "step-start",
+            "snapshot": "d41a15e9171b95ed0a140af1aa25d696204d2e60"
+          },
+          {
+            "type": "reasoning",
+            "withheld": true,
+            "original_sha256": "c3282e2eea0d4ada9122941a28ccd78fff9dab7ef1f9c71c949820d53b0b742a",
+            "original_size": 237
+          },
+          {
+            "id": "prt_1b48ef629001p5xhVh2aLOgzck",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48ebb19001SVaX3bd072kLW3",
+            "type": "tool",
+            "callID": "call_7dc36f04b3ed44d586dbcf43",
+            "tool": "sf_handoff",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "write",
+                "handoff": {
+                  "agent": "sf-verifier",
+                  "boundary_statement": "只读验证执行，未修改任何业务或治理文件，未调用 Gate/状态推进工具；本批为 implementation 阶段证据补全，不构成正式验证报告结论。",
+                  "duration_ms": 120000,
+                  "evidence": [],
+                  "findings": [
+                    "index 1: attempt=a7ca86b54704950744ddde22fc68d81036baebb2212af2ada1dcc68e8c72cc25, receipt=a26316c97406bbb3045fb22d2f5dc99dd0c76bbb43c1c28868d5b1986ae432c3, exit_code=0, stdout=\"1\\n\", cleanup_proved=true, PASS（期望 exit 0 且输出含 1）",
+                    "index 2: attempt=7ad6c3b4667b5c481d40e20b4fc4896e8147d65ddee4a8548b60e3573764cc77, receipt=bf02c8e9a546535109b8f78f3c76f0e1d21ad9f7d9f2a73b158888169df02c0b, exit_code=0, stdout=\"1\\n\", cleanup_proved=true, PASS（期望 exit 0 且输出含 1）",
+                    "index 3: attempt=2153099d661adbb3f7b233b5a43f5d8f1a1461739749a44a78a402342acc44d3, receipt=673495007620c5bb591e523c14895897162793e86b60904ee53b88ca9765e513, exit_code=0, stdout=\"1\\n\", cleanup_proved=true, PASS（期望 exit 0 且输出含 1）",
+                    "index 4: attempt=f6edd5aee3c1be88041ba5cc26b8470c3bc6784820f2789f694581a6382e863d, receipt=00e9cd65a1a6325f1cf07166825e4fb36b7337502f89a583346bc11e4c1a0a70, exit_code=0, stdout=\"2\\n\", cleanup_proved=true, PASS（期望 exit 0 且输出含 2）",
+                    "所有 4 个 LPAC 单进程只读 Node 内联判定均 outcome=passed、output_complete=true、output_preview_truncated=false、failure=null；未运行 shell/grep，原 grep/grep -cE 声明由 Runtime 归一化为同一隔离 Node 内联检查",
+                    "index 0 未重复执行（已有历史 receipt ec2d84148c29a89b8053897a378f1c7bbbfce17b4003d29e0050f47c1922ab27）"
+                  ],
+                  "inputs_read": [
+                    "plan 799ca8fa1434daceee30d1a57c69acfeaed32ba9e1fac4e0a59fa23e7682972b (index 1)",
+                    "plan 7cd166ac41b863d0ae9b19b3eb6ed70d2b764aee9a134e634ad65bfa66b6c2da (index 2)",
+                    "plan 206f658718f7e2c3fa78e4f1ecec85c7ec0b42b03d87260e5863ed1f2ebe7443 (index 3)",
+                    "plan 9109cfb691102dd1d73865e88025b0ca963a218942d1b920a41a360362f73eec (index 4)"
+                  ],
+                  "next_step_recommendation": "由 sf-orchestrator 将 4 条真实回执与 index 0 历史回执合并进 TASK-WI-0001-001 的 unit 证据记录；本批结果属 implementation 阶段证据补全，不直接作为正式验证报告通过依据。",
+                  "outputs_written": [
+                    "handoff:verification-implementation-batch-t001-unit"
+                  ],
+                  "schema_version": "1.0",
+                  "stage": "verification-implementation-batch-t001-unit",
+                  "timestamp": "2026-11-07T00:00:00Z",
+                  "unknowns": [],
+                  "work_item_id": "WI-0001"
+                },
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\n  \"success\": false,\n  \"error\": \"Handoff validation failed: Missing required field: escalation_signals (§14.3)\"\n}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794030630452,
+                "end": 1794030630519
+              }
+            }
+          },
+          {
+            "id": "prt_1b48ef7c4001o5qW2ExAePooLA",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48ebb19001SVaX3bd072kLW3",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "d41a15e9171b95ed0a140af1aa25d696204d2e60",
+            "cost": 0,
+            "tokens": {
+              "total": 33569,
+              "input": 296,
+              "output": 1072,
+              "reasoning": 9,
+              "cache": {
+                "read": 32192,
+                "write": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b48ef93a001fv30xlsbFiGVIc",
+          "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+          "role": "assistant",
+          "time": {
+            "created": 1794030631226,
+            "completed": 1794030645313
+          },
+          "parentID": "msg_1b48c9dec001RCYL6tiG6f9IPx",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-verifier",
+          "agent": "sf-verifier",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 34676,
+            "input": 1155,
+            "output": 1073,
+            "reasoning": 0,
+            "cache": {
+              "read": 32448,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1b48f2c3300178lHSeergMGAMo",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48ef93a001fv30xlsbFiGVIc",
+            "type": "step-start",
+            "snapshot": "d41a15e9171b95ed0a140af1aa25d696204d2e60"
+          },
+          {
+            "id": "prt_1b48f2c37001idocLO0xB5xAHn",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48ef93a001fv30xlsbFiGVIc",
+            "type": "tool",
+            "callID": "call_00d8ec6d351b47b2b7a710f0",
+            "tool": "sf_handoff",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "write",
+                "handoff": {
+                  "agent": "sf-verifier",
+                  "boundary_statement": "只读验证执行，未修改任何业务或治理文件，未调用 Gate/状态推进工具；本批为 implementation 阶段证据补全，不构成正式验证报告结论。",
+                  "duration_ms": 120000,
+                  "escalation_signals": [],
+                  "findings": [
+                    "index 1: attempt=a7ca86b54704950744ddde22fc68d81036baebb2212af2ada1dcc68e8c72cc25, receipt=a26316c97406bbb3045fb22d2f5dc99dd0c76bbb43c1c28868d5b1986ae432c3, exit_code=0, stdout=\"1\\n\", cleanup_proved=true, PASS（期望 exit 0 且输出含 1）",
+                    "index 2: attempt=7ad6c3b4667b5c481d40e20b4fc4896e8147d65ddee4a8548b60e3573764cc77, receipt=bf02c8e9a546535109b8f78f3c76f0e1d21ad9f7d9f2a73b158888169df02c0b, exit_code=0, stdout=\"1\\n\", cleanup_proved=true, PASS（期望 exit 0 且输出含 1）",
+                    "index 3: attempt=2153099d661adbb3f7b233b5a43f5d8f1a1461739749a44a78a402342acc44d3, receipt=673495007620c5bb591e523c14895897162793e86b60904ee53b88ca9765e513, exit_code=0, stdout=\"1\\n\", cleanup_proved=true, PASS（期望 exit 0 且输出含 1）",
+                    "index 4: attempt=f6edd5aee3c1be88041ba5cc26b8470c3bc6784820f2789f694581a6382e863d, receipt=00e9cd65a1a6325f1cf07166825e4fb36b7337502f89a583346bc11e4c1a0a70, exit_code=0, stdout=\"2\\n\", cleanup_proved=true, PASS（期望 exit 0 且输出含 2）",
+                    "所有 4 个 LPAC 单进程只读 Node 内联判定均 outcome=passed、output_complete=true、output_preview_truncated=false、failure=null；未运行 shell/grep，原 grep/grep -cE 声明由 Runtime 归一化为同一隔离 Node 内联检查",
+                    "index 0 未重复执行（已有历史 receipt ec2d84148c29a89b8053897a378f1c7bbbfce17b4003d29e0050f47c1922ab27）"
+                  ],
+                  "inputs_read": [
+                    "plan 799ca8fa1434daceee30d1a57c69acfeaed32ba9e1fac4e0a59fa23e7682972b (index 1)",
+                    "plan 7cd166ac41b863d0ae9b19b3eb6ed70d2b764aee9a134e634ad65bfa66b6c2da (index 2)",
+                    "plan 206f658718f7e2c3fa78e4f1ecec85c7ec0b42b03d87260e5863ed1f2ebe7443 (index 3)",
+                    "plan 9109cfb691102dd1d73865e88025b0ca963a218942d1b920a41a360362f73eec (index 4)"
+                  ],
+                  "next_step_recommendation": "由 sf-orchestrator 将 4 条真实回执与 index 0 历史回执合并进 TASK-WI-0001-001 的 unit 证据记录；本批结果属 implementation 阶段证据补全，不直接作为正式验证报告通过依据。",
+                  "outputs_written": [
+                    "handoff:verification-implementation-batch-t001-unit"
+                  ],
+                  "schema_version": "1.0",
+                  "stage": "verification-implementation-batch-t001-unit",
+                  "timestamp": "2026-11-07T00:00:00Z",
+                  "unknowns": [],
+                  "work_item_id": "WI-0001"
+                },
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\n  \"success\": true,\n  \"action\": \"write\",\n  \"path\": \"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-conformance-business-R6ttE7\\\\.specforge\\\\work-items\\\\WI-0001\\\\handoffs\\\\handoff_sf-verifier_verification-implementation-batch-t001-unit_1794030644339_21cb1559396d_0.json\"\n}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794030644289,
+                "end": 1794030644369
+              }
+            }
+          },
+          {
+            "id": "prt_1b48f2ee3001jgyFa0HEEjN60R",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48ef93a001fv30xlsbFiGVIc",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "dee4510466262343035c8d93dc6ba8c9591e502d",
+            "cost": 0,
+            "tokens": {
+              "total": 34676,
+              "input": 1155,
+              "output": 1073,
+              "reasoning": 0,
+              "cache": {
+                "read": 32448,
+                "write": 0
+              }
+            }
+          },
+          {
+            "id": "prt_1b48f303c00108DEif7zEEwsuv",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48ef93a001fv30xlsbFiGVIc",
+            "type": "patch",
+            "hash": "d41a15e9171b95ed0a140af1aa25d696204d2e60",
+            "files": [
+              "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/.specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-implementation-batch-t001-unit_1794030644339_21cb1559396d_0.json"
+            ]
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b48f3047001FRCj4GoMV3gT70",
+          "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+          "role": "assistant",
+          "time": {
+            "created": 1794030645319,
+            "completed": 1794030655781
+          },
+          "parentID": "msg_1b48c9dec001RCYL6tiG6f9IPx",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-verifier",
+          "agent": "sf-verifier",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 35208,
+            "input": 1172,
+            "output": 436,
+            "reasoning": 0,
+            "cache": {
+              "read": 33600,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "stop"
+        },
+        "parts": [
+          {
+            "id": "prt_1b48f446f001qC8usQpzXzuj56",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48f3047001FRCj4GoMV3gT70",
+            "type": "step-start",
+            "snapshot": "dee4510466262343035c8d93dc6ba8c9591e502d"
+          },
+          {
+            "id": "prt_1b48f447a001pY2cR3uCYqDflZ",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48f3047001FRCj4GoMV3gT70",
+            "type": "text",
+            "text": "WI-0001 · TASK-WI-0001-001 unit 批次（index 1–4）D23 只读验证完成，全部通过；handoff 已持久化。\n\n| index | plan_id | attempt_record_id | receipt_id | exit_code | 输出 | cleanup | 判定 |\n|---|---|---|---|---|---|---|---|\n| 1 | 799ca8fa…972b | a7ca86b5…c25 | a26316c9…2c3 | 0 | `1` | proved | **pass**（期望含 1 ✓） |\n| 2 | 7cd166ac…2da | 7ad6c3b4…c77 | bf02c8e9…c0b | 0 | `1` | proved | **pass**（期望含 1 ✓） |\n| 3 | 206f6587…443 | 2153099d…4d3 | 67349500…513 | 0 | `1` | proved | **pass**（期望含 1 ✓） |\n| 4 | 9109cfb6…eec | f6edd5ae…63d | 00e9cd65…a70 | 0 | `2` | proved | **pass**（期望含 2 ✓） |\n\n事实说明：\n- 四个计划各执行一次 prepare→run，无重试、无参数混传；未运行 shell/grep，原声明由 Runtime 归一化为同一 LPAC 单进程只读 Node 内联判定（原声明已在上方表格上下文如实保留）。\n- 所有回执 outcome=passed、output_complete=true、failure=null。\n- index 0 未重复执行（历史 receipt ec2d8414…ab27 保持有效）。\n- 未写任何业务或治理文件；代码权限保持撤销。此批为 implementation 阶段证据补全，不构成正式验证报告结论。",
+            "time": {
+              "start": 1794030650490,
+              "end": 1794030655073
+            }
+          },
+          {
+            "id": "prt_1b48f57b0001xCDR1ALnZPDl1v",
+            "sessionID": "ses_e4b736232ffe1S7Rh815AIixkl",
+            "messageID": "msg_1b48f3047001FRCj4GoMV3gT70",
+            "type": "step-finish",
+            "reason": "stop",
+            "snapshot": "dee4510466262343035c8d93dc6ba8c9591e502d",
+            "cost": 0,
+            "tokens": {
+              "total": 35208,
+              "input": 1172,
+              "output": 436,
+              "reasoning": 0,
+              "cache": {
+                "read": 33600,
+                "write": 0
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "build",
+    "docs/archive/2026-11-07-verification-production/create-public-fixture.ts",
+    "--target=bun",
+    "--outfile=.tmp/verification-lpac-build/create-public-fixture.js"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Rebuild owned synthetic fixture producer from current owner source for1.0.23 acceptance",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES ignored self-owned fixture bundle; EXTERNAL_EVIDENCE_WRITES frozen entry/build receipt",
+  "started_utc": "2026-11-07T07:34:27.850Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 1,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\create-public-fixture.ts",
+      "sha256": "7648ef7288f01879aa4bfd8972a8e4ad6b2664c5d843aa6daa1db012a1d2903f",
+      "size": 9855,
+      "extension": ".ts"
+    }
+  ]
+}

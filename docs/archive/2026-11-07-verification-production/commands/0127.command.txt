@@ -1,0 +1,16 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/invocation-lease.test.ts",
+    "tests/unit/verification-runtime-plan.test.ts",
+    "tests/unit/verification-owner-store.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "neutral-invocation-lease-behavior-and-owner-runtime-regression",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned unit fixtures and explicit verifier/native doubles; EXTERNAL_EVIDENCE_WRITES receipts; no profiles/original",
+  "started_utc": "2026-11-07T03:20:50.002Z"
+}

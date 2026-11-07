@@ -1,0 +1,13 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/node-command-contract.test.ts (33 tests) 82ms
+ ✓ tests/unit/static-task-command.test.ts (16 tests) 872ms
+   ✓ finite readonly static Task normalization > retains grep empty/final-line/CRLF/quiet/negative exit and output behavior  320ms
+ ✓ tests/unit/node-command-proof-boundary.test.ts (7 tests) 36ms
+
+ Test Files  3 passed (3)
+      Tests  56 passed (56)
+   Start at  10:28:14
+   Duration  2.68s (transform 89ms, setup 0ms, collect 845ms, tests 990ms, environment 0ms, prepare 325ms)
+

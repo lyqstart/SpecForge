@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/verify-source-repair-provenance.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-source-repair-commit-and-exact0208-build-provenance",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES committed/raw source and fixed asset identities only; no original/user install",
+  "started_utc": "2026-11-07T04:42:14.631Z"
+}

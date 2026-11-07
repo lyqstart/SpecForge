@@ -1,0 +1,87 @@
+$ vitest run "tests/v11-agent-skill-contract-alignment.test.ts" "--maxWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/v11-agent-skill-contract-alignment.test.ts > v1.1.5 Agent/Skill final governance contract alignment > keeps positive formal-verification delegation aligned with the D23 entry and consumer prerequisites
+AssertionError: expected '### 阶段 10：implementation_done → verif…' to contain 'sf_verification_plan'
+
+- Expected
++ Received
+
+- sf_verification_plan
++ ### 阶段 10：implementation_done → verification_done（验证）
++
++ **目标：** 执行验证，确认所有验收标准满足
++
++ **执行步骤：**
++ 1. 调用 sf_state_read 确认当前状态为 implementation_done
++ 2. 调用 sf_state_transition（from_state="implementation_done"，to_state="verification_running"，evidence="starting verification"）
++ 3. **使用 task 工具调度子 Agent sf-verifier**，在 prompt 中包含：
++    - work_item_id 和 spec_directory 路径
++    - tasks.md 的路径（含 verification_commands）
++    - requirements.md 的路径（含验收标准）
++    - 指令：加载 superpowers-verification-before-completion skill，逐项核验当前原始证据与验收标准。SPS §9.2 / D18 禁止脚本、测试和构建执行；不得绕过。必需证据缺失时返回 blocked，命令记 skipped、required evidence 记 not_executed
++    - **必须明确告知返回验证 JSON 的完整要求**：
++      
++      你必须返回验证 JSON 对象，包含以下字段：
++      1. conclusion: "pass" | "fail" | "blocked"
++      2. verification_commands: 逐条列出 pass/fail/skipped，保留未执行原因
++      3. acceptance_criteria: 验收标准逐项确认
++      4. e2e_tests: 端到端测试结果
++      5. side_effects: 无副作用检查
++      6. summary: 验证总结
++      
++ 4. 等待 sf-verifier 完成；确认其已受控写入 verification_report 与 evidence_manifest，获取包含 typed semantic_closure 的验证 JSON
++ 5. **调用 sf_semantic_closure_run**（work_item_id=<id>, semantic_closure=<验证 JSON 中的原样对象>）；闭包无效时重新调度 verifier，不得继续 Gate
++ 6. **调用 sf_artifact_write** 写入工作日志：
++    - sf_artifact_write（work_item_id=<id>, file_type="work_log", run_id=<run_id>, agent_content=<验证 JSON 的 summary>）
++ 7. 如果闭包有效：调用 sf_gate_run(gate_ids=["verification_gate"])；Gate Runner 通过后自动推进 verification_done
++ 8. 如果验证失败：先按 blocking_issues 区分报告错误、真实失败和能力/证据缺口。仅当问题已由责任 owner 解决且存在可核验的新证据时，**生成新的 run_id**（如 WI-001-sf-verifier-2）重新调度；D18 下无法执行的任务保持 blocked，不得重复派发或口头豁免
++
++ **⚠️ 重要规则：**
++ - 每次重新调度 sf-verifier 必须使用新的 run_id 和新的 archive_path，不得复用之前的
++ - sf-verifier 自己受控写入验证报告与 Evidence；Orchestrator 只写 work_log，并把 semantic_closure 原样提交给专用 Tool
++
++ **产物：** 验证报告（由 sf_artifact_write 渲染写入）
++
++
+
+ ❯ tests/v11-agent-skill-contract-alignment.test.ts:97:21
+     95|     const section = skill.match(/### 阶段 10：[\s\S]*?(?=### 阶段 11：)/)?.[…
+     96|     expect(section).toBeDefined();
+     97|     expect(section).toContain('sf_verification_plan');
+       |                     ^
+     98|     expect(section).toContain('sf_verification_run');
+     99|     expect(section).toContain('contract_reviews');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/v11-agent-skill-contract-alignment.test.ts > v1.1.5 Agent/Skill final governance contract alignment > keeps the orchestrator positive closure sequence on the same D23 and audit owners
+AssertionError: expected '变更审计通过\n→ 必要的 sf-reviewer 审查\n→ sf-ve…' to contain 'sf_verification_plan'
+
+- Expected
++ Received
+
+- sf_verification_plan
++ 变更审计通过
++ → 必要的 sf-reviewer 审查
++ → sf-verifier 核验当前测试和验收原始证据；SPS §9.2 / D18 下缺少必需证据则 blocked，不转交被禁止的执行任务
++ → sf-verifier 受控写入 verification_report + evidence_manifest，并返回 typed semantic_closure
++ → sf_semantic_closure_run(work_item_id, semantic_closure=<verifier 原样输出>)
++ → 仅当 semantic_closure_valid=true 时执行 sf_gate_run(verification_gate)
++ → sf_code_permission(action="revoke")
++ → sf_close_gate
++
+
+ ❯ tests/v11-agent-skill-contract-alignment.test.ts:109:22
+    107|     const sequence = orchestrator.match(/实现后的收口顺序是：[\s\S]*?```text\n([…
+    108|     expect(sequence).toBeDefined();
+    109|     expect(sequence).toContain('sf_verification_plan');
+       |                      ^
+    110|     expect(sequence).toContain('sf_verification_run');
+    111|     expect(sequence!.indexOf('sf_changed_files_audit')).toBeGreaterTha…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+error: script "test" exited with code 1

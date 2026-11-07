@@ -1,0 +1,28 @@
+{
+  "utc": "2026-11-07T10:44:22.642Z",
+  "version": "1.0.23",
+  "source_commit": "d8fc418cab14cde5c0e06ad7fd8c602b451f868b",
+  "release_manifest_sha256": "cba59f74e4602b1f1532cf60e6bbf5c010102da9fdb84458511558215e2433eb",
+  "managed_count": 117,
+  "changed_managed_members": [
+    "agents/sf-orchestrator.md",
+    "skills/sf-workflow-feature-spec/SKILL.md"
+  ],
+  "native_tuple_unchanged": true,
+  "native_targets": [
+    "sf-user/bin/specforge.exe",
+    "sf-user/bin/specforged.exe",
+    "sf-user/bin/verification/node.exe",
+    "sf-user/bin/verification/specforge-verify.exe",
+    "sf-user/bin/verification/assets.json"
+  ],
+  "source_validation": {
+    "root": "0503:51 files748 pass",
+    "direct_consumers": "0502:16 files120 pass",
+    "precheck": "0507:passed"
+  },
+  "business_delivery": "0481:closed_and_git_merged main28c8e3d",
+  "business_installer_writes_authorized": false,
+  "owner_key_content_read": false,
+  "qualification": "Official same-version transactional upgrade of exactly2 managed guidance files plus installer metadata. No --force, native rebuild, original writes or private key reads."
+}

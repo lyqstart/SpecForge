@@ -1,0 +1,30 @@
+{
+  "agent": "sf-verifier",
+  "boundary_statement": "只执行 D23 formal 只读验证；未写任何业务或治理文件；未推进状态。",
+  "duration_ms": 0,
+  "escalation_signals": [],
+  "findings": [
+    "unit idx0: exit_code=0, stdout='1\\n', cleanup_proved=true, receipt da62f46687f3084b0ffa4b16ff8271962b224a7f753281043d2571d429e8429d, 判定 pass",
+    "unit idx1: exit_code=0, stdout='1\\n', cleanup_proved=true, receipt 4cab13ba7c2fedea7d4b10029c9c35f87d1e8a51276d37e6ca39a05d534e88aa, 判定 pass",
+    "unit idx2: exit_code=0, stdout='1\\n' (≥1), cleanup_proved=true, receipt 5a84eaab42fe00810f87806a541c6a6cd4e7eed9f96a594b14ab60fe96f41e72, 判定 pass",
+    "unit idx3: exit_code=0, stdout='2\\n' (≥1), cleanup_proved=true, receipt 3fe42ac343427279031822573062fd9da1577b285d83701fa7116e6db429cc21, 判定 pass",
+    "unit idx4: exit_code=0, stdout='1\\n' (≥1), cleanup_proved=true, receipt 75552a2e0033a798b2615e2f92c4bf535f529aa3a5a5160efcb649909fd4aa09, 判定 pass",
+    "regression idx0: exit_code=0, stdout='1\\n', cleanup_proved=true, receipt 931cff1070577c035b8b0f7cdb4bbaa52bd40be73e9ac4d02f223099cf8bf920, 判定 pass",
+    "全部命令为 Runtime 归一化的只读 Node 内联检查，非真实 shell grep；原声明已逐条披露，输出完整无截断"
+  ],
+  "inputs_read": [
+    "plan:8386d2ea5bf4e3949cec302f46b5a13cb9f727138a3abf2014a525ff7c216d85",
+    "plan:73749384ec353d31768f7a8194ca5281d17eef58942730f594da26b576cf8a08",
+    "plan:5fa1c481cd3a578827e16969ba36e4ed239f87b2a92b31fb57f7d4b734e35877",
+    "plan:9f533f75702965865beeee18de3b1f9324662d97dc4301fd86df177fe042e783",
+    "plan:d032b596cee58580e28ffc7726b82ab5b0b2b5b1d0ee3da0e937497e5926f7a3",
+    "plan:f59ef509548e0e964c45e6d7a102a7faa7ea6281d5b75a269a42c243c49858e2"
+  ],
+  "next_step_recommendation": "由 Orchestrator 汇总本批 receipt 生成 verification_report / evidence_manifest 并运行 verification_gate。",
+  "outputs_written": [],
+  "schema_version": "1.0",
+  "stage": "verification-formal-batch-t004",
+  "timestamp": "2026-11-07T00:00:00Z",
+  "unknowns": [],
+  "work_item_id": "WI-0001"
+}

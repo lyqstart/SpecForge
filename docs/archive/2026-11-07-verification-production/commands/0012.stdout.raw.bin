@@ -1,0 +1,10 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/verification-owner-store.test.ts (13 tests) 215ms
+
+ Test Files  1 passed (1)
+      Tests  13 passed (13)
+   Start at  08:33:09
+   Duration  569ms (transform 43ms, setup 0ms, collect 55ms, tests 215ms, environment 0ms, prepare 108ms)
+

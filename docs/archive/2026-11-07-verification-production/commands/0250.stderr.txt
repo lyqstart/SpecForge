@@ -1,0 +1,6 @@
+Sourcemap for "D:/code/SpecForge/packages/workflow-runtime/dist/src/WorkflowPersistence.js" points to missing source files
+Sourcemap for "D:/code/SpecForge/packages/workflow-runtime/dist/src/events/EventLogReader.js" points to missing source files
+Sourcemap for "D:/code/SpecForge/packages/workflow-runtime/dist/src/StateRecoveryManager.js" points to missing source files
+Sourcemap for "D:/code/SpecForge/packages/workflow-runtime/dist/src/storage/index.js" points to missing source files
+Sourcemap for "D:/code/SpecForge/packages/workflow-runtime/dist/src/storage/WorkflowInstanceStorage.js" points to missing source files
+Sourcemap for "D:/code/SpecForge/packages/workflow-runtime/dist/src/storage/AtomicWorkflowInstanceStorage.js" points to missing source files

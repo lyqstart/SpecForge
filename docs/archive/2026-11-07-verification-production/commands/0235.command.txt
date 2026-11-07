@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/upgrade-user-installation.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "upgrade-real-user1.0.21-to-verified1.0.22",
+  "expected_writes": "DEPLOYMENT_WRITES official transactional installer user managed117 files/manifest/backups/journal only; RUNTIME_OBSERVER_WRITES installer verify; EXTERNAL_EVIDENCE_WRITES exact provenance; original1057 files/set checked unchanged before/after; no model prompt",
+  "started_utc": "2026-11-07T04:52:28.791Z"
+}

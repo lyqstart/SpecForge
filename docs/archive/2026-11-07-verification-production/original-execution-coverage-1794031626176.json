@@ -1,0 +1,727 @@
+{
+  "utc": "2026-11-07T06:07:06.175Z",
+  "source": "Actual genuine installed professional Agent tool parts; plans and prepare/run linked to canonical Task selectors",
+  "task_path": ".specforge/work-items/WI-0001/candidates/tasks.md",
+  "task_raw_sha256": "0b73306b4a56b505b1cdc59f062fbe83f76d1d39ad2534cc1597faa61d1feae2",
+  "declarations": [
+    {
+      "task_id": "TASK-WI-0001-001",
+      "verification_type": "unit",
+      "command_index": 0,
+      "command": "test -f package.json && test -f tsconfig.json"
+    },
+    {
+      "task_id": "TASK-WI-0001-001",
+      "verification_type": "unit",
+      "command_index": 1,
+      "command": "grep -c '\"dependencies\": {}' package.json"
+    },
+    {
+      "task_id": "TASK-WI-0001-001",
+      "verification_type": "unit",
+      "command_index": 2,
+      "command": "grep -c '\"test\": \"node --test tests/greet.test.ts\"' package.json"
+    },
+    {
+      "task_id": "TASK-WI-0001-001",
+      "verification_type": "unit",
+      "command_index": 3,
+      "command": "grep -c '\"type\": \"module\"' package.json"
+    },
+    {
+      "task_id": "TASK-WI-0001-001",
+      "verification_type": "unit",
+      "command_index": 4,
+      "command": "grep -cE '\"noEmit\": true|\"allowImportingTsExtensions\": true' tsconfig.json"
+    },
+    {
+      "task_id": "TASK-WI-0001-002",
+      "verification_type": "unit",
+      "command_index": 0,
+      "command": "test -f src/greet.ts"
+    },
+    {
+      "task_id": "TASK-WI-0001-002",
+      "verification_type": "unit",
+      "command_index": 1,
+      "command": "grep -c \"export function greet(name: string): string\" src/greet.ts"
+    },
+    {
+      "task_id": "TASK-WI-0001-002",
+      "verification_type": "unit",
+      "command_index": 2,
+      "command": "grep -c \"Hello, world!\" src/greet.ts"
+    },
+    {
+      "task_id": "TASK-WI-0001-002",
+      "verification_type": "unit",
+      "command_index": 3,
+      "command": "! grep -qE \"^import |^import\\{|require\\(\" src/greet.ts"
+    },
+    {
+      "task_id": "TASK-WI-0001-003",
+      "verification_type": "unit",
+      "command_index": 0,
+      "command": "test -f tests/greet.test.ts"
+    },
+    {
+      "task_id": "TASK-WI-0001-003",
+      "verification_type": "unit",
+      "command_index": 1,
+      "command": "grep -c \"node:test\" tests/greet.test.ts"
+    },
+    {
+      "task_id": "TASK-WI-0001-003",
+      "verification_type": "unit",
+      "command_index": 2,
+      "command": "grep -c \"node:assert/strict\" tests/greet.test.ts"
+    },
+    {
+      "task_id": "TASK-WI-0001-003",
+      "verification_type": "unit",
+      "command_index": 3,
+      "command": "grep -c \"strictEqual\" tests/greet.test.ts"
+    },
+    {
+      "task_id": "TASK-WI-0001-003",
+      "verification_type": "integration",
+      "command_index": 0,
+      "command": "node --test tests/greet.test.ts"
+    },
+    {
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "unit",
+      "command_index": 0,
+      "command": "grep -c \"^# Greeting Library\" README.md"
+    },
+    {
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "unit",
+      "command_index": 1,
+      "command": "grep -c \"A synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\" README.md"
+    },
+    {
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "unit",
+      "command_index": 2,
+      "command": "grep -c \"greet(name: string): string\" README.md"
+    },
+    {
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "unit",
+      "command_index": 3,
+      "command": "grep -cE \"Hello, Ada!|Hello, Grace!\" README.md"
+    },
+    {
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "unit",
+      "command_index": 4,
+      "command": "grep -c \"Hello, world!\" README.md"
+    },
+    {
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "regression",
+      "command_index": 0,
+      "command": "grep -c \"No production data.\" README.md"
+    },
+    {
+      "task_id": "TASK-WI-0001-005",
+      "verification_type": "integration",
+      "command_index": 0,
+      "command": "node --test tests/greet.test.ts"
+    },
+    {
+      "task_id": "TASK-WI-0001-005",
+      "verification_type": "e2e",
+      "command_index": 0,
+      "command": "node -e \"import('./src/greet.ts').then(m => { const a = m.greet('Ada'); const b = m.greet(''); if (a !== 'Hello, Ada!' || b !== 'Hello, world!') { process.exit(1); } console.log('E2E-OK'); }).catch(() => process.exit(1))\""
+    }
+  ],
+  "phases": {
+    "implementation": {
+      "declared": 22,
+      "covered": 22,
+      "successful_receipts": 22,
+      "missing": [],
+      "receipts": [
+        {
+          "task_id": "TASK-WI-0001-001",
+          "verification_type": "unit",
+          "command_index": 0,
+          "command": "test -f package.json && test -f tsconfig.json",
+          "purpose": "implementation",
+          "plan_id": "e5aee7af74e3cd0c3f390964b758e1523fd811330b55504e57c12b79f1d26acd",
+          "attempt_record_id": "34b3ee953b87904695b2e5050edfd7b3f8d0e0a87d7a989264c7c346366dd40d",
+          "receipt_id": "ec2d84148c29a89b8053897a378f1c7bbbfce17b4003d29e0050f47c1922ab27",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b783970ffeiuEa5CG20oT0ft",
+          "message": "msg_1b487fbc50011hhFpTqdDRlBah",
+          "call_id": "call_89a3fed744c34fac85e6b224"
+        },
+        {
+          "task_id": "TASK-WI-0001-001",
+          "verification_type": "unit",
+          "command_index": 1,
+          "command": "grep -c '\"dependencies\": {}' package.json",
+          "purpose": "implementation",
+          "plan_id": "799ca8fa1434daceee30d1a57c69acfeaed32ba9e1fac4e0a59fa23e7682972b",
+          "attempt_record_id": "a7ca86b54704950744ddde22fc68d81036baebb2212af2ada1dcc68e8c72cc25",
+          "receipt_id": "a26316c97406bbb3045fb22d2f5dc99dd0c76bbb43c1c28868d5b1986ae432c3",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b736232ffe1S7Rh815AIixkl",
+          "message": "msg_1b48cbf44001aU28I6XKq1Ebgw",
+          "call_id": "call_24f4e827ef394b0da50b9ed3"
+        },
+        {
+          "task_id": "TASK-WI-0001-001",
+          "verification_type": "unit",
+          "command_index": 2,
+          "command": "grep -c '\"test\": \"node --test tests/greet.test.ts\"' package.json",
+          "purpose": "implementation",
+          "plan_id": "7cd166ac41b863d0ae9b19b3eb6ed70d2b764aee9a134e634ad65bfa66b6c2da",
+          "attempt_record_id": "7ad6c3b4667b5c481d40e20b4fc4896e8147d65ddee4a8548b60e3573764cc77",
+          "receipt_id": "bf02c8e9a546535109b8f78f3c76f0e1d21ad9f7d9f2a73b158888169df02c0b",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b736232ffe1S7Rh815AIixkl",
+          "message": "msg_1b48dac17001xT7kOXXRwrnWOV",
+          "call_id": "call_a31104cfaa7d4f60a0b31234"
+        },
+        {
+          "task_id": "TASK-WI-0001-001",
+          "verification_type": "unit",
+          "command_index": 3,
+          "command": "grep -c '\"type\": \"module\"' package.json",
+          "purpose": "implementation",
+          "plan_id": "206f658718f7e2c3fa78e4f1ecec85c7ec0b42b03d87260e5863ed1f2ebe7443",
+          "attempt_record_id": "2153099d661adbb3f7b233b5a43f5d8f1a1461739749a44a78a402342acc44d3",
+          "receipt_id": "673495007620c5bb591e523c14895897162793e86b60904ee53b88ca9765e513",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b736232ffe1S7Rh815AIixkl",
+          "message": "msg_1b48dfd46001zpFAyBGr2lKiC2",
+          "call_id": "call_62820dbf27e34621bda72a80"
+        },
+        {
+          "task_id": "TASK-WI-0001-001",
+          "verification_type": "unit",
+          "command_index": 4,
+          "command": "grep -cE '\"noEmit\": true|\"allowImportingTsExtensions\": true' tsconfig.json",
+          "purpose": "implementation",
+          "plan_id": "9109cfb691102dd1d73865e88025b0ca963a218942d1b920a41a360362f73eec",
+          "attempt_record_id": "f6edd5aee3c1be88041ba5cc26b8470c3bc6784820f2789f694581a6382e863d",
+          "receipt_id": "00e9cd65a1a6325f1cf07166825e4fb36b7337502f89a583346bc11e4c1a0a70",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b736232ffe1S7Rh815AIixkl",
+          "message": "msg_1b48e69ec001Z5KERG8ZG2oX6y",
+          "call_id": "call_8c6f4631a9b04e848ff252f4"
+        },
+        {
+          "task_id": "TASK-WI-0001-002",
+          "verification_type": "unit",
+          "command_index": 0,
+          "command": "test -f src/greet.ts",
+          "purpose": "implementation",
+          "plan_id": "13193249c19aef1645687f8be079b0885879d4b5089ac6dbc6a23e61985507b2",
+          "attempt_record_id": "1bec86d3f526340968089cc771cfd9185bada1deec2e9d25609811fbdc894ce0",
+          "receipt_id": "3fe122ba6c28b01d8afc5b5f2a743653a75bc7499ddc26f1d30c6dabdb0ae088",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b703542ffe3PaJIUyWDnaBqL",
+          "message": "msg_1b48feb80001ZHTum1K6wNIAUc",
+          "call_id": "call_59288016a86041e3aa642b71"
+        },
+        {
+          "task_id": "TASK-WI-0001-002",
+          "verification_type": "unit",
+          "command_index": 1,
+          "command": "grep -c \"export function greet(name: string): string\" src/greet.ts",
+          "purpose": "implementation",
+          "plan_id": "bfa66679f48491902a87e25df7472e47fa520514891c7c08cade5ab2d59947fc",
+          "attempt_record_id": "fd84e9f4812ffa719ef37f0b680e38a1470b79deb4de045a750c532bad1d33a5",
+          "receipt_id": "f5b2992046d2baf3e4e3698ca7bdf1f9ea793e4e637c866af2a891078459dc81",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b703542ffe3PaJIUyWDnaBqL",
+          "message": "msg_1b4904e2b001Kvvb3VyGCJ2HEt",
+          "call_id": "call_512b00fb045d4ed49712b68d"
+        },
+        {
+          "task_id": "TASK-WI-0001-002",
+          "verification_type": "unit",
+          "command_index": 2,
+          "command": "grep -c \"Hello, world!\" src/greet.ts",
+          "purpose": "implementation",
+          "plan_id": "ebebda367f2635ff8b6a629cb80cf72cfced1ef60712d1bff8a7798bf824ed08",
+          "attempt_record_id": "7cc9654d2c981eb2a0adb948233633026e7f426e9883016c0db5c85dc5fcd598",
+          "receipt_id": "025a4148643cbb6fe155cb3e6975ce6631d26d312aab290a1de54c36f2f05cca",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b703542ffe3PaJIUyWDnaBqL",
+          "message": "msg_1b490c36e001rM100LBCUWbZKq",
+          "call_id": "call_691c3b8d3c004d1d8d65640d"
+        },
+        {
+          "task_id": "TASK-WI-0001-002",
+          "verification_type": "unit",
+          "command_index": 3,
+          "command": "! grep -qE \"^import |^import\\{|require\\(\" src/greet.ts",
+          "purpose": "implementation",
+          "plan_id": "db00fda91e93e1f43341ea132550e03624375d1a7506052b127ced8c7569bde6",
+          "attempt_record_id": "f6a74d1422e229b19739bb8e952b35324a370b5c6b37d39fa64b15d8ffec63d7",
+          "receipt_id": "a4489be1fb529a47c203256ed9e986d63651ed8a800b7d9d696571be3901f818",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b703542ffe3PaJIUyWDnaBqL",
+          "message": "msg_1b4911e2b001z2rSl9mrqu9Je6",
+          "call_id": "call_934e4b07fb0d4bc29cd3ba0d"
+        },
+        {
+          "task_id": "TASK-WI-0001-003",
+          "verification_type": "unit",
+          "command_index": 0,
+          "command": "test -f tests/greet.test.ts",
+          "purpose": "implementation",
+          "plan_id": "9ba0719c0a55cc7f2ef807afd9a2869b3b4377326985f7741073b323e9447426",
+          "attempt_record_id": "bae2b2b09d54b20c7dc39248622bc8437016131e8bd833ba4234f881bbedaece",
+          "receipt_id": "5a3b4225f62c20b98c101e6d5646bf770ea5fa538d014920f4b97dd4801fadd8",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b6d9952ffeWDsGtLlTJgH5IV",
+          "message": "msg_1b49299d9001YG3cozXCytasyg",
+          "call_id": "call_d5ad23aa8c3145ccb877f797"
+        },
+        {
+          "task_id": "TASK-WI-0001-003",
+          "verification_type": "unit",
+          "command_index": 1,
+          "command": "grep -c \"node:test\" tests/greet.test.ts",
+          "purpose": "implementation",
+          "plan_id": "4d483ce75b63349b4113cb84930a32cf21814a6ef512049eb28e6abe3ee8110a",
+          "attempt_record_id": "f38d4bbffad55d5bd7d147deb4c92d7ccd3a96db9421704acaac5df513891369",
+          "receipt_id": "6dded82ea63e35c76790991380bf8bc60dbed2ab852b078891700d681d66c3ab",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b6d9952ffeWDsGtLlTJgH5IV",
+          "message": "msg_1b492fe360015Q5L95SypnA689",
+          "call_id": "call_5b00a88b51414a0689d929a8"
+        },
+        {
+          "task_id": "TASK-WI-0001-003",
+          "verification_type": "unit",
+          "command_index": 2,
+          "command": "grep -c \"node:assert/strict\" tests/greet.test.ts",
+          "purpose": "implementation",
+          "plan_id": "36f9b948ce1b46e2888bab91970d0de1ba0de0643c8802cd2d160833fd24d57d",
+          "attempt_record_id": "d112ec8788f6f8888c99961df62849f06690143770ff9ac4159d77f235279419",
+          "receipt_id": "d54a21706964fb5af6a4eefb17ae9e5669bc77d3498b955042b767331627cb2f",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b6d9952ffeWDsGtLlTJgH5IV",
+          "message": "msg_1b4934db100158bO7IfMgjkVbj",
+          "call_id": "call_c9670bb893c348418e2074b6"
+        },
+        {
+          "task_id": "TASK-WI-0001-003",
+          "verification_type": "unit",
+          "command_index": 3,
+          "command": "grep -c \"strictEqual\" tests/greet.test.ts",
+          "purpose": "implementation",
+          "plan_id": "8548667a5002756ca795bb11c67840b7887dc76c0253fa20ff2d253f304d48bf",
+          "attempt_record_id": "2aeee49b361260910c8cfa819483940d3555c709b11088763ea757b865378192",
+          "receipt_id": "3c9295cbf337ba34732a6ca02871b156a0da619d9502ee7e7bf571a832a1747d",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b6d9952ffeWDsGtLlTJgH5IV",
+          "message": "msg_1b494b7ca001U6MbikMKez6suH",
+          "call_id": "call_25f1995ee17048aeb143fcbb"
+        },
+        {
+          "task_id": "TASK-WI-0001-003",
+          "verification_type": "integration",
+          "command_index": 0,
+          "command": "node --test tests/greet.test.ts",
+          "purpose": "implementation",
+          "plan_id": "df06153d385112f1758269c9b92c493a83e7f8769324fb52f74b4f39ca2792e8",
+          "attempt_record_id": "30424b4a830c3143975d44b013cc2747dcfbaebfbe58f0a27b197acb25c3f308",
+          "receipt_id": "b2409493c39b98faa240d92f40913eeb67dbdd4a9e6a077fc88e16c8a8e96839",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b6d9952ffeWDsGtLlTJgH5IV",
+          "message": "msg_1b49516a2001l3N8fd8D1KUgBQ",
+          "call_id": "call_1de4538847f64d4cb0e5fc12"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "unit",
+          "command_index": 0,
+          "command": "grep -c \"^# Greeting Library\" README.md",
+          "purpose": "implementation",
+          "plan_id": "928b32f78fd9af2b868aba73ba52b85f4bc958c56de37324f7b9c38c544c95be",
+          "attempt_record_id": "72b950ecbca4ce25db77a31c4da5ea6486953283cc60833fae182bb68f2ee0d0",
+          "receipt_id": "dc02cb1cf3cf9d951432ad86e1ae37a1ded04b63c700eedd348d50731ad4c65d",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b69dd07ffeddAieswn13Rszu",
+          "message": "msg_1b4965028001F0qqpVh8irpKot",
+          "call_id": "call_6ec593069be849c98bc0eb2e"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "unit",
+          "command_index": 1,
+          "command": "grep -c \"A synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\" README.md",
+          "purpose": "implementation",
+          "plan_id": "851cb65c078371aaf3816e6842b35e50a1497339b4765f2a3eb826b058f00cf2",
+          "attempt_record_id": "71c05371a2ec4f23650fb2fac5f8a3487cc786f880c5fc12ce4ed1e04cfb22c0",
+          "receipt_id": "5d2f99fcf8411b99f07c4aa0d980c544aa556b43b177516ac1a27685d1d0e934",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b69dd07ffeddAieswn13Rszu",
+          "message": "msg_1b496a4bc001hrwetgNlrnJXvX",
+          "call_id": "call_d152a82eeb5d455eaeceb5f2"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "unit",
+          "command_index": 2,
+          "command": "grep -c \"greet(name: string): string\" README.md",
+          "purpose": "implementation",
+          "plan_id": "32ae5b6411335829f36c74565ebcc03ac433ea1ad4aff0c15d9b883fc9e5bcc5",
+          "attempt_record_id": "1bc855a025545ae49aff95a5122fe4066b44a60d505c1f3ff03fcd72d8577e0b",
+          "receipt_id": "62fc588d6e29f1203712c807c38409292c410b8ec37237a04492a8a44c1d122f",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b69dd07ffeddAieswn13Rszu",
+          "message": "msg_1b49757fa001eVRFxkjgP7hPS6",
+          "call_id": "call_662f34b867b2486186b52ea7"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "unit",
+          "command_index": 3,
+          "command": "grep -cE \"Hello, Ada!|Hello, Grace!\" README.md",
+          "purpose": "implementation",
+          "plan_id": "87b0ef450204e74d1a0c9757920d1e01ce296e2b11ed4dc8ed567f9ecf4c775d",
+          "attempt_record_id": "a3859ac8bb52bbdf1dc232f2dc6a1d7c4a824105df0e8c7a5c7b5790153c15c2",
+          "receipt_id": "ba1dff2adfa79535b14f4e3b4ea24aeaaa31a9b53f9d42e79471015c794ddfcc",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b69dd07ffeddAieswn13Rszu",
+          "message": "msg_1b497bed8001Vimu1PJBJ2lBZP",
+          "call_id": "call_e1a3f9550e24473683ad20ec"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "unit",
+          "command_index": 4,
+          "command": "grep -c \"Hello, world!\" README.md",
+          "purpose": "implementation",
+          "plan_id": "f4dbd7336f5aac3437f5696abedff37046acf4922e34bcaadc5bb6793ca7a8c0",
+          "attempt_record_id": "e37a0a531c1ada28ce93a6d3e489cc9394404a7e603918369bf4172d6ded42d2",
+          "receipt_id": "1f407a8b6f0e5845319ffc3387c7223188d3fa7e2badb510041f20646fdd5c4b",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b69dd07ffeddAieswn13Rszu",
+          "message": "msg_1b4999e74001kUNEpKjU1gFadC",
+          "call_id": "call_ac3b679b02ee4fd58419c526"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "regression",
+          "command_index": 0,
+          "command": "grep -c \"No production data.\" README.md",
+          "purpose": "implementation",
+          "plan_id": "4a9a8ddb73969d34b258594f8d0c37bda4c530a29ea5b02ed5fdcc781ef72d55",
+          "attempt_record_id": "c1aa3e8f1119966d07d9a3712ed07f0bb2cbc8f9a2076b20948ebced705e08a6",
+          "receipt_id": "ae2fbd6bb1df0b46d04647f1692992a0bbeade46fea5ec8b04fdfe47790bec5a",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b69dd07ffeddAieswn13Rszu",
+          "message": "msg_1b499fa2c001G3CRNnP9057v3p",
+          "call_id": "call_9f3cf4b072854309835e4657"
+        },
+        {
+          "task_id": "TASK-WI-0001-005",
+          "verification_type": "integration",
+          "command_index": 0,
+          "command": "node --test tests/greet.test.ts",
+          "purpose": "implementation",
+          "plan_id": "77d838a02c3166ae06570e67d9293fb7c7c9d32bb61d9af43b57e8f298ee684f",
+          "attempt_record_id": "83bf91fb9ac7c8067035ccfeb87aa883931e84d4d37028268ace2e7e4546e22c",
+          "receipt_id": "73014cdd12b6147b3c8c6a0135340a164e44b1fe8b337ff14314747879a2154f",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b64b0f8ffeuWjTbyWe8LUZMH",
+          "message": "msg_1b49b5fba001uY1aw01Kuwtczq",
+          "call_id": "call_1c967739277448099c6738a1"
+        },
+        {
+          "task_id": "TASK-WI-0001-005",
+          "verification_type": "e2e",
+          "command_index": 0,
+          "command": "node -e \"import('./src/greet.ts').then(m => { const a = m.greet('Ada'); const b = m.greet(''); if (a !== 'Hello, Ada!' || b !== 'Hello, world!') { process.exit(1); } console.log('E2E-OK'); }).catch(() => process.exit(1))\"",
+          "purpose": "implementation",
+          "plan_id": "e9cc0a53f933aec3a6f978b396572f131bc09685925d9f651f78a69b9e71a161",
+          "attempt_record_id": "7cce384e7b951b8af2a477d63cdc3b633206d9cf31f77c85ace2114996ca77d9",
+          "receipt_id": "924a291abdaefe1a985fc85985ab111c617c582cc1783e5cdc4ee34ea7a1a1f1",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4b64b0f8ffeuWjTbyWe8LUZMH",
+          "message": "msg_1b49bbbc3001szTu5nyBHwqiKm",
+          "call_id": "call_beae8613ee6444078351cff2"
+        }
+      ]
+    },
+    "formal": {
+      "declared": 22,
+      "covered": 0,
+      "successful_receipts": 0,
+      "missing": [
+        {
+          "task_id": "TASK-WI-0001-001",
+          "verification_type": "unit",
+          "command_index": 0,
+          "command": "test -f package.json && test -f tsconfig.json"
+        },
+        {
+          "task_id": "TASK-WI-0001-001",
+          "verification_type": "unit",
+          "command_index": 1,
+          "command": "grep -c '\"dependencies\": {}' package.json"
+        },
+        {
+          "task_id": "TASK-WI-0001-001",
+          "verification_type": "unit",
+          "command_index": 2,
+          "command": "grep -c '\"test\": \"node --test tests/greet.test.ts\"' package.json"
+        },
+        {
+          "task_id": "TASK-WI-0001-001",
+          "verification_type": "unit",
+          "command_index": 3,
+          "command": "grep -c '\"type\": \"module\"' package.json"
+        },
+        {
+          "task_id": "TASK-WI-0001-001",
+          "verification_type": "unit",
+          "command_index": 4,
+          "command": "grep -cE '\"noEmit\": true|\"allowImportingTsExtensions\": true' tsconfig.json"
+        },
+        {
+          "task_id": "TASK-WI-0001-002",
+          "verification_type": "unit",
+          "command_index": 0,
+          "command": "test -f src/greet.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-002",
+          "verification_type": "unit",
+          "command_index": 1,
+          "command": "grep -c \"export function greet(name: string): string\" src/greet.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-002",
+          "verification_type": "unit",
+          "command_index": 2,
+          "command": "grep -c \"Hello, world!\" src/greet.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-002",
+          "verification_type": "unit",
+          "command_index": 3,
+          "command": "! grep -qE \"^import |^import\\{|require\\(\" src/greet.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-003",
+          "verification_type": "unit",
+          "command_index": 0,
+          "command": "test -f tests/greet.test.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-003",
+          "verification_type": "unit",
+          "command_index": 1,
+          "command": "grep -c \"node:test\" tests/greet.test.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-003",
+          "verification_type": "unit",
+          "command_index": 2,
+          "command": "grep -c \"node:assert/strict\" tests/greet.test.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-003",
+          "verification_type": "unit",
+          "command_index": 3,
+          "command": "grep -c \"strictEqual\" tests/greet.test.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-003",
+          "verification_type": "integration",
+          "command_index": 0,
+          "command": "node --test tests/greet.test.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "unit",
+          "command_index": 0,
+          "command": "grep -c \"^# Greeting Library\" README.md"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "unit",
+          "command_index": 1,
+          "command": "grep -c \"A synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\" README.md"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "unit",
+          "command_index": 2,
+          "command": "grep -c \"greet(name: string): string\" README.md"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "unit",
+          "command_index": 3,
+          "command": "grep -cE \"Hello, Ada!|Hello, Grace!\" README.md"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "unit",
+          "command_index": 4,
+          "command": "grep -c \"Hello, world!\" README.md"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "regression",
+          "command_index": 0,
+          "command": "grep -c \"No production data.\" README.md"
+        },
+        {
+          "task_id": "TASK-WI-0001-005",
+          "verification_type": "integration",
+          "command_index": 0,
+          "command": "node --test tests/greet.test.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-005",
+          "verification_type": "e2e",
+          "command_index": 0,
+          "command": "node -e \"import('./src/greet.ts').then(m => { const a = m.greet('Ada'); const b = m.greet(''); if (a !== 'Hello, Ada!' || b !== 'Hello, world!') { process.exit(1); } console.log('E2E-OK'); }).catch(() => process.exit(1))\""
+        }
+      ],
+      "receipts": []
+    }
+  },
+  "rejected_runs": [
+    {
+      "input": {
+        "action": "run",
+        "attempt_record_id": "16ce0294658f347c05c9127ddfd090c8981d06fd25d695ff9a40ca179c4c6c71",
+        "plan_id": "cfe94c41edcbd8af1593f7b8ca02dc8211ad21992c89b48624c30fda5af31416",
+        "work_item_id": "WI-0001"
+      },
+      "error": "VERIFICATION_SCHEMA_FIELDS_INVALID",
+      "session": "ses_e4b7b539cffeUabMUcOM66waa1",
+      "message": "msg_1b484d3fd0012xWlN1cEmut0Zj",
+      "call_id": "call_91bd78c478294e2cb2779ea6"
+    },
+    {
+      "input": {
+        "action": "run",
+        "attempt_record_id": "ed7ae04a8536e640fc2cc96e33e1edc2ab0790b94899546ebfdd6f42b09ceaff",
+        "plan_id": "aaacaa92d49c53cd6bb524c58c82e6cb1ce5a5709f367dbe068e73235cf110b5",
+        "work_item_id": "WI-0001"
+      },
+      "error": "VERIFICATION_SCHEMA_FIELDS_INVALID",
+      "session": "ses_e4b7b539cffeUabMUcOM66waa1",
+      "message": "msg_1b484d3fd0012xWlN1cEmut0Zj",
+      "call_id": "call_acd0dabc34d44a8d904539c3"
+    },
+    {
+      "input": {
+        "action": "run",
+        "attempt_record_id": "3e7bc33bf209c0bdb5f2db4b04fbcd5a07c79ed0fdf3762af292847882e07118",
+        "plan_id": "4ef45c3561d62457dca716eaf5d85a5abf4365d3a82f2ba7ad27e33a924758d5",
+        "work_item_id": "WI-0001"
+      },
+      "error": "VERIFICATION_SCHEMA_FIELDS_INVALID",
+      "session": "ses_e4b7b539cffeUabMUcOM66waa1",
+      "message": "msg_1b484d3fd0012xWlN1cEmut0Zj",
+      "call_id": "call_f279936b30d94eb0b2bb8be8"
+    },
+    {
+      "input": {
+        "action": "run",
+        "attempt_record_id": "d4e9b1e3c5dbb85dc58477c51867e47bb256ca7a6b721f92b834c2796ae1cc61",
+        "plan_id": "43872f8d6c044d2638ffced165e8033d4e879f23857b1f1473452f72ec418ca0",
+        "work_item_id": "WI-0001"
+      },
+      "error": "VERIFICATION_SCHEMA_FIELDS_INVALID",
+      "session": "ses_e4b7b539cffeUabMUcOM66waa1",
+      "message": "msg_1b484d3fd0012xWlN1cEmut0Zj",
+      "call_id": "call_29225902798d4445bba40160"
+    },
+    {
+      "input": {
+        "action": "run",
+        "attempt_record_id": "358b378a07d542921ed39ecebe1bb3ba4986e53ac1699bb43f9f7f37f750cc3f",
+        "plan_id": "49893a36a2e0a4744caa642b152dafeac248bb8729f2ae7e95aec53eb44dda47",
+        "work_item_id": "WI-0001"
+      },
+      "error": "VERIFICATION_SCHEMA_FIELDS_INVALID",
+      "session": "ses_e4b7b539cffeUabMUcOM66waa1",
+      "message": "msg_1b484d3fd0012xWlN1cEmut0Zj",
+      "call_id": "call_532068ef4ce848cba7c4c56c"
+    }
+  ],
+  "scope": "Observed native owner results and semantic selector coverage. Does not itself authenticate owner-store MACs, re-evaluate freshness, prove Review/Audit/any full Gate/Formal Version/Close, or authorize workflow transitions."
+}

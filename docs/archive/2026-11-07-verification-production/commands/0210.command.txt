@@ -1,0 +1,12 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/run-current-release-precheck.ts",
+    "--candidate-id",
+    "workspace-build0208-bb14f5e5b74e49b3db62d23599119870bfc088eb64dde59168c75b3d11fcc232"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "async-Git-fix0208-install-surface-precheck",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES ignored development release manifest; EXTERNAL_EVIDENCE_WRITES precheck; no original/user install",
+  "started_utc": "2026-11-07T04:26:24.666Z"
+}

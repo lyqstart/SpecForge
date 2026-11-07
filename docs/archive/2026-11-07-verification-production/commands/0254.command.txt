@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/verification-runtime-plan.test.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "Verify strict per-action verification arguments and pre-start rejection preserves controlled cancellation",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES receipts; RUNTIME_OBSERVER_WRITES owned synthetic unit project and temp Git; no original or deployment writes",
+  "started_utc": "2026-11-07T05:45:33.140Z"
+}

@@ -1,0 +1,10 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/execution-evidence-consumer.test.ts (18 tests) 9ms
+
+ Test Files  1 passed (1)
+      Tests  18 passed (18)
+   Start at  09:41:02
+   Duration  501ms (transform 49ms, setup 0ms, collect 71ms, tests 9ms, environment 0ms, prepare 189ms)
+

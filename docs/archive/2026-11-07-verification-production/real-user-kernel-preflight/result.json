@@ -1,0 +1,26 @@
+{
+  "utc": "2026-11-07T04:38:47.807Z",
+  "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-user-kernel-preflight-aH0i7k",
+  "base": "http://127.0.0.1:44096",
+  "exit": {
+    "code": null,
+    "signal": "SIGTERM",
+    "utc": "2026-11-07T04:38:47.400Z"
+  },
+  "sdk_before": {
+    "version": "1.18.16",
+    "package_sha256": "b05c6fac54e6aed0f45a6b1bf67d54e8215de0c9d3c307ad93ecfc54e099f2c8"
+  },
+  "sdk_after": {
+    "version": "1.18.16",
+    "package_sha256": "b05c6fac54e6aed0f45a6b1bf67d54e8215de0c9d3c307ad93ecfc54e099f2c8"
+  },
+  "user_managed_files_verified_unchanged": 112,
+  "raw_log_path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-user-kernel-preflight-aH0i7k\\kernel.raw.log",
+  "raw_log_sha256": "c5dfced9a71696f051729d479519b92d0ff62ec368fcdea6679ac70849ba7959",
+  "failure": null,
+  "inner_exit_code": 0,
+  "model_prompt_sent": false,
+  "original_project_writes": "NONE",
+  "qualification": "Actual connected provider metadata only; SDK initialization is OpenCode-owned; does not prove a model response or D23 deployment acceptance"
+}

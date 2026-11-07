@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/resume-original-verification.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Continue original WI using real installed professional Agents and explicitly authorized fresh minimum-context GLM-5.3 session",
+  "expected_writes": "TRUTH_SOURCE_WRITES only original WI governed artifacts and StateManager through installed owners; RUNTIME_OBSERVER_WRITES real OpenCode/Daemon logs and session; EXTERNAL_EVIDENCE_WRITES redacted audit and command receipts; explicit external-model-consent.json recorded0242 permits project code/spec/Task/necessary records/path/environment, no old history/credentials/keys, no business main merge",
+  "started_utc": "2026-11-07T05:37:56.947Z"
+}

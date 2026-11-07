@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-public-trials.cjs",
+    "16",
+    "20"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-latest-full-installed-formal-and-actual-SDK-proof",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable public-native-evidence20 full installer SDK and native receipts; private key omitted; no original/user install",
+  "started_utc": "2026-11-07T04:44:58.404Z"
+}

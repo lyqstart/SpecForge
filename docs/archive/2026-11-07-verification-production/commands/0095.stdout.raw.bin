@@ -1,0 +1,1 @@
+{"utc":"2026-11-07T02:40:13.202Z","scope":"Actual public SDK schema conversion, not Kernel invocation or native execution","tool_sha256":"d73c1e6661c9e36f85027a302ded410ca8006df6c3a73dac55cbe4087be69377","schema_sdk":"@opencode-ai/plugin1.18.16 + zod4.1.8","converted":false,"error":"TypeError: undefined is not an object (evaluating 'schema._zod.def')"}

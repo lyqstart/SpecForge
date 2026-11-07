@@ -1,0 +1,22 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/capture-session-boundary.cjs",
+    "06",
+    "01"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Preserve exact R06 current tool graph and role results before observation deadline,without reasoning publication",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=Kernel read logs;EXTERNAL_EVIDENCE_WRITES=hash-bound sanitized session graph and private ignored raw copies",
+  "started_utc": "2026-11-07T09:39:00.640Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\capture-session-boundary.cjs",
+      "sha256": "c26d84a2b8c43310b3b23c25fda1226aab0d97dadd322920543dd386ae01d2c6",
+      "size": 2924,
+      "extension": ".cjs"
+    }
+  ]
+}

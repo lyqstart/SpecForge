@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/check-async-process-budgets.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Node-async-execFile-timeout-and-output-control",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES two fixed owned Node children stopped by async limits; EXTERNAL_EVIDENCE_WRITES independent budget control; no original/user install",
+  "started_utc": "2026-11-07T04:27:51.316Z"
+}

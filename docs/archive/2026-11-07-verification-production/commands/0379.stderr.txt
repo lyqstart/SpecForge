@@ -1,0 +1,25 @@
+$ vitest run tests/unit/active-development-rules-contract.test.ts tests/unit/semantic-closure-contract-alignment.test.ts tests/unit/semantic-closure-producer-governance.test.ts "--maxWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/semantic-closure-producer-governance.test.ts > semantic closure producer governance > connects the active artifact handler to the verification template renderer
+AssertionError: {"success":false,"error":"INVALID_VERIFICATION_REPORT_CONTRACT","hard_stop":false,"retry_allowed":true,"contract_id":"verification-report/v1","validation_errors":["MISSING_FIELD: verification_commands must be a non-empty array"],"message":"verification_report failed verification-report/v1 validation and was NOT written to disk. Use the sf-verifier Required Output contract exactly, then retry."}: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/unit/semantic-closure-producer-governance.test.ts:94:61
+     92|     );
+     93| 
+     94|     expect((result as any).success, JSON.stringify(result)).toBe(true);
+       |                                                             ^
+     95|     const report = await fs.readFile(
+     96|       path.join(projectRoot, '.specforge', 'work-items', workItemId, '…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+error: script "test" exited with code 1

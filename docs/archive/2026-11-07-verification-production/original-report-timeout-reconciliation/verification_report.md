@@ -1,0 +1,1189 @@
+# 验证报告
+
+## 结果汇总
+
+| 指标 | 数值 |
+|------|------|
+| 总检查数 | 43 |
+| 通过 | 43 |
+| 失败 | 0 |
+| 结论 | pass |
+
+## 验证命令
+
+| 命令 | 状态 | 输出摘要 |
+|------|------|----------|
+| `test -f package.json && test -f tsconfig.json` | ✅ pass | Task 声明性存在断言经 finite-posix-readonly-predicate/v1 有限归一化在固定单进程只读 Node 内联执行（非 Shell 原生执行）；exit 0，无输出，与预期一致 |
+| `grep -c '"dependencies": {}' package.json` | ✅ pass | 归一化 Node 只读内联执行（非原生 grep）；exit 0，stdout '1\n'，含预期 1 |
+| `grep -c '"test": "node --test tests/greet.test.ts"' package.json` | ✅ pass | 归一化 Node 只读内联执行；exit 0，stdout '1\n'，含预期 1 |
+| `grep -c '"type": "module"' package.json` | ✅ pass | 归一化 Node 只读内联执行；exit 0，stdout '1\n'，含预期 1 |
+| `grep -cE '"noEmit": true|"allowImportingTsExtensions": true' tsconfig.json` | ✅ pass | 归一化 Node 只读内联执行；exit 0，stdout '2\n'，含预期 2 |
+| `test -f src/greet.ts` | ✅ pass | 归一化 Node 只读内联执行；exit 0，无输出 |
+| `grep -c "export function greet(name: string): string" src/greet.ts` | ✅ pass | 归一化 Node 只读内联执行；exit 0，stdout '1\n'，签名逐字命中（PI-CORE-001） |
+| `grep -c "Hello, world!" src/greet.ts` | ✅ pass | 归一化 Node 只读内联执行；exit 0，stdout '1\n'，13 字符常量命中 |
+| `! grep -qE "^import |^import\{|require\(" src/greet.ts` | ✅ pass | 归一化 Node 只读内联反向断言；exit 0，无输出，src/greet.ts 零 import 成立 |
+| `test -f tests/greet.test.ts` | ✅ pass | 归一化 Node 只读内联执行；exit 0，无输出 |
+| `grep -c "node:test" tests/greet.test.ts` | ✅ pass | 归一化 Node 只读内联执行；exit 0，stdout '1\n' |
+| `grep -c "node:assert/strict" tests/greet.test.ts` | ✅ pass | 归一化 Node 只读内联执行；exit 0，stdout '1\n' |
+| `grep -c "strictEqual" tests/greet.test.ts` | ✅ pass | 归一化 Node 只读内联执行；exit 0，stdout '4\n'，A1–A4 四条断言存在 |
+| `node --test tests/greet.test.ts` | ✅ pass | D23 固定单进程只读 Node 真实执行；exit 0，TAP 完整输出含 '# tests 4 / # pass 4 / # fail 0'，A1–A4 全部通过，套件以真实 import ../src/greet.ts 消费公共 API |
+| `grep -c "^# Greeting Library" README.md` | ✅ pass | 归一化 Node 只读内联执行；exit 0，stdout '1\n'，既有标题保留 |
+| `grep -c "A synthetic TypeScript greeting library for an isolated governance acceptance run. No production data." README.md` | ✅ pass | 归一化 Node 只读内联执行；exit 0，stdout '1\n'，既有正文保留 |
+| `grep -c "greet(name: string): string" README.md` | ✅ pass | 归一化 Node 只读内联执行；exit 0，stdout '1\n'，调用方式说明命中 |
+| `grep -cE "Hello, Ada!|Hello, Grace!" README.md` | ✅ pass | 归一化 Node 只读内联执行；exit 0，stdout '2\n'，两种非空示例命中 |
+| `grep -c "Hello, world!" README.md` | ✅ pass | 归一化 Node 只读内联执行；exit 0，stdout '1\n'，空名称示例命中 |
+| `grep -c "No production data." README.md` | ✅ pass | 归一化 Node 只读内联执行（回归断言）；exit 0，stdout '1\n'，追加未破坏既有声明 |
+| `node --test tests/greet.test.ts` | ✅ pass | D23 固定单进程只读 Node 真实执行（集成闭环重跑，主路径命令与 scripts.test 同入口）；exit 0，TAP 完整输出含 '# tests 4 / # pass 4 / # fail 0'，同时构成行为回归证据 |
+| `node -e "import('./src/greet.ts').then(m => { const a = m.greet('Ada'); const b = m.greet(''); if (a !== 'Hello, Ada!' || b !== 'Hello, world!') { process.exit(1); } console.log('E2E-OK'); }).catch(() => process.exit(1))"` | ✅ pass | D23 固定单进程只读 Node 真实执行调用方视角动态导入；exit 0，stdout 'E2E-OK\n'，greet('Ada')==='Hello, Ada!' 且 greet('')==='Hello, world!'，与 README 示例逐字符一致 |
+
+## 验收标准
+
+| 需求 | 名称 | 状态 | 证据 |
+|------|------|------|------|
+| AC-CORE-001 | src/greet.ts 提供名为 greet 的导出函数 | ✅ pass | EV-0007 |
+| AC-CORE-002 | greet 具备签名 greet(name: string): string（tsconfig strict/NodeNext 承载静态类型检查路径） | ✅ pass | EV-0007 |
+| AC-CORE-003 | 反向判定：文件存在、greet 已导出、签名一致且被真实 import 消费 | ✅ pass | EV-0022 |
+| AC-CORE-004 | 非空字符串调用返回精确 Hello, <name>!（A1/A2） | ✅ pass | EV-0014 |
+| AC-CORE-005 | 三段拼接模板字符不得增删改写（A1/A2/A4 strictEqual 逐字符相等） | ✅ pass | EV-0014 |
+| AC-CORE-006 | 反向判定：任一非空输入不符模板/改写 name/抛异常即未满足（未触发） | ✅ pass | EV-0014 |
+| AC-CORE-007 | 空字符串调用返回 Hello, world!（A3） | ✅ pass | EV-0014 |
+| AC-CORE-008 | 默认问候精确等于 13 字符 Hello, world! | ✅ pass | EV-0008 |
+| AC-CORE-009 | 反向判定：空字符串返回其他值/抛异常/不确定即未满足（未触发） | ✅ pass | EV-0014 |
+| AC-CORE-010 | 交付自动化测试且断言覆盖两条行为（strictEqual×4，A1/A2/A4→REQ-002、A3→REQ-003） | ✅ pass | EV-0013 |
+| AC-CORE-011 | 测试套件在批准后合法执行边界内运行且全部断言通过（scripts.test 同入口） | ✅ pass | EV-0021 |
+| AC-CORE-012 | 流程约束：候选阶段无已运行/已通过表述，运行证据仅在批准后取得 | ✅ pass | EV-0021 |
+| AC-CORE-013 | 使用说明说明 greet 导入与调用方式，既有内容保留 | ✅ pass | EV-0017 |
+| AC-CORE-014 | 使用说明同时含非空与空名称两种行为示例 | ✅ pass | EV-0018 |
+| AC-CORE-015 | 示例与实现行为逐字符一致（与 A1/A3 断言值对照） | ✅ pass | EV-0022 |
+| AC-CORE-016 | 运行时 dependencies 为空集 | ✅ pass | EV-0002 |
+| AC-CORE-017 | 反向判定：运行路径不得依赖第三方包（src 零 import） | ✅ pass | EV-0009 |
+| AC-CORE-018 | 开发期工具链零安装路径（node:test/node:assert/strict 内置，无 devDependencies） | ✅ pass | EV-0011 |
+
+## 端到端测试
+
+| 测试名称 | 状态 | 证据 |
+|----------|------|------|
+| 集成闭环：加载器→真实源文件 import→A1–A4 断言（TASK-WI-0001-003） | ✅ pass | EV-0014 |
+| 集成闭环重跑与行为回归（TASK-WI-0001-005） | ✅ pass | EV-0021 |
+| 调用方视角动态导入双行为契约检查（greet('Ada')/greet('')） | ✅ pass | EV-0022 |
+
+## 副作用
+
+验证阶段零副作用：sf-verifier 全程只读（未调用任何执行工具，仅聚合已有 formal 回执并用受控工具写入自有产物）；22 条回执 cleanup_proved=true；changed_files_audit PASS（5/5 in_scope，0 越界，unresolved blocked=0，Write Guard Evidence SHA256 7b89d713…）；历史 Get-FileHash 拒绝（HS-1793717145264）为 operator_error/abandon 且零写入，保留为已解决历史记录。
+
+## 结论
+
+**结论：pass**
+
+WI-0001（feature_spec/requirement_change_path）验证结论 pass。上游核对：tasks.md 五任务全部 verification_commands（22 条）与 formal 回执逐条一致（命令文本、task_id、verification_type、command_index、exit 0、输出与 expected_output_contains 吻合）；trace_delta 的 REQ→AC→DD→TASK→FILE→TEST→EVIDENCE 矩阵 18/18 AC 覆盖、8/8 EVREQ 全部取得；requirements.candidate 的 REQ-CORE-001～006 Must×5+Should×1 全部由非弱或其声明等级证据支撑。测试矩阵：L1/L2/L4/L6 pass（静态断言 19 条归一化 Node 只读执行、node --test 真实运行 4 pass×2、README 回归、行为回归），L3/L5/L7/L8/L9/L10 不适用（无 PBT/部署冒烟/性能/安全/跨版本兼容/UAT 需求：无生产部署、隔离验收运行、需求明确排除性能与安全维度，D23 固定 Node 仅证明当前运行时且未声明生产最低版本）。治理覆盖：两个历史 Get-FileHash 拒绝（HS-1793717145264，operator_error/abandon，零写入）如实保留消费；22 条独立 formal 回执覆盖；changed_files_audit PASS。Verdict Gate 前置第 1-5 项已由本报告与 evidence_manifest（EV-0001～EV-0022）满足。
+
+## Machine-readable Verification Contract
+
+```json
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0001",
+  "workflow_type": "feature_spec",
+  "workflow_path": "requirement_change_path",
+  "conclusion": "pass",
+  "test_matrix": {
+    "L1_unit": "pass",
+    "L2_integration": "pass",
+    "L3_pbt": "not_applicable",
+    "L4_e2e": "pass",
+    "L5_smoke": "not_applicable",
+    "L6_regression": "pass",
+    "L7_performance": "not_applicable",
+    "L8_security": "not_applicable",
+    "L9_compatibility": "not_applicable",
+    "L10_uat": "not_applicable"
+  },
+  "verification_commands": [
+    {
+      "command": "test -f package.json && test -f tsconfig.json",
+      "status": "pass",
+      "output_summary": "Task 声明性存在断言经 finite-posix-readonly-predicate/v1 有限归一化在固定单进程只读 Node 内联执行（非 Shell 原生执行）；exit 0，无输出，与预期一致",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "ba1f4b337c784b7aae9627b940740ae1e5d7842f56bd8133956f67bfa23f7333",
+      "task_id": "TASK-WI-0001-001",
+      "verification_type": "unit",
+      "command_index": 0
+    },
+    {
+      "command": "grep -c '\"dependencies\": {}' package.json",
+      "status": "pass",
+      "output_summary": "归一化 Node 只读内联执行（非原生 grep）；exit 0，stdout '1\\n'，含预期 1",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "a39a587ad7f256a823c141be8e8346ef4a29dd54a1f91d033a6384d706ec7d8c",
+      "task_id": "TASK-WI-0001-001",
+      "verification_type": "unit",
+      "command_index": 1
+    },
+    {
+      "command": "grep -c '\"test\": \"node --test tests/greet.test.ts\"' package.json",
+      "status": "pass",
+      "output_summary": "归一化 Node 只读内联执行；exit 0，stdout '1\\n'，含预期 1",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "35ce1c4da752abf007c72c5836b22374aae246f274880a45087e3e61523da4c2",
+      "task_id": "TASK-WI-0001-001",
+      "verification_type": "unit",
+      "command_index": 2
+    },
+    {
+      "command": "grep -c '\"type\": \"module\"' package.json",
+      "status": "pass",
+      "output_summary": "归一化 Node 只读内联执行；exit 0，stdout '1\\n'，含预期 1",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "a56d6d8432c5e28610379c5538f071d94a548112f1256726ac3fd4cf750f8268",
+      "task_id": "TASK-WI-0001-001",
+      "verification_type": "unit",
+      "command_index": 3
+    },
+    {
+      "command": "grep -cE '\"noEmit\": true|\"allowImportingTsExtensions\": true' tsconfig.json",
+      "status": "pass",
+      "output_summary": "归一化 Node 只读内联执行；exit 0，stdout '2\\n'，含预期 2",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "725eaeeffc0472a805dfa80e3042f1efd6449082888ebb5c15ce7883cceee4fd",
+      "task_id": "TASK-WI-0001-001",
+      "verification_type": "unit",
+      "command_index": 4
+    },
+    {
+      "command": "test -f src/greet.ts",
+      "status": "pass",
+      "output_summary": "归一化 Node 只读内联执行；exit 0，无输出",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "290bf68c482afbf68cbb38639492980aade04b82ae7d5d6d984b0bb0249436d5",
+      "task_id": "TASK-WI-0001-002",
+      "verification_type": "unit",
+      "command_index": 0
+    },
+    {
+      "command": "grep -c \"export function greet(name: string): string\" src/greet.ts",
+      "status": "pass",
+      "output_summary": "归一化 Node 只读内联执行；exit 0，stdout '1\\n'，签名逐字命中（PI-CORE-001）",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "0246951140b7a562a278ef97bdb06ff4419c133ed6f051df5af7263eee15db45",
+      "task_id": "TASK-WI-0001-002",
+      "verification_type": "unit",
+      "command_index": 1
+    },
+    {
+      "command": "grep -c \"Hello, world!\" src/greet.ts",
+      "status": "pass",
+      "output_summary": "归一化 Node 只读内联执行；exit 0，stdout '1\\n'，13 字符常量命中",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "43096710781324aab9afd8b45b6f827f685a398bb9336f06c20268f0afc22d9e",
+      "task_id": "TASK-WI-0001-002",
+      "verification_type": "unit",
+      "command_index": 2
+    },
+    {
+      "command": "! grep -qE \"^import |^import\\{|require\\(\" src/greet.ts",
+      "status": "pass",
+      "output_summary": "归一化 Node 只读内联反向断言；exit 0，无输出，src/greet.ts 零 import 成立",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "9abce60b2d876d97ad08425b7f67b287a1d7f3d02f49c3ff481a7c73f97a7aa7",
+      "task_id": "TASK-WI-0001-002",
+      "verification_type": "unit",
+      "command_index": 3
+    },
+    {
+      "command": "test -f tests/greet.test.ts",
+      "status": "pass",
+      "output_summary": "归一化 Node 只读内联执行；exit 0，无输出",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "11650444ba0b308497eb5b418e00448f1b0356f1e867da5c9b4751538b6aeaa2",
+      "task_id": "TASK-WI-0001-003",
+      "verification_type": "unit",
+      "command_index": 0
+    },
+    {
+      "command": "grep -c \"node:test\" tests/greet.test.ts",
+      "status": "pass",
+      "output_summary": "归一化 Node 只读内联执行；exit 0，stdout '1\\n'",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "019d28117b3b3420a8e60268cc337cc7b537373f4a43691495ddaded2f8213bf",
+      "task_id": "TASK-WI-0001-003",
+      "verification_type": "unit",
+      "command_index": 1
+    },
+    {
+      "command": "grep -c \"node:assert/strict\" tests/greet.test.ts",
+      "status": "pass",
+      "output_summary": "归一化 Node 只读内联执行；exit 0，stdout '1\\n'",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "0d9908e31e2c080ebc9722a84573ff78e68add94044fa688f5602df37958ef39",
+      "task_id": "TASK-WI-0001-003",
+      "verification_type": "unit",
+      "command_index": 2
+    },
+    {
+      "command": "grep -c \"strictEqual\" tests/greet.test.ts",
+      "status": "pass",
+      "output_summary": "归一化 Node 只读内联执行；exit 0，stdout '4\\n'，A1–A4 四条断言存在",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "ab4b192ce7969882ccbf5d395ba057ec5296327410b154661c003906540c3e06",
+      "task_id": "TASK-WI-0001-003",
+      "verification_type": "unit",
+      "command_index": 3
+    },
+    {
+      "command": "node --test tests/greet.test.ts",
+      "status": "pass",
+      "output_summary": "D23 固定单进程只读 Node 真实执行；exit 0，TAP 完整输出含 '# tests 4 / # pass 4 / # fail 0'，A1–A4 全部通过，套件以真实 import ../src/greet.ts 消费公共 API",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "99535bcd60677e21214aa72c85c9ecb7c9928ff329bddcdeaa9a1d4dbd2cf911",
+      "task_id": "TASK-WI-0001-003",
+      "verification_type": "integration",
+      "command_index": 0
+    },
+    {
+      "command": "grep -c \"^# Greeting Library\" README.md",
+      "status": "pass",
+      "output_summary": "归一化 Node 只读内联执行；exit 0，stdout '1\\n'，既有标题保留",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "da62f46687f3084b0ffa4b16ff8271962b224a7f753281043d2571d429e8429d",
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "unit",
+      "command_index": 0
+    },
+    {
+      "command": "grep -c \"A synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\" README.md",
+      "status": "pass",
+      "output_summary": "归一化 Node 只读内联执行；exit 0，stdout '1\\n'，既有正文保留",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "4cab13ba7c2fedea7d4b10029c9c35f87d1e8a51276d37e6ca39a05d534e88aa",
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "unit",
+      "command_index": 1
+    },
+    {
+      "command": "grep -c \"greet(name: string): string\" README.md",
+      "status": "pass",
+      "output_summary": "归一化 Node 只读内联执行；exit 0，stdout '1\\n'，调用方式说明命中",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "5a84eaab42fe00810f87806a541c6a6cd4e7eed9f96a594b14ab60fe96f41e72",
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "unit",
+      "command_index": 2
+    },
+    {
+      "command": "grep -cE \"Hello, Ada!|Hello, Grace!\" README.md",
+      "status": "pass",
+      "output_summary": "归一化 Node 只读内联执行；exit 0，stdout '2\\n'，两种非空示例命中",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "3fe42ac343427279031822573062fd9da1577b285d83701fa7116e6db429cc21",
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "unit",
+      "command_index": 3
+    },
+    {
+      "command": "grep -c \"Hello, world!\" README.md",
+      "status": "pass",
+      "output_summary": "归一化 Node 只读内联执行；exit 0，stdout '1\\n'，空名称示例命中",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "75552a2e0033a798b2615e2f92c4bf535f529aa3a5a5160efcb649909fd4aa09",
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "unit",
+      "command_index": 4
+    },
+    {
+      "command": "grep -c \"No production data.\" README.md",
+      "status": "pass",
+      "output_summary": "归一化 Node 只读内联执行（回归断言）；exit 0，stdout '1\\n'，追加未破坏既有声明",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "931cff1070577c035b8b0f7cdb4bbaa52bd40be73e9ac4d02f223099cf8bf920",
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "regression",
+      "command_index": 0
+    },
+    {
+      "command": "node --test tests/greet.test.ts",
+      "status": "pass",
+      "output_summary": "D23 固定单进程只读 Node 真实执行（集成闭环重跑，主路径命令与 scripts.test 同入口）；exit 0，TAP 完整输出含 '# tests 4 / # pass 4 / # fail 0'，同时构成行为回归证据",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "575a36f175b7cfe4a22df649867a7c4e70e0869710a3d64587b9a8e1440cb344",
+      "task_id": "TASK-WI-0001-005",
+      "verification_type": "integration",
+      "command_index": 0
+    },
+    {
+      "command": "node -e \"import('./src/greet.ts').then(m => { const a = m.greet('Ada'); const b = m.greet(''); if (a !== 'Hello, Ada!' || b !== 'Hello, world!') { process.exit(1); } console.log('E2E-OK'); }).catch(() => process.exit(1))\"",
+      "status": "pass",
+      "output_summary": "D23 固定单进程只读 Node 真实执行调用方视角动态导入；exit 0，stdout 'E2E-OK\\n'，greet('Ada')==='Hello, Ada!' 且 greet('')==='Hello, world!'，与 README 示例逐字符一致",
+      "execution_kind": "verification-execution/v1",
+      "execution_receipt_id": "25074708ec87917bc53d6a1310b08144413b7ae70c1fa3f89249a3512e6c87ab",
+      "task_id": "TASK-WI-0001-005",
+      "verification_type": "e2e",
+      "command_index": 0
+    }
+  ],
+  "acceptance_criteria": [
+    {
+      "req_id": "AC-CORE-001",
+      "name": "src/greet.ts 提供名为 greet 的导出函数",
+      "status": "pass",
+      "evidence": "EV-0007"
+    },
+    {
+      "req_id": "AC-CORE-002",
+      "name": "greet 具备签名 greet(name: string): string（tsconfig strict/NodeNext 承载静态类型检查路径）",
+      "status": "pass",
+      "evidence": "EV-0007"
+    },
+    {
+      "req_id": "AC-CORE-003",
+      "name": "反向判定：文件存在、greet 已导出、签名一致且被真实 import 消费",
+      "status": "pass",
+      "evidence": "EV-0022"
+    },
+    {
+      "req_id": "AC-CORE-004",
+      "name": "非空字符串调用返回精确 Hello, <name>!（A1/A2）",
+      "status": "pass",
+      "evidence": "EV-0014"
+    },
+    {
+      "req_id": "AC-CORE-005",
+      "name": "三段拼接模板字符不得增删改写（A1/A2/A4 strictEqual 逐字符相等）",
+      "status": "pass",
+      "evidence": "EV-0014"
+    },
+    {
+      "req_id": "AC-CORE-006",
+      "name": "反向判定：任一非空输入不符模板/改写 name/抛异常即未满足（未触发）",
+      "status": "pass",
+      "evidence": "EV-0014"
+    },
+    {
+      "req_id": "AC-CORE-007",
+      "name": "空字符串调用返回 Hello, world!（A3）",
+      "status": "pass",
+      "evidence": "EV-0014"
+    },
+    {
+      "req_id": "AC-CORE-008",
+      "name": "默认问候精确等于 13 字符 Hello, world!",
+      "status": "pass",
+      "evidence": "EV-0008"
+    },
+    {
+      "req_id": "AC-CORE-009",
+      "name": "反向判定：空字符串返回其他值/抛异常/不确定即未满足（未触发）",
+      "status": "pass",
+      "evidence": "EV-0014"
+    },
+    {
+      "req_id": "AC-CORE-010",
+      "name": "交付自动化测试且断言覆盖两条行为（strictEqual×4，A1/A2/A4→REQ-002、A3→REQ-003）",
+      "status": "pass",
+      "evidence": "EV-0013"
+    },
+    {
+      "req_id": "AC-CORE-011",
+      "name": "测试套件在批准后合法执行边界内运行且全部断言通过（scripts.test 同入口）",
+      "status": "pass",
+      "evidence": "EV-0021"
+    },
+    {
+      "req_id": "AC-CORE-012",
+      "name": "流程约束：候选阶段无已运行/已通过表述，运行证据仅在批准后取得",
+      "status": "pass",
+      "evidence": "EV-0021"
+    },
+    {
+      "req_id": "AC-CORE-013",
+      "name": "使用说明说明 greet 导入与调用方式，既有内容保留",
+      "status": "pass",
+      "evidence": "EV-0017"
+    },
+    {
+      "req_id": "AC-CORE-014",
+      "name": "使用说明同时含非空与空名称两种行为示例",
+      "status": "pass",
+      "evidence": "EV-0018"
+    },
+    {
+      "req_id": "AC-CORE-015",
+      "name": "示例与实现行为逐字符一致（与 A1/A3 断言值对照）",
+      "status": "pass",
+      "evidence": "EV-0022"
+    },
+    {
+      "req_id": "AC-CORE-016",
+      "name": "运行时 dependencies 为空集",
+      "status": "pass",
+      "evidence": "EV-0002"
+    },
+    {
+      "req_id": "AC-CORE-017",
+      "name": "反向判定：运行路径不得依赖第三方包（src 零 import）",
+      "status": "pass",
+      "evidence": "EV-0009"
+    },
+    {
+      "req_id": "AC-CORE-018",
+      "name": "开发期工具链零安装路径（node:test/node:assert/strict 内置，无 devDependencies）",
+      "status": "pass",
+      "evidence": "EV-0011"
+    }
+  ],
+  "required_evidence_results": [
+    {
+      "id": "EVREQ-1A",
+      "supports": [
+        "REQ-CORE-001",
+        "TASK-WI-0001-002"
+      ],
+      "required_level": "L1",
+      "actual_level": "L1",
+      "status": "pass",
+      "command": "test -f src/greet.ts; grep -c \"export function greet(name: string): string\" src/greet.ts",
+      "observed_result": "src/greet.ts 存在且签名导出命中 1（EV-0006/EV-0007，归一化 Node 只读执行 exit 0）"
+    },
+    {
+      "id": "EVREQ-1B",
+      "supports": [
+        "REQ-CORE-001",
+        "REQ-CORE-004",
+        "TASK-WI-0001-003",
+        "TASK-WI-0001-005"
+      ],
+      "required_level": "L4",
+      "actual_level": "L4",
+      "status": "pass",
+      "command": "node --test tests/greet.test.ts; node -e import('./src/greet.ts')",
+      "observed_result": "测试套件真实 import ../src/greet.ts 运行 4 pass（EV-0014/EV-0021），e2e 动态导入消费 greet 成功（EV-0022，L5）"
+    },
+    {
+      "id": "EVREQ-2A",
+      "supports": [
+        "REQ-CORE-002",
+        "TASK-WI-0001-003"
+      ],
+      "required_level": "L3",
+      "actual_level": "L4",
+      "status": "pass",
+      "command": "node --test tests/greet.test.ts",
+      "observed_result": "A1 greet('Ada')==='Hello, Ada!' 与 A2 greet('Grace')==='Hello, Grace!' 两个互不相同非空名称断言全部通过（EV-0014/EV-0021，# pass 4 / # fail 0）"
+    },
+    {
+      "id": "EVREQ-3A",
+      "supports": [
+        "REQ-CORE-003",
+        "TASK-WI-0001-003"
+      ],
+      "required_level": "L3",
+      "actual_level": "L4",
+      "status": "pass",
+      "command": "node --test tests/greet.test.ts",
+      "observed_result": "A3 greet('')==='Hello, world!' 断言通过（EV-0014/EV-0021）；源码常量静态命中（EV-0008）"
+    },
+    {
+      "id": "EVREQ-4A",
+      "supports": [
+        "REQ-CORE-004",
+        "TASK-WI-0001-003"
+      ],
+      "required_level": "L1",
+      "actual_level": "L1",
+      "status": "pass",
+      "command": "test -f tests/greet.test.ts; grep -c strictEqual/node:test/node:assert/strict tests/greet.test.ts",
+      "observed_result": "测试文件存在于受控路径，strictEqual×4 映射两条行为（EV-0010～EV-0013）"
+    },
+    {
+      "id": "EVREQ-4B",
+      "supports": [
+        "REQ-CORE-004",
+        "TASK-WI-0001-005"
+      ],
+      "required_level": "L3",
+      "actual_level": "L4",
+      "status": "pass",
+      "command": "node --test tests/greet.test.ts",
+      "observed_result": "两次真实运行均 exit 0 且 # tests 4 / # pass 4 / # fail 0，含运行方式与完整输出记录（EV-0014、EV-0021）"
+    },
+    {
+      "id": "EVREQ-5A",
+      "supports": [
+        "REQ-CORE-005",
+        "TASK-WI-0001-004"
+      ],
+      "required_level": "L1",
+      "actual_level": "L1",
+      "status": "pass",
+      "command": "grep README.md 使用说明三要素与既有内容保留",
+      "observed_result": "调用方式+签名（EV-0017）、非空示例×2（EV-0018）、空名称示例（EV-0019）全部命中；既有标题/正文/声明保留（EV-0015/EV-0016/EV-0020）；一致性由 L5 行为证据 EV-0022 锚定（AC-CORE-015）"
+    },
+    {
+      "id": "EVREQ-6A",
+      "supports": [
+        "REQ-CORE-006",
+        "TASK-WI-0001-001",
+        "TASK-WI-0001-002"
+      ],
+      "required_level": "L1",
+      "actual_level": "L1",
+      "status": "pass",
+      "command": "grep -c '\"dependencies\": {}' package.json; ! grep -qE '^import|^require\\(' src/greet.ts",
+      "observed_result": "dependencies 为显式空对象命中 1（EV-0002），src/greet.ts 零 import（EV-0009），测试仅用内置模块（EV-0011/EV-0012）"
+    }
+  ],
+  "missing_blocking_evidence": [],
+  "e2e_tests": [
+    {
+      "name": "集成闭环：加载器→真实源文件 import→A1–A4 断言（TASK-WI-0001-003）",
+      "status": "pass",
+      "evidence": "EV-0014"
+    },
+    {
+      "name": "集成闭环重跑与行为回归（TASK-WI-0001-005）",
+      "status": "pass",
+      "evidence": "EV-0021"
+    },
+    {
+      "name": "调用方视角动态导入双行为契约检查（greet('Ada')/greet('')）",
+      "status": "pass",
+      "evidence": "EV-0022"
+    }
+  ],
+  "contract_reviews": [
+    {
+      "contract_id": "PI-CORE-001",
+      "files": [
+        "src/greet.ts"
+      ],
+      "modules": [
+        "CORE"
+      ],
+      "review_method": "manual",
+      "reviewer": "sf-verifier",
+      "conclusion": "pass",
+      "summary": "签名 export function greet(name: string): string 逐字命中（EV-0007）且被真实 import 消费（EV-0014/EV-0021/EV-0022），实际消费者（tests/greet.test.ts、e2e 动态导入）均在 owner 模块 CORE 内",
+      "evidence": "EV-0007"
+    },
+    {
+      "contract_id": "PI-0001",
+      "files": [
+        "src/greet.ts"
+      ],
+      "modules": [
+        "CORE"
+      ],
+      "review_method": "manual",
+      "reviewer": "sf-verifier",
+      "conclusion": "pass",
+      "summary": "项目级公共接口契约 source_refs（ARCH-CORE-001/003、DATA-CORE-001/002）未被破坏：唯一导出、纯函数、无状态成立",
+      "evidence": "EV-0007"
+    },
+    {
+      "contract_id": "INV-CORE-001",
+      "files": [
+        "src/greet.ts"
+      ],
+      "modules": [
+        "CORE"
+      ],
+      "review_method": "manual",
+      "reviewer": "sf-verifier",
+      "conclusion": "pass",
+      "summary": "定义域内不抛出异常：A1–A4 全部通过且零 fail（EV-0014/EV-0021）",
+      "evidence": "EV-0014"
+    },
+    {
+      "contract_id": "INV-CORE-002",
+      "files": [
+        "src/greet.ts"
+      ],
+      "modules": [
+        "CORE"
+      ],
+      "review_method": "manual",
+      "reviewer": "sf-verifier",
+      "conclusion": "pass",
+      "summary": "name 原样保留不归一化：A1/A2/A4 strictEqual 逐字符相等，纯空白按非空规则处理（EV-0014/EV-0021）",
+      "evidence": "EV-0014"
+    },
+    {
+      "contract_id": "INV-CORE-003",
+      "files": [
+        "package.json",
+        "src/greet.ts",
+        "tests/greet.test.ts"
+      ],
+      "modules": [
+        "CORE"
+      ],
+      "review_method": "manual",
+      "reviewer": "sf-verifier",
+      "conclusion": "pass",
+      "summary": "零运行时依赖：dependencies:{} 显式空对象（EV-0002）、src 零 import（EV-0009）、测试仅用 node:test/node:assert/strict（EV-0011/EV-0012）",
+      "evidence": "EV-0002"
+    }
+  ],
+  "governance_model": {
+    "basis_checked": true,
+    "upstream_coverage_checked": true,
+    "required_evidence_checked": true,
+    "project_integration_checked": true
+  },
+  "governance_coverage": {
+    "formal_receipts_count": 22,
+    "receipts_note": "本报告结论基于 22 条独立 formal 执行回执逐条核对（TASK-001 unit×5、TASK-002 unit×4、TASK-003 unit×4+integration×1、TASK-004 unit×5+regression×1、TASK-005 integration×1+e2e×1），全部 exit 0、cleanup_proved=true、output_complete=true；历史状态事件文本曾误写 18 条实施回执，以本逐项记录为准，不以自述数字替代；implementation 回执未冒充 formal。",
+    "normalized_execution_disclosure": "全部 test/grep 类静态声明实际经 finite-posix-readonly-predicate/v1 有限归一化在 D23 固定单进程只读 Node 内联执行（actual_argv 可证），本报告如实表述为归一化 Node 执行，不声称执行了原 Shell/grep；node --test 与 node -e 为该固定 Node 真实执行。",
+    "historical_hard_stops": [
+      {
+        "hard_stop_id": "HS-1793717145264",
+        "source_tool": "sf_safe_bash",
+        "blocked_action": "Get-FileHash 取证 .specforge/work-items/WI-0001/gate_attempts/attempt-0005/input-snapshot.json（两次调用均被拒，policy=SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN）",
+        "resolution_type": "operator_error",
+        "blocked_action_disposition": "abandon",
+        "outcome": "改用只读内容比对完成同一无漂移证据目标，零写入；changed_files_audit 将其保留为 historical/resolved blocked write（1 条），unresolved=0，本验证如实保留该历史拒绝事实，不称历史零拒绝"
+      }
+    ],
+    "changed_files_audit": {
+      "overall_status": "pass",
+      "source": ".specforge/work-items/WI-0001/changed_files_audit.md",
+      "timestamp": "2026-11-07T06:06:03.632Z",
+      "total_files": 5,
+      "in_scope": 5,
+      "out_of_scope": 0,
+      "violations": 0,
+      "unresolved_blocked_write_attempts": 0,
+      "note": "5 个实际变更文件与 planned_code_paths 一一对应且唯一映射 CORE 模块，为 Code Permission 冻结范围子集"
+    }
+  },
+  "side_effects": "验证阶段零副作用：sf-verifier 全程只读（未调用任何执行工具，仅聚合已有 formal 回执并用受控工具写入自有产物）；22 条回执 cleanup_proved=true；changed_files_audit PASS（5/5 in_scope，0 越界，unresolved blocked=0，Write Guard Evidence SHA256 7b89d713…）；历史 Get-FileHash 拒绝（HS-1793717145264）为 operator_error/abandon 且零写入，保留为已解决历史记录。",
+  "summary": "WI-0001（feature_spec/requirement_change_path）验证结论 pass。上游核对：tasks.md 五任务全部 verification_commands（22 条）与 formal 回执逐条一致（命令文本、task_id、verification_type、command_index、exit 0、输出与 expected_output_contains 吻合）；trace_delta 的 REQ→AC→DD→TASK→FILE→TEST→EVIDENCE 矩阵 18/18 AC 覆盖、8/8 EVREQ 全部取得；requirements.candidate 的 REQ-CORE-001～006 Must×5+Should×1 全部由非弱或其声明等级证据支撑。测试矩阵：L1/L2/L4/L6 pass（静态断言 19 条归一化 Node 只读执行、node --test 真实运行 4 pass×2、README 回归、行为回归），L3/L5/L7/L8/L9/L10 不适用（无 PBT/部署冒烟/性能/安全/跨版本兼容/UAT 需求：无生产部署、隔离验收运行、需求明确排除性能与安全维度，D23 固定 Node 仅证明当前运行时且未声明生产最低版本）。治理覆盖：两个历史 Get-FileHash 拒绝（HS-1793717145264，operator_error/abandon，零写入）如实保留消费；22 条独立 formal 回执覆盖；changed_files_audit PASS。Verdict Gate 前置第 1-5 项已由本报告与 evidence_manifest（EV-0001～EV-0022）满足。",
+  "semantic_closure": {
+    "schema_version": "1.0",
+    "work_item_id": "WI-0001",
+    "workflow_type": "feature_spec",
+    "outcomes": [
+      {
+        "id": "OUT-1",
+        "description": "greet 导出契约达成：src/greet.ts 提供唯一具名导出且被真实 import 消费",
+        "requirement_refs": [
+          "REQ-CORE-001"
+        ],
+        "required_evidence_refs": [
+          "EV-0006",
+          "EV-0007",
+          "EV-0014",
+          "EV-0021",
+          "EV-0022"
+        ]
+      },
+      {
+        "id": "OUT-2",
+        "description": "非空名称个性化问候行为达成：A1/A2 断言真实运行通过，name 原样保留",
+        "requirement_refs": [
+          "REQ-CORE-002"
+        ],
+        "required_evidence_refs": [
+          "EV-0014",
+          "EV-0021",
+          "EV-0022"
+        ]
+      },
+      {
+        "id": "OUT-3",
+        "description": "空名称默认问候行为达成：A3 断言真实运行通过且常量精确 13 字符",
+        "requirement_refs": [
+          "REQ-CORE-003"
+        ],
+        "required_evidence_refs": [
+          "EV-0008",
+          "EV-0014",
+          "EV-0021",
+          "EV-0022"
+        ]
+      },
+      {
+        "id": "OUT-4",
+        "description": "自动化测试交付并在合法执行边界内全部通过（A1–A4，4 pass 0 fail）",
+        "requirement_refs": [
+          "REQ-CORE-004"
+        ],
+        "required_evidence_refs": [
+          "EV-0013",
+          "EV-0014",
+          "EV-0021"
+        ]
+      },
+      {
+        "id": "OUT-5",
+        "description": "README 使用说明交付且与实现行为逐字符一致（既有内容追加式保留）",
+        "requirement_refs": [
+          "REQ-CORE-005"
+        ],
+        "required_evidence_refs": [
+          "EV-0015",
+          "EV-0017",
+          "EV-0018",
+          "EV-0019",
+          "EV-0022"
+        ]
+      },
+      {
+        "id": "OUT-6",
+        "description": "零运行时第三方依赖约束成立（dependencies 空集 + src 零 import + 测试仅内置模块）",
+        "requirement_refs": [
+          "REQ-CORE-006"
+        ],
+        "required_evidence_refs": [
+          "EV-0002",
+          "EV-0009",
+          "EV-0011"
+        ]
+      }
+    ],
+    "requirements": [
+      {
+        "id": "REQ-CORE-001",
+        "description": "greet 导出契约（Must）",
+        "type": "MUST",
+        "outcome_refs": [
+          "OUT-1"
+        ],
+        "design_refs": [
+          "DD-CORE-001",
+          "DD-CORE-004"
+        ],
+        "task_refs": [
+          "TASK-WI-0001-001",
+          "TASK-WI-0001-002",
+          "TASK-WI-0001-005"
+        ],
+        "required_evidence_refs": [
+          "EV-0006",
+          "EV-0007",
+          "EV-0014",
+          "EV-0021",
+          "EV-0022"
+        ]
+      },
+      {
+        "id": "REQ-CORE-002",
+        "description": "非空名称问候行为（Must）",
+        "type": "MUST",
+        "outcome_refs": [
+          "OUT-2"
+        ],
+        "design_refs": [
+          "DD-CORE-001",
+          "DD-CORE-002",
+          "DD-CORE-006"
+        ],
+        "task_refs": [
+          "TASK-WI-0001-002",
+          "TASK-WI-0001-003"
+        ],
+        "required_evidence_refs": [
+          "EV-0014",
+          "EV-0021",
+          "EV-0022"
+        ]
+      },
+      {
+        "id": "REQ-CORE-003",
+        "description": "空名称默认问候行为（Must）",
+        "type": "MUST",
+        "outcome_refs": [
+          "OUT-3"
+        ],
+        "design_refs": [
+          "DD-CORE-002",
+          "DD-CORE-006"
+        ],
+        "task_refs": [
+          "TASK-WI-0001-002",
+          "TASK-WI-0001-003"
+        ],
+        "required_evidence_refs": [
+          "EV-0008",
+          "EV-0014",
+          "EV-0021",
+          "EV-0022"
+        ]
+      },
+      {
+        "id": "REQ-CORE-004",
+        "description": "两条行为规则的自动化测试交付物（Must）",
+        "type": "MUST",
+        "outcome_refs": [
+          "OUT-4"
+        ],
+        "design_refs": [
+          "DD-CORE-003",
+          "DD-CORE-006"
+        ],
+        "task_refs": [
+          "TASK-WI-0001-001",
+          "TASK-WI-0001-003",
+          "TASK-WI-0001-005"
+        ],
+        "required_evidence_refs": [
+          "EV-0010",
+          "EV-0011",
+          "EV-0012",
+          "EV-0013",
+          "EV-0014",
+          "EV-0021"
+        ]
+      },
+      {
+        "id": "REQ-CORE-005",
+        "description": "使用说明交付物（Must）",
+        "type": "MUST",
+        "outcome_refs": [
+          "OUT-5"
+        ],
+        "design_refs": [
+          "DD-CORE-005"
+        ],
+        "task_refs": [
+          "TASK-WI-0001-004"
+        ],
+        "required_evidence_refs": [
+          "EV-0015",
+          "EV-0016",
+          "EV-0017",
+          "EV-0018",
+          "EV-0019",
+          "EV-0020",
+          "EV-0022"
+        ]
+      },
+      {
+        "id": "REQ-CORE-006",
+        "description": "零运行时第三方依赖约束（Should）",
+        "type": "SHOULD",
+        "outcome_refs": [
+          "OUT-6"
+        ],
+        "design_refs": [
+          "DD-CORE-003",
+          "DD-CORE-004"
+        ],
+        "task_refs": [
+          "TASK-WI-0001-001",
+          "TASK-WI-0001-002"
+        ],
+        "required_evidence_refs": [
+          "EV-0002",
+          "EV-0009",
+          "EV-0011"
+        ]
+      }
+    ],
+    "design_decisions": [
+      {
+        "id": "DD-CORE-001",
+        "description": "公共 API 设计（greet 签名与导出）",
+        "requirement_refs": [
+          "REQ-CORE-001",
+          "REQ-CORE-002",
+          "REQ-CORE-003"
+        ],
+        "task_refs": [
+          "TASK-WI-0001-002",
+          "TASK-WI-0001-005"
+        ]
+      },
+      {
+        "id": "DD-CORE-002",
+        "description": "两条行为规则与定义域分支",
+        "requirement_refs": [
+          "REQ-CORE-002",
+          "REQ-CORE-003"
+        ],
+        "task_refs": [
+          "TASK-WI-0001-002"
+        ]
+      },
+      {
+        "id": "DD-CORE-003",
+        "description": "node:test 零安装执行路径与降级链",
+        "requirement_refs": [
+          "REQ-CORE-004",
+          "REQ-CORE-006"
+        ],
+        "task_refs": [
+          "TASK-WI-0001-001",
+          "TASK-WI-0001-003",
+          "TASK-WI-0001-005"
+        ]
+      },
+      {
+        "id": "DD-CORE-004",
+        "description": "最小工程配置（package.json/tsconfig）",
+        "requirement_refs": [
+          "REQ-CORE-001",
+          "REQ-CORE-006"
+        ],
+        "task_refs": [
+          "TASK-WI-0001-001"
+        ]
+      },
+      {
+        "id": "DD-CORE-005",
+        "description": "README 追加式使用说明",
+        "requirement_refs": [
+          "REQ-CORE-005"
+        ],
+        "task_refs": [
+          "TASK-WI-0001-004"
+        ]
+      },
+      {
+        "id": "DD-CORE-006",
+        "description": "断言与验证钩子设计（A1–A4）",
+        "requirement_refs": [
+          "REQ-CORE-002",
+          "REQ-CORE-003",
+          "REQ-CORE-004"
+        ],
+        "task_refs": [
+          "TASK-WI-0001-003"
+        ]
+      }
+    ],
+    "tasks": [
+      {
+        "id": "TASK-WI-0001-001",
+        "description": "创建最小工程配置",
+        "requirement_refs": [
+          "REQ-CORE-001",
+          "REQ-CORE-004",
+          "REQ-CORE-006"
+        ],
+        "design_refs": [
+          "DD-CORE-003",
+          "DD-CORE-004"
+        ],
+        "evidence_refs": [
+          "EV-0001",
+          "EV-0002",
+          "EV-0003",
+          "EV-0004",
+          "EV-0005"
+        ]
+      },
+      {
+        "id": "TASK-WI-0001-002",
+        "description": "实现 greet 纯函数",
+        "requirement_refs": [
+          "REQ-CORE-001",
+          "REQ-CORE-002",
+          "REQ-CORE-003",
+          "REQ-CORE-006"
+        ],
+        "design_refs": [
+          "DD-CORE-001",
+          "DD-CORE-002"
+        ],
+        "evidence_refs": [
+          "EV-0006",
+          "EV-0007",
+          "EV-0008",
+          "EV-0009"
+        ]
+      },
+      {
+        "id": "TASK-WI-0001-003",
+        "description": "编写行为断言测试",
+        "requirement_refs": [
+          "REQ-CORE-002",
+          "REQ-CORE-003",
+          "REQ-CORE-004"
+        ],
+        "design_refs": [
+          "DD-CORE-003",
+          "DD-CORE-006"
+        ],
+        "evidence_refs": [
+          "EV-0010",
+          "EV-0011",
+          "EV-0012",
+          "EV-0013",
+          "EV-0014"
+        ]
+      },
+      {
+        "id": "TASK-WI-0001-004",
+        "description": "README 追加使用说明",
+        "requirement_refs": [
+          "REQ-CORE-005"
+        ],
+        "design_refs": [
+          "DD-CORE-005"
+        ],
+        "evidence_refs": [
+          "EV-0015",
+          "EV-0016",
+          "EV-0017",
+          "EV-0018",
+          "EV-0019",
+          "EV-0020"
+        ]
+      },
+      {
+        "id": "TASK-WI-0001-005",
+        "description": "集成闭环验证（T2C）",
+        "requirement_refs": [
+          "REQ-CORE-001",
+          "REQ-CORE-002",
+          "REQ-CORE-003",
+          "REQ-CORE-004"
+        ],
+        "design_refs": [
+          "DD-CORE-001",
+          "DD-CORE-003",
+          "DD-CORE-006"
+        ],
+        "evidence_refs": [
+          "EV-0021",
+          "EV-0022"
+        ]
+      }
+    ],
+    "evidence": [
+      {
+        "id": "EV-0014",
+        "description": "node --test tests/greet.test.ts 真实运行（TASK-WI-0001-003 integration#0，receipt 99535bcd…），TAP 4 pass 0 fail，套件真实 import ../src/greet.ts",
+        "status": "passed",
+        "level": "L4",
+        "evidence_type": "integration",
+        "supports": [
+          "OUT-1",
+          "OUT-2",
+          "OUT-3",
+          "OUT-4",
+          "REQ-CORE-001",
+          "REQ-CORE-002",
+          "REQ-CORE-003",
+          "REQ-CORE-004",
+          "TASK-WI-0001-003"
+        ],
+        "requirement_refs": [
+          "REQ-CORE-001",
+          "REQ-CORE-002",
+          "REQ-CORE-003",
+          "REQ-CORE-004"
+        ],
+        "task_refs": [
+          "TASK-WI-0001-003"
+        ],
+        "outcome_refs": [
+          "OUT-1",
+          "OUT-2",
+          "OUT-3",
+          "OUT-4"
+        ]
+      },
+      {
+        "id": "EV-0021",
+        "description": "node --test tests/greet.test.ts 集成闭环重跑（TASK-WI-0001-005 integration#0，receipt 575a36f1…），TAP 4 pass 0 fail，含行为回归",
+        "status": "passed",
+        "level": "L4",
+        "evidence_type": "integration",
+        "supports": [
+          "OUT-1",
+          "OUT-2",
+          "OUT-3",
+          "OUT-4",
+          "REQ-CORE-001",
+          "REQ-CORE-002",
+          "REQ-CORE-003",
+          "REQ-CORE-004",
+          "TASK-WI-0001-005"
+        ],
+        "requirement_refs": [
+          "REQ-CORE-001",
+          "REQ-CORE-002",
+          "REQ-CORE-003",
+          "REQ-CORE-004"
+        ],
+        "task_refs": [
+          "TASK-WI-0001-005"
+        ],
+        "outcome_refs": [
+          "OUT-1",
+          "OUT-2",
+          "OUT-3",
+          "OUT-4"
+        ]
+      },
+      {
+        "id": "EV-0022",
+        "description": "调用方视角动态导入 e2e（TASK-WI-0001-005 e2e#0，receipt 25074708…），E2E-OK：greet('Ada')==='Hello, Ada!' 且 greet('')==='Hello, world!'，与文档示例一致",
+        "status": "passed",
+        "level": "L5",
+        "evidence_type": "e2e",
+        "supports": [
+          "OUT-1",
+          "OUT-2",
+          "OUT-3",
+          "OUT-5",
+          "REQ-CORE-001",
+          "REQ-CORE-002",
+          "REQ-CORE-003",
+          "REQ-CORE-005",
+          "TASK-WI-0001-005"
+        ],
+        "requirement_refs": [
+          "REQ-CORE-001",
+          "REQ-CORE-002",
+          "REQ-CORE-003",
+          "REQ-CORE-005"
+        ],
+        "task_refs": [
+          "TASK-WI-0001-005"
+        ],
+        "outcome_refs": [
+          "OUT-1",
+          "OUT-2",
+          "OUT-3",
+          "OUT-5"
+        ]
+      }
+    ],
+    "project_integration": {
+      "required": true,
+      "status": "merged",
+      "refs": [
+        ".specforge/work-items/WI-0001/merge_report.md",
+        ".specforge/work-items/WI-0001/changed_files_audit.md"
+      ]
+    }
+  },
+  "evidence_refs": [
+    "EV-0001",
+    "EV-0002",
+    "EV-0003",
+    "EV-0004",
+    "EV-0005",
+    "EV-0006",
+    "EV-0007",
+    "EV-0008",
+    "EV-0009",
+    "EV-0010",
+    "EV-0011",
+    "EV-0012",
+    "EV-0013",
+    "EV-0014",
+    "EV-0015",
+    "EV-0016",
+    "EV-0017",
+    "EV-0018",
+    "EV-0019",
+    "EV-0020",
+    "EV-0021",
+    "EV-0022"
+  ],
+  "verification_execution_contract": "verification-execution/v1"
+}
+```

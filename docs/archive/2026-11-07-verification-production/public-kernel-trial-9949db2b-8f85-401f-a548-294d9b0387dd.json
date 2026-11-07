@@ -1,0 +1,136 @@
+{
+  "trial": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\624733f825af4301b89c0307be140ecb\\trials\\9949db2b-8f85-401f-a548-294d9b0387dd",
+  "result_sha256": "6ee3220e8650a2e538b7cb15f046d477f7a46bafc26c8de02e557716f086dc14",
+  "utc": "2026-11-07T04:07:27.113Z",
+  "records": [
+    {
+      "name": "broker-crash-plan",
+      "session": "ses_e4bd01a5effeyjkSYbecNKLTQW",
+      "message": "msg_1b42fe99a0014T9FNaBTb6ZxLS",
+      "call": "call_44666fce196e41c9840995148261eb18",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "3639dd6f0b52042940dc8735bd996657edcd5484c7651df1bccd7a697c43c2fb",
+        "preparation_id": "b7613075d16fbf9f532f1919306edc0c741017e4bc3d0983efa7dd17ceea7392",
+        "expires_at": "2026-11-07T04:16:45.662Z",
+        "purpose": "implementation",
+        "original_command": "node --test tests/waiting.test.cjs",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "--test-reporter=tap",
+          "--test",
+          "--test-isolation=none",
+          "tests/waiting.test.cjs"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "broker-crash-prepare",
+      "session": "ses_e4bcff8a5ffeYQktJ7GCPEb8vD",
+      "message": "msg_1b43007bc0011f6JD4YtSQ6x6s",
+      "call": "call_643fb26968f342e2bfb266302e618f17",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "daf7e06fda45ac19613a83c2d6d48811965dc979b70708cfffd460dd757ed581",
+        "attempt_id": "7c1918de69834dbc8de3b75dbc3f9b64",
+        "plan_id": "3639dd6f0b52042940dc8735bd996657edcd5484c7651df1bccd7a697c43c2fb",
+        "application_started": false
+      }
+    },
+    {
+      "name": "broker-crash-run",
+      "session": "ses_e4bcfeb06ffe1fF5hUcja85qzX",
+      "message": "msg_1b4301547001tvNa2IM8jmu2zk",
+      "call": "call_b99a75c97d0b402b8076e7334fa7eadc",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": false,
+        "receipt_id": "db9614f07ddfcb234b1df7263cd318eb545a5321532022ee0364aaa7ac0093cd",
+        "attempt_record_id": "daf7e06fda45ac19613a83c2d6d48811965dc979b70708cfffd460dd757ed581",
+        "attempt_id": "7c1918de69834dbc8de3b75dbc3f9b64",
+        "plan_id": "3639dd6f0b52042940dc8735bd996657edcd5484c7651df1bccd7a697c43c2fb",
+        "outcome": "interrupted",
+        "exit_code": null,
+        "cleanup_proved": false,
+        "failure": "NATIVE_RECEIPT_UNAVAILABLE_OR_INVALID",
+        "stdout": "",
+        "stderr": "",
+        "output_preview_truncated": false,
+        "output_complete": false
+      }
+    },
+    {
+      "name": "broker-crash-recover",
+      "session": "ses_e4bcfc3c7ffePjuGsq9fRjSWHQ",
+      "message": "msg_1b4303c920016WNR3ojh6gkejC",
+      "call": "call_8b1ab12c9066470c9a110f188a197943",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "recovery_id": "a5acf86cd7a2b8e4a42f4e36b558d3aaf1ad2af0ac00d9a9f0ab026220b71272",
+        "attempt_record_id": "daf7e06fda45ac19613a83c2d6d48811965dc979b70708cfffd460dd757ed581",
+        "cleanup_proved": true,
+        "application_passed": false
+      }
+    },
+    {
+      "name": "broker-crash-recover-again",
+      "session": "ses_e4bcfb6a0ffeyVpmctqDfgmcas",
+      "message": "msg_1b43049ab001EzCCHIOfNwF6Lb",
+      "call": "call_456dc2d9dc154ef29318ba9dd583c638",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "recovery_id": "dc176da939f3d022bdaf6ae3b705dc7acb63e1a94cea8f117e15a30c2f0f3a08",
+        "attempt_record_id": "daf7e06fda45ac19613a83c2d6d48811965dc979b70708cfffd460dd757ed581",
+        "cleanup_proved": true,
+        "application_passed": false
+      }
+    },
+    {
+      "name": "daemon-crash-plan",
+      "session": "ses_e4bcfa94effeCOmJs0QuFOYm1h",
+      "message": "msg_1b4305704001c0JDmxNWnCaJeb",
+      "call": "call_7cbc38fbc9824fb2aa7b8f571f24f911",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": false,
+        "error": "VERIFICATION_REQUEST_REJECTED",
+        "application_passed": false
+      }
+    },
+    {
+      "child": "kernel",
+      "pid": 37656,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-11-07T04:07:27.111Z"
+      }
+    },
+    {
+      "child": "daemon",
+      "pid": 34640,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "utc": "2026-11-07T04:07:27.025Z"
+      }
+    }
+  ],
+  "failure": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nfalse !== true\n\n    at main (D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\public-kernel-chain.cjs:202:208)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)",
+  "exit_code": 1,
+  "original_business_touched": false
+}

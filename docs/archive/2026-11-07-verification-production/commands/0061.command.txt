@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/probe-kernel-entry.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-kernel-entry-preflight",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=owned isolated OpenCode help config/cache only no application;EXTERNAL_EVIDENCE_WRITES=actual version and help raw receipts",
+  "started_utc": "2026-11-07T02:02:51.996Z"
+}

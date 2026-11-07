@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-public-trials.cjs",
+    "03",
+    "01"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-first-genuine-public-native-positive",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable selected trial and native receipts; no private key copied; product/original writes NONE",
+  "started_utc": "2026-11-07T02:23:39.529Z"
+}

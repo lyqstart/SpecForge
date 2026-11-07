@@ -1,0 +1,31 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/verification-source-snapshot.test.ts (4 tests | 4 failed) 842ms
+   × verification raw source and Git identity > captures current raw input and rejects a changed source without invoking clean filters 218ms
+     → Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{713af56a-2216-4943-9161-50d39c920e91}/AC/Temp/sf-verification-source-test-foPMLr/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+   × verification raw source and Git identity > rejects undeclared untracked code and hardlinked tracked input 193ms
+     → Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{713af56a-2216-4943-9161-50d39c920e91}/AC/Temp/sf-verification-source-test-FYYsEU/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+   × verification raw source and Git identity > binds branch, index and repository configuration 230ms
+     → Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{713af56a-2216-4943-9161-50d39c920e91}/AC/Temp/sf-verification-source-test-N6tJDa/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+   × verification raw source and Git identity > freezes only reachable code and package metadata, without reading unrelated tracked files 200ms
+     → Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{713af56a-2216-4943-9161-50d39c920e91}/AC/Temp/sf-verification-source-test-C3aJ6l/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+ ✓ tests/unit/node-command-contract.test.ts (33 tests) 26ms
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  4 failed | 33 passed (37)
+   Start at  09:10:44
+   Duration  2.33s (transform 76ms, setup 0ms, collect 598ms, tests 868ms, environment 0ms, prepare 334ms)
+

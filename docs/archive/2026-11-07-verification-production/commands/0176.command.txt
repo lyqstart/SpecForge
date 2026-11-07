@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-public-trials.cjs",
+    "11",
+    "14"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-transparent-transport-and-witness-collision",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable public-native-evidence14; failed0175 preserved; original/user installation untouched",
+  "started_utc": "2026-11-07T04:06:25.596Z"
+}

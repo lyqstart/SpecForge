@@ -1,0 +1,8 @@
+{
+  "executable": "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/native-product-build-01/NativeProductPlanRegression.exe",
+  "args": [],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "qualified-native-parser-regression",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=owned parser/copy fixture no profile no application;EXTERNAL_EVIDENCE_WRITES=test raw receipts",
+  "started_utc": "2026-11-07T01:50:52.054Z"
+}

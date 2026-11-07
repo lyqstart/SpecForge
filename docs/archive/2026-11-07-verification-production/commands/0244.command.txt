@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-workflow-persistence-baseline.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Freeze raw obsolete Workflow Runtime persistence, current consumers and documentation before retirement",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES workflow-persistence-baseline snapshot, manifest and receipts; product and original business read-only",
+  "started_utc": "2026-11-07T05:38:45.558Z"
+}

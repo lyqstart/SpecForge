@@ -1,0 +1,14 @@
+{
+  "executable": "bun",
+  "args": [
+    "../../node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/persistence-owner-boundary.test.ts",
+    "--config",
+    "vitest.config.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\workflow-runtime",
+  "purpose": "Reproduce SPS8 public persistence boundary against unchanged production source",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES receipts; RUNTIME_OBSERVER_WRITES Vitest owned cache; product source read-only; expected regression assertion failure retained",
+  "started_utc": "2026-11-07T05:39:04.476Z"
+}

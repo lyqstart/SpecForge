@@ -1,0 +1,132 @@
+{
+  "utc": "2026-11-07T10:31:19.808Z",
+  "branch": "codex/verification-final-guidance",
+  "source_head": "4d891569fb9e497bd1cfad498b0de79ae80c6b0a",
+  "staged_paths": [
+    ".gitignore",
+    "README.md",
+    "docs/archive/2026-11-07-verification-production/final-guidance-baseline-01/0000.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-baseline-01/0001.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-baseline-01/0002.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-baseline-01/manifest.json",
+    "docs/archive/2026-11-07-verification-production/final-guidance-baseline-02/0000.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-baseline-02/0001.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-baseline-02/0002.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-baseline-02/0003.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-baseline-02/0004.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-baseline-02/manifest.json",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-01/0000.current.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-01/0000.head.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-01/0001.current.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-01/0001.head.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-01/0002.current.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-01/0002.head.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-01/0003.current.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-01/0003.head.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-01/0004.current.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-01/0004.head.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-01/0005.current.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-01/0005.head.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-01/0006.current.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-01/0006.head.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-01/0007.current.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-01/0007.head.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-01/0008.current.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-01/0008.head.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-01/manifest.json",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-01/source.diff.txt",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-02/0000.current.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-02/0000.head.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-02/0001.current.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-02/0001.head.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-02/0002.current.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-02/0002.head.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-02/0003.current.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-02/0003.head.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-02/0004.current.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-02/0004.head.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-02/0005.current.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-02/0005.head.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-02/0006.current.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-02/0006.head.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-02/0007.current.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-02/0007.head.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-02/0008.current.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-02/0008.head.raw",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-02/manifest.json",
+    "docs/archive/2026-11-07-verification-production/final-guidance-source-review-02/source.diff.txt",
+    "docs/archive/2026-11-07-verification-production/quickstart-endpoint-baseline-01/0000.raw",
+    "docs/archive/2026-11-07-verification-production/quickstart-endpoint-baseline-01/0001.raw",
+    "docs/archive/2026-11-07-verification-production/quickstart-endpoint-baseline-01/0002.raw",
+    "docs/archive/2026-11-07-verification-production/quickstart-endpoint-baseline-01/0003.raw",
+    "docs/archive/2026-11-07-verification-production/quickstart-endpoint-baseline-01/0004.raw",
+    "docs/archive/2026-11-07-verification-production/quickstart-endpoint-baseline-01/manifest.json",
+    "docs/project-status.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md",
+    "docs/user/quick-start.md",
+    "packages/daemon-core/tests/unit/daemon-startup-readme-contract.test.ts",
+    "packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts",
+    "setup/userlevel-opencode/agents/sf-orchestrator.md",
+    "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md"
+  ],
+  "source_paths": [
+    ".gitignore",
+    "README.md",
+    "docs/project-status.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md",
+    "docs/user/quick-start.md",
+    "packages/daemon-core/tests/unit/daemon-startup-readme-contract.test.ts",
+    "packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts",
+    "setup/userlevel-opencode/agents/sf-orchestrator.md",
+    "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md"
+  ],
+  "bindings": {
+    ".gitignore": {
+      "object": "82919d1ce6a0f3c8d3580359319bb62fa18e035e",
+      "blob_sha256": "dfec3f8088eecbafdc35b7338450085d7f8764ff0c4b7ab4b892a8278ab02309",
+      "raw_sha256": "2a22aa04cb12223be7c4807d5ce2f00bc7b5fb133e2ac55963d447d067958245"
+    },
+    "README.md": {
+      "object": "c4dbfab64123877ce886979810cb53ea9fc7c679",
+      "blob_sha256": "cf1e1eb60c537cc6304f2a842289a3bd75b369ff8d022ffc4a23685f93a53987",
+      "raw_sha256": "fab2569557da2abf4db842a625423d960492f8d2ea2924c2c306758ed65d26d6"
+    },
+    "docs/project-status.md": {
+      "object": "d03ee8316ed19106d93ab4a482a738cb065b733c",
+      "blob_sha256": "2e70dff836368c8081d1caabe9b7e701ad6ad07416e83d7c7f5a977d6dff8944",
+      "raw_sha256": "4d4b48d5da6ea961d518fe565dfdfb9e8c37893c06f57c4cb030927a2a2026c4"
+    },
+    "docs/rule/specforge-development-error-ledger-and-experience.md": {
+      "object": "68b70d879788ad604e6c3ff26dbc59045ac8b88b",
+      "blob_sha256": "77d349de70a4ae5f6c6e96fa72244217c53c14f1e1a81ec36959a506ddfb738f",
+      "raw_sha256": "58bf77ce6b7b1193797b6000eb5fc74db8681491f43e9d34a2bd74264a326ddc"
+    },
+    "docs/user/quick-start.md": {
+      "object": "06364596ffa397654cbfe9a851b461e024139101",
+      "blob_sha256": "961a189c8159963f821c6a3dd00d8892aaf14fd7e3e4a65da88b6aa30b341cf9",
+      "raw_sha256": "c7e2344870a61d0540539bcb95b063537138965d549e6c4770b7a3a2ef800e6d"
+    },
+    "packages/daemon-core/tests/unit/daemon-startup-readme-contract.test.ts": {
+      "object": "32d1c722bd749f464ab0ac9ea55051f78acac049",
+      "blob_sha256": "95ccbac726da98c2905b24f04094db0a11ff2d70776e26d7406aea24d7d26aa4",
+      "raw_sha256": "95ccbac726da98c2905b24f04094db0a11ff2d70776e26d7406aea24d7d26aa4"
+    },
+    "packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts": {
+      "object": "2838fb8e495b5d914ef60e3bd06d9fa8d0aae875",
+      "blob_sha256": "08fdaef689d2368511a89fb67bf7daf98bcabcb8335e73baa203498d4e90b1b8",
+      "raw_sha256": "08fdaef689d2368511a89fb67bf7daf98bcabcb8335e73baa203498d4e90b1b8"
+    },
+    "setup/userlevel-opencode/agents/sf-orchestrator.md": {
+      "object": "f5c202d19772a38a4e6eb06cbec0a952cc837ebb",
+      "blob_sha256": "9ce846f6e24f5d53f31b26b153461b95d0bf14a51e6bacbeeec5c8b3a19350f0",
+      "raw_sha256": "4f71e63bc34c02ef6827de60b34d622c0c0a71545314f9a43f6d6b167666ef17"
+    },
+    "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md": {
+      "object": "0e77efbff8484f4808932bf5f6f623fbc9dd2e39",
+      "blob_sha256": "5e59ced0b55bb23a89556b787082a0514112d9b49ee8ecb97c6b29b475720523",
+      "raw_sha256": "5e59ced0b55bb23a89556b787082a0514112d9b49ee8ecb97c6b29b475720523"
+    }
+  },
+  "archive_members": 56,
+  "classification": "Exact reviewed9 source paths + immutable baseline/review evidence only; no whole-tree add, no hidden reasoning/private credentials, no Runtime/native source change"
+}

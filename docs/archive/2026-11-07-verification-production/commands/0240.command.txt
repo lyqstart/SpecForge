@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/record-integration-checkpoint-06.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Independently reconcile receipts 1-239, 21 frozen sets, installed identities, original file set and SDK entry bytes",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES only integration-checkpoint-06.json and command receipts; original business and user installation read-only; no provider or model request",
+  "started_utc": "2026-11-07T05:33:45.914Z"
+}

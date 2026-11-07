@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-07T10:50:42.022Z",
+  "inner_exit_code": 0,
+  "command": "opencode --port 4096",
+  "session_id": 61886,
+  "owned_process_pid": 32236,
+  "owned_endpoint_verified": true,
+  "loaded_guidance_verified": true,
+  "model_prompt_sent": false,
+  "optional_opencode_update": "Dismissed with Escape; no update accepted",
+  "terminal_pipe_completeness": "Only returned PTY text; truncation metadata retained"
+}

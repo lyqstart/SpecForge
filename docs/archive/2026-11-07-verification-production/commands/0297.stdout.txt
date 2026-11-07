@@ -1,0 +1,10 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/verification-evidence-producer.test.ts (2 tests) 34ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  14:35:51
+   Duration  1.72s (transform 700ms, setup 0ms, collect 1.29s, tests 34ms, environment 0ms, prepare 140ms)
+

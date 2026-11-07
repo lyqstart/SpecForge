@@ -1,0 +1,74 @@
+
+ RUN  v4.1.5 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/git-detached-bootstrap.test.ts (30 tests | 5 failed) 125481ms
+     × plans without creating refs, atomically binds two new branches and standard context, then retries idempotently 10023ms
+     × recovers an interrupted owner at refs_created without rewriting business/index or duplicating refs 10008ms
+     × recovers an interrupted owner at refs_and_head_bound without rewriting business/index or duplicating refs 10029ms
+     × recovers an interrupted owner at context_bound without rewriting business/index or duplicating refs 10017ms
+     × holds Git HEAD.lock against an actual concurrent commit, then completes safely 10015ms
+ ❯ tests/integration/p0-governance-regression-flow.test.ts (8 tests | 1 failed) 8754ms
+     × passes close_gate after verification evidence and revoked code permission even when pre-merge hashes changed after merge 2579ms
+stdout | tests/unit/runtime-history-integrity.test.ts > authoritative history integrity at configuration consumer > validates missing in a real fresh child process and preserves original evidence
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/runtime-history-integrity.test.ts > authoritative history integrity at configuration consumer > validates invalid-schema in a real fresh child process and preserves original evidence
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+stdout | tests/unit/runtime-history-integrity.test.ts > authoritative history integrity at configuration consumer > validates rotation in a real fresh child process and preserves original evidence
+[Config] DEBUG Validating configuration layer { layer: 'builtin', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'user', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'project', schemaVersion: '1.0' }
+[Config] DEBUG Validating configuration layer { layer: 'runtime', schemaVersion: '1.0' }
+[Config] DEBUG Starting configuration merge { layerCount: 4 }
+[Config] DEBUG Merging layer { layer: 'builtin' }
+[Config] DEBUG Merging layer { layer: 'user' }
+[Config] DEBUG Merging layer { layer: 'project' }
+[Config] DEBUG Merging layer { layer: 'runtime' }
+[Config] INFO Configuration merge completed { keyCount: 8, layerCount: 4, validationErrors: 0 }
+
+ ❯ tests/unit/runtime-history-integrity.test.ts (20 tests | 3 failed) 2202ms
+     × validates missing in a real fresh child process and preserves original evidence 65ms
+     × validates invalid-schema in a real fresh child process and preserves original evidence 29ms
+     × validates rotation in a real fresh child process and preserves original evidence 83ms
+ ❯ tests/unit/legacy-filesystem-mode-recovery.test.ts (7 tests | 1 failed) 3943ms
+     × records a hash-bound recovery and lets Formal Version stay on filesystem evidence 1080ms
+ ❯ tests/v11-section21-acceptance.test.ts (37 tests | 5 failed) 3680ms
+     × should complete full lifecycle: Gate → User Decision → Merge → Trace → Verification → Evidence → close_gate 690ms
+     × should complete full design_change_path lifecycle 448ms
+     × should have empty candidate_manifest entries for code_only_fast_path 564ms
+     × should still complete all phases: tasks, Write Guard, verification, evidence, close_gate 555ms
+     × close_gate should fail when out-of-bounds writes are recorded 547ms
+ ❯ tests/unit/configuration-activation-loss.test.ts (16 tests | 1 failed) 1058ms
+     × rejects missing activation after actual process exit and fresh process startup 4ms
+ ❯ tests/unit/semantic-closure-producer-governance.test.ts (6 tests | 1 failed) 202ms
+     × connects the active artifact handler to the verification template renderer 57ms
+ ❯ tests/unit/active-development-rules-contract.test.ts (54 tests | 1 failed) 56ms
+     × whole file contains no concrete ERR-[0-9]+ ids 6ms
+ ❯ tests/unit/semantic-closure-contract-alignment.test.ts (7 tests | 2 failed) 43ms
+     × keeps deployed trace readers and writer on the canonical Runtime path 17ms
+     × routes verifier governance reads away from sf_safe_bash 5ms
+
+ Test Files  9 failed | 227 passed (236)
+      Tests  20 failed | 2306 passed (2326)
+   Start at  15:33:14
+   Duration  550.74s (transform 10.57s, setup 0ms, import 101.41s, tests 347.62s, environment 48ms)
+

@@ -1,0 +1,440 @@
+{
+  "utc": "2026-11-07T05:56:32.773Z",
+  "source_commit": "6be12495582540d5b55f322924829a93a62e6b9a",
+  "parent": "a918b49c62e7dfaf3c0bfc57961ffe3bbaa99ba3",
+  "bindings": {
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/manifest.json": {
+      "raw_sha256": "2b23b913bd2ba0b8277ae448ca9f4b2efdf17737504338c9c0ccdcb3bb7c9aaa",
+      "index_oid": "66e513b1dc7eb66a5a44a85171d4d2d287aee0b5",
+      "index_blob_sha256": "2b23b913bd2ba0b8277ae448ca9f4b2efdf17737504338c9c0ccdcb3bb7c9aaa",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md": {
+      "raw_sha256": "a4e9aa2e2c191d21cc7dddb069676606332717080d1f76ee96678717ae69704b",
+      "index_oid": "3119640683377abc090e24510c4b811fc1a48e00",
+      "index_blob_sha256": "a4e9aa2e2c191d21cc7dddb069676606332717080d1f76ee96678717ae69704b",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md": {
+      "raw_sha256": "9d4602fa43a2a9bc5a34f5af3b7e89372af158427e28e6e5a113a60aacc6e01c",
+      "index_oid": "99e58ee7658a32d24ba3758a9c7e7d18b4d6709c",
+      "index_blob_sha256": "9d4602fa43a2a9bc5a34f5af3b7e89372af158427e28e6e5a113a60aacc6e01c",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/API.md": {
+      "raw_sha256": "81bc4e5b7fc9f0ff1dd2e13f2c66abf70ef7489310aaa68621d41e80a9c2c2e6",
+      "index_oid": "24da695eed1a18c23d9fe4cc497a7d17335cdc55",
+      "index_blob_sha256": "81bc4e5b7fc9f0ff1dd2e13f2c66abf70ef7489310aaa68621d41e80a9c2c2e6",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/DEPLOYMENT.md": {
+      "raw_sha256": "7a080402caa7701e6c87a34422528c6a8131f932d77ecf9e337f777eabf8d226",
+      "index_oid": "3f1d1bd82f82991c34753585a3c2c6abe9b10725",
+      "index_blob_sha256": "7a080402caa7701e6c87a34422528c6a8131f932d77ecf9e337f777eabf8d226",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/EXAMPLES.md": {
+      "raw_sha256": "68e7d83dc39fa0041a44ec468c77f651390fedd8d6addc670086714c3003b314",
+      "index_oid": "d1cd27f49aa8405852feb40484584cda43775de6",
+      "index_blob_sha256": "68e7d83dc39fa0041a44ec468c77f651390fedd8d6addc670086714c3003b314",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/state-recovery-mechanism.md": {
+      "raw_sha256": "7f25bb6f998f14c1872e37e7f710d6c1ffedfccf119d0a3c3521e5a13dc837f1",
+      "index_oid": "f74ccb250fb793f19556f1309911bd06d1a8a454",
+      "index_blob_sha256": "7f25bb6f998f14c1872e37e7f710d6c1ffedfccf119d0a3c3521e5a13dc837f1",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/storage-implementation.md": {
+      "raw_sha256": "a27662a3d0e88e068a7f8e55c1d6ba034b2951fc383bcf88b8d37540ab9db26c",
+      "index_oid": "18ae059083a0ab71580c166ef1228584f72597f3",
+      "index_blob_sha256": "a27662a3d0e88e068a7f8e55c1d6ba034b2951fc383bcf88b8d37540ab9db26c",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/examples/state-recovery-example.ts": {
+      "raw_sha256": "717adfdab4b9d4e46a2348da70aa9467a3fb311bd94a6428c8b9fe3a8833214a",
+      "index_oid": "77787e5340c1944c024314f4a9151a9a041cb798",
+      "index_blob_sha256": "717adfdab4b9d4e46a2348da70aa9467a3fb311bd94a6428c8b9fe3a8833214a",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/examples/storage-example.ts": {
+      "raw_sha256": "0e243e1bfccdf1966fbcae2924d35aab889f9c3820663cf9256eb9d46419cc86",
+      "index_oid": "75344ca310f7fbe768af56aa3e2560fb0144c05a",
+      "index_blob_sha256": "0e243e1bfccdf1966fbcae2924d35aab889f9c3820663cf9256eb9d46419cc86",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/package.json": {
+      "raw_sha256": "595aae781854d6165d00e88a34e88e854441deb9d39b6a7c68b01c6a46e75f1b",
+      "index_oid": "ed71e61ecb306ebbfa6280d443e33cbcedc8938d",
+      "index_blob_sha256": "595aae781854d6165d00e88a34e88e854441deb9d39b6a7c68b01c6a46e75f1b",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/StateRecoveryManager.ts": {
+      "raw_sha256": "ceec29944fec5c12109162c0ae6c892b1b0856d5c714d03f1532432503e81e91",
+      "index_oid": "a3e9135c12c1583644dbae28bd728cf23305abd3",
+      "index_blob_sha256": "ceec29944fec5c12109162c0ae6c892b1b0856d5c714d03f1532432503e81e91",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/WorkflowPersistence.ts": {
+      "raw_sha256": "d6007f568316ad188d2ca761b202cb8e62cc0c0ab0a52ccb8592ea5b0c67ee25",
+      "index_oid": "c7b1bb6d1d5704b612db06c25c7fa8acea5c1648",
+      "index_blob_sha256": "d6007f568316ad188d2ca761b202cb8e62cc0c0ab0a52ccb8592ea5b0c67ee25",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/events/EventLogReader.ts": {
+      "raw_sha256": "f5273d34df6d0ada812ae626fc0853bd44680630173dd9536faebb8f997369f5",
+      "index_oid": "98803c1d6081c85860b72c8c7cef3e2dd917db6f",
+      "index_blob_sha256": "f5273d34df6d0ada812ae626fc0853bd44680630173dd9536faebb8f997369f5",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/index.ts": {
+      "raw_sha256": "7af98213deb3be1b864cbac06b19b98af452fcbad47afd39f59b497af67db209",
+      "index_oid": "b5753d74232e990c9079ceabba43096fa0ffbad9",
+      "index_blob_sha256": "7af98213deb3be1b864cbac06b19b98af452fcbad47afd39f59b497af67db209",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/storage/AtomicWorkflowInstanceStorage.ts": {
+      "raw_sha256": "f4e15fcdedef2195a5cff3010e7bd64d9f1fff576ac8c9caaca1928b81281fc1",
+      "index_oid": "88c5e0fbc3570c988942e11b8d124db139a6d18a",
+      "index_blob_sha256": "f4e15fcdedef2195a5cff3010e7bd64d9f1fff576ac8c9caaca1928b81281fc1",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/storage/WorkflowInstanceStorage.ts": {
+      "raw_sha256": "48ae0adf5ea0326f06b14a5327a05eea71279efde989399ce56b6d7eb5d8001e",
+      "index_oid": "6f78d7dcb1dba00c30e509ebb77c8a4e66aadcee",
+      "index_blob_sha256": "48ae0adf5ea0326f06b14a5327a05eea71279efde989399ce56b6d7eb5d8001e",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/storage/index.ts": {
+      "raw_sha256": "eb1624f2a2aead3c5bd9164f3e6d62b420b3aad84f55d1b873b53267ea44f157",
+      "index_oid": "5eefaada5ee32721b2b7f5c70e19594015db0a7e",
+      "index_blob_sha256": "eb1624f2a2aead3c5bd9164f3e6d62b420b3aad84f55d1b873b53267ea44f157",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/acceptance.test.ts": {
+      "raw_sha256": "61a9ab4eaf573d8c3bc1914bd2f2e7d57c3201dc6649902c1cb4947aa5b06bc2",
+      "index_oid": "edd328c20812726eb6ed5df975e39caede81a556",
+      "index_blob_sha256": "61a9ab4eaf573d8c3bc1914bd2f2e7d57c3201dc6649902c1cb4947aa5b06bc2",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/integration/crash-recovery.test.ts": {
+      "raw_sha256": "816f716663cea1dd80f2677c6e67619cc08cd1ea68fac82bff46a970b33c567f",
+      "index_oid": "bd4352541c87405a5e5f275098ec2942a9e3dfd6",
+      "index_blob_sha256": "816f716663cea1dd80f2677c6e67619cc08cd1ea68fac82bff46a970b33c567f",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/integration/persistence-comprehensive.test.ts": {
+      "raw_sha256": "75e84318c5084f896e934291882a00f6529cc5519a1515b440b3f69b24328bd9",
+      "index_oid": "474752d3cb646a9aa073606fb4ef93ee9ff714c6",
+      "index_blob_sha256": "75e84318c5084f896e934291882a00f6529cc5519a1515b440b3f69b24328bd9",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/AtomicWorkflowInstanceStorage.test.ts": {
+      "raw_sha256": "66807a3db4ac6cdb7553cf5c9577f95fcb64b1113f73379e794d307c5e28dc15",
+      "index_oid": "e6f42b28a2df0503fef96207b6d7b2ae66574e22",
+      "index_blob_sha256": "66807a3db4ac6cdb7553cf5c9577f95fcb64b1113f73379e794d307c5e28dc15",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/EventLogReader.test.ts": {
+      "raw_sha256": "a0244214c2e1f046bcc5b5ae755780f81a4298a43da7578e2eb7bf652cbff0db",
+      "index_oid": "014dca8343ca13ec50f8158ca6a3272f1a89994d",
+      "index_blob_sha256": "a0244214c2e1f046bcc5b5ae755780f81a4298a43da7578e2eb7bf652cbff0db",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/StateRecoveryManager.test.ts": {
+      "raw_sha256": "77f3cc88b634bd31c2d33342a39bf11f08d9dd1c41ceb033cc580a07303f9785",
+      "index_oid": "c10dd27f34d7a48dd520dd09a2cfc86468ab7450",
+      "index_blob_sha256": "77f3cc88b634bd31c2d33342a39bf11f08d9dd1c41ceb033cc580a07303f9785",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/WorkflowInstanceStorage.test.ts": {
+      "raw_sha256": "de03b46c844749446a9cea564caed8130804dbd6ff41815af388ecaa9998f6fe",
+      "index_oid": "709e7a2cbe334032499d77b993cea4519cdaf64c",
+      "index_blob_sha256": "de03b46c844749446a9cea564caed8130804dbd6ff41815af388ecaa9998f6fe",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/WorkflowPersistence.test.ts": {
+      "raw_sha256": "b3b53fb9d8c6d0c5e3b39c16a307bc200757ab67d8893899503d4ff02f056cf5",
+      "index_oid": "717c7f80da5ea640bbfddfa0c6722d67542f5db3",
+      "index_blob_sha256": "b3b53fb9d8c6d0c5e3b39c16a307bc200757ab67d8893899503d4ff02f056cf5",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tsconfig.json": {
+      "raw_sha256": "327e0a2f4c1717bccd2ec87f350830b48f15df8ac10c8ff89925bf7414b41276",
+      "index_oid": "7cf02706da8c24d37391795612353f928f66aad1",
+      "index_blob_sha256": "327e0a2f4c1717bccd2ec87f350830b48f15df8ac10c8ff89925bf7414b41276",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/tests/e2e/feature-spec-e2e.test.ts": {
+      "raw_sha256": "928d5d7beb857c59a35f2c107e22a2c88acb6c114490ef8403b277eb83618b57",
+      "index_oid": "26f791dc76c6f9dea6f5e948e67956b89952726f",
+      "index_blob_sha256": "928d5d7beb857c59a35f2c107e22a2c88acb6c114490ef8403b277eb83618b57",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-boundary-repair-plan.md": {
+      "raw_sha256": "8053c26f14ffe578c72db2f82bdcfa341a84f1017f7a93568a2f5532e93536f5",
+      "index_oid": "37007edd73a5b59f6f3b2938bb7ac8b325a5d7e0",
+      "index_blob_sha256": "8053c26f14ffe578c72db2f82bdcfa341a84f1017f7a93568a2f5532e93536f5",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-build-verification.json": {
+      "raw_sha256": "d6d2c3c76509bb93b7ad74467a3f6022228d842a50c9fb8fdb8a12cbd0c549e5",
+      "index_oid": "b71fb38ac0714686af2f7e6c18f7d3e1f1fc71b3",
+      "index_blob_sha256": "d6d2c3c76509bb93b7ad74467a3f6022228d842a50c9fb8fdb8a12cbd0c549e5",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-retirement.json": {
+      "raw_sha256": "bae66c43d886b7e83a37a6c059d1539bbe3303ea9610789c3b288c60ad26eae6",
+      "index_oid": "154ebc489e9dfba0cd9d8c34cfa37fbdf444da8c",
+      "index_blob_sha256": "bae66c43d886b7e83a37a6c059d1539bbe3303ea9610789c3b288c60ad26eae6",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "docs/design/windows-lpac-node-readonly-contract.md": {
+      "raw_sha256": "a56c36b239d5558275d880d286269f3564a61085c9e080bdcca8c26be5f73647",
+      "index_oid": "49c9b32037a12b5762de5c72b577349b05929359",
+      "index_blob_sha256": "a3d7b50042814cf2cf4a456999da5b93fb4500f01ad33b085cb25a05698df610",
+      "raw_equals_index": false,
+      "committed_blob_verified": true
+    },
+    "docs/project-status.md": {
+      "raw_sha256": "a30f0de4274e9298f378c50799fa13035801c7729423c395949707e76c673e4d",
+      "index_oid": "d632e1f5b5d3cc1e19e455a6e2694d12add48cb7",
+      "index_blob_sha256": "f1bd73120a57173c227aa2b15cae705fc0303d73f2b952d297f8ef50795bfab6",
+      "raw_equals_index": false,
+      "committed_blob_verified": true
+    },
+    "docs/rule/specforge-development-error-ledger-and-experience.md": {
+      "raw_sha256": "95f0e3d69ecb205cc5b3e928deb9131c0cf96199894fd071c1a20be1c49c3c27",
+      "index_oid": "2fb2c0b0e1048e2deb86a32ec2b1ed3bcb982267",
+      "index_blob_sha256": "bbc184b1eecf0f08e2ce2a7a7aff31460bac3b0b07456461d28d6474ede76092",
+      "raw_equals_index": false,
+      "committed_blob_verified": true
+    },
+    "packages/daemon-core/tests/unit/verification-runtime-plan.test.ts": {
+      "raw_sha256": "e5a7d4e32f6d23ed0d4960399a079c3439747697d148730897378acc323cf7e4",
+      "index_oid": "346a829dad144b16bc57ec950d06e8e81e45908e",
+      "index_blob_sha256": "e5a7d4e32f6d23ed0d4960399a079c3439747697d148730897378acc323cf7e4",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md": {
+      "raw_sha256": "ee8f4751b8e4cfe55b911bdfaf5ad710e4ece14764642941667826f37300a764",
+      "index_oid": "6e747016fd24696dffcf9d6871f4884e85d08adf",
+      "index_blob_sha256": "ee8f4751b8e4cfe55b911bdfaf5ad710e4ece14764642941667826f37300a764",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md": {
+      "raw_sha256": "efb031c4d447728d43bcb005eaf99cfe76b6e7c94aa17016f3c6ea0e326669fd",
+      "index_oid": "b066b61f22279eb8996708f250c45d2895dd28a4",
+      "index_blob_sha256": "efb031c4d447728d43bcb005eaf99cfe76b6e7c94aa17016f3c6ea0e326669fd",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "packages/workflow-runtime/docs/API.md": {
+      "raw_sha256": "86d5e6a7dc632eb39b47196fba9b1c5de350d6fc76eb67dce2da071f8974dad1",
+      "index_oid": "afb4d53aa6a30ea4567d6ae9bc9a333cc7d02b5e",
+      "index_blob_sha256": "86d5e6a7dc632eb39b47196fba9b1c5de350d6fc76eb67dce2da071f8974dad1",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "packages/workflow-runtime/docs/DEPLOYMENT.md": {
+      "raw_sha256": "8c81be1829d631d0adbd79c0ebf7e8cde0ac0a3930fc4d962828eaac42da2bd7",
+      "index_oid": "19dbe56d48c5b8b92ad266e314cae315f619c979",
+      "index_blob_sha256": "8c81be1829d631d0adbd79c0ebf7e8cde0ac0a3930fc4d962828eaac42da2bd7",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "packages/workflow-runtime/docs/EXAMPLES.md": {
+      "raw_sha256": "876592c72daeb39fab4aa4dc4bd8862e7c88d7325d83adf9056c510b325125af",
+      "index_oid": "4d8545186d25b3d5f82e993e2cccae847b08db2f",
+      "index_blob_sha256": "876592c72daeb39fab4aa4dc4bd8862e7c88d7325d83adf9056c510b325125af",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "packages/workflow-runtime/docs/state-recovery-mechanism.md": {
+      "raw_sha256": "daf08306e02884fc7fc21b50b9e1ff45e45b87dec40f7056d30bc899949cb35b",
+      "index_oid": "9acbe5415ecfe2a0d4927b1e2d6663c251572ca6",
+      "index_blob_sha256": "daf08306e02884fc7fc21b50b9e1ff45e45b87dec40f7056d30bc899949cb35b",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "packages/workflow-runtime/docs/storage-implementation.md": {
+      "raw_sha256": "732c9cfa15daf61d453ee3254133837f9f3f0640b9a0dec012a3c1d088a0776b",
+      "index_oid": "cc0bae8bbd2fd763c1a604e2f1acec204550825a",
+      "index_blob_sha256": "732c9cfa15daf61d453ee3254133837f9f3f0640b9a0dec012a3c1d088a0776b",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "packages/workflow-runtime/examples/state-recovery-example.ts": {
+      "deleted": true,
+      "parent_blob_oid": "77787e5340c1944c024314f4a9151a9a041cb798"
+    },
+    "packages/workflow-runtime/examples/storage-example.ts": {
+      "deleted": true,
+      "parent_blob_oid": "75344ca310f7fbe768af56aa3e2560fb0144c05a"
+    },
+    "packages/workflow-runtime/package.json": {
+      "raw_sha256": "cb7fbee2a963438c2fed2f3e709cffc4cf01e7ad6b1db053a97b651fbe6bbb45",
+      "index_oid": "4814fda98fcf2d3dd8689df48d47ee4736287345",
+      "index_blob_sha256": "cb7fbee2a963438c2fed2f3e709cffc4cf01e7ad6b1db053a97b651fbe6bbb45",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "packages/workflow-runtime/src/StateRecoveryManager.ts": {
+      "deleted": true,
+      "parent_blob_oid": "a3e9135c12c1583644dbae28bd728cf23305abd3"
+    },
+    "packages/workflow-runtime/src/WorkflowPersistence.ts": {
+      "deleted": true,
+      "parent_blob_oid": "c7b1bb6d1d5704b612db06c25c7fa8acea5c1648"
+    },
+    "packages/workflow-runtime/src/events/EventLogReader.ts": {
+      "deleted": true,
+      "parent_blob_oid": "98803c1d6081c85860b72c8c7cef3e2dd917db6f"
+    },
+    "packages/workflow-runtime/src/index.ts": {
+      "raw_sha256": "268bed6a7251cf277787a7f1f708f67d39b4340b37816faa6b959746871b1047",
+      "index_oid": "e4f5e22e96c8a63a724bb98141dbd62dc5f75044",
+      "index_blob_sha256": "268bed6a7251cf277787a7f1f708f67d39b4340b37816faa6b959746871b1047",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "packages/workflow-runtime/src/storage/AtomicWorkflowInstanceStorage.ts": {
+      "deleted": true,
+      "parent_blob_oid": "88c5e0fbc3570c988942e11b8d124db139a6d18a"
+    },
+    "packages/workflow-runtime/src/storage/WorkflowInstanceStorage.ts": {
+      "deleted": true,
+      "parent_blob_oid": "6f78d7dcb1dba00c30e509ebb77c8a4e66aadcee"
+    },
+    "packages/workflow-runtime/src/storage/index.ts": {
+      "deleted": true,
+      "parent_blob_oid": "5eefaada5ee32721b2b7f5c70e19594015db0a7e"
+    },
+    "packages/workflow-runtime/tests/acceptance.test.ts": {
+      "raw_sha256": "795203b678ac4b58298b15e3dda13276b747fab429ac89a8bf0e9b35e3eb6c44",
+      "index_oid": "43d0e0f8e30765053def1a22db59f3c1bdad2738",
+      "index_blob_sha256": "795203b678ac4b58298b15e3dda13276b747fab429ac89a8bf0e9b35e3eb6c44",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "packages/workflow-runtime/tests/integration/crash-recovery.test.ts": {
+      "deleted": true,
+      "parent_blob_oid": "bd4352541c87405a5e5f275098ec2942a9e3dfd6"
+    },
+    "packages/workflow-runtime/tests/integration/persistence-comprehensive.test.ts": {
+      "deleted": true,
+      "parent_blob_oid": "474752d3cb646a9aa073606fb4ef93ee9ff714c6"
+    },
+    "packages/workflow-runtime/tests/unit/AtomicWorkflowInstanceStorage.test.ts": {
+      "deleted": true,
+      "parent_blob_oid": "e6f42b28a2df0503fef96207b6d7b2ae66574e22"
+    },
+    "packages/workflow-runtime/tests/unit/EventLogReader.test.ts": {
+      "deleted": true,
+      "parent_blob_oid": "014dca8343ca13ec50f8158ca6a3272f1a89994d"
+    },
+    "packages/workflow-runtime/tests/unit/StateRecoveryManager.test.ts": {
+      "deleted": true,
+      "parent_blob_oid": "c10dd27f34d7a48dd520dd09a2cfc86468ab7450"
+    },
+    "packages/workflow-runtime/tests/unit/WorkflowInstanceStorage.test.ts": {
+      "deleted": true,
+      "parent_blob_oid": "709e7a2cbe334032499d77b993cea4519cdaf64c"
+    },
+    "packages/workflow-runtime/tests/unit/WorkflowPersistence.test.ts": {
+      "deleted": true,
+      "parent_blob_oid": "717c7f80da5ea640bbfddfa0c6722d67542f5db3"
+    },
+    "packages/workflow-runtime/tests/unit/persistence-owner-boundary.test.ts": {
+      "raw_sha256": "736e09e86f282517a3bc876641436aaf7b0c15461424c1f843ebe34fa3272dd3",
+      "index_oid": "e57f88da33b99b90e0db2c8e7086c2e8b5456496",
+      "index_blob_sha256": "736e09e86f282517a3bc876641436aaf7b0c15461424c1f843ebe34fa3272dd3",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "scripts/build-workflow-runtime.ts": {
+      "raw_sha256": "65104374b2021a1feb1b673704d9a73f70ea202c4852b046ed2e3c08bef604c1",
+      "index_oid": "bc0442808b1049b5b01045a8c86f1e0ef85141cc",
+      "index_blob_sha256": "65104374b2021a1feb1b673704d9a73f70ea202c4852b046ed2e3c08bef604c1",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "setup/userlevel-opencode/agents/sf-verifier.md": {
+      "raw_sha256": "ac27b94d1a17bc3b16b7bed5214d2986d4de59a8deeecfb869d1fcfcee950357",
+      "index_oid": "bff574b263486c71bc68d7bcf5a67a0fd37ca88b",
+      "index_blob_sha256": "ac27b94d1a17bc3b16b7bed5214d2986d4de59a8deeecfb869d1fcfcee950357",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md": {
+      "raw_sha256": "f9056b569a83005c3dc4a751fd21a35af49bade8f8600e378a7e4b9c4fc62044",
+      "index_oid": "ac7f2c65487b2ee91a953491e82fe0f6843b1053",
+      "index_blob_sha256": "f9056b569a83005c3dc4a751fd21a35af49bade8f8600e378a7e4b9c4fc62044",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "setup/userlevel-opencode/tools/sf_verification_run.ts": {
+      "raw_sha256": "0ab67a9a6ee97eebdc0b6597fd3ba30b9fbf79a2b4a58b91d1db81efcab9e141",
+      "index_oid": "51204c0691126d2e76514d67e7b95aff14b9eeb6",
+      "index_blob_sha256": "0ab67a9a6ee97eebdc0b6597fd3ba30b9fbf79a2b4a58b91d1db81efcab9e141",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    },
+    "tests/e2e/feature-spec-e2e.test.ts": {
+      "raw_sha256": "f49a83aa96aab0f8604f5d1ef08b14853e6af16c9991d5c885b43a0a7814e5c1",
+      "index_oid": "556a6b9e8fbd95a956d1dd54b5a0fba347960485",
+      "index_blob_sha256": "f49a83aa96aab0f8604f5d1ef08b14853e6af16c9991d5c885b43a0a7814e5c1",
+      "raw_equals_index": true,
+      "committed_blob_verified": true
+    }
+  },
+  "workspace_build_receipt": "0255",
+  "current_root_receipt": "0259",
+  "actual_package_node_receipt": "0260",
+  "source_validation": [
+    "0247 expected boundary failure",
+    "0249 boundary3",
+    "0250 real owner integration17",
+    "0251 complete types",
+    "0254 strict action9",
+    "0255 full12-package build",
+    "0258 retained orchestration/boundary18",
+    "0259 current49 files739",
+    "0260 actual Node package/deep-import/output closure"
+  ],
+  "deployment": "Pending: global current native build remains0208/a918, not this source commit.",
+  "no_final_acceptance_claim": true
+}

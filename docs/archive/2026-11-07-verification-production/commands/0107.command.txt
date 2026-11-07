@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/installer/verify-tool-schemas.test.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "installer-schema-guard-host-regression",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES ordinary host root unit cache only; EXTERNAL_EVIDENCE_WRITES receipts; no install/original",
+  "started_utc": "2026-11-07T02:48:39.446Z"
+}

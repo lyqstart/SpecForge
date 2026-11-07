@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/resume-original-verification.cjs",
+    "02",
+    "original-verification-prompt-02.txt"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Continue same original WI in a new empty session with exact per-action argument guidance and existing success retained",
+  "expected_writes": "TRUTH_SOURCE_WRITES only original WI artifacts and StateManager through real installed owners; RUNTIME_OBSERVER_WRITES Kernel/Daemon/provider session; EXTERNAL_EVIDENCE_WRITES redacted evidence; user consent0242 authorizes same GLM minimum context, no old history/credentials/keys or business main merge",
+  "started_utc": "2026-11-07T05:46:59.290Z"
+}

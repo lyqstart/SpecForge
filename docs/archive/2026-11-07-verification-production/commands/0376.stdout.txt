@@ -1,0 +1,12 @@
+{"name":"routing-canonical-manifest","value":{"success":true,"path":".specforge/work-items/WI-9901/evidence/evidence_manifest.json","size":6767,"file_type":"evidence_manifest","controlled_artifact":true,"normalized":true}}
+{"name":"routing-original-work-log-shape","value":{"success":true,"path":".specforge/archive/agent_runs/verifier-wi0001-manifest-align/work_log.md","size":257}}
+{"name":"routing-topic-trigger-result","value":{"success":true,"path":".specforge/archive/agent_runs/trigger-result/work_log.md","size":29}}
+{"name":"routing-topic-candidate-manifest","value":{"success":true,"path":".specforge/archive/agent_runs/candidate-manifest/work_log.md","size":33}}
+{"name":"routing-topic-trace-delta","value":{"success":true,"path":".specforge/archive/agent_runs/trace-delta/work_log.md","size":26}}
+{"name":"routing-topic-impact-analysis","value":{"success":true,"path":".specforge/archive/agent_runs/impact-analysis/work_log.md","size":30}}
+{"name":"routing-topic-change-classification","value":{"success":true,"path":".specforge/archive/agent_runs/change-classification/work_log.md","size":36}}
+{"name":"routing-topic-task-plan","value":{"success":true,"path":".specforge/archive/agent_runs/task-plan/work_log.md","size":24}}
+{"name":"routing-topic-merge-report","value":{"success":true,"path":".specforge/archive/agent_runs/merge-report/work_log.md","size":27}}
+{"name":"routing-topic-evidence-manifest","value":{"success":true,"path":".specforge/archive/agent_runs/evidence-manifest/work_log.md","size":32}}
+{"name":"routing-missing-array-refused","value":{"success":false,"error":"INVALID_ARTIFACT_JSON","hard_stop":false,"retry_allowed":true,"validation_errors":["evidence_manifest.entries must be an array"],"message":"Artifact \"evidence_manifest.json\" failed schema validation and was NOT written to disk.\nCorrect the JSON and retry.","normalized_content_preview":"{\"schema_version\":\"1.0\",\"work_item_id\":\"WI-9901\",\"action\":\"evidence_manifest_supports_alignment\"}"}}
+{"trial":"D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\7bb83150ebf54338975311185cadfade\\trials\\ca85fa0b-4537-4635-a64e-96821b078348","failure":null,"exit_code":0}

@@ -1,0 +1,15 @@
+{
+  "utc": "2026-11-07T05:08:45.419Z",
+  "args": [
+    "daemon",
+    "start",
+    "--json"
+  ],
+  "status": null,
+  "stdout": "{\"success\":true,\"message\":\"Daemon process running in foreground\",\"pid\":8516,\"executable\":\"C:\\\\Users\\\\lyq\\\\.config\\\\opencode\\\\sf-user\\\\bin\\\\specforged.exe\"}\nHandshake file written to: C:\\Users\\lyq\\.config\\opencode\\sf-user\\runtime\\handshake.json\n[EventBus] Started\n[EventBus] Subscribe: session.* (handler: ldt2i8am7vmw5xz0cd)\n[EventBus] Subscribe: project.updated (handler: 0vkm2macbwhmw5xz0cd)\n[EXTENSIONS] Loading extensions...\n[EventBus] Publish: load {\n  eventId: \"ext-skill-1794028036478\",\n  projectId: undefined,\n  source: \"daemon\",\n  timestamp: \"2026-11-07T05:07:16.479Z\",\n}\n[EventBus] Publish: load {\n  eventId: \"ext-tool-1794028036481\",\n  projectId: undefined,\n  source: \"daemon\",\n  timestamp: \"2026-11-07T05:07:16.481Z\",\n}\n[EventBus] Publish: load {\n  eventId: \"ext-workflow-1794028036486\",\n  projectId: undefined,\n  source: \"daemon\",\n  timestamp: \"2026-11-07T05:07:16.486Z\",\n}\n[EventBus] Publish: load {\n  eventId: \"ext-gate-1794028036486\",\n  projectId: undefined,\n  source: \"daemon\",\n  timestamp: \"2026-11-07T05:07:16.486Z\",\n}\n[EXTENSIONS] All extensions loaded successfully in 9ms\nDaemon Core started on port 9728\n",
+  "stderr": "[SessionRegistry] WAL not injected — running in memory-only mode\n",
+  "error": {
+    "name": "Error",
+    "code": "ETIMEDOUT"
+  }
+}

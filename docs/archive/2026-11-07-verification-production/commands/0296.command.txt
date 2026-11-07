@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/freeze-evidence-guidance-baseline.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Freeze Evidence guidance/handler bytes and reproduce exact current filename contract against actual rejected inputs",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable baseline and diagnostic facts only; all source/original/deployment read-only",
+  "started_utc": "2026-11-07T06:33:59.275Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\freeze-evidence-guidance-baseline.cjs",
+      "sha256": "b346f43b4262ebeaddab83954fb7c193aba6e71c167413d9bfbc51d732432551",
+      "size": 3068,
+      "extension": ".cjs"
+    }
+  ]
+}

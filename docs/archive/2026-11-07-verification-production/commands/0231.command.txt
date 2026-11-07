@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/public-kernel-chain.cjs",
+    "16",
+    "consumers",
+    "602c9ce8-1832-4aff-8595-b695431ad18b"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-installed16-common-Gates-HardStop-retest",
+  "expected_writes": "TRUTH_SOURCE_WRITES owned fixture16 Report Evidence Gate projections and actual audit-owner HardStop; RUNTIME_OBSERVER_WRITES installed Agents Plugin direct Kernel Daemon cancellation/recovery and bounded receipt tamper restored; EXTERNAL_EVIDENCE_WRITES SDK and frozen source trial; no original/user install",
+  "started_utc": "2026-11-07T04:45:10.402Z"
+}

@@ -1,0 +1,23 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/resume-original-verification.cjs",
+    "04",
+    "original-verification-prompt-04.txt",
+    "verification_running"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Continue original WI through real Gates/FV/Close using already-written authenticated professional artifacts and unknown-outcome reconciliation",
+  "expected_writes": "TRUTH_SOURCE_WRITES only real owner Gate/FV/Close records and StateManager; RUNTIME_OBSERVER_WRITES fresh minimum-context GLM/Kernel/Daemon session; EXTERNAL_EVIDENCE_WRITES frozen/redacted traces; consent0242 unchanged, no old chat/credentials/main merge or duplicate successful execution/report writes",
+  "started_utc": "2026-11-07T07:19:31.724Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\resume-original-verification.cjs",
+      "sha256": "2284bedc67669df237347d715b479f17e24a08960f83ec44eef08c91334ce5a1",
+      "size": 14195,
+      "extension": ".cjs"
+    }
+  ]
+}

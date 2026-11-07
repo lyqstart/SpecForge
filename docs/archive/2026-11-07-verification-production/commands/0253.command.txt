@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/halt-original-verification.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Abort only owned fresh original-WI session and child delegations after actual repeated schema rejection",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES controlled OpenCode session abort; EXTERNAL_EVIDENCE_WRITES stop observations and receipts; no direct business truth edits or model prompt",
+  "started_utc": "2026-11-07T05:43:26.837Z"
+}

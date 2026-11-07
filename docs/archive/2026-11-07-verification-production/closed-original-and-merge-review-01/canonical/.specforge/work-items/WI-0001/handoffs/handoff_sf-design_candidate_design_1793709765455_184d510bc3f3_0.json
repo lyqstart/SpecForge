@@ -1,0 +1,53 @@
+{
+  "agent": "sf-design",
+  "boundary_statement": "仅修复设计候选绑定字段与 ID 规范：五份候选就地修订（candidate_preparing 合法窗口），未推进状态、未触发审批、未触碰 requirements.candidate.md/tasks.md/trace_delta.md/impact_analysis.md 等非所有权产物、未修改任何设计决策实质（DD-CORE-001~006 语义、capability_verdict=reuse_existing、七章节结构、治理关系增量语义全部保留）。",
+  "errors": [],
+  "escalation_signals": [
+    {
+      "type": "conflict",
+      "description": "调度指令要求 contracts.candidate.json 顶层补 implementation_baseline_id，但 Runtime ModuleContractFileSchema 强制顶层恰好 contracts/owner_module/schema_version 三键并拒绝第四键（MODULE_CONTRACT_SCHEMA_INVALID，未落盘）；本 Agent 已按 Runtime 权威保持三键结构，Module Contract 绑定语义由同 WI 的 architecture/data_model/design/module 四份候选顶层承载",
+      "affected_refs": [
+        ".specforge/work-items/WI-0001/candidates/project/modules/CORE/contracts.candidate.json",
+        ".specforge/work-items/WI-0001/implementation_baseline.json"
+      ],
+      "recommended_action": "由 sf-orchestrator 确认 Module Contract 绑定字段的最终承载策略：或接受现状（绑定由兄弟候选承载），或走受治理 schema 变更流程扩展 ModuleContractFileSchema"
+    }
+  ],
+  "findings": [
+    "【design.candidate.md｜本会话覆写 27848 bytes】front-matter 绑定字段重命名 1 处（implementation_baseline_snapshot_id→implementation_baseline_id，值 sha256:8f8ac52a…2722 不变）；正文绑定行已是 implementation_baseline_id 并显式引用 .specforge/work-items/WI-0001/implementation_baseline.json（captured_at 2026-10-25T05:23:36.211Z、README.md 既有 123 bytes sha256:757ee94e…f40 追加式修改、package.json/src/greet.ts/tests/greet.test.ts/tsconfig.json matched_files 空新建）；DD-0xx→DD-CORE-0xx 41 处 ID 实例（含 6 个定义标题、§3/§5.4/§5.5/§5.6 引用、Requirements Coverage 表、Assumptions）；REQ-0xx→REQ-CORE-0xx 36 处；AC-0xx→AC-CORE-0xx 16 处（含 AC-010/012/015 的 AC-01x 段）；DD4/YAGNI 与 CP-001~005 非短编号引用逐字保留；sf_batch_verify 12/12 通过",
+    "【module.candidate.json｜本会话覆写 310 bytes normalized】顶层元数据新增 implementation_baseline_id 1 处（ModuleDefinition schema 接受）；code_paths 保持 canonical string[] 5 条不变；0 ID 替换；sf_batch_verify 4/4 通过",
+    "【contracts.candidate.json｜本会话覆写 3428 bytes normalized】source_refs DD 规范化 6 处（INV-CORE-001:1、INV-CORE-002:1、INV-CORE-003:2、PI-CORE-001:2）；description 内 REQ 3 处、AC 6 处、enforcement 内 AC 1 处规范化；首次尝试按指令在顶层补 implementation_baseline_id 被 Runtime 以 MODULE_CONTRACT_SCHEMA_INVALID 拒绝（顶层必须恰好 contracts/owner_module/schema_version 三键，未落盘）；按 Runtime 权威判据保持三键结构、不携带顶层绑定字段，绑定语义由同 WI architecture/data_model/design/module 四份候选承载；四桶结构与 PI/INV 契约 ID 全保留；sf_batch_verify 11/11 通过",
+    "【architecture.candidate.md｜继承首次子会话 ses_e5ea3c781ffexOAlCZo8pe1loi 写入（7393 bytes）+本会话幂等覆写确认，内容一致】0 替换（front-matter 与正文绑定字段、ARCH-CORE/DD-CORE/REQ-CORE 在首会话已规范化）；sf_batch_verify 8/8 通过",
+    "【data_model.candidate.md｜继承首次子会话写入（5387 bytes），本会话仅核验、未覆写——本会话该文件的写入调用因消息格式无效未被执行】0 替换（绑定字段与 DATA-CORE/REQ-CORE/AC-CORE 已规范）；sf_batch_verify 7/7 通过；保留原文件未动",
+    "【过程事实更正】外部审计确认首次子会话并非零写入（architecture/data_model 两份已成功落盘后 HTTP 429/code 1302 中断、无 handoff）；本会话中途曾有两次 candidate_module_contract 写入被 ARTIFACT_OWNER_MISMATCH 拒绝（caller_agent=build），根因为中间一条 noReply 控制消息遗漏 agent 元数据触发默认角色，两次拒绝均正确且零写入，sf-design 角色恢复后第三次写入成功；本 handoff 为该修复轮首个有效设计 handoff"
+  ],
+  "inputs_read": [
+    ".specforge/work-items/WI-0001/candidates/project/architecture.candidate.md（修复前当前版+本会话覆写后复核）",
+    ".specforge/work-items/WI-0001/candidates/project/data_model.candidate.md（首会话版本，核验保留）",
+    ".specforge/work-items/WI-0001/candidates/project/modules/CORE/design.candidate.md（修复前当前版+覆写后复核）",
+    ".specforge/work-items/WI-0001/candidates/project/modules/CORE/module.candidate.json（修复前当前版+覆写后复核）",
+    ".specforge/work-items/WI-0001/candidates/project/modules/CORE/contracts.candidate.json（修复前当前版+覆写后复核）",
+    ".specforge/work-items/WI-0001/implementation_baseline.json（Runtime 基线事实源核对）",
+    "外部独立审计恢复事实（首会话非零写入、无handoff；noReply 消息角色元数据缺失致 build 默认判定）"
+  ],
+  "next_step_recommendation": "调度 sf-task-planner 完成 tasks/trace_delta 同源规范化（candidates/tasks.md 与 candidates/trace_delta.md 仍含 REQ-0xx/AC-0xx/DD-0xx 短编号与 implementation_baseline_snapshot_id front-matter 残留，属其所有权），并同步消费 contracts.candidate.json 三键 schema 约束下的绑定承载现状。",
+  "outputs_written": [
+    ".specforge/work-items/WI-0001/candidates/project/modules/CORE/design.candidate.md（本会话覆写，27848 bytes）",
+    ".specforge/work-items/WI-0001/candidates/project/modules/CORE/module.candidate.json（本会话覆写，310 bytes）",
+    ".specforge/work-items/WI-0001/candidates/project/modules/CORE/contracts.candidate.json（本会话覆写，3428 bytes）",
+    ".specforge/work-items/WI-0001/candidates/project/architecture.candidate.md（继承首会话写入，本会话幂等覆写确认，7393 bytes）",
+    ".specforge/work-items/WI-0001/candidates/project/data_model.candidate.md（继承首会话写入，本会话仅核验未覆写，5387 bytes）"
+  ],
+  "schema_version": "1.0",
+  "stage": "candidate_design",
+  "timestamp": "2026-11-03T00:00:00.000Z",
+  "unknowns": [
+    "handoff timestamp 为日期级近似（2026-11-03，本会话无时钟访问权限，精确时刻以 Runtime 落盘记录为准）",
+    "candidates/tasks.md 与 candidates/trace_delta.md 中的短编号及旧绑定字段残留属 sf-task-planner 所有权，其规范化时点未定",
+    "Module Contract 顶层绑定字段的最终产品策略（schema 三键约束 vs 调度指令补字段要求）需 Orchestrator/Runtime 契约方确认"
+  ],
+  "warnings": [
+    "首次子会话因 provider HTTP 429/code 1302 中断且无 handoff，本 handoff 已并入其成功落盘的两份继承输出，未把未交接当作未写入。"
+  ],
+  "work_item_id": "WI-0001"
+}

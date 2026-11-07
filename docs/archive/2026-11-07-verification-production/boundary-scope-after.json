@@ -1,0 +1,9 @@
+{
+  "utc": "2026-11-07T06:05:03.118Z",
+  "label": "after",
+  "paths_checked": 80,
+  "violations": [],
+  "baselineProof": [],
+  "status": "PASS",
+  "scope_basis": "SPS8 repair plan explicitly covers obsolete documentation consumers; two module-root reports were omitted from status globs, not unclassified user modifications."
+}

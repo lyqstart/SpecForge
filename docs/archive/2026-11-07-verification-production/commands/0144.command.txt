@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/typescript/bin/tsc",
+    "--noEmit"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "current-manual-boundary-daemon-types",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES typecheck receipt only",
+  "started_utc": "2026-11-07T03:44:11.356Z"
+}

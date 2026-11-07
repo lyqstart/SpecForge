@@ -1,0 +1,34 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/value.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/value.test.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/value.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/value.test.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/value.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/value.test.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/value.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/value.test.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/value.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/value.test.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/value.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/value.test.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/value.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/value.test.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/value.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/value.test.mjs', LF will be replaced by CRLF the next time Git touches it
+stderr | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 when CAS store fails
+[PAYLOAD] CAS compression failed: CAS disk full
+
+stderr | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 for oversized non-JSON body
+[PAYLOAD] CAS compression failed: Oversized payload is not valid JSON — cannot apply CAS compression
+
+stderr | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 for oversized JSON without data field
+[PAYLOAD] CAS compression failed: Oversized payload has no "data" field — cannot apply CAS compression
+

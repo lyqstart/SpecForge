@@ -1,0 +1,11 @@
+{
+  "utc": "2026-11-07T08:54:01.325Z",
+  "prompt_sha256": "4faa95cd0b36f554a691199e6f48e1093c7c2fcdf4f305b855263bb5ea3c8cc4",
+  "installed_version": "1.0.23",
+  "state": "verification_running",
+  "old_successes_retained": true,
+  "fresh_formal_required_due_asset_change": true,
+  "prior_session_history_transmitted": false,
+  "credentials_or_keys_read": false,
+  "business_main_merge_authorized": false
+}

@@ -1,0 +1,80 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{713af56a-2216-4943-9161-50d39c920e91}/AC/Temp/sf-verification-source-test-foPMLr/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{713af56a-2216-4943-9161-50d39c920e91}/AC/Temp/sf-verification-source-test-FYYsEU/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{713af56a-2216-4943-9161-50d39c920e91}/AC/Temp/sf-verification-source-test-N6tJDa/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{713af56a-2216-4943-9161-50d39c920e91}/AC/Temp/sf-verification-source-test-C3aJ6l/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/verification-source-snapshot.test.ts > verification raw source and Git identity > captures current raw input and rejects a changed source without invoking clean filters
+Error: Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{713af56a-2216-4943-9161-50d39c920e91}/AC/Temp/sf-verification-source-test-foPMLr/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+ ❯ git tests/unit/verification-source-snapshot.test.ts:10:47
+      8| 
+      9| const roots: string[] = [];
+     10| const git = (root: string, args: string[]) => execFileSync('git', ['-c…
+       |                                               ^
+     11|   cwd: root, windowsHide: true, encoding: 'utf8', env: { ...process.en…
+     12| });
+ ❯ fixture tests/unit/verification-source-snapshot.test.ts:16:3
+ ❯ tests/unit/verification-source-snapshot.test.ts:32:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/unit/verification-source-snapshot.test.ts > verification raw source and Git identity > rejects undeclared untracked code and hardlinked tracked input
+Error: Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{713af56a-2216-4943-9161-50d39c920e91}/AC/Temp/sf-verification-source-test-FYYsEU/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+ ❯ git tests/unit/verification-source-snapshot.test.ts:10:47
+      8| 
+      9| const roots: string[] = [];
+     10| const git = (root: string, args: string[]) => execFileSync('git', ['-c…
+       |                                               ^
+     11|   cwd: root, windowsHide: true, encoding: 'utf8', env: { ...process.en…
+     12| });
+ ❯ fixture tests/unit/verification-source-snapshot.test.ts:16:3
+ ❯ tests/unit/verification-source-snapshot.test.ts:42:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/unit/verification-source-snapshot.test.ts > verification raw source and Git identity > binds branch, index and repository configuration
+Error: Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{713af56a-2216-4943-9161-50d39c920e91}/AC/Temp/sf-verification-source-test-N6tJDa/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+ ❯ git tests/unit/verification-source-snapshot.test.ts:10:47
+      8| 
+      9| const roots: string[] = [];
+     10| const git = (root: string, args: string[]) => execFileSync('git', ['-c…
+       |                                               ^
+     11|   cwd: root, windowsHide: true, encoding: 'utf8', env: { ...process.en…
+     12| });
+ ❯ fixture tests/unit/verification-source-snapshot.test.ts:16:3
+ ❯ tests/unit/verification-source-snapshot.test.ts:51:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/unit/verification-source-snapshot.test.ts > verification raw source and Git identity > freezes only reachable code and package metadata, without reading unrelated tracked files
+Error: Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{713af56a-2216-4943-9161-50d39c920e91}/AC/Temp/sf-verification-source-test-C3aJ6l/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+ ❯ git tests/unit/verification-source-snapshot.test.ts:10:47
+      8| 
+      9| const roots: string[] = [];
+     10| const git = (root: string, args: string[]) => execFileSync('git', ['-c…
+       |                                               ^
+     11|   cwd: root, windowsHide: true, encoding: 'utf8', env: { ...process.en…
+     12| });
+ ❯ fixture tests/unit/verification-source-snapshot.test.ts:16:3
+ ❯ tests/unit/verification-source-snapshot.test.ts:61:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+

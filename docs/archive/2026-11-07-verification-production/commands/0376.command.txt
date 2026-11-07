@@ -1,0 +1,22 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/public-kernel-routing.cjs",
+    "19",
+    "routing"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Verify actual deployed routing-repaired Kernel/Daemon preserves22 canonical entries across real work_log requests",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES private fixture19 Kernel/Daemon/archives only; EXTERNAL_EVIDENCE_WRITES actual driver/tool results; no global or original writes",
+  "started_utc": "2026-11-07T07:56:26.510Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\public-kernel-routing.cjs",
+      "sha256": "a6008d1f398a7e66406121ab9b2aa7be1d054de0ff7666a75de98229048823f4",
+      "size": 44496,
+      "extension": ".cjs"
+    }
+  ]
+}

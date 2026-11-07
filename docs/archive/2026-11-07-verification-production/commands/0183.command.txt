@@ -1,0 +1,12 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/run-current-release-precheck.ts",
+    "--candidate-id",
+    "workspace-build0182-44b5318d083519a68eeb363798caf71ab998523526f6cf506e11de480c51d29b"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "diagnostic-candidate-complete-install-surface-precheck",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES ignored development diagnostic release manifest; EXTERNAL_EVIDENCE_WRITES precheck; not publication or user install",
+  "started_utc": "2026-11-07T04:10:52.602Z"
+}

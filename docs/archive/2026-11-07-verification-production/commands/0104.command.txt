@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/typescript/bin/tsc",
+    "--noEmit",
+    "-p",
+    "scripts/tsconfig.release-owner-snapshot.json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "release-and-installer-source1.0.22-typechecks",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES typecheck receipts only",
+  "started_utc": "2026-11-07T02:46:07.447Z"
+}

@@ -1,0 +1,38 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/verification-evidence-producer.test.ts",
+    "tests/unit/merge-report-owner.test.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "Verify explicit artifact routing,22-entry preservation, missing-array refusal and Merge Runner ownership",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES synthetic unit fixtures only; EXTERNAL_EVIDENCE_WRITES sealed source/test receipt",
+  "started_utc": "2026-11-07T07:45:39.344Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\node_modules\\vitest\\vitest.mjs",
+      "sha256": "39db22f579acf5639bbb17a261408debbde03f4692c0c439e77e7f13aeba74d6",
+      "size": 43,
+      "extension": ".mjs"
+    },
+    {
+      "argument_index": 2,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\verification-evidence-producer.test.ts",
+      "sha256": "cd9b5988ef6b8ff7536ad3c1340b034ed3ebd5314f47b2db7d6f90234f475b8a",
+      "size": 5487,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\merge-report-owner.test.ts",
+      "sha256": "6afaf6e96cd2193afecf10c4e50351c9381c7b8ede2ccf8fa9d4e710eb4782d0",
+      "size": 3269,
+      "extension": ".ts"
+    }
+  ]
+}

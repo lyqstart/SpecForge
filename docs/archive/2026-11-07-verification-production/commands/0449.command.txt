@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/send-current-linkage-audit-note.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Deliver exact current linkage-contract facts to existing actual Verifier with explicit role/model,noReply and consent",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=one current authorized OpenCode control message;EXTERNAL_EVIDENCE_WRITES=before/request/response/after binding;no secret or prior history input",
+  "started_utc": "2026-11-07T09:32:10.653Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\send-current-linkage-audit-note.cjs",
+      "sha256": "cfab705df10da403223b1f84d91e703cdda55ff087982675d881901eec087995",
+      "size": 5605,
+      "extension": ".cjs"
+    }
+  ]
+}

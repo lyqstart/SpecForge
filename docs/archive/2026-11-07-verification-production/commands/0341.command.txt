@@ -1,0 +1,22 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/install-private-fixture-1.0.23.cjs",
+    "17",
+    "0331"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Install and verify all managed1.0.23 files in empty isolated fixture17 using actual installer",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES self-owned .tmp fixture config/home/installation only; EXTERNAL_EVIDENCE_WRITES identity metadata/sealed receipt; no global or original writes",
+  "started_utc": "2026-11-07T07:34:39.951Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\install-private-fixture-1.0.23.cjs",
+      "sha256": "a5f770f2c2016537b567791a3568dae6a52bec7eb3bf1231d97d93f0446fd896",
+      "size": 5851,
+      "extension": ".cjs"
+    }
+  ]
+}

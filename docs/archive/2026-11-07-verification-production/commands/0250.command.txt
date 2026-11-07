@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/e2e/feature-spec-e2e.test.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Verify current finite orchestration integration delegates persistence and recovery to real Daemon owner",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES receipts; RUNTIME_OBSERVER_WRITES owned temporary test project runtime/checkpoints/WAL; no original business writes",
+  "started_utc": "2026-11-07T05:42:05.330Z"
+}

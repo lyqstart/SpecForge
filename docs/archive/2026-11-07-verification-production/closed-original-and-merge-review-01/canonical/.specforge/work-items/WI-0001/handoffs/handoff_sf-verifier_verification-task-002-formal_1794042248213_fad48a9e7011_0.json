@@ -1,0 +1,27 @@
+{
+  "agent": "sf-verifier",
+  "boundary_statement": "只读验证执行；未写任何 artifact，未读取 runtime trace，未推进工作流状态。verification_report/evidence_manifest 待 Orchestrator 后续指令。",
+  "duration_ms": 0,
+  "errors": [],
+  "findings": [
+    "[idx0] plan 3e67a231...7376 | `test -f src/greet.ts` | attempt_record 0ce948f6...3b38 | receipt d02452cdd9f7f187acb553bb84daec81454829c5037a229c786e0ab2c41ebf14 | exit 0 | stdout='' | PASS (exit 0, 无输出)",
+    "[idx1] plan 06bedb6c...cd11 | `grep -c \"export function greet(name: string): string\" src/greet.ts` | attempt_record d84d6013...9e3b | receipt deb2e15387a73d95fc17f9bf98be59a20aad0eaf601f310c92e4bfd1f60a7832 | exit 0 | stdout='1\\n' | PASS (count=1)",
+    "[idx2] plan 80eb247b...dc9 | `grep -c \"Hello, world!\" src/greet.ts` | attempt_record fd4af6a2...66e9 | receipt 64065f2b8d19d321492b3c4ec9a232243773c471e6764809918f433d7f4c7a96 | exit 0 | stdout='1\\n' | PASS (count=1)",
+    "[idx3] plan 9da1af6e...f38 | `! grep -qE \"^import |^import\\{|require\\(\" src/greet.ts` | attempt_record d0671ecb...0951 | receipt 19ab172273eccf0b859040f4abb877963293a24e902bf6fe45e7d5c4e89f6e55 | exit 0 | stdout='' | PASS (zero-import fact, 无输出)",
+    "全部 4 个 attempt 均 outcome=passed、cleanup_proved=true、output_complete=true、无 stderr、无 failure"
+  ],
+  "inputs_read": [
+    "plan:3e67a23124ec01d813a49d4d2dc905dec7106e56992252c4fce9edadef637376",
+    "plan:06bedb6cc69aa4a0ae936c8c5edcdbf7bc29c6312017a00939bed4866dc0cd11",
+    "plan:80eb247b608f0ff60e4cf830543d1ead60be1050d40097b869218fab5b669dc9",
+    "plan:9da1af6e139e52ce456240e552c2b676d8bc2e97921a03503b57ea2fd54d0f38"
+  ],
+  "next_step_recommendation": "TASK-WI-0001-002 unit 验证 4/4 passed；可继续其它 Task 的正式验证或汇总写 verification_report/evidence_manifest。",
+  "outputs_written": [],
+  "schema_version": "1.0",
+  "stage": "verification-task-002-formal",
+  "timestamp": "2026-11-07T00:00:00Z",
+  "unknowns": [],
+  "work_item_id": "WI-0001",
+  "escalation_signals": []
+}

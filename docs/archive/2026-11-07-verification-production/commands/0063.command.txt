@@ -1,0 +1,15 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/verification-runtime-plan.test.ts",
+    "tests/unit/verification-owner-store.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "runtime-shutdown-route-store-regression",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=owned unit Git fixtures and private test stores cleaned;EXTERNAL_EVIDENCE_WRITES=test raw receipts",
+  "started_utc": "2026-11-07T02:06:24.782Z"
+}

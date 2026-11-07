@@ -1,0 +1,40 @@
+{
+  "baseline_timestamp": "2026-11-03T15:40:05.822Z",
+  "diff_timestamp": "2026-11-07T09:55:40.283Z",
+  "created": [
+    "package.json",
+    "src/greet.ts",
+    "tests/greet.test.ts",
+    "tsconfig.json"
+  ],
+  "modified": [
+    "README.md"
+  ],
+  "deleted": [],
+  "all_changes": [
+    {
+      "path": "package.json",
+      "change": "created"
+    },
+    {
+      "path": "src/greet.ts",
+      "change": "created"
+    },
+    {
+      "path": "tests/greet.test.ts",
+      "change": "created"
+    },
+    {
+      "path": "tsconfig.json",
+      "change": "created"
+    },
+    {
+      "path": "README.md",
+      "change": "modified"
+    }
+  ],
+  "untracked_changes": [],
+  "ignored_runtime_files": 0,
+  "baseline_files_with_content_hash": 20,
+  "legacy_reconciled_metadata_only_paths": []
+}

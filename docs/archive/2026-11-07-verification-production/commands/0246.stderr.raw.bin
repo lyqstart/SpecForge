@@ -1,0 +1,7 @@
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/persistence-owner-boundary.test.ts [ tests/unit/persistence-owner-boundary.test.ts ]
+Error: EPERM: operation not permitted, rename 'C:\Users\lyq\AppData\Local\Packages\sandbox.{3cb296ad-9814-42a6-bcca-2a8763adf267}\AC\Temp\LKzDs8SBRnDgzqn3WpdCn\ssr\.tmp-1794029982624-qvaat6lpkei' -> 'C:\Users\lyq\AppData\Local\Packages\sandbox.{3cb296ad-9814-42a6-bcca-2a8763adf267}\AC\Temp\LKzDs8SBRnDgzqn3WpdCn\ssr\9c63f9bf1bb17c50810025cc12a4d92234a750ea'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

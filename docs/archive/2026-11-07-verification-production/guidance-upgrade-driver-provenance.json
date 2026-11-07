@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-07T10:44:22.645Z",
+  "driver_base_sha256": "dcbf865caa6461a3d9f306a640db302ffc6d5414603776f149176285f3574f0d",
+  "driver_sha256": "d8700ff0e6e61944ee99e7f0ff93fc03e08e9fce63d6cfb4d7b8313b4956874e",
+  "source_manifest_sha256": "cba59f74e4602b1f1532cf60e6bbf5c010102da9fdb84458511558215e2433eb",
+  "before_manifest_sha256": "fba4ed3e20d69c54530cc1ef581a3be7fcf83e345bfff42c7b59b95db41dc664",
+  "changed_managed_members": [
+    "agents/sf-orchestrator.md",
+    "skills/sf-workflow-feature-spec/SKILL.md"
+  ],
+  "native_tuple_unchanged": true,
+  "preparation_only": true
+}

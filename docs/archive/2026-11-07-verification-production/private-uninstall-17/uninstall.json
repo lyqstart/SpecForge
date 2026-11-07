@@ -1,0 +1,6 @@
+{
+  "utc": "2026-11-07T08:21:51.791Z",
+  "status": 0,
+  "stdout": "🗑️ 正在卸载 SpecForge 共享组件...\n   OpenCode 配置根: D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\359ad1a4490a40a9948d4f2e76162693\\config\n\n\n✅ 卸载完成\n   已删除: 117 个文件\n",
+  "stderr": ""
+}

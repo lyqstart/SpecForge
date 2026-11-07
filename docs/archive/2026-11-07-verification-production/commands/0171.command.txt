@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/public-kernel-chain.cjs",
+    "11",
+    "crash"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "installed-crash-retest-pinned-install-proof",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned installed11 exact witness kill198/199 new Daemon restart and repeated public cleanup; EXTERNAL_EVIDENCE_WRITES source frozen identities; no original/user install",
+  "started_utc": "2026-11-07T03:59:25.219Z"
+}

@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-public-trials.cjs",
+    "09",
+    "09"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-current-build-formal-lease-matrix",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable public-native-evidence09; private key omitted; no product/original changes",
+  "started_utc": "2026-11-07T03:50:33.198Z"
+}

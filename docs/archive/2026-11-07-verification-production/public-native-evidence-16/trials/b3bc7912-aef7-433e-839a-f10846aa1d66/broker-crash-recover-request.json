@@ -1,0 +1,11 @@
+{
+  "utc": "2026-11-07T04:13:27.811Z",
+  "session": "ses_e4bc9e282ffeeuJ04zyOTK7mv6",
+  "agent": "sf-verifier",
+  "tool": "sf_verification_run",
+  "args": {
+    "action": "recover",
+    "work_item_id": "WI-9901",
+    "attempt_record_id": "d0efc62394431e8b7c1de31eb88253cad6f3814dbbe93cc5c84c587ae1f3d321"
+  }
+}

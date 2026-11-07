@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-07T10:04:24.263Z",
+  "classification": "Pre-invocation tool-name correction; no model or merge had started",
+  "original_prompt": "original-verification-prompt-08.txt",
+  "original_prompt_sha256": "cff34b73e27d2b5d55cc80dcfe174d625e9cd2d969abe52ce143679c6b69def5",
+  "qualified_prompt": "original-verification-prompt-09.txt",
+  "qualified_prompt_sha256": "284d66e8124522ea73d9187aef50ba9e67ac0aeadac9842f411b6b5e7d2ffdf3",
+  "actual_tool": "sf_git_merge_run",
+  "actual_wrapper_sha256": "ea21428c7cf65d5e51cbc7805776af4a1edd6fe848fe53fe56fa7bebc8fcdf8e",
+  "authorization": "Same explicit current source/target/local-only decision, no scope expansion",
+  "driver": "resume-original-approved-local-merge.cjs",
+  "original_files_preserved": true
+}

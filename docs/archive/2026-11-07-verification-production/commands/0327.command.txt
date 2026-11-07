@@ -1,0 +1,21 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/prepare-consumer-source.cjs",
+    "verify"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Verify complete staged consumer patch against frozen raw bytes and exact ALLOWED_SCOPE",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES staged review/patch and sealed receipt; no original or installed writes",
+  "started_utc": "2026-11-07T07:27:21.926Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\prepare-consumer-source.cjs",
+      "sha256": "bdc9b3355f45b03628cf3a164387ba17e680d08ca360c26022d262848e5f92dc",
+      "size": 4475,
+      "extension": ".cjs"
+    }
+  ]
+}

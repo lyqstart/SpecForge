@@ -1,0 +1,14 @@
+{
+  "executable": "specforge",
+  "args": [
+    "daemon",
+    "status",
+    "--json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Verify PATH-resolved current service status through ordinary documented CLI",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES status receipt; RUNTIME_OBSERVER_WRITES service status read only",
+  "started_utc": "2026-11-07T09:04:40.757Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": []
+}

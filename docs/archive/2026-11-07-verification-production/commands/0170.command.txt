@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-public-trials.cjs",
+    "11",
+    "12"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-failed-installed-witness-type-mismatch",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable public-native-evidence12 including failed0165 and cleanup; no original/user install",
+  "started_utc": "2026-11-07T03:59:15.602Z"
+}

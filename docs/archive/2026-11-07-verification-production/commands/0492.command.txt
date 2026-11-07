@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/review-final-guidance-source.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Review/preserve exact9 task-owned final guidance changes and canonical staged identities before product Git operations",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=read-only Git;EXTERNAL_EVIDENCE_WRITES=current/head raw bytes and diff",
+  "started_utc": "2026-11-07T10:27:40.024Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\review-final-guidance-source.cjs",
+      "sha256": "96b83ba7fccb608492a42560ed85e806b795cc156a06692343c1162232ee7073",
+      "size": 2755,
+      "extension": ".cjs"
+    }
+  ]
+}

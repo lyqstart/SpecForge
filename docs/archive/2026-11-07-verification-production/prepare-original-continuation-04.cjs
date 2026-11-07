@@ -1,0 +1,16 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');const inspection=JSON.parse(fs.readFileSync(path.join(__dirname,'original-professional-artifact-inspection.json'))),state=JSON.parse(fs.readFileSync(path.join(__dirname,'original-verification-run-03/original-authoritative-state-after.json')));assert.equal(inspection.formal_command_subjects_matched,22);assert.equal(inspection.report_contract_valid,true);assert.equal(state.current_state,'verification_running');
+const prompt=`恢复原项目 C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7 的同一 WI-0001。你是真实sf-orchestrator；这是新空最小上下文会话，不读取/导入任何旧会话消息，不读auth.json、owner.key、凭据、完整host-profile或其他项目。只用真实专业Agent、当前Skill及正式工具。实际用户安装仍SpecForge1.0.22、固定Windows x64/Node24.19单进程只读；源码1.0.23修复尚未部署，不能混淆。
+
+当前合法断点是verification_running。Candidate审批、PSV-0002原子合并、五文件实现/提交、Changed Files Audit、进入正式验证均已成功；代码写许可已撤销且保持。全部22条implementation及22条formal命令已经真实成功，禁止重复plan/prepare/run、改Task或重开代码写权限。业务分支codex/greet-library-wi-0001的HEAD仍f5fed085a8609f593592eca5e8035b2d1c958759，main仍8a692e88c0823984647622294f5199c18bb0c587。
+
+最重要的新事实：真实sf-verifier已通过sf_artifact_write成功写成canonical evidence/evidence_manifest.json及verification_report.md。之前界面报30秒客户端超时，实际Daemon分别在30157ms/33511ms完成，handler response的success=true，文件真实存在。外部审计者已读原字节、运行生产Report Contract/Manifest Schema，并把报告22个formal主体/命令/receipt逐项对到原Task和真实Kernel记录，报告conclusion=pass。核验SHA分别为manifest ${inspection.manifest_sha256}，report ${inspection.report_sha256}。这些是鉴别现存产物的事实，不是Gate已经通过。不要因为旧任务超时重写报告、重新派发生成或重复测试。
+
+请先sf_state_read确认实时权威状态，再读取上述两份规范专业产物。直接消费真实Verifier已写报告的完整结构化JSON/semantic_closure，按当前owner/Skill调用sf_semantic_closure_run以及适用Verification/Formal Version/Trace/Audit/Close流程。若流程确需专业handoff，可让真实sf-verifier只读核验既有产物并返回原始JSON/handoff，不重新编造或写覆盖结论。Orchestrator不代写专业报告。
+
+旧客户端对Gate/Close也可能30秒先超时，不能据此当作操作失败或回滚。每次只发一次；超时后先用正式读取入口核验StateManager、规范Gate报告/summary及必要owner observability，再决定下一步。Daemon观察日志位于该项目.specforge/logs/observability/daemon/dispatcher.jsonl；仅Orchestrator可为对账读取，Verifier不读取自己禁止的trace。dispatch.status=success只表示handler返回，不能单独当业务成功；看真实handler payload以及Gate的passed/required checks。状态/产物已成功的动作不重做；未知就保留unknown和原请求证据，不无限重派。后台可能仍在完成，发现旧view不能立刻再发同一写入。
+
+若Gate明确失败，读取真实失败check和上游输入，按合法owner修复，不伪造通过、不跳Gate、不手改.specforge。两个历史Get-FileHash拒绝及已存在operator_error/abandon resolution保留，不能声明历史零拒绝。至verification_done之后仅由sf_close_gate写closed；Formal Version必须由当前正式owner真实登记，不写伪造文件或使用不存在状态。
+
+业务默认main合并仍无用户确认。若到此边界，只生成真实can_merge=true的sf_git_merge_plan，展示目标/分支/实际diff和阻塞项并等待用户，禁止confirmed=true、普通git merge/push。当前目标先完成真实Gate/FV/Close，或返回精确可复核的合法断点。外部审计者会核验真实StateManager、各Gate和正式版本，不以你的总结代替。
+`;
+fs.writeFileSync(path.join(__dirname,'original-verification-prompt-04.txt'),prompt,{flag:'wx'});fs.writeFileSync(path.join(__dirname,'original-continuation-04-input-provenance.json'),JSON.stringify({utc:new Date().toISOString(),expected_state:state.current_state,source:'0310 actual owner late success;0317 typed/hash/22-subject independent inspection',professional_artifact_rewritten:false,history_loaded:false,model_prompt_sent:false},null,2)+'\n',{flag:'wx'});console.log(JSON.stringify({prompt:'original-verification-prompt-04.txt',expected_state:state.current_state,professional_artifact_rewritten:false,successful_steps_to_reuse:'44 executions and2 professional artifacts'}));

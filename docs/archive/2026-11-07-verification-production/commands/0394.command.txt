@@ -1,0 +1,21 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/prepare-fixture-source.cjs",
+    "prepare"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Freeze fully green test-consumer repair with complete raw,base blobs,scope and patch before commit",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES25-path immutable source review/hash/pathspec; no original/global writes",
+  "started_utc": "2026-11-07T08:31:46.593Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\prepare-fixture-source.cjs",
+      "sha256": "7d40a2b6a8d25b13746797df0af9f0870fe69587afe1efe30d302f37834dc60e",
+      "size": 4624,
+      "extension": ".cjs"
+    }
+  ]
+}

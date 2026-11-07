@@ -1,0 +1,7 @@
+{
+  "utc": "2026-11-07T06:15:48.548Z",
+  "source": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\resume-original-verification.cjs",
+  "sha256": "819431142f357284fa79ccbd0df7f00d88c79a23012c17436ebd7feecbcd1c48",
+  "timing": "AFTER_INVOCATION_BEGIN",
+  "qualification": "Current source captured before subsequent edits. Run02 began earlier without a pre-start script snapshot; this is not retroactively represented as one. Run01 source was edited before this capture and its exact original entry bytes are not claimed. Actual Kernel/native receipts and owner checks remain separate evidence."
+}

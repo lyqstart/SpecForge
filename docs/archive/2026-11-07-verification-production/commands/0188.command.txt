@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/record-integration-checkpoint-04.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify186receipts15frozen-sets-and-update-unique-status",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES unique docs/project-status.md; EXTERNAL_EVIDENCE_WRITES checkpoint04; no original/user install",
+  "started_utc": "2026-11-07T04:12:33.236Z"
+}

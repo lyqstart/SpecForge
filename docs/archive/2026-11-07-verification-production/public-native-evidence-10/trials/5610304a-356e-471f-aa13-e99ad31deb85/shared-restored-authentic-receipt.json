@@ -1,0 +1,8 @@
+{
+  "success": true,
+  "action": "validate_verification_report",
+  "validator": "verification-report-contract/v1",
+  "valid": true,
+  "errors": [],
+  "conclusion": "pass"
+}

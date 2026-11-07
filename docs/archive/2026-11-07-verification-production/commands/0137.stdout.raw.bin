@@ -1,0 +1,30 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/execution-evidence-consumer.test.ts (19 tests | 1 failed) 16ms
+   ✓ shared execution reference consumer (unit transport only) > uses the same exact subject for Report and Evidence and verifies it once 4ms
+   ✓ shared execution reference consumer (unit transport only) > rejects a free-text passed command without an authenticated receipt 1ms
+   ✓ shared execution reference consumer (unit transport only) > fails closed without the composed owner or when that owner rejects freshness 1ms
+   ✓ shared execution reference consumer (unit transport only) > rejects copied subjects, duplicate command receipts and missing manifest links 1ms
+   ✓ shared execution reference consumer (unit transport only) > checks the manifest path domain rather than trusting a copied path 0ms
+   ✓ shared execution reference consumer (unit transport only) > checks the manifest hash domain rather than trusting a copied path 0ms
+   ✓ shared execution reference consumer (unit transport only) > checks the manifest hash_domain domain rather than trusting a copied path 0ms
+   ✓ shared execution reference consumer (unit transport only) > does not permit an executable declaration to be relabeled manual 0ms
+   × shared execution reference consumer (unit transport only) > does not let a manual prefix claim an executable Task or receipt subject 7ms
+     → expected [] to include 'manual_observation_reference_invalid:0'
+   ✓ shared execution reference consumer (unit transport only) > does not interpret newer required fields as proof of an old closure defect 0ms
+   ✓ request lifetime and recovery action boundary > only trusts the process-local signal symbol 0ms
+   ✓ request lifetime and recovery action boundary > classifies only resource recovery sf_verification_plan/create 0ms
+   ✓ request lifetime and recovery action boundary > classifies only resource recovery sf_verification_plan/recover 0ms
+   ✓ request lifetime and recovery action boundary > classifies only resource recovery sf_verification_plan/revoke 0ms
+   ✓ request lifetime and recovery action boundary > classifies only resource recovery sf_verification_run/prepare 0ms
+   ✓ request lifetime and recovery action boundary > classifies only resource recovery sf_verification_run/run 0ms
+   ✓ request lifetime and recovery action boundary > classifies only resource recovery sf_verification_run/cancel 0ms
+   ✓ request lifetime and recovery action boundary > classifies only resource recovery sf_verification_run/recover 0ms
+   ✓ request lifetime and recovery action boundary > classifies only resource recovery sf_safe_bash/recover 0ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 18 passed (19)
+   Start at  11:39:09
+   Duration  542ms (transform 47ms, setup 0ms, collect 70ms, tests 16ms, environment 0ms, prepare 192ms)
+

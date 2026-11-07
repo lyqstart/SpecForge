@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/preflight-real-user-Kernel.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preflight-real-user-Kernel-and-connected-provider-metadata",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES actual user OpenCode SDK initialization and owned empty Temp probe cwd/logs only; EXTERNAL_EVIDENCE_WRITES safe metadata hashes; no model prompt original project SpecForge managed asset or user credential file writes",
+  "started_utc": "2026-11-07T04:38:41.134Z"
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "name": "sf-orchestrator",
+    "mode": "primary",
+    "prompt_sha256": "f904d2b4b55e5b7234179fd6660f93583e748d64ab9da75bdd2a1792aeb36c5e"
+  },
+  {
+    "name": "sf-verifier",
+    "mode": "subagent",
+    "prompt_sha256": "e11b123b42242641c844479be8813f99c6c793463de2bffc21ea3d8cf21c1b9c"
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/public-kernel-chain.cjs",
+    "09",
+    "consumers",
+    "5610304a-356e-471f-aa13-e99ad31deb85"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "current-lease-common-consumers-real-Gates-HardStop",
+  "expected_writes": "TRUTH_SOURCE_WRITES owned fixture09 Report Evidence Gate reports and real audit-owner HardStop; RUNTIME_OBSERVER_WRITES Kernel Daemon pre-start cancellation recovery and bounded receipt tamper restored; EXTERNAL_EVIDENCE_WRITES source-frozen trial; original/user install untouched",
+  "started_utc": "2026-11-07T03:50:43.393Z"
+}

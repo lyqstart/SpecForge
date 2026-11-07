@@ -1,0 +1,28 @@
+{
+  "trial": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\b1cf9d5575484f519b266e6b2673a421\\trials\\e867fa9c-de09-4c57-968b-385c7cfe7fdd",
+  "result_sha256": "802de6a7e91ac6546d688b81d837efd3e0e9fe2a8ef7ea2977c6ead2f2a83924",
+  "utc": "2026-11-07T02:19:04.105Z",
+  "records": [
+    {
+      "child": "kernel",
+      "pid": 5380,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-11-07T02:19:04.103Z"
+      }
+    },
+    {
+      "child": "daemon",
+      "pid": 17900,
+      "exit": {
+        "code": 1,
+        "signal": null,
+        "utc": "2026-11-07T02:19:03.974Z"
+      }
+    }
+  ],
+  "failure": "AssertionError [ERR_ASSERTION]: DAEMON_EARLY_EXIT UNSUPPORTED_SPECFORGED_COMMAND: --foreground\n\n\n1 !== null\n\n    at main (D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\public-kernel-chain.cjs:64:140)",
+  "exit_code": 1,
+  "original_business_touched": false
+}

@@ -1,0 +1,13 @@
+{
+  "executable": "git",
+  "args": [
+    "ls-remote",
+    "origin",
+    "refs/heads/main",
+    "refs/tags/specforge-v1.0.23"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Read remote main identity and reserve-free next patch tag before release version preparation",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES command receipts only; remote read-only refs, no push or local ref changes",
+  "started_utc": "2026-11-07T05:58:33.486Z"
+}

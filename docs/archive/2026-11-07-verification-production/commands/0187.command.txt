@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/public-kernel-chain.cjs",
+    "12",
+    "crash"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "diagnostic-installed12-direct-crash-followup-plan",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned installed12 actual professional Agents direct Kernel Daemon bounded private diagnostics stable crash/recovery; EXTERNAL_EVIDENCE_WRITES frozen source trial; no original/user install",
+  "started_utc": "2026-11-07T04:11:49.872Z"
+}

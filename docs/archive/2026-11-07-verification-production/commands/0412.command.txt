@@ -1,0 +1,23 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/resume-original-verification-1.0.23.cjs",
+    "06",
+    "original-verification-prompt-06.txt",
+    "verification_running"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Run approved real GLM minimum-context same-WI current1.0.23 formal revalidation and lawful Gate/Close continuation",
+  "expected_writes": "TRUTH_SOURCE_WRITES only actual authorized professional owners on sameWI; RUNTIME_OBSERVER_WRITES owned fresh Kernel and current user Daemon; EXTERNAL_EVIDENCE_WRITES redacted tool/native evidence; no business code edits, key reads or main merge",
+  "started_utc": "2026-11-07T08:54:19.683Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\resume-original-verification-1.0.23.cjs",
+      "sha256": "a43643c3c3383929db5dd83a1bf233ea7a2ac6c25d4670dccde67d528016a8e3",
+      "size": 14266,
+      "extension": ".cjs"
+    }
+  ]
+}

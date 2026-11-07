@@ -1,0 +1,1 @@
+{"schema_version":"1.0","status":"ok","pid":14576,"version":"1.0.22","startedAt":1794028214458,"uptimeSec":168,"activeClients":0,"pendingEvents":4,"lastEventTs":1794028214473}

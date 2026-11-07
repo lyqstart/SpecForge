@@ -1,0 +1,495 @@
+[SessionRegistry] WAL not injected — running in memory-only mode
+Handshake file written to: D:\code\SpecForge\.tmp\verification-public-kernel\8a982ca253364a8188f931573c9de83e\config\sf-user\runtime\handshake.json
+[EventBus] Started
+[EventBus] Subscribe: session.* (handler: yb0xjk96canmw5wdso4)
+[EventBus] Subscribe: project.updated (handler: 8xomeowhn8omw5wdso4)
+[EXTENSIONS] Loading extensions...
+[EventBus] Publish: load {
+  eventId: "ext-skill-1794025367140",
+  projectId: undefined,
+  source: "daemon",
+  timestamp: "2026-11-07T04:22:47.140Z",
+}
+[EventBus] Publish: load {
+  eventId: "ext-tool-1794025367141",
+  projectId: undefined,
+  source: "daemon",
+  timestamp: "2026-11-07T04:22:47.141Z",
+}
+[EventBus] Publish: load {
+  eventId: "ext-workflow-1794025367143",
+  projectId: undefined,
+  source: "daemon",
+  timestamp: "2026-11-07T04:22:47.143Z",
+}
+[EventBus] Publish: load {
+  eventId: "ext-gate-1794025367143",
+  projectId: undefined,
+  source: "daemon",
+  timestamp: "2026-11-07T04:22:47.143Z",
+}
+[EXTENSIONS] All extensions loaded successfully in 3ms
+Daemon Core started on port 8387
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.diff
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: catalog.updated
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: plugin.added
+[SessionRegistry] Unhandled opencode event subtype: reference.updated
+[SessionRegistry] Unhandled opencode event subtype: integration.updated
+[SessionRegistry] Unhandled opencode event subtype: catalog.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.diff
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.delta
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.diff
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.diff
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.diff
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.delta
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.diff
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.diff
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.diff
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.delta
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.diff
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.diff
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.diff
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.delta
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.diff
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.diff
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.diff
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.delta
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.diff
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.diff
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+{"event":"verification.request.rejected","utc":"2026-11-07T04:23:21.377Z","error_name":"SystemError","system_code":"ETIMEDOUT","syscall":null,"http_status":null,"message_family":null,"transport_category":null,"message_sha256":"6610d55856bb585cd45998bac420f561b29df5978f22a85a8263830abb924ce4","stage":"source_git_read","git_operation":"rev-parse"}
+{"event":"verification.request.rejected","utc":"2026-11-07T04:23:21.378Z","error_name":"SystemError","system_code":"ETIMEDOUT","syscall":null,"http_status":null,"message_family":null,"transport_category":null,"message_sha256":"6610d55856bb585cd45998bac420f561b29df5978f22a85a8263830abb924ce4","stage":"source_inventory"}
+{"event":"verification.request.rejected","utc":"2026-11-07T04:23:21.378Z","error_name":"SystemError","system_code":"ETIMEDOUT","syscall":null,"http_status":null,"message_family":null,"transport_category":null,"message_sha256":"6610d55856bb585cd45998bac420f561b29df5978f22a85a8263830abb924ce4"}
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.diff
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.delta
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.part.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: message.updated
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: session.status
+[SessionRegistry] Unhandled opencode event subtype: session.updated
+[SessionRegistry] Unhandled opencode event subtype: session.diff
+[API] admin/stop — initiating graceful shutdown
+Daemon Core shutting down...
+[GracefulShutdown] Starting shutdown: daemon.stop()
+[GracefulShutdown] Executing priority: stop-accepting (1 tasks)
+[SHUTDOWN] Step 1: Stopping HTTP accept...
+[GracefulShutdown] Executing priority: drain (1 tasks)
+[SHUTDOWN] Step 2: Draining Event Bus...
+[GracefulShutdown] Executing priority: flush (1 tasks)
+[SHUTDOWN] Step 3: Flush events (no-op, eventLogger removed)...
+[GracefulShutdown] Executing priority: close (1 tasks)
+[SHUTDOWN] Step 4: Closing SSE connections...
+[GracefulShutdown] Executing priority: release (1 tasks)
+[SHUTDOWN] Step 5: Disposing extensions...
+[GracefulShutdown] Shutdown sequence completed successfully
+[GracefulShutdown] Resources disposed
+[EventBus] Unsubscribe: project.updated (handler: 8xomeowhn8omw5wdso4)
+[EventBus] Unsubscribe: session.* (handler: yb0xjk96canmw5wdso4)
+[EventBus] Stopped
+Cleaning up handshake file and releasing lock...
+Handshake file deleted: D:\code\SpecForge\.tmp\verification-public-kernel\8a982ca253364a8188f931573c9de83e\config\sf-user\runtime\handshake.json
+Cleanup completed
+Daemon Core stopped

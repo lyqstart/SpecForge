@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/typescript/bin/tsc",
+    "--noEmit",
+    "-p",
+    "scripts/tsconfig.installer.json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verification-installer-types",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=typecheck raw receipts",
+  "started_utc": "2026-11-07T01:48:05.267Z"
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "attempt_id": "attempt-0006",
+  "work_item_id": "WI-0001",
+  "source": "gate_run",
+  "started_at": "2026-11-03T14:47:10.592Z",
+  "completed_at": "2026-11-03T14:47:10.621Z",
+  "requested_gate_ids": [
+    "post_merge_gate"
+  ],
+  "current_report_gate_ids": [
+    "post_merge_gate"
+  ],
+  "summary_report_gate_ids": [
+    "post_merge_gate"
+  ],
+  "summary_status": "passed",
+  "input_snapshot": "input-snapshot.json"
+}

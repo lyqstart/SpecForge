@@ -1,0 +1,25 @@
+{
+  "agent": "sf-design",
+  "boundary_statement": "仅修两项 Gate 阻塞，未推进状态，未触碰其他文件",
+  "duration_ms": 0,
+  "escalation_signals": [],
+  "findings": [
+    "修复 1（本次修复）：data_model.candidate.md DATA-CORE-003 的 constrained_by: PI-CORE-001 键行已替换为普通契约对应说明行；DATA-CORE-001/002 的 ARCH-CORE-003 与 DATA-CORE-004 的 ARCH-CORE-002 保持不动，其余内容逐字未变；sf_batch_verify 5/5 通过",
+    "修复 2（本次修复）：architecture.candidate.md 已在 front-matter analysis_scope 之后加 capability_verdict: reuse_existing，并追加『## 系统治理分析（analysis_scope: system_governance）』大章及七个逐字小节（Problem Understanding / Existing Architecture Analysis / Governance Classification / Existing Capability Assessment / Solution Strategy / Impact Analysis / Verification Plan），正文 Verification Plan 之后同值声明一次；既有章节全部保留；sf_batch_verify 7/7 通过",
+    "attempt-0002 前次调度无任何返回，两项修复均判定为未修复状态后执行本次最小必要写入"
+  ],
+  "inputs_read": [
+    ".specforge/work-items/WI-0001/candidates/project/data_model.candidate.md",
+    ".specforge/work-items/WI-0001/candidates/project/architecture.candidate.md"
+  ],
+  "next_step_recommendation": "重试封存并跑 attempt-0003",
+  "outputs_written": [
+    ".specforge/work-items/WI-0001/candidates/project/data_model.candidate.md",
+    ".specforge/work-items/WI-0001/candidates/project/architecture.candidate.md"
+  ],
+  "schema_version": "1.0",
+  "stage": "candidate_design",
+  "timestamp": "2026-11-03T00:00:00.000Z",
+  "unknowns": [],
+  "work_item_id": "WI-0001"
+}

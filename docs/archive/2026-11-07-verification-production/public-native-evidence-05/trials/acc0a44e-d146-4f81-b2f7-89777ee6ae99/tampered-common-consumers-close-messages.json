@@ -1,0 +1,250 @@
+[
+  {
+    "info": {
+      "id": "msg_1b3f48bfd0017g5aSd94RQKCXg",
+      "sessionID": "ses_e4c0b741effe9GGG5Y4qCvyCE3",
+      "role": "user",
+      "time": {
+        "created": 1794020510717
+      },
+      "summary": {
+        "diffs": [
+          {
+            "file": ".specforge/work-items/WI-9901/gate_attempts/attempt-0005/attempt-result.json",
+            "patch": "Index: .specforge/work-items/WI-9901/gate_attempts/attempt-0005/attempt-result.json\n===================================================================\n--- .specforge/work-items/WI-9901/gate_attempts/attempt-0005/attempt-result.json\t\n+++ .specforge/work-items/WI-9901/gate_attempts/attempt-0005/attempt-result.json\t\n@@ -0,0 +1,19 @@\n+{\n+  \"schema_version\": \"1.0\",\n+  \"attempt_id\": \"attempt-0005\",\n+  \"work_item_id\": \"WI-9901\",\n+  \"source\": \"gate_run\",\n+  \"started_at\": \"2026-11-07T03:01:51.405Z\",\n+  \"completed_at\": \"2026-11-07T03:01:56.565Z\",\n+  \"requested_gate_ids\": [\n+    \"close_gate\"\n+  ],\n+  \"current_report_gate_ids\": [\n+    \"close_gate\"\n+  ],\n+  \"summary_report_gate_ids\": [\n+    \"close_gate\"\n+  ],\n+  \"summary_status\": \"failed\",\n+  \"input_snapshot\": \"input-snapshot.json\"\n+}\n\\ No newline at end of file\n",
+            "additions": 19,
+            "deletions": 0,
+            "status": "added"
+          },
+          {
+            "file": ".specforge/work-items/WI-9901/gate_attempts/attempt-0005/attempt-start.json",
+            "patch": "Index: .specforge/work-items/WI-9901/gate_attempts/attempt-0005/attempt-start.json\n===================================================================\n--- .specforge/work-items/WI-9901/gate_attempts/attempt-0005/attempt-start.json\t\n+++ .specforge/work-items/WI-9901/gate_attempts/attempt-0005/attempt-start.json\t\n@@ -0,0 +1,10 @@\n+{\n+  \"schema_version\": \"1.0\",\n+  \"attempt_id\": \"attempt-0005\",\n+  \"work_item_id\": \"WI-9901\",\n+  \"source\": \"gate_run\",\n+  \"started_at\": \"2026-11-07T03:01:51.405Z\",\n+  \"requested_gate_ids\": [\n+    \"close_gate\"\n+  ]\n+}\n\\ No newline at end of file\n",
+            "additions": 10,
+            "deletions": 0,
+            "status": "added"
+          },
+          {
+            "file": ".specforge/work-items/WI-9901/gate_attempts/attempt-0005/gate_summary.md",
+            "patch": "Index: .specforge/work-items/WI-9901/gate_attempts/attempt-0005/gate_summary.md\n===================================================================\n--- .specforge/work-items/WI-9901/gate_attempts/attempt-0005/gate_summary.md\t\n+++ .specforge/work-items/WI-9901/gate_attempts/attempt-0005/gate_summary.md\t\n@@ -0,0 +1,28 @@\n+# Gate Summary\n+\n+Work Item: WI-9901\n+Overall Status: failed\n+Generated: 2026-11-07T03:01:56.557Z\n+\n+## Gate Reports\n+\n+### close_gate\n+- Type: hard_gate\n+- Status: failed\n+- Required: true\n+- Blocking Issues:\n+  - Required file exists: intake.md\n+  - Required file exists: trigger_result.json\n+  - Required file exists: change_classification.md\n+  - Required file exists: impact_analysis.md\n+  - Required file exists: changed_files_audit.md\n+  - Required file exists: .semantic_closure.json\n+  - Formal Version Gate passed before Close\n+  - verification evidence source and declared time remain valid at Close\n+  - .semantic_closure.json exists and is valid JSON\n+  - semantic closure is bound to the current verification artifacts\n+  - No unresolved blocking issues from gates/*.json (§15.2)\n+\n+## User Decision Required\n+\n+Some hard gates failed. User cannot approve until issues are resolved.\n\\ No newline at end of file\n",
+            "additions": 28,
+            "deletions": 0,
+            "status": "added"
+          },
+          {
+            "file": ".specforge/work-items/WI-9901/gate_attempts/attempt-0005/gates/close_gate.json",
+            "patch": "Index: .specforge/work-items/WI-9901/gate_attempts/attempt-0005/gates/close_gate.json\n===================================================================\n--- .specforge/work-items/WI-9901/gate_attempts/attempt-0005/gates/close_gate.json\t\n+++ .specforge/work-items/WI-9901/gate_attempts/attempt-0005/gates/close_gate.json\t\n@@ -0,0 +1,240 @@\n+{\n+  \"schema_version\": \"1.0\",\n+  \"work_item_id\": \"WI-9901\",\n+  \"gate_id\": \"close_gate\",\n+  \"gate_type\": \"hard_gate\",\n+  \"required\": true,\n+  \"status\": \"failed\",\n+  \"input_files\": [\n+    \"work_item.json\",\n+    \"intake.md\",\n+    \"trigger_result.json\",\n+    \"change_classification.md\",\n+    \"impact_analysis.md\",\n+    \"candidate_manifest.json\",\n+    \"verification_report.md\",\n+    \"merge_report.md\",\n+    \"changed_files_audit.md\",\n+    \"evidence/evidence_manifest.json\",\n+    \".semantic_closure.json\",\n+    \"candidates/tasks.md\",\n+    \"gates/formal_version_gate.json\",\n+    \"formal_version_snapshot.json\",\n+    \".specforge/project/extension_registry.json\",\n+    \".specforge/project/spec_manifest.json\"\n+  ],\n+  \"checks\": [\n+    {\n+      \"check_id\": \"close_file_work_item_json\",\n+      \"description\": \"Required file exists: work_item.json\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"close_file_intake_md\",\n+      \"description\": \"Required file exists: intake.md\",\n+      \"passed\": false,\n+      \"severity\": \"error\"\n+    },\n+    {\n+      \"check_id\": \"close_file_trigger_result_json\",\n+      \"description\": \"Required file exists: trigger_result.json\",\n+      \"passed\": false,\n+      \"severity\": \"error\"\n+    },\n+    {\n+      \"check_id\": \"close_file_change_classification_md\",\n+      \"description\": \"Required file exists: change_classification.md\",\n+      \"passed\": false,\n+      \"severity\": \"error\"\n+    },\n+    {\n+      \"check_id\": \"close_file_impact_analysis_md\",\n+      \"description\": \"Required file exists: impact_analysis.md\",\n+      \"passed\": false,\n+      \"severity\": \"error\"\n+    },\n+    {\n+      \"check_id\": \"close_file_candidate_manifest_json\",\n+      \"description\": \"Required file exists: candidate_manifest.json\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"close_file_verification_report_md\",\n+      \"description\": \"Required file exists: verification_report.md\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"close_file_merge_report_md\",\n+      \"description\": \"Required file exists: merge_report.md\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"close_file_changed_files_audit_md\",\n+      \"description\": \"Required file exists: changed_files_audit.md\",\n+      \"passed\": false,\n+      \"severity\": \"error\"\n+    },\n+    {\n+      \"check_id\": \"close_file_evidence_evidence_manifest_json\",\n+      \"description\": \"Required file exists: evidence/evidence_manifest.json\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"close_file__semantic_closure_json\",\n+      \"description\": \"Required file exists: .semantic_closure.json\",\n+      \"passed\": false,\n+      \"severity\": \"error\"\n+    },\n+    {\n+      \"check_id\": \"close_artifact_tasks_authoritative\",\n+      \"description\": \"Authoritative tasks artifact is present (Candidate first; authored legacy fallback only)\",\n+      \"passed\": true,\n+      \"details\": \"path=.specforge/work-items/WI-9901/candidates/tasks.md\"\n+    },\n+    {\n+      \"check_id\": \"close_formal_version_gate\",\n+      \"description\": \"Formal Version Gate passed before Close\",\n+      \"passed\": false,\n+      \"severity\": \"error\",\n+      \"details\": \"status=failed\"\n+    },\n+    {\n+      \"check_id\": \"close_project_spec_core_version_coherent\",\n+      \"description\": \"Project Spec Core files agree on the authoritative project_spec_version when declared\",\n+      \"passed\": true,\n+      \"details\": \"project_spec_version=PSV-0001\"\n+    },\n+    {\n+      \"check_id\": \"close_filesystem_formal_version_current\",\n+      \"description\": \"Filesystem implementation file set and content fingerprint still match Formal Version\",\n+      \"passed\": true,\n+      \"details\": \"filesystem Formal Version snapshot is current or not applicable to Git mode\"\n+    },\n+    {\n+      \"check_id\": \"close_write_guard_audit_current\",\n+      \"description\": \"Changed Files Audit covers the current Write Guard and resolution evidence\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"close_verification_nonempty\",\n+      \"description\": \"verification_report is not empty\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"close_verification_refs_evidence\",\n+      \"description\": \"verification_report references Evidence (§13.3)\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"close_user_decision_valid\",\n+      \"description\": \"User Decision is approved or waived (§10)\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"close_user_decision_semantic_valid\",\n+      \"description\": \"User Decision is semantically valid: actor, workflow_path, Gate hash, manifest hash, candidate hash\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"close_workflow_path_valid\",\n+      \"description\": \"workflow_path is valid (§6.4)\",\n+      \"passed\": true,\n+      \"details\": \"effective_workflow_path=code_only_fast_path; work_item.workflow_path=code_only_fast_path; ctx.workflow_path=code_only_fast_path\"\n+    },\n+    {\n+      \"check_id\": \"close_code_permission_revoked\",\n+      \"description\": \"code_permission is revoked by daemon fact source (§12)\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"close_allowed_write_empty\",\n+      \"description\": \"allowed_write_files is empty (§15.2.13-14)\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"close_no_write_guard_violations\",\n+      \"description\": \"No unresolved Write Guard violations (§15.2.12)\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"close_resume_plan_no_pending\",\n+      \"description\": \"No resume_plan present (not applicable)\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"close_evidence_manifest_has_entries\",\n+      \"description\": \"evidence_manifest has entries (§13.4)\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"close_verification_evidence_source_and_time_integrity\",\n+      \"description\": \"verification evidence source and declared time remain valid at Close\",\n+      \"passed\": false,\n+      \"severity\": \"error\",\n+      \"details\": \"execution_receipt_rejected:command-0; execution_receipt_rejected:evidence-0\"\n+    },\n+    {\n+      \"check_id\": \"close_semantic_closure_json_valid\",\n+      \"description\": \".semantic_closure.json exists and is valid JSON\",\n+      \"passed\": false,\n+      \"severity\": \"error\"\n+    },\n+    {\n+      \"check_id\": \"close_semantic_closure_provenance_current\",\n+      \"description\": \"semantic closure is bound to the current verification artifacts\",\n+      \"passed\": false,\n+      \"severity\": \"error\",\n+      \"details\": \"SEMANTIC_CLOSURE_PROVENANCE_MISSING: regenerate with sf_semantic_closure_run(force=true).\"\n+    },\n+    {\n+      \"check_id\": \"close_merge_report_valid\",\n+      \"description\": \"merge_report satisfies its current contract and belongs to this Work Item (§11)\",\n+      \"passed\": true,\n+      \"details\": \"status=not_applicable\"\n+    },\n+    {\n+      \"check_id\": \"close_post_merge_gate\",\n+      \"description\": \"post_merge_gate passed or not_applicable (§15.2)\",\n+      \"passed\": true,\n+      \"details\": \"status=not_present\"\n+    },\n+    {\n+      \"check_id\": \"close_no_blocking_issues\",\n+      \"description\": \"No unresolved blocking issues from gates/*.json (§15.2)\",\n+      \"passed\": false,\n+      \"severity\": \"error\",\n+      \"details\": \"11 issue(s): Execution evidence is authentic, current and completely terminated; Verification Gate passed; Changed Files Audit passed; Pre-implementation version-control mode is frozen or recovered from bound legacy evidence; Version-control mode remains the mode frozen before implementation\"\n+    },\n+    {\n+      \"check_id\": \"close_waiver_follow_up\",\n+      \"description\": \"No waivers requiring follow-up\",\n+      \"passed\": true,\n+      \"details\": \"waiver_ids=[]; waiver_used=false\"\n+    },\n+    {\n+      \"check_id\": \"close_extension_request_resolved\",\n+      \"description\": \"No extension_request.json present (not applicable)\",\n+      \"passed\": true\n+    }\n+  ],\n+  \"blocking_issues\": [\n+    \"Required file exists: intake.md\",\n+    \"Required file exists: trigger_result.json\",\n+    \"Required file exists: change_classification.md\",\n+    \"Required file exists: impact_analysis.md\",\n+    \"Required file exists: changed_files_audit.md\",\n+    \"Required file exists: .semantic_closure.json\",\n+    \"Formal Version Gate passed before Close\",\n+    \"verification evidence source and declared time remain valid at Close\",\n+    \".semantic_closure.json exists and is valid JSON\",\n+    \"semantic closure is bound to the current verification artifacts\",\n+    \"No unresolved blocking issues from gates/*.json (§15.2)\"\n+  ],\n+  \"warnings\": [],\n+  \"waiver_allowed\": false,\n+  \"waiver_required\": false,\n+  \"waiver_ids\": [],\n+  \"started_at\": \"2026-11-07T03:01:56.525Z\",\n+  \"finished_at\": \"2026-11-07T03:01:56.525Z\",\n+  \"runner\": \"gate_runner\"\n+}\n\\ No newline at end of file\n",
+            "additions": 240,
+            "deletions": 0,
+            "status": "added"
+          },
+          {
+            "file": ".specforge/work-items/WI-9901/gate_attempts/attempt-0005/input-snapshot.json",
+            "patch": "Index: .specforge/work-items/WI-9901/gate_attempts/attempt-0005/input-snapshot.json\n===================================================================\n--- .specforge/work-items/WI-9901/gate_attempts/attempt-0005/input-snapshot.json\t\n+++ .specforge/work-items/WI-9901/gate_attempts/attempt-0005/input-snapshot.json\t\n@@ -0,0 +1,130 @@\n+{\n+  \"schema_version\": \"1.0\",\n+  \"attempt_id\": \"attempt-0005\",\n+  \"work_item_id\": \"WI-9901\",\n+  \"captured_at\": \"2026-11-07T03:01:56.563Z\",\n+  \"inputs\": [\n+    {\n+      \"path\": \".semantic_closure.json\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \".specforge/project/extension_registry.json\",\n+      \"exists\": true,\n+      \"kind\": \"file\",\n+      \"sha256\": \"17589ed8069ea7a8e8df0bce877782e6e0861807e0439dde315b50a504258bad\",\n+      \"size\": 395,\n+      \"mtime_ms\": 1794019448401.029\n+    },\n+    {\n+      \"path\": \".specforge/project/spec_manifest.json\",\n+      \"exists\": true,\n+      \"kind\": \"file\",\n+      \"sha256\": \"7623c2007a89dcac344f568d27af54928a541ea2bf530cacced274e08f9e25ad\",\n+      \"size\": 956,\n+      \"mtime_ms\": 1794019448400.0269\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\9e514c84cc6345f4bcb1a837bdfcbe04\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\candidate_manifest.json\",\n+      \"exists\": true,\n+      \"kind\": \"file\",\n+      \"sha256\": \"262cc4d86ef256455b7c81df5f083e3ae64fb0304ac5613d497095ae726ab5df\",\n+      \"size\": 215,\n+      \"mtime_ms\": 1794019450285.593\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\9e514c84cc6345f4bcb1a837bdfcbe04\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\candidates\\\\tasks.md\",\n+      \"exists\": true,\n+      \"kind\": \"file\",\n+      \"sha256\": \"cd2f13da7466433985ff8bf970555dc6e34d037e253f9a825b180845a4463498\",\n+      \"size\": 3031,\n+      \"mtime_ms\": 1794019450284.5845\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\9e514c84cc6345f4bcb1a837bdfcbe04\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\change_classification.md\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\9e514c84cc6345f4bcb1a837bdfcbe04\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\impact_analysis.md\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\9e514c84cc6345f4bcb1a837bdfcbe04\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\implementation_baseline.json\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\9e514c84cc6345f4bcb1a837bdfcbe04\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\trigger_result.json\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"candidate_manifest.json\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"candidates/tasks.md\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"change_classification.md\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"changed_files_audit.md\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"evidence/evidence_manifest.json\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"formal_version_snapshot.json\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"gates/formal_version_gate.json\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"impact_analysis.md\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"intake.md\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"merge_report.md\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"trigger_result.json\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"verification_report.md\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"work_item.json\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    }\n+  ]\n+}\n\\ No newline at end of file\n",
+            "additions": 130,
+            "deletions": 0,
+            "status": "added"
+          },
+          {
+            "file": ".specforge/work-items/WI-9901/gate_summary.md",
+            "patch": "Index: .specforge/work-items/WI-9901/gate_summary.md\n===================================================================\n--- .specforge/work-items/WI-9901/gate_summary.md\t\n+++ .specforge/work-items/WI-9901/gate_summary.md\t\n@@ -1,34 +1,28 @@\n # Gate Summary\n \n Work Item: WI-9901\n Overall Status: failed\n-Generated: 2026-11-07T03:01:48.522Z\n+Generated: 2026-11-07T03:01:56.557Z\n \n ## Gate Reports\n \n-### formal_version_gate\n+### close_gate\n - Type: hard_gate\n - Status: failed\n - Required: true\n - Blocking Issues:\n-  - Execution evidence is authentic, current and completely terminated\n-  - Verification Gate passed\n-  - Changed Files Audit passed\n-  - Pre-implementation version-control mode is frozen or recovered from bound legacy evidence\n-  - Version-control mode remains the mode frozen before implementation\n-  - Semantic closure evidence exists\n-  - Hard Gate verification_gate.json did not fail\n-\n-### verification_gate\n-- Type: hard_gate\n-- Status: failed\n-- Required: true\n-- Blocking Issues:\n-  - manual acceptance has independent content-bound evidence and declared times do not exceed runtime time\n-  - changed_files_audit is complete and passed\n-  - semantic closure proves the user outcome to evidence chain\n+  - Required file exists: intake.md\n+  - Required file exists: trigger_result.json\n+  - Required file exists: change_classification.md\n+  - Required file exists: impact_analysis.md\n+  - Required file exists: changed_files_audit.md\n+  - Required file exists: .semantic_closure.json\n+  - Formal Version Gate passed before Close\n+  - verification evidence source and declared time remain valid at Close\n+  - .semantic_closure.json exists and is valid JSON\n   - semantic closure is bound to the current verification artifacts\n+  - No unresolved blocking issues from gates/*.json (§15.2)\n \n ## User Decision Required\n \n Some hard gates failed. User cannot approve until issues are resolved.\n\\ No newline at end of file\n",
+            "additions": 12,
+            "deletions": 18,
+            "status": "modified"
+          },
+          {
+            "file": ".specforge/work-items/WI-9901/gates/close_gate.json",
+            "patch": "Index: .specforge/work-items/WI-9901/gates/close_gate.json\n===================================================================\n--- .specforge/work-items/WI-9901/gates/close_gate.json\t\n+++ .specforge/work-items/WI-9901/gates/close_gate.json\t\n@@ -1,237 +1,240 @@\n {\n   \"schema_version\": \"1.0\",\n   \"work_item_id\": \"WI-9901\",\n   \"gate_id\": \"close_gate\",\n   \"gate_type\": \"hard_gate\",\n   \"required\": true,\n   \"status\": \"failed\",\n   \"input_files\": [\n     \"work_item.json\",\n     \"intake.md\",\n     \"trigger_result.json\",\n     \"change_classification.md\",\n     \"impact_analysis.md\",\n     \"candidate_manifest.json\",\n     \"verification_report.md\",\n     \"merge_report.md\",\n     \"changed_files_audit.md\",\n     \"evidence/evidence_manifest.json\",\n     \".semantic_closure.json\",\n     \"candidates/tasks.md\",\n     \"gates/formal_version_gate.json\",\n     \"formal_version_snapshot.json\",\n     \".specforge/project/extension_registry.json\",\n     \".specforge/project/spec_manifest.json\"\n   ],\n   \"checks\": [\n     {\n       \"check_id\": \"close_file_work_item_json\",\n       \"description\": \"Required file exists: work_item.json\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"close_file_intake_md\",\n       \"description\": \"Required file exists: intake.md\",\n       \"passed\": false,\n       \"severity\": \"error\"\n     },\n     {\n       \"check_id\": \"close_file_trigger_result_json\",\n       \"description\": \"Required file exists: trigger_result.json\",\n       \"passed\": false,\n       \"severity\": \"error\"\n     },\n     {\n       \"check_id\": \"close_file_change_classification_md\",\n       \"description\": \"Required file exists: change_classification.md\",\n       \"passed\": false,\n       \"severity\": \"error\"\n     },\n     {\n       \"check_id\": \"close_file_impact_analysis_md\",\n       \"description\": \"Required file exists: impact_analysis.md\",\n       \"passed\": false,\n       \"severity\": \"error\"\n     },\n     {\n       \"check_id\": \"close_file_candidate_manifest_json\",\n       \"description\": \"Required file exists: candidate_manifest.json\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"close_file_verification_report_md\",\n       \"description\": \"Required file exists: verification_report.md\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"close_file_merge_report_md\",\n       \"description\": \"Required file exists: merge_report.md\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"close_file_changed_files_audit_md\",\n       \"description\": \"Required file exists: changed_files_audit.md\",\n       \"passed\": false,\n       \"severity\": \"error\"\n     },\n     {\n       \"check_id\": \"close_file_evidence_evidence_manifest_json\",\n       \"description\": \"Required file exists: evidence/evidence_manifest.json\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"close_file__semantic_closure_json\",\n       \"description\": \"Required file exists: .semantic_closure.json\",\n       \"passed\": false,\n       \"severity\": \"error\"\n     },\n     {\n       \"check_id\": \"close_artifact_tasks_authoritative\",\n       \"description\": \"Authoritative tasks artifact is present (Candidate first; authored legacy fallback only)\",\n       \"passed\": true,\n       \"details\": \"path=.specforge/work-items/WI-9901/candidates/tasks.md\"\n     },\n     {\n       \"check_id\": \"close_formal_version_gate\",\n       \"description\": \"Formal Version Gate passed before Close\",\n       \"passed\": false,\n       \"severity\": \"error\",\n       \"details\": \"status=failed\"\n     },\n     {\n       \"check_id\": \"close_project_spec_core_version_coherent\",\n       \"description\": \"Project Spec Core files agree on the authoritative project_spec_version when declared\",\n       \"passed\": true,\n       \"details\": \"project_spec_version=PSV-0001\"\n     },\n     {\n       \"check_id\": \"close_filesystem_formal_version_current\",\n       \"description\": \"Filesystem implementation file set and content fingerprint still match Formal Version\",\n       \"passed\": true,\n       \"details\": \"filesystem Formal Version snapshot is current or not applicable to Git mode\"\n     },\n     {\n       \"check_id\": \"close_write_guard_audit_current\",\n       \"description\": \"Changed Files Audit covers the current Write Guard and resolution evidence\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"close_verification_nonempty\",\n       \"description\": \"verification_report is not empty\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"close_verification_refs_evidence\",\n       \"description\": \"verification_report references Evidence (§13.3)\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"close_user_decision_valid\",\n       \"description\": \"User Decision is approved or waived (§10)\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"close_user_decision_semantic_valid\",\n       \"description\": \"User Decision is semantically valid: actor, workflow_path, Gate hash, manifest hash, candidate hash\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"close_workflow_path_valid\",\n       \"description\": \"workflow_path is valid (§6.4)\",\n       \"passed\": true,\n       \"details\": \"effective_workflow_path=code_only_fast_path; work_item.workflow_path=code_only_fast_path; ctx.workflow_path=code_only_fast_path\"\n     },\n     {\n       \"check_id\": \"close_code_permission_revoked\",\n       \"description\": \"code_permission is revoked by daemon fact source (§12)\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"close_allowed_write_empty\",\n       \"description\": \"allowed_write_files is empty (§15.2.13-14)\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"close_no_write_guard_violations\",\n       \"description\": \"No unresolved Write Guard violations (§15.2.12)\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"close_resume_plan_no_pending\",\n       \"description\": \"No resume_plan present (not applicable)\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"close_evidence_manifest_has_entries\",\n       \"description\": \"evidence_manifest has entries (§13.4)\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"close_verification_evidence_source_and_time_integrity\",\n       \"description\": \"verification evidence source and declared time remain valid at Close\",\n-      \"passed\": true\n+      \"passed\": false,\n+      \"severity\": \"error\",\n+      \"details\": \"execution_receipt_rejected:command-0; execution_receipt_rejected:evidence-0\"\n     },\n     {\n       \"check_id\": \"close_semantic_closure_json_valid\",\n       \"description\": \".semantic_closure.json exists and is valid JSON\",\n       \"passed\": false,\n       \"severity\": \"error\"\n     },\n     {\n       \"check_id\": \"close_semantic_closure_provenance_current\",\n       \"description\": \"semantic closure is bound to the current verification artifacts\",\n       \"passed\": false,\n       \"severity\": \"error\",\n       \"details\": \"SEMANTIC_CLOSURE_PROVENANCE_MISSING: regenerate with sf_semantic_closure_run(force=true).\"\n     },\n     {\n       \"check_id\": \"close_merge_report_valid\",\n       \"description\": \"merge_report satisfies its current contract and belongs to this Work Item (§11)\",\n       \"passed\": true,\n       \"details\": \"status=not_applicable\"\n     },\n     {\n       \"check_id\": \"close_post_merge_gate\",\n       \"description\": \"post_merge_gate passed or not_applicable (§15.2)\",\n       \"passed\": true,\n       \"details\": \"status=not_present\"\n     },\n     {\n       \"check_id\": \"close_no_blocking_issues\",\n       \"description\": \"No unresolved blocking issues from gates/*.json (§15.2)\",\n       \"passed\": false,\n       \"severity\": \"error\",\n-      \"details\": \"9 issue(s): Verification Gate passed; Changed Files Audit passed; Pre-implementation version-control mode is frozen or recovered from bound legacy evidence; Version-control mode remains the mode frozen before implementation; Semantic closure evidence exists\"\n+      \"details\": \"11 issue(s): Execution evidence is authentic, current and completely terminated; Verification Gate passed; Changed Files Audit passed; Pre-implementation version-control mode is frozen or recovered from bound legacy evidence; Version-control mode remains the mode frozen before implementation\"\n     },\n     {\n       \"check_id\": \"close_waiver_follow_up\",\n       \"description\": \"No waivers requiring follow-up\",\n       \"passed\": true,\n       \"details\": \"waiver_ids=[]; waiver_used=false\"\n     },\n     {\n       \"check_id\": \"close_extension_request_resolved\",\n       \"description\": \"No extension_request.json present (not applicable)\",\n       \"passed\": true\n     }\n   ],\n   \"blocking_issues\": [\n     \"Required file exists: intake.md\",\n     \"Required file exists: trigger_result.json\",\n     \"Required file exists: change_classification.md\",\n     \"Required file exists: impact_analysis.md\",\n     \"Required file exists: changed_files_audit.md\",\n     \"Required file exists: .semantic_closure.json\",\n     \"Formal Version Gate passed before Close\",\n+    \"verification evidence source and declared time remain valid at Close\",\n     \".semantic_closure.json exists and is valid JSON\",\n     \"semantic closure is bound to the current verification artifacts\",\n     \"No unresolved blocking issues from gates/*.json (§15.2)\"\n   ],\n   \"warnings\": [],\n   \"waiver_allowed\": false,\n   \"waiver_required\": false,\n   \"waiver_ids\": [],\n-  \"started_at\": \"2026-11-07T03:01:35.636Z\",\n-  \"finished_at\": \"2026-11-07T03:01:35.636Z\",\n+  \"started_at\": \"2026-11-07T03:01:56.525Z\",\n+  \"finished_at\": \"2026-11-07T03:01:56.525Z\",\n   \"runner\": \"gate_runner\"\n }\n\\ No newline at end of file\n",
+            "additions": 7,
+            "deletions": 4,
+            "status": "modified"
+          }
+        ]
+      },
+      "agent": "sf-orchestrator",
+      "model": {
+        "providerID": "sf-fixture",
+        "modelID": "finite-model"
+      }
+    },
+    "parts": [
+      {
+        "id": "prt_1b3f48c02001xxgfUNsnAx0R2E",
+        "sessionID": "ses_e4c0b741effe9GGG5Y4qCvyCE3",
+        "messageID": "msg_1b3f48bfd0017g5aSd94RQKCXg",
+        "type": "text",
+        "text": "Execute the single requested tool once, then stop. SF_FIXTURE_REQUEST:eyJ0b29sIjoic2ZfZ2F0ZV9ydW4iLCJhcmdzIjp7IndvcmtfaXRlbV9pZCI6IldJLTk5MDEiLCJnYXRlX3R5cGUiOiJjbG9zZSJ9fQ=="
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1b3f48c1e001i7ZfvGRL9fh6V2",
+      "sessionID": "ses_e4c0b741effe9GGG5Y4qCvyCE3",
+      "role": "assistant",
+      "time": {
+        "created": 1794020510750,
+        "completed": 1794020517406
+      },
+      "parentID": "msg_1b3f48bfd0017g5aSd94RQKCXg",
+      "modelID": "finite-model",
+      "providerID": "sf-fixture",
+      "mode": "sf-orchestrator",
+      "agent": "sf-orchestrator",
+      "path": {
+        "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project",
+        "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project"
+      },
+      "cost": 0,
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "finish": "tool-calls"
+    },
+    "parts": [
+      {
+        "id": "prt_1b3f48e72001hV0BXai7TNs6fk",
+        "sessionID": "ses_e4c0b741effe9GGG5Y4qCvyCE3",
+        "messageID": "msg_1b3f48c1e001i7ZfvGRL9fh6V2",
+        "type": "step-start",
+        "snapshot": "fccc04aafe8cb194dd4198f89793d96efa8b4648"
+      },
+      {
+        "id": "prt_1b3f48e77001WZqXVc0D7Gp0O4",
+        "sessionID": "ses_e4c0b741effe9GGG5Y4qCvyCE3",
+        "messageID": "msg_1b3f48c1e001i7ZfvGRL9fh6V2",
+        "type": "tool",
+        "callID": "call_2808b9016988492cb15d74b181623fdb",
+        "tool": "sf_gate_run",
+        "state": {
+          "status": "completed",
+          "input": {
+            "work_item_id": "WI-9901",
+            "gate_type": "close"
+          },
+          "output": "{\n  \"success\": true,\n  \"work_item_id\": \"WI-9901\",\n  \"workflow_path\": \"code_only_fast_path\",\n  \"workflow_type\": \"feature_spec\",\n  \"workflow_type_source\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\9e514c84cc6345f4bcb1a837bdfcbe04\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\work_item.json\",\n  \"candidate_phase\": \"full\",\n  \"candidate_phase_source\": \"artifact_inference\",\n  \"workflow_path_source\": \".specforge/work-items/WI-9901/work_item.json\",\n  \"authoritative_state_before_gate\": \"verification_running\",\n  \"requested_gate_ids\": [],\n  \"requested_gate_type\": \"close\",\n  \"normalized_gate_ids\": [\n    \"close_gate\"\n  ],\n  \"aliases_used\": [\n    \"close\"\n  ],\n  \"summary_status\": \"failed\",\n  \"summary_path\": \".specforge/work-items/WI-9901/gate_summary.md\",\n  \"gate_attempt_id\": \"attempt-0005\",\n  \"gate_attempt_path\": \".specforge/work-items/WI-9901/gate_attempts/attempt-0005\",\n  \"gate_count\": 1,\n  \"passed\": 0,\n  \"failed\": 1,\n  \"state_auto_advance\": {\n    \"attempted\": false,\n    \"reason\": \"post_candidate_gates_present\",\n    \"details\": {\n      \"post_candidate_gates\": [\n        \"close_gate\"\n      ]\n    }\n  },\n  \"reports\": [\n    {\n      \"gate_id\": \"close_gate\",\n      \"status\": \"failed\",\n      \"blocking_issues\": 11,\n      \"warnings\": 0\n    }\n  ]\n}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1794020511366,
+            "end": 1794020516578
+          }
+        }
+      },
+      {
+        "id": "prt_1b3f4a4d9001bebVWHN0bu99k3",
+        "sessionID": "ses_e4c0b741effe9GGG5Y4qCvyCE3",
+        "messageID": "msg_1b3f48c1e001i7ZfvGRL9fh6V2",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "snapshot": "de090d6437100bf6530a46e4c556f03368aa70a8",
+        "cost": 0,
+        "tokens": {
+          "total": 120,
+          "input": 100,
+          "output": 20,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      },
+      {
+        "id": "prt_1b3f4a619001RL2167s1iuHtWK",
+        "sessionID": "ses_e4c0b741effe9GGG5Y4qCvyCE3",
+        "messageID": "msg_1b3f48c1e001i7ZfvGRL9fh6V2",
+        "type": "patch",
+        "hash": "fccc04aafe8cb194dd4198f89793d96efa8b4648",
+        "files": [
+          "D:/code/SpecForge/.tmp/verification-public-kernel/9e514c84cc6345f4bcb1a837bdfcbe04/project/.specforge/work-items/WI-9901/gate_attempts/attempt-0005/attempt-result.json",
+          "D:/code/SpecForge/.tmp/verification-public-kernel/9e514c84cc6345f4bcb1a837bdfcbe04/project/.specforge/work-items/WI-9901/gate_attempts/attempt-0005/attempt-start.json",
+          "D:/code/SpecForge/.tmp/verification-public-kernel/9e514c84cc6345f4bcb1a837bdfcbe04/project/.specforge/work-items/WI-9901/gate_attempts/attempt-0005/gate_summary.md",
+          "D:/code/SpecForge/.tmp/verification-public-kernel/9e514c84cc6345f4bcb1a837bdfcbe04/project/.specforge/work-items/WI-9901/gate_attempts/attempt-0005/gates/close_gate.json",
+          "D:/code/SpecForge/.tmp/verification-public-kernel/9e514c84cc6345f4bcb1a837bdfcbe04/project/.specforge/work-items/WI-9901/gate_attempts/attempt-0005/input-snapshot.json",
+          "D:/code/SpecForge/.tmp/verification-public-kernel/9e514c84cc6345f4bcb1a837bdfcbe04/project/.specforge/work-items/WI-9901/gate_summary.md",
+          "D:/code/SpecForge/.tmp/verification-public-kernel/9e514c84cc6345f4bcb1a837bdfcbe04/project/.specforge/work-items/WI-9901/gates/close_gate.json"
+        ]
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1b3f4a6240016dVN2s0k42Dl62",
+      "sessionID": "ses_e4c0b741effe9GGG5Y4qCvyCE3",
+      "role": "assistant",
+      "time": {
+        "created": 1794020517412,
+        "completed": 1794020518573
+      },
+      "parentID": "msg_1b3f48bfd0017g5aSd94RQKCXg",
+      "modelID": "finite-model",
+      "providerID": "sf-fixture",
+      "mode": "sf-orchestrator",
+      "agent": "sf-orchestrator",
+      "path": {
+        "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project",
+        "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project"
+      },
+      "cost": 0,
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "finish": "stop"
+    },
+    "parts": [
+      {
+        "id": "prt_1b3f4a77d001NLHnwJhlSJaQXW",
+        "sessionID": "ses_e4c0b741effe9GGG5Y4qCvyCE3",
+        "messageID": "msg_1b3f4a6240016dVN2s0k42Dl62",
+        "type": "step-start",
+        "snapshot": "de090d6437100bf6530a46e4c556f03368aa70a8"
+      },
+      {
+        "id": "prt_1b3f4a7810018ZsX2gN3p5uQxW",
+        "sessionID": "ses_e4c0b741effe9GGG5Y4qCvyCE3",
+        "messageID": "msg_1b3f4a6240016dVN2s0k42Dl62",
+        "type": "text",
+        "text": "SF_FIXTURE_TOOL_COMPLETE",
+        "time": {
+          "start": 1794020517761,
+          "end": 1794020517766
+        }
+      },
+      {
+        "id": "prt_1b3f4a993001LsuA9IOoQGhVQj",
+        "sessionID": "ses_e4c0b741effe9GGG5Y4qCvyCE3",
+        "messageID": "msg_1b3f4a6240016dVN2s0k42Dl62",
+        "type": "step-finish",
+        "reason": "stop",
+        "snapshot": "de090d6437100bf6530a46e4c556f03368aa70a8",
+        "cost": 0,
+        "tokens": {
+          "total": 120,
+          "input": 100,
+          "output": 20,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    ]
+  }
+]

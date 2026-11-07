@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/verify-boundary-source-commit.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Verify committed66 source/raw-archive Git bindings and reconcile actual source commit without claiming new deployment",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable commit provenance and receipts; REPOSITORY_TRACKED_WRITES unique status only; no original or deployment writes",
+  "started_utc": "2026-11-07T05:56:25.423Z"
+}

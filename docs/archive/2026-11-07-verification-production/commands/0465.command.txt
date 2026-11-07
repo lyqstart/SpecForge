@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/send-verifier-receipt-correction.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Give actual R07 Verifier exact canonical64hex correction after two65char rejected writes,without rewriting professional conclusions",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=one existing authorized session control note;EXTERNAL_EVIDENCE_WRITES=source/request/role binding proof;no secret/prior history input",
+  "started_utc": "2026-11-07T09:49:53.035Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\send-verifier-receipt-correction.cjs",
+      "sha256": "3175c0c1e1457cbb959169167441dcb44cf86a886c825998b72bfc471a9b14ac",
+      "size": 6076,
+      "extension": ".cjs"
+    }
+  ]
+}

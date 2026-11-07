@@ -1,0 +1,203 @@
+[
+  {
+    "info": {
+      "id": "msg_1b4215914001kqOafzdeNgOZZV",
+      "sessionID": "ses_e4bdea708ffete538tBL6odzuF",
+      "role": "user",
+      "time": {
+        "created": 1794023446804
+      },
+      "summary": {
+        "diffs": [
+          {
+            "file": ".specforge/work-items/WI-9901/evidence/evidence_manifest.json",
+            "patch": "Index: .specforge/work-items/WI-9901/evidence/evidence_manifest.json\n===================================================================\n--- .specforge/work-items/WI-9901/evidence/evidence_manifest.json\t\n+++ .specforge/work-items/WI-9901/evidence/evidence_manifest.json\t\n@@ -1,174 +1,153 @@\n {\n   \"schema_version\": \"1.0\",\n   \"work_item_id\": \"WI-9901\",\n   \"entries\": [\n     {\n-      \"execution_receipt_id\": \"356f3f2efbd6095980ddcdcb39b6e8400d0ba38aa9b44b711570c4b8a8e5721e\",\n-      \"task_id\": \"TASK-WI-9901-001\",\n-      \"verification_type\": \"unit\",\n-      \"command_index\": 0,\n-      \"command\": \"node --test tests/positive.test.cjs\",\n-      \"evidence_id\": \"EV-NATIVE-001\",\n-      \"type\": \"unit_test\",\n-      \"evidence_type\": \"unit_test\",\n-      \"level\": \"L1\",\n-      \"status\": \"passed\",\n-      \"path\": \"verification-owner:receipt:356f3f2efbd6095980ddcdcb39b6e8400d0ba38aa9b44b711570c4b8a8e5721e\",\n-      \"hash\": \"sha256:356f3f2efbd6095980ddcdcb39b6e8400d0ba38aa9b44b711570c4b8a8e5721e\",\n-      \"hash_domain\": \"canonical-json:verification-execution/v1\",\n-      \"supports\": [\n-        \"OUT-DEMO-001\",\n-        \"REQ-DEMO-001\",\n-        \"DD-DEMO-001\",\n-        \"TASK-WI-9901-001\"\n-      ]\n-    },\n-    {\n       \"execution_receipt_id\": \"db71195ab38ba762424ed14e11ccdd881bb530322e0bdb9ed6b2748a35e1fe5f\",\n       \"task_id\": \"TASK-WI-9901-002\",\n       \"verification_type\": \"e2e\",\n       \"command_index\": 0,\n       \"command\": \"node -e \\\"const {salute}=require('./src/library.cjs');if(salute('Ada')!=='hi Ada')process.exit(1);console.log('SF_PRODUCT_INLINE_OK');\\\"\",\n       \"evidence_id\": \"EV-NATIVE-002\",\n       \"type\": \"behavioral_e2e\",\n       \"evidence_type\": \"behavioral_e2e\",\n       \"level\": \"L5\",\n       \"status\": \"passed\",\n       \"path\": \"verification-owner:receipt:db71195ab38ba762424ed14e11ccdd881bb530322e0bdb9ed6b2748a35e1fe5f\",\n       \"hash\": \"sha256:db71195ab38ba762424ed14e11ccdd881bb530322e0bdb9ed6b2748a35e1fe5f\",\n       \"hash_domain\": \"canonical-json:verification-execution/v1\",\n       \"supports\": [\n         \"OUT-DEMO-001\",\n         \"REQ-DEMO-001\",\n         \"DD-DEMO-001\",\n         \"TASK-WI-9901-002\"\n       ]\n     },\n     {\n       \"execution_receipt_id\": \"2db4c7a00209a2802657ecbc15b9d3ef2321d2ad4d7febc3a206816719aa12dd\",\n       \"task_id\": \"TASK-WI-9901-004\",\n       \"verification_type\": \"unit\",\n       \"command_index\": 0,\n       \"command\": \"test -f package.json && test -f tsconfig.json\",\n       \"evidence_id\": \"EV-NATIVE-004\",\n       \"type\": \"unit_test\",\n       \"evidence_type\": \"unit_test\",\n       \"level\": \"L1\",\n       \"status\": \"passed\",\n       \"path\": \"verification-owner:receipt:2db4c7a00209a2802657ecbc15b9d3ef2321d2ad4d7febc3a206816719aa12dd\",\n       \"hash\": \"sha256:2db4c7a00209a2802657ecbc15b9d3ef2321d2ad4d7febc3a206816719aa12dd\",\n       \"hash_domain\": \"canonical-json:verification-execution/v1\",\n       \"supports\": [\n         \"OUT-DEMO-001\",\n         \"REQ-DEMO-001\",\n         \"DD-DEMO-001\",\n         \"TASK-WI-9901-004\"\n       ]\n     },\n     {\n       \"execution_receipt_id\": \"98ca29f434a48bbe282e253d39a68aee36f5fa932f52c1938c4ea8069f30a5a3\",\n       \"task_id\": \"TASK-WI-9901-005\",\n       \"verification_type\": \"unit\",\n       \"command_index\": 0,\n       \"command\": \"grep -c '\\\"type\\\": \\\"module\\\"' package.json\",\n       \"evidence_id\": \"EV-NATIVE-005\",\n       \"type\": \"unit_test\",\n       \"evidence_type\": \"unit_test\",\n       \"level\": \"L1\",\n       \"status\": \"passed\",\n       \"path\": \"verification-owner:receipt:98ca29f434a48bbe282e253d39a68aee36f5fa932f52c1938c4ea8069f30a5a3\",\n       \"hash\": \"sha256:98ca29f434a48bbe282e253d39a68aee36f5fa932f52c1938c4ea8069f30a5a3\",\n       \"hash_domain\": \"canonical-json:verification-execution/v1\",\n       \"supports\": [\n         \"OUT-DEMO-001\",\n         \"REQ-DEMO-001\",\n         \"DD-DEMO-001\",\n         \"TASK-WI-9901-005\"\n       ]\n     },\n     {\n       \"execution_receipt_id\": \"e08d63617ea051d33fdba7378e42ba43f28e6c0ed2eed28fe3021d3d5309fe05\",\n       \"task_id\": \"TASK-WI-9901-006\",\n       \"verification_type\": \"unit\",\n       \"command_index\": 0,\n       \"command\": \"! grep -qE \\\"^import |^import\\\\{|require\\\\(\\\" src/value.ts\",\n       \"evidence_id\": \"EV-NATIVE-006\",\n       \"type\": \"unit_test\",\n       \"evidence_type\": \"unit_test\",\n       \"level\": \"L1\",\n       \"status\": \"passed\",\n       \"path\": \"verification-owner:receipt:e08d63617ea051d33fdba7378e42ba43f28e6c0ed2eed28fe3021d3d5309fe05\",\n       \"hash\": \"sha256:e08d63617ea051d33fdba7378e42ba43f28e6c0ed2eed28fe3021d3d5309fe05\",\n       \"hash_domain\": \"canonical-json:verification-execution/v1\",\n       \"supports\": [\n         \"OUT-DEMO-001\",\n         \"REQ-DEMO-001\",\n         \"DD-DEMO-001\",\n         \"TASK-WI-9901-006\"\n       ]\n     },\n     {\n       \"execution_receipt_id\": \"23391d444c6f8a9ab090e9d6e4eb428dc23a4163074f0d95fc20377df5dd2220\",\n       \"task_id\": \"TASK-WI-9901-007\",\n       \"verification_type\": \"integration\",\n       \"command_index\": 0,\n       \"command\": \"node --test tests/value.test.ts\",\n       \"evidence_id\": \"EV-NATIVE-007\",\n       \"type\": \"integration_test\",\n       \"evidence_type\": \"integration_test\",\n       \"level\": \"L2\",\n       \"status\": \"passed\",\n       \"path\": \"verification-owner:receipt:23391d444c6f8a9ab090e9d6e4eb428dc23a4163074f0d95fc20377df5dd2220\",\n       \"hash\": \"sha256:23391d444c6f8a9ab090e9d6e4eb428dc23a4163074f0d95fc20377df5dd2220\",\n       \"hash_domain\": \"canonical-json:verification-execution/v1\",\n       \"supports\": [\n         \"OUT-DEMO-001\",\n         \"REQ-DEMO-001\",\n         \"DD-DEMO-001\",\n         \"TASK-WI-9901-007\"\n       ]\n     },\n     {\n       \"execution_receipt_id\": \"d6383f05d383b2ee30184027506ecec759b80e6e347c030b852a19c2737af190\",\n       \"task_id\": \"TASK-WI-9901-008\",\n       \"verification_type\": \"unit\",\n       \"command_index\": 0,\n       \"command\": \"node --test tests/esm.test.mjs\",\n       \"evidence_id\": \"EV-NATIVE-008\",\n       \"type\": \"unit_test\",\n       \"evidence_type\": \"unit_test\",\n       \"level\": \"L1\",\n       \"status\": \"passed\",\n       \"path\": \"verification-owner:receipt:d6383f05d383b2ee30184027506ecec759b80e6e347c030b852a19c2737af190\",\n       \"hash\": \"sha256:d6383f05d383b2ee30184027506ecec759b80e6e347c030b852a19c2737af190\",\n       \"hash_domain\": \"canonical-json:verification-execution/v1\",\n       \"supports\": [\n         \"OUT-DEMO-001\",\n         \"REQ-DEMO-001\",\n         \"DD-DEMO-001\",\n         \"TASK-WI-9901-008\"\n       ]\n     },\n     {\n       \"execution_receipt_id\": \"59eef245e378ade9a3a53aa4fb7bf3ee36207206aa81c5b1274e340aab817959\",\n       \"task_id\": \"TASK-WI-9901-009\",\n       \"verification_type\": \"e2e\",\n       \"command_index\": 0,\n       \"command\": \"node -e \\\"import('./src/value.ts').then(m=>{if(m.greet('Ada')!=='Hello, Ada!'||m.greet('')!=='Hello, world!')process.exit(1);console.log('TS_INLINE_OK');}).catch(()=>process.exit(1))\\\"\",\n       \"evidence_id\": \"EV-NATIVE-009\",\n       \"type\": \"behavioral_e2e\",\n       \"evidence_type\": \"behavioral_e2e\",\n       \"level\": \"L5\",\n       \"status\": \"passed\",\n       \"path\": \"verification-owner:receipt:59eef245e378ade9a3a53aa4fb7bf3ee36207206aa81c5b1274e340aab817959\",\n       \"hash\": \"sha256:59eef245e378ade9a3a53aa4fb7bf3ee36207206aa81c5b1274e340aab817959\",\n       \"hash_domain\": \"canonical-json:verification-execution/v1\",\n       \"supports\": [\n         \"OUT-DEMO-001\",\n         \"REQ-DEMO-001\",\n         \"DD-DEMO-001\",\n         \"TASK-WI-9901-009\"\n       ]\n     }\n   ]\n }\n\\ No newline at end of file\n",
+            "additions": 0,
+            "deletions": 21,
+            "status": "modified"
+          }
+        ]
+      },
+      "agent": "sf-verifier",
+      "model": {
+        "providerID": "sf-fixture",
+        "modelID": "finite-model"
+      }
+    },
+    "parts": [
+      {
+        "id": "prt_1b421591e001znLt8WvdJMVomG",
+        "sessionID": "ses_e4bdea708ffete538tBL6odzuF",
+        "messageID": "msg_1b4215914001kqOafzdeNgOZZV",
+        "type": "text",
+        "text": "Execute the single requested tool once, then stop. SF_FIXTURE_REQUEST:eyJ0b29sIjoic2ZfYXJ0aWZhY3Rfd3JpdGUiLCJhcmdzIjp7IndvcmtfaXRlbV9pZCI6IldJLTk5MDEiLCJmaWxlX3R5cGUiOiJldmlkZW5jZV9tYW5pZmVzdCIsImNvbnRlbnQiOiJ7XCJzY2hlbWFfdmVyc2lvblwiOlwiMS4wXCIsXCJ3b3JrX2l0ZW1faWRcIjpcIldJLTk5MDFcIixcImVudHJpZXNcIjpbe1wiZXhlY3V0aW9uX3JlY2VpcHRfaWRcIjpcImRiNzExOTVhYjM4YmE3NjI0MjRlZDE0ZTExY2NkZDg4MWJiNTMwMzIyZTBiZGI5ZWQ2YjI3NDhhMzVlMWZlNWZcIixcInRhc2tfaWRcIjpcIlRBU0stV0ktOTkwMS0wMDJcIixcInZlcmlmaWNhdGlvbl90eXBlXCI6XCJlMmVcIixcImNvbW1hbmRfaW5kZXhcIjowLFwiY29tbWFuZFwiOlwibm9kZSAtZSBcXFwiY29uc3Qge3NhbHV0ZX09cmVxdWlyZSgnLi9zcmMvbGlicmFyeS5janMnKTtpZihzYWx1dGUoJ0FkYScpIT09J2hpIEFkYScpcHJvY2Vzcy5leGl0KDEpO2NvbnNvbGUubG9nKCdTRl9QUk9EVUNUX0lOTElORV9PSycpO1xcXCJcIixcImV2aWRlbmNlX2lkXCI6XCJFVi1OQVRJVkUtMDAyXCIsXCJ0eXBlXCI6XCJiZWhhdmlvcmFsX2UyZVwiLFwiZXZpZGVuY2VfdHlwZVwiOlwiYmVoYXZpb3JhbF9lMmVcIixcImxldmVsXCI6XCJMNVwiLFwic3RhdHVzXCI6XCJwYXNzZWRcIixcInBhdGhcIjpcInZlcmlmaWNhdGlvbi1vd25lcjpyZWNlaXB0OmRiNzExOTVhYjM4YmE3NjI0MjRlZDE0ZTExY2NkZDg4MWJiNTMwMzIyZTBiZGI5ZWQ2YjI3NDhhMzVlMWZlNWZcIixcImhhc2hcIjpcInNoYTI1NjpkYjcxMTk1YWIzOGJhNzYyNDI0ZWQxNGUxMWNjZGQ4ODFiYjUzMDMyMmUwYmRiOWVkNmIyNzQ4YTM1ZTFmZTVmXCIsXCJoYXNoX2RvbWFpblwiOlwiY2Fub25pY2FsLWpzb246dmVyaWZpY2F0aW9uLWV4ZWN1dGlvbi92MVwiLFwic3VwcG9ydHNcIjpbXCJPVVQtREVNTy0wMDFcIixcIlJFUS1ERU1PLTAwMVwiLFwiREQtREVNTy0wMDFcIixcIlRBU0stV0ktOTkwMS0wMDJcIl19LHtcImV4ZWN1dGlvbl9yZWNlaXB0X2lkXCI6XCIyZGI0YzdhMDAyMDlhMjgwMjY1N2VjYmMxNWI5ZDNlZjIzMjFkMmFkNGQ3ZmViYzNhMjA2ODE2NzE5YWExMmRkXCIsXCJ0YXNrX2lkXCI6XCJUQVNLLVdJLTk5MDEtMDA0XCIsXCJ2ZXJpZmljYXRpb25fdHlwZVwiOlwidW5pdFwiLFwiY29tbWFuZF9pbmRleFwiOjAsXCJjb21tYW5kXCI6XCJ0ZXN0IC1mIHBhY2thZ2UuanNvbiAmJiB0ZXN0IC1mIHRzY29uZmlnLmpzb25cIixcImV2aWRlbmNlX2lkXCI6XCJFVi1OQVRJVkUtMDA0XCIsXCJ0eXBlXCI6XCJ1bml0X3Rlc3RcIixcImV2aWRlbmNlX3R5cGVcIjpcInVuaXRfdGVzdFwiLFwibGV2ZWxcIjpcIkwxXCIsXCJzdGF0dXNcIjpcInBhc3NlZFwiLFwicGF0aFwiOlwidmVyaWZpY2F0aW9uLW93bmVyOnJlY2VpcHQ6MmRiNGM3YTAwMjA5YTI4MDI2NTdlY2JjMTViOWQzZWYyMzIxZDJhZDRkN2ZlYmMzYTIwNjgxNjcxOWFhMTJkZFwiLFwiaGFzaFwiOlwic2hhMjU2OjJkYjRjN2EwMDIwOWEyODAyNjU3ZWNiYzE1YjlkM2VmMjMyMWQyYWQ0ZDdmZWJjM2EyMDY4MTY3MTlhYTEyZGRcIixcImhhc2hfZG9tYWluXCI6XCJjYW5vbmljYWwtanNvbjp2ZXJpZmljYXRpb24tZXhlY3V0aW9uL3YxXCIsXCJzdXBwb3J0c1wiOltcIk9VVC1ERU1PLTAwMVwiLFwiUkVRLURFTU8tMDAxXCIsXCJERC1ERU1PLTAwMVwiLFwiVEFTSy1XSS05OTAxLTAwNFwiXX0se1wiZXhlY3V0aW9uX3JlY2VpcHRfaWRcIjpcIjk4Y2EyOWY0MzRhNDhiYmUyODJlMjUzZDM5YTY4YWVlMzZmNWZhOTMyZjUyYzE5MzhjNGVhODA2OWYzMGE1YTNcIixcInRhc2tfaWRcIjpcIlRBU0stV0ktOTkwMS0wMDVcIixcInZlcmlmaWNhdGlvbl90eXBlXCI6XCJ1bml0XCIsXCJjb21tYW5kX2luZGV4XCI6MCxcImNvbW1hbmRcIjpcImdyZXAgLWMgJ1xcXCJ0eXBlXFxcIjogXFxcIm1vZHVsZVxcXCInIHBhY2thZ2UuanNvblwiLFwiZXZpZGVuY2VfaWRcIjpcIkVWLU5BVElWRS0wMDVcIixcInR5cGVcIjpcInVuaXRfdGVzdFwiLFwiZXZpZGVuY2VfdHlwZVwiOlwidW5pdF90ZXN0XCIsXCJsZXZlbFwiOlwiTDFcIixcInN0YXR1c1wiOlwicGFzc2VkXCIsXCJwYXRoXCI6XCJ2ZXJpZmljYXRpb24tb3duZXI6cmVjZWlwdDo5OGNhMjlmNDM0YTQ4YmJlMjgyZTI1M2QzOWE2OGFlZTM2ZjVmYTkzMmY1MmMxOTM4YzRlYTgwNjlmMzBhNWEzXCIsXCJoYXNoXCI6XCJzaGEyNTY6OThjYTI5ZjQzNGE0OGJiZTI4MmUyNTNkMzlhNjhhZWUzNmY1ZmE5MzJmNTJjMTkzOGM0ZWE4MDY5ZjMwYTVhM1wiLFwiaGFzaF9kb21haW5cIjpcImNhbm9uaWNhbC1qc29uOnZlcmlmaWNhdGlvbi1leGVjdXRpb24vdjFcIixcInN1cHBvcnRzXCI6W1wiT1VULURFTU8tMDAxXCIsXCJSRVEtREVNTy0wMDFcIixcIkRELURFTU8tMDAxXCIsXCJUQVNLLVdJLTk5MDEtMDA1XCJdfSx7XCJleGVjdXRpb25fcmVjZWlwdF9pZFwiOlwiZTA4ZDYzNjE3ZWEwNTFkMzNmZGJhNzM3OGU0MmJhNDNmMjhlNmMwZWQyZWVkMjhmZTMwMjFkM2Q1MzA5ZmUwNVwiLFwidGFza19pZFwiOlwiVEFTSy1XSS05OTAxLTAwNlwiLFwidmVyaWZpY2F0aW9uX3R5cGVcIjpcInVuaXRcIixcImNvbW1hbmRfaW5kZXhcIjowLFwiY29tbWFuZFwiOlwiISBncmVwIC1xRSBcXFwiXmltcG9ydCB8XmltcG9ydFxcXFx7fHJlcXVpcmVcXFxcKFxcXCIgc3JjL3ZhbHVlLnRzXCIsXCJldmlkZW5jZV9pZFwiOlwiRVYtTkFUSVZFLTAwNlwiLFwidHlwZVwiOlwidW5pdF90ZXN0XCIsXCJldmlkZW5jZV90eXBlXCI6XCJ1bml0X3Rlc3RcIixcImxldmVsXCI6XCJMMVwiLFwic3RhdHVzXCI6XCJwYXNzZWRcIixcInBhdGhcIjpcInZlcmlmaWNhdGlvbi1vd25lcjpyZWNlaXB0OmUwOGQ2MzYxN2VhMDUxZDMzZmRiYTczNzhlNDJiYTQzZjI4ZTZjMGVkMmVlZDI4ZmUzMDIxZDNkNTMwOWZlMDVcIixcImhhc2hcIjpcInNoYTI1NjplMDhkNjM2MTdlYTA1MWQzM2ZkYmE3Mzc4ZTQyYmE0M2YyOGU2YzBlZDJlZWQyOGZlMzAyMWQzZDUzMDlmZTA1XCIsXCJoYXNoX2RvbWFpblwiOlwiY2Fub25pY2FsLWpzb246dmVyaWZpY2F0aW9uLWV4ZWN1dGlvbi92MVwiLFwic3VwcG9ydHNcIjpbXCJPVVQtREVNTy0wMDFcIixcIlJFUS1ERU1PLTAwMVwiLFwiREQtREVNTy0wMDFcIixcIlRBU0stV0ktOTkwMS0wMDZcIl19LHtcImV4ZWN1dGlvbl9yZWNlaXB0X2lkXCI6XCIyMzM5MWQ0NDRjNmY4YTlhYjA5MGU5ZDZlNGViNDI4ZGMyM2E0MTYzMDc0ZjBkOTVmYzIwMzc3ZGY1ZGQyMjIwXCIsXCJ0YXNrX2lkXCI6XCJUQVNLLVdJLTk5MDEtMDA3XCIsXCJ2ZXJpZmljYXRpb25fdHlwZVwiOlwiaW50ZWdyYXRpb25cIixcImNvbW1hbmRfaW5kZXhcIjowLFwiY29tbWFuZFwiOlwibm9kZSAtLXRlc3QgdGVzdHMvdmFsdWUudGVzdC50c1wiLFwiZXZpZGVuY2VfaWRcIjpcIkVWLU5BVElWRS0wMDdcIixcInR5cGVcIjpcImludGVncmF0aW9uX3Rlc3RcIixcImV2aWRlbmNlX3R5cGVcIjpcImludGVncmF0aW9uX3Rlc3RcIixcImxldmVsXCI6XCJMMlwiLFwic3RhdHVzXCI6XCJwYXNzZWRcIixcInBhdGhcIjpcInZlcmlmaWNhdGlvbi1vd25lcjpyZWNlaXB0OjIzMzkxZDQ0NGM2ZjhhOWFiMDkwZTlkNmU0ZWI0MjhkYzIzYTQxNjMwNzRmMGQ5NWZjMjAzNzdkZjVkZDIyMjBcIixcImhhc2hcIjpcInNoYTI1NjoyMzM5MWQ0NDRjNmY4YTlhYjA5MGU5ZDZlNGViNDI4ZGMyM2E0MTYzMDc0ZjBkOTVmYzIwMzc3ZGY1ZGQyMjIwXCIsXCJoYXNoX2RvbWFpblwiOlwiY2Fub25pY2FsLWpzb246dmVyaWZpY2F0aW9uLWV4ZWN1dGlvbi92MVwiLFwic3VwcG9ydHNcIjpbXCJPVVQtREVNTy0wMDFcIixcIlJFUS1ERU1PLTAwMVwiLFwiREQtREVNTy0wMDFcIixcIlRBU0stV0ktOTkwMS0wMDdcIl19LHtcImV4ZWN1dGlvbl9yZWNlaXB0X2lkXCI6XCJkNjM4M2YwNWQzODNiMmVlMzAxODQwMjc1MDZlY2VjNzU5YjgwZTZlMzQ3YzAzMGI4NTJhMTljMjczN2FmMTkwXCIsXCJ0YXNrX2lkXCI6XCJUQVNLLVdJLTk5MDEtMDA4XCIsXCJ2ZXJpZmljYXRpb25fdHlwZVwiOlwidW5pdFwiLFwiY29tbWFuZF9pbmRleFwiOjAsXCJjb21tYW5kXCI6XCJub2RlIC0tdGVzdCB0ZXN0cy9lc20udGVzdC5tanNcIixcImV2aWRlbmNlX2lkXCI6XCJFVi1OQVRJVkUtMDA4XCIsXCJ0eXBlXCI6XCJ1bml0X3Rlc3RcIixcImV2aWRlbmNlX3R5cGVcIjpcInVuaXRfdGVzdFwiLFwibGV2ZWxcIjpcIkwxXCIsXCJzdGF0dXNcIjpcInBhc3NlZFwiLFwicGF0aFwiOlwidmVyaWZpY2F0aW9uLW93bmVyOnJlY2VpcHQ6ZDYzODNmMDVkMzgzYjJlZTMwMTg0MDI3NTA2ZWNlYzc1OWI4MGU2ZTM0N2MwMzBiODUyYTE5YzI3MzdhZjE5MFwiLFwiaGFzaFwiOlwic2hhMjU2OmQ2MzgzZjA1ZDM4M2IyZWUzMDE4NDAyNzUwNmVjZWM3NTliODBlNmUzNDdjMDMwYjg1MmExOWMyNzM3YWYxOTBcIixcImhhc2hfZG9tYWluXCI6XCJjYW5vbmljYWwtanNvbjp2ZXJpZmljYXRpb24tZXhlY3V0aW9uL3YxXCIsXCJzdXBwb3J0c1wiOltcIk9VVC1ERU1PLTAwMVwiLFwiUkVRLURFTU8tMDAxXCIsXCJERC1ERU1PLTAwMVwiLFwiVEFTSy1XSS05OTAxLTAwOFwiXX0se1wiZXhlY3V0aW9uX3JlY2VpcHRfaWRcIjpcIjU5ZWVmMjQ1ZTM3OGFkZTlhM2E1M2FhNGZiN2JmM2VlMzYyMDcyMDZhYTgxYzViMTI3NGUzNDBhYWI4MTc5NTlcIixcInRhc2tfaWRcIjpcIlRBU0stV0ktOTkwMS0wMDlcIixcInZlcmlmaWNhdGlvbl90eXBlXCI6XCJlMmVcIixcImNvbW1hbmRfaW5kZXhcIjowLFwiY29tbWFuZFwiOlwibm9kZSAtZSBcXFwiaW1wb3J0KCcuL3NyYy92YWx1ZS50cycpLnRoZW4obT0+e2lmKG0uZ3JlZXQoJ0FkYScpIT09J0hlbGxvLCBBZGEhJ3x8bS5ncmVldCgnJykhPT0nSGVsbG8sIHdvcmxkIScpcHJvY2Vzcy5leGl0KDEpO2NvbnNvbGUubG9nKCdUU19JTkxJTkVfT0snKTt9KS5jYXRjaCgoKT0+cHJvY2Vzcy5leGl0KDEpKVxcXCJcIixcImV2aWRlbmNlX2lkXCI6XCJFVi1OQVRJVkUtMDA5XCIsXCJ0eXBlXCI6XCJiZWhhdmlvcmFsX2UyZVwiLFwiZXZpZGVuY2VfdHlwZVwiOlwiYmVoYXZpb3JhbF9lMmVcIixcImxldmVsXCI6XCJMNVwiLFwic3RhdHVzXCI6XCJwYXNzZWRcIixcInBhdGhcIjpcInZlcmlmaWNhdGlvbi1vd25lcjpyZWNlaXB0OjU5ZWVmMjQ1ZTM3OGFkZTlhM2E1M2FhNGZiN2JmM2VlMzYyMDcyMDZhYTgxYzViMTI3NGUzNDBhYWI4MTc5NTlcIixcImhhc2hcIjpcInNoYTI1Njo1OWVlZjI0NWUzNzhhZGU5YTNhNTNhYTRmYjdiZjNlZTM2MjA3MjA2YWE4MWM1YjEyNzRlMzQwYWFiODE3OTU5XCIsXCJoYXNoX2RvbWFpblwiOlwiY2Fub25pY2FsLWpzb246dmVyaWZpY2F0aW9uLWV4ZWN1dGlvbi92MVwiLFwic3VwcG9ydHNcIjpbXCJPVVQtREVNTy0wMDFcIixcIlJFUS1ERU1PLTAwMVwiLFwiREQtREVNTy0wMDFcIixcIlRBU0stV0ktOTkwMS0wMDlcIl19XX0ifX0="
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1b4215c47001xkR4B0cYH9wCQs",
+      "sessionID": "ses_e4bdea708ffete538tBL6odzuF",
+      "role": "assistant",
+      "time": {
+        "created": 1794023447623,
+        "completed": 1794023458078
+      },
+      "parentID": "msg_1b4215914001kqOafzdeNgOZZV",
+      "modelID": "finite-model",
+      "providerID": "sf-fixture",
+      "mode": "sf-verifier",
+      "agent": "sf-verifier",
+      "path": {
+        "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\ec4e012955964ac080d38edc63c1db94\\project",
+        "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\ec4e012955964ac080d38edc63c1db94\\project"
+      },
+      "cost": 0,
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "finish": "tool-calls"
+    },
+    "parts": [
+      {
+        "id": "prt_1b421665e001YB2NvuPOHp5ePN",
+        "sessionID": "ses_e4bdea708ffete538tBL6odzuF",
+        "messageID": "msg_1b4215c47001xkR4B0cYH9wCQs",
+        "type": "step-start",
+        "snapshot": "ca1de9add27d3f5a96b87d5db501ad6c61557309"
+      },
+      {
+        "id": "prt_1b4216666001jdZ20F1I4JYVQs",
+        "sessionID": "ses_e4bdea708ffete538tBL6odzuF",
+        "messageID": "msg_1b4215c47001xkR4B0cYH9wCQs",
+        "type": "tool",
+        "callID": "call_741de6cb4b5143e3a20baed62a4026f8",
+        "tool": "sf_artifact_write",
+        "state": {
+          "status": "completed",
+          "input": {
+            "work_item_id": "WI-9901",
+            "file_type": "evidence_manifest",
+            "content": "{\"schema_version\":\"1.0\",\"work_item_id\":\"WI-9901\",\"entries\":[{\"execution_receipt_id\":\"db71195ab38ba762424ed14e11ccdd881bb530322e0bdb9ed6b2748a35e1fe5f\",\"task_id\":\"TASK-WI-9901-002\",\"verification_type\":\"e2e\",\"command_index\":0,\"command\":\"node -e \\\"const {salute}=require('./src/library.cjs');if(salute('Ada')!=='hi Ada')process.exit(1);console.log('SF_PRODUCT_INLINE_OK');\\\"\",\"evidence_id\":\"EV-NATIVE-002\",\"type\":\"behavioral_e2e\",\"evidence_type\":\"behavioral_e2e\",\"level\":\"L5\",\"status\":\"passed\",\"path\":\"verification-owner:receipt:db71195ab38ba762424ed14e11ccdd881bb530322e0bdb9ed6b2748a35e1fe5f\",\"hash\":\"sha256:db71195ab38ba762424ed14e11ccdd881bb530322e0bdb9ed6b2748a35e1fe5f\",\"hash_domain\":\"canonical-json:verification-execution/v1\",\"supports\":[\"OUT-DEMO-001\",\"REQ-DEMO-001\",\"DD-DEMO-001\",\"TASK-WI-9901-002\"]},{\"execution_receipt_id\":\"2db4c7a00209a2802657ecbc15b9d3ef2321d2ad4d7febc3a206816719aa12dd\",\"task_id\":\"TASK-WI-9901-004\",\"verification_type\":\"unit\",\"command_index\":0,\"command\":\"test -f package.json && test -f tsconfig.json\",\"evidence_id\":\"EV-NATIVE-004\",\"type\":\"unit_test\",\"evidence_type\":\"unit_test\",\"level\":\"L1\",\"status\":\"passed\",\"path\":\"verification-owner:receipt:2db4c7a00209a2802657ecbc15b9d3ef2321d2ad4d7febc3a206816719aa12dd\",\"hash\":\"sha256:2db4c7a00209a2802657ecbc15b9d3ef2321d2ad4d7febc3a206816719aa12dd\",\"hash_domain\":\"canonical-json:verification-execution/v1\",\"supports\":[\"OUT-DEMO-001\",\"REQ-DEMO-001\",\"DD-DEMO-001\",\"TASK-WI-9901-004\"]},{\"execution_receipt_id\":\"98ca29f434a48bbe282e253d39a68aee36f5fa932f52c1938c4ea8069f30a5a3\",\"task_id\":\"TASK-WI-9901-005\",\"verification_type\":\"unit\",\"command_index\":0,\"command\":\"grep -c '\\\"type\\\": \\\"module\\\"' package.json\",\"evidence_id\":\"EV-NATIVE-005\",\"type\":\"unit_test\",\"evidence_type\":\"unit_test\",\"level\":\"L1\",\"status\":\"passed\",\"path\":\"verification-owner:receipt:98ca29f434a48bbe282e253d39a68aee36f5fa932f52c1938c4ea8069f30a5a3\",\"hash\":\"sha256:98ca29f434a48bbe282e253d39a68aee36f5fa932f52c1938c4ea8069f30a5a3\",\"hash_domain\":\"canonical-json:verification-execution/v1\",\"supports\":[\"OUT-DEMO-001\",\"REQ-DEMO-001\",\"DD-DEMO-001\",\"TASK-WI-9901-005\"]},{\"execution_receipt_id\":\"e08d63617ea051d33fdba7378e42ba43f28e6c0ed2eed28fe3021d3d5309fe05\",\"task_id\":\"TASK-WI-9901-006\",\"verification_type\":\"unit\",\"command_index\":0,\"command\":\"! grep -qE \\\"^import |^import\\\\{|require\\\\(\\\" src/value.ts\",\"evidence_id\":\"EV-NATIVE-006\",\"type\":\"unit_test\",\"evidence_type\":\"unit_test\",\"level\":\"L1\",\"status\":\"passed\",\"path\":\"verification-owner:receipt:e08d63617ea051d33fdba7378e42ba43f28e6c0ed2eed28fe3021d3d5309fe05\",\"hash\":\"sha256:e08d63617ea051d33fdba7378e42ba43f28e6c0ed2eed28fe3021d3d5309fe05\",\"hash_domain\":\"canonical-json:verification-execution/v1\",\"supports\":[\"OUT-DEMO-001\",\"REQ-DEMO-001\",\"DD-DEMO-001\",\"TASK-WI-9901-006\"]},{\"execution_receipt_id\":\"23391d444c6f8a9ab090e9d6e4eb428dc23a4163074f0d95fc20377df5dd2220\",\"task_id\":\"TASK-WI-9901-007\",\"verification_type\":\"integration\",\"command_index\":0,\"command\":\"node --test tests/value.test.ts\",\"evidence_id\":\"EV-NATIVE-007\",\"type\":\"integration_test\",\"evidence_type\":\"integration_test\",\"level\":\"L2\",\"status\":\"passed\",\"path\":\"verification-owner:receipt:23391d444c6f8a9ab090e9d6e4eb428dc23a4163074f0d95fc20377df5dd2220\",\"hash\":\"sha256:23391d444c6f8a9ab090e9d6e4eb428dc23a4163074f0d95fc20377df5dd2220\",\"hash_domain\":\"canonical-json:verification-execution/v1\",\"supports\":[\"OUT-DEMO-001\",\"REQ-DEMO-001\",\"DD-DEMO-001\",\"TASK-WI-9901-007\"]},{\"execution_receipt_id\":\"d6383f05d383b2ee30184027506ecec759b80e6e347c030b852a19c2737af190\",\"task_id\":\"TASK-WI-9901-008\",\"verification_type\":\"unit\",\"command_index\":0,\"command\":\"node --test tests/esm.test.mjs\",\"evidence_id\":\"EV-NATIVE-008\",\"type\":\"unit_test\",\"evidence_type\":\"unit_test\",\"level\":\"L1\",\"status\":\"passed\",\"path\":\"verification-owner:receipt:d6383f05d383b2ee30184027506ecec759b80e6e347c030b852a19c2737af190\",\"hash\":\"sha256:d6383f05d383b2ee30184027506ecec759b80e6e347c030b852a19c2737af190\",\"hash_domain\":\"canonical-json:verification-execution/v1\",\"supports\":[\"OUT-DEMO-001\",\"REQ-DEMO-001\",\"DD-DEMO-001\",\"TASK-WI-9901-008\"]},{\"execution_receipt_id\":\"59eef245e378ade9a3a53aa4fb7bf3ee36207206aa81c5b1274e340aab817959\",\"task_id\":\"TASK-WI-9901-009\",\"verification_type\":\"e2e\",\"command_index\":0,\"command\":\"node -e \\\"import('./src/value.ts').then(m=>{if(m.greet('Ada')!=='Hello, Ada!'||m.greet('')!=='Hello, world!')process.exit(1);console.log('TS_INLINE_OK');}).catch(()=>process.exit(1))\\\"\",\"evidence_id\":\"EV-NATIVE-009\",\"type\":\"behavioral_e2e\",\"evidence_type\":\"behavioral_e2e\",\"level\":\"L5\",\"status\":\"passed\",\"path\":\"verification-owner:receipt:59eef245e378ade9a3a53aa4fb7bf3ee36207206aa81c5b1274e340aab817959\",\"hash\":\"sha256:59eef245e378ade9a3a53aa4fb7bf3ee36207206aa81c5b1274e340aab817959\",\"hash_domain\":\"canonical-json:verification-execution/v1\",\"supports\":[\"OUT-DEMO-001\",\"REQ-DEMO-001\",\"DD-DEMO-001\",\"TASK-WI-9901-009\"]}]}"
+          },
+          "output": "{\n  \"success\": true,\n  \"path\": \".specforge/work-items/WI-9901/evidence/evidence_manifest.json\",\n  \"size\": 6012,\n  \"file_type\": \"evidence_manifest\",\n  \"controlled_artifact\": true,\n  \"normalized\": true\n}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1794023450243,
+            "end": 1794023457185
+          }
+        }
+      },
+      {
+        "id": "prt_1b42183bd001ijUs3k2r5PIMwF",
+        "sessionID": "ses_e4bdea708ffete538tBL6odzuF",
+        "messageID": "msg_1b4215c47001xkR4B0cYH9wCQs",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "snapshot": "6307e720a528d75ac334192f92d36a131a92dd44",
+        "cost": 0,
+        "tokens": {
+          "total": 120,
+          "input": 100,
+          "output": 20,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      },
+      {
+        "id": "prt_1b4218513001700FDShWiE3BDz",
+        "sessionID": "ses_e4bdea708ffete538tBL6odzuF",
+        "messageID": "msg_1b4215c47001xkR4B0cYH9wCQs",
+        "type": "patch",
+        "hash": "ca1de9add27d3f5a96b87d5db501ad6c61557309",
+        "files": [
+          "D:/code/SpecForge/.tmp/verification-public-kernel/ec4e012955964ac080d38edc63c1db94/project/.specforge/work-items/WI-9901/evidence/evidence_manifest.json"
+        ]
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1b4218527001Jpe4vi0ZkZiqfJ",
+      "sessionID": "ses_e4bdea708ffete538tBL6odzuF",
+      "role": "assistant",
+      "time": {
+        "created": 1794023458087,
+        "completed": 1794023459331
+      },
+      "parentID": "msg_1b4215914001kqOafzdeNgOZZV",
+      "modelID": "finite-model",
+      "providerID": "sf-fixture",
+      "mode": "sf-verifier",
+      "agent": "sf-verifier",
+      "path": {
+        "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\ec4e012955964ac080d38edc63c1db94\\project",
+        "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\ec4e012955964ac080d38edc63c1db94\\project"
+      },
+      "cost": 0,
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "finish": "stop"
+    },
+    "parts": [
+      {
+        "id": "prt_1b42186ad001CRtw8Qav7LKzOU",
+        "sessionID": "ses_e4bdea708ffete538tBL6odzuF",
+        "messageID": "msg_1b4218527001Jpe4vi0ZkZiqfJ",
+        "type": "step-start",
+        "snapshot": "6307e720a528d75ac334192f92d36a131a92dd44"
+      },
+      {
+        "id": "prt_1b42186b2001anzvByhgPhpKS4",
+        "sessionID": "ses_e4bdea708ffete538tBL6odzuF",
+        "messageID": "msg_1b4218527001Jpe4vi0ZkZiqfJ",
+        "type": "text",
+        "text": "SF_FIXTURE_TOOL_COMPLETE",
+        "time": {
+          "start": 1794023458482,
+          "end": 1794023458488
+        }
+      },
+      {
+        "id": "prt_1b42188ee001Deg8T06p7UOVWE",
+        "sessionID": "ses_e4bdea708ffete538tBL6odzuF",
+        "messageID": "msg_1b4218527001Jpe4vi0ZkZiqfJ",
+        "type": "step-finish",
+        "reason": "stop",
+        "snapshot": "6307e720a528d75ac334192f92d36a131a92dd44",
+        "cost": 0,
+        "tokens": {
+          "total": 120,
+          "input": 100,
+          "output": 20,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    ]
+  }
+]

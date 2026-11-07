@@ -1,0 +1,15 @@
+{
+  "utc": "2026-11-07T10:49:58.915Z",
+  "inner_exit_code": 0,
+  "installed_files_verified": 117,
+  "daemon_pid": 33388,
+  "daemon_started_without_kernel": true,
+  "interactive_owned_endpoint": "http://127.0.0.1:4096",
+  "orchestrator_current_guidance_loaded": true,
+  "verifier_loaded": true,
+  "feature_skill_loaded": true,
+  "business_head": "28c8e3d850c81218af4598928569bf5420814372",
+  "business_worktree_clean": true,
+  "business_code_unchanged": 5,
+  "model_prompt_sent": false
+}

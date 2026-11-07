@@ -1,0 +1,14 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/execution-evidence-consumer.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "common-consumer-reference-regression",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=unit consumer only no native application;EXTERNAL_EVIDENCE_WRITES=test raw receipts",
+  "started_utc": "2026-11-07T01:41:00.946Z"
+}

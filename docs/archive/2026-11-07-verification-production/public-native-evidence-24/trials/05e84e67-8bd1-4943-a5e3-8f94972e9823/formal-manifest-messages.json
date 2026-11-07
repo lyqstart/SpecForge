@@ -1,0 +1,203 @@
+[
+  {
+    "info": {
+      "id": "msg_1b50ed94d0013yO7HZ7PBv1g24",
+      "sessionID": "ses_e4af126cdffeRP09bUsKb5MQlC",
+      "role": "user",
+      "time": {
+        "created": 1794039011661
+      },
+      "summary": {
+        "diffs": [
+          {
+            "file": ".specforge/work-items/WI-9901/evidence/evidence_manifest.json",
+            "patch": "Index: .specforge/work-items/WI-9901/evidence/evidence_manifest.json\n===================================================================\n--- .specforge/work-items/WI-9901/evidence/evidence_manifest.json\t\n+++ .specforge/work-items/WI-9901/evidence/evidence_manifest.json\t\n@@ -1,182 +1,174 @@\n {\n   \"schema_version\": \"1.0\",\n   \"work_item_id\": \"WI-9901\",\n   \"entries\": [\n     {\n-      \"evidence_id\": \"EV-ROUTING-0\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-0.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n+      \"execution_receipt_id\": \"19872fd97abe1a2e44e015b876abaec480b483d499283c080a61f96cc18698c2\",\n+      \"task_id\": \"TASK-WI-9901-001\",\n+      \"verification_type\": \"unit\",\n+      \"command_index\": 0,\n+      \"command\": \"node --test tests/positive.test.cjs\",\n+      \"evidence_id\": \"EV-NATIVE-001\",\n+      \"type\": \"unit_test\",\n+      \"evidence_type\": \"unit_test\",\n+      \"level\": \"L1\",\n+      \"status\": \"passed\",\n+      \"path\": \"verification-owner:receipt:19872fd97abe1a2e44e015b876abaec480b483d499283c080a61f96cc18698c2\",\n+      \"hash\": \"sha256:19872fd97abe1a2e44e015b876abaec480b483d499283c080a61f96cc18698c2\",\n+      \"hash_domain\": \"canonical-json:verification-execution/v1\",\n+      \"supports\": [\n+        \"OUT-DEMO-001\",\n+        \"REQ-DEMO-001\",\n+        \"DD-DEMO-001\",\n+        \"TASK-WI-9901-001\"\n+      ]\n     },\n     {\n-      \"evidence_id\": \"EV-ROUTING-1\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-1.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n+      \"execution_receipt_id\": \"c7675088f84626f149129ed2633112e29d8b2f334b1fe9eaf25a4e0cf1056595\",\n+      \"task_id\": \"TASK-WI-9901-002\",\n+      \"verification_type\": \"e2e\",\n+      \"command_index\": 0,\n+      \"command\": \"node -e \\\"const {salute}=require('./src/library.cjs');if(salute('Ada')!=='hi Ada')process.exit(1);console.log('SF_PRODUCT_INLINE_OK');\\\"\",\n+      \"evidence_id\": \"EV-NATIVE-002\",\n+      \"type\": \"behavioral_e2e\",\n+      \"evidence_type\": \"behavioral_e2e\",\n+      \"level\": \"L5\",\n+      \"status\": \"passed\",\n+      \"path\": \"verification-owner:receipt:c7675088f84626f149129ed2633112e29d8b2f334b1fe9eaf25a4e0cf1056595\",\n+      \"hash\": \"sha256:c7675088f84626f149129ed2633112e29d8b2f334b1fe9eaf25a4e0cf1056595\",\n+      \"hash_domain\": \"canonical-json:verification-execution/v1\",\n+      \"supports\": [\n+        \"OUT-DEMO-001\",\n+        \"REQ-DEMO-001\",\n+        \"DD-DEMO-001\",\n+        \"TASK-WI-9901-002\"\n+      ]\n     },\n     {\n-      \"evidence_id\": \"EV-ROUTING-2\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-2.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n+      \"execution_receipt_id\": \"de72e8aff4bc2023eee52f5ee317325f45b875afa8fed2a90de6d5668fd53d90\",\n+      \"task_id\": \"TASK-WI-9901-004\",\n+      \"verification_type\": \"unit\",\n+      \"command_index\": 0,\n+      \"command\": \"test -f package.json && test -f tsconfig.json\",\n+      \"evidence_id\": \"EV-NATIVE-004\",\n+      \"type\": \"unit_test\",\n+      \"evidence_type\": \"unit_test\",\n+      \"level\": \"L1\",\n+      \"status\": \"passed\",\n+      \"path\": \"verification-owner:receipt:de72e8aff4bc2023eee52f5ee317325f45b875afa8fed2a90de6d5668fd53d90\",\n+      \"hash\": \"sha256:de72e8aff4bc2023eee52f5ee317325f45b875afa8fed2a90de6d5668fd53d90\",\n+      \"hash_domain\": \"canonical-json:verification-execution/v1\",\n+      \"supports\": [\n+        \"OUT-DEMO-001\",\n+        \"REQ-DEMO-001\",\n+        \"DD-DEMO-001\",\n+        \"TASK-WI-9901-004\"\n+      ]\n     },\n     {\n-      \"evidence_id\": \"EV-ROUTING-3\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-3.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n+      \"execution_receipt_id\": \"e158ef44c224ed3e135afb8b7a3453514f43b941fbdf5f79a9bc2dd8a7b25cbb\",\n+      \"task_id\": \"TASK-WI-9901-005\",\n+      \"verification_type\": \"unit\",\n+      \"command_index\": 0,\n+      \"command\": \"grep -c '\\\"type\\\": \\\"module\\\"' package.json\",\n+      \"evidence_id\": \"EV-NATIVE-005\",\n+      \"type\": \"unit_test\",\n+      \"evidence_type\": \"unit_test\",\n+      \"level\": \"L1\",\n+      \"status\": \"passed\",\n+      \"path\": \"verification-owner:receipt:e158ef44c224ed3e135afb8b7a3453514f43b941fbdf5f79a9bc2dd8a7b25cbb\",\n+      \"hash\": \"sha256:e158ef44c224ed3e135afb8b7a3453514f43b941fbdf5f79a9bc2dd8a7b25cbb\",\n+      \"hash_domain\": \"canonical-json:verification-execution/v1\",\n+      \"supports\": [\n+        \"OUT-DEMO-001\",\n+        \"REQ-DEMO-001\",\n+        \"DD-DEMO-001\",\n+        \"TASK-WI-9901-005\"\n+      ]\n     },\n     {\n-      \"evidence_id\": \"EV-ROUTING-4\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-4.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n+      \"execution_receipt_id\": \"a53e9b2fea203d8e08b194d3906f71c08f56a413b1deb9d0403860664feded01\",\n+      \"task_id\": \"TASK-WI-9901-006\",\n+      \"verification_type\": \"unit\",\n+      \"command_index\": 0,\n+      \"command\": \"! grep -qE \\\"^import |^import\\\\{|require\\\\(\\\" src/value.ts\",\n+      \"evidence_id\": \"EV-NATIVE-006\",\n+      \"type\": \"unit_test\",\n+      \"evidence_type\": \"unit_test\",\n+      \"level\": \"L1\",\n+      \"status\": \"passed\",\n+      \"path\": \"verification-owner:receipt:a53e9b2fea203d8e08b194d3906f71c08f56a413b1deb9d0403860664feded01\",\n+      \"hash\": \"sha256:a53e9b2fea203d8e08b194d3906f71c08f56a413b1deb9d0403860664feded01\",\n+      \"hash_domain\": \"canonical-json:verification-execution/v1\",\n+      \"supports\": [\n+        \"OUT-DEMO-001\",\n+        \"REQ-DEMO-001\",\n+        \"DD-DEMO-001\",\n+        \"TASK-WI-9901-006\"\n+      ]\n     },\n     {\n-      \"evidence_id\": \"EV-ROUTING-5\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-5.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n+      \"execution_receipt_id\": \"11d0177ea86af1a4b65de82935576ab935d9f3d9dfb2940ba745b58e6ca6dd14\",\n+      \"task_id\": \"TASK-WI-9901-007\",\n+      \"verification_type\": \"integration\",\n+      \"command_index\": 0,\n+      \"command\": \"node --test tests/value.test.ts\",\n+      \"evidence_id\": \"EV-NATIVE-007\",\n+      \"type\": \"integration_test\",\n+      \"evidence_type\": \"integration_test\",\n+      \"level\": \"L2\",\n+      \"status\": \"passed\",\n+      \"path\": \"verification-owner:receipt:11d0177ea86af1a4b65de82935576ab935d9f3d9dfb2940ba745b58e6ca6dd14\",\n+      \"hash\": \"sha256:11d0177ea86af1a4b65de82935576ab935d9f3d9dfb2940ba745b58e6ca6dd14\",\n+      \"hash_domain\": \"canonical-json:verification-execution/v1\",\n+      \"supports\": [\n+        \"OUT-DEMO-001\",\n+        \"REQ-DEMO-001\",\n+        \"DD-DEMO-001\",\n+        \"TASK-WI-9901-007\"\n+      ]\n     },\n     {\n-      \"evidence_id\": \"EV-ROUTING-6\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-6.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n+      \"execution_receipt_id\": \"c82715aa01344f801583de07ae79581a97f8d83db5a100d44f55c91294dc9851\",\n+      \"task_id\": \"TASK-WI-9901-008\",\n+      \"verification_type\": \"unit\",\n+      \"command_index\": 0,\n+      \"command\": \"node --test tests/esm.test.mjs\",\n+      \"evidence_id\": \"EV-NATIVE-008\",\n+      \"type\": \"unit_test\",\n+      \"evidence_type\": \"unit_test\",\n+      \"level\": \"L1\",\n+      \"status\": \"passed\",\n+      \"path\": \"verification-owner:receipt:c82715aa01344f801583de07ae79581a97f8d83db5a100d44f55c91294dc9851\",\n+      \"hash\": \"sha256:c82715aa01344f801583de07ae79581a97f8d83db5a100d44f55c91294dc9851\",\n+      \"hash_domain\": \"canonical-json:verification-execution/v1\",\n+      \"supports\": [\n+        \"OUT-DEMO-001\",\n+        \"REQ-DEMO-001\",\n+        \"DD-DEMO-001\",\n+        \"TASK-WI-9901-008\"\n+      ]\n     },\n     {\n-      \"evidence_id\": \"EV-ROUTING-7\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-7.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n-    },\n-    {\n-      \"evidence_id\": \"EV-ROUTING-8\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-8.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n-    },\n-    {\n-      \"evidence_id\": \"EV-ROUTING-9\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-9.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n-    },\n-    {\n-      \"evidence_id\": \"EV-ROUTING-10\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-10.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n-    },\n-    {\n-      \"evidence_id\": \"EV-ROUTING-11\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-11.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n-    },\n-    {\n-      \"evidence_id\": \"EV-ROUTING-12\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-12.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n-    },\n-    {\n-      \"evidence_id\": \"EV-ROUTING-13\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-13.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n-    },\n-    {\n-      \"evidence_id\": \"EV-ROUTING-14\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-14.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n-    },\n-    {\n-      \"evidence_id\": \"EV-ROUTING-15\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-15.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n-    },\n-    {\n-      \"evidence_id\": \"EV-ROUTING-16\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-16.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n-    },\n-    {\n-      \"evidence_id\": \"EV-ROUTING-17\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-17.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n-    },\n-    {\n-      \"evidence_id\": \"EV-ROUTING-18\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-18.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n-    },\n-    {\n-      \"evidence_id\": \"EV-ROUTING-19\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-19.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n-    },\n-    {\n-      \"evidence_id\": \"EV-ROUTING-20\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-20.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n-    },\n-    {\n-      \"evidence_id\": \"EV-ROUTING-21\",\n-      \"type\": \"command_output\",\n-      \"path\": \"evidence/source/blocked-21.txt\",\n-      \"description\": \"Blocked synthetic entry for destination preservation, not an execution pass\",\n-      \"created_at\": \"2026-11-07T07:57:21.937Z\",\n-      \"status\": \"blocked\"\n+      \"execution_receipt_id\": \"67eee4cb11c1f31e688ca69c6767db4cb25ac0da6e5ec16764dc4a7dc4b6386e\",\n+      \"task_id\": \"TASK-WI-9901-009\",\n+      \"verification_type\": \"e2e\",\n+      \"command_index\": 0,\n+      \"command\": \"node -e \\\"import('./src/value.ts').then(m=>{if(m.greet('Ada')!=='Hello, Ada!'||m.greet('')!=='Hello, world!')process.exit(1);console.log('TS_INLINE_OK');}).catch(()=>process.exit(1))\\\"\",\n+      \"evidence_id\": \"EV-NATIVE-009\",\n+      \"type\": \"behavioral_e2e\",\n+      \"evidence_type\": \"behavioral_e2e\",\n+      \"level\": \"L5\",\n+      \"status\": \"passed\",\n+      \"path\": \"verification-owner:receipt:67eee4cb11c1f31e688ca69c6767db4cb25ac0da6e5ec16764dc4a7dc4b6386e\",\n+      \"hash\": \"sha256:67eee4cb11c1f31e688ca69c6767db4cb25ac0da6e5ec16764dc4a7dc4b6386e\",\n+      \"hash_domain\": \"canonical-json:verification-execution/v1\",\n+      \"supports\": [\n+        \"OUT-DEMO-001\",\n+        \"REQ-DEMO-001\",\n+        \"DD-DEMO-001\",\n+        \"TASK-WI-9901-009\"\n+      ]\n     }\n   ]\n }\n\\ No newline at end of file\n",
+            "additions": 166,
+            "deletions": 174,
+            "status": "modified"
+          }
+        ]
+      },
+      "agent": "sf-verifier",
+      "model": {
+        "providerID": "sf-fixture",
+        "modelID": "finite-model"
+      }
+    },
+    "parts": [
+      {
+        "id": "prt_1b50ed955001tupHVnfOXP0MD2",
+        "sessionID": "ses_e4af126cdffeRP09bUsKb5MQlC",
+        "messageID": "msg_1b50ed94d0013yO7HZ7PBv1g24",
+        "type": "text",
+        "text": "Execute the single requested tool once, then stop. SF_FIXTURE_REQUEST:eyJ0b29sIjoic2ZfYXJ0aWZhY3Rfd3JpdGUiLCJhcmdzIjp7IndvcmtfaXRlbV9pZCI6IldJLTk5MDEiLCJmaWxlX3R5cGUiOiJldmlkZW5jZV9tYW5pZmVzdCIsImNvbnRlbnQiOiJ7XCJzY2hlbWFfdmVyc2lvblwiOlwiMS4wXCIsXCJ3b3JrX2l0ZW1faWRcIjpcIldJLTk5MDFcIixcImVudHJpZXNcIjpbe1wiZXhlY3V0aW9uX3JlY2VpcHRfaWRcIjpcIjE5ODcyZmQ5N2FiZTFhMmU0NGUwMTViODc2YWJhZWM0ODBiNDgzZDQ5OTI4M2MwODBhNjFmOTZjYzE4Njk4YzJcIixcInRhc2tfaWRcIjpcIlRBU0stV0ktOTkwMS0wMDFcIixcInZlcmlmaWNhdGlvbl90eXBlXCI6XCJ1bml0XCIsXCJjb21tYW5kX2luZGV4XCI6MCxcImNvbW1hbmRcIjpcIm5vZGUgLS10ZXN0IHRlc3RzL3Bvc2l0aXZlLnRlc3QuY2pzXCIsXCJldmlkZW5jZV9pZFwiOlwiRVYtTkFUSVZFLTAwMVwiLFwidHlwZVwiOlwidW5pdF90ZXN0XCIsXCJldmlkZW5jZV90eXBlXCI6XCJ1bml0X3Rlc3RcIixcImxldmVsXCI6XCJMMVwiLFwic3RhdHVzXCI6XCJwYXNzZWRcIixcInBhdGhcIjpcInZlcmlmaWNhdGlvbi1vd25lcjpyZWNlaXB0OjE5ODcyZmQ5N2FiZTFhMmU0NGUwMTViODc2YWJhZWM0ODBiNDgzZDQ5OTI4M2MwODBhNjFmOTZjYzE4Njk4YzJcIixcImhhc2hcIjpcInNoYTI1NjoxOTg3MmZkOTdhYmUxYTJlNDRlMDE1Yjg3NmFiYWVjNDgwYjQ4M2Q0OTkyODNjMDgwYTYxZjk2Y2MxODY5OGMyXCIsXCJoYXNoX2RvbWFpblwiOlwiY2Fub25pY2FsLWpzb246dmVyaWZpY2F0aW9uLWV4ZWN1dGlvbi92MVwiLFwic3VwcG9ydHNcIjpbXCJPVVQtREVNTy0wMDFcIixcIlJFUS1ERU1PLTAwMVwiLFwiREQtREVNTy0wMDFcIixcIlRBU0stV0ktOTkwMS0wMDFcIl19LHtcImV4ZWN1dGlvbl9yZWNlaXB0X2lkXCI6XCJjNzY3NTA4OGY4NDYyNmYxNDkxMjllZDI2MzMxMTJlMjlkOGIyZjMzNGIxZmU5ZWFmMjVhNGUwY2YxMDU2NTk1XCIsXCJ0YXNrX2lkXCI6XCJUQVNLLVdJLTk5MDEtMDAyXCIsXCJ2ZXJpZmljYXRpb25fdHlwZVwiOlwiZTJlXCIsXCJjb21tYW5kX2luZGV4XCI6MCxcImNvbW1hbmRcIjpcIm5vZGUgLWUgXFxcImNvbnN0IHtzYWx1dGV9PXJlcXVpcmUoJy4vc3JjL2xpYnJhcnkuY2pzJyk7aWYoc2FsdXRlKCdBZGEnKSE9PSdoaSBBZGEnKXByb2Nlc3MuZXhpdCgxKTtjb25zb2xlLmxvZygnU0ZfUFJPRFVDVF9JTkxJTkVfT0snKTtcXFwiXCIsXCJldmlkZW5jZV9pZFwiOlwiRVYtTkFUSVZFLTAwMlwiLFwidHlwZVwiOlwiYmVoYXZpb3JhbF9lMmVcIixcImV2aWRlbmNlX3R5cGVcIjpcImJlaGF2aW9yYWxfZTJlXCIsXCJsZXZlbFwiOlwiTDVcIixcInN0YXR1c1wiOlwicGFzc2VkXCIsXCJwYXRoXCI6XCJ2ZXJpZmljYXRpb24tb3duZXI6cmVjZWlwdDpjNzY3NTA4OGY4NDYyNmYxNDkxMjllZDI2MzMxMTJlMjlkOGIyZjMzNGIxZmU5ZWFmMjVhNGUwY2YxMDU2NTk1XCIsXCJoYXNoXCI6XCJzaGEyNTY6Yzc2NzUwODhmODQ2MjZmMTQ5MTI5ZWQyNjMzMTEyZTI5ZDhiMmYzMzRiMWZlOWVhZjI1YTRlMGNmMTA1NjU5NVwiLFwiaGFzaF9kb21haW5cIjpcImNhbm9uaWNhbC1qc29uOnZlcmlmaWNhdGlvbi1leGVjdXRpb24vdjFcIixcInN1cHBvcnRzXCI6W1wiT1VULURFTU8tMDAxXCIsXCJSRVEtREVNTy0wMDFcIixcIkRELURFTU8tMDAxXCIsXCJUQVNLLVdJLTk5MDEtMDAyXCJdfSx7XCJleGVjdXRpb25fcmVjZWlwdF9pZFwiOlwiZGU3MmU4YWZmNGJjMjAyM2VlZTUyZjVlZTMxNzMyNWY0NWI4NzVhZmE4ZmVkMmE5MGRlNmQ1NjY4ZmQ1M2Q5MFwiLFwidGFza19pZFwiOlwiVEFTSy1XSS05OTAxLTAwNFwiLFwidmVyaWZpY2F0aW9uX3R5cGVcIjpcInVuaXRcIixcImNvbW1hbmRfaW5kZXhcIjowLFwiY29tbWFuZFwiOlwidGVzdCAtZiBwYWNrYWdlLmpzb24gJiYgdGVzdCAtZiB0c2NvbmZpZy5qc29uXCIsXCJldmlkZW5jZV9pZFwiOlwiRVYtTkFUSVZFLTAwNFwiLFwidHlwZVwiOlwidW5pdF90ZXN0XCIsXCJldmlkZW5jZV90eXBlXCI6XCJ1bml0X3Rlc3RcIixcImxldmVsXCI6XCJMMVwiLFwic3RhdHVzXCI6XCJwYXNzZWRcIixcInBhdGhcIjpcInZlcmlmaWNhdGlvbi1vd25lcjpyZWNlaXB0OmRlNzJlOGFmZjRiYzIwMjNlZWU1MmY1ZWUzMTczMjVmNDViODc1YWZhOGZlZDJhOTBkZTZkNTY2OGZkNTNkOTBcIixcImhhc2hcIjpcInNoYTI1NjpkZTcyZThhZmY0YmMyMDIzZWVlNTJmNWVlMzE3MzI1ZjQ1Yjg3NWFmYThmZWQyYTkwZGU2ZDU2NjhmZDUzZDkwXCIsXCJoYXNoX2RvbWFpblwiOlwiY2Fub25pY2FsLWpzb246dmVyaWZpY2F0aW9uLWV4ZWN1dGlvbi92MVwiLFwic3VwcG9ydHNcIjpbXCJPVVQtREVNTy0wMDFcIixcIlJFUS1ERU1PLTAwMVwiLFwiREQtREVNTy0wMDFcIixcIlRBU0stV0ktOTkwMS0wMDRcIl19LHtcImV4ZWN1dGlvbl9yZWNlaXB0X2lkXCI6XCJlMTU4ZWY0NGMyMjRlZDNlMTM1YWZiOGI3YTM0NTM1MTRmNDNiOTQxZmJkZjVmNzlhOWJjMmRkOGE3YjI1Y2JiXCIsXCJ0YXNrX2lkXCI6XCJUQVNLLVdJLTk5MDEtMDA1XCIsXCJ2ZXJpZmljYXRpb25fdHlwZVwiOlwidW5pdFwiLFwiY29tbWFuZF9pbmRleFwiOjAsXCJjb21tYW5kXCI6XCJncmVwIC1jICdcXFwidHlwZVxcXCI6IFxcXCJtb2R1bGVcXFwiJyBwYWNrYWdlLmpzb25cIixcImV2aWRlbmNlX2lkXCI6XCJFVi1OQVRJVkUtMDA1XCIsXCJ0eXBlXCI6XCJ1bml0X3Rlc3RcIixcImV2aWRlbmNlX3R5cGVcIjpcInVuaXRfdGVzdFwiLFwibGV2ZWxcIjpcIkwxXCIsXCJzdGF0dXNcIjpcInBhc3NlZFwiLFwicGF0aFwiOlwidmVyaWZpY2F0aW9uLW93bmVyOnJlY2VpcHQ6ZTE1OGVmNDRjMjI0ZWQzZTEzNWFmYjhiN2EzNDUzNTE0ZjQzYjk0MWZiZGY1Zjc5YTliYzJkZDhhN2IyNWNiYlwiLFwiaGFzaFwiOlwic2hhMjU2OmUxNThlZjQ0YzIyNGVkM2UxMzVhZmI4YjdhMzQ1MzUxNGY0M2I5NDFmYmRmNWY3OWE5YmMyZGQ4YTdiMjVjYmJcIixcImhhc2hfZG9tYWluXCI6XCJjYW5vbmljYWwtanNvbjp2ZXJpZmljYXRpb24tZXhlY3V0aW9uL3YxXCIsXCJzdXBwb3J0c1wiOltcIk9VVC1ERU1PLTAwMVwiLFwiUkVRLURFTU8tMDAxXCIsXCJERC1ERU1PLTAwMVwiLFwiVEFTSy1XSS05OTAxLTAwNVwiXX0se1wiZXhlY3V0aW9uX3JlY2VpcHRfaWRcIjpcImE1M2U5YjJmZWEyMDNkOGUwOGIxOTRkMzkwNmY3MWMwOGY1NmE0MTNiMWRlYjlkMDQwMzg2MDY2NGZlZGVkMDFcIixcInRhc2tfaWRcIjpcIlRBU0stV0ktOTkwMS0wMDZcIixcInZlcmlmaWNhdGlvbl90eXBlXCI6XCJ1bml0XCIsXCJjb21tYW5kX2luZGV4XCI6MCxcImNvbW1hbmRcIjpcIiEgZ3JlcCAtcUUgXFxcIl5pbXBvcnQgfF5pbXBvcnRcXFxce3xyZXF1aXJlXFxcXChcXFwiIHNyYy92YWx1ZS50c1wiLFwiZXZpZGVuY2VfaWRcIjpcIkVWLU5BVElWRS0wMDZcIixcInR5cGVcIjpcInVuaXRfdGVzdFwiLFwiZXZpZGVuY2VfdHlwZVwiOlwidW5pdF90ZXN0XCIsXCJsZXZlbFwiOlwiTDFcIixcInN0YXR1c1wiOlwicGFzc2VkXCIsXCJwYXRoXCI6XCJ2ZXJpZmljYXRpb24tb3duZXI6cmVjZWlwdDphNTNlOWIyZmVhMjAzZDhlMDhiMTk0ZDM5MDZmNzFjMDhmNTZhNDEzYjFkZWI5ZDA0MDM4NjA2NjRmZWRlZDAxXCIsXCJoYXNoXCI6XCJzaGEyNTY6YTUzZTliMmZlYTIwM2Q4ZTA4YjE5NGQzOTA2ZjcxYzA4ZjU2YTQxM2IxZGViOWQwNDAzODYwNjY0ZmVkZWQwMVwiLFwiaGFzaF9kb21haW5cIjpcImNhbm9uaWNhbC1qc29uOnZlcmlmaWNhdGlvbi1leGVjdXRpb24vdjFcIixcInN1cHBvcnRzXCI6W1wiT1VULURFTU8tMDAxXCIsXCJSRVEtREVNTy0wMDFcIixcIkRELURFTU8tMDAxXCIsXCJUQVNLLVdJLTk5MDEtMDA2XCJdfSx7XCJleGVjdXRpb25fcmVjZWlwdF9pZFwiOlwiMTFkMDE3N2VhODZhZjFhNGI2NWRlODI5MzU1NzZhYjkzNWQ5ZjNkOWRmYjI5NDBiYTc0NWI1OGU2Y2E2ZGQxNFwiLFwidGFza19pZFwiOlwiVEFTSy1XSS05OTAxLTAwN1wiLFwidmVyaWZpY2F0aW9uX3R5cGVcIjpcImludGVncmF0aW9uXCIsXCJjb21tYW5kX2luZGV4XCI6MCxcImNvbW1hbmRcIjpcIm5vZGUgLS10ZXN0IHRlc3RzL3ZhbHVlLnRlc3QudHNcIixcImV2aWRlbmNlX2lkXCI6XCJFVi1OQVRJVkUtMDA3XCIsXCJ0eXBlXCI6XCJpbnRlZ3JhdGlvbl90ZXN0XCIsXCJldmlkZW5jZV90eXBlXCI6XCJpbnRlZ3JhdGlvbl90ZXN0XCIsXCJsZXZlbFwiOlwiTDJcIixcInN0YXR1c1wiOlwicGFzc2VkXCIsXCJwYXRoXCI6XCJ2ZXJpZmljYXRpb24tb3duZXI6cmVjZWlwdDoxMWQwMTc3ZWE4NmFmMWE0YjY1ZGU4MjkzNTU3NmFiOTM1ZDlmM2Q5ZGZiMjk0MGJhNzQ1YjU4ZTZjYTZkZDE0XCIsXCJoYXNoXCI6XCJzaGEyNTY6MTFkMDE3N2VhODZhZjFhNGI2NWRlODI5MzU1NzZhYjkzNWQ5ZjNkOWRmYjI5NDBiYTc0NWI1OGU2Y2E2ZGQxNFwiLFwiaGFzaF9kb21haW5cIjpcImNhbm9uaWNhbC1qc29uOnZlcmlmaWNhdGlvbi1leGVjdXRpb24vdjFcIixcInN1cHBvcnRzXCI6W1wiT1VULURFTU8tMDAxXCIsXCJSRVEtREVNTy0wMDFcIixcIkRELURFTU8tMDAxXCIsXCJUQVNLLVdJLTk5MDEtMDA3XCJdfSx7XCJleGVjdXRpb25fcmVjZWlwdF9pZFwiOlwiYzgyNzE1YWEwMTM0NGY4MDE1ODNkZTA3YWU3OTU4MWE5N2Y4ZDgzZGI1YTEwMGQ0NGY1NWM5MTI5NGRjOTg1MVwiLFwidGFza19pZFwiOlwiVEFTSy1XSS05OTAxLTAwOFwiLFwidmVyaWZpY2F0aW9uX3R5cGVcIjpcInVuaXRcIixcImNvbW1hbmRfaW5kZXhcIjowLFwiY29tbWFuZFwiOlwibm9kZSAtLXRlc3QgdGVzdHMvZXNtLnRlc3QubWpzXCIsXCJldmlkZW5jZV9pZFwiOlwiRVYtTkFUSVZFLTAwOFwiLFwidHlwZVwiOlwidW5pdF90ZXN0XCIsXCJldmlkZW5jZV90eXBlXCI6XCJ1bml0X3Rlc3RcIixcImxldmVsXCI6XCJMMVwiLFwic3RhdHVzXCI6XCJwYXNzZWRcIixcInBhdGhcIjpcInZlcmlmaWNhdGlvbi1vd25lcjpyZWNlaXB0OmM4MjcxNWFhMDEzNDRmODAxNTgzZGUwN2FlNzk1ODFhOTdmOGQ4M2RiNWExMDBkNDRmNTVjOTEyOTRkYzk4NTFcIixcImhhc2hcIjpcInNoYTI1NjpjODI3MTVhYTAxMzQ0ZjgwMTU4M2RlMDdhZTc5NTgxYTk3ZjhkODNkYjVhMTAwZDQ0ZjU1YzkxMjk0ZGM5ODUxXCIsXCJoYXNoX2RvbWFpblwiOlwiY2Fub25pY2FsLWpzb246dmVyaWZpY2F0aW9uLWV4ZWN1dGlvbi92MVwiLFwic3VwcG9ydHNcIjpbXCJPVVQtREVNTy0wMDFcIixcIlJFUS1ERU1PLTAwMVwiLFwiREQtREVNTy0wMDFcIixcIlRBU0stV0ktOTkwMS0wMDhcIl19LHtcImV4ZWN1dGlvbl9yZWNlaXB0X2lkXCI6XCI2N2VlZTRjYjExYzFmMzFlNjg4Y2E2OWM2NzY3ZGI0Y2IyNWFjMGRhNmU1ZWMxNjc2NGRjNGE3ZGM0YjYzODZlXCIsXCJ0YXNrX2lkXCI6XCJUQVNLLVdJLTk5MDEtMDA5XCIsXCJ2ZXJpZmljYXRpb25fdHlwZVwiOlwiZTJlXCIsXCJjb21tYW5kX2luZGV4XCI6MCxcImNvbW1hbmRcIjpcIm5vZGUgLWUgXFxcImltcG9ydCgnLi9zcmMvdmFsdWUudHMnKS50aGVuKG09PntpZihtLmdyZWV0KCdBZGEnKSE9PSdIZWxsbywgQWRhISd8fG0uZ3JlZXQoJycpIT09J0hlbGxvLCB3b3JsZCEnKXByb2Nlc3MuZXhpdCgxKTtjb25zb2xlLmxvZygnVFNfSU5MSU5FX09LJyk7fSkuY2F0Y2goKCk9PnByb2Nlc3MuZXhpdCgxKSlcXFwiXCIsXCJldmlkZW5jZV9pZFwiOlwiRVYtTkFUSVZFLTAwOVwiLFwidHlwZVwiOlwiYmVoYXZpb3JhbF9lMmVcIixcImV2aWRlbmNlX3R5cGVcIjpcImJlaGF2aW9yYWxfZTJlXCIsXCJsZXZlbFwiOlwiTDVcIixcInN0YXR1c1wiOlwicGFzc2VkXCIsXCJwYXRoXCI6XCJ2ZXJpZmljYXRpb24tb3duZXI6cmVjZWlwdDo2N2VlZTRjYjExYzFmMzFlNjg4Y2E2OWM2NzY3ZGI0Y2IyNWFjMGRhNmU1ZWMxNjc2NGRjNGE3ZGM0YjYzODZlXCIsXCJoYXNoXCI6XCJzaGEyNTY6NjdlZWU0Y2IxMWMxZjMxZTY4OGNhNjljNjc2N2RiNGNiMjVhYzBkYTZlNWVjMTY3NjRkYzRhN2RjNGI2Mzg2ZVwiLFwiaGFzaF9kb21haW5cIjpcImNhbm9uaWNhbC1qc29uOnZlcmlmaWNhdGlvbi1leGVjdXRpb24vdjFcIixcInN1cHBvcnRzXCI6W1wiT1VULURFTU8tMDAxXCIsXCJSRVEtREVNTy0wMDFcIixcIkRELURFTU8tMDAxXCIsXCJUQVNLLVdJLTk5MDEtMDA5XCJdfV19In19"
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1b50ed9700019JVgQ7KOrgkwAY",
+      "sessionID": "ses_e4af126cdffeRP09bUsKb5MQlC",
+      "role": "assistant",
+      "time": {
+        "created": 1794039011697,
+        "completed": 1794039023666
+      },
+      "parentID": "msg_1b50ed94d0013yO7HZ7PBv1g24",
+      "modelID": "finite-model",
+      "providerID": "sf-fixture",
+      "mode": "sf-verifier",
+      "agent": "sf-verifier",
+      "path": {
+        "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\7bb83150ebf54338975311185cadfade\\project",
+        "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\7bb83150ebf54338975311185cadfade\\project"
+      },
+      "cost": 0,
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "finish": "tool-calls"
+    },
+    "parts": [
+      {
+        "id": "prt_1b50edbe3001Rt35z1M30R9FFB",
+        "sessionID": "ses_e4af126cdffeRP09bUsKb5MQlC",
+        "messageID": "msg_1b50ed9700019JVgQ7KOrgkwAY",
+        "type": "step-start",
+        "snapshot": "ee9ddb9e4843a5a7b1d6ab0394e0ba5d953235e0"
+      },
+      {
+        "id": "prt_1b50edbe8001kqZnQOVCdGUM2V",
+        "sessionID": "ses_e4af126cdffeRP09bUsKb5MQlC",
+        "messageID": "msg_1b50ed9700019JVgQ7KOrgkwAY",
+        "type": "tool",
+        "callID": "call_13448097354f4270a62363136e65f8c5",
+        "tool": "sf_artifact_write",
+        "state": {
+          "status": "completed",
+          "input": {
+            "work_item_id": "WI-9901",
+            "file_type": "evidence_manifest",
+            "content": "{\"schema_version\":\"1.0\",\"work_item_id\":\"WI-9901\",\"entries\":[{\"execution_receipt_id\":\"19872fd97abe1a2e44e015b876abaec480b483d499283c080a61f96cc18698c2\",\"task_id\":\"TASK-WI-9901-001\",\"verification_type\":\"unit\",\"command_index\":0,\"command\":\"node --test tests/positive.test.cjs\",\"evidence_id\":\"EV-NATIVE-001\",\"type\":\"unit_test\",\"evidence_type\":\"unit_test\",\"level\":\"L1\",\"status\":\"passed\",\"path\":\"verification-owner:receipt:19872fd97abe1a2e44e015b876abaec480b483d499283c080a61f96cc18698c2\",\"hash\":\"sha256:19872fd97abe1a2e44e015b876abaec480b483d499283c080a61f96cc18698c2\",\"hash_domain\":\"canonical-json:verification-execution/v1\",\"supports\":[\"OUT-DEMO-001\",\"REQ-DEMO-001\",\"DD-DEMO-001\",\"TASK-WI-9901-001\"]},{\"execution_receipt_id\":\"c7675088f84626f149129ed2633112e29d8b2f334b1fe9eaf25a4e0cf1056595\",\"task_id\":\"TASK-WI-9901-002\",\"verification_type\":\"e2e\",\"command_index\":0,\"command\":\"node -e \\\"const {salute}=require('./src/library.cjs');if(salute('Ada')!=='hi Ada')process.exit(1);console.log('SF_PRODUCT_INLINE_OK');\\\"\",\"evidence_id\":\"EV-NATIVE-002\",\"type\":\"behavioral_e2e\",\"evidence_type\":\"behavioral_e2e\",\"level\":\"L5\",\"status\":\"passed\",\"path\":\"verification-owner:receipt:c7675088f84626f149129ed2633112e29d8b2f334b1fe9eaf25a4e0cf1056595\",\"hash\":\"sha256:c7675088f84626f149129ed2633112e29d8b2f334b1fe9eaf25a4e0cf1056595\",\"hash_domain\":\"canonical-json:verification-execution/v1\",\"supports\":[\"OUT-DEMO-001\",\"REQ-DEMO-001\",\"DD-DEMO-001\",\"TASK-WI-9901-002\"]},{\"execution_receipt_id\":\"de72e8aff4bc2023eee52f5ee317325f45b875afa8fed2a90de6d5668fd53d90\",\"task_id\":\"TASK-WI-9901-004\",\"verification_type\":\"unit\",\"command_index\":0,\"command\":\"test -f package.json && test -f tsconfig.json\",\"evidence_id\":\"EV-NATIVE-004\",\"type\":\"unit_test\",\"evidence_type\":\"unit_test\",\"level\":\"L1\",\"status\":\"passed\",\"path\":\"verification-owner:receipt:de72e8aff4bc2023eee52f5ee317325f45b875afa8fed2a90de6d5668fd53d90\",\"hash\":\"sha256:de72e8aff4bc2023eee52f5ee317325f45b875afa8fed2a90de6d5668fd53d90\",\"hash_domain\":\"canonical-json:verification-execution/v1\",\"supports\":[\"OUT-DEMO-001\",\"REQ-DEMO-001\",\"DD-DEMO-001\",\"TASK-WI-9901-004\"]},{\"execution_receipt_id\":\"e158ef44c224ed3e135afb8b7a3453514f43b941fbdf5f79a9bc2dd8a7b25cbb\",\"task_id\":\"TASK-WI-9901-005\",\"verification_type\":\"unit\",\"command_index\":0,\"command\":\"grep -c '\\\"type\\\": \\\"module\\\"' package.json\",\"evidence_id\":\"EV-NATIVE-005\",\"type\":\"unit_test\",\"evidence_type\":\"unit_test\",\"level\":\"L1\",\"status\":\"passed\",\"path\":\"verification-owner:receipt:e158ef44c224ed3e135afb8b7a3453514f43b941fbdf5f79a9bc2dd8a7b25cbb\",\"hash\":\"sha256:e158ef44c224ed3e135afb8b7a3453514f43b941fbdf5f79a9bc2dd8a7b25cbb\",\"hash_domain\":\"canonical-json:verification-execution/v1\",\"supports\":[\"OUT-DEMO-001\",\"REQ-DEMO-001\",\"DD-DEMO-001\",\"TASK-WI-9901-005\"]},{\"execution_receipt_id\":\"a53e9b2fea203d8e08b194d3906f71c08f56a413b1deb9d0403860664feded01\",\"task_id\":\"TASK-WI-9901-006\",\"verification_type\":\"unit\",\"command_index\":0,\"command\":\"! grep -qE \\\"^import |^import\\\\{|require\\\\(\\\" src/value.ts\",\"evidence_id\":\"EV-NATIVE-006\",\"type\":\"unit_test\",\"evidence_type\":\"unit_test\",\"level\":\"L1\",\"status\":\"passed\",\"path\":\"verification-owner:receipt:a53e9b2fea203d8e08b194d3906f71c08f56a413b1deb9d0403860664feded01\",\"hash\":\"sha256:a53e9b2fea203d8e08b194d3906f71c08f56a413b1deb9d0403860664feded01\",\"hash_domain\":\"canonical-json:verification-execution/v1\",\"supports\":[\"OUT-DEMO-001\",\"REQ-DEMO-001\",\"DD-DEMO-001\",\"TASK-WI-9901-006\"]},{\"execution_receipt_id\":\"11d0177ea86af1a4b65de82935576ab935d9f3d9dfb2940ba745b58e6ca6dd14\",\"task_id\":\"TASK-WI-9901-007\",\"verification_type\":\"integration\",\"command_index\":0,\"command\":\"node --test tests/value.test.ts\",\"evidence_id\":\"EV-NATIVE-007\",\"type\":\"integration_test\",\"evidence_type\":\"integration_test\",\"level\":\"L2\",\"status\":\"passed\",\"path\":\"verification-owner:receipt:11d0177ea86af1a4b65de82935576ab935d9f3d9dfb2940ba745b58e6ca6dd14\",\"hash\":\"sha256:11d0177ea86af1a4b65de82935576ab935d9f3d9dfb2940ba745b58e6ca6dd14\",\"hash_domain\":\"canonical-json:verification-execution/v1\",\"supports\":[\"OUT-DEMO-001\",\"REQ-DEMO-001\",\"DD-DEMO-001\",\"TASK-WI-9901-007\"]},{\"execution_receipt_id\":\"c82715aa01344f801583de07ae79581a97f8d83db5a100d44f55c91294dc9851\",\"task_id\":\"TASK-WI-9901-008\",\"verification_type\":\"unit\",\"command_index\":0,\"command\":\"node --test tests/esm.test.mjs\",\"evidence_id\":\"EV-NATIVE-008\",\"type\":\"unit_test\",\"evidence_type\":\"unit_test\",\"level\":\"L1\",\"status\":\"passed\",\"path\":\"verification-owner:receipt:c82715aa01344f801583de07ae79581a97f8d83db5a100d44f55c91294dc9851\",\"hash\":\"sha256:c82715aa01344f801583de07ae79581a97f8d83db5a100d44f55c91294dc9851\",\"hash_domain\":\"canonical-json:verification-execution/v1\",\"supports\":[\"OUT-DEMO-001\",\"REQ-DEMO-001\",\"DD-DEMO-001\",\"TASK-WI-9901-008\"]},{\"execution_receipt_id\":\"67eee4cb11c1f31e688ca69c6767db4cb25ac0da6e5ec16764dc4a7dc4b6386e\",\"task_id\":\"TASK-WI-9901-009\",\"verification_type\":\"e2e\",\"command_index\":0,\"command\":\"node -e \\\"import('./src/value.ts').then(m=>{if(m.greet('Ada')!=='Hello, Ada!'||m.greet('')!=='Hello, world!')process.exit(1);console.log('TS_INLINE_OK');}).catch(()=>process.exit(1))\\\"\",\"evidence_id\":\"EV-NATIVE-009\",\"type\":\"behavioral_e2e\",\"evidence_type\":\"behavioral_e2e\",\"level\":\"L5\",\"status\":\"passed\",\"path\":\"verification-owner:receipt:67eee4cb11c1f31e688ca69c6767db4cb25ac0da6e5ec16764dc4a7dc4b6386e\",\"hash\":\"sha256:67eee4cb11c1f31e688ca69c6767db4cb25ac0da6e5ec16764dc4a7dc4b6386e\",\"hash_domain\":\"canonical-json:verification-execution/v1\",\"supports\":[\"OUT-DEMO-001\",\"REQ-DEMO-001\",\"DD-DEMO-001\",\"TASK-WI-9901-009\"]}]}"
+          },
+          "output": "{\n  \"success\": true,\n  \"path\": \".specforge/work-items/WI-9901/evidence/evidence_manifest.json\",\n  \"size\": 6814,\n  \"file_type\": \"evidence_manifest\",\n  \"controlled_artifact\": true,\n  \"normalized\": true\n}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1794039012334,
+            "end": 1794039022458
+          }
+        }
+      },
+      {
+        "id": "prt_1b50f062d001Xzx1eIgbV4UXGE",
+        "sessionID": "ses_e4af126cdffeRP09bUsKb5MQlC",
+        "messageID": "msg_1b50ed9700019JVgQ7KOrgkwAY",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "snapshot": "2a622e07e42349a96da9bad16d8e4fcb56c7113a",
+        "cost": 0,
+        "tokens": {
+          "total": 120,
+          "input": 100,
+          "output": 20,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      },
+      {
+        "id": "prt_1b50f082d001l01RxD3g3CtPgZ",
+        "sessionID": "ses_e4af126cdffeRP09bUsKb5MQlC",
+        "messageID": "msg_1b50ed9700019JVgQ7KOrgkwAY",
+        "type": "patch",
+        "hash": "ee9ddb9e4843a5a7b1d6ab0394e0ba5d953235e0",
+        "files": [
+          "D:/code/SpecForge/.tmp/verification-public-kernel/7bb83150ebf54338975311185cadfade/project/.specforge/work-items/WI-9901/evidence/evidence_manifest.json"
+        ]
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1b50f0839001n3W8UYONB43Weg",
+      "sessionID": "ses_e4af126cdffeRP09bUsKb5MQlC",
+      "role": "assistant",
+      "time": {
+        "created": 1794039023673,
+        "completed": 1794039025168
+      },
+      "parentID": "msg_1b50ed94d0013yO7HZ7PBv1g24",
+      "modelID": "finite-model",
+      "providerID": "sf-fixture",
+      "mode": "sf-verifier",
+      "agent": "sf-verifier",
+      "path": {
+        "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\7bb83150ebf54338975311185cadfade\\project",
+        "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\7bb83150ebf54338975311185cadfade\\project"
+      },
+      "cost": 0,
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "finish": "stop"
+    },
+    "parts": [
+      {
+        "id": "prt_1b50f0a28001nAi974gJnxbNBN",
+        "sessionID": "ses_e4af126cdffeRP09bUsKb5MQlC",
+        "messageID": "msg_1b50f0839001n3W8UYONB43Weg",
+        "type": "step-start",
+        "snapshot": "2a622e07e42349a96da9bad16d8e4fcb56c7113a"
+      },
+      {
+        "id": "prt_1b50f0a2c001qOVRx15CG66dId",
+        "sessionID": "ses_e4af126cdffeRP09bUsKb5MQlC",
+        "messageID": "msg_1b50f0839001n3W8UYONB43Weg",
+        "type": "text",
+        "text": "SF_FIXTURE_TOOL_COMPLETE",
+        "time": {
+          "start": 1794039024172,
+          "end": 1794039024176
+        }
+      },
+      {
+        "id": "prt_1b50f0c9e001PzMkGqo6oBAWEb",
+        "sessionID": "ses_e4af126cdffeRP09bUsKb5MQlC",
+        "messageID": "msg_1b50f0839001n3W8UYONB43Weg",
+        "type": "step-finish",
+        "reason": "stop",
+        "snapshot": "2a622e07e42349a96da9bad16d8e4fcb56c7113a",
+        "cost": 0,
+        "tokens": {
+          "total": 120,
+          "input": 100,
+          "output": 20,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    ]
+  }
+]

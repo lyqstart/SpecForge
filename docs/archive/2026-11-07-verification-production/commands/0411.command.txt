@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/prepare-original-continuation-06.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Prepare original revalidation from actual nested owner-state projection, preserving failed capture directory",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES new canonical preservation02/prompt/provenance only; no original truth edit",
+  "started_utc": "2026-11-07T08:54:00.000Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\prepare-original-continuation-06.cjs",
+      "sha256": "a89c9ace711a01149e20fe043413b269835a9063b1388031da4d968959935b95",
+      "size": 3822,
+      "extension": ".cjs"
+    }
+  ]
+}

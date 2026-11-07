@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/initialize-public-kernel-fixture.cjs",
+    "04",
+    "0097"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "reserve-public-formal-fixture04-source1.0.22",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned ignored fixed assets/tool copies; EXTERNAL_EVIDENCE_WRITES fixture identity; original untouched",
+  "started_utc": "2026-11-07T02:42:19.034Z"
+}

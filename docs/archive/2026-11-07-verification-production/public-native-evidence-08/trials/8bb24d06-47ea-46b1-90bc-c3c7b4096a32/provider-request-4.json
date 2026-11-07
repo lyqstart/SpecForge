@@ -1,0 +1,177 @@
+{
+  "utc": "2026-11-07T03:08:12.829Z",
+  "url": "/v1/chat/completions",
+  "body": {
+    "model": "finite-model",
+    "max_tokens": 4096,
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are a finite product integration fixture. Execute only the exact single requested SpecForge tool. No other work.\nYou are powered by the model named finite-model. The exact model ID is sf-fixture/finite-model\nHere is some useful information about the environment you are running in:\n<env>\n  Working directory: D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\63ad82d80a914742817dc95f44d806ba\\project\n  Workspace root folder: D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\63ad82d80a914742817dc95f44d806ba\\project\n  Is directory a git repo: yes\n  Platform: win32\n  Today's date: Sat Nov 07 2026\n</env>"
+      },
+      {
+        "role": "user",
+        "content": "Execute the single requested tool once, then stop. SF_FIXTURE_REQUEST:eyJ0b29sIjoic2Zfc2FmZV9iYXNoIiwiYXJncyI6eyJjb21tYW5kIjoibm9kZSAtLXRlc3QgdGVzdHMvcG9zaXRpdmUudGVzdC5janMifX0="
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_0623493f81634a85814873275224acbe",
+            "type": "function",
+            "function": {
+              "name": "sf_safe_bash",
+              "arguments": "{\"command\":\"node --test tests/positive.test.cjs\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "call_0623493f81634a85814873275224acbe",
+        "content": "{\n  \"success\": false,\n  \"error\": \"WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\\nViolations: SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor\",\n  \"hard_stop\": false,\n  \"policy_violation\": true,\n  \"retry_allowed\": false,\n  \"blocked_command\": \"node --test tests/positive.test.cjs\",\n  \"write_guard_targets\": []\n}"
+      }
+    ],
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "sf_safe_bash",
+          "description": "受控只读操作入口（SPS §9.2 / D18）。在 Runtime 内部读取，不启动 Shell 或子进程。\n支持 pwd/Get-Location、echo/Write-Output 字面文字、cat/type/Get-Content 文件、ls/dir/Get-ChildItem 目录、Test-Path、Get-FileHash/sha256sum，以及 sleep/Start-Sleep 的内部等待。\n只接受单条完整的字面参数；不展开变量、管道、重定向或复合语句。读取限制在项目普通文件，治理文件请使用受控 owner。\n当前脚本、解释器、构建、测试、任意外部可执行文件均不可用，env/stdin 参数也拒绝。拒绝不是测试通过，不得改用其他 Shell、辅助脚本或原生 bash 重试。\n返回 success / exitCode / stdout / stderr / rejected / timeout；shell 始终为 null。",
+          "parameters": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "command": {
+                "description": "单条受控只读操作；脚本、构建、测试及复合命令均拒绝。",
+                "type": "string"
+              },
+              "cwd": {
+                "description": "工作目录。绝对路径或相对仓库根的路径。必须位于项目内；不支持 ~ 或外部目录。不传则用当前目录。",
+                "type": "string"
+              },
+              "timeoutMs": {
+                "description": "命令超时（毫秒），默认 60000，最小 1，最大 600000。仅限制内部只读操作，不启动子进程。",
+                "type": "number"
+              },
+              "env": {
+                "description": "兼容字段；当前提供该字段将拒绝执行。",
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "stdin": {
+                "description": "兼容字段；当前提供该字段将拒绝执行。",
+                "type": "string"
+              },
+              "outputLimit": {
+                "description": "stdout/stderr 截断长度（字符），默认 4096。超出部分丢弃但 truncated 字段为 true。",
+                "type": "number"
+              }
+            },
+            "required": [
+              "command"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "sf_verification_plan",
+          "description": "sf-orchestrator 从已批准 Task 创建独立只读验证计划，或撤销计划、恢复中断的输入准备。Runtime 核验真实调用身份；不授予代码写权限。",
+          "parameters": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "revoke",
+                  "recover"
+                ]
+              },
+              "work_item_id": {
+                "type": "string"
+              },
+              "task_id": {
+                "type": "string"
+              },
+              "verification_type": {
+                "type": "string",
+                "enum": [
+                  "unit",
+                  "property",
+                  "integration",
+                  "e2e",
+                  "regression"
+                ]
+              },
+              "command_index": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 63
+              },
+              "plan_id": {
+                "type": "string"
+              },
+              "preparation_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "action",
+              "work_item_id"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "sf_verification_run",
+          "description": "sf-verifier 先 prepare 取得不可变 Attempt，再 run；cancel/recover 只取消或回收该 Attempt。仅使用固定单进程只读隔离，保留真实退出和中断，不推进工作流。",
+          "parameters": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": [
+                  "prepare",
+                  "run",
+                  "cancel",
+                  "recover"
+                ]
+              },
+              "work_item_id": {
+                "type": "string"
+              },
+              "plan_id": {
+                "type": "string"
+              },
+              "attempt_record_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "action",
+              "work_item_id"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": "auto",
+    "stream": true,
+    "stream_options": {
+      "include_usage": true
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "utc": "2026-11-07T09:49:53.686Z",
+  "status": 200,
+  "message_id": "msg_1b56a206a001QQZuVlfbQlfQ80",
+  "agent": "sf-verifier",
+  "model": {
+    "providerID": "zhipuai-coding-plan",
+    "modelID": "glm-5.3",
+    "variant": "low"
+  },
+  "note_sha256": "961662caf9a7be509086b091e1e7b28eefb2c5815c97b264baf42ddf93e6faa6",
+  "noReply": true,
+  "prior_history_sent": false,
+  "credentials_sent": false
+}

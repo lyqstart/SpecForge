@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-07T10:17:53.597Z",
+  "phase": "after-stop",
+  "process_query": {
+    "exit_code": 0,
+    "raw_stdout": "[]\r\n",
+    "value": []
+  },
+  "tcp_query": {
+    "exit_code": 0,
+    "raw_stdout": "[]\r\n",
+    "value": []
+  },
+  "owned_processes": [],
+  "owned_listeners": [],
+  "health": [
+    {
+      "port": 4096,
+      "http_status": null,
+      "error_name": "TypeError"
+    }
+  ],
+  "model_prompt_sent": false,
+  "method": "Successful independent CIM creation/image identity plus complete TCP listener query filtered to newly owned process IDs. No command line, memory, environment or credential reads."
+}

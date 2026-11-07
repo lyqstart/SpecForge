@@ -1,0 +1,54 @@
+{
+  "utc": "2026-11-07T04:03:25.606Z",
+  "fixture": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\624733f825af4301b89c0307be140ecb",
+  "scope": "READONLY_PRECLAIM_STAGES_ONLY_NOT_REAL_INVOCATION_OR_PRODUCT_SUCCESS",
+  "rows": [
+    {
+      "stage": "authority",
+      "identity": "2102826767b7ebc2ab67e88fb93493e3250d3f9bf3a7ebe2f5f503568e3e9f1d",
+      "command": "node --test tests/waiting.test.cjs"
+    },
+    {
+      "stage": "source-inventory",
+      "identity": "42d918103badb92b5ab7983c2eaa710800bc38ade3f3c76afd9653ce85bc1361"
+    },
+    {
+      "stage": "input-graph",
+      "paths": [
+        "package.json",
+        "tests/waiting.test.cjs"
+      ]
+    },
+    {
+      "stage": "compile-command",
+      "argv": [
+        "--no-addons",
+        "--preserve-symlinks",
+        "--preserve-symlinks-main",
+        "--test-reporter=tap",
+        "--test",
+        "--test-isolation=none",
+        "tests/waiting.test.cjs"
+      ]
+    },
+    {
+      "stage": "source-inputs",
+      "identity": "4d2c262ba56e349704eeec0bc4ac55344f71e47df62d4cd63e21e8dba45c4ee3"
+    },
+    {
+      "stage": "fixed-assets",
+      "assets": {
+        "contract": "verification-assets/v1",
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "manifestSha256": "99f12316a16dcc7cbe63be3fc73e7a84722892a89d961a0a1a5cedde4bd0a68f",
+        "nodePath": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\624733f825af4301b89c0307be140ecb\\config\\sf-user\\bin\\verification\\node.exe",
+        "nodeSha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+        "launcherPath": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\624733f825af4301b89c0307be140ecb\\config\\sf-user\\bin\\verification\\specforge-verify.exe",
+        "launcherSha256": "ef80aa50c57797c3d3afafd5287549c0b8f371068efe747478dd0e8f48445f77",
+        "daemonPath": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\624733f825af4301b89c0307be140ecb\\config\\sf-user\\bin\\specforged.exe",
+        "daemonSha256": "b1545ec314a2d3aa2d83ec5752d7c55a40d0016359a2975c141ae46bc1dfc4ec"
+      }
+    }
+  ],
+  "exit_code": 0
+}

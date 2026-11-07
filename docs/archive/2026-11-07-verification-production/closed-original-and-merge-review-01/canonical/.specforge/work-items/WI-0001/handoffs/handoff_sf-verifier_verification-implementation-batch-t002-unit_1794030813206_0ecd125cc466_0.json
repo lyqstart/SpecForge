@@ -1,0 +1,28 @@
+{
+  "agent": "sf-verifier",
+  "boundary_statement": "只读验证；未修改任何业务或治理文件；未运行 shell/grep，所有检查由 Runtime 在固定只读隔离 Node 内归一化执行；代码权限保持撤销。",
+  "duration_ms": 30000,
+  "escalation_signals": [],
+  "findings": [
+    "index 0 test -f src/greet.ts → 归一化 Node 检查，exit_code=0，stdout 空，cleanup_proved=true，receipt 3fe122ba6c28b01d8afc5b5f2a743653a75bc7499ddc26f1d30c6dabdb0ae088 → pass",
+    "index 1 grep -c 'export function greet(name: string): string' → 归一化有限只读谓词，exit_code=0，stdout='1\\n'，cleanup_proved=true，receipt f5b2992046d2baf3e4e3698ca7bdf1f9ea793e4e637c866af2a891078459dc81 → pass",
+    "index 2 grep -c 'Hello, world!' → 归一化有限只读谓词，exit_code=0，stdout='1\\n'，cleanup_proved=true，receipt 025a4148643cbb6fe155cb3e6975ce6631d26d312aab290a1de54c36f2f05cca → pass",
+    "index 3 ! grep -qE '^import |^import\\{|require\\(' → 归一化零 import 反向判定，exit_code=0，stdout 空，cleanup_proved=true，receipt a4489be1fb529a47c203256ed9e986d63651ed8a800b7d9d696571be3901f818 → pass",
+    "4/4 命令通过；本批为实施验证（implementation verification），不得作为正式验证证据使用"
+  ],
+  "inputs_read": [
+    "plan_id 13193249...507b2 (index 0)",
+    "plan_id bfa66679...7fc (index 1)",
+    "plan_id ebebda36...ed08 (index 2)",
+    "plan_id db00fda9...bde6 (index 3)"
+  ],
+  "next_step_recommendation": "将 4 条 receipt 用于 TASK-WI-0001-002 的实施验证记录；后续正式验证按正式 Verification Pipeline 重新取证。",
+  "outputs_written": [],
+  "schema_version": "1.0",
+  "stage": "verification-implementation-batch-t002-unit",
+  "timestamp": "2026-11-07T00:00:00Z",
+  "unknowns": [
+    "归一化后实际 Node argv 由 Runtime 签名，未在本响应中逐字披露；以 receipt_id 可追溯"
+  ],
+  "work_item_id": "WI-0001"
+}

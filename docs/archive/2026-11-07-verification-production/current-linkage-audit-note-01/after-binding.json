@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-07T09:32:11.308Z",
+  "message_id": "msg_1b559ea880012l900Y708rZRmE",
+  "agent": "sf-verifier",
+  "model": {
+    "providerID": "zhipuai-coding-plan",
+    "modelID": "glm-5.3",
+    "variant": "low"
+  },
+  "text_sha256": "44286960bd1b7b4a329ee0f22a14b560317a0ea4e3ab0e9dbdf39f16ae365408",
+  "same_actual_session": true
+}

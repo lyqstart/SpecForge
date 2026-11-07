@@ -1,0 +1,26 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/formal-version-git-closure-regression.test.ts (17 tests) 2505ms
+   ✓ formal version Git closure regressions > does not inherit optional Git Governance from an ancestor repository  382ms
+   ✓ formal version Git closure regressions > rejects observed implementation files until they are committed on the WI branch  711ms
+   ✓ formal version Git closure regressions > detects committed implementation files omitted from observed formal evidence  587ms
+   ✓ formal version Git closure regressions > preserves durable implementation files when governance scope is in compatibility mode  675ms
+ ✓ tests/unit/sf-v11-close-gate.test.ts (22 tests) 1712ms
+   ✓ sf_close_gate handler > recovers a passed prior closure when the Formal Version snapshot omits committed code  931ms
+ ✓ tests/unit/close-gate-semantic-closure.test.ts (4 tests) 148ms
+ ✓ tests/unit/close-gate-no-code-audit.test.ts (2 tests) 83ms
+ ✓ tests/unit/verification-gate-historical-attempt-reconcile.test.ts (2 tests) 30ms
+ ✓ tests/unit/close-gate-closure.test.ts (24 tests) 23ms
+ ❯ tests/unit/code-only-close-gate-overlay.test.ts (4 tests | 1 failed) 11ms
+   ✓ Close Gate workflow artifact applicability > requires tasks but not Trace Delta for code_only_fast_path 1ms
+   ✓ Close Gate workflow artifact applicability > requires tasks and Trace Delta for spec-changing workflows 0ms
+   ✓ Close Gate workflow artifact applicability > does not require Candidate tasks or Trace Delta for investigation and contract workflows 0ms
+   × Close Gate workflow artifact applicability > keeps Close applicability in the layer used by the formal close handler 8ms
+     → expected '/**\n * sf-v11-close-gate — v1.1 Clos…' to match /runCloseGate\(\{\s*workItemId,\s*wor…/s
+
+ Test Files  1 failed | 6 passed (7)
+      Tests  1 failed | 74 passed (75)
+   Start at  10:56:28
+   Duration  10.14s (transform 1.10s, setup 0ms, collect 3.69s, tests 4.51s, environment 1ms, prepare 735ms)
+

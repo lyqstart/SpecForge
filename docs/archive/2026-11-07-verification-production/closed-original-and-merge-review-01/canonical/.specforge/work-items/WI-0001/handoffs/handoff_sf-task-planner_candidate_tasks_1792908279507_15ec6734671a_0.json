@@ -1,0 +1,41 @@
+{
+  "agent": "sf-task-planner",
+  "boundary_statement": "仅生成任务与追溯候选；不推进状态、不触发审批、不调度其他 Agent、不实现代码、不执行任何验证命令（D18 声明性边界）；未写 .specforge/project/** 或任何治理真相源。",
+  "duration_ms": 0,
+  "escalation_signals": [],
+  "findings": [
+    "tasks.md 首次写入被 task-document/v1 契约校验拒绝（LEGACY_TASK_REF：结构化 refs 须用 canonical module-scoped REQ-CORE-*/DD-CORE-*；TASK_CONTRACT_SCHEMA_INVALID：refs 仅允许 REQ/DD/CP，PI/INV/ARCH/DATA 移入 context_block 文本；ALLOWED_WRITE_FILES_MISSING：TASK-005 须至少一条具体路径），按契约修复后重写成功，头部已建立 canonical↔上游短编号 ID 映射表",
+    "TASK-005 集成闭环（T2C）写入面落定为 package.json：仅 DD-003 D-2 降级（Node 22.6–23.5）触发时同步 scripts.test 单行，主路径零变更；与 TASK-001 为串行依赖关系，无并行文件重叠，未扩大 planned_code_paths",
+    "trace_delta.md 已物化 design.candidate.md §5.2 各 DD constrained_by 与 contracts.candidate.json source_refs 的治理关系增量：33 条 ADD 边（Current Registry 为空、无 REMOVE），ERR-157 四列/合法 Operation/Relation/正式 ID 自检通过",
+    "planned_code_paths 5 条（src/greet.ts、tests/greet.test.ts、README.md、package.json、tsconfig.json）与任务 allowed_write_files 并集一一对应、不多不少，全部唯一映射模块 CORE；README 为追加式修改（基线 sha256:757ee94e…），其余 4 条按基线新建",
+    "全部 verification_commands 为声明性（D18）：标准 test/grep/node 命令、退出码可判定、零第三方 CLI、不假设网络/包管理器；node --test 主路径与 DD-003 D-2 降级链一致；本阶段未执行任何命令或测试",
+    "覆盖完成：REQ 6/6、AC 18/18、DD 6/6、TASK 5/5（含 1 个 T2C 集成闭环）、FILE 5/5、EVIDENCE 8 个 EVREQ 全部为预期证据态"
+  ],
+  "inputs_read": [
+    ".specforge/work-items/WI-0001/intake.md",
+    ".specforge/work-items/WI-0001/trigger_result.json",
+    ".specforge/work-items/WI-0001/candidates/project/modules/CORE/requirements.candidate.md",
+    ".specforge/work-items/WI-0001/candidates/project/modules/CORE/design.candidate.md",
+    ".specforge/work-items/WI-0001/candidates/project/architecture.candidate.md",
+    ".specforge/work-items/WI-0001/candidates/project/data_model.candidate.md",
+    ".specforge/work-items/WI-0001/candidates/project/modules/CORE/module.candidate.json",
+    ".specforge/work-items/WI-0001/candidates/project/modules/CORE/contracts.candidate.json",
+    ".specforge/work-items/WI-0001/implementation_baseline.json",
+    ".specforge/config/project-rules.md",
+    ".specforge/config/prod-environment.md",
+    ".specforge/project/extension_registry.json"
+  ],
+  "next_step_recommendation": "请求封存并运行候选 Gate",
+  "outputs_written": [
+    ".specforge/work-items/WI-0001/candidates/tasks.md",
+    ".specforge/work-items/WI-0001/candidates/trace_delta.md"
+  ],
+  "schema_version": "1.0",
+  "stage": "candidate_tasks",
+  "timestamp": "2026-10-25T05:55:00.000Z",
+  "unknowns": [
+    "UNKNOWN-2/D-2：项目内 Node.js 具体可用版本未取证，由批准后验证阶段以真实运行证据确认（主路径 node --test，Node ≥23.6；降级 --experimental-strip-types，22.6–23.5；<22.6 熔断走可恢复 HardStop 协议，禁止第三方转译兜底）",
+    "上游 requirements/design/architecture/data_model/module/contracts 候选与本任务候选同属待审批候选包，合并生效前均为候选态；trace 的 project_integration_effect（modules/CORE/trace.md 与 trace_matrix.md）由 Runtime 于合并后更新"
+  ],
+  "work_item_id": "WI-0001"
+}

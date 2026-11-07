@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-public-trials.cjs",
+    "09",
+    "10"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-current-common-Gates-HardStop-proof",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable public-native-evidence10; private key omitted; original untouched",
+  "started_utc": "2026-11-07T03:53:02.528Z"
+}

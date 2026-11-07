@@ -1,0 +1,16 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/daemon-startup-readme-contract.test.ts (5 tests | 1 failed) 21ms
+   × ERR-167 daemon startup README contract > opens the documented interactive Kernel on the actual Adapter default endpoint 10ms
+     → README.md must expose the Kernel endpoint used by the Adapter: expected null not to be null
+   ✓ ERR-167 daemon startup README contract > documents the real daemon entry and canonical health endpoint 2ms
+   ✓ ERR-167 daemon startup README contract > documents one-time PATH setup instead of requiring absolute lifecycle commands 2ms
+   ✓ ERR-167 daemon startup README contract > documents CLI daemon lifecycle commands as supported deployment entrypoints 2ms
+   ✓ ERR-167 daemon startup README contract > keeps documentation aligned with daemon startup and HTTP routing facts 4ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  18:20:03
+   Duration  525ms (transform 56ms, setup 0ms, collect 67ms, tests 21ms, environment 0ms, prepare 166ms)
+

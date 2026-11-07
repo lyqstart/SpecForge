@@ -1,0 +1,22 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/collect-original-execution-coverage.ts",
+    "02",
+    "offline"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Reconstruct complete44 original results offline from final immutable Kernel traces with actual publication times and outputs",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES coverage and sealed source receipts only; original/installation read-only; no Kernel/model contact",
+  "started_utc": "2026-11-07T06:40:31.496Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\collect-original-execution-coverage.ts",
+      "sha256": "94a7794f62968d99dca6f0fdeda6c87ad115d9478cce97012d4959b9ac78a625",
+      "size": 6703,
+      "extension": ".ts"
+    }
+  ]
+}

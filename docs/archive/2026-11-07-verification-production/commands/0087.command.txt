@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-public-trials.cjs",
+    "03",
+    "03"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-public-stable-crash-restart-recovery-chain",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable selected trial/native evidence; no private key; original untouched",
+  "started_utc": "2026-11-07T02:32:11.840Z"
+}

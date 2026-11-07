@@ -1,0 +1,21 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/verify-fresh-user-runtime-1.0.23.cjs",
+    "01"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Independently start and verify fresh user1.0.23 CLI/Daemon,loaded professional Agents and owned policy negative",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned preflight Kernel and explicitly started user Daemon/read-only owned negative; EXTERNAL_EVIDENCE_WRITES fresh process/version/hash/owner preservation proof; no model prompts or original project writes",
+  "started_utc": "2026-11-07T08:47:01.152Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\verify-fresh-user-runtime-1.0.23.cjs",
+      "sha256": "c01717d6f622d6a0fecd3a1d8cd03413fd139dd853ab9d1bbbdada0df909141d",
+      "size": 8023,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/verification-runtime-plan.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "runtime-plan-unit-regression",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=owned unit Git repositories and private test keys cleaned no native application;EXTERNAL_EVIDENCE_WRITES=test raw receipts",
+  "started_utc": "2026-11-07T01:43:38.400Z"
+}

@@ -1,0 +1,38 @@
+{
+  "utc": "2026-11-07T08:55:58.914Z",
+  "attempt": "06",
+  "parent": {
+    "session": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+    "status": {
+      "type": "busy"
+    }
+  },
+  "children": [
+    {
+      "session": "ses_e4ac79b47ffeQYMIWHsEqzJBlL",
+      "status": {
+        "type": "busy"
+      },
+      "tools": [
+        {
+          "agent": "sf-verifier",
+          "call_id": "call_9d6b4080286647a2beb6d983",
+          "input": {
+            "action": "prepare",
+            "plan_id": "cfa468dbdf3fb8dd537210c4596bb07bb3294232e3d22d0a29438baf7d5f76df",
+            "work_item_id": "WI-0001"
+          },
+          "status": "completed",
+          "result": {
+            "success": true,
+            "attempt_record_id": "0214e823bc10410b17b531fcaac0212f84531403bab578ac06a181862383ff62",
+            "attempt_id": "e852ea6d0f5c4451b1de601887b134d2",
+            "plan_id": "cfa468dbdf3fb8dd537210c4596bb07bb3294232e3d22d0a29438baf7d5f76df",
+            "application_started": false
+          }
+        }
+      ]
+    }
+  ],
+  "model_prompt_sent": false
+}

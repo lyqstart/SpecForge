@@ -1,0 +1,14 @@
+{
+  "executable": "git",
+  "args": [
+    "commit",
+    "-m",
+    "chore(release): prepare 1.0.23 and reconcile verification evidence"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Commit aligned1.0.23 patch metadata and reviewed verification/scope/evidence reconciliation",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES reviewed staged33 paths committed on current local codex branch; EXTERNAL_EVIDENCE_WRITES receipts; no merge/push/native install/business Git writes",
+  "started_utc": "2026-11-07T06:28:23.455Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": []
+}

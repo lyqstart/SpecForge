@@ -1,0 +1,5 @@
+✓ Generated: docs\conventions\directory-layout.md
+✓ Updated markers in: README.md
+✓ Updated markers in: setup/userlevel-opencode/AGENTS.md
+
+Done.

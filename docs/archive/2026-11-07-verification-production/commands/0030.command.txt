@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/record-integration-recovery.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "integration-recovery-gate",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=integration-recovery.json and raw receipts",
+  "started_utc": "2026-11-07T01:10:33.766Z"
+}

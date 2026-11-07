@@ -1,0 +1,22 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/e2e/tool-dispatcher-e2e.test.ts > Tool Dispatcher E2E > all userlevel sf tool files pass OpenCode context to daemon or project API
+AssertionError: sf_close_gate.ts should pass OpenCode context to daemon.invokeTool or derive projectPath from context: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/e2e/tool-dispatcher-e2e.test.ts:44:9
+     42|         passesContextToDaemon || passesProjectPath,
+     43|         `${file} should pass OpenCode context to daemon.invokeTool or …
+     44|       ).toBe(true);
+       |         ^
+     45|     }
+     46|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

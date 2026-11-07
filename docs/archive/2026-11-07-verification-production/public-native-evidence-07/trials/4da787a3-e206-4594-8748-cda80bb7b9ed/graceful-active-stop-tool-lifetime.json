@@ -1,0 +1,17 @@
+{
+  "value": {
+    "success": false,
+    "receipt_id": "61ece399366fc6ae29c8b230b29f5452b70935620a84f9825f60be92615402a3",
+    "attempt_record_id": "e0ce027cb748f3ab31f2a6c46d4d324e1d5b43c94de3d19bc14d77a9a9ca8f35",
+    "attempt_id": "bdd04dacce7144e9bb69fec6cc61e7d5",
+    "plan_id": "48a0bdfe95af302da7d1a28ab1bb068d0abf04fec3be4d477f95e07f3829eac4",
+    "outcome": "cancelled",
+    "exit_code": 130,
+    "cleanup_proved": true,
+    "failure": "CANCELLED",
+    "stdout": "",
+    "stderr": "",
+    "output_preview_truncated": false,
+    "output_complete": true
+  }
+}

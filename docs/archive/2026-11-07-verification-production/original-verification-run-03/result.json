@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-07T07:01:23.592Z",
+  "project": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+  "session": "ses_e4b41a68affeslS2Uq2YShzjgg",
+  "kernel_exit": {
+    "code": null,
+    "signal": "SIGTERM",
+    "utc": "2026-11-07T07:01:23.591Z"
+  },
+  "daemon_independently_managed": true,
+  "agent_returned": true,
+  "failure": null,
+  "inner_exit_code": 0,
+  "raw_evidence_root": "D:\\code\\SpecForge\\.tmp\\original-verification\\250b06bd-e86e-44f0-8bc0-76731725d1aa",
+  "raw_kernel_log_sha256": "6a64ddc7b95c3607aa5f449737e2be81678fe2e1fe63baa4474b7aa9b4cc9d65",
+  "qualification": "Real installed professional Agents and connected provider. Native return is an observation, not proof of WI/Gate/Close success; independently audit authoritative state and all actual receipts."
+}

@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/public-kernel-chain.cjs",
+    "11",
+    "matrix"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "installed-real-agent-Daemon-positive-negative-cancel-matrix",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned installed11 actual professional Agents Plugin Kernel fresh exact Daemon/native plan run cancel and source drift restored; EXTERNAL_EVIDENCE_WRITES source-frozen trial; no user install/original",
+  "started_utc": "2026-11-07T03:53:13.579Z"
+}

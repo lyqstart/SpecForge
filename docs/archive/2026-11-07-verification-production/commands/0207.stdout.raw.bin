@@ -1,0 +1,25 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/verification-runtime-plan.test.ts (8 tests) 22180ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > retains the legal code-only not_applicable merge path  2797ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > binds canonical WI-owned Tasks even when the Project Spec merge manifest has no Task entry  2574ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > rejects an actual role mismatch and caller-supplied commands before private writes  303ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > does not reuse an actual invocation or accept changed source/approved Tasks  4126ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > revokes only the independent verification grant and blocks a new Attempt  2447ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > prepares immutable fixed config and can cancel it under HardStop without launching anything  3119ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > recovers an authenticated interrupted preparation and refuses unknown extra files  2329ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > cancels active work and waits for its receipt before completing graceful shutdown (unit backend)  4482ms
+ ✓ tests/unit/verification-source-snapshot.test.ts (5 tests) 7537ms
+   ✓ verification raw source and Git identity > records a bounded stage for a failed Git read without logging the project path  691ms
+   ✓ verification raw source and Git identity > captures current raw input and rejects a changed source without invoking clean filters  1731ms
+   ✓ verification raw source and Git identity > rejects undeclared untracked code and hardlinked tracked input  1088ms
+   ✓ verification raw source and Git identity > binds branch, index and repository configuration  2427ms
+   ✓ verification raw source and Git identity > freezes only reachable code and package metadata, without reading unrelated tracked files  1598ms
+ ✓ tests/unit/verification-rejection-diagnostic.test.ts (4 tests) 5ms
+
+ Test Files  3 passed (3)
+      Tests  17 passed (17)
+   Start at  12:24:32
+   Duration  33.41s (transform 1.09s, setup 0ms, collect 2.58s, tests 29.72s, environment 1ms, prepare 427ms)
+

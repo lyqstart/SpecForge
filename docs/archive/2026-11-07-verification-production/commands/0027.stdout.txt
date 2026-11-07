@@ -1,0 +1,1 @@
+{"utc":"2026-11-07T00:53:15.1638567Z","fixture":"D:\\code\\SpecForge\\.tmp\\verification-native-plan-tests\\83fd7704d9b84e6aab6e6c6e40a8d9b0","checks":29,"profile_created":false,"application_executed":false,"inner_exit_code":0}

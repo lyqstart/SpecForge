@@ -1,0 +1,15 @@
+{
+  "executable": "git",
+  "args": [
+    "ls-remote",
+    "origin",
+    "refs/heads/main",
+    "refs/tags/specforge-v1.0.23"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Read configured remote main immediately before authorized local-main integration",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES sealed remote-read receipt; no refs or worktree writes",
+  "started_utc": "2026-11-07T08:33:56.095Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": []
+}

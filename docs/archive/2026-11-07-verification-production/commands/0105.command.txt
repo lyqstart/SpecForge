@@ -1,0 +1,19 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/verification-runtime-plan.test.ts",
+    "tests/unit/verification-owner-store.test.ts",
+    "tests/unit/verification-source-snapshot.test.ts",
+    "tests/unit/project-session-bootstrap.test.ts",
+    "tests/unit/verifier-guidance-execution-boundary.test.ts",
+    "src/http/HTTPServer.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "verification-owner-runtime-source-http-guidance-regressions1.0.22",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES self-owned unit Git/temp/HTTP fixtures; EXTERNAL_EVIDENCE_WRITES receipts; no LPAC or original",
+  "started_utc": "2026-11-07T02:46:12.206Z"
+}

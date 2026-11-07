@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-public-trials.cjs",
+    "04",
+    "08"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-real-invalid-state-D18-evidence",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable public-native-evidence08 only; no original/install",
+  "started_utc": "2026-11-07T03:43:28.658Z"
+}

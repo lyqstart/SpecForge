@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/update-final-publication-checkpoint.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Record final SPS/deployment/interactive acceptance checkpoint with preserved status and ledger baselines",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=unique project status and error ledger checkpoint15;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=raw status ledger before baseline",
+  "started_utc": "2026-11-07T10:55:09.194Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\update-final-publication-checkpoint.cjs",
+      "sha256": "97bab91e4af682ee2f1bf14a7137ac864ac61ee4b6fad15122484023e9c2dc07",
+      "size": 5593,
+      "extension": ".cjs"
+    }
+  ]
+}

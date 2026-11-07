@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "scripts/run-root-tests.mjs",
+    "current",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Run current registered root suite after Daemon-owner acceptance migration and full workspace rebuild",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES receipts; RUNTIME_OBSERVER_WRITES owned test temp projects and caches; no original business or deployment writes",
+  "started_utc": "2026-11-07T05:47:42.666Z"
+}

@@ -1,0 +1,14 @@
+[root-test-registry] {"CURRENT_HERMETIC":49,"CURRENT_ENVIRONMENTAL":1,"MIGRATED_DUPLICATE":14,"HISTORICAL_EVIDENCE":122}
+[root-test-registry] mode=current selected=49
+
+ RUN  v4.1.5 D:/code/SpecForge
+
+ ❯ tests/unit/current-product-version-contract.test.ts (6 tests | 2 failed) 29ms
+     × defines the new product epoch from the root package identity 7ms
+     × keeps every current workspace package on the product version 15ms
+
+ Test Files  1 failed | 48 passed (49)
+      Tests  2 failed | 738 passed (740)
+   Start at  10:57:01
+   Duration  24.71s (transform 1.47s, setup 0ms, import 2.88s, tests 12.15s, environment 4ms)
+

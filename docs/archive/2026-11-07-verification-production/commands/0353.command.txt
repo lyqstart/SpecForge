@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-artifact-routing-defect.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Freeze confirmed canonical artifact routing defect and exact prior22-entry requests before repair",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES raw source/actual request-response/canonical snapshots and plan; original read only",
+  "started_utc": "2026-11-07T07:43:50.083Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\freeze-artifact-routing-defect.cjs",
+      "sha256": "6c2d4e3689050db9c05c7f4aa39ef014bae0e7154f5a3174d3b6741b93ba48c4",
+      "size": 2892,
+      "extension": ".cjs"
+    }
+  ]
+}

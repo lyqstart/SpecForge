@@ -1,0 +1,13 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/execution-evidence-consumer.test.ts (20 tests) 14ms
+ ✓ tests/unit/invocation-lease.test.ts (6 tests) 528ms
+   ✓ actual invocation lifetime lease > cancels a live operation when Runtime ends the call even though the HTTP signal never aborts  517ms
+ ✓ tests/unit/verifier-guidance-execution-boundary.test.ts (3 tests) 11ms
+
+ Test Files  3 passed (3)
+      Tests  29 passed (29)
+   Start at  11:39:40
+   Duration  2.13s (transform 124ms, setup 0ms, collect 241ms, tests 554ms, environment 0ms, prepare 587ms)
+

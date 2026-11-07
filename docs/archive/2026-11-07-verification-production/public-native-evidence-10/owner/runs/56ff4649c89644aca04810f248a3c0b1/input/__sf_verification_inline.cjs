@@ -1,0 +1,1 @@
+const text="export function greet(name:string):string{return name===\"\"?\"Hello, world!\":\"Hello, \"+name+\"!\";}\n";const lines=text===""?[]:text.split("\n");if(lines.length&&lines[lines.length-1]==="")lines.pop();const regex=RegExp("^import |^import\\{|require\\(");let count=0;for(const line of lines){if(regex.test(line))count++;}process.exit(count===0?0:1);

@@ -1,0 +1,14 @@
+{
+  "utc": "2026-11-07T07:13:25.243Z",
+  "source": [
+    {
+      "path": "tests/unit/verification-consumer-http.test.ts",
+      "sha256": "c660ef6e48be91b7a3525d57348f63fc2d92b1f56511cd985469579bd20075c1"
+    },
+    {
+      "path": "tests/unit/verifier-evidence-manifest-example.test.ts",
+      "sha256": "0604a505cdb800339e805738513e421135effa064bd38f08dccff257db842b53"
+    }
+  ],
+  "scope": "Known task-owned tests before adding to Git-discovered root registry"
+}

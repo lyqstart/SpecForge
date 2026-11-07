@@ -1,0 +1,25 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/v11-agent-skill-contract-alignment.test.ts (13 tests | 2 failed) 99ms
+   × v1.1.5 Agent/Skill final governance contract alignment > keeps positive formal-verification delegation aligned with the D23 entry and consumer prerequisites 12ms
+     → expected '### 阶段 10：implementation_done → verif…' to contain 'sf_verification_plan'
+   × v1.1.5 Agent/Skill final governance contract alignment > keeps the orchestrator positive closure sequence on the same D23 and audit owners 3ms
+     → expected '变更审计通过\n→ 必要的 sf-reviewer 审查\n→ sf-ve…' to contain 'sf_verification_plan'
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps the positive feature workflow Close steps owned by Close Gate 2ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > has target Agent/Skill markdown files to govern 3ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > task planning examples use typed verification_commands 5ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > injects the final governance contract into every userlevel SpecForge Agent and Skill markdown file 19ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > does not leave explicit legacy mainline transition instructions in governed Agent/Skill prose outside the contract block 26ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps professional Candidate writers on controlled Tools and Runtime-owned Manifest materialization 5ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps sf-orchestrator on read-only evidence tools in restricted states 1ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps setup wrappers aligned with final governance fields 5ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps daemon handlers aligned with the contract-enforced workflow 7ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps Contract consumer truth-source and manual-review rules aligned in Agents and Skills 6ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > aligns detached bootstrap fields across actual wrappers, handlers, orchestrator and workflow 5ms
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 11 passed (13)
+   Start at  18:06:47
+   Duration  1.30s (transform 450ms, setup 0ms, collect 829ms, tests 99ms, environment 0ms, prepare 138ms)
+

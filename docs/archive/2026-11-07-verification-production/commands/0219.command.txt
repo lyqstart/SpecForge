@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/public-kernel-chain.cjs",
+    "16",
+    "formal"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-fixed-actual-installed16-formal-execution-matrix",
+  "expected_writes": "TRUTH_SOURCE_WRITES owned fixture16 formal Report Evidence Gate projection only; RUNTIME_OBSERVER_WRITES actual installed professional Agents Plugin direct Kernel Daemon native matrix; EXTERNAL_EVIDENCE_WRITES frozen source and real receipts; no original/user install",
+  "started_utc": "2026-11-07T04:29:49.987Z"
+}

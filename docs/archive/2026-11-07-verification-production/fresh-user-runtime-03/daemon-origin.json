@@ -1,0 +1,30 @@
+{
+  "utc": "2026-11-07T05:14:22.441Z",
+  "kernel": {
+    "pid": 24468,
+    "base": "http://127.0.0.1:4096",
+    "binary_sha256": "83567c13cc5e361ded7e48351cb024cd4503285960d82c30fc585194da46d757",
+    "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-user-kernel-preflight-aH0i7k"
+  },
+  "daemon": {
+    "ProcessId": 14576,
+    "ExecutablePath": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforged.exe",
+    "CreationDate": "2026-11-07T13:10:13.867179+08:00",
+    "sha256": "bb14f5e5b74e49b3db62d23599119870bfc088eb64dde59168c75b3d11fcc232",
+    "port": 43540
+  },
+  "health": {
+    "success": true,
+    "data": {
+      "status": "ok",
+      "service": "daemon-core",
+      "version": "1.0.22",
+      "uptime": 248
+    },
+    "requestId": "0olrn3tn3ctomw5y85b8",
+    "timestamp": 1794028462820
+  },
+  "source_commit": "a918b49c62e7dfaf3c0bfc57961ffe3bbaa99ba3",
+  "managed_files_verified": 117,
+  "token_disclosed": false
+}

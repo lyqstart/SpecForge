@@ -1,0 +1,8 @@
+{
+  "source": "D:\\code\\SpecForge\\setup\\userlevel-opencode\\tools\\sf_changed_files_audit.ts",
+  "sha256": "8f947807651094786e0a772c77a6fe48805fe705122d5a15421036a813926371",
+  "target": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\7bb83150ebf54338975311185cadfade\\config\\tools\\sf_changed_files_audit.ts",
+  "reused_exact_prior_owned_copy": true,
+  "existing_installer_owned_copy": true,
+  "reason": "Actual installer proof or prior owned copy witness; actual audit owner creates an intentional fixture-precondition HardStop; no fabricated latch"
+}

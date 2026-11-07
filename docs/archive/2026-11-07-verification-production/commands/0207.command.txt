@@ -1,0 +1,16 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/verification-source-snapshot.test.ts",
+    "tests/unit/verification-runtime-plan.test.ts",
+    "tests/unit/verification-rejection-diagnostic.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "asynchronous-bounded-Git-source-Runtime-regression",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned host source/Runtime Git fixtures; EXTERNAL_EVIDENCE_WRITES tests; no native/original/user install",
+  "started_utc": "2026-11-07T04:24:31.496Z"
+}

@@ -1,0 +1,38 @@
+[Config] DEBUG Validating configuration layer {
+  layer: "builtin",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "user",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "project",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Validating configuration layer {
+  layer: "runtime",
+  schemaVersion: "1.0",
+}
+[Config] DEBUG Starting configuration merge {
+  layerCount: 4,
+}
+[Config] DEBUG Merging layer {
+  layer: "builtin",
+}
+[Config] DEBUG Merging layer {
+  layer: "user",
+}
+[Config] DEBUG Merging layer {
+  layer: "project",
+}
+[Config] DEBUG Merging layer {
+  layer: "runtime",
+}
+[Config] INFO Configuration merge completed {
+  keyCount: 8,
+  layerCount: 4,
+  validationErrors: 0,
+}
+[EventBus] Stopped
+{"project":"D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\b1cf9d5575484f519b266e6b2673a421\\project","work_item_id":"WI-9901","head":"53517f758f0ab191d6c66a8c2b29badb42edb9bd","real_state_owner":true,"profile_created":false}

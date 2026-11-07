@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/record-integration-checkpoint-11.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Reconcile actual deployed1.0.23 and same-WI current14-of22 formal checkpoint in single status entry",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES unique status/error ledger; EXTERNAL_EVIDENCE_WRITES checkpoint11; no original/global changes",
+  "started_utc": "2026-11-07T09:08:28.001Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\record-integration-checkpoint-11.cjs",
+      "sha256": "6bcaac7f6569c539fd46ea617ffe14579aa90f8805cbb58c9a07b765af1324ba",
+      "size": 7273,
+      "extension": ".cjs"
+    }
+  ]
+}

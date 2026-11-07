@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/prepare-user-runtime-drivers-1.0.23.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Prepare exact version-bound1.0.23 fresh-runtime and minimal-consent continuation drivers without launching them",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES new driver copies/provenance only; no model, service or install action",
+  "started_utc": "2026-11-07T08:24:10.151Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\prepare-user-runtime-drivers-1.0.23.cjs",
+      "sha256": "66b39d468658deff65ca70d562fe34071d4fc7098429d38fd859e3b4040384e1",
+      "size": 3178,
+      "extension": ".cjs"
+    }
+  ]
+}

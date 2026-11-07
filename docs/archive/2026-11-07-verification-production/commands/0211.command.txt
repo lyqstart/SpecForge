@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/install-private-fixture.cjs",
+    "15",
+    "0208"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "async-Git-fix-actual-installer-fixture15",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES new owned fixture15 actual117-file install verify SDK; EXTERNAL_EVIDENCE_WRITES exact source manifest proof; no original/user install",
+  "started_utc": "2026-11-07T04:26:32.520Z"
+}

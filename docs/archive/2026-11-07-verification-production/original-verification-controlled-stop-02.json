@@ -1,0 +1,81 @@
+{
+  "utc": "2026-11-07T06:29:44.275Z",
+  "reason": "Actual original-WI repeated tool contract rejections require source diagnosis; preserve all native successes and stop invalid retries",
+  "fresh_session": "ses_e4b742829ffel12umYMGJQ5nqZ",
+  "children": [
+    "ses_e4b736232ffe1S7Rh815AIixkl",
+    "ses_e4b703542ffe3PaJIUyWDnaBqL",
+    "ses_e4b6d9952ffeWDsGtLlTJgH5IV",
+    "ses_e4b69dd07ffeddAieswn13Rszu",
+    "ses_e4b64b0f8ffeuWjTbyWe8LUZMH",
+    "ses_e4b620b42ffeFNl27ibfHyMSqB",
+    "ses_e4b5e326effeHShnHAetUYzOez",
+    "ses_e4b5c0d13ffeVeS9rnIhLoPLY5",
+    "ses_e4b5823f5ffeXQ182MBkbglf6i",
+    "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+    "ses_e4b50e0d6ffetQSLKT3Gj4t4oK"
+  ],
+  "events": [
+    {
+      "utc": "2026-11-07T06:29:42.860Z",
+      "session": "ses_e4b736232ffe1S7Rh815AIixkl",
+      "result": true
+    },
+    {
+      "utc": "2026-11-07T06:29:42.898Z",
+      "session": "ses_e4b703542ffe3PaJIUyWDnaBqL",
+      "result": true
+    },
+    {
+      "utc": "2026-11-07T06:29:42.915Z",
+      "session": "ses_e4b6d9952ffeWDsGtLlTJgH5IV",
+      "result": true
+    },
+    {
+      "utc": "2026-11-07T06:29:42.931Z",
+      "session": "ses_e4b69dd07ffeddAieswn13Rszu",
+      "result": true
+    },
+    {
+      "utc": "2026-11-07T06:29:42.950Z",
+      "session": "ses_e4b64b0f8ffeuWjTbyWe8LUZMH",
+      "result": true
+    },
+    {
+      "utc": "2026-11-07T06:29:42.968Z",
+      "session": "ses_e4b620b42ffeFNl27ibfHyMSqB",
+      "result": true
+    },
+    {
+      "utc": "2026-11-07T06:29:42.982Z",
+      "session": "ses_e4b5e326effeHShnHAetUYzOez",
+      "result": true
+    },
+    {
+      "utc": "2026-11-07T06:29:43.004Z",
+      "session": "ses_e4b5c0d13ffeVeS9rnIhLoPLY5",
+      "result": true
+    },
+    {
+      "utc": "2026-11-07T06:29:43.023Z",
+      "session": "ses_e4b5823f5ffeXQ182MBkbglf6i",
+      "result": true
+    },
+    {
+      "utc": "2026-11-07T06:29:43.038Z",
+      "session": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+      "result": true
+    },
+    {
+      "utc": "2026-11-07T06:29:43.057Z",
+      "session": "ses_e4b50e0d6ffetQSLKT3Gj4t4oK",
+      "result": true
+    },
+    {
+      "utc": "2026-11-07T06:29:43.379Z",
+      "session": "ses_e4b742829ffel12umYMGJQ5nqZ",
+      "result": true
+    }
+  ],
+  "original_truth_sources_directly_modified": false
+}

@@ -1,0 +1,16 @@
+{
+  "started": {
+    "current_time": "2026-11-07 10:14:19 UTC"
+  },
+  "finished": {
+    "current_time": "2026-11-07 10:17:40 UTC"
+  },
+  "cmd": "opencode",
+  "cwd": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7",
+  "inner_exit_code": 0,
+  "model_prompt_sent": false,
+  "endpoint_accepted": false,
+  "reason": "Owned TUI had no TCP listeners; expected4096 health failed. Full interactive integration not accepted until corrected endpoint smoke.",
+  "transport": "exec_command PTY"
+}
+

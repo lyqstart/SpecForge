@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/prepare-private-1.0.23.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Prepare isolated1.0.23 installer fixture from unchanged qualified harness with exact version expectation",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES harness copy and sealed source receipt; no global/business writes",
+  "started_utc": "2026-11-07T07:34:02.814Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\prepare-private-1.0.23.cjs",
+      "sha256": "99d4ae2d3b1fad9ec2cbacc90c6ca3cd3fa48137e9d6db49eae9f8ce328b04d6",
+      "size": 848,
+      "extension": ".cjs"
+    }
+  ]
+}

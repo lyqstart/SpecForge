@@ -1,0 +1,9 @@
+# D23 已批准产品接入实施
+
+CODEX_DIRECT；RUN_ID=CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01；原始基线main6fc9de2a。用户两项均批准。Bootstrap仅自身32MiB与回归先行，真实READY0002/测试0005后才进入正式权威与产品接线。D22封存1058成员不改，旧多进程结果不改，不创建SpecForge自身WI。
+
+已确认的实际架构：Dispatcher的可配置RBAC只保护三个旧工具，context.agent来自HTTP传入，不能作为D23真实身份；SessionRegistry有active/pending/history绑定与projectPath，但普通Thin Plugin注册为plugin，并非专业Agent；必须补足真实调用身份核验。StateManager通过ProjectManager重建events，不能用work_item.json作状态。既有C#入口仅固定合成脚本，没有任意产品输入；正式生产适配与受信控制回执需在原producer责任层扩展。现有验证Report/Manifest/Gate/Close校验层可接共同执行证据校验器，不能靠各自信Agent文本通过。
+
+先核对Task命令语义/实际身份/输入资产/owner存储的责任归属，再扩展正式plan/run、原生launcher受信计划与失败恢复、共同消费者和部署固定资产。同步精确登记、模板、Agent/Skill、安装器及测试，完成真实SP-I01/SP-D01。最后通过原WI owner恢复同一WI及完整规格对应验收。禁止伪造角色、手改原WI真相源、放宽D22权限或将失败/未知标通过。
+
+写入分类：TRUTH_SOURCE_WRITES=正式Registry/SPS/从属合同和唯一project-status，原业务仅后续正式owner可写；REPOSITORY_TRACKED_WRITES=必要核心代码/工具/模板/安装资产/规则/测试；RUNTIME_OBSERVER_WRITES=受控合成与构建/部署真实生命周期；EXTERNAL_EVIDENCE_WRITES=本根原始命令回执、独立取证和验收。

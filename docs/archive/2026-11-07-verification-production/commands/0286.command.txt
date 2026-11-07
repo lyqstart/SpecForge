@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/verify-carrier-source-freeze.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Verify new carrier and entry-source snapshots are bound to immediate immutable receipt seals",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES source freeze verification and receipts only; product/original/installation read-only",
+  "started_utc": "2026-11-07T06:21:24.175Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\verify-carrier-source-freeze.cjs",
+      "sha256": "7c0aaae76ef3333d1a2e1832eb606c0ebea05df7dbf3ca3275dc391f55d45c29",
+      "size": 1524,
+      "extension": ".cjs"
+    }
+  ]
+}

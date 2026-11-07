@@ -1,0 +1,4 @@
+Bundled 175 modules in 54ms
+
+  create-public-fixture.js  0.78 MB  (entry point)
+

@@ -1,0 +1,1 @@
+{"driver":"resume-original-verification-1.0.23-continuation.cjs","prompt":"original-verification-prompt-07.txt","expected_state":"verification_running","current_subjects":22,"native_reexecution_allowed":false,"members":20}

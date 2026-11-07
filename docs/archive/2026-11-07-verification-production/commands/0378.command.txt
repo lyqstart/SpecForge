@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-daemon-consumer-fixtures.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Freeze all9 full-suite failure sources and evidence-based consumer/environment repair plan before test edits",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES raw test baselines/manifest; no original or deployed writes",
+  "started_utc": "2026-11-07T08:01:31.549Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\freeze-daemon-consumer-fixtures.cjs",
+      "sha256": "1124d0a2c9ac5888b5e56b8f6e6cd66a34c6be4267004e2196268da5367d3788",
+      "size": 2754,
+      "extension": ".cjs"
+    }
+  ]
+}

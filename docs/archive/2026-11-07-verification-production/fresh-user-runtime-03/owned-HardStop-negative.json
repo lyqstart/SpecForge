@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-07T05:14:23.270Z",
+  "project": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\e0a7c93c26db443eb1e2100e75b8091b\\project",
+  "response": {
+    "success": false,
+    "error": "HARD_STOP_ACTIVE: Work item WI-9901 is blocked.\nScope: work_item.\nReason: ALLOWED_WRITE_FILES_EMPTY. Source: sf_changed_files_audit.\nOnly read/debug/recovery tools are allowed for this work item. Tool sf_verification_plan is blocked for WI-9901.",
+    "hard_stop": true,
+    "hard_stop_record": {
+      "schema_version": "1.2",
+      "hard_stop_id": "HS-1794026867293",
+      "scope": "work_item",
+      "work_item_id": "WI-9901",
+      "blocked": true,
+      "reason": "ALLOWED_WRITE_FILES_EMPTY",
+      "source_tool": "sf_changed_files_audit",
+      "created_at": "2026-11-07T04:47:47.293Z",
+      "resolved": false,
+      "recovery_status": "pending"
+    },
+    "work_item_id": "WI-9901"
+  },
+  "scope": "Direct authenticated policy negative on owned synthetic fixture; no original project context and not an Agent identity proof"
+}

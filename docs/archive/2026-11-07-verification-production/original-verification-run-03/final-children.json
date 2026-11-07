@@ -1,0 +1,86 @@
+[
+  {
+    "id": "ses_e4b3edaf1ffeOeKmIsNI4Sqlrt",
+    "slug": "curious-engine",
+    "projectID": "8a692e88c0823984647622294f5199c18bb0c587",
+    "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+    "path": "",
+    "parentID": "ses_e4b41a68affeslS2Uq2YShzjgg",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 87324,
+      "output": 40784,
+      "reasoning": 15308,
+      "cache": {
+        "read": 609088,
+        "write": 0
+      }
+    },
+    "title": "WI-0001 验证产物聚合 (@sf-verifier subagent)",
+    "agent": "sf-verifier",
+    "model": {
+      "id": "glm-5.3",
+      "providerID": "zhipuai-coding-plan",
+      "variant": "low"
+    },
+    "version": "1.18.35",
+    "time": {
+      "created": 1794033919246,
+      "updated": 1794034563133
+    },
+    "permission": [
+      {
+        "permission": "todowrite",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ]
+  },
+  {
+    "id": "ses_e4b32f2e0ffePVYuvYpr6cZFYk",
+    "slug": "kind-garden",
+    "projectID": "8a692e88c0823984647622294f5199c18bb0c587",
+    "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+    "path": "",
+    "parentID": "ses_e4b41a68affeslS2Uq2YShzjgg",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 24363,
+      "output": 9853,
+      "reasoning": 3510,
+      "cache": {
+        "read": 70592,
+        "write": 0
+      }
+    },
+    "title": "WI-0001 验证产物聚合 (@sf-verifier subagent)",
+    "agent": "sf-verifier",
+    "model": {
+      "id": "glm-5.3",
+      "providerID": "zhipuai-coding-plan",
+      "variant": "low"
+    },
+    "version": "1.18.35",
+    "time": {
+      "created": 1794034699551,
+      "updated": 1794034840597
+    },
+    "permission": [
+      {
+        "permission": "todowrite",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ]
+  }
+]

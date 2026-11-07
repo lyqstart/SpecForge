@@ -1,0 +1,23 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/resume-original-verification.cjs",
+    "05",
+    "original-verification-prompt-05.txt",
+    "verification_running"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Continue same original WI through real approved GLM professional Agent from successful semantic closure",
+  "expected_writes": "TRUTH_SOURCE_WRITES only real professional owners per authorized WI; RUNTIME_OBSERVER_WRITES owned Kernel sessions/logs; EXTERNAL_EVIDENCE_WRITES redacted minimal session evidence; no code permission or business main merge",
+  "started_utc": "2026-11-07T07:31:50.272Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\resume-original-verification.cjs",
+      "sha256": "2284bedc67669df237347d715b479f17e24a08960f83ec44eef08c91334ce5a1",
+      "size": 14195,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/packages/scope-gate
+
+ ✓ tests/release-manifest-and-runtime-entry-producers.test.ts  (6 tests) 267ms
+ ✓ tests/release-runtime-artifact-producer.test.ts  (3 tests) 49ms
+ ✓ tests/current-release-path-projections.test.ts  (3 tests) 9ms
+
+ Test Files  3 passed (3)
+      Tests  12 passed (12)
+   Start at  10:49:40
+   Duration  2.28s (transform 132ms, setup 0ms, collect 204ms, tests 325ms, environment 1ms, prepare 1.14s)
+

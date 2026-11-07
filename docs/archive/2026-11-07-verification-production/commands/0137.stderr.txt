@@ -1,0 +1,11 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/execution-evidence-consumer.test.ts > shared execution reference consumer (unit transport only) > does not let a manual prefix claim an executable Task or receipt subject
+AssertionError: expected [] to include 'manual_observation_reference_invalid:0'
+ ❯ tests/unit/execution-evidence-consumer.test.ts:38:333
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

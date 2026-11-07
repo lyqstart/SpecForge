@@ -1,0 +1,2 @@
+$ vitest run tests/unit/active-development-rules-contract.test.ts tests/unit/semantic-closure-contract-alignment.test.ts tests/unit/semantic-closure-producer-governance.test.ts "--maxWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m

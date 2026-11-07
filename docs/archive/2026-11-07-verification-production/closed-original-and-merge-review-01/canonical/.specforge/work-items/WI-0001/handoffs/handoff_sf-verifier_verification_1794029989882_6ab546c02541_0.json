@@ -1,0 +1,40 @@
+{
+  "agent": "sf-verifier",
+  "boundary_statement": "未调用 sf_safe_bash，未写任何业务源码或 .specforge/work-items/**，未调用 sf_changed_files_audit，未写 verification_report/evidence_manifest（formal 阶段产物），未推进任何状态，未调用 Gate/State 工具。",
+  "duration_ms": 0,
+  "errors": [
+    "idx0 run: VERIFICATION_SCHEMA_FIELDS_INVALID",
+    "idx1 run: VERIFICATION_SCHEMA_FIELDS_INVALID",
+    "idx2 run: VERIFICATION_SCHEMA_FIELDS_INVALID",
+    "idx3 run: VERIFICATION_SCHEMA_FIELDS_INVALID",
+    "idx4 run: VERIFICATION_SCHEMA_FIELDS_INVALID"
+  ],
+  "findings": [
+    "5 个 plan 的 prepare 全部成功并取得不可变 attempt_record_id",
+    "5 个 run 全部失败，错误码 VERIFICATION_SCHEMA_FIELDS_INVALID，application_passed=false，Runtime 未签发任何 execution receipt_id",
+    "按合同未重试、未改写、未取消；attempt 状态保留原样（失败结果不覆盖）",
+    "本阶段 purpose=implementation，无任何命令获得 passed 证据；对应 verification_commands 条目应记 status=fail（原样错误）而非 skipped"
+  ],
+  "inputs_read": [
+    "candidates/tasks.md 中的 5 条 verification_commands 声明（由任务提示提供，plan_id/preparation_id 由 sf-orchestrator 创建）"
+  ],
+  "next_step_recommendation": "由真实 sf-orchestrator 核查该 VERIFICATION_SCHEMA_FIELDS_INVALID 的 Runtime 侧成因（plan/Task schema 与当前 D23 运行时校验不一致），修正 plan 或 schema 后重新提供新 plan_id；本次 5 个 attempt 保留失败结果，不得复用为通过证据。",
+  "outputs_written": [],
+  "schema_version": "1.0",
+  "stage": "verification",
+  "timestamp": "2026-11-07T00:00:00Z",
+  "unknowns": [
+    "VERIFICATION_SCHEMA_FIELDS_INVALID 具体指向的字段或 schema 版本差异未在错误中披露，需 Runtime 侧诊断"
+  ],
+  "work_item_id": "WI-0001",
+  "escalation_signals": [
+    {
+      "affected_refs": [
+        "TASK-WI-0001-001"
+      ],
+      "description": "5 个 D23 verification run 全部返回 VERIFICATION_SCHEMA_FIELDS_INVALID，application_passed=false，未签发任何 receipt_id；怀疑 plan/Task schema 与 Runtime 校验不一致",
+      "recommended_action": "由 sf-orchestrator 诊断 plan schema 并重新创建合法 plan",
+      "type": "other"
+    }
+  ]
+}

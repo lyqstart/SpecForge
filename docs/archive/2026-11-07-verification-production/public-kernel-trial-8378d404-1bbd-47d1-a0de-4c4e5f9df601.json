@@ -1,0 +1,44 @@
+{
+  "trial": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\trials\\8378d404-1bbd-47d1-a0de-4c4e5f9df601",
+  "result_sha256": "8b3adc3f5af825b45f6f6bf32e685a3f4896c402cbe57c22ef91ef54bd9f40f0",
+  "utc": "2026-11-07T02:58:19.457Z",
+  "records": [
+    {
+      "name": "remaining-authentic-manifest",
+      "session": "ses_e4c10fb52ffeAgWrvX2LmMnkOD",
+      "message": "msg_1b3ef077f001xN5FtFy8aWZOFD",
+      "call": "call_38c27d77c9d34a2aacd2c04a628365b8",
+      "agent": "sf-verifier",
+      "tool": "sf_artifact_write",
+      "value": {
+        "success": true,
+        "path": ".specforge/work-items/WI-9901/evidence/evidence_manifest.json",
+        "size": 6012,
+        "file_type": "evidence_manifest",
+        "controlled_artifact": true,
+        "normalized": true
+      }
+    },
+    {
+      "child": "kernel",
+      "pid": 23232,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-11-07T02:58:19.455Z"
+      }
+    },
+    {
+      "child": "daemon",
+      "pid": 32568,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "utc": "2026-11-07T02:58:19.375Z"
+      }
+    }
+  ],
+  "failure": "AssertionError [ERR_ASSERTION]: ONE_REAL_TOOL_PART_REQUIRED\n\n0 !== 1\n\n    at invoke (D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\public-kernel-chain.cjs:51:9)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async main (D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\public-kernel-chain.cjs:77:123)",
+  "exit_code": 1,
+  "original_business_touched": false
+}

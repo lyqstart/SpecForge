@@ -1,0 +1,128 @@
+{
+  "schema_version": "2.0",
+  "content_hash_algorithm": "sha256",
+  "timestamp": "2026-11-03T15:40:05.822Z",
+  "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+  "files": [
+    {
+      "path": ".specforge/.gitignore",
+      "size": 103,
+      "mtimeMs": 1793707933185.8452,
+      "sha256": "48d564c7a0dae10d8b632376f59ef02c6fb3aeb64d238c66e46ca79534a1209a"
+    },
+    {
+      "path": ".specforge/config/observability.json",
+      "size": 52,
+      "mtimeMs": 1793707933187.7173,
+      "sha256": "e6f1b29e04b17064b3dafc7ba84855aab45f3ec18760917cffd8f564b4c013c6"
+    },
+    {
+      "path": ".specforge/config/prod-environment.md",
+      "size": 713,
+      "mtimeMs": 1793707933195.2698,
+      "sha256": "38b1967db9291ae5e90c46086370352579fc6857ab8af9948eaef2c94ff0ca1c"
+    },
+    {
+      "path": ".specforge/config/project-rules.md",
+      "size": 683,
+      "mtimeMs": 1793707933199.0325,
+      "sha256": "41b69e2efea901e49f49d8c1bd8952dd73568c9b525fe11963917d236027a987"
+    },
+    {
+      "path": ".specforge/config/project.json",
+      "size": 30,
+      "mtimeMs": 1793707933204.3384,
+      "sha256": "ae4485aea4a3ee8a404d95e3b2ed3ea56f3c833d29077aaf8d012276d34a990c"
+    },
+    {
+      "path": ".specforge/project/architecture.md",
+      "size": 12092,
+      "mtimeMs": 1793712156370.0925,
+      "sha256": "e85982f289bb6da764e06986b4df109d78c0bb8112544292ca2c7891e3714936"
+    },
+    {
+      "path": ".specforge/project/data_model.md",
+      "size": 5475,
+      "mtimeMs": 1793714144970.1975,
+      "sha256": "d0618cfb3b00b944b3e9ea6fa771e51e20b9743b0a4f6cf67258b646ebb05991"
+    },
+    {
+      "path": ".specforge/project/decisions.md",
+      "size": 38,
+      "mtimeMs": 1793707934758.6614,
+      "sha256": "8d975c562c022cc9d809c04f613e91ee0673bdeef39ed096c68e735b66e6400c"
+    },
+    {
+      "path": ".specforge/project/design_index.md",
+      "size": 38,
+      "mtimeMs": 1793707934765.4802,
+      "sha256": "8d975c562c022cc9d809c04f613e91ee0673bdeef39ed096c68e735b66e6400c"
+    },
+    {
+      "path": ".specforge/project/extension_registry.json",
+      "size": 1981,
+      "mtimeMs": 1793717222156.736,
+      "sha256": "f2cbb6b20e94461d614c736b61582ee76e1f181ba761c14d1b2b574c050c0699"
+    },
+    {
+      "path": ".specforge/project/glossary.md",
+      "size": 38,
+      "mtimeMs": 1793707934774.7139,
+      "sha256": "8d975c562c022cc9d809c04f613e91ee0673bdeef39ed096c68e735b66e6400c"
+    },
+    {
+      "path": ".specforge/project/modules/CORE/contracts.json",
+      "size": 3428,
+      "mtimeMs": 1793709664080.4846,
+      "sha256": "7c44cb3891a74b4551b9427aeb2104cc42baae522a5f665e0a97dafdb8986245"
+    },
+    {
+      "path": ".specforge/project/modules/CORE/design.md",
+      "size": 27848,
+      "mtimeMs": 1793709415821.6233,
+      "sha256": "f440d149e7651ab446c346d5689fcd90d07c2f3d06559d746de70db62524a022"
+    },
+    {
+      "path": ".specforge/project/modules/CORE/module.json",
+      "size": 310,
+      "mtimeMs": 1793709425987.693,
+      "sha256": "d70d5364fcc2b23c68044f0c61e20f931d1b31569d6ddde529de771ab708e6ea"
+    },
+    {
+      "path": ".specforge/project/modules/CORE/requirements.md",
+      "size": 19190,
+      "mtimeMs": 1793708311350.4946,
+      "sha256": "c3aee7cb3eb8eb36e4ecc181283c67fec9ce3de00e63ab771f0e3a6ffad677e6"
+    },
+    {
+      "path": ".specforge/project/modules/CORE/trace.md",
+      "size": 1790,
+      "mtimeMs": 1793717222176.7444,
+      "sha256": "e955ebebfabb61051133f8133eac3764e9ca5eb23c3e8fc81784b3c06b9e12d3"
+    },
+    {
+      "path": ".specforge/project/requirements_index.md",
+      "size": 38,
+      "mtimeMs": 1793707934804.1047,
+      "sha256": "8d975c562c022cc9d809c04f613e91ee0673bdeef39ed096c68e735b66e6400c"
+    },
+    {
+      "path": ".specforge/project/spec_manifest.json",
+      "size": 1727,
+      "mtimeMs": 1793717222178.7466,
+      "sha256": "b4025249f22fb43bd340db05f53ffe7174bbf53e33a3caabf2b005d097cf6fde"
+    },
+    {
+      "path": ".specforge/project/trace_matrix.md",
+      "size": 10508,
+      "mtimeMs": 1793717222132.7375,
+      "sha256": "4731797887ea27ae4e3c3057575441f4869b6e026bb2c1eb8f12e1a8ca4462d1"
+    },
+    {
+      "path": "README.md",
+      "size": 123,
+      "mtimeMs": 1793707934929.3584,
+      "sha256": "757ee94ea46933c3dd7092c04d15a32546a3f54e609b9c6e66351eeafe8fdf40"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/run-current-release-precheck.ts",
+    "--candidate-id",
+    "a918b49c62e7dfaf3c0bfc57961ffe3bbaa99ba3"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-committed-a9181.0.22-release-precheck",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES ignored complete release manifest bound to committed a918 source; EXTERNAL_EVIDENCE_WRITES precheck only; no original/user install",
+  "started_utc": "2026-11-07T04:45:17.342Z"
+}

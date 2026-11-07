@@ -1,0 +1,15 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "Run entire daemon-core suite through canonical Bun package entry after all classified fixture repairs",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES self-owned test fixtures/processes/cache; EXTERNAL_EVIDENCE_WRITES sealed full output; no original/deployment writes",
+  "started_utc": "2026-11-07T08:06:48.132Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": []
+}

@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-07T07:57:36.746Z",
+  "session": "ses_e4afcab98ffesQGGN5ecbrvR4n",
+  "agent": "sf-verifier",
+  "tool": "sf_artifact_write",
+  "args": {
+    "work_item_id": "WI-9901",
+    "file_type": "work_log",
+    "run_id": "candidate-manifest",
+    "content": "Review log for candidate-manifest"
+  }
+}

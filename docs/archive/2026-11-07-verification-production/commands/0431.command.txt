@@ -1,0 +1,21 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/observe-original-artifact-tools.cjs",
+    "06"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Read current R06 artifact and Gate progress without altering model or truth sources",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=Kernel read logs;EXTERNAL_EVIDENCE_WRITES=observation and receipts",
+  "started_utc": "2026-11-07T09:15:29.737Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\observe-original-artifact-tools.cjs",
+      "sha256": "d7e249c8196d0d6b67c83932275278c886d3bc3f2b4fef911b63b537c40f4b70",
+      "size": 2522,
+      "extension": ".cjs"
+    }
+  ]
+}

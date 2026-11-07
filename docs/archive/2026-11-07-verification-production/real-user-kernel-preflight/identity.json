@@ -1,0 +1,14 @@
+{
+  "utc": "2026-11-07T04:38:44.457Z",
+  "pid": 30996,
+  "base": "http://127.0.0.1:44096",
+  "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-user-kernel-preflight-aH0i7k",
+  "binary_sha256": "83567c13cc5e361ded7e48351cb024cd4503285960d82c30fc585194da46d757",
+  "sdk_before": {
+    "version": "1.18.16",
+    "package_sha256": "b05c6fac54e6aed0f45a6b1bf67d54e8215de0c9d3c307ad93ecfc54e099f2c8"
+  },
+  "user_installation_version": "1.0.21",
+  "model_prompt_sent": false,
+  "original_project_used": false
+}

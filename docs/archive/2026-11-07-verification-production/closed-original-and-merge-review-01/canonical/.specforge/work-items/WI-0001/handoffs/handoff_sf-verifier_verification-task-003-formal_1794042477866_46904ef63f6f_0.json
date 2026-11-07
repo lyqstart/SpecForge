@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "agent": "sf-verifier",
+  "work_item_id": "WI-0001",
+  "stage": "verification-task-003-formal",
+  "timestamp": "2026-11-07T00:00:00Z",
+  "inputs_read": [
+    "plan 7b33f88daf7df13d32455b6f889b4de652ed843c2e02856c7b657b562a71035a (unit idx0)",
+    "plan 4a8001cef67535016d580ad2c3bfc11bf55cd29929708514ada8db03ee5b3987 (unit idx1)",
+    "plan 7b16a5fcb8c9cb25d47c74d8e3394f1eb5e553b943975918499e0e5b4427845f (unit idx2)",
+    "plan aa5056db09bfbdcf0096faaa38cb51663be1619536a1047cfaecbd3019e1de67 (unit idx3)",
+    "plan 20d2cd7ba2dcebad9afe1e667a7f1fa08f113e60ecec23ede95f4255f5a5ec54 (integration idx0)"
+  ],
+  "outputs_written": [],
+  "findings": [
+    "unit idx0 `test -f tests/greet.test.ts`: attempt_record_id=b9d408f2af2d01a9e32635c8354de9a2c1bcc384b2b5841ddade5b399fbbdbf9, receipt_id=ad88130276bce2dc4f83a418061a08b0cd55dd19040fe220760f8d2946d110c5, exit_code=0, stdout='' (empty), PASS — expected exit 0 / no output",
+    "unit idx1 `grep -c \"node:test\" tests/greet.test.ts`: attempt_record_id=455c8d1771b09496ac0fa1f38a3175d44ce6491abed950b6cfccb916ed54c191, receipt_id=f43bdeec31e97a94cadcae11356b4ada08f11ef4130fdf83bc8df20e86959eb0, exit_code=0, stdout='1\\n', PASS — expected count 1",
+    "unit idx2 `grep -c \"node:assert/strict\" tests/greet.test.ts`: attempt_record_id=ac97394a7d9a3436a988dec9b066667955db40e5899cdb33a6d57aa8083f7122, receipt_id=907e1765021901dfd0c388ccd8e8c98dc77fcdf49171e6f9c8a5d32c4d1dda94, exit_code=0, stdout='1\\n', PASS — expected count 1",
+    "unit idx3 `grep -c \"strictEqual\" tests/greet.test.ts`: attempt_record_id=a37fd4843c4ac81a4055243478e50a49df89a7b7aa35ba175d12ed6becec1c78, receipt_id=8cce832fe4fb8dc61fbc600fef9b871a2d062ec508298fb0189f85352a627723, exit_code=0, stdout='4\\n', PASS — expected count 4 (A1–A4)",
+    "integration idx0 `node --test tests/greet.test.ts`: attempt_record_id=bf7286bd42578d1908aa78b99318c34588db05f623f4afd6308717a9c02ac3b2, receipt_id=54fda4bf3a59c933e96154b3d73eb1066921e3cabeeb405e0d04e6f5b08782e7, exit_code=0, TAP '1..4' '# tests 4' '# pass 4' '# fail 0' with ok 1–4 for A1–A4, PASS — expected 4 pass / 0 fail",
+    "All 5 attempts: outcome=passed, cleanup_proved=true, output_complete=true, no stderr, no truncation. TASK-WI-0001-003 result: 5/5 pass."
+  ],
+  "unknowns": [],
+  "escalation_signals": [],
+  "next_step_recommendation": "Orchestrator assembles verification_report/evidence_manifest citing the 5 receipt_ids as verification-owner:receipt:<receipt_id> (hash_domain canonical-json:verification-execution/v1); all TASK-WI-0001-003 formal verification evidence is collected.",
+  "boundary_statement": "Executed only sf_verification_run prepare/run with the exact three-parameter D23 contracts; no artifacts written, no state transitions, no gate calls, no runtime traces read, no executor substitution, code permission untouched."
+}

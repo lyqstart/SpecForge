@@ -1,0 +1,7 @@
+{
+  "utc": "2026-11-07T04:04:42.567Z",
+  "listen": "http://127.0.0.1:12220",
+  "upstream": "http://127.0.0.1:4096",
+  "actual_kernel_unmodified": true,
+  "scope": "Transparent loopback transport diagnosis; never generates Runtime records or credentials"
+}

@@ -1,0 +1,10 @@
+{
+  "utc": "2026-11-07T08:18:47.058Z",
+  "session": "ses_e4ae94970ffe60BnGvi2Nq7IOs",
+  "agent": "sf-orchestrator",
+  "tool": "sf_gate_run",
+  "args": {
+    "work_item_id": "WI-9901",
+    "gate_type": "close"
+  }
+}

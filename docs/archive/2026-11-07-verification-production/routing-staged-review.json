@@ -1,0 +1,127 @@
+{
+  "utc": "2026-11-07T07:51:18.211Z",
+  "parent": "cf766382828cf1df2ebd08782c857fe524fa400c",
+  "paths": [
+    "docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/actual-work-log-request-response.json",
+    "docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/canonical-after-controlled-stop.json",
+    "docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/plan.json",
+    "docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/prior22-entry-request-0.json",
+    "docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/prior22-entry-request-1.json",
+    "docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/source/packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+    "docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/source/packages/daemon-core/tests/unit/merge-report-owner.test.ts",
+    "docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/source/packages/daemon-core/tests/unit/verification-evidence-producer.test.ts",
+    "docs/project-status.md",
+    "docs/rule/specforge-active-development-rules.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md",
+    "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+    "packages/daemon-core/tests/unit/merge-report-owner.test.ts",
+    "packages/daemon-core/tests/unit/verification-evidence-producer.test.ts",
+    "setup/userlevel-opencode/tools/sf_artifact_write.ts"
+  ],
+  "bindings": {
+    "docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/actual-work-log-request-response.json": {
+      "raw_sha256": "6aab69358656bcea1b86afcba1f680385fc152b21bba3bcdf5f1b7107fe2b176",
+      "size": 2030,
+      "index_oid": "b3b1dd900d63972d552c09397dbf4c82746d026e",
+      "index_blob_sha256": "6aab69358656bcea1b86afcba1f680385fc152b21bba3bcdf5f1b7107fe2b176"
+    },
+    "docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/canonical-after-controlled-stop.json": {
+      "raw_sha256": "504dd4fda524a992d244de3655bc0d01b5d26ff37d34ecdecbda49ef56b3590e",
+      "size": 36314,
+      "index_oid": "14cdfccc191206526c856acde8251f7aa4fb5ca0",
+      "index_blob_sha256": "504dd4fda524a992d244de3655bc0d01b5d26ff37d34ecdecbda49ef56b3590e"
+    },
+    "docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/plan.json": {
+      "raw_sha256": "eda6eb6329e69a4cbc1d5cd7bd9e627ab965848f8c43ab41d09a10b84d3fb992",
+      "size": 1839,
+      "index_oid": "96a9fb4af9a124162ec632c87b94e2ac5c03ab55",
+      "index_blob_sha256": "eda6eb6329e69a4cbc1d5cd7bd9e627ab965848f8c43ab41d09a10b84d3fb992"
+    },
+    "docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/prior22-entry-request-0.json": {
+      "raw_sha256": "10da952360c36577da9c2c198b759ad2753d54a2254c4b3ae82411871aa82982",
+      "size": 38110,
+      "index_oid": "25ea54f3a82d1c8896c3d0950fead2d6ebf9ec66",
+      "index_blob_sha256": "10da952360c36577da9c2c198b759ad2753d54a2254c4b3ae82411871aa82982"
+    },
+    "docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/prior22-entry-request-1.json": {
+      "raw_sha256": "78599a1731f52bb4020975657805274577d57f55df1d1ef8573ed52caac8ab12",
+      "size": 38110,
+      "index_oid": "3a7cf46721a659835f4cc7172e1c5084b22bf275",
+      "index_blob_sha256": "78599a1731f52bb4020975657805274577d57f55df1d1ef8573ed52caac8ab12"
+    },
+    "docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/source/packages/daemon-core/src/tools/handlers/sf-artifact-write.ts": {
+      "raw_sha256": "f1a2106827c25c2121a05ad29446c622f79006fc9d51978e23c42fe97954f22f",
+      "size": 60722,
+      "index_oid": "35f8b8289e6323c944de9c7bfb8f059797ed5839",
+      "index_blob_sha256": "f1a2106827c25c2121a05ad29446c622f79006fc9d51978e23c42fe97954f22f"
+    },
+    "docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/source/packages/daemon-core/tests/unit/merge-report-owner.test.ts": {
+      "raw_sha256": "6ada258ff40874694083f81a24e1ae2e9a52f67afef450e0e8c2cb133b70c3eb",
+      "size": 2955,
+      "index_oid": "4edf2888688658f3d1ce2dc90c862ddae4567372",
+      "index_blob_sha256": "6ada258ff40874694083f81a24e1ae2e9a52f67afef450e0e8c2cb133b70c3eb"
+    },
+    "docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/source/packages/daemon-core/tests/unit/verification-evidence-producer.test.ts": {
+      "raw_sha256": "b11ac109b31219746e055e49b7f5035ce50dd7f32acc147aba60ff8b23179d0c",
+      "size": 2579,
+      "index_oid": "b18541e26580ef6fa240d2267668329120bd0d46",
+      "index_blob_sha256": "b11ac109b31219746e055e49b7f5035ce50dd7f32acc147aba60ff8b23179d0c"
+    },
+    "docs/project-status.md": {
+      "raw_sha256": "b8fee70f6ba841a05233936f6b6109720dde557d9b66ad6d7b32621eba392c16",
+      "size": 7343,
+      "parent_blob_oid": "034d630af523c10c155a642201c4b44b6bbdeb13",
+      "parent_blob_sha256": "42e58233ffb02464824cc83db68518a86b99f618d3ab54c71a2a16f36488d2bf",
+      "index_oid": "776f2969e3c48c8b56742139acec7e3c197e136f",
+      "index_blob_sha256": "5255fa8a45f317805093b701b71bbd1e8203376198c9a91cafc6980a5b73e700"
+    },
+    "docs/rule/specforge-active-development-rules.md": {
+      "raw_sha256": "678d838160f2ab80146d60d5921f2604bf456ae93e1cd63a3e7706f730a82272",
+      "size": 174951,
+      "parent_blob_oid": "9168e49a196495dace9ac5366e76e2c81a9090ce",
+      "parent_blob_sha256": "0ebcccde0a0e615f8779aa9ff3ae6d59ec1dbf4190a3d1a797e45f5b6c3b4312",
+      "index_oid": "f659728dcc4a65776e739da4a10ae4007365a36f",
+      "index_blob_sha256": "ac2a6ebeab15eee40181630c109b718bfbe24cdf7ae7fa4ca2e4f70fa48cf604"
+    },
+    "docs/rule/specforge-development-error-ledger-and-experience.md": {
+      "raw_sha256": "11f5afd8ab07444154f8288c0e59029fdb9e1ce3a3fe7e7342e55f81ecdc99d4",
+      "size": 4457703,
+      "parent_blob_oid": "ab046e8bbcd0f133e2f3a6c217339467be331714",
+      "parent_blob_sha256": "31a7021a7c63819ee00cc1754fb613db182fc859dd2de68aae17af045cee2176",
+      "index_oid": "50fc6a393321b8d327bc36c7e34be4bd751cfc20",
+      "index_blob_sha256": "271a805e888cde3f8c034bcef90b5ab29aac47d98374758934e05fde7c6dc462"
+    },
+    "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts": {
+      "raw_sha256": "c6d8262eadd511d7974a989e22b8c8cd9703b384c6ced61ffe05518e8640121c",
+      "size": 59170,
+      "parent_blob_oid": "35f8b8289e6323c944de9c7bfb8f059797ed5839",
+      "parent_blob_sha256": "f1a2106827c25c2121a05ad29446c622f79006fc9d51978e23c42fe97954f22f",
+      "index_oid": "b61c878c66ac3746271bf10cb5a019d36e0a3666",
+      "index_blob_sha256": "c6d8262eadd511d7974a989e22b8c8cd9703b384c6ced61ffe05518e8640121c"
+    },
+    "packages/daemon-core/tests/unit/merge-report-owner.test.ts": {
+      "raw_sha256": "6afaf6e96cd2193afecf10c4e50351c9381c7b8ede2ccf8fa9d4e710eb4782d0",
+      "size": 3269,
+      "parent_blob_oid": "4edf2888688658f3d1ce2dc90c862ddae4567372",
+      "parent_blob_sha256": "6ada258ff40874694083f81a24e1ae2e9a52f67afef450e0e8c2cb133b70c3eb",
+      "index_oid": "7a1604d6f1a9c2966a72f545ebff45deadd1df39",
+      "index_blob_sha256": "6afaf6e96cd2193afecf10c4e50351c9381c7b8ede2ccf8fa9d4e710eb4782d0"
+    },
+    "packages/daemon-core/tests/unit/verification-evidence-producer.test.ts": {
+      "raw_sha256": "b632495f69c8d4eb032b84daf6404012262505120dd28cf6899fb6260f4b5d8a",
+      "size": 5714,
+      "parent_blob_oid": "b18541e26580ef6fa240d2267668329120bd0d46",
+      "parent_blob_sha256": "b11ac109b31219746e055e49b7f5035ce50dd7f32acc147aba60ff8b23179d0c",
+      "index_oid": "c9f4bbf42c812477a80851344a887ce3eb559289",
+      "index_blob_sha256": "b632495f69c8d4eb032b84daf6404012262505120dd28cf6899fb6260f4b5d8a"
+    },
+    "setup/userlevel-opencode/tools/sf_artifact_write.ts": {
+      "raw_sha256": "06e3f0b6945bd5c458cd834e9608c3ac980f77b4319c6ad1ca68682bc0170742",
+      "size": 5487,
+      "parent_blob_oid": "81508b93ed2fd62736784b3645b0dd946b31b1cd",
+      "parent_blob_sha256": "f799ed1fb567024c9e175101c1c71c0809ad1c606e441c1427c90a1d07cc2f93",
+      "index_oid": "e2cf1c1808fa09f0fa4e06156ed5f3ed98ba99bb",
+      "index_blob_sha256": "06e3f0b6945bd5c458cd834e9608c3ac980f77b4319c6ad1ca68682bc0170742"
+    }
+  }
+}

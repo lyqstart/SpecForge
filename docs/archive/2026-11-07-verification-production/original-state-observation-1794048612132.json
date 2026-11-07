@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-07T10:50:12.131Z",
+  "project": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+  "tool": "sf_state_read",
+  "args": {
+    "work_item_id": "WI-0001",
+    "query": "state"
+  },
+  "daemon_pid": 33388,
+  "daemon_port": 42838,
+  "state": {
+    "success": true,
+    "rebuilt_from_events": true,
+    "work_item_id": "WI-0001",
+    "workflow_type": "feature_spec",
+    "current_state": "closed",
+    "created_at": 1792905467014,
+    "updated_at": 1794045358653
+  },
+  "qualification": "Direct authenticated read-only owner query for independent audit; no genuine Agent role claim, no workflow transition or model prompt. Runtime may append observability records."
+}

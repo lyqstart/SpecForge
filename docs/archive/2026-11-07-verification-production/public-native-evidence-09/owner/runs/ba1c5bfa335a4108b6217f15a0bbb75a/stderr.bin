@@ -1,0 +1,22 @@
+
+<--- Last few GCs --->
+
+[6092:000001B3317B0000]     1120 ms: Mark-Compact (reduce) 994.7 (998.5) -> 994.7 (997.5) MB, pooled: 0 MB, 44.71 / 0.00 ms  (average mu = 0.129, current mu = 0.113) last resort; GC in old space requested
+[6092:000001B3317B0000]     1162 ms: Mark-Compact (reduce) 994.7 (997.5) -> 994.7 (997.5) MB, pooled: 0 MB, 41.92 / 0.00 ms  (average mu = 0.072, current mu = 0.001) last resort; GC in old space requested
+
+FATAL ERROR: CALL_AND_RETRY_LAST Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 00007FF7F29F50BF 
+ 2: 00007FF7F161DD27 
+ 3: 00007FF7F1436BC2 
+ 4: 00007FF7F14426E8 
+ 5: 00007FF7F1459BEC 
+ 6: 00007FF7F1238771 
+ 7: 00007FF7F1238579 
+ 8: 00007FF7F1238211 
+ 9: 00007FF7F123688D 
+10: 00007FF7F114852D 
+11: 00007FF7F12255F0 
+12: 00007FF7F1022502 
+13: 000001B3696F75FA 

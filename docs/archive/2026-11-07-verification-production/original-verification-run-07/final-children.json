@@ -1,0 +1,44 @@
+[
+  {
+    "id": "ses_e4a9b96f8ffeupa1lztDr9XzLQ",
+    "slug": "playful-comet",
+    "projectID": "8a692e88c0823984647622294f5199c18bb0c587",
+    "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+    "path": "",
+    "parentID": "ses_e4a9cc696ffeyXUoWJNamUkRD5",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 76133,
+      "output": 29408,
+      "reasoning": 5443,
+      "cache": {
+        "read": 1146816,
+        "write": 0
+      }
+    },
+    "title": "PI-CORE-001 合同审查并修订报告 (@sf-verifier subagent)",
+    "agent": "sf-verifier",
+    "model": {
+      "id": "glm-5.3",
+      "providerID": "zhipuai-coding-plan",
+      "variant": "low"
+    },
+    "version": "1.18.35",
+    "time": {
+      "created": 1794044619015,
+      "updated": 1794045158266
+    },
+    "permission": [
+      {
+        "permission": "todowrite",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ]
+  }
+]

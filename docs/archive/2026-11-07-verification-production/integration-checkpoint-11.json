@@ -1,0 +1,35 @@
+{
+  "utc": "2026-11-07T09:08:29.771Z",
+  "run_id": "CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01",
+  "attempt_id": "CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01-01",
+  "mode": "CODEX_DIRECT",
+  "status": "IN_PROGRESS",
+  "source_main": "4d891569fb9e497bd1cfad498b0de79ae80c6b0a",
+  "remote_main_last_verified": "6fc9de2a844ecae27543c6c672319907105b578b",
+  "version": "1.0.23",
+  "managed_files_verified": 117,
+  "daemon_pid": 35544,
+  "root": {
+    "files": 51,
+    "passed": 748
+  },
+  "daemon_tests": {
+    "files": 236,
+    "passed": 2338
+  },
+  "original": {
+    "active_command": "0412",
+    "session": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+    "attempt": "06",
+    "state": "verification_running",
+    "current_formal": 14,
+    "declared": 22,
+    "old_successes_retained": 44,
+    "code_permission_revoked": true,
+    "business_main_merged": false
+  },
+  "coverage": "original-current-execution-coverage-1794042437707.json",
+  "key_content_read": false,
+  "ledger_through": "ERR-2005",
+  "stop_reason": null
+}

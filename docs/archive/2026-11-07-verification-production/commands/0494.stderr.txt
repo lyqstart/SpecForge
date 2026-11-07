@@ -1,0 +1,15 @@
+D:\code\SpecForge\docs\archive\2026-11-07-verification-production\stage-final-guidance-source.cjs:4
+assert.equal(new Set(files).size,files.length);git(['add','--',...files]);const staged=git(['diff','--cached','--name-only','-z']).toString().split('\0').filter(Boolean);assert.deepEqual([...staged].sort(),[...files].sort());git(['diff','--cached','--check']);const bindings={};for(const m of review.members){const oid=git(['rev-parse',':'+m.path]).toString().trim();assert.equal(oid,m.expected_index_object);assert.equal(sha(fs.readFileSync(path.join(root,m.path))),m.current_raw_sha256);bindings[m.path]={object:oid,blob_sha256:sha(git(['cat-file','blob',':'+m.path])),raw_sha256:m.current_raw_sha256};}for(const p of files.filter(p=>!review.allowed_source_paths.includes(p)))assert.equal(sha(git(['cat-file','blob',':'+p])),sha(fs.readFileSync(path.join(root,p))),'ARCHIVE_INDEX_BYTES_DRIFT:'+p));const result={utc:new Date().toISOString(),branch,source_head:review.source_head,staged_paths:staged,source_paths:review.allowed_source_paths,bindings,archive_members:files.length-review.allowed_source_paths.length,classification:'Exact reviewed9 source paths + immutable baseline/review evidence only; no whole-tree add, no hidden reasoning/private credentials, no Runtime/native source change'};fs.writeFileSync(path.join(__dirname,'final-guidance-staged-review.json'),JSON.stringify(result,null,2)+'\n',{flag:'wx'});console.log(JSON.stringify({branch,staged_paths:files.length,source_paths:review.allowed_source_paths.length,archive_members:result.archive_members,all_index_bindings_verified:true}));
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ^
+
+SyntaxError: Unexpected token ')'
+    at wrapSafe (node:internal/modules/cjs/loader:1804:18)
+    at Module._compile (node:internal/modules/cjs/loader:1846:20)
+    at Object..js (node:internal/modules/cjs/loader:2003:10)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47
+
+Node.js v24.19.0

@@ -1,0 +1,90 @@
+{
+  "utc": "2026-11-07T10:37:20.452Z",
+  "candidate": "d8fc418cab14cde5c0e06ad7fd8c602b451f868b",
+  "base": "4d891569fb9e497bd1cfad498b0de79ae80c6b0a",
+  "branch": "codex/verification-final-guidance",
+  "remote": "6fc9de2a844ecae27543c6c672319907105b578b\trefs/heads/main\n",
+  "sources": [
+    {
+      "path": ".gitignore",
+      "snapshot": "0000.raw",
+      "raw_sha256": "2a22aa04cb12223be7c4807d5ce2f00bc7b5fb133e2ac55963d447d067958245",
+      "blob_sha256": "dfec3f8088eecbafdc35b7338450085d7f8764ff0c4b7ab4b892a8278ab02309"
+    },
+    {
+      "path": "README.md",
+      "snapshot": "0001.raw",
+      "raw_sha256": "fab2569557da2abf4db842a625423d960492f8d2ea2924c2c306758ed65d26d6",
+      "blob_sha256": "cf1e1eb60c537cc6304f2a842289a3bd75b369ff8d022ffc4a23685f93a53987"
+    },
+    {
+      "path": "docs/project-status.md",
+      "snapshot": "0002.raw",
+      "raw_sha256": "4d4b48d5da6ea961d518fe565dfdfb9e8c37893c06f57c4cb030927a2a2026c4",
+      "blob_sha256": "2e70dff836368c8081d1caabe9b7e701ad6ad07416e83d7c7f5a977d6dff8944"
+    },
+    {
+      "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "snapshot": "0003.raw",
+      "raw_sha256": "58bf77ce6b7b1193797b6000eb5fc74db8681491f43e9d34a2bd74264a326ddc",
+      "blob_sha256": "77d349de70a4ae5f6c6e96fa72244217c53c14f1e1a81ec36959a506ddfb738f"
+    },
+    {
+      "path": "docs/user/quick-start.md",
+      "snapshot": "0004.raw",
+      "raw_sha256": "c7e2344870a61d0540539bcb95b063537138965d549e6c4770b7a3a2ef800e6d",
+      "blob_sha256": "961a189c8159963f821c6a3dd00d8892aaf14fd7e3e4a65da88b6aa30b341cf9"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/daemon-startup-readme-contract.test.ts",
+      "snapshot": "0005.raw",
+      "raw_sha256": "95ccbac726da98c2905b24f04094db0a11ff2d70776e26d7406aea24d7d26aa4",
+      "blob_sha256": "95ccbac726da98c2905b24f04094db0a11ff2d70776e26d7406aea24d7d26aa4"
+    },
+    {
+      "path": "packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts",
+      "snapshot": "0006.raw",
+      "raw_sha256": "08fdaef689d2368511a89fb67bf7daf98bcabcb8335e73baa203498d4e90b1b8",
+      "blob_sha256": "08fdaef689d2368511a89fb67bf7daf98bcabcb8335e73baa203498d4e90b1b8"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-orchestrator.md",
+      "snapshot": "0007.raw",
+      "raw_sha256": "4f71e63bc34c02ef6827de60b34d622c0c0a71545314f9a43f6d6b167666ef17",
+      "blob_sha256": "9ce846f6e24f5d53f31b26b153461b95d0bf14a51e6bacbeeec5c8b3a19350f0"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md",
+      "snapshot": "0008.raw",
+      "raw_sha256": "5e59ced0b55bb23a89556b787082a0514112d9b49ee8ecb97c6b29b475720523",
+      "blob_sha256": "5e59ced0b55bb23a89556b787082a0514112d9b49ee8ecb97c6b29b475720523"
+    }
+  ],
+  "native": [
+    {
+      "target": "sf-user/bin/specforge.exe",
+      "source": "release/bin/specforge.exe",
+      "sha256": "4e60c6b592434421240f92006abf63691a41dd9736967eeec39c45482d60ee8d"
+    },
+    {
+      "target": "sf-user/bin/specforged.exe",
+      "source": "release/bin/specforged.exe",
+      "sha256": "003faf31d46f30a440c65037acae46dd8a9ab7df82e395160100ba44798daca8"
+    },
+    {
+      "target": "sf-user/bin/verification/node.exe",
+      "source": "release/bin/verification/node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "target": "sf-user/bin/verification/specforge-verify.exe",
+      "source": "release/bin/verification/specforge-verify.exe",
+      "sha256": "5cb378826469834143067b551108f2fc295e1e3e9a04dadb4d7293bc77a41d7f"
+    },
+    {
+      "target": "sf-user/bin/verification/assets.json",
+      "source": "release/bin/verification/assets.json",
+      "sha256": "28ee6f93f9a72a4e058004ade5cb79a22aacdbb3459090eee95ab04532bebc59"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/observe-original-artifact-tools.cjs",
+    "02"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Read actual original Report Evidence Gate state-transition and handoff results without prompting Agent",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES local Kernel read-only artifact-tool observation and sealed source receipts; no business invocation or model prompt",
+  "started_utc": "2026-11-07T06:29:05.375Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\observe-original-artifact-tools.cjs",
+      "sha256": "9ffb44b4c6be38fcd606bd1d73b29345d6c5abec7353de0461fcecf9966f9c0f",
+      "size": 2012,
+      "extension": ".cjs"
+    }
+  ]
+}

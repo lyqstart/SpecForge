@@ -1,0 +1,1 @@
+{"daemon_files":236,"daemon_tests":2338,"root_tests":748,"native_current_passed":true,"global_upgrade_pending":true,"original_fresh_formal_pending":true,"ledger_through":"ERR-2004"}

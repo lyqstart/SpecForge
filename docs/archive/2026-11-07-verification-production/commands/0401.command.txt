@@ -1,0 +1,18 @@
+{
+  "executable": "git",
+  "args": [
+    "-c",
+    "core.hooksPath=NUL",
+    "-c",
+    "core.fsmonitor=false",
+    "merge",
+    "--ff-only",
+    "codex/verification-production"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Fast-forward local product main to fully verified feature4d891569",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES authorized main ref/worktree/index integration; EXTERNAL_EVIDENCE_WRITES receipt; no remote push or business main action",
+  "started_utc": "2026-11-07T08:36:17.673Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": []
+}

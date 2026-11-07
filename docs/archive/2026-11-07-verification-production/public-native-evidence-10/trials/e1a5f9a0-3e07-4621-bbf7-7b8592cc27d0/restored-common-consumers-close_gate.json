@@ -1,0 +1,237 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-9901",
+  "gate_id": "close_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "failed",
+  "input_files": [
+    "work_item.json",
+    "intake.md",
+    "trigger_result.json",
+    "change_classification.md",
+    "impact_analysis.md",
+    "candidate_manifest.json",
+    "verification_report.md",
+    "merge_report.md",
+    "changed_files_audit.md",
+    "evidence/evidence_manifest.json",
+    ".semantic_closure.json",
+    "candidates/tasks.md",
+    "gates/formal_version_gate.json",
+    "formal_version_snapshot.json",
+    ".specforge/project/extension_registry.json",
+    ".specforge/project/spec_manifest.json"
+  ],
+  "checks": [
+    {
+      "check_id": "close_file_work_item_json",
+      "description": "Required file exists: work_item.json",
+      "passed": true
+    },
+    {
+      "check_id": "close_file_intake_md",
+      "description": "Required file exists: intake.md",
+      "passed": false,
+      "severity": "error"
+    },
+    {
+      "check_id": "close_file_trigger_result_json",
+      "description": "Required file exists: trigger_result.json",
+      "passed": false,
+      "severity": "error"
+    },
+    {
+      "check_id": "close_file_change_classification_md",
+      "description": "Required file exists: change_classification.md",
+      "passed": false,
+      "severity": "error"
+    },
+    {
+      "check_id": "close_file_impact_analysis_md",
+      "description": "Required file exists: impact_analysis.md",
+      "passed": false,
+      "severity": "error"
+    },
+    {
+      "check_id": "close_file_candidate_manifest_json",
+      "description": "Required file exists: candidate_manifest.json",
+      "passed": true
+    },
+    {
+      "check_id": "close_file_verification_report_md",
+      "description": "Required file exists: verification_report.md",
+      "passed": true
+    },
+    {
+      "check_id": "close_file_merge_report_md",
+      "description": "Required file exists: merge_report.md",
+      "passed": true
+    },
+    {
+      "check_id": "close_file_changed_files_audit_md",
+      "description": "Required file exists: changed_files_audit.md",
+      "passed": false,
+      "severity": "error"
+    },
+    {
+      "check_id": "close_file_evidence_evidence_manifest_json",
+      "description": "Required file exists: evidence/evidence_manifest.json",
+      "passed": true
+    },
+    {
+      "check_id": "close_file__semantic_closure_json",
+      "description": "Required file exists: .semantic_closure.json",
+      "passed": false,
+      "severity": "error"
+    },
+    {
+      "check_id": "close_artifact_tasks_authoritative",
+      "description": "Authoritative tasks artifact is present (Candidate first; authored legacy fallback only)",
+      "passed": true,
+      "details": "path=.specforge/work-items/WI-9901/candidates/tasks.md"
+    },
+    {
+      "check_id": "close_formal_version_gate",
+      "description": "Formal Version Gate passed before Close",
+      "passed": false,
+      "severity": "error",
+      "details": "status=failed"
+    },
+    {
+      "check_id": "close_project_spec_core_version_coherent",
+      "description": "Project Spec Core files agree on the authoritative project_spec_version when declared",
+      "passed": true,
+      "details": "project_spec_version=PSV-0001"
+    },
+    {
+      "check_id": "close_filesystem_formal_version_current",
+      "description": "Filesystem implementation file set and content fingerprint still match Formal Version",
+      "passed": true,
+      "details": "filesystem Formal Version snapshot is current or not applicable to Git mode"
+    },
+    {
+      "check_id": "close_write_guard_audit_current",
+      "description": "Changed Files Audit covers the current Write Guard and resolution evidence",
+      "passed": true
+    },
+    {
+      "check_id": "close_verification_nonempty",
+      "description": "verification_report is not empty",
+      "passed": true
+    },
+    {
+      "check_id": "close_verification_refs_evidence",
+      "description": "verification_report references Evidence (§13.3)",
+      "passed": true
+    },
+    {
+      "check_id": "close_user_decision_valid",
+      "description": "User Decision is approved or waived (§10)",
+      "passed": true
+    },
+    {
+      "check_id": "close_user_decision_semantic_valid",
+      "description": "User Decision is semantically valid: actor, workflow_path, Gate hash, manifest hash, candidate hash",
+      "passed": true
+    },
+    {
+      "check_id": "close_workflow_path_valid",
+      "description": "workflow_path is valid (§6.4)",
+      "passed": true,
+      "details": "effective_workflow_path=code_only_fast_path; work_item.workflow_path=code_only_fast_path; ctx.workflow_path=code_only_fast_path"
+    },
+    {
+      "check_id": "close_code_permission_revoked",
+      "description": "code_permission is revoked by daemon fact source (§12)",
+      "passed": true
+    },
+    {
+      "check_id": "close_allowed_write_empty",
+      "description": "allowed_write_files is empty (§15.2.13-14)",
+      "passed": true
+    },
+    {
+      "check_id": "close_no_write_guard_violations",
+      "description": "No unresolved Write Guard violations (§15.2.12)",
+      "passed": true
+    },
+    {
+      "check_id": "close_resume_plan_no_pending",
+      "description": "No resume_plan present (not applicable)",
+      "passed": true
+    },
+    {
+      "check_id": "close_evidence_manifest_has_entries",
+      "description": "evidence_manifest has entries (§13.4)",
+      "passed": true
+    },
+    {
+      "check_id": "close_verification_evidence_source_and_time_integrity",
+      "description": "verification evidence source and declared time remain valid at Close",
+      "passed": true
+    },
+    {
+      "check_id": "close_semantic_closure_json_valid",
+      "description": ".semantic_closure.json exists and is valid JSON",
+      "passed": false,
+      "severity": "error"
+    },
+    {
+      "check_id": "close_semantic_closure_provenance_current",
+      "description": "semantic closure is bound to the current verification artifacts",
+      "passed": false,
+      "severity": "error",
+      "details": "SEMANTIC_CLOSURE_PROVENANCE_MISSING: regenerate with sf_semantic_closure_run(force=true)."
+    },
+    {
+      "check_id": "close_merge_report_valid",
+      "description": "merge_report satisfies its current contract and belongs to this Work Item (§11)",
+      "passed": true,
+      "details": "status=not_applicable"
+    },
+    {
+      "check_id": "close_post_merge_gate",
+      "description": "post_merge_gate passed or not_applicable (§15.2)",
+      "passed": true,
+      "details": "status=not_present"
+    },
+    {
+      "check_id": "close_no_blocking_issues",
+      "description": "No unresolved blocking issues from gates/*.json (§15.2)",
+      "passed": false,
+      "severity": "error",
+      "details": "9 issue(s): Verification Gate passed; Changed Files Audit passed; Pre-implementation version-control mode is frozen or recovered from bound legacy evidence; Version-control mode remains the mode frozen before implementation; Semantic closure evidence exists"
+    },
+    {
+      "check_id": "close_waiver_follow_up",
+      "description": "No waivers requiring follow-up",
+      "passed": true,
+      "details": "waiver_ids=[]; waiver_used=false"
+    },
+    {
+      "check_id": "close_extension_request_resolved",
+      "description": "No extension_request.json present (not applicable)",
+      "passed": true
+    }
+  ],
+  "blocking_issues": [
+    "Required file exists: intake.md",
+    "Required file exists: trigger_result.json",
+    "Required file exists: change_classification.md",
+    "Required file exists: impact_analysis.md",
+    "Required file exists: changed_files_audit.md",
+    "Required file exists: .semantic_closure.json",
+    "Formal Version Gate passed before Close",
+    ".semantic_closure.json exists and is valid JSON",
+    "semantic closure is bound to the current verification artifacts",
+    "No unresolved blocking issues from gates/*.json (§15.2)"
+  ],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-11-07T03:52:26.375Z",
+  "finished_at": "2026-11-07T03:52:26.375Z",
+  "runner": "gate_runner"
+}

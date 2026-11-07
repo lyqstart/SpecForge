@@ -1,0 +1,21 @@
+{
+  "executable": "node",
+  "args": [
+    "--check",
+    "docs/archive/2026-11-07-verification-production/record-publication-completion.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Qualify final unique-status publication completion helper syntax",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=final preseal syntax receipt",
+  "started_utc": "2026-11-07T10:56:16.654Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 1,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\record-publication-completion.cjs",
+      "sha256": "f9d02f7b222b81a3a4b6ccea3c21a55d1be3a803828c986eb4220cab8e088926",
+      "size": 2549,
+      "extension": ".cjs"
+    }
+  ]
+}

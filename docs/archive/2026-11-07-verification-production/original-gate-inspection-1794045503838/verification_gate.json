@@ -1,0 +1,1508 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0001",
+  "gate_id": "verification_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "passed",
+  "input_files": [
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\verification_report.md",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\evidence\\evidence_manifest.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\changed_files_audit.md",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\.semantic_closure.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\src\\greet.ts",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\tests\\greet.test.ts",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\extension_registry.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\modules\\CORE\\contracts.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\spec_manifest.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\architecture.md",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\data_model.md",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\modules\\CORE\\design.md",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\modules\\CORE\\module.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\modules\\CORE\\trace.md",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\git_context.json",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\governance_scope.json"
+  ],
+  "checks": [
+    {
+      "check_id": "verification_report_exists",
+      "description": "verification_report.md exists",
+      "passed": true
+    },
+    {
+      "check_id": "verification_evidence_source_and_time_integrity",
+      "description": "manual acceptance has independent content-bound evidence and declared times do not exceed runtime time",
+      "passed": true
+    },
+    {
+      "check_id": "evidence_manifest_schema_current",
+      "description": "evidence_manifest uses the current owner schema",
+      "passed": true
+    },
+    {
+      "check_id": "verification_report_contract_valid",
+      "description": "verification_report satisfies the shared verification-report/v1 contract",
+      "passed": true
+    },
+    {
+      "check_id": "verification_report_conclusion_pass",
+      "description": "verification_report conclusion is pass",
+      "passed": true,
+      "details": "pass"
+    },
+    {
+      "check_id": "verification_required_tests_complete",
+      "description": "required tests were executed or explicitly marked not_applicable",
+      "passed": true,
+      "details": "statuses=pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,not_applicable,pass,not_applicable,pass,not_applicable,not_applicable,not_applicable,not_applicable"
+    },
+    {
+      "check_id": "verification_acceptance_criteria_passed",
+      "description": "acceptance criteria are present and passed",
+      "passed": true,
+      "details": "statuses=pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,pass"
+    },
+    {
+      "check_id": "verification_e2e_complete",
+      "description": "end-to-end verification passed or is explicitly not_applicable",
+      "passed": true,
+      "details": "statuses=pass"
+    },
+    {
+      "check_id": "verification_evidence_manifest_nonempty",
+      "description": "evidence_manifest exists and has registered entries",
+      "passed": true
+    },
+    {
+      "check_id": "verification_report_claims_have_registered_evidence",
+      "description": "acceptance and end-to-end claims reference registered Evidence",
+      "passed": true
+    },
+    {
+      "check_id": "verification_side_effects_declared",
+      "description": "verification side effects are explicitly declared",
+      "passed": true
+    },
+    {
+      "check_id": "verification_write_guard_audit_current",
+      "description": "Changed Files Audit covers current Write Guard and resolution evidence",
+      "passed": true
+    },
+    {
+      "check_id": "verification_changed_files_audit_passed",
+      "description": "changed_files_audit is complete and passed",
+      "passed": true
+    },
+    {
+      "check_id": "verification_semantic_closure_valid",
+      "description": "semantic closure proves the user outcome to evidence chain",
+      "passed": true
+    },
+    {
+      "check_id": "verification_semantic_closure_provenance_current",
+      "description": "semantic closure is bound to the current verification artifacts",
+      "passed": true
+    },
+    {
+      "check_id": "verification_claims_match_evidence_manifest",
+      "description": "semantic evidence claims match registered Evidence Manifest entries",
+      "passed": true
+    },
+    {
+      "check_id": "evidence_manifest_exists",
+      "description": "evidence/evidence_manifest.json exists and is valid JSON",
+      "passed": true
+    },
+    {
+      "check_id": "code_contract_registry_readable",
+      "description": "Project and Module Contract registries are readable for code reconciliation",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check_id": "code_contract_ast_coverage",
+      "description": "Changed TypeScript/JavaScript explicit Contract bindings were AST-checked",
+      "passed": true,
+      "details": "checked=src/greet.ts, tests/greet.test.ts; machine_contracts=none; manual_review=src/greet.ts"
+    },
+    {
+      "check_id": "code_contract_manual_review_module_0",
+      "description": "Manual-review source src/greet.ts resolves to exactly one owning Module",
+      "passed": true,
+      "details": "owners=CORE"
+    },
+    {
+      "check_id": "code_contract_manual_review_0_PI-CORE-001",
+      "description": "Unverified Contract consumer src/greet.ts has structured manual review for PI-CORE-001",
+      "passed": true
+    },
+    {
+      "check_id": "code_contract_consumer_module_0",
+      "description": "src/greet.ts resolves to exactly one owning Module",
+      "passed": true,
+      "details": "contract=PI-CORE-001"
+    },
+    {
+      "check_id": "code_contract_internal_boundary_0",
+      "description": "Actual consumer CORE respects PI-CORE-001 Contract visibility",
+      "passed": true,
+      "details": "level=module; owner=CORE"
+    },
+    {
+      "check_id": "code_contract_trace_reconciliation_0",
+      "description": "Actual Contract consumer CORE/src/greet.ts is declared by formal Trace",
+      "passed": true,
+      "details": "contract=PI-CORE-001; verification=textual_unverified"
+    },
+    {
+      "check_id": "architecture_id_format",
+      "description": "Every declared Architecture ID uses ARCH-<DOMAIN>-<NNN>",
+      "passed": true,
+      "severity": "error",
+      "details": "invalid=none; valid=ARCH-CORE-001,ARCH-CORE-002,ARCH-CORE-003,ARCH-CORE-004"
+    },
+    {
+      "check_id": "data_model_id_format",
+      "description": "Every declared Data ID uses DATA-<DOMAIN>-<NNN>, or the model is explicitly not applicable",
+      "passed": true,
+      "severity": "error",
+      "details": "invalid=none; valid=DATA-CORE-001,DATA-CORE-002,DATA-CORE-003,DATA-CORE-004; not_applicable=false"
+    },
+    {
+      "check_id": "module_design_id_format",
+      "description": "Every declared Module Design ID uses DD-<DOMAIN>-<NNN>",
+      "passed": true,
+      "severity": "error",
+      "details": "invalid=none"
+    },
+    {
+      "check_id": "architecture_ids_exist",
+      "description": "Formal Project Architecture contains stable ARCH-* IDs",
+      "passed": true
+    },
+    {
+      "check_id": "data_model_declared",
+      "description": "Formal Project Data Model contains DATA-* IDs or explicit DATA_MODEL_NOT_APPLICABLE",
+      "passed": true
+    },
+    {
+      "check_id": "module_CORE_code_paths",
+      "description": "Module CORE declares explicit code_paths in spec_manifest.json",
+      "passed": true
+    },
+    {
+      "check_id": "module_CORE_contracts_path",
+      "description": "Module CORE declares contracts.json in spec_manifest.json",
+      "passed": true
+    },
+    {
+      "check_id": "module_CORE_design_ids",
+      "description": "Module CORE Design contains stable DD-* decisions",
+      "passed": true
+    },
+    {
+      "check_id": "governance_trace_0_endpoints",
+      "description": "DATA-CORE-001 constrained_by ARCH-CORE-003: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_0_shape",
+      "description": "DATA-CORE-001 constrained_by ARCH-CORE-003: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_1_endpoints",
+      "description": "DATA-CORE-002 constrained_by ARCH-CORE-003: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_1_shape",
+      "description": "DATA-CORE-002 constrained_by ARCH-CORE-003: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_2_endpoints",
+      "description": "DATA-CORE-003 constrained_by ARCH-CORE-003: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_2_shape",
+      "description": "DATA-CORE-003 constrained_by ARCH-CORE-003: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_3_endpoints",
+      "description": "DATA-CORE-004 constrained_by ARCH-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_3_shape",
+      "description": "DATA-CORE-004 constrained_by ARCH-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_4_endpoints",
+      "description": "DD-CORE-001 constrained_by ARCH-CORE-001: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_4_shape",
+      "description": "DD-CORE-001 constrained_by ARCH-CORE-001: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_5_endpoints",
+      "description": "DD-CORE-001 constrained_by ARCH-CORE-003: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_5_shape",
+      "description": "DD-CORE-001 constrained_by ARCH-CORE-003: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_6_endpoints",
+      "description": "DD-CORE-001 constrained_by DATA-CORE-001: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_6_shape",
+      "description": "DD-CORE-001 constrained_by DATA-CORE-001: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_7_endpoints",
+      "description": "DD-CORE-001 constrained_by DATA-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_7_shape",
+      "description": "DD-CORE-001 constrained_by DATA-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_8_endpoints",
+      "description": "DD-CORE-001 constrained_by PI-CORE-001: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_8_shape",
+      "description": "DD-CORE-001 constrained_by PI-CORE-001: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_9_endpoints",
+      "description": "DD-CORE-002 constrained_by DATA-CORE-001: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_9_shape",
+      "description": "DD-CORE-002 constrained_by DATA-CORE-001: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_10_endpoints",
+      "description": "DD-CORE-002 constrained_by DATA-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_10_shape",
+      "description": "DD-CORE-002 constrained_by DATA-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_11_endpoints",
+      "description": "DD-CORE-002 constrained_by DATA-CORE-003: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_11_shape",
+      "description": "DD-CORE-002 constrained_by DATA-CORE-003: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_12_endpoints",
+      "description": "DD-CORE-002 constrained_by INV-CORE-001: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_12_shape",
+      "description": "DD-CORE-002 constrained_by INV-CORE-001: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_13_endpoints",
+      "description": "DD-CORE-002 constrained_by INV-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_13_shape",
+      "description": "DD-CORE-002 constrained_by INV-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_14_endpoints",
+      "description": "DD-CORE-002 constrained_by PI-CORE-001: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_14_shape",
+      "description": "DD-CORE-002 constrained_by PI-CORE-001: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_15_endpoints",
+      "description": "DD-CORE-003 constrained_by ARCH-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_15_shape",
+      "description": "DD-CORE-003 constrained_by ARCH-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_16_endpoints",
+      "description": "DD-CORE-003 constrained_by ARCH-CORE-004: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_16_shape",
+      "description": "DD-CORE-003 constrained_by ARCH-CORE-004: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_17_endpoints",
+      "description": "DD-CORE-003 constrained_by INV-CORE-003: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_17_shape",
+      "description": "DD-CORE-003 constrained_by INV-CORE-003: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_18_endpoints",
+      "description": "DD-CORE-004 constrained_by ARCH-CORE-001: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_18_shape",
+      "description": "DD-CORE-004 constrained_by ARCH-CORE-001: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_19_endpoints",
+      "description": "DD-CORE-004 constrained_by ARCH-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_19_shape",
+      "description": "DD-CORE-004 constrained_by ARCH-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_20_endpoints",
+      "description": "DD-CORE-004 constrained_by ARCH-CORE-004: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_20_shape",
+      "description": "DD-CORE-004 constrained_by ARCH-CORE-004: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_21_endpoints",
+      "description": "DD-CORE-004 constrained_by INV-CORE-003: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_21_shape",
+      "description": "DD-CORE-004 constrained_by INV-CORE-003: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_22_endpoints",
+      "description": "DD-CORE-005 constrained_by ARCH-CORE-001: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_22_shape",
+      "description": "DD-CORE-005 constrained_by ARCH-CORE-001: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_23_endpoints",
+      "description": "DD-CORE-006 constrained_by ARCH-CORE-004: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_23_shape",
+      "description": "DD-CORE-006 constrained_by ARCH-CORE-004: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_24_endpoints",
+      "description": "DD-CORE-006 constrained_by INV-CORE-001: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_24_shape",
+      "description": "DD-CORE-006 constrained_by INV-CORE-001: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_25_endpoints",
+      "description": "DD-CORE-006 constrained_by INV-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_25_shape",
+      "description": "DD-CORE-006 constrained_by INV-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_26_endpoints",
+      "description": "DD-CORE-006 constrained_by PI-CORE-001: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_26_shape",
+      "description": "DD-CORE-006 constrained_by PI-CORE-001: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_27_endpoints",
+      "description": "INV-CORE-001 enforces DD-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_27_shape",
+      "description": "INV-CORE-001 enforces DD-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_28_endpoints",
+      "description": "INV-CORE-002 enforces DD-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_28_shape",
+      "description": "INV-CORE-002 enforces DD-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_29_endpoints",
+      "description": "INV-CORE-003 enforces DD-CORE-003: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_29_shape",
+      "description": "INV-CORE-003 enforces DD-CORE-003: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_30_endpoints",
+      "description": "INV-CORE-003 enforces DD-CORE-004: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_30_shape",
+      "description": "INV-CORE-003 enforces DD-CORE-004: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_31_endpoints",
+      "description": "PI-0001 enforces ARCH-CORE-001: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_31_shape",
+      "description": "PI-0001 enforces ARCH-CORE-001: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_32_endpoints",
+      "description": "PI-0001 enforces ARCH-CORE-003: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_32_shape",
+      "description": "PI-0001 enforces ARCH-CORE-003: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_33_endpoints",
+      "description": "PI-0001 enforces DATA-CORE-001: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_33_shape",
+      "description": "PI-0001 enforces DATA-CORE-001: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_34_endpoints",
+      "description": "PI-0001 enforces DATA-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_34_shape",
+      "description": "PI-0001 enforces DATA-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_35_endpoints",
+      "description": "PI-CORE-001 enforces DD-CORE-001: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_35_shape",
+      "description": "PI-CORE-001 enforces DD-CORE-001: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_36_endpoints",
+      "description": "PI-CORE-001 enforces DD-CORE-002: both IDs exist",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "governance_trace_36_shape",
+      "description": "PI-CORE-001 enforces DD-CORE-002: relation direction/type is legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "impact_scope_contract_consumers_expanded",
+      "description": "Impact Scope is expanded from changed Contracts to every formal DD and Module consumer",
+      "passed": true,
+      "details": "declared_modules=CORE; consumer_modules=none; effective_modules=CORE"
+    },
+    {
+      "check_id": "impact_scope_present",
+      "description": "Active governance requires a non-empty machine-readable Impact Scope",
+      "passed": true
+    },
+    {
+      "check_id": "planned_code_owner_b3356305",
+      "description": "Planned code path maps to exactly one Module: README.md",
+      "passed": true,
+      "details": "owners=CORE"
+    },
+    {
+      "check_id": "planned_code_scope_b3356305",
+      "description": "Planned code path owner is declared affected: README.md",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "planned_code_owner_7ae45ad1",
+      "description": "Planned code path maps to exactly one Module: package.json",
+      "passed": true,
+      "details": "owners=CORE"
+    },
+    {
+      "check_id": "planned_code_scope_7ae45ad1",
+      "description": "Planned code path owner is declared affected: package.json",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "planned_code_owner_4a8f3f01",
+      "description": "Planned code path maps to exactly one Module: src/greet.ts",
+      "passed": true,
+      "details": "owners=CORE"
+    },
+    {
+      "check_id": "planned_code_scope_4a8f3f01",
+      "description": "Planned code path owner is declared affected: src/greet.ts",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "planned_code_owner_70f41969",
+      "description": "Planned code path maps to exactly one Module: tests/greet.test.ts",
+      "passed": true,
+      "details": "owners=CORE"
+    },
+    {
+      "check_id": "planned_code_scope_70f41969",
+      "description": "Planned code path owner is declared affected: tests/greet.test.ts",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "planned_code_owner_b55cdbef",
+      "description": "Planned code path maps to exactly one Module: tsconfig.json",
+      "passed": true,
+      "details": "owners=CORE"
+    },
+    {
+      "check_id": "planned_code_scope_b55cdbef",
+      "description": "Planned code path owner is declared affected: tsconfig.json",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "task_allowed_write_files_fe21e323",
+      "description": "Task TASK-WI-0001-001 declares allowed_write_files",
+      "passed": true
+    },
+    {
+      "check_id": "task_write_impact_d89e153b",
+      "description": "Task TASK-WI-0001-001 write path must be covered by approved Impact Scope: package.json",
+      "passed": true,
+      "details": "covered=true; matched_pattern=package.json"
+    },
+    {
+      "check_id": "task_write_owner_d89e153b",
+      "description": "Task TASK-WI-0001-001 write path maps to exactly one Module or approved cross-module test harness: package.json",
+      "passed": true,
+      "details": "owners=CORE; approved_cross_module_test_harness=false"
+    },
+    {
+      "check_id": "task_write_scope_d89e153b",
+      "description": "Task TASK-WI-0001-001 write path owner is declared affected: package.json",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "task_write_impact_f5647f97",
+      "description": "Task TASK-WI-0001-001 write path must be covered by approved Impact Scope: tsconfig.json",
+      "passed": true,
+      "details": "covered=true; matched_pattern=tsconfig.json"
+    },
+    {
+      "check_id": "task_write_owner_f5647f97",
+      "description": "Task TASK-WI-0001-001 write path maps to exactly one Module or approved cross-module test harness: tsconfig.json",
+      "passed": true,
+      "details": "owners=CORE; approved_cross_module_test_harness=false"
+    },
+    {
+      "check_id": "task_write_scope_f5647f97",
+      "description": "Task TASK-WI-0001-001 write path owner is declared affected: tsconfig.json",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "task_allowed_write_files_b44a55fe",
+      "description": "Task TASK-WI-0001-002 declares allowed_write_files",
+      "passed": true
+    },
+    {
+      "check_id": "task_write_impact_141335eb",
+      "description": "Task TASK-WI-0001-002 write path must be covered by approved Impact Scope: src/greet.ts",
+      "passed": true,
+      "details": "covered=true; matched_pattern=src/greet.ts"
+    },
+    {
+      "check_id": "task_write_owner_141335eb",
+      "description": "Task TASK-WI-0001-002 write path maps to exactly one Module or approved cross-module test harness: src/greet.ts",
+      "passed": true,
+      "details": "owners=CORE; approved_cross_module_test_harness=false"
+    },
+    {
+      "check_id": "task_write_scope_141335eb",
+      "description": "Task TASK-WI-0001-002 write path owner is declared affected: src/greet.ts",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "task_allowed_write_files_d077b050",
+      "description": "Task TASK-WI-0001-003 declares allowed_write_files",
+      "passed": true
+    },
+    {
+      "check_id": "task_write_impact_e5b6d544",
+      "description": "Task TASK-WI-0001-003 write path must be covered by approved Impact Scope: tests/greet.test.ts",
+      "passed": true,
+      "details": "covered=true; matched_pattern=tests/greet.test.ts"
+    },
+    {
+      "check_id": "task_write_owner_e5b6d544",
+      "description": "Task TASK-WI-0001-003 write path maps to exactly one Module or approved cross-module test harness: tests/greet.test.ts",
+      "passed": true,
+      "details": "owners=CORE; approved_cross_module_test_harness=false"
+    },
+    {
+      "check_id": "task_write_scope_e5b6d544",
+      "description": "Task TASK-WI-0001-003 write path owner is declared affected: tests/greet.test.ts",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "task_allowed_write_files_f753a896",
+      "description": "Task TASK-WI-0001-004 declares allowed_write_files",
+      "passed": true
+    },
+    {
+      "check_id": "task_write_impact_9fa20324",
+      "description": "Task TASK-WI-0001-004 write path must be covered by approved Impact Scope: README.md",
+      "passed": true,
+      "details": "covered=true; matched_pattern=README.md"
+    },
+    {
+      "check_id": "task_write_owner_9fa20324",
+      "description": "Task TASK-WI-0001-004 write path maps to exactly one Module or approved cross-module test harness: README.md",
+      "passed": true,
+      "details": "owners=CORE; approved_cross_module_test_harness=false"
+    },
+    {
+      "check_id": "task_write_scope_9fa20324",
+      "description": "Task TASK-WI-0001-004 write path owner is declared affected: README.md",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "task_allowed_write_files_02f652ad",
+      "description": "Task TASK-WI-0001-005 declares allowed_write_files",
+      "passed": true
+    },
+    {
+      "check_id": "task_write_impact_391180b1",
+      "description": "Task TASK-WI-0001-005 write path must be covered by approved Impact Scope: package.json",
+      "passed": true,
+      "details": "covered=true; matched_pattern=package.json"
+    },
+    {
+      "check_id": "task_write_owner_391180b1",
+      "description": "Task TASK-WI-0001-005 write path maps to exactly one Module or approved cross-module test harness: package.json",
+      "passed": true,
+      "details": "owners=CORE; approved_cross_module_test_harness=false"
+    },
+    {
+      "check_id": "task_write_scope_391180b1",
+      "description": "Task TASK-WI-0001-005 write path owner is declared affected: package.json",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "architecture_candidate_required",
+      "description": "architecture_changed requires an Architecture Candidate",
+      "passed": true
+    },
+    {
+      "check_id": "data_model_candidate_required",
+      "description": "data_model_changed requires a Project Data Model Candidate",
+      "passed": true
+    },
+    {
+      "check_id": "design_candidate_required",
+      "description": "design_changed requires at least one Module Design Candidate",
+      "passed": true
+    },
+    {
+      "check_id": "module_contract_candidate_required",
+      "description": "module_contract_changed requires at least one Module Contract Candidate",
+      "passed": true
+    },
+    {
+      "check_id": "architecture_id_format",
+      "description": "Every declared Architecture ID uses ARCH-<DOMAIN>-<NNN>",
+      "passed": true,
+      "severity": "error",
+      "details": "invalid=none; valid=ARCH-CORE-001,ARCH-CORE-002,ARCH-CORE-003,ARCH-CORE-004"
+    },
+    {
+      "check_id": "data_model_id_format",
+      "description": "Every declared Data ID uses DATA-<DOMAIN>-<NNN>, or the model is explicitly not applicable",
+      "passed": true,
+      "severity": "error",
+      "details": "invalid=none; valid=DATA-CORE-001,DATA-CORE-002,DATA-CORE-003,DATA-CORE-004; not_applicable=false"
+    },
+    {
+      "check_id": "module_design_id_format",
+      "description": "Every declared Module Design ID uses DD-<DOMAIN>-<NNN>",
+      "passed": true,
+      "severity": "error",
+      "details": "invalid=none"
+    },
+    {
+      "check_id": "contract_PI-0001_unique_truth_source",
+      "description": "Contract PI-0001 has exactly one governance-level definition",
+      "passed": true,
+      "details": "definitions=1"
+    },
+    {
+      "check_id": "contract_INV-CORE-001_unique_truth_source",
+      "description": "Contract INV-CORE-001 has exactly one governance-level definition",
+      "passed": true,
+      "details": "definitions=1"
+    },
+    {
+      "check_id": "contract_INV-CORE-002_unique_truth_source",
+      "description": "Contract INV-CORE-002 has exactly one governance-level definition",
+      "passed": true,
+      "details": "definitions=1"
+    },
+    {
+      "check_id": "contract_INV-CORE-003_unique_truth_source",
+      "description": "Contract INV-CORE-003 has exactly one governance-level definition",
+      "passed": true,
+      "details": "definitions=1"
+    },
+    {
+      "check_id": "contract_PI-CORE-001_unique_truth_source",
+      "description": "Contract PI-CORE-001 has exactly one governance-level definition",
+      "passed": true,
+      "details": "definitions=1"
+    },
+    {
+      "check_id": "module_contract_CORE_exists",
+      "description": "Module CORE has a contracts.json",
+      "passed": true
+    },
+    {
+      "check_id": "module_contract_CORE_valid",
+      "description": "Module CORE contracts.json is valid",
+      "passed": true
+    },
+    {
+      "check_id": "module_contract_CORE_owner",
+      "description": "Module CORE contracts.json owner_module matches its directory Module",
+      "passed": true,
+      "details": "owner_module=CORE"
+    },
+    {
+      "check_id": "contract_PI-0001_owner",
+      "description": "Contract PI-0001 declares a valid owner Module",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "contract_PI-0001_source_refs",
+      "description": "Contract PI-0001 declares source_refs",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-0001_enforcement",
+      "description": "Contract PI-0001 declares machine enforcement",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-0001_source_ARCH_CORE_001",
+      "description": "Contract PI-0001 source is legal: ARCH-CORE-001",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-0001_source_ARCH_CORE_003",
+      "description": "Contract PI-0001 source is legal: ARCH-CORE-003",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-0001_source_DATA_CORE_001",
+      "description": "Contract PI-0001 source is legal: DATA-CORE-001",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-0001_source_DATA_CORE_002",
+      "description": "Contract PI-0001 source is legal: DATA-CORE-002",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-001_owner",
+      "description": "Contract INV-CORE-001 declares a valid owner Module",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "contract_INV-CORE-001_source_refs",
+      "description": "Contract INV-CORE-001 declares source_refs",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-001_enforcement",
+      "description": "Contract INV-CORE-001 declares machine enforcement",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-001_source_DD_CORE_002",
+      "description": "Contract INV-CORE-001 source is legal: DD-CORE-002",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-001_consumer_DD-CORE-002",
+      "description": "Contract INV-CORE-001 consumer DD-CORE-002 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-001_consumer_DD-CORE-006",
+      "description": "Contract INV-CORE-001 consumer DD-CORE-006 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-001_internal_boundary",
+      "description": "Internal Contract INV-CORE-001 is consumed only inside owner Module CORE",
+      "passed": true,
+      "details": "all consumers are internal"
+    },
+    {
+      "check_id": "contract_INV-CORE-002_owner",
+      "description": "Contract INV-CORE-002 declares a valid owner Module",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "contract_INV-CORE-002_source_refs",
+      "description": "Contract INV-CORE-002 declares source_refs",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-002_enforcement",
+      "description": "Contract INV-CORE-002 declares machine enforcement",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-002_source_DD_CORE_002",
+      "description": "Contract INV-CORE-002 source is legal: DD-CORE-002",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-002_consumer_DD-CORE-002",
+      "description": "Contract INV-CORE-002 consumer DD-CORE-002 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-002_consumer_DD-CORE-006",
+      "description": "Contract INV-CORE-002 consumer DD-CORE-006 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-002_internal_boundary",
+      "description": "Internal Contract INV-CORE-002 is consumed only inside owner Module CORE",
+      "passed": true,
+      "details": "all consumers are internal"
+    },
+    {
+      "check_id": "contract_INV-CORE-003_owner",
+      "description": "Contract INV-CORE-003 declares a valid owner Module",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "contract_INV-CORE-003_source_refs",
+      "description": "Contract INV-CORE-003 declares source_refs",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-003_enforcement",
+      "description": "Contract INV-CORE-003 declares machine enforcement",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-003_source_DD_CORE_003",
+      "description": "Contract INV-CORE-003 source is legal: DD-CORE-003",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-003_source_DD_CORE_004",
+      "description": "Contract INV-CORE-003 source is legal: DD-CORE-004",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-003_consumer_DD-CORE-003",
+      "description": "Contract INV-CORE-003 consumer DD-CORE-003 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-003_consumer_DD-CORE-004",
+      "description": "Contract INV-CORE-003 consumer DD-CORE-004 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_INV-CORE-003_internal_boundary",
+      "description": "Internal Contract INV-CORE-003 is consumed only inside owner Module CORE",
+      "passed": true,
+      "details": "all consumers are internal"
+    },
+    {
+      "check_id": "contract_PI-CORE-001_owner",
+      "description": "Contract PI-CORE-001 declares a valid owner Module",
+      "passed": true,
+      "details": "owner=CORE"
+    },
+    {
+      "check_id": "contract_PI-CORE-001_source_refs",
+      "description": "Contract PI-CORE-001 declares source_refs",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-CORE-001_enforcement",
+      "description": "Contract PI-CORE-001 declares machine enforcement",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-CORE-001_source_DD_CORE_001",
+      "description": "Contract PI-CORE-001 source is legal: DD-CORE-001",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-CORE-001_source_DD_CORE_002",
+      "description": "Contract PI-CORE-001 source is legal: DD-CORE-002",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-CORE-001_consumer_DD-CORE-001",
+      "description": "Contract PI-CORE-001 consumer DD-CORE-001 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-CORE-001_consumer_DD-CORE-002",
+      "description": "Contract PI-CORE-001 consumer DD-CORE-002 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-CORE-001_consumer_DD-CORE-006",
+      "description": "Contract PI-CORE-001 consumer DD-CORE-006 resolves to Module CORE",
+      "passed": true
+    },
+    {
+      "check_id": "contract_PI-CORE-001_internal_boundary",
+      "description": "Internal Contract PI-CORE-001 is consumed only inside owner Module CORE",
+      "passed": true,
+      "details": "all consumers are internal"
+    },
+    {
+      "check_id": "architecture_id_format",
+      "description": "Every declared Architecture ID uses ARCH-<DOMAIN>-<NNN>",
+      "passed": true,
+      "severity": "error",
+      "details": "invalid=none; valid=ARCH-CORE-001,ARCH-CORE-002,ARCH-CORE-003,ARCH-CORE-004"
+    },
+    {
+      "check_id": "data_model_id_format",
+      "description": "Every declared Data ID uses DATA-<DOMAIN>-<NNN>, or the model is explicitly not applicable",
+      "passed": true,
+      "severity": "error",
+      "details": "invalid=none; valid=DATA-CORE-001,DATA-CORE-002,DATA-CORE-003,DATA-CORE-004; not_applicable=false"
+    },
+    {
+      "check_id": "module_design_id_format",
+      "description": "Every declared Module Design ID uses DD-<DOMAIN>-<NNN>",
+      "passed": true,
+      "severity": "error",
+      "details": "invalid=none"
+    },
+    {
+      "check_id": "trace_data_DATA-CORE-001",
+      "description": "Data design DATA-CORE-001 is constrained by Project Architecture",
+      "passed": true
+    },
+    {
+      "check_id": "trace_data_DATA-CORE-002",
+      "description": "Data design DATA-CORE-002 is constrained by Project Architecture",
+      "passed": true
+    },
+    {
+      "check_id": "trace_data_DATA-CORE-003",
+      "description": "Data design DATA-CORE-003 is constrained by Project Architecture",
+      "passed": true
+    },
+    {
+      "check_id": "trace_data_DATA-CORE-004",
+      "description": "Data design DATA-CORE-004 is constrained by Project Architecture",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-001",
+      "description": "Module Design DD-CORE-001 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-002",
+      "description": "Module Design DD-CORE-002 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-003",
+      "description": "Module Design DD-CORE-003 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-004",
+      "description": "Module Design DD-CORE-004 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-005",
+      "description": "Module Design DD-CORE-005 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_dd_DD-CORE-006",
+      "description": "Module Design DD-CORE-006 is constrained by Architecture, Data Model, or a formal Contract",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_PI-0001_1aa6ba",
+      "description": "Contract PI-0001 formally enforces source ARCH-CORE-001",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_PI-0001_a1ccb8",
+      "description": "Contract PI-0001 formally enforces source ARCH-CORE-003",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_PI-0001_71bef1",
+      "description": "Contract PI-0001 formally enforces source DATA-CORE-001",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_PI-0001_37adad",
+      "description": "Contract PI-0001 formally enforces source DATA-CORE-002",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_INV-CORE-001_c62300",
+      "description": "Contract INV-CORE-001 formally enforces source DD-CORE-002",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_INV-CORE-002_c62300",
+      "description": "Contract INV-CORE-002 formally enforces source DD-CORE-002",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_INV-CORE-003_664a7c",
+      "description": "Contract INV-CORE-003 formally enforces source DD-CORE-003",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_INV-CORE-003_c3d9c0",
+      "description": "Contract INV-CORE-003 formally enforces source DD-CORE-004",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_PI-CORE-001_b74db0",
+      "description": "Contract PI-CORE-001 formally enforces source DD-CORE-001",
+      "passed": true
+    },
+    {
+      "check_id": "trace_contract_PI-CORE-001_c62300",
+      "description": "Contract PI-CORE-001 formally enforces source DD-CORE-002",
+      "passed": true
+    },
+    {
+      "check_id": "trace_relation_0",
+      "description": "DATA-CORE-001 constrained_by ARCH-CORE-003 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_1",
+      "description": "DATA-CORE-002 constrained_by ARCH-CORE-003 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_2",
+      "description": "DATA-CORE-003 constrained_by ARCH-CORE-003 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_3",
+      "description": "DATA-CORE-004 constrained_by ARCH-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_4",
+      "description": "DD-CORE-001 constrained_by ARCH-CORE-001 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_5",
+      "description": "DD-CORE-001 constrained_by ARCH-CORE-003 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_6",
+      "description": "DD-CORE-001 constrained_by DATA-CORE-001 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_7",
+      "description": "DD-CORE-001 constrained_by DATA-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_8",
+      "description": "DD-CORE-001 constrained_by PI-CORE-001 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_9",
+      "description": "DD-CORE-002 constrained_by DATA-CORE-001 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_10",
+      "description": "DD-CORE-002 constrained_by DATA-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_11",
+      "description": "DD-CORE-002 constrained_by DATA-CORE-003 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_12",
+      "description": "DD-CORE-002 constrained_by INV-CORE-001 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_13",
+      "description": "DD-CORE-002 constrained_by INV-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_14",
+      "description": "DD-CORE-002 constrained_by PI-CORE-001 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_15",
+      "description": "DD-CORE-003 constrained_by ARCH-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_16",
+      "description": "DD-CORE-003 constrained_by ARCH-CORE-004 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_17",
+      "description": "DD-CORE-003 constrained_by INV-CORE-003 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_18",
+      "description": "DD-CORE-004 constrained_by ARCH-CORE-001 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_19",
+      "description": "DD-CORE-004 constrained_by ARCH-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_20",
+      "description": "DD-CORE-004 constrained_by ARCH-CORE-004 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_21",
+      "description": "DD-CORE-004 constrained_by INV-CORE-003 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_22",
+      "description": "DD-CORE-005 constrained_by ARCH-CORE-001 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_23",
+      "description": "DD-CORE-006 constrained_by ARCH-CORE-004 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_24",
+      "description": "DD-CORE-006 constrained_by INV-CORE-001 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_25",
+      "description": "DD-CORE-006 constrained_by INV-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_26",
+      "description": "DD-CORE-006 constrained_by PI-CORE-001 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_27",
+      "description": "INV-CORE-001 enforces DD-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_28",
+      "description": "INV-CORE-002 enforces DD-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_29",
+      "description": "INV-CORE-003 enforces DD-CORE-003 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_30",
+      "description": "INV-CORE-003 enforces DD-CORE-004 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_31",
+      "description": "PI-0001 enforces ARCH-CORE-001 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_32",
+      "description": "PI-0001 enforces ARCH-CORE-003 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_33",
+      "description": "PI-0001 enforces DATA-CORE-001 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_34",
+      "description": "PI-0001 enforces DATA-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_35",
+      "description": "PI-CORE-001 enforces DD-CORE-001 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_relation_36",
+      "description": "PI-CORE-001 enforces DD-CORE-002 is semantically legal",
+      "passed": true,
+      "details": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md"
+    },
+    {
+      "check_id": "trace_module_view_CORE",
+      "description": "Module CORE trace.md is a generated projection of the canonical project Trace Matrix",
+      "passed": true,
+      "details": "generated=true; missing=none; unexpected=none"
+    },
+    {
+      "check_id": "actual_scope_audit_passed",
+      "description": "Changed Files Audit passed and actual implementation stays inside approved Module scope",
+      "passed": true,
+      "details": "changed_files_audit=passed; actual_modules=CORE; violations=none"
+    },
+    {
+      "check_id": "project_spec_version_frozen",
+      "description": "Project Spec version equals the Code Permission snapshot or every later version is proven by a successful Atomic Spec Merge chain",
+      "passed": true,
+      "details": "permission=PSV-0002; current=PSV-0002; later_merge_chain=not_needed"
+    }
+  ],
+  "blocking_issues": [],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-11-07T09:55:07.761Z",
+  "finished_at": "2026-11-07T09:55:07.761Z",
+  "runner": "gate_runner"
+}

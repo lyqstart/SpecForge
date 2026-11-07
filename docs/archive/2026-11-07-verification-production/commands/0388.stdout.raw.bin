@@ -1,0 +1,12 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/git-detached-filter-exclusion.test.ts (1 test) 12035ms
+   ✓ never starts a repository clean filter while checking or publishing a detached bootstrap  12033ms
+ ✓ tests/design-governance-orchestrator-closure.test.ts (17 tests) 883ms
+
+ Test Files  2 passed (2)
+      Tests  18 passed (18)
+   Start at  16:17:47
+   Duration  18.14s (transform 2.17s, setup 0ms, collect 4.22s, tests 12.92s, environment 0ms, prepare 393ms)
+

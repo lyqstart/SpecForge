@@ -1,0 +1,82 @@
+  // SPS §8: finite orchestration/Daemon-owner integration, not full WI/Gate acceptance.
+  describe("AC-4: Daemon StateManager owns persisted state", () => {
+    const resolver = new PersonalPathResolver()
+    async function owned(project = tempDir) {
+      const state = new StateManager(resolver, project)
+      await state.initialize()
+      return state
+    }
+    function orchestration(state?: StateManager) {
+      const workflow = new WorkflowEngine(state ? {
+        onTransition: p => state.transition(p.workItemId, p.fromState, p.toState, "system", p.workflowType),
+      } : undefined)
+      const definition = buildFeatureSpecWorkflow()
+      definition.stateMachine.initial = "created"
+      definition.stateMachine.states.created = { agent: "none", skills: [], next: "intake_ready" }
+      definition.stateMachine.states.intake_ready = { agent: "none", skills: [], next: "impact_analyzing" }
+      definition.stateMachine.states.impact_analyzing = { agent: "none", skills: [] }
+      workflow.loadWorkflow(definition)
+      return workflow
+    }
+    const advance = (workflow: WorkflowEngine, id: string, fromState: string, toState: string) =>
+      workflow.transitionFull({ workItemId: id, fromState, toState, actor: "system", workflowType: "feature_spec" })
+
+    it("orchestration without a state capability does not create physical persistence", async () => {
+      await advance(orchestration(), "WI-OWNER-1", "", "created")
+      expect(existsSync(resolver.resolveEventsPath(tempDir))).toBe(false)
+      expect(existsSync(resolver.resolveStatePath(tempDir))).toBe(false)
+    })
+
+    it("delegates creation to the real Daemon owner and reloads its WAL", async () => {
+      const state = await owned()
+      await advance(orchestration(state), "WI-OWNER-2", "", "created")
+      const restarted = await owned()
+      expect(restarted.getState("WI-OWNER-2")?.current_state).toBe("created")
+      const events = (await readFile(resolver.resolveEventsPath(tempDir), "utf8")).trim().split("\n").map(line => JSON.parse(line))
+      expect(events).toHaveLength(1)
+      expect(events[0].action).toBe("state.transition")
+      expect(events[0].payload.to_state).toBe("created")
+    })
+
+    it("preserves ordered orchestration transitions through a new StateManager", async () => {
+      const state = await owned(), workflow = orchestration(state)
+      await advance(workflow, "WI-OWNER-3", "", "created")
+      await advance(workflow, "WI-OWNER-3", "created", "intake_ready")
+      await advance(workflow, "WI-OWNER-3", "intake_ready", "impact_analyzing")
+      expect((await owned()).getState("WI-OWNER-3")?.current_state).toBe("impact_analyzing")
+      const events = (await readFile(resolver.resolveEventsPath(tempDir), "utf8")).trim().split("\n").map(line => JSON.parse(line))
+      expect(events.map(event => event.payload.to_state)).toEqual(["created", "intake_ready", "impact_analyzing"])
+    })
+
+    it("rebuilds a missing checkpoint from the Daemon WAL", async () => {
+      const state = await owned(), workflow = orchestration(state)
+      await advance(workflow, "WI-OWNER-4", "", "created")
+      await advance(workflow, "WI-OWNER-4", "created", "intake_ready")
+      const before = await readFile(resolver.resolveEventsPath(tempDir))
+      await unlink(resolver.resolveStatePath(tempDir))
+      const restarted = await owned()
+      expect(restarted.getState("WI-OWNER-4")?.current_state).toBe("intake_ready")
+      expect(await readFile(resolver.resolveEventsPath(tempDir))).toEqual(before)
+      expect(existsSync(resolver.resolveStatePath(tempDir))).toBe(true)
+    })
+
+    it("retains the owner's optimistic state guard without appending rejected transitions", async () => {
+      const state = await owned()
+      await advance(orchestration(state), "WI-OWNER-5", "", "created")
+      const before = await readFile(resolver.resolveEventsPath(tempDir))
+      await expect(state.transition("WI-OWNER-5", "intake_ready", "impact_analyzing", "system")).rejects.toThrow("Optimistic lock")
+      expect(await readFile(resolver.resolveEventsPath(tempDir))).toEqual(before)
+      expect((await owned()).getState("WI-OWNER-5")?.current_state).toBe("created")
+    })
+
+    it("keeps the same WI identity isolated across two owned project roots", async () => {
+      const a = await owned(join(tempDir, "a")), b = await owned(join(tempDir, "b"))
+      const workflow = orchestration(a)
+      await advance(workflow, "WI-OWNER-6", "", "created")
+      await advance(workflow, "WI-OWNER-6", "created", "intake_ready")
+      await advance(orchestration(b), "WI-OWNER-6", "", "created")
+      expect((await owned(join(tempDir, "a"))).getState("WI-OWNER-6")?.current_state).toBe("intake_ready")
+      expect((await owned(join(tempDir, "b"))).getState("WI-OWNER-6")?.current_state).toBe("created")
+    })
+  })
+})

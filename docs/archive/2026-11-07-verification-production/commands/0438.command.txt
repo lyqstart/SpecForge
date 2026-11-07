@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/record-integration-checkpoint-12.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Reconcile full current selector coverage and preserved native receipts in unique status;record no-child path error",
+  "expected_writes": "TRUTH_SOURCE_WRITES=unique project status and history ledger;REPOSITORY_TRACKED_WRITES=status/ledger only;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=checkpoint and receipts",
+  "started_utc": "2026-11-07T09:20:16.573Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\record-integration-checkpoint-12.cjs",
+      "sha256": "0a14f276ccf570e1c24315f620965ec6ae0bd32bd43e5bad805b62891982c672",
+      "size": 5712,
+      "extension": ".cjs"
+    }
+  ]
+}

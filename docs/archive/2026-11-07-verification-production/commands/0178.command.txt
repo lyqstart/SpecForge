@@ -1,0 +1,11 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "-e",
+    "import {findOrphanSfFiles} from './scripts/sf-installer.ts'; import {readFileSync} from 'node:fs'; const m=JSON.parse(readFileSync('release/release-manifest.json','utf8')); console.log(JSON.stringify({orphans:findOrphanSfFiles('C:/Users/lyq/.config/opencode',m.installFiles)}));"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "readonly-user-upgrade-orphan-inventory",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES current installer-owned orphan enumeration only; no user installation/original mutations",
+  "started_utc": "2026-11-07T04:07:17.931Z"
+}

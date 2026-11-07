@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "-e",
+    "process.exit(7)"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Carrier fact probe: actual child exits7 through explicit PowerShell exit",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES only receipts; owned no-op child intentionally exits7; PowerShell explicitly forwards LASTEXITCODE",
+  "started_utc": "2026-11-07T06:12:35.021Z"
+}

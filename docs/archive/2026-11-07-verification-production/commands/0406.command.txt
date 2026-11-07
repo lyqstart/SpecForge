@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/prepare-final-deployment.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Bind final current-main payload to full green canonical tests,exact native proof and117-file physical install",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable deployment readiness; no source/global/original writes",
+  "started_utc": "2026-11-07T08:44:28.650Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\prepare-final-deployment.cjs",
+      "sha256": "9d89c7baee7fcb8a759c4d12c405925bb24a2025a6eceb2de8fd4f1284d46d16",
+      "size": 3406,
+      "extension": ".cjs"
+    }
+  ]
+}

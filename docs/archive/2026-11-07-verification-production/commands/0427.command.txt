@@ -1,0 +1,21 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/collect-original-current-execution-coverage.ts",
+    "06"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Recollect genuine current R06 formal selectors using receipt0422 verified Bun executable;0426 never spawned",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=read-only Kernel HTTP;EXTERNAL_EVIDENCE_WRITES=coverage and command receipts",
+  "started_utc": "2026-11-07T09:12:50.444Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\collect-original-current-execution-coverage.ts",
+      "sha256": "8b580d533fe3db300a3fdc75692a2a520bf40e6371a99c3b8c4ec372eed8a374",
+      "size": 6508,
+      "extension": ".ts"
+    }
+  ]
+}

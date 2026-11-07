@@ -1,0 +1,530 @@
+{
+  "source": {
+    "path": "original-verification-run-06/messages-004.json",
+    "sha256": "642a448c3a97961b2a87bcc8094d32c653553e0347a4c9928b8b78ed6b114496",
+    "size": 99663
+  },
+  "method": "Native tool/input/output/Agent metadata retained; model reasoning and nested credential fields replaced by hashes. Original local copy preserved and excluded from Git publication.",
+  "data": {
+    "raw_sha256": "ceb53cab34249c4a521c94da5d2cde478821a7b81b3b4f9f8c463b37738c0b02",
+    "raw_path": "D:\\code\\SpecForge\\.tmp\\original-verification\\9fc3cd28-243f-456d-bace-fcd6c8448e23\\messages-004.raw.json",
+    "data": [
+      {
+        "info": {
+          "id": "msg_1b53755730015hm8Df8wRqYovF",
+          "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+          "role": "user",
+          "time": {
+            "created": 1794041664883
+          },
+          "summary": {
+            "diffs": []
+          },
+          "agent": "sf-orchestrator",
+          "model": {
+            "providerID": "zhipuai-coding-plan",
+            "modelID": "glm-5.3",
+            "variant": "low"
+          }
+        },
+        "parts": [
+          {
+            "id": "prt_1b537557e001dLOCWUT75r7eBb",
+            "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+            "messageID": "msg_1b53755730015hm8Df8wRqYovF",
+            "type": "text",
+            "text": "恢复 C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7 同一 WI-0001。你是真实sf-orchestrator，使用当前专业Agent、Skill和正式工具。用户已授权GLM-5.3最小上下文完成验证/Gate/Close，没有授权业务main合并。新空会话，不读取/导入旧会话消息、旧reasoning或agent_runs工作日志，不读其他项目、auth.json、host-profile.json、owner.key、凭据/密钥。只读当前规范项目产物与本轮必要回执。上下文提供时刻2026-11-07T08:54:01.325Z，不是未来完成时间。\n\n真实用户安装已受控升级到SpecForge1.0.23，117文件、新Daemon和专业Agent均已核验。旧1.0.22期间22条implementation及22条formal确实成功，全部保留；升级改变资产tuple，消费旧receipt将ASSETS_CHANGED，因此当前必须重新取得22条formal证据。这是同一WI合法正式重验，不是重复implementation。0409新owner最后状态verification_running，请先sf_state_read确认。代码写许可保持revoked，不改5个业务文件或Task、不建新WI，不重新Candidate审批或PSV-0002合并。业务分支codex/greet-library-wi-0001 HEAD=f5fed085a8609f593592eca5e8035b2d1c958759，main=8a692e88c0823984647622294f5199c18bb0c587。\n\n从canonical candidates/tasks.md解析全部22条：TASK-001五条unit，TASK-002四条unit，TASK-003四条unit加一integration，TASK-004五条unit加一regression，TASK-005一integration加一e2e。sf-orchestrator按当前Task/类别/原command_index创建新formal plan，真实sf-verifier prepare/run；本轮成功的当前资产主体不重复。按Task分批就近创建/消费，不囤积过期plan；一次执行完成再下一次。prepare只传action/work_item_id/plan_id；run/cancel/recover只传action/work_item_id/attempt_record_id，run不带plan_id。失败先按真实返回归因，不猜参数、不换执行器。\n\n全部新formal主体成功后，由真实sf-verifier聚合完整22项Evidence Manifest和Verification Report。entry基本必填evidence_id/type/path/description/created_at，id与evidence_id一致，type不是evidence_type。执行源直接verification-owner:receipt:<id>、sha256:<id>、hash_domain=canonical-json:verification-execution/v1，绑定同一Task/类别/index/原声明；不另造verification_evidence包装或probe。声明时间使用实际可证时间，不编造；EV条目首次真实created_at可保留，但不冒充新执行时间，真正新执行时间由新receipt证明。报告可省略可选timestamp。旧规范报告/清单/闭包/失败Gate已逐字节封存，本阶段按合法owner更新当前视图，不能把旧receipt继续标作当前资产通过。\n\n语义闭包须完整真实消费链。旧合法闭包中EV-0014/EV-0021集成测试实际消费工程加载环境、greet实现及测试；EV-0022 e2e与README示例逐字符一致，可说明它们对相应Task/OUT/REQ的支持。静态断言保持L1，不冒充行为证据或人工验收。Report semantic_closure与新Manifest的supports/related refs一致后，由Orchestrator sf_semantic_closure_run；真实失败按owner修复，不口头豁免。sf_handoff完整登记Required Output，包括escalation_signals。\n\n1.0.23已修复work_log按主题误写正式产物；日志只归档，正式产物仍用显式canonical file_type。Report/Manifest及Gate/Close的HTTP等待180秒，不自动重发。超时或DAEMON_OPERATION_OUTCOME_UNKNOWN不证明未执行/回滚；每次只发一次，先只读对账规范产物、Gate和StateManager。必要时仅Orchestrator读取本次操作附近.specforge/logs/observability/daemon/dispatcher.jsonl，不能只看dispatch.status，不加载整段旧历史。Verifier不得读取自身禁止的Runtime trace。已成功步骤不重写、不重派。\n\n完成真实Verification Gate、Formal Version、适用Trace/Audit及Close；verification_done之后只由sf_close_gate写closed。保留两个历史Get-FileHash拒绝及operator_error/abandon resolution，不声明历史零拒绝。不能直接手改.specforge或用通用写入绕owner。若Git默认main合并成为必要边界，只生成真实can_merge=true的sf_git_merge_plan和确切diff/头信息，等待用户单独确认；禁止confirmed=true、普通git merge/push。外部审计者按真实StateManager和全部Gate核验，不以你的总结当完成。\n"
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b537585d0018BBru2pGJ3bvHP",
+          "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+          "role": "assistant",
+          "time": {
+            "created": 1794041665629,
+            "completed": 1794041679745
+          },
+          "parentID": "msg_1b53755730015hm8Df8wRqYovF",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-orchestrator",
+          "agent": "sf-orchestrator",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 34828,
+            "input": 34796,
+            "output": 18,
+            "reasoning": 14,
+            "cache": {
+              "read": 0,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1b5378b25001K3VF8u6Kp4e9fj",
+            "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+            "messageID": "msg_1b537585d0018BBru2pGJ3bvHP",
+            "type": "step-start",
+            "snapshot": "40f4b69725c04b5858c687e95836c4dbd1f93ade"
+          },
+          {
+            "type": "reasoning",
+            "withheld": true,
+            "original_sha256": "9dba567cd3156649b642929dcf84b320ad9d7b6b664a89cd47b81762e556e51a",
+            "original_size": 268
+          },
+          {
+            "id": "prt_1b5378d63001xYfe6fRc8T8Uua",
+            "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+            "messageID": "msg_1b537585d0018BBru2pGJ3bvHP",
+            "type": "tool",
+            "callID": "call_925f45f6cb1f48bb84d2eaff",
+            "tool": "sf_state_read",
+            "state": {
+              "status": "completed",
+              "input": {
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\n  \"success\": true,\n  \"rebuilt_from_events\": true,\n  \"work_item_id\": \"WI-0001\",\n  \"workflow_type\": \"feature_spec\",\n  \"current_state\": \"verification_running\",\n  \"created_at\": 1792905467014,\n  \"updated_at\": 1794031583349\n}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794041679216,
+                "end": 1794041679276
+              }
+            }
+          },
+          {
+            "id": "prt_1b5378e94001dL7Fdsza65cwFq",
+            "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+            "messageID": "msg_1b537585d0018BBru2pGJ3bvHP",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "40f4b69725c04b5858c687e95836c4dbd1f93ade",
+            "cost": 0,
+            "tokens": {
+              "total": 34828,
+              "input": 34796,
+              "output": 18,
+              "reasoning": 14,
+              "cache": {
+                "read": 0,
+                "write": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b5378f890010OV1WVLQ5z93W1",
+          "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+          "role": "assistant",
+          "time": {
+            "created": 1794041679753,
+            "completed": 1794041689528
+          },
+          "parentID": "msg_1b53755730015hm8Df8wRqYovF",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-orchestrator",
+          "agent": "sf-orchestrator",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 34986,
+            "input": 155,
+            "output": 47,
+            "reasoning": 32,
+            "cache": {
+              "read": 34752,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1b537af74001tQtoghHriVuoyx",
+            "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+            "messageID": "msg_1b5378f890010OV1WVLQ5z93W1",
+            "type": "step-start",
+            "snapshot": "40f4b69725c04b5858c687e95836c4dbd1f93ade"
+          },
+          {
+            "type": "reasoning",
+            "withheld": true,
+            "original_sha256": "20f10f76a49937e9619f1e124af2c34d56b61a3c50a5f6c2357947bb28bc9ce5",
+            "original_size": 379
+          },
+          {
+            "id": "prt_1b537b38c001HLKwT8h7oBkyKr",
+            "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+            "messageID": "msg_1b5378f890010OV1WVLQ5z93W1",
+            "type": "tool",
+            "callID": "call_a7e432bd297545dda4158cf2",
+            "tool": "read",
+            "state": {
+              "status": "completed",
+              "input": {
+                "filePath": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\tasks.md"
+              },
+              "output": "<path>C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\tasks.md</path>\n<type>file</type>\n<content>\n1: ---\n2: work_item_id: WI-0001\n3: module_id: CORE\n4: workflow_type: feature_spec\n5: workflow_path: requirement_change_path\n6: candidate_type: candidate_tasks\n7: base_spec_version: PSV-0001\n8: implementation_baseline_id: sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722\n9: ---\n10: \n11: # Tasks Candidate — WI-0001 / CORE（Greeting Library 首个功能）\n12: \n13: ## 候选绑定\n14: \n15: - Work Item: WI-0001（feature_spec / requirement_change_path）\n16: - 模块归属: CORE（spec_manifest.json PSV-0001 唯一已声明模块，default_module=CORE）\n17: - implementation_baseline_id: `sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722`（本候选逐字绑定；任务 create/modify 标记与基线逐文件一致）\n18: - 上游输入（只读）：`intake.md`、`trigger_result.json`、`candidates/project/modules/CORE/requirements.candidate.md`（REQ-CORE-001～REQ-CORE-006 / AC-CORE-001～AC-CORE-018 已冻结）、`candidates/project/modules/CORE/design.candidate.md`（DD-CORE-001～DD-CORE-006 已冻结）、`candidates/project/architecture.candidate.md`（ARCH-CORE-001～004）、`candidates/project/data_model.candidate.md`（DATA-CORE-001～004）、`candidates/project/modules/CORE/module.candidate.json`（CORE code_paths 5 条）、`candidates/project/modules/CORE/contracts.candidate.json`（PI-CORE-001、INV-CORE-001～003）\n19: - 配置依据：`project-rules.md`（主语言 TypeScript；零依赖优先；node:test 优先；最小工程配置随首个功能受控创建）、`prod-environment.md`（无生产部署；Node 版本未取证；win32；无外部服务依赖）\n20: - 任务编号约定：短编号 TASK-001～TASK-005 与规范 ID `TASK-WI-0001-001`～`TASK-WI-0001-005` 一一对应；追溯统一使用规范 ID。\n21: - 引用承载说明：Contract/Architecture/Data 层引用（PI-CORE-*、INV-CORE-*、ARCH-CORE-*、DATA-CORE-*）按 task-document/v1 不进入结构化 refs，在每任务 context_block 的 **Refs** 行中以文本承载。\n22: \n23: ## D18 声明（流程硬约束）\n24: \n25: 本文档全部 `verification_commands` 均为**声明性验证命令**，供批准后的实现/验证阶段在合法执行边界内使用。本阶段（candidate_preparing）**未执行任何命令、未运行任何测试、未取得任何运行证据**；本文档不含任何\"已运行/已通过\"表述（AC-CORE-012 / CONSTRAINT-1）。运行与通过证据（EVREQ-2A/3A/4B 等）属于批准后验证阶段。\n26: \n27: ## 承接的上游约束\n28: \n29: - CONSTRAINT-1：不实现额外输入分支（null/undefined/非 string 不编写任何分支、校验或抛错；纯空白字符串按非空规则直接处理，禁止 trim/归一化）。\n30: - CONSTRAINT-2：不引入任何第三方依赖（运行时与开发期均零安装）；不假设 npm registry、网络、CI、外部执行器可用。\n31: - Impact Scope 硬界：全部任务 `allowed_write_files` 之和恰等于 `impact_scope.planned_code_paths` 的 5 条，不多不少，不扩大；每条路径唯一映射模块 CORE。\n32: \n33: ## 基线逐文件状态（T2A 对账，依据 implementation_baseline.json）\n34: \n35: | 计划代码路径 | 基线状态 | 任务操作 | 承接任务 |\n36: | --- | --- | --- | --- |\n37: | README.md | 既有（123 bytes，sha256:757ee94ea46933c3dd7092c04d15a32546a3f54e609b9c6e66351eeafe8fdf40） | 修改（追加式，既有内容逐字节保留） | TASK-WI-0001-004 |\n38: | package.json | 基线缺失（matched_files 为空） | 创建（TASK-005 仅在 D-2 降级触发时受控微调 scripts.test） | TASK-WI-0001-001（创建）、TASK-WI-0001-005（降级微调，主路径零变更） |\n39: | tsconfig.json | 基线缺失 | 创建 | TASK-WI-0001-001 |\n40: | src/greet.ts | 基线缺失 | 创建 | TASK-WI-0001-002 |\n41: | tests/greet.test.ts | 基线缺失 | 创建 | TASK-WI-0001-003 |\n42: \n43: Current Implementation 总结（全候选共用）：CORE 模块当前**无既有业务源代码、无既有测试、无既有工程配置**（项目首个正式功能：5 条计划路径中 README.md 为既有文件·追加式修改，其余 4 条为新建）；README.md 是唯一既有交付文件。已确认依据：CODE_OBSERVED（implementation_baseline.json，snapshot sha256:8f8ac52a…）+ PROJECT_SPEC（candidates/*）+ DESIGN（DD-CORE-001～DD-CORE-006）。\n44: \n45: ## 任务总览、批次与依赖\n46: \n47: | 规范 ID | 短编号 | 名称 | 主 DD | allowed_write_files | depends_on | 批次 |\n48: | --- | --- | --- | --- | --- | --- | --- |\n49: | TASK-WI-0001-001 | TASK-001 | 创建最小工程配置 | DD-CORE-004（+DD-CORE-003 scripts.test） | package.json, tsconfig.json | 无 | 1（可并行） |\n50: | TASK-WI-0001-002 | TASK-002 | 实现 greet 纯函数 | DD-CORE-001, DD-CORE-002 | src/greet.ts | 无 | 1（可并行） |\n51: | TASK-WI-0001-003 | TASK-003 | 编写行为断言测试 | DD-CORE-006（+DD-CORE-003） | tests/greet.test.ts | TASK-WI-0001-001, TASK-WI-0001-002 | 2（可并行） |\n52: | TASK-WI-0001-004 | TASK-004 | README 追加使用说明 | DD-CORE-005 | README.md | TASK-WI-0001-002 | 2（可并行） |\n53: | TASK-WI-0001-005 | TASK-005 | 集成闭环验证（T2C） | DD-CORE-001/DD-CORE-003/DD-CORE-006 链路 | package.json（仅 D-2 降级微调；主路径零写入） | TASK-WI-0001-001～004 | 3（串行收口） |\n54: \n55: ```mermaid\n56: graph LR\n57:   T001[TASK-001 工程配置] --> T003[TASK-003 测试]\n58:   T002[TASK-002 greet 实现] --> T003\n59:   T002 --> T004[TASK-004 README]\n60:   T001 --> T005[TASK-005 集成闭环]\n61:   T002 --> T005\n62:   T003 --> T005\n63:   T004 --> T005\n64: ```\n65: \n66: 批次说明：批次 1（TASK-001 × TASK-002）与批次 2（TASK-003 × TASK-004）内部写文件零交集、无隐性依赖，可并行；TASK-005 为 Integration Closure Task（T2C），串行收口验证多任务链路真实接通（其 package.json 写入面仅在与 TASK-001 串行依赖下生效，无并行重叠）。\n67: \n68: ---\n69: \n70: ### TASK-WI-0001-001（TASK-001）创建最小工程配置 package.json 与 tsconfig.json\n71: \n72: **context_block**（executor 必读）：\n73: - **What**: 新建根级 `package.json` 与 `tsconfig.json` 两个最小工程配置文件。`package.json` 字段级形态（DD-CORE-004 逐字执行）：`name: \"greeting-library\"`、`version: \"0.1.0\"`、`private: true`、`type: \"module\"`、`scripts.test: \"node --test tests/greet.test.ts\"`、`dependencies: {}`（显式空对象）；**不设** `main`/`exports`/`devDependencies`/构建脚本。`tsconfig.json`：`compilerOptions` 含 `target: \"ES2022\"`、`module: \"NodeNext\"`、`moduleResolution: \"NodeNext\"`、`strict: true`、`noEmit: true`、`allowImportingTsExtensions: true`；`include: [\"src/**/*.ts\", \"tests/**/*.ts\"]`。\n74: - **Why**: 为 REQ-CORE-001 的签名静态复核（AC-CORE-002）提供类型检查配置；为 REQ-CORE-004 提供唯一测试入口声明（`scripts.test`，DD-CORE-003 主路径）；以 `dependencies: {}` 显式空对象作为 REQ-CORE-006 零运行时依赖的可检查配置证据（EVREQ-6A，INV-CORE-003）。\n75: - **Refs**（完整引用链，文本承载）：DD-CORE-004（最小工程配置设计）、DD-CORE-003（scripts.test 唯一测试入口与零安装路径）；约束契约 INV-CORE-003（零运行时依赖）、ARCH-CORE-002（零运行时依赖架构）、ARCH-CORE-004（工具链与运行时隔离）。\n76: - **Current Implementation**: 两文件基线缺失（implementation_baseline.json matched_files 均为空）→ 全部新建；项目此前无任何工程配置（BL-1/FACT-1）。已确认依据：CODE_OBSERVED（基线）+ DESIGN（DD-CORE-004）。\n77: - **Constraints**:\n78:   - 不引入任何第三方依赖（运行时与 devDependencies 均零安装，CONSTRAINT-2/AC-CORE-018）。\n79:   - `noEmit: true` 与 `allowImportingTsExtensions: true` 必须同时出现（配套合法组合，支撑测试文件显式 `.ts` import）。\n80:   - tsconfig 仅用于开发期类型检查，不产生构建产物、不构成任何执行前置（ARCH-CORE-004 工具链与运行时隔离）。\n81:   - 遵守 project-rules：最小工程配置随首个功能任务受控创建；风格为标准 JSON 两空格缩进。\n82: - **Steps**（执行步骤）:\n83:   1. 新建 `package.json`，按 What 中字段级形态逐字段写入（顺序：name、version、private、type、scripts、dependencies）。\n84:   2. 自查 `dependencies` 为显式空对象 `{}`，无 `devDependencies` 键。\n85:   3. 新建 `tsconfig.json`，写入 `compilerOptions` 六项与 `include` 两项。\n86:   4. 自查两文件为合法 JSON（可用 Read 工具复核结构）。\n87: - **Done When Code**: `package.json` 与 `tsconfig.json` 存在于项目根，字段与 DD-CORE-004 逐项一致。\n88: - **Done When Behavior**: `scripts.test` 即 DD-CORE-003 主路径命令；类型检查配置覆盖 src/ 与 tests/ 且不产出构建产物；零运行时依赖在配置面显式成立。\n89: - **Done When Evidence**: 下方 unit 命令全部以退出码 0 通过（批准后实现阶段的合法执行边界内取得；本阶段仅为声明）。\n90: \n91: - **refs**: [REQ-CORE-001, REQ-CORE-004, REQ-CORE-006, DD-CORE-004, DD-CORE-003]\n92: - **depends_on**: []\n93: - **allowed_write_files**: [package.json, tsconfig.json]\n94: - **forbidden_files**: [src/greet.ts, tests/greet.test.ts, README.md, .specforge/work-items/**, .specforge/project/**, .specforge/config/**]\n95: - **expected_file_changes**: [package.json（新建，约 10 行）, tsconfig.json（新建，约 10 行）]\n96: - **verification_commands**:\n97:   - unit:\n98:     - `test -f package.json && test -f tsconfig.json`\n99:     - `grep -c '\"dependencies\": {}' package.json`\n100:     - `grep -c '\"test\": \"node --test tests/greet.test.ts\"' package.json`\n101:     - `grep -c '\"type\": \"module\"' package.json`\n102:     - `grep -cE '\"noEmit\": true|\"allowImportingTsExtensions\": true' tsconfig.json`\n103: - **verification_evidence_expected**:\n104:   | command | expected_exit_code | expected_output_pattern | evidence_type |\n105:   | --- | --- | --- | --- |\n106:   | `test -f package.json && test -f tsconfig.json` | 0 | 无输出 | command_exit |\n107:   | `grep -c '\"dependencies\": {}' package.json` | 0 | 含 1 | command_output |\n108:   | `grep -c '\"test\": \"node --test tests/greet.test.ts\"' package.json` | 0 | 含 1 | command_output |\n109:   | `grep -c '\"type\": \"module\"' package.json` | 0 | 含 1 | command_output |\n110:   | `grep -cE '\"noEmit\": true|\"allowImportingTsExtensions\": true' tsconfig.json` | 0 | 含 2 | command_output |\n111: - **out_of_scope**: 不实现 greet 函数；不编写测试；不修改 README；不新增 main/exports/构建脚本/CI 配置；不运行任何测试命令（`node --test` 属批准后验证阶段）。\n112: - **验收对照**: AC-CORE-011（scripts.test 入口形态）、AC-CORE-016（dependencies 为空集）、AC-CORE-018（工具链仅开发期、零安装）、AC-CORE-002（tsconfig 承载签名静态类型检查路径）。\n113: \n114: ---\n115: \n116: ### TASK-WI-0001-002（TASK-002）实现 src/greet.ts 纯函数导出\n117: \n118: **context_block**（executor 必读）：\n119: - **What**: 新建 `src/greet.ts`，提供**唯一**具名导出 `greet`，签名 `export function greet(name: string): string`（PI-CORE-001 逐字实现）。函数体有且仅有两个行为分支（DD-CORE-002）：`name === \"\"`（长度 0）→ 返回精确常量 `\"Hello, world!\"`（13 字符：大写 H、小写 world、逗号后一个空格、结尾感叹号）；否则（长度 ≥ 1，含纯空白字符串）→ 返回 `\"Hello, \" + name + \"!\"` 三段依序拼接，name 逐字符原样保留。零 import、无状态、无副作用、无 I/O、不抛出异常（定义域内）。\n120: - **Why**: 实现用户结果的核心行为契约：REQ-CORE-001（导出契约）、REQ-CORE-002（非空名称个性化问候）、REQ-CORE-003（空名称默认问候）；同时以零 import 源码事实支撑 REQ-CORE-006/INV-CORE-003。\n121: - **Refs**（完整引用链，文本承载）：DD-CORE-001（公共 API 设计，接口定义见 design.candidate.md §5.2 DD-CORE-001）、DD-CORE-002（两条行为规则与定义域分支）；约束契约 PI-CORE-001、INV-CORE-001、INV-CORE-002、DATA-CORE-001、DATA-CORE-002、DATA-CORE-003、ARCH-CORE-003。\n122: - **Current Implementation**: `src/` 目录与 `src/greet.ts` 基线缺失（matched_files 为空）→ 全新建；CORE 当前无任何业务源代码（BL-1/FACT-1）。已确认依据：CODE_OBSERVED（基线）+ DESIGN（DD-CORE-001/002）+ PROJECT_SPEC（PI-CORE-001/DATA-CORE-001～003）。\n123: - **Constraints**:\n124:   - 禁止为 null/undefined/非 string 编写任何分支、校验、抛错（CONSTRAINT-1；域外行为在 PI-CORE-001.undefined_behavior 中明确未定义）。\n125:   - 禁止 trim、大小写变换、Unicode 归一化、截断或任何对 name 的改写（DATA-CORE-003/INV-CORE-002）。\n126:   - 文件零 import（自包含纯函数；EVREQ-6A/INV-CORE-003 源码面）。不引入新依赖（CONSTRAINT-2）。\n127:   - 仅使用可擦除 TypeScript 语法（类型标注），不使用 enum/namespace/参数属性（ARCH-CORE-004 type stripping 路径要求）。\n128:   - 函数实现不依赖 package.json/tsconfig.json 的存在（文件系统独立；二者仅属开发期工具链）。\n129: - **Steps**（执行步骤）:\n130:   1. 新建 `src/greet.ts`。\n131:   2. 写入唯一具名导出 `greet(name: string): string` 与两个行为分支（空字符串 → 常量；其余 → 三段拼接）。\n132:   3. 自查：无 import 语句、无类型分支、无 trim/变换、无 throw、无 console/I/O。\n133:   4. 用 Read 复核签名逐字符为 `export function greet(name: string): string`。\n134: - **Done When Code**: `src/greet.ts` 存在，恰一个具名导出 `greet`，签名精确匹配，函数体恰两个分支，零 import。\n135: - **Done When Behavior**: E0（`\"\"`）→ `\"Hello, world!\"`；E1（任意长度 ≥ 1 字符串，含纯空白）→ `\"Hello, \" + name + \"!\"`（name 原样）；定义域内不抛出、无副作用。\n136: - **Done When Evidence**: 下方 unit 命令全部退出码 0（静态证据，批准后实现阶段取得）；行为层运行证据由 TASK-WI-0001-003/005 的断言运行提供（EVREQ-2A/3A/4B，批准后验证阶段）。\n137: \n138: - **refs**: [REQ-CORE-001, REQ-CORE-002, REQ-CORE-003, DD-CORE-001, DD-CORE-002]\n139: - **depends_on**: []\n140: - **allowed_write_files**: [src/greet.ts]\n141: - **forbidden_files**: [package.json, tsconfig.json, tests/greet.test.ts, README.md, .specforge/work-items/**, .specforge/project/**, .specforge/config/**]\n142: - **expected_file_changes**: [src/greet.ts（新建，< 20 行）]\n143: - **verification_commands**:\n144:   - unit:\n145:     - `test -f src/greet.ts`\n146:     - `grep -c \"export function greet(name: string): string\" src/greet.ts`\n147:     - `grep -c \"Hello, world!\" src/greet.ts`\n148:     - `! grep -qE \"^import |^import\\{|require\\(\" src/greet.ts`\n149: - **verification_evidence_expected**:\n150:   | command | expected_exit_code | expected_output_pattern | evidence_type |\n151:   | --- | --- | --- | --- |\n152:   | `test -f src/greet.ts` | 0 | 无输出 | command_exit |\n153:   | `grep -c \"export function greet(name: string): string\" src/greet.ts` | 0 | 含 1 | command_output |\n154:   | `grep -c \"Hello, world!\" src/greet.ts` | 0 | 含 1 | command_output |\n155:   | `! grep -qE \"^import |^import\\{|require\\(\" src/greet.ts` | 0 | 无输出（零 import 事实） | command_exit |\n156: - **out_of_scope**: 不实现额外输入分支（null/undefined/非 string/纯空白特殊处理/trim）；不写测试；不改工程配置与 README；不做国际化/可配置模板；不运行任何命令。\n157: - **验收对照**: AC-CORE-001、AC-CORE-002（+AC-CORE-003 反向判定）、AC-CORE-004、AC-CORE-005（+AC-CORE-006）、AC-CORE-007、AC-CORE-008（+AC-CORE-009）。\n158: \n159: ---\n160: \n161: ### TASK-WI-0001-003（TASK-003）编写 tests/greet.test.ts 行为断言套件\n162: \n163: **context_block**（executor 必读）：\n164: - **What**: 新建 `tests/greet.test.ts`，使用 Node 内置 `node:test` 的 `test()` 组织断言、`node:assert/strict` 的 `strictEqual` 做严格相等断言，实现 DD-CORE-006 断言清单：A1 `greet(\"Ada\")` 严格等于 `\"Hello, Ada!\"`；A2 `greet(\"Grace\")` 严格等于 `\"Hello, Grace!\"`；A3 `greet(\"\")` 严格等于 `\"Hello, world!\"`；A4 纯空白名称（如 `\"  \"`）严格等于 `\"Hello, \" + name + \"!\"` 拼接形态。对被测对象的引用使用显式 `.ts` 说明符：`import { greet } from \"../src/greet.ts\"`（type stripping 要求，与 tsconfig `allowImportingTsExtensions` 配套）。\n165: - **Why**: 交付 REQ-CORE-004 的自动化测试：A1/A2 满足 EVREQ-2A\"≥ 2 个互不相同非空名称\"，A3 满足 EVREQ-3A，A4 固化 INV-CORE-002\"纯空白按非空规则处理、不归一化\"；测试以真实 import 消费公共 API（EVREQ-1B 最小集成面）。\n166: - **Refs**（完整引用链，文本承载）：DD-CORE-006（断言与验证钩子设计，断言清单 A1–A4）、DD-CORE-003（node:test + node:assert/strict 零安装路径）；约束契约 PI-CORE-001、INV-CORE-001、INV-CORE-002、ARCH-CORE-004。\n167: - **Current Implementation**: `tests/` 目录与文件基线缺失 → 全新建；项目无既有测试（BL-1）。被测对象 `src/greet.ts` 由 TASK-WI-0001-002 创建（本任务前置依赖）；测试入口声明 `scripts.test` 由 TASK-WI-0001-001 创建。已确认依据：CODE_OBSERVED（基线）+ DESIGN（DD-CORE-006/DD-CORE-003）。\n168: - **Constraints**:\n169:   - 仅使用 Node 内置模块（`node:test`、`node:assert/strict`）；零 devDependencies、零安装步骤（DD-CORE-003 D-1 裁决、CONSTRAINT-2）。\n170:   - 仅使用可擦除 TypeScript 语法；import 说明符必须带 `.ts` 扩展名。\n171:   - 断言必须恰好覆盖 A1–A4 四条，不新增对域外输入（null/undefined/非 string）的断言（CONSTRAINT-1）。\n172:   - 本任务只编写测试文件；**不得运行测试**（运行与取证属批准后验证阶段，AC-CORE-012）。\n173: - **Steps**（执行步骤）:\n174:   1. 新建 `tests/greet.test.ts`。\n175:   2. 写入 `import { test } from \"node:test\"`、`import assert from \"node:assert/strict\"`、`import { greet } from \"../src/greet.ts\"`。\n176:   3. 写入 A1–A4 四条 `test()` + `assert.strictEqual(...)` 断言（断言值逐字符按 What 清单）。\n177:   4. 自查断言计数与清单一致、无域外输入断言、无第三方 import。\n178: - **Done When Code**: `tests/greet.test.ts` 存在，含 4 条 strictEqual 断言（A1–A4），import 形态符合 type stripping 要求。\n179: - **Done When Behavior**: 该套件在 `node --test tests/greet.test.ts` 下可加载并执行（批准后验证阶段以真实运行输出证明全部断言通过，EVREQ-4B；主路径 Node ≥ 23.6，降级链见 DD-CORE-003 D-2）。\n180: - **Done When Evidence**: 下方 unit 命令（静态存在性）全部退出码 0；integration 命令 `node --test tests/greet.test.ts` 在批准后验证阶段取得退出码 0 的真实运行输出（本阶段仅为声明，不声称已运行）。\n181: \n182: - **refs**: [REQ-CORE-002, REQ-CORE-003, REQ-CORE-004, DD-CORE-006, DD-CORE-003]\n183: - **depends_on**: [TASK-WI-0001-001, TASK-WI-0001-002]\n184: - **allowed_write_files**: [tests/greet.test.ts]\n185: - **forbidden_files**: [src/greet.ts, package.json, tsconfig.json, README.md, .specforge/work-items/**, .specforge/project/**, .specforge/config/**]\n186: - **expected_file_changes**: [tests/greet.test.ts（新建，< 30 行）]\n187: - **verification_commands**:\n188:   - unit:\n189:     - `test -f tests/greet.test.ts`\n190:     - `grep -c \"node:test\" tests/greet.test.ts`\n191:     - `grep -c \"node:assert/strict\" tests/greet.test.ts`\n192:     - `grep -c \"strictEqual\" tests/greet.test.ts`\n193:   - integration:\n194:     - `node --test tests/greet.test.ts`\n195: - **verification_evidence_expected**:\n196:   | command | expected_exit_code | expected_output_pattern | evidence_type |\n197:   | --- | --- | --- | --- |\n198:   | `test -f tests/greet.test.ts` | 0 | 无输出 | command_exit |\n199:   | `grep -c \"node:test\" tests/greet.test.ts` | 0 | 含 1 | command_output |\n200:   | `grep -c \"node:assert/strict\" tests/greet.test.ts` | 0 | 含 1 | command_output |\n201:   | `grep -c \"strictEqual\" tests/greet.test.ts` | 0 | 含 4（A1–A4） | command_output |\n202:   | `node --test tests/greet.test.ts` | 0 | `4 pass`（或等价全部通过输出） | test_output |\n203:   注：integration 行为**声明性预期**，仅在批准后验证阶段于合法执行边界内运行取证（EVREQ-4B；AC-CORE-012 禁止本阶段声称已运行）。\n204: - **out_of_scope**: 不修改 greet 实现；不改工程配置与 README；不新增域外输入断言；不引入任何测试框架第三方依赖；不运行测试（本阶段）。\n205: - **验收对照**: AC-CORE-010（断言清单覆盖两条行为，A1/A2/A4 → REQ-CORE-002、A3 → REQ-CORE-003）、AC-CORE-011（可运行形态，运行取证在 TASK-005/验证阶段）、AC-CORE-012（本任务全程无\"已运行\"表述）。\n206: \n207: ---\n208: \n209: ### TASK-WI-0001-004（TASK-004）README.md 追加 greet 使用说明\n210: \n211: **context_block**（executor 必读）：\n212: - **What**: 对既有 `README.md` 实施**追加式修改**：保留既有标题 `# Greeting Library` 与项目性质描述行（既有 123 bytes，基线 sha256:757ee94ea46933c3dd7092c04d15a32546a3f54e609b9c6e66351eeafe8fdf40 逐字节锚定），在既有内容之后追加一个使用说明章节，必须含三要素（DD-CORE-005）：（1）调用方式——从 `./src/greet.ts` import `greet` 的示例与签名 `greet(name: string): string`；（2）非空名称行为——示例 `greet(\"Ada\")` → `\"Hello, Ada!\"`；（3）空名称行为——示例 `greet(\"\")` → `\"Hello, world!\"`。\n213: - **Why**: 交付 REQ-CORE-005 使用说明：让调用方不读源码即可正确使用 greet；文档示例即 EVREQ-5A 的内容面，示例与实现行为不一致将由 AC-CORE-015 拦截。\n214: - **Refs**（完整引用链，文本承载）：DD-CORE-005（README 追加设计）；架构约束 ARCH-CORE-001（README 属 CORE code_paths）。\n215: - **Current Implementation**: README.md 既有（唯一既有交付文件）：标题 `# Greeting Library`，正文 `A synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.`（123 bytes）。本任务为**追加**，不重建、不改写既有行。已确认依据：CODE_OBSERVED（implementation_baseline.json 基线哈希）。行为依据由 TASK-WI-0001-002 的实现提供（本任务前置依赖：文档描述的行为必须与已实现行为一致）。\n216: - **Constraints**:\n217:   - 既有内容**逐字节保留**（追加式，append-only；A-3 假设锚定）。\n218:   - 三要素示例必须与 REQ-CORE-002/REQ-CORE-003 及测试断言（A1/A3）逐字符一致：`\"Hello, Ada!\"`、`\"Hello, world!\"`。\n219:   - 不描述域外输入行为（null/undefined/非 string 未定义，CONSTRAINT-1）；不承诺范围外能力（i18n/可配置模板/CLI 等）。\n220:   - Markdown 风格与既有文档一致（简单标题 + 段落/代码块）。\n221: - **Steps**（执行步骤）:\n222:   1. 读取 README.md 现有内容（123 bytes，两行）。\n223:   2. 在既有内容之后追加空行 + 使用说明章节（`## Usage` 或等价标题）。\n224:   3. 写入三要素：import 示例 + 签名、`greet(\"Ada\")` → `\"Hello, Ada!\"`、`greet(\"\")` → `\"Hello, world!\"`。\n225:   4. 自查既有两行原样保留、追加内容含全部三要素。\n226: - **Done When Code**: README.md 存在追加章节；既有标题与正文行逐字节不变（前缀保留）。\n227: - **Done When Behavior**: 读者可在 README 中同时找到调用方式与两种返回行为说明，且与实现行为一致。\n228: - **Done When Evidence**: 下方 unit/regression 命令全部退出码 0：既有行保留 grep 命中 + 三要素 grep 命中（EVREQ-5A 文档内容证据，批准后实现阶段取得）。\n229: \n230: - **refs**: [REQ-CORE-005, DD-CORE-005]\n231: - **depends_on**: [TASK-WI-0001-002]\n232: - **allowed_write_files**: [README.md]\n233: - **forbidden_files**: [src/greet.ts, tests/greet.test.ts, package.json, tsconfig.json, .specforge/work-items/**, .specforge/project/**, .specforge/config/**]\n234: - **expected_file_changes**: [README.md（修改：追加使用说明章节；既有 123 bytes 前缀逐字节保留）]\n235: - **verification_commands**:\n236:   - unit:\n237:     - `grep -c \"^# Greeting Library\" README.md`\n238:     - `grep -c \"A synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\" README.md`\n239:     - `grep -c \"greet(name: string): string\" README.md`\n240:     - `grep -cE \"Hello, Ada!|Hello, Grace!\" README.md`\n241:     - `grep -c \"Hello, world!\" README.md`\n242:   - regression:\n243:     - `grep -c \"No production data.\" README.md`\n244: - **verification_evidence_expected**:\n245:   | command | expected_exit_code | expected_output_pattern | evidence_type |\n246:   | --- | --- | --- | --- |\n247:   | `grep -c \"^# Greeting Library\" README.md` | 0 | 含 1（既有标题保留） | command_output |\n248:   | `grep -c \"A synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\" README.md` | 0 | 含 1（既有正文保留） | command_output |\n249:   | `grep -c \"greet(name: string): string\" README.md` | 0 | 含 ≥ 1（调用方式） | command_output |\n250:   | `grep -cE \"Hello, Ada!|Hello, Grace!\" README.md` | 0 | 含 ≥ 1（非空行为示例） | command_output |\n251:   | `grep -c \"Hello, world!\" README.md` | 0 | 含 ≥ 1（空名称行为示例） | command_output |\n252:   | `grep -c \"No production data.\" README.md` | 0 | 含 1（追加不破坏既有声明） | command_output |\n253: - **out_of_scope**: 不改任何代码/测试/配置文件；不描述域外输入行为；不新增范围外能力承诺；不运行任何命令。\n254: - **验收对照**: AC-CORE-013（调用方式说明）、AC-CORE-014（两种行为说明）、AC-CORE-015（描述与实现一致；一致性由 TASK-WI-0001-005 与断言 A1/A3 对照复核）。\n255: \n256: ---\n257: \n258: ### TASK-WI-0001-005（TASK-005）集成闭环验证（Integration Closure，T2C）\n259: \n260: **context_block**（executor 必读）：\n261: - **What**: 集成闭环验证任务：证明 TASK-001～004 的局部交付已真实接通为同一用户结果——在一条命令内由 Node 内置 type stripping 直接加载 TypeScript 源文件、以真实 `import('../src/greet.ts')` 消费公共 API（EVREQ-1B）、A1–A4 全部断言通过（EVREQ-2A/3A/4B），并以调用方视角的动态导入复核两条行为契约。写入面：**主路径（Node ≥ 23.6）零文件写入**；仅当实测 Node 22.6–23.5 触发 DD-CORE-003 D-2 降级路径时，将 `package.json#scripts.test` 同步为 `node --experimental-strip-types --test tests/greet.test.ts`（受控单行微调，保持\"唯一测试入口\"与实际命令一致，仍属 DD-CORE-003 设计范围与 planned_code_paths 之内）。\n262: - **Why**: 多个局部任务共同实现一个用户结果（可用的 greet 库 + 可复核测试 + 一致文档）时，T2C 要求一个集成闭环任务验证链路真实接通；本任务同时是 DD-CORE-003 D-2 版本事实的取证明细点（主路径 `node --test`；降级路径见 What；若实测 Node < 22.6 按可恢复 HardStop 协议上报，禁止第三方转译兜底）。\n263: - **Refs**（完整引用链，文本承载）：DD-CORE-001（公共 API）、DD-CORE-003（执行路径与 D-2 降级链）、DD-CORE-006（断言清单）；约束契约 PI-CORE-001。\n264: - **Current Implementation**: 本任务消费 TASK-001～004 已交付的 5 个文件（其基线状态见前表）；本任务自身无既有实现，主路径零文件变更。已确认依据：DESIGN（DD-CORE-003/006）+ PROJECT_SPEC（PI-CORE-001）。\n265: - **Constraints**:\n266:   - **本任务在本阶段（candidate_preparing）不执行任何命令**；其 verification_commands 为声明性，供批准后验证阶段在合法执行边界内使用（D18/AC-CORE-012）。执行被治理拒绝时按可恢复 HardStop 协议处理并保留证据。\n267:   - 唯一合法写入面为 `package.json` 且仅限 D-2 降级触发的 `scripts.test` 单行同步；禁止改写其他任何字段或文件，禁止写治理产物。\n268:   - 仅使用 DD-CORE-003 固化的主路径命令与 Node 内置能力；不引入第三方 runner/转译。\n269: - **Steps**（执行步骤，批准后执行边界内）:\n270:   1. 确认 TASK-001～004 全部完成（5 文件就位）。\n271:   2. 运行 `node --test tests/greet.test.ts`，确认退出码 0、4 条断言全部通过。\n272:   3. 运行调用方视角动态导入检查（e2e 命令），确认 `greet('Ada') === 'Hello, Ada!'` 且 `greet('') === 'Hello, world!'`。\n273:   4. 若步骤 2/3 因 Node 版本不足失败且实测为 22.6–23.5：改用 `node --experimental-strip-types --test tests/greet.test.ts` 验证通过后，将 `package.json#scripts.test` 同步为该降级命令（唯一写入动作）；若实测 < 22.6：停止并按可恢复 HardStop 协议上报（禁止第三方转译兜底）。\n274:   5. 记录运行输出与退出码作为 EVREQ-2A/3A/4B/1B 的真实证据。\n275: - **Done When Code**: 主路径零文件变更；（仅降级触发时）`package.json#scripts.test` 为降级命令且其余字段不变。\n276: - **Done When Behavior**: 加载器 → 真实源文件 import → 两条行为契约断言 → 全部通过，单一链路接通；README 示例与断言值逐字符一致（A1↔`Hello, Ada!`、A3↔`Hello, world!`）。\n277: - **Done When Evidence**: integration/e2e 命令退出码 0 与运行输出（批准后验证阶段取得；本阶段仅为声明）。\n278: \n279: - **refs**: [REQ-CORE-001, REQ-CORE-002, REQ-CORE-003, REQ-CORE-004, DD-CORE-001, DD-CORE-003, DD-CORE-006]\n280: - **depends_on**: [TASK-WI-0001-001, TASK-WI-0001-002, TASK-WI-0001-003, TASK-WI-0001-004]\n281: - **allowed_write_files**: [package.json]\n282: - **forbidden_files**: [src/greet.ts, tests/greet.test.ts, README.md, tsconfig.json, .specforge/work-items/**, .specforge/project/**, .specforge/config/**]\n283: - **expected_file_changes**: []（主路径；仅 D-2 降级触发时 package.json 的 scripts.test 一行受控微调）\n284: - **verification_commands**:\n285:   - integration:\n286:     - `node --test tests/greet.test.ts`\n287:   - e2e:\n288:     - `node -e \"import('./src/greet.ts').then(m => { const a = m.greet('Ada'); const b = m.greet(''); if (a !== 'Hello, Ada!' || b !== 'Hello, world!') { process.exit(1); } console.log('E2E-OK'); }).catch(() => process.exit(1))\"`\n289: - **verification_evidence_expected**:\n290:   | command | expected_exit_code | expected_output_pattern | evidence_type |\n291:   | --- | --- | --- | --- |\n292:   | `node --test tests/greet.test.ts` | 0 | `4 pass`（或等价全部通过输出） | test_output |\n293:   | `node -e \"import('./src/greet.ts').then(...)\"` | 0 | `E2E-OK` | command_output |\n294:   注：两行均为**声明性预期**，批准后验证阶段于合法执行边界内运行取证（EVREQ-1B/2A/3A/4B）；若 Node 版本实测为 22.6–23.5，integration 命令替换为 DD-CORE-003 D-2 降级路径 `node --experimental-strip-types --test tests/greet.test.ts`（同一测试文件，仅命令行差异，并同步 scripts.test）。\n295: - **out_of_scope**: 除 D-2 降级的 scripts.test 单行同步外不修改任何文件；不声称本阶段已运行任何命令；不引入第三方工具兜底 Node 版本缺口（熔断路径走可恢复 HardStop 协议）。\n296: - **验收对照**: AC-CORE-004、AC-CORE-007（真实运行证明）、AC-CORE-011（EVREQ-4B 运行取证）、AC-CORE-001/002/003（EVREQ-1B 以真实 import 消费公共 API）。\n297: \n298: ---\n299: \n300: ## 覆盖与自检总结\n301: \n302: - REQ-CORE-001～REQ-CORE-006 全部被任务承接（详见 trace_delta.md 追溯矩阵）；DD-CORE-001～DD-CORE-006 全部有对应任务（DD-CORE-001/002→T-002、DD-CORE-003→T-001/T-003/T-005、DD-CORE-004→T-001、DD-CORE-005→T-004、DD-CORE-006→T-003）。\n303: - planned_code_paths 5 条与全部任务 allowed_write_files 之并集**一一对应、不多不少**（TASK-005 的 package.json 写入面为 TASK-001 同路径的串行子集，未引入计划外路径）；每条唯一映射 CORE。\n304: - 并行批次写文件零交集；无循环依赖（T-001/T-002 → T-003/T-004 → T-005 单向）。\n305: - 全部 verification_commands 为声明性（D18）：标准 `test`/`grep`/`node` 命令，退出码可判定，零第三方 CLI，不假设网络/包管理器；`node --test` 主路径与 DD-CORE-003 D-2 降级链一致。\n\n(End of file - total 305 lines)\n</content>",
+              "title": ".specforge\\work-items\\WI-0001\\candidates\\tasks.md",
+              "metadata": {
+                "preview": "---\nwork_item_id: WI-0001\nmodule_id: CORE\nworkflow_type: feature_spec\nworkflow_path: requirement_change_path\ncandidate_type: candidate_tasks\nbase_spec_version: PSV-0001\nimplementation_baseline_id: sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722\n---\n\n# Tasks Candidate — WI-0001 / CORE（Greeting Library 首个功能）\n\n## 候选绑定\n\n- Work Item: WI-0001（feature_spec / requirement_change_path）\n- 模块归属: CORE（spec_manifest.json PSV-0001 唯一已声明模块，default_module=CORE）\n- implementation_baseline_id: `sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722`（本候选逐字绑定；任务 create/modify 标记与基线逐文件一致）\n- 上游输入（只读）：`intake.md`、`trigger_result.json`、`candidates/project/modules/CORE/requirements.candidate.md`（REQ-CORE-001～REQ-CORE-006 / AC-CORE-001～AC-CORE-018 已冻结）、`candidates/project/modules/CORE/design.candidate.md`（DD-CORE-001～DD-CORE-006 已冻结）、`candidates/project/architecture.candidate.md`（ARCH-CORE-001～004）、`candidates/project/data_model.candidate.md`（DATA-CORE-001～004）、`candidates/project/modules/CORE/module.candidate.json`（CORE code_paths 5 条）、`candidates/project/modules/CORE/contracts.candidate.json`（PI-CORE-001、INV-CORE-001～003）\n- 配置依据：`project-rules.md`（主语言 TypeScript；零依赖优先；node:test 优先；最小工程配置随首个功能受控创建）、`prod-environment.md`（无生产部署；Node 版本未取证；win32；无外部服务依赖）\n- 任务编号约定：短编号 TASK-001～TASK-005 与规范 ID `TASK-WI-0001-001`～`TASK-WI-0001-005` 一一对应；追溯统一使用规范 ID。",
+                "truncated": false,
+                "loaded": [],
+                "display": {
+                  "type": "file",
+                  "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\tasks.md",
+                  "text": "---\nwork_item_id: WI-0001\nmodule_id: CORE\nworkflow_type: feature_spec\nworkflow_path: requirement_change_path\ncandidate_type: candidate_tasks\nbase_spec_version: PSV-0001\nimplementation_baseline_id: sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722\n---\n\n# Tasks Candidate — WI-0001 / CORE（Greeting Library 首个功能）\n\n## 候选绑定\n\n- Work Item: WI-0001（feature_spec / requirement_change_path）\n- 模块归属: CORE（spec_manifest.json PSV-0001 唯一已声明模块，default_module=CORE）\n- implementation_baseline_id: `sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722`（本候选逐字绑定；任务 create/modify 标记与基线逐文件一致）\n- 上游输入（只读）：`intake.md`、`trigger_result.json`、`candidates/project/modules/CORE/requirements.candidate.md`（REQ-CORE-001～REQ-CORE-006 / AC-CORE-001～AC-CORE-018 已冻结）、`candidates/project/modules/CORE/design.candidate.md`（DD-CORE-001～DD-CORE-006 已冻结）、`candidates/project/architecture.candidate.md`（ARCH-CORE-001～004）、`candidates/project/data_model.candidate.md`（DATA-CORE-001～004）、`candidates/project/modules/CORE/module.candidate.json`（CORE code_paths 5 条）、`candidates/project/modules/CORE/contracts.candidate.json`（PI-CORE-001、INV-CORE-001～003）\n- 配置依据：`project-rules.md`（主语言 TypeScript；零依赖优先；node:test 优先；最小工程配置随首个功能受控创建）、`prod-environment.md`（无生产部署；Node 版本未取证；win32；无外部服务依赖）\n- 任务编号约定：短编号 TASK-001～TASK-005 与规范 ID `TASK-WI-0001-001`～`TASK-WI-0001-005` 一一对应；追溯统一使用规范 ID。\n- 引用承载说明：Contract/Architecture/Data 层引用（PI-CORE-*、INV-CORE-*、ARCH-CORE-*、DATA-CORE-*）按 task-document/v1 不进入结构化 refs，在每任务 context_block 的 **Refs** 行中以文本承载。\n\n## D18 声明（流程硬约束）\n\n本文档全部 `verification_commands` 均为**声明性验证命令**，供批准后的实现/验证阶段在合法执行边界内使用。本阶段（candidate_preparing）**未执行任何命令、未运行任何测试、未取得任何运行证据**；本文档不含任何\"已运行/已通过\"表述（AC-CORE-012 / CONSTRAINT-1）。运行与通过证据（EVREQ-2A/3A/4B 等）属于批准后验证阶段。\n\n## 承接的上游约束\n\n- CONSTRAINT-1：不实现额外输入分支（null/undefined/非 string 不编写任何分支、校验或抛错；纯空白字符串按非空规则直接处理，禁止 trim/归一化）。\n- CONSTRAINT-2：不引入任何第三方依赖（运行时与开发期均零安装）；不假设 npm registry、网络、CI、外部执行器可用。\n- Impact Scope 硬界：全部任务 `allowed_write_files` 之和恰等于 `impact_scope.planned_code_paths` 的 5 条，不多不少，不扩大；每条路径唯一映射模块 CORE。\n\n## 基线逐文件状态（T2A 对账，依据 implementation_baseline.json）\n\n| 计划代码路径 | 基线状态 | 任务操作 | 承接任务 |\n| --- | --- | --- | --- |\n| README.md | 既有（123 bytes，sha256:757ee94ea46933c3dd7092c04d15a32546a3f54e609b9c6e66351eeafe8fdf40） | 修改（追加式，既有内容逐字节保留） | TASK-WI-0001-004 |\n| package.json | 基线缺失（matched_files 为空） | 创建（TASK-005 仅在 D-2 降级触发时受控微调 scripts.test） | TASK-WI-0001-001（创建）、TASK-WI-0001-005（降级微调，主路径零变更） |\n| tsconfig.json | 基线缺失 | 创建 | TASK-WI-0001-001 |\n| src/greet.ts | 基线缺失 | 创建 | TASK-WI-0001-002 |\n| tests/greet.test.ts | 基线缺失 | 创建 | TASK-WI-0001-003 |\n\nCurrent Implementation 总结（全候选共用）：CORE 模块当前**无既有业务源代码、无既有测试、无既有工程配置**（项目首个正式功能：5 条计划路径中 README.md 为既有文件·追加式修改，其余 4 条为新建）；README.md 是唯一既有交付文件。已确认依据：CODE_OBSERVED（implementation_baseline.json，snapshot sha256:8f8ac52a…）+ PROJECT_SPEC（candidates/*）+ DESIGN（DD-CORE-001～DD-CORE-006）。\n\n## 任务总览、批次与依赖\n\n| 规范 ID | 短编号 | 名称 | 主 DD | allowed_write_files | depends_on | 批次 |\n| --- | --- | --- | --- | --- | --- | --- |\n| TASK-WI-0001-001 | TASK-001 | 创建最小工程配置 | DD-CORE-004（+DD-CORE-003 scripts.test） | package.json, tsconfig.json | 无 | 1（可并行） |\n| TASK-WI-0001-002 | TASK-002 | 实现 greet 纯函数 | DD-CORE-001, DD-CORE-002 | src/greet.ts | 无 | 1（可并行） |\n| TASK-WI-0001-003 | TASK-003 | 编写行为断言测试 | DD-CORE-006（+DD-CORE-003） | tests/greet.test.ts | TASK-WI-0001-001, TASK-WI-0001-002 | 2（可并行） |\n| TASK-WI-0001-004 | TASK-004 | README 追加使用说明 | DD-CORE-005 | README.md | TASK-WI-0001-002 | 2（可并行） |\n| TASK-WI-0001-005 | TASK-005 | 集成闭环验证（T2C） | DD-CORE-001/DD-CORE-003/DD-CORE-006 链路 | package.json（仅 D-2 降级微调；主路径零写入） | TASK-WI-0001-001～004 | 3（串行收口） |\n\n```mermaid\ngraph LR\n  T001[TASK-001 工程配置] --> T003[TASK-003 测试]\n  T002[TASK-002 greet 实现] --> T003\n  T002 --> T004[TASK-004 README]\n  T001 --> T005[TASK-005 集成闭环]\n  T002 --> T005\n  T003 --> T005\n  T004 --> T005\n```\n\n批次说明：批次 1（TASK-001 × TASK-002）与批次 2（TASK-003 × TASK-004）内部写文件零交集、无隐性依赖，可并行；TASK-005 为 Integration Closure Task（T2C），串行收口验证多任务链路真实接通（其 package.json 写入面仅在与 TASK-001 串行依赖下生效，无并行重叠）。\n\n---\n\n### TASK-WI-0001-001（TASK-001）创建最小工程配置 package.json 与 tsconfig.json\n\n**context_block**（executor 必读）：\n- **What**: 新建根级 `package.json` 与 `tsconfig.json` 两个最小工程配置文件。`package.json` 字段级形态（DD-CORE-004 逐字执行）：`name: \"greeting-library\"`、`version: \"0.1.0\"`、`private: true`、`type: \"module\"`、`scripts.test: \"node --test tests/greet.test.ts\"`、`dependencies: {}`（显式空对象）；**不设** `main`/`exports`/`devDependencies`/构建脚本。`tsconfig.json`：`compilerOptions` 含 `target: \"ES2022\"`、`module: \"NodeNext\"`、`moduleResolution: \"NodeNext\"`、`strict: true`、`noEmit: true`、`allowImportingTsExtensions: true`；`include: [\"src/**/*.ts\", \"tests/**/*.ts\"]`。\n- **Why**: 为 REQ-CORE-001 的签名静态复核（AC-CORE-002）提供类型检查配置；为 REQ-CORE-004 提供唯一测试入口声明（`scripts.test`，DD-CORE-003 主路径）；以 `dependencies: {}` 显式空对象作为 REQ-CORE-006 零运行时依赖的可检查配置证据（EVREQ-6A，INV-CORE-003）。\n- **Refs**（完整引用链，文本承载）：DD-CORE-004（最小工程配置设计）、DD-CORE-003（scripts.test 唯一测试入口与零安装路径）；约束契约 INV-CORE-003（零运行时依赖）、ARCH-CORE-002（零运行时依赖架构）、ARCH-CORE-004（工具链与运行时隔离）。\n- **Current Implementation**: 两文件基线缺失（implementation_baseline.json matched_files 均为空）→ 全部新建；项目此前无任何工程配置（BL-1/FACT-1）。已确认依据：CODE_OBSERVED（基线）+ DESIGN（DD-CORE-004）。\n- **Constraints**:\n  - 不引入任何第三方依赖（运行时与 devDependencies 均零安装，CONSTRAINT-2/AC-CORE-018）。\n  - `noEmit: true` 与 `allowImportingTsExtensions: true` 必须同时出现（配套合法组合，支撑测试文件显式 `.ts` import）。\n  - tsconfig 仅用于开发期类型检查，不产生构建产物、不构成任何执行前置（ARCH-CORE-004 工具链与运行时隔离）。\n  - 遵守 project-rules：最小工程配置随首个功能任务受控创建；风格为标准 JSON 两空格缩进。\n- **Steps**（执行步骤）:\n  1. 新建 `package.json`，按 What 中字段级形态逐字段写入（顺序：name、version、private、type、scripts、dependencies）。\n  2. 自查 `dependencies` 为显式空对象 `{}`，无 `devDependencies` 键。\n  3. 新建 `tsconfig.json`，写入 `compilerOptions` 六项与 `include` 两项。\n  4. 自查两文件为合法 JSON（可用 Read 工具复核结构）。\n- **Done When Code**: `package.json` 与 `tsconfig.json` 存在于项目根，字段与 DD-CORE-004 逐项一致。\n- **Done When Behavior**: `scripts.test` 即 DD-CORE-003 主路径命令；类型检查配置覆盖 src/ 与 tests/ 且不产出构建产物；零运行时依赖在配置面显式成立。\n- **Done When Evidence**: 下方 unit 命令全部以退出码 0 通过（批准后实现阶段的合法执行边界内取得；本阶段仅为声明）。\n\n- **refs**: [REQ-CORE-001, REQ-CORE-004, REQ-CORE-006, DD-CORE-004, DD-CORE-003]\n- **depends_on**: []\n- **allowed_write_files**: [package.json, tsconfig.json]\n- **forbidden_files**: [src/greet.ts, tests/greet.test.ts, README.md, .specforge/work-items/**, .specforge/project/**, .specforge/config/**]\n- **expected_file_changes**: [package.json（新建，约 10 行）, tsconfig.json（新建，约 10 行）]\n- **verification_commands**:\n  - unit:\n    - `test -f package.json && test -f tsconfig.json`\n    - `grep -c '\"dependencies\": {}' package.json`\n    - `grep -c '\"test\": \"node --test tests/greet.test.ts\"' package.json`\n    - `grep -c '\"type\": \"module\"' package.json`\n    - `grep -cE '\"noEmit\": true|\"allowImportingTsExtensions\": true' tsconfig.json`\n- **verification_evidence_expected**:\n  | command | expected_exit_code | expected_output_pattern | evidence_type |\n  | --- | --- | --- | --- |\n  | `test -f package.json && test -f tsconfig.json` | 0 | 无输出 | command_exit |\n  | `grep -c '\"dependencies\": {}' package.json` | 0 | 含 1 | command_output |\n  | `grep -c '\"test\": \"node --test tests/greet.test.ts\"' package.json` | 0 | 含 1 | command_output |\n  | `grep -c '\"type\": \"module\"' package.json` | 0 | 含 1 | command_output |\n  | `grep -cE '\"noEmit\": true|\"allowImportingTsExtensions\": true' tsconfig.json` | 0 | 含 2 | command_output |\n- **out_of_scope**: 不实现 greet 函数；不编写测试；不修改 README；不新增 main/exports/构建脚本/CI 配置；不运行任何测试命令（`node --test` 属批准后验证阶段）。\n- **验收对照**: AC-CORE-011（scripts.test 入口形态）、AC-CORE-016（dependencies 为空集）、AC-CORE-018（工具链仅开发期、零安装）、AC-CORE-002（tsconfig 承载签名静态类型检查路径）。\n\n---\n\n### TASK-WI-0001-002（TASK-002）实现 src/greet.ts 纯函数导出\n\n**context_block**（executor 必读）：\n- **What**: 新建 `src/greet.ts`，提供**唯一**具名导出 `greet`，签名 `export function greet(name: string): string`（PI-CORE-001 逐字实现）。函数体有且仅有两个行为分支（DD-CORE-002）：`name === \"\"`（长度 0）→ 返回精确常量 `\"Hello, world!\"`（13 字符：大写 H、小写 world、逗号后一个空格、结尾感叹号）；否则（长度 ≥ 1，含纯空白字符串）→ 返回 `\"Hello, \" + name + \"!\"` 三段依序拼接，name 逐字符原样保留。零 import、无状态、无副作用、无 I/O、不抛出异常（定义域内）。\n- **Why**: 实现用户结果的核心行为契约：REQ-CORE-001（导出契约）、REQ-CORE-002（非空名称个性化问候）、REQ-CORE-003（空名称默认问候）；同时以零 import 源码事实支撑 REQ-CORE-006/INV-CORE-003。\n- **Refs**（完整引用链，文本承载）：DD-CORE-001（公共 API 设计，接口定义见 design.candidate.md §5.2 DD-CORE-001）、DD-CORE-002（两条行为规则与定义域分支）；约束契约 PI-CORE-001、INV-CORE-001、INV-CORE-002、DATA-CORE-001、DATA-CORE-002、DATA-CORE-003、ARCH-CORE-003。\n- **Current Implementation**: `src/` 目录与 `src/greet.ts` 基线缺失（matched_files 为空）→ 全新建；CORE 当前无任何业务源代码（BL-1/FACT-1）。已确认依据：CODE_OBSERVED（基线）+ DESIGN（DD-CORE-001/002）+ PROJECT_SPEC（PI-CORE-001/DATA-CORE-001～003）。\n- **Constraints**:\n  - 禁止为 null/undefined/非 string 编写任何分支、校验、抛错（CONSTRAINT-1；域外行为在 PI-CORE-001.undefined_behavior 中明确未定义）。\n  - 禁止 trim、大小写变换、Unicode 归一化、截断或任何对 name 的改写（DATA-CORE-003/INV-CORE-002）。\n  - 文件零 import（自包含纯函数；EVREQ-6A/INV-CORE-003 源码面）。不引入新依赖（CONSTRAINT-2）。\n  - 仅使用可擦除 TypeScript 语法（类型标注），不使用 enum/namespace/参数属性（ARCH-CORE-004 type stripping 路径要求）。\n  - 函数实现不依赖 package.json/tsconfig.json 的存在（文件系统独立；二者仅属开发期工具链）。\n- **Steps**（执行步骤）:\n  1. 新建 `src/greet.ts`。\n  2. 写入唯一具名导出 `greet(name: string): string` 与两个行为分支（空字符串 → 常量；其余 → 三段拼接）。\n  3. 自查：无 import 语句、无类型分支、无 trim/变换、无 throw、无 console/I/O。\n  4. 用 Read 复核签名逐字符为 `export function greet(name: string): string`。\n- **Done When Code**: `src/greet.ts` 存在，恰一个具名导出 `greet`，签名精确匹配，函数体恰两个分支，零 import。\n- **Done When Behavior**: E0（`\"\"`）→ `\"Hello, world!\"`；E1（任意长度 ≥ 1 字符串，含纯空白）→ `\"Hello, \" + name + \"!\"`（name 原样）；定义域内不抛出、无副作用。\n- **Done When Evidence**: 下方 unit 命令全部退出码 0（静态证据，批准后实现阶段取得）；行为层运行证据由 TASK-WI-0001-003/005 的断言运行提供（EVREQ-2A/3A/4B，批准后验证阶段）。\n\n- **refs**: [REQ-CORE-001, REQ-CORE-002, REQ-CORE-003, DD-CORE-001, DD-CORE-002]\n- **depends_on**: []\n- **allowed_write_files**: [src/greet.ts]\n- **forbidden_files**: [package.json, tsconfig.json, tests/greet.test.ts, README.md, .specforge/work-items/**, .specforge/project/**, .specforge/config/**]\n- **expected_file_changes**: [src/greet.ts（新建，< 20 行）]\n- **verification_commands**:\n  - unit:\n    - `test -f src/greet.ts`\n    - `grep -c \"export function greet(name: string): string\" src/greet.ts`\n    - `grep -c \"Hello, world!\" src/greet.ts`\n    - `! grep -qE \"^import |^import\\{|require\\(\" src/greet.ts`\n- **verification_evidence_expected**:\n  | command | expected_exit_code | expected_output_pattern | evidence_type |\n  | --- | --- | --- | --- |\n  | `test -f src/greet.ts` | 0 | 无输出 | command_exit |\n  | `grep -c \"export function greet(name: string): string\" src/greet.ts` | 0 | 含 1 | command_output |\n  | `grep -c \"Hello, world!\" src/greet.ts` | 0 | 含 1 | command_output |\n  | `! grep -qE \"^import |^import\\{|require\\(\" src/greet.ts` | 0 | 无输出（零 import 事实） | command_exit |\n- **out_of_scope**: 不实现额外输入分支（null/undefined/非 string/纯空白特殊处理/trim）；不写测试；不改工程配置与 README；不做国际化/可配置模板；不运行任何命令。\n- **验收对照**: AC-CORE-001、AC-CORE-002（+AC-CORE-003 反向判定）、AC-CORE-004、AC-CORE-005（+AC-CORE-006）、AC-CORE-007、AC-CORE-008（+AC-CORE-009）。\n\n---\n\n### TASK-WI-0001-003（TASK-003）编写 tests/greet.test.ts 行为断言套件\n\n**context_block**（executor 必读）：\n- **What**: 新建 `tests/greet.test.ts`，使用 Node 内置 `node:test` 的 `test()` 组织断言、`node:assert/strict` 的 `strictEqual` 做严格相等断言，实现 DD-CORE-006 断言清单：A1 `greet(\"Ada\")` 严格等于 `\"Hello, Ada!\"`；A2 `greet(\"Grace\")` 严格等于 `\"Hello, Grace!\"`；A3 `greet(\"\")` 严格等于 `\"Hello, world!\"`；A4 纯空白名称（如 `\"  \"`）严格等于 `\"Hello, \" + name + \"!\"` 拼接形态。对被测对象的引用使用显式 `.ts` 说明符：`import { greet } from \"../src/greet.ts\"`（type stripping 要求，与 tsconfig `allowImportingTsExtensions` 配套）。\n- **Why**: 交付 REQ-CORE-004 的自动化测试：A1/A2 满足 EVREQ-2A\"≥ 2 个互不相同非空名称\"，A3 满足 EVREQ-3A，A4 固化 INV-CORE-002\"纯空白按非空规则处理、不归一化\"；测试以真实 import 消费公共 API（EVREQ-1B 最小集成面）。\n- **Refs**（完整引用链，文本承载）：DD-CORE-006（断言与验证钩子设计，断言清单 A1–A4）、DD-CORE-003（node:test + node:assert/strict 零安装路径）；约束契约 PI-CORE-001、INV-CORE-001、INV-CORE-002、ARCH-CORE-004。\n- **Current Implementation**: `tests/` 目录与文件基线缺失 → 全新建；项目无既有测试（BL-1）。被测对象 `src/greet.ts` 由 TASK-WI-0001-002 创建（本任务前置依赖）；测试入口声明 `scripts.test` 由 TASK-WI-0001-001 创建。已确认依据：CODE_OBSERVED（基线）+ DESIGN（DD-CORE-006/DD-CORE-003）。\n- **Constraints**:\n  - 仅使用 Node 内置模块（`node:test`、`node:assert/strict`）；零 devDependencies、零安装步骤（DD-CORE-003 D-1 裁决、CONSTRAINT-2）。\n  - 仅使用可擦除 TypeScript 语法；import 说明符必须带 `.ts` 扩展名。\n  - 断言必须恰好覆盖 A1–A4 四条，不新增对域外输入（null/undefined/非 string）的断言（CONSTRAINT-1）。\n  - 本任务只编写测试文件；**不得运行测试**（运行与取证属批准后验证阶段，AC-CORE-012）。\n- **Steps**（执行步骤）:\n  1. 新建 `tests/greet.test.ts`。\n  2. 写入 `import { test } from \"node:test\"`、`import assert from \"node:assert/strict\"`、`import { greet } from \"../src/greet.ts\"`。\n  3. 写入 A1–A4 四条 `test()` + `assert.strictEqual(...)` 断言（断言值逐字符按 What 清单）。\n  4. 自查断言计数与清单一致、无域外输入断言、无第三方 import。\n- **Done When Code**: `tests/greet.test.ts` 存在，含 4 条 strictEqual 断言（A1–A4），import 形态符合 type stripping 要求。\n- **Done When Behavior**: 该套件在 `node --test tests/greet.test.ts` 下可加载并执行（批准后验证阶段以真实运行输出证明全部断言通过，EVREQ-4B；主路径 Node ≥ 23.6，降级链见 DD-CORE-003 D-2）。\n- **Done When Evidence**: 下方 unit 命令（静态存在性）全部退出码 0；integration 命令 `node --test tests/greet.test.ts` 在批准后验证阶段取得退出码 0 的真实运行输出（本阶段仅为声明，不声称已运行）。\n\n- **refs**: [REQ-CORE-002, REQ-CORE-003, REQ-CORE-004, DD-CORE-006, DD-CORE-003]\n- **depends_on**: [TASK-WI-0001-001, TASK-WI-0001-002]\n- **allowed_write_files**: [tests/greet.test.ts]\n- **forbidden_files**: [src/greet.ts, package.json, tsconfig.json, README.md, .specforge/work-items/**, .specforge/project/**, .specforge/config/**]\n- **expected_file_changes**: [tests/greet.test.ts（新建，< 30 行）]\n- **verification_commands**:\n  - unit:\n    - `test -f tests/greet.test.ts`\n    - `grep -c \"node:test\" tests/greet.test.ts`\n    - `grep -c \"node:assert/strict\" tests/greet.test.ts`\n    - `grep -c \"strictEqual\" tests/greet.test.ts`\n  - integration:\n    - `node --test tests/greet.test.ts`\n- **verification_evidence_expected**:\n  | command | expected_exit_code | expected_output_pattern | evidence_type |\n  | --- | --- | --- | --- |\n  | `test -f tests/greet.test.ts` | 0 | 无输出 | command_exit |\n  | `grep -c \"node:test\" tests/greet.test.ts` | 0 | 含 1 | command_output |\n  | `grep -c \"node:assert/strict\" tests/greet.test.ts` | 0 | 含 1 | command_output |\n  | `grep -c \"strictEqual\" tests/greet.test.ts` | 0 | 含 4（A1–A4） | command_output |\n  | `node --test tests/greet.test.ts` | 0 | `4 pass`（或等价全部通过输出） | test_output |\n  注：integration 行为**声明性预期**，仅在批准后验证阶段于合法执行边界内运行取证（EVREQ-4B；AC-CORE-012 禁止本阶段声称已运行）。\n- **out_of_scope**: 不修改 greet 实现；不改工程配置与 README；不新增域外输入断言；不引入任何测试框架第三方依赖；不运行测试（本阶段）。\n- **验收对照**: AC-CORE-010（断言清单覆盖两条行为，A1/A2/A4 → REQ-CORE-002、A3 → REQ-CORE-003）、AC-CORE-011（可运行形态，运行取证在 TASK-005/验证阶段）、AC-CORE-012（本任务全程无\"已运行\"表述）。\n\n---\n\n### TASK-WI-0001-004（TASK-004）README.md 追加 greet 使用说明\n\n**context_block**（executor 必读）：\n- **What**: 对既有 `README.md` 实施**追加式修改**：保留既有标题 `# Greeting Library` 与项目性质描述行（既有 123 bytes，基线 sha256:757ee94ea46933c3dd7092c04d15a32546a3f54e609b9c6e66351eeafe8fdf40 逐字节锚定），在既有内容之后追加一个使用说明章节，必须含三要素（DD-CORE-005）：（1）调用方式——从 `./src/greet.ts` import `greet` 的示例与签名 `greet(name: string): string`；（2）非空名称行为——示例 `greet(\"Ada\")` → `\"Hello, Ada!\"`；（3）空名称行为——示例 `greet(\"\")` → `\"Hello, world!\"`。\n- **Why**: 交付 REQ-CORE-005 使用说明：让调用方不读源码即可正确使用 greet；文档示例即 EVREQ-5A 的内容面，示例与实现行为不一致将由 AC-CORE-015 拦截。\n- **Refs**（完整引用链，文本承载）：DD-CORE-005（README 追加设计）；架构约束 ARCH-CORE-001（README 属 CORE code_paths）。\n- **Current Implementation**: README.md 既有（唯一既有交付文件）：标题 `# Greeting Library`，正文 `A synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.`（123 bytes）。本任务为**追加**，不重建、不改写既有行。已确认依据：CODE_OBSERVED（implementation_baseline.json 基线哈希）。行为依据由 TASK-WI-0001-002 的实现提供（本任务前置依赖：文档描述的行为必须与已实现行为一致）。\n- **Constraints**:\n  - 既有内容**逐字节保留**（追加式，append-only；A-3 假设锚定）。\n  - 三要素示例必须与 REQ-CORE-002/REQ-CORE-003 及测试断言（A1/A3）逐字符一致：`\"Hello, Ada!\"`、`\"Hello, world!\"`。\n  - 不描述域外输入行为（null/undefined/非 string 未定义，CONSTRAINT-1）；不承诺范围外能力（i18n/可配置模板/CLI 等）。\n  - Markdown 风格与既有文档一致（简单标题 + 段落/代码块）。\n- **Steps**（执行步骤）:\n  1. 读取 README.md 现有内容（123 bytes，两行）。\n  2. 在既有内容之后追加空行 + 使用说明章节（`## Usage` 或等价标题）。\n  3. 写入三要素：import 示例 + 签名、`greet(\"Ada\")` → `\"Hello, Ada!\"`、`greet(\"\")` → `\"Hello, world!\"`。\n  4. 自查既有两行原样保留、追加内容含全部三要素。\n- **Done When Code**: README.md 存在追加章节；既有标题与正文行逐字节不变（前缀保留）。\n- **Done When Behavior**: 读者可在 README 中同时找到调用方式与两种返回行为说明，且与实现行为一致。\n- **Done When Evidence**: 下方 unit/regression 命令全部退出码 0：既有行保留 grep 命中 + 三要素 grep 命中（EVREQ-5A 文档内容证据，批准后实现阶段取得）。\n\n- **refs**: [REQ-CORE-005, DD-CORE-005]\n- **depends_on**: [TASK-WI-0001-002]\n- **allowed_write_files**: [README.md]\n- **forbidden_files**: [src/greet.ts, tests/greet.test.ts, package.json, tsconfig.json, .specforge/work-items/**, .specforge/project/**, .specforge/config/**]\n- **expected_file_changes**: [README.md（修改：追加使用说明章节；既有 123 bytes 前缀逐字节保留）]\n- **verification_commands**:\n  - unit:\n    - `grep -c \"^# Greeting Library\" README.md`\n    - `grep -c \"A synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\" README.md`\n    - `grep -c \"greet(name: string): string\" README.md`\n    - `grep -cE \"Hello, Ada!|Hello, Grace!\" README.md`\n    - `grep -c \"Hello, world!\" README.md`\n  - regression:\n    - `grep -c \"No production data.\" README.md`\n- **verification_evidence_expected**:\n  | command | expected_exit_code | expected_output_pattern | evidence_type |\n  | --- | --- | --- | --- |\n  | `grep -c \"^# Greeting Library\" README.md` | 0 | 含 1（既有标题保留） | command_output |\n  | `grep -c \"A synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\" README.md` | 0 | 含 1（既有正文保留） | command_output |\n  | `grep -c \"greet(name: string): string\" README.md` | 0 | 含 ≥ 1（调用方式） | command_output |\n  | `grep -cE \"Hello, Ada!|Hello, Grace!\" README.md` | 0 | 含 ≥ 1（非空行为示例） | command_output |\n  | `grep -c \"Hello, world!\" README.md` | 0 | 含 ≥ 1（空名称行为示例） | command_output |\n  | `grep -c \"No production data.\" README.md` | 0 | 含 1（追加不破坏既有声明） | command_output |\n- **out_of_scope**: 不改任何代码/测试/配置文件；不描述域外输入行为；不新增范围外能力承诺；不运行任何命令。\n- **验收对照**: AC-CORE-013（调用方式说明）、AC-CORE-014（两种行为说明）、AC-CORE-015（描述与实现一致；一致性由 TASK-WI-0001-005 与断言 A1/A3 对照复核）。\n\n---\n\n### TASK-WI-0001-005（TASK-005）集成闭环验证（Integration Closure，T2C）\n\n**context_block**（executor 必读）：\n- **What**: 集成闭环验证任务：证明 TASK-001～004 的局部交付已真实接通为同一用户结果——在一条命令内由 Node 内置 type stripping 直接加载 TypeScript 源文件、以真实 `import('../src/greet.ts')` 消费公共 API（EVREQ-1B）、A1–A4 全部断言通过（EVREQ-2A/3A/4B），并以调用方视角的动态导入复核两条行为契约。写入面：**主路径（Node ≥ 23.6）零文件写入**；仅当实测 Node 22.6–23.5 触发 DD-CORE-003 D-2 降级路径时，将 `package.json#scripts.test` 同步为 `node --experimental-strip-types --test tests/greet.test.ts`（受控单行微调，保持\"唯一测试入口\"与实际命令一致，仍属 DD-CORE-003 设计范围与 planned_code_paths 之内）。\n- **Why**: 多个局部任务共同实现一个用户结果（可用的 greet 库 + 可复核测试 + 一致文档）时，T2C 要求一个集成闭环任务验证链路真实接通；本任务同时是 DD-CORE-003 D-2 版本事实的取证明细点（主路径 `node --test`；降级路径见 What；若实测 Node < 22.6 按可恢复 HardStop 协议上报，禁止第三方转译兜底）。\n- **Refs**（完整引用链，文本承载）：DD-CORE-001（公共 API）、DD-CORE-003（执行路径与 D-2 降级链）、DD-CORE-006（断言清单）；约束契约 PI-CORE-001。\n- **Current Implementation**: 本任务消费 TASK-001～004 已交付的 5 个文件（其基线状态见前表）；本任务自身无既有实现，主路径零文件变更。已确认依据：DESIGN（DD-CORE-003/006）+ PROJECT_SPEC（PI-CORE-001）。\n- **Constraints**:\n  - **本任务在本阶段（candidate_preparing）不执行任何命令**；其 verification_commands 为声明性，供批准后验证阶段在合法执行边界内使用（D18/AC-CORE-012）。执行被治理拒绝时按可恢复 HardStop 协议处理并保留证据。\n  - 唯一合法写入面为 `package.json` 且仅限 D-2 降级触发的 `scripts.test` 单行同步；禁止改写其他任何字段或文件，禁止写治理产物。\n  - 仅使用 DD-CORE-003 固化的主路径命令与 Node 内置能力；不引入第三方 runner/转译。\n- **Steps**（执行步骤，批准后执行边界内）:\n  1. 确认 TASK-001～004 全部完成（5 文件就位）。\n  2. 运行 `node --test tests/greet.test.ts`，确认退出码 0、4 条断言全部通过。\n  3. 运行调用方视角动态导入检查（e2e 命令），确认 `greet('Ada') === 'Hello, Ada!'` 且 `greet('') === 'Hello, world!'`。\n  4. 若步骤 2/3 因 Node 版本不足失败且实测为 22.6–23.5：改用 `node --experimental-strip-types --test tests/greet.test.ts` 验证通过后，将 `package.json#scripts.test` 同步为该降级命令（唯一写入动作）；若实测 < 22.6：停止并按可恢复 HardStop 协议上报（禁止第三方转译兜底）。\n  5. 记录运行输出与退出码作为 EVREQ-2A/3A/4B/1B 的真实证据。\n- **Done When Code**: 主路径零文件变更；（仅降级触发时）`package.json#scripts.test` 为降级命令且其余字段不变。\n- **Done When Behavior**: 加载器 → 真实源文件 import → 两条行为契约断言 → 全部通过，单一链路接通；README 示例与断言值逐字符一致（A1↔`Hello, Ada!`、A3↔`Hello, world!`）。\n- **Done When Evidence**: integration/e2e 命令退出码 0 与运行输出（批准后验证阶段取得；本阶段仅为声明）。\n\n- **refs**: [REQ-CORE-001, REQ-CORE-002, REQ-CORE-003, REQ-CORE-004, DD-CORE-001, DD-CORE-003, DD-CORE-006]\n- **depends_on**: [TASK-WI-0001-001, TASK-WI-0001-002, TASK-WI-0001-003, TASK-WI-0001-004]\n- **allowed_write_files**: [package.json]\n- **forbidden_files**: [src/greet.ts, tests/greet.test.ts, README.md, tsconfig.json, .specforge/work-items/**, .specforge/project/**, .specforge/config/**]\n- **expected_file_changes**: []（主路径；仅 D-2 降级触发时 package.json 的 scripts.test 一行受控微调）\n- **verification_commands**:\n  - integration:\n    - `node --test tests/greet.test.ts`\n  - e2e:\n    - `node -e \"import('./src/greet.ts').then(m => { const a = m.greet('Ada'); const b = m.greet(''); if (a !== 'Hello, Ada!' || b !== 'Hello, world!') { process.exit(1); } console.log('E2E-OK'); }).catch(() => process.exit(1))\"`\n- **verification_evidence_expected**:\n  | command | expected_exit_code | expected_output_pattern | evidence_type |\n  | --- | --- | --- | --- |\n  | `node --test tests/greet.test.ts` | 0 | `4 pass`（或等价全部通过输出） | test_output |\n  | `node -e \"import('./src/greet.ts').then(...)\"` | 0 | `E2E-OK` | command_output |\n  注：两行均为**声明性预期**，批准后验证阶段于合法执行边界内运行取证（EVREQ-1B/2A/3A/4B）；若 Node 版本实测为 22.6–23.5，integration 命令替换为 DD-CORE-003 D-2 降级路径 `node --experimental-strip-types --test tests/greet.test.ts`（同一测试文件，仅命令行差异，并同步 scripts.test）。\n- **out_of_scope**: 除 D-2 降级的 scripts.test 单行同步外不修改任何文件；不声称本阶段已运行任何命令；不引入第三方工具兜底 Node 版本缺口（熔断路径走可恢复 HardStop 协议）。\n- **验收对照**: AC-CORE-004、AC-CORE-007（真实运行证明）、AC-CORE-011（EVREQ-4B 运行取证）、AC-CORE-001/002/003（EVREQ-1B 以真实 import 消费公共 API）。\n\n---\n\n## 覆盖与自检总结\n\n- REQ-CORE-001～REQ-CORE-006 全部被任务承接（详见 trace_delta.md 追溯矩阵）；DD-CORE-001～DD-CORE-006 全部有对应任务（DD-CORE-001/002→T-002、DD-CORE-003→T-001/T-003/T-005、DD-CORE-004→T-001、DD-CORE-005→T-004、DD-CORE-006→T-003）。\n- planned_code_paths 5 条与全部任务 allowed_write_files 之并集**一一对应、不多不少**（TASK-005 的 package.json 写入面为 TASK-001 同路径的串行子集，未引入计划外路径）；每条唯一映射 CORE。\n- 并行批次写文件零交集；无循环依赖（T-001/T-002 → T-003/T-004 → T-005 单向）。\n- 全部 verification_commands 为声明性（D18）：标准 `test`/`grep`/`node` 命令，退出码可判定，零第三方 CLI，不假设网络/包管理器；`node --test` 主路径与 DD-CORE-003 D-2 降级链一致。",
+                  "lineStart": 1,
+                  "lineEnd": 305,
+                  "totalLines": 305,
+                  "truncated": false
+                }
+              },
+              "time": {
+                "start": 1794041688978,
+                "end": 1794041689039
+              }
+            }
+          },
+          {
+            "id": "prt_1b537b4dd001usmQa6S8fE2RDJ",
+            "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+            "messageID": "msg_1b5378f890010OV1WVLQ5z93W1",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "40f4b69725c04b5858c687e95836c4dbd1f93ade",
+            "cost": 0,
+            "tokens": {
+              "total": 34986,
+              "input": 155,
+              "output": 47,
+              "reasoning": 32,
+              "cache": {
+                "read": 34752,
+                "write": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b537b5be001ZzRiK6okcfaj0n",
+          "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+          "role": "assistant",
+          "time": {
+            "created": 1794041689534,
+            "completed": 1794041710262
+          },
+          "parentID": "msg_1b53755730015hm8Df8wRqYovF",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-orchestrator",
+          "agent": "sf-orchestrator",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 45956,
+            "input": 10342,
+            "output": 383,
+            "reasoning": 351,
+            "cache": {
+              "read": 34880,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1b537c830001aPzN3E5gzkoqYV",
+            "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+            "messageID": "msg_1b537b5be001ZzRiK6okcfaj0n",
+            "type": "step-start",
+            "snapshot": "40f4b69725c04b5858c687e95836c4dbd1f93ade"
+          },
+          {
+            "type": "reasoning",
+            "withheld": true,
+            "original_sha256": "555128ad6185c12d8f80b986f82e9b54fbdf565605b67cab3cf6d33c0e2c11ef",
+            "original_size": 1528
+          },
+          {
+            "id": "prt_1b537dda1001wtlG7Y04Bi4Jyk",
+            "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+            "messageID": "msg_1b537b5be001ZzRiK6okcfaj0n",
+            "type": "text",
+            "text": "权威状态确认：WI-0001 处于 `verification_running`（feature_spec）。已解析 canonical `candidates/tasks.md` 的全部 22 条声明性命令：\n\n- TASK-001：5×unit｜TASK-002：4×unit｜TASK-003：4×unit + 1×integration｜TASK-004：5×unit + 1×regression｜TASK-005：1×integration + 1×e2e（共 22 条）\n\n按 Task 分批创建 formal verification plan 并由真实 sf-verifier prepare/run。先创建 TASK-001 的 5 条 plan：",
+            "time": {
+              "start": 1794041699745,
+              "end": 1794041706286
+            }
+          },
+          {
+            "id": "prt_1b537edb1001FvUnGSSn2w4iiO",
+            "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+            "messageID": "msg_1b537b5be001ZzRiK6okcfaj0n",
+            "type": "tool",
+            "callID": "call_4b5a91fd572d497e9c768cff",
+            "tool": "sf_verification_plan",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "create",
+                "command_index": 0,
+                "task_id": "TASK-WI-0001-001",
+                "verification_type": "unit",
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\"success\":true,\"plan_id\":\"cfa468dbdf3fb8dd537210c4596bb07bb3294232e3d22d0a29438baf7d5f76df\",\"preparation_id\":\"da8d17a82f487cbb0da834843a7c2de29266f6c3ca6bf3a113d6737b6dfc1de2\",\"expires_at\":\"2026-11-07T09:05:05.753Z\",\"purpose\":\"formal\",\"original_command\":\"test -f package.json && test -f tsconfig.json\",\"actual_argv\":[\"--no-addons\",\"--preserve-symlinks\",\"--preserve-symlinks-main\",\"-e\",\"process.exit(0);\"],\"profile\":\"windows-lpac-node-single-process-readonly/v1\",\"code_write_granted\":false}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794041703862,
+                "end": 1794041707952
+              }
+            }
+          },
+          {
+            "id": "prt_1b537ef7d001BpyCvD0hgbTzgt",
+            "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+            "messageID": "msg_1b537b5be001ZzRiK6okcfaj0n",
+            "type": "tool",
+            "callID": "call_7fcd5f70be3947feae717c8f",
+            "tool": "sf_verification_plan",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "create",
+                "command_index": 1,
+                "task_id": "TASK-WI-0001-001",
+                "verification_type": "unit",
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\"success\":true,\"plan_id\":\"0eefe775d6313b18c3a982bcbb03cb07aa480f2298efc8390a6970fa59be46f7\",\"preparation_id\":\"5cc0254c02bdc79d71e28bcad8679b83e3c36dacbaea37355d5c5c25da44fb6b\",\"expires_at\":\"2026-11-07T09:05:05.725Z\",\"purpose\":\"formal\",\"original_command\":\"grep -c '\\\"dependencies\\\": {}' package.json\",\"actual_argv\":[\"--no-addons\",\"--preserve-symlinks\",\"--preserve-symlinks-main\",\"-e\",\"const text=\\\"{\\\\n  \\\\\\\"name\\\\\\\": \\\\\\\"greeting-library\\\\\\\",\\\\n  \\\\\\\"version\\\\\\\": \\\\\\\"0.1.0\\\\\\\",\\\\n  \\\\\\\"private\\\\\\\": true,\\\\n  \\\\\\\"type\\\\\\\": \\\\\\\"module\\\\\\\",\\\\n  \\\\\\\"scripts\\\\\\\": {\\\\n    \\\\\\\"test\\\\\\\": \\\\\\\"node --test tests/greet.test.ts\\\\\\\"\\\\n  },\\\\n  \\\\\\\"dependencies\\\\\\\": {}\\\\n}\\\\n\\\";const lines=text===\\\"\\\"?[]:text.split(\\\"\\\\n\\\");if(lines.length&&lines[lines.length-1]===\\\"\\\")lines.pop();const regex=RegExp(\\\"\\\\\\\"dependencies\\\\\\\": \\\\\\\\{\\\\\\\\}\\\");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);\"],\"profile\":\"windows-lpac-node-single-process-readonly/v1\",\"code_write_granted\":false}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794041704322,
+                "end": 1794041707764
+              }
+            }
+          },
+          {
+            "id": "prt_1b537f34f001PjkIQAt5NZsIlE",
+            "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+            "messageID": "msg_1b537b5be001ZzRiK6okcfaj0n",
+            "type": "tool",
+            "callID": "call_19396bf23da34d009fe8e440",
+            "tool": "sf_verification_plan",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "create",
+                "command_index": 2,
+                "task_id": "TASK-WI-0001-001",
+                "verification_type": "unit",
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\"success\":true,\"plan_id\":\"6f9928a8fdea347abc3c954f69bd138b33ca90f6fc0c49c37f0b67e219ed40bc\",\"preparation_id\":\"10250ef9f6c7ec3d4762310528ed6fff7c4aa5b6d6c78625bceb60ba11e1fa1c\",\"expires_at\":\"2026-11-07T09:05:06.955Z\",\"purpose\":\"formal\",\"original_command\":\"grep -c '\\\"test\\\": \\\"node --test tests/greet.test.ts\\\"' package.json\",\"actual_argv\":[\"--no-addons\",\"--preserve-symlinks\",\"--preserve-symlinks-main\",\"-e\",\"const text=\\\"{\\\\n  \\\\\\\"name\\\\\\\": \\\\\\\"greeting-library\\\\\\\",\\\\n  \\\\\\\"version\\\\\\\": \\\\\\\"0.1.0\\\\\\\",\\\\n  \\\\\\\"private\\\\\\\": true,\\\\n  \\\\\\\"type\\\\\\\": \\\\\\\"module\\\\\\\",\\\\n  \\\\\\\"scripts\\\\\\\": {\\\\n    \\\\\\\"test\\\\\\\": \\\\\\\"node --test tests/greet.test.ts\\\\\\\"\\\\n  },\\\\n  \\\\\\\"dependencies\\\\\\\": {}\\\\n}\\\\n\\\";const lines=text===\\\"\\\"?[]:text.split(\\\"\\\\n\\\");if(lines.length&&lines[lines.length-1]===\\\"\\\")lines.pop();const regex=RegExp(\\\"\\\\\\\"test\\\\\\\": \\\\\\\"node --test tests/greet[\\\\\\\\s\\\\\\\\S]test[\\\\\\\\s\\\\\\\\S]ts\\\\\\\"\\\");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);\"],\"profile\":\"windows-lpac-node-single-process-readonly/v1\",\"code_write_granted\":false}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794041705305,
+                "end": 1794041708901
+              }
+            }
+          },
+          {
+            "id": "prt_1b537f56a001eUVVEeRByrA39J",
+            "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+            "messageID": "msg_1b537b5be001ZzRiK6okcfaj0n",
+            "type": "tool",
+            "callID": "call_8c4ec699785e40c8886ee8af",
+            "tool": "sf_verification_plan",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "create",
+                "command_index": 3,
+                "task_id": "TASK-WI-0001-001",
+                "verification_type": "unit",
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\"success\":true,\"plan_id\":\"e344458665c8dc629275d85bff5f3210729040924abd97e48f7013a986fdb96c\",\"preparation_id\":\"eeac1a22a838da01a477f975843fc21d30898ded9918cb37e08b995d4c696308\",\"expires_at\":\"2026-11-07T09:05:07.715Z\",\"purpose\":\"formal\",\"original_command\":\"grep -c '\\\"type\\\": \\\"module\\\"' package.json\",\"actual_argv\":[\"--no-addons\",\"--preserve-symlinks\",\"--preserve-symlinks-main\",\"-e\",\"const text=\\\"{\\\\n  \\\\\\\"name\\\\\\\": \\\\\\\"greeting-library\\\\\\\",\\\\n  \\\\\\\"version\\\\\\\": \\\\\\\"0.1.0\\\\\\\",\\\\n  \\\\\\\"private\\\\\\\": true,\\\\n  \\\\\\\"type\\\\\\\": \\\\\\\"module\\\\\\\",\\\\n  \\\\\\\"scripts\\\\\\\": {\\\\n    \\\\\\\"test\\\\\\\": \\\\\\\"node --test tests/greet.test.ts\\\\\\\"\\\\n  },\\\\n  \\\\\\\"dependencies\\\\\\\": {}\\\\n}\\\\n\\\";const lines=text===\\\"\\\"?[]:text.split(\\\"\\\\n\\\");if(lines.length&&lines[lines.length-1]===\\\"\\\")lines.pop();const regex=RegExp(\\\"\\\\\\\"type\\\\\\\": \\\\\\\"module\\\\\\\"\\\");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);\"],\"profile\":\"windows-lpac-node-single-process-readonly/v1\",\"code_write_granted\":false}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794041705840,
+                "end": 1794041709283
+              }
+            }
+          },
+          {
+            "id": "prt_1b537f71e001dwAua454dVI04r",
+            "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+            "messageID": "msg_1b537b5be001ZzRiK6okcfaj0n",
+            "type": "tool",
+            "callID": "call_60a98d5b34f541ffa7839540",
+            "tool": "sf_verification_plan",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "create",
+                "command_index": 4,
+                "task_id": "TASK-WI-0001-001",
+                "verification_type": "unit",
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\"success\":true,\"plan_id\":\"9b54742137b4b7681dc947abdf066748cc02b8bf26cfe0294cb08d811a20a2b5\",\"preparation_id\":\"38a0a8ad92ba575a13730c0a255d7f7c56570140dddbf64e12dd10232e700a96\",\"expires_at\":\"2026-11-07T09:05:08.316Z\",\"purpose\":\"formal\",\"original_command\":\"grep -cE '\\\"noEmit\\\": true|\\\"allowImportingTsExtensions\\\": true' tsconfig.json\",\"actual_argv\":[\"--no-addons\",\"--preserve-symlinks\",\"--preserve-symlinks-main\",\"-e\",\"const text=\\\"{\\\\n  \\\\\\\"compilerOptions\\\\\\\": {\\\\n    \\\\\\\"target\\\\\\\": \\\\\\\"ES2022\\\\\\\",\\\\n    \\\\\\\"module\\\\\\\": \\\\\\\"NodeNext\\\\\\\",\\\\n    \\\\\\\"moduleResolution\\\\\\\": \\\\\\\"NodeNext\\\\\\\",\\\\n    \\\\\\\"strict\\\\\\\": true,\\\\n    \\\\\\\"noEmit\\\\\\\": true,\\\\n    \\\\\\\"allowImportingTsExtensions\\\\\\\": true\\\\n  },\\\\n  \\\\\\\"include\\\\\\\": [\\\\\\\"src/**/*.ts\\\\\\\", \\\\\\\"tests/**/*.ts\\\\\\\"]\\\\n}\\\\n\\\";const lines=text===\\\"\\\"?[]:text.split(\\\"\\\\n\\\");if(lines.length&&lines[lines.length-1]===\\\"\\\")lines.pop();const regex=RegExp(\\\"\\\\\\\"noEmit\\\\\\\": true|\\\\\\\"allowImportingTsExtensions\\\\\\\": true\\\");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);\"],\"profile\":\"windows-lpac-node-single-process-readonly/v1\",\"code_write_granted\":false}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794041706282,
+                "end": 1794041709810
+              }
+            }
+          },
+          {
+            "id": "prt_1b53805b5001nn1t8dua86hgvb",
+            "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+            "messageID": "msg_1b537b5be001ZzRiK6okcfaj0n",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "40f4b69725c04b5858c687e95836c4dbd1f93ade",
+            "cost": 0,
+            "tokens": {
+              "total": 45956,
+              "input": 10342,
+              "output": 383,
+              "reasoning": 351,
+              "cache": {
+                "read": 34880,
+                "write": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b53806bc001ebdh9wPhJMDGnx",
+          "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+          "role": "assistant",
+          "time": {
+            "created": 1794041710268
+          },
+          "parentID": "msg_1b53755730015hm8Df8wRqYovF",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-orchestrator",
+          "agent": "sf-orchestrator",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "input": 0,
+            "output": 0,
+            "reasoning": 0,
+            "cache": {
+              "read": 0,
+              "write": 0
+            }
+          },
+          "variant": "low"
+        },
+        "parts": [
+          {
+            "id": "prt_1b5383644001xgGazTp8F3Grr8",
+            "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+            "messageID": "msg_1b53806bc001ebdh9wPhJMDGnx",
+            "type": "step-start",
+            "snapshot": "40f4b69725c04b5858c687e95836c4dbd1f93ade"
+          },
+          {
+            "type": "reasoning",
+            "withheld": true,
+            "original_sha256": "808370f253fe293bdab7fada35ea48823b19ebeba45d3e107a3d5ca9382c338c",
+            "original_size": 297
+          },
+          {
+            "id": "prt_1b5383a02001yZl8LKaJLSvC86",
+            "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+            "messageID": "msg_1b53806bc001ebdh9wPhJMDGnx",
+            "type": "text",
+            "text": "TASK-001 的 5 条 formal plan 已创建。调度真实 sf-verifier 执行 prepare/run：",
+            "time": {
+              "start": 1794041723394,
+              "end": 1794041734317
+            }
+          },
+          {
+            "id": "prt_1b538649c0017ra43YqPwhu87H",
+            "sessionID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+            "messageID": "msg_1b53806bc001ebdh9wPhJMDGnx",
+            "type": "tool",
+            "callID": "call_d90026ba635f4902bb7bd9c5",
+            "tool": "task",
+            "state": {
+              "status": "running",
+              "input": {
+                "description": "Verify TASK-001 five plans",
+                "prompt": "You are the real sf-verifier for Work Item WI-0001 (spec-driven TypeScript greeting library, state=verification_running). Execute exactly 5 formal verification attempts for TASK-WI-0001-001, using the tools sf_verification_run and nothing else that writes.\n\nFor each plan below, in order:\n1. sf_verification_run(action=\"prepare\", work_item_id=\"WI-0001\", plan_id=\"<plan_id>\") — pass ONLY action/work_item_id/plan_id; this returns an attempt_record_id.\n2. sf_verification_run(action=\"run\", work_item_id=\"WI-0001\", attempt_record_id=\"<attempt_record_id>\") — pass ONLY action/work_item_id/attempt_record_id; do NOT include plan_id.\n\nPlans (Task TASK-WI-0001-001, category unit, command_index in parentheses, expected per canonical candidates/tasks.md):\n- idx 0: plan_id=cfa468dbdf3fb8dd537210c4596bb07bb3294232e3d22d0a29438baf7d5f76df — `test -f package.json && test -f tsconfig.json` — expect exit 0, no output\n- idx 1: plan_id=0eefe775d6313b18c3a982bcbb03cb07aa480f2298efc8390a6970fa59be46f7 — `grep -c '\"dependencies\": {}' package.json` — expect exit 0, output containing 1\n- idx 2: plan_id=6f9928a8fdea347abc3c954f69bd138b33ca90f6fc0c49c37f0b67e219ed40bc — `grep -c '\"test\": \"node --test tests/greet.test.ts\"' package.json` — expect exit 0, output containing 1\n- idx 3: plan_id=e344458665c8dc629275d85bff5f3210729040924abd97e48f7013a986fdb96c — `grep -c '\"type\": \"module\"' package.json` — expect exit 0, output containing 1\n- idx 4: plan_id=9b54742137b4b7681dc947abdf066748cc02b8bf26cfe0294cb08d811a20a2b5 — `grep -cE '\"noEmit\": true|\"allowImportingTsExtensions\": true' tsconfig.json` — expect exit 0, output containing 2\n\nRules:\n- One attempt at a time; complete run before the next prepare.\n- Judge ONLY on real receipt_id, full output, numeric exit code and Task acceptance; do not infer pass from tool existence or exit 0 alone (check expected output counts too).\n- On failure, report the actual returned error/output verbatim; do not guess parameters, do not switch executors, do not retry without cause.\n- Do NOT write any artifacts (verification_report/evidence_manifest come later in an aggregate run).\n- Do NOT read .specforge/runtime traces or work-item internals beyond what tools return.\n\nThen call sf_handoff(action=\"write\") with schema 1.0, agent=\"sf-verifier\", stage=\"verification-task-001-formal\", listing each plan_id, attempt_record_id, receipt_id, exit code, output, and pass/fail per command; include escalation_signals (empty if none), and return a concise summary of all 5 results.",
+                "subagent_type": "sf-verifier"
+              },
+              "title": "Verify TASK-001 five plans",
+              "metadata": {
+                "parentSessionId": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+                "sessionId": "ses_e4ac79b47ffeQYMIWHsEqzJBlL",
+                "model": {
+                  "modelID": "glm-5.3",
+                  "providerID": "zhipuai-coding-plan"
+                }
+              },
+              "time": {
+                "start": 1794041734311
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

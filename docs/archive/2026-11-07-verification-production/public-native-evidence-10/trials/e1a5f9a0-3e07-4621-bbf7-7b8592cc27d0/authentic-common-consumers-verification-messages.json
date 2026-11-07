@@ -1,0 +1,266 @@
+[
+  {
+    "info": {
+      "id": "msg_1b421b0bb001rUeYoBq6vBviw3",
+      "sessionID": "ses_e4bde4f60ffen0Sw5zxMJUYN7R",
+      "role": "user",
+      "time": {
+        "created": 1794023469243
+      },
+      "summary": {
+        "diffs": [
+          {
+            "file": ".specforge/work-items/WI-9901/gate_attempts/attempt-0002/attempt-result.json",
+            "patch": "Index: .specforge/work-items/WI-9901/gate_attempts/attempt-0002/attempt-result.json\n===================================================================\n--- .specforge/work-items/WI-9901/gate_attempts/attempt-0002/attempt-result.json\t\n+++ .specforge/work-items/WI-9901/gate_attempts/attempt-0002/attempt-result.json\t\n@@ -0,0 +1,22 @@\n+{\n+  \"schema_version\": \"1.0\",\n+  \"attempt_id\": \"attempt-0002\",\n+  \"work_item_id\": \"WI-9901\",\n+  \"source\": \"gate_run\",\n+  \"started_at\": \"2026-11-07T03:51:09.925Z\",\n+  \"completed_at\": \"2026-11-07T03:51:23.857Z\",\n+  \"requested_gate_ids\": [\n+    \"verification_gate\",\n+    \"formal_version_gate\"\n+  ],\n+  \"current_report_gate_ids\": [\n+    \"verification_gate\",\n+    \"formal_version_gate\"\n+  ],\n+  \"summary_report_gate_ids\": [\n+    \"formal_version_gate\",\n+    \"verification_gate\"\n+  ],\n+  \"summary_status\": \"failed\",\n+  \"input_snapshot\": \"input-snapshot.json\"\n+}\n\\ No newline at end of file\n",
+            "additions": 22,
+            "deletions": 0,
+            "status": "added"
+          },
+          {
+            "file": ".specforge/work-items/WI-9901/gate_attempts/attempt-0002/attempt-start.json",
+            "patch": "Index: .specforge/work-items/WI-9901/gate_attempts/attempt-0002/attempt-start.json\n===================================================================\n--- .specforge/work-items/WI-9901/gate_attempts/attempt-0002/attempt-start.json\t\n+++ .specforge/work-items/WI-9901/gate_attempts/attempt-0002/attempt-start.json\t\n@@ -0,0 +1,11 @@\n+{\n+  \"schema_version\": \"1.0\",\n+  \"attempt_id\": \"attempt-0002\",\n+  \"work_item_id\": \"WI-9901\",\n+  \"source\": \"gate_run\",\n+  \"started_at\": \"2026-11-07T03:51:09.925Z\",\n+  \"requested_gate_ids\": [\n+    \"verification_gate\",\n+    \"formal_version_gate\"\n+  ]\n+}\n\\ No newline at end of file\n",
+            "additions": 11,
+            "deletions": 0,
+            "status": "added"
+          },
+          {
+            "file": ".specforge/work-items/WI-9901/gate_attempts/attempt-0002/gate_summary.md",
+            "patch": "Index: .specforge/work-items/WI-9901/gate_attempts/attempt-0002/gate_summary.md\n===================================================================\n--- .specforge/work-items/WI-9901/gate_attempts/attempt-0002/gate_summary.md\t\n+++ .specforge/work-items/WI-9901/gate_attempts/attempt-0002/gate_summary.md\t\n@@ -0,0 +1,32 @@\n+# Gate Summary\n+\n+Work Item: WI-9901\n+Overall Status: failed\n+Generated: 2026-11-07T03:51:23.836Z\n+\n+## Gate Reports\n+\n+### formal_version_gate\n+- Type: hard_gate\n+- Status: failed\n+- Required: true\n+- Blocking Issues:\n+  - Verification Gate passed\n+  - Changed Files Audit passed\n+  - Pre-implementation version-control mode is frozen or recovered from bound legacy evidence\n+  - Version-control mode remains the mode frozen before implementation\n+  - Semantic closure evidence exists\n+  - Hard Gate verification_gate.json did not fail\n+\n+### verification_gate\n+- Type: hard_gate\n+- Status: failed\n+- Required: true\n+- Blocking Issues:\n+  - changed_files_audit is complete and passed\n+  - semantic closure proves the user outcome to evidence chain\n+  - semantic closure is bound to the current verification artifacts\n+\n+## User Decision Required\n+\n+Some hard gates failed. User cannot approve until issues are resolved.\n\\ No newline at end of file\n",
+            "additions": 32,
+            "deletions": 0,
+            "status": "added"
+          },
+          {
+            "file": ".specforge/work-items/WI-9901/gate_attempts/attempt-0002/gates/formal_version_gate.json",
+            "patch": "Index: .specforge/work-items/WI-9901/gate_attempts/attempt-0002/gates/formal_version_gate.json\n===================================================================\n--- .specforge/work-items/WI-9901/gate_attempts/attempt-0002/gates/formal_version_gate.json\t\n+++ .specforge/work-items/WI-9901/gate_attempts/attempt-0002/gates/formal_version_gate.json\t\n@@ -0,0 +1,97 @@\n+{\n+  \"schema_version\": \"1.0\",\n+  \"work_item_id\": \"WI-9901\",\n+  \"gate_id\": \"formal_version_gate\",\n+  \"gate_type\": \"hard_gate\",\n+  \"required\": true,\n+  \"status\": \"failed\",\n+  \"input_files\": [\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\extension_registry.json\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\spec_manifest.json\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\.semantic_closure.json\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\changed_files_audit.md\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\filesystem_baseline.json\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\gates\\\\verification_gate.json\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\git_context.json\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\governance_scope.json\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\version_control_mode_recovery.json\"\n+  ],\n+  \"checks\": [\n+    {\n+      \"check_id\": \"formal_execution_evidence_integrity\",\n+      \"description\": \"Execution evidence is authentic, current and completely terminated\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"formal_verification_gate\",\n+      \"description\": \"Verification Gate passed\",\n+      \"passed\": false,\n+      \"severity\": \"error\"\n+    },\n+    {\n+      \"check_id\": \"formal_changed_files_audit\",\n+      \"description\": \"Changed Files Audit passed\",\n+      \"passed\": false,\n+      \"severity\": \"error\"\n+    },\n+    {\n+      \"check_id\": \"formal_actual_governance_scope\",\n+      \"description\": \"Actual implementation files map to exactly one approved Module and do not expand governance scope\",\n+      \"passed\": true,\n+      \"details\": \"actual_modules=none; violations=none\"\n+    },\n+    {\n+      \"check_id\": \"formal_version_control_mode_evidence\",\n+      \"description\": \"Pre-implementation version-control mode is frozen or recovered from bound legacy evidence\",\n+      \"passed\": false,\n+      \"severity\": \"error\",\n+      \"details\": \"source=missing; mode=missing; error=LEGACY_VERSION_CONTROL_MODE_RECOVERY_REQUIRED\"\n+    },\n+    {\n+      \"check_id\": \"formal_repository_mode_stable\",\n+      \"description\": \"Version-control mode remains the mode frozen before implementation\",\n+      \"passed\": false,\n+      \"severity\": \"error\",\n+      \"details\": \"frozen=missing; source=missing; effective=filesystem; current=git; head=ec0f3000b160a57309fa28e67eb75186b242c71c; legacy_recovery=false\"\n+    },\n+    {\n+      \"check_id\": \"formal_git_context\",\n+      \"description\": \"Git-enabled implementation is bound to WI branch and base commit\",\n+      \"passed\": true,\n+      \"details\": \"required=false; enabled=false; branch=missing; base=missing\"\n+    },\n+    {\n+      \"check_id\": \"formal_semantic_closure\",\n+      \"description\": \"Semantic closure evidence exists\",\n+      \"passed\": false,\n+      \"severity\": \"error\"\n+    },\n+    {\n+      \"check_id\": \"formal_hard_gate_verification_gate_json\",\n+      \"description\": \"Hard Gate verification_gate.json did not fail\",\n+      \"passed\": false,\n+      \"severity\": \"error\"\n+    },\n+    {\n+      \"check_id\": \"formal_project_spec_core_version_coherent\",\n+      \"description\": \"Project Spec Core files agree on the authoritative project_spec_version\",\n+      \"passed\": true,\n+      \"details\": \"project_spec_version=PSV-0001\"\n+    }\n+  ],\n+  \"blocking_issues\": [\n+    \"Verification Gate passed\",\n+    \"Changed Files Audit passed\",\n+    \"Pre-implementation version-control mode is frozen or recovered from bound legacy evidence\",\n+    \"Version-control mode remains the mode frozen before implementation\",\n+    \"Semantic closure evidence exists\",\n+    \"Hard Gate verification_gate.json did not fail\"\n+  ],\n+  \"warnings\": [],\n+  \"waiver_allowed\": false,\n+  \"waiver_required\": false,\n+  \"waiver_ids\": [],\n+  \"started_at\": \"2026-11-07T03:51:23.832Z\",\n+  \"finished_at\": \"2026-11-07T03:51:23.832Z\",\n+  \"runner\": \"gate_runner\"\n+}\n\\ No newline at end of file\n",
+            "additions": 97,
+            "deletions": 0,
+            "status": "added"
+          },
+          {
+            "file": ".specforge/work-items/WI-9901/gate_attempts/attempt-0002/gates/verification_gate.json",
+            "patch": "Index: .specforge/work-items/WI-9901/gate_attempts/attempt-0002/gates/verification_gate.json\n===================================================================\n--- .specforge/work-items/WI-9901/gate_attempts/attempt-0002/gates/verification_gate.json\t\n+++ .specforge/work-items/WI-9901/gate_attempts/attempt-0002/gates/verification_gate.json\t\n@@ -0,0 +1,144 @@\n+{\n+  \"schema_version\": \"1.0\",\n+  \"work_item_id\": \"WI-9901\",\n+  \"gate_id\": \"verification_gate\",\n+  \"gate_type\": \"hard_gate\",\n+  \"required\": true,\n+  \"status\": \"failed\",\n+  \"input_files\": [\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\verification_report.md\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\evidence\\\\evidence_manifest.json\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\changed_files_audit.md\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\.semantic_closure.json\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\extension_registry.json\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\modules\\\\CORE\\\\contracts.json\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\spec_manifest.json\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\architecture.md\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\data_model.md\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\modules\\\\CORE\\\\design.md\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\modules\\\\CORE\\\\module.json\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\modules\\\\CORE\\\\trace.md\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\trace_matrix.md\"\n+  ],\n+  \"checks\": [\n+    {\n+      \"check_id\": \"verification_report_exists\",\n+      \"description\": \"verification_report.md exists\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"verification_evidence_source_and_time_integrity\",\n+      \"description\": \"manual acceptance has independent content-bound evidence and declared times do not exceed runtime time\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"evidence_manifest_schema_current\",\n+      \"description\": \"evidence_manifest uses the current owner schema\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"verification_report_contract_valid\",\n+      \"description\": \"verification_report satisfies the shared verification-report/v1 contract\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"verification_report_conclusion_pass\",\n+      \"description\": \"verification_report conclusion is pass\",\n+      \"passed\": true,\n+      \"details\": \"pass\"\n+    },\n+    {\n+      \"check_id\": \"verification_required_tests_complete\",\n+      \"description\": \"required tests were executed or explicitly marked not_applicable\",\n+      \"passed\": true,\n+      \"details\": \"statuses=pass,pass,pass,pass,pass,pass,pass,pass,pass,not_applicable,pass,pass,not_applicable,not_applicable,not_applicable,not_applicable,not_applicable\"\n+    },\n+    {\n+      \"check_id\": \"verification_acceptance_criteria_passed\",\n+      \"description\": \"acceptance criteria are present and passed\",\n+      \"passed\": true,\n+      \"details\": \"statuses=pass\"\n+    },\n+    {\n+      \"check_id\": \"verification_e2e_complete\",\n+      \"description\": \"end-to-end verification passed or is explicitly not_applicable\",\n+      \"passed\": true,\n+      \"details\": \"statuses=pass\"\n+    },\n+    {\n+      \"check_id\": \"verification_evidence_manifest_nonempty\",\n+      \"description\": \"evidence_manifest exists and has registered entries\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"verification_report_claims_have_registered_evidence\",\n+      \"description\": \"acceptance and end-to-end claims reference registered Evidence\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"verification_side_effects_declared\",\n+      \"description\": \"verification side effects are explicitly declared\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"verification_write_guard_audit_current\",\n+      \"description\": \"Changed Files Audit covers current Write Guard and resolution evidence\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"verification_changed_files_audit_passed\",\n+      \"description\": \"changed_files_audit is complete and passed\",\n+      \"passed\": false,\n+      \"severity\": \"error\",\n+      \"details\": \"changed_files_audit.md is empty\"\n+    },\n+    {\n+      \"check_id\": \"verification_semantic_closure_valid\",\n+      \"description\": \"semantic closure proves the user outcome to evidence chain\",\n+      \"passed\": false,\n+      \"severity\": \"error\",\n+      \"details\": \"semantic_manifest_object\"\n+    },\n+    {\n+      \"check_id\": \"verification_semantic_closure_provenance_current\",\n+      \"description\": \"semantic closure is bound to the current verification artifacts\",\n+      \"passed\": false,\n+      \"severity\": \"error\",\n+      \"details\": \"SEMANTIC_CLOSURE_PROVENANCE_MISSING: regenerate with sf_semantic_closure_run(force=true).\"\n+    },\n+    {\n+      \"check_id\": \"verification_claims_match_evidence_manifest\",\n+      \"description\": \"semantic evidence claims match registered Evidence Manifest entries\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"evidence_manifest_exists\",\n+      \"description\": \"evidence/evidence_manifest.json exists and is valid JSON\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"code_contract_registry_readable\",\n+      \"description\": \"Project and Module Contract registries are readable for code reconciliation\",\n+      \"passed\": true,\n+      \"details\": \"\"\n+    },\n+    {\n+      \"check_id\": \"code_contract_ast_coverage\",\n+      \"description\": \"Changed TypeScript/JavaScript explicit Contract bindings were AST-checked\",\n+      \"passed\": true,\n+      \"details\": \"checked=none; machine_contracts=none; manual_review=none\"\n+    }\n+  ],\n+  \"blocking_issues\": [\n+    \"changed_files_audit is complete and passed\",\n+    \"semantic closure proves the user outcome to evidence chain\",\n+    \"semantic closure is bound to the current verification artifacts\"\n+  ],\n+  \"warnings\": [],\n+  \"waiver_allowed\": false,\n+  \"waiver_required\": false,\n+  \"waiver_ids\": [],\n+  \"started_at\": \"2026-11-07T03:51:16.902Z\",\n+  \"finished_at\": \"2026-11-07T03:51:16.902Z\",\n+  \"runner\": \"gate_runner\"\n+}\n\\ No newline at end of file\n",
+            "additions": 144,
+            "deletions": 0,
+            "status": "added"
+          },
+          {
+            "file": ".specforge/work-items/WI-9901/gate_attempts/attempt-0002/input-snapshot.json",
+            "patch": "Index: .specforge/work-items/WI-9901/gate_attempts/attempt-0002/input-snapshot.json\n===================================================================\n--- .specforge/work-items/WI-9901/gate_attempts/attempt-0002/input-snapshot.json\t\n+++ .specforge/work-items/WI-9901/gate_attempts/attempt-0002/input-snapshot.json\t\n@@ -0,0 +1,167 @@\n+{\n+  \"schema_version\": \"1.0\",\n+  \"attempt_id\": \"attempt-0002\",\n+  \"work_item_id\": \"WI-9901\",\n+  \"captured_at\": \"2026-11-07T03:51:23.853Z\",\n+  \"inputs\": [\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\architecture.md\",\n+      \"exists\": true,\n+      \"kind\": \"file\",\n+      \"sha256\": \"8d975c562c022cc9d809c04f613e91ee0673bdeef39ed096c68e735b66e6400c\",\n+      \"size\": 38,\n+      \"mtime_ms\": 1794023023154.3804\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\data_model.md\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\extension_registry.json\",\n+      \"exists\": true,\n+      \"kind\": \"file\",\n+      \"sha256\": \"17589ed8069ea7a8e8df0bce877782e6e0861807e0439dde315b50a504258bad\",\n+      \"size\": 395,\n+      \"mtime_ms\": 1794023023152.3755\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\modules\\\\CORE\\\\contracts.json\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\modules\\\\CORE\\\\design.md\",\n+      \"exists\": true,\n+      \"kind\": \"file\",\n+      \"sha256\": \"8d975c562c022cc9d809c04f613e91ee0673bdeef39ed096c68e735b66e6400c\",\n+      \"size\": 38,\n+      \"mtime_ms\": 1794023023129.2358\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\modules\\\\CORE\\\\module.json\",\n+      \"exists\": true,\n+      \"kind\": \"file\",\n+      \"sha256\": \"944f4ccbd3e0f1d9878fa448f60e964068c132c5dd3c184ae03bb87ac313fd55\",\n+      \"size\": 77,\n+      \"mtime_ms\": 1794023023128.2368\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\modules\\\\CORE\\\\trace.md\",\n+      \"exists\": true,\n+      \"kind\": \"file\",\n+      \"sha256\": \"8d975c562c022cc9d809c04f613e91ee0673bdeef39ed096c68e735b66e6400c\",\n+      \"size\": 38,\n+      \"mtime_ms\": 1794023023129.2358\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\spec_manifest.json\",\n+      \"exists\": true,\n+      \"kind\": \"file\",\n+      \"sha256\": \"7623c2007a89dcac344f568d27af54928a541ea2bf530cacced274e08f9e25ad\",\n+      \"size\": 956,\n+      \"mtime_ms\": 1794023023151.375\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\trace_matrix.md\",\n+      \"exists\": true,\n+      \"kind\": \"file\",\n+      \"sha256\": \"8d975c562c022cc9d809c04f613e91ee0673bdeef39ed096c68e735b66e6400c\",\n+      \"size\": 38,\n+      \"mtime_ms\": 1794023023155.3792\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\.semantic_closure.json\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\candidate_manifest.json\",\n+      \"exists\": true,\n+      \"kind\": \"file\",\n+      \"sha256\": \"262cc4d86ef256455b7c81df5f083e3ae64fb0304ac5613d497095ae726ab5df\",\n+      \"size\": 215,\n+      \"mtime_ms\": 1794023025221.4019\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\candidates\\\\tasks.md\",\n+      \"exists\": true,\n+      \"kind\": \"file\",\n+      \"sha256\": \"cd2f13da7466433985ff8bf970555dc6e34d037e253f9a825b180845a4463498\",\n+      \"size\": 3031,\n+      \"mtime_ms\": 1794023025220.3992\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\change_classification.md\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\changed_files_audit.md\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\evidence\\\\evidence_manifest.json\",\n+      \"exists\": true,\n+      \"kind\": \"file\",\n+      \"sha256\": \"220945f1956e54e79b31428c92b733a98a66668308dc2c98b08959270c72ddf7\",\n+      \"size\": 6012,\n+      \"mtime_ms\": 1794023457155.9094\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\filesystem_baseline.json\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\gates\\\\verification_gate.json\",\n+      \"exists\": true,\n+      \"kind\": \"file\",\n+      \"sha256\": \"9443b69e7749d88026435324f5779dea4840228b8d96fe926f28c0cdd9b1352a\",\n+      \"size\": 6608,\n+      \"mtime_ms\": 1794023476942.887\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\git_context.json\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\governance_scope.json\",\n+      \"exists\": true,\n+      \"kind\": \"file\",\n+      \"sha256\": \"595219792dd54a38a8ace80a6a7fc33b928ea74f0dd1bdfac6a2b708dbe0dd1e\",\n+      \"size\": 22,\n+      \"mtime_ms\": 1794023025219.4001\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\impact_analysis.md\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\implementation_baseline.json\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\trigger_result.json\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\verification_report.md\",\n+      \"exists\": true,\n+      \"kind\": \"file\",\n+      \"sha256\": \"9bf69d0543831d742bf9f31f9e0903996e2be0b673ef5bd4de5de27d55e3a61b\",\n+      \"size\": 7936,\n+      \"mtime_ms\": 1794023466822.6738\n+    },\n+    {\n+      \"path\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\version_control_mode_recovery.json\",\n+      \"exists\": false,\n+      \"kind\": \"missing\"\n+    }\n+  ]\n+}\n\\ No newline at end of file\n",
+            "additions": 167,
+            "deletions": 0,
+            "status": "added"
+          },
+          {
+            "file": ".specforge/work-items/WI-9901/gate_summary.md",
+            "patch": "Index: .specforge/work-items/WI-9901/gate_summary.md\n===================================================================\n--- .specforge/work-items/WI-9901/gate_summary.md\t\n+++ .specforge/work-items/WI-9901/gate_summary.md\t\n@@ -1,20 +1,32 @@\n # Gate Summary\n \n Work Item: WI-9901\n Overall Status: failed\n-Generated: 2026-11-07T03:50:02.976Z\n+Generated: 2026-11-07T03:51:23.836Z\n \n ## Gate Reports\n \n+### formal_version_gate\n+- Type: hard_gate\n+- Status: failed\n+- Required: true\n+- Blocking Issues:\n+  - Verification Gate passed\n+  - Changed Files Audit passed\n+  - Pre-implementation version-control mode is frozen or recovered from bound legacy evidence\n+  - Version-control mode remains the mode frozen before implementation\n+  - Semantic closure evidence exists\n+  - Hard Gate verification_gate.json did not fail\n+\n ### verification_gate\n - Type: hard_gate\n - Status: failed\n - Required: true\n - Blocking Issues:\n   - changed_files_audit is complete and passed\n   - semantic closure proves the user outcome to evidence chain\n   - semantic closure is bound to the current verification artifacts\n \n ## User Decision Required\n \n Some hard gates failed. User cannot approve until issues are resolved.\n\\ No newline at end of file\n",
+            "additions": 13,
+            "deletions": 1,
+            "status": "modified"
+          },
+          {
+            "file": ".specforge/work-items/WI-9901/gates/formal_version_gate.json",
+            "patch": "Index: .specforge/work-items/WI-9901/gates/formal_version_gate.json\n===================================================================\n--- .specforge/work-items/WI-9901/gates/formal_version_gate.json\t\n+++ .specforge/work-items/WI-9901/gates/formal_version_gate.json\t\n@@ -0,0 +1,97 @@\n+{\n+  \"schema_version\": \"1.0\",\n+  \"work_item_id\": \"WI-9901\",\n+  \"gate_id\": \"formal_version_gate\",\n+  \"gate_type\": \"hard_gate\",\n+  \"required\": true,\n+  \"status\": \"failed\",\n+  \"input_files\": [\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\extension_registry.json\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\spec_manifest.json\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\.semantic_closure.json\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\changed_files_audit.md\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\filesystem_baseline.json\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\gates\\\\verification_gate.json\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\git_context.json\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\governance_scope.json\",\n+    \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\version_control_mode_recovery.json\"\n+  ],\n+  \"checks\": [\n+    {\n+      \"check_id\": \"formal_execution_evidence_integrity\",\n+      \"description\": \"Execution evidence is authentic, current and completely terminated\",\n+      \"passed\": true\n+    },\n+    {\n+      \"check_id\": \"formal_verification_gate\",\n+      \"description\": \"Verification Gate passed\",\n+      \"passed\": false,\n+      \"severity\": \"error\"\n+    },\n+    {\n+      \"check_id\": \"formal_changed_files_audit\",\n+      \"description\": \"Changed Files Audit passed\",\n+      \"passed\": false,\n+      \"severity\": \"error\"\n+    },\n+    {\n+      \"check_id\": \"formal_actual_governance_scope\",\n+      \"description\": \"Actual implementation files map to exactly one approved Module and do not expand governance scope\",\n+      \"passed\": true,\n+      \"details\": \"actual_modules=none; violations=none\"\n+    },\n+    {\n+      \"check_id\": \"formal_version_control_mode_evidence\",\n+      \"description\": \"Pre-implementation version-control mode is frozen or recovered from bound legacy evidence\",\n+      \"passed\": false,\n+      \"severity\": \"error\",\n+      \"details\": \"source=missing; mode=missing; error=LEGACY_VERSION_CONTROL_MODE_RECOVERY_REQUIRED\"\n+    },\n+    {\n+      \"check_id\": \"formal_repository_mode_stable\",\n+      \"description\": \"Version-control mode remains the mode frozen before implementation\",\n+      \"passed\": false,\n+      \"severity\": \"error\",\n+      \"details\": \"frozen=missing; source=missing; effective=filesystem; current=git; head=ec0f3000b160a57309fa28e67eb75186b242c71c; legacy_recovery=false\"\n+    },\n+    {\n+      \"check_id\": \"formal_git_context\",\n+      \"description\": \"Git-enabled implementation is bound to WI branch and base commit\",\n+      \"passed\": true,\n+      \"details\": \"required=false; enabled=false; branch=missing; base=missing\"\n+    },\n+    {\n+      \"check_id\": \"formal_semantic_closure\",\n+      \"description\": \"Semantic closure evidence exists\",\n+      \"passed\": false,\n+      \"severity\": \"error\"\n+    },\n+    {\n+      \"check_id\": \"formal_hard_gate_verification_gate_json\",\n+      \"description\": \"Hard Gate verification_gate.json did not fail\",\n+      \"passed\": false,\n+      \"severity\": \"error\"\n+    },\n+    {\n+      \"check_id\": \"formal_project_spec_core_version_coherent\",\n+      \"description\": \"Project Spec Core files agree on the authoritative project_spec_version\",\n+      \"passed\": true,\n+      \"details\": \"project_spec_version=PSV-0001\"\n+    }\n+  ],\n+  \"blocking_issues\": [\n+    \"Verification Gate passed\",\n+    \"Changed Files Audit passed\",\n+    \"Pre-implementation version-control mode is frozen or recovered from bound legacy evidence\",\n+    \"Version-control mode remains the mode frozen before implementation\",\n+    \"Semantic closure evidence exists\",\n+    \"Hard Gate verification_gate.json did not fail\"\n+  ],\n+  \"warnings\": [],\n+  \"waiver_allowed\": false,\n+  \"waiver_required\": false,\n+  \"waiver_ids\": [],\n+  \"started_at\": \"2026-11-07T03:51:23.832Z\",\n+  \"finished_at\": \"2026-11-07T03:51:23.832Z\",\n+  \"runner\": \"gate_runner\"\n+}\n\\ No newline at end of file\n",
+            "additions": 97,
+            "deletions": 0,
+            "status": "added"
+          },
+          {
+            "file": ".specforge/work-items/WI-9901/gates/verification_gate.json",
+            "patch": "Index: .specforge/work-items/WI-9901/gates/verification_gate.json\n===================================================================\n--- .specforge/work-items/WI-9901/gates/verification_gate.json\t\n+++ .specforge/work-items/WI-9901/gates/verification_gate.json\t\n@@ -1,144 +1,144 @@\n {\n   \"schema_version\": \"1.0\",\n   \"work_item_id\": \"WI-9901\",\n   \"gate_id\": \"verification_gate\",\n   \"gate_type\": \"hard_gate\",\n   \"required\": true,\n   \"status\": \"failed\",\n   \"input_files\": [\n     \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\verification_report.md\",\n     \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\evidence\\\\evidence_manifest.json\",\n     \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\changed_files_audit.md\",\n     \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\.semantic_closure.json\",\n     \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\extension_registry.json\",\n     \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\modules\\\\CORE\\\\contracts.json\",\n     \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\spec_manifest.json\",\n     \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\architecture.md\",\n     \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\data_model.md\",\n     \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\modules\\\\CORE\\\\design.md\",\n     \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\modules\\\\CORE\\\\module.json\",\n     \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\modules\\\\CORE\\\\trace.md\",\n     \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\project\\\\trace_matrix.md\"\n   ],\n   \"checks\": [\n     {\n       \"check_id\": \"verification_report_exists\",\n       \"description\": \"verification_report.md exists\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"verification_evidence_source_and_time_integrity\",\n       \"description\": \"manual acceptance has independent content-bound evidence and declared times do not exceed runtime time\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"evidence_manifest_schema_current\",\n       \"description\": \"evidence_manifest uses the current owner schema\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"verification_report_contract_valid\",\n       \"description\": \"verification_report satisfies the shared verification-report/v1 contract\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"verification_report_conclusion_pass\",\n       \"description\": \"verification_report conclusion is pass\",\n       \"passed\": true,\n       \"details\": \"pass\"\n     },\n     {\n       \"check_id\": \"verification_required_tests_complete\",\n       \"description\": \"required tests were executed or explicitly marked not_applicable\",\n       \"passed\": true,\n-      \"details\": \"statuses=pass,pass,pass,pass,pass,pass,pass,pass,pass,pass,not_applicable,pass,pass,not_applicable,not_applicable,not_applicable,not_applicable,not_applicable\"\n+      \"details\": \"statuses=pass,pass,pass,pass,pass,pass,pass,pass,pass,not_applicable,pass,pass,not_applicable,not_applicable,not_applicable,not_applicable,not_applicable\"\n     },\n     {\n       \"check_id\": \"verification_acceptance_criteria_passed\",\n       \"description\": \"acceptance criteria are present and passed\",\n       \"passed\": true,\n       \"details\": \"statuses=pass\"\n     },\n     {\n       \"check_id\": \"verification_e2e_complete\",\n       \"description\": \"end-to-end verification passed or is explicitly not_applicable\",\n       \"passed\": true,\n       \"details\": \"statuses=pass\"\n     },\n     {\n       \"check_id\": \"verification_evidence_manifest_nonempty\",\n       \"description\": \"evidence_manifest exists and has registered entries\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"verification_report_claims_have_registered_evidence\",\n       \"description\": \"acceptance and end-to-end claims reference registered Evidence\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"verification_side_effects_declared\",\n       \"description\": \"verification side effects are explicitly declared\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"verification_write_guard_audit_current\",\n       \"description\": \"Changed Files Audit covers current Write Guard and resolution evidence\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"verification_changed_files_audit_passed\",\n       \"description\": \"changed_files_audit is complete and passed\",\n       \"passed\": false,\n       \"severity\": \"error\",\n       \"details\": \"changed_files_audit.md is empty\"\n     },\n     {\n       \"check_id\": \"verification_semantic_closure_valid\",\n       \"description\": \"semantic closure proves the user outcome to evidence chain\",\n       \"passed\": false,\n       \"severity\": \"error\",\n       \"details\": \"semantic_manifest_object\"\n     },\n     {\n       \"check_id\": \"verification_semantic_closure_provenance_current\",\n       \"description\": \"semantic closure is bound to the current verification artifacts\",\n       \"passed\": false,\n       \"severity\": \"error\",\n       \"details\": \"SEMANTIC_CLOSURE_PROVENANCE_MISSING: regenerate with sf_semantic_closure_run(force=true).\"\n     },\n     {\n       \"check_id\": \"verification_claims_match_evidence_manifest\",\n       \"description\": \"semantic evidence claims match registered Evidence Manifest entries\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"evidence_manifest_exists\",\n       \"description\": \"evidence/evidence_manifest.json exists and is valid JSON\",\n       \"passed\": true\n     },\n     {\n       \"check_id\": \"code_contract_registry_readable\",\n       \"description\": \"Project and Module Contract registries are readable for code reconciliation\",\n       \"passed\": true,\n       \"details\": \"\"\n     },\n     {\n       \"check_id\": \"code_contract_ast_coverage\",\n       \"description\": \"Changed TypeScript/JavaScript explicit Contract bindings were AST-checked\",\n       \"passed\": true,\n       \"details\": \"checked=none; machine_contracts=none; manual_review=none\"\n     }\n   ],\n   \"blocking_issues\": [\n     \"changed_files_audit is complete and passed\",\n     \"semantic closure proves the user outcome to evidence chain\",\n     \"semantic closure is bound to the current verification artifacts\"\n   ],\n   \"warnings\": [],\n   \"waiver_allowed\": false,\n   \"waiver_required\": false,\n   \"waiver_ids\": [],\n-  \"started_at\": \"2026-11-07T03:50:02.935Z\",\n-  \"finished_at\": \"2026-11-07T03:50:02.935Z\",\n+  \"started_at\": \"2026-11-07T03:51:16.902Z\",\n+  \"finished_at\": \"2026-11-07T03:51:16.902Z\",\n   \"runner\": \"gate_runner\"\n }\n\\ No newline at end of file\n",
+            "additions": 3,
+            "deletions": 3,
+            "status": "modified"
+          }
+        ]
+      },
+      "agent": "sf-orchestrator",
+      "model": {
+        "providerID": "sf-fixture",
+        "modelID": "finite-model"
+      }
+    },
+    "parts": [
+      {
+        "id": "prt_1b421b0c2001p31KrRx6XDxT7v",
+        "sessionID": "ses_e4bde4f60ffen0Sw5zxMJUYN7R",
+        "messageID": "msg_1b421b0bb001rUeYoBq6vBviw3",
+        "type": "text",
+        "text": "Execute the single requested tool once, then stop. SF_FIXTURE_REQUEST:eyJ0b29sIjoic2ZfZ2F0ZV9ydW4iLCJhcmdzIjp7IndvcmtfaXRlbV9pZCI6IldJLTk5MDEiLCJnYXRlX3R5cGUiOiJ2ZXJpZmljYXRpb24ifX0="
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1b421b0f1001ENLsV4rDh7s8j2",
+      "sessionID": "ses_e4bde4f60ffen0Sw5zxMJUYN7R",
+      "role": "assistant",
+      "time": {
+        "created": 1794023469297,
+        "completed": 1794023485133
+      },
+      "parentID": "msg_1b421b0bb001rUeYoBq6vBviw3",
+      "modelID": "finite-model",
+      "providerID": "sf-fixture",
+      "mode": "sf-orchestrator",
+      "agent": "sf-orchestrator",
+      "path": {
+        "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\ec4e012955964ac080d38edc63c1db94\\project",
+        "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\ec4e012955964ac080d38edc63c1db94\\project"
+      },
+      "cost": 0,
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "finish": "tool-calls"
+    },
+    "parts": [
+      {
+        "id": "prt_1b421b324001JiW7ihyGwTEknL",
+        "sessionID": "ses_e4bde4f60ffen0Sw5zxMJUYN7R",
+        "messageID": "msg_1b421b0f1001ENLsV4rDh7s8j2",
+        "type": "step-start",
+        "snapshot": "c5620d3e3585ead91a0c898a8c3d049963e54501"
+      },
+      {
+        "id": "prt_1b421b32b001ZDbVVZkprV95dh",
+        "sessionID": "ses_e4bde4f60ffen0Sw5zxMJUYN7R",
+        "messageID": "msg_1b421b0f1001ENLsV4rDh7s8j2",
+        "type": "tool",
+        "callID": "call_00cdea13205c4862be721e53c7bb853f",
+        "tool": "sf_gate_run",
+        "state": {
+          "status": "completed",
+          "input": {
+            "work_item_id": "WI-9901",
+            "gate_type": "verification"
+          },
+          "output": "{\n  \"success\": true,\n  \"work_item_id\": \"WI-9901\",\n  \"workflow_path\": \"code_only_fast_path\",\n  \"workflow_type\": \"feature_spec\",\n  \"workflow_type_source\": \"D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\project\\\\.specforge\\\\work-items\\\\WI-9901\\\\work_item.json\",\n  \"candidate_phase\": \"full\",\n  \"candidate_phase_source\": \"artifact_inference\",\n  \"workflow_path_source\": \".specforge/work-items/WI-9901/work_item.json\",\n  \"authoritative_state_before_gate\": \"verification_running\",\n  \"requested_gate_ids\": [],\n  \"requested_gate_type\": \"verification\",\n  \"normalized_gate_ids\": [\n    \"verification_gate\",\n    \"formal_version_gate\"\n  ],\n  \"aliases_used\": [\n    \"verification\"\n  ],\n  \"summary_status\": \"failed\",\n  \"summary_path\": \".specforge/work-items/WI-9901/gate_summary.md\",\n  \"gate_attempt_id\": \"attempt-0002\",\n  \"gate_attempt_path\": \".specforge/work-items/WI-9901/gate_attempts/attempt-0002\",\n  \"gate_count\": 2,\n  \"passed\": 0,\n  \"failed\": 2,\n  \"state_auto_advance\": {\n    \"attempted\": false,\n    \"reason\": \"verification_owned_gate_failed\",\n    \"failed_gate_ids\": [\n      \"verification_gate\",\n      \"formal_version_gate\"\n    ],\n    \"missing_gate_ids\": [],\n    \"summary_status\": \"failed\"\n  },\n  \"reports\": [\n    {\n      \"gate_id\": \"verification_gate\",\n      \"status\": \"failed\",\n      \"blocking_issues\": 3,\n      \"warnings\": 0\n    },\n    {\n      \"gate_id\": \"formal_version_gate\",\n      \"status\": \"failed\",\n      \"blocking_issues\": 6,\n      \"warnings\": 0\n    }\n  ]\n}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1794023469886,
+            "end": 1794023483883
+          }
+        }
+      },
+      {
+        "id": "prt_1b421ed59001CA2GOsrtYtb4ut",
+        "sessionID": "ses_e4bde4f60ffen0Sw5zxMJUYN7R",
+        "messageID": "msg_1b421b0f1001ENLsV4rDh7s8j2",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "snapshot": "4fbb9b86493a8d0da4eff36a0552e2f69f4cb9b2",
+        "cost": 0,
+        "tokens": {
+          "total": 120,
+          "input": 100,
+          "output": 20,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      },
+      {
+        "id": "prt_1b421eec8001GhC3hmlOfFYQiY",
+        "sessionID": "ses_e4bde4f60ffen0Sw5zxMJUYN7R",
+        "messageID": "msg_1b421b0f1001ENLsV4rDh7s8j2",
+        "type": "patch",
+        "hash": "c5620d3e3585ead91a0c898a8c3d049963e54501",
+        "files": [
+          "D:/code/SpecForge/.tmp/verification-public-kernel/ec4e012955964ac080d38edc63c1db94/project/.specforge/work-items/WI-9901/gate_attempts/attempt-0002/attempt-result.json",
+          "D:/code/SpecForge/.tmp/verification-public-kernel/ec4e012955964ac080d38edc63c1db94/project/.specforge/work-items/WI-9901/gate_attempts/attempt-0002/attempt-start.json",
+          "D:/code/SpecForge/.tmp/verification-public-kernel/ec4e012955964ac080d38edc63c1db94/project/.specforge/work-items/WI-9901/gate_attempts/attempt-0002/gate_summary.md",
+          "D:/code/SpecForge/.tmp/verification-public-kernel/ec4e012955964ac080d38edc63c1db94/project/.specforge/work-items/WI-9901/gate_attempts/attempt-0002/gates/formal_version_gate.json",
+          "D:/code/SpecForge/.tmp/verification-public-kernel/ec4e012955964ac080d38edc63c1db94/project/.specforge/work-items/WI-9901/gate_attempts/attempt-0002/gates/verification_gate.json",
+          "D:/code/SpecForge/.tmp/verification-public-kernel/ec4e012955964ac080d38edc63c1db94/project/.specforge/work-items/WI-9901/gate_attempts/attempt-0002/input-snapshot.json",
+          "D:/code/SpecForge/.tmp/verification-public-kernel/ec4e012955964ac080d38edc63c1db94/project/.specforge/work-items/WI-9901/gate_summary.md",
+          "D:/code/SpecForge/.tmp/verification-public-kernel/ec4e012955964ac080d38edc63c1db94/project/.specforge/work-items/WI-9901/gates/formal_version_gate.json",
+          "D:/code/SpecForge/.tmp/verification-public-kernel/ec4e012955964ac080d38edc63c1db94/project/.specforge/work-items/WI-9901/gates/verification_gate.json"
+        ]
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1b421eed30018u0bT02fJ9V0rA",
+      "sessionID": "ses_e4bde4f60ffen0Sw5zxMJUYN7R",
+      "role": "assistant",
+      "time": {
+        "created": 1794023485139,
+        "completed": 1794023486476
+      },
+      "parentID": "msg_1b421b0bb001rUeYoBq6vBviw3",
+      "modelID": "finite-model",
+      "providerID": "sf-fixture",
+      "mode": "sf-orchestrator",
+      "agent": "sf-orchestrator",
+      "path": {
+        "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\ec4e012955964ac080d38edc63c1db94\\project",
+        "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\ec4e012955964ac080d38edc63c1db94\\project"
+      },
+      "cost": 0,
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "finish": "stop"
+    },
+    "parts": [
+      {
+        "id": "prt_1b421f0c7001cNmSq8TBDDNik8",
+        "sessionID": "ses_e4bde4f60ffen0Sw5zxMJUYN7R",
+        "messageID": "msg_1b421eed30018u0bT02fJ9V0rA",
+        "type": "step-start",
+        "snapshot": "4fbb9b86493a8d0da4eff36a0552e2f69f4cb9b2"
+      },
+      {
+        "id": "prt_1b421f0cc001J3EzFbvfNpmgBo",
+        "sessionID": "ses_e4bde4f60ffen0Sw5zxMJUYN7R",
+        "messageID": "msg_1b421eed30018u0bT02fJ9V0rA",
+        "type": "text",
+        "text": "SF_FIXTURE_TOOL_COMPLETE",
+        "time": {
+          "start": 1794023485644,
+          "end": 1794023485648
+        }
+      },
+      {
+        "id": "prt_1b421f2e6001aHIqqRrhUOj2ZO",
+        "sessionID": "ses_e4bde4f60ffen0Sw5zxMJUYN7R",
+        "messageID": "msg_1b421eed30018u0bT02fJ9V0rA",
+        "type": "step-finish",
+        "reason": "stop",
+        "snapshot": "4fbb9b86493a8d0da4eff36a0552e2f69f4cb9b2",
+        "cost": 0,
+        "tokens": {
+          "total": 120,
+          "input": 100,
+          "output": 20,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    ]
+  }
+]

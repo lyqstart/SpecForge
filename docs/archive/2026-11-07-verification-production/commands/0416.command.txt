@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/build-sps-preclosure-review.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Bind current SPS20 acceptance criteria to primary source hashes and actual bounded validation receipts before final original Close",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable preclosure audit only; no product authority or state writes",
+  "started_utc": "2026-11-07T09:03:16.668Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\build-sps-preclosure-review.cjs",
+      "sha256": "3e3736abba7c9466e1fe291c1a111e9cd84ad1a987de513e720afec87b129413",
+      "size": 6602,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/build-workspace.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Build complete current workspace after production persistence retirement",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES repository-owned workspace dist only; EXTERNAL_EVIDENCE_WRITES build receipts; no original or user deployment writes",
+  "started_utc": "2026-11-07T05:45:33.157Z"
+}

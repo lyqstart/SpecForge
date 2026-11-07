@@ -1,0 +1,16 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/execution-evidence-consumer.test.ts",
+    "tests/unit/invocation-lease.test.ts",
+    "tests/unit/verifier-guidance-execution-boundary.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "manual-observation-execution-subject-boundary-fixed-regression",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES reference-only units; EXTERNAL_EVIDENCE_WRITES receipts; no native/original",
+  "started_utc": "2026-11-07T03:39:39.086Z"
+}

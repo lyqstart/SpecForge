@@ -1,0 +1,37 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/post-close-git-merge-governance.test.ts (8 tests) 13035ms
+   ✓ post-close formal Git merge governance > fails merge planning closed when authority or post-close cleanliness is missing  1866ms
+   ✓ post-close formal Git merge governance > blocks merge planning and merge execution when the snapshot omits committed code  1840ms
+   ✓ post-close formal Git merge governance > blocks merge planning when a new implementation path appears after Formal Version  1332ms
+   ✓ post-close formal Git merge governance > rejects post-merge verification when a new implementation path was merged outside the controlled runner  1251ms
+   ✓ post-close formal Git merge governance > rejects post-merge verification when an invalid snapshot was merged outside the controlled runner  1254ms
+   ✓ post-close formal Git merge governance > requires explicit confirmation and proves actual repository delivery after merge  2585ms
+   ✓ post-close formal Git merge governance > rejects post-merge completion when the approved implementation tree changes  2043ms
+   ✓ post-close formal Git merge governance > aligns tools, Orchestrator, workflow Skill, handoff and experience consumers  863ms
+ ✓ tests/unit/formal-version-git-closure-regression.test.ts (17 tests) 2837ms
+   ✓ formal version Git closure regressions > does not inherit optional Git Governance from an ancestor repository  465ms
+   ✓ formal version Git closure regressions > rejects observed implementation files until they are committed on the WI branch  856ms
+   ✓ formal version Git closure regressions > detects committed implementation files omitted from observed formal evidence  709ms
+   ✓ formal version Git closure regressions > preserves durable implementation files when governance scope is in compatibility mode  664ms
+ ✓ tests/design-governance-orchestrator-closure.test.ts (17 tests) 553ms
+ ✓ tests/unit/specforge-development-err125.test.ts (3 tests) 171ms
+ ✓ tests/unit/current-release-extension-boundary.test.ts (4 tests) 182ms
+ ✓ tests/v11-agent-skill-contract-alignment.test.ts (13 tests) 44ms
+ ✓ tests/unit/err155-159-contract-governance-recovery.test.ts (10 tests) 79ms
+ ✓ tests/unit/sf-doctor-initialization.test.ts (5 tests) 53ms
+ ✓ tests/design-governance-contract.test.ts (5 tests) 13ms
+ ✓ tests/unit/semantic-closure-contract-alignment.test.ts (7 tests) 16ms
+ ✓ tests/unit/daemon-startup-readme-contract.test.ts (5 tests) 15ms
+ ✓ tests/unit/phase11-agent-guidance-contract.test.ts (7 tests) 10ms
+ ✓ tests/unit/verifier-guidance-execution-boundary.test.ts (3 tests) 7ms
+ ✓ tests/unit/candidate-runtime-truth-contract.test.ts (4 tests) 10ms
+ ✓ tests/unit/phase11-impact-scope-field-kind-contract.test.ts (7 tests) 7ms
+ ✓ tests/unit/work-item-artifact-authority-contract.test.ts (5 tests) 4ms
+
+ Test Files  16 passed (16)
+      Tests  120 passed (120)
+   Start at  18:34:10
+   Duration  26.75s (transform 1.82s, setup 0ms, collect 4.70s, tests 17.04s, environment 3ms, prepare 1.97s)
+

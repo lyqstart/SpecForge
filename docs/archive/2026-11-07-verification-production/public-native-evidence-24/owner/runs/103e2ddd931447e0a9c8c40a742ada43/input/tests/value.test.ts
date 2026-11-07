@@ -1,0 +1,1 @@
+import {test} from "node:test";import assert from "node:assert/strict";import {greet} from "../src/value.ts";test("name",()=>assert.equal(greet("Ada"),"Hello, Ada!"));test("empty",()=>assert.equal(greet(""),"Hello, world!"));

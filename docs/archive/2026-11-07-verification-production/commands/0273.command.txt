@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/current-product-version-contract.test.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Verify root authoritative product identity and all workspace versions after patch-only metadata preparation",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES receipts; RUNTIME_OBSERVER_WRITES test cache only; no tag/deployment/original writes",
+  "started_utc": "2026-11-07T06:00:24.137Z"
+}

@@ -1,0 +1,770 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0001",
+  "asset_generation": "formal-v1.0.23",
+  "entries": [
+    {
+      "evidence_id": "EV-0001",
+      "id": "EV-0001",
+      "type": "command_output",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "static",
+      "supports": [
+        "TASK-WI-0001-001",
+        "REQ-CORE-006"
+      ],
+      "description": "TASK-WI-0001-001 unit#0 `test -f package.json && test -f tsconfig.json` — exit 0, empty output (D23 fixed readonly Node, normalized finite-posix predicate; original shell declaration disclosed, not shell-executed)",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T08:59:15.915Z",
+      "timestamp": "2026-11-07T08:59:15.915Z",
+      "execution_receipt_id": "eec147298882bfd11284df9add44391ffe07de85514f83596d9cd2a9085a6740",
+      "task_id": "TASK-WI-0001-001",
+      "verification_type": "unit",
+      "command_index": 0,
+      "command": "test -f package.json && test -f tsconfig.json",
+      "path": "verification-owner:receipt:eec147298882bfd11284df9add44391ffe07de85514f83596d9cd2a9085a6740",
+      "hash": "sha256:eec147298882bfd11284df9add44391ffe07de85514f83596d9cd2a9085a6740",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-001",
+          "REQ-CORE-004",
+          "REQ-CORE-006"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-001"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0002",
+      "id": "EV-0002",
+      "type": "command_output",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "static",
+      "supports": [
+        "TASK-WI-0001-001",
+        "REQ-CORE-006"
+      ],
+      "description": "TASK-WI-0001-001 unit#1 `grep -c '\"dependencies\": {}' package.json` — exit 0, stdout '1' (explicit empty runtime dependencies, EVREQ-6A static config face)",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T08:59:15.915Z",
+      "timestamp": "2026-11-07T08:59:15.915Z",
+      "execution_receipt_id": "7cf287078c90b6c71f44621d132c1ebadb527019fa493f994b2e52092763adeb",
+      "task_id": "TASK-WI-0001-001",
+      "verification_type": "unit",
+      "command_index": 1,
+      "command": "grep -c '\"dependencies\": {}' package.json",
+      "path": "verification-owner:receipt:7cf287078c90b6c71f44621d132c1ebadb527019fa493f994b2e52092763adeb",
+      "hash": "sha256:7cf287078c90b6c71f44621d132c1ebadb527019fa493f994b2e52092763adeb",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-006"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-001"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0003",
+      "id": "EV-0003",
+      "type": "command_output",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "static",
+      "supports": [
+        "TASK-WI-0001-001",
+        "REQ-CORE-004"
+      ],
+      "description": "TASK-WI-0001-001 unit#2 `grep -c '\"test\": \"node --test tests/greet.test.ts\"' package.json` — exit 0, stdout '1' (unique test entry, DD-CORE-003 main path)",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T08:59:15.915Z",
+      "timestamp": "2026-11-07T08:59:15.915Z",
+      "execution_receipt_id": "22677de542fd4277b75c483078b8158d230462d509c328c7e0881a7601a17e41",
+      "task_id": "TASK-WI-0001-001",
+      "verification_type": "unit",
+      "command_index": 2,
+      "command": "grep -c '\"test\": \"node --test tests/greet.test.ts\"' package.json",
+      "path": "verification-owner:receipt:22677de542fd4277b75c483078b8158d230462d509c328c7e0881a7601a17e41",
+      "hash": "sha256:22677de542fd4277b75c483078b8158d230462d509c328c7e0881a7601a17e41",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-004"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-001"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0004",
+      "id": "EV-0004",
+      "type": "command_output",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "static",
+      "supports": [
+        "TASK-WI-0001-001"
+      ],
+      "description": "TASK-WI-0001-001 unit#3 `grep -c '\"type\": \"module\"' package.json` — exit 0, stdout '1' (ESM module type consumed by real node --test runs EV-0014/EV-0021)",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T08:59:15.915Z",
+      "timestamp": "2026-11-07T08:59:15.915Z",
+      "execution_receipt_id": "484bc425c21fd920e455f5f835c707d083f583c537d14a8a6f3b78e48368951d",
+      "task_id": "TASK-WI-0001-001",
+      "verification_type": "unit",
+      "command_index": 3,
+      "command": "grep -c '\"type\": \"module\"' package.json",
+      "path": "verification-owner:receipt:484bc425c21fd920e455f5f835c707d083f583c537d14a8a6f3b78e48368951d",
+      "hash": "sha256:484bc425c21fd920e455f5f835c707d083f583c537d14a8a6f3b78e48368951d",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-001"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-001"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0005",
+      "id": "EV-0005",
+      "type": "command_output",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "static",
+      "supports": [
+        "TASK-WI-0001-001"
+      ],
+      "description": "TASK-WI-0001-001 unit#4 `grep -cE '\"noEmit\": true|\"allowImportingTsExtensions\": true' tsconfig.json` — exit 0, stdout '2' (both paired options present)",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T08:59:15.915Z",
+      "timestamp": "2026-11-07T08:59:15.915Z",
+      "execution_receipt_id": "0e8c96edbec07a5e5a2044170d10c4b5287ac365d4e8f96a7ee834dd7515244a",
+      "task_id": "TASK-WI-0001-001",
+      "verification_type": "unit",
+      "command_index": 4,
+      "command": "grep -cE '\"noEmit\": true|\"allowImportingTsExtensions\": true' tsconfig.json",
+      "path": "verification-owner:receipt:0e8c96edbec07a5e5a2044170d10c4b5287ac365d4e8f96a7ee834dd7515244a",
+      "hash": "sha256:0e8c96edbec07a5e5a2044170d10c4b5287ac365d4e8f96a7ee834dd7515244a",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-001"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-001"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0006",
+      "id": "EV-0006",
+      "type": "command_output",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "static",
+      "supports": [
+        "TASK-WI-0001-002",
+        "REQ-CORE-001"
+      ],
+      "description": "TASK-WI-0001-002 unit#0 `test -f src/greet.ts` — exit 0, empty output (source file present in CORE code_paths)",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T09:04:08.213Z",
+      "timestamp": "2026-11-07T09:04:08.213Z",
+      "execution_receipt_id": "d02452cdd9f7f187acb553bb84daec81454829c5037a229c786e0ab2c41ebf14",
+      "task_id": "TASK-WI-0001-002",
+      "verification_type": "unit",
+      "command_index": 0,
+      "command": "test -f src/greet.ts",
+      "path": "verification-owner:receipt:d02452cdd9f7f187acb553bb84daec81454829c5037a229c786e0ab2c41ebf14",
+      "hash": "sha256:d02452cdd9f7f187acb553bb84daec81454829c5037a229c786e0ab2c41ebf14",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-001"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-002"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0007",
+      "id": "EV-0007",
+      "type": "command_output",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "static",
+      "supports": [
+        "TASK-WI-0001-002",
+        "REQ-CORE-001"
+      ],
+      "description": "TASK-WI-0001-002 unit#1 `grep -c \"export function greet(name: string): string\" src/greet.ts` — exit 0, stdout '1' (exact PI-CORE-001 signature)",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T09:04:08.213Z",
+      "timestamp": "2026-11-07T09:04:08.213Z",
+      "execution_receipt_id": "deb2e15387a73d95fc17f9bf98be59a20aad0eaf601f310c92e4bfd1f60a7832",
+      "task_id": "TASK-WI-0001-002",
+      "verification_type": "unit",
+      "command_index": 1,
+      "command": "grep -c \"export function greet(name: string): string\" src/greet.ts",
+      "path": "verification-owner:receipt:deb2e15387a73d95fc17f9bf98be59a20aad0eaf601f310c92e4bfd1f60a7832",
+      "hash": "sha256:deb2e15387a73d95fc17f9bf98be59a20aad0eaf601f310c92e4bfd1f60a7832",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-001"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-002"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0008",
+      "id": "EV-0008",
+      "type": "command_output",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "static",
+      "supports": [
+        "TASK-WI-0001-002",
+        "REQ-CORE-003"
+      ],
+      "description": "TASK-WI-0001-002 unit#2 `grep -c \"Hello, world!\" src/greet.ts` — exit 0, stdout '1' (default greeting constant in implementation)",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T09:04:08.213Z",
+      "timestamp": "2026-11-07T09:04:08.213Z",
+      "execution_receipt_id": "64065f2b8d19d321492b3c4ec9a232243773c471e6764809918f433d7f4c7a96",
+      "task_id": "TASK-WI-0001-002",
+      "verification_type": "unit",
+      "command_index": 2,
+      "command": "grep -c \"Hello, world!\" src/greet.ts",
+      "path": "verification-owner:receipt:64065f2b8d19d321492b3c4ec9a232243773c471e6764809918f433d7f4c7a96",
+      "hash": "sha256:64065f2b8d19d321492b3c4ec9a232243773c471e6764809918f433d7f4c7a96",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-003"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-002"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0009",
+      "id": "EV-0009",
+      "type": "command_output",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "static",
+      "supports": [
+        "TASK-WI-0001-002",
+        "REQ-CORE-006"
+      ],
+      "description": "TASK-WI-0001-002 unit#3 `! grep -qE \"^import |^import\\{|require\\(\" src/greet.ts` — exit 0, empty output (zero-import fact, INV-CORE-003 source face)",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T09:04:08.213Z",
+      "timestamp": "2026-11-07T09:04:08.213Z",
+      "execution_receipt_id": "19ab172273eccf0b859040f4abb877963293a24e902bf6fe45e7d5c4e89f6e55",
+      "task_id": "TASK-WI-0001-002",
+      "verification_type": "unit",
+      "command_index": 3,
+      "command": "! grep -qE \"^import |^import\\{|require\\(\" src/greet.ts",
+      "path": "verification-owner:receipt:19ab172273eccf0b859040f4abb877963293a24e902bf6fe45e7d5c4e89f6e55",
+      "hash": "sha256:19ab172273eccf0b859040f4abb877963293a24e902bf6fe45e7d5c4e89f6e55",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-001",
+          "REQ-CORE-006"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-002"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0010",
+      "id": "EV-0010",
+      "type": "command_output",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "static",
+      "supports": [
+        "TASK-WI-0001-003",
+        "REQ-CORE-004"
+      ],
+      "description": "TASK-WI-0001-003 unit#0 `test -f tests/greet.test.ts` — exit 0, empty output (test suite present in controlled code path)",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T09:07:57.867Z",
+      "timestamp": "2026-11-07T09:07:57.867Z",
+      "execution_receipt_id": "ad88130276bce2dc4f83a418061a08b0cd55dd19040fe220760f8d2946d110c5",
+      "task_id": "TASK-WI-0001-003",
+      "verification_type": "unit",
+      "command_index": 0,
+      "command": "test -f tests/greet.test.ts",
+      "path": "verification-owner:receipt:ad88130276bce2dc4f83a418061a08b0cd55dd19040fe220760f8d2946d110c5",
+      "hash": "sha256:ad88130276bce2dc4f83a418061a08b0cd55dd19040fe220760f8d2946d110c5",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-004"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-003"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0011",
+      "id": "EV-0011",
+      "type": "command_output",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "static",
+      "supports": [
+        "TASK-WI-0001-003",
+        "REQ-CORE-004",
+        "REQ-CORE-006"
+      ],
+      "description": "TASK-WI-0001-003 unit#1 `grep -c \"node:test\" tests/greet.test.ts` — exit 0, stdout '1' (Node built-in runner, zero third-party framework)",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T09:07:57.867Z",
+      "timestamp": "2026-11-07T09:07:57.867Z",
+      "execution_receipt_id": "f43bdeec31e97a94cadcae11356b4ada08f11ef4130fdf83bc8df20e86959eb0",
+      "task_id": "TASK-WI-0001-003",
+      "verification_type": "unit",
+      "command_index": 1,
+      "command": "grep -c \"node:test\" tests/greet.test.ts",
+      "path": "verification-owner:receipt:f43bdeec31e97a94cadcae11356b4ada08f11ef4130fdf83bc8df20e86959eb0",
+      "hash": "sha256:f43bdeec31e97a94cadcae11356b4ada08f11ef4130fdf83bc8df20e86959eb0",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-004",
+          "REQ-CORE-006"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-003"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0012",
+      "id": "EV-0012",
+      "type": "command_output",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "static",
+      "supports": [
+        "TASK-WI-0001-003",
+        "REQ-CORE-004"
+      ],
+      "description": "TASK-WI-0001-003 unit#2 `grep -c \"node:assert/strict\" tests/greet.test.ts` — exit 0, stdout '1' (strict equality assertion import)",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T09:07:57.867Z",
+      "timestamp": "2026-11-07T09:07:57.867Z",
+      "execution_receipt_id": "907e1765021901dfd0c388ccd8e8c98dc77fcdf49171e6f9c8a5d32c4d1dda94",
+      "task_id": "TASK-WI-0001-003",
+      "verification_type": "unit",
+      "command_index": 2,
+      "command": "grep -c \"node:assert/strict\" tests/greet.test.ts",
+      "path": "verification-owner:receipt:907e1765021901dfd0c388ccd8e8c98dc77fcdf49171e6f9c8a5d32c4d1dda94",
+      "hash": "sha256:907e1765021901dfd0c388ccd8e8c98dc77fcdf49171e6f9c8a5d32c4d1dda94",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-004"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-003"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0013",
+      "id": "EV-0013",
+      "type": "command_output",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "static",
+      "supports": [
+        "TASK-WI-0001-003",
+        "REQ-CORE-002",
+        "REQ-CORE-003"
+      ],
+      "description": "TASK-WI-0001-003 unit#3 `grep -c \"strictEqual\" tests/greet.test.ts` — exit 0, stdout '4' (assertion count A1–A4 exactly, AC-CORE-010 mapping to both behavior rules)",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T09:07:57.867Z",
+      "timestamp": "2026-11-07T09:07:57.867Z",
+      "execution_receipt_id": "8cce832fe4fb8dc61fbc600fef9b871a2d062ec508298fb0189f85352a627723",
+      "task_id": "TASK-WI-0001-003",
+      "verification_type": "unit",
+      "command_index": 3,
+      "command": "grep -c \"strictEqual\" tests/greet.test.ts",
+      "path": "verification-owner:receipt:8cce832fe4fb8dc61fbc600fef9b871a2d062ec508298fb0189f85352a627723",
+      "hash": "sha256:8cce832fe4fb8dc61fbc600fef9b871a2d062ec508298fb0189f85352a627723",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-002",
+          "REQ-CORE-003",
+          "REQ-CORE-004"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-003"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0014",
+      "id": "EV-0014",
+      "type": "test_output",
+      "status": "passed",
+      "level": "L4",
+      "evidence_type": "integration",
+      "supports": [
+        "OUT-1",
+        "OUT-2",
+        "OUT-3",
+        "OUT-4",
+        "OUT-6",
+        "REQ-CORE-001",
+        "REQ-CORE-002",
+        "REQ-CORE-003",
+        "REQ-CORE-004",
+        "REQ-CORE-006",
+        "TASK-WI-0001-001",
+        "TASK-WI-0001-002",
+        "TASK-WI-0001-003"
+      ],
+      "description": "node --test tests/greet.test.ts real run (TASK-WI-0001-003 integration#0, receipt 54fda4bf…), TAP '1..4' '# tests 4' '# pass 4' '# fail 0', ok 1–4 for A1–A4; suite really imports ../src/greet.ts; run path only Node built-ins and local file imports, zero third-party packages; consuming real project load environment (type:module + TS source) built by TASK-001/002",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T09:07:57.867Z",
+      "timestamp": "2026-11-07T09:07:57.867Z",
+      "execution_receipt_id": "54fda4bf3a59c933e96154b3d73eb1066921e3cabeeb405e0d04e6f5b08782e7",
+      "task_id": "TASK-WI-0001-003",
+      "verification_type": "integration",
+      "command_index": 0,
+      "command": "node --test tests/greet.test.ts",
+      "path": "verification-owner:receipt:54fda4bf3a59c933e96154b3d73eb1066921e3cabeeb405e0d04e6f5b08782e7",
+      "hash": "sha256:54fda4bf3a59c933e96154b3d73eb1066921e3cabeeb405e0d04e6f5b08782e7",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-001",
+          "REQ-CORE-002",
+          "REQ-CORE-003",
+          "REQ-CORE-004",
+          "REQ-CORE-006"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-001",
+          "TASK-WI-0001-002",
+          "TASK-WI-0001-003"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0015",
+      "id": "EV-0015",
+      "type": "command_output",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "static",
+      "supports": [
+        "TASK-WI-0001-004",
+        "REQ-CORE-005"
+      ],
+      "description": "TASK-WI-0001-004 unit#0 `grep -c \"^# Greeting Library\" README.md` — exit 0, stdout '1' (existing heading preserved append-only)",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T09:12:17.163Z",
+      "timestamp": "2026-11-07T09:12:17.163Z",
+      "execution_receipt_id": "802ce3656670897abaee1569816bb4a516f15adf8fdb05f03b175a81758bf1dd",
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "unit",
+      "command_index": 0,
+      "command": "grep -c \"^# Greeting Library\" README.md",
+      "path": "verification-owner:receipt:802ce3656670897abaee1569816bb4a516f15adf8fdb05f03b175a81758bf1dd",
+      "hash": "sha256:802ce3656670897abaee1569816bb4a516f15adf8fdb05f03b175a81758bf1dd",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-005"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-004"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0016",
+      "id": "EV-0016",
+      "type": "command_output",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "static",
+      "supports": [
+        "TASK-WI-0001-004",
+        "REQ-CORE-005"
+      ],
+      "description": "TASK-WI-0001-004 unit#1 `grep -c \"A synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\" README.md` — exit 0, stdout '1' (existing body preserved byte-wise)",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T09:12:17.163Z",
+      "timestamp": "2026-11-07T09:12:17.163Z",
+      "execution_receipt_id": "d4b02894c31ab8312a16b370d4fc625fbd75dd6a0743f142797bd4c3d890838f",
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "unit",
+      "command_index": 1,
+      "command": "grep -c \"A synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\" README.md",
+      "path": "verification-owner:receipt:d4b02894c31ab8312a16b370d4fc625fbd75dd6a0743f142797bd4c3d890838f",
+      "hash": "sha256:d4b02894c31ab8312a16b370d4fc625fbd75dd6a0743f142797bd4c3d890838f",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-005"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-004"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0017",
+      "id": "EV-0017",
+      "type": "command_output",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "static",
+      "supports": [
+        "TASK-WI-0001-004",
+        "REQ-CORE-005"
+      ],
+      "description": "TASK-WI-0001-004 unit#2 `grep -c \"greet(name: string): string\" README.md` — exit 0, stdout '1' (usage: import + signature documented)",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T09:12:17.163Z",
+      "timestamp": "2026-11-07T09:12:17.163Z",
+      "execution_receipt_id": "ef2ac84e3c445d74abbbae0a45b3d398ff98b0d9c586043f04c57e57186f15c9",
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "unit",
+      "command_index": 2,
+      "command": "grep -c \"greet(name: string): string\" README.md",
+      "path": "verification-owner:receipt:ef2ac84e3c445d74abbbae0a45b3d398ff98b0d9c586043f04c57e57186f15c9",
+      "hash": "sha256:ef2ac84e3c445d74abbbae0a45b3d398ff98b0d9c586043f04c57e57186f15c9",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-005"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-004"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0018",
+      "id": "EV-0018",
+      "type": "command_output",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "static",
+      "supports": [
+        "TASK-WI-0001-004",
+        "REQ-CORE-005",
+        "REQ-CORE-002"
+      ],
+      "description": "TASK-WI-0001-004 unit#3 `grep -cE \"Hello, Ada!|Hello, Grace!\" README.md` — exit 0, stdout '2' (non-empty-name behavior examples present)",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T09:12:17.163Z",
+      "timestamp": "2026-11-07T09:12:17.163Z",
+      "execution_receipt_id": "fc3038a35b65f850e77037518c8b51e6f80e4f2d20157a14b0e7ff1f0d492694",
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "unit",
+      "command_index": 3,
+      "command": "grep -cE \"Hello, Ada!|Hello, Grace!\" README.md",
+      "path": "verification-owner:receipt:fc3038a35b65f850e77037518c8b51e6f80e4f2d20157a14b0e7ff1f0d492694",
+      "hash": "sha256:fc3038a35b65f850e77037518c8b51e6f80e4f2d20157a14b0e7ff1f0d492694",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-002",
+          "REQ-CORE-005"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-004"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0019",
+      "id": "EV-0019",
+      "type": "command_output",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "static",
+      "supports": [
+        "TASK-WI-0001-004",
+        "REQ-CORE-005",
+        "REQ-CORE-003"
+      ],
+      "description": "TASK-WI-0001-004 unit#4 `grep -c \"Hello, world!\" README.md` — exit 0, stdout '1' (empty-name default greeting example present)",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T09:12:17.163Z",
+      "timestamp": "2026-11-07T09:12:17.163Z",
+      "execution_receipt_id": "0360e529c81309a4ab7d70f1e741b5e0a7a17034dedfd81cb052a23528805158",
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "unit",
+      "command_index": 4,
+      "command": "grep -c \"Hello, world!\" README.md",
+      "path": "verification-owner:receipt:0360e529c81309a4ab7d70f1e741b5e0a7a17034dedfd81cb052a23528805158",
+      "hash": "sha256:0360e529c81309a4ab7d70f1e741b5e0a7a17034dedfd81cb052a23528805158",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-003",
+          "REQ-CORE-005"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-004"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0020",
+      "id": "EV-0020",
+      "type": "command_output",
+      "status": "passed",
+      "level": "L1",
+      "evidence_type": "static",
+      "supports": [
+        "TASK-WI-0001-004",
+        "REQ-CORE-005"
+      ],
+      "description": "TASK-WI-0001-004 regression#0 `grep -c \"No production data.\" README.md` — exit 0, stdout '1' (append-only edit did not break the existing isolation statement)",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T09:12:17.163Z",
+      "timestamp": "2026-11-07T09:12:17.163Z",
+      "execution_receipt_id": "b95a902854a9efe5ccc4cce5037fd38834ecb35ee916607c47b440e418cdb7cd",
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "regression",
+      "command_index": 0,
+      "command": "grep -c \"No production data.\" README.md",
+      "path": "verification-owner:receipt:b95a902854a9efe5ccc4cce5037fd38834ecb35ee916607c47b440e418cdb7cd",
+      "hash": "sha256:b95a902854a9efe5ccc4cce5037fd38834ecb35ee916607c47b440e418cdb7cd",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-005"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-004"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0021",
+      "id": "EV-0021",
+      "type": "test_output",
+      "status": "passed",
+      "level": "L4",
+      "evidence_type": "integration",
+      "supports": [
+        "OUT-1",
+        "OUT-2",
+        "OUT-3",
+        "OUT-4",
+        "OUT-6",
+        "REQ-CORE-001",
+        "REQ-CORE-002",
+        "REQ-CORE-003",
+        "REQ-CORE-004",
+        "REQ-CORE-006",
+        "TASK-WI-0001-001",
+        "TASK-WI-0001-002",
+        "TASK-WI-0001-005"
+      ],
+      "description": "node --test tests/greet.test.ts integration closure rerun (TASK-WI-0001-005 integration#0, receipt 17b75cad…), exit 0, TAP v13 ok 1–4 (A1 greet('Ada')='Hello, Ada!', A2 greet('Grace')='Hello, Grace!', A3 greet('')='Hello, world!', A4 whitespace-name 'Hello, '+name+'!' form), # tests 4, # pass 4, # fail 0; loader → real source import → A1–A4 single chain on zero-third-party run path; consumes the real project load environment and greet implementation built by TASK-001/002",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T09:15:51.302Z",
+      "timestamp": "2026-11-07T09:15:51.302Z",
+      "execution_receipt_id": "17b75cadae7af1295c2e14c0596097ed35b4f1b4f486603b6b964bbe82c87c90",
+      "task_id": "TASK-WI-0001-005",
+      "verification_type": "integration",
+      "command_index": 0,
+      "command": "node --test tests/greet.test.ts",
+      "path": "verification-owner:receipt:17b75cadae7af1295c2e14c0596097ed35b4f1b4f486603b6b964bbe82c87c90",
+      "hash": "sha256:17b75cadae7af1295c2e14c0596097ed35b4f1b4f486603b6b964bbe82c87c90",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-001",
+          "REQ-CORE-002",
+          "REQ-CORE-003",
+          "REQ-CORE-004",
+          "REQ-CORE-006"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-001",
+          "TASK-WI-0001-002",
+          "TASK-WI-0001-005"
+        ]
+      }
+    },
+    {
+      "evidence_id": "EV-0022",
+      "id": "EV-0022",
+      "type": "command_output",
+      "status": "passed",
+      "level": "L5",
+      "evidence_type": "e2e",
+      "supports": [
+        "OUT-1",
+        "OUT-2",
+        "OUT-3",
+        "OUT-5",
+        "OUT-6",
+        "REQ-CORE-001",
+        "REQ-CORE-002",
+        "REQ-CORE-003",
+        "REQ-CORE-005",
+        "REQ-CORE-006",
+        "TASK-WI-0001-004",
+        "TASK-WI-0001-005"
+      ],
+      "description": "Caller-view dynamic-import e2e (TASK-WI-0001-005 e2e#0, receipt 2a83a293…), exit 0, stdout 'E2E-OK\\n', stderr empty, output complete: greet('Ada') === 'Hello, Ada!' and greet('') === 'Hello, world!' — byte-identical to the README usage examples; dynamic import consumes only the local source file, zero third-party packages on the run path",
+      "collected_by": "sf-verifier",
+      "created_at": "2026-11-07T09:15:51.302Z",
+      "timestamp": "2026-11-07T09:15:51.302Z",
+      "execution_receipt_id": "2a83a293a5b44f56b29b34a852f4acc9df2c2faf9efdce2922412d91a188e0e5",
+      "task_id": "TASK-WI-0001-005",
+      "verification_type": "e2e",
+      "command_index": 0,
+      "command": "node -e \"import('./src/greet.ts').then(m => { const a = m.greet('Ada'); const b = m.greet(''); if (a !== 'Hello, Ada!' || b !== 'Hello, world!') { process.exit(1); } console.log('E2E-OK'); }).catch(() => process.exit(1))\"",
+      "path": "verification-owner:receipt:2a83a293a5b44f56b29b34a852f4acc9df2c2faf9efdce2922412d91a188e0e5",
+      "hash": "sha256:2a83a293a5b44f56b29b34a852f4acc9df2c2faf9efdce2922412d91a188e0e5",
+      "hash_domain": "canonical-json:verification-execution/v1",
+      "related_refs": {
+        "req_ids": [
+          "REQ-CORE-001",
+          "REQ-CORE-002",
+          "REQ-CORE-003",
+          "REQ-CORE-005",
+          "REQ-CORE-006"
+        ],
+        "task_ids": [
+          "TASK-WI-0001-004",
+          "TASK-WI-0001-005"
+        ]
+      }
+    }
+  ]
+}

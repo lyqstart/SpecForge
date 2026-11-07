@@ -1,0 +1,40 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/v11-section21-acceptance.test.ts",
+    "tests/integration/p0-governance-regression-flow.test.ts",
+    "tests/unit/legacy-filesystem-mode-recovery.test.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "Verify seeded in-process governance composition fixtures consume exact registered execution subjects without claiming native execution",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES self-owned synthetic Git/governance fixtures only; EXTERNAL_EVIDENCE_WRITES canonical test results; production Runtime/Gate/MAC unchanged",
+  "started_utc": "2026-11-07T08:05:18.102Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\v11-section21-acceptance.test.ts",
+      "sha256": "ef83ab834c6aa5290a96907fbe9be9baf10e706629197edbb487a65be2d55737",
+      "size": 58944,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 4,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\integration\\p0-governance-regression-flow.test.ts",
+      "sha256": "d38918c8292349dfaa26b7708cad954efd6d02e0f21161bdad5c69f9c822a652",
+      "size": 26988,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 5,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\legacy-filesystem-mode-recovery.test.ts",
+      "sha256": "e3aa2e1b08c34474e2ce6782d1d12eb9e2b41e957df763fff5dc53b7f1a8ba4a",
+      "size": 17542,
+      "extension": ".ts"
+    }
+  ]
+}

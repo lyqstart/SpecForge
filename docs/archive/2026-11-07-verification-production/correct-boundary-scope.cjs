@@ -1,0 +1,9 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');const root=path.resolve(__dirname,'../../..'),audit=JSON.parse(fs.readFileSync(path.join(__dirname,'boundary-scope-before.json')));assert.deepEqual(audit.violations,['packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md','packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md']);assert.ok(audit.baselineProof.every(x=>x.old_raw_normalizes_to_parent_git_object));
+const file=path.join(root,'docs/project-status.md');let status=fs.readFileSync(file,'utf8');const match=status.match(/^ALLOWED_SCOPE=(.*)$/m);assert.ok(match);for(const p of audit.violations)assert.equal(match[1].split(';').includes(p),false);status=status.replace(match[0],()=>match[0]+';'+audit.violations.join(';'));fs.writeFileSync(file,status);
+const ledger=path.join(root,'docs/rule/specforge-development-error-ledger-and-experience.md');let text=fs.readFileSync(ledger,'utf8');assert.equal(text.includes('### ERR-1994：'),false);text+=`
+### ERR-1994：模块消费者修复方案与允许范围投影漏列两个根目录说明文件
+
+- 0267源码提交包含EVENT_REPLAY_COMPLETION_SUMMARY.md、STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md的历史指针修订；方案包含旧文档消费者，但0241更新ALLOWED_SCOPE时只扩src/examples等，未加入这两个module-root文件。0264准备器仅按workflow-runtime前缀校验，不能替代唯一状态的精确glob，遗漏直到0274复核才被发现。不得回写旧证据或宣称提交前该投影完整。
+- 0274对66个已审查路径和15个版本路径的80个去重路径逐一使用真实ALLOWED_SCOPE的glob，恰发现两个遗漏。各旧raw按原路径Git clean归一化后与父提交对象完全相同，且27份原字节已封存；不存在覆盖用户独立内容的证据，原业务/部署未受此修订影响。已停止新产品修改，先在既有SPS8用户修复授权及明确文档消费者范围内补正唯一status的两个精确路径；不扩大产品功能或业务权限。
+- 后续source准备/提交检查必须直接消费唯一status的literal/glob集合，覆盖tracked删除、新增、归档与版本文件，不能用更宽的模块前缀冒充范围合同。scope审计保留before/after独立记录，补正不抹去先前越过范围投影的错误。EXP-004/006/007/017/031/193。
+`;fs.writeFileSync(ledger,text.trimEnd()+'\n');console.log(JSON.stringify({corrected_scope_paths:audit.violations,ledger_through:'ERR-1994',original_or_deployment_writes:false}));

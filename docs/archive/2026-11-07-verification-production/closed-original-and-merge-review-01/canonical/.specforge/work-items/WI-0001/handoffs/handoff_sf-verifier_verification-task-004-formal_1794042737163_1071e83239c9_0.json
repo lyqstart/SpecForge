@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "agent": "sf-verifier",
+  "work_item_id": "WI-0001",
+  "stage": "verification-task-004-formal",
+  "timestamp": "2026-11-07T00:00:00Z",
+  "inputs_read": [
+    "TASK-WI-0001-004 verification plans (5 unit + 1 regression)"
+  ],
+  "outputs_written": [],
+  "findings": [
+    "unit idx0 grep -c \"^# Greeting Library\" README.md: attempt_record_id=cca9e6e6e11361e67f4e382421d2076653f1c57592936fdc67bdb601e5e0412a, receipt_id=802ce3656670897abaee1569816bb4a516f15adf8fdb05f03b175a81758bf1dd, exit_code=0, stdout=\"1\\n\" (expected 1), cleanup_proved=true → PASS",
+    "unit idx1 grep -c \"A synthetic TypeScript greeting library...No production data.\" README.md: attempt_record_id=66cd7236a5bfba6a0e1c90aebc56c32db082baa4769e3a38142dcf439dce5917, receipt_id=d4b02894c31ab8312a16b370d4fc625fbd75dd6a0743f142797bd4c3d890838f, exit_code=0, stdout=\"1\\n\" (expected 1), cleanup_proved=true → PASS",
+    "unit idx2 grep -c \"greet(name: string): string\" README.md: attempt_record_id=9934264254c4de6db3e2425c2ce2c0bd6df6ec920ff4096d1427f507ecc8c962, receipt_id=ef2ac84e3c445d74abbbae0a45b3d398ff98b0d9c586043f04c57e57186f15c9, exit_code=0, stdout=\"1\\n\" (expected ≥1), cleanup_proved=true → PASS",
+    "unit idx3 grep -cE \"Hello, Ada!|Hello, Grace!\" README.md: attempt_record_id=a347a414f4373651904b1613def5ffbc1a382fb4ae32e00a2de7a3d51eed0798, receipt_id=fc3038a35b65f850e77037518c8b51e6f80e4f2d20157a14b0e7ff1f0d492694, exit_code=0, stdout=\"2\\n\" (expected ≥1), cleanup_proved=true → PASS",
+    "unit idx4 grep -c \"Hello, world!\" README.md: attempt_record_id=8cfeb16531acefba097da5e147488bb768fadc47e251c7062b1d60716e78c549, receipt_id=0360e529c81309a4ab7d70f1e741b5e0a7a17034dedfd81cb052a23528805158, exit_code=0, stdout=\"1\\n\" (expected ≥1), cleanup_proved=true → PASS",
+    "regression idx0 grep -c \"No production data.\" README.md: attempt_record_id=464faeb80eacd7fec8ff5cfb61d8cc3ec6660bfd2e9b5379fb8da8328515a7e6, receipt_id=b95a902854a9efe5ccc4cce5037fd38834ecb35ee916607c47b440e418cdb7cd, exit_code=0, stdout=\"1\\n\" (expected 1), cleanup_proved=true → PASS",
+    "All 6 attempts executed sequentially via sf_verification_run prepare/run with exact three-param contract; no shell fallback, no artifacts written, no runtime traces read."
+  ],
+  "unknowns": [],
+  "escalation_signals": [],
+  "next_step_recommendation": "Orchestrator aggregates these 6 receipts into evidence_manifest (verification-owner:receipt:<receipt_id>) and verification_report for TASK-WI-0001-004; all required behavioral-level evidence passed.",
+  "boundary_statement": "sf-verifier only executed D23 formal verification attempts via sf_verification_run; wrote no governance artifacts and did not read runtime trace files; conclusions judged solely on real receipt_id, numeric exit_code, and complete stdout vs expected counts.",
+  "duration_ms": 0
+}

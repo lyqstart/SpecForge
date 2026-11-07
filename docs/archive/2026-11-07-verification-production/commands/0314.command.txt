@@ -1,0 +1,30 @@
+{
+  "executable": "git",
+  "args": [
+    "add",
+    "--",
+    "tests/unit/verification-consumer-http.test.ts",
+    "tests/unit/verifier-evidence-manifest-example.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Register only two source-frozen individually passing regression files in Git index required by tracked root-test inventory",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES Git index only two declared tests; EXTERNAL_EVIDENCE_WRITES source-sealed receipts; no original/deployment writes",
+  "started_utc": "2026-11-07T07:13:37.276Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 2,
+      "path": "D:\\code\\SpecForge\\tests\\unit\\verification-consumer-http.test.ts",
+      "sha256": "c660ef6e48be91b7a3525d57348f63fc2d92b1f56511cd985469579bd20075c1",
+      "size": 6885,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\tests\\unit\\verifier-evidence-manifest-example.test.ts",
+      "sha256": "0604a505cdb800339e805738513e421135effa064bd38f08dccff257db842b53",
+      "size": 2229,
+      "extension": ".ts"
+    }
+  ]
+}

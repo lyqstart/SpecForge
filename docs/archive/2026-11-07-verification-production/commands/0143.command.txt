@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/public-kernel-chain.cjs",
+    "09",
+    "formal"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "current-build-formal-real-Kernel-matrix-with-lease",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned fixture09 Kernel Daemon LPAC receipts and artifacts; EXTERNAL_EVIDENCE_WRITES frozen driver trial; no original/install",
+  "started_utc": "2026-11-07T03:44:00.813Z"
+}

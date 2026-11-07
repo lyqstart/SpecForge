@@ -1,0 +1,13 @@
+
+ RUN  v4.1.5 D:/code/SpecForge/packages/workflow-runtime
+
+ ❯ tests/unit/persistence-owner-boundary.test.ts (3 tests | 3 failed) 21ms
+     × keeps orchestration public without exporting independent persistence owners 13ms
+     × closes package deep imports of retired owners rather than merely hiding root names 2ms
+     × excludes legacy physical persistence from the current source/build input set 4ms
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  13:40:02
+   Duration  1.36s (transform 657ms, setup 71ms, import 880ms, tests 21ms, environment 0ms)
+

@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/prepare-original-continuation-02.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Prepare fresh minimum-context original continuation with exact strict action arguments and existing passed owner receipt",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES new prompt and receipts only; no model request or original writes",
+  "started_utc": "2026-11-07T05:46:36.635Z"
+}

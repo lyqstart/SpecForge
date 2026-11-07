@@ -1,0 +1,15 @@
+{
+  "utc": "2026-11-07T04:26:33.447Z",
+  "kind": "D23_PRIVATE_REAL_INSTALLER_FIXTURE",
+  "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\67bef6b18b55439cbc5adc47d4481152",
+  "nonce": "67bef6b18b55439cbc5adc47d4481152",
+  "config": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\67bef6b18b55439cbc5adc47d4481152\\config",
+  "project": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\67bef6b18b55439cbc5adc47d4481152\\project",
+  "qualified_build_receipt": "0208",
+  "release_manifest_sha256": "e034ecde23781d3884aafcacdb7271dd61ae08688bd95001552df26dd070012a",
+  "expected_work_item_id": "WI-9901",
+  "upstream_governance": "SEEDED_SYNTHETIC_BASELINE_NOT_BUSINESS_ACCEPTANCE",
+  "original_business_touched": false,
+  "profile_created": false,
+  "config_empty_before_install": true
+}

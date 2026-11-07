@@ -1,0 +1,126 @@
+{
+  "utc": "2026-11-07T04:15:22.773Z",
+  "runtime": "node",
+  "version": "v24.19.0",
+  "rows": [
+    {
+      "label": "baseline",
+      "ms": 63,
+      "stdout": "git version 2.55.0.windows.3",
+      "success": true
+    },
+    {
+      "label": "owned-child-0",
+      "pid": 38776,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM"
+      }
+    },
+    {
+      "label": "after-child-0",
+      "ms": 55,
+      "stdout": "git version 2.55.0.windows.3",
+      "success": true
+    },
+    {
+      "label": "owned-child-1",
+      "pid": 3556,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM"
+      }
+    },
+    {
+      "label": "after-child-1",
+      "ms": 61,
+      "stdout": "git version 2.55.0.windows.3",
+      "success": true
+    },
+    {
+      "label": "owned-child-2",
+      "pid": 16604,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM"
+      }
+    },
+    {
+      "label": "after-child-2",
+      "ms": 65,
+      "stdout": "git version 2.55.0.windows.3",
+      "success": true
+    },
+    {
+      "label": "owned-child-3",
+      "pid": 30780,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM"
+      }
+    },
+    {
+      "label": "after-child-3",
+      "ms": 119,
+      "stdout": "git version 2.55.0.windows.3",
+      "success": true
+    },
+    {
+      "label": "owned-child-4",
+      "pid": 32280,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM"
+      }
+    },
+    {
+      "label": "after-child-4",
+      "ms": 103,
+      "stdout": "git version 2.55.0.windows.3",
+      "success": true
+    },
+    {
+      "label": "owned-child-5",
+      "pid": 17132,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM"
+      }
+    },
+    {
+      "label": "after-child-5",
+      "ms": 66,
+      "stdout": "git version 2.55.0.windows.3",
+      "success": true
+    },
+    {
+      "label": "owned-child-6",
+      "pid": 6584,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM"
+      }
+    },
+    {
+      "label": "after-child-6",
+      "ms": 68,
+      "stdout": "git version 2.55.0.windows.3",
+      "success": true
+    },
+    {
+      "label": "owned-child-7",
+      "pid": 40108,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM"
+      }
+    },
+    {
+      "label": "after-child-7",
+      "ms": 97,
+      "stdout": "git version 2.55.0.windows.3",
+      "success": true
+    }
+  ],
+  "scope": "Fixed owned host waiting processes and readonly git --version only; not product isolation or business acceptance"
+}

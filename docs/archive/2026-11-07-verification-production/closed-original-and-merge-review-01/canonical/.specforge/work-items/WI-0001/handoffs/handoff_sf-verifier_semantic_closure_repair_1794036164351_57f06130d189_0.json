@@ -1,0 +1,41 @@
+{
+  "agent": "sf-verifier",
+  "boundary_statement": "本 Agent 只读核验 WI-0001 evidence_manifest.json 与 verification_report.md，仅产出修正版 semantic_closure JSON 原文；未写入任何文件，未运行验证命令，未触碰 verification_report.md / evidence_manifest.json / 权威状态。",
+  "duration_ms": 0,
+  "escalation_signals": [
+    {
+      "description": "OUT-6/REQ-CORE-006（SHOULD）在既有证据集中无任何非弱（L3-L5 behavioral/integration/e2e）passed 证据；闭包按诚实缺口处理（空 required_evidence_refs），未伪造 level。若 runtime 要求 Should 级也必须非弱证据，需 Orchestrator 决策补证或豁免。",
+      "recommended_action": "orchestrator 原样传递本修正版 semantic_closure 给 sf_semantic_closure_run；若 Should 级空引用被拒，由 Orchestrator 按 Should/MUST 判定差异处理或规划补充行为证据，不得回填弱证据",
+      "type": "missing_spec"
+    },
+    {
+      "description": "verification_report.md 中 fenced semantic_closure 仍为旧版（required_evidence_refs 引用弱证据）；本任务禁止修改该文件，修正仅体现在本次返回的 typed JSON。若 runtime 从报告 fenced JSON 重建闭包可能再次引入弱证据引用。",
+      "recommended_action": "orchestrator 使用本回复的 typed semantic_closure 对象调用 sf_semantic_closure_run，优先级高于报告内 fenced JSON",
+      "type": "conflict"
+    }
+  ],
+  "findings": [
+    "manifest 22 条证据事实核验与任务假设一致：EV-0014（L4/integration/passed, receipt 99535bcd…, TASK-003 integration#0）、EV-0021（L4/integration/passed, receipt 575a36f1…, TASK-005 integration#0）、EV-0022（L5/e2e/passed, receipt 25074708…, TASK-005 e2e#0）为仅有的三条非弱证据；其余 EV-0001~EV-0013、EV-0015~EV-0020 均为 L1/static 弱证据",
+    "修正：OUT-1/OUT-2/OUT-3 的 required_evidence_refs 收敛为 EV-0014/EV-0021/EV-0022；OUT-4 收敛为 EV-0014/EV-0021（EV-0022 的 supports 不含 REQ-CORE-004）；OUT-5 收敛为 EV-0022（唯一 supports REQ-CORE-005 的非弱证据）；MUST REQ-001~004 同步收敛",
+    "OUT-6（REQ-CORE-006，SHOULD）在既有证据集中不存在任何 passed 且 L3-L5 非弱证据（其全部支撑为 EV-0002/0009/0011 等 L1/static）。按契约如实处理：保留 outcome/requirement 结构与 SHOULD 类型，required_evidence_refs 为空数组，description 内记录诚实缺口（静态 L1 证据仍登记于 manifest，不进入闭包非弱引用），未伪造 level/type",
+    "修正：Task evidence_refs 全部收敛为 evidence 数组真实存在且非弱的条目——TASK-001/002/004 无非弱证据，evidence_refs=[]（其 L1 证据仍在 manifest，如实不进入闭包）；TASK-003=[EV-0014]；TASK-005=[EV-0021, EV-0022]",
+    "evidence 数组保留 EV-0014/EV-0021/EV-0022 原始 receipt 描述、status=passed、真实 level/type，supports/requirement_refs/task_refs/outcome_refs 与 manifest 一致（EV-0014/0021 支撑 OUT-1/2/3/4；EV-0022 支撑 OUT-1/2/3/5）",
+    "design_decisions（DD-CORE-001~006）、requirements MUST×5+SHOULD×1、project_integration（required=true, status=merged, refs=merge_report.md 与 changed_files_audit.md）与已验证事实保持一致，语义结论未改变"
+  ],
+  "inputs_read": [
+    ".specforge/work-items/WI-0001/evidence/evidence_manifest.json",
+    ".specforge/work-items/WI-0001/verification_report.md"
+  ],
+  "next_step_recommendation": "orchestrator 将本次返回的 semantic_closure JSON 原样传给 sf_semantic_closure_run(work_item_id=WI-0001, semantic_closure=<对象>)；若 runtime 对 SHOULD 需求空 required_evidence_refs 报错，应按 Should 判定差异语义处理（Should 不要求非弱完成证据），而不是回填弱证据",
+  "outputs_written": [],
+  "schema_version": "1.0",
+  "stage": "semantic_closure_repair",
+  "timestamp": "2026-11-07T00:00:00.000Z",
+  "unknowns": [
+    "runtime 对 SHOULD 级 requirement 允许空 required_evidence_refs 的具体策略未在本轮验证，以 sf_semantic_closure_run 校验结果为准"
+  ],
+  "warnings": [
+    "verification_report.md 中 fenced semantic_closure 仍是旧版（含弱证据引用）；本任务禁止修改该文件，修正仅体现在本 handoff 返回的 typed JSON，由 orchestrator 原样传递"
+  ],
+  "work_item_id": "WI-0001"
+}

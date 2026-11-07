@@ -1,0 +1,325 @@
+diff --git a/bun.lock b/bun.lock
+index 6b03b1457ea059286eeee53087d803e3b3a17ea7..80b6dc93aa2e399e2d1385ae3a90ab4a95bcf7c3 100644
+--- a/bun.lock
++++ b/bun.lock
+@@ -25,7 +25,7 @@
+     },
+     "packages/cli": {
+       "name": "@specforge/cli",
+-      "version": "1.0.22",
++      "version": "1.0.23",
+       "bin": {
+         "specforge": "dist/cli.js",
+       },
+@@ -57,7 +57,7 @@
+     },
+     "packages/configuration": {
+       "name": "@specforge/configuration",
+-      "version": "1.0.22",
++      "version": "1.0.23",
+       "dependencies": {
+         "@specforge/types": "workspace:*",
+         "chokidar": "^3.5.3",
+@@ -80,7 +80,7 @@
+     },
+     "packages/daemon-core": {
+       "name": "@specforge/daemon-core",
+-      "version": "1.0.22",
++      "version": "1.0.23",
+       "bin": {
+         "specforged": "dist/specforged.js",
+       },
+@@ -112,7 +112,7 @@
+     },
+     "packages/host-profile": {
+       "name": "@specforge/host-profile",
+-      "version": "1.0.22",
++      "version": "1.0.23",
+       "dependencies": {
+         "@specforge/types": "workspace:*",
+         "@specforge/version-unification": "workspace:*",
+@@ -124,7 +124,7 @@
+     },
+     "packages/observability": {
+       "name": "@specforge/observability",
+-      "version": "1.0.22",
++      "version": "1.0.23",
+       "dependencies": {
+         "@specforge/types": "workspace:*",
+       },
+@@ -147,7 +147,7 @@
+     },
+     "packages/opencode-adapter": {
+       "name": "@specforge/opencode-adapter",
+-      "version": "1.0.22",
++      "version": "1.0.23",
+       "dependencies": {
+         "@specforge/types": "workspace:*",
+         "zod": "^4.4.3",
+@@ -168,7 +168,7 @@
+     },
+     "packages/permission-engine": {
+       "name": "@specforge/permission-engine",
+-      "version": "1.0.22",
++      "version": "1.0.23",
+       "dependencies": {
+         "@specforge/types": "workspace:*",
+         "yaml": "^2.9.0",
+@@ -192,7 +192,7 @@
+     },
+     "packages/scope-gate": {
+       "name": "@specforge/scope-gate",
+-      "version": "1.0.22",
++      "version": "1.0.23",
+       "dependencies": {
+         "zod": "^4.4.3",
+       },
+@@ -215,7 +215,7 @@
+     },
+     "packages/service-management": {
+       "name": "@specforge/service-management",
+-      "version": "1.0.22",
++      "version": "1.0.23",
+       "dependencies": {
+         "@specforge/cli": "workspace:*",
+         "@specforge/configuration": "workspace:*",
+@@ -241,7 +241,7 @@
+     },
+     "packages/types": {
+       "name": "@specforge/types",
+-      "version": "1.0.22",
++      "version": "1.0.23",
+       "dependencies": {
+         "zod": "^3.22.4",
+       },
+@@ -251,14 +251,14 @@
+     },
+     "packages/version-unification": {
+       "name": "@specforge/version-unification",
+-      "version": "1.0.22",
++      "version": "1.0.23",
+       "devDependencies": {
+         "vitest": "^4.1.5",
+       },
+     },
+     "packages/workflow-runtime": {
+       "name": "@specforge/workflow-runtime",
+-      "version": "1.0.22",
++      "version": "1.0.23",
+       "dependencies": {
+         "@specforge/types": "workspace:*",
+         "fast-check": "^3.0.0",
+diff --git a/docs/product-specification/specforge-product-specification.md b/docs/product-specification/specforge-product-specification.md
+index b479805b277fc520df9206423b99a953b74e52a8..89bdc745b168c183965f43aa21693b2cd3eff7cf 100644
+--- a/docs/product-specification/specforge-product-specification.md
++++ b/docs/product-specification/specforge-product-specification.md
+@@ -4,7 +4,7 @@
+ >
+ > Specification ID: SPS-1.0
+ >
+-> Product release version: 1.0.22
++> Product release version: 1.0.23
+ >
+ > Product version epoch: 1
+ >
+diff --git a/docs/project-status.md b/docs/project-status.md
+index d632e1f5b5d3cc1e19e455a6e2694d12add48cb7..668cbc82fd1122677e18a3cdd52c1592078aeb42 100644
+--- a/docs/project-status.md
++++ b/docs/project-status.md
+@@ -21,12 +21,12 @@ EXECUTION_ACTOR=CODEX
+ EXECUTION_AUDITOR=CODEX
+ EXECUTION_RUN_ID=CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01
+ EXECUTION_EVIDENCE_ROOT=D:/code/SpecForge/docs/archive/2026-11-07-verification-production
+-LAST_EXECUTION_CHECKPOINT=Source HEAD a918b49 remains, verified SPS8 module/guidance changes uncommitted. Raw27-file baseline0244 preserved; three boundary failures0247 reproduced. Independent persistence retired from production source/API/build, current real Daemon-owner integration17 passed0250; boundary3 passed0249, complete types0251, all12-package build0255, retained orchestration/boundary18 passed0258, root49 files739 tests0259 passed. Actual Node built-package loading0260 confirms24 obsolete outputs absent and4 deep imports blocked. Installed global1.0.22/117files remains exact0208/a918 binary. User external minimum-context GLM consent0242 received; real original fresh run0243 kept five invalid run-argument rejections and one corrected real passed receipt. Controlled stop0253 preserved facts. New empty session0257 is active, exact per-action guidance supplied;0262 observes remaining4 Task001 implementation runs exit0/cleanup_proved, making5 Task001 successes including prior receipt. No final business Gate/FV/Close or overall SPS acceptance.
++LAST_EXECUTION_CHECKPOINT=SPS8 module/action-guidance source committed6be12495;66 raw/Git bindings verified0268,27 old raw files preserved. Root49 files739 tests0259,complete12-package build0255,actual Node package closure0260 passed. Next patch source1.0.23 mechanically prepared0270 across15 identity files, no dependency changes;12-package rebuild0272 and6 existing version-contract tests0273 passed, metadata/scope/status/ledger remain uncommitted. Scope omission of2 module-root historical pointer docs recorded1994, old contents match parent Git, exact scope corrected0275 and80-path glob audit0276 passed. Real GLM original run0257 remains active; approved Tasks22 declarations linked independently0278/287:22 implementation successes and latest19 formal successes. Installed read-only owner query0279 directly confirmed verification_running,rebuilt_from_events. Five original code files and Git heads unchanged; global117 installation remains1.0.22 exact0208/a918. Carrier startup-exit/Shell-exit and pre-start source-freeze gaps classified1995/1996, corrected prospective controls tested0282/283/286; run02 only has qualified late driver capture. No full Gate/FV/Close or overall SPS acceptance.
+ NEXT_EXECUTION_STOP=COMPLETE_APPROVED_PRODUCT_VERIFICATION_CHAIN_SP_I01_SP_D01_AND_ORIGINAL_WI_SPS_ACCEPTANCE_OR_EVIDENCED_HARD_STOP
+ LAST_COMPLETED_CHECKPOINT=User decision UD-WI-0001-1793717210435, nine-artifact PSV-0002 merge and post_merge_gate passed. D19 owner extension/release/deployment and original implementation checkpoint completed. Task001-004 code/static artifacts exist; original verification command exits and Task005 integration/e2e were not executed. Code permission revoked, business main unchanged at8a692e88; no implementation_done/review_done/verification_done/Formal Version/Close or overall SPS acceptance claimed. Original data-loss cause remains INSUFFICIENT_EVIDENCE.
+-CURRENT_BLOCKER=ORIGINAL_REAL_PROVIDER_TASK002_TO005_IMPLEMENTATION_AND_FORMAL_GATES_PENDING;SPS8_AND_ACTION_GUIDANCE_SOURCE_COMMIT_AND_NATIVE_DEPLOYMENT_PENDING;PRODUCT_GIT_DELIVERY_PENDING
+-NEXT_LEGAL_ACTION=Monitor and independently audit active original run0257 from same WI legal breakpoint; keep Task001 five successes and all prior failures, revoked code permission and fresh-session privacy boundary. Do not replace installed native assets while original receipts are active. Prepare source/Git/blob/raw-byte review of tested module and action-guidance changes, commit with exact provenance; after original legal completion or evidenced stop rebuild/precheck/install and independently test current native package, with any receipt freshness invalidation handled by actual owners. Complete full SPS acceptance matrix and final direct-main Git delivery; business default-main merge still needs separate concrete plan confirmation.
+-ALLOWED_SCOPE=AGENTS.md;README.md;.gitattributes;.gitignore;package.json;bun.lock;docs/project-status.md;docs/product-specification/**;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/archive/**;docs/adr/**;docs/cli/**;docs/conventions/**;docs/user/**;docs/plugins/**;docs/tools/**;docs/engineering-lessons/**;docs/rule/**;scripts/**;setup/**;packages/**/package.json;packages/service-management/src/**;packages/configuration/src/**;packages/opencode-adapter/src/**;packages/permission-engine/src/**;packages/daemon-core/src/**;packages/cli/src/**;packages/types/src/**;packages/observability/src/**;packages/observability/examples/**;packages/workflow-runtime/src/**;packages/workflow-runtime/tsconfig.json;packages/workflow-runtime/examples/**;packages/workflow-runtime/vitest.config.ts;packages/**/README.md;packages/**/DEVELOPMENT.md;packages/**/docs/**;packages/**/src/**/*.md;packages/**/tests/**;tests/**;docs/design/windows-lpac-node-readonly-contract.md
++CURRENT_BLOCKER=ORIGINAL_REMAINING_FORMAL_COMMANDS_REPORT_EVIDENCE_AND_FULL_GATES_PENDING;PATCH1_0_23_SOURCE_COMMIT_NATIVE_BUILD_INSTALL_ACCEPTANCE_PENDING;SPS_FINAL_MATRIX_AND_PRODUCT_GIT_DELIVERY_PENDING
++NEXT_LEGAL_ACTION=Read live original authoritative state and monitor0257; reuse all real implementation/formal successes and keep five pre-start schema refusals. Finish remaining formal receipts and actual Report/Evidence/Gates/FV/Close through installed owners. Driver observation window ends about06:32Z; if still active, stop only at evidenced legal boundary, preserve children/attempts and resume a new minimum-context session from actual state, not hardcoded implementation_running. Do not replace current native assets while original receipts are active. Complete exact-scope raw/blob review and commit1.0.23 metadata/status/ledger, then after original legal completion/stop rebuild/precheck/install/test current native package. Complete SPS matrix and direct-main product Git delivery. Business-main merge requires separate concrete can_merge=true plan and user confirmation.
++ALLOWED_SCOPE=AGENTS.md;README.md;.gitattributes;.gitignore;package.json;bun.lock;docs/project-status.md;docs/product-specification/**;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/archive/**;docs/adr/**;docs/cli/**;docs/conventions/**;docs/user/**;docs/plugins/**;docs/tools/**;docs/engineering-lessons/**;docs/rule/**;scripts/**;setup/**;packages/**/package.json;packages/service-management/src/**;packages/configuration/src/**;packages/opencode-adapter/src/**;packages/permission-engine/src/**;packages/daemon-core/src/**;packages/cli/src/**;packages/types/src/**;packages/observability/src/**;packages/observability/examples/**;packages/workflow-runtime/src/**;packages/workflow-runtime/tsconfig.json;packages/workflow-runtime/examples/**;packages/workflow-runtime/vitest.config.ts;packages/**/README.md;packages/**/DEVELOPMENT.md;packages/**/docs/**;packages/**/src/**/*.md;packages/**/tests/**;tests/**;docs/design/windows-lpac-node-readonly-contract.md;packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md;packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md
+ PROHIBITED=Deleting ADR ERR audit or report evidence;creating another active handoff current-status or recovery-status file;modifying D:\code\t3 outside a separately authorized controlled recovery phase;reading or modifying D:\code\t2 during SpecForge repair;creating a SpecForge Work Item for SpecForge product self-development;using archive evidence as a current product contract
+ REQUIRED_RULES=docs/rule/specforge-active-development-rules.md;docs/product-specification/authority-registry.md;docs/product-specification/specforge-product-specification.md;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/rule/specforge-execution-mode-and-evidence-protocol.md
+ REQUIRED_VALIDATION=D22 formal authority and frozen SP-P01..SP-L03 matrix;actual single-process candidate identity/token/SID/LPAC/child policy1/Job1 before resume;CJS/ESM/TS and inline positives;file/alias/registry/network/COM/native/override/console/parent-handle denials;resource/cancel/launcher/Daemon crash restart recovery;immutable raw receipts and independent cleanup. SP-I01/SP-D01 and original WI remain later independent gates.
+diff --git a/docs/rule/specforge-development-error-ledger-and-experience.md b/docs/rule/specforge-development-error-ledger-and-experience.md
+index 2fb2c0b0e1048e2deb86a32ec2b1ed3bcb982267..147f3baaedd1dab743235680a486ac95c8584151 100644
+--- a/docs/rule/specforge-development-error-ledger-and-experience.md
++++ b/docs/rule/specforge-development-error-ledger-and-experience.md
+@@ -32696,3 +32696,19 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制
+ - 第二个真实Verifier仅传action/work_item_id/attempt_record_id后，同一安装版成功返回ec2d84148c29a89b8053897a378f1c7bbbfce17b4003d29e0050f47c1922ab27，exit0、cleanup/output完整。首批错误归于Tool Schema/Agent调用指引的可用性，不能误报LPAC或Runtime执行缺陷。外部审计者0253本机abort仅停止本轮父子会话以防无意义重派，原首条成功和五次拒绝都保留，WI仍implementation_running。
+ - 最小修复在真实工具description/字段describe、Verifier Agent、验证Skill及从属合同明确严格动作字段集；Runtime不放宽。0254新增unit证明多余plan_id在native/start reservation前拒绝、同一Attempt仍可受控取消，9项通过。第二轮0257使用新空会话、精确JSON及既有receipt事实继续；不加载旧消息，未为Task001 index0重复成功步骤。0262只读真实child投影确认其余4条均exit0/cleanup_proved，Task001五条implementation执行结果齐全；共同Gate消费和完整WI尚未通过。
+ - 提供方在首轮出现真实账户速率限制后恢复，保留progress原文，不扩并发、不切提供方或补造成功。用户级工具/Agent/Skill改动尚待后续正式安装；本轮纠正提示不冒充该部署已完成。EXP-004/007/008/016/026/031/298。
++
++### ERR-1994：模块消费者修复方案与允许范围投影漏列两个根目录说明文件
++
++- 0267源码提交包含EVENT_REPLAY_COMPLETION_SUMMARY.md、STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md的历史指针修订；方案包含旧文档消费者，但0241更新ALLOWED_SCOPE时只扩src/examples等，未加入这两个module-root文件。0264准备器仅按workflow-runtime前缀校验，不能替代唯一状态的精确glob，遗漏直到0274复核才被发现。不得回写旧证据或宣称提交前该投影完整。
++- 0274对66个已审查路径和15个版本路径的80个去重路径逐一使用真实ALLOWED_SCOPE的glob，恰发现两个遗漏。各旧raw按原路径Git clean归一化后与父提交对象完全相同，且27份原字节已封存；不存在覆盖用户独立内容的证据，原业务/部署未受此修订影响。已停止新产品修改，先在既有SPS8用户修复授权及明确文档消费者范围内补正唯一status的两个精确路径；不扩大产品功能或业务权限。
++- 后续source准备/提交检查必须直接消费唯一status的literal/glob集合，覆盖tracked删除、新增、归档与版本文件，不能用更宽的模块前缀冒充范围合同。scope审计保留before/after独立记录，补正不抹去先前越过范围投影的错误。EXP-004/006/007/017/031/193。
++
++### ERR-1995：证据载体把进程未启动映射成了目标退出码1，且外层PowerShell未显式传递非1退出
++
++- 0245目标bun ENOENT未产生子进程，原载体把null status同时映为carrier/inner1。旧回执不覆盖；carrier-exit-facts-verification.json明确补充真实inner不可用，不计该行产品覆盖。新载体记录process_started、child_pid、spawn_error及numeric availability；启动失败或信号无数值退出时inner=null、载体失败1，禁止补造应用退出。
++- 0280实际child7与0281不存在程序(null)是刻意证据探针，不是产品失败；0282独立校验通过。0280外层PowerShell默认退出1与内部Node/child7分属不同域。0283显式exit $LASTEXITCODE后exec_command真实返回7，原始返回对象保存于carrier-powershell-exit-observation.json。后续PowerShell调用显式传递LASTEXITCODE。EXP-002/007/193。
++
++### ERR-1996：新原WI联测入口未沿用启动前源码冻结
++
++- 私有Kernel联测载体已有逐次source freeze，但新resume-original-verification入口01/02漏掉该步骤；01之后文件有修改，不能用后来同名文件声称旧入口可精确重建。02当前源在0284后续修改前作了明确AFTER_INVOCATION_BEGIN的late capture，不冒充启动前快照。实际Kernel tool parts、native owner回执与后续共同消费者是独立证据，不把载体自述当鉴真。
++- 从0284起，通用carrier在目标启动前冻结自身和存在的脚本参数原字节，command记录SHA，立即receipt seal包括这些文件；0286独立核验hash及封存成员通过。未来原WI入口也在Kernel/模型启动前独立冻结driver及prompt。旧缺口如实保留，不回填或伪造时间。EXP-007/032/193/298。
+diff --git a/package.json b/package.json
+index cb8b67b1e367c9b8dec8792ce69c4c0c1d7075d2..49cffd87ad0db7ac23e2e9147939943bbeb99d5c 100644
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "specforge",
+-  "version": "1.0.22",
++  "version": "1.0.23",
+   "private": true,
+   "workspaces": [
+     "packages/*"
+diff --git a/packages/cli/package.json b/packages/cli/package.json
+index 5f6719c46b3334fce63a713a412e7403bf4cd16c..ff12a9941fcbd99a5a864d6e4c2778ef7b35c73f 100644
+--- a/packages/cli/package.json
++++ b/packages/cli/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/cli",
+-  "version": "1.0.22",
++  "version": "1.0.23",
+   "description": "Command Line Interface for SpecForge",
+   "main": "dist/cli.js",
+   "types": "dist/cli.d.ts",
+diff --git a/packages/configuration/package.json b/packages/configuration/package.json
+index addc4cd9fc498b80da5e3a6a6652f4d10e2a25ee..e51dd1646070440f1c399e48ab95f9289a363d50 100644
+--- a/packages/configuration/package.json
++++ b/packages/configuration/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/configuration",
+-  "version": "1.0.22",
++  "version": "1.0.23",
+   "description": "Configuration subsystem for SpecForge",
+   "main": "dist/index.js",
+   "types": "dist/index.d.ts",
+diff --git a/packages/daemon-core/package.json b/packages/daemon-core/package.json
+index b3feb7094d8426fe9ab9f6fd0afa9ab521aeeb78..f148eec50e0fdfdbcc596a12070be7946141a690 100644
+--- a/packages/daemon-core/package.json
++++ b/packages/daemon-core/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/daemon-core",
+-  "version": "1.0.22",
++  "version": "1.0.23",
+   "description": "Daemon Core module for SpecForge - Central process and Single Source of Truth",
+   "main": "dist/index.js",
+   "types": "dist/index.d.ts",
+diff --git a/packages/host-profile/package.json b/packages/host-profile/package.json
+index 0d0509d4cac0fec0720aa241966359590566b33a..7c16bb7c57935cb74fb7deeb5d79c50b69ca55b5 100644
+--- a/packages/host-profile/package.json
++++ b/packages/host-profile/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/host-profile",
+-  "version": "1.0.22",
++  "version": "1.0.23",
+   "private": true,
+   "type": "module",
+   "main": "dist/index.js",
+diff --git a/packages/observability/package.json b/packages/observability/package.json
+index b5f9a4c417774817647e3ec3dffda8a727bbd2d6..fa211a0bf4ff8215352efc32d982a060b9ab2c9f 100644
+--- a/packages/observability/package.json
++++ b/packages/observability/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/observability",
+-  "version": "1.0.22",
++  "version": "1.0.23",
+   "description": "SpecForge current-release observability types and policy contract",
+   "type": "module",
+   "main": "dist/src/index.js",
+diff --git a/packages/opencode-adapter/package.json b/packages/opencode-adapter/package.json
+index 17d1f47cd5cbbd279926a147fa126447ae82b7de..72a4c035e4a5273cee0bcad7ecce3aba5d922682 100644
+--- a/packages/opencode-adapter/package.json
++++ b/packages/opencode-adapter/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/opencode-adapter",
+-  "version": "1.0.22",
++  "version": "1.0.23",
+   "description": "OpenCode Adapter module for SpecForge - Implements LLMKernelAdapter interface for OpenCode",
+   "type": "commonjs",
+   "main": "dist/index.js",
+diff --git a/packages/permission-engine/package.json b/packages/permission-engine/package.json
+index 053b7a0acfc85417b79fcc132b1c7b2c55ab9a8a..18d7c278ebfdf388b80385fe5303d7e42bdcf4aa 100644
+--- a/packages/permission-engine/package.json
++++ b/packages/permission-engine/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/permission-engine",
+-  "version": "1.0.22",
++  "version": "1.0.23",
+   "description": "Permission Engine module for SpecForge - Fine-grained access control and authorization",
+   "type": "module",
+   "main": "dist/src/index.js",
+diff --git a/packages/scope-gate/package.json b/packages/scope-gate/package.json
+index 7ba4a5b0ccfc70f0f96ae4502ed23ce8270d9e48..b87f054340541ef6d14ca5918e15d7030a5e6280 100644
+--- a/packages/scope-gate/package.json
++++ b/packages/scope-gate/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/scope-gate",
+-  "version": "1.0.22",
++  "version": "1.0.23",
+   "description": "Current-release evidence and artifact-set validator for SpecForge",
+   "type": "module",
+   "main": "dist/src/index.js",
+diff --git a/packages/service-management/package.json b/packages/service-management/package.json
+index 6d98a77f4c572ffec9a5b2149e3661b7d363fec7..4e6a83a5447513ef883d5bf827cd8b13cbe83a83 100644
+--- a/packages/service-management/package.json
++++ b/packages/service-management/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/service-management",
+-  "version": "1.0.22",
++  "version": "1.0.23",
+   "description": "Service Management subsystem for SpecForge - OS service lifecycle management",
+   "main": "dist/index.js",
+   "types": "dist/index.d.ts",
+diff --git a/packages/types/package.json b/packages/types/package.json
+index 0242bc70db93317455c3305f8886de9b1af2b968..1b871be974e654b624089c22eb70a33b6ea6c47e 100644
+--- a/packages/types/package.json
++++ b/packages/types/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/types",
+-  "version": "1.0.22",
++  "version": "1.0.23",
+   "description": "Shared TypeScript types for SpecForge modules",
+   "type": "module",
+   "main": "dist/index.js",
+diff --git a/packages/version-unification/package.json b/packages/version-unification/package.json
+index 7a43c27f20c06b169a40fb25046977143ab198f3..069baa7f605a2f10829c231437b8afa100be651c 100644
+--- a/packages/version-unification/package.json
++++ b/packages/version-unification/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/version-unification",
+-  "version": "1.0.22",
++  "version": "1.0.23",
+   "private": true,
+   "type": "module",
+   "main": "dist/index.js",
+diff --git a/packages/workflow-runtime/package.json b/packages/workflow-runtime/package.json
+index 4814fda98fcf2d3dd8689df48d47ee4736287345..2230ea49e3908af113892dedba7de275af4cf96b 100644
+--- a/packages/workflow-runtime/package.json
++++ b/packages/workflow-runtime/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@specforge/workflow-runtime",
+-  "version": "1.0.22",
++  "version": "1.0.23",
+   "schema_version": "1.0",
+   "description": "Workflow Runtime module for SpecForge - Implements compositeGate semantics (Property 29)",
+   "type": "module",

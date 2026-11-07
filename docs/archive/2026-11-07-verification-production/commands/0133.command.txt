@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/public-kernel-chain.cjs",
+    "07",
+    "abort"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "retest-real-kernel-abort-and-active-stop-with-invocation-lease",
+  "expected_writes": "TRUTH_SOURCE_WRITES self-owned immutable lease/receipt owner only; RUNTIME_OBSERVER_WRITES actual Kernel abort/LPAC cancellation and active graceful Daemon stop; EXTERNAL_EVIDENCE_WRITES source-frozen trial; original/user install untouched",
+  "started_utc": "2026-11-07T03:28:00.554Z"
+}

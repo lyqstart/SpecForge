@@ -1,0 +1,21 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/prepare-routing-source.cjs",
+    "verify"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Verify staged artifact routing patch and raw-to-index canonical identity",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES staged review and full patch only",
+  "started_utc": "2026-11-07T07:51:11.385Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\prepare-routing-source.cjs",
+      "sha256": "6afcec814235fe19e27d66de6a6950edf33ce4f02964598c53c68bf5145e67ef",
+      "size": 3878,
+      "extension": ".cjs"
+    }
+  ]
+}

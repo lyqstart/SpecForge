@@ -1,0 +1,21 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/prepare-consumer-source.cjs",
+    "prepare"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Freeze full15-source consumer change set and12 baseline archives with exact scope and parent Git bytes",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES review snapshots/patch/hash/pathspec and sealed receipt only",
+  "started_utc": "2026-11-07T07:26:54.463Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\prepare-consumer-source.cjs",
+      "sha256": "bdc9b3355f45b03628cf3a164387ba17e680d08ca360c26022d262848e5f92dc",
+      "size": 4475,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "success": true,
+  "work_item_id": "WI-0001",
+  "bootstrap_mode": "verified_detached_commit",
+  "bootstrap_plan_sha256": "f7c1fe5dfe60741054b396cc7fb906aa990d05c2b902aa644dd25c876cf649ca",
+  "branch_name": "codex/greet-library-wi-0001",
+  "base_branch": "main",
+  "base_commit": "8a692e88c0823984647622294f5199c18bb0c587",
+  "git_context_path": ".specforge/work-items/WI-0001/git_context.json",
+  "index_unchanged": true,
+  "tracked_bytes_unchanged": true,
+  "new_commit_created": false,
+  "old_branch_restoration_claimed": false
+}

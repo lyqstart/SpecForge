@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/run-public-fixture-builder.cjs",
+    "09",
+    "formal"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "initialize-real-configuration-and-formal-fixture09",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned fixture09 real ProjectInit config/state owner seeded baseline; EXTERNAL_EVIDENCE_WRITES results; original/install untouched",
+  "started_utc": "2026-11-07T03:43:42.430Z"
+}

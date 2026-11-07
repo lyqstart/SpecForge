@@ -1,0 +1,11 @@
+
+ RUN  v4.1.5 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/verification-evidence-producer.test.ts (13 tests | 1 failed) 234ms
+     × does not invent an empty entries array for an explicit incomplete Evidence Manifest 24ms
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 16 passed (17)
+   Start at  15:45:40
+   Duration  2.82s (transform 1.15s, setup 0ms, import 1.87s, tests 302ms, environment 0ms)
+

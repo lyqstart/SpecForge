@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/verify-fresh-user-runtime.cjs",
+    "03"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "complete-fresh-user-Daemon-ready-origin-and-policy-no-model",
+  "expected_writes": "TRUTH_SOURCE_WRITES user Daemon owner lifecycle plus owned fixture16 reader caches only; REPOSITORY_TRACKED_WRITES NONE; RUNTIME_OBSERVER_WRITES documented detach/readiness CLI local Kernel and deployed prompt metadata; EXTERNAL_EVIDENCE_WRITES immutable attempt03; no model messages or original context",
+  "started_utc": "2026-11-07T05:14:16.488Z"
+}

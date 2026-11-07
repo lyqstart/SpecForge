@@ -1,0 +1,589 @@
+{
+  "trial": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\ec4e012955964ac080d38edc63c1db94\\trials\\e1a5f9a0-3e07-4621-bbf7-7b8592cc27d0",
+  "result_sha256": "078b5f8a9800c09e81c810d6a19d59c8f401e336695328425f2f7cae4fa25153",
+  "utc": "2026-11-07T03:52:51.902Z",
+  "records": [
+    {
+      "name": "remaining-authentic-manifest",
+      "session": "ses_e4bdea708ffete538tBL6odzuF",
+      "message": "msg_1b4215c47001xkR4B0cYH9wCQs",
+      "call": "call_741de6cb4b5143e3a20baed62a4026f8",
+      "agent": "sf-verifier",
+      "tool": "sf_artifact_write",
+      "value": {
+        "success": true,
+        "path": ".specforge/work-items/WI-9901/evidence/evidence_manifest.json",
+        "size": 6012,
+        "file_type": "evidence_manifest",
+        "controlled_artifact": true,
+        "normalized": true
+      }
+    },
+    {
+      "name": "remaining-authentic-report",
+      "session": "ses_e4bde7592ffe2AalBo1OxTVtDy",
+      "message": "msg_1b4218ab8001Hg1Se3zi3vUMJD",
+      "call": "call_292e27675fb245cbb1f861e9a599b110",
+      "agent": "sf-verifier",
+      "tool": "sf_artifact_write",
+      "value": {
+        "success": true,
+        "path": ".specforge/work-items/WI-9901/verification_report.md",
+        "size": 7936,
+        "file_type": "verification_report",
+        "controlled_artifact": true,
+        "normalized": false
+      }
+    },
+    {
+      "name": "authentic-common-consumers-verification",
+      "session": "ses_e4bde4f60ffen0Sw5zxMJUYN7R",
+      "message": "msg_1b421b0f1001ENLsV4rDh7s8j2",
+      "call": "call_00cdea13205c4862be721e53c7bb853f",
+      "agent": "sf-orchestrator",
+      "tool": "sf_gate_run",
+      "value": {
+        "success": true,
+        "work_item_id": "WI-9901",
+        "workflow_path": "code_only_fast_path",
+        "workflow_type": "feature_spec",
+        "workflow_type_source": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\ec4e012955964ac080d38edc63c1db94\\project\\.specforge\\work-items\\WI-9901\\work_item.json",
+        "candidate_phase": "full",
+        "candidate_phase_source": "artifact_inference",
+        "workflow_path_source": ".specforge/work-items/WI-9901/work_item.json",
+        "authoritative_state_before_gate": "verification_running",
+        "requested_gate_ids": [],
+        "requested_gate_type": "verification",
+        "normalized_gate_ids": [
+          "verification_gate",
+          "formal_version_gate"
+        ],
+        "aliases_used": [
+          "verification"
+        ],
+        "summary_status": "failed",
+        "summary_path": ".specforge/work-items/WI-9901/gate_summary.md",
+        "gate_attempt_id": "attempt-0002",
+        "gate_attempt_path": ".specforge/work-items/WI-9901/gate_attempts/attempt-0002",
+        "gate_count": 2,
+        "passed": 0,
+        "failed": 2,
+        "state_auto_advance": {
+          "attempted": false,
+          "reason": "verification_owned_gate_failed",
+          "failed_gate_ids": [
+            "verification_gate",
+            "formal_version_gate"
+          ],
+          "missing_gate_ids": [],
+          "summary_status": "failed"
+        },
+        "reports": [
+          {
+            "gate_id": "verification_gate",
+            "status": "failed",
+            "blocking_issues": 3,
+            "warnings": 0
+          },
+          {
+            "gate_id": "formal_version_gate",
+            "status": "failed",
+            "blocking_issues": 6,
+            "warnings": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "authentic-common-consumers-close",
+      "session": "ses_e4bde0ba5ffe33g6xy6a5Jjiv3",
+      "message": "msg_1b421f495001X8oLBUI6XCwi62",
+      "call": "call_c4f71807617044079d787bd789ecf50c",
+      "agent": "sf-orchestrator",
+      "tool": "sf_gate_run",
+      "value": {
+        "success": true,
+        "work_item_id": "WI-9901",
+        "workflow_path": "code_only_fast_path",
+        "workflow_type": "feature_spec",
+        "workflow_type_source": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\ec4e012955964ac080d38edc63c1db94\\project\\.specforge\\work-items\\WI-9901\\work_item.json",
+        "candidate_phase": "full",
+        "candidate_phase_source": "artifact_inference",
+        "workflow_path_source": ".specforge/work-items/WI-9901/work_item.json",
+        "authoritative_state_before_gate": "verification_running",
+        "requested_gate_ids": [],
+        "requested_gate_type": "close",
+        "normalized_gate_ids": [
+          "close_gate"
+        ],
+        "aliases_used": [
+          "close"
+        ],
+        "summary_status": "failed",
+        "summary_path": ".specforge/work-items/WI-9901/gate_summary.md",
+        "gate_attempt_id": "attempt-0003",
+        "gate_attempt_path": ".specforge/work-items/WI-9901/gate_attempts/attempt-0003",
+        "gate_count": 1,
+        "passed": 0,
+        "failed": 1,
+        "state_auto_advance": {
+          "attempted": false,
+          "reason": "post_candidate_gates_present",
+          "details": {
+            "post_candidate_gates": [
+              "close_gate"
+            ]
+          }
+        },
+        "reports": [
+          {
+            "gate_id": "close_gate",
+            "status": "failed",
+            "blocking_issues": 10,
+            "warnings": 0
+          }
+        ]
+      }
+    },
+    {
+      "gate": "verification_gate",
+      "check": "verification_evidence_source_and_time_integrity",
+      "passed": true,
+      "gate_overall_status": "failed",
+      "scope": "Actual common-consumer projection only; seeded upstream audit/closure remain incomplete"
+    },
+    {
+      "gate": "formal_version_gate",
+      "check": "formal_execution_evidence_integrity",
+      "passed": true,
+      "gate_overall_status": "failed",
+      "scope": "Actual common-consumer projection only; seeded upstream audit/closure remain incomplete"
+    },
+    {
+      "gate": "close_gate",
+      "check": "close_verification_evidence_source_and_time_integrity",
+      "passed": true,
+      "gate_overall_status": "failed",
+      "scope": "Actual common-consumer projection only; seeded upstream audit/closure remain incomplete"
+    },
+    {
+      "name": "tampered-common-consumers-verification",
+      "session": "ses_e4bdde53dffetjuepaP5wVDB0s",
+      "message": "msg_1b4221b12001cHtU5H7ylu86wF",
+      "call": "call_91b73114ab6d46f5a54def61a7120341",
+      "agent": "sf-orchestrator",
+      "tool": "sf_gate_run",
+      "value": {
+        "success": true,
+        "work_item_id": "WI-9901",
+        "workflow_path": "code_only_fast_path",
+        "workflow_type": "feature_spec",
+        "workflow_type_source": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\ec4e012955964ac080d38edc63c1db94\\project\\.specforge\\work-items\\WI-9901\\work_item.json",
+        "candidate_phase": "full",
+        "candidate_phase_source": "artifact_inference",
+        "workflow_path_source": ".specforge/work-items/WI-9901/work_item.json",
+        "authoritative_state_before_gate": "verification_running",
+        "requested_gate_ids": [],
+        "requested_gate_type": "verification",
+        "normalized_gate_ids": [
+          "verification_gate",
+          "formal_version_gate"
+        ],
+        "aliases_used": [
+          "verification"
+        ],
+        "summary_status": "failed",
+        "summary_path": ".specforge/work-items/WI-9901/gate_summary.md",
+        "gate_attempt_id": "attempt-0004",
+        "gate_attempt_path": ".specforge/work-items/WI-9901/gate_attempts/attempt-0004",
+        "gate_count": 2,
+        "passed": 0,
+        "failed": 2,
+        "state_auto_advance": {
+          "attempted": false,
+          "reason": "verification_owned_gate_failed",
+          "failed_gate_ids": [
+            "verification_gate",
+            "formal_version_gate"
+          ],
+          "missing_gate_ids": [],
+          "summary_status": "failed"
+        },
+        "reports": [
+          {
+            "gate_id": "verification_gate",
+            "status": "failed",
+            "blocking_issues": 4,
+            "warnings": 0
+          },
+          {
+            "gate_id": "formal_version_gate",
+            "status": "failed",
+            "blocking_issues": 7,
+            "warnings": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "tampered-common-consumers-close",
+      "session": "ses_e4bddad11ffe3jO0VhnfqkZfX4",
+      "message": "msg_1b422532c001BjYw0KBDXEEuud",
+      "call": "call_0192d65b64d340fcac622f4f7e00142f",
+      "agent": "sf-orchestrator",
+      "tool": "sf_gate_run",
+      "value": {
+        "success": true,
+        "work_item_id": "WI-9901",
+        "workflow_path": "code_only_fast_path",
+        "workflow_type": "feature_spec",
+        "workflow_type_source": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\ec4e012955964ac080d38edc63c1db94\\project\\.specforge\\work-items\\WI-9901\\work_item.json",
+        "candidate_phase": "full",
+        "candidate_phase_source": "artifact_inference",
+        "workflow_path_source": ".specforge/work-items/WI-9901/work_item.json",
+        "authoritative_state_before_gate": "verification_running",
+        "requested_gate_ids": [],
+        "requested_gate_type": "close",
+        "normalized_gate_ids": [
+          "close_gate"
+        ],
+        "aliases_used": [
+          "close"
+        ],
+        "summary_status": "failed",
+        "summary_path": ".specforge/work-items/WI-9901/gate_summary.md",
+        "gate_attempt_id": "attempt-0005",
+        "gate_attempt_path": ".specforge/work-items/WI-9901/gate_attempts/attempt-0005",
+        "gate_count": 1,
+        "passed": 0,
+        "failed": 1,
+        "state_auto_advance": {
+          "attempted": false,
+          "reason": "post_candidate_gates_present",
+          "details": {
+            "post_candidate_gates": [
+              "close_gate"
+            ]
+          }
+        },
+        "reports": [
+          {
+            "gate_id": "close_gate",
+            "status": "failed",
+            "blocking_issues": 11,
+            "warnings": 0
+          }
+        ]
+      }
+    },
+    {
+      "gate": "verification_gate",
+      "check": "verification_evidence_source_and_time_integrity",
+      "passed": false,
+      "gate_overall_status": "failed",
+      "scope": "Actual common-consumer projection only; seeded upstream audit/closure remain incomplete"
+    },
+    {
+      "gate": "formal_version_gate",
+      "check": "formal_execution_evidence_integrity",
+      "passed": false,
+      "gate_overall_status": "failed",
+      "scope": "Actual common-consumer projection only; seeded upstream audit/closure remain incomplete"
+    },
+    {
+      "gate": "close_gate",
+      "check": "close_verification_evidence_source_and_time_integrity",
+      "passed": false,
+      "gate_overall_status": "failed",
+      "scope": "Actual common-consumer projection only; seeded upstream audit/closure remain incomplete"
+    },
+    {
+      "name": "restored-common-consumers-verification",
+      "session": "ses_e4bdd88a7ffeYHhqkis33fo7or",
+      "message": "msg_1b42277ab0015sGHJ6i1jX62G2",
+      "call": "call_beca0b1413674e6fa0a53a9f029c0b7e",
+      "agent": "sf-orchestrator",
+      "tool": "sf_gate_run",
+      "value": {
+        "success": true,
+        "work_item_id": "WI-9901",
+        "workflow_path": "code_only_fast_path",
+        "workflow_type": "feature_spec",
+        "workflow_type_source": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\ec4e012955964ac080d38edc63c1db94\\project\\.specforge\\work-items\\WI-9901\\work_item.json",
+        "candidate_phase": "full",
+        "candidate_phase_source": "artifact_inference",
+        "workflow_path_source": ".specforge/work-items/WI-9901/work_item.json",
+        "authoritative_state_before_gate": "verification_running",
+        "requested_gate_ids": [],
+        "requested_gate_type": "verification",
+        "normalized_gate_ids": [
+          "verification_gate",
+          "formal_version_gate"
+        ],
+        "aliases_used": [
+          "verification"
+        ],
+        "summary_status": "failed",
+        "summary_path": ".specforge/work-items/WI-9901/gate_summary.md",
+        "gate_attempt_id": "attempt-0006",
+        "gate_attempt_path": ".specforge/work-items/WI-9901/gate_attempts/attempt-0006",
+        "gate_count": 2,
+        "passed": 0,
+        "failed": 2,
+        "state_auto_advance": {
+          "attempted": false,
+          "reason": "verification_owned_gate_failed",
+          "failed_gate_ids": [
+            "verification_gate",
+            "formal_version_gate"
+          ],
+          "missing_gate_ids": [],
+          "summary_status": "failed"
+        },
+        "reports": [
+          {
+            "gate_id": "verification_gate",
+            "status": "failed",
+            "blocking_issues": 3,
+            "warnings": 0
+          },
+          {
+            "gate_id": "formal_version_gate",
+            "status": "failed",
+            "blocking_issues": 6,
+            "warnings": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "restored-common-consumers-close",
+      "session": "ses_e4bdd40bbffeW0K42lr7KSWlM4",
+      "message": "msg_1b422bf8d001zki54R2YkSF5T0",
+      "call": "call_3270f7b0498641178ae733b7c7557333",
+      "agent": "sf-orchestrator",
+      "tool": "sf_gate_run",
+      "value": {
+        "success": true,
+        "work_item_id": "WI-9901",
+        "workflow_path": "code_only_fast_path",
+        "workflow_type": "feature_spec",
+        "workflow_type_source": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\ec4e012955964ac080d38edc63c1db94\\project\\.specforge\\work-items\\WI-9901\\work_item.json",
+        "candidate_phase": "full",
+        "candidate_phase_source": "artifact_inference",
+        "workflow_path_source": ".specforge/work-items/WI-9901/work_item.json",
+        "authoritative_state_before_gate": "verification_running",
+        "requested_gate_ids": [],
+        "requested_gate_type": "close",
+        "normalized_gate_ids": [
+          "close_gate"
+        ],
+        "aliases_used": [
+          "close"
+        ],
+        "summary_status": "failed",
+        "summary_path": ".specforge/work-items/WI-9901/gate_summary.md",
+        "gate_attempt_id": "attempt-0007",
+        "gate_attempt_path": ".specforge/work-items/WI-9901/gate_attempts/attempt-0007",
+        "gate_count": 1,
+        "passed": 0,
+        "failed": 1,
+        "state_auto_advance": {
+          "attempted": false,
+          "reason": "post_candidate_gates_present",
+          "details": {
+            "post_candidate_gates": [
+              "close_gate"
+            ]
+          }
+        },
+        "reports": [
+          {
+            "gate_id": "close_gate",
+            "status": "failed",
+            "blocking_issues": 10,
+            "warnings": 0
+          }
+        ]
+      }
+    },
+    {
+      "gate": "verification_gate",
+      "check": "verification_evidence_source_and_time_integrity",
+      "passed": true,
+      "gate_overall_status": "failed",
+      "scope": "Actual common-consumer projection only; seeded upstream audit/closure remain incomplete"
+    },
+    {
+      "gate": "formal_version_gate",
+      "check": "formal_execution_evidence_integrity",
+      "passed": true,
+      "gate_overall_status": "failed",
+      "scope": "Actual common-consumer projection only; seeded upstream audit/closure remain incomplete"
+    },
+    {
+      "gate": "close_gate",
+      "check": "close_verification_evidence_source_and_time_integrity",
+      "passed": true,
+      "gate_overall_status": "failed",
+      "scope": "Actual common-consumer projection only; seeded upstream audit/closure remain incomplete"
+    },
+    {
+      "name": "pre-hard-stop-plan",
+      "session": "ses_e4bdd17fbffeLQ7Vg8CqJa5w2M",
+      "message": "msg_1b422e843001JqOUKGP93RX5TM",
+      "call": "call_73dfc14782c34779a0fe7ad76304784d",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "54e207ddb7c4a5a5da651fa9ec00dcff4d8f3ae570574f3147dc201d7f6fe7d9",
+        "preparation_id": "abcaeabc9265d2170b8d888ddccd7e989f3bd9c7f4e1eb70e561fbecabf6dbb6",
+        "expires_at": "2026-11-07T04:02:30.909Z",
+        "purpose": "formal",
+        "original_command": "node --test tests/waiting.test.cjs",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "--test-reporter=tap",
+          "--test",
+          "--test-isolation=none",
+          "tests/waiting.test.cjs"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "pre-hard-stop-prepare",
+      "session": "ses_e4bdd04cdffeQP3ZFjqvXXStcg",
+      "message": "msg_1b422fb7c001P7eeLQ8O18CGlN",
+      "call": "call_42955c9b1f614bf2af59bc1bc139081f",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "29cfc53b404ad25630a683dee5d64efa1bd4af4d0db2b01942dfe7e2c310bf39",
+        "attempt_id": "5634e519fddd42a09581c2383de7b5c6",
+        "plan_id": "54e207ddb7c4a5a5da651fa9ec00dcff4d8f3ae570574f3147dc201d7f6fe7d9",
+        "application_started": false
+      }
+    },
+    {
+      "name": "actual-audit-owner-hard-stop",
+      "session": "ses_e4bdcf790ffeSFUBHzopJcFkgB",
+      "message": "msg_1b42308b9001jKMHu1vZqMDlAg",
+      "call": "call_983c6a542c0a479e93ec8afe420908a6",
+      "agent": "sf-orchestrator",
+      "tool": "sf_changed_files_audit",
+      "value": {
+        "success": false,
+        "error": "ALLOWED_WRITE_FILES_EMPTY: allowed_write_files and allowed_write_files_snapshot are empty.\nAudit cannot proceed.",
+        "hard_stop": true
+      }
+    },
+    {
+      "name": "hard-stop-plan-create-denied",
+      "session": "ses_e4bdcec3dffeFWgxKPzo8XjMT9",
+      "message": "msg_1b423140c001JCGtnhEX6w4Aym",
+      "call": "call_8dd07478189346caa9389325bb4a5d73",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": false,
+        "error": "HARD_STOP_ACTIVE: Work item WI-9901 is blocked.\nScope: work_item.\nReason: ALLOWED_WRITE_FILES_EMPTY. Source: sf_changed_files_audit.\nOnly read/debug/recovery tools are allowed for this work item. Tool sf_verification_plan is blocked for WI-9901.",
+        "hard_stop": true,
+        "hard_stop_record": {
+          "schema_version": "1.2",
+          "hard_stop_id": "HS-1794023557798",
+          "scope": "work_item",
+          "work_item_id": "WI-9901",
+          "blocked": true,
+          "reason": "ALLOWED_WRITE_FILES_EMPTY",
+          "source_tool": "sf_changed_files_audit",
+          "created_at": "2026-11-07T03:52:37.798Z",
+          "resolved": false,
+          "recovery_status": "pending"
+        },
+        "work_item_id": "WI-9901"
+      }
+    },
+    {
+      "name": "hard-stop-prepare-denied",
+      "session": "ses_e4bdce290ffeWtuTxeWGX8Rsp0",
+      "message": "msg_1b4231daa001FNBP5UwcTfWc55",
+      "call": "call_817240a5a684470bb7fff943c67ca508",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": false,
+        "error": "HARD_STOP_ACTIVE: Work item WI-9901 is blocked.\nScope: work_item.\nReason: ALLOWED_WRITE_FILES_EMPTY. Source: sf_changed_files_audit.\nOnly read/debug/recovery tools are allowed for this work item. Tool sf_verification_run is blocked for WI-9901.",
+        "hard_stop": true,
+        "hard_stop_record": {
+          "schema_version": "1.2",
+          "hard_stop_id": "HS-1794023557798",
+          "scope": "work_item",
+          "work_item_id": "WI-9901",
+          "blocked": true,
+          "reason": "ALLOWED_WRITE_FILES_EMPTY",
+          "source_tool": "sf_changed_files_audit",
+          "created_at": "2026-11-07T03:52:37.798Z",
+          "resolved": false,
+          "recovery_status": "pending"
+        },
+        "work_item_id": "WI-9901"
+      }
+    },
+    {
+      "name": "hard-stop-owned-cancel-allowed",
+      "session": "ses_e4bdcd79effeO1pst9IkzI4aTy",
+      "message": "msg_1b42328b6001QETqPS6uA5ayFB",
+      "call": "call_f3df4541cad0411ab76d960786aa988e",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "29cfc53b404ad25630a683dee5d64efa1bd4af4d0db2b01942dfe7e2c310bf39",
+        "cancellation_requested": true,
+        "application_passed": false
+      }
+    },
+    {
+      "name": "hard-stop-owned-recovery-allowed",
+      "session": "ses_e4bdcccd0ffe2Fy5WlMVo2TXQ1",
+      "message": "msg_1b42333790011cPz7x66Kf2rYo",
+      "call": "call_409ade00cf164bb5a9071a03ae6a82a6",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "recovery_id": "233d83eefd8cb55d9bcc015c1978a859489f3e4b804c844dbc613580d8cbe113",
+        "attempt_record_id": "29cfc53b404ad25630a683dee5d64efa1bd4af4d0db2b01942dfe7e2c310bf39",
+        "cleanup_proved": true,
+        "application_passed": false
+      }
+    },
+    {
+      "child": "kernel",
+      "pid": 37544,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-11-07T03:52:51.901Z"
+      }
+    },
+    {
+      "child": "daemon",
+      "pid": 30648,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "utc": "2026-11-07T03:52:51.806Z"
+      }
+    }
+  ],
+  "failure": null,
+  "exit_code": 0,
+  "original_business_touched": false
+}

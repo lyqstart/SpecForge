@@ -1,0 +1,1417 @@
+{
+  "utc": "2026-11-07T10:52:26.278Z",
+  "label": "01",
+  "members": [
+    {
+      "original_path": "original-verification-run-01/child-ses_e4b783970ffeiuEa5CG20oT0ft.json",
+      "original_sha256": "3e731afdd19bdece50a46a72da86c2ff4bccc2cf77c1ae256f07ca8746be050e",
+      "original_size": 21590,
+      "derivative_path": "publication-derivatives-01/0000.json",
+      "derivative_sha256": "e8122a22a6dba0b512315f21307fc4a4e5805415d8868749f772be209b9a5201",
+      "derivative_size": 22379
+    },
+    {
+      "original_path": "original-verification-run-01/child-ses_e4b7b539cffeUabMUcOM66waa1.json",
+      "original_sha256": "885a023d613f0e1566fed2f9920679f9b29c0832683a005221d292d43c366202",
+      "original_size": 33202,
+      "derivative_path": "publication-derivatives-01/0001.json",
+      "derivative_sha256": "d1c411888a6e7ef8a1088e8b9e43a1b048b1edf941faa6906117d9dc76131a2f",
+      "derivative_size": 34208
+    },
+    {
+      "original_path": "original-verification-run-01/final-new-messages.json",
+      "original_sha256": "d51988e02100bc6f3df33e0e6d2b08ea7ec99ebf7a88c19c617517312aba5662",
+      "original_size": 230268,
+      "derivative_path": "publication-derivatives-01/0002.json",
+      "derivative_sha256": "baaa03f6eb5401f786bcc3dd64df106c7bbe38a78ba6746d5f9df8937c09e037",
+      "derivative_size": 227874
+    },
+    {
+      "original_path": "original-verification-run-01/messages-000.json",
+      "original_sha256": "c5f2b64ad21b5a3fc4139f959d958c6a527d234716abea726b504ec0287f0e83",
+      "original_size": 12236,
+      "derivative_path": "publication-derivatives-01/0003.json",
+      "derivative_sha256": "e093943b531699df4e3b5c93f40c2d4b17e2a7f11f1f06339346182a3b3b7855",
+      "derivative_size": 12695
+    },
+    {
+      "original_path": "original-verification-run-01/messages-004.json",
+      "original_sha256": "747ee88ffbae178db2772b22380e1227afb9ec740aae65c93f0168bf622b80a5",
+      "original_size": 165432,
+      "derivative_path": "publication-derivatives-01/0004.json",
+      "derivative_sha256": "595733728951798f2a7d28bc4ee59dedb8f24c39154c95ddc03be9a4bc9f426e",
+      "derivative_size": 165046
+    },
+    {
+      "original_path": "original-verification-run-01/messages-008.json",
+      "original_sha256": "bd0a06633ec2726fb690ddedd093bcc82e22e65b01812054d4ac6a61828cf633",
+      "original_size": 191981,
+      "derivative_path": "publication-derivatives-01/0005.json",
+      "derivative_sha256": "4a903b4fcb65d5d04e2ea639009527bbeb88847d3d0d09d82195cc57105406e7",
+      "derivative_size": 191295
+    },
+    {
+      "original_path": "original-verification-run-01/messages-012.json",
+      "original_sha256": "1d083618bef6a56c58d8c5d6649de7be24efd5ba2dfcd708693f0ac82a9f4e4c",
+      "original_size": 227311,
+      "derivative_path": "publication-derivatives-01/0006.json",
+      "derivative_sha256": "51ac9928731de8b9b8395da6b4914380800b732c2c760b64e589672e4b4c81d7",
+      "derivative_size": 224821
+    },
+    {
+      "original_path": "original-verification-run-01/messages-016.json",
+      "original_sha256": "4de358f8b957ab2505cfce3e4a98226f6566520c6f395f9d044ef3f12a9de771",
+      "original_size": 227311,
+      "derivative_path": "publication-derivatives-01/0007.json",
+      "derivative_sha256": "0d54fd107ccdc0538c01ec9c4035284e61ac1e2036fface0bd3d67b20d0ef313",
+      "derivative_size": 224821
+    },
+    {
+      "original_path": "original-verification-run-01/messages-020.json",
+      "original_sha256": "34d5cb8021d94cbc8bf46402a403db9dee3b23049ba0c626f05ead515ccdf733",
+      "original_size": 230075,
+      "derivative_path": "publication-derivatives-01/0008.json",
+      "derivative_sha256": "9534de9647c133282d54d4f68fdb3d32f5acb94113452ae7f1cf9babbfcaabd8",
+      "derivative_size": 227659
+    },
+    {
+      "original_path": "original-verification-run-02/child-ses_e4b50e0d6ffetQSLKT3Gj4t4oK.json",
+      "original_sha256": "853a36a912c554f48e0108377a4446ba69fa6933a7b8d46926dc2fa6287a2b21",
+      "original_size": 214923,
+      "derivative_path": "publication-derivatives-01/0009.json",
+      "derivative_sha256": "e40152ea6540b4bd407b0e0748afc9d34eab64628fe844ec0c4ff17dd9c86286",
+      "derivative_size": 210299
+    },
+    {
+      "original_path": "original-verification-run-02/child-ses_e4b52cd78ffehd8b3eV8Xvfk0P.json",
+      "original_sha256": "61f741b4f59b13b51c8142bcda7d66821094533acc18f7ca58545cf52adf1a1b",
+      "original_size": 35512,
+      "derivative_path": "publication-derivatives-01/0010.json",
+      "derivative_sha256": "675ca600a06d8633c75deff021432a4f6a435087309dec145e2ee12c8ade9b01",
+      "derivative_size": 37126
+    },
+    {
+      "original_path": "original-verification-run-02/child-ses_e4b5823f5ffeXQ182MBkbglf6i.json",
+      "original_sha256": "11c78af38632ce42c5ae79d694991ff180b7178145d65745e4c676033db1379d",
+      "original_size": 53922,
+      "derivative_path": "publication-derivatives-01/0011.json",
+      "derivative_sha256": "e098cba185a814e34c39182c1664fdf548ac00b556a6a9d4440beb5fa4c4ca8c",
+      "derivative_size": 56730
+    },
+    {
+      "original_path": "original-verification-run-02/child-ses_e4b5c0d13ffeVeS9rnIhLoPLY5.json",
+      "original_sha256": "8a80fb17f33080271924f9fdc9741edc68a586aecb6286a52e87db62ca370fd6",
+      "original_size": 63864,
+      "derivative_path": "publication-derivatives-01/0012.json",
+      "derivative_sha256": "ee1ff7d62ee03942163b2ae137788a6a4314ad92a7e4291feb1305680674e02c",
+      "derivative_size": 66676
+    },
+    {
+      "original_path": "original-verification-run-02/child-ses_e4b5e326effeHShnHAetUYzOez.json",
+      "original_sha256": "4e3a3baa07e303a1c78861ba60214f99800c1b6d6e7e56ff19456b1d91842edc",
+      "original_size": 49677,
+      "derivative_path": "publication-derivatives-01/0013.json",
+      "derivative_sha256": "ccc693dc9cd7e47b049b63a90406aa0205ce4b669072dd032f6647d9d96f3e7f",
+      "derivative_size": 52036
+    },
+    {
+      "original_path": "original-verification-run-02/child-ses_e4b620b42ffeFNl27ibfHyMSqB.json",
+      "original_sha256": "992b9acc19d0400e67915bff4d840173893f3d83a9e157364039909f120b9bac",
+      "original_size": 53912,
+      "derivative_path": "publication-derivatives-01/0014.json",
+      "derivative_sha256": "95ddb4b563a644065a1cb8a855d66a1cc103a404d347e4b7ea222f1f1e9e3445",
+      "derivative_size": 56156
+    },
+    {
+      "original_path": "original-verification-run-02/child-ses_e4b64b0f8ffeuWjTbyWe8LUZMH.json",
+      "original_sha256": "c9a7a4dece43c521b31e44e206efea06b5069553d0bb7d2586784d7bf6be0017",
+      "original_size": 31875,
+      "derivative_path": "publication-derivatives-01/0015.json",
+      "derivative_sha256": "dc13cb761ce911e509e9eefa5bde53a8fb68aa88a31820b8c1964b9992005402",
+      "derivative_size": 33024
+    },
+    {
+      "original_path": "original-verification-run-02/child-ses_e4b69dd07ffeddAieswn13Rszu.json",
+      "original_sha256": "995f1742cac9812f44003426834417aee943f5e604808472aa7e018e60d464b7",
+      "original_size": 67513,
+      "derivative_path": "publication-derivatives-01/0016.json",
+      "derivative_sha256": "65938f4aed2ffe1e574634857de0bd7fd9273948c9156294f6b5ae4f246693c1",
+      "derivative_size": 70668
+    },
+    {
+      "original_path": "original-verification-run-02/child-ses_e4b6d9952ffeWDsGtLlTJgH5IV.json",
+      "original_sha256": "257e2cac2dd1ac8b546c1903de6ea6ef4f277fa5823ec89315fbc1f3caa84162",
+      "original_size": 57997,
+      "derivative_path": "publication-derivatives-01/0017.json",
+      "derivative_sha256": "38621dd72785944e41a9e0ccdc9dd5925167772e66c0552dcdaf0ac88acba5bf",
+      "derivative_size": 60603
+    },
+    {
+      "original_path": "original-verification-run-02/child-ses_e4b703542ffe3PaJIUyWDnaBqL.json",
+      "original_sha256": "f7714bfb80b7b051d947a2f569e1befdfe776361aa08588209d702ad27dbf2d6",
+      "original_size": 45964,
+      "derivative_path": "publication-derivatives-01/0018.json",
+      "derivative_sha256": "0d6cb10d0067ac7fc9a63c17fe60eed2d8578ca58bb3ba338f750f2a26595502",
+      "derivative_size": 47939
+    },
+    {
+      "original_path": "original-verification-run-02/child-ses_e4b736232ffe1S7Rh815AIixkl.json",
+      "original_sha256": "7cb38c39764bc0d2d8835745a23bf6095b7b85e53e17741903fa21e94c7f1b33",
+      "original_size": 47827,
+      "derivative_path": "publication-derivatives-01/0019.json",
+      "derivative_sha256": "dba20cea8b2f667e83458e7388bda0be32f9694a1921d836a47fc496f5f201fd",
+      "derivative_size": 50001
+    },
+    {
+      "original_path": "original-verification-run-02/final-new-messages.json",
+      "original_sha256": "ad74068a6ee24ca25deecf8d2d45e34f37b9878df0241c0636c8f3712a38d689",
+      "original_size": 451123,
+      "derivative_path": "publication-derivatives-01/0020.json",
+      "derivative_sha256": "17710d41028d10d90e51d9040730517e2cb941e47ffa82bec0ca28235314d4ce",
+      "derivative_size": 447238
+    },
+    {
+      "original_path": "original-verification-run-02/messages-000.json",
+      "original_sha256": "0e806c97d62bee44e20dd3a85466f5538ad1dd02bbc30dfc1bc4e783715b2cc6",
+      "original_size": 132138,
+      "derivative_path": "publication-derivatives-01/0021.json",
+      "derivative_sha256": "7a1e1c46011bcf3c9d58281643b45f77c39a10e72963c42b90510c67ff3351f3",
+      "derivative_size": 132592
+    },
+    {
+      "original_path": "original-verification-run-02/messages-004.json",
+      "original_sha256": "f0f5727c76f3618c0153549830b408eb3ecc0aeff5ebea85f566ee1209218331",
+      "original_size": 150146,
+      "derivative_path": "publication-derivatives-01/0022.json",
+      "derivative_sha256": "01a2f2bd0f0afe81a0cb4adc14865097c8c0f481036a430d17d3383fa7f09c35",
+      "derivative_size": 149128
+    },
+    {
+      "original_path": "original-verification-run-02/messages-008.json",
+      "original_sha256": "aae2bae9822dea9f1a81d976ad786ff8f969371833c070fc5e02f95f434ee177",
+      "original_size": 150146,
+      "derivative_path": "publication-derivatives-01/0023.json",
+      "derivative_sha256": "bd21e66e7675d0e30996862d58ec69893b297c5cdf196118dc93b2fa06101c76",
+      "derivative_size": 149128
+    },
+    {
+      "original_path": "original-verification-run-02/messages-012.json",
+      "original_sha256": "0eb3b5c0a6942ceb135fdee25cdcaff6dce497e1b876ea24291139a0c7b3a3a0",
+      "original_size": 150146,
+      "derivative_path": "publication-derivatives-01/0024.json",
+      "derivative_sha256": "860a6f2a6efa9e6237580b118aca0450d78bcab89525dae69228e52232c441be",
+      "derivative_size": 149128
+    },
+    {
+      "original_path": "original-verification-run-02/messages-016.json",
+      "original_sha256": "9f7df5bfd8e9cfec0e9a0df2e0920f1aeeb09a793ae45ebf8e2e90e6b664330d",
+      "original_size": 184966,
+      "derivative_path": "publication-derivatives-01/0025.json",
+      "derivative_sha256": "cb11f24a1b241066722c0a8d214ccdff031aca22d600db0c6b3a0bb8a829f31e",
+      "derivative_size": 183905
+    },
+    {
+      "original_path": "original-verification-run-02/messages-020.json",
+      "original_sha256": "14cd123b7afbb6342d198295519a0353b4fbcb4d0e7af7b07b7a67df0bb12c86",
+      "original_size": 188236,
+      "derivative_path": "publication-derivatives-01/0026.json",
+      "derivative_sha256": "150223d3acec07afbfad5b197515ad1af80f8b6fcfbba0d914c385355a666ecb",
+      "derivative_size": 187235
+    },
+    {
+      "original_path": "original-verification-run-02/messages-024.json",
+      "original_sha256": "ee6e667c57c0e2a0b8bc170a88d6c61e3d7c106b55779c80caa44a5f50f95652",
+      "original_size": 188236,
+      "derivative_path": "publication-derivatives-01/0027.json",
+      "derivative_sha256": "9f101c6bbbcc6d9e8b6bdfbdaa74db6e1bc3d34cda493ff9f2f248faff04aade",
+      "derivative_size": 187235
+    },
+    {
+      "original_path": "original-verification-run-02/messages-028.json",
+      "original_sha256": "e5b50cd73007e86343eee9616194f75a159788c4e2de638b91ea65622c776e80",
+      "original_size": 222418,
+      "derivative_path": "publication-derivatives-01/0028.json",
+      "derivative_sha256": "25cdedf5e1d7618b142b850207d93bc18881a2b1400d6e425771d6a868eb648f",
+      "derivative_size": 221690
+    },
+    {
+      "original_path": "original-verification-run-02/messages-032.json",
+      "original_sha256": "fe3d6020c887b4b66bae6d71dd147bcfe7b3bf230f21c3e2dbe7139c32ae3ffb",
+      "original_size": 222418,
+      "derivative_path": "publication-derivatives-01/0029.json",
+      "derivative_sha256": "02b0b9c04beb72420a91b647c3c344c68216ef3c46bb7f0a1ead899e26b7b755",
+      "derivative_size": 221690
+    },
+    {
+      "original_path": "original-verification-run-02/messages-036.json",
+      "original_sha256": "4860abef5a1ba6acc8963469bc0c622dac52b1a9d47bb3a146662af885730626",
+      "original_size": 222418,
+      "derivative_path": "publication-derivatives-01/0030.json",
+      "derivative_sha256": "b2c0861e009ec7385c6dec460eb4d4493d5809f5fece6820ac80eb21fac15399",
+      "derivative_size": 221690
+    },
+    {
+      "original_path": "original-verification-run-02/messages-040.json",
+      "original_sha256": "5daf7e5f530c980dc97bd8b235a198246b61218afed2cce6297478eb75ceb2ca",
+      "original_size": 222418,
+      "derivative_path": "publication-derivatives-01/0031.json",
+      "derivative_sha256": "7f2d172ed450ae77705513ba41955b210faf6766b45045af31cf0e4fd7bb9cd6",
+      "derivative_size": 221690
+    },
+    {
+      "original_path": "original-verification-run-02/messages-044.json",
+      "original_sha256": "f44938d25033477a381492a3719df91ba5803b03f6e4c29095962738fcc0c669",
+      "original_size": 250954,
+      "derivative_path": "publication-derivatives-01/0032.json",
+      "derivative_sha256": "d3b6792768249679f7449cb3d02c469a753ddb6c33745b76d9397c26368df4c7",
+      "derivative_size": 250499
+    },
+    {
+      "original_path": "original-verification-run-02/messages-048.json",
+      "original_sha256": "8425c36b1965d8a57cf13e9f13f111d1c88268b9e76edbfffc3a261e343aa1b9",
+      "original_size": 250954,
+      "derivative_path": "publication-derivatives-01/0033.json",
+      "derivative_sha256": "863c6b1b9c2400fb66881123c86a1da53f9d4e9de56afd5bd204cd6d3fbd1bbc",
+      "derivative_size": 250499
+    },
+    {
+      "original_path": "original-verification-run-02/messages-052.json",
+      "original_sha256": "60e48744514ef6b2b211270c39741ad9fec046a21d5ea0cf89c3cea5d84adc2e",
+      "original_size": 250954,
+      "derivative_path": "publication-derivatives-01/0034.json",
+      "derivative_sha256": "e68379319b14b12bd1a7a6be2240f2944f20a40220a0c5c5581faff596f7af52",
+      "derivative_size": 250499
+    },
+    {
+      "original_path": "original-verification-run-02/messages-056.json",
+      "original_sha256": "c46cb1db449d2d2bf935ef6204b0235a143538a3e330610cc0106da05ac6bfd6",
+      "original_size": 250954,
+      "derivative_path": "publication-derivatives-01/0035.json",
+      "derivative_sha256": "918bbe8d0b79248488b6504cd292b63ff9ccf0c9ec7e1808f79d8f567174215a",
+      "derivative_size": 250499
+    },
+    {
+      "original_path": "original-verification-run-02/messages-060.json",
+      "original_sha256": "f22ca74810e4fc7bca4a8d5d8e1db8f7ad16321b251e58657af64aa26ef688ee",
+      "original_size": 250954,
+      "derivative_path": "publication-derivatives-01/0036.json",
+      "derivative_sha256": "121aa6139f98eccfa14512396fe9b1051de739d7069628c32a5f64d9cc12304a",
+      "derivative_size": 250499
+    },
+    {
+      "original_path": "original-verification-run-02/messages-064.json",
+      "original_sha256": "6f38f2344e48ba4e67f211656eb5096b9968e960ec8384556dde5580099620c4",
+      "original_size": 250954,
+      "derivative_path": "publication-derivatives-01/0037.json",
+      "derivative_sha256": "baa3ec2b4938ad2bd4980a306ec4e13f133913273f26305596d3c1a7d906ce83",
+      "derivative_size": 250499
+    },
+    {
+      "original_path": "original-verification-run-02/messages-068.json",
+      "original_sha256": "940f7e69f96351a5a6aa8a4d5285b57cdefc56ef63f99303f22add77fd359d3f",
+      "original_size": 269458,
+      "derivative_path": "publication-derivatives-01/0038.json",
+      "derivative_sha256": "d3288df82017fdd1b2b71326a0b6006c88350f1c9b1fa91911fc96c4baff9857",
+      "derivative_size": 269037
+    },
+    {
+      "original_path": "original-verification-run-02/messages-072.json",
+      "original_sha256": "bc35c23ae3a8d01c20dec2e7c2dc980d4616e4ed5ed0634bd60c99c28be6c47f",
+      "original_size": 273524,
+      "derivative_path": "publication-derivatives-01/0039.json",
+      "derivative_sha256": "431f40c245e39eb0f011460cd20acc5ff9daf005d1be1f5ef4bf76b878402431",
+      "derivative_size": 273235
+    },
+    {
+      "original_path": "original-verification-run-02/messages-076.json",
+      "original_sha256": "0edc18c0fe0a218ad1961cd93150567ec784e1d27aa2358a225b213bffb17c20",
+      "original_size": 311888,
+      "derivative_path": "publication-derivatives-01/0040.json",
+      "derivative_sha256": "cbb898e1f1f0aea8091c2df9ec758c0ca38f1ca383b53cf406b4501beaa7d318",
+      "derivative_size": 309283
+    },
+    {
+      "original_path": "original-verification-run-02/messages-080.json",
+      "original_sha256": "ad92d04c8df262976f8be833b665ab24fb520d49c5190657d846dac95830fb25",
+      "original_size": 328325,
+      "derivative_path": "publication-derivatives-01/0041.json",
+      "derivative_sha256": "e7bb2db4757426754fa5b02ba208a1b86ccbb0cfe0ae39157b0e3e0802d48bc7",
+      "derivative_size": 325449
+    },
+    {
+      "original_path": "original-verification-run-02/messages-084.json",
+      "original_sha256": "9be967d0480b7c64e1e77e0bcdd212c90b7c7c853d4c4fdcdfbe21de5d89d515",
+      "original_size": 328325,
+      "derivative_path": "publication-derivatives-01/0042.json",
+      "derivative_sha256": "72ed3a8a99fecbdcc7d6b97db93e254c0b5fd5266742920e14eec77c0d4b6c55",
+      "derivative_size": 325449
+    },
+    {
+      "original_path": "original-verification-run-02/messages-088.json",
+      "original_sha256": "7be1f3e92eb02db363d74e71b1f789bee857147ea2f76822b45f37f71daad431",
+      "original_size": 328325,
+      "derivative_path": "publication-derivatives-01/0043.json",
+      "derivative_sha256": "b9fdcdc83c017745961907e76b0cb6068c8116a829efbc478139f0ba7a807d28",
+      "derivative_size": 325449
+    },
+    {
+      "original_path": "original-verification-run-02/messages-092.json",
+      "original_sha256": "c2e043694ed1d82bf1426b96708f27158822ce7e87f16e7b7b0a0932808e853f",
+      "original_size": 328325,
+      "derivative_path": "publication-derivatives-01/0044.json",
+      "derivative_sha256": "48acb1cfe1f31358e132a2d71e656df05a7c9ad2611de7e9cc3a8c6646a425ad",
+      "derivative_size": 325449
+    },
+    {
+      "original_path": "original-verification-run-02/messages-096.json",
+      "original_sha256": "a196d2724cb47d70f7695d0bce4a7aa41b079293f50b3d244ab86bdc179ece93",
+      "original_size": 349107,
+      "derivative_path": "publication-derivatives-01/0045.json",
+      "derivative_sha256": "df8a329332f23e769eb87ecd5ca9973156b9613afed5703638e66bbd515e2428",
+      "derivative_size": 346568
+    },
+    {
+      "original_path": "original-verification-run-02/messages-100.json",
+      "original_sha256": "d51e3079ce4f12a64e261a4c2ee92475b15cdab8ab8b75d5726b5bc59b22a896",
+      "original_size": 349107,
+      "derivative_path": "publication-derivatives-01/0046.json",
+      "derivative_sha256": "8e8834317f6ad455fca4b8d94064eae95b01c7e99c78469c1b3ae9d9bc5caf80",
+      "derivative_size": 346568
+    },
+    {
+      "original_path": "original-verification-run-02/messages-104.json",
+      "original_sha256": "7c1399c12f0df2ba0ad667ac2a60deb65fbae7fbf28f6bd984b710c8cc3a0769",
+      "original_size": 372956,
+      "derivative_path": "publication-derivatives-01/0047.json",
+      "derivative_sha256": "57ec43b14472e170b62d5a7a798455a33843707198e57cee8df4c04f2c183aef",
+      "derivative_size": 371051
+    },
+    {
+      "original_path": "original-verification-run-02/messages-108.json",
+      "original_sha256": "0e054a84746883bf5209ae06b7efea6908e8988d79b344a3cb319f95c9fcaa2d",
+      "original_size": 372956,
+      "derivative_path": "publication-derivatives-01/0048.json",
+      "derivative_sha256": "f9c8c7ca6a8dafa7195ed3bfb31e69fb8a229de71b5543a379e5fdf311e38ec8",
+      "derivative_size": 371051
+    },
+    {
+      "original_path": "original-verification-run-02/messages-112.json",
+      "original_sha256": "7fbc99b43aa60aa8a0d1eb121e5035972139be1ae72007f0f1101f7a28ff33fc",
+      "original_size": 372956,
+      "derivative_path": "publication-derivatives-01/0049.json",
+      "derivative_sha256": "9b24003ff69708d5096d7148871eaf092c042abd313958127aa82646371d01fc",
+      "derivative_size": 371051
+    },
+    {
+      "original_path": "original-verification-run-02/messages-116.json",
+      "original_sha256": "ee0bf788fd9e5352497c35b29491dcc5ad344426d3bfbfb1aaf8f49972e8cdba",
+      "original_size": 372956,
+      "derivative_path": "publication-derivatives-01/0050.json",
+      "derivative_sha256": "537b063f5249c7bd5c71160c1388824bd8655ce8fc9d3a26bfd526b10048e6ac",
+      "derivative_size": 371051
+    },
+    {
+      "original_path": "original-verification-run-02/messages-120.json",
+      "original_sha256": "8cf01b3dc51d275d5be67864f7bc190ae3ff55448d6d7d9586b7984351a579d9",
+      "original_size": 398757,
+      "derivative_path": "publication-derivatives-01/0051.json",
+      "derivative_sha256": "ac6e7fe114829460f1ab8e3eb7eeaecb9f29a9b24f66cae7efda2db6720519c5",
+      "derivative_size": 397466
+    },
+    {
+      "original_path": "original-verification-run-02/messages-124.json",
+      "original_sha256": "469c91a5607ce945b9befa431b380d6a06b96afe630ad4ce8997cc224033e057",
+      "original_size": 402564,
+      "derivative_path": "publication-derivatives-01/0052.json",
+      "derivative_sha256": "d5c5a9ca89590c1ff49acd1ec816fe6c7ec4ce76e8c7e59729d9779ff6a4ea9b",
+      "derivative_size": 401347
+    },
+    {
+      "original_path": "original-verification-run-02/messages-128.json",
+      "original_sha256": "0a715e14ea011591beb18f3f40d8f94c670ac90f9804330d919c9165dcf13560",
+      "original_size": 402564,
+      "derivative_path": "publication-derivatives-01/0053.json",
+      "derivative_sha256": "4a80785aab162e44a36c6f8f3556f9342d4ea58c7672071b9125b8b1efeafb8d",
+      "derivative_size": 401347
+    },
+    {
+      "original_path": "original-verification-run-02/messages-132.json",
+      "original_sha256": "c9b0582cb616a6d5b01215ce424be87c50b607e617c34954d7ce9b8f15529cfe",
+      "original_size": 402564,
+      "derivative_path": "publication-derivatives-01/0054.json",
+      "derivative_sha256": "db0710a30289f4f0b01610cac8633f4318032355afa56fbd6d83e8b6cb81694d",
+      "derivative_size": 401347
+    },
+    {
+      "original_path": "original-verification-run-02/messages-136.json",
+      "original_sha256": "e2df1e14af0b4914c2714021a76283a5aa26ad32399ef3fbd14e87a32edfa4f4",
+      "original_size": 402564,
+      "derivative_path": "publication-derivatives-01/0055.json",
+      "derivative_sha256": "b03a6a1bba5cc3ff0b7ae0530359b6404210247d6f91964fd153b34fda7ecc20",
+      "derivative_size": 401347
+    },
+    {
+      "original_path": "original-verification-run-02/messages-140.json",
+      "original_sha256": "cc5e60b786a478d328d46d69aa086c6f23ab7b0ccd8c9e43d342408def16b6a7",
+      "original_size": 402564,
+      "derivative_path": "publication-derivatives-01/0056.json",
+      "derivative_sha256": "ae55288f52f50c65261b070f14a206abb5301171aa50cbab0291a0f89adccc6d",
+      "derivative_size": 401347
+    },
+    {
+      "original_path": "original-verification-run-02/messages-144.json",
+      "original_sha256": "acf5f14e3c008bae92ca63f55f0206f44f67db26ce34ce2d5f1325f015b9f0c8",
+      "original_size": 418672,
+      "derivative_path": "publication-derivatives-01/0057.json",
+      "derivative_sha256": "b7d468f9563bc873e4d9795d7a39e0745dfd540b86778fcab354b0f0b4b12ec0",
+      "derivative_size": 417927
+    },
+    {
+      "original_path": "original-verification-run-02/messages-148.json",
+      "original_sha256": "ed48718c1b95bda86878450897e1df42636b0c1df0e2991bad8ef5bbf72d5e28",
+      "original_size": 418672,
+      "derivative_path": "publication-derivatives-01/0058.json",
+      "derivative_sha256": "4efcdf0bef3fcd51d1f0ed27b58931a22f780e46a1da2f341a81d9f4e33ab3e6",
+      "derivative_size": 417927
+    },
+    {
+      "original_path": "original-verification-run-02/messages-152.json",
+      "original_sha256": "b8ca8ebc00750859c2c4d58b0f65d73ffe801bf95c86895ffba843926aca7002",
+      "original_size": 445134,
+      "derivative_path": "publication-derivatives-01/0059.json",
+      "derivative_sha256": "6d322b7687e10eda85202af0caca061848ac7609bf154c1d094958de34404b9d",
+      "derivative_size": 441167
+    },
+    {
+      "original_path": "original-verification-run-02/messages-156.json",
+      "original_sha256": "24d0953d6506cc22121fa430af5b3cc54184444d364bfa1aac0a8a2141f775cc",
+      "original_size": 450928,
+      "derivative_path": "publication-derivatives-01/0060.json",
+      "derivative_sha256": "6b2badf6d43cb1dee86d58f0eb6cbb1c96b728bb991c0dc5c91ca45b21202ac2",
+      "derivative_size": 447021
+    },
+    {
+      "original_path": "original-verification-run-02/messages-160.json",
+      "original_sha256": "a3fc0c84c09419c58bd061e22740f784a88d8d291abd4b5dd76fbc7f5ddfb000",
+      "original_size": 450928,
+      "derivative_path": "publication-derivatives-01/0061.json",
+      "derivative_sha256": "09442bf8ac94c1f3f87f9230a2b7593d7213dced399cb5d219137e4165df47f7",
+      "derivative_size": 447021
+    },
+    {
+      "original_path": "original-verification-run-02/messages-164.json",
+      "original_sha256": "abc42e25d6e729337bef52ed2ec3939b38bb46a1c1d5277752474dfbcada41da",
+      "original_size": 450928,
+      "derivative_path": "publication-derivatives-01/0062.json",
+      "derivative_sha256": "6c8ab0210a6bafc50bf472b09c52e096082154211e0e7814b8195bbf11ad46c2",
+      "derivative_size": 447021
+    },
+    {
+      "original_path": "original-verification-run-02/messages-168.json",
+      "original_sha256": "75078d36a85d530003ea8cf7c3daf5452f9f0499284d2ee3161269d341718268",
+      "original_size": 450928,
+      "derivative_path": "publication-derivatives-01/0063.json",
+      "derivative_sha256": "574a4ebade15c4708586bf8892753269a1f8dd91fd2025dc23b79da527dc9703",
+      "derivative_size": 447021
+    },
+    {
+      "original_path": "original-verification-run-03/child-ses_e4b32f2e0ffePVYuvYpr6cZFYk.json",
+      "original_sha256": "5fba86813b3ff12e69473135ade754cb008ab95728d227c4514cea86c974fd7c",
+      "original_size": 230041,
+      "derivative_path": "publication-derivatives-01/0064.json",
+      "derivative_sha256": "c7b502928720ff3c48e61cb68520e5d01761d81cde4efa6925beb2b41933b76a",
+      "derivative_size": 217109
+    },
+    {
+      "original_path": "original-verification-run-03/child-ses_e4b3edaf1ffeOeKmIsNI4Sqlrt.json",
+      "original_sha256": "d337d9095607df6881e2b840221e5c8f65a88de0b49d414c0b6038dd070f32ac",
+      "original_size": 482057,
+      "derivative_path": "publication-derivatives-01/0065.json",
+      "derivative_sha256": "859f1d0d0fb24b5167d13ca86a7f4b0e3da41e43fda335c09ba6e70ac654199d",
+      "derivative_size": 431814
+    },
+    {
+      "original_path": "original-verification-run-03/final-new-messages.json",
+      "original_sha256": "c0cd145729528553e45af8998e9ec01e2d44ed82f2057148c9563d26258fb28a",
+      "original_size": 316685,
+      "derivative_path": "publication-derivatives-01/0066.json",
+      "derivative_sha256": "41aeec0156012353fd76928afdcc5b11b6ef207d54aa7565687121c47bfbc93d",
+      "derivative_size": 317082
+    },
+    {
+      "original_path": "original-verification-run-03/messages-000.json",
+      "original_sha256": "1d43718980173d84bcff0d5ac00544986bd2994719f0c608a2b16100bda087f5",
+      "original_size": 48090,
+      "derivative_path": "publication-derivatives-01/0067.json",
+      "derivative_sha256": "ba3239011cbeeed6eafad29d364e3e68f1e621ffe358acc933c558e4c054a231",
+      "derivative_size": 48362
+    },
+    {
+      "original_path": "original-verification-run-03/messages-004.json",
+      "original_sha256": "f1bbc7953a7288ffa5d3c4ff25b41b1d717dfeee8c858e2d57686652999292ae",
+      "original_size": 52698,
+      "derivative_path": "publication-derivatives-01/0068.json",
+      "derivative_sha256": "d6965c71282d565d90f72b798d8d1a222ba18c1022b8d9ae498669117838ff0a",
+      "derivative_size": 52810
+    },
+    {
+      "original_path": "original-verification-run-03/messages-008.json",
+      "original_sha256": "c17540b278e3fb89c740a96c62bd63b2c8f51f1e08c521d9dcbbb7e0aa7abea7",
+      "original_size": 181017,
+      "derivative_path": "publication-derivatives-01/0069.json",
+      "derivative_sha256": "efd6034acc0f01b7a8b5fd1a227b50e2d0afa7efac6e23163f58bb4b544e599c",
+      "derivative_size": 181230
+    },
+    {
+      "original_path": "original-verification-run-03/messages-012.json",
+      "original_sha256": "6ecd2df8b76a66d083ade17093546caf55e0cf92ce0a88d7dd44470cc69befce",
+      "original_size": 201723,
+      "derivative_path": "publication-derivatives-01/0070.json",
+      "derivative_sha256": "66f7be4d203f65f7736fe4cb6800f0e9dc77835728159e72340f5c14f7c4a0e7",
+      "derivative_size": 201994
+    },
+    {
+      "original_path": "original-verification-run-03/messages-016.json",
+      "original_sha256": "fecbdb53c52afd93510f0d8a5a91cd0eb4439a4326efacf2245557c36fc63c62",
+      "original_size": 201723,
+      "derivative_path": "publication-derivatives-01/0071.json",
+      "derivative_sha256": "2e0c6cacfbc86059d421064e68b67fe8f15259710de5705f9ff2a359a88cc215",
+      "derivative_size": 201994
+    },
+    {
+      "original_path": "original-verification-run-03/messages-020.json",
+      "original_sha256": "5348c561a7615bfacb515e66a55af612ae797a7531fcb3e7bd72801e160b9d46",
+      "original_size": 201723,
+      "derivative_path": "publication-derivatives-01/0072.json",
+      "derivative_sha256": "d08641610208dfb07b7f1ad55fc9a3b8257f8694fea22f9000738afcd80bb263",
+      "derivative_size": 201994
+    },
+    {
+      "original_path": "original-verification-run-03/messages-024.json",
+      "original_sha256": "edae2a03cd5979baf246183c04f2a4c2e494280238d7022dd96eed062856fafa",
+      "original_size": 201723,
+      "derivative_path": "publication-derivatives-01/0073.json",
+      "derivative_sha256": "a6be4af02f6d2eb6769f9891af79d60bdd648399ec359ddf0c453c254f9fcb6f",
+      "derivative_size": 201994
+    },
+    {
+      "original_path": "original-verification-run-03/messages-028.json",
+      "original_sha256": "c5e699de42df0c86d37f4e1c1588c0cdd05485a89c71b42bc6da13884e76c344",
+      "original_size": 201723,
+      "derivative_path": "publication-derivatives-01/0074.json",
+      "derivative_sha256": "30bbafe733c47b5a2b55ca83c56d99848a9ba64704ebc1e8c46e0e491b016974",
+      "derivative_size": 201994
+    },
+    {
+      "original_path": "original-verification-run-03/messages-032.json",
+      "original_sha256": "dc24af163367c8f2099c5d2d3cd3da2338540a1f49a965e815cf00bcb9afc1dc",
+      "original_size": 201723,
+      "derivative_path": "publication-derivatives-01/0075.json",
+      "derivative_sha256": "8ea68ac19ef64670c4839a8e583baa207fa67c295f70a4ebc263338c6b6f5549",
+      "derivative_size": 201994
+    },
+    {
+      "original_path": "original-verification-run-03/messages-036.json",
+      "original_sha256": "76ca23fe4dd0a8cc8b08ff065597536e2885138e4085c2a7005462d1a2bd91da",
+      "original_size": 201723,
+      "derivative_path": "publication-derivatives-01/0076.json",
+      "derivative_sha256": "2cb670d65207362da16773c5adaf5f55981766875d8ac7625a80e56d03b5aa23",
+      "derivative_size": 201994
+    },
+    {
+      "original_path": "original-verification-run-03/messages-040.json",
+      "original_sha256": "55aad7d22f58f554bcab0d06da94dc780c682b4eb9a9f8953f36de7b88db592b",
+      "original_size": 201723,
+      "derivative_path": "publication-derivatives-01/0077.json",
+      "derivative_sha256": "3137f465eb08e245876c310190ef9b3f7c8079cb7a6fb1ce83ec7fb30e38e3d3",
+      "derivative_size": 201994
+    },
+    {
+      "original_path": "original-verification-run-03/messages-044.json",
+      "original_sha256": "ee0c32de91833f50c671eb6cfa51597bfe42937a08a0e94bc7bb65ac0f870d35",
+      "original_size": 201723,
+      "derivative_path": "publication-derivatives-01/0078.json",
+      "derivative_sha256": "08c97f6a5eb81e951736a4f514753a7e41920726b94f8a28725f23a034e5d3f2",
+      "derivative_size": 201994
+    },
+    {
+      "original_path": "original-verification-run-03/messages-048.json",
+      "original_sha256": "cb949e866b20c0f196937517ed39c24fe8ad7456504ccaa030664287bb053375",
+      "original_size": 201723,
+      "derivative_path": "publication-derivatives-01/0079.json",
+      "derivative_sha256": "96a2126ecdabe2d4e47a8e1f12b9384722e017497977f83e5c09ccb4f3565f41",
+      "derivative_size": 201994
+    },
+    {
+      "original_path": "original-verification-run-03/messages-052.json",
+      "original_sha256": "605d854582fc3c2ae73439cf06095be9215bc217dbc024aa32cece5ee3f43052",
+      "original_size": 201723,
+      "derivative_path": "publication-derivatives-01/0080.json",
+      "derivative_sha256": "43c4fb6c72722acb5eef3d4f0299945eb4567889747a668b5f3817f364677fb3",
+      "derivative_size": 201994
+    },
+    {
+      "original_path": "original-verification-run-03/messages-056.json",
+      "original_sha256": "6a261c8ce589a9783cbb5d63f5be4e3274b5c1828dcfa81b8f99c2b73e797a9c",
+      "original_size": 201723,
+      "derivative_path": "publication-derivatives-01/0081.json",
+      "derivative_sha256": "0ee730b720938c9de4cb4f219ad50c374ed658cd86ca6cf3c61159c6b663ba59",
+      "derivative_size": 201994
+    },
+    {
+      "original_path": "original-verification-run-03/messages-060.json",
+      "original_sha256": "8ec4dd8df442ed5f77f763eec6a643fa21670eaa963b26590800825eed41315a",
+      "original_size": 295649,
+      "derivative_path": "publication-derivatives-01/0082.json",
+      "derivative_sha256": "57c07097fffd36c63a9019406e6892b4fe40ce3b184c005ecda9d966db7518e3",
+      "derivative_size": 295966
+    },
+    {
+      "original_path": "original-verification-run-03/messages-064.json",
+      "original_sha256": "d1bffb4a9463cacd7cc5e58b604dffc5a82fad0deb4af7c4ab3b37eb23fd69b4",
+      "original_size": 316483,
+      "derivative_path": "publication-derivatives-01/0083.json",
+      "derivative_sha256": "2554a42cea1364441551ff25ad02fa839dc2d10b7c99d48d43c78d792616cd1b",
+      "derivative_size": 316858
+    },
+    {
+      "original_path": "original-verification-run-03/messages-068.json",
+      "original_sha256": "7d8b2122ad338794b9e565e1222168a009308484819f4dc93d8f345165eb17f5",
+      "original_size": 316483,
+      "derivative_path": "publication-derivatives-01/0084.json",
+      "derivative_sha256": "d01f2714c6dcd8b1a654a1b7caf979239a0711851640c0837d08f62fd8fc6452",
+      "derivative_size": 316858
+    },
+    {
+      "original_path": "original-verification-run-03/messages-072.json",
+      "original_sha256": "60fd902aadbd736fb97df1dc028ecad1ff977f0397e435c4280cee0b493a8193",
+      "original_size": 316483,
+      "derivative_path": "publication-derivatives-01/0085.json",
+      "derivative_sha256": "6a7909c28a8cc521fbec1f2306a0b62e9237cd3a69cd35ba737559a6a51b0f3c",
+      "derivative_size": 316858
+    },
+    {
+      "original_path": "original-verification-run-04/child-ses_e4b1b0c7effeHtH3Gy0G6JJJ1k.json",
+      "original_sha256": "fbbb9e8922fd0695b83e2c7aeabbb4fd3942c6bea398b16ff8fb711ec8e41c6a",
+      "original_size": 187206,
+      "derivative_path": "publication-derivatives-01/0086.json",
+      "derivative_sha256": "8e7acd90f670f5845ae4bbadc8d0d207ac0d5133d20afc2926511f72950a32d0",
+      "derivative_size": 185487
+    },
+    {
+      "original_path": "original-verification-run-04/child-ses_e4b1e0809ffe9laPhyvRZOMWOc.json",
+      "original_sha256": "3eb4a5641709032fa7b133b1af0f6f469de1ef6b8143366fbe85d19f4ff19cee",
+      "original_size": 233098,
+      "derivative_path": "publication-derivatives-01/0087.json",
+      "derivative_sha256": "140554d92d00b9a4392d18a625a057e1ef499f03d33401eedf6e29233e907236",
+      "derivative_size": 233046
+    },
+    {
+      "original_path": "original-verification-run-04/final-new-messages.json",
+      "original_sha256": "e873a0dbe967288c31535d2bca64d6aed17b4e09238c75c08f7f5b880dd76df4",
+      "original_size": 383641,
+      "derivative_path": "publication-derivatives-01/0088.json",
+      "derivative_sha256": "104fe816ae6ef329ea11f176f8ce173387a88724ca4eab5318e53d0645a13cd0",
+      "derivative_size": 383017
+    },
+    {
+      "original_path": "original-verification-run-04/messages-000.json",
+      "original_sha256": "a9e0027649a3ea1ce111d551205a4aeda9e4eb2afb5058126b27bf203c2b59c0",
+      "original_size": 7809,
+      "derivative_path": "publication-derivatives-01/0089.json",
+      "derivative_sha256": "f71b345d1bf9206ca7ceb42b16ce3312fe241585ca172dc3f1cfeb59382002df",
+      "derivative_size": 8267
+    },
+    {
+      "original_path": "original-verification-run-04/messages-004.json",
+      "original_sha256": "15ec3e3b415d70c33f60551d7cc34be8f86c4dcd89a08574c3dedc1aded8417d",
+      "original_size": 263164,
+      "derivative_path": "publication-derivatives-01/0090.json",
+      "derivative_sha256": "87fa2806933ffa64d67de187b5b10a7e52f4615f5c50b3c120511c7b66e034ad",
+      "derivative_size": 264637
+    },
+    {
+      "original_path": "original-verification-run-04/messages-008.json",
+      "original_sha256": "b34f56d0fe63fc87227046f0bc46655bb5ba6af72558a997ac9069dc9600fe03",
+      "original_size": 271282,
+      "derivative_path": "publication-derivatives-01/0091.json",
+      "derivative_sha256": "22f066cc56f9a0975f0e792fc7a87d08c652f7bff88b21e0a064e82ec26f39c3",
+      "derivative_size": 270153
+    },
+    {
+      "original_path": "original-verification-run-04/messages-012.json",
+      "original_sha256": "71b66cb1bf1a203459fd262a47fbb228c0a80b7fcd82cf75631367a04a99a9b0",
+      "original_size": 271282,
+      "derivative_path": "publication-derivatives-01/0092.json",
+      "derivative_sha256": "3dbe6d4ed8c637ef551e41acf2c6dea583925fef11b3f58311b02e3be637b7a8",
+      "derivative_size": 270153
+    },
+    {
+      "original_path": "original-verification-run-04/messages-016.json",
+      "original_sha256": "6dbc2faea7309a4f7f653353ec77140bf127ca1e547a0c6bd88cdaf648a889d3",
+      "original_size": 316000,
+      "derivative_path": "publication-derivatives-01/0093.json",
+      "derivative_sha256": "977b7fa9da5d5ac25a3ba86325e8c09c2d0d4af2237f25662dbbe15e7022ece3",
+      "derivative_size": 314803
+    },
+    {
+      "original_path": "original-verification-run-04/messages-020.json",
+      "original_sha256": "b44df2336a396a485369b4313908bfbcafcae3f97b7efbc3fda9d22e459b32de",
+      "original_size": 341459,
+      "derivative_path": "publication-derivatives-01/0094.json",
+      "derivative_sha256": "9942675a484d664a4e03b82398b2ecc0fbc6769f8019efad361c76721db44dca",
+      "derivative_size": 339455
+    },
+    {
+      "original_path": "original-verification-run-04/messages-024.json",
+      "original_sha256": "4ea87b914522fef52b663b819dd2bd70644b5f8312b1b66e0c3c8ac7cb813b17",
+      "original_size": 341459,
+      "derivative_path": "publication-derivatives-01/0095.json",
+      "derivative_sha256": "807b9e8b1ae9c05a5e962270d328a248c3569672a5c6c93012ff7fe424a0160e",
+      "derivative_size": 339455
+    },
+    {
+      "original_path": "original-verification-run-04/messages-028.json",
+      "original_sha256": "551ca8b2d06f71e4d517cbb597ce062b5855cb9e5af09327b2aaa5da62dc847a",
+      "original_size": 359099,
+      "derivative_path": "publication-derivatives-01/0096.json",
+      "derivative_sha256": "ecb78177922ac329033d640209646334d4aeae035549e67fbefe1b4b0306728a",
+      "derivative_size": 357241
+    },
+    {
+      "original_path": "original-verification-run-04/messages-032.json",
+      "original_sha256": "4554c18af7f3dda81d3d0bcda147b0b6af94869efb18288de2c96ef3aca66b79",
+      "original_size": 382891,
+      "derivative_path": "publication-derivatives-01/0097.json",
+      "derivative_sha256": "40982d380ee6735e46520f196d4bbe9d9171c2a5fd06db9674cba7140b02f29e",
+      "derivative_size": 382203
+    },
+    {
+      "original_path": "original-verification-run-05/child-ses_e4b12d213ffeXIe5IG25AinkON.json",
+      "original_sha256": "6be3363bb714d4a4b8e781cdf4053a6138ec9e7b3e52f53b247d13731f810481",
+      "original_size": 393925,
+      "derivative_path": "publication-derivatives-01/0098.json",
+      "derivative_sha256": "69c2a9aa49c16b6354b238c7c48a834b046fe7d7117a24f83f54a495652416c4",
+      "derivative_size": 390678
+    },
+    {
+      "original_path": "original-verification-run-05/final-new-messages.json",
+      "original_sha256": "c5c2b1443ffc321889f4d2123ccd4c89021f44109444e2e040bc0e43bd851c7c",
+      "original_size": 417726,
+      "derivative_path": "publication-derivatives-01/0099.json",
+      "derivative_sha256": "04c54e5c50f22227251798ab530ca4f9f1dae7457d90f8515130aafb209a4378",
+      "derivative_size": 417021
+    },
+    {
+      "original_path": "original-verification-run-05/messages-000.json",
+      "original_sha256": "35a109b5c6af86d0ec7657bd5cda9ae8460b012e333a89560322b9ef9bd7afe5",
+      "original_size": 9238,
+      "derivative_path": "publication-derivatives-01/0100.json",
+      "derivative_sha256": "a2808f198ae029ecbb8d5d052df00fd27b9db4c4165be7d05602a146f3191c36",
+      "derivative_size": 9923
+    },
+    {
+      "original_path": "original-verification-run-05/messages-004.json",
+      "original_sha256": "7fe7120711ad407867895bfb8d5d93c15bd9aa919e97d304d3e745d268cbe459",
+      "original_size": 410190,
+      "derivative_path": "publication-derivatives-01/0101.json",
+      "derivative_sha256": "e72c548d5ec43b223f095ffcf3a137cc10041ee3dda06dedf6b2cfe3309faef5",
+      "derivative_size": 410976
+    },
+    {
+      "original_path": "original-verification-run-05/messages-008.json",
+      "original_sha256": "603d4edc1db64a03c3d6d1056d2340cb3ca42a9d66abb57200f39d404e258326",
+      "original_size": 416202,
+      "derivative_path": "publication-derivatives-01/0102.json",
+      "derivative_sha256": "655d7bb0b4909a431e3e382484df16e775c38f07857716e0acc9b565216a7b06",
+      "derivative_size": 415443
+    },
+    {
+      "original_path": "original-verification-run-05/messages-012.json",
+      "original_sha256": "c05bcf48fc20b305ef22ce80455ed6f2b83f5639a5e5318fb6f244f0b329ae72",
+      "original_size": 416202,
+      "derivative_path": "publication-derivatives-01/0103.json",
+      "derivative_sha256": "87b669f65c4aab1475616f19a7bb5f000e0ed44524d6b1dd1ee0f8f0b7106b9e",
+      "derivative_size": 415443
+    },
+    {
+      "original_path": "original-verification-run-05/messages-016.json",
+      "original_sha256": "7cfeb1bdd21d4afa52090164804e4d8584d7c51bfe10f54e2c0c1697712212b6",
+      "original_size": 416202,
+      "derivative_path": "publication-derivatives-01/0104.json",
+      "derivative_sha256": "c1ad238abadc12998950996c5520f86434a7039d0d207de1d87ee89bc9110e6f",
+      "derivative_size": 415443
+    },
+    {
+      "original_path": "original-verification-run-05/messages-020.json",
+      "original_sha256": "28e76fa9724ce0bd628fdd25f25c725793d3cca93bc0b067e4d4f216ed1d3c6b",
+      "original_size": 416202,
+      "derivative_path": "publication-derivatives-01/0105.json",
+      "derivative_sha256": "2f7c731c62a8b86ab4ec624e9b5a912745d2640355f173071bbcb27180663c3d",
+      "derivative_size": 415443
+    },
+    {
+      "original_path": "original-verification-run-05/messages-024.json",
+      "original_sha256": "a30d215c22744b5dc3b391046b5233cccce3ccf484fde74d1859891a8181460a",
+      "original_size": 416202,
+      "derivative_path": "publication-derivatives-01/0106.json",
+      "derivative_sha256": "8ce19b5cd633441acdc3af08e93286d922d591b52f4d6123aadbd74f2e348691",
+      "derivative_size": 415443
+    },
+    {
+      "original_path": "original-verification-run-05/messages-028.json",
+      "original_sha256": "c662ffb1bb6e736416dd5345bf770e5b18223d93911123cbc45d2d7da6f2d877",
+      "original_size": 416202,
+      "derivative_path": "publication-derivatives-01/0107.json",
+      "derivative_sha256": "9448ca7e622f7f4316b1d5735d318519ad78c3e4ec59797696c66af8a0fe73b3",
+      "derivative_size": 415443
+    },
+    {
+      "original_path": "original-verification-run-05/messages-032.json",
+      "original_sha256": "2f4069d767ee3efb9e68985b7aaced17583b4c6aa2b1631340f5f1deb6aa0676",
+      "original_size": 416202,
+      "derivative_path": "publication-derivatives-01/0108.json",
+      "derivative_sha256": "17d11c267b29627b6a59ce6bc73e1e5a1552a0f0056bb40f48a3fb8d815949ad",
+      "derivative_size": 415443
+    },
+    {
+      "original_path": "original-verification-run-05/messages-036.json",
+      "original_sha256": "41eb4b0460aa345f0fa0cdf71c55e3c5098c1a6c206a4d71142bed61c1be9e74",
+      "original_size": 416202,
+      "derivative_path": "publication-derivatives-01/0109.json",
+      "derivative_sha256": "6a2d0e02e286d65438826dea4a557b110b68cae222c7e81368e8b91b38371a24",
+      "derivative_size": 415443
+    },
+    {
+      "original_path": "original-verification-run-05/messages-040.json",
+      "original_sha256": "5a15f8249b77dceb5512557ad6c7e2b2ff248443b96764d6ca7b480cf238c1f0",
+      "original_size": 417720,
+      "derivative_path": "publication-derivatives-01/0110.json",
+      "derivative_sha256": "9ca5a993910fb5d12e9a095388b6ee6bd720183c37cde5bcd09775aa6d67b745",
+      "derivative_size": 417009
+    },
+    {
+      "original_path": "original-verification-run-06/messages-000.json",
+      "original_sha256": "5f96a816ec9941e50f61709e137685cd6c49334596ef9515713c0f717159e9a1",
+      "original_size": 9367,
+      "derivative_path": "publication-derivatives-01/0111.json",
+      "derivative_sha256": "f920c628d076cacbf19fe40a6b3f99d1798fdc816f0d0ed1930e5948999a8660",
+      "derivative_size": 9874
+    },
+    {
+      "original_path": "original-verification-run-06/messages-004.json",
+      "original_sha256": "642a448c3a97961b2a87bcc8094d32c653553e0347a4c9928b8b78ed6b114496",
+      "original_size": 99663,
+      "derivative_path": "publication-derivatives-01/0112.json",
+      "derivative_sha256": "9a216332021f48878696a79fefecd3152e204998a6a0f99b6162201831da0458",
+      "derivative_size": 98936
+    },
+    {
+      "original_path": "original-verification-run-06/messages-008.json",
+      "original_sha256": "4dbf561da429371eed51cfa1902e100fa1daa9fb5ebddb6064ce260a361a7b84",
+      "original_size": 99663,
+      "derivative_path": "publication-derivatives-01/0113.json",
+      "derivative_sha256": "79f6266135433cab78d5c64fb1cc8c50e1bdc12cceb1cb74ad40763ed71f969c",
+      "derivative_size": 98936
+    },
+    {
+      "original_path": "original-verification-run-06/messages-012.json",
+      "original_sha256": "529613b2e8821bb425a7689d119d5989523eb019b62d603d762e52d35b9cadd2",
+      "original_size": 99663,
+      "derivative_path": "publication-derivatives-01/0114.json",
+      "derivative_sha256": "503a09813d611c3312e528c48146d673c7df30bb5e8c0b4984e97b99ec06ee73",
+      "derivative_size": 98936
+    },
+    {
+      "original_path": "original-verification-run-06/messages-016.json",
+      "original_sha256": "e509a95dbc7d5988b32c98a759e2667af27a99d00a012f7fd25b29fbdb74d043",
+      "original_size": 99663,
+      "derivative_path": "publication-derivatives-01/0115.json",
+      "derivative_sha256": "4a70139c01d2404ced62ac0b50c078c95d0c0851f467e18dd24bb59a65f8bc64",
+      "derivative_size": 98936
+    },
+    {
+      "original_path": "original-verification-run-06/messages-020.json",
+      "original_sha256": "83290750514d278eb39998f28b545ef2ca821f272195e2a381336a9fefc27c35",
+      "original_size": 124432,
+      "derivative_path": "publication-derivatives-01/0116.json",
+      "derivative_sha256": "ccd44b2c1f7c195181bed47268c4fa6035ee633743879e31146c3066fe0222ba",
+      "derivative_size": 123742
+    },
+    {
+      "original_path": "original-verification-run-06/messages-024.json",
+      "original_sha256": "1aa7f8b7588fb4ec3048104143931e6c7514d8c4030f37aed7a460e848e9bd29",
+      "original_size": 144065,
+      "derivative_path": "publication-derivatives-01/0117.json",
+      "derivative_sha256": "5888f66733d2655e89a9201ba37bed498fb7c011d1c5fc097348b28ad714e873",
+      "derivative_size": 143427
+    },
+    {
+      "original_path": "original-verification-run-06/messages-028.json",
+      "original_sha256": "0f765de42076335baebb6b8c7a49dcf47af089b8c67b1e2d26b69a4644514fea",
+      "original_size": 144065,
+      "derivative_path": "publication-derivatives-01/0118.json",
+      "derivative_sha256": "db07d6d1464c77b58c9d6f67ebb5789df9efb793f643145fc6d56c41725741fd",
+      "derivative_size": 143427
+    },
+    {
+      "original_path": "original-verification-run-06/messages-032.json",
+      "original_sha256": "2790842bf88e4bde35211c1dd89a8f619b7ecd1efd1ab69e6722c47a719054f8",
+      "original_size": 149584,
+      "derivative_path": "publication-derivatives-01/0119.json",
+      "derivative_sha256": "c7366a6102cb23378b88cfa34b48094c1d5aa5363fef19909e7a3a197832f5c3",
+      "derivative_size": 148967
+    },
+    {
+      "original_path": "original-verification-run-06/messages-036.json",
+      "original_sha256": "1cae4f3488726ae4d8b256a2d0f78f9c0eadc027b5257e824e2bb6ffc5a41cb0",
+      "original_size": 149584,
+      "derivative_path": "publication-derivatives-01/0120.json",
+      "derivative_sha256": "65c7755e02c00055b1e6c5674dbc8bfa7ad91384c022ac57f3343ef010554f2a",
+      "derivative_size": 148967
+    },
+    {
+      "original_path": "original-verification-run-06/messages-040.json",
+      "original_sha256": "63a7cea76bca43edc9d5b7c95cb45741cc1828a73214725bdfa70c60f2503c1d",
+      "original_size": 183479,
+      "derivative_path": "publication-derivatives-01/0121.json",
+      "derivative_sha256": "9d61e668f07174658e7cb89556fc1aa03b2963706add3b51c0a9f1aa779362c6",
+      "derivative_size": 183030
+    },
+    {
+      "original_path": "original-verification-run-06/messages-044.json",
+      "original_sha256": "b3bb63daacf87142c85667a8d769dd8b12d95b96c98258f4ce704ffc4d2cf483",
+      "original_size": 186584,
+      "derivative_path": "publication-derivatives-01/0122.json",
+      "derivative_sha256": "df5ad39ddba3ee6348d0394b592a6d11b50085d881e2def4489d66b373254597",
+      "derivative_size": 186193
+    },
+    {
+      "original_path": "original-verification-run-06/messages-048.json",
+      "original_sha256": "729b39619b83984652ec3b503df57cdc9ad1b4a43d89cf3b6f7f2f8d4e5f3e57",
+      "original_size": 186584,
+      "derivative_path": "publication-derivatives-01/0123.json",
+      "derivative_sha256": "fb4bf364655a20603261f4adf732e1fead27ba719af63bad08f44d71cd457590",
+      "derivative_size": 186193
+    },
+    {
+      "original_path": "original-verification-run-06/messages-052.json",
+      "original_sha256": "825fe1fadcd6464ff2bbeb47b84645a5f59acb39d98109c89f7611dfb1b25777",
+      "original_size": 186584,
+      "derivative_path": "publication-derivatives-01/0124.json",
+      "derivative_sha256": "70d7b905ec1b3845f8d9735cde03bd585a53a7357542fdc879e3e706a8680b0d",
+      "derivative_size": 186193
+    },
+    {
+      "original_path": "original-verification-run-06/messages-056.json",
+      "original_sha256": "a5a375a4ab62298f0926986be97d9b0072a0c332a1b4846d82bc71f6e2458993",
+      "original_size": 227821,
+      "derivative_path": "publication-derivatives-01/0125.json",
+      "derivative_sha256": "99f6887b5abaaa0db4c2193771dd75d82bba694d3ca2b120d209f317290cbe0e",
+      "derivative_size": 228190
+    },
+    {
+      "original_path": "original-verification-run-06/messages-060.json",
+      "original_sha256": "45b70f9379e619728df3441bc07bb9765504807485520d2e43fb238a1ceab164",
+      "original_size": 227821,
+      "derivative_path": "publication-derivatives-01/0126.json",
+      "derivative_sha256": "da370d5af552dc114c2b8fb965c074471070f4e6e9c3f7fa60a700485de5ec27",
+      "derivative_size": 228190
+    },
+    {
+      "original_path": "original-verification-run-06/messages-064.json",
+      "original_sha256": "0b861a2d69ad13599d1b822a6bc859277fb98c34d7640337661a378c5cd14c41",
+      "original_size": 227821,
+      "derivative_path": "publication-derivatives-01/0127.json",
+      "derivative_sha256": "f0b0895d79690f5b3ebc0309cc5083022e012f82d9a0515b966956e3d966ba95",
+      "derivative_size": 228190
+    },
+    {
+      "original_path": "original-verification-run-06/messages-068.json",
+      "original_sha256": "6af3decf2b2d351a926b3c52cef26d3fc47af1c8823031c3017174f7ae869a01",
+      "original_size": 227821,
+      "derivative_path": "publication-derivatives-01/0128.json",
+      "derivative_sha256": "b8545059980fe3895910d9174d5ee5738d5be38ab2a7ef1bc7009e10e20301f5",
+      "derivative_size": 228190
+    },
+    {
+      "original_path": "original-verification-run-06/messages-072.json",
+      "original_sha256": "087e36c6a7fe04494e9fa386abb15da860a1ef6914fef3ad07662adafb41668d",
+      "original_size": 250071,
+      "derivative_path": "publication-derivatives-01/0129.json",
+      "derivative_sha256": "ac5157b091441b946a0976f50f7fb0c8cae0b26d00b9d68a2658b75b3871a01d",
+      "derivative_size": 250740
+    },
+    {
+      "original_path": "original-verification-run-06/messages-076.json",
+      "original_sha256": "6176a4da4a45df76721a4ec7805f08a806b1610abc89e2abcd4d7acb31e8892f",
+      "original_size": 257748,
+      "derivative_path": "publication-derivatives-01/0130.json",
+      "derivative_sha256": "43c9a86a73c9d919bd8ba3c4a7b3c309fa8ddbf36d008f4ae6fa1221078c8487",
+      "derivative_size": 258661
+    },
+    {
+      "original_path": "original-verification-run-06/messages-080.json",
+      "original_sha256": "f72e9ba565946b84624b82b1fb5bc49fe83b568704687179d48a078fc80d6d63",
+      "original_size": 257748,
+      "derivative_path": "publication-derivatives-01/0131.json",
+      "derivative_sha256": "77726a43ec6eb03a19079c8d7bbc396de416ad77034ebcc242f95f5b355a1055",
+      "derivative_size": 258661
+    },
+    {
+      "original_path": "original-verification-run-06/messages-084.json",
+      "original_sha256": "9607a004bc689eff9b3027108aec39c119431dc674a8661f99162481f5568fc3",
+      "original_size": 257748,
+      "derivative_path": "publication-derivatives-01/0132.json",
+      "derivative_sha256": "4387b64a348c1d2905a72a1f0a70322add3b5cfbc4075e60519174a1afe3ed34",
+      "derivative_size": 258661
+    },
+    {
+      "original_path": "original-verification-run-06/messages-088.json",
+      "original_sha256": "6389dbd229f8c6572a3ecd836262f175aa2d0e57f0947823fe04f17d73e9d51d",
+      "original_size": 290178,
+      "derivative_path": "publication-derivatives-01/0133.json",
+      "derivative_sha256": "c60e1d30d425982a94ba4449e738e623c1e8ee1d80937b471fc62d76c038770f",
+      "derivative_size": 288508
+    },
+    {
+      "original_path": "original-verification-run-06/messages-092.json",
+      "original_sha256": "655afccf66834cf93ee74e11a6f093f898185730955c22c21b6c2e7dd92e039a",
+      "original_size": 290178,
+      "derivative_path": "publication-derivatives-01/0134.json",
+      "derivative_sha256": "8071b298dba0296d92ad277ee81fe1e9fdb83416572e827956a315cd9ae56ac8",
+      "derivative_size": 288508
+    },
+    {
+      "original_path": "original-verification-run-06/messages-096.json",
+      "original_sha256": "5b46a485e62ea928494efd55d72c776eb2bfe54cb040347c74fc0b6cf9872fbc",
+      "original_size": 299043,
+      "derivative_path": "publication-derivatives-01/0135.json",
+      "derivative_sha256": "ab5ee75886df31006c865c82486e8b3fb2a3375680d90c56551b67571f484600",
+      "derivative_size": 297519
+    },
+    {
+      "original_path": "original-verification-run-06/messages-100.json",
+      "original_sha256": "3498335bdac0b49cc982fcfc6e49617cc146c8401fd68e693250743ed6a26e25",
+      "original_size": 306173,
+      "derivative_path": "publication-derivatives-01/0136.json",
+      "derivative_sha256": "83bd9d95b59443dd8c95de19ef1cca4205d7f17632a558be5330c55458882e9e",
+      "derivative_size": 304008
+    },
+    {
+      "original_path": "original-verification-run-06/messages-104.json",
+      "original_sha256": "ab98062d8b4ba4373357d4b60ad51765c29eeea6e8868d4d89bed9055c3fd980",
+      "original_size": 306173,
+      "derivative_path": "publication-derivatives-01/0137.json",
+      "derivative_sha256": "25ede92a00bb6017a1559cb507f8e9253651ab2dbeca3e0b6c136817bc468bed",
+      "derivative_size": 304008
+    },
+    {
+      "original_path": "original-verification-run-06/messages-108.json",
+      "original_sha256": "fddcae331e608ebc753ebff1978b32191b73bb9fe03b0155592a953ce46d6ba2",
+      "original_size": 306173,
+      "derivative_path": "publication-derivatives-01/0138.json",
+      "derivative_sha256": "a16698e195f1c8c1d871c13d6265aa6d673ee68241bcf8218c70ced4f3033495",
+      "derivative_size": 304008
+    },
+    {
+      "original_path": "original-verification-run-06/messages-112.json",
+      "original_sha256": "aa6511891f129d84c98f7f735ac1beb02f301b7c31c95d847ad0c1364581c230",
+      "original_size": 306173,
+      "derivative_path": "publication-derivatives-01/0139.json",
+      "derivative_sha256": "97d97f7ad6b3cfbb959dbcef22b829482be9e0100570a1e0d06edec9b4fa2afb",
+      "derivative_size": 304008
+    },
+    {
+      "original_path": "original-verification-run-06/messages-116.json",
+      "original_sha256": "5d02f756e0058ac90f4eb2110030880719b600f70c4a4b12cfb3ff2c38835d0d",
+      "original_size": 306173,
+      "derivative_path": "publication-derivatives-01/0140.json",
+      "derivative_sha256": "5d103b20c64e14fa543e572dba635e9ed108cc3e39f6941ad00df327564a5b15",
+      "derivative_size": 304008
+    },
+    {
+      "original_path": "original-verification-run-06/messages-120.json",
+      "original_sha256": "0c165afd2cbd5295cf52b6fb9e2dc9c4a2d361339ee1745ed32eebaa27a3077c",
+      "original_size": 306173,
+      "derivative_path": "publication-derivatives-01/0141.json",
+      "derivative_sha256": "bd716974e0b32e4765db8ea248cea87625110e5dba11d853715cdbd57a2b520f",
+      "derivative_size": 304008
+    },
+    {
+      "original_path": "original-verification-run-06/messages-124.json",
+      "original_sha256": "0f7118c5e01c86899351984c4bf3a211057d3c0728251378f6ff5510528f745d",
+      "original_size": 306173,
+      "derivative_path": "publication-derivatives-01/0142.json",
+      "derivative_sha256": "815a0917dbe3cdddf06ab3f76f245efaacbb394022a03a02380edac955a973f0",
+      "derivative_size": 304008
+    },
+    {
+      "original_path": "original-verification-run-06/messages-128.json",
+      "original_sha256": "835d49ed5469f5879182605f09083b9b91776d3187f749fcc841112fec990c4b",
+      "original_size": 306173,
+      "derivative_path": "publication-derivatives-01/0143.json",
+      "derivative_sha256": "ae58c43ffbb8798902c3d6ca78db4b70f06601ef6f92030e638225f4264ac655",
+      "derivative_size": 304008
+    },
+    {
+      "original_path": "original-verification-run-06/messages-132.json",
+      "original_sha256": "5e903b5f06d55364d4d6dd296d860b45d3d8acbe20bc234937b9ce0a1951a087",
+      "original_size": 306173,
+      "derivative_path": "publication-derivatives-01/0144.json",
+      "derivative_sha256": "564ae82e9e65a8c23b3a6a0d3d9749cda726be3ef0d1abc4dbfab49b28c54e97",
+      "derivative_size": 304008
+    },
+    {
+      "original_path": "original-verification-run-06/messages-136.json",
+      "original_sha256": "67491c1a919a13bd7e272de6d67621b909b6e54f571f36cf358ac10e9dbd763e",
+      "original_size": 306173,
+      "derivative_path": "publication-derivatives-01/0145.json",
+      "derivative_sha256": "275aba23e6f4b1a1b32c79acd2c5a3443ed7e2bac11e32a04041c273fd470376",
+      "derivative_size": 304008
+    },
+    {
+      "original_path": "original-verification-run-06/messages-140.json",
+      "original_sha256": "e6f1b476be07a4fd99982a2c39518ff068ce944e2c8b73004edb08a2322a04ce",
+      "original_size": 306173,
+      "derivative_path": "publication-derivatives-01/0146.json",
+      "derivative_sha256": "f3040ffb44401b105eed6dbf909bfba08329240786db9c29ac622c78347a2497",
+      "derivative_size": 304008
+    },
+    {
+      "original_path": "original-verification-run-06/messages-144.json",
+      "original_sha256": "f51f7010e25c0063a04a21df109117423b77385f9a8007534547a8a6882b0384",
+      "original_size": 306173,
+      "derivative_path": "publication-derivatives-01/0147.json",
+      "derivative_sha256": "4c8dfbeb027eb3e5ace9bd4d14915caff6d2c736a78b6e8af5dc9833b880f10b",
+      "derivative_size": 304008
+    },
+    {
+      "original_path": "original-verification-run-06/messages-148.json",
+      "original_sha256": "8eb452d40aa37a8aad989dd5450e7f7c43a57f4cd731759f2e7fa4bac6819539",
+      "original_size": 306173,
+      "derivative_path": "publication-derivatives-01/0148.json",
+      "derivative_sha256": "9b02729e485f6a84d78d96db94fe0198343bf38cd9754092bac7bd68694e90af",
+      "derivative_size": 304008
+    },
+    {
+      "original_path": "original-verification-run-06/messages-152.json",
+      "original_sha256": "1440b700c1918395ef8079bd1d68e40d413b4ba137829080084e239daa0e0de7",
+      "original_size": 306173,
+      "derivative_path": "publication-derivatives-01/0149.json",
+      "derivative_sha256": "a2f9a715fb412b95b4b9e14f4114e25451e6c2aa1996e092bf9129891036ef5f",
+      "derivative_size": 304008
+    },
+    {
+      "original_path": "original-verification-run-06/messages-156.json",
+      "original_sha256": "c0e7be84165ad72658ac6bc9861b46c43689d00792539a1e0e2225af07379b2b",
+      "original_size": 306173,
+      "derivative_path": "publication-derivatives-01/0150.json",
+      "derivative_sha256": "f41a7a713ac3b024a899f5a502b51b6af67754255c901e245439274a35f11aa5",
+      "derivative_size": 304008
+    },
+    {
+      "original_path": "original-verification-run-06/messages-160.json",
+      "original_sha256": "b87241e3b7d4a77de0683fb3bebf221dc3da10bbb56bc6046743b7a9b254a8ae",
+      "original_size": 306173,
+      "derivative_path": "publication-derivatives-01/0151.json",
+      "derivative_sha256": "19d6c30ffc2114424cf60d30720a27e3680250fde09857b966dbcf6874e94878",
+      "derivative_size": 304008
+    },
+    {
+      "original_path": "original-verification-run-06/messages-164.json",
+      "original_sha256": "321563ed274d191fb31ac138fb72702ab9c295cf5e88fa81fb7d8103b102ba28",
+      "original_size": 306173,
+      "derivative_path": "publication-derivatives-01/0152.json",
+      "derivative_sha256": "572a303d2896eb92c8c885919da8dc349fe34cb5012c5df9571d08758efc9057",
+      "derivative_size": 304008
+    },
+    {
+      "original_path": "original-verification-run-06/messages-168.json",
+      "original_sha256": "43bffe4c5e743468c0e2aae295ae03a76d509984c2f68fd25d60426c747ce1b4",
+      "original_size": 306173,
+      "derivative_path": "publication-derivatives-01/0153.json",
+      "derivative_sha256": "9fa433596ce97d3443039a6a6984a57c99e9469c781cd7f8840c9282251e6157",
+      "derivative_size": 304008
+    },
+    {
+      "original_path": "original-verification-run-06/messages-172.json",
+      "original_sha256": "5e288fceba373e4cc1858d4f3e0f07205febf98931dfcfda92004ac0ac771a53",
+      "original_size": 497081,
+      "derivative_path": "publication-derivatives-01/0154.json",
+      "derivative_sha256": "74b8f08039e212614a07ef69a160911737e95d1b97974883dfa44a4d5bfd8b39",
+      "derivative_size": 494793
+    },
+    {
+      "original_path": "original-verification-run-06/messages-176.json",
+      "original_sha256": "d450713a4b50c9fd1ad7244b6cf357b3847de9c8a326c4dd03744f2bed945684",
+      "original_size": 560521,
+      "derivative_path": "publication-derivatives-01/0155.json",
+      "derivative_sha256": "35addfc29592b2d918bdef43fad510755b62090962a9d9e7ab6058112b61f2a2",
+      "derivative_size": 558894
+    },
+    {
+      "original_path": "original-verification-run-07/child-ses_e4a9b96f8ffeupa1lztDr9XzLQ.json",
+      "original_sha256": "08b6159411ab4407532c3d37dcec4e1670f597c2a8a288aa8e71f639971cc38c",
+      "original_size": 464307,
+      "derivative_path": "publication-derivatives-01/0156.json",
+      "derivative_sha256": "2d75ac4a1fbe085ac5fec2bc6cdd564804a767aad689140709f1fbcadbc7906a",
+      "derivative_size": 452181
+    },
+    {
+      "original_path": "original-verification-run-07/final-new-messages.json",
+      "original_sha256": "29a5ac8b4e85fd6b8571cd9295215b3fe1e0c0ce23993875e3d6181cd842c71a",
+      "original_size": 801504,
+      "derivative_path": "publication-derivatives-01/0157.json",
+      "derivative_sha256": "a67192824281377613549f324a4f54ae74a9911a477c626f3ac2e90a247d3df7",
+      "derivative_size": 796555
+    },
+    {
+      "original_path": "original-verification-run-07/messages-000.json",
+      "original_sha256": "8af479cee4a6757a8c114ca7b3319a34db90d3123f9b4cff123c9cc8ac248c61",
+      "original_size": 17186,
+      "derivative_path": "publication-derivatives-01/0158.json",
+      "derivative_sha256": "3a2cd0615029237a318697732274ffb5f5ecad76c1eefbf9452e4f83bde3e399",
+      "derivative_size": 17704
+    },
+    {
+      "original_path": "original-verification-run-07/messages-004.json",
+      "original_sha256": "c2e312f9b9befe7c9a1b18abbd88227ae70021fc286658394016bc6a7007ad5e",
+      "original_size": 274540,
+      "derivative_path": "publication-derivatives-01/0159.json",
+      "derivative_sha256": "8c51b9233368c347b73f0690c609d4ba9833b04e329f268761754f45077e5d41",
+      "derivative_size": 272879
+    },
+    {
+      "original_path": "original-verification-run-07/messages-008.json",
+      "original_sha256": "88a534c59afdf78f16bd812a2e4f2628559b0fa97f09849dcf316c7f4a404004",
+      "original_size": 279053,
+      "derivative_path": "publication-derivatives-01/0160.json",
+      "derivative_sha256": "dd518c4481939b6bd7999b56a841cc66313333b4fdb2564180a32ce2cc9639be",
+      "derivative_size": 277450
+    },
+    {
+      "original_path": "original-verification-run-07/messages-012.json",
+      "original_sha256": "9f0305b05f6ba77a79e22bc119b29cd7a043ca904458480424c1f50f4b2316c1",
+      "original_size": 279053,
+      "derivative_path": "publication-derivatives-01/0161.json",
+      "derivative_sha256": "db42fa2e50c8bc3e60f8bd78e3f16d120f437cbdb4b2d4b9e09cfe8510b7f03e",
+      "derivative_size": 277450
+    },
+    {
+      "original_path": "original-verification-run-07/messages-016.json",
+      "original_sha256": "0fce428119d6df73f563a78b991b357aacdf14a7921b73e565ef1c5ff2d98012",
+      "original_size": 279053,
+      "derivative_path": "publication-derivatives-01/0162.json",
+      "derivative_sha256": "cd9094ec52badb0a90d000d22a4d1e0f2fca949c5ebac54cbeb6d7e249c5d26c",
+      "derivative_size": 277450
+    },
+    {
+      "original_path": "original-verification-run-07/messages-020.json",
+      "original_sha256": "0cef0073d949337b47bb4130197400038be6e0b418827e62883ba8855dfbba05",
+      "original_size": 279053,
+      "derivative_path": "publication-derivatives-01/0163.json",
+      "derivative_sha256": "e519c657ad944e6031e89e436577e4275ab774bc9b343a33e6c669b609708e9a",
+      "derivative_size": 277450
+    },
+    {
+      "original_path": "original-verification-run-07/messages-024.json",
+      "original_sha256": "550be65038da5004bfc23803fe35a3e43c9a41ee6ebb3045a249b27b1e27ff49",
+      "original_size": 279053,
+      "derivative_path": "publication-derivatives-01/0164.json",
+      "derivative_sha256": "eb0f4367fcd254f5abfae33cc3b7ebb6d089afccc408fe8a72e0c7e5ea4dd339",
+      "derivative_size": 277450
+    },
+    {
+      "original_path": "original-verification-run-07/messages-028.json",
+      "original_sha256": "6e469c046a47f81b1fa54917216431e3cff30279de8fdc848676ffe94716b1d2",
+      "original_size": 279053,
+      "derivative_path": "publication-derivatives-01/0165.json",
+      "derivative_sha256": "01e535cac5ed52fa65d3332abc88ad5ea8d4c9efdbfb3088ceb44181e3510806",
+      "derivative_size": 277450
+    },
+    {
+      "original_path": "original-verification-run-07/messages-032.json",
+      "original_sha256": "1eeec71ab54cbaa6bd3ac5d128befb658379ce371e5712ad2c0106a7b2b78d90",
+      "original_size": 279053,
+      "derivative_path": "publication-derivatives-01/0166.json",
+      "derivative_sha256": "7a3110e96e837ee2f1270abfe748a9c85deef174f077dc401b5827d5219290ef",
+      "derivative_size": 277450
+    },
+    {
+      "original_path": "original-verification-run-07/messages-036.json",
+      "original_sha256": "2c0047c937b1d31b09a22e3fad3260a4c8a2f0379365b79c71abdfb5df3bf2a2",
+      "original_size": 279053,
+      "derivative_path": "publication-derivatives-01/0167.json",
+      "derivative_sha256": "f3f3f586713709554108bc985e18baee78822623ccf09b9ff524b401396e5c4b",
+      "derivative_size": 277450
+    },
+    {
+      "original_path": "original-verification-run-07/messages-040.json",
+      "original_sha256": "1405f8a2ad4c4dd63eab0724b7a57240cdb4e9fe9d7856e3ea32239cc8f98356",
+      "original_size": 284156,
+      "derivative_path": "publication-derivatives-01/0168.json",
+      "derivative_sha256": "d120ccf1202e30749de5d03648a0deadfc835c001e8d9663b0b001b4483eae31",
+      "derivative_size": 282687
+    },
+    {
+      "original_path": "original-verification-run-07/messages-044.json",
+      "original_sha256": "a5007a30f9a44539bbe094ca8421d7d68c4886b56a9b0ff1737a97c5da41be53",
+      "original_size": 369815,
+      "derivative_path": "publication-derivatives-01/0169.json",
+      "derivative_sha256": "f837b10544eef6f87c4604ebfa1c79dbab2b0a6ce8e2f93c441207ea457352d7",
+      "derivative_size": 368355
+    },
+    {
+      "original_path": "original-verification-run-07/messages-048.json",
+      "original_sha256": "494aae4304c3bbfef03c54310ce395e6549f8f73cd5a3119cfd542d89a621512",
+      "original_size": 379622,
+      "derivative_path": "publication-derivatives-01/0170.json",
+      "derivative_sha256": "59f419da7441215a2a8065f6ec3449333c66bb62774db47352bd6fa07b7d9853",
+      "derivative_size": 377551
+    },
+    {
+      "original_path": "original-verification-run-07/messages-052.json",
+      "original_sha256": "b381c14661089a4cfc1ea07f8f0bb282c92ddc644217237a70266ee9f944ed85",
+      "original_size": 630177,
+      "derivative_path": "publication-derivatives-01/0171.json",
+      "derivative_sha256": "de7c72a94eae246ebf4410251f4e60591016fc8687f9fe1da3a25ba4c7240e14",
+      "derivative_size": 629305
+    },
+    {
+      "original_path": "original-verification-run-07/messages-056.json",
+      "original_sha256": "e7007f0519aa289895a0c31c3e90778ee9d0cc85f95ce7183c87889f509613e6",
+      "original_size": 740066,
+      "derivative_path": "publication-derivatives-01/0172.json",
+      "derivative_sha256": "a1f8e48e9c522120a37514af14ba0a4ba8f56b472d07c8aaae4761076b4ed2a5",
+      "derivative_size": 737414
+    },
+    {
+      "original_path": "original-verification-run-08/final-new-messages.json",
+      "original_sha256": "bf5824b9b6ea0c828db5c08e347e91c2156e8cbe2b43923d41f2008388e264e5",
+      "original_size": 88194,
+      "derivative_path": "publication-derivatives-01/0173.json",
+      "derivative_sha256": "ad4a2f7d1e5fad124122bbfcf25b774d3e1a00894b93446406000398263862e9",
+      "derivative_size": 89256
+    },
+    {
+      "original_path": "original-verification-run-08/messages-000.json",
+      "original_sha256": "47cd14734d7a87adb9de856c6af570b3640162880a6492a5739146eb3b6b1fad",
+      "original_size": 7681,
+      "derivative_path": "publication-derivatives-01/0174.json",
+      "derivative_sha256": "fb027e9994f0a414b74b856e7915ea1d2e7a19b705550a48f31fed661002053b",
+      "derivative_size": 8166
+    },
+    {
+      "original_path": "original-verification-run-08/messages-004.json",
+      "original_sha256": "f80932e65392ab332c86b400eca1d7c21e3e517761051ecdd5c61a564c5f4327",
+      "original_size": 85817,
+      "derivative_path": "publication-derivatives-01/0175.json",
+      "derivative_sha256": "f1bb3595b677aa313e02be4d00c108ddb24c73e76391f853f6c55a83a3398917",
+      "derivative_size": 86827
+    }
+  ],
+  "local_originals_preserved": true,
+  "reasoning_published": false,
+  "scope": "Hash-bound publication derivatives only; no new model call, workflow write, or source credential read"
+}

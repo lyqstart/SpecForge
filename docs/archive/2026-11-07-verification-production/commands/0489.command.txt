@@ -1,0 +1,18 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "--cwd",
+    "packages/daemon-core",
+    "test",
+    "--",
+    "tests/unit/daemon-startup-readme-contract.test.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Reproduce documented startup mismatch against actual default HTTP client request;no external network",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=existing startup regression case only;RUNTIME_OBSERVER_WRITES=Vitest cache;EXTERNAL_EVIDENCE_WRITES=qualified before-fix result",
+  "started_utc": "2026-11-07T10:20:01.863Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": []
+}

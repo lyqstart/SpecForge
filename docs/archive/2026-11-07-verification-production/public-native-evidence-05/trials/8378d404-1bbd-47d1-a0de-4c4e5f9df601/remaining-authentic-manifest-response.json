@@ -1,0 +1,50 @@
+{
+  "info": {
+    "parentID": "msg_1b3ef04c2001hv5F51iOVuYCcM",
+    "role": "assistant",
+    "mode": "sf-verifier",
+    "agent": "sf-verifier",
+    "path": {
+      "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project",
+      "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project"
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 0,
+      "output": 0,
+      "reasoning": 0,
+      "cache": {
+        "read": 0,
+        "write": 0
+      }
+    },
+    "modelID": "finite-model",
+    "providerID": "sf-fixture",
+    "time": {
+      "created": 1794020158775,
+      "completed": 1794020229670
+    },
+    "error": {
+      "name": "APIError",
+      "data": {
+        "message": "AssertionError [ERR_ASSERTION]: EXTENSION_COLLISION\n\ntrue !== false",
+        "statusCode": 500,
+        "isRetryable": true,
+        "responseHeaders": {
+          "connection": "keep-alive",
+          "content-type": "application/json",
+          "date": "Sat, 07 Nov 2026 02:57:09 GMT",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked"
+        },
+        "responseBody": "{\"error\":{\"message\":\"AssertionError [ERR_ASSERTION]: EXTENSION_COLLISION\\n\\ntrue !== false\\n\"}}",
+        "metadata": {
+          "url": "http://127.0.0.1:1399/v1/chat/completions"
+        }
+      }
+    },
+    "id": "msg_1b3ef2d37001NtcUS0Yo391QrU",
+    "sessionID": "ses_e4c10fb52ffeAgWrvX2LmMnkOD"
+  },
+  "parts": []
+}

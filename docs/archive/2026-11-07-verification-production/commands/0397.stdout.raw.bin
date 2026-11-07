@@ -1,0 +1,16 @@
+[codex/verification-production 4d891569] test(governance): align current execution evidence consumers and bounded recovery suites
+ 25 files changed, 135 insertions(+), 46 deletions(-)
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/additional-manifest.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/additional/packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/additional/packages/daemon-core/tests/unit/git-detached-filter-exclusion.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/manifest.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/active-development-rules-contract.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/configuration-activation-loss.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/git-detached-bootstrap.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/legacy-filesystem-mode-recovery.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/runtime-history-integrity.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/semantic-closure-contract-alignment.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/semantic-closure-producer-governance.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/v11-section21-acceptance.test.ts
+ create mode 100644 packages/daemon-core/tests/helpers/unit-execution-consumer.ts

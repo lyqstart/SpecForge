@@ -1,0 +1,21 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/capture-legacy-home-metadata.cjs",
+    "after-quickstart"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Capture metadata-only legacy home after exact documented interactive run",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=read-only lstat no credential content;EXTERNAL_EVIDENCE_WRITES=legacy home after metadata",
+  "started_utc": "2026-11-07T10:51:24.758Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\capture-legacy-home-metadata.cjs",
+      "sha256": "1e83bbf571b584d6433dfd2aa3df6abc3ec7ff30770a42ec6ff47dcbd741a042",
+      "size": 1237,
+      "extension": ".cjs"
+    }
+  ]
+}

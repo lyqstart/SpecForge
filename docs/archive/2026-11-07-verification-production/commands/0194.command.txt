@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/diagnose-sync-git-after-exit198.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Node-syncGit-after-natural-exit198-control",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES eight fixed Node natural198 children ended; EXTERNAL_EVIDENCE_WRITES readonly Git control; no original/user install",
+  "started_utc": "2026-11-07T04:17:48.505Z"
+}

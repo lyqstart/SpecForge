@@ -1,0 +1,28 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/static-task-command.test.ts (17 tests | 1 failed) 955ms
+   ✓ finite readonly static Task normalization > retains BRE literal parentheses/braces, wildcard dots and exact line counts 253ms
+   ✓ finite readonly static Task normalization > counts matching lines once across ERE alternatives and accepts escaped literal metacharacters 207ms
+   ✓ finite readonly static Task normalization > retains grep empty/final-line/CRLF/quiet/negative exit and output behavior  352ms
+   ✓ finite readonly static Task normalization > freezes the entire conjunction file set and does not execute any shell 66ms
+   ✓ finite readonly static Task normalization > does not execute shell-looking file content or read any extra input 65ms
+   ✓ finite readonly static Task normalization > rejects unknown or dangerous declaration grep -c "a*a*a*b" input.md 0ms
+   ✓ finite readonly static Task normalization > rejects unknown or dangerous declaration grep -cE "(a+)+" input.md 0ms
+   ✓ finite readonly static Task normalization > rejects unknown or dangerous declaration grep -c "$HOME" input.md 0ms
+   ✓ finite readonly static Task normalization > rejects unknown or dangerous declaration grep -c "x" input.md > out.md 0ms
+   ✓ finite readonly static Task normalization > rejects unknown or dangerous declaration grep -c "x" ../input.md 0ms
+   ✓ finite readonly static Task normalization > rejects unknown or dangerous declaration test -f input.md && node evil.cjs 0ms
+   ✓ finite readonly static Task normalization > rejects unknown or dangerous declaration grep -c "x" .specforge/state.json 0ms
+   ✓ finite readonly static Task normalization > rejects unknown or dangerous declaration grep -cE "a||b" input.md 0ms
+   ✓ finite readonly static Task normalization > rejects unknown or dangerous declaration ! grep -c "x" input.md 0ms
+   ✓ finite readonly static Task normalization > rejects unknown or dangerous declaration grep -c "x" input.md; echo evil 0ms
+   ✓ finite readonly static Task normalization > rejects locale-dependent counts and changed raw identities 0ms
+   × finite readonly static Task normalization > rejects double-quoted shell backslash transformations instead of certifying another pattern 7ms
+     → expected [Function] to throw an error
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 16 passed (17)
+   Start at  10:33:00
+   Duration  1.81s (transform 90ms, setup 0ms, collect 434ms, tests 955ms, environment 0ms, prepare 188ms)
+

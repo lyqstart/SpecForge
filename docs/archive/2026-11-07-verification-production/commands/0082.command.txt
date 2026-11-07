@@ -1,0 +1,16 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/static-task-command.test.ts",
+    "tests/unit/node-command-contract.test.ts",
+    "tests/unit/node-command-proof-boundary.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "static-normalization-and-existing-node-semantic-unit",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES actual ordinary Node unit children only; no profiles/business writes; EXTERNAL_EVIDENCE_WRITES receipts",
+  "started_utc": "2026-11-07T02:28:13.531Z"
+}

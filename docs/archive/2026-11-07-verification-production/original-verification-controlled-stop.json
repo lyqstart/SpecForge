@@ -1,0 +1,27 @@
+{
+  "utc": "2026-11-07T05:43:28.910Z",
+  "reason": "Actual original-WI Verifier run schema rejections require source diagnosis; prevent repeated plans/provider retries",
+  "fresh_session": "ses_e4b7c726dffez4E1gZhSMjRjhr",
+  "children": [
+    "ses_e4b7b539cffeUabMUcOM66waa1",
+    "ses_e4b783970ffeiuEa5CG20oT0ft"
+  ],
+  "events": [
+    {
+      "utc": "2026-11-07T05:43:27.503Z",
+      "session": "ses_e4b7b539cffeUabMUcOM66waa1",
+      "result": true
+    },
+    {
+      "utc": "2026-11-07T05:43:27.514Z",
+      "session": "ses_e4b783970ffeiuEa5CG20oT0ft",
+      "result": true
+    },
+    {
+      "utc": "2026-11-07T05:43:27.858Z",
+      "session": "ses_e4b7c726dffez4E1gZhSMjRjhr",
+      "result": true
+    }
+  ],
+  "original_truth_sources_directly_modified": false
+}

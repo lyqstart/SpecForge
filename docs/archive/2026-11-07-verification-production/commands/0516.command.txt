@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/read-original-state.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Independently verify original closed StateManager replay after cold Daemon restart",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=read-only state owner and observability;EXTERNAL_EVIDENCE_WRITES=cold replay state observation",
+  "started_utc": "2026-11-07T10:50:11.452Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\read-original-state.cjs",
+      "sha256": "e61e1f438ee825ac0d674c78e5539d35a0c9ad95526aba7f8022c95a12214ab5",
+      "size": 1532,
+      "extension": ".cjs"
+    }
+  ]
+}

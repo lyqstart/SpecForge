@@ -1,0 +1,9 @@
+{
+  "success": true,
+  "rebuilt_from_events": true,
+  "work_item_id": "WI-0001",
+  "workflow_type": "feature_spec",
+  "current_state": "closed",
+  "created_at": 1792905467014,
+  "updated_at": 1794045358653
+}

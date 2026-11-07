@@ -1,0 +1,1 @@
+const text="{\n  \"name\": \"specforge-owned-public-fixture\",\n  \"private\": true,\n  \"type\": \"module\"\n}\n";const lines=text===""?[]:text.split("\n");if(lines.length&&lines[lines.length-1]==="")lines.pop();const regex=RegExp("\"type\": \"module\"");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);

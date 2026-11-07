@@ -1,0 +1,29 @@
+{
+  "agent": "sf-verifier",
+  "boundary_statement": "只读验证执行，未修改任何业务或治理文件，未调用 Gate/状态推进工具；本批为 implementation 阶段证据补全，不构成正式验证报告结论。",
+  "duration_ms": 120000,
+  "escalation_signals": [],
+  "findings": [
+    "index 1: attempt=a7ca86b54704950744ddde22fc68d81036baebb2212af2ada1dcc68e8c72cc25, receipt=a26316c97406bbb3045fb22d2f5dc99dd0c76bbb43c1c28868d5b1986ae432c3, exit_code=0, stdout=\"1\\n\", cleanup_proved=true, PASS（期望 exit 0 且输出含 1）",
+    "index 2: attempt=7ad6c3b4667b5c481d40e20b4fc4896e8147d65ddee4a8548b60e3573764cc77, receipt=bf02c8e9a546535109b8f78f3c76f0e1d21ad9f7d9f2a73b158888169df02c0b, exit_code=0, stdout=\"1\\n\", cleanup_proved=true, PASS（期望 exit 0 且输出含 1）",
+    "index 3: attempt=2153099d661adbb3f7b233b5a43f5d8f1a1461739749a44a78a402342acc44d3, receipt=673495007620c5bb591e523c14895897162793e86b60904ee53b88ca9765e513, exit_code=0, stdout=\"1\\n\", cleanup_proved=true, PASS（期望 exit 0 且输出含 1）",
+    "index 4: attempt=f6edd5aee3c1be88041ba5cc26b8470c3bc6784820f2789f694581a6382e863d, receipt=00e9cd65a1a6325f1cf07166825e4fb36b7337502f89a583346bc11e4c1a0a70, exit_code=0, stdout=\"2\\n\", cleanup_proved=true, PASS（期望 exit 0 且输出含 2）",
+    "所有 4 个 LPAC 单进程只读 Node 内联判定均 outcome=passed、output_complete=true、output_preview_truncated=false、failure=null；未运行 shell/grep，原 grep/grep -cE 声明由 Runtime 归一化为同一隔离 Node 内联检查",
+    "index 0 未重复执行（已有历史 receipt ec2d84148c29a89b8053897a378f1c7bbbfce17b4003d29e0050f47c1922ab27）"
+  ],
+  "inputs_read": [
+    "plan 799ca8fa1434daceee30d1a57c69acfeaed32ba9e1fac4e0a59fa23e7682972b (index 1)",
+    "plan 7cd166ac41b863d0ae9b19b3eb6ed70d2b764aee9a134e634ad65bfa66b6c2da (index 2)",
+    "plan 206f658718f7e2c3fa78e4f1ecec85c7ec0b42b03d87260e5863ed1f2ebe7443 (index 3)",
+    "plan 9109cfb691102dd1d73865e88025b0ca963a218942d1b920a41a360362f73eec (index 4)"
+  ],
+  "next_step_recommendation": "由 sf-orchestrator 将 4 条真实回执与 index 0 历史回执合并进 TASK-WI-0001-001 的 unit 证据记录；本批结果属 implementation 阶段证据补全，不直接作为正式验证报告通过依据。",
+  "outputs_written": [
+    "handoff:verification-implementation-batch-t001-unit"
+  ],
+  "schema_version": "1.0",
+  "stage": "verification-implementation-batch-t001-unit",
+  "timestamp": "2026-11-07T00:00:00Z",
+  "unknowns": [],
+  "work_item_id": "WI-0001"
+}

@@ -1,0 +1,23 @@
+{
+  "session": "ses_e4b12d213ffeXIe5IG25AinkON",
+  "agent": "sf-verifier",
+  "message": "msg_1b4f2dbd40016wHBOCkFkgxSyD",
+  "call_id": "call_5da0274ac40f4b64858ddb4c",
+  "tool": "sf_artifact_write",
+  "status": "completed",
+  "input": {
+    "agent_content": "验证只读核验：读取 evidence/evidence_manifest.json 与 .semantic_closure.json、抽查 verification_report.md 引用，确认闭包对 EV-0014/EV-0021/EV-0022 的跨目标 supports 均有真实 receipt 执行链路依据（node --test 真实 import ../src/greet.ts 消费 TASK-001 加载环境与 TASK-002 实现；e2e 输出与 TASK-004 README 示例逐字符一致；均为零第三方包运行路径，承载 REQ-CORE-006 行为面）。修订：通过 sf_artifact_write(file_type=evidence_manifest) 原子覆盖，仅对三条目的 supports 增补 OUT/REQ-CORE-006/TASK 目标并在 description 附加对齐说明，related_refs 同步补充；其余 19 条目及全部 receipt id/exit_code/timestamp/hash 原值未动（多行正则复核通过，22 条目完整）。未修改 verification_report.md、未重跑任何命令、未创建 plan/attempt、未重开代码权限、未推进状态。注意：两次 artifact_write 出现 30s 响应超时，第一次未落盘、第二次实际已落盘（grep 确认），无重复或部分写入。",
+    "content": "{\"run_id\":\"verifier-wi0001-manifest-align\",\"work_item_id\":\"WI-0001\",\"agent\":\"sf-verifier\",\"action\":\"evidence_manifest_supports_alignment\",\"timestamp\":\"2026-11-07\",\"details\":\"对齐 EV-0014/EV-0021/EV-0022 supports 至 .semantic_closure.json 声明集合；仅核验真实执行链路依据后增补，receipt 事实零改动\"}",
+    "file_type": "work_log",
+    "run_id": "verifier-wi0001-manifest-align",
+    "work_item_id": "WI-0001"
+  },
+  "result": {
+    "success": true,
+    "path": ".specforge/work-items/WI-0001/evidence/evidence_manifest.json",
+    "size": 395,
+    "file_type": "evidence_manifest",
+    "controlled_artifact": true,
+    "normalized": true
+  }
+}

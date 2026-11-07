@@ -1,0 +1,22 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-original-current-receipts.cjs",
+    "01",
+    "original-current-execution-coverage-1794043059517.json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Preserve current22 signed objects and native raw results by consumer dependency graph;no owner key read",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable native originals and command receipts",
+  "started_utc": "2026-11-07T09:18:42.377Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\freeze-original-current-receipts.cjs",
+      "sha256": "03f6c4cd703c80801e086e586555ff2b1e12951087ec125ac6f5a1a467a23e5d",
+      "size": 4279,
+      "extension": ".cjs"
+    }
+  ]
+}

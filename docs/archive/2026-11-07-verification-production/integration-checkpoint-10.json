@@ -1,0 +1,51 @@
+{
+  "utc": "2026-11-07T08:30:08.150Z",
+  "run_id": "CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01",
+  "attempt_id": "CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01-01",
+  "mode": "CODEX_DIRECT",
+  "status": "IN_PROGRESS",
+  "source_commit": "27d46badeab50b351bc96a3aa83de73f769a703c",
+  "root": {
+    "files": 51,
+    "passed": 748,
+    "receipt": "0359"
+  },
+  "daemon": {
+    "files": 236,
+    "passed": 2338,
+    "receipt": "0389",
+    "runner": "Bun package entry/Vitest3.2.4"
+  },
+  "workspace_build": "0385 all12",
+  "native_build": "0368",
+  "current_native_acceptance": [
+    "0376 routing",
+    "0384 formal",
+    "0387 common consumers"
+  ],
+  "frozen": {
+    "22": {
+      "members": 481,
+      "manifest_sha256": "3c8bf589324946f0b4fd814766aff190e4a4a3c3d3c9154d4fed0d69135a5e1a"
+    },
+    "23": {
+      "members": 79,
+      "manifest_sha256": "3a72e8054ac04a3f8dedc04635e6cab0426070fc49c12a863a76bf957b27ad4a"
+    },
+    "24": {
+      "members": 666,
+      "manifest_sha256": "b948b5ecd083661a0fb0dec896e0d617d0dd702e66b0724c87308ab0399fa2d6"
+    }
+  },
+  "real_uninstall": "0390 owned fixture17,117 files/private and unmanaged retained",
+  "global_version": "1.0.22",
+  "original_state": "verification_running owner0377;R05 controlled stop",
+  "old_actual_executions": {
+    "implementation": 22,
+    "formal": 22,
+    "current_new_assets_accepted": false
+  },
+  "key_content_read": false,
+  "ledger_through": "ERR-2004",
+  "stop_reason": null
+}

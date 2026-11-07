@@ -1,0 +1,327 @@
+Updating 6fc9de2a..4d891569
+Fast-forward
+ .gitattributes                                     |   1 +
+ bun.lock                                           |  24 +-
+ .../actual-work-log-request-response.json          | Bin 0 -> 2030 bytes
+ .../canonical-after-controlled-stop.json           | Bin 0 -> 36314 bytes
+ .../artifact-routing-baseline-02/plan.json         | Bin 0 -> 1839 bytes
+ .../prior22-entry-request-0.json                   | Bin 0 -> 38110 bytes
+ .../prior22-entry-request-1.json                   | Bin 0 -> 38110 bytes
+ .../src/tools/handlers/sf-artifact-write.ts        | Bin 0 -> 60722 bytes
+ .../tests/unit/merge-report-owner.test.ts          | Bin 0 -> 2955 bytes
+ .../unit/verification-evidence-producer.test.ts    | Bin 0 -> 2579 bytes
+ .../consumer-client-baseline/manifest.json         | Bin 0 -> 1063 bytes
+ .../userlevel-opencode/tools/lib/thin-client.ts    | Bin 0 -> 10825 bytes
+ .../userlevel-opencode/tools/sf_artifact_write.ts  | Bin 0 -> 5144 bytes
+ .../userlevel-opencode/tools/sf_close_gate.ts      | Bin 0 -> 2215 bytes
+ .../setup/userlevel-opencode/tools/sf_gate_run.ts  | Bin 0 -> 2815 bytes
+ .../tools/sf_verification_gate.ts                  | Bin 0 -> 787 bytes
+ .../additional-manifest.json                       | Bin 0 -> 531 bytes
+ .../design-governance-orchestrator-closure.test.ts | Bin 0 -> 47408 bytes
+ .../unit/git-detached-filter-exclusion.test.ts     | Bin 0 -> 2784 bytes
+ .../daemon-consumer-fixture-baseline/manifest.json | Bin 0 -> 3362 bytes
+ .../p0-governance-regression-flow.test.ts          | Bin 0 -> 26777 bytes
+ .../unit/active-development-rules-contract.test.ts | Bin 0 -> 10104 bytes
+ .../unit/configuration-activation-loss.test.ts     | Bin 0 -> 7971 bytes
+ .../tests/unit/git-detached-bootstrap.test.ts      | Bin 0 -> 15661 bytes
+ .../unit/legacy-filesystem-mode-recovery.test.ts   | Bin 0 -> 16847 bytes
+ .../tests/unit/runtime-history-integrity.test.ts   | Bin 0 -> 8876 bytes
+ .../semantic-closure-contract-alignment.test.ts    | Bin 0 -> 5861 bytes
+ .../semantic-closure-producer-governance.test.ts   | Bin 0 -> 8087 bytes
+ .../tests/v11-section21-acceptance.test.ts         | Bin 0 -> 58509 bytes
+ .../design/windows-lpac-node-readonly-contract.md  | Bin 0 -> 19314 bytes
+ .../evidence-guidance-baseline/manifest.json       | Bin 0 -> 33738 bytes
+ .../src/tools/handlers/sf-artifact-write.ts        | Bin 0 -> 60722 bytes
+ .../setup/userlevel-opencode/agents/sf-verifier.md | Bin 0 -> 38651 bytes
+ .../SKILL.md                                       | Bin 0 -> 3734 bytes
+ .../userlevel-opencode/tools/sf_artifact_write.ts  | Bin 0 -> 4194 bytes
+ .../version-preparation-1.0.23/manifest.json       | Bin 0 -> 4502 bytes
+ .../version-preparation-1.0.23/original/bun.lock   | Bin 0 -> 366461 bytes
+ .../specforge-product-specification.md             | Bin 0 -> 89704 bytes
+ .../original/package.json                          | Bin 0 -> 2611 bytes
+ .../original/packages/cli/package.json             | Bin 0 -> 1604 bytes
+ .../original/packages/configuration/package.json   | Bin 0 -> 1243 bytes
+ .../original/packages/daemon-core/package.json     | Bin 0 -> 1890 bytes
+ .../original/packages/host-profile/package.json    | Bin 0 -> 583 bytes
+ .../original/packages/observability/package.json   | Bin 0 -> 2007 bytes
+ .../packages/opencode-adapter/package.json         | Bin 0 -> 1817 bytes
+ .../packages/permission-engine/package.json        | Bin 0 -> 2040 bytes
+ .../original/packages/scope-gate/package.json      | Bin 0 -> 2254 bytes
+ .../packages/service-management/package.json       | Bin 0 -> 2008 bytes
+ .../original/packages/types/package.json           | Bin 0 -> 2890 bytes
+ .../packages/version-unification/package.json      | Bin 0 -> 607 bytes
+ .../packages/workflow-runtime/package.json         | Bin 0 -> 2231 bytes
+ .../workflow-persistence-baseline/manifest.json    | Bin 0 -> 5413 bytes
+ .../EVENT_REPLAY_COMPLETION_SUMMARY.md             | Bin 0 -> 4018 bytes
+ .../STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md       | Bin 0 -> 5252 bytes
+ .../original/packages/workflow-runtime/docs/API.md | Bin 0 -> 18103 bytes
+ .../packages/workflow-runtime/docs/DEPLOYMENT.md   | Bin 0 -> 14882 bytes
+ .../packages/workflow-runtime/docs/EXAMPLES.md     | Bin 0 -> 19813 bytes
+ .../docs/state-recovery-mechanism.md               | Bin 0 -> 6720 bytes
+ .../docs/storage-implementation.md                 | Bin 0 -> 5586 bytes
+ .../examples/state-recovery-example.ts             | Bin
+ .../workflow-runtime/examples/storage-example.ts   | Bin
+ .../packages/workflow-runtime/package.json         | Bin 0 -> 2069 bytes
+ .../workflow-runtime/src/StateRecoveryManager.ts   | Bin
+ .../workflow-runtime/src/WorkflowPersistence.ts    | Bin
+ .../workflow-runtime/src/events/EventLogReader.ts  | Bin
+ .../packages/workflow-runtime/src/index.ts         | Bin 0 -> 3974 bytes
+ .../src/storage/AtomicWorkflowInstanceStorage.ts   | Bin
+ .../src/storage/WorkflowInstanceStorage.ts         | Bin
+ .../workflow-runtime/src/storage/index.ts          | Bin
+ .../workflow-runtime/tests/acceptance.test.ts      | Bin 0 -> 24991 bytes
+ .../tests/integration/crash-recovery.test.ts       | Bin
+ .../integration/persistence-comprehensive.test.ts  | Bin
+ .../unit/AtomicWorkflowInstanceStorage.test.ts     | Bin
+ .../tests/unit/EventLogReader.test.ts              | Bin
+ .../tests/unit/StateRecoveryManager.test.ts        | Bin
+ .../tests/unit/WorkflowInstanceStorage.test.ts     | Bin
+ .../tests/unit/WorkflowPersistence.test.ts         | Bin
+ .../packages/workflow-runtime/tsconfig.json        | Bin 0 -> 1130 bytes
+ .../original/tests/e2e/feature-spec-e2e.test.ts    | Bin 0 -> 23183 bytes
+ .../workflow-persistence-boundary-repair-plan.md   | Bin 0 -> 2574 bytes
+ .../workflow-persistence-build-verification.json   | Bin 0 -> 3961 bytes
+ .../workflow-persistence-retirement.json           | Bin 0 -> 6278 bytes
+ docs/design/windows-lpac-node-readonly-contract.md |  43 +-
+ docs/product-specification/authority-registry.md   |   5 +-
+ .../specforge-product-specification.md             |  24 +-
+ docs/project-status.md                             |  20 +-
+ docs/rule/specforge-active-development-rules.md    |  17 +
+ ...orge-development-error-ledger-and-experience.md | 312 ++++++++
+ package.json                                       |   2 +-
+ packages/cli/package.json                          |   2 +-
+ packages/configuration/package.json                |   2 +-
+ packages/daemon-core/package.json                  |   2 +-
+ packages/daemon-core/src/daemon/Daemon.ts          |  13 +-
+ packages/daemon-core/src/http/HTTPServer.ts        |   7 +-
+ packages/daemon-core/src/tools/ToolDispatcher.ts   |  20 +-
+ .../src/tools/handlers/sf-artifact-write.ts        |  54 +-
+ .../src/tools/handlers/sf-v11-close-gate.ts        |   1 +
+ .../src/tools/handlers/sf-v11-gate-run.ts          |   1 +
+ .../src/tools/handlers/sf-v11-verification.ts      |  17 +-
+ .../tools/handlers/sf-verification-execution.ts    |  19 +
+ .../src/tools/handlers/sf-verification-gate.ts     |   6 +-
+ packages/daemon-core/src/tools/index.ts            |   1 +
+ packages/daemon-core/src/tools/lib/close-gate.ts   |   1 +
+ .../daemon-core/src/tools/lib/evidence-manifest.ts |   9 +
+ packages/daemon-core/src/tools/lib/gate-report.ts  |   1 +
+ .../daemon-core/src/tools/lib/gate-runner-v11.ts   |   2 +
+ .../src/tools/lib/project-governance-v2.ts         |   5 +
+ .../tools/lib/verification-evidence-integrity.ts   |   4 +
+ .../tools/lib/verification-governance-contract.ts  |   2 +
+ .../src/tools/lib/verification-report-contract.ts  |  13 +
+ .../src/verification/VerificationRuntime.ts        | 314 ++++++++
+ .../src/verification/authority-snapshot.ts         | 114 +++
+ .../verification/execution-evidence-consumer.ts    |  52 ++
+ .../src/verification/invocation-lease.ts           |  57 ++
+ .../src/verification/native-executor.ts            | 141 ++++
+ .../src/verification/node-command-contract.ts      | 213 ++++++
+ .../daemon-core/src/verification/owner-store.ts    | 119 +++
+ .../src/verification/rejection-diagnostic.ts       |  14 +
+ .../src/verification/request-context.ts            |  12 +
+ .../src/verification/source-snapshot.ts            | 102 +++
+ .../src/verification/static-task-command.ts        |  78 ++
+ .../src/verification/verification-assets.ts        |  36 +
+ .../src/verification/verification-plan.ts          | 113 +++
+ .../src/verification/verification-schema.ts        | 118 +++
+ .../src/verification/windows/LpacInputIdentity.cs  |   1 +
+ .../src/verification/windows/LpacParentLifetime.cs |   4 +-
+ .../src/verification/windows/LpacProductionPlan.cs |  48 ++
+ .../verification/windows/LpacProductionRecovery.cs |  52 ++
+ .../src/verification/windows/LpacStartupPoc.cs     |  54 +-
+ .../daemon-core/src/verification/windows/README.md |  30 +-
+ .../design-governance-orchestrator-closure.test.ts |  12 +-
+ .../tests/helpers/unit-execution-consumer.ts       |  40 +
+ .../p0-governance-regression-flow.test.ts          |  15 +-
+ .../unit/active-development-rules-contract.test.ts |   8 +-
+ .../unit/code-only-close-gate-overlay.test.ts      |   2 +-
+ .../tests/unit/execution-evidence-consumer.test.ts |  60 ++
+ .../tests/unit/git-detached-bootstrap.test.ts      |   4 +-
+ .../unit/git-detached-filter-exclusion.test.ts     |   2 +-
+ .../tests/unit/invocation-lease.test.ts            |  42 ++
+ .../unit/legacy-filesystem-mode-recovery.test.ts   |  10 +-
+ .../tests/unit/merge-report-owner.test.ts          |  10 +-
+ .../tests/unit/node-command-contract.test.ts       |  78 ++
+ .../tests/unit/node-command-proof-boundary.test.ts |  22 +
+ .../tests/unit/project-session-bootstrap.test.ts   |  44 ++
+ .../semantic-closure-contract-alignment.test.ts    |   9 +-
+ .../semantic-closure-producer-governance.test.ts   |  34 +-
+ .../tests/unit/static-task-command.test.ts         |  52 ++
+ .../unit/verification-evidence-producer.test.ts    |  42 ++
+ .../unit/verification-governance-contract.test.ts  |  22 +-
+ .../tests/unit/verification-owner-store.test.ts    |  81 +++
+ .../unit/verification-rejection-diagnostic.test.ts |  17 +
+ .../tests/unit/verification-runtime-plan.test.ts   | 144 ++++
+ .../unit/verification-source-snapshot.test.ts      |  86 +++
+ .../tests/v11-section21-acceptance.test.ts         |  28 +-
+ packages/host-profile/package.json                 |   2 +-
+ packages/observability/package.json                |   2 +-
+ packages/opencode-adapter/package.json             |   2 +-
+ packages/opencode-adapter/src/index.ts             |   2 +
+ .../src/integration/OpenCodeHttpRuntimeClient.ts   |  67 ++
+ .../tests/OpenCodeToolInvocation.test.ts           |  62 ++
+ packages/permission-engine/package.json            |   2 +-
+ packages/scope-gate/package.json                   |   2 +-
+ packages/service-management/package.json           |   2 +-
+ packages/types/package.json                        |  10 +-
+ packages/types/src/index.ts                        |   2 +
+ packages/types/src/trusted-tool-invocation.ts      |  24 +
+ packages/version-unification/package.json          |   2 +-
+ .../EVENT_REPLAY_COMPLETION_SUMMARY.md             | 115 +--
+ .../STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md       | 145 +---
+ packages/workflow-runtime/docs/API.md              | 802 +--------------------
+ packages/workflow-runtime/docs/DEPLOYMENT.md       | 710 +-----------------
+ packages/workflow-runtime/docs/EXAMPLES.md         | 772 +-------------------
+ .../docs/state-recovery-mechanism.md               | 250 +------
+ .../docs/storage-implementation.md                 | 171 +----
+ packages/workflow-runtime/package.json             |  16 +-
+ packages/workflow-runtime/src/index.ts             |  26 -
+ packages/workflow-runtime/tests/acceptance.test.ts |  47 +-
+ .../tests/unit/persistence-owner-boundary.test.ts  |  37 +
+ scripts/build-release-runtime-artifacts.ts         |   3 +
+ scripts/build-workflow-runtime.ts                  |  29 +
+ scripts/lib/registry.ts                            |   9 +
+ scripts/lib/release-manifest-producer.ts           |   3 +
+ scripts/lib/release-owner-snapshot-producers.ts    |   8 +-
+ scripts/lib/types.ts                               |   2 +
+ scripts/lib/verification-asset-producer.ts         |  45 ++
+ scripts/lib/verify-tool-schemas.ts                 |  34 +
+ scripts/project-session-bootstrap.mjs              |   3 +-
+ scripts/render-layout.ts                           |   1 +
+ setup/userlevel-opencode/AGENTS.md                 | 129 ++--
+ setup/userlevel-opencode/agents/sf-orchestrator.md |  11 +-
+ setup/userlevel-opencode/agents/sf-verifier.md     |  33 +-
+ .../skills/sf-workflow-feature-spec/SKILL.md       |   6 +-
+ .../SKILL.md                                       |  12 +-
+ .../tools/lib/sf_verifier_execution_core.ts        |   6 +-
+ setup/userlevel-opencode/tools/lib/thin-client.ts  |  41 +-
+ .../userlevel-opencode/tools/sf_artifact_write.ts  |  66 +-
+ setup/userlevel-opencode/tools/sf_close_gate.ts    |   9 +-
+ setup/userlevel-opencode/tools/sf_gate_run.ts      |   9 +-
+ .../tools/sf_verification_gate.ts                  |   9 +-
+ .../tools/sf_verification_plan.ts                  |  19 +
+ .../tools/sf_verification_run.ts                   |  16 +
+ tests/e2e/feature-spec-e2e.test.ts                 | 242 ++-----
+ tests/e2e/tool-dispatcher-e2e.test.ts              |   5 +-
+ tests/root-test-role-registry.json                 |   6 +-
+ .../unit/current-product-version-contract.test.ts  |   9 +-
+ tests/unit/installer/verify-tool-schemas.test.ts   |  11 +
+ tests/unit/verification-consumer-http.test.ts      | 111 +++
+ .../verifier-evidence-manifest-example.test.ts     |  44 ++
+ 208 files changed, 3866 insertions(+), 3503 deletions(-)
+ create mode 100644 docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/actual-work-log-request-response.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/canonical-after-controlled-stop.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/plan.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/prior22-entry-request-0.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/prior22-entry-request-1.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/source/packages/daemon-core/src/tools/handlers/sf-artifact-write.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/source/packages/daemon-core/tests/unit/merge-report-owner.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/source/packages/daemon-core/tests/unit/verification-evidence-producer.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/consumer-client-baseline/manifest.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/consumer-client-baseline/setup/userlevel-opencode/tools/lib/thin-client.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/consumer-client-baseline/setup/userlevel-opencode/tools/sf_artifact_write.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/consumer-client-baseline/setup/userlevel-opencode/tools/sf_close_gate.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/consumer-client-baseline/setup/userlevel-opencode/tools/sf_gate_run.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/consumer-client-baseline/setup/userlevel-opencode/tools/sf_verification_gate.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/additional-manifest.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/additional/packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/additional/packages/daemon-core/tests/unit/git-detached-filter-exclusion.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/manifest.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/active-development-rules-contract.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/configuration-activation-loss.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/git-detached-bootstrap.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/legacy-filesystem-mode-recovery.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/runtime-history-integrity.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/semantic-closure-contract-alignment.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/semantic-closure-producer-governance.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/v11-section21-acceptance.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/docs/design/windows-lpac-node-readonly-contract.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/manifest.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/packages/daemon-core/src/tools/handlers/sf-artifact-write.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/agents/sf-verifier.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/tools/sf_artifact_write.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/manifest.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/bun.lock
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/docs/product-specification/specforge-product-specification.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/cli/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/configuration/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/daemon-core/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/host-profile/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/observability/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/opencode-adapter/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/permission-engine/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/scope-gate/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/service-management/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/types/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/version-unification/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/workflow-runtime/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/manifest.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/API.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/DEPLOYMENT.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/EXAMPLES.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/state-recovery-mechanism.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/storage-implementation.md
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/examples/state-recovery-example.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/examples/storage-example.ts (100%)
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/package.json
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/src/StateRecoveryManager.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/src/WorkflowPersistence.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/src/events/EventLogReader.ts (100%)
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/index.ts
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/src/storage/AtomicWorkflowInstanceStorage.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/src/storage/WorkflowInstanceStorage.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/src/storage/index.ts (100%)
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/acceptance.test.ts
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/tests/integration/crash-recovery.test.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/tests/integration/persistence-comprehensive.test.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/tests/unit/AtomicWorkflowInstanceStorage.test.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/tests/unit/EventLogReader.test.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/tests/unit/StateRecoveryManager.test.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/tests/unit/WorkflowInstanceStorage.test.ts (100%)
+ rename {packages => docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages}/workflow-runtime/tests/unit/WorkflowPersistence.test.ts (100%)
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tsconfig.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/tests/e2e/feature-spec-e2e.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-boundary-repair-plan.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-build-verification.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/workflow-persistence-retirement.json
+ create mode 100644 packages/daemon-core/src/tools/handlers/sf-verification-execution.ts
+ create mode 100644 packages/daemon-core/src/verification/VerificationRuntime.ts
+ create mode 100644 packages/daemon-core/src/verification/authority-snapshot.ts
+ create mode 100644 packages/daemon-core/src/verification/execution-evidence-consumer.ts
+ create mode 100644 packages/daemon-core/src/verification/invocation-lease.ts
+ create mode 100644 packages/daemon-core/src/verification/native-executor.ts
+ create mode 100644 packages/daemon-core/src/verification/node-command-contract.ts
+ create mode 100644 packages/daemon-core/src/verification/owner-store.ts
+ create mode 100644 packages/daemon-core/src/verification/rejection-diagnostic.ts
+ create mode 100644 packages/daemon-core/src/verification/request-context.ts
+ create mode 100644 packages/daemon-core/src/verification/source-snapshot.ts
+ create mode 100644 packages/daemon-core/src/verification/static-task-command.ts
+ create mode 100644 packages/daemon-core/src/verification/verification-assets.ts
+ create mode 100644 packages/daemon-core/src/verification/verification-plan.ts
+ create mode 100644 packages/daemon-core/src/verification/verification-schema.ts
+ create mode 100644 packages/daemon-core/src/verification/windows/LpacProductionPlan.cs
+ create mode 100644 packages/daemon-core/src/verification/windows/LpacProductionRecovery.cs
+ create mode 100644 packages/daemon-core/tests/helpers/unit-execution-consumer.ts
+ create mode 100644 packages/daemon-core/tests/unit/execution-evidence-consumer.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/invocation-lease.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/node-command-contract.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/node-command-proof-boundary.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/static-task-command.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/verification-owner-store.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/verification-rejection-diagnostic.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/verification-runtime-plan.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/verification-source-snapshot.test.ts
+ create mode 100644 packages/opencode-adapter/tests/OpenCodeToolInvocation.test.ts
+ create mode 100644 packages/types/src/trusted-tool-invocation.ts
+ create mode 100644 packages/workflow-runtime/tests/unit/persistence-owner-boundary.test.ts
+ create mode 100644 scripts/build-workflow-runtime.ts
+ create mode 100644 scripts/lib/verification-asset-producer.ts
+ create mode 100644 setup/userlevel-opencode/tools/sf_verification_plan.ts
+ create mode 100644 setup/userlevel-opencode/tools/sf_verification_run.ts
+ create mode 100644 tests/unit/verification-consumer-http.test.ts
+ create mode 100644 tests/unit/verifier-evidence-manifest-example.test.ts

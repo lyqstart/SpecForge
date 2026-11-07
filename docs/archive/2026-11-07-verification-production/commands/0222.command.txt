@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/prepare-source-repair-commit.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-verified-async-Git-source-repair-commit",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES exact source repair pathspec provenance only; no Git mutation/original/user install",
+  "started_utc": "2026-11-07T04:33:02.888Z"
+}

@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-07T10:30:51.263Z",
+  "failed_command": "0494",
+  "failure": "MODULE_PARSE_BEFORE_MUTATION",
+  "observed_branch": "main",
+  "observed_head": "4d891569fb9e497bd1cfad498b0de79ae80c6b0a",
+  "staged_paths": 0,
+  "qualified_source_checks": [
+    {
+      "path": "stage-final-guidance-source.cjs",
+      "sha256": "a0858fdde3a520dcabcbbbe8de4587a51cb2a1ccb787635d399d72cf5d1e7458",
+      "exit_code": 0
+    },
+    {
+      "path": "review-final-guidance-source.cjs",
+      "sha256": "4e65bab073135015cba753bb978ab9224b68bd1288cd1d12a9d4258aa0a0087f",
+      "exit_code": 0
+    }
+  ],
+  "next": "Generate immutable review02 from current9 source paths, then execute syntax-qualified exact staging"
+}

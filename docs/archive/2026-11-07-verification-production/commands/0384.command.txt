@@ -1,0 +1,22 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/public-kernel-chain.cjs",
+    "19",
+    "formal"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Run full real installed routing-repaired1.0.23 formal verification matrix after destination regression",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES isolated fixture19 Kernel/Daemon/LPAC owner only; EXTERNAL_EVIDENCE_WRITES actual frozen driver/tool/native receipts; no original/global writes",
+  "started_utc": "2026-11-07T08:05:59.140Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\public-kernel-chain.cjs",
+      "sha256": "b9e5615034fe70b3730a8c4949530f8ea2328da38d59d03c3b1cff94a17a69a2",
+      "size": 41718,
+      "extension": ".cjs"
+    }
+  ]
+}

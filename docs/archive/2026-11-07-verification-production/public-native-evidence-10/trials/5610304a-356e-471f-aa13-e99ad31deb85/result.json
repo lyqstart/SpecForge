@@ -1,0 +1,855 @@
+{
+  "utc": "2026-11-07T03:50:15.063Z",
+  "trial": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\ec4e012955964ac080d38edc63c1db94\\trials\\5610304a-356e-471f-aa13-e99ad31deb85",
+  "records": [
+    {
+      "name": "formal-001-plan",
+      "session": "ses_e4be4c6ecffeQyz2Zc0Adrx3Y6",
+      "message": "msg_1b41b3dd50017tc1TwJzIhBKEk",
+      "call": "call_f4f19425d5e7484193f4e4a0d02000e5",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "96b93a6e992f21ad2d33c74b3bc51bbf3a4cd4b885437cd58348173fef6c2e3f",
+        "preparation_id": "64ead6c24babb3f4a3891b973c2aafe5605e4e4863100e26e3c35aefce60ace9",
+        "expires_at": "2026-11-07T03:55:14.868Z",
+        "purpose": "formal",
+        "original_command": "node --test tests/positive.test.cjs",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "--test-reporter=tap",
+          "--test",
+          "--test-isolation=none",
+          "tests/positive.test.cjs"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "formal-001-prepare",
+      "session": "ses_e4be39fe2fferUDv66wAnHgxyQ",
+      "message": "msg_1b41c60770017Wo7XszrWAIqUv",
+      "call": "call_90054362c2364400830b6507eb6a0c15",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "d63ce2ec10bbe4e6d08f231bdece5613aa45cd2f13e2781d75029eda70498e54",
+        "attempt_id": "8d08e597274e43a6858c0c89521c7438",
+        "plan_id": "96b93a6e992f21ad2d33c74b3bc51bbf3a4cd4b885437cd58348173fef6c2e3f",
+        "application_started": false
+      }
+    },
+    {
+      "name": "formal-001-run",
+      "session": "ses_e4be390b3ffe7pLPn7OqM6NxAQ",
+      "message": "msg_1b41c6fa0001tmBQWj6JNFUcmd",
+      "call": "call_d51be685a68549089ce3cca66ff5f510",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "receipt_id": "356f3f2efbd6095980ddcdcb39b6e8400d0ba38aa9b44b711570c4b8a8e5721e",
+        "attempt_record_id": "d63ce2ec10bbe4e6d08f231bdece5613aa45cd2f13e2781d75029eda70498e54",
+        "attempt_id": "8d08e597274e43a6858c0c89521c7438",
+        "plan_id": "96b93a6e992f21ad2d33c74b3bc51bbf3a4cd4b885437cd58348173fef6c2e3f",
+        "outcome": "passed",
+        "exit_code": 0,
+        "cleanup_proved": true,
+        "failure": null,
+        "stdout": "TAP version 13\n# Subtest: salute\nok 1 - salute\n  ---\n  duration_ms: 1.2616\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 22.1344\n",
+        "stderr": "",
+        "output_preview_truncated": false,
+        "output_complete": true
+      }
+    },
+    {
+      "name": "formal-002-plan",
+      "session": "ses_e4be361d0ffeKq67ZritDrahQM",
+      "message": "msg_1b41c9e79001ZlVnUVHqwyWs9g",
+      "call": "call_f000f499090e4dc2bf1736cc98b05252",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "91955f682a9ba959e277ac6c7c019417abb6d9c2003316d04ad3eada82aefc92",
+        "preparation_id": "922000b760a67614230e9650919b920fbe642121fcaba8d1466cbf3383a6ee31",
+        "expires_at": "2026-11-07T03:55:38.746Z",
+        "purpose": "formal",
+        "original_command": "node -e \"const {salute}=require('./src/library.cjs');if(salute('Ada')!=='hi Ada')process.exit(1);console.log('SF_PRODUCT_INLINE_OK');\"",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "-e",
+          "const {salute}=require('./src/library.cjs');if(salute('Ada')!=='hi Ada')process.exit(1);console.log('SF_PRODUCT_INLINE_OK');"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "formal-002-prepare",
+      "session": "ses_e4be34beaffebzctnY4bOPa6Vy",
+      "message": "msg_1b41cb465001ELuyIDQWp6e3Xj",
+      "call": "call_09f789a4459a4374bbeaf49cf1cd9197",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "7da4771ed0402c2a9483e311682ff80823843b0bcf07511cd7ab3503edd6ec21",
+        "attempt_id": "a41bac3b548a402783fafcbd9cbccff8",
+        "plan_id": "91955f682a9ba959e277ac6c7c019417abb6d9c2003316d04ad3eada82aefc92",
+        "application_started": false
+      }
+    },
+    {
+      "name": "formal-002-run",
+      "session": "ses_e4be33b43ffecdmt6ej7sS2y86",
+      "message": "msg_1b41cc507001n8aK03HgKA9ZfK",
+      "call": "call_cd34bb386c2b4bde974841dafedbd511",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "receipt_id": "db71195ab38ba762424ed14e11ccdd881bb530322e0bdb9ed6b2748a35e1fe5f",
+        "attempt_record_id": "7da4771ed0402c2a9483e311682ff80823843b0bcf07511cd7ab3503edd6ec21",
+        "attempt_id": "a41bac3b548a402783fafcbd9cbccff8",
+        "plan_id": "91955f682a9ba959e277ac6c7c019417abb6d9c2003316d04ad3eada82aefc92",
+        "outcome": "passed",
+        "exit_code": 0,
+        "cleanup_proved": true,
+        "failure": null,
+        "stdout": "SF_PRODUCT_INLINE_OK\n",
+        "stderr": "",
+        "output_preview_truncated": false,
+        "output_complete": true
+      }
+    },
+    {
+      "name": "formal-004-plan",
+      "session": "ses_e4be30f82ffeDWghEiP61Fy7az",
+      "message": "msg_1b41cf0c1001wCBiMBFN10XrHq",
+      "call": "call_1630eeb5557a4bc0bb41c6b7dd3efee2",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "2103c993f5f042adf92f542de7f2ff774d572e81cba52776d22d7aac89f588c0",
+        "preparation_id": "cc0710099c6366249bc8bb4e45b34e09162e0fd83bd22e12474cc4e687a0abcc",
+        "expires_at": "2026-11-07T03:56:00.123Z",
+        "purpose": "formal",
+        "original_command": "test -f package.json && test -f tsconfig.json",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "-e",
+          "process.exit(0);"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "formal-004-prepare",
+      "session": "ses_e4be2f90affeIhp3OtlO7Pkyb5",
+      "message": "msg_1b41d0743001cgwhrIFFloZWg2",
+      "call": "call_65550809b5d544c18d13afa5b4ce76f3",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "d23e1bc611dd61988f54bca9a01b65addd07e4f0d8962ded605381eddfd59c6c",
+        "attempt_id": "5cc008a596b147d0b5dec349570f2e8a",
+        "plan_id": "2103c993f5f042adf92f542de7f2ff774d572e81cba52776d22d7aac89f588c0",
+        "application_started": false
+      }
+    },
+    {
+      "name": "formal-004-run",
+      "session": "ses_e4be2ea92ffeF3U6hf00enDbjQ",
+      "message": "msg_1b41d15bd0011wxSzZNX21XTMq",
+      "call": "call_84c34e3f11c8421daa480c2c7504656c",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "receipt_id": "2db4c7a00209a2802657ecbc15b9d3ef2321d2ad4d7febc3a206816719aa12dd",
+        "attempt_record_id": "d23e1bc611dd61988f54bca9a01b65addd07e4f0d8962ded605381eddfd59c6c",
+        "attempt_id": "5cc008a596b147d0b5dec349570f2e8a",
+        "plan_id": "2103c993f5f042adf92f542de7f2ff774d572e81cba52776d22d7aac89f588c0",
+        "outcome": "passed",
+        "exit_code": 0,
+        "cleanup_proved": true,
+        "failure": null,
+        "stdout": "",
+        "stderr": "",
+        "output_preview_truncated": false,
+        "output_complete": true
+      }
+    },
+    {
+      "name": "formal-005-plan",
+      "session": "ses_e4be2c210ffe8AWNrQ0NRkJaCK",
+      "message": "msg_1b41d3e400016DyPgKeWnhsheW",
+      "call": "call_27e160004f2d4f4bbe43f814a7e27bbc",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "5b042da75f98a7141ab4577f02b050e81eef5c659fc6e9289d5777d9adbfc185",
+        "preparation_id": "d46606297626a4ee9e6dd52022f11adec8fc7f72e2873fc0e7fca04c1acdea7e",
+        "expires_at": "2026-11-07T03:56:19.521Z",
+        "purpose": "formal",
+        "original_command": "grep -c '\"type\": \"module\"' package.json",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "-e",
+          "const text=\"{\\n  \\\"name\\\": \\\"specforge-owned-public-fixture\\\",\\n  \\\"private\\\": true,\\n  \\\"type\\\": \\\"module\\\"\\n}\\n\";const lines=text===\"\"?[]:text.split(\"\\n\");if(lines.length&&lines[lines.length-1]===\"\")lines.pop();const regex=RegExp(\"\\\"type\\\": \\\"module\\\"\");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "formal-005-prepare",
+      "session": "ses_e4be2ae53ffer1SKLj4MIW7Bi3",
+      "message": "msg_1b41d51f2001dxU0lFvZBacMIN",
+      "call": "call_6c5826a20b594ac39d7a1952dd9855ab",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "9c1e018888290d1c0932357fb14fb051539838bcebd1d08e8d66e90afd405e44",
+        "attempt_id": "9c590663e559444b9f646069c824e712",
+        "plan_id": "5b042da75f98a7141ab4577f02b050e81eef5c659fc6e9289d5777d9adbfc185",
+        "application_started": false
+      }
+    },
+    {
+      "name": "formal-005-run",
+      "session": "ses_e4be2a116ffeUvRYVtNojyGHx9",
+      "message": "msg_1b41d5f2a001QbyU4uPT2rCOob",
+      "call": "call_b878ceffdd4d4c6098381452b1367b77",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "receipt_id": "98ca29f434a48bbe282e253d39a68aee36f5fa932f52c1938c4ea8069f30a5a3",
+        "attempt_record_id": "9c1e018888290d1c0932357fb14fb051539838bcebd1d08e8d66e90afd405e44",
+        "attempt_id": "9c590663e559444b9f646069c824e712",
+        "plan_id": "5b042da75f98a7141ab4577f02b050e81eef5c659fc6e9289d5777d9adbfc185",
+        "outcome": "passed",
+        "exit_code": 0,
+        "cleanup_proved": true,
+        "failure": null,
+        "stdout": "1\n",
+        "stderr": "",
+        "output_preview_truncated": false,
+        "output_complete": true
+      }
+    },
+    {
+      "name": "formal-006-plan",
+      "session": "ses_e4be27843ffeQ7hJ5bcYrvP3LX",
+      "message": "msg_1b41d8800001yPCre4DiNgnIR4",
+      "call": "call_834dec9db0654b1fad78a48043ec26d0",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "b30572f95aee304b54a0c736d021108acc89b67e526291eded33faddf7ac8984",
+        "preparation_id": "09f25099c4a6bc7fc9ef4d209ff7146ca68a4a4099b134115fad7b7b4a09ff9e",
+        "expires_at": "2026-11-07T03:56:38.676Z",
+        "purpose": "formal",
+        "original_command": "! grep -qE \"^import |^import\\{|require\\(\" src/value.ts",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "-e",
+          "const text=\"export function greet(name:string):string{return name===\\\"\\\"?\\\"Hello, world!\\\":\\\"Hello, \\\"+name+\\\"!\\\";}\\n\";const lines=text===\"\"?[]:text.split(\"\\n\");if(lines.length&&lines[lines.length-1]===\"\")lines.pop();const regex=RegExp(\"^import |^import\\\\{|require\\\\(\");let count=0;for(const line of lines){if(regex.test(line))count++;}process.exit(count===0?0:1);"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "formal-006-prepare",
+      "session": "ses_e4be26630ffesTdDSNVy8glr5K",
+      "message": "msg_1b41d99fd001O1XataSZ6kjHHE",
+      "call": "call_f75d5a623ca34c1bab7340a01a6c13e3",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "b8bf028db1582bfea6a8f296ea5440266d8219215477ea6f1089700d6b7d494b",
+        "attempt_id": "56ff4649c89644aca04810f248a3c0b1",
+        "plan_id": "b30572f95aee304b54a0c736d021108acc89b67e526291eded33faddf7ac8984",
+        "application_started": false
+      }
+    },
+    {
+      "name": "formal-006-run",
+      "session": "ses_e4be25948ffeXvuK6DnIvDAow4",
+      "message": "msg_1b41da6e8001xLxOJD6Cwl8wfz",
+      "call": "call_36928e95c0a449df9c79586d0cb3e4ce",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "receipt_id": "e08d63617ea051d33fdba7378e42ba43f28e6c0ed2eed28fe3021d3d5309fe05",
+        "attempt_record_id": "b8bf028db1582bfea6a8f296ea5440266d8219215477ea6f1089700d6b7d494b",
+        "attempt_id": "56ff4649c89644aca04810f248a3c0b1",
+        "plan_id": "b30572f95aee304b54a0c736d021108acc89b67e526291eded33faddf7ac8984",
+        "outcome": "passed",
+        "exit_code": 0,
+        "cleanup_proved": true,
+        "failure": null,
+        "stdout": "",
+        "stderr": "",
+        "output_preview_truncated": false,
+        "output_complete": true
+      }
+    },
+    {
+      "name": "formal-007-plan",
+      "session": "ses_e4be23523ffezAbDSt86vXyx2A",
+      "message": "msg_1b41dcb02001xjcnsADAmxO6tB",
+      "call": "call_9eb44c40d68b4971a39f8e5e478b6854",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "39deedf368968363fd5c3947a356b61f2928409a959ea5fee5de734fe7eca38e",
+        "preparation_id": "a8988963cc041d9d9cabf5f99a23315b52dde21cb456c941d43b05ed868a517a",
+        "expires_at": "2026-11-07T03:56:55.519Z",
+        "purpose": "formal",
+        "original_command": "node --test tests/value.test.ts",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "--test-reporter=tap",
+          "--test",
+          "--test-isolation=none",
+          "tests/value.test.ts"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "formal-007-prepare",
+      "session": "ses_e4be22063ffeLzaEXq5a3WlbdW",
+      "message": "msg_1b41ddfed001genM3K7ScfHOiR",
+      "call": "call_2a00f81f2fb54ae9a0d101bc059bc739",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "3e007e59676fd5944c4eb4dabd1588191f731aae7d2559f485c211574a8cc8b0",
+        "attempt_id": "2ecfd73b59be4fea9b28dc5e7b901cb9",
+        "plan_id": "39deedf368968363fd5c3947a356b61f2928409a959ea5fee5de734fe7eca38e",
+        "application_started": false
+      }
+    },
+    {
+      "name": "formal-007-run",
+      "session": "ses_e4be21037ffeooXcpSNwcVeYDQ",
+      "message": "msg_1b41df023001vVfLuL1ticqAoM",
+      "call": "call_5a902153d33c485c8d948fec2e1f5895",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "receipt_id": "23391d444c6f8a9ab090e9d6e4eb428dc23a4163074f0d95fc20377df5dd2220",
+        "attempt_record_id": "3e007e59676fd5944c4eb4dabd1588191f731aae7d2559f485c211574a8cc8b0",
+        "attempt_id": "2ecfd73b59be4fea9b28dc5e7b901cb9",
+        "plan_id": "39deedf368968363fd5c3947a356b61f2928409a959ea5fee5de734fe7eca38e",
+        "outcome": "passed",
+        "exit_code": 0,
+        "cleanup_proved": true,
+        "failure": null,
+        "stdout": "TAP version 13\n# Subtest: name\nok 1 - name\n  ---\n  duration_ms: 1.109\n  type: 'test'\n  ...\n# Subtest: empty\nok 2 - empty\n  ---\n  duration_ms: 0.1726\n  type: 'test'\n  ...\n1..2\n# tests 2\n# suites 0\n# pass 2\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 61.5487\n",
+        "stderr": "",
+        "output_preview_truncated": false,
+        "output_complete": true
+      }
+    },
+    {
+      "name": "formal-008-plan",
+      "session": "ses_e4be1e5b5ffeJaUMt6hOaUUREG",
+      "message": "msg_1b41e1a88001QDEw8tHmwFDwXJ",
+      "call": "call_643c573823a14be0b2422e64995a7000",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "e635b7f18763877a7399cb5e9761938fe90e698a199472cf7ae2b0b27e4bb917",
+        "preparation_id": "4fbf3e3f917bc417ddba6cf653efa1a3599943f2e48854b4abc58bc93bf5086d",
+        "expires_at": "2026-11-07T03:57:16.124Z",
+        "purpose": "formal",
+        "original_command": "node --test tests/esm.test.mjs",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "--test-reporter=tap",
+          "--test",
+          "--test-isolation=none",
+          "tests/esm.test.mjs"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "formal-008-prepare",
+      "session": "ses_e4be1d140ffeyL212XVlJNnfBZ",
+      "message": "msg_1b41e2ef9001Om4t0mA9jDIiB9",
+      "call": "call_508f64f8d1e748c98cdb5b0d372cbe7a",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "a16732e082c61731dc17db2431c1181534014873ec1ddeb102c9ec4d21bb6b37",
+        "attempt_id": "2bf84c85b3b3469c98eaf73d3f569c48",
+        "plan_id": "e635b7f18763877a7399cb5e9761938fe90e698a199472cf7ae2b0b27e4bb917",
+        "application_started": false
+      }
+    },
+    {
+      "name": "formal-008-run",
+      "session": "ses_e4be1c317ffeM5XwbAXtiq5NuH",
+      "message": "msg_1b41e3d39001NhBPJ9d7ABffuU",
+      "call": "call_f2e2973fd5324353b53323a02688db48",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "receipt_id": "d6383f05d383b2ee30184027506ecec759b80e6e347c030b852a19c2737af190",
+        "attempt_record_id": "a16732e082c61731dc17db2431c1181534014873ec1ddeb102c9ec4d21bb6b37",
+        "attempt_id": "2bf84c85b3b3469c98eaf73d3f569c48",
+        "plan_id": "e635b7f18763877a7399cb5e9761938fe90e698a199472cf7ae2b0b27e4bb917",
+        "outcome": "passed",
+        "exit_code": 0,
+        "cleanup_proved": true,
+        "failure": null,
+        "stdout": "TAP version 13\n# Subtest: sum\nok 1 - sum\n  ---\n  duration_ms: 2.0667\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 24.4865\n",
+        "stderr": "",
+        "output_preview_truncated": false,
+        "output_complete": true
+      }
+    },
+    {
+      "name": "formal-009-plan",
+      "session": "ses_e4be199d0ffexhGnPisAl6VVew",
+      "message": "msg_1b41e6670001iQT8sXadwZVu7S",
+      "call": "call_4f7394794e6d46b384e2261494482199",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "1d7110e556263d44eeee420d2f62c64051be2a026f09739e7aa028c95077f754",
+        "preparation_id": "a6173377474594c92ab2a838373980178d1297e80c17d74e1a173aeecb1a89d3",
+        "expires_at": "2026-11-07T03:57:35.209Z",
+        "purpose": "formal",
+        "original_command": "node -e \"import('./src/value.ts').then(m=>{if(m.greet('Ada')!=='Hello, Ada!'||m.greet('')!=='Hello, world!')process.exit(1);console.log('TS_INLINE_OK');}).catch(()=>process.exit(1))\"",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "-e",
+          "import('./src/value.ts').then(m=>{if(m.greet('Ada')!=='Hello, Ada!'||m.greet('')!=='Hello, world!')process.exit(1);console.log('TS_INLINE_OK');}).catch(()=>process.exit(1))"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "formal-009-prepare",
+      "session": "ses_e4be18766ffeL5fPzyf3ZHKV0H",
+      "message": "msg_1b41e78eb0013WHAPWEmxjM2jJ",
+      "call": "call_23e0639180ad47c7bde9728f64b613d4",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "cb279ed4efd134e58f0b0ffbeef0bca5121fa99a745b2cbf0c294d44c7c03ef7",
+        "attempt_id": "c89cee9f87a344cd8dcb23905a305904",
+        "plan_id": "1d7110e556263d44eeee420d2f62c64051be2a026f09739e7aa028c95077f754",
+        "application_started": false
+      }
+    },
+    {
+      "name": "formal-009-run",
+      "session": "ses_e4be17a3fffex6FwfK2TJzSPVC",
+      "message": "msg_1b41e86260018dXbS1W6h83a0T",
+      "call": "call_0da44dcb21234892a9ad5ca8416889a7",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "receipt_id": "59eef245e378ade9a3a53aa4fb7bf3ee36207206aa81c5b1274e340aab817959",
+        "attempt_record_id": "cb279ed4efd134e58f0b0ffbeef0bca5121fa99a745b2cbf0c294d44c7c03ef7",
+        "attempt_id": "c89cee9f87a344cd8dcb23905a305904",
+        "plan_id": "1d7110e556263d44eeee420d2f62c64051be2a026f09739e7aa028c95077f754",
+        "outcome": "passed",
+        "exit_code": 0,
+        "cleanup_proved": true,
+        "failure": null,
+        "stdout": "TS_INLINE_OK\n",
+        "stderr": "",
+        "output_preview_truncated": false,
+        "output_complete": true
+      }
+    },
+    {
+      "name": "formal-010-plan",
+      "session": "ses_e4be1525dffe2A9TE82SHKpNqx",
+      "message": "msg_1b41eade2001gvtiNlcRyyv5kK",
+      "call": "call_b9a1117aef2347488eebe4a3a4ada50d",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "601623ffaef0dff9f2f6dc50620503fe23ba2d774be463b7589613c697b03b04",
+        "preparation_id": "a444a082448e05ebe938b595589726db238ce13faf89a5012936b893a33e5839",
+        "expires_at": "2026-11-07T03:57:53.486Z",
+        "purpose": "formal",
+        "original_command": "node --test tests/failed.test.cjs",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "--test-reporter=tap",
+          "--test",
+          "--test-isolation=none",
+          "tests/failed.test.cjs"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "formal-010-prepare",
+      "session": "ses_e4be1406affe7SnauBtQRBhOy4",
+      "message": "msg_1b41ebfda001pOPIAOvz59yAX1",
+      "call": "call_b7a2d3e1e8514192938498759054005b",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "f176692af51bef6defd19cc382416895429f2eafcd07967d0ed6415116a82f42",
+        "attempt_id": "c5683b39dabe467abe87284a43adc442",
+        "plan_id": "601623ffaef0dff9f2f6dc50620503fe23ba2d774be463b7589613c697b03b04",
+        "application_started": false
+      }
+    },
+    {
+      "name": "formal-010-run",
+      "session": "ses_e4be1334fffe6Vp4ia7VSMAEvq",
+      "message": "msg_1b41eccf0001fWpVPkvNyJK8Fe",
+      "call": "call_1db51cf597a14affb6846fd8ef40c111",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": false,
+        "receipt_id": "03f6b8a9c0d5d52e1b793fddc0139e356f6d0c4b273ce7ab9e7616e64e04c30d",
+        "attempt_record_id": "f176692af51bef6defd19cc382416895429f2eafcd07967d0ed6415116a82f42",
+        "attempt_id": "c5683b39dabe467abe87284a43adc442",
+        "plan_id": "601623ffaef0dff9f2f6dc50620503fe23ba2d774be463b7589613c697b03b04",
+        "outcome": "failed",
+        "exit_code": 1,
+        "cleanup_proved": true,
+        "failure": "VERIFICATION_NATIVE_SUCCESS_UNPROVED",
+        "stdout": "TAP version 13\n# Subtest: expected fixture failure\nnot ok 1 - expected fixture failure\n  ---\n  duration_ms: 1.363\n  type: 'test'\n  location: 'D:\\\\code\\\\SpecForge\\\\.tmp\\\\verification-public-kernel\\\\ec4e012955964ac080d38edc63c1db94\\\\config\\\\sf-user\\\\runtime\\\\verification-owner\\\\runs\\\\c5683b39dabe467abe87284a43adc442\\\\input\\\\tests\\\\failed.test.cjs:1:78'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    1 !== 2\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 2\n  actual: 1\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\ec4e012955964ac080d38edc63c1db94\\config\\sf-user\\runtime\\verification-owner\\runs\\c5683b39dabe467abe87284a43adc442\\input\\tests\\failed.test.cjs:1:121)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1382:25)\n    Test.start (node:internal/test_runner/test:1242:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 16.5314\n",
+        "stderr": "",
+        "output_preview_truncated": false,
+        "output_complete": true
+      }
+    },
+    {
+      "name": "unsupported-native-dependency",
+      "session": "ses_e4be10e94ffe9zTcS092atPldo",
+      "message": "msg_1b41ef1a3001Gdn8sW4So9Nf19",
+      "call": "call_a2a6429e48714c35bce80686c8b4264a",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": false,
+        "error": "VERIFICATION_REQUEST_REJECTED",
+        "application_passed": false
+      }
+    },
+    {
+      "name": "formal-012-plan",
+      "session": "ses_e4be10306ffeQP6S3hTPorUkC9",
+      "message": "msg_1b41efd390019DdMleE6RvM0kT",
+      "call": "call_f76b31b74e2e4722a1759564d423c1cb",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "e8d79f2d382fce6cfdb0a5272281ae5298e2edb7ab5950763c93d5ca65ad5fd7",
+        "preparation_id": "ef2ffa5b600b4ce21c521ff6691a6da4a6e354a95bf44e573c29c1f6a3de7384",
+        "expires_at": "2026-11-07T03:58:13.964Z",
+        "purpose": "formal",
+        "original_command": "node -e \"console.log('x'.repeat(1100000));\"",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "-e",
+          "console.log('x'.repeat(1100000));"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "formal-012-prepare",
+      "session": "ses_e4be0f05fffexvKAknP68ayE8c",
+      "message": "msg_1b41f0fea001JmlsLcnq5epS1t",
+      "call": "call_090456851f8548c1bb40dff89c0888fd",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "632a89a3e0ce3477199f9e98d34ccbe706658a7eb2ff9f48ca29f3129bd00e64",
+        "attempt_id": "2764842bf4194e97b57390aa0991e7d9",
+        "plan_id": "e8d79f2d382fce6cfdb0a5272281ae5298e2edb7ab5950763c93d5ca65ad5fd7",
+        "application_started": false
+      }
+    },
+    {
+      "name": "formal-012-run",
+      "session": "ses_e4be0e260ffeXh4CqzzkZuHW7n",
+      "message": "msg_1b41f1de0001ZhGRtlpCUTBAIh",
+      "call": "call_89eaa9b91f024448a797f8cee9003bc2",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": false,
+        "receipt_id": "ef28bc1b20ffcf5a58720067cea36b80bc51a7a60aa6eeea85a38f2d611200eb",
+        "attempt_record_id": "632a89a3e0ce3477199f9e98d34ccbe706658a7eb2ff9f48ca29f3129bd00e64",
+        "attempt_id": "2764842bf4194e97b57390aa0991e7d9",
+        "plan_id": "e8d79f2d382fce6cfdb0a5272281ae5298e2edb7ab5950763c93d5ca65ad5fd7",
+        "outcome": "failed",
+        "exit_code": 137,
+        "cleanup_proved": true,
+        "failure": "VERIFICATION_NATIVE_SUCCESS_UNPROVED",
+        "stdout": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "stderr": "",
+        "output_preview_truncated": true,
+        "output_complete": false
+      }
+    },
+    {
+      "name": "formal-013-plan",
+      "session": "ses_e4be0b471ffeAc6DnnrJK8DQre",
+      "message": "msg_1b41f4bd0001Jbx90jgU4t1ARt",
+      "call": "call_8d601b2ba6e14c8ea19c49c3e8e93c88",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "93b7ceb8d3ceda5935be6aa9c33ef26095525807e134239a0597ae5de2078a5f",
+        "preparation_id": "6f52b207552c47a7046a2c83ce23bf86d384ea4ebbec9c276f4dd5c77a973a11",
+        "expires_at": "2026-11-07T03:58:34.110Z",
+        "purpose": "formal",
+        "original_command": "node -e \"const blocks=[];while(true){blocks.push(Array(1000000).fill(123456789));}\"",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "-e",
+          "const blocks=[];while(true){blocks.push(Array(1000000).fill(123456789));}"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "formal-013-prepare",
+      "session": "ses_e4be0a1caffeGZ0avAiz3bx8E8",
+      "message": "msg_1b41f5e7c001hSpKzAXEg692u3",
+      "call": "call_5515ff3301464bb980c7170b9754d85a",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "8c612d9fcab1107cd82eb726b5bd511125644958c0d6620c9feb544d97369f66",
+        "attempt_id": "ba1c5bfa335a4108b6217f15a0bbb75a",
+        "plan_id": "93b7ceb8d3ceda5935be6aa9c33ef26095525807e134239a0597ae5de2078a5f",
+        "application_started": false
+      }
+    },
+    {
+      "name": "formal-013-run",
+      "session": "ses_e4be093fcffeis75gnciwN53iK",
+      "message": "msg_1b41f6c42001spJP7hPIHBfG3V",
+      "call": "call_1bad88126d834185af01f561e94e3feb",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": false,
+        "receipt_id": "b0bff5e70767107e078512d3b015c6d3a0e3a190842cacea03420ebe01b7b81e",
+        "attempt_record_id": "8c612d9fcab1107cd82eb726b5bd511125644958c0d6620c9feb544d97369f66",
+        "attempt_id": "ba1c5bfa335a4108b6217f15a0bbb75a",
+        "plan_id": "93b7ceb8d3ceda5935be6aa9c33ef26095525807e134239a0597ae5de2078a5f",
+        "outcome": "failed",
+        "exit_code": 134,
+        "cleanup_proved": true,
+        "failure": "VERIFICATION_NATIVE_SUCCESS_UNPROVED",
+        "stdout": "",
+        "stderr": "\r\n<--- Last few GCs --->\r\n\r\n[6092:000001B3317B0000]     1120 ms: Mark-Compact (reduce) 994.7 (998.5) -> 994.7 (997.5) MB, pooled: 0 MB, 44.71 / 0.00 ms  (average mu = 0.129, current mu = 0.113) last resort; GC in old space requested\r\n[6092:000001B3317B0000]     1162 ms: Mark-Compact (reduce) 994.7 (997.5) -> 994.7 (997.5) MB, pooled: 0 MB, 41.92 / 0.00 ms  (average mu = 0.072, current mu = 0.001) last resort; GC in old space requested\r\n\r\nFATAL ERROR: CALL_AND_RETRY_LAST Allocation failed - JavaScript heap out of memory\r\n----- Native stack trace -----\r\n\r\n 1: 00007FF7F29F50BF \r\n 2: 00007FF7F161DD27 \r\n 3: 00007FF7F1436BC2 \r\n 4: 00007FF7F14426E8 \r\n 5: 00007FF7F1459BEC \r\n 6: 00007FF7F1238771 \r\n 7: 00007FF7F1238579 \r\n 8: 00007FF7F1238211 \r\n 9: 00007FF7F123688D \r\n10: 00007FF7F114852D \r\n11: 00007FF7F12255F0 \r\n12: 00007FF7F1022502 \r\n13: 000001B3696F75FA \r\n",
+        "output_preview_truncated": false,
+        "output_complete": true
+      }
+    },
+    {
+      "name": "formal-manifest",
+      "session": "ses_e4be06948ffezqQfJS1nGWaYwT",
+      "message": "msg_1b41f9704001nhR6KGg5lESzOx",
+      "call": "call_e9363b10bd9346a08fb061f3a1d3119c",
+      "agent": "sf-verifier",
+      "tool": "sf_artifact_write",
+      "value": {
+        "success": true,
+        "path": ".specforge/work-items/WI-9901/evidence/evidence_manifest.json",
+        "size": 6814,
+        "file_type": "evidence_manifest",
+        "controlled_artifact": true,
+        "normalized": true
+      }
+    },
+    {
+      "name": "formal-report",
+      "session": "ses_e4be03e2fffeVEg3pmuohqHObd",
+      "message": "msg_1b41fc20d001NhMIw6wFu7JJky",
+      "call": "call_10cbde417196400584783c8149cb487f",
+      "agent": "sf-verifier",
+      "tool": "sf_artifact_write",
+      "value": {
+        "success": true,
+        "path": ".specforge/work-items/WI-9901/verification_report.md",
+        "size": 8510,
+        "file_type": "verification_report",
+        "controlled_artifact": true,
+        "normalized": false
+      }
+    },
+    {
+      "name": "copied-report-write-denied",
+      "session": "ses_e4bdfd69cffejHGMDm10yqUWP4",
+      "message": "msg_1b42029bb001P0km2KBoiEWjFK",
+      "call": "call_beddfd71584a4e4da56a197f1e68d196",
+      "agent": "sf-verifier",
+      "tool": "sf_artifact_write",
+      "value": {
+        "success": false,
+        "error": "VERIFICATION_EXECUTION_EVIDENCE_REJECTED",
+        "validation_errors": [
+          "execution_receipt_rejected:command-0"
+        ],
+        "hard_stop": false,
+        "retry_allowed": true
+      }
+    },
+    {
+      "name": "formal-gate-integration-projection",
+      "session": "ses_e4bdf723fffeD4YwLLyT5HdtUP",
+      "message": "msg_1b4208df0001Nm2ebuZaEiJXBW",
+      "call": "call_f098b113b13649549f0340b3881d33fe",
+      "agent": "sf-orchestrator",
+      "tool": "sf_gate_run",
+      "value": {
+        "success": true,
+        "work_item_id": "WI-9901",
+        "workflow_path": "code_only_fast_path",
+        "workflow_type": "feature_spec",
+        "workflow_type_source": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\ec4e012955964ac080d38edc63c1db94\\project\\.specforge\\work-items\\WI-9901\\work_item.json",
+        "candidate_phase": "full",
+        "candidate_phase_source": "artifact_inference",
+        "workflow_path_source": ".specforge/work-items/WI-9901/work_item.json",
+        "authoritative_state_before_gate": "verification_running",
+        "requested_gate_ids": [],
+        "requested_gate_type": "verification_gate",
+        "normalized_gate_ids": [
+          "verification_gate"
+        ],
+        "aliases_used": [],
+        "summary_status": "failed",
+        "summary_path": ".specforge/work-items/WI-9901/gate_summary.md",
+        "gate_attempt_id": "attempt-0001",
+        "gate_attempt_path": ".specforge/work-items/WI-9901/gate_attempts/attempt-0001",
+        "gate_count": 1,
+        "passed": 0,
+        "failed": 1,
+        "state_auto_advance": {
+          "attempted": false,
+          "reason": "verification_owned_gate_missing",
+          "failed_gate_ids": [
+            "verification_gate"
+          ],
+          "missing_gate_ids": [
+            "formal_version_gate"
+          ],
+          "summary_status": "failed"
+        },
+        "reports": [
+          {
+            "gate_id": "verification_gate",
+            "status": "failed",
+            "blocking_issues": 3,
+            "warnings": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "formal-revoke-used-plan",
+      "session": "ses_e4bdf493cffegR42ymRctesBaS",
+      "message": "msg_1b420b714001eZFm3jUG7nIMnB",
+      "call": "call_04f1a7496fff4136af9a6ecbba3d2ca6",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "96b93a6e992f21ad2d33c74b3bc51bbf3a4cd4b885437cd58348173fef6c2e3f",
+        "verification_permission_revoked": true,
+        "code_write_granted": false
+      }
+    },
+    {
+      "child": "kernel",
+      "pid": 6128,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-11-07T03:50:15.062Z"
+      }
+    },
+    {
+      "child": "daemon",
+      "pid": 11256,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "utc": "2026-11-07T03:50:14.967Z"
+      }
+    }
+  ],
+  "failure": null,
+  "exit_code": 0,
+  "original_business_touched": false
+}

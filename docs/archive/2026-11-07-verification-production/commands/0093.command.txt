@@ -1,0 +1,17 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/verification-governance-contract.test.ts",
+    "tests/unit/verification-evidence-integrity.test.ts",
+    "tests/unit/verification-evidence-producer.test.ts",
+    "tests/verification-report-contract-delegation.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "formal-report-governance-unit-explicit-consumer-fixture",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned unit temp fixtures and explicit mock execution consumer; EXTERNAL_EVIDENCE_WRITES receipts; no native/original",
+  "started_utc": "2026-11-07T02:37:46.287Z"
+}

@@ -1,0 +1,20 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/build-workspace.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Rebuild all current12 workspace packages after committed artifact handler repair",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES package dist/TypeScript outputs only; EXTERNAL_EVIDENCE_WRITES sealed workspace build results; no global/original writes",
+  "started_utc": "2026-11-07T08:06:29.912Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\scripts\\build-workspace.ts",
+      "sha256": "42f88fb9686fbcfbd0bdcdebc9b056536018ca778a61555c04b0671f88c12aca",
+      "size": 1441,
+      "extension": ".ts"
+    }
+  ]
+}

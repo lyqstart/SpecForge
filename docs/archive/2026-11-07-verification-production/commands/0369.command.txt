@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/prepare-routing-kernel-trial.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Prepare real Kernel routing-regression trial without changing qualified historical harness",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES new frozen trial driver only",
+  "started_utc": "2026-11-07T07:54:10.665Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\prepare-routing-kernel-trial.cjs",
+      "sha256": "2295e8f6fb4e0365eceeb2b7947149893637d9338309e80d2f54b8bfb006b85c",
+      "size": 3722,
+      "extension": ".cjs"
+    }
+  ]
+}

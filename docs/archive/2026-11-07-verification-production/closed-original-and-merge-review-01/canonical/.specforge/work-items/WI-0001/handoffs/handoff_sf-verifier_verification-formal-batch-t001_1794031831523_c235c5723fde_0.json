@@ -1,0 +1,26 @@
+{
+  "agent": "sf-verifier",
+  "boundary_statement": "只执行了 D23 formal 只读验证 prepare/run；未写任何业务或治理文件，未推进状态，未调用 Gate 工具；verification_report/evidence_manifest 留待后续受控写入。",
+  "duration_ms": 0,
+  "findings": [
+    "idx0 plan_id=14149f004802f001c30fa2125925a42ca08a493fe5235162c0abac023a67c43f attempt_record_id=2ea6b689544bd43736bf139a917a7f6a012a1aee52e13e66f1d5b37c6c78cf9b 原声明 `test -f package.json && test -f tsconfig.json` exit_code=0 stdout='' cleanup_proved=true passed receipt=ba1f4b337c784b7aae9627b940740ae1e5d7842f56bd8133956f67bfa23f7333",
+    "idx1 plan_id=588352bf998def3809e578a542f7a61f0d4ffab7beae69cec469bedec395bb8c attempt_record_id=b058573d2ed582e98c97debcc44a0f50547630147f69617acc6b0c0c14df9ab3 原声明 `grep -c '\"dependencies\": {}' package.json` exit_code=0 stdout='1\\n' cleanup_proved=true passed receipt=a39a587ad7f256a823c141be8e8346ef4a29dd54a1f91d033a6384d706ec7d8c",
+    "idx2 plan_id=968dd0df9fa8d74739d8f3ba56ec8ff148724811bd37c7f1dadf92e2c2d76b47 attempt_record_id=6db27f3469aface7ff31641185f351b64ba1cc7cac7052e03810f9a9fd855788 原声明 `grep -c '\"test\": \"node --test tests/greet.test.ts\"' package.json` exit_code=0 stdout='1\\n' cleanup_proved=true passed receipt=35ce1c4da752abf007c72c5836b22374aae246f274880a45087e3e61523da4c2",
+    "idx3 plan_id=ec2090526c70d55c54f3ddf74ff13696710eafbac2a283ac6f3df328111139b1 attempt_record_id=ddc506156d83ebe5320c587f06e0358e5aae7bf26dc1a3e90fce47b8be3aed33 原声明 `grep -c '\"type\": \"module\"' package.json` exit_code=0 stdout='1\\n' cleanup_proved=true passed receipt=a56d6d8432c5e28610379c5538f071d94a548112f1256726ac3fd4cf750f8268",
+    "idx4 plan_id=884899d62b29dc59a5792df5475eb9bc8944b552a807841af86969ff555096b6 attempt_record_id=1911ee459ac6c5accfde43b493eebcb6b2588f974d5300ae15e438031594fbc6 原声明 `grep -cE '\"noEmit\": true|\"allowImportingTsExtensions\": true' tsconfig.json` exit_code=0 stdout='2\\n' cleanup_proved=true passed receipt=725eaeeffc0472a805dfa80e3042f1efd6449082888ebb5c15ce7883cceee4fd"
+  ],
+  "inputs_read": [
+    "formal verification plans TASK-WI-0001-001 idx0..idx4"
+  ],
+  "next_step_recommendation": "后续受控写入 verification_evidence/evidence_manifest/verification_report（引用本批 receipt_id，evidence path=verification-owner:receipt:<receipt_id>）并重建语义闭包",
+  "outputs_written": [],
+  "schema_version": "1.0",
+  "stage": "verification-formal-batch-t001",
+  "timestamp": "2026-11-07T00:00:00Z",
+  "unknowns": [
+    "各命令的 Node 归一化 argv 由 Runtime receipt 持有；本 handoff 记录原声明与真实数值退出/输出"
+  ],
+  "warnings": [],
+  "escalation_signals": [],
+  "work_item_id": "WI-0001"
+}

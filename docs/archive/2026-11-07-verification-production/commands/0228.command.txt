@@ -1,0 +1,12 @@
+{
+  "executable": "git",
+  "args": [
+    "commit",
+    "-m",
+    "fix: keep verification Git reads asynchronous after recovery"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "commit-verified-asynchronous-Git-recovery-fix",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES local Git source repair commit only on codex/verification-production; no merge push original/user install",
+  "started_utc": "2026-11-07T04:40:31.519Z"
+}

@@ -1,0 +1,69 @@
+{
+  "utc": "2026-11-07T03:11:21.456Z",
+  "trial": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\1e3f1b9cf999403db16ffc76d8a8af18\\trials\\4bb5237a-8e0a-46f2-ab1b-5d876e154ffa",
+  "records": [
+    {
+      "name": "http-abort-plan",
+      "session": "ses_e4c04614fffexcua6xtv6YcjLW",
+      "message": "msg_1b3fba732001EnVLGuOF7in8KZ",
+      "call": "call_c47ae0902cd8421993eb7c2fce433799",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "af87fbe5b4dc19402c2111da19e34feb2f043e5428aebe5877e254d0715aee2e",
+        "preparation_id": "b9c4a488e34e34c5ad4e1e9fed9b5c802c0f9b40fa09c89ccff02c6a5e1a3266",
+        "expires_at": "2026-11-07T03:20:20.481Z",
+        "purpose": "implementation",
+        "original_command": "node --test tests/waiting.test.cjs",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "--test-reporter=tap",
+          "--test",
+          "--test-isolation=none",
+          "tests/waiting.test.cjs"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "http-abort-prepare",
+      "session": "ses_e4c0397deffeO57et86kvR5CV6",
+      "message": "msg_1b3fc687e001KSo0hssZPzlcr4",
+      "call": "call_43bfff1632594e07a8e2be3992879e6a",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "ce8896cdd161b587e73c007943058ad3682d83ba2306e9335cf888430c53881a",
+        "attempt_id": "cfe0d4866a664c57a2930b7e767bac04",
+        "plan_id": "af87fbe5b4dc19402c2111da19e34feb2f043e5428aebe5877e254d0715aee2e",
+        "application_started": false
+      }
+    },
+    {
+      "child": "kernel",
+      "pid": 16396,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-11-07T03:11:21.454Z"
+      }
+    },
+    {
+      "child": "daemon",
+      "pid": 35744,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "utc": "2026-11-07T03:11:21.364Z"
+      }
+    }
+  ],
+  "failure": "AssertionError [ERR_ASSERTION]: IMMUTABLE_INTERRUPTION_RECEIPT_REQUIRED\n    at main (D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\public-kernel-chain.cjs:100:127)",
+  "exit_code": 1,
+  "original_business_touched": false
+}

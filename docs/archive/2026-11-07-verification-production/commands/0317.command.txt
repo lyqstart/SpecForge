@@ -1,0 +1,20 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/inspect-original-professional-artifacts.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Independently inspect actual professional Report/Manifest typed contracts hashes and all22 exact formal receipt subjects",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES inspection and source-sealed receipts only; original artifacts strictly read-only, no model request or professional artifact authorship",
+  "started_utc": "2026-11-07T07:18:21.548Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\inspect-original-professional-artifacts.ts",
+      "sha256": "2a05260c8de668d8c5339a8be49cefc51f8c7e2557aa4dd9c64c65afa08c02bf",
+      "size": 3732,
+      "extension": ".ts"
+    }
+  ]
+}

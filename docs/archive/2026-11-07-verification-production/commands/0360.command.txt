@@ -1,0 +1,23 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/run-daemon-regressions.cjs",
+    "tests/unit/configuration-activation-loss.test.ts",
+    "tests/unit/runtime-history-integrity.test.ts",
+    "tests/unit/git-detached-bootstrap.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Retest unchanged process/recovery tests with their required fixed Bun npm_execpath environment",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES self-owned process/Git fixtures only; EXTERNAL_EVIDENCE_WRITES sealed wrapper and test outputs; no original or deployed writes",
+  "started_utc": "2026-11-07T07:48:55.776Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\run-daemon-regressions.cjs",
+      "sha256": "cbc06d5a2217eecd75f26f580220dcf6586e43f0a2f26667b55c4270661a5132",
+      "size": 873,
+      "extension": ".cjs"
+    }
+  ]
+}

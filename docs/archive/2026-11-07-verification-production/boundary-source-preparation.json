@@ -1,0 +1,474 @@
+{
+  "utc": "2026-11-07T05:53:40.783Z",
+  "parent": "a918b49c62e7dfaf3c0bfc57961ffe3bbaa99ba3",
+  "source": {
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/manifest.json": {
+      "raw_sha256": "2b23b913bd2ba0b8277ae448ca9f4b2efdf17737504338c9c0ccdcb3bb7c9aaa",
+      "size": 5413,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md": {
+      "raw_sha256": "a4e9aa2e2c191d21cc7dddb069676606332717080d1f76ee96678717ae69704b",
+      "size": 4018,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md": {
+      "raw_sha256": "9d4602fa43a2a9bc5a34f5af3b7e89372af158427e28e6e5a113a60aacc6e01c",
+      "size": 5252,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/API.md": {
+      "raw_sha256": "81bc4e5b7fc9f0ff1dd2e13f2c66abf70ef7489310aaa68621d41e80a9c2c2e6",
+      "size": 18103,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/DEPLOYMENT.md": {
+      "raw_sha256": "7a080402caa7701e6c87a34422528c6a8131f932d77ecf9e337f777eabf8d226",
+      "size": 14882,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/EXAMPLES.md": {
+      "raw_sha256": "68e7d83dc39fa0041a44ec468c77f651390fedd8d6addc670086714c3003b314",
+      "size": 19813,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/state-recovery-mechanism.md": {
+      "raw_sha256": "7f25bb6f998f14c1872e37e7f710d6c1ffedfccf119d0a3c3521e5a13dc837f1",
+      "size": 6720,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/storage-implementation.md": {
+      "raw_sha256": "a27662a3d0e88e068a7f8e55c1d6ba034b2951fc383bcf88b8d37540ab9db26c",
+      "size": 5586,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/examples/state-recovery-example.ts": {
+      "raw_sha256": "717adfdab4b9d4e46a2348da70aa9467a3fb311bd94a6428c8b9fe3a8833214a",
+      "size": 8244,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/examples/storage-example.ts": {
+      "raw_sha256": "0e243e1bfccdf1966fbcae2924d35aab889f9c3820663cf9256eb9d46419cc86",
+      "size": 4432,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/package.json": {
+      "raw_sha256": "595aae781854d6165d00e88a34e88e854441deb9d39b6a7c68b01c6a46e75f1b",
+      "size": 2069,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/StateRecoveryManager.ts": {
+      "raw_sha256": "ceec29944fec5c12109162c0ae6c892b1b0856d5c714d03f1532432503e81e91",
+      "size": 17510,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/WorkflowPersistence.ts": {
+      "raw_sha256": "d6007f568316ad188d2ca761b202cb8e62cc0c0ab0a52ccb8592ea5b0c67ee25",
+      "size": 13473,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/events/EventLogReader.ts": {
+      "raw_sha256": "f5273d34df6d0ada812ae626fc0853bd44680630173dd9536faebb8f997369f5",
+      "size": 7245,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/index.ts": {
+      "raw_sha256": "7af98213deb3be1b864cbac06b19b98af452fcbad47afd39f59b497af67db209",
+      "size": 3974,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/storage/AtomicWorkflowInstanceStorage.ts": {
+      "raw_sha256": "f4e15fcdedef2195a5cff3010e7bd64d9f1fff576ac8c9caaca1928b81281fc1",
+      "size": 16219,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/storage/WorkflowInstanceStorage.ts": {
+      "raw_sha256": "48ae0adf5ea0326f06b14a5327a05eea71279efde989399ce56b6d7eb5d8001e",
+      "size": 2630,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/storage/index.ts": {
+      "raw_sha256": "eb1624f2a2aead3c5bd9164f3e6d62b420b3aad84f55d1b873b53267ea44f157",
+      "size": 486,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/acceptance.test.ts": {
+      "raw_sha256": "61a9ab4eaf573d8c3bc1914bd2f2e7d57c3201dc6649902c1cb4947aa5b06bc2",
+      "size": 24991,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/integration/crash-recovery.test.ts": {
+      "raw_sha256": "816f716663cea1dd80f2677c6e67619cc08cd1ea68fac82bff46a970b33c567f",
+      "size": 15693,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/integration/persistence-comprehensive.test.ts": {
+      "raw_sha256": "75e84318c5084f896e934291882a00f6529cc5519a1515b440b3f69b24328bd9",
+      "size": 25674,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/AtomicWorkflowInstanceStorage.test.ts": {
+      "raw_sha256": "66807a3db4ac6cdb7553cf5c9577f95fcb64b1113f73379e794d307c5e28dc15",
+      "size": 17921,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/EventLogReader.test.ts": {
+      "raw_sha256": "a0244214c2e1f046bcc5b5ae755780f81a4298a43da7578e2eb7bf652cbff0db",
+      "size": 15861,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/StateRecoveryManager.test.ts": {
+      "raw_sha256": "77f3cc88b634bd31c2d33342a39bf11f08d9dd1c41ceb033cc580a07303f9785",
+      "size": 18041,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/WorkflowInstanceStorage.test.ts": {
+      "raw_sha256": "de03b46c844749446a9cea564caed8130804dbd6ff41815af388ecaa9998f6fe",
+      "size": 9138,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/WorkflowPersistence.test.ts": {
+      "raw_sha256": "b3b53fb9d8c6d0c5e3b39c16a307bc200757ab67d8893899503d4ff02f056cf5",
+      "size": 15045,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tsconfig.json": {
+      "raw_sha256": "327e0a2f4c1717bccd2ec87f350830b48f15df8ac10c8ff89925bf7414b41276",
+      "size": 1130,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/tests/e2e/feature-spec-e2e.test.ts": {
+      "raw_sha256": "928d5d7beb857c59a35f2c107e22a2c88acb6c114490ef8403b277eb83618b57",
+      "size": 23183,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-boundary-repair-plan.md": {
+      "raw_sha256": "8053c26f14ffe578c72db2f82bdcfa341a84f1017f7a93568a2f5532e93536f5",
+      "size": 2574,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-build-verification.json": {
+      "raw_sha256": "d6d2c3c76509bb93b7ad74467a3f6022228d842a50c9fb8fdb8a12cbd0c549e5",
+      "size": 3961,
+      "added": true
+    },
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-retirement.json": {
+      "raw_sha256": "bae66c43d886b7e83a37a6c059d1539bbe3303ea9610789c3b288c60ad26eae6",
+      "size": 6278,
+      "added": true
+    },
+    "docs/design/windows-lpac-node-readonly-contract.md": {
+      "raw_sha256": "a56c36b239d5558275d880d286269f3564a61085c9e080bdcca8c26be5f73647",
+      "size": 19314,
+      "parent_blob_oid": "97b8aa1a3716b530cce796332770bb52e1093aae",
+      "parent_blob_sha256": "146d1ac84459bf03bb82ecfb8b49cd977112aa0fa356c21926d66deb6fbc1f01"
+    },
+    "docs/project-status.md": {
+      "raw_sha256": "a30f0de4274e9298f378c50799fa13035801c7729423c395949707e76c673e4d",
+      "size": 7285,
+      "parent_blob_oid": "b3ebd8bef368424593364ddc1c367b4a70518067",
+      "parent_blob_sha256": "59292a22b524537931452194553bff67905df05a45145bf717d7273dfdadb4ae"
+    },
+    "docs/rule/specforge-development-error-ledger-and-experience.md": {
+      "raw_sha256": "95f0e3d69ecb205cc5b3e928deb9131c0cf96199894fd071c1a20be1c49c3c27",
+      "size": 4447814,
+      "parent_blob_oid": "ec07451f0d7db3bc73ecb20dda5bca6623415d19",
+      "parent_blob_sha256": "e7f1a489a247611666aa3d8bd6568d862afeb6afb04cf509718e9ca7f2eac88c"
+    },
+    "packages/daemon-core/tests/unit/verification-runtime-plan.test.ts": {
+      "raw_sha256": "e5a7d4e32f6d23ed0d4960399a079c3439747697d148730897378acc323cf7e4",
+      "size": 14507,
+      "parent_blob_oid": "8fea51ced08e2650f3fdd2bfb883651db933117b",
+      "parent_blob_sha256": "080dbccd214554cbcd91c162b3f850531d44e5eb11b03cbcd0c033d4dd4b5b27"
+    },
+    "packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md": {
+      "raw_sha256": "ee8f4751b8e4cfe55b911bdfaf5ad710e4ece14764642941667826f37300a764",
+      "size": 518,
+      "parent_blob_oid": "e8bdb3e0b0f891c2689492e1a804ce0fcac6c752",
+      "parent_blob_sha256": "990bf77333cd997bf7fb923cbd77b7542894670d3d9ff5dbb1043941d9e2c3e5"
+    },
+    "packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md": {
+      "raw_sha256": "efb031c4d447728d43bcb005eaf99cfe76b6e7c94aa17016f3c6ea0e326669fd",
+      "size": 524,
+      "parent_blob_oid": "755330f51fd6266b42218cd9f502a39c4dd227d4",
+      "parent_blob_sha256": "010e8fe31d34545d449718d00cd923f772f51d2ae553b54f8d8046b0f7fe731f"
+    },
+    "packages/workflow-runtime/docs/API.md": {
+      "raw_sha256": "86d5e6a7dc632eb39b47196fba9b1c5de350d6fc76eb67dce2da071f8974dad1",
+      "size": 1401,
+      "parent_blob_oid": "56fbd9b793d97a1a49923c41cacda88ae10c077b",
+      "parent_blob_sha256": "e97d6790e2a7131c25600ad21fca135548567f3510805b0cabce3e60ead262a4"
+    },
+    "packages/workflow-runtime/docs/DEPLOYMENT.md": {
+      "raw_sha256": "8c81be1829d631d0adbd79c0ebf7e8cde0ac0a3930fc4d962828eaac42da2bd7",
+      "size": 1015,
+      "parent_blob_oid": "2dafa014a78c7f1d9caf7a80cba4d27caa000b06",
+      "parent_blob_sha256": "4e9a295c4485a52f3d5ae7f0d9b86dfe700cc966bb847f2a6b6f350acffac986"
+    },
+    "packages/workflow-runtime/docs/EXAMPLES.md": {
+      "raw_sha256": "876592c72daeb39fab4aa4dc4bd8862e7c88d7325d83adf9056c510b325125af",
+      "size": 899,
+      "parent_blob_oid": "c0033b577eb07ac046218a2ecf34909bff0085a3",
+      "parent_blob_sha256": "f96750805e8a10427703e2f7153b01a9b1d570bea457e69f4a542571eaafd005"
+    },
+    "packages/workflow-runtime/docs/state-recovery-mechanism.md": {
+      "raw_sha256": "daf08306e02884fc7fc21b50b9e1ff45e45b87dec40f7056d30bc899949cb35b",
+      "size": 519,
+      "parent_blob_oid": "0924c0975c62bf85b6ccf56cae42893e99f695b1",
+      "parent_blob_sha256": "ac048a81882bb4613f9986de2507efc1aecda2a8533cd3b282f75e7c1ef52973"
+    },
+    "packages/workflow-runtime/docs/storage-implementation.md": {
+      "raw_sha256": "732c9cfa15daf61d453ee3254133837f9f3f0640b9a0dec012a3c1d088a0776b",
+      "size": 517,
+      "parent_blob_oid": "d572c8c09c585e0ac9d25a3ae2a5a6c4b5c9be13",
+      "parent_blob_sha256": "0c05f9fd5cbbbb0e67eb2710ac410ddc7a8e3b206e3e8c5f2acaf0808b52a04f"
+    },
+    "packages/workflow-runtime/examples/state-recovery-example.ts": {
+      "deleted": true,
+      "parent_blob_oid": "77787e5340c1944c024314f4a9151a9a041cb798",
+      "parent_blob_sha256": "717adfdab4b9d4e46a2348da70aa9467a3fb311bd94a6428c8b9fe3a8833214a"
+    },
+    "packages/workflow-runtime/examples/storage-example.ts": {
+      "deleted": true,
+      "parent_blob_oid": "75344ca310f7fbe768af56aa3e2560fb0144c05a",
+      "parent_blob_sha256": "0e243e1bfccdf1966fbcae2924d35aab889f9c3820663cf9256eb9d46419cc86"
+    },
+    "packages/workflow-runtime/package.json": {
+      "raw_sha256": "cb7fbee2a963438c2fed2f3e709cffc4cf01e7ad6b1db053a97b651fbe6bbb45",
+      "size": 2231,
+      "parent_blob_oid": "6f24bfec6850babcf9040a0d84bd4c0f5b614838",
+      "parent_blob_sha256": "c1002eec4555a1eebd9307eb6b37993e06ac8679e0b501c6f632f9247e0e1cea"
+    },
+    "packages/workflow-runtime/src/StateRecoveryManager.ts": {
+      "deleted": true,
+      "parent_blob_oid": "a3e9135c12c1583644dbae28bd728cf23305abd3",
+      "parent_blob_sha256": "ceec29944fec5c12109162c0ae6c892b1b0856d5c714d03f1532432503e81e91"
+    },
+    "packages/workflow-runtime/src/WorkflowPersistence.ts": {
+      "deleted": true,
+      "parent_blob_oid": "c7b1bb6d1d5704b612db06c25c7fa8acea5c1648",
+      "parent_blob_sha256": "d6007f568316ad188d2ca761b202cb8e62cc0c0ab0a52ccb8592ea5b0c67ee25"
+    },
+    "packages/workflow-runtime/src/events/EventLogReader.ts": {
+      "deleted": true,
+      "parent_blob_oid": "98803c1d6081c85860b72c8c7cef3e2dd917db6f",
+      "parent_blob_sha256": "f5273d34df6d0ada812ae626fc0853bd44680630173dd9536faebb8f997369f5"
+    },
+    "packages/workflow-runtime/src/index.ts": {
+      "raw_sha256": "268bed6a7251cf277787a7f1f708f67d39b4340b37816faa6b959746871b1047",
+      "size": 3370,
+      "parent_blob_oid": "b5753d74232e990c9079ceabba43096fa0ffbad9",
+      "parent_blob_sha256": "7af98213deb3be1b864cbac06b19b98af452fcbad47afd39f59b497af67db209"
+    },
+    "packages/workflow-runtime/src/storage/AtomicWorkflowInstanceStorage.ts": {
+      "deleted": true,
+      "parent_blob_oid": "88c5e0fbc3570c988942e11b8d124db139a6d18a",
+      "parent_blob_sha256": "f4e15fcdedef2195a5cff3010e7bd64d9f1fff576ac8c9caaca1928b81281fc1"
+    },
+    "packages/workflow-runtime/src/storage/WorkflowInstanceStorage.ts": {
+      "deleted": true,
+      "parent_blob_oid": "6f78d7dcb1dba00c30e509ebb77c8a4e66aadcee",
+      "parent_blob_sha256": "48ae0adf5ea0326f06b14a5327a05eea71279efde989399ce56b6d7eb5d8001e"
+    },
+    "packages/workflow-runtime/src/storage/index.ts": {
+      "deleted": true,
+      "parent_blob_oid": "5eefaada5ee32721b2b7f5c70e19594015db0a7e",
+      "parent_blob_sha256": "eb1624f2a2aead3c5bd9164f3e6d62b420b3aad84f55d1b873b53267ea44f157"
+    },
+    "packages/workflow-runtime/tests/acceptance.test.ts": {
+      "raw_sha256": "795203b678ac4b58298b15e3dda13276b747fab429ac89a8bf0e9b35e3eb6c44",
+      "size": 23498,
+      "parent_blob_oid": "edd328c20812726eb6ed5df975e39caede81a556",
+      "parent_blob_sha256": "61a9ab4eaf573d8c3bc1914bd2f2e7d57c3201dc6649902c1cb4947aa5b06bc2"
+    },
+    "packages/workflow-runtime/tests/integration/crash-recovery.test.ts": {
+      "deleted": true,
+      "parent_blob_oid": "bd4352541c87405a5e5f275098ec2942a9e3dfd6",
+      "parent_blob_sha256": "816f716663cea1dd80f2677c6e67619cc08cd1ea68fac82bff46a970b33c567f"
+    },
+    "packages/workflow-runtime/tests/integration/persistence-comprehensive.test.ts": {
+      "deleted": true,
+      "parent_blob_oid": "474752d3cb646a9aa073606fb4ef93ee9ff714c6",
+      "parent_blob_sha256": "75e84318c5084f896e934291882a00f6529cc5519a1515b440b3f69b24328bd9"
+    },
+    "packages/workflow-runtime/tests/unit/AtomicWorkflowInstanceStorage.test.ts": {
+      "deleted": true,
+      "parent_blob_oid": "e6f42b28a2df0503fef96207b6d7b2ae66574e22",
+      "parent_blob_sha256": "66807a3db4ac6cdb7553cf5c9577f95fcb64b1113f73379e794d307c5e28dc15"
+    },
+    "packages/workflow-runtime/tests/unit/EventLogReader.test.ts": {
+      "deleted": true,
+      "parent_blob_oid": "014dca8343ca13ec50f8158ca6a3272f1a89994d",
+      "parent_blob_sha256": "a0244214c2e1f046bcc5b5ae755780f81a4298a43da7578e2eb7bf652cbff0db"
+    },
+    "packages/workflow-runtime/tests/unit/StateRecoveryManager.test.ts": {
+      "deleted": true,
+      "parent_blob_oid": "c10dd27f34d7a48dd520dd09a2cfc86468ab7450",
+      "parent_blob_sha256": "77f3cc88b634bd31c2d33342a39bf11f08d9dd1c41ceb033cc580a07303f9785"
+    },
+    "packages/workflow-runtime/tests/unit/WorkflowInstanceStorage.test.ts": {
+      "deleted": true,
+      "parent_blob_oid": "709e7a2cbe334032499d77b993cea4519cdaf64c",
+      "parent_blob_sha256": "de03b46c844749446a9cea564caed8130804dbd6ff41815af388ecaa9998f6fe"
+    },
+    "packages/workflow-runtime/tests/unit/WorkflowPersistence.test.ts": {
+      "deleted": true,
+      "parent_blob_oid": "717c7f80da5ea640bbfddfa0c6722d67542f5db3",
+      "parent_blob_sha256": "b3b53fb9d8c6d0c5e3b39c16a307bc200757ab67d8893899503d4ff02f056cf5"
+    },
+    "packages/workflow-runtime/tests/unit/persistence-owner-boundary.test.ts": {
+      "raw_sha256": "736e09e86f282517a3bc876641436aaf7b0c15461424c1f843ebe34fa3272dd3",
+      "size": 1840,
+      "added": true
+    },
+    "scripts/build-workflow-runtime.ts": {
+      "raw_sha256": "65104374b2021a1feb1b673704d9a73f70ea202c4852b046ed2e3c08bef604c1",
+      "size": 1406,
+      "added": true
+    },
+    "setup/userlevel-opencode/agents/sf-verifier.md": {
+      "raw_sha256": "ac27b94d1a17bc3b16b7bed5214d2986d4de59a8deeecfb869d1fcfcee950357",
+      "size": 38651,
+      "parent_blob_oid": "1b23b7d295c0f51126d5298a4b3570cc2468a045",
+      "parent_blob_sha256": "66d8605c5f8dcd9c8310948ba1c389dd434fbfc3fa96804ea68daf3d9f383389"
+    },
+    "setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md": {
+      "raw_sha256": "f9056b569a83005c3dc4a751fd21a35af49bade8f8600e378a7e4b9c4fc62044",
+      "size": 3734,
+      "parent_blob_oid": "23a0965ef7535e2544dee3977604b538ab6450d9",
+      "parent_blob_sha256": "d5a34443bac290ec10c988854ddda7b187d99db8b2b589c17c2c98ded3014064"
+    },
+    "setup/userlevel-opencode/tools/sf_verification_run.ts": {
+      "raw_sha256": "0ab67a9a6ee97eebdc0b6597fd3ba30b9fbf79a2b4a58b91d1db81efcab9e141",
+      "size": 1216,
+      "parent_blob_oid": "84f2bb67f53f4ae49a0c3d232ebf304cde6ddf66",
+      "parent_blob_sha256": "28cff1f753defb0e6ccf6888a8e6a756f813660c526a3af8f7891d5303de1b65"
+    },
+    "tests/e2e/feature-spec-e2e.test.ts": {
+      "raw_sha256": "f49a83aa96aab0f8604f5d1ef08b14853e6af16c9991d5c885b43a0a7814e5c1",
+      "size": 20782,
+      "parent_blob_oid": "26f791dc76c6f9dea6f5e948e67956b89952726f",
+      "parent_blob_sha256": "928d5d7beb857c59a35f2c107e22a2c88acb6c114490ef8403b277eb83618b57"
+    }
+  },
+  "paths": [
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/manifest.json",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/API.md",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/DEPLOYMENT.md",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/EXAMPLES.md",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/state-recovery-mechanism.md",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/storage-implementation.md",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/examples/state-recovery-example.ts",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/examples/storage-example.ts",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/package.json",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/StateRecoveryManager.ts",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/WorkflowPersistence.ts",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/events/EventLogReader.ts",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/index.ts",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/storage/AtomicWorkflowInstanceStorage.ts",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/storage/WorkflowInstanceStorage.ts",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/storage/index.ts",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/acceptance.test.ts",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/integration/crash-recovery.test.ts",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/integration/persistence-comprehensive.test.ts",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/AtomicWorkflowInstanceStorage.test.ts",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/EventLogReader.test.ts",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/StateRecoveryManager.test.ts",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/WorkflowInstanceStorage.test.ts",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/WorkflowPersistence.test.ts",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tsconfig.json",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/tests/e2e/feature-spec-e2e.test.ts",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-boundary-repair-plan.md",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-build-verification.json",
+    "docs/archive/2026-11-07-verification-production/workflow-persistence-retirement.json",
+    "docs/design/windows-lpac-node-readonly-contract.md",
+    "docs/project-status.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md",
+    "packages/daemon-core/tests/unit/verification-runtime-plan.test.ts",
+    "packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md",
+    "packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md",
+    "packages/workflow-runtime/docs/API.md",
+    "packages/workflow-runtime/docs/DEPLOYMENT.md",
+    "packages/workflow-runtime/docs/EXAMPLES.md",
+    "packages/workflow-runtime/docs/state-recovery-mechanism.md",
+    "packages/workflow-runtime/docs/storage-implementation.md",
+    "packages/workflow-runtime/examples/state-recovery-example.ts",
+    "packages/workflow-runtime/examples/storage-example.ts",
+    "packages/workflow-runtime/package.json",
+    "packages/workflow-runtime/src/StateRecoveryManager.ts",
+    "packages/workflow-runtime/src/WorkflowPersistence.ts",
+    "packages/workflow-runtime/src/events/EventLogReader.ts",
+    "packages/workflow-runtime/src/index.ts",
+    "packages/workflow-runtime/src/storage/AtomicWorkflowInstanceStorage.ts",
+    "packages/workflow-runtime/src/storage/WorkflowInstanceStorage.ts",
+    "packages/workflow-runtime/src/storage/index.ts",
+    "packages/workflow-runtime/tests/acceptance.test.ts",
+    "packages/workflow-runtime/tests/integration/crash-recovery.test.ts",
+    "packages/workflow-runtime/tests/integration/persistence-comprehensive.test.ts",
+    "packages/workflow-runtime/tests/unit/AtomicWorkflowInstanceStorage.test.ts",
+    "packages/workflow-runtime/tests/unit/EventLogReader.test.ts",
+    "packages/workflow-runtime/tests/unit/StateRecoveryManager.test.ts",
+    "packages/workflow-runtime/tests/unit/WorkflowInstanceStorage.test.ts",
+    "packages/workflow-runtime/tests/unit/WorkflowPersistence.test.ts",
+    "packages/workflow-runtime/tests/unit/persistence-owner-boundary.test.ts",
+    "scripts/build-workflow-runtime.ts",
+    "setup/userlevel-opencode/agents/sf-verifier.md",
+    "setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md",
+    "setup/userlevel-opencode/tools/sf_verification_run.ts",
+    "tests/e2e/feature-spec-e2e.test.ts"
+  ],
+  "source_paths": [
+    "docs/design/windows-lpac-node-readonly-contract.md",
+    "docs/project-status.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md",
+    "packages/daemon-core/tests/unit/verification-runtime-plan.test.ts",
+    "packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md",
+    "packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md",
+    "packages/workflow-runtime/docs/API.md",
+    "packages/workflow-runtime/docs/DEPLOYMENT.md",
+    "packages/workflow-runtime/docs/EXAMPLES.md",
+    "packages/workflow-runtime/docs/state-recovery-mechanism.md",
+    "packages/workflow-runtime/docs/storage-implementation.md",
+    "packages/workflow-runtime/examples/state-recovery-example.ts",
+    "packages/workflow-runtime/examples/storage-example.ts",
+    "packages/workflow-runtime/package.json",
+    "packages/workflow-runtime/src/StateRecoveryManager.ts",
+    "packages/workflow-runtime/src/WorkflowPersistence.ts",
+    "packages/workflow-runtime/src/events/EventLogReader.ts",
+    "packages/workflow-runtime/src/index.ts",
+    "packages/workflow-runtime/src/storage/AtomicWorkflowInstanceStorage.ts",
+    "packages/workflow-runtime/src/storage/WorkflowInstanceStorage.ts",
+    "packages/workflow-runtime/src/storage/index.ts",
+    "packages/workflow-runtime/tests/acceptance.test.ts",
+    "packages/workflow-runtime/tests/integration/crash-recovery.test.ts",
+    "packages/workflow-runtime/tests/integration/persistence-comprehensive.test.ts",
+    "packages/workflow-runtime/tests/unit/AtomicWorkflowInstanceStorage.test.ts",
+    "packages/workflow-runtime/tests/unit/EventLogReader.test.ts",
+    "packages/workflow-runtime/tests/unit/StateRecoveryManager.test.ts",
+    "packages/workflow-runtime/tests/unit/WorkflowInstanceStorage.test.ts",
+    "packages/workflow-runtime/tests/unit/WorkflowPersistence.test.ts",
+    "setup/userlevel-opencode/agents/sf-verifier.md",
+    "setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md",
+    "setup/userlevel-opencode/tools/sf_verification_run.ts",
+    "tests/e2e/feature-spec-e2e.test.ts",
+    "packages/workflow-runtime/tests/unit/persistence-owner-boundary.test.ts",
+    "scripts/build-workflow-runtime.ts"
+  ],
+  "raw_baseline_members": 27,
+  "original_tracked_code_files_unchanged": 5,
+  "original_governance_changes": "Expected real owner artifacts/session handoffs; not asserted byte-unchanged after authorized execution.",
+  "validation": [
+    "0247 expected boundary failure",
+    "0249 boundary3",
+    "0250 real owner integration17",
+    "0251 complete types",
+    "0254 strict action9",
+    "0255 full12-package build",
+    "0258 retained orchestration/boundary18",
+    "0259 current49 files739",
+    "0260 actual Node package/deep-import/output closure"
+  ],
+  "deployment": "Current global117 files and native assets remain0208/a918. New module/guidance source has not been deployed; no binary provenance or final acceptance claim."
+}

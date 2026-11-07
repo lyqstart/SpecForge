@@ -1,0 +1,15 @@
+{
+  "utc": "2026-11-07T05:36:00.098Z",
+  "checkpoint": "integration-checkpoint-06.json",
+  "scope_basis": "SPS8 existing owner boundary; standing user repair instruction; archived workflow-persistence-boundary-repair-plan.md",
+  "before": {
+    "docs/project-status.md": "b488a8ce9a0400b717250d79abf8ec02aaacf58f6285830489a4d2a16231949e",
+    "docs/rule/specforge-development-error-ledger-and-experience.md": "8b8192a706ce5352d890fe7753f227d39b14d18970844701a2f7c0951f2d6c21"
+  },
+  "after": {
+    "docs/project-status.md": "edf85db456b66e78fe8f2948ad40592e989f1eaaaf1a2868fb0022aff2d57164",
+    "docs/rule/specforge-development-error-ledger-and-experience.md": "3bfee6b60ccf109df38ec93cfc2df659e21cfd98101f397b7f771ba9211acfb3"
+  },
+  "external_model_consent_created": false,
+  "original_business_writes": false
+}

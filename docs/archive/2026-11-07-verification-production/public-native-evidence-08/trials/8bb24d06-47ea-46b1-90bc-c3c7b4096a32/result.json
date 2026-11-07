@@ -1,0 +1,57 @@
+{
+  "utc": "2026-11-07T03:08:13.708Z",
+  "trial": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\63ad82d80a914742817dc95f44d806ba\\trials\\8bb24d06-47ea-46b1-90bc-c3c7b4096a32",
+  "records": [
+    {
+      "name": "actual-implementation-done-state-rejected",
+      "session": "ses_e4c06a0a8ffeP3RSjnU2BbacWJ",
+      "message": "msg_1b3f96344001ohi3YSvsUW6wYU",
+      "call": "call_014d7aee0b044fa387204f8f5e30fedf",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": false,
+        "error": "VERIFICATION_AUTHORITATIVE_STATE_REQUIRED",
+        "application_passed": false
+      }
+    },
+    {
+      "name": "safe-bash-remains-readonly",
+      "session": "ses_e4c05a50cffeOsmSNFmYm21jlJ",
+      "message": "msg_1b3fa5b2d001pglxSAmyoWf28l",
+      "call": "call_0623493f81634a85814873275224acbe",
+      "agent": "sf-verifier",
+      "tool": "sf_safe_bash",
+      "value": {
+        "success": false,
+        "error": "WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\nViolations: SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor",
+        "hard_stop": false,
+        "policy_violation": true,
+        "retry_allowed": false,
+        "blocked_command": "node --test tests/positive.test.cjs",
+        "write_guard_targets": []
+      }
+    },
+    {
+      "child": "kernel",
+      "pid": 40192,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-11-07T03:08:13.707Z"
+      }
+    },
+    {
+      "child": "daemon",
+      "pid": 40836,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "utc": "2026-11-07T03:08:13.593Z"
+      }
+    }
+  ],
+  "failure": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ undefined\n- true\n\n    at main (D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\public-kernel-chain.cjs:82:183)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)",
+  "exit_code": 1,
+  "original_business_touched": false
+}

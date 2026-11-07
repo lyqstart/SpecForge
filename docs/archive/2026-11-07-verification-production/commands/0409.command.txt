@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/read-original-state.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Read same original WI authoritative state from newly installed1.0.23 owner before formal revalidation",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES state projection only; RUNTIME_OBSERVER_WRITES new Daemon read logs; no truth edits",
+  "started_utc": "2026-11-07T08:51:06.870Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\read-original-state.cjs",
+      "sha256": "e61e1f438ee825ac0d674c78e5539d35a0c9ad95526aba7f8022c95a12214ab5",
+      "size": 1532,
+      "extension": ".cjs"
+    }
+  ]
+}

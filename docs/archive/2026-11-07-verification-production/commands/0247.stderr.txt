@@ -1,0 +1,60 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/persistence-owner-boundary.test.ts > SPS §8: Daemon owns workflow-state persistence > keeps orchestration public without exporting independent persistence owners
+AssertionError: WorkflowPersistence: expected { …(85), …(1) } to not have property "WorkflowPersistence"
+
+- Expected:
+undefined
+
++ Received:
+[Function WorkflowPersistence]
+
+ ❯ tests/unit/persistence-owner-boundary.test.ts:18:59
+     16|     expect(runtime.WorkflowEngine).toBeTypeOf('function');
+     17|     expect(runtime.WorkflowLoader).toBeTypeOf('function');
+     18|     for (const name of retired) expect(runtime, name).not.toHaveProper…
+       |                                                           ^
+     19|   });
+     20|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/unit/persistence-owner-boundary.test.ts > SPS §8: Daemon owns workflow-state persistence > closes package deep imports of retired owners rather than merely hiding root names
+AssertionError: expected undefined to be './dist/src/index.js' // Object.is equality
+
+- Expected:
+"./dist/src/index.js"
+
++ Received:
+undefined
+
+ ❯ tests/unit/persistence-owner-boundary.test.ts:22:45
+     20|
+     21|   it('closes package deep imports of retired owners rather than merely…
+     22|     expect(manifest.exports?.['.']?.import).toBe('./dist/src/index.js'…
+       |                                             ^
+     23|     const require = createRequire(resolve(root, 'package.json'));
+     24|     for (const subpath of ['WorkflowPersistence', 'dist/src/WorkflowPe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/unit/persistence-owner-boundary.test.ts > SPS §8: Daemon owns workflow-state persistence > excludes legacy physical persistence from the current source/build input set
+AssertionError: WorkflowPersistence.ts: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/unit/persistence-owner-boundary.test.ts:35:61
+     33|       'WorkflowPersistence.ts', 'StateRecoveryManager.ts', 'events/Eve…
+     34|       'storage/WorkflowInstanceStorage.ts', 'storage/AtomicWorkflowIns…
+     35|     ]) expect(existsSync(resolve(root, 'src', name)), name).toBe(false…
+       |                                                             ^
+     36|   });
+     37| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+

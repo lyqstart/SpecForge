@@ -1,0 +1,32 @@
+{
+  "agent": "sf-verifier",
+  "boundary_statement": "只读 D23 formal 验证；未写业务/治理文件；代码权限保持撤销，未重新释放；未调用状态/Gate 工具。",
+  "duration_ms": 60000,
+  "evidence": [
+    "receipt:290bf68c482afbf68cbb38639492980aade04b82ae7d5d6d984b0bb0249436d5",
+    "receipt:0246951140b7a562a278ef97bdb06ff4419c133ed6f051df5af7263eee15db45",
+    "receipt:43096710781324aab9afd8b45b6f827f685a398bb9336f06c20268f0afc22d9e",
+    "receipt:9abce60b2d876d97ad08425b7f67b287a1d7f3d02f49c3ff481a7c73f97a7aa7"
+  ],
+  "findings": [
+    "idx0 原声明 `test -f src/greet.ts`：exit_code=0，stdout=\"\"，cleanup_proved=true，receipt_id=290bf68c482afbf68cbb38639492980aade04b82ae7d5d6d984b0bb0249436d5 → 判定 pass（Runtime 归一化为只读 Node 文件存在检查）",
+    "idx1 原声明 `grep -c \"export function greet(name: string): string\" src/greet.ts`：exit_code=0，stdout=\"1\\n\"，cleanup_proved=true，receipt_id=0246951140b7a562a278ef97bdb06ff4419c133ed6f051df5af7263eee15db45 → 判定 pass（归一化有限 grep 计数，输出含 1）",
+    "idx2 原声明 `grep -c \"Hello, world!\" src/greet.ts`：exit_code=0，stdout=\"1\\n\"，cleanup_proved=true，receipt_id=43096710781324aab9afd8b45b6f827f685a398bb9336f06c20268f0afc22d9e → 判定 pass（输出含 1）",
+    "idx3 原声明 `! grep -qE \"^import |^import\\{|require\\(\" src/greet.ts`：exit_code=0，stdout=\"\"，cleanup_proved=true，receipt_id=9abce60b2d876d97ad08425b7f67b287a1d7f3d02f49c3ff481a7c73f97a7aa7 → 判定 pass（零 import 反向判定成立）",
+    "Attempt 映射：idx0 attempt_record_id=01c6af9e93e7696506e5af5dd09ea125b9ed84b68afd897f406d58e5953b77e6；idx1=a328c0252f1a9cc3286e84657fff4ba3d98ccb0394d3ed3ab476f05fab16da02；idx2=2d9ca3803c6d7859d7b259e033ff92a1fc17d7ec068bf9d83f7bee115d9c4f34；idx3=6940a8b48dd4139771a0a3107f6d08562c785d7855e3437082194a9444942733；每个 Attempt 仅消费一次"
+  ],
+  "inputs_read": [
+    "plan:eb0895f1a2520be4da59dee2d485582b1b1b39cd9591b4098bf582ed939caa9f",
+    "plan:40bac342f0c35e83fa743ab53280a1a9fcf22731c646164d7ad802adc85d2b1d",
+    "plan:7b0e6d17a5cc57df23a2e7a4939e1dba78ca7648fdd60e1c63ed6e1a662854f6",
+    "plan:caacb71d2d8e802c30989451b611cfb85fce16856f095d9b23a2e07799b45d1b"
+  ],
+  "next_step_recommendation": "由 sf-orchestrator 汇总本批 formal 回执，写入 evidence_manifest/verification_report 并继续 verification 流程闭环。",
+  "outputs_written": [],
+  "schema_version": "1.0",
+  "stage": "verification-formal-batch-t002",
+  "timestamp": "2026-11-07T00:00:00Z",
+  "unknowns": [],
+  "escalation_signals": [],
+  "work_item_id": "WI-0001"
+}

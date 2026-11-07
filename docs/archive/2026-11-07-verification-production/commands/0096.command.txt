@@ -1,0 +1,13 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "build",
+    "docs/archive/2026-11-07-verification-production/create-public-fixture.ts",
+    "--target=bun",
+    "--outfile=.tmp/verification-lpac-build/create-public-fixture.js"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "compile-formal-purpose-public-fixture-builder",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES ignored fixture bundle; EXTERNAL_EVIDENCE_WRITES build receipts",
+  "started_utc": "2026-11-07T02:41:45.875Z"
+}

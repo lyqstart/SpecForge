@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/verify-post-interactive-preservation.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Verify final loaded Skill bytes,unchanged canonical acceptance and legacy home,Daemon independent after TUI exit",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=read-only health and file identities;EXTERNAL_EVIDENCE_WRITES=final preservation receipt",
+  "started_utc": "2026-11-07T10:51:33.165Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\verify-post-interactive-preservation.cjs",
+      "sha256": "33945ad159a94a49b5c00ee9af8a3f92e0dc2a6350f847cb58e4c674113fd52d",
+      "size": 2927,
+      "extension": ".cjs"
+    }
+  ]
+}

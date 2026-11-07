@@ -1,0 +1,14 @@
+{
+  "executable": "git",
+  "args": [
+    "add",
+    "--pathspec-from-file=docs/archive/2026-11-07-verification-production/version-source-pathspec.nul",
+    "--pathspec-file-nul"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Stage only reviewed33 patch metadata/status/error and preserved version-baseline paths",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES Git index only for explicit version-source-pathspec; EXTERNAL_EVIDENCE_WRITES receipts; no original/deployment/ref changes",
+  "started_utc": "2026-11-07T06:27:49.510Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": []
+}

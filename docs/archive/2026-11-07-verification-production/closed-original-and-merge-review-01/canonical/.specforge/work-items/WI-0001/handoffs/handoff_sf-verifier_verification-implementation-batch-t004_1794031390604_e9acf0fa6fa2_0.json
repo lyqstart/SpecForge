@@ -1,0 +1,32 @@
+{
+  "agent": "sf-verifier",
+  "boundary_statement": "只读验证；未写业务/治理文件；无 hard_stop",
+  "duration_ms": 60000,
+  "errors": [],
+  "escalation_signals": [],
+  "findings": [
+    "unit index0 grep -c \"^# Greeting Library\" README.md: attempt=72b950ecbca4ce25db77a31c4da5ea6486953283cc60833fae182bb68f2ee0d0 receipt=dc02cb1cf3cf9d951432ad86e1ae37a1ded04b63c700eedd348d50731ad4c65d exit=0 stdout=1 判定pass（既有标题保留）",
+    "unit index1 grep -c \"A synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\" README.md: attempt=71c05371a2ec4f23650fb2fac5f8a3487cc786f880c5fc12ce4ed1e04cfb22c0 receipt=5d2f99fcf8411b99f07c4aa0d980c544aa556b43b177516ac1a27685d1d0e934 exit=0 stdout=1 判定pass（既有正文保留）",
+    "unit index2 grep -c \"greet(name: string): string\" README.md: attempt=1bc855a025545ae49aff95a5122fe4066b44a60d505c1f3ff03fcd72d8577e0b receipt=62fc588d6e29f1203712c807c38409292c410b8ec37237a04492a8a44c1d122f exit=0 stdout=1 判定pass（≥1满足）",
+    "unit index3 grep -cE \"Hello, Ada!|Hello, Grace!\" README.md: attempt=a3859ac8bb52bbdf1dc232f2dc6a1d7c4a824105df0e8c7a5c7b5790153c15c2 receipt=ba1dff2adfa79535b14f4e3b4ea24aeaaa31a9b53f9d42e79471015c794ddfcc exit=0 stdout=2 判定pass（≥1满足）",
+    "unit index4 grep -c \"Hello, world!\" README.md: attempt=e37a0a531c1ada28ce93a6d3e489cc9394404a7e603918369bf4172d6ded42d2 receipt=1f407a8b6f0e5845319ffc3387c7223188d3fa7e2badb510041f20646fdd5c4b exit=0 stdout=1 判定pass（≥1满足）",
+    "regression index0 grep -c \"No production data.\" README.md: attempt=c1aa3e8f1119966d07d9a3712ed07f0bb2cbc8f9a2076b20948ebced705e08a6 receipt=ae2fbd6bb1df0b46d04647f1692992a0bbeade46fea5ec8b04fdfe47790bec5a exit=0 stdout=1 判定pass（追加不破坏既有声明）",
+    "六项均经 D23 固定只读隔离 Node 归一化执行（finite-posix-readonly-predicate/v1），非 shell/grep 程序执行；cleanup_proved 全部 true，output_complete 全部 true"
+  ],
+  "inputs_read": [
+    "plan 928b32f78fd9af2b868aba73ba52b85f4bc958c56de37324f7b9c38c544c95be",
+    "plan 851cb65c078371aaf3816e6842b35e50a1497339b4765f2a3eb826b058f00cf2",
+    "plan 32ae5b6411335829f36c74565ebcc03ac433ea1ad4aff0c15d9b883fc9e5bcc5",
+    "plan 87b0ef450204e74d1a0c9757920d1e01ce296e2b11ed4dc8ed567f9ecf4c775d",
+    "plan f4dbd7336f5aac3437f5696abedff37046acf4922e34bcaadc5bb6793ca7a8c0",
+    "plan 4a9a8ddb73969d34b258594f8d0c37bda4c530a29ea5b02ed5fdcc781ef72d55"
+  ],
+  "next_step_recommendation": "六个 receipt 可纳入 TASK-WI-0001-004 的 verification_commands（execution_kind=verification-execution/v1）；正式验证阶段据此写 verification_report/evidence_manifest",
+  "outputs_written": [],
+  "schema_version": "1.0",
+  "stage": "verification-implementation-batch-t004",
+  "timestamp": "2026-11-07T00:00:00Z",
+  "unknowns": [],
+  "warnings": [],
+  "work_item_id": "WI-0001"
+}

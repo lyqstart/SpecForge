@@ -1,0 +1,12 @@
+{
+  "executable": "git",
+  "args": [
+    "add",
+    "--pathspec-from-file=docs/archive/2026-11-07-verification-production/source-repair-pathspec.nul",
+    "--pathspec-file-nul"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "stage-verified-async-Git-source-repair",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES Git index exact8 classified source repair paths; no archive evidence original/user install writes",
+  "started_utc": "2026-11-07T04:40:08.352Z"
+}

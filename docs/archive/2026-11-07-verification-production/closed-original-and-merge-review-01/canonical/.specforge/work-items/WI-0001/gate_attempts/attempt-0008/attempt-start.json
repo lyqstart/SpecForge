@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "attempt_id": "attempt-0008",
+  "work_item_id": "WI-0001",
+  "source": "gate_run",
+  "started_at": "2026-11-07T09:38:40.228Z",
+  "requested_gate_ids": [
+    "verification_gate",
+    "formal_version_gate"
+  ]
+}

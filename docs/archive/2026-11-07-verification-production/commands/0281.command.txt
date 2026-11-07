@@ -1,0 +1,8 @@
+{
+  "executable": "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/owned-nonexistent-probe.exe",
+  "args": [],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Carrier fact probe: nonexistent owned executable has no process exit",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES only receipts; intentionally nonexistent executable under evidence root, no process created",
+  "started_utc": "2026-11-07T06:11:43.303Z"
+}

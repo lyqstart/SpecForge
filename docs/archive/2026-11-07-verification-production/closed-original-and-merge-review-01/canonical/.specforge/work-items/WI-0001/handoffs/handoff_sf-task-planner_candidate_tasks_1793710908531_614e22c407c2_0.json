@@ -1,0 +1,32 @@
+{
+  "agent": "sf-task-planner",
+  "boundary_statement": "仅修订任务/追溯候选绑定字段与 ID 规范；未推进状态、未触发审批、未实现代码、未触碰其他文件；本次为该修复轮首次有效执行（上轮调度零写入零 handoff）。",
+  "duration_ms": 0,
+  "escalation_signals": [],
+  "findings": [
+    "tasks.md：front-matter 字段名 implementation_baseline_snapshot_id→implementation_baseline_id ×1（值 sha256:8f8ac52a… 不变，与 architecture/design 同值同字段名）",
+    "tasks.md：REQ-0xx→REQ-CORE-0xx 6 token、AC-0xx→AC-CORE-0xx 30 token、DD-0xx→DD-CORE-0xx 48 token（正文/总览表/验收对照/总结统计），另 3 处区间尾补前缀（～006→～DD-CORE-006），L312 上游短编号括号 2 处随句删除",
+    "tasks.md：删除『## 规范 ID 映射』别名章节（含 2 行映射表与一一对应说明）；其 contract 承载说明行语义保留并并入候选绑定节",
+    "tasks.md：上游输入行区间改规范表述（REQ-CORE-001～REQ-CORE-006 / AC-CORE-001～AC-CORE-018 / DD-CORE-001～DD-CORE-006）；L53 『（greenfield，BL-1/FACT-1）』改枚举式表述，语义不变",
+    "tasks.md 保持不动项核验通过：TASK-WI-0001-001～005 标题×5、EVREQ-* 17 处、A1–A4、任务短编号列/mermaid/批次说明、结构化 refs 与 allowed_write_files 声明结构逐字保留",
+    "trace_delta.md：front-matter 字段名改 implementation_baseline_id ×1；REQ-0xx→REQ-CORE-0xx 20 token、AC-0xx→AC-CORE-0xx 23 token、DD-0xx→DD-CORE-0xx 55 token + 通配 DD-00*→DD-CORE-*（self-check 行），追溯矩阵 18 行、文件覆盖表、覆盖统计、Governance Delta 33 行边（From/To DD 规范化）全覆盖",
+    "trace_delta.md：删除 L18『ID 约定：本矩阵沿用上游候选短编号』别名行；上游来源行区间改规范表述；Governance Delta 标记、33 行四列结构、边集合与 Operation/Relation 语义零变化",
+    "残留核验（sf_batch_verify 两文件）：implementation_baseline_snapshot_id / REQ-0xx / AC-0xx / DD-0xx / 规范ID映射 / ID约定别名行 / greenfield 全部零残留；行锚定模式失败项经非锚定复核与 Read 实证确认为工具锚定口径（非内容缺失）；追溯矩阵 18 行经 Read 直接实证"
+  ],
+  "inputs_read": [
+    ".specforge/work-items/WI-0001/candidates/tasks.md（旧版全文）",
+    ".specforge/work-items/WI-0001/candidates/trace_delta.md（旧版全文）"
+  ],
+  "next_step_recommendation": "重试封存并运行候选 Gate",
+  "outputs_written": [
+    ".specforge/work-items/WI-0001/candidates/tasks.md",
+    ".specforge/work-items/WI-0001/candidates/trace_delta.md"
+  ],
+  "schema_version": "1.0",
+  "stage": "candidate_tasks",
+  "timestamp": "2026-11-03T00:00:00.000Z",
+  "unknowns": [
+    "prod-environment.md 的 Node 实际版本仍为上游未取证事实（原候选已声明，非本次修复范围）"
+  ],
+  "work_item_id": "WI-0001"
+}

@@ -1,0 +1,12 @@
+{
+  "executable": "git",
+  "args": [
+    "commit",
+    "-m",
+    "fix(workflow): retire legacy persistence and clarify verification actions"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Commit reviewed SPS8 persistence retirement, preserved raw history and strict verification action guidance",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES only reviewed staged66 paths committed to current codex branch; EXTERNAL_EVIDENCE_WRITES command receipts; no merge/push/business Git or deployment writes",
+  "started_utc": "2026-11-07T05:55:40.438Z"
+}

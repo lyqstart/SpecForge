@@ -1,0 +1,877 @@
+{
+  "utc": "2026-11-07T09:14:58.456Z",
+  "attempt": "06",
+  "runtime_version": "1.0.23",
+  "prior_attempts_included": false,
+  "source": "Actual genuine installed professional Agent tool parts; plans and prepare/run linked to canonical Task selectors",
+  "task_path": ".specforge/work-items/WI-0001/candidates/tasks.md",
+  "task_raw_sha256": "0b73306b4a56b505b1cdc59f062fbe83f76d1d39ad2534cc1597faa61d1feae2",
+  "declarations": [
+    {
+      "task_id": "TASK-WI-0001-001",
+      "verification_type": "unit",
+      "command_index": 0,
+      "command": "test -f package.json && test -f tsconfig.json"
+    },
+    {
+      "task_id": "TASK-WI-0001-001",
+      "verification_type": "unit",
+      "command_index": 1,
+      "command": "grep -c '\"dependencies\": {}' package.json"
+    },
+    {
+      "task_id": "TASK-WI-0001-001",
+      "verification_type": "unit",
+      "command_index": 2,
+      "command": "grep -c '\"test\": \"node --test tests/greet.test.ts\"' package.json"
+    },
+    {
+      "task_id": "TASK-WI-0001-001",
+      "verification_type": "unit",
+      "command_index": 3,
+      "command": "grep -c '\"type\": \"module\"' package.json"
+    },
+    {
+      "task_id": "TASK-WI-0001-001",
+      "verification_type": "unit",
+      "command_index": 4,
+      "command": "grep -cE '\"noEmit\": true|\"allowImportingTsExtensions\": true' tsconfig.json"
+    },
+    {
+      "task_id": "TASK-WI-0001-002",
+      "verification_type": "unit",
+      "command_index": 0,
+      "command": "test -f src/greet.ts"
+    },
+    {
+      "task_id": "TASK-WI-0001-002",
+      "verification_type": "unit",
+      "command_index": 1,
+      "command": "grep -c \"export function greet(name: string): string\" src/greet.ts"
+    },
+    {
+      "task_id": "TASK-WI-0001-002",
+      "verification_type": "unit",
+      "command_index": 2,
+      "command": "grep -c \"Hello, world!\" src/greet.ts"
+    },
+    {
+      "task_id": "TASK-WI-0001-002",
+      "verification_type": "unit",
+      "command_index": 3,
+      "command": "! grep -qE \"^import |^import\\{|require\\(\" src/greet.ts"
+    },
+    {
+      "task_id": "TASK-WI-0001-003",
+      "verification_type": "unit",
+      "command_index": 0,
+      "command": "test -f tests/greet.test.ts"
+    },
+    {
+      "task_id": "TASK-WI-0001-003",
+      "verification_type": "unit",
+      "command_index": 1,
+      "command": "grep -c \"node:test\" tests/greet.test.ts"
+    },
+    {
+      "task_id": "TASK-WI-0001-003",
+      "verification_type": "unit",
+      "command_index": 2,
+      "command": "grep -c \"node:assert/strict\" tests/greet.test.ts"
+    },
+    {
+      "task_id": "TASK-WI-0001-003",
+      "verification_type": "unit",
+      "command_index": 3,
+      "command": "grep -c \"strictEqual\" tests/greet.test.ts"
+    },
+    {
+      "task_id": "TASK-WI-0001-003",
+      "verification_type": "integration",
+      "command_index": 0,
+      "command": "node --test tests/greet.test.ts"
+    },
+    {
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "unit",
+      "command_index": 0,
+      "command": "grep -c \"^# Greeting Library\" README.md"
+    },
+    {
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "unit",
+      "command_index": 1,
+      "command": "grep -c \"A synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\" README.md"
+    },
+    {
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "unit",
+      "command_index": 2,
+      "command": "grep -c \"greet(name: string): string\" README.md"
+    },
+    {
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "unit",
+      "command_index": 3,
+      "command": "grep -cE \"Hello, Ada!|Hello, Grace!\" README.md"
+    },
+    {
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "unit",
+      "command_index": 4,
+      "command": "grep -c \"Hello, world!\" README.md"
+    },
+    {
+      "task_id": "TASK-WI-0001-004",
+      "verification_type": "regression",
+      "command_index": 0,
+      "command": "grep -c \"No production data.\" README.md"
+    },
+    {
+      "task_id": "TASK-WI-0001-005",
+      "verification_type": "integration",
+      "command_index": 0,
+      "command": "node --test tests/greet.test.ts"
+    },
+    {
+      "task_id": "TASK-WI-0001-005",
+      "verification_type": "e2e",
+      "command_index": 0,
+      "command": "node -e \"import('./src/greet.ts').then(m => { const a = m.greet('Ada'); const b = m.greet(''); if (a !== 'Hello, Ada!' || b !== 'Hello, world!') { process.exit(1); } console.log('E2E-OK'); }).catch(() => process.exit(1))\""
+    }
+  ],
+  "phases": {
+    "implementation": {
+      "declared": 22,
+      "covered": 0,
+      "successful_receipts": 0,
+      "missing": [
+        {
+          "task_id": "TASK-WI-0001-001",
+          "verification_type": "unit",
+          "command_index": 0,
+          "command": "test -f package.json && test -f tsconfig.json"
+        },
+        {
+          "task_id": "TASK-WI-0001-001",
+          "verification_type": "unit",
+          "command_index": 1,
+          "command": "grep -c '\"dependencies\": {}' package.json"
+        },
+        {
+          "task_id": "TASK-WI-0001-001",
+          "verification_type": "unit",
+          "command_index": 2,
+          "command": "grep -c '\"test\": \"node --test tests/greet.test.ts\"' package.json"
+        },
+        {
+          "task_id": "TASK-WI-0001-001",
+          "verification_type": "unit",
+          "command_index": 3,
+          "command": "grep -c '\"type\": \"module\"' package.json"
+        },
+        {
+          "task_id": "TASK-WI-0001-001",
+          "verification_type": "unit",
+          "command_index": 4,
+          "command": "grep -cE '\"noEmit\": true|\"allowImportingTsExtensions\": true' tsconfig.json"
+        },
+        {
+          "task_id": "TASK-WI-0001-002",
+          "verification_type": "unit",
+          "command_index": 0,
+          "command": "test -f src/greet.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-002",
+          "verification_type": "unit",
+          "command_index": 1,
+          "command": "grep -c \"export function greet(name: string): string\" src/greet.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-002",
+          "verification_type": "unit",
+          "command_index": 2,
+          "command": "grep -c \"Hello, world!\" src/greet.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-002",
+          "verification_type": "unit",
+          "command_index": 3,
+          "command": "! grep -qE \"^import |^import\\{|require\\(\" src/greet.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-003",
+          "verification_type": "unit",
+          "command_index": 0,
+          "command": "test -f tests/greet.test.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-003",
+          "verification_type": "unit",
+          "command_index": 1,
+          "command": "grep -c \"node:test\" tests/greet.test.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-003",
+          "verification_type": "unit",
+          "command_index": 2,
+          "command": "grep -c \"node:assert/strict\" tests/greet.test.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-003",
+          "verification_type": "unit",
+          "command_index": 3,
+          "command": "grep -c \"strictEqual\" tests/greet.test.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-003",
+          "verification_type": "integration",
+          "command_index": 0,
+          "command": "node --test tests/greet.test.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "unit",
+          "command_index": 0,
+          "command": "grep -c \"^# Greeting Library\" README.md"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "unit",
+          "command_index": 1,
+          "command": "grep -c \"A synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\" README.md"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "unit",
+          "command_index": 2,
+          "command": "grep -c \"greet(name: string): string\" README.md"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "unit",
+          "command_index": 3,
+          "command": "grep -cE \"Hello, Ada!|Hello, Grace!\" README.md"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "unit",
+          "command_index": 4,
+          "command": "grep -c \"Hello, world!\" README.md"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "regression",
+          "command_index": 0,
+          "command": "grep -c \"No production data.\" README.md"
+        },
+        {
+          "task_id": "TASK-WI-0001-005",
+          "verification_type": "integration",
+          "command_index": 0,
+          "command": "node --test tests/greet.test.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-005",
+          "verification_type": "e2e",
+          "command_index": 0,
+          "command": "node -e \"import('./src/greet.ts').then(m => { const a = m.greet('Ada'); const b = m.greet(''); if (a !== 'Hello, Ada!' || b !== 'Hello, world!') { process.exit(1); } console.log('E2E-OK'); }).catch(() => process.exit(1))\""
+        }
+      ],
+      "receipts": []
+    },
+    "formal": {
+      "declared": 22,
+      "covered": 20,
+      "successful_receipts": 21,
+      "missing": [
+        {
+          "task_id": "TASK-WI-0001-005",
+          "verification_type": "integration",
+          "command_index": 0,
+          "command": "node --test tests/greet.test.ts"
+        },
+        {
+          "task_id": "TASK-WI-0001-005",
+          "verification_type": "e2e",
+          "command_index": 0,
+          "command": "node -e \"import('./src/greet.ts').then(m => { const a = m.greet('Ada'); const b = m.greet(''); if (a !== 'Hello, Ada!' || b !== 'Hello, world!') { process.exit(1); } console.log('E2E-OK'); }).catch(() => process.exit(1))\""
+        }
+      ],
+      "receipts": [
+        {
+          "task_id": "TASK-WI-0001-001",
+          "verification_type": "unit",
+          "command_index": 0,
+          "command": "test -f package.json && test -f tsconfig.json",
+          "purpose": "formal",
+          "plan_id": "cfa468dbdf3fb8dd537210c4596bb07bb3294232e3d22d0a29438baf7d5f76df",
+          "attempt_record_id": "0214e823bc10410b17b531fcaac0212f84531403bab578ac06a181862383ff62",
+          "receipt_id": "eec147298882bfd11284df9add44391ffe07de85514f83596d9cd2a9085a6740",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "-e",
+            "process.exit(0);"
+          ],
+          "stdout": "",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T08:56:12.919Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4ac79b47ffeQYMIWHsEqzJBlL",
+          "message": "msg_1b538c40c001h0C1lZiL1DsSJX",
+          "call_id": "call_f7d670606a694e75b0a0a397"
+        },
+        {
+          "task_id": "TASK-WI-0001-001",
+          "verification_type": "unit",
+          "command_index": 1,
+          "command": "grep -c '\"dependencies\": {}' package.json",
+          "purpose": "formal",
+          "plan_id": "0eefe775d6313b18c3a982bcbb03cb07aa480f2298efc8390a6970fa59be46f7",
+          "attempt_record_id": "c9a420a302191936d5d1dc5e5c168045a251842061fcf15e7458f237102d76f3",
+          "receipt_id": "7cf287078c90b6c71f44621d132c1ebadb527019fa493f994b2e52092763adeb",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "-e",
+            "const text=\"{\\n  \\\"name\\\": \\\"greeting-library\\\",\\n  \\\"version\\\": \\\"0.1.0\\\",\\n  \\\"private\\\": true,\\n  \\\"type\\\": \\\"module\\\",\\n  \\\"scripts\\\": {\\n    \\\"test\\\": \\\"node --test tests/greet.test.ts\\\"\\n  },\\n  \\\"dependencies\\\": {}\\n}\\n\";const lines=text===\"\"?[]:text.split(\"\\n\");if(lines.length&&lines[lines.length-1]===\"\")lines.pop();const regex=RegExp(\"\\\"dependencies\\\": \\\\{\\\\}\");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);"
+          ],
+          "stdout": "1\n",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T08:56:34.507Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4ac79b47ffeQYMIWHsEqzJBlL",
+          "message": "msg_1b5391c5f001fUXrgyQITiEPcR",
+          "call_id": "call_cc7a6467341d4a379f9f0d7f"
+        },
+        {
+          "task_id": "TASK-WI-0001-001",
+          "verification_type": "unit",
+          "command_index": 2,
+          "command": "grep -c '\"test\": \"node --test tests/greet.test.ts\"' package.json",
+          "purpose": "formal",
+          "plan_id": "6f9928a8fdea347abc3c954f69bd138b33ca90f6fc0c49c37f0b67e219ed40bc",
+          "attempt_record_id": "338048195fed78f31d3b592e016aff53e6e7a4d0eff1405073702da3f63f1cec",
+          "receipt_id": "22677de542fd4277b75c483078b8158d230462d509c328c7e0881a7601a17e41",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "-e",
+            "const text=\"{\\n  \\\"name\\\": \\\"greeting-library\\\",\\n  \\\"version\\\": \\\"0.1.0\\\",\\n  \\\"private\\\": true,\\n  \\\"type\\\": \\\"module\\\",\\n  \\\"scripts\\\": {\\n    \\\"test\\\": \\\"node --test tests/greet.test.ts\\\"\\n  },\\n  \\\"dependencies\\\": {}\\n}\\n\";const lines=text===\"\"?[]:text.split(\"\\n\");if(lines.length&&lines[lines.length-1]===\"\")lines.pop();const regex=RegExp(\"\\\"test\\\": \\\"node --test tests/greet[\\\\s\\\\S]test[\\\\s\\\\S]ts\\\"\");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);"
+          ],
+          "stdout": "1\n",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T08:56:55.159Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4ac79b47ffeQYMIWHsEqzJBlL",
+          "message": "msg_1b5396cef0014ZDxpoKcv83UC4",
+          "call_id": "call_dcf80ecdcee94b1c9b619684"
+        },
+        {
+          "task_id": "TASK-WI-0001-001",
+          "verification_type": "unit",
+          "command_index": 3,
+          "command": "grep -c '\"type\": \"module\"' package.json",
+          "purpose": "formal",
+          "plan_id": "e344458665c8dc629275d85bff5f3210729040924abd97e48f7013a986fdb96c",
+          "attempt_record_id": "0dbdc6649c9314b55c4a9d0906a516c3f04300a32ff6d89800884994c894c728",
+          "receipt_id": "484bc425c21fd920e455f5f835c707d083f583c537d14a8a6f3b78e48368951d",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "-e",
+            "const text=\"{\\n  \\\"name\\\": \\\"greeting-library\\\",\\n  \\\"version\\\": \\\"0.1.0\\\",\\n  \\\"private\\\": true,\\n  \\\"type\\\": \\\"module\\\",\\n  \\\"scripts\\\": {\\n    \\\"test\\\": \\\"node --test tests/greet.test.ts\\\"\\n  },\\n  \\\"dependencies\\\": {}\\n}\\n\";const lines=text===\"\"?[]:text.split(\"\\n\");if(lines.length&&lines[lines.length-1]===\"\")lines.pop();const regex=RegExp(\"\\\"type\\\": \\\"module\\\"\");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);"
+          ],
+          "stdout": "1\n",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T08:57:15.735Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4ac79b47ffeQYMIWHsEqzJBlL",
+          "message": "msg_1b539bef6001bnjBMq0pTfrREf",
+          "call_id": "call_8482d55449624681ad30c955"
+        },
+        {
+          "task_id": "TASK-WI-0001-001",
+          "verification_type": "unit",
+          "command_index": 4,
+          "command": "grep -cE '\"noEmit\": true|\"allowImportingTsExtensions\": true' tsconfig.json",
+          "purpose": "formal",
+          "plan_id": "9b54742137b4b7681dc947abdf066748cc02b8bf26cfe0294cb08d811a20a2b5",
+          "attempt_record_id": "cb9bac7bfad1ff346d8e4cbdfe6512e971ac8112e62728d5322af512866b7223",
+          "receipt_id": "0e8c96edbec07a5e5a2044170d10c4b5287ac365d4e8f96a7ee834dd7515244a",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "-e",
+            "const text=\"{\\n  \\\"compilerOptions\\\": {\\n    \\\"target\\\": \\\"ES2022\\\",\\n    \\\"module\\\": \\\"NodeNext\\\",\\n    \\\"moduleResolution\\\": \\\"NodeNext\\\",\\n    \\\"strict\\\": true,\\n    \\\"noEmit\\\": true,\\n    \\\"allowImportingTsExtensions\\\": true\\n  },\\n  \\\"include\\\": [\\\"src/**/*.ts\\\", \\\"tests/**/*.ts\\\"]\\n}\\n\";const lines=text===\"\"?[]:text.split(\"\\n\");if(lines.length&&lines[lines.length-1]===\"\")lines.pop();const regex=RegExp(\"\\\"noEmit\\\": true|\\\"allowImportingTsExtensions\\\": true\");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);"
+          ],
+          "stdout": "2\n",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T08:58:49.070Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4ac79b47ffeQYMIWHsEqzJBlL",
+          "message": "msg_1b53b2acc001g1eJPJnkEFufTW",
+          "call_id": "call_bafcad7ac248400c9f22cc58"
+        },
+        {
+          "task_id": "TASK-WI-0001-002",
+          "verification_type": "unit",
+          "command_index": 0,
+          "command": "test -f src/greet.ts",
+          "purpose": "formal",
+          "plan_id": "3e67a23124ec01d813a49d4d2dc905dec7106e56992252c4fce9edadef637376",
+          "attempt_record_id": "15bf9086134cb871c1046ce4986450dc2be8a5ff2adccb4c65da47431da4c2a4",
+          "receipt_id": "f44b51432409aee8a645905b80b26e8640daa76fa5278336a194bca516b2853f",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "-e",
+            "process.exit(0);"
+          ],
+          "stdout": "",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T09:00:25.108Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4ac3a029ffeC0rfCgzlAwB88B",
+          "message": "msg_1b53c9464001EPGjTpNPxUEtfD",
+          "call_id": "call_054bbce0805e44259e0cd970"
+        },
+        {
+          "task_id": "TASK-WI-0001-002",
+          "verification_type": "unit",
+          "command_index": 0,
+          "command": "test -f src/greet.ts",
+          "purpose": "formal",
+          "plan_id": "3e67a23124ec01d813a49d4d2dc905dec7106e56992252c4fce9edadef637376",
+          "attempt_record_id": "0ce948f6ec4ddaceec76e28934e5f69a9b0659c4372904fd7ab2d61b9ffe3b38",
+          "receipt_id": "d02452cdd9f7f187acb553bb84daec81454829c5037a229c786e0ab2c41ebf14",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "-e",
+            "process.exit(0);"
+          ],
+          "stdout": "",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T09:02:34.977Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4ac1a40cffeNVk7jXFjZF6tiy",
+          "message": "msg_1b53e9344001kZvOk1kfae5oPe",
+          "call_id": "call_ad0f3d95f407409ba0f24fad"
+        },
+        {
+          "task_id": "TASK-WI-0001-002",
+          "verification_type": "unit",
+          "command_index": 1,
+          "command": "grep -c \"export function greet(name: string): string\" src/greet.ts",
+          "purpose": "formal",
+          "plan_id": "06bedb6cc69aa4a0ae936c8c5edcdbf7bc29c6312017a00939bed4866dc0cd11",
+          "attempt_record_id": "d84d60134ce0de3a04bf179f13ace2fd872d1ea5f83b79fd5716b7cac9c69e3b",
+          "receipt_id": "deb2e15387a73d95fc17f9bf98be59a20aad0eaf601f310c92e4bfd1f60a7832",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "-e",
+            "const text=\"// PI-CORE-001 / DD-CORE-002: greet çº¯å½æ°ï¼ä¸¤åæ¯ï¼é¶å¯ä½ç¨\\nexport function greet(name: string): string {\\n  if (name === \\\"\\\") {\\n    return \\\"Hello, world!\\\";\\n  }\\n  return \\\"Hello, \\\" + name + \\\"!\\\";\\n}\\n\";const lines=text===\"\"?[]:text.split(\"\\n\");if(lines.length&&lines[lines.length-1]===\"\")lines.pop();const regex=RegExp(\"export function greet\\\\(name: string\\\\): string\");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);"
+          ],
+          "stdout": "1\n",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T09:03:08.538Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4ac1a40cffeNVk7jXFjZF6tiy",
+          "message": "msg_1b53ee009001KEI4IOCbBwteeo",
+          "call_id": "call_c359ebea076c4068b449be27"
+        },
+        {
+          "task_id": "TASK-WI-0001-002",
+          "verification_type": "unit",
+          "command_index": 2,
+          "command": "grep -c \"Hello, world!\" src/greet.ts",
+          "purpose": "formal",
+          "plan_id": "80eb247b608f0ff60e4cf830543d1ead60be1050d40097b869218fab5b669dc9",
+          "attempt_record_id": "fd4af6a2dd94f63a4839aab3e2883f2e2b2f83d720993f7396a23200794866e9",
+          "receipt_id": "64065f2b8d19d321492b3c4ec9a232243773c471e6764809918f433d7f4c7a96",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "-e",
+            "const text=\"// PI-CORE-001 / DD-CORE-002: greet çº¯å½æ°ï¼ä¸¤åæ¯ï¼é¶å¯ä½ç¨\\nexport function greet(name: string): string {\\n  if (name === \\\"\\\") {\\n    return \\\"Hello, world!\\\";\\n  }\\n  return \\\"Hello, \\\" + name + \\\"!\\\";\\n}\\n\";const lines=text===\"\"?[]:text.split(\"\\n\");if(lines.length&&lines[lines.length-1]===\"\")lines.pop();const regex=RegExp(\"Hello, world!\");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);"
+          ],
+          "stdout": "1\n",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T09:03:29.729Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4ac1a40cffeNVk7jXFjZF6tiy",
+          "message": "msg_1b53f73f0001qHCeeY4tD1fX2S",
+          "call_id": "call_94baacf959b44c6ca1c2f1ae"
+        },
+        {
+          "task_id": "TASK-WI-0001-002",
+          "verification_type": "unit",
+          "command_index": 3,
+          "command": "! grep -qE \"^import |^import\\{|require\\(\" src/greet.ts",
+          "purpose": "formal",
+          "plan_id": "9da1af6e139e52ce456240e552c2b676d8bc2e97921a03503b57ea2fd54d0f38",
+          "attempt_record_id": "d0671ecb9d0b8078dbba4eb8d2c409b8cd15bd3fad8493e8533b9386fe050951",
+          "receipt_id": "19ab172273eccf0b859040f4abb877963293a24e902bf6fe45e7d5c4e89f6e55",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "-e",
+            "const text=\"// PI-CORE-001 / DD-CORE-002: greet çº¯å½æ°ï¼ä¸¤åæ¯ï¼é¶å¯ä½ç¨\\nexport function greet(name: string): string {\\n  if (name === \\\"\\\") {\\n    return \\\"Hello, world!\\\";\\n  }\\n  return \\\"Hello, \\\" + name + \\\"!\\\";\\n}\\n\";const lines=text===\"\"?[]:text.split(\"\\n\");if(lines.length&&lines[lines.length-1]===\"\")lines.pop();const regex=RegExp(\"^import |^import\\\\{|require\\\\(\");let count=0;for(const line of lines){if(regex.test(line))count++;}process.exit(count===0?0:1);"
+          ],
+          "stdout": "",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T09:03:51.204Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4ac1a40cffeNVk7jXFjZF6tiy",
+          "message": "msg_1b53fc3de001EjPVDeujOkwqv4",
+          "call_id": "call_cdf0c033ae0f4051acb46c2b"
+        },
+        {
+          "task_id": "TASK-WI-0001-003",
+          "verification_type": "unit",
+          "command_index": 0,
+          "command": "test -f tests/greet.test.ts",
+          "purpose": "formal",
+          "plan_id": "7b33f88daf7df13d32455b6f889b4de652ed843c2e02856c7b657b562a71035a",
+          "attempt_record_id": "b9d408f2af2d01a9e32635c8354de9a2c1bcc384b2b5841ddade5b399fbbdbf9",
+          "receipt_id": "ad88130276bce2dc4f83a418061a08b0cd55dd19040fe220760f8d2946d110c5",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "-e",
+            "process.exit(0);"
+          ],
+          "stdout": "",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T09:05:10.160Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4abf3664ffe7s0ykfZm62mnvX",
+          "message": "msg_1b540f9ec0013sNecRyn4DTlj5",
+          "call_id": "call_2eada0b4d6b64815b3102768"
+        },
+        {
+          "task_id": "TASK-WI-0001-003",
+          "verification_type": "unit",
+          "command_index": 1,
+          "command": "grep -c \"node:test\" tests/greet.test.ts",
+          "purpose": "formal",
+          "plan_id": "4a8001cef67535016d580ad2c3bfc11bf55cd29929708514ada8db03ee5b3987",
+          "attempt_record_id": "455c8d1771b09496ac0fa1f38a3175d44ce6491abed950b6cfccb916ed54c191",
+          "receipt_id": "f43bdeec31e97a94cadcae11356b4ada08f11ef4130fdf83bc8df20e86959eb0",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "-e",
+            "const text=\"// TASK-WI-0001-003 / DD-CORE-006: A1âA4 è¡ä¸ºæ­è¨å¥ä»¶\\nimport { test } from \\\"node:test\\\"\\nimport assert from \\\"node:assert/strict\\\"\\nimport { greet } from \\\"../src/greet.ts\\\"\\n\\ntest(\\\"A1: greet('Ada') strictly equals 'Hello, Ada!'\\\", () => {\\n  assert.strictEqual(greet(\\\"Ada\\\"), \\\"Hello, Ada!\\\")\\n})\\n\\ntest(\\\"A2: greet('Grace') strictly equals 'Hello, Grace!'\\\", () => {\\n  assert.strictEqual(greet(\\\"Grace\\\"), \\\"Hello, Grace!\\\")\\n})\\n\\ntest(\\\"A3: greet('') strictly equals 'Hello, world!'\\\", () => {\\n  assert.strictEqual(greet(\\\"\\\"), \\\"Hello, world!\\\")\\n})\\n\\ntest(\\\"A4: greet('  ') strictly equals 'Hello, ' + name + '!' form\\\", () => {\\n  const name = \\\"  \\\"\\n  assert.strictEqual(greet(name), \\\"Hello, \\\" + name + \\\"!\\\")\\n})\\n\";const lines=text===\"\"?[]:text.split(\"\\n\");if(lines.length&&lines[lines.length-1]===\"\")lines.pop();const regex=RegExp(\"node:test\");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);"
+          ],
+          "stdout": "1\n",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T09:05:41.054Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4abf3664ffe7s0ykfZm62mnvX",
+          "message": "msg_1b54156a9001WpjnPoazWSOYbG",
+          "call_id": "call_2ac28fd7c05a42e2b883e62c"
+        },
+        {
+          "task_id": "TASK-WI-0001-003",
+          "verification_type": "unit",
+          "command_index": 2,
+          "command": "grep -c \"node:assert/strict\" tests/greet.test.ts",
+          "purpose": "formal",
+          "plan_id": "7b16a5fcb8c9cb25d47c74d8e3394f1eb5e553b943975918499e0e5b4427845f",
+          "attempt_record_id": "ac97394a7d9a3436a988dec9b066667955db40e5899cdb33a6d57aa8083f7122",
+          "receipt_id": "907e1765021901dfd0c388ccd8e8c98dc77fcdf49171e6f9c8a5d32c4d1dda94",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "-e",
+            "const text=\"// TASK-WI-0001-003 / DD-CORE-006: A1âA4 è¡ä¸ºæ­è¨å¥ä»¶\\nimport { test } from \\\"node:test\\\"\\nimport assert from \\\"node:assert/strict\\\"\\nimport { greet } from \\\"../src/greet.ts\\\"\\n\\ntest(\\\"A1: greet('Ada') strictly equals 'Hello, Ada!'\\\", () => {\\n  assert.strictEqual(greet(\\\"Ada\\\"), \\\"Hello, Ada!\\\")\\n})\\n\\ntest(\\\"A2: greet('Grace') strictly equals 'Hello, Grace!'\\\", () => {\\n  assert.strictEqual(greet(\\\"Grace\\\"), \\\"Hello, Grace!\\\")\\n})\\n\\ntest(\\\"A3: greet('') strictly equals 'Hello, world!'\\\", () => {\\n  assert.strictEqual(greet(\\\"\\\"), \\\"Hello, world!\\\")\\n})\\n\\ntest(\\\"A4: greet('  ') strictly equals 'Hello, ' + name + '!' form\\\", () => {\\n  const name = \\\"  \\\"\\n  assert.strictEqual(greet(name), \\\"Hello, \\\" + name + \\\"!\\\")\\n})\\n\";const lines=text===\"\"?[]:text.split(\"\\n\");if(lines.length&&lines[lines.length-1]===\"\")lines.pop();const regex=RegExp(\"node:assert/strict\");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);"
+          ],
+          "stdout": "1\n",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T09:05:59.893Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4abf3664ffe7s0ykfZm62mnvX",
+          "message": "msg_1b541b993001iTVitaRr8kZ2Bt",
+          "call_id": "call_50badbcf49d0498b9fa02722"
+        },
+        {
+          "task_id": "TASK-WI-0001-003",
+          "verification_type": "unit",
+          "command_index": 3,
+          "command": "grep -c \"strictEqual\" tests/greet.test.ts",
+          "purpose": "formal",
+          "plan_id": "aa5056db09bfbdcf0096faaa38cb51663be1619536a1047cfaecbd3019e1de67",
+          "attempt_record_id": "a37fd4843c4ac81a4055243478e50a49df89a7b7aa35ba175d12ed6becec1c78",
+          "receipt_id": "8cce832fe4fb8dc61fbc600fef9b871a2d062ec508298fb0189f85352a627723",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "-e",
+            "const text=\"// TASK-WI-0001-003 / DD-CORE-006: A1âA4 è¡ä¸ºæ­è¨å¥ä»¶\\nimport { test } from \\\"node:test\\\"\\nimport assert from \\\"node:assert/strict\\\"\\nimport { greet } from \\\"../src/greet.ts\\\"\\n\\ntest(\\\"A1: greet('Ada') strictly equals 'Hello, Ada!'\\\", () => {\\n  assert.strictEqual(greet(\\\"Ada\\\"), \\\"Hello, Ada!\\\")\\n})\\n\\ntest(\\\"A2: greet('Grace') strictly equals 'Hello, Grace!'\\\", () => {\\n  assert.strictEqual(greet(\\\"Grace\\\"), \\\"Hello, Grace!\\\")\\n})\\n\\ntest(\\\"A3: greet('') strictly equals 'Hello, world!'\\\", () => {\\n  assert.strictEqual(greet(\\\"\\\"), \\\"Hello, world!\\\")\\n})\\n\\ntest(\\\"A4: greet('  ') strictly equals 'Hello, ' + name + '!' form\\\", () => {\\n  const name = \\\"  \\\"\\n  assert.strictEqual(greet(name), \\\"Hello, \\\" + name + \\\"!\\\")\\n})\\n\";const lines=text===\"\"?[]:text.split(\"\\n\");if(lines.length&&lines[lines.length-1]===\"\")lines.pop();const regex=RegExp(\"strictEqual\");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);"
+          ],
+          "stdout": "4\n",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T09:06:18.509Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4abf3664ffe7s0ykfZm62mnvX",
+          "message": "msg_1b54210b1001LN81mgcTg1iEA4",
+          "call_id": "call_cdacc31b70e349afa067af27"
+        },
+        {
+          "task_id": "TASK-WI-0001-003",
+          "verification_type": "integration",
+          "command_index": 0,
+          "command": "node --test tests/greet.test.ts",
+          "purpose": "formal",
+          "plan_id": "20d2cd7ba2dcebad9afe1e667a7f1fa08f113e60ecec23ede95f4255f5a5ec54",
+          "attempt_record_id": "bf7286bd42578d1908aa78b99318c34588db05f623f4afd6308717a9c02ac3b2",
+          "receipt_id": "54fda4bf3a59c933e96154b3d73eb1066921e3cabeeb405e0d04e6f5b08782e7",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "--test-reporter=tap",
+            "--test",
+            "--test-isolation=none",
+            "tests/greet.test.ts"
+          ],
+          "stdout": "TAP version 13\n# Subtest: A1: greet('Ada') strictly equals 'Hello, Ada!'\nok 1 - A1: greet('Ada') strictly equals 'Hello, Ada!'\n  ---\n  duration_ms: 0.8199\n  type: 'test'\n  ...\n# Subtest: A2: greet('Grace') strictly equals 'Hello, Grace!'\nok 2 - A2: greet('Grace') strictly equals 'Hello, Grace!'\n  ---\n  duration_ms: 0.1483\n  type: 'test'\n  ...\n# Subtest: A3: greet('') strictly equals 'Hello, world!'\nok 3 - A3: greet('') strictly equals 'Hello, world!'\n  ---\n  duration_ms: 0.0913\n  type: 'test'\n  ...\n# Subtest: A4: greet('  ') strictly equals 'Hello, ' + name + '!' form\nok 4 - A4: greet('  ') strictly equals 'Hello, ' + name + '!' form\n  ---\n  duration_ms: 0.0915\n  type: 'test'\n  ...\n1..4\n# tests 4\n# suites 0\n# pass 4\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 50.5486\n",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T09:06:38.534Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4abf3664ffe7s0ykfZm62mnvX",
+          "message": "msg_1b54260070018hpSje3e5tIgZ6",
+          "call_id": "call_44f24cae78a141828fc383ce"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "unit",
+          "command_index": 0,
+          "command": "grep -c \"^# Greeting Library\" README.md",
+          "purpose": "formal",
+          "plan_id": "8e196597885273b12b048684908a36efdce1fa241446007de0d9a03d41848fa2",
+          "attempt_record_id": "cca9e6e6e11361e67f4e382421d2076653f1c57592936fdc67bdb601e5e0412a",
+          "receipt_id": "802ce3656670897abaee1569816bb4a516f15adf8fdb05f03b175a81758bf1dd",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "-e",
+            "const text=\"# Greeting Library\\n\\nA synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\\n\\n## Usage\\n\\nImport `greet` from `./src/greet.ts` (signature: `greet(name: string): string`) and call it with a name:\\n\\n```ts\\nimport { greet } from \\\"./src/greet.ts\\\";\\n\\ngreet(\\\"Ada\\\"); // \\\"Hello, Ada!\\\"\\n```\\n\\n- Non-empty name â returns a personalized greeting:\\n\\n```ts\\ngreet(\\\"Ada\\\"); // \\\"Hello, Ada!\\\"\\n```\\n\\n- Empty name â returns the default greeting:\\n\\n```ts\\ngreet(\\\"\\\"); // \\\"Hello, world!\\\"\\n```\\n\";const lines=text===\"\"?[]:text.split(\"\\n\");if(lines.length&&lines[lines.length-1]===\"\")lines.pop();const regex=RegExp(\"^# Greeting Library\");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);"
+          ],
+          "stdout": "1\n",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T09:08:52.359Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4abbb3f5ffeTR0oTDfttSkOSs",
+          "message": "msg_1b544684f001CyiJlDnFXmb3MY",
+          "call_id": "call_ae1d0083a330461ab32371b6"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "unit",
+          "command_index": 1,
+          "command": "grep -c \"A synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\" README.md",
+          "purpose": "formal",
+          "plan_id": "8fc3f3facf679f2fc72e603270a743b90feef6e867df9450a1987b71d8cc25eb",
+          "attempt_record_id": "66cd7236a5bfba6a0e1c90aebc56c32db082baa4769e3a38142dcf439dce5917",
+          "receipt_id": "d4b02894c31ab8312a16b370d4fc625fbd75dd6a0743f142797bd4c3d890838f",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "-e",
+            "const text=\"# Greeting Library\\n\\nA synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\\n\\n## Usage\\n\\nImport `greet` from `./src/greet.ts` (signature: `greet(name: string): string`) and call it with a name:\\n\\n```ts\\nimport { greet } from \\\"./src/greet.ts\\\";\\n\\ngreet(\\\"Ada\\\"); // \\\"Hello, Ada!\\\"\\n```\\n\\n- Non-empty name â returns a personalized greeting:\\n\\n```ts\\ngreet(\\\"Ada\\\"); // \\\"Hello, Ada!\\\"\\n```\\n\\n- Empty name â returns the default greeting:\\n\\n```ts\\ngreet(\\\"\\\"); // \\\"Hello, world!\\\"\\n```\\n\";const lines=text===\"\"?[]:text.split(\"\\n\");if(lines.length&&lines[lines.length-1]===\"\")lines.pop();const regex=RegExp(\"A synthetic TypeScript greeting library for an isolated governance acceptance run[\\\\s\\\\S] No production data[\\\\s\\\\S]\");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);"
+          ],
+          "stdout": "1\n",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T09:09:48.094Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4abbb3f5ffeTR0oTDfttSkOSs",
+          "message": "msg_1b54544b30017AMuRMToeVUl32",
+          "call_id": "call_6f75ffe6d52c451cb22c2e83"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "unit",
+          "command_index": 2,
+          "command": "grep -c \"greet(name: string): string\" README.md",
+          "purpose": "formal",
+          "plan_id": "09bae45bd3a2455c23de8633e5cec311d8c6a9c6dd3687a17dc45ea9e696022f",
+          "attempt_record_id": "9934264254c4de6db3e2425c2ce2c0bd6df6ec920ff4096d1427f507ecc8c962",
+          "receipt_id": "ef2ac84e3c445d74abbbae0a45b3d398ff98b0d9c586043f04c57e57186f15c9",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "-e",
+            "const text=\"# Greeting Library\\n\\nA synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\\n\\n## Usage\\n\\nImport `greet` from `./src/greet.ts` (signature: `greet(name: string): string`) and call it with a name:\\n\\n```ts\\nimport { greet } from \\\"./src/greet.ts\\\";\\n\\ngreet(\\\"Ada\\\"); // \\\"Hello, Ada!\\\"\\n```\\n\\n- Non-empty name â returns a personalized greeting:\\n\\n```ts\\ngreet(\\\"Ada\\\"); // \\\"Hello, Ada!\\\"\\n```\\n\\n- Empty name â returns the default greeting:\\n\\n```ts\\ngreet(\\\"\\\"); // \\\"Hello, world!\\\"\\n```\\n\";const lines=text===\"\"?[]:text.split(\"\\n\");if(lines.length&&lines[lines.length-1]===\"\")lines.pop();const regex=RegExp(\"greet\\\\(name: string\\\\): string\");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);"
+          ],
+          "stdout": "1\n",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T09:10:43.877Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4abbb3f5ffeTR0oTDfttSkOSs",
+          "message": "msg_1b54588f3001wjiooaHKVbW6rO",
+          "call_id": "call_5427aaa2d54f43b384dbb13d"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "unit",
+          "command_index": 3,
+          "command": "grep -cE \"Hello, Ada!|Hello, Grace!\" README.md",
+          "purpose": "formal",
+          "plan_id": "e079e766d3c71525d26cc1b52958a75382d1e4459d43bc8da6ff79c548bbce0b",
+          "attempt_record_id": "a347a414f4373651904b1613def5ffbc1a382fb4ae32e00a2de7a3d51eed0798",
+          "receipt_id": "fc3038a35b65f850e77037518c8b51e6f80e4f2d20157a14b0e7ff1f0d492694",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "-e",
+            "const text=\"# Greeting Library\\n\\nA synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\\n\\n## Usage\\n\\nImport `greet` from `./src/greet.ts` (signature: `greet(name: string): string`) and call it with a name:\\n\\n```ts\\nimport { greet } from \\\"./src/greet.ts\\\";\\n\\ngreet(\\\"Ada\\\"); // \\\"Hello, Ada!\\\"\\n```\\n\\n- Non-empty name â returns a personalized greeting:\\n\\n```ts\\ngreet(\\\"Ada\\\"); // \\\"Hello, Ada!\\\"\\n```\\n\\n- Empty name â returns the default greeting:\\n\\n```ts\\ngreet(\\\"\\\"); // \\\"Hello, world!\\\"\\n```\\n\";const lines=text===\"\"?[]:text.split(\"\\n\");if(lines.length&&lines[lines.length-1]===\"\")lines.pop();const regex=RegExp(\"Hello, Ada!|Hello, Grace!\");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);"
+          ],
+          "stdout": "2\n",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T09:11:05.496Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4abbb3f5ffeTR0oTDfttSkOSs",
+          "message": "msg_1b54665dc001QqAjsZKuicquAg",
+          "call_id": "call_5b5669cecbba4f6e8257a12c"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "unit",
+          "command_index": 4,
+          "command": "grep -c \"Hello, world!\" README.md",
+          "purpose": "formal",
+          "plan_id": "c937e86acbef84d87ad123173705f42c65156f388429096c4489332720eeac91",
+          "attempt_record_id": "8cfeb16531acefba097da5e147488bb768fadc47e251c7062b1d60716e78c549",
+          "receipt_id": "0360e529c81309a4ab7d70f1e741b5e0a7a17034dedfd81cb052a23528805158",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "-e",
+            "const text=\"# Greeting Library\\n\\nA synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\\n\\n## Usage\\n\\nImport `greet` from `./src/greet.ts` (signature: `greet(name: string): string`) and call it with a name:\\n\\n```ts\\nimport { greet } from \\\"./src/greet.ts\\\";\\n\\ngreet(\\\"Ada\\\"); // \\\"Hello, Ada!\\\"\\n```\\n\\n- Non-empty name â returns a personalized greeting:\\n\\n```ts\\ngreet(\\\"Ada\\\"); // \\\"Hello, Ada!\\\"\\n```\\n\\n- Empty name â returns the default greeting:\\n\\n```ts\\ngreet(\\\"\\\"); // \\\"Hello, world!\\\"\\n```\\n\";const lines=text===\"\"?[]:text.split(\"\\n\");if(lines.length&&lines[lines.length-1]===\"\")lines.pop();const regex=RegExp(\"Hello, world!\");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);"
+          ],
+          "stdout": "1\n",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T09:11:26.486Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4abbb3f5ffeTR0oTDfttSkOSs",
+          "message": "msg_1b546b8f1001zFJAwxNHpBs1Gi",
+          "call_id": "call_92d4b32567e04e17ad0897b8"
+        },
+        {
+          "task_id": "TASK-WI-0001-004",
+          "verification_type": "regression",
+          "command_index": 0,
+          "command": "grep -c \"No production data.\" README.md",
+          "purpose": "formal",
+          "plan_id": "be04201c6bdfd80f94d0e52f26eed68bb0239b00254baf6093c44f13d7feb5a1",
+          "attempt_record_id": "464faeb80eacd7fec8ff5cfb61d8cc3ec6660bfd2e9b5379fb8da8328515a7e6",
+          "receipt_id": "b95a902854a9efe5ccc4cce5037fd38834ecb35ee916607c47b440e418cdb7cd",
+          "exit_code": 0,
+          "cleanup_proved": true,
+          "output_complete": true,
+          "actual_argv": [
+            "--no-addons",
+            "--preserve-symlinks",
+            "--preserve-symlinks-main",
+            "-e",
+            "const text=\"# Greeting Library\\n\\nA synthetic TypeScript greeting library for an isolated governance acceptance run. No production data.\\n\\n## Usage\\n\\nImport `greet` from `./src/greet.ts` (signature: `greet(name: string): string`) and call it with a name:\\n\\n```ts\\nimport { greet } from \\\"./src/greet.ts\\\";\\n\\ngreet(\\\"Ada\\\"); // \\\"Hello, Ada!\\\"\\n```\\n\\n- Non-empty name â returns a personalized greeting:\\n\\n```ts\\ngreet(\\\"Ada\\\"); // \\\"Hello, Ada!\\\"\\n```\\n\\n- Empty name â returns the default greeting:\\n\\n```ts\\ngreet(\\\"\\\"); // \\\"Hello, world!\\\"\\n```\\n\";const lines=text===\"\"?[]:text.split(\"\\n\");if(lines.length&&lines[lines.length-1]===\"\")lines.pop();const regex=RegExp(\"No production data[\\\\s\\\\S]\");let count=0;for(const line of lines){if(regex.test(line))count++;}console.log(String(count));process.exit(count>0?0:1);"
+          ],
+          "stdout": "1\n",
+          "stderr": "",
+          "tool_published_at": "2026-11-07T09:11:42.737Z",
+          "actual_agent": "sf-verifier",
+          "session": "ses_e4abbb3f5ffeTR0oTDfttSkOSs",
+          "message": "msg_1b5470337001d6GZlyE8vc3qgV",
+          "call_id": "call_1767ac3e2f9943c2b939d37a"
+        }
+      ]
+    }
+  },
+  "rejected_runs": [],
+  "scope": "Observed native owner results and semantic selector coverage. Does not itself authenticate owner-store MACs, re-evaluate freshness, prove Review/Audit/any full Gate/Formal Version/Close, or authorize workflow transitions."
+}

@@ -1,0 +1,10 @@
+{
+  "success": true,
+  "action": "validate_verification_report",
+  "validator": "verification-report-contract/v1",
+  "valid": false,
+  "errors": [
+    "execution_receipt_rejected:command-0"
+  ],
+  "conclusion": "pass"
+}

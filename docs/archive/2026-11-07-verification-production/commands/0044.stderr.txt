@@ -1,0 +1,26 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/node-command-proof-boundary.test.ts > single-file semantic certificate host boundary > rejects reflection and scope-name laundering without executing it: const get=Object.getOwnPropertyDescriptor(Object,'getPrototypeOf').value;const F=Object.getOwnPropertyDescriptor(get(String),'constructor').value;console.log(F('return process')().cwd());
+ FAIL  tests/unit/node-command-proof-boundary.test.ts > single-file semantic certificate host boundary > rejects reflection and scope-name laundering without executing it: function unused(process){};const p=process;console.log(p.cwd());
+ FAIL  tests/unit/node-command-proof-boundary.test.ts > single-file semantic certificate host boundary > rejects reflection and scope-name laundering without executing it: function unused(console){};const c=console;c.log('x');
+ FAIL  tests/unit/node-command-proof-boundary.test.ts > single-file semantic certificate host boundary > rejects reflection and scope-name laundering without executing it: const C=class {};
+AssertionError: expected [Function] to throw an error
+
+- Expected: 
+null
+
++ Received: 
+undefined
+
+ ❯ tests/unit/node-command-proof-boundary.test.ts:11:65
+      9|     'const C=class {};',
+     10|   ])('rejects reflection and scope-name laundering without executing i…
+     11|     expect(() => compileNodeCommand(`node -e "${source}"`, [])).toThro…
+       |                                                                 ^
+     12|   });
+     13| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+

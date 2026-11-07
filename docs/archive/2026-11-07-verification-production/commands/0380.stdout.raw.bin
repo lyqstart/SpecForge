@@ -1,0 +1,40 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/git-detached-bootstrap.test.ts (30 tests) 123409ms
+   ✓ controlled detached Git bootstrap > plans without creating refs, atomically binds two new branches and standard context, then retries idempotently  12291ms
+   ✓ controlled detached Git bootstrap > recovers an interrupted owner at refs_created without rewriting business/index or duplicating refs  10583ms
+   ✓ controlled detached Git bootstrap > recovers an interrupted owner at refs_and_head_bound without rewriting business/index or duplicating refs  11171ms
+   ✓ controlled detached Git bootstrap > recovers an interrupted owner at context_bound without rewriting business/index or duplicating refs  12132ms
+   ✓ controlled detached Git bootstrap > rejects unbound confirmation 批准 before refs  1778ms
+   ✓ controlled detached Git bootstrap > rejects unbound confirmation 不同意 main + codex/greet-library-wi-0001 before refs  1939ms
+   ✓ controlled detached Git bootstrap > rejects unbound confirmation 采用 main + codex/other-wi-0001 before refs  1780ms
+   ✓ controlled detached Git bootstrap > rejects a tampered immutable plan before refs  2006ms
+   ✓ controlled detached Git bootstrap > rejects unknown_schema with a correct raw hash before refs  2220ms
+   ✓ controlled detached Git bootstrap > rejects unknown_field with a correct raw hash before refs  1934ms
+   ✓ controlled detached Git bootstrap > rejects branch identity collision main while planning  694ms
+   ✓ controlled detached Git bootstrap > rejects branch identity collision main/topic while planning  697ms
+   ✓ controlled detached Git bootstrap > does not match the base name as a substring inside the work branch confirmation  2069ms
+   ✓ controlled detached Git bootstrap > atomically rejects a concurrent HEAD commit before changing either requested ref  3816ms
+   ✓ controlled detached Git bootstrap > rejects concurrent attachment to a different branch without overwriting that HEAD  4339ms
+   ✓ controlled detached Git bootstrap > holds Git HEAD.lock against an actual concurrent commit, then completes safely  9251ms
+   ✓ controlled detached Git bootstrap > preserves an unknown Git HEAD lock and rejects before creating refs  2620ms
+   ✓ controlled detached Git bootstrap > rejects tracked drift without creating target refs or context  2644ms
+   ✓ controlled detached Git bootstrap > rejects untracked drift without creating target refs or context  2301ms
+   ✓ controlled detached Git bootstrap > rejects staged drift without creating target refs or context  2580ms
+   ✓ controlled detached Git bootstrap > rejects head drift without creating target refs or context  2667ms
+   ✓ controlled detached Git bootstrap > rejects refs drift without creating target refs or context  2664ms
+   ✓ controlled detached Git bootstrap > rejects config drift without creating target refs or context  2803ms
+   ✓ controlled detached Git bootstrap > rejects context drift without creating target refs or context  3189ms
+   ✓ controlled detached Git bootstrap > rejects active permission and an existing local branch at plan time  1752ms
+   ✓ controlled detached Git bootstrap > rejects a tracked hard-link alias and retains bytes at both names  2452ms
+   ✓ controlled detached Git bootstrap > does not execute repository hooks or change the index  8278ms
+   ✓ controlled detached Git bootstrap > shares mutation exclusion with the normal existing-branch owner and preserves its behavior afterward  1194ms
+   ✓ controlled detached Git bootstrap > rejects wrong Runtime state and missing real confirmation through the actual dispatcher  688ms
+   ✓ controlled detached Git bootstrap > consumes actual StateManager events through the real public dispatcher while preserving state and recording normal context  8875ms
+
+ Test Files  1 passed (1)
+      Tests  30 passed (30)
+   Start at  16:02:28
+   Duration  127.60s (transform 1.94s, setup 0ms, collect 3.80s, tests 123.41s, environment 0ms, prepare 141ms)
+

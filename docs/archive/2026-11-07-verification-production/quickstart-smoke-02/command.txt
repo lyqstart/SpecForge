@@ -1,0 +1,25 @@
+{
+  "utc": "2026-11-07T10:48:21.812Z",
+  "purpose": "Exact documented interactive startup smoke without any model prompt",
+  "cmd": "opencode --port 4096",
+  "cwd": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7",
+  "tool": "exec_command",
+  "tty": true,
+  "login": false,
+  "resolved_command": {
+    "Name": "opencode.ps1",
+    "Source": "C:\\Users\\lyq\\AppData\\Roaming\\npm\\opencode.ps1",
+    "CommandType": 16
+  },
+  "resolved_wrapper_sha256": "7dc7f9e963b88bbfb7a529a82d1922adf642d386f096fc250e891e374884ee8e",
+  "open_code_executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/opencode-ai/bin/opencode.exe",
+  "open_code_executable_sha256": "83567c13cc5e361ded7e48351cb024cd4503285960d82c30fc585194da46d757",
+  "writes": {
+    "TRUTH_SOURCE_WRITES": "NONE requested; no model prompt or workflow tool invoked",
+    "REPOSITORY_TRACKED_WRITES": "NONE",
+    "RUNTIME_OBSERVER_WRITES": "OpenCode TUI/session/cache and Thin Plugin registration/observability",
+    "EXTERNAL_EVIDENCE_WRITES": "Exact tool terminal observations, owned process/endpoint evidence"
+  },
+  "stop": "Only this owned interactive session via control keys; leave independently managed Daemon running",
+  "terminal_evidence": "PTY text as returned by exec tool; stdout/stderr merged, not claimed as complete raw native pipe bytes"
+}

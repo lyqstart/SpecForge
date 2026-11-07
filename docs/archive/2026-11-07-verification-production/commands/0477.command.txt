@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-final-guidance-followup-baseline.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Freeze exact positive delegation/entry/order guidance and actual Runtime authority before consumer-only repair",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=immutable guidance and Runtime raw snapshots",
+  "started_utc": "2026-11-07T10:05:56.290Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\freeze-final-guidance-followup-baseline.cjs",
+      "sha256": "da4286ceb91c9a44d98c5b3d78ac0eba242120073870c2fe1b7dc613cfd405c7",
+      "size": 1360,
+      "extension": ".cjs"
+    }
+  ]
+}

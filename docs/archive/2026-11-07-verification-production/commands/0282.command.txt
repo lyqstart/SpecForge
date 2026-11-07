@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/verify-carrier-exit-facts.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Verify carrier actual exit and unavailable exit distinction with immutable historical supplement",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES verification and receipts only; no product/original/deployment writes",
+  "started_utc": "2026-11-07T06:11:47.865Z"
+}

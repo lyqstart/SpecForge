@@ -1,0 +1,15 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/verification-source-snapshot.test.ts (4 tests) 8447ms
+   ✓ verification raw source and Git identity > captures current raw input and rejects a changed source without invoking clean filters  1278ms
+   ✓ verification raw source and Git identity > rejects undeclared untracked code and hardlinked tracked input  757ms
+   ✓ verification raw source and Git identity > binds branch, index and repository configuration  2904ms
+   ✓ verification raw source and Git identity > freezes only reachable code and package metadata, without reading unrelated tracked files  3507ms
+ ✓ tests/unit/node-command-contract.test.ts (33 tests) 25ms
+
+ Test Files  2 passed (2)
+      Tests  37 passed (37)
+   Start at  09:11:08
+   Duration  10.00s (transform 179ms, setup 0ms, collect 776ms, tests 8.47s, environment 0ms, prepare 227ms)
+

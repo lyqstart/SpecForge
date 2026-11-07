@@ -1,0 +1,312 @@
+[
+  {
+    "schema_version": "1.4",
+    "source": "daemon",
+    "timestamp": "2026-11-07T06:50:06.501Z",
+    "trace_id": "sftr_20261107065006483_ab5821f87fe1",
+    "category": "dispatcher",
+    "phase": "dispatch.received",
+    "tool_name": "sf_artifact_write",
+    "work_item_id": "WI-0001",
+    "status": "received",
+    "payload_bytes": 29984,
+    "payload_sha256": "800a74c259d251b550d9bbe6213daabc299ef56d1e97872142cf4d9e6db42f93",
+    "payload_file": ".specforge\\logs\\observability\\daemon\\payloads\\by-sha256\\80\\800a74c259d251b550d9bbe6213daabc299ef56d1e97872142cf4d9e6db42f93.json",
+    "error_bytes": 0,
+    "metadata": {
+      "registered_tool_count": 46
+    },
+    "archived_payload": {
+      "path": "payloads/800a74c259d251b550d9bbe6213daabc299ef56d1e97872142cf4d9e6db42f93.json",
+      "raw_sha256": "800a74c259d251b550d9bbe6213daabc299ef56d1e97872142cf4d9e6db42f93"
+    }
+  },
+  {
+    "schema_version": "1.4",
+    "source": "daemon",
+    "timestamp": "2026-11-07T06:50:06.505Z",
+    "trace_id": "sftr_20261107065006483_ab5821f87fe1",
+    "category": "dispatcher",
+    "phase": "dispatch.rbac",
+    "tool_name": "sf_artifact_write",
+    "work_item_id": "WI-0001",
+    "status": "allowed",
+    "payload_bytes": 159,
+    "payload_sha256": "67aa5b4256437a4e3482087741739e98a383e07b70ed938453d62c505b6b3271",
+    "payload_file": ".specforge\\logs\\observability\\daemon\\payloads\\by-sha256\\67\\67aa5b4256437a4e3482087741739e98a383e07b70ed938453d62c505b6b3271.json",
+    "error_bytes": 0,
+    "archived_payload": {
+      "path": "payloads/67aa5b4256437a4e3482087741739e98a383e07b70ed938453d62c505b6b3271.json",
+      "raw_sha256": "67aa5b4256437a4e3482087741739e98a383e07b70ed938453d62c505b6b3271"
+    }
+  },
+  {
+    "schema_version": "1.4",
+    "source": "daemon",
+    "timestamp": "2026-11-07T06:50:06.526Z",
+    "trace_id": "sftr_20261107065006483_ab5821f87fe1",
+    "category": "dispatcher",
+    "phase": "dispatch.completed",
+    "tool_name": "sf_artifact_write",
+    "handler_name": "sf_artifact_write",
+    "work_item_id": "WI-0001",
+    "status": "success",
+    "duration_ms": 24,
+    "payload_bytes": 3265,
+    "payload_sha256": "106fb1ff493e94778c26b888bf91eb43c005bff2b5ab91be99f6ad0664cfa5f0",
+    "payload_file": ".specforge\\logs\\observability\\daemon\\payloads\\by-sha256\\10\\106fb1ff493e94778c26b888bf91eb43c005bff2b5ab91be99f6ad0664cfa5f0.json",
+    "error_bytes": 0,
+    "archived_payload": {
+      "path": "payloads/106fb1ff493e94778c26b888bf91eb43c005bff2b5ab91be99f6ad0664cfa5f0.json",
+      "raw_sha256": "106fb1ff493e94778c26b888bf91eb43c005bff2b5ab91be99f6ad0664cfa5f0"
+    }
+  },
+  {
+    "schema_version": "1.4",
+    "source": "daemon",
+    "timestamp": "2026-11-07T06:52:05.761Z",
+    "trace_id": "sftr_20261107065205739_0c97cd6fe5c9",
+    "category": "dispatcher",
+    "phase": "dispatch.received",
+    "tool_name": "sf_artifact_write",
+    "work_item_id": "WI-0001",
+    "status": "received",
+    "payload_bytes": 30594,
+    "payload_sha256": "ae3b02b82390e452e2e2c5be1e0ec455b2e3887b23c3f32e26bc58008aad60f5",
+    "payload_file": ".specforge\\logs\\observability\\daemon\\payloads\\by-sha256\\ae\\ae3b02b82390e452e2e2c5be1e0ec455b2e3887b23c3f32e26bc58008aad60f5.json",
+    "error_bytes": 0,
+    "metadata": {
+      "registered_tool_count": 46
+    },
+    "archived_payload": {
+      "path": "payloads/ae3b02b82390e452e2e2c5be1e0ec455b2e3887b23c3f32e26bc58008aad60f5.json",
+      "raw_sha256": "ae3b02b82390e452e2e2c5be1e0ec455b2e3887b23c3f32e26bc58008aad60f5"
+    }
+  },
+  {
+    "schema_version": "1.4",
+    "source": "daemon",
+    "timestamp": "2026-11-07T06:52:05.764Z",
+    "trace_id": "sftr_20261107065205739_0c97cd6fe5c9",
+    "category": "dispatcher",
+    "phase": "dispatch.rbac",
+    "tool_name": "sf_artifact_write",
+    "work_item_id": "WI-0001",
+    "status": "allowed",
+    "payload_bytes": 159,
+    "payload_sha256": "1cb9481ed1d2623dfe058ab0978d2221a238f9b5068ffe9a7b1cd6c367f78ffe",
+    "payload_file": ".specforge\\logs\\observability\\daemon\\payloads\\by-sha256\\1c\\1cb9481ed1d2623dfe058ab0978d2221a238f9b5068ffe9a7b1cd6c367f78ffe.json",
+    "error_bytes": 0,
+    "archived_payload": {
+      "path": "payloads/1cb9481ed1d2623dfe058ab0978d2221a238f9b5068ffe9a7b1cd6c367f78ffe.json",
+      "raw_sha256": "1cb9481ed1d2623dfe058ab0978d2221a238f9b5068ffe9a7b1cd6c367f78ffe"
+    }
+  },
+  {
+    "schema_version": "1.4",
+    "source": "daemon",
+    "timestamp": "2026-11-07T06:52:35.916Z",
+    "trace_id": "sftr_20261107065205739_0c97cd6fe5c9",
+    "category": "dispatcher",
+    "phase": "dispatch.completed",
+    "tool_name": "sf_artifact_write",
+    "handler_name": "sf_artifact_write",
+    "work_item_id": "WI-0001",
+    "status": "success",
+    "duration_ms": 30157,
+    "payload_bytes": 177,
+    "payload_sha256": "7c20c5455afeb6d2540ce7af37ded02f393af0572b28d2c5422c68688daced61",
+    "payload_file": ".specforge\\logs\\observability\\daemon\\payloads\\by-sha256\\7c\\7c20c5455afeb6d2540ce7af37ded02f393af0572b28d2c5422c68688daced61.json",
+    "error_bytes": 0,
+    "archived_payload": {
+      "path": "payloads/7c20c5455afeb6d2540ce7af37ded02f393af0572b28d2c5422c68688daced61.json",
+      "raw_sha256": "7c20c5455afeb6d2540ce7af37ded02f393af0572b28d2c5422c68688daced61"
+    }
+  },
+  {
+    "schema_version": "1.4",
+    "source": "daemon",
+    "timestamp": "2026-11-07T06:54:12.250Z",
+    "trace_id": "sftr_20261107065412227_71658d6348c9",
+    "category": "dispatcher",
+    "phase": "dispatch.received",
+    "tool_name": "sf_artifact_write",
+    "work_item_id": "WI-0001",
+    "status": "received",
+    "payload_bytes": 31944,
+    "payload_sha256": "c0abb0ca924dd4b9555c4e0ec897f4d10c32922ee100cf5ad1b12884a88a05d5",
+    "payload_file": ".specforge\\logs\\observability\\daemon\\payloads\\by-sha256\\c0\\c0abb0ca924dd4b9555c4e0ec897f4d10c32922ee100cf5ad1b12884a88a05d5.json",
+    "error_bytes": 0,
+    "metadata": {
+      "registered_tool_count": 46
+    },
+    "archived_payload": {
+      "path": "payloads/c0abb0ca924dd4b9555c4e0ec897f4d10c32922ee100cf5ad1b12884a88a05d5.json",
+      "raw_sha256": "c0abb0ca924dd4b9555c4e0ec897f4d10c32922ee100cf5ad1b12884a88a05d5"
+    }
+  },
+  {
+    "schema_version": "1.4",
+    "source": "daemon",
+    "timestamp": "2026-11-07T06:54:12.253Z",
+    "trace_id": "sftr_20261107065412227_71658d6348c9",
+    "category": "dispatcher",
+    "phase": "dispatch.rbac",
+    "tool_name": "sf_artifact_write",
+    "work_item_id": "WI-0001",
+    "status": "allowed",
+    "payload_bytes": 159,
+    "payload_sha256": "e6352d8beaa5abf07d648278729d82a570463f5f5e51f89a64a620cce6f3a36a",
+    "payload_file": ".specforge\\logs\\observability\\daemon\\payloads\\by-sha256\\e6\\e6352d8beaa5abf07d648278729d82a570463f5f5e51f89a64a620cce6f3a36a.json",
+    "error_bytes": 0,
+    "archived_payload": {
+      "path": "payloads/e6352d8beaa5abf07d648278729d82a570463f5f5e51f89a64a620cce6f3a36a.json",
+      "raw_sha256": "e6352d8beaa5abf07d648278729d82a570463f5f5e51f89a64a620cce6f3a36a"
+    }
+  },
+  {
+    "schema_version": "1.4",
+    "source": "daemon",
+    "timestamp": "2026-11-07T06:54:12.274Z",
+    "trace_id": "sftr_20261107065412227_71658d6348c9",
+    "category": "dispatcher",
+    "phase": "dispatch.completed",
+    "tool_name": "sf_artifact_write",
+    "handler_name": "sf_artifact_write",
+    "work_item_id": "WI-0001",
+    "status": "success",
+    "duration_ms": 23,
+    "payload_bytes": 697,
+    "payload_sha256": "435e36ac81698a2cca09026e81925e519ce225b1664fad2014cc6364578cdb44",
+    "payload_file": ".specforge\\logs\\observability\\daemon\\payloads\\by-sha256\\43\\435e36ac81698a2cca09026e81925e519ce225b1664fad2014cc6364578cdb44.json",
+    "error_bytes": 0,
+    "archived_payload": {
+      "path": "payloads/435e36ac81698a2cca09026e81925e519ce225b1664fad2014cc6364578cdb44.json",
+      "raw_sha256": "435e36ac81698a2cca09026e81925e519ce225b1664fad2014cc6364578cdb44"
+    }
+  },
+  {
+    "schema_version": "1.4",
+    "source": "daemon",
+    "timestamp": "2026-11-07T06:55:22.658Z",
+    "trace_id": "sftr_20261107065522626_459ea25aa8fc",
+    "category": "dispatcher",
+    "phase": "dispatch.received",
+    "tool_name": "sf_artifact_write",
+    "work_item_id": "WI-0001",
+    "status": "received",
+    "payload_bytes": 31939,
+    "payload_sha256": "7387778d2e38093422cf2a41b439d349b47f40cfd485bcb9ae16fb507f472d74",
+    "payload_file": ".specforge\\logs\\observability\\daemon\\payloads\\by-sha256\\73\\7387778d2e38093422cf2a41b439d349b47f40cfd485bcb9ae16fb507f472d74.json",
+    "error_bytes": 0,
+    "metadata": {
+      "registered_tool_count": 46
+    },
+    "archived_payload": {
+      "path": "payloads/7387778d2e38093422cf2a41b439d349b47f40cfd485bcb9ae16fb507f472d74.json",
+      "raw_sha256": "7387778d2e38093422cf2a41b439d349b47f40cfd485bcb9ae16fb507f472d74"
+    }
+  },
+  {
+    "schema_version": "1.4",
+    "source": "daemon",
+    "timestamp": "2026-11-07T06:55:22.701Z",
+    "trace_id": "sftr_20261107065522626_459ea25aa8fc",
+    "category": "dispatcher",
+    "phase": "dispatch.rbac",
+    "tool_name": "sf_artifact_write",
+    "work_item_id": "WI-0001",
+    "status": "allowed",
+    "payload_bytes": 159,
+    "payload_sha256": "dc6d196dac59dbbf1f2b024476b12d04aa516110c35ddb6068ff73321c0def29",
+    "payload_file": ".specforge\\logs\\observability\\daemon\\payloads\\by-sha256\\dc\\dc6d196dac59dbbf1f2b024476b12d04aa516110c35ddb6068ff73321c0def29.json",
+    "error_bytes": 0,
+    "archived_payload": {
+      "path": "payloads/dc6d196dac59dbbf1f2b024476b12d04aa516110c35ddb6068ff73321c0def29.json",
+      "raw_sha256": "dc6d196dac59dbbf1f2b024476b12d04aa516110c35ddb6068ff73321c0def29"
+    }
+  },
+  {
+    "schema_version": "1.4",
+    "source": "daemon",
+    "timestamp": "2026-11-07T06:55:56.169Z",
+    "trace_id": "sftr_20261107065522626_459ea25aa8fc",
+    "category": "dispatcher",
+    "phase": "dispatch.completed",
+    "tool_name": "sf_artifact_write",
+    "handler_name": "sf_artifact_write",
+    "work_item_id": "WI-0001",
+    "status": "success",
+    "duration_ms": 33511,
+    "payload_bytes": 171,
+    "payload_sha256": "14fa4ac7683e8b7adfeae2091af373368d9056411f6d194b23809b4a76acef0c",
+    "payload_file": ".specforge\\logs\\observability\\daemon\\payloads\\by-sha256\\14\\14fa4ac7683e8b7adfeae2091af373368d9056411f6d194b23809b4a76acef0c.json",
+    "error_bytes": 0,
+    "archived_payload": {
+      "path": "payloads/14fa4ac7683e8b7adfeae2091af373368d9056411f6d194b23809b4a76acef0c.json",
+      "raw_sha256": "14fa4ac7683e8b7adfeae2091af373368d9056411f6d194b23809b4a76acef0c"
+    }
+  },
+  {
+    "schema_version": "1.4",
+    "source": "daemon",
+    "timestamp": "2026-11-07T07:00:39.547Z",
+    "trace_id": "sftr_20261107070039526_59a12d22273f",
+    "category": "dispatcher",
+    "phase": "dispatch.received",
+    "tool_name": "sf_artifact_write",
+    "work_item_id": "WI-0001",
+    "status": "received",
+    "payload_bytes": 29926,
+    "payload_sha256": "724ed095a69e79c34756e823dc677b72c45fa00e46866b5039f5105a726420e6",
+    "payload_file": ".specforge\\logs\\observability\\daemon\\payloads\\by-sha256\\72\\724ed095a69e79c34756e823dc677b72c45fa00e46866b5039f5105a726420e6.json",
+    "error_bytes": 0,
+    "metadata": {
+      "registered_tool_count": 46
+    },
+    "archived_payload": {
+      "path": "payloads/724ed095a69e79c34756e823dc677b72c45fa00e46866b5039f5105a726420e6.json",
+      "raw_sha256": "724ed095a69e79c34756e823dc677b72c45fa00e46866b5039f5105a726420e6"
+    }
+  },
+  {
+    "schema_version": "1.4",
+    "source": "daemon",
+    "timestamp": "2026-11-07T07:00:39.552Z",
+    "trace_id": "sftr_20261107070039526_59a12d22273f",
+    "category": "dispatcher",
+    "phase": "dispatch.rbac",
+    "tool_name": "sf_artifact_write",
+    "work_item_id": "WI-0001",
+    "status": "allowed",
+    "payload_bytes": 159,
+    "payload_sha256": "8d542a9265b9377b931b5484de684e2612eba8b8f069a0404283f59b151559fc",
+    "payload_file": ".specforge\\logs\\observability\\daemon\\payloads\\by-sha256\\8d\\8d542a9265b9377b931b5484de684e2612eba8b8f069a0404283f59b151559fc.json",
+    "error_bytes": 0,
+    "archived_payload": {
+      "path": "payloads/8d542a9265b9377b931b5484de684e2612eba8b8f069a0404283f59b151559fc.json",
+      "raw_sha256": "8d542a9265b9377b931b5484de684e2612eba8b8f069a0404283f59b151559fc"
+    }
+  },
+  {
+    "schema_version": "1.4",
+    "source": "daemon",
+    "timestamp": "2026-11-07T07:00:39.588Z",
+    "trace_id": "sftr_20261107070039526_59a12d22273f",
+    "category": "dispatcher",
+    "phase": "dispatch.completed",
+    "tool_name": "sf_artifact_write",
+    "handler_name": "sf_artifact_write",
+    "work_item_id": "WI-0001",
+    "status": "success",
+    "duration_ms": 43,
+    "payload_bytes": 3150,
+    "payload_sha256": "4249487e5b45015d2f4558078ec5cfff491c2281f6eb5c84559515ec952e962b",
+    "payload_file": ".specforge\\logs\\observability\\daemon\\payloads\\by-sha256\\42\\4249487e5b45015d2f4558078ec5cfff491c2281f6eb5c84559515ec952e962b.json",
+    "error_bytes": 0,
+    "archived_payload": {
+      "path": "payloads/4249487e5b45015d2f4558078ec5cfff491c2281f6eb5c84559515ec952e962b.json",
+      "raw_sha256": "4249487e5b45015d2f4558078ec5cfff491c2281f6eb5c84559515ec952e962b"
+    }
+  }
+]

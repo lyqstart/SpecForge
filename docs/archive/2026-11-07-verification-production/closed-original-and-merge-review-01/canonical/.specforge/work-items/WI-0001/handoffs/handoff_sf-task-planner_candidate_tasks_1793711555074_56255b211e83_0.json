@@ -1,0 +1,28 @@
+{
+  "agent": "sf-task-planner",
+  "boundary_statement": "仅修 trace 关系：未触碰 tasks.md/requirements/design/其他候选文件，未运行 shell/Node/Python，未推进状态、未调用 Gate/State 工具。",
+  "duration_ms": 0,
+  "escalation_signals": [],
+  "findings": [
+    "删除非法关系 1 行：| ADD | DATA-CORE-003 | constrained_by | PI-CORE-001 |（数据设计不得被模块契约 constrained_by）；合法行 DD-CORE-002 constrained_by DATA-CORE-003 保持原样",
+    "补 Project Contract PI-0001（项目级公共接口契约，owner=CORE，source_refs=ARCH-CORE-001/ARCH-CORE-003/DATA-CORE-001/DATA-CORE-002）的 4 条 enforces ADD 行",
+    "计数偏差修正：指令给的 33+4=37 与实际不符——原表 33 行删 1 行非法行后为 32 行，+4 条 PI-0001 = 实际 36 行（26 constrained_by + 10 enforces）；Current/SELF_CHECK 计数按真实行数写为 36 条 ADD = 32+4、0 REMOVE，已在本文档中注明构成，未伪造 37",
+    "追溯矩阵、文件覆盖、覆盖统计、implementation_baseline_id 绑定（sha256:8f8ac52…b2722）逐字未动",
+    "sf_batch_verify 13/13 通过：非法行 0 命中、PI-0001 enforces 恰 4 条、constrained_by=26、enforces=10、标记成对、无非法操作、旧计数 37 已清除"
+  ],
+  "inputs_read": [
+    ".specforge/work-items/WI-0001/candidates/trace_delta.md"
+  ],
+  "next_step_recommendation": "重试封存（candidate gate attempt-0002）",
+  "outputs_written": [
+    ".specforge/work-items/WI-0001/candidates/trace_delta.md"
+  ],
+  "schema_version": "1.0",
+  "stage": "candidate_tasks",
+  "timestamp": "2026-11-03T00:00:00Z",
+  "unknowns": [],
+  "warnings": [
+    "指令要求计数写 37（33+4），但删除 1 行后的真实行数为 36（32+4）；为满足 TRACE_DELTA_CANONICAL_ROW_SELF_CHECK 行数一致性，按真实 36 写入并在此声明偏差"
+  ],
+  "work_item_id": "WI-0001"
+}

@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "platform": "win32-x64",
+  "artifacts": [
+    {
+      "id": "runtime:specforge",
+      "path": "release/bin/specforge.exe",
+      "sha256": "9b77bdfecce52647b78ceb975ab22ae4c6ba472386ac9d0a6c5ffe74d911c776",
+      "size": 99623936
+    },
+    {
+      "id": "runtime:specforged",
+      "path": "release/bin/specforged.exe",
+      "sha256": "217bf602ed3da29dbe3b3fc71bc08ca6e89ddce8e17f31e1111fd049b2f91aec",
+      "size": 110956544
+    }
+  ],
+  "verification_assets": [
+    {
+      "path": "release/bin/verification/node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "size": 92825416
+    },
+    {
+      "path": "release/bin/verification/specforge-verify.exe",
+      "sha256": "d4cb9b6f44bafec7236aa960af2dde1a2828a24d58a407bc46a9c6258cf0ed2f",
+      "size": 343040
+    },
+    {
+      "path": "release/bin/verification/assets.json",
+      "sha256": "895bfc21bb83ae0789b06f7481ed94d9f4e54ede0b08873cbe004bfbc1991ddf",
+      "size": 494
+    }
+  ]
+}

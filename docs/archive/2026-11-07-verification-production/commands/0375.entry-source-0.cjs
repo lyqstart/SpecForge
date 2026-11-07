@@ -1,0 +1,10 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),cp=require('node:child_process');
+const label=process.argv[2];if(!/^\d{2}$/.test(label||''))throw Error('FIXTURE_LABEL_REQUIRED');
+const info=JSON.parse(fs.readFileSync(path.join(__dirname,`public-kernel-fixture-${label}.json`),'utf8')),root=path.resolve(__dirname,'../../..');
+const sha=raw=>crypto.createHash('sha256').update(raw).digest('hex');
+if(path.dirname(info.fixture)!==path.join(root,'.tmp','verification-public-kernel')||sha(fs.readFileSync(path.join(info.fixture,'reservation.json')))!==info.reservation_sha256||sha(fs.readFileSync(path.join(info.fixture,'create-public-fixture.js')))!==info.fixture_bundle_sha256)throw Error('FIXTURE_IDENTITY');
+const env={};for(const key of ['PATH','SystemRoot','WINDIR','USERPROFILE','LOCALAPPDATA','APPDATA','SYSTEMDRIVE','PATHEXT','ProgramFiles'])if(process.env[key]!==undefined)env[key]=process.env[key];
+Object.assign(env,{OPENCODE_CONFIG_DIR:info.config,HOME:path.join(info.fixture,'home'),TEMP:path.join(info.fixture,'temp'),TMP:path.join(info.fixture,'temp'),XDG_CONFIG_HOME:path.join(info.fixture,'xdg-config'),XDG_DATA_HOME:path.join(info.fixture,'data'),XDG_CACHE_HOME:path.join(info.fixture,'cache'),XDG_STATE_HOME:path.join(info.fixture,'state')});
+const purpose=process.argv[3]||'implementation';if(!['implementation','formal'].includes(purpose))throw Error('FIXTURE_PURPOSE');
+const value=cp.spawnSync('C:\\Users\\lyq\\AppData\\Roaming\\npm\\node_modules\\bun\\bin\\bun.exe',[path.join(info.fixture,'create-public-fixture.js'),info.fixture,purpose],{cwd:root,env,windowsHide:true,timeout:60000,maxBuffer:2097152});
+process.stdout.write(value.stdout??Buffer.alloc(0));process.stderr.write(value.stderr??Buffer.alloc(0));if(value.error)console.error(value.error.message);process.exitCode=Number.isInteger(value.status)?value.status:1;

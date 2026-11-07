@@ -1,0 +1,183 @@
+[
+  {
+    "info": {
+      "id": "msg_1b41219e9001AIFlRujN9ifvqj",
+      "sessionID": "ses_e4bede63fffepOmGm5ZHl6m4ya",
+      "role": "user",
+      "time": {
+        "created": 1794022447593
+      },
+      "summary": {
+        "diffs": []
+      },
+      "agent": "sf-verifier",
+      "model": {
+        "providerID": "sf-fixture",
+        "modelID": "finite-model"
+      }
+    },
+    "parts": [
+      {
+        "id": "prt_1b41219ef001tRbB5Wj4udcme3",
+        "sessionID": "ses_e4bede63fffepOmGm5ZHl6m4ya",
+        "messageID": "msg_1b41219e9001AIFlRujN9ifvqj",
+        "type": "text",
+        "text": "Execute the single requested tool once, then stop. SF_FIXTURE_REQUEST:eyJ0b29sIjoic2Zfc2FmZV9iYXNoIiwiYXJncyI6eyJjb21tYW5kIjoibm9kZSAtLXRlc3QgdGVzdHMvcG9zaXRpdmUudGVzdC5janMifX0="
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1b4121a0d001c19aHjIQ6rnrEB",
+      "sessionID": "ses_e4bede63fffepOmGm5ZHl6m4ya",
+      "role": "assistant",
+      "time": {
+        "created": 1794022447629,
+        "completed": 1794022448787
+      },
+      "parentID": "msg_1b41219e9001AIFlRujN9ifvqj",
+      "modelID": "finite-model",
+      "providerID": "sf-fixture",
+      "mode": "sf-verifier",
+      "agent": "sf-verifier",
+      "path": {
+        "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\63ad82d80a914742817dc95f44d806ba\\project",
+        "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\63ad82d80a914742817dc95f44d806ba\\project"
+      },
+      "cost": 0,
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "finish": "tool-calls"
+    },
+    "parts": [
+      {
+        "id": "prt_1b4121bbc00139WDuju8y5FNCT",
+        "sessionID": "ses_e4bede63fffepOmGm5ZHl6m4ya",
+        "messageID": "msg_1b4121a0d001c19aHjIQ6rnrEB",
+        "type": "step-start",
+        "snapshot": "3217e2e60994133e49b11e014bb4c03e6c91d1fd"
+      },
+      {
+        "id": "prt_1b4121bc10010aBdMHtq2jGbVC",
+        "sessionID": "ses_e4bede63fffepOmGm5ZHl6m4ya",
+        "messageID": "msg_1b4121a0d001c19aHjIQ6rnrEB",
+        "type": "tool",
+        "callID": "call_71a4dd696d89438b89427016dddcafab",
+        "tool": "sf_safe_bash",
+        "state": {
+          "status": "completed",
+          "input": {
+            "command": "node --test tests/positive.test.cjs"
+          },
+          "output": "{\n  \"success\": false,\n  \"error\": \"WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\\nViolations: SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor\",\n  \"hard_stop\": false,\n  \"policy_violation\": true,\n  \"retry_allowed\": false,\n  \"blocked_command\": \"node --test tests/positive.test.cjs\",\n  \"write_guard_targets\": []\n}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1794022448083,
+            "end": 1794022448125
+          }
+        }
+      },
+      {
+        "id": "prt_1b4121d3b001Mg6RHcs1mRAwf5",
+        "sessionID": "ses_e4bede63fffepOmGm5ZHl6m4ya",
+        "messageID": "msg_1b4121a0d001c19aHjIQ6rnrEB",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "snapshot": "3217e2e60994133e49b11e014bb4c03e6c91d1fd",
+        "cost": 0,
+        "tokens": {
+          "total": 120,
+          "input": 100,
+          "output": 20,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1b4121e990017YwSp51l8tT5z6",
+      "sessionID": "ses_e4bede63fffepOmGm5ZHl6m4ya",
+      "role": "assistant",
+      "time": {
+        "created": 1794022448793,
+        "completed": 1794022449915
+      },
+      "parentID": "msg_1b41219e9001AIFlRujN9ifvqj",
+      "modelID": "finite-model",
+      "providerID": "sf-fixture",
+      "mode": "sf-verifier",
+      "agent": "sf-verifier",
+      "path": {
+        "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\63ad82d80a914742817dc95f44d806ba\\project",
+        "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\63ad82d80a914742817dc95f44d806ba\\project"
+      },
+      "cost": 0,
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "finish": "stop"
+    },
+    "parts": [
+      {
+        "id": "prt_1b4122022001zalplpf1P4HXxv",
+        "sessionID": "ses_e4bede63fffepOmGm5ZHl6m4ya",
+        "messageID": "msg_1b4121e990017YwSp51l8tT5z6",
+        "type": "step-start",
+        "snapshot": "3217e2e60994133e49b11e014bb4c03e6c91d1fd"
+      },
+      {
+        "id": "prt_1b4122027001vxxwMj4Jcxu2vq",
+        "sessionID": "ses_e4bede63fffepOmGm5ZHl6m4ya",
+        "messageID": "msg_1b4121e990017YwSp51l8tT5z6",
+        "type": "text",
+        "text": "SF_FIXTURE_TOOL_COMPLETE",
+        "time": {
+          "start": 1794022449191,
+          "end": 1794022449196
+        }
+      },
+      {
+        "id": "prt_1b41221ad001d8gHtFiuALVE6Q",
+        "sessionID": "ses_e4bede63fffepOmGm5ZHl6m4ya",
+        "messageID": "msg_1b4121e990017YwSp51l8tT5z6",
+        "type": "step-finish",
+        "reason": "stop",
+        "snapshot": "3217e2e60994133e49b11e014bb4c03e6c91d1fd",
+        "cost": 0,
+        "tokens": {
+          "total": 120,
+          "input": 100,
+          "output": 20,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    ]
+  }
+]

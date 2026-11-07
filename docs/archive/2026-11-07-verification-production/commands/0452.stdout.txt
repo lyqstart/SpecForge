@@ -1,0 +1,1 @@
+{"directory":"current-professional-artifacts-01","current_formal_subjects":22,"report_contract_valid":true,"manifest_schema_valid":true,"conclusion":"pass","full_gate_claimed":false}

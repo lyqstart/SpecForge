@@ -1,0 +1,1 @@
+{"fixture":"D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\8a982ca253364a8188f931573c9de83e","managed_files":117,"version":"1.0.22","actual_installer":true,"install_proof_sha256":"aadaf5ac7620691abfd6a67ffb62da321977eb84449d0a20a94ea7a02b701d3e","original_business_touched":false}

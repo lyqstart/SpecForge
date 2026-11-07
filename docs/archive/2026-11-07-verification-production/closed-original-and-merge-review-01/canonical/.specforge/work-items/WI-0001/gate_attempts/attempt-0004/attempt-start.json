@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "attempt_id": "attempt-0004",
+  "work_item_id": "WI-0001",
+  "source": "gate_run",
+  "started_at": "2026-11-03T13:56:49.608Z",
+  "requested_gate_ids": [
+    "entry_gate",
+    "workflow_selection_gate",
+    "schema_gate",
+    "required_files_gate",
+    "candidate_manifest_gate",
+    "path_policy_gate",
+    "spec_consistency_gate",
+    "contract_integrity_gate",
+    "trace_gate",
+    "workflow_specific_gate"
+  ]
+}

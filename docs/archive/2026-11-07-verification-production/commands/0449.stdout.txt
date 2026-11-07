@@ -1,0 +1,1 @@
+{"session":"ses_e4ab2012cffecSP5xN7chz6VnD","message":"msg_1b559ea880012l900Y708rZRmE","agent":"sf-verifier","model":{"providerID":"zhipuai-coding-plan","modelID":"glm-5.3","variant":"low"},"noReply":true,"native_rerun_requested":false,"prior_history_sent":false,"credentials_sent":false}

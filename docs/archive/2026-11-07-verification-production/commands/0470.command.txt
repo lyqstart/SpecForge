@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/inspect-original-gates.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Preserve actual passed Verification/FormalVersion/Close artifacts and historical Gate statuses",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=Gate copies and receipts",
+  "started_utc": "2026-11-07T09:58:22.818Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\inspect-original-gates.cjs",
+      "sha256": "92e67f891ed8b0f1f4cd276351a722621e0b57dcbae2586b17e3ccdb33e7d7db",
+      "size": 1174,
+      "extension": ".cjs"
+    }
+  ]
+}

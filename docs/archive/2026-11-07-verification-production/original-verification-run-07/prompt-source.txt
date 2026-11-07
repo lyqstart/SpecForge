@@ -1,0 +1,249 @@
+继续 C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7 的原 WI-0001，当前独立StateManager读取得 verification_running（2026-11-07T09:40:10.103Z）。你是真实sf-orchestrator，当前已安装SpecForge1.0.23，使用真实专业Agent/Skill/工具。用户已授权GLM-5.3最小上下文验证/Gate/Close；没有授权业务main合并。此为新空会话，不导入旧聊天/旧reasoning/agent_runs，不读取其他项目、auth.json、host-profile.json、owner.key、凭据或密钥。上下文时刻2026-11-07T09:41:31.790Z不是执行或完成时间。
+
+前轮观察窗口已结束（实际结果agent_returned=false,failure=OBSERVATION_WINDOW_EXPIRED），不代表业务测试失败。全部22个正式主体已在当前1.0.23真实成功（23份回执，含重复主体），代码/Task/资产未替换、代码权限仍revoked；旧1.0.22的44份成功只保留历史。严禁重新运行这22个主体，严禁重新创建计划、重复implementation或重新打开代码权限。只消费下列当前回执和规范专业产物。当前分支codex/greet-library-wi-0001 HEAD=f5fed085a8609f593592eca5e8035b2d1c958759，main=8a692e88c0823984647622294f5199c18bb0c587。PSV-0002及用户Candidate批准/受控Merge已成功，不重复WI、审批或规格Merge。
+
+R06真实sf-verifier最终已成功写当前Evidence Manifest和Verification Report；独立0452在2026-11-07T09:36:13Z核验22个当前主体/真实receipt/原Task命令/类别内序号及Schema，结论pass。先正式Read确认当前字节与真实owner/StateManager情况；成功的产物不要重复重写。如果前轮在随后Gate修订了当前视图，以真实规范产物和原始错误为准，不凭本摘要覆盖。Verification Report中已有专业typed semantic_closure；从同一原始报告读取并原样交sf_semantic_closure_run，不自行制造专业结论。如果必须调整专业产物，由真实sf-verifier owner执行，不直接手改.specforge。
+
+已核验的字段合同：每个执行Evidence entry显式execution_receipt_id、task_id、verification_type、类别内command_index、原command、path='verification-owner:receipt:'+id、hash='sha256:'+id、hash_domain='canonical-json:verification-execution/v1'、status='passed'；evidence_id/type/path/description/created_at和真实supports/related_refs仍有效。仅source/location/sha256别名不会推导execution_receipt_id/hash；TASK-005 e2e类别内index=0，不是1。此错误的旧两次report拒绝必须保留，不是Runtime注册表失效，最终owner已接受修正，不重跑应用。
+
+从当前合法断点完成semantic closure、真实Verification Gate、Formal Version、适用Trace/Audit及Close。若仍verification_running，确认专业报告/Manifest一致后继续真实Gate；若verification_done则直接完成必要FV/Close，勿重复已成功Gate。只有sf_close_gate可写closed；随后sf_state_read确认，不额外sf_state_transition closed。保持两个历史Get-FileHash拒绝及operator_error/abandon resolution；原sf_changed_files_audit owner按新鲜度复核，不能声称历史零拒绝。
+
+遇到超时/DAEMON_OPERATION_OUTCOME_UNKNOWN先由Orchestrator正式读规范产物、Gate和StateManager对账，不盲重发。你与子Agent不得sf_safe_bash或通用写入真相源。sf_verifier不得读取自己的Runtime trace、推进状态或调用Gate。关闭后可生成真实can_merge=true sf_git_merge_plan和确切heads/diff，等待用户另行确认；禁止confirmed=true或普通git merge/push。完成前返回实际owner/Gate/StateManager结果，不以自述代替。
+
+当前22主体及其已成功23回执（仅本轮核验事实，不是旧会话文本）：
+{
+  "TASK-WI-0001-001/unit/0": [
+    {
+      "receipt_id": "eec147298882bfd11284df9add44391ffe07de85514f83596d9cd2a9085a6740",
+      "plan_id": "cfa468dbdf3fb8dd537210c4596bb07bb3294232e3d22d0a29438baf7d5f76df",
+      "attempt_record_id": "0214e823bc10410b17b531fcaac0212f84531403bab578ac06a181862383ff62",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-001/unit/1": [
+    {
+      "receipt_id": "7cf287078c90b6c71f44621d132c1ebadb527019fa493f994b2e52092763adeb",
+      "plan_id": "0eefe775d6313b18c3a982bcbb03cb07aa480f2298efc8390a6970fa59be46f7",
+      "attempt_record_id": "c9a420a302191936d5d1dc5e5c168045a251842061fcf15e7458f237102d76f3",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-001/unit/2": [
+    {
+      "receipt_id": "22677de542fd4277b75c483078b8158d230462d509c328c7e0881a7601a17e41",
+      "plan_id": "6f9928a8fdea347abc3c954f69bd138b33ca90f6fc0c49c37f0b67e219ed40bc",
+      "attempt_record_id": "338048195fed78f31d3b592e016aff53e6e7a4d0eff1405073702da3f63f1cec",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-001/unit/3": [
+    {
+      "receipt_id": "484bc425c21fd920e455f5f835c707d083f583c537d14a8a6f3b78e48368951d",
+      "plan_id": "e344458665c8dc629275d85bff5f3210729040924abd97e48f7013a986fdb96c",
+      "attempt_record_id": "0dbdc6649c9314b55c4a9d0906a516c3f04300a32ff6d89800884994c894c728",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-001/unit/4": [
+    {
+      "receipt_id": "0e8c96edbec07a5e5a2044170d10c4b5287ac365d4e8f96a7ee834dd7515244a",
+      "plan_id": "9b54742137b4b7681dc947abdf066748cc02b8bf26cfe0294cb08d811a20a2b5",
+      "attempt_record_id": "cb9bac7bfad1ff346d8e4cbdfe6512e971ac8112e62728d5322af512866b7223",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-002/unit/0": [
+    {
+      "receipt_id": "f44b51432409aee8a645905b80b26e8640daa76fa5278336a194bca516b2853f",
+      "plan_id": "3e67a23124ec01d813a49d4d2dc905dec7106e56992252c4fce9edadef637376",
+      "attempt_record_id": "15bf9086134cb871c1046ce4986450dc2be8a5ff2adccb4c65da47431da4c2a4",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    },
+    {
+      "receipt_id": "d02452cdd9f7f187acb553bb84daec81454829c5037a229c786e0ab2c41ebf14",
+      "plan_id": "3e67a23124ec01d813a49d4d2dc905dec7106e56992252c4fce9edadef637376",
+      "attempt_record_id": "0ce948f6ec4ddaceec76e28934e5f69a9b0659c4372904fd7ab2d61b9ffe3b38",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-002/unit/1": [
+    {
+      "receipt_id": "deb2e15387a73d95fc17f9bf98be59a20aad0eaf601f310c92e4bfd1f60a7832",
+      "plan_id": "06bedb6cc69aa4a0ae936c8c5edcdbf7bc29c6312017a00939bed4866dc0cd11",
+      "attempt_record_id": "d84d60134ce0de3a04bf179f13ace2fd872d1ea5f83b79fd5716b7cac9c69e3b",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-002/unit/2": [
+    {
+      "receipt_id": "64065f2b8d19d321492b3c4ec9a232243773c471e6764809918f433d7f4c7a96",
+      "plan_id": "80eb247b608f0ff60e4cf830543d1ead60be1050d40097b869218fab5b669dc9",
+      "attempt_record_id": "fd4af6a2dd94f63a4839aab3e2883f2e2b2f83d720993f7396a23200794866e9",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-002/unit/3": [
+    {
+      "receipt_id": "19ab172273eccf0b859040f4abb877963293a24e902bf6fe45e7d5c4e89f6e55",
+      "plan_id": "9da1af6e139e52ce456240e552c2b676d8bc2e97921a03503b57ea2fd54d0f38",
+      "attempt_record_id": "d0671ecb9d0b8078dbba4eb8d2c409b8cd15bd3fad8493e8533b9386fe050951",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-003/unit/0": [
+    {
+      "receipt_id": "ad88130276bce2dc4f83a418061a08b0cd55dd19040fe220760f8d2946d110c5",
+      "plan_id": "7b33f88daf7df13d32455b6f889b4de652ed843c2e02856c7b657b562a71035a",
+      "attempt_record_id": "b9d408f2af2d01a9e32635c8354de9a2c1bcc384b2b5841ddade5b399fbbdbf9",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-003/unit/1": [
+    {
+      "receipt_id": "f43bdeec31e97a94cadcae11356b4ada08f11ef4130fdf83bc8df20e86959eb0",
+      "plan_id": "4a8001cef67535016d580ad2c3bfc11bf55cd29929708514ada8db03ee5b3987",
+      "attempt_record_id": "455c8d1771b09496ac0fa1f38a3175d44ce6491abed950b6cfccb916ed54c191",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-003/unit/2": [
+    {
+      "receipt_id": "907e1765021901dfd0c388ccd8e8c98dc77fcdf49171e6f9c8a5d32c4d1dda94",
+      "plan_id": "7b16a5fcb8c9cb25d47c74d8e3394f1eb5e553b943975918499e0e5b4427845f",
+      "attempt_record_id": "ac97394a7d9a3436a988dec9b066667955db40e5899cdb33a6d57aa8083f7122",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-003/unit/3": [
+    {
+      "receipt_id": "8cce832fe4fb8dc61fbc600fef9b871a2d062ec508298fb0189f85352a627723",
+      "plan_id": "aa5056db09bfbdcf0096faaa38cb51663be1619536a1047cfaecbd3019e1de67",
+      "attempt_record_id": "a37fd4843c4ac81a4055243478e50a49df89a7b7aa35ba175d12ed6becec1c78",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-003/integration/0": [
+    {
+      "receipt_id": "54fda4bf3a59c933e96154b3d73eb1066921e3cabeeb405e0d04e6f5b08782e7",
+      "plan_id": "20d2cd7ba2dcebad9afe1e667a7f1fa08f113e60ecec23ede95f4255f5a5ec54",
+      "attempt_record_id": "bf7286bd42578d1908aa78b99318c34588db05f623f4afd6308717a9c02ac3b2",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-004/unit/0": [
+    {
+      "receipt_id": "802ce3656670897abaee1569816bb4a516f15adf8fdb05f03b175a81758bf1dd",
+      "plan_id": "8e196597885273b12b048684908a36efdce1fa241446007de0d9a03d41848fa2",
+      "attempt_record_id": "cca9e6e6e11361e67f4e382421d2076653f1c57592936fdc67bdb601e5e0412a",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-004/unit/1": [
+    {
+      "receipt_id": "d4b02894c31ab8312a16b370d4fc625fbd75dd6a0743f142797bd4c3d890838f",
+      "plan_id": "8fc3f3facf679f2fc72e603270a743b90feef6e867df9450a1987b71d8cc25eb",
+      "attempt_record_id": "66cd7236a5bfba6a0e1c90aebc56c32db082baa4769e3a38142dcf439dce5917",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-004/unit/2": [
+    {
+      "receipt_id": "ef2ac84e3c445d74abbbae0a45b3d398ff98b0d9c586043f04c57e57186f15c9",
+      "plan_id": "09bae45bd3a2455c23de8633e5cec311d8c6a9c6dd3687a17dc45ea9e696022f",
+      "attempt_record_id": "9934264254c4de6db3e2425c2ce2c0bd6df6ec920ff4096d1427f507ecc8c962",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-004/unit/3": [
+    {
+      "receipt_id": "fc3038a35b65f850e77037518c8b51e6f80e4f2d20157a14b0e7ff1f0d492694",
+      "plan_id": "e079e766d3c71525d26cc1b52958a75382d1e4459d43bc8da6ff79c548bbce0b",
+      "attempt_record_id": "a347a414f4373651904b1613def5ffbc1a382fb4ae32e00a2de7a3d51eed0798",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-004/unit/4": [
+    {
+      "receipt_id": "0360e529c81309a4ab7d70f1e741b5e0a7a17034dedfd81cb052a23528805158",
+      "plan_id": "c937e86acbef84d87ad123173705f42c65156f388429096c4489332720eeac91",
+      "attempt_record_id": "8cfeb16531acefba097da5e147488bb768fadc47e251c7062b1d60716e78c549",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-004/regression/0": [
+    {
+      "receipt_id": "b95a902854a9efe5ccc4cce5037fd38834ecb35ee916607c47b440e418cdb7cd",
+      "plan_id": "be04201c6bdfd80f94d0e52f26eed68bb0239b00254baf6093c44f13d7feb5a1",
+      "attempt_record_id": "464faeb80eacd7fec8ff5cfb61d8cc3ec6660bfd2e9b5379fb8da8328515a7e6",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-005/integration/0": [
+    {
+      "receipt_id": "17b75cadae7af1295c2e14c0596097ed35b4f1b4f486603b6b964bbe82c87c90",
+      "plan_id": "fc37be27c0af9380487bb836e4899951ef947750cdc804f9e99ef2d4ee20d233",
+      "attempt_record_id": "0530ac36c4d284d6bfb0936edad760019f8880607bf50e7d542925eeab2b899c",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ],
+  "TASK-WI-0001-005/e2e/0": [
+    {
+      "receipt_id": "2a83a293a5b44f56b29b34a852f4acc9df2c2faf9efdce2922412d91a188e0e5",
+      "plan_id": "17f1e2de0a1b18d65eb69a4ca0e82d266e48396a9ab1b9d441922b6f1246dc7f",
+      "attempt_record_id": "0cd79df9a07b53dceb8735078d1c1dd781134463823da063f4a051c0bb2352ad",
+      "exit_code": 0,
+      "cleanup_proved": true,
+      "output_complete": true
+    }
+  ]
+}
+
+
+最新真实Gate0456阻断点（先正式Read当前gates/verification_gate.json和formal_version_gate.json，不重试相同输入）：
+1. verification_semantic_closure_provenance_current: SEMANTIC_CLOSURE_INPUT_STALE: changed_files_audit.md changed after closure generation. 原因是前轮先semantic_closure_run再changed_files_audit，closure绑定被后续审计更新失效。正确顺序必须是专业报告/Manifest完成 → sf_changed_files_audit完成 → 用专业typed manifest重新sf_semantic_closure_run → 实际verification_gate/formal_version_gate → sf_close_gate。生成closure后不再改任何被绑定输入；不得通过删除provenance或放宽Gate处理。
+2. code_contract_manual_review_0_PI-CORE-001: Unverified Contract consumer src/greet.ts has structured manual review for PI-CORE-001。这是报告缺失正式合同已有的逐文件review，不是原生应用失败。真实sf-verifier必须读取当前src/greet.ts、正式Project Spec的PI-CORE-001 Contract、Module/Trace及现有测试证据，实际完成技术代码审查；在其verification_report.contract_reviews登记contract_id/files/modules/review_method=manual/reviewer/conclusion/summary/evidence（Evidence ID）等正式字段。reviewer必须是实际技术审查者，不把Agent审查写成人类用户亲自验收。若需独立审查事实源，通过其正式verification_evidence/facts.txt owner和Evidence Manifest登记；不编造人工测试、不改代码/Task/原23回执，不使用NO_CONTRACT_USAGE否认已确认消费者。由专业owner据真实读取决定结论。
+formal_version_gate仅因上述Verification未过而失败。保留两项旧failed及所有历史，不请求豁免、不重新执行应用。修正专业报告后按上述顺序审计/closure/Gate。

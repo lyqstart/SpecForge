@@ -1,0 +1,12 @@
+{
+  "name": "sf-workflow-feature-spec",
+  "keys": [
+    "name",
+    "description",
+    "location",
+    "content"
+  ],
+  "location": "C:\\Users\\lyq\\.config\\opencode\\skills\\sf-workflow-feature-spec\\SKILL.md",
+  "content_sha256": "dd7cf9def4fddb4641499d61ecc9545604c91f505fcc71e466c56df0406fd950",
+  "installed_sha256": "5e59ced0b55bb23a89556b787082a0514112d9b49ee8ecb97c6b29b475720523"
+}

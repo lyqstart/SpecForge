@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/run-public-fixture-builder.cjs",
+    "15",
+    "implementation"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "initialize-async-Git-installed15-through-real-owners",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned installed15 actual ProjectInit config/state baseline; EXTERNAL_EVIDENCE_WRITES receipt; no original/user install",
+  "started_utc": "2026-11-07T04:27:02.191Z"
+}

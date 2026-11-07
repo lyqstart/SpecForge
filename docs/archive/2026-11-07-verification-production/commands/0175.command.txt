@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/public-kernel-chain.cjs",
+    "11",
+    "crash-proxy"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "diagnose-real-crash-followup-plan-Runtime-transport",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned fixture11 actual Kernel Daemon crash/recovery and transparent loopback proxy; EXTERNAL_EVIDENCE_WRITES only real transport status timings frozen source; no synthetic Runtime records original or user installation",
+  "started_utc": "2026-11-07T04:04:39.525Z"
+}

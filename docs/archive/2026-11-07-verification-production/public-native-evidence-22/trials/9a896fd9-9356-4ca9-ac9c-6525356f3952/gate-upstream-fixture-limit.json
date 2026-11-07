@@ -1,0 +1,43 @@
+{
+  "success": true,
+  "work_item_id": "WI-9901",
+  "workflow_path": "code_only_fast_path",
+  "workflow_type": "feature_spec",
+  "workflow_type_source": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\f4420a0d874c405eb7ca5c051240ca59\\project\\.specforge\\work-items\\WI-9901\\work_item.json",
+  "candidate_phase": "full",
+  "candidate_phase_source": "artifact_inference",
+  "workflow_path_source": ".specforge/work-items/WI-9901/work_item.json",
+  "authoritative_state_before_gate": "verification_running",
+  "requested_gate_ids": [],
+  "requested_gate_type": "verification_gate",
+  "normalized_gate_ids": [
+    "verification_gate"
+  ],
+  "aliases_used": [],
+  "summary_status": "failed",
+  "summary_path": ".specforge/work-items/WI-9901/gate_summary.md",
+  "gate_attempt_id": "attempt-0001",
+  "gate_attempt_path": ".specforge/work-items/WI-9901/gate_attempts/attempt-0001",
+  "gate_count": 1,
+  "passed": 0,
+  "failed": 1,
+  "state_auto_advance": {
+    "attempted": false,
+    "reason": "verification_owned_gate_missing",
+    "failed_gate_ids": [
+      "verification_gate"
+    ],
+    "missing_gate_ids": [
+      "formal_version_gate"
+    ],
+    "summary_status": "failed"
+  },
+  "reports": [
+    {
+      "gate_id": "verification_gate",
+      "status": "failed",
+      "blocking_issues": 3,
+      "warnings": 0
+    }
+  ]
+}

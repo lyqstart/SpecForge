@@ -1,0 +1,22 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/install-private-fixture-1.0.23.cjs",
+    "20",
+    "0368"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Install and verify final integrated-main physical117-file payload in fresh private fixture20",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES self-owned fixture20 only; EXTERNAL_EVIDENCE_WRITES final physical installer proof; global/original unchanged",
+  "started_utc": "2026-11-07T08:42:28.964Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\install-private-fixture-1.0.23.cjs",
+      "sha256": "a5f770f2c2016537b567791a3568dae6a52bec7eb3bf1231d97d93f0446fd896",
+      "size": 5851,
+      "extension": ".cjs"
+    }
+  ]
+}

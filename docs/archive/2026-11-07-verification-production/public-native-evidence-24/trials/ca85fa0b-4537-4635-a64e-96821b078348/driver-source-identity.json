@@ -1,0 +1,10 @@
+{
+  "utc": "2026-11-07T07:56:26.948Z",
+  "source": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\public-kernel-routing.cjs",
+  "sha256": "a6008d1f398a7e66406121ab9b2aa7be1d054de0ff7666a75de98229048823f4",
+  "bytes": 44496,
+  "argv": [
+    "19",
+    "routing"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "executable": "node",
+  "args": [
+    "--check",
+    "docs/archive/2026-11-07-verification-production/integrate-final-guidance-main.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Syntax-qualify final main integration carrier before any Git mutation",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=source syntax qualification",
+  "started_utc": "2026-11-07T10:37:02.192Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 1,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\integrate-final-guidance-main.cjs",
+      "sha256": "2e60ffc602b5e25ce0da19d0637b6d9f0e17ce5b75d4c80c8d09af9904e39df1",
+      "size": 4079,
+      "extension": ".cjs"
+    }
+  ]
+}

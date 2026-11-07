@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/retire-workflow-persistence.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Retire independently persisted workflow state from production exports/source and migrate current integration acceptance to Daemon owners",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES only frozen Workflow Runtime files, root feature integration and package metadata; EXTERNAL_EVIDENCE_WRITES retirement receipt; no original or user installation writes",
+  "started_utc": "2026-11-07T05:41:43.294Z"
+}

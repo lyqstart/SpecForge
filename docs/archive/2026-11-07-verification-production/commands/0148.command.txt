@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/install-private-fixture.cjs",
+    "10",
+    "0139"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-private-installer-complete-managed-deployment",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES newly owned private fixture10 complete117-file installer install/verify SDK plumbing; EXTERNAL_EVIDENCE_WRITES install proof; no user install/original",
+  "started_utc": "2026-11-07T03:47:21.847Z"
+}

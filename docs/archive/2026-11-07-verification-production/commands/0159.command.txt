@@ -1,0 +1,12 @@
+{
+  "executable": "pwsh",
+  "args": [
+    "-NoProfile",
+    "-Command",
+    "Get-CimInstance Win32_Process -Filter 'Name = ''specforged.exe''' | Select-Object ProcessId,ExecutablePath,CreationDate | ConvertTo-Json -Compress; exit 0"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "independently-inspect-old-user-daemon-image-processes",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES CIM ownership status only; no process or file mutations",
+  "started_utc": "2026-11-07T03:54:31.567Z"
+}

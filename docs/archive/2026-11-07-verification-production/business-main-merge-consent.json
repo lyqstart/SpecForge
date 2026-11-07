@@ -1,0 +1,20 @@
+{
+  "utc": "2026-11-07T10:03:27.431Z",
+  "source": "Actual user send_user_message_question_reply in this chat",
+  "question_item_id": "[\"request_user_input_async\",\"call_b613e4a80fbf4be6ba8e3978092b35b9\",0]",
+  "question": "是否批准原合成项目本地合并方案：将已关闭WI-0001工作分支codex/greet-library-wi-0001（6e917aec）合并到该项目本地main（8a692e88），5份实现和202份规格/治理证据，不推送业务远端。",
+  "user_response_quote": "批准本地合并",
+  "authorization": "GLM_WI0001_APPROVED_LOCAL_MAIN_MERGE",
+  "project": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+  "work_item_id": "WI-0001",
+  "source_branch": "codex/greet-library-wi-0001",
+  "source_head": "6e917aec62788a35013f02a340c8d60edaa76ae9",
+  "target_branch": "main",
+  "target_head": "8a692e88c0823984647622294f5199c18bb0c587",
+  "review_manifest_sha256": "d2c044a1666f84b32e88b763a6c34437da58151b5dd83cc53ab09af851e7764a",
+  "allow_default_main_merge": true,
+  "allow_business_remote_push": false,
+  "allow_code_permission_reopen": false,
+  "allow_prior_session_history": false,
+  "allow_credentials_or_keys": false
+}

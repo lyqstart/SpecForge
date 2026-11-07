@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-07T05:14:23.714Z",
+  "inner_exit_code": 0,
+  "failure": null,
+  "kernel_exit": {
+    "code": null,
+    "signal": "SIGTERM",
+    "utc": "2026-11-07T05:14:23.713Z"
+  },
+  "user_daemon_independently_managed": true,
+  "model_prompt_sent": false,
+  "original_project_used": false
+}

@@ -1,0 +1,14 @@
+{
+  "executable": "C:/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe",
+  "args": [
+    "/nologo",
+    "/target:exe",
+    "/out:D:\\code\\SpecForge\\.tmp\\verification-lpac-build\\ProductCrashWitness.exe",
+    "/reference:System.Web.Extensions.dll",
+    "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\ProductCrashWitness.cs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "compile-ordinary-stable-product-crash-witness",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES ignored fixed witness exe; EXTERNAL_EVIDENCE_WRITES build receipts; no product execution",
+  "started_utc": "2026-11-07T02:30:19.682Z"
+}

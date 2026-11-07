@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/installer/verify-tool-schemas.test.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "installer-actual-schema-outage-guard-regression",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES source-only root unit; EXTERNAL_EVIDENCE_WRITES receipts; no Tool execution/install",
+  "started_utc": "2026-11-07T02:48:18.933Z"
+}

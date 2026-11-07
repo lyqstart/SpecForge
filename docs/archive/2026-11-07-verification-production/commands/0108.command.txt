@@ -1,0 +1,13 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/typescript/bin/tsc",
+    "--noEmit",
+    "-p",
+    "scripts/tsconfig.installer.json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "installer-updated-schema-guard-typecheck",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES typecheck receipts only",
+  "started_utc": "2026-11-07T02:48:41.731Z"
+}

@@ -1,0 +1,174 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/merge-report-owner.test.ts > Merge Report owner boundary > keeps work_log separate from the Merge Runner report even when its run_id says merge-report
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/unit/merge-report-owner.test.ts:46:39
+     44|       );
+     45|
+     46|       expect((result as any).success).toBe(true);
+       |                                       ^
+     47|       expect((result as any).path).toBe('.specforge/archive/agent_runs…
+     48|       expect(await readFile(path.join(projectRoot, (result as any).pat…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  tests/unit/verification-evidence-producer.test.ts > controlled verification evidence producer > keeps a real-style evidence alignment work_log in its archive at verification_running
+AssertionError: expected '.specforge/work-items/WI-9001/evidenc…' to be '.specforge/archive/agent_runs/verifie…' // Object.is equality
+
+Expected: ".specforge/archive/agent_runs/verifier-wi0001-manifest-align/work_log.md"
+Received: ".specforge/work-items/WI-9001/evidence/evidence_manifest.json"
+
+ ❯ tests/unit/verification-evidence-producer.test.ts:65:25
+     63|     const result = await write({ file_type: 'work_log', run_id: runId,…
+     64|     expect(result.success, JSON.stringify(result)).toBe(true);
+     65|     expect(result.path).toBe(`.specforge/archive/agent_runs/${runId}/w…
+       |                         ^
+     66|     expect(await fs.readFile(target, 'utf8')).toBe(original);
+     67|     expect(await fs.readFile(path.join(root, result.path), 'utf8')).to…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  tests/unit/verification-evidence-producer.test.ts > controlled verification evidence producer > keeps a real-style evidence alignment work_log in its archive at verification_done
+AssertionError: {"success":false,"error":"VERIFICATION_INPUTS_FROZEN","hard_stop":false,"retry_allowed":false,"current_state":"verification_done","state_authority":"StateManager","message":"verification_report and evidence_manifest are frozen after verification_gate passes. Recover to implementation_ready before changing verification evidence, then regenerate semantic closure and rerun verification_gate."}: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/unit/verification-evidence-producer.test.ts:64:52
+     62|       action: 'evidence_manifest_supports_alignment', details: 'Log of…
+     63|     const result = await write({ file_type: 'work_log', run_id: runId,…
+     64|     expect(result.success, JSON.stringify(result)).toBe(true);
+       |                                                    ^
+     65|     expect(result.path).toBe(`.specforge/archive/agent_runs/${runId}/w…
+     66|     expect(await fs.readFile(target, 'utf8')).toBe(original);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  tests/unit/verification-evidence-producer.test.ts > controlled verification evidence producer > never treats a work_log topic trigger-result as a canonical artifact selector
+ FAIL  tests/unit/verification-evidence-producer.test.ts > controlled verification evidence producer > never treats a work_log topic impact-analysis as a canonical artifact selector
+ FAIL  tests/unit/verification-evidence-producer.test.ts > controlled verification evidence producer > never treats a work_log topic change-classification as a canonical artifact selector
+AssertionError: {"success":false,"error":"CANDIDATE_BASIS_FROZEN","hard_stop":false,"retry_allowed":false,"current_state":"implementation_ready","state_authority":"StateManager","message":"Candidate basis artifacts are sealed outside impact_analyzing, candidate_preparing, or gates_failed. From candidate_prepared transition to blocked and recover to candidate_preparing before repair; do not invoke a known-invalid Gate merely to reach gates_failed."}: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/unit/verification-evidence-producer.test.ts:74:54
+     72|       const content = `Completed review of ${topic}; this is an execut…
+     73|       const result = await write({ file_type: 'work_log', run_id: topi…
+     74|       expect(result.success, JSON.stringify(result)).toBe(true);
+       |                                                      ^
+     75|       expect(result.path).toBe(`.specforge/archive/agent_runs/${topic}…
+     76|       expect(await fs.readdir(path.join(root, '.specforge/work-items',…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+ FAIL  tests/unit/verification-evidence-producer.test.ts > controlled verification evidence producer > never treats a work_log topic candidate-manifest as a canonical artifact selector
+AssertionError: {"success":false,"error":"CANDIDATE_FROZEN","hard_stop":false,"retry_allowed":false,"current_state":"implementation_ready","state_authority":"StateManager","message":"Candidate artifacts are frozen while WI state is implementation_ready. Invalidate the approval and recover to candidate_preparing before editing."}: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/unit/verification-evidence-producer.test.ts:74:54
+     72|       const content = `Completed review of ${topic}; this is an execut…
+     73|       const result = await write({ file_type: 'work_log', run_id: topi…
+     74|       expect(result.success, JSON.stringify(result)).toBe(true);
+       |                                                      ^
+     75|       expect(result.path).toBe(`.specforge/archive/agent_runs/${topic}…
+     76|       expect(await fs.readdir(path.join(root, '.specforge/work-items',…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯
+
+ FAIL  tests/unit/verification-evidence-producer.test.ts > controlled verification evidence producer > never treats a work_log topic trace-delta as a canonical artifact selector
+AssertionError: {"success":false,"error":"ARTIFACT_OWNER_MISMATCH","hard_stop":false,"policy_violation":true,"retry_allowed":true,"file_type":"trace_delta","caller_agent":"sf-verifier","required_agent":"sf-task-planner","message":"Artifact type \"trace_delta\" is owned by sf-task-planner. sf-orchestrator must re-dispatch the owning professional agent instead of writing the artifact itself."}: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/unit/verification-evidence-producer.test.ts:74:54
+     72|       const content = `Completed review of ${topic}; this is an execut…
+     73|       const result = await write({ file_type: 'work_log', run_id: topi…
+     74|       expect(result.success, JSON.stringify(result)).toBe(true);
+       |                                                      ^
+     75|       expect(result.path).toBe(`.specforge/archive/agent_runs/${topic}…
+     76|       expect(await fs.readdir(path.join(root, '.specforge/work-items',…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯
+
+ FAIL  tests/unit/verification-evidence-producer.test.ts > controlled verification evidence producer > never treats a work_log topic task-plan as a canonical artifact selector
+AssertionError: {"success":false,"error":"ARTIFACT_OWNER_MISMATCH","hard_stop":false,"policy_violation":true,"retry_allowed":true,"file_type":"tasks","caller_agent":"sf-verifier","required_agent":"sf-task-planner","message":"Artifact type \"tasks\" is owned by sf-task-planner. sf-orchestrator must re-dispatch the owning professional agent instead of writing the artifact itself."}: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/unit/verification-evidence-producer.test.ts:74:54
+     72|       const content = `Completed review of ${topic}; this is an execut…
+     73|       const result = await write({ file_type: 'work_log', run_id: topi…
+     74|       expect(result.success, JSON.stringify(result)).toBe(true);
+       |                                                      ^
+     75|       expect(result.path).toBe(`.specforge/archive/agent_runs/${topic}…
+     76|       expect(await fs.readdir(path.join(root, '.specforge/work-items',…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/11]⎯
+
+ FAIL  tests/unit/verification-evidence-producer.test.ts > controlled verification evidence producer > never treats a work_log topic merge-report as a canonical artifact selector
+AssertionError: {"success":false,"error":"MERGE_REPORT_OWNED_BY_MERGE_RUNNER","hard_stop":false,"policy_violation":true,"retry_allowed":false,"file_type":"merge_report","message":"merge_report.md is emitted only by the governed Merge Runner transaction."}: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/unit/verification-evidence-producer.test.ts:74:54
+     72|       const content = `Completed review of ${topic}; this is an execut…
+     73|       const result = await write({ file_type: 'work_log', run_id: topi…
+     74|       expect(result.success, JSON.stringify(result)).toBe(true);
+       |                                                      ^
+     75|       expect(result.path).toBe(`.specforge/archive/agent_runs/${topic}…
+     76|       expect(await fs.readdir(path.join(root, '.specforge/work-items',…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/11]⎯
+
+ FAIL  tests/unit/verification-evidence-producer.test.ts > controlled verification evidence producer > never treats a work_log topic evidence-manifest as a canonical artifact selector
+AssertionError: {"success":false,"error":"INVALID_ARTIFACT_JSON","hard_stop":false,"retry_allowed":true,"validation_errors":["evidence_manifest must be valid JSON"],"message":"Artifact \"evidence_manifest.json\" failed schema validation and was NOT written to disk.\nCorrect the JSON and retry.","normalized_content_preview":"Completed review of evidence-manifest; this is an execution log."}: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/unit/verification-evidence-producer.test.ts:74:54
+     72|       const content = `Completed review of ${topic}; this is an execut…
+     73|       const result = await write({ file_type: 'work_log', run_id: topi…
+     74|       expect(result.success, JSON.stringify(result)).toBe(true);
+       |                                                      ^
+     75|       expect(result.path).toBe(`.specforge/archive/agent_runs/${topic}…
+     76|       expect(await fs.readdir(path.join(root, '.specforge/work-items',…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/11]⎯
+

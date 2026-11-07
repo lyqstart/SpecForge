@@ -1,0 +1,17 @@
+{
+  "executable": "git",
+  "args": [
+    "-c",
+    "core.hooksPath=NUL",
+    "-c",
+    "core.fsmonitor=false",
+    "switch",
+    "main"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Switch verified product repository to existing local main with hooks disabled",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES authorized worktree/index branch switch; EXTERNAL_EVIDENCE_WRITES sealed receipt; original business untouched",
+  "started_utc": "2026-11-07T08:35:31.700Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": []
+}

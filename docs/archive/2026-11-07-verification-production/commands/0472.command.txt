@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-closed-original-and-merge-plan.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Freeze original closed event/Gates and actual can_merge=true concrete plan before asking separate business-main approval",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=read-only Git with optional locks disabled;EXTERNAL_EVIDENCE_WRITES=canonical originals,actual owner plan and exact diffs",
+  "started_utc": "2026-11-07T09:59:55.924Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\freeze-closed-original-and-merge-plan.cjs",
+      "sha256": "cfdcda86fffdf42e280820094ab95a6a9fdd009de3aaa5f5c968471385ec0198",
+      "size": 6924,
+      "extension": ".cjs"
+    }
+  ]
+}

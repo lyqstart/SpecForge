@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "module_code": "CORE",
+  "status": "active",
+  "implementation_baseline_id": "sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722",
+  "code_paths": [
+    "src/greet.ts",
+    "tests/greet.test.ts",
+    "README.md",
+    "package.json",
+    "tsconfig.json"
+  ]
+}

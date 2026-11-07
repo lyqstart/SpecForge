@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/correct-boundary-scope.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Correct two exact documentation scope omissions with preserved parent-content proof and failure history",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES unique status scope and historical ledger only; EXTERNAL_EVIDENCE_WRITES receipts; no source implementation/original/deployment writes",
+  "started_utc": "2026-11-07T06:04:57.143Z"
+}

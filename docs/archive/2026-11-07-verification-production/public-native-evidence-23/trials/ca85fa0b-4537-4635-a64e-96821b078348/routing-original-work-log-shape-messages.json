@@ -1,0 +1,187 @@
+[
+  {
+    "info": {
+      "id": "msg_1b503404f001Kp8QFkwDKihigK",
+      "sessionID": "ses_e4afcbfd6ffeMz45a1jM6iFIme",
+      "role": "user",
+      "time": {
+        "created": 1794038251600
+      },
+      "summary": {
+        "diffs": []
+      },
+      "agent": "sf-verifier",
+      "model": {
+        "providerID": "sf-fixture",
+        "modelID": "finite-model"
+      }
+    },
+    "parts": [
+      {
+        "id": "prt_1b503405a001tvqqO6XlVLJysw",
+        "sessionID": "ses_e4afcbfd6ffeMz45a1jM6iFIme",
+        "messageID": "msg_1b503404f001Kp8QFkwDKihigK",
+        "type": "text",
+        "text": "Execute the single requested tool once, then stop. SF_FIXTURE_REQUEST:eyJ0b29sIjoic2ZfYXJ0aWZhY3Rfd3JpdGUiLCJhcmdzIjp7IndvcmtfaXRlbV9pZCI6IldJLTk5MDEiLCJmaWxlX3R5cGUiOiJ3b3JrX2xvZyIsInJ1bl9pZCI6InZlcmlmaWVyLXdpMDAwMS1tYW5pZmVzdC1hbGlnbiIsImNvbnRlbnQiOiJ7XCJydW5faWRcIjpcInZlcmlmaWVyLXdpMDAwMS1tYW5pZmVzdC1hbGlnblwiLFwid29ya19pdGVtX2lkXCI6XCJXSS05OTAxXCIsXCJhZ2VudFwiOlwic2YtdmVyaWZpZXJcIixcImFjdGlvblwiOlwiZXZpZGVuY2VfbWFuaWZlc3Rfc3VwcG9ydHNfYWxpZ25tZW50XCIsXCJkZXRhaWxzXCI6XCJFeGVjdXRpb24gbG9nIGFib3V0IGFuIEV2aWRlbmNlIE1hbmlmZXN0XCJ9IiwiYWdlbnRfY29udGVudCI6Ik9ic2VydmVkIGV2aWRlbmNlX21hbmlmZXN0IGFsaWdubWVudDsgdGhpcyBpcyBhbiBleGVjdXRpb24gbG9nLCBub3QgYSByZXBsYWNlbWVudCBtYW5pZmVzdC4ifX0="
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1b503408100169proQ0241tOHL",
+      "sessionID": "ses_e4afcbfd6ffeMz45a1jM6iFIme",
+      "role": "assistant",
+      "time": {
+        "created": 1794038251649,
+        "completed": 1794038253086
+      },
+      "parentID": "msg_1b503404f001Kp8QFkwDKihigK",
+      "modelID": "finite-model",
+      "providerID": "sf-fixture",
+      "mode": "sf-verifier",
+      "agent": "sf-verifier",
+      "path": {
+        "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\7bb83150ebf54338975311185cadfade\\project",
+        "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\7bb83150ebf54338975311185cadfade\\project"
+      },
+      "cost": 0,
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "finish": "tool-calls"
+    },
+    "parts": [
+      {
+        "id": "prt_1b5034357001brJWbTIoVx4jcb",
+        "sessionID": "ses_e4afcbfd6ffeMz45a1jM6iFIme",
+        "messageID": "msg_1b503408100169proQ0241tOHL",
+        "type": "step-start",
+        "snapshot": "ee9ddb9e4843a5a7b1d6ab0394e0ba5d953235e0"
+      },
+      {
+        "id": "prt_1b503435c001McC5c6JFhR7oL4",
+        "sessionID": "ses_e4afcbfd6ffeMz45a1jM6iFIme",
+        "messageID": "msg_1b503408100169proQ0241tOHL",
+        "type": "tool",
+        "callID": "call_254ae85b115f4c3584c2f459e5714f92",
+        "tool": "sf_artifact_write",
+        "state": {
+          "status": "completed",
+          "input": {
+            "work_item_id": "WI-9901",
+            "file_type": "work_log",
+            "run_id": "verifier-wi0001-manifest-align",
+            "content": "{\"run_id\":\"verifier-wi0001-manifest-align\",\"work_item_id\":\"WI-9901\",\"agent\":\"sf-verifier\",\"action\":\"evidence_manifest_supports_alignment\",\"details\":\"Execution log about an Evidence Manifest\"}",
+            "agent_content": "Observed evidence_manifest alignment; this is an execution log, not a replacement manifest."
+          },
+          "output": "{\n  \"success\": true,\n  \"path\": \".specforge/archive/agent_runs/verifier-wi0001-manifest-align/work_log.md\",\n  \"size\": 257\n}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1794038252389,
+            "end": 1794038252461
+          }
+        }
+      },
+      {
+        "id": "prt_1b50344d2001UiXzi2XrGJ3Lzk",
+        "sessionID": "ses_e4afcbfd6ffeMz45a1jM6iFIme",
+        "messageID": "msg_1b503408100169proQ0241tOHL",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "snapshot": "ee9ddb9e4843a5a7b1d6ab0394e0ba5d953235e0",
+        "cost": 0,
+        "tokens": {
+          "total": 120,
+          "input": 100,
+          "output": 20,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1b5034625001ouKizFHFnvbmnd",
+      "sessionID": "ses_e4afcbfd6ffeMz45a1jM6iFIme",
+      "role": "assistant",
+      "time": {
+        "created": 1794038253093,
+        "completed": 1794038254225
+      },
+      "parentID": "msg_1b503404f001Kp8QFkwDKihigK",
+      "modelID": "finite-model",
+      "providerID": "sf-fixture",
+      "mode": "sf-verifier",
+      "agent": "sf-verifier",
+      "path": {
+        "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\7bb83150ebf54338975311185cadfade\\project",
+        "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\7bb83150ebf54338975311185cadfade\\project"
+      },
+      "cost": 0,
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "finish": "stop"
+    },
+    "parts": [
+      {
+        "id": "prt_1b50347dc001RYUxixUR2Mn7vD",
+        "sessionID": "ses_e4afcbfd6ffeMz45a1jM6iFIme",
+        "messageID": "msg_1b5034625001ouKizFHFnvbmnd",
+        "type": "step-start",
+        "snapshot": "ee9ddb9e4843a5a7b1d6ab0394e0ba5d953235e0"
+      },
+      {
+        "id": "prt_1b50347e0001QiZXFScYgtLnQM",
+        "sessionID": "ses_e4afcbfd6ffeMz45a1jM6iFIme",
+        "messageID": "msg_1b5034625001ouKizFHFnvbmnd",
+        "type": "text",
+        "text": "SF_FIXTURE_TOOL_COMPLETE",
+        "time": {
+          "start": 1794038253536,
+          "end": 1794038253540
+        }
+      },
+      {
+        "id": "prt_1b503495c001Tts0y7HCejzNRD",
+        "sessionID": "ses_e4afcbfd6ffeMz45a1jM6iFIme",
+        "messageID": "msg_1b5034625001ouKizFHFnvbmnd",
+        "type": "step-finish",
+        "reason": "stop",
+        "snapshot": "ee9ddb9e4843a5a7b1d6ab0394e0ba5d953235e0",
+        "cost": 0,
+        "tokens": {
+          "total": 120,
+          "input": 100,
+          "output": 20,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    ]
+  }
+]

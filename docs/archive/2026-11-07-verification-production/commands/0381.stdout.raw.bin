@@ -1,0 +1,12 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/semantic-closure-producer-governance.test.ts (7 tests) 93ms
+ ✓ tests/unit/active-development-rules-contract.test.ts (54 tests) 164ms
+ ✓ tests/unit/semantic-closure-contract-alignment.test.ts (7 tests) 20ms
+
+ Test Files  3 passed (3)
+      Tests  68 passed (68)
+   Start at  16:03:34
+   Duration  3.68s (transform 1.03s, setup 0ms, collect 1.92s, tests 277ms, environment 1ms, prepare 608ms)
+

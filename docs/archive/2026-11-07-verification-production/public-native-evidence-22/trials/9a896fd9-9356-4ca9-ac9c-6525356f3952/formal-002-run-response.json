@@ -1,0 +1,71 @@
+{
+  "info": {
+    "parentID": "msg_1b4f3960b001jWBqWF0MDKjO9Q",
+    "role": "assistant",
+    "mode": "sf-verifier",
+    "agent": "sf-verifier",
+    "path": {
+      "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\f4420a0d874c405eb7ca5c051240ca59\\project",
+      "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\f4420a0d874c405eb7ca5c051240ca59\\project"
+    },
+    "cost": 0,
+    "tokens": {
+      "total": 120,
+      "input": 100,
+      "output": 20,
+      "reasoning": 0,
+      "cache": {
+        "write": 0,
+        "read": 0
+      }
+    },
+    "modelID": "finite-model",
+    "providerID": "sf-fixture",
+    "time": {
+      "created": 1794037242059,
+      "completed": 1794037244047
+    },
+    "finish": "stop",
+    "id": "msg_1b4f3d8cb001CAPHaQx1m1LeH2",
+    "sessionID": "ses_e4b0c6a2affeP4g93C1tnoosQj"
+  },
+  "parts": [
+    {
+      "snapshot": "036f08a83d800756e4e67f5cacc9ab307388c533",
+      "type": "step-start",
+      "id": "prt_1b4f3dbdb001UtIohtBW3YtFWk",
+      "sessionID": "ses_e4b0c6a2affeP4g93C1tnoosQj",
+      "messageID": "msg_1b4f3d8cb001CAPHaQx1m1LeH2"
+    },
+    {
+      "type": "text",
+      "text": "SF_FIXTURE_TOOL_COMPLETE",
+      "time": {
+        "start": 1794037242848,
+        "end": 1794037242856
+      },
+      "id": "prt_1b4f3dbe0001KSMq63FsylsZaC",
+      "sessionID": "ses_e4b0c6a2affeP4g93C1tnoosQj",
+      "messageID": "msg_1b4f3d8cb001CAPHaQx1m1LeH2"
+    },
+    {
+      "reason": "stop",
+      "snapshot": "036f08a83d800756e4e67f5cacc9ab307388c533",
+      "type": "step-finish",
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "write": 0,
+          "read": 0
+        }
+      },
+      "cost": 0,
+      "id": "prt_1b4f3deb6001W4EP2ONaACiVXQ",
+      "sessionID": "ses_e4b0c6a2affeP4g93C1tnoosQj",
+      "messageID": "msg_1b4f3d8cb001CAPHaQx1m1LeH2"
+    }
+  ]
+}

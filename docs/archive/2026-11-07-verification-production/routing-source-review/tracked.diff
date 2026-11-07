@@ -1,0 +1,236 @@
+diff --git a/docs/project-status.md b/docs/project-status.md
+index 034d630af523c10c155a642201c4b44b6bbdeb13..776f2969e3c48c8b56742139acec7e3c197e136f 100644
+--- a/docs/project-status.md
++++ b/docs/project-status.md
+@@ -21,11 +21,11 @@ EXECUTION_ACTOR=CODEX
+ EXECUTION_AUDITOR=CODEX
+ EXECUTION_RUN_ID=CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01
+ EXECUTION_EVIDENCE_ROOT=D:/code/SpecForge/docs/archive/2026-11-07-verification-production
+-LAST_EXECUTION_CHECKPOINT=SPS8/action source6be12495 and1.0.23 metadata759cd2ff committed; source bindings0268/0321 verified. Current consumer guidance/schema-example/180s bounded HTTP reconciliation fix pending source commit;0316 related14 and0320 maintained51-file748-test regression passed. Original44 real successes:22 implementation+22 formal0298;0310 canonical professional Manifest/Report succeeded after30s client deadline,0317 typed/hash/22-selector inspection passed. Fresh authorized minimum-context R04 session0319 active;0323 semantic closure rejects weak or missing Task behavioral evidence, real Agent checking. Global117 managed files/Daemon remain1.0.22 old0208 assets, original code permission revoked. No full Gate/FV/Close or overall SPS acceptance.
++LAST_EXECUTION_CHECKPOINT=Consumer sourcecf766382 committed,27 raw/index bindings independently verified;1.0.23 native candidate0331 and release precheck0334 passed,fixture18 actual117-file install0345/formal matrix0348 passed and481 members frozen0361. This native candidate predates newly confirmed work_log routing defect2001 and is not final delivery. R05 stopped0352 after actual work_log was redirected to canonical Evidence Manifest;0354 preserves actual input/response and current22 entries, no manual truth edit. Routing source repair now removes topic inference and missing-array default;0355 pre-fix11 failures,0357 related25/0358 full types/0359 root51-files748 all pass. Complete Daemon0338 actually227 files2306 pass and9 files20 fail; environmental rerun0360 active, remaining consumer/static/fixture failures require classification. Global remains old1.0.22.
+ NEXT_EXECUTION_STOP=COMPLETE_APPROVED_PRODUCT_VERIFICATION_CHAIN_SP_I01_SP_D01_AND_ORIGINAL_WI_SPS_ACCEPTANCE_OR_EVIDENCED_HARD_STOP
+ LAST_COMPLETED_CHECKPOINT=Original approved PSV-0002 nine-artifact merge and post_merge_gate retained. All22 implementation and22 formal controlled executions complete with actual exit0/output/cleanup receipts. Professional Evidence Manifest and Verification Report exist and independently validate; semantic closure and downstream Gate/FV/Close still pending. Business main8a692e88 unchanged, code permission revoked; no business-main merge approval.
+-CURRENT_BLOCKER=ORIGINAL_SEMANTIC_CLOSURE_AND_FULL_GATES_PENDING;CONSUMER_FIX_SOURCE_COMMIT_AND1_0_23_NATIVE_BUILD_INSTALL_ACCEPTANCE_PENDING;SPS_FINAL_MATRIX_AND_PRODUCT_GIT_DELIVERY_PENDING
+-NEXT_LEGAL_ACTION=Monitor owned real R04 session0319 and read live authoritative state; reuse44 successful executions and successful professional artifacts, retain all prior refusals/timeouts. Resolve only actual semantic/Gate errors through legal owner; unknown transport outcomes require read-only reconciliation before retry. Do not replace global native assets while original receipts active. Review exact ALLOWED_SCOPE raw/parent/index bindings and commit tested consumer fix/status/ledger; then after original completion/legal stop rebuild/precheck/install/test1.0.23. Finish SPS matrix and authorized direct-main product Git delivery. Business-main merge still needs fresh concrete can_merge=true plan and separate user confirmation.
++CURRENT_BLOCKER=ARTIFACT_ROUTING_REPAIR_SOURCE_COMMIT_AND_NATIVE_INSTALL_ACCEPTANCE_PENDING;FULL_DAEMON20_FAILURES_CLASSIFICATION_AND_REPAIR_PENDING;ORIGINAL_VERIFICATION_GATES_FV_CLOSE_PENDING;SPS_MATRIX_AND_PRODUCT_GIT_DELIVERY_PENDING
++NEXT_LEGAL_ACTION=Inspect0360 actual results then classify all20 Daemon failures from0338 against current authority and raw inputs; preserve failed tests and do not dilute assertions. Review/commit fully tested routing repair/status/ledger/active EXP17 and frozen baseline. Rebuild current1.0.23 native candidate, actual isolated install and real Kernel work_log/canonical preservation plus common consumers before deployment. Original R05 stopped; read live owner state and current22-entry Manifest before any continuation, reuse genuine44 successes where current receipt contract allows; fix through explicit professional owners only, no manual truth writes. Keep global1.0.22 assets unchanged until original legal completion or governed recovery; business-main merge still requires fresh concrete can_merge=true plan and separate user confirmation. Finish current SPS matrix and authorized direct-main product Git delivery.
+ ALLOWED_SCOPE=AGENTS.md;README.md;.gitattributes;.gitignore;package.json;bun.lock;docs/project-status.md;docs/product-specification/**;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/archive/**;docs/adr/**;docs/cli/**;docs/conventions/**;docs/user/**;docs/plugins/**;docs/tools/**;docs/engineering-lessons/**;docs/rule/**;scripts/**;setup/**;packages/**/package.json;packages/service-management/src/**;packages/configuration/src/**;packages/opencode-adapter/src/**;packages/permission-engine/src/**;packages/daemon-core/src/**;packages/cli/src/**;packages/types/src/**;packages/observability/src/**;packages/observability/examples/**;packages/workflow-runtime/src/**;packages/workflow-runtime/tsconfig.json;packages/workflow-runtime/examples/**;packages/workflow-runtime/vitest.config.ts;packages/**/README.md;packages/**/DEVELOPMENT.md;packages/**/docs/**;packages/**/src/**/*.md;packages/**/tests/**;tests/**;docs/design/windows-lpac-node-readonly-contract.md;packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md;packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md
+ PROHIBITED=Deleting ADR ERR audit or report evidence;creating another active handoff current-status or recovery-status file;modifying D:\code\t3 outside a separately authorized controlled recovery phase;reading or modifying D:\code\t2 during SpecForge repair;creating a SpecForge Work Item for SpecForge product self-development;using archive evidence as a current product contract
+ REQUIRED_RULES=docs/rule/specforge-active-development-rules.md;docs/product-specification/authority-registry.md;docs/product-specification/specforge-product-specification.md;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/rule/specforge-execution-mode-and-evidence-protocol.md
+diff --git a/docs/rule/specforge-active-development-rules.md b/docs/rule/specforge-active-development-rules.md
+index 9168e49a196495dace9ac5366e76e2c81a9090ce..f659728dcc4a65776e739da4a10ae4007365a36f 100644
+--- a/docs/rule/specforge-active-development-rules.md
++++ b/docs/rule/specforge-active-development-rules.md
+@@ -117,6 +117,8 @@ Project Spec Version、状态、路径和 Contract ID 等权威值不能用“
+ ## EXP-017：唯一真相源，其他都是投影
+ 
+ 权威状态、版本、Trace 消费关系、安装 Manifest 等只能有一个正式源。其他列表、缓存和 Module Trace 必须是可重建投影，不能各自维护事实。
++
++正式产物的目标和所有权必须由显式类型决定，不能根据日志名称、模板或正文中的主题词猜测另一种产物。普通执行日志不得改写正式治理输入；必填集合缺失不得静默补成空集合。回归须验证真实目标路径、既有规范产物字节不变及显式 owner/冻结/Schema 边界仍生效。
+ <!-- source: ledger Part3/4 verbatim (audited), view L1903-2944 -->
+ 
+ ## EXP-018：用户边界高于自动化便利
+diff --git a/docs/rule/specforge-development-error-ledger-and-experience.md b/docs/rule/specforge-development-error-ledger-and-experience.md
+index ab046e8bbcd0f133e2f3a6c217339467be331714..50fc6a393321b8d327bc36c7e34be4bd751cfc20 100644
+--- a/docs/rule/specforge-development-error-ledger-and-experience.md
++++ b/docs/rule/specforge-development-error-ledger-and-experience.md
+@@ -32733,3 +32733,19 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制
+ ### ERR-1990 / ERR-1992 补充：恢复取证仍重复输出巨型JSON及猜测尚不存在的stdout
+ 
+ - 本轮恢复直接打印含工作树全量清单的0320/321 receipt和活动规则导致展示截断，不能计作完整读取；原会话已完成的前置全文读取不被这些截断替代。随后仅投影数值退出/目的/UTC及最终测试摘要，确认0320为51文件748项通过、0321为33路径版本提交身份核验通过。读取活动0319尚不存在的stdout产生ENOENT，未改变现场。0322受限本机fetch TypeError后0323同一只读观察在已授权宿主成功；不把受限载体连接失败当作产品失败。后续先检查存在性并解析选定字段。EXP-007/008/021/193/296。
++
++### ERR-2001：Runtime按日志主题猜测正式产物类型，导致日志覆盖Evidence Manifest
++
++- 0351实际sf-verifier输入file_type=work_log、run_id=verifier-wi0001-manifest-align，正文action含evidence_manifest_supports_alignment；真实handler返回success=true、file_type=evidence_manifest、规范路径及395字节。此前两个显式Manifest请求各含22条。源码inferCanonicalFileType把run_id/template/前400字符主题猜测为正式类型，normalizeCoreJsonArtifact又把缺失entries补空数组；角色相同与基础Schema通过不能证明调用者请求了该写入。
++- 0352只abort本轮两个自有会话，不手改真相源。载体固定reason文本仍写“重复合同拒绝”，本次真实停因以命令purpose及原始request/response为准，不能改写该旧记录。停止后采集时规范文件已回到22条；旧空文件原始字节未封存，不补造。0353错误把瞬时0条写成前置不变量，因实读22而停止，部分目录保留；0354在新目录冻结实际请求/返回、当前22条和3份旧源，明确时间差。
++- 0355真实原source复现11项失败。移除八类work_log主题猜测，显式file_type决定唯一目标；保留前置角色/控制owner及正式输入冻结。显式Evidence缺少entries及已支持数组别名时，不再补空数组使错误输入合法。0356一个新增夹具本身缺旧Schema，先被SCHEMA_ID_MISSING拒绝；修成有效既存Schema后0357三文件25项、0358完整类型、0359当前51文件748项通过。当前1.0.22用户Daemon仍含旧缺陷；0331原生候选也早于修复，不能标作最终发布。EXP-004/007/008/017/022/025/031/298。
++
++### ERR-2002：完整Daemon测试入口与环境不完整，且维护测试暴露真实消费闭环缺口
++
++- 0337误用Bun参数位置，只打印帮助并exit0，没有测试覆盖；0338改明确Node/Vitest/cwd后真实运行236文件2326项，227文件2306项通过、9文件20项失败（失败hook额外显示不等于25个测试）。原始结果全部保留，不把完整测试失败掩盖为root绿色。
++- configuration-activation/runtime-history进程夹具明确依赖npm_execpath指向Bun，直接Node入口缺失；git-detached五项10秒超时及后续EBUSY另记，不能未测即归因相同。0360只补固定已核实Bun路径后重跑三份未改测试，不放宽断言/预算，结果须独立核验。
++- 其余失败涉及当前D23执行凭据消费、旧Formal Version夹具与文档静态断言；尚待逐项对照实际失败payload、当前权威和基线，不预先统一归类为产品缺陷或过期测试。原生候选0331/安装fixture18有限正式矩阵0348退出0，39次工具调用及481成员在0361独立封存，但不替代本次失败或修复后原生验收。EXP-002/004/007/008/009/016/022/026/193。
++
++### ERR-1990 / ERR-1992 补充：路径猜测、PowerShell内联引号与依赖执行顺序再次失败
++
++- 恢复期间猜测不存在build-native-release/credential-scan文件、Windows rg通配路径及内联嵌套引号造成只读/载体错误，未据此形成产品结论。0340 Bun读取父目录被EPERM拒绝，但随后安装夹具17已启动，沿用了原有旧fixture bundle；没有将其认作新source producer验收。0344宿主同命令重建成功后，另建fixture18，0345/347/348绑定新bundle，旧17保留。后续依赖动作只在前一步实际成功后启动，不能仅因顺序await就忽略exit失败。显示截断仍不计完整读取。EXP-007/008/014/021/193/296。
+diff --git a/packages/daemon-core/src/tools/handlers/sf-artifact-write.ts b/packages/daemon-core/src/tools/handlers/sf-artifact-write.ts
+index 35f8b8289e6323c944de9c7bfb8f059797ed5839..b61c878c66ac3746271bf10cb5a019d36e0a3666 100644
+--- a/packages/daemon-core/src/tools/handlers/sf-artifact-write.ts
++++ b/packages/daemon-core/src/tools/handlers/sf-artifact-write.ts
+@@ -319,11 +319,6 @@ function projectModuleTargetPath(
+   return path.relative(baseDir, absolutePath).replace(/\\/g, '/');
+ }
+ 
+-function normalizeToken(value: unknown): string {
+-  return String(value ?? '')
+-    .toLowerCase()
+-    .replace(/[^a-z0-9]+/g, '-');
+-}
+ function stringifyArtifactContent(value: unknown, fallback?: unknown): string {
+   const chosen = value ?? fallback ?? '';
+   if (typeof chosen === 'string') return chosen;
+@@ -331,28 +326,6 @@ function stringifyArtifactContent(value: unknown, fallback?: unknown): string {
+   if (typeof chosen === 'object') return JSON.stringify(chosen, null, 2);
+   return String(chosen);
+ }
+-function inferCanonicalFileType(args: Record<string, unknown>): string | null {
+-  const fileType = String(args['file_type'] ?? '');
+-  const runId = normalizeToken(args['run_id']);
+-  const template = normalizeToken(args['template']);
+-  const content = stringifyArtifactContent(args['content'], args['agent_content']);
+-  const contentToken = normalizeToken(content.slice(0, 400));
+-  const probe = `${runId} ${template} ${contentToken}`;
+-  if (fileType !== 'work_log') return null;
+-  if (probe.includes('trigger-result') || probe.includes('trigger-result-json'))
+-    return 'trigger_result';
+-  if (probe.includes('candidate-manifest') || probe.includes('candidate-manifest-json'))
+-    return 'candidate_manifest';
+-  if (probe.includes('trace-delta')) return 'trace_delta';
+-  if (probe.includes('impact-analysis')) return 'impact_analysis';
+-  if (probe.includes('change-classification') || probe.includes('intake-classification'))
+-    return 'change_classification';
+-  if (probe.includes('tasks-md') || probe.includes('task-plan') || probe.includes('task-planning'))
+-    return 'tasks';
+-  if (probe.includes('merge-report')) return 'merge_report';
+-  if (probe.includes('evidence-manifest')) return 'evidence_manifest';
+-  return null;
+-}
+ function resolveTargetFilename(
+   fileType: string,
+   content: string,
+@@ -901,6 +874,8 @@ function normalizeCoreJsonArtifact(
+     return JSON.stringify(normalized, null, 2);
+   }
+   if (filename === 'evidence_manifest.json') {
++    // Missing required evidence is not proof of an intentionally empty manifest.
++    if (!Array.isArray(parsed.entries) && !Array.isArray(parsed.evidence_items) && !Array.isArray(parsed.evidence)) return content;
+     const entries = Array.isArray(parsed.entries)
+       ? parsed.entries
+       : Array.isArray(parsed.evidence_items)
+@@ -1047,7 +1022,7 @@ function rejectExecutorGovernanceArtifact(fileType: string, context: any): any |
+ registerHandler('sf_artifact_write', async (args, context, deps) => {
+   const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
+   const workItemId = args['work_item_id'] as string;
+-  let fileType = args['file_type'] as string;
++  const fileType = args['file_type'] as string;
+   let content = stringifyArtifactContent(args['content'], args['agent_content']);
+ 
+   const initialControlOwnerRejection = rejectControlToolOwnedArtifact(fileType);
+@@ -1081,15 +1056,8 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
+     };
+   }
+ 
+-  const inferred = inferCanonicalFileType(args);
+-  if (inferred) fileType = inferred;
+-
+-  const inferredControlOwnerRejection = rejectControlToolOwnedArtifact(fileType);
+-  if (inferredControlOwnerRejection) return inferredControlOwnerRejection;
+-  const inferredExecutorRejection = rejectExecutorGovernanceArtifact(fileType, context);
+-  if (inferredExecutorRejection) return inferredExecutorRejection;
+-  const inferredOwnershipRejection = rejectProfessionalArtifactOwnership(fileType, context);
+-  if (inferredOwnershipRejection) return inferredOwnershipRejection;
++  // The caller's explicit canonical selector owns routing. A log may discuss a
++  // required artifact; neither its run_id nor its prose can change its target.
+   if (fileType === 'verification_evidence') {
+     const state = await readAuthoritativeState({ deps, projectRoot: baseDir, workItemId });
+     if (!['implementation_ready', 'implementation_done', 'verification_running'].includes(
+diff --git a/packages/daemon-core/tests/unit/merge-report-owner.test.ts b/packages/daemon-core/tests/unit/merge-report-owner.test.ts
+index 4edf2888688658f3d1ce2dc90c862ddae4567372..7a1604d6f1a9c2966a72f545ebff45deadd1df39 100644
+--- a/packages/daemon-core/tests/unit/merge-report-owner.test.ts
++++ b/packages/daemon-core/tests/unit/merge-report-owner.test.ts
+@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
+ import '../../src/tools/handlers/sf-artifact-write.js';
+ import { getHandler } from '../../src/tools/ToolDispatcher.js';
+ import { evaluateMergeReport } from '@specforge/types';
+-import { mkdtemp, rm } from 'node:fs/promises';
++import { mkdtemp, rm, access, readFile } from 'node:fs/promises';
+ import { tmpdir } from 'node:os';
+ import path from 'node:path';
+ import { createWorkItem } from '../../src/tools/lib/work-item-lifecycle-v11.js';
+@@ -24,7 +24,7 @@ describe('Merge Report owner boundary', () => {
+     expect((result as any).retry_allowed).toBe(false);
+   });
+ 
+-  it('rejects a disguised work_log after canonical file-type inference', async () => {
++  it('keeps work_log separate from the Merge Runner report even when its run_id says merge-report', async () => {
+     const projectRoot = await mkdtemp(path.join(tmpdir(), 'sf-merge-owner-'));
+     try {
+       await createWorkItem({
+@@ -43,8 +43,10 @@ describe('Merge Report owner boundary', () => {
+         {},
+       );
+ 
+-      expect((result as any).success).toBe(false);
+-      expect((result as any).error).toBe('MERGE_REPORT_OWNED_BY_MERGE_RUNNER');
++      expect((result as any).success).toBe(true);
++      expect((result as any).path).toBe('.specforge/archive/agent_runs/merge-report/work_log.md');
++      expect(await readFile(path.join(projectRoot, (result as any).path), 'utf8')).toBe('# forged report');
++      await expect(access(path.join(projectRoot, '.specforge/work-items/WI-0001/merge_report.md'))).rejects.toMatchObject({ code: 'ENOENT' });
+     } finally {
+       await rm(projectRoot, { recursive: true, force: true });
+     }
+diff --git a/packages/daemon-core/tests/unit/verification-evidence-producer.test.ts b/packages/daemon-core/tests/unit/verification-evidence-producer.test.ts
+index b18541e26580ef6fa240d2267668329120bd0d46..c9f4bbf42c812477a80851344a887ce3eb559289 100644
+--- a/packages/daemon-core/tests/unit/verification-evidence-producer.test.ts
++++ b/packages/daemon-core/tests/unit/verification-evidence-producer.test.ts
+@@ -47,4 +47,46 @@ describe('controlled verification evidence producer', () => {
+     state = 'closed';
+     expect((await write() as any).error).toBe('VERIFICATION_EVIDENCE_STATE_FROZEN');
+   });
++
++  it.each(['verification_running', 'verification_done'])('keeps a real-style evidence alignment work_log in its archive at %s', async currentState => {
++    state = currentState;
++    const target = path.join(root, '.specforge/work-items', workItemId, 'evidence/evidence_manifest.json');
++    const original = JSON.stringify({ schema_version: '1.0', work_item_id: workItemId,
++      entries: Array.from({ length: 22 }, (_, i) => ({ evidence_id: `EV-${i + 1}`, type: 'command_output',
++        path: `evidence/source/facts-${i + 1}.txt`, description: 'Retained synthetic evidence identity',
++        created_at: '2026-11-07T00:00:00.000Z', status: 'blocked' })) });
++    await fs.mkdir(path.dirname(target), { recursive: true });
++    await fs.writeFile(target, original);
++    const runId = 'verifier-wi0001-manifest-align';
++    const content = JSON.stringify({ run_id: runId, work_item_id: workItemId, agent: 'sf-verifier',
++      action: 'evidence_manifest_supports_alignment', details: 'Log of already completed Evidence Manifest alignment' });
++    const result = await write({ file_type: 'work_log', run_id: runId, content }) as any;
++    expect(result.success, JSON.stringify(result)).toBe(true);
++    expect(result.path).toBe(`.specforge/archive/agent_runs/${runId}/work_log.md`);
++    expect(await fs.readFile(target, 'utf8')).toBe(original);
++    expect(await fs.readFile(path.join(root, result.path), 'utf8')).toBe(content);
++  });
++
++  it.each(['trigger-result', 'candidate-manifest', 'trace-delta', 'impact-analysis', 'change-classification', 'task-plan', 'merge-report', 'evidence-manifest'])(
++    'never treats a work_log topic %s as a canonical artifact selector', async topic => {
++      const content = `Completed review of ${topic}; this is an execution log.`;
++      const result = await write({ file_type: 'work_log', run_id: topic, content }) as any;
++      expect(result.success, JSON.stringify(result)).toBe(true);
++      expect(result.path).toBe(`.specforge/archive/agent_runs/${topic}/work_log.md`);
++      expect(await fs.readdir(path.join(root, '.specforge/work-items', workItemId))).toEqual(['work_item.json']);
++    });
++
++  it('does not invent an empty entries array for an explicit incomplete Evidence Manifest', async () => {
++    state = 'verification_running';
++    const target = path.join(root, '.specforge/work-items', workItemId, 'evidence/evidence_manifest.json');
++    const before = JSON.stringify({ schema_version: '1.0', work_item_id: workItemId,
++      entries: [{ evidence_id: 'EV-RETAINED', type: 'command_output', path: 'evidence/source/facts.txt',
++        description: 'Existing registered evidence', created_at: '2026-11-07T00:00:00.000Z' }] });
++    await fs.mkdir(path.dirname(target), { recursive: true }); await fs.writeFile(target, before);
++    const result = await write({ file_type: 'evidence_manifest', content: JSON.stringify({
++      schema_version: '1.0', work_item_id: workItemId, action: 'evidence_manifest_supports_alignment',
++    }) }) as any;
++    expect(result.success).toBe(false); expect(result.error).toBe('INVALID_ARTIFACT_JSON');
++    expect(await fs.readFile(target, 'utf8')).toBe(before);
++  });
+ });
+diff --git a/setup/userlevel-opencode/tools/sf_artifact_write.ts b/setup/userlevel-opencode/tools/sf_artifact_write.ts
+index 81508b93ed2fd62736784b3645b0dd946b31b1cd..e2cf1c1808fa09f0fa4e06156ed5f3ed98ba99bb 100644
+--- a/setup/userlevel-opencode/tools/sf_artifact_write.ts
++++ b/setup/userlevel-opencode/tools/sf_artifact_write.ts
+@@ -2,7 +2,7 @@ import { tool } from "@opencode-ai/plugin";
+ import { daemon, invokeVerificationConsumerTool } from "./lib/thin-client";
+ export default tool({
+   description:
+-    "将 SpecForge Work Item 受控产物写入白名单路径。正式 WI 产物必须使用 canonical file_type，不得用 work_log 承载 trigger_result/tasks/candidate_manifest/merge_report/evidence_manifest 等 required artifact。" +
++    "将 SpecForge Work Item 受控产物写入白名单路径。正式 WI 产物必须使用 canonical file_type，不得用 work_log 承载 trigger_result/tasks/candidate_manifest/merge_report/evidence_manifest 等 required artifact。work_log只写执行归档，不会根据run_id、template或正文猜测/切换产物类型；日志提到正式产物不授予对该产物的写入。" +
+     " JSON 产物的 content 必须是 JSON 字符串；如果上层传入对象，daemon 会尽量序列化，但 Agent 应优先使用 JSON.stringify 后的字符串。" +
+     " 新项目第一次正式功能如果尚无有效 Project Architecture / Project Data Model，sf-design 必须在同一个 Requirement WI 中使用 candidate_architecture、candidate_data_model，并为已声明或受控新增 Module 使用 candidate_module_definition 写入真实 code_paths、使用 candidate_module_contract 建立 Module Contract；不得编造架构、数据模型或代码归属。" +
+     " verification_report 必须使用 template=verification_report；daemon 会在写盘前严格校验 sf-verifier Required Output 契约，不会补齐缺失字段或接受 evidence_ref 别名；校验通过后才渲染 Markdown 并保留可机读 fenced JSON。该产物和 evidence_manifest 由 sf-verifier 拥有。" +

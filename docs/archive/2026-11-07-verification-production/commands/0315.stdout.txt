@@ -1,0 +1,13 @@
+[root-test-registry] {"CURRENT_HERMETIC":51,"CURRENT_ENVIRONMENTAL":1,"MIGRATED_DUPLICATE":14,"HISTORICAL_EVIDENCE":122}
+[root-test-registry] mode=current selected=51
+
+ RUN  v4.1.5 D:/code/SpecForge
+
+ ❯ tests/e2e/tool-dispatcher-e2e.test.ts (5 tests | 1 failed) 48ms
+     × all userlevel sf tool files pass OpenCode context to daemon or project API 9ms
+
+ Test Files  1 failed | 50 passed (51)
+      Tests  1 failed | 747 passed (748)
+   Start at  15:13:50
+   Duration  44.32s (transform 2.42s, setup 0ms, import 5.67s, tests 19.41s, environment 8ms)
+

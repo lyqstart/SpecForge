@@ -1,0 +1,63 @@
+{
+  "id": "19a5b5069bdfc234ae62725c2821318425efd2f5c01a87a63104e34ef337e69c",
+  "payload": {
+    "assets": {
+      "contract": "verification-assets/v1",
+      "daemonPath": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\dfa9692df8254ad0b094e86b1b4af80e\\config\\sf-user\\bin\\specforged.exe",
+      "daemonSha256": "217bf602ed3da29dbe3b3fc71bc08ca6e89ddce8e17f31e1111fd049b2f91aec",
+      "launcherPath": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\dfa9692df8254ad0b094e86b1b4af80e\\config\\sf-user\\bin\\verification\\specforge-verify.exe",
+      "launcherSha256": "d4cb9b6f44bafec7236aa960af2dde1a2828a24d58a407bc46a9c6258cf0ed2f",
+      "manifestSha256": "895bfc21bb83ae0789b06f7481ed94d9f4e54ede0b08873cbe004bfbc1991ddf",
+      "nodePath": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\dfa9692df8254ad0b094e86b1b4af80e\\config\\sf-user\\bin\\verification\\node.exe",
+      "nodeSha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "profile": "windows-lpac-node-single-process-readonly/v1"
+    },
+    "attemptId": "c555c2cbf0974bc4980e1c64d143ffd9",
+    "authorityIdentity": "89486efb3f56c43500626f1fad7f87578ce167e134683ee2bef680133a105342",
+    "budget": {
+      "memoryBytes": 1073741824,
+      "processes": 1,
+      "stderrBytes": 1048576,
+      "stdoutBytes": 1048576,
+      "wallMs": 120000
+    },
+    "cleanupProved": true,
+    "contract": "verification-execution/v1",
+    "exitCode": 130,
+    "failure": "CANCELLED",
+    "finishedAt": "2026-11-07T03:29:23.937Z",
+    "inspectionSha256": "a38e167ac9604a890c1eb317ed25ddc8ed0370b0a21a9e368be27bda61c2b14e",
+    "jobEnded": true,
+    "launcherExitCode": 1,
+    "leaseId": "f11c46e2b094dab16990ecae881c19417ccc2eb53b333167f61bd0c2e4f9f2a3",
+    "nativeEventsSha256": "b98d493fa4e5a92af8f1a9be07159438693e29e90f99b649730d469193ed29c3",
+    "nativeReceiptSha256": "71cc8687f95382cad6b29bc5327fd55f0fbe8e1f8d0cb5be75cf80b0ee35a54f",
+    "outcome": "cancelled",
+    "outputComplete": true,
+    "owner": {
+      "agent": "sf-verifier",
+      "callId": "call_0b123c701d704ed0bb45304012387d6b",
+      "directory": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\dfa9692df8254ad0b094e86b1b4af80e\\project",
+      "inputSha256": "5b6a94ee4f1198f5e82db82fc42de4a3e29cf8c3b321ff6f310ef8df4fe4cba3",
+      "messageId": "msg_1b40da3100015CqvS8V7m6dPSk",
+      "observedAt": "2026-11-07T03:29:15.559Z",
+      "runtimeProjectionSha256": "1ba618725bf2f77aa7d69f2d6dd65dba185edf17341859f90c920a015ae4ac4e",
+      "sessionId": "ses_e4bf25d3affe0Ei1iPabZ2ROWP",
+      "source": "runtime-tool-invocation/v1",
+      "startedAt": 1794022155506,
+      "tool": "sf_verification_run"
+    },
+    "planId": "2293163f67f657830b98689b3b2f6fffaa54faa89b15a666633fda12244b6c25",
+    "processResumed": true,
+    "processStarted": true,
+    "profile": "windows-lpac-node-single-process-readonly/v1",
+    "projectRoot": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\dfa9692df8254ad0b094e86b1b4af80e\\project",
+    "purpose": "implementation",
+    "reservationId": "99b52c1cbe67e932d9189734eb0315ad582ce3f4b0b10cfba5395d68128f90e9",
+    "sourceIdentity": "c473a39c91c5eabc5fbfc04db0b86a89ca4d562d46bad4d4287b187fd1258b8a",
+    "startedAt": "2026-11-07T03:29:16.401Z",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "workItemId": "WI-9901"
+  }
+}

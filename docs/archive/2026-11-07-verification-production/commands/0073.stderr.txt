@@ -1,0 +1,7 @@
+InvalidProjectPath: Invalid project path "undefined": projectPath must not be empty
+    at validateProjectPath (D:\code\SpecForge\.tmp\verification-public-kernel\945f533696d441219a52f4dd31eade40\create-public-fixture.js:22361:33)
+    at resolveProjectRuntimeDir (D:\code\SpecForge\.tmp\verification-public-kernel\945f533696d441219a52f4dd31eade40\create-public-fixture.js:22378:24)
+    at resolveEventsPath (D:\code\SpecForge\.tmp\verification-public-kernel\945f533696d441219a52f4dd31eade40\create-public-fixture.js:22385:53)
+    at new StateManager (D:\code\SpecForge\.tmp\verification-public-kernel\945f533696d441219a52f4dd31eade40\create-public-fixture.js:22043:56)
+    at main (D:\code\SpecForge\.tmp\verification-public-kernel\945f533696d441219a52f4dd31eade40\create-public-fixture.js:23226:70)
+    at processTicksAndRejections (native:7:39)

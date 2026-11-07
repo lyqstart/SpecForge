@@ -1,0 +1,21 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/prepare-post-window-continuation.cjs",
+    "original-state-observation-1794044410104.json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Prepare fresh minimum-context continuation from actual R06 Gate failures;reuse current22 successes and fix only missing review/order",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=current canonical snapshots,prompt and fixed provenance",
+  "started_utc": "2026-11-07T09:41:30.507Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\prepare-post-window-continuation.cjs",
+      "sha256": "31b2b9609f275ca69fcabff8d58c5514bd1bece28376e46bd082fde04dc7435f",
+      "size": 9726,
+      "extension": ".cjs"
+    }
+  ]
+}

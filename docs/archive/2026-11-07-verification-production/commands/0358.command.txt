@@ -1,0 +1,15 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/typescript/bin/tsc",
+    "--noEmit",
+    "-p",
+    "packages/daemon-core/tsconfig.json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Typecheck complete daemon after explicit artifact route repair",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES TypeScript cache only; EXTERNAL_EVIDENCE_WRITES sealed compiler receipt; no original or deployment writes",
+  "started_utc": "2026-11-07T07:46:26.679Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": []
+}

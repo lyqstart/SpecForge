@@ -1,0 +1,84 @@
+{
+  "utc": "2026-11-07T09:39:01.539Z",
+  "attempt": "06",
+  "parent": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+  "members": [
+    {
+      "path": "children.json",
+      "sha256": "88997ba184cd54cb1db8a7e18eb3c821b5491189c14dd6f1b4ae1b32c67bc025",
+      "raw_sha256": "fbe7719e5ef955584c2b52671dff50868fbcc12c3af3a333e1695e22a6b57410",
+      "raw_size": 5688
+    },
+    {
+      "path": "statuses.json",
+      "sha256": "dd7e92c3cf0ef53fa2523f2db4ea7737a9d8dacce142c3c8f2a1ca50ccf7e890",
+      "raw_sha256": "ab22210b31a251e38e0667c793d0e07fadfdba9d723b7c9f6daf1fcf6f452863",
+      "raw_size": 50
+    },
+    {
+      "path": "parent-messages.json",
+      "sha256": "032c836cf82692cc8fc247040acb06c731d0177ed7a5e447d8996d23eb48698c",
+      "raw_sha256": "5072ad85b81002852561450b0e46c86692da80e6d6e0d2baf108a00a6065ea3b",
+      "raw_size": 514342
+    },
+    {
+      "path": "child-ses_e4ac79b47ffeQYMIWHsEqzJBlL.json",
+      "sha256": "8adc8e149e5f51a09cab6d547a16317564b2154ac1fb4c84160eff82994bc4ea",
+      "raw_sha256": "e257a31b54bffbf0d92fbce397b74dbf88fd1eefa1a2b1d19dd67692f4f938b8",
+      "raw_size": 38863
+    },
+    {
+      "path": "child-ses_e4ac3a029ffeC0rfCgzlAwB88B.json",
+      "sha256": "c629b707d4db12d48066136c99ee36e74840c3d5003538fd27abe4aac07c4bd5",
+      "raw_sha256": "17380c283c4e6e58e474601b1e90c4a0c88d6e3c3cbd3ded912eca70d5988f35",
+      "raw_size": 17311
+    },
+    {
+      "path": "child-ses_e4ac1a40cffeNVk7jXFjZF6tiy.json",
+      "sha256": "0725b1e7a4d8cfc3877977686af7a4ccb58c4c44837463b9b98718544a29383a",
+      "raw_sha256": "7e3d790a3ba9cb37975b0cc1b1953f2c6ec8af8aab0b98e47749638fa8908f43",
+      "raw_size": 28046
+    },
+    {
+      "path": "child-ses_e4abf3664ffe7s0ykfZm62mnvX.json",
+      "sha256": "ff01baa13bb21b258dcb583bd45c227b3601251b7cc94ed8124b31738544b0eb",
+      "raw_sha256": "d5c18ca73dd90204ab64b7ea66e0375adb00f92e06fb776785eb0591b422ce18",
+      "raw_size": 48752
+    },
+    {
+      "path": "child-ses_e4abbb3f5ffeTR0oTDfttSkOSs.json",
+      "sha256": "cdb7c4f81d695bab36392878eaae0077dac118821fa0a6d206494befc6576d64",
+      "raw_sha256": "6e4ff8f0aa89daf2cff87da7bf04c1e77a68230297d435540f0831308553d1d1",
+      "raw_size": 43207
+    },
+    {
+      "path": "child-ses_e4ab727c2ffetSiHtKlxtadMvQ.json",
+      "sha256": "0930bffd2ed99fb43dc8424c8115e3f6741cb79a64ed0584d8edb7dc40ad0e3c",
+      "raw_sha256": "d54107aca028c35a8d359bf0077a6812627cf49cb08db50af3fa6d793058c65c",
+      "raw_size": 24550
+    },
+    {
+      "path": "child-ses_e4ab4369affeQzlKLxYIHJ6vmx.json",
+      "sha256": "dbf60446833136cd0715d25d61066d7f89c540a93fd73b720b3ed12d24a46a7a",
+      "raw_sha256": "1ef82a6bf9ef989fd2ef37335b1c01120afc4c53a3a03e1aafe8f938aabb964e",
+      "raw_size": 206542
+    },
+    {
+      "path": "child-ses_e4ab2012cffecSP5xN7chz6VnD.json",
+      "sha256": "fbe1ff82b47cf0c9d9d1fbaff79ef1be5d9bce5c5a005b86fc98804e059c110d",
+      "raw_sha256": "1c544975097c784f1bbd456e6c3b82a11cebbb37d2547a7696ddba8e24c79b67",
+      "raw_size": 784498
+    }
+  ],
+  "raw_evidence_root": "D:\\code\\SpecForge\\.tmp\\original-session-boundary\\4b574490-794e-4d97-a99c-455f497c82a0",
+  "reasoning_published": false,
+  "source": "Actual current local Kernel API response bytes; current partial boundary, not a final workflow verdict",
+  "active": [
+    {
+      "id": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+      "status": {
+        "type": "busy"
+      }
+    }
+  ]
+}

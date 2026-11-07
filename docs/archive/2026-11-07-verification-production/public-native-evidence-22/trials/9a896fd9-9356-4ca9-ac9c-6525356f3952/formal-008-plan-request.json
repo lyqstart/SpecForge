@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-07T07:42:26.373Z",
+  "session": "ses_e4b0a8fbeffeXSbHYRRNIPo0a2",
+  "agent": "sf-orchestrator",
+  "tool": "sf_verification_plan",
+  "args": {
+    "action": "create",
+    "work_item_id": "WI-9901",
+    "task_id": "TASK-WI-9901-008",
+    "verification_type": "unit",
+    "command_index": 0
+  }
+}

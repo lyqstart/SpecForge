@@ -1,0 +1,10 @@
+{
+  "utc": "2026-11-07T04:29:21.187Z",
+  "args": [
+    "scripts/sf-installer.ts",
+    "install"
+  ],
+  "status": 0,
+  "stdout": "📦 正在安装 SpecForge 共享组件...\n   OpenCode 配置根: D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\e0a7c93c26db443eb1e2100e75b8091b\\config\n\n\n✅ 安装完成\n   已部署: 117 个共享组件文件\n   OpenCode 配置根: D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\e0a7c93c26db443eb1e2100e75b8091b\\config\n   CLI 命令目录: D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\e0a7c93c26db443eb1e2100e75b8091b\\config\\sf-user\\bin\n   ⚠ 当前 shell 尚不能直接运行 specforge。请在 PowerShell 执行一次:\n   $sfBin = 'D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\e0a7c93c26db443eb1e2100e75b8091b\\config\\sf-user\\bin'; $entries = @(([Environment]::GetEnvironmentVariable('Path', 'User') -split ';') | Where-Object { $_ }); if ($entries -notcontains $sfBin) { [Environment]::SetEnvironmentVariable('Path', (($entries + $sfBin) -join ';'), 'User') }; $env:Path = \"$sfBin;$env:Path\"\n   完成后，新终端可直接运行 specforge；当前 PowerShell 也立即生效。\n   提示: 需要重启 OpenCode 才能加载新版 Plugin\n",
+  "stderr": ""
+}

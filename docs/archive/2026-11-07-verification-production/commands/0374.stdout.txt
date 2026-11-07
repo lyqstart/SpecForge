@@ -1,0 +1,11 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/git-detached-bootstrap.test.ts (30 tests | 29 skipped) 15860ms
+   ✓ controlled detached Git bootstrap > plans without creating refs, atomically binds two new branches and standard context, then retries idempotently  15858ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 29 skipped (30)
+   Start at  15:55:50
+   Duration  20.22s (transform 1.99s, setup 0ms, collect 3.87s, tests 15.86s, environment 0ms, prepare 178ms)
+

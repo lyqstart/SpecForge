@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-public-trials.cjs",
+    "06",
+    "06"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-http-cancel-propagation-failure-before-diagnosis",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable raw failure/control/native outputs; owner key/Node copies excluded; original untouched",
+  "started_utc": "2026-11-07T03:14:51.874Z"
+}

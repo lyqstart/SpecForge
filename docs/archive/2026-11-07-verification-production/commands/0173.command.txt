@@ -1,0 +1,10 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/diagnose-installed-plan-v2.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "readonly-plan-stages-with-real-ProjectManager",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned fixture11 real StateManager read/cache only; EXTERNAL_EVIDENCE_WRITES diagnosis02; no invocation claim application original or user install",
+  "started_utc": "2026-11-07T04:03:23.320Z"
+}

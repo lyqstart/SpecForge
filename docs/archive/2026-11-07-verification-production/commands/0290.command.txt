@@ -1,0 +1,21 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/prepare-version-source-commit.cjs",
+    "prepare"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Freeze exact-scope source version metadata, status/error reconciliation and preserved before-version bytes for next commit",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES current/parent raw review, full tracked diff and pathspec; source/index/original/installation read-only",
+  "started_utc": "2026-11-07T06:27:16.596Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\prepare-version-source-commit.cjs",
+      "sha256": "b35fea49d91367e49099cee20ff18aec34505a55f35567ebebabd07fc48e0748",
+      "size": 4796,
+      "extension": ".cjs"
+    }
+  ]
+}

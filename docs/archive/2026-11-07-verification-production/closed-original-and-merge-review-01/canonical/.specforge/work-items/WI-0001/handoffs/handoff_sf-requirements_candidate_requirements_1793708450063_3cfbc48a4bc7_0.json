@@ -1,0 +1,31 @@
+{
+  "agent": "sf-requirements",
+  "boundary_statement": "仅修订需求候选 ID 与绑定字段；不推进状态、不触发审批、不触碰 design/tasks/trace_delta/impact_analysis 等非本所有物文件、不实现代码。",
+  "escalation_signals": [],
+  "findings": [
+    "front-matter 绑定字段已由 implementation_baseline_snapshot_id 替换为 implementation_baseline_id: sha256:8f8ac52aeb32950630565ea6fa66a62d4fe0afd6acb9ec26635a509b958b2722",
+    "正文『候选绑定与 Basis 来源』节已改用 implementation_baseline_id 并显式引用 .specforge/work-items/WI-0001/implementation_baseline.json（captured_at: 2026-10-25T05:23:36.211Z；README.md 既有 123 bytes sha256:757ee94e...→ 追加式修改；package.json/src/greet.ts/tests/greet.test.ts/tsconfig.json 基线 matched_files 为空 → 新建）",
+    "REQ 短编号规范化 37 处：REQ-CORE-001×7、REQ-CORE-002×9、REQ-CORE-003×9、REQ-CORE-004×3、REQ-CORE-005×4、REQ-CORE-006×5，覆盖定义/引用/表格/Required Evidence/not_done_when/Delta 说明",
+    "AC 短编号规范化 22 处：AC-CORE-001×3、AC-CORE-002～AC-CORE-017 各×1（16 处）、AC-CORE-018×3",
+    "grep/batch_verify 残留检查：REQ-0、AC-0、DD-0 短编号残留均为 0；implementation_baseline_snapshot_id 残留 0",
+    "正文仅存在 L236『固化为 DD 决策』无编号泛指，非 DD-0xx 形态，按修复要求无需替换",
+    "EVREQ-1A/1B/2A/3A/4A/4B/5A/6A 共 8 处证据键保持原样；REQ/AC 实质、Out-of-Scope、术语表、basis 引用键（UQ/FACT/CONSTRAINT/IMPACT/UNKNOWN/CLS）逐字保留",
+    "sf_doc_lint(doc_type=requirements)=pass（结构自检，不构成正式 Gate）",
+    "前置检查：extension_registry.json requirement_types 为空，本候选未使用自定义类型，无 contract_gap；写入时权威状态 candidate_preparing（可写窗口内）"
+  ],
+  "inputs_read": [
+    ".specforge/work-items/WI-0001/candidates/project/modules/CORE/requirements.candidate.md",
+    ".specforge/work-items/WI-0001/implementation_baseline.json",
+    ".specforge/project/extension_registry.json",
+    "sf_state_read(WI-0001): candidate_preparing / feature_spec"
+  ],
+  "next_step_recommendation": "调度 sf-design 完成设计层同源规范化（DD 编号与绑定字段对齐 Runtime 正式规范），随后由 orchestrator 运行正式 Candidate Gate。",
+  "outputs_written": [
+    ".specforge/work-items/WI-0001/candidates/project/modules/CORE/requirements.candidate.md"
+  ],
+  "schema_version": "1.0",
+  "stage": "candidate_requirements",
+  "timestamp": "2026-11-03T00:00:00.000Z",
+  "unknowns": [],
+  "work_item_id": "WI-0001"
+}

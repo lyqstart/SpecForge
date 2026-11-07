@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/verify-approved-business-delivery.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Independently verify approved local merge parents,unchanged5 raw code/critical acceptance and actual repository_delivery_complete owner result",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=read-only Git optional locks0;EXTERNAL_EVIDENCE_WRITES=final original delivery proof and raw originals",
+  "started_utc": "2026-11-07T10:08:59.260Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\verify-approved-business-delivery.cjs",
+      "sha256": "9048c86a004e3fe71779903175db6f5f3fb57447a595e66f66b8b28e1125034c",
+      "size": 5973,
+      "extension": ".cjs"
+    }
+  ]
+}

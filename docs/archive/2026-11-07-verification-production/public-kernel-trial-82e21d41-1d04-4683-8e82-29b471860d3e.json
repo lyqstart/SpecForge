@@ -1,0 +1,93 @@
+{
+  "trial": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\b1cf9d5575484f519b266e6b2673a421\\trials\\82e21d41-1d04-4683-8e82-29b471860d3e",
+  "result_sha256": "440bfb7260b81c3df71b50b3e714aa8fc7bc80809a56c90179274d0234d145a3",
+  "utc": "2026-11-07T02:21:52.143Z",
+  "records": [
+    {
+      "name": "positive-plan",
+      "session": "ses_e4c31e3f2ffeXHEhpMrabZHxw5",
+      "message": "msg_1b3ce1f47001K9Y3sOgFnoh0Wc",
+      "call": "call_f4ef3286b79f45de9102041f37621d86",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": true,
+        "plan_id": "02c042d0eadaa7f01417e067fedba0140bb46e2f9cec4bf3eec0bcfc27f6f895",
+        "preparation_id": "499bb7798ba92e4fe8299346e8b6dbcc73e572571425206092442a3083610e7c",
+        "expires_at": "2026-11-07T02:31:33.204Z",
+        "purpose": "implementation",
+        "original_command": "node --test tests/positive.test.cjs",
+        "actual_argv": [
+          "--no-addons",
+          "--preserve-symlinks",
+          "--preserve-symlinks-main",
+          "--test-reporter=tap",
+          "--test",
+          "--test-isolation=none",
+          "tests/positive.test.cjs"
+        ],
+        "profile": "windows-lpac-node-single-process-readonly/v1",
+        "code_write_granted": false
+      }
+    },
+    {
+      "name": "positive-prepare",
+      "session": "ses_e4c3042efffeEw0Dd9UC7wVMgo",
+      "message": "msg_1b3cfbd73001u3C4DwlKS5VEDy",
+      "call": "call_f4392ee90e724e74aa6844a0a1cbb048",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "attempt_record_id": "03d097f6ed962a764d25255025e0cfe2ca485e6bd991b524f87f282c973f30d5",
+        "attempt_id": "7938326d7a724c0c905fb2956f32ffb8",
+        "plan_id": "02c042d0eadaa7f01417e067fedba0140bb46e2f9cec4bf3eec0bcfc27f6f895",
+        "application_started": false
+      }
+    },
+    {
+      "name": "positive-run",
+      "session": "ses_e4c3036d7ffePnt106Ji8wAh8a",
+      "message": "msg_1b3cfc9660013Te2m6f5dZS7n9",
+      "call": "call_bced53a8260c4d3c97c93f79c37ae051",
+      "agent": "sf-verifier",
+      "tool": "sf_verification_run",
+      "value": {
+        "success": true,
+        "receipt_id": "e6fe7489c4feb449ef1ad8b8920be6c63d8ec36e87214a8e8a1e66a5017fba19",
+        "attempt_record_id": "03d097f6ed962a764d25255025e0cfe2ca485e6bd991b524f87f282c973f30d5",
+        "attempt_id": "7938326d7a724c0c905fb2956f32ffb8",
+        "plan_id": "02c042d0eadaa7f01417e067fedba0140bb46e2f9cec4bf3eec0bcfc27f6f895",
+        "outcome": "passed",
+        "exit_code": 0,
+        "cleanup_proved": true,
+        "failure": null,
+        "stdout": "TAP version 13\n# Subtest: salute\nok 1 - salute\n  ---\n  duration_ms: 0.7317\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 18.2156\n",
+        "stderr": "",
+        "output_preview_truncated": false,
+        "output_complete": true
+      }
+    },
+    {
+      "child": "kernel",
+      "pid": 17196,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-11-07T02:21:52.141Z"
+      }
+    },
+    {
+      "child": "daemon",
+      "pid": 40564,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "utc": "2026-11-07T02:21:52.046Z"
+      }
+    }
+  ],
+  "failure": null,
+  "exit_code": 0,
+  "original_business_touched": false
+}

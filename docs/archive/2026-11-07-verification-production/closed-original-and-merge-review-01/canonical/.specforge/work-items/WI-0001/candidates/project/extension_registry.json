@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "project_spec_version": "PSV-0001",
+  "namespaces": {
+    "requirement_types": [],
+    "design_types": [],
+    "task_types": [],
+    "verification_types": [],
+    "gate_types": []
+  },
+  "updated_by_work_item": "WI-0001",
+  "updated_at": "2026-11-03T13:05:41.009Z",
+  "contracts": {
+    "shared_enums": [],
+    "invariants": [],
+    "public_interfaces": [
+      {
+        "behavior": "name 为空字符串（长度 0）时返回精确常量 'Hello, world!'（13 字符）；name 为非空字符串（长度 ≥ 1，含纯空白字符串）时返回 'Hello, ' + name + '!' 三段依序拼接（name 逐字符原样保留）。无状态、无副作用、不抛出异常。null/undefined/非 string 输入行为未定义，不属于本契约承诺（CONSTRAINT-1）。除此之外无其他承诺。",
+        "description": "Greeting Library 对外唯一公共 API 的项目级公共接口契约（api_contract_changed=true 的正式承载）。语义与 CORE 模块契约 PI-CORE-001（candidates/project/modules/CORE/contracts.candidate.json）一致，设计依据 DD-CORE-001/DD-CORE-002；模块级 enforcement 与断言细节由 CORE Module Contract 承载，本 Project Contract 登记项目级公共接口身份与行为承诺。当前无跨模块消费者；未来消费者经 Prospective Trace 登记。",
+        "enforcement": "tests/greet.test.ts A1–A4 strictEqual 断言（node --test，批准后验证阶段真实运行取证：EVREQ-1A/1B/2A/3A/4B）+ TypeScript 签名静态检查（AC-CORE-001～003）；运行时依赖为空集（INV-CORE-003 对应约束同步适用）。",
+        "id": "PI-0001",
+        "name": "greet",
+        "owner_module": "CORE",
+        "signature": "greet(name: string): string",
+        "source_refs": [
+          "ARCH-CORE-001",
+          "ARCH-CORE-003",
+          "DATA-CORE-001",
+          "DATA-CORE-002"
+        ],
+        "status": "candidate"
+      }
+    ],
+    "extension_points": []
+  }
+}

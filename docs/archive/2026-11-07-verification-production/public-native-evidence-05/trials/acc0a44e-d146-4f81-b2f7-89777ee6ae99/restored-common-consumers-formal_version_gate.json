@@ -1,0 +1,97 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-9901",
+  "gate_id": "formal_version_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "failed",
+  "input_files": [
+    "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project\\.specforge\\project\\extension_registry.json",
+    "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project\\.specforge\\project\\spec_manifest.json",
+    "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project\\.specforge\\work-items\\WI-9901\\.semantic_closure.json",
+    "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project\\.specforge\\work-items\\WI-9901\\changed_files_audit.md",
+    "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project\\.specforge\\work-items\\WI-9901\\filesystem_baseline.json",
+    "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project\\.specforge\\work-items\\WI-9901\\gates\\verification_gate.json",
+    "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project\\.specforge\\work-items\\WI-9901\\git_context.json",
+    "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project\\.specforge\\work-items\\WI-9901\\governance_scope.json",
+    "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project\\.specforge\\work-items\\WI-9901\\version_control_mode_recovery.json"
+  ],
+  "checks": [
+    {
+      "check_id": "formal_execution_evidence_integrity",
+      "description": "Execution evidence is authentic, current and completely terminated",
+      "passed": true
+    },
+    {
+      "check_id": "formal_verification_gate",
+      "description": "Verification Gate passed",
+      "passed": false,
+      "severity": "error"
+    },
+    {
+      "check_id": "formal_changed_files_audit",
+      "description": "Changed Files Audit passed",
+      "passed": false,
+      "severity": "error"
+    },
+    {
+      "check_id": "formal_actual_governance_scope",
+      "description": "Actual implementation files map to exactly one approved Module and do not expand governance scope",
+      "passed": true,
+      "details": "actual_modules=none; violations=none"
+    },
+    {
+      "check_id": "formal_version_control_mode_evidence",
+      "description": "Pre-implementation version-control mode is frozen or recovered from bound legacy evidence",
+      "passed": false,
+      "severity": "error",
+      "details": "source=missing; mode=missing; error=LEGACY_VERSION_CONTROL_MODE_RECOVERY_REQUIRED"
+    },
+    {
+      "check_id": "formal_repository_mode_stable",
+      "description": "Version-control mode remains the mode frozen before implementation",
+      "passed": false,
+      "severity": "error",
+      "details": "frozen=missing; source=missing; effective=filesystem; current=git; head=3532a24723edc08b6aba8d5e88c107df3eabfc0e; legacy_recovery=false"
+    },
+    {
+      "check_id": "formal_git_context",
+      "description": "Git-enabled implementation is bound to WI branch and base commit",
+      "passed": true,
+      "details": "required=false; enabled=false; branch=missing; base=missing"
+    },
+    {
+      "check_id": "formal_semantic_closure",
+      "description": "Semantic closure evidence exists",
+      "passed": false,
+      "severity": "error"
+    },
+    {
+      "check_id": "formal_hard_gate_verification_gate_json",
+      "description": "Hard Gate verification_gate.json did not fail",
+      "passed": false,
+      "severity": "error"
+    },
+    {
+      "check_id": "formal_project_spec_core_version_coherent",
+      "description": "Project Spec Core files agree on the authoritative project_spec_version",
+      "passed": true,
+      "details": "project_spec_version=PSV-0001"
+    }
+  ],
+  "blocking_issues": [
+    "Verification Gate passed",
+    "Changed Files Audit passed",
+    "Pre-implementation version-control mode is frozen or recovered from bound legacy evidence",
+    "Version-control mode remains the mode frozen before implementation",
+    "Semantic closure evidence exists",
+    "Hard Gate verification_gate.json did not fail"
+  ],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-11-07T03:02:11.162Z",
+  "finished_at": "2026-11-07T03:02:11.162Z",
+  "runner": "gate_runner"
+}

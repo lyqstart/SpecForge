@@ -1,0 +1,31 @@
+{
+  "utc": "2026-11-07T00:18:22.747Z",
+  "mode": "CODEX_DIRECT",
+  "run_id": "CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01",
+  "attempt_id": "CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01-01",
+  "baseline": "6fc9de2a844ecae27543c6c672319907105b578b",
+  "user_reply": "批准两项，继续完成全部修复",
+  "bootstrap_exception": "Only Bootstrap run() explicit32MiB and regression tests until real READY; no other product writes before READY.",
+  "production_adoption": "Approved exact sealed production-adoption-proposal.md; formal Registry/SPS adoption to follow READY, then full public producer/common consumer/install/original WI controlled closure.",
+  "proposal_raw_sha256": "a37ef833b90e10cd4e458d5d3992913e51ec2a440e654f1eeb62ddd32ec64a64",
+  "prior_sealed_members_verified": 1058,
+  "worktree_classification": "Clean baseline before current evidence initializer; all subsequent changes must be owned by this phase",
+  "rule_reads": "Same-conversation complete prior reads and actual deltas retained in prior rule-gate/matrix-checkpoint. No fresh complete-read claim inferred from hashes.",
+  "EXPERIENCE_FILE_READ": "YES",
+  "ACTIVE_EXPERIENCE_RULES_FILE_READ": "YES",
+  "APPLICABLE_EXPERIENCE_RULES": [
+    "EXP-002",
+    "EXP-007",
+    "EXP-008",
+    "EXP-014",
+    "EXP-015",
+    "EXP-016",
+    "EXP-193",
+    "EXP-292",
+    "EXP-295"
+  ],
+  "HISTORICAL_LEDGER_SEARCH": "ENOBUFS/Bootstrap/command output limits; prior ERR1943..1948 and historical source snapshot buffer failures at ledger32005/32135. Broad Buffer query hit enormous old JSON; no truncated hit treated as complete evidence.",
+  "REPEATED_ERROR_CHECK": "PASS: bounded searches, verify dependent exit before freezing, split patches per file, immediate receipt seals",
+  "initial_bootstrap": "BLOCKED TRACKED_FILE_LIST_UNAVAILABLE; local/remote6fc9de2a clean. User explicitly authorized narrow self-repair exception.",
+  "inner_exit_code": 0
+}

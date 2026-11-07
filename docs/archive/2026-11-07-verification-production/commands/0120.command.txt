@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-public-trials.cjs",
+    "05",
+    "05"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-real-common-consumer-and-hardstop-matrix",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable selected evidence including failed0114 and successful0119; owner key/Node copies excluded; original untouched",
+  "started_utc": "2026-11-07T03:03:45.941Z"
+}

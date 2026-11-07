@@ -1,0 +1,14 @@
+{
+  "executable": "git",
+  "args": [
+    "add",
+    "--pathspec-from-file=docs/archive/2026-11-07-verification-production/consumer-source-pathspec.nul",
+    "--pathspec-file-nul"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Stage exactly reviewed27 consumer source/baseline paths",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES Git index for exact source pathspec only; EXTERNAL_EVIDENCE_WRITES receipt",
+  "started_utc": "2026-11-07T07:27:19.463Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": []
+}

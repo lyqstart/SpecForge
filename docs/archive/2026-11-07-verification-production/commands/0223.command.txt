@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-public-trials.cjs",
+    "16",
+    "19"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-external-Kernel-agent-init-timeout",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable public-native-evidence19 including full installer proof; no verification owner existed; original/user install untouched",
+  "started_utc": "2026-11-07T04:36:01.729Z"
+}

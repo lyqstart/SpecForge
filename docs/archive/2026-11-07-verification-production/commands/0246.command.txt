@@ -1,0 +1,15 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/persistence-owner-boundary.test.ts",
+    "--config",
+    "vitest.config.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\workflow-runtime",
+  "purpose": "Reproduce SPS8 boundary with installed Node Vitest runner; prior bun spawn unavailable is carrier failure",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES receipts; RUNTIME_OBSERVER_WRITES Vitest owned cache; source read-only; assertion failure expected",
+  "started_utc": "2026-11-07T05:39:37.903Z"
+}

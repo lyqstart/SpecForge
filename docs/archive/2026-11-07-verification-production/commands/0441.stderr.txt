@@ -1,0 +1,43 @@
+$ vitest run "tests/v11-agent-skill-contract-alignment.test.ts" "--maxWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/v11-agent-skill-contract-alignment.test.ts > v1.1.5 Agent/Skill final governance contract alignment > keeps the positive feature workflow Close steps owned by Close Gate
+AssertionError: Close Gate owns the closed event; no extra manual transition: expected '### 阶段 11：verification_done → closed（…' not to contain 'sf_state_transition'
+
+- Expected
++ Received
+
+- sf_state_transition
++ ### 阶段 11：verification_done → closed（关闭门禁）
++
++ **目标：** 执行最终关闭门禁，确认工作流完整
++
++ **执行步骤：**
++ 1. 调用 sf_state_read 确认当前状态为 verification_done
++ 2. **调用 sf_close_gate**（work_item_id=<id>）
++    - Close Gate 验证：所有 Spec 文件存在、验证报告通过、无未解决的 blocking_issues
++ 3. 根据 Close Gate 结果路由：
++    - **通过** → 调用 sf_state_transition（from_state="verification_done"，to_state="closed"，evidence="close gate passed, workflow complete"）
++    - **失败** → 回退到对应阶段修复问题（具体回退目标由 Close Gate 返回的 blocking_issues 决定）
++
++ **工具：** sf_close_gate
++
++ **⚠️ 重要规则：**
++ - 必须先调用 sf_close_gate 确认通过后，才能流转到 closed 状态
++ - closed 是终态，一旦进入不可回退
++
++
+
+ ❯ tests/v11-agent-skill-contract-alignment.test.ts:97:89
+     95|     expect(section).toContain('sf_close_gate');
+     96|     expect(section).toContain('sf_state_read');
+     97|     expect(section, 'Close Gate owns the closed event; no extra manual…
+       |                                                                                         ^
+     98|     expect(section).not.toMatch(/to_state\s*[:=]\s*["']closed["']/);
+     99|     expect(section, 'dedicated invalid-closure recovery must remain po…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+error: script "test" exited with code 1

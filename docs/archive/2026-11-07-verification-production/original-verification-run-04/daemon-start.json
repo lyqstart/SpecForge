@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-07T07:19:37.293Z",
+  "args": [
+    "daemon",
+    "start",
+    "--detach",
+    "--json"
+  ],
+  "exit_code": 0,
+  "stdout": "{\"success\":true,\"already_running\":true,\"message\":\"Daemon is already running\",\"pid\":14576,\"version\":\"1.0.22\",\"status\":\"ok\"}\n",
+  "stderr": "",
+  "error": null
+}

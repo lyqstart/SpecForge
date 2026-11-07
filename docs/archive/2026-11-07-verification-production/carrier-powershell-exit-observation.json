@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-07T06:12:38.184Z",
+  "tool_result": {
+    "chunk_id": "1a1c0f",
+    "wall_time_seconds": 4.2529983,
+    "exit_code": 7,
+    "original_token_count": 21,
+    "output": "{\"receipt\":\"0283\",\"inner_exit_code\":7,\"finished_utc\":\"2026-11-07T06:12:36.640Z\"}\n"
+  },
+  "source": "Direct exec_command returned object for explicit exit $LASTEXITCODE probe",
+  "historical_0280": {
+    "tool_outer_shell_exit_code": 1,
+    "node_evidence_carrier_exit_code": 7,
+    "actual_target_child_exit_code": 7,
+    "qualification": "Default PowerShell process maps a native nonzero command to outer1. Node-carrier/target fields are separate domains, not the outer shell exit. Future native tool invocations explicitly forward LASTEXITCODE."
+  }
+}

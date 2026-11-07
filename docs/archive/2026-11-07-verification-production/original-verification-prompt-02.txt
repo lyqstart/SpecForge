@@ -1,0 +1,27 @@
+恢复唯一原项目 C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7 的原 WI-0001。使用本轮新建的最小上下文会话，不读取、导入或续传旧会话消息；旧会话只作为本地历史锚点保留。你是真实 sf-orchestrator，使用已配置的 zhipuai-coding-plan/glm-5.3 low；只通过真实专业 Agent/当前 Skill 和正式工具恢复，不新建项目或 WI。
+
+本轮用户已明确批准 D23 产品采用并要求继续全部修复。当前正式安装是 SpecForge1.0.22，源码提交 a918b49c62e7dfaf3c0bfc57961ffe3bbaa99ba3。D22封存隔离验收、真实 public producer/共同消费者 SP-I01、完整117文件正式安装及新Daemon真实正反例/崩溃重启恢复 SP-D01 均已通过；当前运行的新用户级Daemon/资产身份也已由外部审计者独立核验。旧D18通用外部执行禁令仍在；新增的有限合法路径是 sf_verification_plan / sf_verification_run，不是 sf_safe_bash、终端、npm/bun、其他执行器或任意脚本。
+
+权威事实应先用 sf_state_read 等正式只读工具复核：原 WI 在 implementation_running，PSV-0002；代码权限已撤销，继续保持。业务分支 codex/greet-library-wi-0001 的 HEAD 是 f5fed085a8609f593592eca5e8035b2d1c958759，main 是8a692e88c0823984647622294f5199c18bb0c587。五个业务文件已实现并提交，不需要重新开启代码写许可。原用户决定 UD-WI-0001-1793717210435、九项规格成功原子合并、post_merge_gate以及原批准的 canonical candidates/tasks.md 均已存在；Candidate全文hash为 sha256:429b3b54eb423cb74dfa76ef70da1452c383af6991481062706f4ecfa50c80e3。不要重复这些成功步骤、重做审批或修改已封存 Task/Candidate/Project Spec。
+
+原断点是：Task001-004只有代码和静态记录；原 verification_commands 的真实数值退出以及Task005 integration/e2e尚未执行。不得把旧 not_executed/blocked 当通过，也不要删除旧失败/HardStop/resolution。原数据缺失原因仍是证据不足，已批准的归档/Git基线重建不等于逐字节还原探测前现场。
+
+具体执行：
+1. 加载当前 feature_spec 与验证 Skill/Contract；读取原 Task、验收准则、项目规则、已有 implementation/audit/git_context。环境已有独立证明为Windows x64、固定Node24.19.0、单进程LPAC；使用这些事实和原项目环境文档，不重复主机探测、不读取完整host-profile.json，不读取凭据、owner.key、auth.json、私有密钥或旧会话历史。若需要额外环境数据，先明确所需最小字段并停在合法边界，不先读取或外发。
+2. 按原Task依赖顺序逐项处理全部 verification_commands。由你对每个声明调用 sf_verification_plan(action=create,work_item_id,task_id,verification_type,command_index)，不可传替代命令、改序号含义或改封存Task。计划10分钟有效，按Task小批创建、委派，避免过期。
+3. 将真实 plan_id 和精确Task主体交给真实 sf-verifier；Verifier用 sf_verification_run(action=prepare)取得 attempt_record_id，然后action=run。你不冒充Verifier运行，Verifier不冒充Orchestrator创建计划。真实角色、session/message/call与输入由Runtime核验，自报agent无效。每个真实调用/Attempt只消费一次。
+4. static test/grep声明会按正式 finite-posix-readonly-predicate/v1 转为同一LPAC只读Node内联判定，必须如实记录原声明、归一化、实际数值退出与receipt_id；不能声称运行了shell/grep。Node内置测试和冻结内联走同一单进程隔离。第三方依赖、子进程和未知语法拒绝时保留原错误，不换解释器、扩大权限、重启代码许可或改Task兜底。
+5. 对Task001-004补全真实验证证据，再完成Task005的原 integration/e2e；按Task小批委派，避免Verifier45步上限。用owner允许的任务/实施证据产物记录receipt引用，不往已批准candidates/tasks.md写完成勾选或更改内容。失败、取消、超限、过期或清理未知均不能通过；只走原受控cancel/recover/revoke恢复。
+6. 完成实现阶段所需真实专业Review/Audit/证据；由原合法owner推进 implementation_done / verification_running。不存在review_running/review_done或development/completed这类旧状态。不可用Agent自述代替正式状态、Audit或Gate。
+7. implementation目的回执不能冒充formal回执。进入真实 verification_running 后，按批准Task原验收重新取得必要的formal计划/执行与全部原命令语义证据；由真实 sf-verifier 经 sf_artifact_write 写规范 Verification Report、Evidence Manifest、Semantic Closure/相关产物，完整绑定真实receipt与Task/验证类别/序号。所有验收命令必须有可追溯结果，不能遗漏、改成manual观测或以静态检查冒充行为通过。
+8. 按当前owner链完成 Changed Files Audit、Verification/Formal Version Gates、正式版本与Close；每个HardStop先读取精确事实并走正式恢复入口，不手改 .specforge 真相源、不补造状态、签名或审批。两个历史被拒Get-FileHash及其operator_error/abandon resolution仍需如实消费，不能宣称历史零拒绝。
+9. 业务默认main的Git合并是单独决定。若到此边界，先通过 sf_git_merge_plan 生成实际 can_merge=true 的完整计划，展示目标/分支/真实Diff和阻塞项，然后等待本次用户明确确认。不要调用 confirmed=true，不做普通git merge/push；已有Candidate批准与分支名确认不代表该合并确认。
+
+持续到真实Close及待确认的具体业务Git计划，或明确、可复核的合法停点。若存在工具/Contract/Runtime能力缺口，保留原始错误、最后成功状态和必要证据并精确说明责任层；不要无限重派、走General Task、手改治理文件或把未执行结果写成pass。外部修复者会审核实际状态、产物和全部回执覆盖，不以你的总结替代验收。
+
+
+本次最小上下文恢复的新增事实（不导入任何旧消息）：上一轮真实工具调用已定位为动作参数混传，而非LPAC应用能力失败。sf_verification_run的prepare恰好传{"action":"prepare","work_item_id":"WI-0001","plan_id":"<id>"}；run恰好传{"action":"run","work_item_id":"WI-0001","attempt_record_id":"<id>"}。run/cancel/recover必须省略plan_id；prepare返回的attempt_id不是run参数。把完整两条JSON示例及禁止混传规则明确交给每位Verifier。额外字段被严格Schema拒绝时不能重建整批计划，不放宽Runtime或改Task；先核对实际调用参数和原Attempt的新鲜度/一次性消费边界。遇到同类意外拒绝停止该批并返回原错误，不循环重派。
+
+Task001 unit command_index=0已由真实sf-verifier正确参数执行，owner返回receipt_id=ec2d84148c29a89b8053897a378f1c7bbbfce17b4003d29e0050f47c1922ab27，plan_id=e5aee7af74e3cd0c3f390964b758e1523fd811330b55504e57c12b79f1d26acd，attempt_record_id=34b3ee953b87904695b2e5050edfd7b3f8d0e0a87d7a989264c7c346366dd40d，目的implementation，exit_code=0、cleanup_proved=true、output_complete=true。这是已存在真实执行事实，后续产物仍须经正式共同消费者验真；不要仅为重复成功步骤再执行它。其余Task001 unit index1..4的旧prepare尚无成功执行回执，旧参数拒绝和Verifier handoff保留。依据当前owner/有效期选择合法恢复或重新计划；不可把旧prepared当passed。
+
+上一轮提供方曾短暂限流后恢复；不要扩大并发或切换提供方。每批先取得少量计划并交给真实Verifier依序执行。若需要记录实施证据，先核对产物ownership/Schema；不得让Verifier写自己不拥有的文件，也不得改封存Task来补完成标记。原状态仍implementation_running，代码写许可撤销不变。此前已停止的新会话不读取消息历史；只读取同一WI必要正式治理记录。继续原任务直到合法停点。

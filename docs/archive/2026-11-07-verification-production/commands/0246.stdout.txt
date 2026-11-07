@@ -1,0 +1,10 @@
+
+ RUN  v4.1.5 D:/code/SpecForge/packages/workflow-runtime
+
+ ❯ tests/unit/persistence-owner-boundary.test.ts (0 test)
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  13:39:41
+   Duration  952ms (transform 0ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)
+

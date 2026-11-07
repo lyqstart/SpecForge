@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0001",
+  "gate_id": "workflow_specific_gate",
+  "gate_type": "hard_gate",
+  "required": true,
+  "status": "failed",
+  "input_files": [
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\design.candidate.md",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\requirements.candidate.md",
+    "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\tasks.md"
+  ],
+  "checks": [
+    {
+      "check_id": "workflow_specific_gate_issue_1",
+      "description": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/.specforge/work-items/WI-0001/candidates/project/architecture.candidate.md: 系统治理分析缺少有效章节或内容过短: Problem Understanding",
+      "passed": false,
+      "severity": "error"
+    },
+    {
+      "check_id": "workflow_specific_gate_issue_2",
+      "description": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/.specforge/work-items/WI-0001/candidates/project/architecture.candidate.md: 系统治理分析缺少有效章节或内容过短: Existing Architecture Analysis",
+      "passed": false,
+      "severity": "error"
+    },
+    {
+      "check_id": "workflow_specific_gate_issue_3",
+      "description": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/.specforge/work-items/WI-0001/candidates/project/architecture.candidate.md: 系统治理分析缺少有效章节或内容过短: Governance Classification",
+      "passed": false,
+      "severity": "error"
+    },
+    {
+      "check_id": "workflow_specific_gate_issue_4",
+      "description": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/.specforge/work-items/WI-0001/candidates/project/architecture.candidate.md: 系统治理分析缺少有效章节或内容过短: Existing Capability Assessment",
+      "passed": false,
+      "severity": "error"
+    },
+    {
+      "check_id": "workflow_specific_gate_issue_5",
+      "description": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/.specforge/work-items/WI-0001/candidates/project/architecture.candidate.md: 系统治理分析缺少有效章节或内容过短: Solution Strategy",
+      "passed": false,
+      "severity": "error"
+    },
+    {
+      "check_id": "workflow_specific_gate_issue_6",
+      "description": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/.specforge/work-items/WI-0001/candidates/project/architecture.candidate.md: 系统治理分析缺少有效章节或内容过短: Impact Analysis",
+      "passed": false,
+      "severity": "error"
+    },
+    {
+      "check_id": "workflow_specific_gate_issue_7",
+      "description": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/.specforge/work-items/WI-0001/candidates/project/architecture.candidate.md: 系统治理分析缺少有效章节或内容过短: Verification Plan",
+      "passed": false,
+      "severity": "error"
+    },
+    {
+      "check_id": "workflow_specific_gate_issue_8",
+      "description": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/.specforge/work-items/WI-0001/candidates/project/architecture.candidate.md: 系统治理分析缺少 capability_verdict，合法值为 reuse_existing、extend_existing、new_capability_required、blocked",
+      "passed": false,
+      "severity": "error"
+    }
+  ],
+  "blocking_issues": [
+    "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/.specforge/work-items/WI-0001/candidates/project/architecture.candidate.md: 系统治理分析缺少有效章节或内容过短: Problem Understanding",
+    "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/.specforge/work-items/WI-0001/candidates/project/architecture.candidate.md: 系统治理分析缺少有效章节或内容过短: Existing Architecture Analysis",
+    "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/.specforge/work-items/WI-0001/candidates/project/architecture.candidate.md: 系统治理分析缺少有效章节或内容过短: Governance Classification",
+    "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/.specforge/work-items/WI-0001/candidates/project/architecture.candidate.md: 系统治理分析缺少有效章节或内容过短: Existing Capability Assessment",
+    "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/.specforge/work-items/WI-0001/candidates/project/architecture.candidate.md: 系统治理分析缺少有效章节或内容过短: Solution Strategy",
+    "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/.specforge/work-items/WI-0001/candidates/project/architecture.candidate.md: 系统治理分析缺少有效章节或内容过短: Impact Analysis",
+    "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/.specforge/work-items/WI-0001/candidates/project/architecture.candidate.md: 系统治理分析缺少有效章节或内容过短: Verification Plan",
+    "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/.specforge/work-items/WI-0001/candidates/project/architecture.candidate.md: 系统治理分析缺少 capability_verdict，合法值为 reuse_existing、extend_existing、new_capability_required、blocked"
+  ],
+  "warnings": [],
+  "waiver_allowed": false,
+  "waiver_required": false,
+  "waiver_ids": [],
+  "started_at": "2026-11-03T13:14:00.548Z",
+  "finished_at": "2026-11-03T13:14:00.548Z",
+  "runner": "gate_runner"
+}

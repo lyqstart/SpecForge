@@ -1,0 +1,14 @@
+{
+  "executable": "git",
+  "args": [
+    "add",
+    "--pathspec-from-file=docs/archive/2026-11-07-verification-production/fixture-source-pathspec.nul",
+    "--pathspec-file-nul"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Stage exact25 reviewed current test-consumer and baseline paths",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES Git index exact25 paths; EXTERNAL_EVIDENCE_WRITES receipt",
+  "started_utc": "2026-11-07T08:33:19.742Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": []
+}

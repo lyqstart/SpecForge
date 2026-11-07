@@ -1,0 +1,185 @@
+[
+  {
+    "info": {
+      "id": "msg_1b3e9b103001c5R1WzvYdYc9no",
+      "sessionID": "ses_e4c164f15ffe2tyICAKyW15S4P",
+      "role": "user",
+      "time": {
+        "created": 1794019799299
+      },
+      "summary": {
+        "diffs": []
+      },
+      "agent": "sf-verifier",
+      "model": {
+        "providerID": "sf-fixture",
+        "modelID": "finite-model"
+      }
+    },
+    "parts": [
+      {
+        "id": "prt_1b3e9b107001fntE0iFSx4U0ub",
+        "sessionID": "ses_e4c164f15ffe2tyICAKyW15S4P",
+        "messageID": "msg_1b3e9b103001c5R1WzvYdYc9no",
+        "type": "text",
+        "text": "Execute the single requested tool once, then stop. SF_FIXTURE_REQUEST:eyJ0b29sIjoic2ZfdmVyaWZpY2F0aW9uX3J1biIsImFyZ3MiOnsiYWN0aW9uIjoicnVuIiwid29ya19pdGVtX2lkIjoiV0ktOTkwMSIsImF0dGVtcHRfcmVjb3JkX2lkIjoiMGUyNjMxNzQwN2ZkZWRmZTM0NDk2ZWQ1YTc4YWFlMTgxYWNkZWE3MjBkN2I1ODhhOGU2MDIyODFjYjA2N2U3ZCJ9fQ=="
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1b3e9b122001WHuEgh6QaxeUcs",
+      "sessionID": "ses_e4c164f15ffe2tyICAKyW15S4P",
+      "role": "assistant",
+      "time": {
+        "created": 1794019799330,
+        "completed": 1794019807791
+      },
+      "parentID": "msg_1b3e9b103001c5R1WzvYdYc9no",
+      "modelID": "finite-model",
+      "providerID": "sf-fixture",
+      "mode": "sf-verifier",
+      "agent": "sf-verifier",
+      "path": {
+        "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project",
+        "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project"
+      },
+      "cost": 0,
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "finish": "tool-calls"
+    },
+    "parts": [
+      {
+        "id": "prt_1b3e9b2ae001xz6cvo0P3i9Im9",
+        "sessionID": "ses_e4c164f15ffe2tyICAKyW15S4P",
+        "messageID": "msg_1b3e9b122001WHuEgh6QaxeUcs",
+        "type": "step-start",
+        "snapshot": "123b85324b5a283aae898bcd75d406d38a7f9d68"
+      },
+      {
+        "id": "prt_1b3e9b2b1001rEVXcxE0Tfv7Iv",
+        "sessionID": "ses_e4c164f15ffe2tyICAKyW15S4P",
+        "messageID": "msg_1b3e9b122001WHuEgh6QaxeUcs",
+        "type": "tool",
+        "callID": "call_d3bf3ca3c9324151b3ef09617159a1c6",
+        "tool": "sf_verification_run",
+        "state": {
+          "status": "completed",
+          "input": {
+            "action": "run",
+            "work_item_id": "WI-9901",
+            "attempt_record_id": "0e26317407fdedfe34496ed5a78aae181acdea720d7b588a8e602281cb067e7d"
+          },
+          "output": "{\"success\":false,\"receipt_id\":\"ca7b114a0b6ba07e879cbea996769433026a4e41dc5ebb7519ec8fa8be63976c\",\"attempt_record_id\":\"0e26317407fdedfe34496ed5a78aae181acdea720d7b588a8e602281cb067e7d\",\"attempt_id\":\"2e86563bd5804bb8ac6041728f77175f\",\"plan_id\":\"d175bd92ad36714048e09aaec505d0f2bea7c4282d4b0985ff0b35537530051c\",\"outcome\":\"failed\",\"exit_code\":134,\"cleanup_proved\":true,\"failure\":\"VERIFICATION_NATIVE_SUCCESS_UNPROVED\",\"stdout\":\"\",\"stderr\":\"\\r\\n<--- Last few GCs --->\\r\\n\\r\\n[37804:0000020C50DB1000]      817 ms: Mark-Compact (reduce) 987.1 (989.9) -> 987.1 (989.9) MB, pooled: 0 MB, 35.23 / 0.00 ms  (average mu = 0.180, current mu = 0.001) last resort; GC in old space requested\\r\\n[37804:0000020C50DB1000]      823 ms: Scavenge (interleaved) 994.7 (997.5) -> 994.7 (998.5) MB, pooled: 1 MB, 0.56 / 0.00 ms  (average mu = 0.180, current mu = 0.001) allocation failure; \\r\\n\\r\\nFATAL ERROR: Committing semi space failed. Allocation failed - JavaScript heap out of memory\\r\\n----- Native stack trace -----\\r\\n\\r\\n 1: 00007FF6D80150BF \\r\\n 2: 00007FF6D6C3DD27 \\r\\n 3: 00007FF6D6A3E567 \\r\\n 4: 00007FF6D69D6B5B \\r\\n 5: 00007FF6D69AE58E \\r\\n 6: 00007FF6D6A41002 \\r\\n 7: 00007FF6D6A3FFB7 \\r\\n 8: 00007FF6D6A50EF2 \\r\\n 9: 00007FF6D6A50A1B \\r\\n10: 00007FF6D8337DED \\r\\n11: 00007FF6D6A3C030 \\r\\n12: 00007FF6D6A5695E \\r\\n13: 00007FF6D6A626E8 \\r\\n14: 00007FF6D6A79BEC \\r\\n15: 00007FF6D6858771 \\r\\n16: 00007FF6D6858579 \\r\\n17: 00007FF6D6858211 \\r\\n18: 00007FF6D685688D \\r\\n19: 00007FF6D676852D \\r\\n20: 00007FF6D68455F0 \\r\\n21: 00007FF6D6642502 \\r\\n22: 0000020C1FE775FA \\r\\n\",\"output_preview_truncated\":false,\"output_complete\":true}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1794019799741,
+            "end": 1794019807281
+          }
+        }
+      },
+      {
+        "id": "prt_1b3e9d13e001XVcBghtNKGWm8L",
+        "sessionID": "ses_e4c164f15ffe2tyICAKyW15S4P",
+        "messageID": "msg_1b3e9b122001WHuEgh6QaxeUcs",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "snapshot": "123b85324b5a283aae898bcd75d406d38a7f9d68",
+        "cost": 0,
+        "tokens": {
+          "total": 120,
+          "input": 100,
+          "output": 20,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1b3e9d234001cqYOVcy9wK0GnO",
+      "sessionID": "ses_e4c164f15ffe2tyICAKyW15S4P",
+      "role": "assistant",
+      "time": {
+        "created": 1794019807796,
+        "completed": 1794019808890
+      },
+      "parentID": "msg_1b3e9b103001c5R1WzvYdYc9no",
+      "modelID": "finite-model",
+      "providerID": "sf-fixture",
+      "mode": "sf-verifier",
+      "agent": "sf-verifier",
+      "path": {
+        "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project",
+        "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project"
+      },
+      "cost": 0,
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "finish": "stop"
+    },
+    "parts": [
+      {
+        "id": "prt_1b3e9d40e0017DhnEPwpCbfANa",
+        "sessionID": "ses_e4c164f15ffe2tyICAKyW15S4P",
+        "messageID": "msg_1b3e9d234001cqYOVcy9wK0GnO",
+        "type": "step-start",
+        "snapshot": "123b85324b5a283aae898bcd75d406d38a7f9d68"
+      },
+      {
+        "id": "prt_1b3e9d4110010RcRhO42V2asqZ",
+        "sessionID": "ses_e4c164f15ffe2tyICAKyW15S4P",
+        "messageID": "msg_1b3e9d234001cqYOVcy9wK0GnO",
+        "type": "text",
+        "text": "SF_FIXTURE_TOOL_COMPLETE",
+        "time": {
+          "start": 1794019808273,
+          "end": 1794019808276
+        }
+      },
+      {
+        "id": "prt_1b3e9d573001XGLhDz4ZIUzjrE",
+        "sessionID": "ses_e4c164f15ffe2tyICAKyW15S4P",
+        "messageID": "msg_1b3e9d234001cqYOVcy9wK0GnO",
+        "type": "step-finish",
+        "reason": "stop",
+        "snapshot": "123b85324b5a283aae898bcd75d406d38a7f9d68",
+        "cost": 0,
+        "tokens": {
+          "total": 120,
+          "input": 100,
+          "output": 20,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    ]
+  }
+]

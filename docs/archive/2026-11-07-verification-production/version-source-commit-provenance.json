@@ -1,0 +1,248 @@
+{
+  "utc": "2026-11-07T07:21:28.495Z",
+  "source_commit": "759cd2ffede4bd942db7bd9a0025c96cd02bac1e",
+  "parent": "6be12495582540d5b55f322924829a93a62e6b9a",
+  "paths_verified": 33,
+  "bindings": {
+    "bun.lock": {
+      "raw_sha256": "7d1c96e74775fc7cb3ad83a99d5c38a1f0f3b4860ed1f6be447ee4d3d208ba3a",
+      "size": 366461,
+      "parent_blob_oid": "6b03b1457ea059286eeee53087d803e3b3a17ea7",
+      "parent_blob_sha256": "dfc4911cadbed27c18da3aa277fda685395341bf6adb8d709df71e18bc343b3a",
+      "index_oid": "80b6dc93aa2e399e2d1385ae3a90ab4a95bcf7c3",
+      "index_blob_sha256": "7d1c96e74775fc7cb3ad83a99d5c38a1f0f3b4860ed1f6be447ee4d3d208ba3a"
+    },
+    "docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/manifest.json": {
+      "raw_sha256": "d6ae9c95553093a166dd7f287502cd18e4af28cd3eeb0f72701305632f7d6d29",
+      "size": 4502,
+      "index_oid": "c6a263f2c2960931eede7a437e64acd465a5b43a",
+      "index_blob_sha256": "d6ae9c95553093a166dd7f287502cd18e4af28cd3eeb0f72701305632f7d6d29"
+    },
+    "docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/bun.lock": {
+      "raw_sha256": "dfc4911cadbed27c18da3aa277fda685395341bf6adb8d709df71e18bc343b3a",
+      "size": 366461,
+      "index_oid": "6b03b1457ea059286eeee53087d803e3b3a17ea7",
+      "index_blob_sha256": "dfc4911cadbed27c18da3aa277fda685395341bf6adb8d709df71e18bc343b3a"
+    },
+    "docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/docs/product-specification/specforge-product-specification.md": {
+      "raw_sha256": "14174cbe448d3b4964208623fc70f54f4aa573eec4231267ee7d244be2dff524",
+      "size": 89704,
+      "index_oid": "83ad205e518ebb4dafda39e67247a4f57af51e00",
+      "index_blob_sha256": "14174cbe448d3b4964208623fc70f54f4aa573eec4231267ee7d244be2dff524"
+    },
+    "docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/package.json": {
+      "raw_sha256": "c44304090780142cce0efa0caa49489f1bd1bc8c1effe1170fd930a85303bf8d",
+      "size": 2611,
+      "index_oid": "c7ddd20ef74dc135966efc2d054dfae9a06a74f7",
+      "index_blob_sha256": "c44304090780142cce0efa0caa49489f1bd1bc8c1effe1170fd930a85303bf8d"
+    },
+    "docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/cli/package.json": {
+      "raw_sha256": "1725a183922ada023fb465934baa084ace9b2016a3e11c84d47153f461929364",
+      "size": 1604,
+      "index_oid": "bea617f05d5b6eba3a64334136992a19737767db",
+      "index_blob_sha256": "1725a183922ada023fb465934baa084ace9b2016a3e11c84d47153f461929364"
+    },
+    "docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/configuration/package.json": {
+      "raw_sha256": "0a9b7e94f4efb62061099a5bfedbe4a0c3a306de80d9dd65b775c226275512f2",
+      "size": 1243,
+      "index_oid": "346992a0a3faa6a98e59a5aa9326cb1aa795f451",
+      "index_blob_sha256": "0a9b7e94f4efb62061099a5bfedbe4a0c3a306de80d9dd65b775c226275512f2"
+    },
+    "docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/daemon-core/package.json": {
+      "raw_sha256": "dd3203350543b147e4a40004ed17379fefcc4d0b640841322d38b91c9b8a01b6",
+      "size": 1890,
+      "index_oid": "025889a566ade74fe2cc67a3ab537339a615a7e7",
+      "index_blob_sha256": "dd3203350543b147e4a40004ed17379fefcc4d0b640841322d38b91c9b8a01b6"
+    },
+    "docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/host-profile/package.json": {
+      "raw_sha256": "eac582a676dbaf75f16b24e29065377f74b7808072691700db98b2a1ba78ba14",
+      "size": 583,
+      "index_oid": "63dc728def52dc9d6c25f81df37014d98e1582bf",
+      "index_blob_sha256": "eac582a676dbaf75f16b24e29065377f74b7808072691700db98b2a1ba78ba14"
+    },
+    "docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/observability/package.json": {
+      "raw_sha256": "fc327469fa683526f3157570fb2ca671be01cc88703896f4a45739dc76ef8e13",
+      "size": 2007,
+      "index_oid": "bdac0d5841bb30b12ce84190f3526d473e1d1d98",
+      "index_blob_sha256": "fc327469fa683526f3157570fb2ca671be01cc88703896f4a45739dc76ef8e13"
+    },
+    "docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/opencode-adapter/package.json": {
+      "raw_sha256": "02fbcaa7af83c8dafdfc2c9b2a352eb2874a39ea3a8e25eb562dccdc0d090dc4",
+      "size": 1817,
+      "index_oid": "100c06c6dc57b946f0ae8927e7c200f9a712ec6b",
+      "index_blob_sha256": "02fbcaa7af83c8dafdfc2c9b2a352eb2874a39ea3a8e25eb562dccdc0d090dc4"
+    },
+    "docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/permission-engine/package.json": {
+      "raw_sha256": "4206146195e13a05cfefa8fb6638efddc2b50de3993751f7a9861b34d9842bbc",
+      "size": 2040,
+      "index_oid": "f03408fe3ba980a5b83ea44965c4ecbd30be0868",
+      "index_blob_sha256": "4206146195e13a05cfefa8fb6638efddc2b50de3993751f7a9861b34d9842bbc"
+    },
+    "docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/scope-gate/package.json": {
+      "raw_sha256": "0b2ac1b96e149d4c6c155bc6f4f82db778ce51268ca617e702afdee55b622b82",
+      "size": 2254,
+      "index_oid": "1418482cfb7193ba3014e7b76fcdf396ff92f80b",
+      "index_blob_sha256": "0b2ac1b96e149d4c6c155bc6f4f82db778ce51268ca617e702afdee55b622b82"
+    },
+    "docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/service-management/package.json": {
+      "raw_sha256": "0dc4db804da2fccc69ed9d1bad5d165066eed671040547f8458f648035e6f431",
+      "size": 2008,
+      "index_oid": "86116b392945f8d2ef250e651b2f091e302c7983",
+      "index_blob_sha256": "0dc4db804da2fccc69ed9d1bad5d165066eed671040547f8458f648035e6f431"
+    },
+    "docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/types/package.json": {
+      "raw_sha256": "8a94e020cc55805ef14058a2cd310e5ce44ba83bb38f3838b11765f961b065ec",
+      "size": 2890,
+      "index_oid": "9301b2142b87e403b06505b69ccf749eaa9f1347",
+      "index_blob_sha256": "8a94e020cc55805ef14058a2cd310e5ce44ba83bb38f3838b11765f961b065ec"
+    },
+    "docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/version-unification/package.json": {
+      "raw_sha256": "0943a9aff9cf630c101281757e795b03c5edb897887e0ce89b85e4bf45b3f1bb",
+      "size": 607,
+      "index_oid": "c06e568fb2243f0cf349fd70ba18653b9aa2446f",
+      "index_blob_sha256": "0943a9aff9cf630c101281757e795b03c5edb897887e0ce89b85e4bf45b3f1bb"
+    },
+    "docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/workflow-runtime/package.json": {
+      "raw_sha256": "cb7fbee2a963438c2fed2f3e709cffc4cf01e7ad6b1db053a97b651fbe6bbb45",
+      "size": 2231,
+      "index_oid": "4814fda98fcf2d3dd8689df48d47ee4736287345",
+      "index_blob_sha256": "cb7fbee2a963438c2fed2f3e709cffc4cf01e7ad6b1db053a97b651fbe6bbb45"
+    },
+    "docs/product-specification/specforge-product-specification.md": {
+      "raw_sha256": "0cf3cef264e84b198746852b340cb8d6b2b88562472357a78fa7850c83816d31",
+      "size": 89704,
+      "parent_blob_oid": "b479805b277fc520df9206423b99a953b74e52a8",
+      "parent_blob_sha256": "a8b86117486c6957a0c49d2edd6ef01c13a4e5fa5f11900904e419aadecfeb29",
+      "index_oid": "89bdc745b168c183965f43aa21693b2cd3eff7cf",
+      "index_blob_sha256": "39d75f7f14ae26776bb227920c3e3a19509c4f768ed95074fc789edf52aa0f96"
+    },
+    "docs/project-status.md": {
+      "raw_sha256": "3d2d4bacaea473857a349113009ac76d2b159e4d120bd64b7de43a8e3628049c",
+      "size": 7707,
+      "parent_blob_oid": "d632e1f5b5d3cc1e19e455a6e2694d12add48cb7",
+      "parent_blob_sha256": "f1bd73120a57173c227aa2b15cae705fc0303d73f2b952d297f8ef50795bfab6",
+      "index_oid": "668cbc82fd1122677e18a3cdd52c1592078aeb42",
+      "index_blob_sha256": "4e92f65902442bd2ffabb4908c1d4870b4f9aba3bb427a44a91c4ed984c105b5"
+    },
+    "docs/rule/specforge-development-error-ledger-and-experience.md": {
+      "raw_sha256": "8dc4d7a78a7db5172a4f5783c0380bdc73f94879e7f11fee60259f466d2c2b9f",
+      "size": 4450909,
+      "parent_blob_oid": "2fb2c0b0e1048e2deb86a32ec2b1ed3bcb982267",
+      "parent_blob_sha256": "bbc184b1eecf0f08e2ce2a7a7aff31460bac3b0b07456461d28d6474ede76092",
+      "index_oid": "147f3baaedd1dab743235680a486ac95c8584151",
+      "index_blob_sha256": "ec3c8fa68a12ab2c90a5f0cc587692bc969fc9054715d1e6f54f71ab1095d8cc"
+    },
+    "package.json": {
+      "raw_sha256": "f6f2d1f5a4a4c1932e1eb4238aee90458f0ef5f3370fb6189d0bfd7e69bd6ba0",
+      "size": 2611,
+      "parent_blob_oid": "cb8b67b1e367c9b8dec8792ce69c4c0c1d7075d2",
+      "parent_blob_sha256": "e14637594549f84d42bef3d896c51544ed8be55c542ebeffd3fba3aaf6d4f639",
+      "index_oid": "49cffd87ad0db7ac23e2e9147939943bbeb99d5c",
+      "index_blob_sha256": "a748de3d6b900e25bacb75e1593023ade78efa300f190c130feb5c4ee20cbd3d"
+    },
+    "packages/cli/package.json": {
+      "raw_sha256": "13819361399cd243cbb08b7091509e3bcd322ee94607af2ed50e0b414b60a8b0",
+      "size": 1604,
+      "parent_blob_oid": "5f6719c46b3334fce63a713a412e7403bf4cd16c",
+      "parent_blob_sha256": "6b540f253d54ae92582a8bcb4c821969ad61ef86c0e7a68175e63c4af85f3307",
+      "index_oid": "ff12a9941fcbd99a5a864d6e4c2778ef7b35c73f",
+      "index_blob_sha256": "6b135eab032a2f966c36b89c8eb59ab5244470a6352da2c0cb81260615563cab"
+    },
+    "packages/configuration/package.json": {
+      "raw_sha256": "37430e312528dcab305692994d39af3c035dfa8a107dc68a2669f8e831ca7036",
+      "size": 1243,
+      "parent_blob_oid": "addc4cd9fc498b80da5e3a6a6652f4d10e2a25ee",
+      "parent_blob_sha256": "0ac433a68c1e2aa050e4c4945064c0a1eb42b50026855352c796494bd2917eed",
+      "index_oid": "e51dd1646070440f1c399e48ab95f9289a363d50",
+      "index_blob_sha256": "ee75965cc7ac119e5347faf3eef5a5bced869e800c8683f429973e2b92e5d981"
+    },
+    "packages/daemon-core/package.json": {
+      "raw_sha256": "d6cef585df5f43eef9df7534dd42923338bd7fef0ec084a3db9a701584971e4d",
+      "size": 1890,
+      "parent_blob_oid": "b3feb7094d8426fe9ab9f6fd0afa9ab521aeeb78",
+      "parent_blob_sha256": "3a98f50d530127a72b2195643cb8144d22250bb9334f85744121c6129b7dc9e1",
+      "index_oid": "f148eec50e0fdfdbcc596a12070be7946141a690",
+      "index_blob_sha256": "7951a1e849776621e59a750fb71517a3fd4b4ddf9d68c78e0de8f2a86e86715d"
+    },
+    "packages/host-profile/package.json": {
+      "raw_sha256": "fa1e7da49aaba119da836add89a992b2eaa9c8215aa00155d4a4fc87155c3ba1",
+      "size": 583,
+      "parent_blob_oid": "0d0509d4cac0fec0720aa241966359590566b33a",
+      "parent_blob_sha256": "9dc06cb7a1ea3a48ae0abaa31ef5aab89d47b2d17fe5f60bf99a9bc7cc74ea83",
+      "index_oid": "7c16bb7c57935cb74fb7deeb5d79c50b69ca55b5",
+      "index_blob_sha256": "a13a5521394d69e1a7b1459694eb2f7ec6eaffff7ae2b19534ef35c9ad5da2a1"
+    },
+    "packages/observability/package.json": {
+      "raw_sha256": "ed29b6ac0b87e60fdf308c9f886e0bd89c827a100c5875dca7a0b6145f2397ad",
+      "size": 2007,
+      "parent_blob_oid": "b5f9a4c417774817647e3ec3dffda8a727bbd2d6",
+      "parent_blob_sha256": "c3da774076b6da2492e881613dc060f026e31e9ced23695d44ced31bfdde07a6",
+      "index_oid": "fa211a0bf4ff8215352efc32d982a060b9ab2c9f",
+      "index_blob_sha256": "20dd0642a74474ffdd30374312c92e00899ffde51c862e1ebb6e5b80a4ee52c6"
+    },
+    "packages/opencode-adapter/package.json": {
+      "raw_sha256": "73f9e116ebcde11c30fb5a81c88d01450587402ff0ad1a0702b7f702e5631241",
+      "size": 1817,
+      "parent_blob_oid": "17d1f47cd5cbbd279926a147fa126447ae82b7de",
+      "parent_blob_sha256": "a90028a78095d9e67cf230d21d7de2511a64897ad065a7d1b267b1a9ef40b3c6",
+      "index_oid": "72a4c035e4a5273cee0bcad7ecce3aba5d922682",
+      "index_blob_sha256": "5ae8b6e0b5dd0519f22a0949a6cb0bb94501d8c06d8ecef2b7b2893fafcbfd18"
+    },
+    "packages/permission-engine/package.json": {
+      "raw_sha256": "b22ddb6cf6fe2e7218b0618a106030276b072ed747b884375f2811b9cc4303b4",
+      "size": 2040,
+      "parent_blob_oid": "053b7a0acfc85417b79fcc132b1c7b2c55ab9a8a",
+      "parent_blob_sha256": "6db458f7456bb45881df0072413d4b2b0258dcbe84c0b2f9940ef0549a7bf98e",
+      "index_oid": "18d7c278ebfdf388b80385fe5303d7e42bdcf4aa",
+      "index_blob_sha256": "7b9ab8c0b410d5eb5d52c80426b75c78d922eca6fda8dc457c1dea76c45873bf"
+    },
+    "packages/scope-gate/package.json": {
+      "raw_sha256": "2e64ff5956659e530d80f216a74d7de54bb8eaf3991362ce256406cdd1f5e4dc",
+      "size": 2254,
+      "parent_blob_oid": "7ba4a5b0ccfc70f0f96ae4502ed23ce8270d9e48",
+      "parent_blob_sha256": "18f5f808b48bc676fe26276494331260f2aed6e6c9a50f84bbcfd950120075a6",
+      "index_oid": "b87f054340541ef6d14ca5918e15d7030a5e6280",
+      "index_blob_sha256": "64d78fe65ba97389e5313413c3e04cf0388b0bf451baac90abf7447493412b87"
+    },
+    "packages/service-management/package.json": {
+      "raw_sha256": "fe6c25069a3e5e5060c867d8d038b499bdf760a29b8827056c93b387658b48e0",
+      "size": 2008,
+      "parent_blob_oid": "6d98a77f4c572ffec9a5b2149e3661b7d363fec7",
+      "parent_blob_sha256": "fa987830de4ea6706e217a29ac7719358187531abc57f553aa9b96bd259275c4",
+      "index_oid": "4e6a83a5447513ef883d5bf827cd8b13cbe83a83",
+      "index_blob_sha256": "e6f2fed279e7097c5940085a4e4d6713907707896428755e021e3e34e03480f8"
+    },
+    "packages/types/package.json": {
+      "raw_sha256": "f06bd9e03ba21bdf5dca0d0f50ccb0c71fbdf0ba8c635fa32a4ea38a34a06907",
+      "size": 2890,
+      "parent_blob_oid": "0242bc70db93317455c3305f8886de9b1af2b968",
+      "parent_blob_sha256": "e4d0d9104ac9a41398a74be8ccb4ab3c009d417ea5b30d0fc266a8a3d446cafd",
+      "index_oid": "1b871be974e654b624089c22eb70a33b6ea6c47e",
+      "index_blob_sha256": "25a31f9a694a3210aae5643a2d664301e6c37a3933d8c906c29922674d88276a"
+    },
+    "packages/version-unification/package.json": {
+      "raw_sha256": "a5d9a71dbc0e80e04967ad9a040e01f9dcd048f965bad4f2bcbb8d3e6c4fe543",
+      "size": 607,
+      "parent_blob_oid": "7a43c27f20c06b169a40fb25046977143ab198f3",
+      "parent_blob_sha256": "6d5d6f6087e00d6341b4972e9f92af78effeb73c2f0797e0525edfcb980414f6",
+      "index_oid": "069baa7f605a2f10829c231437b8afa100be651c",
+      "index_blob_sha256": "8433a4a668775ec261d2cfd03afc4c438d8b10495ccaa1db92c462ae843101f1"
+    },
+    "packages/workflow-runtime/package.json": {
+      "raw_sha256": "1ce10dd161292957a8db767a599b88e08b28dc7c3705e899b13639504789e6f8",
+      "size": 2231,
+      "parent_blob_oid": "4814fda98fcf2d3dd8689df48d47ee4736287345",
+      "parent_blob_sha256": "cb7fbee2a963438c2fed2f3e709cffc4cf01e7ad6b1db053a97b651fbe6bbb45",
+      "index_oid": "2230ea49e3908af113892dedba7de275af4cf96b",
+      "index_blob_sha256": "1ce10dd161292957a8db767a599b88e08b28dc7c3705e899b13639504789e6f8"
+    }
+  },
+  "version": "1.0.23",
+  "validation": [
+    "0272 complete12-package build",
+    "0273 version-contract6",
+    "0292 exact staged scope/blob/patch"
+  ],
+  "native_deployment_pending": true,
+  "additional_task_owned_guidance_and_http_changes": "Separate working changes after this committed metadata baseline; not claimed included."
+}

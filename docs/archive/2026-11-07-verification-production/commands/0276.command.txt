@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/audit-boundary-scope.cjs",
+    "after"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Verify complete source/version/archival path set against corrected literal allowed-scope globs",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES after-scope proof and receipts only; all repositories and installation read-only",
+  "started_utc": "2026-11-07T06:05:01.681Z"
+}

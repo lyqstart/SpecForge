@@ -1,0 +1,1 @@
+const blocks=[];while(true){blocks.push(Array(1000000).fill(123456789));}

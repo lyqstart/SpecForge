@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-07T07:31:55.673Z",
+  "args": [
+    "daemon",
+    "status",
+    "--json"
+  ],
+  "exit_code": 0,
+  "stdout": "{\"schema_version\":\"1.0\",\"status\":\"ok\",\"pid\":14576,\"version\":\"1.0.22\",\"startedAt\":1794028214458,\"uptimeSec\":8501,\"activeClients\":0,\"pendingEvents\":4,\"lastEventTs\":1794028214473}\n",
+  "stderr": "",
+  "error": null
+}

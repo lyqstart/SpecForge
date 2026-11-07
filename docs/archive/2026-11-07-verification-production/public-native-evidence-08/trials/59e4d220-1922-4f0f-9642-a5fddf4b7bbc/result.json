@@ -1,0 +1,57 @@
+{
+  "utc": "2026-11-07T03:34:10.089Z",
+  "trial": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\63ad82d80a914742817dc95f44d806ba\\trials\\59e4d220-1922-4f0f-9642-a5fddf4b7bbc",
+  "records": [
+    {
+      "name": "actual-implementation-done-state-rejected",
+      "session": "ses_e4bedfbdaffeY83m6sQkG548aI",
+      "message": "msg_1b4120760001It4LhKHiQqsngO",
+      "call": "call_e2d77cfba9bb49468054852d2c50a352",
+      "agent": "sf-orchestrator",
+      "tool": "sf_verification_plan",
+      "value": {
+        "success": false,
+        "error": "VERIFICATION_AUTHORITATIVE_STATE_REQUIRED",
+        "application_passed": false
+      }
+    },
+    {
+      "name": "safe-bash-remains-readonly",
+      "session": "ses_e4bede63fffepOmGm5ZHl6m4ya",
+      "message": "msg_1b4121a0d001c19aHjIQ6rnrEB",
+      "call": "call_71a4dd696d89438b89427016dddcafab",
+      "agent": "sf-verifier",
+      "tool": "sf_safe_bash",
+      "value": {
+        "success": false,
+        "error": "WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\nUse sf_project_config for runtime project JSON, sf_artifact_write(file_type=project_prod_environment|project_rules) for configuration documents during intake_ready, canonical sf_artifact_write types for Work Item artifacts, and sf_merge_run for Project Spec. Do not fall back to native file tools, General Task, or helper scripts.\nViolations: SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor",
+        "hard_stop": false,
+        "policy_violation": true,
+        "retry_allowed": false,
+        "blocked_command": "node --test tests/positive.test.cjs",
+        "write_guard_targets": []
+      }
+    },
+    {
+      "child": "kernel",
+      "pid": 40760,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-11-07T03:34:10.088Z"
+      }
+    },
+    {
+      "child": "daemon",
+      "pid": 31872,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "utc": "2026-11-07T03:34:09.994Z"
+      }
+    }
+  ],
+  "failure": null,
+  "exit_code": 0,
+  "original_business_touched": false
+}

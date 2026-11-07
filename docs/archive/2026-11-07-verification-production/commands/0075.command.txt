@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/initialize-public-kernel-fixture.cjs",
+    "03"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "reserve-public-fixture03-qualified-owner-builder",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES self-owned ignored fixture assets; EXTERNAL_EVIDENCE_WRITES fixture03 identity/receipts; original untouched",
+  "started_utc": "2026-11-07T02:17:29.431Z"
+}

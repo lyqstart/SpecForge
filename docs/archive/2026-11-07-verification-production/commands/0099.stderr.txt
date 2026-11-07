@@ -1,0 +1,4 @@
+Error: Invalid target state "review_running". Valid states: created, intake_ready, impact_analyzing, impact_analyzed, workflow_selected, candidate_preparing, candidate_prepared, gates_running, gates_failed, approval_required, approved, merge_ready, merging, merged, post_merge_verified, implementation_ready, implementation_running, implementation_done, verification_running, verification_done, closed, blocked, rejected, superseded
+    at transition (D:\code\SpecForge\.tmp\verification-public-kernel\63ad82d80a914742817dc95f44d806ba\create-public-fixture.js:22066:22)
+    at async main (D:\code\SpecForge\.tmp\verification-public-kernel\63ad82d80a914742817dc95f44d806ba\create-public-fixture.js:23247:27)
+    at processTicksAndRejections (native:7:39)

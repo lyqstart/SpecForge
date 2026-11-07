@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-07T07:57:31.568Z",
+  "session": "ses_e4afcbfd6ffeMz45a1jM6iFIme",
+  "agent": "sf-verifier",
+  "tool": "sf_artifact_write",
+  "args": {
+    "work_item_id": "WI-9901",
+    "file_type": "work_log",
+    "run_id": "verifier-wi0001-manifest-align",
+    "content": "{\"run_id\":\"verifier-wi0001-manifest-align\",\"work_item_id\":\"WI-9901\",\"agent\":\"sf-verifier\",\"action\":\"evidence_manifest_supports_alignment\",\"details\":\"Execution log about an Evidence Manifest\"}",
+    "agent_content": "Observed evidence_manifest alignment; this is an execution log, not a replacement manifest."
+  }
+}

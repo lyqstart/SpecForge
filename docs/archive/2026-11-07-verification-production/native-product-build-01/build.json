@@ -1,0 +1,125 @@
+{
+  "utc": "2026-11-07T01:50:42.153Z",
+  "qualified_compile_receipts": [
+    "0051",
+    "0055"
+  ],
+  "entry": "LpacVerificationMain",
+  "parser_entry": "NativeProductPlanRegression",
+  "application_executed": false,
+  "prior_0053": "UNQUALIFIED_STALE_EXECUTABLE",
+  "members": {
+    "source/LpacAliasFixture.cs": {
+      "sha256": "f910b543c3ac18ab9a6581c172e5387193bc48a6df9a7894ff4c209b58e58ecd",
+      "bytes": 5611
+    },
+    "source/LpacFileAclAttack.cs": {
+      "sha256": "c6ce80b29f258701f1dd4098c307af1b98419fd9006c566dbbce50810e5b5839",
+      "bytes": 3875
+    },
+    "source/LpacFileBoundaryProbe.cs": {
+      "sha256": "46be179139f8aa3d3455e8525b19ed7d8d2084b18baec53db99acdb687c1785e",
+      "bytes": 19890
+    },
+    "source/LpacInputIdentity.cs": {
+      "sha256": "f8d893b0987d53c053ebc5948033775436b9ec39e1acd099b5fd6e48815826ff",
+      "bytes": 9236
+    },
+    "source/LpacJobNotifications.cs": {
+      "sha256": "e6f08c6a8460f66d088cc0577279f6b8d060c8e20d424e283814ce6ab66c540e",
+      "bytes": 2381
+    },
+    "source/LpacLoopbackFixture.cs": {
+      "sha256": "b3d2eff55f5be447b3200d4479e1500d15e7e1f1a8785c87381723a7cb4cfe67",
+      "bytes": 2197
+    },
+    "source/LpacNativeBoundaryProbe.cs": {
+      "sha256": "4423fd8fd90016584866bac52b196786db07a9ae9bb2477fc1ce60655c0f8547",
+      "bytes": 9230
+    },
+    "source/LpacNativeWmiCom.cs": {
+      "sha256": "d7faac752aef3a20524a58efd5f0098813d55604273c3c07f081974806708584",
+      "bytes": 4004
+    },
+    "source/LpacNetworkAndUncFixture.cs": {
+      "sha256": "fe863dd12b1b7504bee86dfc7df119f35268d1b36a940c5d4bd77adb8842730b",
+      "bytes": 2307
+    },
+    "source/LpacNodeFileProbe.cs": {
+      "sha256": "6c5710262ed70942cea8d82fd127b1203e77f7d1d00ee3ed84fdfc9de37c2f61",
+      "bytes": 2689
+    },
+    "source/LpacOwnedRegistryGuard.cs": {
+      "sha256": "fda4bfca0dec7cad70b13f1d1dfa85d52a4974b22ddb5ac612ce3fb7a5ff5688",
+      "bytes": 4323
+    },
+    "source/LpacParentLifetime.cs": {
+      "sha256": "bf66eb97a15510df75cce7d3020bd5c1ea10b9f61645596614b029c6bcf8a066",
+      "bytes": 5262
+    },
+    "source/LpacPrivateRegistryChild.cs": {
+      "sha256": "d11ebe0d2da85430b8dc8348c702f8cfd823def3443853326d5cd3dec9c820b6",
+      "bytes": 5516
+    },
+    "source/LpacProbeJson.cs": {
+      "sha256": "bed808509ae4271841ff398845c016f5ad2d74294dabcd054d86f3b63481ab24",
+      "bytes": 2471
+    },
+    "source/LpacProductionPlan.cs": {
+      "sha256": "98bd69fc7391631cbb857b0fcb0af090992f33affc470d5cae88389c01a26b70",
+      "bytes": 9784
+    },
+    "source/LpacProductionRecovery.cs": {
+      "sha256": "07c0734e1b4bc789245582d9acd4de6fdf01cf3b958b4a91f929b12410de7c30",
+      "bytes": 11282
+    },
+    "source/LpacReadTrace.cs": {
+      "sha256": "3ab8c2812cfa959afe30519158ec2fb4cfe519301e37f7ecd7ee544af43f6c64",
+      "bytes": 21879
+    },
+    "source/LpacRegistryReadCanary.cs": {
+      "sha256": "a82a88cd87514e44bc1128026edab2c9f0ec86a9ad0417cc0f37a52927fa8b9e",
+      "bytes": 12030
+    },
+    "source/LpacRegistryReadCapability.cs": {
+      "sha256": "9e6f70d6ee48710d9b812cc1a5d5835631e4993113b17f82656551cca0bb1078",
+      "bytes": 2563
+    },
+    "source/LpacResourceProbe.cs": {
+      "sha256": "d6bfb1d182519864484c82776f1671c6e6295bc77bb7fb8e855902903f64150c",
+      "bytes": 5874
+    },
+    "source/LpacSingleBoundaryFixture.cs": {
+      "sha256": "c22f2582f9b9ae72b761d0e4e3182c796d0c5773a0acdff8d0bcbb024c596188",
+      "bytes": 9514
+    },
+    "source/LpacSingleNativeBoundary.cs": {
+      "sha256": "f4627b10b6c66f31a930cb9feeb0cc07661605459ba7338e3d9451b5210dc0f7",
+      "bytes": 5070
+    },
+    "source/LpacSingleProcessProbe.cs": {
+      "sha256": "c9ffcd3ec1c8aa24c928b40fdd22cb458bab860b0d5cbb6f68dc76617ebec912",
+      "bytes": 10907
+    },
+    "source/LpacStartupPoc.cs": {
+      "sha256": "18e083c84eb898271fe130086480db28a4ba416091412fa5d5da3c779ec15d96",
+      "bytes": 59184
+    },
+    "source/LpacUncProbe.cs": {
+      "sha256": "8c65b1d2a657e8b7719b874bc07b3986ba0d2a7034da7191118ea06ef27a9367",
+      "bytes": 3387
+    },
+    "source/NativeProductPlanRegression.cs": {
+      "sha256": "6d2815aadad3e1744a4f9c1fde75593678bf1c2949b029f66bb1341e4f9141b1",
+      "bytes": 6034
+    },
+    "specforge-verify.exe": {
+      "sha256": "1617ff5a34048c4cf9362a55ff807b170a5427f14ecc33441a8235497b38cb30",
+      "bytes": 343040
+    },
+    "NativeProductPlanRegression.exe": {
+      "sha256": "52eb6d2276b7e86cc36c3f298082ee770f2aa05346ee68b965e0b817a04b8431",
+      "bytes": 352256
+    }
+  }
+}

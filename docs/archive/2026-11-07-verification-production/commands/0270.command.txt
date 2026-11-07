@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/prepare-patch-version-1.0.23.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Prepare next patch source version consistently across root12 packages SPS header and lock-only workspace metadata",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES exactly15 version identity files; EXTERNAL_EVIDENCE_WRITES raw originals, version manifest and receipts; no dependency install/native assets/original/user deployment writes",
+  "started_utc": "2026-11-07T05:59:23.064Z"
+}

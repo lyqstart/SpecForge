@@ -1,0 +1,108 @@
+{
+  "utc": "2026-11-07T07:35:14.197Z",
+  "sessions": [
+    {
+      "id": "ses_e4b1428b1ffehscC31NP5Y5eQp",
+      "status": {
+        "type": "busy"
+      }
+    },
+    {
+      "id": "ses_e4b12d213ffeXIe5IG25AinkON",
+      "status": {
+        "type": "busy"
+      }
+    }
+  ],
+  "activity": [
+    {
+      "session": "ses_e4b1428b1ffehscC31NP5Y5eQp",
+      "messages": 6,
+      "last_message_role": "assistant",
+      "last_parts": [
+        {
+          "type": "step-start"
+        },
+        {
+          "type": "reasoning",
+          "text_characters": 1556
+        },
+        {
+          "type": "text",
+          "text_characters": 478
+        },
+        {
+          "type": "tool",
+          "tool": "task",
+          "status": "running"
+        }
+      ],
+      "last_tools": [
+        {
+          "tool": "sf_gate_run",
+          "status": "error"
+        },
+        {
+          "tool": "read",
+          "status": "completed",
+          "input_path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\gates\\verification_gate.json"
+        },
+        {
+          "tool": "task",
+          "status": "running"
+        }
+      ]
+    },
+    {
+      "session": "ses_e4b12d213ffeXIe5IG25AinkON",
+      "messages": 4,
+      "last_message_role": "assistant",
+      "last_parts": [
+        {
+          "type": "step-start"
+        },
+        {
+          "type": "reasoning",
+          "text_characters": 988
+        },
+        {
+          "type": "text",
+          "text_characters": 0
+        }
+      ],
+      "last_tools": [
+        {
+          "tool": "read",
+          "status": "completed",
+          "input_path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\evidence\\evidence_manifest.json"
+        },
+        {
+          "tool": "read",
+          "status": "completed",
+          "input_path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\.semantic_closure.json"
+        },
+        {
+          "tool": "grep",
+          "status": "completed"
+        }
+      ]
+    }
+  ],
+  "records": [
+    {
+      "session": "ses_e4b1428b1ffehscC31NP5Y5eQp",
+      "agent": "sf-orchestrator",
+      "message": "msg_1b4ec1f04001B3UL03x32nqZbD",
+      "call_id": "call_db325f3c3fb848869665107b",
+      "tool": "sf_gate_run",
+      "status": "error",
+      "input": {
+        "gate_type": "verification",
+        "work_item_id": "WI-0001"
+      },
+      "result": null,
+      "error": "Daemon request timed out (30000ms)"
+    }
+  ],
+  "scope": "Read-only local Kernel projection; actual tool data, not proof that full Gates passed"
+}

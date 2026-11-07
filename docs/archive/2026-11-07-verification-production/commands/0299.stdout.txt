@@ -1,0 +1,1 @@
+{"prompt":"original-verification-prompt-03.txt","expected_state":"verification_running","formal_facts":22,"history_loaded":false,"professional_artifact_authored":false}

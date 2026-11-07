@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/record-external-model-consent.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Record explicit user minimum-context GLM consent and reconcile unique execution status",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES consent record and command receipts; REPOSITORY_TRACKED_WRITES docs/project-status.md; no model launch or original writes",
+  "started_utc": "2026-11-07T05:37:38.753Z"
+}

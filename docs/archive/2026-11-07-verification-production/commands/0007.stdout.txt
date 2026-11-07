@@ -1,0 +1,55 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/opencode-adapter
+
+stdout | tests/OpenCodeHttpRuntimeClient.test.ts > OpenCodeHttpRuntimeClient > makes the Adapter use real runtime session ids and transport calls
+[2026-11-07T00:25:20.409Z] [SPAWNAGENT] [INFO] Session created successfully { sessionId: 'oc-real-session', spawnIntentId: 'intent-1' }
+[EventLogger] session.lifecycle {
+  eventId: 'evt-1794011120411-1-e7mwdn0',
+  ts: '2026-11-07T00:25:20.411Z',
+  projectId: 'opencode-adapter',
+  payload: {
+    sessionId: 'oc-real-session',
+    spawnIntentId: 'intent-1',
+    event: 'created',
+    reason: undefined,
+    timestamp: '2026-11-07T00:25:20.411Z'
+  }
+}
+
+stdout | tests/OpenCodeHttpRuntimeClient.test.ts > OpenCodeHttpRuntimeClient > makes the Adapter use real runtime session ids and transport calls
+[EventLogger] session.lifecycle {
+  eventId: 'evt-1794011120414-2-k3mca5x',
+  ts: '2026-11-07T00:25:20.414Z',
+  projectId: 'opencode-adapter',
+  payload: {
+    sessionId: 'oc-real-session',
+    spawnIntentId: 'intent-1',
+    event: 'cancelled',
+    reason: 'done',
+    timestamp: '2026-11-07T00:25:20.414Z'
+  }
+}
+
+stdout | tests/OpenCodeHttpRuntimeClient.test.ts > OpenCodeHttpRuntimeClient > bridges matching native runtime events into the translated adapter queue
+[2026-11-07T00:25:20.416Z] [SPAWNAGENT] [INFO] Session created successfully { sessionId: 'runtime-s1', spawnIntentId: 'intent-events' }
+[EventLogger] session.lifecycle {
+  eventId: 'evt-1794011120416-1-ryjtfro',
+  ts: '2026-11-07T00:25:20.416Z',
+  projectId: 'opencode-adapter',
+  payload: {
+    sessionId: 'runtime-s1',
+    spawnIntentId: 'intent-events',
+    event: 'created',
+    reason: undefined,
+    timestamp: '2026-11-07T00:25:20.416Z'
+  }
+}
+
+ ✓ tests/OpenCodeHttpRuntimeClient.test.ts (4 tests) 28ms
+ ✓ tests/OpenCodeToolInvocation.test.ts (18 tests) 16ms
+
+ Test Files  2 passed (2)
+      Tests  22 passed (22)
+   Start at  08:25:19
+   Duration  1.09s (transform 185ms, setup 0ms, collect 469ms, tests 44ms, environment 0ms, prepare 216ms)
+

@@ -1,0 +1,4 @@
+16 |   const reservation=JSON.parse(await fs.readFile(path.join(root,'reservation.json'),'utf8')));
+                                                                                                 ^
+error: Expected ";" but found ")"
+    at D:\code\SpecForge\docs\archive\2026-11-07-verification-production\create-public-fixture.ts:16:93

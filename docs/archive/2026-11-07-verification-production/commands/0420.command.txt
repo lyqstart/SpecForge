@@ -1,0 +1,14 @@
+{
+  "executable": "specforge",
+  "args": [
+    "daemon",
+    "status",
+    "--json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Repeat identical ordinary CLI status in host environment after restricted localhost access refusal",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES sealed host status result; RUNTIME_OBSERVER_WRITES status read only; no state transitions",
+  "started_utc": "2026-11-07T09:05:50.035Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": []
+}

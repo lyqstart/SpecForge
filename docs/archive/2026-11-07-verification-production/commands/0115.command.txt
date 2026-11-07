@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/formal-version-git-closure-regression.test.ts",
+    "tests/unit/sf-v11-close-gate.test.ts",
+    "tests/unit/close-gate-closure.test.ts",
+    "tests/unit/close-gate-semantic-closure.test.ts",
+    "tests/unit/close-gate-no-code-audit.test.ts",
+    "tests/unit/verification-gate-historical-attempt-reconcile.test.ts",
+    "tests/unit/code-only-close-gate-overlay.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "formal-version-close-common-consumer-affected-regressions",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES self-owned unit temp/Git fixtures; EXTERNAL_EVIDENCE_WRITES receipts; no original or user installation",
+  "started_utc": "2026-11-07T02:56:27.331Z"
+}

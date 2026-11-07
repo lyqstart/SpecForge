@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-public-trials.cjs",
+    "14",
+    "17"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-source-Git-first-deviation-proof",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable public-native-evidence17 installed14 exact diagnostics and complete installer records; private key omitted; no original/user install",
+  "started_utc": "2026-11-07T04:25:43.534Z"
+}

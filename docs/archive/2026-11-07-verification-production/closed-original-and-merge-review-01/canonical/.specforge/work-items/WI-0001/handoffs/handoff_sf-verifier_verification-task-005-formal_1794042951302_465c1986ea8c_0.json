@@ -1,0 +1,22 @@
+{
+  "boundary_statement": "Verifier executed only the two formal D23 verification attempts; no artifacts written, no state transitions, no runtime traces read, no code or governance files modified.",
+  "duration_ms": null,
+  "escalation_signals": [],
+  "findings": [
+    "Integration idx0: plan_id=fc37be27c0af9380487bb836e4899951ef947750cdc804f9e99ef2d4ee20d233, attempt_record_id=0530ac36c4d284d6bfb0936edad760019f8880607bf50e7d542925eeab2b899c, receipt_id=17b75cadae7af1295c2e14c0596097ed35b4f1b4f486603b6b964bbe82c87c90, exit_code=0, outcome=passed, cleanup_proved=true. Output: TAP v13, ok 1-4 (A1 greet('Ada')='Hello, Ada!', A2 greet('Grace')='Hello, Grace!', A3 greet('')='Hello, world!', A4 greet('  ')='Hello, ' + name + '!' form), # tests 4, # pass 4, # fail 0. Matches expected pattern.",
+    "E2E idx0: plan_id=17f1e2de0a1b18d65eb69a4ca0e82d266e48396a9ab1b9d441922b6f1246dc7f, attempt_record_id=0cd79df9a07b53dceb8735078d1c1dd781134463823da063f4a051c0bb2352ad, receipt_id=2a83a293a5b44f56b29b34a852f4acc9df2c2faf9efdce2922412d91a188e0e5, exit_code=0, outcome=passed, cleanup_proved=true. Output: 'E2E-OK\\n', stderr empty, output_complete=true. Matches expected pattern.",
+    "Both attempts executed sequentially via sf_verification_run prepare->run with exact 3-param contract; pass judgment based solely on real receipt_id, numeric exit code, and full output vs expected pattern."
+  ],
+  "inputs_read": [
+    "plan_id:fc37be27c0af9380487bb836e4899951ef947750cdc804f9e99ef2d4ee20d233 (integration idx0)",
+    "plan_id:17f1e2de0a1b18d65eb69a4ca0e82d266e48396a9ab1b9d441922b6f1246dc7f (e2e idx0)"
+  ],
+  "next_step_recommendation": "Proceed to write evidence_manifest and verification_report referencing receipt IDs 17b75cadae7af1295c2e14c0596097ed35b4f1b4f486603b6b964bbe82c87c90 (integration) and 2a83a293a5b44f56b29b34a852f4acc9df2c2faf9efdce2922412d91a188e0e5 (e2e), then semantic closure via Orchestrator.",
+  "outputs_written": [],
+  "schema_version": "1.0",
+  "stage": "verification-task-005-formal",
+  "timestamp": "2026-11-07T00:00:00Z",
+  "unknowns": [],
+  "agent": "sf-verifier",
+  "work_item_id": "WI-0001"
+}

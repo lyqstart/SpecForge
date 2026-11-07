@@ -1,0 +1,22 @@
+
+ RUN  v4.1.5 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/verification-evidence-producer.test.ts (12 tests | 10 failed) 189ms
+     × keeps a real-style evidence alignment work_log in its archive at verification_running 33ms
+     × keeps a real-style evidence alignment work_log in its archive at verification_done 13ms
+     × never treats a work_log topic trigger-result as a canonical artifact selector 9ms
+     × never treats a work_log topic candidate-manifest as a canonical artifact selector 12ms
+     × never treats a work_log topic trace-delta as a canonical artifact selector 10ms
+     × never treats a work_log topic impact-analysis as a canonical artifact selector 13ms
+     × never treats a work_log topic change-classification as a canonical artifact selector 12ms
+     × never treats a work_log topic task-plan as a canonical artifact selector 12ms
+     × never treats a work_log topic merge-report as a canonical artifact selector 11ms
+     × never treats a work_log topic evidence-manifest as a canonical artifact selector 14ms
+ ❯ tests/unit/merge-report-owner.test.ts (4 tests | 1 failed) 25ms
+     × keeps work_log separate from the Merge Runner report even when its run_id says merge-report 20ms
+
+ Test Files  2 failed (2)
+      Tests  11 failed | 5 passed (16)
+   Start at  15:44:59
+   Duration  3.23s (transform 1.35s, setup 0ms, import 2.20s, tests 214ms, environment 0ms)
+

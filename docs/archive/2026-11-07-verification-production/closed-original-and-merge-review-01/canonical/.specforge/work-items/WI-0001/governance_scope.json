@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0001",
+  "active": true,
+  "affected_modules": [
+    "CORE"
+  ],
+  "allowed_write_files": [
+    "README.md",
+    "package.json",
+    "src/greet.ts",
+    "tests/greet.test.ts",
+    "tsconfig.json"
+  ],
+  "architecture_refs": [
+    "ARCH-CORE-001",
+    "ARCH-CORE-002",
+    "ARCH-CORE-003",
+    "ARCH-CORE-004"
+  ],
+  "data_model_refs": [
+    "DATA-CORE-001",
+    "DATA-CORE-002",
+    "DATA-CORE-003"
+  ],
+  "design_refs": [
+    "DD-CORE-001",
+    "DD-CORE-002",
+    "DD-CORE-003",
+    "DD-CORE-004",
+    "DD-CORE-005",
+    "DD-CORE-006"
+  ],
+  "project_contract_refs": [],
+  "module_contract_refs": [
+    "INV-CORE-001",
+    "INV-CORE-002",
+    "INV-CORE-003",
+    "PI-CORE-001"
+  ],
+  "project_spec_version": "PSV-0002",
+  "impact_scope_hash": "a65e37bbb77eca9b037c838b04be3c2d6c2f22b066dbc8a3d5283453ee70ca75",
+  "frozen_at": "2026-11-03T15:40:04.116Z",
+  "version_control_mode": "git",
+  "git_head_at_freeze": "8a692e88c0823984647622294f5199c18bb0c587",
+  "git_branch_at_freeze": "codex/greet-library-wi-0001"
+}

@@ -1,0 +1,1 @@
+{"snapshot":"original-current-execution-coverage-1794043059517.json","declared_commands":22,"implementation_covered":0,"formal_covered":22,"rejected_run_records":0,"common_consumer_acceptance_claimed":false}

@@ -1,0 +1,12 @@
+{
+  "executable": "C:/Users/lyq/.config/opencode/sf-user/bin/specforge.exe",
+  "args": [
+    "daemon",
+    "status",
+    "--json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "readonly-user-installed-daemon-status-before-upgrade",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES status only; RUNTIME_OBSERVER_WRITES CLI status observation; no installation/original writes",
+  "started_utc": "2026-11-07T03:53:49.349Z"
+}

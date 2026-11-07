@@ -1,0 +1,20 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/build-release-runtime-artifacts.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Build current1.0.23 native CLI Daemon and pinned verification assets from committed consumer source",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES none; RUNTIME_OBSERVER_WRITES ignored release/bin artifacts only; EXTERNAL_EVIDENCE_WRITES sealed build receipt; global1.0.22 assets unchanged",
+  "started_utc": "2026-11-07T07:28:56.478Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\scripts\\build-release-runtime-artifacts.ts",
+      "sha256": "c40cda5ca88e7672e3073bba539427db1a97b873f016315f6080ff1f1b73ce12",
+      "size": 578,
+      "extension": ".ts"
+    }
+  ]
+}

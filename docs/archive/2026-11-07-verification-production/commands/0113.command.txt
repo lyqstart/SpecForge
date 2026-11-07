@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-public-trials.cjs",
+    "05",
+    "04"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-source1.0.22-genuine-formal-producer-consumer-matrix",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable native/trial snapshots excluding owner key and Node copies; product/original unchanged",
+  "started_utc": "2026-11-07T02:51:52.153Z"
+}

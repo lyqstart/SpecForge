@@ -1,0 +1,22 @@
+TAP version 13
+# Subtest: name
+ok 1 - name
+  ---
+  duration_ms: 1.109
+  type: 'test'
+  ...
+# Subtest: empty
+ok 2 - empty
+  ---
+  duration_ms: 0.1726
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 61.5487

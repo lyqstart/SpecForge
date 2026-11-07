@@ -1,0 +1,7 @@
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/installer/verify-tool-schemas.test.ts [ tests/unit/installer/verify-tool-schemas.test.ts ]
+Error: EPERM: operation not permitted, rename 'C:\Users\lyq\AppData\Local\Packages\sandbox.{fdff6163-bbe6-4d77-ac0f-ee0f239fa64d}\AC\Temp\dLwtqjSMtz4WFnphOUCNA\ssr\.tmp-1794019700536-jc64aildt' -> 'C:\Users\lyq\AppData\Local\Packages\sandbox.{fdff6163-bbe6-4d77-ac0f-ee0f239fa64d}\AC\Temp\dLwtqjSMtz4WFnphOUCNA\ssr\1056e2adb0f7c1db181ad8ad07fd05453acbcbef'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

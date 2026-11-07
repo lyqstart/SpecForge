@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/record-routing-checkpoint.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Record confirmed routing defect repair and full-suite failure checkpoint without claiming release acceptance",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES unique status/error ledger; EXTERNAL_EVIDENCE_WRITES checkpoint09/sealed receipt; active EXP17 separately strengthened",
+  "started_utc": "2026-11-07T07:49:59.810Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\record-routing-checkpoint.cjs",
+      "sha256": "b8d40eab604f29ea80f5bee63a29ac4ba64abcdb807b682c0807cc84b9cccd00",
+      "size": 7352,
+      "extension": ".cjs"
+    }
+  ]
+}

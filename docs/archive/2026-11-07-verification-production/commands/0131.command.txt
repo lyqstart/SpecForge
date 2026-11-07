@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/initialize-public-kernel-fixture.cjs",
+    "07",
+    "0129"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "reserve-invocation-lease-http-lifetime-fixture07",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES self-owned ignored build0129 assets/tool copies; EXTERNAL_EVIDENCE_WRITES fixture identity; original untouched",
+  "started_utc": "2026-11-07T03:27:05.936Z"
+}

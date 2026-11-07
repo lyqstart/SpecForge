@@ -1,0 +1,93 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/verification-runtime-plan.test.ts (8 tests) 22167ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > retains the legal code-only not_applicable merge path  2279ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > binds canonical WI-owned Tasks even when the Project Spec merge manifest has no Task entry  2517ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > rejects an actual role mismatch and caller-supplied commands before private writes  335ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > does not reuse an actual invocation or accept changed source/approved Tasks  4574ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > revokes only the independent verification grant and blocks a new Attempt  2352ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > prepares immutable fixed config and can cancel it under HardStop without launching anything  3078ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > recovers an authenticated interrupted preparation and refuses unknown extra files  2442ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > cancels active work and waits for its receipt before completing graceful shutdown (unit backend)  4589ms
+ ✓ tests/unit/verification-source-snapshot.test.ts (4 tests) 7233ms
+   ✓ verification raw source and Git identity > captures current raw input and rejects a changed source without invoking clean filters  1340ms
+   ✓ verification raw source and Git identity > rejects undeclared untracked code and hardlinked tracked input  921ms
+   ✓ verification raw source and Git identity > binds branch, index and repository configuration  2958ms
+   ✓ verification raw source and Git identity > freezes only reachable code and package metadata, without reading unrelated tracked files  2013ms
+ ✓ tests/unit/project-session-bootstrap.test.ts (15 tests) 618ms
+ ✓ tests/unit/verification-owner-store.test.ts (14 tests) 388ms
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should CAS-store oversized JSON body with data field and return 200 (not 413)
+Handshake file written to: C:\Users\lyq\AppData\Local\Temp\specforge-http-cas-xWleTQ\specforge-user\runtime\handshake.json
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should CAS-store oversized JSON body with data field and return 200 (not 413)
+[PAYLOAD] Stored oversized payload in CAS: blob://90f9e9e0fb0b427981135e1418ef5c02a367c092e832e037b65204bdd4d28ab6 (66610 bytes)
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should CAS-store oversized JSON body with data field and return 200 (not 413)
+[PAYLOAD] CAS compression successful, body reduced to 240 bytes
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should CAS-store oversized JSON body with data field and return 200 (not 413)
+Cleaning up handshake file and releasing lock...
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should CAS-store oversized JSON body with data field and return 200 (not 413)
+Handshake file deleted: C:\Users\lyq\AppData\Local\Temp\specforge-http-cas-xWleTQ\specforge-user\runtime\handshake.json
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should CAS-store oversized JSON body with data field and return 200 (not 413)
+Cleanup completed
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 when CAS store fails
+Handshake file written to: C:\Users\lyq\AppData\Local\Temp\specforge-http-cas-lrr66u\specforge-user\runtime\handshake.json
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 when CAS store fails
+Cleaning up handshake file and releasing lock...
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 when CAS store fails
+Handshake file deleted: C:\Users\lyq\AppData\Local\Temp\specforge-http-cas-lrr66u\specforge-user\runtime\handshake.json
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 when CAS store fails
+Cleanup completed
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should NOT trigger CAS for body at exactly maxSize (64 KiB)
+Handshake file written to: C:\Users\lyq\AppData\Local\Temp\specforge-http-cas-wjw1pc\specforge-user\runtime\handshake.json
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should NOT trigger CAS for body at exactly maxSize (64 KiB)
+Cleaning up handshake file and releasing lock...
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should NOT trigger CAS for body at exactly maxSize (64 KiB)
+Handshake file deleted: C:\Users\lyq\AppData\Local\Temp\specforge-http-cas-wjw1pc\specforge-user\runtime\handshake.json
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should NOT trigger CAS for body at exactly maxSize (64 KiB)
+Cleanup completed
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 for oversized non-JSON body
+Handshake file written to: C:\Users\lyq\AppData\Local\Temp\specforge-http-cas-FnBkXJ\specforge-user\runtime\handshake.json
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 for oversized non-JSON body
+Cleaning up handshake file and releasing lock...
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 for oversized non-JSON body
+Handshake file deleted: C:\Users\lyq\AppData\Local\Temp\specforge-http-cas-FnBkXJ\specforge-user\runtime\handshake.json
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 for oversized non-JSON body
+Cleanup completed
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 for oversized JSON without data field
+Handshake file written to: C:\Users\lyq\AppData\Local\Temp\specforge-http-cas-bZmBCM\specforge-user\runtime\handshake.json
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 for oversized JSON without data field
+Cleaning up handshake file and releasing lock...
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 for oversized JSON without data field
+Handshake file deleted: C:\Users\lyq\AppData\Local\Temp\specforge-http-cas-bZmBCM\specforge-user\runtime\handshake.json
+
+stdout | src/http/HTTPServer.test.ts > CAS compression for oversized payloads > should return 413 for oversized JSON without data field
+Cleanup completed
+
+ ✓ src/http/HTTPServer.test.ts (13 tests) 169ms
+ ✓ tests/unit/verifier-guidance-execution-boundary.test.ts (3 tests) 12ms
+
+ Test Files  6 passed (6)
+      Tests  57 passed (57)
+   Start at  10:46:13
+   Duration  36.40s (transform 1.59s, setup 0ms, collect 3.49s, tests 30.59s, environment 1ms, prepare 935ms)
+

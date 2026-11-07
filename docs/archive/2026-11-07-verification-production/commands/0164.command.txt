@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-public-trials.cjs",
+    "11",
+    "11"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-installed-professional-agent-native-matrix",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable installed fixture11 public-native-evidence11; private key omitted; no original",
+  "started_utc": "2026-11-07T03:56:38.801Z"
+}

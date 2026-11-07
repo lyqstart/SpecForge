@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/prepare-local-main-integration.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Freeze EOL-sensitive raw sources and verify exact Git/native/remote baseline before local-main checkout",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES flat raw snapshots/integration plan; no Git refs or original/global writes",
+  "started_utc": "2026-11-07T08:34:36.912Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\prepare-local-main-integration.cjs",
+      "sha256": "44dce33464966077784d3cfbaaff826ae74a8d354ed3dfe34019459876e84123",
+      "size": 3747,
+      "extension": ".cjs"
+    }
+  ]
+}

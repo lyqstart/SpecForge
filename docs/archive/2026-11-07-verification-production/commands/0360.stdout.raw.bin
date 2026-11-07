@@ -1,0 +1,16 @@
+
+ RUN  v4.1.5 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/git-detached-bootstrap.test.ts (30 tests | 6 failed) 127148ms
+     × plans without creating refs, atomically binds two new branches and standard context, then retries idempotently 10022ms
+     × recovers an interrupted owner at refs_created without rewriting business/index or duplicating refs 10012ms
+     × recovers an interrupted owner at refs_and_head_bound without rewriting business/index or duplicating refs 10017ms
+     × recovers an interrupted owner at context_bound without rewriting business/index or duplicating refs 10016ms
+     × holds Git HEAD.lock against an actual concurrent commit, then completes safely 10014ms
+     × does not execute repository hooks or change the index 10002ms
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  6 failed | 60 passed (66)
+   Start at  15:48:56
+   Duration  139.64s (transform 2.83s, setup 0ms, import 5.48s, tests 133.25s, environment 0ms)
+

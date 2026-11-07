@@ -1,0 +1,4 @@
+[codex/verification-production a918b49c] fix: keep verification Git reads asynchronous after recovery
+ 8 files changed, 121 insertions(+), 17 deletions(-)
+ create mode 100644 packages/daemon-core/src/verification/rejection-diagnostic.ts
+ create mode 100644 packages/daemon-core/tests/unit/verification-rejection-diagnostic.test.ts

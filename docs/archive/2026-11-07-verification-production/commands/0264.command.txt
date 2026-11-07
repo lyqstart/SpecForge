@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/prepare-boundary-source-commit.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Freeze full current bytes, parent Git blobs, complete tracked diff and scope of tested module/action-guidance source before staging",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES boundary-source review, metadata/pathspec and receipts only; source and original code read-only",
+  "started_utc": "2026-11-07T05:53:33.554Z"
+}

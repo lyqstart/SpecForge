@@ -1,0 +1,19 @@
+{
+  "utc": "2026-11-07T06:48:34.958Z",
+  "sessions": [
+    {
+      "id": "ses_e4b41a68affeslS2Uq2YShzjgg",
+      "status": {
+        "type": "busy"
+      }
+    },
+    {
+      "id": "ses_e4b3edaf1ffeOeKmIsNI4Sqlrt",
+      "status": {
+        "type": "busy"
+      }
+    }
+  ],
+  "records": [],
+  "scope": "Read-only local Kernel projection; actual tool data, not proof that full Gates passed"
+}

@@ -1,0 +1,40 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/active-development-rules-contract.test.ts",
+    "tests/unit/semantic-closure-contract-alignment.test.ts",
+    "tests/unit/semantic-closure-producer-governance.test.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "Verify renderer uses a valid blocked/skipped contract and still rejects unproved passed commands",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned synthetic fixtures/cache; EXTERNAL_EVIDENCE_WRITES sealed canonical result; no Gate changes",
+  "started_utc": "2026-11-07T08:03:33.012Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\active-development-rules-contract.test.ts",
+      "sha256": "717277a79e85c8dd81d4b720af69feddc21dfe7f22b9ea00cf806beb4f2cf843",
+      "size": 10426,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 4,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\semantic-closure-contract-alignment.test.ts",
+      "sha256": "36ba85ee1dd3c73ef785526390ebfbcace1e82c659a1f42fdff894dc8a5f5eee",
+      "size": 6110,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 5,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\semantic-closure-producer-governance.test.ts",
+      "sha256": "b47fbb4ae5ff4db86b368745bea821b00fc40b707de492a163f0b77cfd98ca17",
+      "size": 9307,
+      "extension": ".ts"
+    }
+  ]
+}

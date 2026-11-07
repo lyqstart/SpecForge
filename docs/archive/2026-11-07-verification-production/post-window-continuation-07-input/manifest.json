@@ -1,0 +1,119 @@
+{
+  "utc": "2026-11-07T09:41:31.790Z",
+  "mode": "CODEX_DIRECT",
+  "run_id": "CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01",
+  "parent_window_result_sha256": "0f445c6dde63f79382bcf890f041ee64f4cf1dce7a7f01d65a6b21acac1cc1c2",
+  "state_observation": "original-state-observation-1794044410104.json",
+  "state": "verification_running",
+  "coverage": "original-current-execution-coverage-1794043059517.json",
+  "driver": "resume-original-verification-1.0.23-continuation.cjs",
+  "driver_sha256": "7bf78e127fea52c1bba392c067d38a9b5448412903ea8dbe2541c1446deee800",
+  "driver_base_sha256": "a43643c3c3383929db5dd83a1bf233ea7a2ac6c25d4670dccde67d528016a8e3",
+  "prompt_sha256": "f563758f5d35b2556efceee778ccd4e33fdd52dfd2d84704964d7df2c2dc3ccb",
+  "members": [
+    {
+      "path": "verification_report.md",
+      "sha256": "936eaf9afa5feda932c804dd16a93c58894e72430515ea55c269de4c1b1e779d",
+      "size": 38275
+    },
+    {
+      "path": "evidence/evidence_manifest.json",
+      "sha256": "f422d618bc876afd97ab4ee7dc646595b6cafa555d5485ba00816e0915b4affb",
+      "size": 29889
+    },
+    {
+      "path": ".semantic_closure.json",
+      "sha256": "60feb3fab0cbfba906be77775a927b357743c7e5df5f0d9c967ea0976acccf92",
+      "size": 13130
+    },
+    {
+      "path": "semantic_closure_report.md",
+      "sha256": "313754b3d3bc76275de3a4f7c5f7436c3bbb671b50491368bbe8cb0d58b436ee",
+      "size": 12689
+    },
+    {
+      "path": "changed_files_audit.md",
+      "sha256": "c61cc5d7cac6ddac5ac3dcd88668ee5a9ce41101a9b7774795bdd7d2c0452f2e",
+      "size": 1499
+    },
+    {
+      "path": "work_item.json",
+      "sha256": "e2e7b8400ade8311f91b8e8a79a6d8a47cb830125c137dc290b9e544080a4fd0",
+      "size": 8898
+    },
+    {
+      "path": "handoff_validation_state.json",
+      "sha256": "5021e37e9a48a6593a1aecbbd48d1196ece083279f2eefbc26a4f314045dbe10",
+      "size": 12112
+    },
+    {
+      "path": "gates/candidate_manifest_gate.json",
+      "sha256": "bbfbf64c2713ac54d057242e98ac5f7cf2c62d20b7cc1b17371bf6c7861f225a",
+      "size": 12355
+    },
+    {
+      "path": "gates/contract_integrity_gate.json",
+      "sha256": "38dfe80576b61f93eeb5fc15fbb57d8f4595af0976a716f8c6ab44e11c4f7a9d",
+      "size": 13439
+    },
+    {
+      "path": "gates/entry_gate.json",
+      "sha256": "c125086de4dfd2c351e45ac24d9941a9e50b9c90bca064aef5c581ed6783d217",
+      "size": 802
+    },
+    {
+      "path": "gates/formal_version_gate.json",
+      "sha256": "c1fe98d66b0aed7c03fa3b174aac703c8c37786d2e7d7ab06e35d7fffb0a5ec6",
+      "size": 8246
+    },
+    {
+      "path": "gates/path_policy_gate.json",
+      "sha256": "b239087960464c274e06effd3448fcc37bc3341be6830c4bbb8b82abe70e4143",
+      "size": 558
+    },
+    {
+      "path": "gates/post_merge_gate.json",
+      "sha256": "5cc9ab5684c54ac8ecc799cb8e8d6d365031e35112841ba095f9c21ed8540a57",
+      "size": 1388
+    },
+    {
+      "path": "gates/required_files_gate.json",
+      "sha256": "b46143c4038f270bb5707e0e84e8c45f761795f08664431fe57d730fb56fc18f",
+      "size": 3978
+    },
+    {
+      "path": "gates/schema_gate.json",
+      "sha256": "0ea5478a393d938769a378c41d7a874afaa57d98c1bd987d4f17ad7215e47003",
+      "size": 1778
+    },
+    {
+      "path": "gates/spec_consistency_gate.json",
+      "sha256": "b8c63dee7356805d608871e365fba4edd868d026b5349279204f6fb093f63887",
+      "size": 35931
+    },
+    {
+      "path": "gates/trace_gate.json",
+      "sha256": "02250c207b08361a52e50894fc9045a24ee17dafe7ea93b6dc7fed25655e1430",
+      "size": 17535
+    },
+    {
+      "path": "gates/verification_gate.json",
+      "sha256": "862a73d2271a453459bf6b3a4ba4f612a52a10c620f18391578809acb7d347c3",
+      "size": 65156
+    },
+    {
+      "path": "gates/workflow_selection_gate.json",
+      "sha256": "98fbaff81435715e58211b43a9574cd7619dfae7c743bdddd4dd26e55075fd38",
+      "size": 841
+    },
+    {
+      "path": "gates/workflow_specific_gate.json",
+      "sha256": "5e65afdc0c56cbe9c63283d8d5a4014a872603ed51774221e1c343f243d20757",
+      "size": 1048
+    }
+  ],
+  "prior_history_transmitted": false,
+  "credentials_read": false,
+  "native_reexecution_allowed": false,
+  "business_main_merge_authorized": false
+}

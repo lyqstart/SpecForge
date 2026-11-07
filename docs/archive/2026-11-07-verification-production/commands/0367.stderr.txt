@@ -1,0 +1,63 @@
+$ vitest run tests/unit/configuration-activation-loss.test.ts tests/unit/runtime-history-integrity.test.ts tests/unit/git-detached-bootstrap.test.ts "--maxWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+stderr | tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > consumes actual StateManager events through the real public dispatcher while preserving state and recording normal context
+[StateManager] WARNING: direct StateManager.transition() to critical state 'post_merge_verified' for 'WI-0001'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\packages\daemon-core\tests\unit\git-detached-bootstrap.test.ts:160:5
+
+stderr | tests/unit/runtime-history-integrity.test.ts > authoritative history integrity at configuration consumer > preserves a closed task and native denial after rotation and restart
+[StateManager] WARNING: direct StateManager.transition() to critical state 'closed' for 'WI-0001'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\packages\daemon-core\tests\unit\runtime-history-integrity.test.ts:51:29
+
+stderr | tests/unit/configuration-activation-loss.test.ts > missing configuration activation at the actual consumer > allows missing-record acceptance when all events are terminal (closed)
+[StateManager] WARNING: direct StateManager.transition() to critical state 'closed' for 'WI-0001'. Production code must use WorkflowEngine.transitionFull() / evidence guard before calling this. Caller: at D:\code\SpecForge\packages\daemon-core\tests\unit\configuration-activation-loss.test.ts:85:5
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > plans without creating refs, atomically binds two new branches and standard context, then retries idempotently
+Error: Test timed out in 10000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/unit/git-detached-bootstrap.test.ts:40:3
+     38| 
+     39| describe('controlled detached Git bootstrap', () => {
+     40|   it('plans without creating refs, atomically binds two new branches a…
+       |   ^
+     41|     const f = await prepared(); expect(await git(f.root, 'for-each-ref…
+     42|     const result = await executeDetachedGitBootstrap(f.execute);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > recovers an interrupted owner at refs_created without rewriting business/index or duplicating refs
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > recovers an interrupted owner at refs_and_head_bound without rewriting business/index or duplicating refs
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > recovers an interrupted owner at context_bound without rewriting business/index or duplicating refs
+Error: Test timed out in 10000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/unit/git-detached-bootstrap.test.ts:53:67
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > recovers an interrupted owner at refs_created without rewriting business/index or duplicating refs
+Error: EBUSY: resource busy or locked, rmdir 'C:\Users\lyq\AppData\Local\Temp\sf-detached-owner-sMRROk'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > recovers an interrupted owner at refs_and_head_bound without rewriting business/index or duplicating refs
+Error: EBUSY: resource busy or locked, rmdir 'C:\Users\lyq\AppData\Local\Temp\sf-detached-owner-XHlWfr'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > holds Git HEAD.lock against an actual concurrent commit, then completes safely
+Error: Test timed out in 10000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/unit/git-detached-bootstrap.test.ts:97:3
+     95|     expect(await git(f.root, 'for-each-ref', '--format=%(refname)')).t…
+     96|   });
+     97|   it('holds Git HEAD.lock against an actual concurrent commit, then co…
+       |   ^
+     98|     const f = await prepared();
+     99|     expect((await executeDetachedGitBootstrap(f.execute, { onCheckpoin…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  tests/unit/git-detached-bootstrap.test.ts > controlled detached Git bootstrap > holds Git HEAD.lock against an actual concurrent commit, then completes safely
+Error: EBUSY: resource busy or locked, rmdir 'C:\Users\lyq\AppData\Local\Temp\sf-detached-owner-UtmeJy'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+error: script "test" exited with code 1

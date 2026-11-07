@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-07T10:55:10.355Z",
+  "members": [
+    {
+      "path": "docs/project-status.md",
+      "snapshot": "0.raw",
+      "size": 7751,
+      "sha256": "4d4b48d5da6ea961d518fe565dfdfb9e8c37893c06f57c4cb030927a2a2026c4"
+    },
+    {
+      "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "snapshot": "1.raw",
+      "size": 4473441,
+      "sha256": "3d9719921886803464cce0ea8148dc77bef1d78947342488bc969e9c1aa30753"
+    }
+  ]
+}

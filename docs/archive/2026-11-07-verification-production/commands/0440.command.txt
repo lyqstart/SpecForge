@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-final-guidance-baseline.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Freeze guidance raw baseline after confirmed positive Close owner contradiction;no runtime replacement",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=raw baseline and receipts",
+  "started_utc": "2026-11-07T09:22:51.060Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\freeze-final-guidance-baseline.cjs",
+      "sha256": "c1a1df1577a84d3c2716cd4fc27249bf1b516fee502ab2f53acf6c012f923290",
+      "size": 1177,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-07T05:10:13.896Z",
+  "args": [
+    "daemon",
+    "start",
+    "--detach",
+    "--json"
+  ],
+  "status": 0,
+  "stdout": "{\"success\":true,\"message\":\"Daemon process started\",\"pid\":14576,\"executable\":\"C:\\\\Users\\\\lyq\\\\.config\\\\opencode\\\\sf-user\\\\bin\\\\specforged.exe\"}\n",
+  "stderr": "",
+  "error": null
+}

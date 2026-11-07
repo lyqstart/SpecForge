@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/read-original-state.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Independently read original authoritative WI state through installed read-only StateManager owner",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES state observation and receipts; RUNTIME_OBSERVER_WRITES Daemon read observability only; no workflow transition or model prompt",
+  "started_utc": "2026-11-07T06:10:10.950Z"
+}

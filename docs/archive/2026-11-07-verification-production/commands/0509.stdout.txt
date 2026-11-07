@@ -1,0 +1,1 @@
+{"driver":"upgrade-user-guidance-1.0.23.cjs","version":"1.0.23","changed_managed_members":["agents/sf-orchestrator.md","skills/sf-workflow-feature-spec/SKILL.md"],"native_tuple_unchanged":true,"installer_or_stop_run":false}

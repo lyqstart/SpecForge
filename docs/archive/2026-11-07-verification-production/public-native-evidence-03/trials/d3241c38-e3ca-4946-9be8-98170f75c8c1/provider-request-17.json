@@ -1,0 +1,112 @@
+{
+  "utc": "2026-11-07T02:24:39.806Z",
+  "url": "/v1/chat/completions",
+  "body": {
+    "model": "finite-model",
+    "max_tokens": 4096,
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are a finite product integration fixture. Execute only the exact single requested SpecForge tool. No other work.\nYou are powered by the model named finite-model. The exact model ID is sf-fixture/finite-model\nHere is some useful information about the environment you are running in:\n<env>\n  Working directory: D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\b1cf9d5575484f519b266e6b2673a421\\project\n  Workspace root folder: D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\b1cf9d5575484f519b266e6b2673a421\\project\n  Is directory a git repo: yes\n  Platform: win32\n  Today's date: Sat Nov 07 2026\n</env>"
+      },
+      {
+        "role": "user",
+        "content": "Execute the single requested tool once, then stop. SF_FIXTURE_REQUEST:eyJ0b29sIjoic2ZfdmVyaWZpY2F0aW9uX3BsYW4iLCJhcmdzIjp7ImFjdGlvbiI6ImNyZWF0ZSIsIndvcmtfaXRlbV9pZCI6IldJLTk5MDEiLCJ0YXNrX2lkIjoiVEFTSy1XSS05OTAxLTAwMSIsInZlcmlmaWNhdGlvbl90eXBlIjoidW5pdCIsImNvbW1hbmRfaW5kZXgiOjB9fQ=="
+      }
+    ],
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "sf_verification_plan",
+          "description": "sf-orchestrator 从已批准 Task 创建独立只读验证计划，或撤销计划、恢复中断的输入准备。Runtime 核验真实调用身份；不授予代码写权限。",
+          "parameters": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "revoke",
+                  "recover"
+                ]
+              },
+              "work_item_id": {
+                "type": "string"
+              },
+              "task_id": {
+                "type": "string"
+              },
+              "verification_type": {
+                "type": "string",
+                "enum": [
+                  "unit",
+                  "property",
+                  "integration",
+                  "e2e",
+                  "regression"
+                ]
+              },
+              "command_index": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 63
+              },
+              "plan_id": {
+                "type": "string"
+              },
+              "preparation_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "action",
+              "work_item_id"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "sf_verification_run",
+          "description": "sf-verifier 先 prepare 取得不可变 Attempt，再 run；cancel/recover 只取消或回收该 Attempt。仅使用固定单进程只读隔离，保留真实退出和中断，不推进工作流。",
+          "parameters": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": [
+                  "prepare",
+                  "run",
+                  "cancel",
+                  "recover"
+                ]
+              },
+              "work_item_id": {
+                "type": "string"
+              },
+              "plan_id": {
+                "type": "string"
+              },
+              "attempt_record_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "action",
+              "work_item_id"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": "auto",
+    "stream": true,
+    "stream_options": {
+      "include_usage": true
+    }
+  }
+}

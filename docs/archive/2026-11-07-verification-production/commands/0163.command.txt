@@ -1,0 +1,12 @@
+{
+  "executable": "git",
+  "args": [
+    "commit",
+    "-m",
+    "feat: add governed single-process verification execution"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "commit-verified-D23-product-source",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES local Git commit on codex/verification-production only; evidence remains unsealed; no merge push install original",
+  "started_utc": "2026-11-07T03:56:21.594Z"
+}

@@ -1,0 +1,14 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/execution-evidence-consumer.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "manual-prefix-cannot-claim-executable-task-subject-negative",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES common reference parser unit only; EXTERNAL_EVIDENCE_WRITES receipts; no native/original",
+  "started_utc": "2026-11-07T03:39:08.075Z"
+}

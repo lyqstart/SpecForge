@@ -1,0 +1,32 @@
+// Exact preconditions and counts preserve the previously accepted synthetic source.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+function edit(file,expected,changes){const raw=fs.readFileSync(file);if(sha(raw)!==expected)throw Error('SOURCE_DRIFT:'+file);let text=raw.toString();for(const[from,to,count]of changes){if(text.split(from).length-1!==count)throw Error('REPLACEMENT_COUNT:'+from);text=text.split(from).join(to);}const content=text.replace(/\r\n/g,'\n');return{file,raw,content,before:sha(raw),after:sha(Buffer.from(content)),changes:changes.map(([from,to,count])=>({from,to,count}))};}
+const core='packages/daemon-core/src/verification/windows/LpacStartupPoc.cs';const changes=[
+ ['// Fixed P01 probe; no caller-supplied script/argv/environment.','// Product entry accepts only its Runtime-private validated plan; legacy modes remain synthetic.\n        LpacProductionPlan product=args.Length==3&&args[0]=="--verification-plan"?LpacProductionPlan.Read(args[1],args[2]):null;\n        if(product!=null)args=new[]{"--product-single-process",product.AttemptRoot,product.NodePath};',1],
+ ['if(args.Length!=3 || (!resourceProbe&&!acceptedModes.Contains(args[0]))','if(args.Length!=3 || (product==null&&!resourceProbe&&!acceptedModes.Contains(args[0]))',1],
+ ['string scriptName=singleInline?', 'string scriptName=product!=null?product.ScriptName:singleInline?',1],
+ ['||singleBoundaryNode||singleResource;','||singleBoundaryNode||singleResource||product!=null;',1],
+ ['||resourceProbe||singleInline||singleBoundaryNode;','||resourceProbe||singleInline||singleBoundaryNode||product!=null&&product.Kind=="node-inline";',1],
+ ['&&!singleBoundaryNode&&!singleResource;','&&!singleBoundaryNode&&!singleResource&&product==null;',1],
+ ['int wallMs=resourceKind==','int wallMs=product!=null?product.WallMs:resourceKind==',1],
+ ['string parent=Path.GetFullPath(Path.Combine(Environment.CurrentDirectory,".tmp","verification-lpac"));','string parent=product!=null?Path.Combine(product.OwnerRoot,"runs"):Path.GetFullPath(Path.Combine(Environment.CurrentDirectory,".tmp","verification-lpac"));',1],
+ ['Directory.CreateDirectory(root);eventFile=', 'if(product==null)Directory.CreateDirectory(root);else{if(!CreateDirectoryW(root,IntPtr.Zero))throw new Win32Exception(Marshal.GetLastWin32Error(),"Reserve exclusive product attempt");}eventFile=',1],
+ ['if(resourceKind=="daemon-crash")parentLifetime=new LpacParentLifetime(Record);','if(resourceKind=="daemon-crash"||product!=null)parentLifetime=new LpacParentLifetime(Record,product==null?null:product.DaemonPath,product==null?null:product.DaemonHash);',1],
+ ['NewFile(Path.Combine(input,scriptName),singleBoundaryNode?', 'if(product!=null)product.CopyInputs(input);else NewFile(Path.Combine(input,scriptName),singleBoundaryNode?',1],
+ ['if(singleProcessNative)command=Quote(application);','if(singleProcessNative)command=Quote(application);\n            if(product!=null){command=product.CommandLine();Record("product_plan_bound",new{plan_id=product.PlanId,attempt_id=product.AttemptId,config_sha256=product.ConfigHash,kind=product.Kind,argv=product.Argv});}',1],
+ ['kind=singleProcessNative?', 'kind=product!=null?"product_"+product.Kind:singleProcessNative?',2],
+ ['scope=singleProcess?', 'scope=product!=null?"D23 product native control receipt; common Runtime consumer verification required":singleProcess?',1],
+ ['startup_result=result==0?(singleProcess?', 'startup_result=result==0?(product!=null?"D23_EXECUTION_OBSERVED":singleProcess?',1],
+ ['isolation_acceptance="INCOMPLETE",error=error','isolation_acceptance=product!=null?"D23_PROFILE_ENFORCED":"INCOMPLETE",error=error',1],
+ ['if(singleProcessNative){if(!LpacSingleNativeBoundary.Validate','if(product!=null){if(code!=0||parentLost||cancelled||processBudgetExceeded)throw new InvalidOperationException("PRODUCT_EXECUTION_FAILED");Record("product_execution_observed",new{plan_id=product.PlanId,application_exit_code=code,output_complete=true});}\n            else if(singleProcessNative){if(!LpacSingleNativeBoundary.Validate',1],
+ ['if((fileProbe||resourceProbe||nodeFileProbe||singleProcess)&&!parentLost)', 'if(product!=null&&!cancelled&&File.Exists(Path.Combine(root,"cancel.json"))){var cancel=new JavaScriptSerializer().Deserialize<Dictionary<string,string>>(File.ReadAllText(Path.Combine(root,"cancel.json")));if(cancel.Count!=2||cancel["plan_id"]!=product.PlanId||cancel["attempt_id"]!=product.AttemptId)throw new InvalidOperationException("PRODUCT_CANCEL_IDENTITY");cancelled=true;Check(TerminateJobObject(job,130),"Terminate product owner cancel");Record("owner_cancel",new{termination_code=130,plan_id=product.PlanId});}\n                if((fileProbe||resourceProbe||nodeFileProbe||singleProcess)&&!parentLost)',1],
+ ['public static int Main(string[] args) {','[DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)][return:MarshalAs(UnmanagedType.Bool)]static extern bool CreateDirectoryW(string path,IntPtr security);\n    public static int Main(string[] args) {',1]
+];
+const results=[edit(core,'91d52ef9d3c97d497fc600b8ef762eb8d008b9ccf4d527a849e5953fc61159d8',changes)];
+results.push(edit('packages/daemon-core/src/verification/windows/LpacParentLifetime.cs','ad272e2f06e084dc27031d0e1236a4267df59b5db685efd0cc4298c42db16225',[
+ ['internal LpacParentLifetime(Action<string,object> record){','internal LpacParentLifetime(Action<string,object> record,string productParent=null,string productHash=null){',1],
+ ['string expected="C:\\\\Users\\\\lyq\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\\\\bun\\\\bin\\\\bun.exe";', 'string expected=productParent??"C:\\\\Users\\\\lyq\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\\\\bun\\\\bin\\\\bun.exe";',1],
+ ['Hash(expected)!="0187f68d843f825a72ada4a7eca60db896ed753759a7f8252edcd31ac1bf1b9c"','Hash(expected)!=(productHash??"0187f68d843f825a72ada4a7eca60db896ed753759a7f8252edcd31ac1bf1b9c")',1]
+]));
+const snapshot=path.join(__dirname,'native-adapter-before');fs.mkdirSync(snapshot);for(const r of results)fs.writeFileSync(path.join(snapshot,path.basename(r.file)),r.raw,{flag:'wx'});for(const r of results)fs.writeFileSync(r.file,r.content);
+fs.writeFileSync(path.join(__dirname,'native-product-adaptation.json'),JSON.stringify({utc:new Date().toISOString(),results:results.map(({raw,content,...r})=>r)},null,2)+'\n',{flag:'wx'});console.log(JSON.stringify({files:results.length,inner_exit_code:0}));

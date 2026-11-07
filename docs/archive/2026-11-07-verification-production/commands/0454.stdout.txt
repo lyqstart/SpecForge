@@ -1,0 +1,1 @@
+{"directory":"session-boundary-06-01","members":11,"active":[{"id":"ses_e4ac8aae4ffeEsRWe4BP4UbhnQ","status":{"type":"busy"}}],"model_call":false,"truth_write":false}

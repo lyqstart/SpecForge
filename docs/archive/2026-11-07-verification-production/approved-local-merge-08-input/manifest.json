@@ -1,0 +1,49 @@
+{
+  "utc": "2026-11-07T10:03:27.431Z",
+  "decision_sha256": "efd2d556ed78961119feaf1508604fde421c800fbeeda59985aa5263e36edd44",
+  "source_head": "6e917aec62788a35013f02a340c8d60edaa76ae9",
+  "target_head": "8a692e88c0823984647622294f5199c18bb0c587",
+  "code": [
+    {
+      "path": "README.md",
+      "snapshot": "0000.raw",
+      "size": 508,
+      "sha256": "d57538d59da2a671680fc5cd6d0df95ccea742eaeed77bc5adb7e408a96d169b"
+    },
+    {
+      "path": "package.json",
+      "snapshot": "0001.raw",
+      "size": 182,
+      "sha256": "35aab8937d4634f75182a1b812f0b71cf9e23ede47488b317b3a7ac89fc35494"
+    },
+    {
+      "path": "src/greet.ts",
+      "snapshot": "0002.raw",
+      "size": 207,
+      "sha256": "7b8ddcc05cf84afed746d56e978563429b0ac79e03598ed359270ecd50993ec4"
+    },
+    {
+      "path": "tests/greet.test.ts",
+      "snapshot": "0003.raw",
+      "size": 690,
+      "sha256": "26d14693eccb088b0964e06f04dba9a4ea1eafc1090f73467019209d5b414981"
+    },
+    {
+      "path": "tsconfig.json",
+      "snapshot": "0004.raw",
+      "size": 243,
+      "sha256": "20b50fa167f1c62b27fc036eec23d39284041111d212b751b45e6b4e0a67d014"
+    }
+  ],
+  "prompt_sha256": "cff34b73e27d2b5d55cc80dcfe174d625e9cd2d969abe52ce143679c6b69def5",
+  "driver_sha256": "73a4df5cb39260d0ba8d0cb65e556acb25b3277bb9c70fef10af1104c399d11c",
+  "driver_base_sha256": "7bf78e127fea52c1bba392c067d38a9b5448412903ea8dbe2541c1446deee800",
+  "autocrlf_query": {
+    "exit_code": 0,
+    "stdout": "file:.git/config\tfalse\n",
+    "stderr": ""
+  },
+  "prior_history_sent": false,
+  "key_read": false,
+  "allow_remote_push": false
+}

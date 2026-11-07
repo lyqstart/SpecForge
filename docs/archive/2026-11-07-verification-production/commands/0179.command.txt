@@ -1,0 +1,15 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/verification-rejection-diagnostic.test.ts",
+    "tests/unit/verification-runtime-plan.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "bounded-private-rejection-diagnostic-regression",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES privacy-only unit fixtures; EXTERNAL_EVIDENCE_WRITES test receipt; no native or original/user install",
+  "started_utc": "2026-11-07T04:09:12.093Z"
+}

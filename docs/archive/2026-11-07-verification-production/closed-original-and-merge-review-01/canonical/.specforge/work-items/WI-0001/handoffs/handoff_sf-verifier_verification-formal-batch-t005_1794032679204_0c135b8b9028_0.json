@@ -1,0 +1,22 @@
+{
+  "agent": "sf-verifier",
+  "boundary_statement": "只读验证角色：仅执行正式 verification_run prepare/run，未写任何业务或治理文件，未调用 Gate/状态推进工具，代码权限保持撤销。",
+  "duration_ms": 0,
+  "escalation_signals": [],
+  "findings": [
+    "integration idx0 判定 pass：原声明 node --test tests/greet.test.ts，归一化为 D23 固定只读 Node 执行；真实数值 exit_code=0；TAP 输出 tests 4 / pass 4 / fail 0 / cancelled 0 / skipped 0（A1 Hello, Ada!；A2 Hello, Grace!；A3 Hello, world!；A4 空白名保持 'Hello, ' + name + '!' 形式）；cleanup_proved=true；receipt_id=575a36f175b7cfe4a22df649867a7c4e70e0869710a3d64587b9a8e1440cb344；attempt_record_id=7ce9f5e935b5e9339229f462acaaac48456da6bbbac7798aa6661871c4ab4dc1；plan_id=d493273f56b77c14473465dfb3b922ec2b64a6c4a48b3b6dfef45ec09e31481e；输出完整未截断。",
+    "e2e idx0 判定 pass：原声明 node -e \"import('./src/greet.ts').then(m => { const a = m.greet('Ada'); const b = m.greet(''); if (a !== 'Hello, Ada!' || b !== 'Hello, world!') { process.exit(1); } console.log('E2E-OK'); }).catch(() => process.exit(1))\"，归一化为同一隔离 Node 语义；真实数值 exit_code=0；stdout='E2E-OK\\n'，stderr 空，输出完整未截断；cleanup_proved=true；receipt_id=25074708ec87917bc53d6a1310b08144413b7ae70c1fa3f89249a3512e6c87ab；attempt_record_id=55b7594fb6594186d2e971e95fc05734393a621a6a2387f6c2bd15f08e931248；plan_id=2cb87c906f881b8cbae88ed36ba41a795df0558240567cd9427cb4b66135b3ba。",
+    "两次 Attempt 各消费一次，run 均省略 plan_id，prepare 返回的 attempt_id 未用作 run 参数；无 Schema 拒绝、无取消、无超限、无过期、无清理未知。"
+  ],
+  "inputs_read": [
+    "plan d493273f56b77c14473465dfb3b922ec2b64a6c4a48b3b6dfef45ec09e31481e (integration idx0)",
+    "plan 2cb87c906f881b8cbae88ed36ba41a795df0558240567cd9427cb4b66135b3ba (e2e idx0)"
+  ],
+  "next_step_recommendation": "由 Orchestrator 将两条 receipt 证据按 formal 目的登记进 evidence_manifest / verification_report，并继续 TASK-WI-0001-005 T2C 闭环的后续验证与 Gate 流程。",
+  "outputs_written": [],
+  "schema_version": "1.0",
+  "stage": "verification-formal-batch-t005",
+  "timestamp": "2026-11-07T00:00:00Z",
+  "unknowns": [],
+  "work_item_id": "WI-0001"
+}

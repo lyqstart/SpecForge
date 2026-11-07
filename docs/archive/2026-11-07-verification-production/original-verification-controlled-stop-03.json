@@ -1,0 +1,27 @@
+{
+  "utc": "2026-11-07T07:01:18.783Z",
+  "reason": "Actual original-WI repeated tool contract rejections require source diagnosis; preserve all native successes and stop invalid retries",
+  "fresh_session": "ses_e4b41a68affeslS2Uq2YShzjgg",
+  "children": [
+    "ses_e4b3edaf1ffeOeKmIsNI4Sqlrt",
+    "ses_e4b32f2e0ffePVYuvYpr6cZFYk"
+  ],
+  "events": [
+    {
+      "utc": "2026-11-07T07:01:17.307Z",
+      "session": "ses_e4b3edaf1ffeOeKmIsNI4Sqlrt",
+      "result": true
+    },
+    {
+      "utc": "2026-11-07T07:01:17.328Z",
+      "session": "ses_e4b32f2e0ffePVYuvYpr6cZFYk",
+      "result": true
+    },
+    {
+      "utc": "2026-11-07T07:01:17.707Z",
+      "session": "ses_e4b41a68affeslS2Uq2YShzjgg",
+      "result": true
+    }
+  ],
+  "original_truth_sources_directly_modified": false
+}

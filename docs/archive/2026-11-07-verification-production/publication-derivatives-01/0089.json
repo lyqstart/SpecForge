@@ -1,0 +1,131 @@
+{
+  "source": {
+    "path": "original-verification-run-04/messages-000.json",
+    "sha256": "a9e0027649a3ea1ce111d551205a4aeda9e4eb2afb5058126b27bf203c2b59c0",
+    "size": 7809
+  },
+  "method": "Native tool/input/output/Agent metadata retained; model reasoning and nested credential fields replaced by hashes. Original local copy preserved and excluded from Git publication.",
+  "data": {
+    "raw_sha256": "cc8cd03c42c3aaca1687033c9ea4590b094a1e13a0e74a47240322bb50fa00b3",
+    "raw_path": "D:\\code\\SpecForge\\.tmp\\original-verification\\28507c97-0c96-475c-9991-517d4d239b68\\messages-000.raw.json",
+    "data": [
+      {
+        "info": {
+          "id": "msg_1b4e09564001K9NtwNvy3zKtwH",
+          "sessionID": "ses_e4b1f6b30ffeGwwy3BnqOVFMw8",
+          "role": "user",
+          "time": {
+            "created": 1794035979620
+          },
+          "summary": {
+            "diffs": []
+          },
+          "agent": "sf-orchestrator",
+          "model": {
+            "providerID": "zhipuai-coding-plan",
+            "modelID": "glm-5.3",
+            "variant": "low"
+          }
+        },
+        "parts": [
+          {
+            "id": "prt_1b4e09589001xEr3l9n8pTIpHU",
+            "sessionID": "ses_e4b1f6b30ffeGwwy3BnqOVFMw8",
+            "messageID": "msg_1b4e09564001K9NtwNvy3zKtwH",
+            "type": "text",
+            "text": "恢复原项目 C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7 的同一 WI-0001。你是真实sf-orchestrator；这是新空最小上下文会话，不读取/导入任何旧会话消息，不读auth.json、owner.key、凭据、完整host-profile或其他项目。只用真实专业Agent、当前Skill及正式工具。实际用户安装仍SpecForge1.0.22、固定Windows x64/Node24.19单进程只读；源码1.0.23修复尚未部署，不能混淆。\n\n当前合法断点是verification_running。Candidate审批、PSV-0002原子合并、五文件实现/提交、Changed Files Audit、进入正式验证均已成功；代码写许可已撤销且保持。全部22条implementation及22条formal命令已经真实成功，禁止重复plan/prepare/run、改Task或重开代码写权限。业务分支codex/greet-library-wi-0001的HEAD仍f5fed085a8609f593592eca5e8035b2d1c958759，main仍8a692e88c0823984647622294f5199c18bb0c587。\n\n最重要的新事实：真实sf-verifier已通过sf_artifact_write成功写成canonical evidence/evidence_manifest.json及verification_report.md。之前界面报30秒客户端超时，实际Daemon分别在30157ms/33511ms完成，handler response的success=true，文件真实存在。外部审计者已读原字节、运行生产Report Contract/Manifest Schema，并把报告22个formal主体/命令/receipt逐项对到原Task和真实Kernel记录，报告conclusion=pass。核验SHA分别为manifest 31e8dbc3b80ae9334a1168f75f737d6846ff64277374ac9fcdb14f71af864006，report 228dfddf59a04274871b4592d5442b81289ee342518352d106947b731944ea51。这些是鉴别现存产物的事实，不是Gate已经通过。不要因为旧任务超时重写报告、重新派发生成或重复测试。\n\n请先sf_state_read确认实时权威状态，再读取上述两份规范专业产物。直接消费真实Verifier已写报告的完整结构化JSON/semantic_closure，按当前owner/Skill调用sf_semantic_closure_run以及适用Verification/Formal Version/Trace/Audit/Close流程。若流程确需专业handoff，可让真实sf-verifier只读核验既有产物并返回原始JSON/handoff，不重新编造或写覆盖结论。Orchestrator不代写专业报告。\n\n旧客户端对Gate/Close也可能30秒先超时，不能据此当作操作失败或回滚。每次只发一次；超时后先用正式读取入口核验StateManager、规范Gate报告/summary及必要owner observability，再决定下一步。Daemon观察日志位于该项目.specforge/logs/observability/daemon/dispatcher.jsonl；仅Orchestrator可为对账读取，Verifier不读取自己禁止的trace。dispatch.status=success只表示handler返回，不能单独当业务成功；看真实handler payload以及Gate的passed/required checks。状态/产物已成功的动作不重做；未知就保留unknown和原请求证据，不无限重派。后台可能仍在完成，发现旧view不能立刻再发同一写入。\n\n若Gate明确失败，读取真实失败check和上游输入，按合法owner修复，不伪造通过、不跳Gate、不手改.specforge。两个历史Get-FileHash拒绝及已存在operator_error/abandon resolution保留，不能声明历史零拒绝。至verification_done之后仅由sf_close_gate写closed；Formal Version必须由当前正式owner真实登记，不写伪造文件或使用不存在状态。\n\n业务默认main合并仍无用户确认。若到此边界，只生成真实can_merge=true的sf_git_merge_plan，展示目标/分支/实际diff和阻塞项并等待用户，禁止confirmed=true、普通git merge/push。当前目标先完成真实Gate/FV/Close，或返回精确可复核的合法断点。外部审计者会核验真实StateManager、各Gate和正式版本，不以你的总结代替。\n"
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b4e09b19001sO2mo5pXr3ivF3",
+          "sessionID": "ses_e4b1f6b30ffeGwwy3BnqOVFMw8",
+          "role": "assistant",
+          "time": {
+            "created": 1794035981081
+          },
+          "parentID": "msg_1b4e09564001K9NtwNvy3zKtwH",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-orchestrator",
+          "agent": "sf-orchestrator",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 34315,
+            "input": 34289,
+            "output": 18,
+            "reasoning": 8,
+            "cache": {
+              "read": 0,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1b4e0ccd5001naWE4aZuE70JiA",
+            "sessionID": "ses_e4b1f6b30ffeGwwy3BnqOVFMw8",
+            "messageID": "msg_1b4e09b19001sO2mo5pXr3ivF3",
+            "type": "step-start",
+            "snapshot": "0e9b52467c842a57ea1ccad581e3c3804f678e29"
+          },
+          {
+            "type": "reasoning",
+            "withheld": true,
+            "original_sha256": "131fddce33008b6287ce691af5f3017e7a7d146cae52dfc9cb755116b0cc78dc",
+            "original_size": 253
+          },
+          {
+            "id": "prt_1b4e0cdfa0019uD81v4Xg9qiK6",
+            "sessionID": "ses_e4b1f6b30ffeGwwy3BnqOVFMw8",
+            "messageID": "msg_1b4e09b19001sO2mo5pXr3ivF3",
+            "type": "tool",
+            "callID": "call_1797acb057364d3f86c4bdf6",
+            "tool": "sf_state_read",
+            "state": {
+              "status": "completed",
+              "input": {
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\n  \"success\": true,\n  \"rebuilt_from_events\": true,\n  \"work_item_id\": \"WI-0001\",\n  \"workflow_type\": \"feature_spec\",\n  \"current_state\": \"verification_running\",\n  \"created_at\": 1792905467014,\n  \"updated_at\": 1794031583349\n}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794035994139,
+                "end": 1794035994243
+              }
+            }
+          },
+          {
+            "id": "prt_1b4e0cff2001ftgWa0rLEk7VJN",
+            "sessionID": "ses_e4b1f6b30ffeGwwy3BnqOVFMw8",
+            "messageID": "msg_1b4e09b19001sO2mo5pXr3ivF3",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "0e9b52467c842a57ea1ccad581e3c3804f678e29",
+            "cost": 0,
+            "tokens": {
+              "total": 34315,
+              "input": 34289,
+              "output": 18,
+              "reasoning": 8,
+              "cache": {
+                "read": 0,
+                "write": 0
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

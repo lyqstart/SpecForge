@@ -1,0 +1,10 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/code-only-close-gate-overlay.test.ts (4 tests) 4ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  10:58:29
+   Duration  1.33s (transform 430ms, setup 0ms, collect 821ms, tests 4ms, environment 0ms, prepare 202ms)
+

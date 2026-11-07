@@ -1,0 +1,16 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/project-session-bootstrap.test.ts > project session bootstrap contract > keeps bootstrap blocked when Git cannot provide the inventory
+SystemError: Path is a directory: rm returned EISDIR (is a directory) C:\Users\lyq\AppData\Local\Temp\sf-bootstrap-git-failure-WrsuSi
+ ❯ tests/unit/project-session-bootstrap.test.ts:177:7
+    175|       expect(receipt.issues).toContain('TRACKED_FILE_LIST_UNAVAILABLE'…
+    176|     } finally {
+    177|       rmSync(directory);
+       |       ^
+    178|     }
+    179|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

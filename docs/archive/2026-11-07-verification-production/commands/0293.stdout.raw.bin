@@ -1,0 +1,18 @@
+[codex/verification-production 759cd2ff] chore(release): prepare 1.0.23 and reconcile verification evidence
+ 33 files changed, 46 insertions(+), 30 deletions(-)
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/manifest.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/bun.lock
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/docs/product-specification/specforge-product-specification.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/cli/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/configuration/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/daemon-core/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/host-profile/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/observability/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/opencode-adapter/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/permission-engine/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/scope-gate/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/service-management/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/types/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/version-unification/package.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/version-preparation-1.0.23/original/packages/workflow-runtime/package.json

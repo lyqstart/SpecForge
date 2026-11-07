@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/record-public-chain-checkpoint.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "record-public-chain-progress",
+  "expected_writes": "TRUTH_SOURCE_WRITES=docs/project-status.md current checkpoint only;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=public-chain-checkpoint.json",
+  "started_utc": "2026-11-07T01:56:36.154Z"
+}

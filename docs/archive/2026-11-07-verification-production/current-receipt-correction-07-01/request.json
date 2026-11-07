@@ -1,0 +1,21 @@
+{
+  "utc": "2026-11-07T09:49:53.612Z",
+  "session": "ses_e4a9b96f8ffeupa1lztDr9XzLQ",
+  "body": {
+    "agent": "sf-verifier",
+    "model": {
+      "providerID": "zhipuai-coding-plan",
+      "modelID": "glm-5.3"
+    },
+    "variant": "low",
+    "noReply": true,
+    "parts": [
+      {
+        "type": "text",
+        "text": "Current independent field-level audit at 2026-11-07T09:49:53.611Z (not an execution timestamp). Same sf-verifier; no test reexecution. The two rejected report requests both contain this 65-character INVALID verification_commands[15].execution_receipt_id: d4b02894c31ab8312a16b370d4fc625fbd75dd6a07af3f142797bd4d3d890838f . The canonical current Manifest EV-0016 and the independently preserved actual current native receipt agree on this exact 64-character id: d4b02894c31ab8312a16b370d4fc625fbd75dd6a0743f142797bd4c3d890838f . Subject is TASK-WI-0001-004 / unit / command_index=1. Do not guess the id from memory or pad/truncate the bad value: copy the exact canonical id above. The canonical pre-review report remains valid and unchanged because both invalid requests were NOT written. Preserve all its existing22 verification_commands and current semantic/evidence identities; only add the actual technical Contract review you performed. Do not regenerate any other receipt id, output, timestamp or command. Actual manual technical review findings remain your professional responsibility, not a human-user acceptance claim. Use your real sf_artifact_write owner and return exact results; do not write raw files, change state/permissions/code, invoke Gate, or start new verification attempts. This note contains only the current field correction, no prior-session history, credentials, private owner key or invented evidence."
+      }
+    ]
+  },
+  "consent_sha256": "f7e30620419d485d1e5456e555e5e90aa978fac0bf595483bd0ee84d474b875b",
+  "observer_effect": "One control message in existing authorized current verifier; no generation requested"
+}

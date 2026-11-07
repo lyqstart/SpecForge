@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/typescript/bin/tsc",
+    "--noEmit"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "strict-invocation-lease-and-consumer-typecheck",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES typecheck receipts only",
+  "started_utc": "2026-11-07T03:21:00.469Z"
+}

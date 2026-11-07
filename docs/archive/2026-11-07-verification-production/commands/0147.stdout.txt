@@ -1,0 +1,11 @@
+[root-test-registry] {"CURRENT_HERMETIC":49,"CURRENT_ENVIRONMENTAL":1,"MIGRATED_DUPLICATE":14,"HISTORICAL_EVIDENCE":122}
+[root-test-registry] mode=current selected=49
+
+ RUN  v4.1.5 D:/code/SpecForge
+
+
+ Test Files  49 passed (49)
+      Tests  740 passed (740)
+   Start at  11:45:25
+   Duration  33.63s (transform 1.80s, setup 0ms, import 3.62s, tests 16.45s, environment 6ms)
+

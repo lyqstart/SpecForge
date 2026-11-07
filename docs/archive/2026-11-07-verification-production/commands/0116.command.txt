@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "scripts/run-root-tests.mjs",
+    "current",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "current-authoritative-root-hermetic-release-regression",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES self-owned CURRENT_HERMETIC test fixtures/cache only; EXTERNAL_EVIDENCE_WRITES receipts; no historical suite, user install or original writes",
+  "started_utc": "2026-11-07T02:57:01.040Z"
+}

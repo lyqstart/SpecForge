@@ -1,0 +1,10 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/build-release-runtime-artifacts.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "build1.0.22-runtime-with-authenticated-invocation-lease",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES ignored CLI/Daemon/native assets; EXTERNAL_EVIDENCE_WRITES exact build hashes; no install/original",
+  "started_utc": "2026-11-07T03:25:37.641Z"
+}

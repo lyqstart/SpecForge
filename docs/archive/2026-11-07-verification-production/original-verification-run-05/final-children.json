@@ -1,0 +1,44 @@
+[
+  {
+    "id": "ses_e4b12d213ffeXIe5IG25AinkON",
+    "slug": "calm-star",
+    "projectID": "8a692e88c0823984647622294f5199c18bb0c587",
+    "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+    "path": "",
+    "parentID": "ses_e4b1428b1ffehscC31NP5Y5eQp",
+    "summary": {
+      "additions": 0,
+      "deletions": 0,
+      "files": 0
+    },
+    "cost": 0,
+    "tokens": {
+      "input": 58991,
+      "output": 29730,
+      "reasoning": 1262,
+      "cache": {
+        "read": 896256,
+        "write": 0
+      }
+    },
+    "title": "Verifier 对齐 manifest 与闭包声明 (@sf-verifier subagent)",
+    "agent": "sf-verifier",
+    "model": {
+      "id": "glm-5.3",
+      "providerID": "zhipuai-coding-plan",
+      "variant": "low"
+    },
+    "version": "1.18.35",
+    "time": {
+      "created": 1794036805100,
+      "updated": 1794037197872
+    },
+    "permission": [
+      {
+        "permission": "todowrite",
+        "pattern": "*",
+        "action": "deny"
+      }
+    ]
+  }
+]

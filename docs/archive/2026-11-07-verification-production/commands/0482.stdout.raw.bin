@@ -1,0 +1,10 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/v11-agent-skill-contract-alignment.test.ts (13 tests) 100ms
+
+ Test Files  1 passed (1)
+      Tests  13 passed (13)
+   Start at  18:09:55
+   Duration  1.29s (transform 452ms, setup 0ms, collect 833ms, tests 100ms, environment 0ms, prepare 135ms)
+

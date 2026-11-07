@@ -1,0 +1,11 @@
+{
+  "utc": "2026-11-07T04:48:14.900Z",
+  "initial_copied_sdk_version": "1.18.16",
+  "actual_sdk_version": "1.18.35",
+  "files": {
+    "node_modules/@opencode-ai/plugin/package.json": "ec2f19bee82de5645fe5e64fbb077468d9e1897c95f68e7b5149587a2a9f4fe5",
+    "node_modules/@opencode-ai/plugin/dist/index.js": "a3d26196e07062e858fc0ee44cfbddeb6143be740f9c93df4286b162a8b3e298",
+    "node_modules/@opencode-ai/plugin/dist/tool.js": "a01230d42fa1055ddb4b378e0128f156e2db07f6f6eadbf2da174eb634380b16",
+    "node_modules/zod/package.json": "67f2058ef56c9209df51e6fe0dd1395eb25af454974de2978ced56008e6fad5e"
+  }
+}

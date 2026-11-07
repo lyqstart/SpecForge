@@ -1,0 +1,119 @@
+{
+  "utc": "2026-11-07T07:05:47.840Z",
+  "project": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+  "source": "Actual installed Daemon dispatcher records and SHA-bound handler response files; unchanged canonical professional artifact bytes",
+  "results": [
+    {
+      "timestamp": "2026-11-07T06:50:06.526Z",
+      "trace_id": "sftr_20261107065006483_ab5821f87fe1",
+      "duration_ms": 24,
+      "dispatch_status": "success",
+      "handler_success": false,
+      "handler_error": "INVALID_ARTIFACT_JSON",
+      "validation_errors": [
+        "entries[0].type is required",
+        "entries[1].type is required",
+        "entries[2].type is required",
+        "entries[3].type is required",
+        "entries[4].type is required",
+        "entries[5].type is required",
+        "entries[6].type is required",
+        "entries[7].type is required",
+        "entries[8].type is required",
+        "entries[9].type is required",
+        "entries[10].type is required",
+        "entries[11].type is required",
+        "entries[12].type is required",
+        "entries[13].type is required",
+        "entries[14].type is required",
+        "entries[15].type is required",
+        "entries[16].type is required",
+        "entries[17].type is required",
+        "entries[18].type is required",
+        "entries[19].type is required",
+        "entries[20].type is required",
+        "entries[21].type is required"
+      ]
+    },
+    {
+      "timestamp": "2026-11-07T06:52:35.916Z",
+      "trace_id": "sftr_20261107065205739_0c97cd6fe5c9",
+      "duration_ms": 30157,
+      "dispatch_status": "success",
+      "handler_success": true,
+      "path": ".specforge/work-items/WI-0001/evidence/evidence_manifest.json"
+    },
+    {
+      "timestamp": "2026-11-07T06:54:12.274Z",
+      "trace_id": "sftr_20261107065412227_71658d6348c9",
+      "duration_ms": 23,
+      "dispatch_status": "success",
+      "handler_success": false,
+      "handler_error": "INVALID_VERIFICATION_REPORT_CONTRACT",
+      "validation_errors": [
+        "INVALID_VALUE: contract_reviews[0].review_method must be one of manual",
+        "INVALID_VALUE: contract_reviews[1].review_method must be one of manual",
+        "INVALID_VALUE: contract_reviews[2].review_method must be one of manual",
+        "INVALID_VALUE: contract_reviews[3].review_method must be one of manual",
+        "INVALID_VALUE: contract_reviews[4].review_method must be one of manual"
+      ]
+    },
+    {
+      "timestamp": "2026-11-07T06:55:56.169Z",
+      "trace_id": "sftr_20261107065522626_459ea25aa8fc",
+      "duration_ms": 33511,
+      "dispatch_status": "success",
+      "handler_success": true,
+      "path": ".specforge/work-items/WI-0001/verification_report.md"
+    },
+    {
+      "timestamp": "2026-11-07T07:00:39.588Z",
+      "trace_id": "sftr_20261107070039526_59a12d22273f",
+      "duration_ms": 43,
+      "dispatch_status": "success",
+      "handler_success": false,
+      "handler_error": "INVALID_ARTIFACT_JSON",
+      "validation_errors": [
+        "entries[0].type is required",
+        "entries[1].type is required",
+        "entries[2].type is required",
+        "entries[3].type is required",
+        "entries[4].type is required",
+        "entries[5].type is required",
+        "entries[6].type is required",
+        "entries[7].type is required",
+        "entries[8].type is required",
+        "entries[9].type is required",
+        "entries[10].type is required",
+        "entries[11].type is required",
+        "entries[12].type is required",
+        "entries[13].type is required",
+        "entries[14].type is required",
+        "entries[15].type is required",
+        "entries[16].type is required",
+        "entries[17].type is required",
+        "entries[18].type is required",
+        "entries[19].type is required",
+        "entries[20].type is required",
+        "entries[21].type is required"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".specforge/work-items/WI-0001/evidence/evidence_manifest.json",
+      "sha256": "31e8dbc3b80ae9334a1168f75f737d6846ff64277374ac9fcdb14f71af864006",
+      "size": 34479,
+      "mtime": "2026-11-07T06:52:35.914Z"
+    },
+    {
+      "path": ".specforge/work-items/WI-0001/verification_report.md",
+      "sha256": "228dfddf59a04274871b4592d5442b81289ee342518352d106947b731944ea51",
+      "size": 46045,
+      "mtime": "2026-11-07T06:55:56.167Z"
+    }
+  ],
+  "confirmed": "Evidence Manifest and Verification Report both completed through the real owner after the30s client deadline. Dispatch success alone was not treated as handler success; archived payload.success is true.",
+  "classification": "CONFIRMED Tool HTTP deadline/unknown-outcome reconciliation defect; exact internal latency contribution remains INSUFFICIENT_EVIDENCE.",
+  "scope": "Does not prove full Verification/Formal Version/Close Gates passed. Do not overwrite or rerun these successful artifact writes because the client timed out."
+}

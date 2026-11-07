@@ -1,0 +1,12 @@
+{
+  "executable": "git",
+  "args": [
+    "add",
+    "--pathspec-from-file=docs/archive/2026-11-07-verification-production/boundary-source-pathspec.nul",
+    "--pathspec-file-nul"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Stage only reviewed66 source and preserved legacy-baseline paths for bounded SPS8/action-guidance commit",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES Git index only for boundary-source-pathspec.nul; EXTERNAL_EVIDENCE_WRITES receipts; no original repository or installation writes",
+  "started_utc": "2026-11-07T05:54:10.970Z"
+}

@@ -1,0 +1,12 @@
+{
+  "executable": "git",
+  "args": [
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "source-repair-staged-diff-check",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES staged whitespace validation only",
+  "started_utc": "2026-11-07T04:40:10.937Z"
+}

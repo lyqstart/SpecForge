@@ -1,0 +1,156 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-SwPbVr/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-0A1xaW/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-M62vkg/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-gixFzw/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-jZPyF9/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-aORGLA/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-oiRoD3/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-tCggWU/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/verification-runtime-plan.test.ts > verification Runtime plan/permission owner (unit dependencies) > retains the legal code-only not_applicable merge path
+Error: Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-SwPbVr/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+ ❯ git tests/unit/verification-runtime-plan.test.ts:16:40
+     14| 
+     15| const roots:string[]=[], wi='WI-9002';
+     16| const git=(root:string,args:string[])=>execFileSync('git',['-c','core.…
+       |                                        ^
+     17| async function write(file:string,value:string|object){await fs.mkdir(p…
+     18| async function fixture(){
+ ❯ fixture tests/unit/verification-runtime-plan.test.ts:21:3
+ ❯ tests/unit/verification-runtime-plan.test.ts:56:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  tests/unit/verification-runtime-plan.test.ts > verification Runtime plan/permission owner (unit dependencies) > binds canonical WI-owned Tasks even when the Project Spec merge manifest has no Task entry
+Error: Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-0A1xaW/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+ ❯ git tests/unit/verification-runtime-plan.test.ts:16:40
+     14| 
+     15| const roots:string[]=[], wi='WI-9002';
+     16| const git=(root:string,args:string[])=>execFileSync('git',['-c','core.…
+       |                                        ^
+     17| async function write(file:string,value:string|object){await fs.mkdir(p…
+     18| async function fixture(){
+ ❯ fixture tests/unit/verification-runtime-plan.test.ts:21:3
+ ❯ tests/unit/verification-runtime-plan.test.ts:66:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  tests/unit/verification-runtime-plan.test.ts > verification Runtime plan/permission owner (unit dependencies) > rejects an actual role mismatch and caller-supplied commands before private writes
+Error: Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-M62vkg/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+ ❯ git tests/unit/verification-runtime-plan.test.ts:16:40
+     14| 
+     15| const roots:string[]=[], wi='WI-9002';
+     16| const git=(root:string,args:string[])=>execFileSync('git',['-c','core.…
+       |                                        ^
+     17| async function write(file:string,value:string|object){await fs.mkdir(p…
+     18| async function fixture(){
+ ❯ fixture tests/unit/verification-runtime-plan.test.ts:21:3
+ ❯ tests/unit/verification-runtime-plan.test.ts:74:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  tests/unit/verification-runtime-plan.test.ts > verification Runtime plan/permission owner (unit dependencies) > does not reuse an actual invocation or accept changed source/approved Tasks
+Error: Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-gixFzw/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+ ❯ git tests/unit/verification-runtime-plan.test.ts:16:40
+     14| 
+     15| const roots:string[]=[], wi='WI-9002';
+     16| const git=(root:string,args:string[])=>execFileSync('git',['-c','core.…
+       |                                        ^
+     17| async function write(file:string,value:string|object){await fs.mkdir(p…
+     18| async function fixture(){
+ ❯ fixture tests/unit/verification-runtime-plan.test.ts:21:3
+ ❯ tests/unit/verification-runtime-plan.test.ts:80:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  tests/unit/verification-runtime-plan.test.ts > verification Runtime plan/permission owner (unit dependencies) > revokes only the independent verification grant and blocks a new Attempt
+Error: Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-jZPyF9/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+ ❯ git tests/unit/verification-runtime-plan.test.ts:16:40
+     14| 
+     15| const roots:string[]=[], wi='WI-9002';
+     16| const git=(root:string,args:string[])=>execFileSync('git',['-c','core.…
+       |                                        ^
+     17| async function write(file:string,value:string|object){await fs.mkdir(p…
+     18| async function fixture(){
+ ❯ fixture tests/unit/verification-runtime-plan.test.ts:21:3
+ ❯ tests/unit/verification-runtime-plan.test.ts:88:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  tests/unit/verification-runtime-plan.test.ts > verification Runtime plan/permission owner (unit dependencies) > prepares immutable fixed config and can cancel it under HardStop without launching anything
+Error: Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-aORGLA/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+ ❯ git tests/unit/verification-runtime-plan.test.ts:16:40
+     14| 
+     15| const roots:string[]=[], wi='WI-9002';
+     16| const git=(root:string,args:string[])=>execFileSync('git',['-c','core.…
+       |                                        ^
+     17| async function write(file:string,value:string|object){await fs.mkdir(p…
+     18| async function fixture(){
+ ❯ fixture tests/unit/verification-runtime-plan.test.ts:21:3
+ ❯ tests/unit/verification-runtime-plan.test.ts:94:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  tests/unit/verification-runtime-plan.test.ts > verification Runtime plan/permission owner (unit dependencies) > recovers an authenticated interrupted preparation and refuses unknown extra files
+Error: Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-oiRoD3/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+ ❯ git tests/unit/verification-runtime-plan.test.ts:16:40
+     14| 
+     15| const roots:string[]=[], wi='WI-9002';
+     16| const git=(root:string,args:string[])=>execFileSync('git',['-c','core.…
+       |                                        ^
+     17| async function write(file:string,value:string|object){await fs.mkdir(p…
+     18| async function fixture(){
+ ❯ fixture tests/unit/verification-runtime-plan.test.ts:21:3
+ ❯ tests/unit/verification-runtime-plan.test.ts:105:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  tests/unit/verification-runtime-plan.test.ts > verification Runtime plan/permission owner (unit dependencies) > cancels active work and waits for its receipt before completing graceful shutdown (unit backend)
+Error: Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-tCggWU/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+ ❯ git tests/unit/verification-runtime-plan.test.ts:16:40
+     14| 
+     15| const roots:string[]=[], wi='WI-9002';
+     16| const git=(root:string,args:string[])=>execFileSync('git',['-c','core.…
+       |                                        ^
+     17| async function write(file:string,value:string|object){await fs.mkdir(p…
+     18| async function fixture(){
+ ❯ fixture tests/unit/verification-runtime-plan.test.ts:21:3
+ ❯ tests/unit/verification-runtime-plan.test.ts:115:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+

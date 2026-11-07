@@ -1,0 +1,10 @@
+{
+  "success": true,
+  "data": {
+    "success": false,
+    "error": "TOOL_INVOCATION_OWNER_NOT_PROVED",
+    "application_passed": false
+  },
+  "requestId": "ywchvbb1h28mw5ve94b",
+  "timestamp": 1794023708843
+}

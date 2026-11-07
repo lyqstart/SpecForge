@@ -1,0 +1,124 @@
+{
+  "utc": "2026-11-07T04:17:50.921Z",
+  "runtime": "bun",
+  "rows": [
+    {
+      "label": "baseline",
+      "ms": 80,
+      "success": true,
+      "root": "D:/code/SpecForge"
+    },
+    {
+      "label": "natural198-0",
+      "pid": 15748,
+      "exit": {
+        "code": 198,
+        "signal": null
+      }
+    },
+    {
+      "label": "after198-0",
+      "ms": 65,
+      "success": true,
+      "root": "D:/code/SpecForge"
+    },
+    {
+      "label": "natural198-1",
+      "pid": 36808,
+      "exit": {
+        "code": 198,
+        "signal": null
+      }
+    },
+    {
+      "label": "after198-1",
+      "ms": 128,
+      "success": true,
+      "root": "D:/code/SpecForge"
+    },
+    {
+      "label": "natural198-2",
+      "pid": 28472,
+      "exit": {
+        "code": 198,
+        "signal": null
+      }
+    },
+    {
+      "label": "after198-2",
+      "ms": 76,
+      "success": true,
+      "root": "D:/code/SpecForge"
+    },
+    {
+      "label": "natural198-3",
+      "pid": 39928,
+      "exit": {
+        "code": 198,
+        "signal": null
+      }
+    },
+    {
+      "label": "after198-3",
+      "ms": 72,
+      "success": true,
+      "root": "D:/code/SpecForge"
+    },
+    {
+      "label": "natural198-4",
+      "pid": 8976,
+      "exit": {
+        "code": 198,
+        "signal": null
+      }
+    },
+    {
+      "label": "after198-4",
+      "ms": 81,
+      "success": true,
+      "root": "D:/code/SpecForge"
+    },
+    {
+      "label": "natural198-5",
+      "pid": 33000,
+      "exit": {
+        "code": 198,
+        "signal": null
+      }
+    },
+    {
+      "label": "after198-5",
+      "ms": 97,
+      "success": true,
+      "root": "D:/code/SpecForge"
+    },
+    {
+      "label": "natural198-6",
+      "pid": 4804,
+      "exit": {
+        "code": 198,
+        "signal": null
+      }
+    },
+    {
+      "label": "after198-6",
+      "ms": 118,
+      "success": true,
+      "root": "D:/code/SpecForge"
+    },
+    {
+      "label": "natural198-7",
+      "pid": 26800,
+      "exit": {
+        "code": 198,
+        "signal": null
+      }
+    },
+    {
+      "label": "after198-7",
+      "ms": 92,
+      "success": true,
+      "root": "D:/code/SpecForge"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "agent": "sf-executor",
+  "boundary_statement": "仅追加 README.md 使用说明章节；既有内容逐字节前缀保留；未运行任何命令（D18）；未触碰其他文件或治理产物。",
+  "escalation_signals": [],
+  "findings": [
+    "追加『## Usage』章节，含 DD-CORE-005 三要素：import 示例与 greet(name: string): string 签名（第 10/12 行）、非空示例 greet(\"Ada\") → \"Hello, Ada!\"（第 18 行）、空名称示例 greet(\"\") → \"Hello, world!\"（第 24 行）",
+    "既有前缀逐字节保留：第 1 行标题与第 3 行正文原样命中，Write 全文 = 原文 + 空行 + 追加章节",
+    "示例值与测试断言逐字符一致：\"Hello, Ada!\" / \"Hello, world!\"；未描述域外输入行为，未承诺 i18n/CLI 等范围外能力；Markdown 风格与既有文档一致"
+  ],
+  "inputs_read": [
+    "README.md（原 123 bytes）",
+    ".specforge/work-items/WI-0001/candidates/tasks.md（TASK-004 段）"
+  ],
+  "next_step_recommendation": "TASK-005 一致性复核属验证阶段，建议交由 sf-verifier 处理",
+  "outputs_written": [
+    "README.md"
+  ],
+  "schema_version": "1.0",
+  "stage": "implementation",
+  "timestamp": "2026-11-03T00:00:00Z",
+  "unknowns": [],
+  "work_item_id": "WI-0001"
+}

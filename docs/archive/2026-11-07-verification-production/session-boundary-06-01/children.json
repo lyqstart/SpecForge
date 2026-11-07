@@ -1,0 +1,344 @@
+{
+  "utc": "2026-11-07T09:39:01.242Z",
+  "source_route": "/session/ses_e4ac8aae4ffeEsRWe4BP4UbhnQ/children",
+  "raw_sha256": "fbe7719e5ef955584c2b52671dff50868fbcc12c3af3a333e1695e22a6b57410",
+  "raw_size": 5688,
+  "data": [
+    {
+      "id": "ses_e4ac79b47ffeQYMIWHsEqzJBlL",
+      "slug": "happy-river",
+      "projectID": "8a692e88c0823984647622294f5199c18bb0c587",
+      "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+      "path": "",
+      "parentID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+      "summary": {
+        "additions": 0,
+        "deletions": 0,
+        "files": 0
+      },
+      "cost": 0,
+      "tokens": {
+        "input": 35766,
+        "output": 2824,
+        "reasoning": 48,
+        "cache": {
+          "read": 392128,
+          "write": 0
+        }
+      },
+      "title": "Verify TASK-001 five plans (@sf-verifier subagent)",
+      "agent": "sf-verifier",
+      "model": {
+        "id": "glm-5.3",
+        "providerID": "zhipuai-coding-plan",
+        "variant": "low"
+      },
+      "version": "1.18.35",
+      "time": {
+        "created": 1794041734328,
+        "updated": 1794041969562
+      },
+      "permission": [
+        {
+          "permission": "todowrite",
+          "pattern": "*",
+          "action": "deny"
+        }
+      ]
+    },
+    {
+      "id": "ses_e4ac3a029ffeC0rfCgzlAwB88B",
+      "slug": "shiny-harbor",
+      "projectID": "8a692e88c0823984647622294f5199c18bb0c587",
+      "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+      "path": "",
+      "parentID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+      "summary": {
+        "additions": 0,
+        "deletions": 0,
+        "files": 0
+      },
+      "cost": 0,
+      "tokens": {
+        "input": 2264,
+        "output": 254,
+        "reasoning": 35,
+        "cache": {
+          "read": 126144,
+          "write": 0
+        }
+      },
+      "title": "Verify TASK-002 four plans (@sf-verifier subagent)",
+      "agent": "sf-verifier",
+      "model": {
+        "id": "glm-5.3",
+        "providerID": "zhipuai-coding-plan",
+        "variant": "low"
+      },
+      "version": "1.18.35",
+      "time": {
+        "created": 1794041995223,
+        "updated": 1794042032774
+      },
+      "permission": [
+        {
+          "permission": "todowrite",
+          "pattern": "*",
+          "action": "deny"
+        }
+      ]
+    },
+    {
+      "id": "ses_e4ac1a40cffeNVk7jXFjZF6tiy",
+      "slug": "playful-nebula",
+      "projectID": "8a692e88c0823984647622294f5199c18bb0c587",
+      "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+      "path": "",
+      "parentID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+      "summary": {
+        "additions": 0,
+        "deletions": 0,
+        "files": 0
+      },
+      "cost": 0,
+      "tokens": {
+        "input": 3735,
+        "output": 1709,
+        "reasoning": 7,
+        "cache": {
+          "read": 318592,
+          "write": 0
+        }
+      },
+      "title": "Verify TASK-002 four plans (@sf-verifier subagent)",
+      "agent": "sf-verifier",
+      "model": {
+        "id": "glm-5.3",
+        "providerID": "zhipuai-coding-plan",
+        "variant": "low"
+      },
+      "version": "1.18.35",
+      "time": {
+        "created": 1794042125299,
+        "updated": 1794042257077
+      },
+      "permission": [
+        {
+          "permission": "todowrite",
+          "pattern": "*",
+          "action": "deny"
+        }
+      ]
+    },
+    {
+      "id": "ses_e4abf3664ffe7s0ykfZm62mnvX",
+      "slug": "jolly-forest",
+      "projectID": "8a692e88c0823984647622294f5199c18bb0c587",
+      "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+      "path": "",
+      "parentID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+      "summary": {
+        "additions": 0,
+        "deletions": 0,
+        "files": 0
+      },
+      "cost": 0,
+      "tokens": {
+        "input": 7576,
+        "output": 3523,
+        "reasoning": 54,
+        "cache": {
+          "read": 502592,
+          "write": 0
+        }
+      },
+      "title": "Verify TASK-003 five plans (@sf-verifier subagent)",
+      "agent": "sf-verifier",
+      "model": {
+        "id": "glm-5.3",
+        "providerID": "zhipuai-coding-plan",
+        "variant": "low"
+      },
+      "version": "1.18.35",
+      "time": {
+        "created": 1794042284444,
+        "updated": 1794042488050
+      },
+      "permission": [
+        {
+          "permission": "todowrite",
+          "pattern": "*",
+          "action": "deny"
+        }
+      ]
+    },
+    {
+      "id": "ses_e4abbb3f5ffeTR0oTDfttSkOSs",
+      "slug": "curious-wizard",
+      "projectID": "8a692e88c0823984647622294f5199c18bb0c587",
+      "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+      "path": "",
+      "parentID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+      "summary": {
+        "additions": 0,
+        "deletions": 0,
+        "files": 0
+      },
+      "cost": 0,
+      "tokens": {
+        "input": 6467,
+        "output": 3426,
+        "reasoning": 21,
+        "cache": {
+          "read": 490432,
+          "write": 0
+        }
+      },
+      "title": "Verify TASK-004 six plans (@sf-verifier subagent)",
+      "agent": "sf-verifier",
+      "model": {
+        "id": "glm-5.3",
+        "providerID": "zhipuai-coding-plan",
+        "variant": "low"
+      },
+      "version": "1.18.35",
+      "time": {
+        "created": 1794042514442,
+        "updated": 1794042755377
+      },
+      "permission": [
+        {
+          "permission": "todowrite",
+          "pattern": "*",
+          "action": "deny"
+        }
+      ]
+    },
+    {
+      "id": "ses_e4ab727c2ffetSiHtKlxtadMvQ",
+      "slug": "gentle-meadow",
+      "projectID": "8a692e88c0823984647622294f5199c18bb0c587",
+      "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+      "path": "",
+      "parentID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+      "summary": {
+        "additions": 0,
+        "deletions": 0,
+        "files": 0
+      },
+      "cost": 0,
+      "tokens": {
+        "input": 3706,
+        "output": 2117,
+        "reasoning": 16,
+        "cache": {
+          "read": 221760,
+          "write": 0
+        }
+      },
+      "title": "Verify TASK-005 two plans (@sf-verifier subagent)",
+      "agent": "sf-verifier",
+      "model": {
+        "id": "glm-5.3",
+        "providerID": "zhipuai-coding-plan",
+        "variant": "low"
+      },
+      "version": "1.18.35",
+      "time": {
+        "created": 1794042812477,
+        "updated": 1794042959493
+      },
+      "permission": [
+        {
+          "permission": "todowrite",
+          "pattern": "*",
+          "action": "deny"
+        }
+      ]
+    },
+    {
+      "id": "ses_e4ab4369affeQzlKLxYIHJ6vmx",
+      "slug": "clever-engine",
+      "projectID": "8a692e88c0823984647622294f5199c18bb0c587",
+      "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+      "path": "",
+      "parentID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+      "summary": {
+        "additions": 0,
+        "deletions": 0,
+        "files": 0
+      },
+      "cost": 0,
+      "tokens": {
+        "input": 31675,
+        "output": 3206,
+        "reasoning": 1473,
+        "cache": {
+          "read": 456320,
+          "write": 0
+        }
+      },
+      "title": "Aggregate verification artifacts (@sf-verifier subagent)",
+      "agent": "sf-verifier",
+      "model": {
+        "id": "glm-5.3",
+        "providerID": "zhipuai-coding-plan",
+        "variant": "low"
+      },
+      "version": "1.18.35",
+      "time": {
+        "created": 1794043005285,
+        "updated": 1794043123391
+      },
+      "permission": [
+        {
+          "permission": "todowrite",
+          "pattern": "*",
+          "action": "deny"
+        }
+      ]
+    },
+    {
+      "id": "ses_e4ab2012cffecSP5xN7chz6VnD",
+      "slug": "glowing-rocket",
+      "projectID": "8a692e88c0823984647622294f5199c18bb0c587",
+      "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+      "path": "",
+      "parentID": "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ",
+      "summary": {
+        "additions": 0,
+        "deletions": 0,
+        "files": 0
+      },
+      "cost": 0,
+      "tokens": {
+        "input": 120440,
+        "output": 67460,
+        "reasoning": 10191,
+        "cache": {
+          "read": 2271424,
+          "write": 0
+        }
+      },
+      "title": "Resume aggregate verification (@sf-verifier subagent)",
+      "agent": "sf-verifier",
+      "model": {
+        "id": "glm-5.3",
+        "providerID": "zhipuai-coding-plan",
+        "variant": "low"
+      },
+      "version": "1.18.35",
+      "time": {
+        "created": 1794043150035,
+        "updated": 1794044257818
+      },
+      "permission": [
+        {
+          "permission": "todowrite",
+          "pattern": "*",
+          "action": "deny"
+        }
+      ]
+    }
+  ]
+}

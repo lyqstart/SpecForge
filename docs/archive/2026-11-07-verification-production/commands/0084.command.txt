@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/typescript/bin/tsc",
+    "--noEmit"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "static-task-runtime-typecheck-fixed-never-narrowing",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES typecheck receipts only",
+  "started_utc": "2026-11-07T02:29:23.238Z"
+}

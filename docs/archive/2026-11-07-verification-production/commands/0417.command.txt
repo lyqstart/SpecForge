@@ -1,0 +1,12 @@
+{
+  "executable": "specforge",
+  "args": [
+    "--version"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Verify normal PATH-resolved user CLI reports installed1.0.23 and independently running service",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES sealed actual CLI output; RUNTIME_OBSERVER_WRITES daemon status read only; no model prompts",
+  "started_utc": "2026-11-07T09:03:19.920Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": []
+}

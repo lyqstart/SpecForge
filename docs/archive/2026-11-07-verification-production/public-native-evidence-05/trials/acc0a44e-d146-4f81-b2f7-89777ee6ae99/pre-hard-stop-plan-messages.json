@@ -1,0 +1,187 @@
+[
+  {
+    "info": {
+      "id": "msg_1b3f505970010ZySm7Z856yafK",
+      "sessionID": "ses_e4c0afa83ffeUVKR5hpwBEGDfL",
+      "role": "user",
+      "time": {
+        "created": 1794020541847
+      },
+      "summary": {
+        "diffs": []
+      },
+      "agent": "sf-orchestrator",
+      "model": {
+        "providerID": "sf-fixture",
+        "modelID": "finite-model"
+      }
+    },
+    "parts": [
+      {
+        "id": "prt_1b3f5059d001wT83h0wz2EtxD7",
+        "sessionID": "ses_e4c0afa83ffeUVKR5hpwBEGDfL",
+        "messageID": "msg_1b3f505970010ZySm7Z856yafK",
+        "type": "text",
+        "text": "Execute the single requested tool once, then stop. SF_FIXTURE_REQUEST:eyJ0b29sIjoic2ZfdmVyaWZpY2F0aW9uX3BsYW4iLCJhcmdzIjp7ImFjdGlvbiI6ImNyZWF0ZSIsIndvcmtfaXRlbV9pZCI6IldJLTk5MDEiLCJ0YXNrX2lkIjoiVEFTSy1XSS05OTAxLTAwMyIsInZlcmlmaWNhdGlvbl90eXBlIjoidW5pdCIsImNvbW1hbmRfaW5kZXgiOjB9fQ=="
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1b3f505cb0017vfxCOuJj8C32g",
+      "sessionID": "ses_e4c0afa83ffeUVKR5hpwBEGDfL",
+      "role": "assistant",
+      "time": {
+        "created": 1794020541899,
+        "completed": 1794020545255
+      },
+      "parentID": "msg_1b3f505970010ZySm7Z856yafK",
+      "modelID": "finite-model",
+      "providerID": "sf-fixture",
+      "mode": "sf-orchestrator",
+      "agent": "sf-orchestrator",
+      "path": {
+        "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project",
+        "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project"
+      },
+      "cost": 0,
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "finish": "tool-calls"
+    },
+    "parts": [
+      {
+        "id": "prt_1b3f507f2001UacNgkQrUlzQk1",
+        "sessionID": "ses_e4c0afa83ffeUVKR5hpwBEGDfL",
+        "messageID": "msg_1b3f505cb0017vfxCOuJj8C32g",
+        "type": "step-start",
+        "snapshot": "fe4a618d08514fefb53d8fc50d956c6f56e125f4"
+      },
+      {
+        "id": "prt_1b3f507f6001WNS1d4chDfLH6t",
+        "sessionID": "ses_e4c0afa83ffeUVKR5hpwBEGDfL",
+        "messageID": "msg_1b3f505cb0017vfxCOuJj8C32g",
+        "type": "tool",
+        "callID": "call_5e30394a6f844ca3b0e7f0c06a87331c",
+        "tool": "sf_verification_plan",
+        "state": {
+          "status": "completed",
+          "input": {
+            "action": "create",
+            "work_item_id": "WI-9901",
+            "task_id": "TASK-WI-9901-003",
+            "verification_type": "unit",
+            "command_index": 0
+          },
+          "output": "{\"success\":true,\"plan_id\":\"b4e34c3a64a62126c25adc433de2e8d0117f71fe1fb1f8e83eaede1f238b0e2d\",\"preparation_id\":\"bd94a580fdfd776b5aa57386bcb1e592db84c99770db874f65be7f6c931192c1\",\"expires_at\":\"2026-11-07T03:12:23.553Z\",\"purpose\":\"formal\",\"original_command\":\"node --test tests/waiting.test.cjs\",\"actual_argv\":[\"--no-addons\",\"--preserve-symlinks\",\"--preserve-symlinks-main\",\"--test-reporter=tap\",\"--test\",\"--test-isolation=none\",\"tests/waiting.test.cjs\"],\"profile\":\"windows-lpac-node-single-process-readonly/v1\",\"code_write_granted\":false}",
+          "title": "",
+          "metadata": {
+            "truncated": false
+          },
+          "time": {
+            "start": 1794020542469,
+            "end": 1794020544774
+          }
+        }
+      },
+      {
+        "id": "prt_1b3f511e20014Hfi5SdoQ5yHwY",
+        "sessionID": "ses_e4c0afa83ffeUVKR5hpwBEGDfL",
+        "messageID": "msg_1b3f505cb0017vfxCOuJj8C32g",
+        "type": "step-finish",
+        "reason": "tool-calls",
+        "snapshot": "fe4a618d08514fefb53d8fc50d956c6f56e125f4",
+        "cost": 0,
+        "tokens": {
+          "total": 120,
+          "input": 100,
+          "output": 20,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    ]
+  },
+  {
+    "info": {
+      "id": "msg_1b3f512ec001EH4Rl0x6AC3oHv",
+      "sessionID": "ses_e4c0afa83ffeUVKR5hpwBEGDfL",
+      "role": "assistant",
+      "time": {
+        "created": 1794020545260,
+        "completed": 1794020546421
+      },
+      "parentID": "msg_1b3f505970010ZySm7Z856yafK",
+      "modelID": "finite-model",
+      "providerID": "sf-fixture",
+      "mode": "sf-orchestrator",
+      "agent": "sf-orchestrator",
+      "path": {
+        "cwd": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project",
+        "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project"
+      },
+      "cost": 0,
+      "tokens": {
+        "total": 120,
+        "input": 100,
+        "output": 20,
+        "reasoning": 0,
+        "cache": {
+          "read": 0,
+          "write": 0
+        }
+      },
+      "finish": "stop"
+    },
+    "parts": [
+      {
+        "id": "prt_1b3f51448001nHGqVECecdSubH",
+        "sessionID": "ses_e4c0afa83ffeUVKR5hpwBEGDfL",
+        "messageID": "msg_1b3f512ec001EH4Rl0x6AC3oHv",
+        "type": "step-start",
+        "snapshot": "fe4a618d08514fefb53d8fc50d956c6f56e125f4"
+      },
+      {
+        "id": "prt_1b3f5144c001Ops6KwU5VmzLIB",
+        "sessionID": "ses_e4c0afa83ffeUVKR5hpwBEGDfL",
+        "messageID": "msg_1b3f512ec001EH4Rl0x6AC3oHv",
+        "type": "text",
+        "text": "SF_FIXTURE_TOOL_COMPLETE",
+        "time": {
+          "start": 1794020545612,
+          "end": 1794020545616
+        }
+      },
+      {
+        "id": "prt_1b3f515be001jt1DGEcLp87pYG",
+        "sessionID": "ses_e4c0afa83ffeUVKR5hpwBEGDfL",
+        "messageID": "msg_1b3f512ec001EH4Rl0x6AC3oHv",
+        "type": "step-finish",
+        "reason": "stop",
+        "snapshot": "fe4a618d08514fefb53d8fc50d956c6f56e125f4",
+        "cost": 0,
+        "tokens": {
+          "total": 120,
+          "input": 100,
+          "output": 20,
+          "reasoning": 0,
+          "cache": {
+            "read": 0,
+            "write": 0
+          }
+        }
+      }
+    ]
+  }
+]

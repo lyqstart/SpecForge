@@ -1,0 +1,41 @@
+{
+  "utc": "2026-11-07T04:27:52.431Z",
+  "runtime": "bun",
+  "rows": [
+    {
+      "kind": "timeout",
+      "pid": 10028,
+      "error": {
+        "name": "Error",
+        "code": null,
+        "killed": true,
+        "signal": "SIGTERM"
+      },
+      "stdout_bytes": 12,
+      "stderr_bytes": 0,
+      "ms": 136.8121,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "fallback": false
+    },
+    {
+      "kind": "output",
+      "pid": 33584,
+      "error": {
+        "name": "RangeError",
+        "code": "ERR_CHILD_PROCESS_STDIO_MAXBUFFER"
+      },
+      "stdout_bytes": 1024,
+      "stderr_bytes": 0,
+      "ms": 107.23039999999997,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM"
+      },
+      "fallback": false
+    }
+  ],
+  "scope": "Actual execFile callback/close, timeout and output cap compatibility; no project code or isolation acceptance"
+}

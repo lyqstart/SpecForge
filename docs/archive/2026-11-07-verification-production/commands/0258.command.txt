@@ -1,0 +1,16 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/acceptance.test.ts",
+    "tests/unit/persistence-owner-boundary.test.ts",
+    "--config",
+    "vitest.config.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\workflow-runtime",
+  "purpose": "Verify retained Workflow orchestration acceptance and current public owner boundary after actual rebuild",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES receipts; RUNTIME_OBSERVER_WRITES package test cache and owned temp fixture only",
+  "started_utc": "2026-11-07T05:47:42.602Z"
+}

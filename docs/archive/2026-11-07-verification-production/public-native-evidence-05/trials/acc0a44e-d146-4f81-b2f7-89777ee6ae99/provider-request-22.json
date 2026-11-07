@@ -1,0 +1,712 @@
+{
+  "utc": "2026-11-07T03:02:31.075Z",
+  "url": "/v1/chat/completions",
+  "body": {
+    "model": "finite-model",
+    "max_tokens": 4096,
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are a finite product integration fixture. Execute only the exact single requested SpecForge tool. No other work.\nYou are powered by the model named finite-model. The exact model ID is sf-fixture/finite-model\nHere is some useful information about the environment you are running in:\n<env>\n  Working directory: D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project\n  Workspace root folder: D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\9e514c84cc6345f4bcb1a837bdfcbe04\\project\n  Is directory a git repo: yes\n  Platform: win32\n  Today's date: Sat Nov 07 2026\n</env>"
+      },
+      {
+        "role": "user",
+        "content": "Execute the single requested tool once, then stop. SF_FIXTURE_REQUEST:eyJ0b29sIjoic2ZfY2hhbmdlZF9maWxlc19hdWRpdCIsImFyZ3MiOnsid29ya19pdGVtX2lkIjoiV0ktOTkwMSJ9fQ=="
+      },
+      {
+        "role": "assistant",
+        "content": "",
+        "tool_calls": [
+          {
+            "id": "call_2dad1657c9764180836ee6c66b6d5783",
+            "type": "function",
+            "function": {
+              "name": "sf_changed_files_audit",
+              "arguments": "{\"work_item_id\":\"WI-9901\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "call_2dad1657c9764180836ee6c66b6d5783",
+        "content": "{\n  \"success\": false,\n  \"error\": \"ALLOWED_WRITE_FILES_EMPTY: allowed_write_files and allowed_write_files_snapshot are empty.\\nAudit cannot proceed.\",\n  \"hard_stop\": true\n}"
+      }
+    ],
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "sf_artifact_write",
+          "description": "将 SpecForge Work Item 受控产物写入白名单路径。正式 WI 产物必须使用 canonical file_type，不得用 work_log 承载 trigger_result/tasks/candidate_manifest/merge_report/evidence_manifest 等 required artifact。 JSON 产物的 content 必须是 JSON 字符串；如果上层传入对象，daemon 会尽量序列化，但 Agent 应优先使用 JSON.stringify 后的字符串。 新项目第一次正式功能如果尚无有效 Project Architecture / Project Data Model，sf-design 必须在同一个 Requirement WI 中使用 candidate_architecture、candidate_data_model，并为已声明或受控新增 Module 使用 candidate_module_definition 写入真实 code_paths、使用 candidate_module_contract 建立 Module Contract；不得编造架构、数据模型或代码归属。 verification_report 必须使用 template=verification_report；daemon 会在写盘前严格校验 sf-verifier Required Output 契约，不会补齐缺失字段或接受 evidence_ref 别名；校验通过后才渲染 Markdown 并保留可机读 fenced JSON。该产物和 evidence_manifest 由 sf-verifier 拥有。 verification_evidence 由 sf-verifier 在验证前以唯一 artifact_name 受控写入 evidence/source，返回 Runtime SHA-256 与真实 recorded_at；验证清单必须引用该独立文件。verification_gate 通过后验证输入被冻结；需要修改时必须先按恢复流程回到 implementation_ready。 项目配置只能由 sf-orchestrator 在 intake_ready 使用 project_prod_environment 或 project_rules 写入 .specforge/config/，不得在 Write Guard 拒绝后改用原生写入。 file_type=work_item 时内容至少应包含 schema_version、work_item_id、status、workflow_type、workflow_path。",
+          "parameters": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "work_item_id": {
+                "description": "Work Item ID，例如 WI-0001",
+                "type": "string"
+              },
+              "module_id": {
+                "description": "模块级 Candidate 的明确 MODULE_CODE；多模块或新增模块场景必填。",
+                "type": "string"
+              },
+              "file_type": {
+                "description": "正式产物必须使用 canonical 类型；work_log 仅用于 Agent Run 过程日志。",
+                "type": "string",
+                "enum": [
+                  "work_item",
+                  "intake",
+                  "change_classification",
+                  "impact_analysis",
+                  "trigger_result",
+                  "investigation_plan",
+                  "findings_report",
+                  "tasks",
+                  "requirements",
+                  "requirements_delta",
+                  "design",
+                  "design_delta",
+                  "candidate_requirements",
+                  "candidate_architecture",
+                  "candidate_data_model",
+                  "candidate_design",
+                  "candidate_module_definition",
+                  "candidate_module_contract",
+                  "candidate_module_trace",
+                  "candidate_tasks",
+                  "trace_delta",
+                  "candidate_manifest",
+                  "merge_report",
+                  "verification_report",
+                  "evidence_manifest",
+                  "verification_evidence",
+                  "work_log",
+                  "review_report",
+                  "agent_run_result",
+                  "project_prod_environment",
+                  "project_rules"
+                ]
+              },
+              "content": {
+                "description": "文件内容；JSON artifact 必须传合法 JSON 字符串。验证通过条目必须引用真实 Runtime receipt 和 Task 主体。",
+                "type": "string"
+              },
+              "artifact_name": {
+                "description": "verification_evidence 不可覆盖的文件名，禁止路径分隔符。",
+                "type": "string"
+              },
+              "content_encoding": {
+                "description": "verification_evidence 编码；图片须 base64。",
+                "type": "string",
+                "enum": [
+                  "utf8",
+                  "base64"
+                ]
+              },
+              "run_id": {
+                "description": "work_log 和 agent_run_result 必填。",
+                "type": "string"
+              },
+              "template": {
+                "description": "verification_report 必填；content 为结构化 Verification JSON。",
+                "type": "string",
+                "enum": [
+                  "verification_report"
+                ]
+              },
+              "agent_content": {
+                "description": "work_log 可选 Agent 报告内容。",
+                "type": "string"
+              }
+            },
+            "required": [
+              "work_item_id",
+              "file_type",
+              "content"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "sf_changed_files_audit",
+          "description": "基于 Runtime 事实源对账实际文件变更与 allowed_write_files_snapshot。支持对缺少内容哈希的旧 filesystem baseline 执行受控恢复；恢复必须由历史 Git preflight、当前同分支同 HEAD 和当前 Git-clean 共同证明。支持 investigation/no-code review，以及 approval_required 前 design/requirements/tasks 规格阶段的 mode=no_code_change/not_applicable 审计模式；该模式只允许无业务代码变更场景，不启用 code_permission，不伪造 allowed_write_files。",
+          "parameters": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "work_item_id": {
+                "description": "Work Item ID",
+                "type": "string"
+              },
+              "action": {
+                "description": "默认 run；旧 baseline 仅 mtime 误报时可用 reconcile_legacy_baseline 受控恢复并立即重跑审计。",
+                "type": "string",
+                "enum": [
+                  "run",
+                  "reconcile_legacy_baseline"
+                ]
+              },
+              "confirm_legacy_baseline_reconciliation": {
+                "description": "action=reconcile_legacy_baseline 时必须显式为 true。",
+                "type": "boolean"
+              },
+              "reconciliation_reason": {
+                "description": "action=reconcile_legacy_baseline 时必填，记录恢复原因。",
+                "type": "string"
+              },
+              "command": {
+                "description": "已执行的命令描述（可选，仅用于审计报告展示）",
+                "type": "string"
+              },
+              "mode": {
+                "description": "可选审计模式。普通实现型 WI 省略；investigation/no-code review 或审批前无代码规格阶段可传 no_code_change 或 not_applicable。",
+                "type": "string"
+              },
+              "audit_mode": {
+                "description": "mode 的兼容别名；推荐使用 mode。",
+                "type": "string"
+              },
+              "expected_write_files": {
+                "description": "Deprecated：预期写入文件列表。最终审计以 Runtime allowed_write_files_snapshot 为准。",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "actual_changed_files": {
+                "description": "Deprecated/debug hint：实际变更文件提示。最终审计优先使用 Write Guard log / filesystem diff。",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "work_item_id"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "sf_gate_run",
+          "description": "执行 Work Item 的 v1.1 canonical Gate 检查，生成 gates/<gate_id>.json 和 gate_summary.md。workflow_specific_gate 委托给现有 Requirements/Design/Tasks Gate Core，不再使用 MVP 跳过实现。候选审批可通过 candidate_phase 使用 design/requirements/tasks/full 阶段配置。",
+          "parameters": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "work_item_id": {
+                "description": "Work Item ID",
+                "type": "string"
+              },
+              "gate_ids": {
+                "description": "指定 canonical Gate ID；通常省略并由 daemon 根据 workflow_path 和 candidate_phase 选择。",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "entry_gate",
+                    "workflow_selection_gate",
+                    "required_files_gate",
+                    "candidate_manifest_gate",
+                    "path_policy_gate",
+                    "schema_gate",
+                    "spec_consistency_gate",
+                    "contract_integrity_gate",
+                    "trace_gate",
+                    "workflow_specific_gate",
+                    "gate_summary_gate",
+                    "merge_ready_gate",
+                    "post_merge_gate",
+                    "verification_gate",
+                    "close_gate",
+                    "all",
+                    "candidate",
+                    "design",
+                    "requirements",
+                    "tasks",
+                    "merge",
+                    "post_merge",
+                    "verification",
+                    "close"
+                  ]
+                }
+              },
+              "gate_type": {
+                "description": "兼容的单阶段入口。design/requirements 只运行对应 workflow_specific Gate，不完成 Candidate 审批；candidate/tasks 执行阶段完整 Gate Profile。",
+                "type": "string",
+                "enum": [
+                  "entry_gate",
+                  "workflow_selection_gate",
+                  "required_files_gate",
+                  "candidate_manifest_gate",
+                  "path_policy_gate",
+                  "schema_gate",
+                  "spec_consistency_gate",
+                  "contract_integrity_gate",
+                  "trace_gate",
+                  "workflow_specific_gate",
+                  "gate_summary_gate",
+                  "merge_ready_gate",
+                  "post_merge_gate",
+                  "verification_gate",
+                  "close_gate",
+                  "all",
+                  "candidate",
+                  "design",
+                  "requirements",
+                  "tasks",
+                  "merge",
+                  "post_merge",
+                  "verification",
+                  "close"
+                ]
+              },
+              "workflow_type": {
+                "description": "显式 workflow_type；通常从 trigger_result.json 读取。",
+                "type": "string"
+              },
+              "candidate_phase": {
+                "description": "Candidate Gate 阶段：design 只要求设计候选；requirements 要求设计+需求；tasks/full 要求完整候选包。默认读取 candidate_manifest.json.candidate_phase。",
+                "type": "string",
+                "enum": [
+                  "design",
+                  "requirements",
+                  "tasks",
+                  "full"
+                ]
+              },
+              "reconcile_attempt_id": {
+                "description": "只用于历史 Candidate Gate Attempt 状态对账。指定 attempt-NNNN 后不会重新执行 Gate、不会创建新 Attempt；daemon 只接受最新、完整 passed、与 latest view 一致且 Gate 输入未变化的 Attempt，并由 gate_runner 完成权威状态收口。",
+                "type": "string"
+              }
+            },
+            "required": [
+              "work_item_id"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "sf_semantic_closure_run",
+          "description": "按 semantic-closure/v1 契约生成并校验 Work Item 的 .semantic_closure.json。首选直接传 semantic_closure 结构化对象；兼容来源为 verification_report fenced JSON、evidence_manifest 语义 sections、或 trace_delta 的 OUT→REQ→DD→TASK→EV 显式链。正常工作流需要 outcomes、requirements、design_decisions、tasks、evidence、project_integration；证据必须 passed、非弱，并显式引用被证明的语义目标。该工具必须在 verification_report、evidence_manifest、changed_files_audit 完成后，verification_gate 之前调用；它只写入当前 Work Item 下的 .semantic_closure.json 与 semantic_closure_report.md，不推进工作流状态、不修改代码、不修改 project truth source。若 semantic_closure_valid=false，不得调用 verification_gate 或 sf_close_gate。",
+          "parameters": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "work_item_id": {
+                "description": "Work Item ID",
+                "type": "string"
+              },
+              "semantic_closure": {
+                "description": "Verifier 产出的完整 Semantic Closure Manifest；这是首选且可发现的输入契约",
+                "type": "object",
+                "properties": {
+                  "schema_version": {
+                    "description": "契约版本，当前使用 1.0",
+                    "type": "string"
+                  },
+                  "work_item_id": {
+                    "description": "必须与外层 work_item_id 一致",
+                    "type": "string"
+                  },
+                  "closure_profile": {
+                    "description": "Investigation 使用 investigation",
+                    "type": "string"
+                  },
+                  "workflow_type": {
+                    "type": "string"
+                  },
+                  "outcomes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "requirement_refs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "required_evidence_refs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "id"
+                      ]
+                    }
+                  },
+                  "requirements": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "description": "MUST/SHOULD/MAY；MUST 需要非弱完成证据",
+                          "type": "string"
+                        },
+                        "requirement_type": {
+                          "type": "string"
+                        },
+                        "outcome_refs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "design_refs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "task_refs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "required_evidence_refs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "id"
+                      ]
+                    }
+                  },
+                  "design_decisions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "requirement_refs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "task_refs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "id"
+                      ]
+                    }
+                  },
+                  "tasks": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "requirement_refs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "design_refs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "evidence_refs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "id"
+                      ]
+                    }
+                  },
+                  "evidence": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "description": "pass/passed/success/succeeded 才能证明完成",
+                          "type": "string"
+                        },
+                        "level": {
+                          "description": "L3-L5 等非弱证据等级；L0-L2 不能证明完成",
+                          "type": "string"
+                        },
+                        "evidence_type": {
+                          "description": "behavioral/integration/e2e 等非弱证据类型",
+                          "type": "string"
+                        },
+                        "supports": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "outcome_refs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "requirement_refs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "design_refs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "task_refs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "status",
+                        "level",
+                        "evidence_type"
+                      ]
+                    }
+                  },
+                  "investigation_questions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "finding_refs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "required_evidence_refs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "id"
+                      ]
+                    }
+                  },
+                  "findings": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "question_refs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "evidence_refs": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "root_cause_status": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id"
+                      ]
+                    }
+                  },
+                  "project_integration": {
+                    "type": "object",
+                    "properties": {
+                      "required": {
+                        "type": "boolean"
+                      },
+                      "status": {
+                        "description": "merged 或 not_applicable",
+                        "type": "string"
+                      },
+                      "refs": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "status"
+                    ]
+                  }
+                }
+              },
+              "force": {
+                "description": "强制重建；传 semantic_closure 时自动视为 true。verification_done 后输入已冻结，需先恢复状态",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "work_item_id"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "sf_verification_plan",
+          "description": "sf-orchestrator 从已批准 Task 创建独立只读验证计划，或撤销计划、恢复中断的输入准备。Runtime 核验真实调用身份；不授予代码写权限。",
+          "parameters": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "revoke",
+                  "recover"
+                ]
+              },
+              "work_item_id": {
+                "type": "string"
+              },
+              "task_id": {
+                "type": "string"
+              },
+              "verification_type": {
+                "type": "string",
+                "enum": [
+                  "unit",
+                  "property",
+                  "integration",
+                  "e2e",
+                  "regression"
+                ]
+              },
+              "command_index": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 63
+              },
+              "plan_id": {
+                "type": "string"
+              },
+              "preparation_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "action",
+              "work_item_id"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "sf_verification_run",
+          "description": "sf-verifier 先 prepare 取得不可变 Attempt，再 run；cancel/recover 只取消或回收该 Attempt。仅使用固定单进程只读隔离，保留真实退出和中断，不推进工作流。",
+          "parameters": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": [
+                  "prepare",
+                  "run",
+                  "cancel",
+                  "recover"
+                ]
+              },
+              "work_item_id": {
+                "type": "string"
+              },
+              "plan_id": {
+                "type": "string"
+              },
+              "attempt_record_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "action",
+              "work_item_id"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": "auto",
+    "stream": true,
+    "stream_options": {
+      "include_usage": true
+    }
+  }
+}

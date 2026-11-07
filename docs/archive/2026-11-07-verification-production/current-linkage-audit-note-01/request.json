@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-07T09:32:11.239Z",
+  "session": "ses_e4ab2012cffecSP5xN7chz6VnD",
+  "route": "/session/{sessionID}/message",
+  "body": {
+    "agent": "sf-verifier",
+    "model": {
+      "providerID": "zhipuai-coding-plan",
+      "modelID": "glm-5.3"
+    },
+    "variant": "low",
+    "noReply": true,
+    "parts": [
+      {
+        "type": "text",
+        "text": "Independent current-contract audit note at 2026-11-07T09:32:11.239Z (not an execution timestamp). Continue as the SAME sf-verifier. All current1.0.23 native outcomes already exist; do not run any attempt again. Your latest canonical Manifest still has 22 entries but zero execution_receipt_id fields, zero hash fields, and the last e2e command_index=1. Both accepted Manifest writes retained that shape. The report owner correctly rejects it; its success response for a Manifest write did not authenticate entries lacking execution_receipt_id.\n\nThe actual common execution consumer reads the EXPLICIT entry fields, not an inferred id from source/path/sha256: every execution entry requires execution_receipt_id=<the existing64hexreceipt>, task_id, verification_type, command_index matching the original Task selector, command exactly as declared, path='verification-owner:receipt:'+id, hash='sha256:'+id, hash_domain='canonical-json:verification-execution/v1', status='passed'. Existing evidence_id/type/description/created_at/supports/related_refs remain required as applicable. source/location/sha256 aliases alone DO NOT provide execution_receipt_id or hash. For TASK-WI-0001-005 e2e, command_index is 0 (category-local), NOT 1; both the Manifest and Report must match that actual prepared plan.\n\nUse the same current receipt ids and real professional sf_artifact_write owners to correct Manifest first, then Report. Preserve failed results, do not fabricate evidence or times, do not change business files/Task/state/permissions or use raw writes. Retain the actual semantic support relationships and truthful static versus behavioral evidence. Return exact canonical owner results. Do not invoke Gate or transition tools. This note contains only current field-level audit facts, no old session history, private runtime store content or credentials."
+      }
+    ]
+  },
+  "consent_sha256": "f7e30620419d485d1e5456e555e5e90aa978fac0bf595483bd0ee84d474b875b",
+  "observer_effects": "One actual OpenCode user-control message persisted in this existing authorized session; no generation requested, no direct canonical writes"
+}

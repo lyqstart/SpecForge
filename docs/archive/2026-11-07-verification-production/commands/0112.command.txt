@@ -1,0 +1,12 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "test",
+    "tests/unit/installer/planner.test.ts",
+    "tests/unit/installer/generated_files.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "installer-bun-native-planner-generated-files-tests",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned Bun installer unit fixtures; EXTERNAL_EVIDENCE_WRITES receipts; no user install/original",
+  "started_utc": "2026-11-07T02:51:23.622Z"
+}

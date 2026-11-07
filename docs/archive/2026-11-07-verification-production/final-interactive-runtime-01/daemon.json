@@ -1,0 +1,31 @@
+{
+  "identity": {
+    "ProcessId": 33388,
+    "ExecutablePath": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforged.exe",
+    "CreationDate": "2026-11-07T18:48:04.620619+08:00"
+  },
+  "health": {
+    "schema_version": "1.0",
+    "status": "ok",
+    "pid": 33388,
+    "version": "1.0.23",
+    "startedAt": 1794048484987,
+    "uptimeSec": 112,
+    "activeClients": 0,
+    "pendingEvents": 4,
+    "lastEventTs": 1794048485010
+  },
+  "status": {
+    "schema_version": "1.0",
+    "status": "ok",
+    "pid": 33388,
+    "version": "1.0.23",
+    "startedAt": 1794048484987,
+    "uptimeSec": 113,
+    "activeClients": 0,
+    "pendingEvents": 4,
+    "lastEventTs": 1794048485010
+  },
+  "sha256": "003faf31d46f30a440c65037acae46dd8a9ab7df82e395160100ba44798daca8",
+  "token_disclosed": false
+}

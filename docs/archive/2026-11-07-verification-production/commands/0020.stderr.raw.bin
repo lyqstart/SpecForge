@@ -1,0 +1,16 @@
+D:\code\SpecForge\docs\archive\2026-11-07-verification-production\adapt-native-product-entry.cjs:3
+function edit(file,expected,changes){const raw=fs.readFileSync(file);if(sha(raw)!==expected)throw Error('SOURCE_DRIFT:'+file);let text=raw.toString();for(const[from,to,count]of changes){if(text.split(from).length-1!==count)throw Error('REPLACEMENT_COUNT:'+from);text=text.split(from).join(to);}const snapshot=path.join(__dirname,'native-adapter-before');fs.mkdirSync(snapshot,{recursive:true});fs.writeFileSync(path.join(snapshot,path.basename(file)),raw,{flag:'wx'});fs.writeFileSync(file,text.replace(/\r\n/g,'\n'));return{file,before:sha(raw),after:sha(fs.readFileSync(file)),changes:changes.map(([from,to,count])=>({from,to,count}))};}
+                                                                                                                                                                                                                               ^
+
+Error: REPLACEMENT_COUNT:||singleBoundaryNode||singleResource;
+    at edit (D:\code\SpecForge\docs\archive\2026-11-07-verification-production\adapt-native-product-entry.cjs:3:230)
+    at Object.<anonymous> (D:\code\SpecForge\docs\archive\2026-11-07-verification-production\adapt-native-product-entry.cjs:24:16)
+    at Module._compile (node:internal/modules/cjs/loader:1872:14)
+    at Object..js (node:internal/modules/cjs/loader:2003:10)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47
+
+Node.js v24.19.0

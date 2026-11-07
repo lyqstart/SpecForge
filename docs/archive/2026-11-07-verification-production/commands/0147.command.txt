@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "scripts/run-root-tests.mjs",
+    "current",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "latest-template-and-boundary-current-root-regression",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned CURRENT_HERMETIC fixtures/cache; EXTERNAL_EVIDENCE_WRITES test receipt; no original/install",
+  "started_utc": "2026-11-07T03:45:23.834Z"
+}

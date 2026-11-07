@@ -1,0 +1,2 @@
+$ vitest run tests/design-governance-orchestrator-closure.test.ts tests/unit/git-detached-filter-exclusion.test.ts "--maxWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m

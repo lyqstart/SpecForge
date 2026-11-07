@@ -1,0 +1,51 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/verification-runtime-plan.test.ts (8 tests | 8 failed) 1513ms
+   × verification Runtime plan/permission owner (unit dependencies) > retains the legal code-only not_applicable merge path 209ms
+     → Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-SwPbVr/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+   × verification Runtime plan/permission owner (unit dependencies) > binds canonical WI-owned Tasks even when the Project Spec merge manifest has no Task entry 189ms
+     → Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-0A1xaW/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+   × verification Runtime plan/permission owner (unit dependencies) > rejects an actual role mismatch and caller-supplied commands before private writes 173ms
+     → Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-M62vkg/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+   × verification Runtime plan/permission owner (unit dependencies) > does not reuse an actual invocation or accept changed source/approved Tasks 174ms
+     → Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-gixFzw/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+   × verification Runtime plan/permission owner (unit dependencies) > revokes only the independent verification grant and blocks a new Attempt 186ms
+     → Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-jZPyF9/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+   × verification Runtime plan/permission owner (unit dependencies) > prepares immutable fixed config and can cancel it under HardStop without launching anything 202ms
+     → Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-aORGLA/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+   × verification Runtime plan/permission owner (unit dependencies) > recovers an authenticated interrupted preparation and refuses unknown extra files 191ms
+     → Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-oiRoD3/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+   × verification Runtime plan/permission owner (unit dependencies) > cancels active work and waits for its receipt before completing graceful shutdown (unit backend) 187ms
+     → Command failed: git -c core.hooksPath=NUL init -q -b main
+error: could not write config file C:/Users/lyq/AppData/Local/Packages/sandbox.{67639863-ca86-4b1e-aed8-6f4523819603}/AC/Temp/sf-verification-runtime-unit-tCggWU/project/.git/config: Permission denied
+fatal: could not set 'core.repositoryformatversion' to '0'
+
+ ✓ tests/unit/verification-rejection-diagnostic.test.ts (4 tests) 10ms
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  8 failed | 4 passed (12)
+   Start at  12:09:13
+   Duration  4.36s (transform 877ms, setup 0ms, collect 2.00s, tests 1.52s, environment 0ms, prepare 357ms)
+

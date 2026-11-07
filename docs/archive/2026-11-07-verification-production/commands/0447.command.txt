@@ -1,0 +1,25 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/run-publication-command.cjs",
+    "Read current source commit to verify reserved receipt path",
+    "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=independently sealed local transport receipt",
+    "git",
+    "rev-parse",
+    "HEAD"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Validate independently sealed post-publication carrier without changing source or running a model",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=primary and reserved local receipt self-check",
+  "started_utc": "2026-11-07T09:29:43.872Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\run-publication-command.cjs",
+      "sha256": "0b78c0362dd3a3550e884a0360afb7aae8c3ad0b2c19cead9718e40c1d33f140",
+      "size": 3152,
+      "extension": ".cjs"
+    }
+  ]
+}

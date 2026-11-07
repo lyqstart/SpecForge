@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "-e",
+    "const fs=require('fs');fs.copyFileSync('docs/archive/2026-11-07-verification-production/adapt-native-product-entry.cjs','docs/archive/2026-11-07-verification-production/adapt-native-product-entry-failed-0020.cjs',fs.constants.COPYFILE_EXCL);"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-native-adapter-generator-precondition-failure",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=failed generator source snapshot",
+  "started_utc": "2026-11-07T00:46:46.783Z"
+}

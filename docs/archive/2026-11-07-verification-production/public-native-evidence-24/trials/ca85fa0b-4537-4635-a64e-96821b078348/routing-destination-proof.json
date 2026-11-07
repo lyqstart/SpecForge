@@ -1,0 +1,10 @@
+{
+  "utc": "2026-11-07T07:57:56.649Z",
+  "canonical_manifest_sha256": "2c7d633cf1d2bce2390415842689a884e81fd2e6211246beae5ece9e7121e458",
+  "retained_entries": 22,
+  "actual_original_work_log_shape_preserved": true,
+  "all8_topics_stay_in_archive": true,
+  "missing_array_refused_before_write": true,
+  "formal_execution_claimed": false,
+  "original_business_touched": false
+}

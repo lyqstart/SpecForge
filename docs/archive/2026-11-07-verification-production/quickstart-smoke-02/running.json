@@ -1,0 +1,52 @@
+{
+  "utc": "2026-11-07T10:49:03.359Z",
+  "phase": "running",
+  "process_query": {
+    "exit_code": 0,
+    "raw_stdout": "[{\"ProcessId\":32236,\"ExecutablePath\":\"C:\\\\Users\\\\lyq\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\\\\opencode-ai\\\\bin\\\\opencode.exe\",\"CreationDate\":\"2026-11-07T18:48:35.053034+08:00\"}]\r\n",
+    "value": [
+      {
+        "ProcessId": 32236,
+        "ExecutablePath": "C:\\Users\\lyq\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe",
+        "CreationDate": "2026-11-07T18:48:35.053034+08:00"
+      }
+    ]
+  },
+  "tcp_query": {
+    "exit_code": 0,
+    "raw_stdout": "[{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":4096,\"OwningProcess\":32236}]\r\n",
+    "value": [
+      {
+        "LocalAddress": "127.0.0.1",
+        "LocalPort": 4096,
+        "OwningProcess": 32236
+      }
+    ]
+  },
+  "owned_processes": [
+    {
+      "ProcessId": 32236,
+      "ExecutablePath": "C:\\Users\\lyq\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe",
+      "CreationDate": "2026-11-07T18:48:35.053034+08:00"
+    }
+  ],
+  "owned_listeners": [
+    {
+      "LocalAddress": "127.0.0.1",
+      "LocalPort": 4096,
+      "OwningProcess": 32236
+    }
+  ],
+  "health": [
+    {
+      "port": 4096,
+      "http_status": 200,
+      "body": {
+        "healthy": true,
+        "version": "1.18.35"
+      }
+    }
+  ],
+  "model_prompt_sent": false,
+  "method": "Successful independent CIM creation/image identity plus complete TCP listener query filtered to newly owned process IDs. No command line, memory, environment or credential reads."
+}

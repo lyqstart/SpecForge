@@ -1,0 +1,288 @@
+{
+  "schema_version": "1.0",
+  "attempt_id": "attempt-0009",
+  "work_item_id": "WI-0001",
+  "captured_at": "2026-11-07T09:55:34.199Z",
+  "inputs": [
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\architecture.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "e85982f289bb6da764e06986b4df109d78c0bb8112544292ca2c7891e3714936",
+      "size": 12092,
+      "mtime_ms": 1793712156370.0925
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\data_model.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "d0618cfb3b00b944b3e9ea6fa771e51e20b9743b0a4f6cf67258b646ebb05991",
+      "size": 5475,
+      "mtime_ms": 1793714144970.1975
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\extension_registry.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "f2cbb6b20e94461d614c736b61582ee76e1f181ba761c14d1b2b574c050c0699",
+      "size": 1981,
+      "mtime_ms": 1793717222156.736
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\modules\\CORE\\contracts.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "7c44cb3891a74b4551b9427aeb2104cc42baae522a5f665e0a97dafdb8986245",
+      "size": 3428,
+      "mtime_ms": 1793709664080.4846
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\modules\\CORE\\design.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "f440d149e7651ab446c346d5689fcd90d07c2f3d06559d746de70db62524a022",
+      "size": 27848,
+      "mtime_ms": 1793709415821.6233
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\modules\\CORE\\module.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "d70d5364fcc2b23c68044f0c61e20f931d1b31569d6ddde529de771ab708e6ea",
+      "size": 310,
+      "mtime_ms": 1793709425987.693
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\modules\\CORE\\trace.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "e955ebebfabb61051133f8133eac3764e9ca5eb23c3e8fc81784b3c06b9e12d3",
+      "size": 1790,
+      "mtime_ms": 1793717222176.7444
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\spec_manifest.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "b4025249f22fb43bd340db05f53ffe7174bbf53e33a3caabf2b005d097cf6fde",
+      "size": 1727,
+      "mtime_ms": 1793717222178.7466
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\project\\trace_matrix.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "4731797887ea27ae4e3c3057575441f4869b6e026bb2c1eb8f12e1a8ca4462d1",
+      "size": 10508,
+      "mtime_ms": 1793717222132.7375
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\.semantic_closure.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "d34176c9d3fc01c26a6fb37098af0a3128ec4e8be13eaa3f4c06c13873800e0a",
+      "size": 13163,
+      "mtime_ms": 1794045281259.781
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidate_manifest.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "c1098af5ec6c5b232eaa936aabf077edcc8e1826163ee32d5e3942611cc77ab7",
+      "size": 2543,
+      "mtime_ms": 1793714340456.9675
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\architecture.candidate.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "e85982f289bb6da764e06986b4df109d78c0bb8112544292ca2c7891e3714936",
+      "size": 12092,
+      "mtime_ms": 1793712156370.0925
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\data_model.candidate.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "d0618cfb3b00b944b3e9ea6fa771e51e20b9743b0a4f6cf67258b646ebb05991",
+      "size": 5475,
+      "mtime_ms": 1793714144970.1975
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\extension_registry.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "b2d0a3984b195c50965939be3efb65471b1c84096bb86589fe1b1af5083599bd",
+      "size": 1981,
+      "mtime_ms": 1793711141012.4705
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\contracts.candidate.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "7c44cb3891a74b4551b9427aeb2104cc42baae522a5f665e0a97dafdb8986245",
+      "size": 3428,
+      "mtime_ms": 1793709664080.4846
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\design.candidate.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "f440d149e7651ab446c346d5689fcd90d07c2f3d06559d746de70db62524a022",
+      "size": 27848,
+      "mtime_ms": 1793709415821.6233
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\module.candidate.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "d70d5364fcc2b23c68044f0c61e20f931d1b31569d6ddde529de771ab708e6ea",
+      "size": 310,
+      "mtime_ms": 1793709425987.693
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\project\\modules\\CORE\\requirements.candidate.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "c3aee7cb3eb8eb36e4ecc181283c67fec9ce3de00e63ab771f0e3a6ffad677e6",
+      "size": 19190,
+      "mtime_ms": 1793708311350.4946
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\tasks.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "0b73306b4a56b505b1cdc59f062fbe83f76d1d39ad2534cc1597faa61d1feae2",
+      "size": 31725,
+      "mtime_ms": 1793710781898.3982
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\candidates\\trace_delta.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "2c85b03ebbb1cfa4434430628dc715bf089ede722675d1d62491f57abe844ee7",
+      "size": 11630,
+      "mtime_ms": 1793714285716.0266
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\change_classification.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "25c98a79b599e007324d0669fe171084cb11a64bfcbfada88b7e1b1288c1befd",
+      "size": 2547,
+      "mtime_ms": 1793707934878.4766
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\changed_files_audit.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "1b0e974f54ab2952918559be8e6a47f90b28629b8119f4f0713237549048d101",
+      "size": 1606,
+      "mtime_ms": 1794045249582.78
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\evidence\\evidence_manifest.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "f422d618bc876afd97ab4ee7dc646595b6cafa555d5485ba00816e0915b4affb",
+      "size": 29889,
+      "mtime_ms": 1794044049230.2693
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\formal_version_snapshot.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "cdb2a88578273a7e517b6040eae98c842f6d5c8e20a814079cbd68356d3d695b",
+      "size": 767,
+      "mtime_ms": 1794045334179.3
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\gates\\verification_gate.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "d9f787cfd2aca7beb886c6eb61a09d84e8d076ea520f7a332ed11c3f77a49a01",
+      "size": 64702,
+      "mtime_ms": 1794045307761.6616
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\git_context.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "b4f175882a927e6ac725c5efc72768a0058b4dc48f1b8ef46f4a3002190174b2",
+      "size": 402,
+      "mtime_ms": 1793720388367.0798
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\governance_scope.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "dfc6e141d712dacceeb6c829046d32c904e0a552d3087ea351971432bb76723b",
+      "size": 1065,
+      "mtime_ms": 1793720405825.9124
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\impact_analysis.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "8cfd357ac3daf215d3f47db1a64df31e6a3562859ec7c4d3454e672a27ef0542",
+      "size": 4135,
+      "mtime_ms": 1793707934908.2632
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\implementation_baseline.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "cd9a8c79b993f61dfb51f5f642af96eb953219fe9948545732a2bd6da6325994",
+      "size": 1110,
+      "mtime_ms": 1793714233347.1343
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\merge_report.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "5d892dd9e1ef6bc7fd14142d287f664eb8bacf9fe9766ba5e07962e2cc5d95f8",
+      "size": 1768,
+      "mtime_ms": 1793717222199.2695
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\trigger_result.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "f3923902ccf53fe2fc8d9edca9a1ebc456e084b90e4200bef2f57530f12f0abb",
+      "size": 1357,
+      "mtime_ms": 1793707934923.5352
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\user_decision.json",
+      "exists": true,
+      "kind": "file",
+      "sha256": "3a98030a90b7534eca2daa18399179c5929b4c0552ffdbfcf166d47c2f5d13ea",
+      "size": 913,
+      "mtime_ms": 1793717210435.1724
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\verification_report.md",
+      "exists": true,
+      "kind": "file",
+      "sha256": "3c11f166064f34070d13533fde6bf1f359332bec36e5bd5c4e8447c8672e1d14",
+      "size": 40717,
+      "mtime_ms": 1794045118728.428
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\src\\greet.ts",
+      "exists": true,
+      "kind": "file",
+      "sha256": "7b8ddcc05cf84afed746d56e978563429b0ac79e03598ed359270ecd50993ec4",
+      "size": 207,
+      "mtime_ms": 1793720445598.792
+    },
+    {
+      "path": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\tests\\greet.test.ts",
+      "exists": true,
+      "kind": "file",
+      "sha256": "26d14693eccb088b0964e06f04dba9a4ea1eafc1090f73467019209d5b414981",
+      "size": 690,
+      "mtime_ms": 1793720531893.8352
+    }
+  ]
+}

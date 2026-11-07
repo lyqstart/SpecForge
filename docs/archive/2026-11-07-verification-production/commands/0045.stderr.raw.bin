@@ -1,0 +1,25 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/node-command-contract.test.ts > frozen readonly Node declaration contract > supports a finite CJS local require graph
+Error: NODE_COMMAND_UNSUPPORTED:UNBOUND_OR_HOST_IDENTIFIER:sum
+ ❯ fail src/verification/node-command-contract.ts:19:49
+     17| }
+     18| 
+     19| const fail = (reason: string): never => { throw new Error(`NODE_COMMAN…
+       |                                                 ^
+     20| const hash = (text: string): string => createHash('sha256').update(tex…
+     21| const commonFlags = ['--no-addons', '--preserve-symlinks', '--preserve…
+ ❯ visit src/verification/node-command-contract.ts:147:90
+ ❯ visitNode2 ../../node_modules/.bun/typescript@5.9.3/node_modules/typescript/lib/typescript.js:32449:18
+ ❯ forEachChildInShorthandPropertyAssignment ../../node_modules/.bun/typescript@5.9.3/node_modules/typescript/lib/typescript.js:32493:59
+ ❯ Object.forEachChild ../../node_modules/.bun/typescript@5.9.3/node_modules/typescript/lib/typescript.js:32970:35
+ ❯ visit src/verification/node-command-contract.ts:151:10
+ ❯ visitNodes ../../node_modules/.bun/typescript@5.9.3/node_modules/typescript/lib/typescript.js:32457:22
+ ❯ forEachChildInObjectLiteralExpression ../../node_modules/.bun/typescript@5.9.3/node_modules/typescript/lib/typescript.js:32606:12
+ ❯ Object.forEachChild ../../node_modules/.bun/typescript@5.9.3/node_modules/typescript/lib/typescript.js:32970:35
+ ❯ visit src/verification/node-command-contract.ts:151:10
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

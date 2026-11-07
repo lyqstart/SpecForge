@@ -1,0 +1,324 @@
+{
+  "schema_version": "1.1",
+  "work_item_id": "WI-0001",
+  "workflow_type": "feature_spec",
+  "workflow_path": "requirement_change_path",
+  "code_change_allowed": false,
+  "allowed_write_files": [],
+  "created_at": "2026-10-25T05:17:46.998Z",
+  "updated_at": "2026-11-03T15:48:44.384Z",
+  "created_by": "sf-orchestrator",
+  "governance_scope": "governance_scope.json",
+  "affected_modules": [
+    "CORE"
+  ],
+  "architecture_refs": [
+    "ARCH-CORE-001",
+    "ARCH-CORE-002",
+    "ARCH-CORE-003",
+    "ARCH-CORE-004"
+  ],
+  "data_model_refs": [
+    "DATA-CORE-001",
+    "DATA-CORE-002",
+    "DATA-CORE-003"
+  ],
+  "design_refs": [
+    "DD-CORE-001",
+    "DD-CORE-002",
+    "DD-CORE-003",
+    "DD-CORE-004",
+    "DD-CORE-005",
+    "DD-CORE-006"
+  ],
+  "project_contract_refs": [],
+  "module_contract_refs": [
+    "INV-CORE-001",
+    "INV-CORE-002",
+    "INV-CORE-003",
+    "PI-CORE-001"
+  ],
+  "project_spec_version_at_permission": "PSV-0002",
+  "impact_scope_hash": "a65e37bbb77eca9b037c838b04be3c2d6c2f22b066dbc8a3d5283453ee70ca75",
+  "code_permission_revoked": true,
+  "allowed_write_files_snapshot": [
+    {
+      "path": "package.json",
+      "operation": "create"
+    },
+    {
+      "path": "package.json",
+      "operation": "modify"
+    },
+    {
+      "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/package.json",
+      "operation": "create"
+    },
+    {
+      "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/package.json",
+      "operation": "modify"
+    },
+    {
+      "path": "tsconfig.json",
+      "operation": "create"
+    },
+    {
+      "path": "tsconfig.json",
+      "operation": "modify"
+    },
+    {
+      "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/tsconfig.json",
+      "operation": "create"
+    },
+    {
+      "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/tsconfig.json",
+      "operation": "modify"
+    },
+    {
+      "path": "src/greet.ts",
+      "operation": "create"
+    },
+    {
+      "path": "src/greet.ts",
+      "operation": "modify"
+    },
+    {
+      "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/src/greet.ts",
+      "operation": "create"
+    },
+    {
+      "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/src/greet.ts",
+      "operation": "modify"
+    },
+    {
+      "path": "tests/greet.test.ts",
+      "operation": "create"
+    },
+    {
+      "path": "tests/greet.test.ts",
+      "operation": "modify"
+    },
+    {
+      "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/tests/greet.test.ts",
+      "operation": "create"
+    },
+    {
+      "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/tests/greet.test.ts",
+      "operation": "modify"
+    },
+    {
+      "path": "README.md",
+      "operation": "create"
+    },
+    {
+      "path": "README.md",
+      "operation": "modify"
+    },
+    {
+      "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/README.md",
+      "operation": "create"
+    },
+    {
+      "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/README.md",
+      "operation": "modify"
+    }
+  ],
+  "code_permission_last_release_mode": "release",
+  "code_permission_release_count": 1,
+  "allowed_write_files_history": [
+    {
+      "timestamp": "2026-11-03T15:40:05.847Z",
+      "mode": "release",
+      "incoming_count": 20,
+      "previous_count": 0,
+      "total_count": 20,
+      "incoming_allowed_write_files": [
+        {
+          "path": "package.json",
+          "operation": "create"
+        },
+        {
+          "path": "package.json",
+          "operation": "modify"
+        },
+        {
+          "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/package.json",
+          "operation": "create"
+        },
+        {
+          "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/package.json",
+          "operation": "modify"
+        },
+        {
+          "path": "tsconfig.json",
+          "operation": "create"
+        },
+        {
+          "path": "tsconfig.json",
+          "operation": "modify"
+        },
+        {
+          "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/tsconfig.json",
+          "operation": "create"
+        },
+        {
+          "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/tsconfig.json",
+          "operation": "modify"
+        },
+        {
+          "path": "src/greet.ts",
+          "operation": "create"
+        },
+        {
+          "path": "src/greet.ts",
+          "operation": "modify"
+        },
+        {
+          "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/src/greet.ts",
+          "operation": "create"
+        },
+        {
+          "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/src/greet.ts",
+          "operation": "modify"
+        },
+        {
+          "path": "tests/greet.test.ts",
+          "operation": "create"
+        },
+        {
+          "path": "tests/greet.test.ts",
+          "operation": "modify"
+        },
+        {
+          "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/tests/greet.test.ts",
+          "operation": "create"
+        },
+        {
+          "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/tests/greet.test.ts",
+          "operation": "modify"
+        },
+        {
+          "path": "README.md",
+          "operation": "create"
+        },
+        {
+          "path": "README.md",
+          "operation": "modify"
+        },
+        {
+          "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/README.md",
+          "operation": "create"
+        },
+        {
+          "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/README.md",
+          "operation": "modify"
+        }
+      ],
+      "requested_allowed_write_files": [
+        {
+          "path": "package.json",
+          "operation": "modify"
+        },
+        {
+          "path": "tsconfig.json",
+          "operation": "modify"
+        },
+        {
+          "path": "src/greet.ts",
+          "operation": "modify"
+        },
+        {
+          "path": "tests/greet.test.ts",
+          "operation": "modify"
+        },
+        {
+          "path": "README.md",
+          "operation": "modify"
+        }
+      ],
+      "effective_allowed_write_files": [
+        {
+          "path": "package.json",
+          "operation": "create"
+        },
+        {
+          "path": "package.json",
+          "operation": "modify"
+        },
+        {
+          "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/package.json",
+          "operation": "create"
+        },
+        {
+          "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/package.json",
+          "operation": "modify"
+        },
+        {
+          "path": "tsconfig.json",
+          "operation": "create"
+        },
+        {
+          "path": "tsconfig.json",
+          "operation": "modify"
+        },
+        {
+          "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/tsconfig.json",
+          "operation": "create"
+        },
+        {
+          "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/tsconfig.json",
+          "operation": "modify"
+        },
+        {
+          "path": "src/greet.ts",
+          "operation": "create"
+        },
+        {
+          "path": "src/greet.ts",
+          "operation": "modify"
+        },
+        {
+          "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/src/greet.ts",
+          "operation": "create"
+        },
+        {
+          "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/src/greet.ts",
+          "operation": "modify"
+        },
+        {
+          "path": "tests/greet.test.ts",
+          "operation": "create"
+        },
+        {
+          "path": "tests/greet.test.ts",
+          "operation": "modify"
+        },
+        {
+          "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/tests/greet.test.ts",
+          "operation": "create"
+        },
+        {
+          "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/tests/greet.test.ts",
+          "operation": "modify"
+        },
+        {
+          "path": "README.md",
+          "operation": "create"
+        },
+        {
+          "path": "README.md",
+          "operation": "modify"
+        },
+        {
+          "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/README.md",
+          "operation": "create"
+        },
+        {
+          "path": "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/README.md",
+          "operation": "modify"
+        }
+      ]
+    }
+  ],
+  "code_permission_revoked_at": "2026-11-03T15:48:44.384Z"
+}

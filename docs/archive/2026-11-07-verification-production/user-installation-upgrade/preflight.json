@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-07T04:52:32.197Z",
+  "config": "C:\\Users\\lyq\\.config\\opencode",
+  "source_candidate": "a918b49c62e7dfaf3c0bfc57961ffe3bbaa99ba3",
+  "before_version": "1.0.21",
+  "before_manifest_sha256": "bb63798cdffaead3f5b61574dc8bdee2e4b85daace7ae3a44fc931a3ff4acf0d",
+  "old_managed_count": 112,
+  "managed_drift": [],
+  "unmanaged_target_collisions": [],
+  "daemon_processes": [],
+  "global_daemon_present": false,
+  "authorization": "User approved production adoption, installation/deployment and complete repair. No --force, direct managed writes, credential reads or original project writes."
+}

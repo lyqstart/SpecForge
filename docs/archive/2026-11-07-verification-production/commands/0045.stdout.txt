@@ -1,0 +1,45 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/node-command-proof-boundary.test.ts (4 tests) 29ms
+ ❯ tests/unit/node-command-contract.test.ts (33 tests | 1 failed) 97ms
+   ✓ frozen readonly Node declaration contract > proves a deterministic single-file test and its complete local graph 31ms
+   ✓ frozen readonly Node declaration contract > retains frozen inline source and exit/output behavior without a shell 4ms
+   × frozen readonly Node declaration contract > supports a finite CJS local require graph 35ms
+     → NODE_COMMAND_UNSUPPORTED:UNBOUND_OR_HOST_IDENTIFIER:sum
+   ✓ frozen readonly Node declaration contract > rejects unsupported or observable declaration node --test ../outside.ts 1ms
+   ✓ frozen readonly Node declaration contract > rejects unsupported or observable declaration node --test a.ts b.ts 0ms
+   ✓ frozen readonly Node declaration contract > rejects unsupported or observable declaration node --test tests/salute.test.ts && echo ok 0ms
+   ✓ frozen readonly Node declaration contract > rejects unsupported or observable declaration node --import package tests/salute.test.ts 0ms
+   ✓ frozen readonly Node declaration contract > rejects unsupported or observable declaration node --test C:/outside.ts 0ms
+   ✓ frozen readonly Node declaration contract > rejects unsupported or observable declaration node -e "console.log(process.env)" 1ms
+   ✓ frozen readonly Node declaration contract > rejects unsupported or observable declaration node -e "const p=process;p.cwd()" 1ms
+   ✓ frozen readonly Node declaration contract > rejects unsupported or observable declaration node -e "require('node:fs')" 1ms
+   ✓ frozen readonly Node declaration contract > rejects unsupported or observable declaration node -e "import('package')" 2ms
+   ✓ frozen readonly Node declaration contract > rejects unsupported or observable declaration node -e "const c=console;c.log(1)" 1ms
+   ✓ frozen readonly Node declaration contract > rejects unsupported or observable declaration node -e "Object.getPrototypeOf(()=>1)" 1ms
+   ✓ frozen readonly Node declaration contract > rejects unsupported or observable declaration node -e "const {constructor:C}=String;C('return process')()" 1ms
+   ✓ frozen readonly Node declaration contract > rejects unsupported or observable declaration node -e "const {['constructor']:C}=String;C('return process')()" 1ms
+   ✓ frozen readonly Node declaration contract > rejects unsupported or observable declaration node -e "Math.random()" 1ms
+   ✓ frozen readonly Node declaration contract > rejects unsupported or observable declaration node -e "Date.now()" 1ms
+   ✓ frozen readonly Node declaration contract > rejects unsupported or observable declaration node -e "import.meta.url" 1ms
+   ✓ frozen readonly Node declaration contract > rejects unsupported or observable declaration node -e "console.log('$HOME')" 0ms
+   ✓ frozen readonly Node declaration contract > does not certify a test with hidden context import {before} from "node:test"; before(()=>{}); 1ms
+   ✓ frozen readonly Node declaration contract > does not certify a test with hidden context import test from "node:test"; test("x",{concurrency:true},()=>{}); 1ms
+   ✓ frozen readonly Node declaration contract > does not certify a test with hidden context import test from "node:test"; test("x",{"timeout":10},()=>{}); 1ms
+   ✓ frozen readonly Node declaration contract > does not certify a test with hidden context import test from "node:test"; test.run(); 1ms
+   ✓ frozen readonly Node declaration contract > does not certify a test with hidden context const moduleCopy=module; moduleCopy.require("node:fs"); 1ms
+   ✓ frozen readonly Node declaration contract > does not certify a test with hidden context const {run: execute}=require("node:test");execute(); 3ms
+   ✓ frozen readonly Node declaration contract > does not certify a test with hidden context const {"constructor": C}=String;C("return process")(); 1ms
+   ✓ frozen readonly Node declaration contract > does not certify a test with hidden context console.log("observed output"); 1ms
+   ✓ frozen readonly Node declaration contract > does not certify a test with hidden context const x=import.meta.url; 1ms
+   ✓ frozen readonly Node declaration contract > does not certify a test with hidden context const x=require(process.argv[1]); 1ms
+   ✓ frozen readonly Node declaration contract > rejects missing, duplicate or mismatched frozen sources 1ms
+   ✓ frozen readonly Node declaration contract > refuses shell quote concatenation in either direction 0ms
+   ✓ frozen readonly Node declaration contract > checks a real inline.cjs import and rejects the reserved virtual entry 2ms
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 36 passed (37)
+   Start at  09:39:47
+   Duration  1.52s (transform 74ms, setup 0ms, collect 596ms, tests 125ms, environment 0ms, prepare 353ms)
+

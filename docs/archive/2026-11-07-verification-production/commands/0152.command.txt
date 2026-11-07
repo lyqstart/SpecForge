@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/run-public-fixture-builder.cjs",
+    "11",
+    "implementation"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "initialize-installed11-real-owner-baseline",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned installed11 actual ProjectInit config/state owners and explicitly seeded implementation baseline; EXTERNAL_EVIDENCE_WRITES receipt; no original",
+  "started_utc": "2026-11-07T03:49:38.351Z"
+}

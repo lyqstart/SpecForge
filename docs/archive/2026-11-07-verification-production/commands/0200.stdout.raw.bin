@@ -1,0 +1,18 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/verification-runtime-plan.test.ts (8 tests) 19709ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > retains the legal code-only not_applicable merge path  2212ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > binds canonical WI-owned Tasks even when the Project Spec merge manifest has no Task entry  2306ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > does not reuse an actual invocation or accept changed source/approved Tasks  3590ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > revokes only the independent verification grant and blocks a new Attempt  2241ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > prepares immutable fixed config and can cancel it under HardStop without launching anything  2652ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > recovers an authenticated interrupted preparation and refuses unknown extra files  2236ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > cancels active work and waits for its receipt before completing graceful shutdown (unit backend)  4173ms
+ ✓ tests/unit/verification-rejection-diagnostic.test.ts (4 tests) 5ms
+
+ Test Files  2 passed (2)
+      Tests  12 passed (12)
+   Start at  12:19:17
+   Duration  22.13s (transform 765ms, setup 0ms, collect 1.72s, tests 19.71s, environment 0ms, prepare 250ms)
+

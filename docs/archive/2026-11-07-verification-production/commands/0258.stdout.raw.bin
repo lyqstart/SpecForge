@@ -1,0 +1,9 @@
+
+ RUN  v4.1.5 D:/code/SpecForge/packages/workflow-runtime
+
+
+ Test Files  2 passed (2)
+      Tests  18 passed (18)
+   Start at  13:47:44
+   Duration  2.35s (transform 811ms, setup 108ms, import 1.22s, tests 67ms, environment 1ms)
+

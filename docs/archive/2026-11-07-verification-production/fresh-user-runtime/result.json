@@ -1,0 +1,19 @@
+{
+  "utc": "2026-11-07T05:08:45.476Z",
+  "inner_exit_code": 1,
+  "failure": {
+    "name": "AssertionError",
+    "code": "ERR_ASSERTION",
+    "http_status": null,
+    "message_sha256": "dd1157a97873558bf098304696cad3a73c40329bb19285ba5b5baae18ad5d77d",
+    "controlled_message": null
+  },
+  "kernel_exit": {
+    "code": null,
+    "signal": "SIGTERM",
+    "utc": "2026-11-07T05:08:45.476Z"
+  },
+  "user_daemon_independently_managed": true,
+  "model_prompt_sent": false,
+  "original_project_used": false
+}

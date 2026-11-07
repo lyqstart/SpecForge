@@ -1,0 +1,8 @@
+src/verification/static-task-command.ts(23,131): error TS18047: 'm' is possibly 'null'.
+src/verification/static-task-command.ts(28,17): error TS18047: 'match' is possibly 'null'.
+src/verification/static-task-command.ts(28,108): error TS18047: 'match' is possibly 'null'.
+src/verification/static-task-command.ts(30,6): error TS18047: 'match' is possibly 'null'.
+src/verification/static-task-command.ts(31,39): error TS18047: 'match' is possibly 'null'.
+src/verification/static-task-command.ts(31,65): error TS18047: 'match' is possibly 'null'.
+src/verification/static-task-command.ts(31,100): error TS18047: 'match' is possibly 'null'.
+src/verification/static-task-command.ts(31,118): error TS18047: 'match' is possibly 'null'.

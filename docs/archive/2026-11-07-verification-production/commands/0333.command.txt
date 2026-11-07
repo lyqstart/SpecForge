@@ -1,0 +1,22 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/build-release-manifest.ts",
+    "--candidate-id",
+    "CODEX-SF-20261107-CF766382-1.0.23"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Produce current1.0.23 source-bound release manifest and runtime entry report",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES ignored release manifest/reports; EXTERNAL_EVIDENCE_WRITES sealed receipt; no global or business writes",
+  "started_utc": "2026-11-07T07:30:47.476Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\scripts\\build-release-manifest.ts",
+      "sha256": "5e89794f912f1f694983d33baf0f95652a12c7ed82fab03fa18597ba487ecb1a",
+      "size": 1480,
+      "extension": ".ts"
+    }
+  ]
+}

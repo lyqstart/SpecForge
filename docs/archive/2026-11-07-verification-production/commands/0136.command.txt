@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/public-kernel-chain.cjs",
+    "04",
+    "state"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "retest-real-invalid-state-and-earlier-writeguard-refusal",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned fixture04 Kernel/Daemon and verified existing wrapper only; no grant/profile; EXTERNAL_EVIDENCE_WRITES source-frozen trial; original untouched",
+  "started_utc": "2026-11-07T03:33:58.621Z"
+}

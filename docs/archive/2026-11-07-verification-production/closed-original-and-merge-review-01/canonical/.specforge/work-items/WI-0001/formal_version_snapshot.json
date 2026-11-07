@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0001",
+  "version_control_mode": "git",
+  "head_commit": "f5fed085a8609f593592eca5e8035b2d1c958759",
+  "implementation_commit": "f5fed085a8609f593592eca5e8035b2d1c958759",
+  "branch_name": "codex/greet-library-wi-0001",
+  "implementation_files": [
+    "README.md",
+    "package.json",
+    "src/greet.ts",
+    "tests/greet.test.ts",
+    "tsconfig.json"
+  ],
+  "implementation_tree_fingerprint": "c8c73e006a4e6e7f295f35572ad6e6295cb6341d7688bf583342eddc0a077eec",
+  "base_commit": "8a692e88c0823984647622294f5199c18bb0c587",
+  "diff_fingerprint": "b7b802a170c4ab93948d0c321680162e3a0c04c797f2709f0bb4517460ed0cda",
+  "spec_migration_project_spec_git_diff_fingerprint": "",
+  "created_at": "2026-11-07T09:55:34.179Z"
+}

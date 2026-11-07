@@ -1,0 +1,1 @@
+{"destination":"D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\public-native-evidence-12","members":243,"manifest_sha256":"9ecc6513a926160476cc6b97b729e4bf3b70372b56cea618a2effbf7f6dd2837","private_key_archived":false}

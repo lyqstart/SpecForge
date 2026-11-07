@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/prepare-source-commit.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-classified-source-commit-and-build-provenance",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES source preparation raw identities and exact NUL pathspec only; no Git mutations original or install",
+  "started_utc": "2026-11-07T03:55:35.964Z"
+}

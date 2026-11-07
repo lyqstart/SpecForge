@@ -1,0 +1,31 @@
+{
+  "agent": "sf-verifier",
+  "boundary_statement": "只读聚合与受控写入；未重新执行任何 verification attempt，未修改业务代码/Task/状态/权限，未调用 Gate/State 工具，未读取 runtime trace。仅经 sf_artifact_write 写入本 Agent 所有的 evidence_manifest 与 verification_report。",
+  "duration_ms": 0,
+  "errors": [],
+  "findings": [
+    "恢复条件满足后按 2026-11-07T09:32:11.239Z 现行合同审计注纠正 Manifest 字段契约：每个执行条目补显式 execution_receipt_id=<64hex receipt>、hash='sha256:'+id、hash_domain='canonical-json:verification-execution/v1'，保留 task_id/verification_type/command_index/command/path/status 及既有必填字段；TASK-WI-0001-005 e2e command_index 修正为类别内 0（Manifest 与 Report 同步）。",
+    "evidence_manifest 成功写入（第3次，size 29889）：22 条 EV-0001..EV-0022 canonical 顺序，全部绑定当前 1.0.23 receipt，无 verification_evidence 包装、无 probe、无陈旧 1.0.22 receipt。",
+    "verification_report 成功写入（size 38275，conclusion=pass）：22/22 verification_commands（含真实 receipt、exit 0、输出摘要）、AC-CORE-001~018 全 pass 且引用已登记 EV、test_matrix L1/L2/L4/L6 pass 其余 not_applicable、governance_model 四项 checked、required_evidence_results EVREQ-1A..6A 全 pass、missing_blocking_evidence 空、typed semantic_closure（与 manifest supports/related_refs 一致，静态 L1 不虚标为行为性）。",
+    "此前两次报告写入失败（VERIFICATION_EXECUTION_EVIDENCE_REJECTED：execution_receipt_rejected:command-21 + 21×execution_receipt_missing_from_manifest）的原因即为缺少显式 execution_receipt_id/hash 字段且 e2e command_index 误用 1；失败结果原样保留于本 WI 会话记录，未伪造、未补写。"
+  ],
+  "inputs_read": [
+    "审计注（2026-11-07T09:32:11.239Z）字段级事实",
+    "本 Agent fresh handoffs（verification-task-002..005-formal）",
+    "Orchestrator 提供的 TASK-WI-0001-001 五条 1.0.23 receipt",
+    ".specforge/work-items/WI-0001/candidates/tasks.md（22 条声明性命令原文）",
+    ".specforge/work-items/WI-0001/candidates/project/modules/CORE/requirements.candidate.md（REQ/AC 冻结结构）",
+    ".specforge/work-items/WI-0001/.semantic_closure.json（canonical 语义结构）"
+  ],
+  "next_step_recommendation": "Orchestrator 可将报告内 semantic_closure 原样传给 sf_semantic_closure_run，随后按正式流程处理 verification_gate；本 Agent 未推进任何状态。",
+  "outputs_written": [
+    ".specforge/work-items/WI-0001/evidence/evidence_manifest.json (sf_artifact_write file_type=evidence_manifest, success)",
+    ".specforge/work-items/WI-0001/verification_report.md (sf_artifact_write file_type=verification_report template=verification_report, success)"
+  ],
+  "escalation_signals": [],
+  "schema_version": "1.0",
+  "stage": "verification-aggregate-formal-v1.0.23-resume",
+  "timestamp": "2026-11-07T09:50:00Z",
+  "unknowns": [],
+  "work_item_id": "WI-0001"
+}

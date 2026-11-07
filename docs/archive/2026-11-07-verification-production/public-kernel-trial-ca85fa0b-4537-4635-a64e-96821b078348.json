@@ -1,0 +1,180 @@
+{
+  "trial": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\7bb83150ebf54338975311185cadfade\\trials\\ca85fa0b-4537-4635-a64e-96821b078348",
+  "result_sha256": "cd1e723f15541e0d269739cb51901ad8f2610bc7122c6b13032212d761c72e5e",
+  "utc": "2026-11-07T07:58:11.780Z",
+  "records": [
+    {
+      "name": "routing-canonical-manifest",
+      "session": "ses_e4afce53effeC62wCZCX36KKtI",
+      "message": "msg_1b5031d7f0010DIUKEt4S1HTbR",
+      "call": "call_c54b19fec78b4f458e508520954e51a0",
+      "agent": "sf-verifier",
+      "tool": "sf_artifact_write",
+      "value": {
+        "success": true,
+        "path": ".specforge/work-items/WI-9901/evidence/evidence_manifest.json",
+        "size": 6767,
+        "file_type": "evidence_manifest",
+        "controlled_artifact": true,
+        "normalized": true
+      }
+    },
+    {
+      "name": "routing-original-work-log-shape",
+      "session": "ses_e4afcbfd6ffeMz45a1jM6iFIme",
+      "message": "msg_1b503408100169proQ0241tOHL",
+      "call": "call_254ae85b115f4c3584c2f459e5714f92",
+      "agent": "sf-verifier",
+      "tool": "sf_artifact_write",
+      "value": {
+        "success": true,
+        "path": ".specforge/archive/agent_runs/verifier-wi0001-manifest-align/work_log.md",
+        "size": 257
+      }
+    },
+    {
+      "name": "routing-topic-trigger-result",
+      "session": "ses_e4afcb539ffeUIquvQcSL06b99",
+      "message": "msg_1b5034b01001xbIOOruEjA0lGd",
+      "call": "call_f437443a96504cfea2abcc5954501a5d",
+      "agent": "sf-verifier",
+      "tool": "sf_artifact_write",
+      "value": {
+        "success": true,
+        "path": ".specforge/archive/agent_runs/trigger-result/work_log.md",
+        "size": 29
+      }
+    },
+    {
+      "name": "routing-topic-candidate-manifest",
+      "session": "ses_e4afcab98ffesQGGN5ecbrvR4n",
+      "message": "msg_1b5035496001kdxHCNnziy8b6p",
+      "call": "call_796472abcd474c658eafb89962da4aec",
+      "agent": "sf-verifier",
+      "tool": "sf_artifact_write",
+      "value": {
+        "success": true,
+        "path": ".specforge/archive/agent_runs/candidate-manifest/work_log.md",
+        "size": 33
+      }
+    },
+    {
+      "name": "routing-topic-trace-delta",
+      "session": "ses_e4afca20bffeXq8jjPKkBMsJY4",
+      "message": "msg_1b5035e44001TbFjTnGrM4F0sX",
+      "call": "call_f0d58bd913be4d0183226681ce7b86f9",
+      "agent": "sf-verifier",
+      "tool": "sf_artifact_write",
+      "value": {
+        "success": true,
+        "path": ".specforge/archive/agent_runs/trace-delta/work_log.md",
+        "size": 26
+      }
+    },
+    {
+      "name": "routing-topic-impact-analysis",
+      "session": "ses_e4afc9864ffeOuHVpDykQq29JC",
+      "message": "msg_1b50367ed001L17K6jJGZTY1c4",
+      "call": "call_7164ff7e4351483fa504f7f367b148ac",
+      "agent": "sf-verifier",
+      "tool": "sf_artifact_write",
+      "value": {
+        "success": true,
+        "path": ".specforge/archive/agent_runs/impact-analysis/work_log.md",
+        "size": 30
+      }
+    },
+    {
+      "name": "routing-topic-change-classification",
+      "session": "ses_e4afc8d89ffeSGbEopRZZRc4Es",
+      "message": "msg_1b50372b4001YOafSSI3QP1TDD",
+      "call": "call_105fde1ab94e44818f2ebc77e1bd064d",
+      "agent": "sf-verifier",
+      "tool": "sf_artifact_write",
+      "value": {
+        "success": true,
+        "path": ".specforge/archive/agent_runs/change-classification/work_log.md",
+        "size": 36
+      }
+    },
+    {
+      "name": "routing-topic-task-plan",
+      "session": "ses_e4afc8467ffeXA2vnpp4mR3hT6",
+      "message": "msg_1b5037bc9001FINXqZf6d1q4Hk",
+      "call": "call_a212474552f5421b893b07af979d81e5",
+      "agent": "sf-verifier",
+      "tool": "sf_artifact_write",
+      "value": {
+        "success": true,
+        "path": ".specforge/archive/agent_runs/task-plan/work_log.md",
+        "size": 24
+      }
+    },
+    {
+      "name": "routing-topic-merge-report",
+      "session": "ses_e4afc7c38ffewM0Bp3bk0SAnrw",
+      "message": "msg_1b50383f9001r4JgjrV5liS6Vj",
+      "call": "call_00e252e79ed8435697bb17bb23abf6a1",
+      "agent": "sf-verifier",
+      "tool": "sf_artifact_write",
+      "value": {
+        "success": true,
+        "path": ".specforge/archive/agent_runs/merge-report/work_log.md",
+        "size": 27
+      }
+    },
+    {
+      "name": "routing-topic-evidence-manifest",
+      "session": "ses_e4afc72ceffeFhBqwoSMSCk2Pz",
+      "message": "msg_1b5038d71001MLdoQZH7Z6J8q3",
+      "call": "call_73105cb984784b84997264777b5f24c7",
+      "agent": "sf-verifier",
+      "tool": "sf_artifact_write",
+      "value": {
+        "success": true,
+        "path": ".specforge/archive/agent_runs/evidence-manifest/work_log.md",
+        "size": 32
+      }
+    },
+    {
+      "name": "routing-missing-array-refused",
+      "session": "ses_e4afc6719ffe3RLseyb5kKUj04",
+      "message": "msg_1b5039926001MnrV3eDq4WdaDX",
+      "call": "call_dba8aa90d51d44a2baf54ba4b01e5478",
+      "agent": "sf-verifier",
+      "tool": "sf_artifact_write",
+      "value": {
+        "success": false,
+        "error": "INVALID_ARTIFACT_JSON",
+        "hard_stop": false,
+        "retry_allowed": true,
+        "validation_errors": [
+          "evidence_manifest.entries must be an array"
+        ],
+        "message": "Artifact \"evidence_manifest.json\" failed schema validation and was NOT written to disk.\nCorrect the JSON and retry.",
+        "normalized_content_preview": "{\"schema_version\":\"1.0\",\"work_item_id\":\"WI-9901\",\"action\":\"evidence_manifest_supports_alignment\"}"
+      }
+    },
+    {
+      "child": "kernel",
+      "pid": 20688,
+      "exit": {
+        "code": null,
+        "signal": "SIGTERM",
+        "utc": "2026-11-07T07:58:11.778Z"
+      }
+    },
+    {
+      "child": "daemon",
+      "pid": 28764,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "utc": "2026-11-07T07:58:11.685Z"
+      }
+    }
+  ],
+  "failure": null,
+  "exit_code": 0,
+  "original_business_touched": false
+}

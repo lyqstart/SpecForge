@@ -1,0 +1,38 @@
+{
+  "utc": "2026-11-07T10:26:39.676Z",
+  "mode": "CODEX_DIRECT",
+  "run_id": "CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01",
+  "attempt_id": "CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01-01",
+  "status": "IN_PROGRESS",
+  "version": "1.0.23",
+  "source_main": "4d891569fb9e497bd1cfad498b0de79ae80c6b0a",
+  "original_wi": "closed",
+  "original_repository_delivery": "closed_and_git_merged",
+  "business_main": "28c8e3d850c81218af4598928569bf5420814372",
+  "business_remote_push": false,
+  "active_kernel": false,
+  "current_formal_subjects": 22,
+  "current_successful_receipts": 23,
+  "full_current_gates": [
+    {
+      "gate": "verification_gate",
+      "status": "passed"
+    },
+    {
+      "gate": "formal_version_gate",
+      "status": "passed"
+    },
+    {
+      "gate": "close_gate",
+      "status": "passed"
+    }
+  ],
+  "focused_tests": {
+    "files": 2,
+    "passed": 18
+  },
+  "native_tuple_changed": false,
+  "final_guidance_installed": false,
+  "positive_interactive_startup_accepted": false,
+  "ledger_through": "ERR-2011"
+}

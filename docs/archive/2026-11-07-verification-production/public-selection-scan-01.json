@@ -1,0 +1,132 @@
+{
+  "utc": "2026-11-07T10:53:13.447Z",
+  "selection": "All archive regular files except exact hash-bound private original messages and reserved publication-live",
+  "files": 13902,
+  "excluded_private_originals": 176,
+  "sensitive_names": [],
+  "reasoning_with_text": [],
+  "candidates": [
+    {
+      "path": "approved-business-delivery-01/actual-tool-results.json",
+      "kind": "KNOWN_TOKEN_SHAPE",
+      "sha256": "5e7d58d1e8f6f799a84f1b1eabd612ecc5b483bcd52ded7d6d6e89ab22af4961"
+    },
+    {
+      "path": "approved-business-delivery-01/actual-tool-results.json",
+      "kind": "KNOWN_TOKEN_SHAPE",
+      "sha256": "3bab93e80a4847cb32d2c4864ca480104980212f3417ea17c6252a5b3c582f33"
+    },
+    {
+      "path": "approved-business-delivery-01/actual-tool-results.json",
+      "kind": "KNOWN_TOKEN_SHAPE",
+      "sha256": "33ff6f1bcfb03a1472b292a577096efe6a25e292d4ea5b08a859630f1f3ac628"
+    },
+    {
+      "path": "approved-business-delivery-01/actual-tool-results.json",
+      "kind": "KNOWN_TOKEN_SHAPE",
+      "sha256": "ad83bc03cfa574edae316d818e5a2af467884553e8c65b552c6a330c5b905e22"
+    },
+    {
+      "path": "approved-business-delivery-01/actual-tool-results.json",
+      "kind": "KNOWN_TOKEN_SHAPE",
+      "sha256": "415f04ec7ec33b44fa4c0bd2e438306fddbc69a6e96a56a92975b5aa60eced6b"
+    },
+    {
+      "path": "approved-local-merge-tool-contract-01.json",
+      "field": "$.authorization",
+      "kind": "SENSITIVE_FIELD_STRING",
+      "sha256": "298bc3e46e37052ff73ee87491ac80ddb70f47dea70492aac6841461a56d096a",
+      "size": 75
+    },
+    {
+      "path": "business-main-merge-consent.json",
+      "field": "$.authorization",
+      "kind": "SENSITIVE_FIELD_STRING",
+      "sha256": "3a7b852bd25b8279b0c422bad9baf529827bf14c9c555a3e0f43cf3e33be3a12",
+      "size": 36
+    },
+    {
+      "path": "commands/0425.entry-source-0.cjs",
+      "kind": "PRIVATE_KEY_MARKER",
+      "sha256": "b37042e9d5da1ccaeafc4aaf8aaf4b5941a8749bb2822f07d358c54877caa1c6"
+    },
+    {
+      "path": "external-model-consent.json",
+      "field": "$.authorization",
+      "kind": "SENSITIVE_FIELD_STRING",
+      "sha256": "b61696f164af7e507c8d8be46668192b2dfdef381f945d017bda6380ee1713ac",
+      "size": 26
+    },
+    {
+      "path": "inventory-publication.cjs",
+      "kind": "PRIVATE_KEY_MARKER",
+      "sha256": "b37042e9d5da1ccaeafc4aaf8aaf4b5941a8749bb2822f07d358c54877caa1c6"
+    },
+    {
+      "path": "local-main-integration-plan.json",
+      "field": "$.authorization",
+      "kind": "SENSITIVE_FIELD_STRING",
+      "sha256": "ab3c20944ad8cd672244e9b95c741cbcbeadf8aecdf166c276a03f208f600f11",
+      "size": 101
+    },
+    {
+      "path": "publication-derivatives-01/0173.json",
+      "kind": "KNOWN_TOKEN_SHAPE",
+      "sha256": "5e7d58d1e8f6f799a84f1b1eabd612ecc5b483bcd52ded7d6d6e89ab22af4961"
+    },
+    {
+      "path": "publication-derivatives-01/0173.json",
+      "kind": "KNOWN_TOKEN_SHAPE",
+      "sha256": "3bab93e80a4847cb32d2c4864ca480104980212f3417ea17c6252a5b3c582f33"
+    },
+    {
+      "path": "publication-derivatives-01/0173.json",
+      "kind": "KNOWN_TOKEN_SHAPE",
+      "sha256": "33ff6f1bcfb03a1472b292a577096efe6a25e292d4ea5b08a859630f1f3ac628"
+    },
+    {
+      "path": "publication-derivatives-01/0173.json",
+      "kind": "KNOWN_TOKEN_SHAPE",
+      "sha256": "ad83bc03cfa574edae316d818e5a2af467884553e8c65b552c6a330c5b905e22"
+    },
+    {
+      "path": "publication-derivatives-01/0173.json",
+      "kind": "KNOWN_TOKEN_SHAPE",
+      "sha256": "415f04ec7ec33b44fa4c0bd2e438306fddbc69a6e96a56a92975b5aa60eced6b"
+    },
+    {
+      "path": "publication-derivatives-01/0175.json",
+      "kind": "KNOWN_TOKEN_SHAPE",
+      "sha256": "5e7d58d1e8f6f799a84f1b1eabd612ecc5b483bcd52ded7d6d6e89ab22af4961"
+    },
+    {
+      "path": "publication-derivatives-01/0175.json",
+      "kind": "KNOWN_TOKEN_SHAPE",
+      "sha256": "3bab93e80a4847cb32d2c4864ca480104980212f3417ea17c6252a5b3c582f33"
+    },
+    {
+      "path": "publication-derivatives-01/0175.json",
+      "kind": "KNOWN_TOKEN_SHAPE",
+      "sha256": "33ff6f1bcfb03a1472b292a577096efe6a25e292d4ea5b08a859630f1f3ac628"
+    },
+    {
+      "path": "publication-derivatives-01/0175.json",
+      "kind": "KNOWN_TOKEN_SHAPE",
+      "sha256": "ad83bc03cfa574edae316d818e5a2af467884553e8c65b552c6a330c5b905e22"
+    },
+    {
+      "path": "publication-derivatives-01/0175.json",
+      "kind": "KNOWN_TOKEN_SHAPE",
+      "sha256": "415f04ec7ec33b44fa4c0bd2e438306fddbc69a6e96a56a92975b5aa60eced6b"
+    },
+    {
+      "path": "user-installation-upgrade/preflight.json",
+      "field": "$.authorization",
+      "kind": "SENSITIVE_FIELD_STRING",
+      "sha256": "cc50f85f22991b413b605c1c719dde4ea7f084f4a623e63bc1aa5c563fd13469",
+      "size": 159
+    }
+  ],
+  "raw_candidate_values_printed": false,
+  "limits": "Conservative pattern and structured-field inspection; no universal absence claim. Source credential files were never collected/read."
+}

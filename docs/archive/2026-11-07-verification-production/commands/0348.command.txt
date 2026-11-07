@@ -1,0 +1,22 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/public-kernel-chain.cjs",
+    "18",
+    "formal"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Exercise installed1.0.23 professional Agents and real Kernel/Daemon formal verification matrix in fixture18",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES isolated fixture18 Kernel/Daemon/owner/profile only; EXTERNAL_EVIDENCE_WRITES frozen driver and receipts; no global/original writes",
+  "started_utc": "2026-11-07T07:38:00.435Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\public-kernel-chain.cjs",
+      "sha256": "b9e5615034fe70b3730a8c4949530f8ea2328da38d59d03c3b1cff94a17a69a2",
+      "size": 41718,
+      "extension": ".cjs"
+    }
+  ]
+}

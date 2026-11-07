@@ -1,0 +1,79 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/verification-governance-contract.test.ts > verification governance contract > passes only when report, Evidence, audit, closure and provenance agree
+AssertionError: expected [ { …(5) } ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "check_id": "verification_evidence_source_and_time_integrity",
++     "description": "manual acceptance has independent content-bound evidence and declared times do not exceed runtime time",
++     "details": "execution_reference_invalid:command-0",
++     "passed": false,
++     "severity": "error",
++   },
++ ]
+
+ ❯ tests/unit/verification-governance-contract.test.ts:244:58
+    242|       workflowType: 'quick_change',
+    243|     });
+    244|     expect(result.checks.filter(check => !check.passed)).toEqual([]);
+       |                                                          ^
+    245|   });
+    246| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/unit/verification-governance-contract.test.ts > verification governance contract > is enforced by the active verification_gate before state advancement
+AssertionError: expected 'failed' to be 'passed' // Object.is equality
+
+Expected: "passed"
+Received: "failed"
+
+ ❯ tests/unit/verification-governance-contract.test.ts:255:27
+    253|       workflowPath: 'code_only_fast_path',
+    254|     });
+    255|     expect(report.status).toBe('passed');
+       |                           ^
+    256|     expect(
+    257|       report.checks.find(check => check.check_id === 'verification_sem…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/unit/verification-governance-contract.test.ts > verification governance contract > reconciles an actual machine-verified consumer with formal Trace
+AssertionError: expected 'failed' to be 'passed' // Object.is equality
+
+Expected: "passed"
+Received: "failed"
+
+ ❯ tests/unit/verification-governance-contract.test.ts:391:27
+    389|     });
+    390| 
+    391|     expect(report.status).toBe('passed');
+       |                           ^
+    392|     expect(
+    393|       report.checks.find(check => check.check_id === 'code_contract_tr…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/unit/verification-governance-contract.test.ts > verification governance contract > accepts unsupported source only with structured manual-review Evidence
+AssertionError: expected 'failed' to be 'passed' // Object.is equality
+
+Expected: "passed"
+Received: "failed"
+
+ ❯ tests/unit/verification-governance-contract.test.ts:449:27
+    447|     });
+    448| 
+    449|     expect(report.status).toBe('passed');
+       |                           ^
+    450|     expect(
+    451|       report.checks.find(check => check.check_id.includes('NO_CONTRACT…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+

@@ -1,0 +1,16 @@
+{
+  "utc": "2026-11-07T08:17:23.508Z",
+  "source": "0386 full canonical suite2 failed/2336 passed",
+  "members": [
+    {
+      "path": "packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts",
+      "sha256": "5130ffef44246c00e6289b520fe355ecd7fc668f213249fd13f47bf61b8f92fa",
+      "size": 47408
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/git-detached-filter-exclusion.test.ts",
+      "sha256": "ded756c0fcc8d415863a0ed90116b80561d6f2ea9ba9639abd5b920a5fa87ca3",
+      "size": 2784
+    }
+  ]
+}

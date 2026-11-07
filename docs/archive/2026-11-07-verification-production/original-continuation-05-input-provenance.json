@@ -1,0 +1,11 @@
+{
+  "utc": "2026-11-07T07:31:39.741Z",
+  "prior_state": "verification_running",
+  "prior_semantic_call": "call_351df015391a450496041234",
+  "semantic_success": true,
+  "prompt_sha256": "f3a9877c85e517c0635725878a405720c4ab3c548a642d29e4370834646b90b5",
+  "prior_history_transmitted": false,
+  "credentials_transmitted": false,
+  "allow_default_main_merge": false,
+  "source": "Canonical owner state and actual successful tool payload; previous prompt reused as user authorization boundaries only"
+}

@@ -1,0 +1,22 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/v11-agent-skill-contract-alignment.test.ts (11 tests | 1 failed) 62ms
+   × v1.1.5 Agent/Skill final governance contract alignment > keeps the positive feature workflow Close steps owned by Close Gate 12ms
+     → Close Gate owns the closed event; no extra manual transition: expected '### 阶段 11：verification_done → closed（…' not to contain 'sf_state_transition'
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > has target Agent/Skill markdown files to govern 3ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > task planning examples use typed verification_commands 2ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > injects the final governance contract into every userlevel SpecForge Agent and Skill markdown file 11ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > does not leave explicit legacy mainline transition instructions in governed Agent/Skill prose outside the contract block 16ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps professional Candidate writers on controlled Tools and Runtime-owned Manifest materialization 2ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps sf-orchestrator on read-only evidence tools in restricted states 1ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps setup wrappers aligned with final governance fields 2ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps daemon handlers aligned with the contract-enforced workflow 4ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps Contract consumer truth-source and manual-review rules aligned in Agents and Skills 4ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > aligns detached bootstrap fields across actual wrappers, handlers, orchestrator and workflow 3ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 10 passed (11)
+   Start at  17:23:15
+   Duration  487ms (transform 49ms, setup 0ms, collect 46ms, tests 62ms, environment 0ms, prepare 145ms)
+

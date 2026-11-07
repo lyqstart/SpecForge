@@ -1,0 +1,29 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/integration/p0-governance-regression-flow.test.ts (8 tests) 6437ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > rejects user_approved when Gate failed  507ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > rejects user_approved while gates are still running  523ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > records sf-orchestrator only as recorded_by while decided_by remains user and state advances to approved  509ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > auto-advances gates_running to approval_required after all required gates pass  750ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > rejects code_permission enable before successful merge for spec-changing workflows  560ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > allows code_permission enable only after successful merge for spec-changing workflows  1050ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > forbids invalidating user_decision after merge success  687ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > passes close_gate after verification evidence and revoked code permission even when pre-merge hashes changed after merge  1849ms
+ ✓ tests/unit/legacy-filesystem-mode-recovery.test.ts (7 tests) 2995ms
+   ✓ legacy filesystem version-control mode recovery > records a hash-bound recovery and lets Formal Version stay on filesystem evidence  1047ms
+   ✓ legacy filesystem version-control mode recovery > rejects recovery outside implementation_done or after the late repository advances  514ms
+   ✓ legacy filesystem version-control mode recovery > invalidates the recovery when the late repository gains tracked files  447ms
+   ✓ legacy filesystem version-control mode recovery > invalidates tampered recovery metadata and a replaced late Git identity  355ms
+ ✓ tests/v11-section21-acceptance.test.ts (37 tests) 2669ms
+   ✓ §21.1 Acceptance: requirement_change_path > should complete full lifecycle: Gate → User Decision → Merge → Trace → Verification → Evidence → close_gate  594ms
+   ✓ §21.2 Acceptance: design_change_path > should complete full design_change_path lifecycle  328ms
+   ✓ §21.3 Acceptance: code_only_fast_path > should have empty candidate_manifest entries for code_only_fast_path  440ms
+   ✓ §21.3 Acceptance: code_only_fast_path > should still complete all phases: tasks, Write Guard, verification, evidence, close_gate  452ms
+   ✓ §21.4 Acceptance: Out-of-bounds Write > close_gate should fail when out-of-bounds writes are recorded  395ms
+
+ Test Files  3 passed (3)
+      Tests  52 passed (52)
+   Start at  16:05:19
+   Duration  19.08s (transform 2.06s, setup 0ms, collect 5.79s, tests 12.10s, environment 1ms, prepare 470ms)
+

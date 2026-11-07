@@ -1,0 +1,21 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/halt-original-verification.cjs",
+    "05"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Stop only owned R05 sessions after confirmed unexpected work_log rewrite of canonical Evidence Manifest",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES abort owned parent/children only; EXTERNAL_EVIDENCE_WRITES immutable controlled-stop receipt; no truth source editing",
+  "started_utc": "2026-11-07T07:42:00.976Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\halt-original-verification.cjs",
+      "sha256": "fca3bca8c7c3d009f8c584a02d553eb34660b4f2752d5cecdff89128d1767036",
+      "size": 1699,
+      "extension": ".cjs"
+    }
+  ]
+}

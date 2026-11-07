@@ -1,0 +1,83 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/semantic-closure-producer-governance.test.ts (6 tests | 1 failed) 77ms
+   × semantic closure producer governance > connects the active artifact handler to the verification template renderer 26ms
+     → expected false to be true // Object.is equality
+   ✓ semantic closure producer governance > rejects Orchestrator attempts to author verifier-owned artifacts 8ms
+   ✓ semantic closure producer governance > rejects an unstructured verification report even from the owning Verifier 9ms
+   ✓ semantic closure producer governance > rejects the historical incomplete report shape before it reaches disk 12ms
+   ✓ semantic closure producer governance > rejects descriptive evidence text that is not an Evidence ID 10ms
+   ✓ semantic closure producer governance > freezes verification inputs after verification_gate advances state 11ms
+ ❯ tests/unit/active-development-rules-contract.test.ts (54 tests | 1 failed) 68ms
+   ✓ active development rules contract (AR-DEC-06) — structural integrity > covers every EXP rule id through the latest section exactly once (no gaps, no duplicates) 8ms
+   ✓ active development rules contract (AR-DEC-06) — structural integrity > every EXP section has non-empty semantic rule content (no empty/hollow rules) 6ms
+   ✓ active development rules contract (AR-DEC-06) — structural integrity > every EXP heading has a complete semantic title 7ms
+   ✓ active development rules contract (AR-DEC-06) — structural integrity > contains no empty fenced blocks 0ms
+   ✓ active development rules contract (AR-DEC-06) — structural integrity > binds every EXP section to exactly one source comment 14ms
+   ✓ active development rules contract (AR-DEC-06) — structural integrity > contains zero ERR headings and zero SPECFORGE_ERR markers 1ms
+   × active development rules contract — semantic purity (FIX2) > whole file contains no concrete ERR-[0-9]+ ids 20ms
+     → expected [ 'ERR-1905', 'ERR-1902', …(15) ] to have a length of +0 but got 17
+   ✓ active development rules contract — semantic purity (FIX2) > whole file contains no ^ERR-N= status lines 0ms
+   ✓ active development rules contract — semantic purity (FIX2) > whole file contains no P0_OVERALL_STATUS 0ms
+   ✓ active development rules contract — semantic purity (FIX2) > migrated region (EXP-095..278) contains no UNRECORDED_FAILURES= runtime status 0ms
+   ✓ active development rules contract — semantic purity (FIX2) > migrated region contains no concrete V-number execution facts 0ms
+   ✓ active development rules contract — semantic purity (FIX2) > contains no incident narrative "本轮验证器失败补录" 0ms
+   ✓ active development rules contract — semantic purity (FIX2) > EXP-097..101 carry no ERR status blocks 0ms
+   ✓ active development rules contract — semantic purity (FIX2) > EXP-186 carries no V81/V82/V83/V86/V89 incident narrative 0ms
+   ✓ active development rules contract — semantic purity (FIX2) > EXP-190 carries no V98 or runtime status 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > a trailing ordinary reference must not overwrite the canonical definition (EXP-188 regression) 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > combined ERR/EXP sections migrate only the EXP rule, never ERR facts (EXP-189/190) 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > bold-list definitions are single-line rules without trailing ERR narrative (EXP-185) 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > COMBINED_REUSE (ERR topic-classification reuse) sections do not become definitions (EXP-044) 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-165 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-180 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-189 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-190 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-201 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-202 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-204 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-207 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-220 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-228 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-229 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-261 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-262 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-263 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-264 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-265 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-266 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-267 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-268 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-269 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-270 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-271 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-272 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-273 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-274 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-275 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-276 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-277 carries rule text with a selected-source comment 0ms
+   ✓ active development rules contract — Definition/Reference classification regressions > EXP-278 carries rule text with a selected-source comment 0ms
+   ✓ consumer alignment (registry / status / AGENTS / protocol / SPS / plan) > registry registers AR-DEC-06 and both rule-file roles 1ms
+   ✓ consumer alignment (registry / status / AGENTS / protocol / SPS / plan) > project-status REQUIRED_RULES references active rules and never the full ledger 1ms
+   ✓ consumer alignment (registry / status / AGENTS / protocol / SPS / plan) > AGENTS gate points at active rules and requires ledger search output 1ms
+   ✓ consumer alignment (registry / status / AGENTS / protocol / SPS / plan) > protocol §6 states active-rules precedence and targeted ledger search 0ms
+   ✓ consumer alignment (registry / status / AGENTS / protocol / SPS / plan) > SPS appendix absorption list includes AR-DEC-06 1ms
+   ✓ consumer alignment (registry / status / AGENTS / protocol / SPS / plan) > governance plan head overlay carries the AR-DEC-06 separation note 1ms
+ ❯ tests/unit/semantic-closure-contract-alignment.test.ts (7 tests | 2 failed) 39ms
+   × semantic closure contract alignment > keeps deployed trace readers and writer on the canonical Runtime path 22ms
+     → setup/userlevel-opencode/AGENTS.md: expected '<!-- SPECFORGE_V11_FINAL_GOVERNANCE_C…' to contain '.specforge/runtime/logs/trace.jsonl'
+   ✓ semantic closure contract alignment > keeps deployed agents free of missing constitution references and sf-design out of trace_delta ownership 3ms
+   ✓ semantic closure contract alignment > exposes the typed semantic_closure argument in the deployed OpenCode tool 1ms
+   ✓ semantic closure contract alignment > requires Verifier output to include the same closure sections 1ms
+   × semantic closure contract alignment > routes verifier governance reads away from sf_safe_bash 3ms
+     → expected '---\ndescription: SpecForge 验证 Agent，…' to contain 'sf_safe_bash` 当前只提供 Runtime 内部受控只读操作'
+   ✓ semantic closure contract alignment > orders semantic closure before verification_gate in the Orchestrator contract 1ms
+   ✓ semantic closure contract alignment > keeps every workflow that runs verification_gate on the typed closeout protocol 7ms
+
+ Test Files  3 failed (3)
+      Tests  4 failed | 63 passed (67)
+   Start at  15:55:23
+   Duration  3.47s (transform 1.12s, setup 0ms, collect 2.04s, tests 184ms, environment 1ms, prepare 482ms)
+

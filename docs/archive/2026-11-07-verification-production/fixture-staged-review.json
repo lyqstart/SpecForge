@@ -1,0 +1,205 @@
+{
+  "utc": "2026-11-07T08:33:28.787Z",
+  "parent": "27d46badeab50b351bc96a3aa83de73f769a703c",
+  "paths": [
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/additional-manifest.json",
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/additional/packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts",
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/additional/packages/daemon-core/tests/unit/git-detached-filter-exclusion.test.ts",
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/manifest.json",
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts",
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/active-development-rules-contract.test.ts",
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/configuration-activation-loss.test.ts",
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/git-detached-bootstrap.test.ts",
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/legacy-filesystem-mode-recovery.test.ts",
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/runtime-history-integrity.test.ts",
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/semantic-closure-contract-alignment.test.ts",
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/semantic-closure-producer-governance.test.ts",
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/v11-section21-acceptance.test.ts",
+    "docs/project-status.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md",
+    "packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts",
+    "packages/daemon-core/tests/helpers/unit-execution-consumer.ts",
+    "packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts",
+    "packages/daemon-core/tests/unit/active-development-rules-contract.test.ts",
+    "packages/daemon-core/tests/unit/git-detached-bootstrap.test.ts",
+    "packages/daemon-core/tests/unit/git-detached-filter-exclusion.test.ts",
+    "packages/daemon-core/tests/unit/legacy-filesystem-mode-recovery.test.ts",
+    "packages/daemon-core/tests/unit/semantic-closure-contract-alignment.test.ts",
+    "packages/daemon-core/tests/unit/semantic-closure-producer-governance.test.ts",
+    "packages/daemon-core/tests/v11-section21-acceptance.test.ts"
+  ],
+  "bindings": {
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/additional-manifest.json": {
+      "raw_sha256": "2a7f967b5c12001c3beae72f7f5cca6db21c93eefd800fceb1957ffa96ea2713",
+      "size": 531,
+      "index_oid": "70639f6d29cde7bc218bb3b99aad518686ff20a8",
+      "index_blob_sha256": "2a7f967b5c12001c3beae72f7f5cca6db21c93eefd800fceb1957ffa96ea2713"
+    },
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/additional/packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts": {
+      "raw_sha256": "5130ffef44246c00e6289b520fe355ecd7fc668f213249fd13f47bf61b8f92fa",
+      "size": 47408,
+      "index_oid": "ad0c8ce1ffba6c31c389fa75f775f03a7339124e",
+      "index_blob_sha256": "5130ffef44246c00e6289b520fe355ecd7fc668f213249fd13f47bf61b8f92fa"
+    },
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/additional/packages/daemon-core/tests/unit/git-detached-filter-exclusion.test.ts": {
+      "raw_sha256": "ded756c0fcc8d415863a0ed90116b80561d6f2ea9ba9639abd5b920a5fa87ca3",
+      "size": 2784,
+      "index_oid": "891eaf8120873e9bfee694562ce6c87f92cf7229",
+      "index_blob_sha256": "ded756c0fcc8d415863a0ed90116b80561d6f2ea9ba9639abd5b920a5fa87ca3"
+    },
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/manifest.json": {
+      "raw_sha256": "df6d5ba0fbba5217e837de0e77d7b4b49f47ea1ea2ec5ddaa0ecad92aa418547",
+      "size": 3362,
+      "index_oid": "c65610fdea55e60e0a647b57ed96c4c21728a7a4",
+      "index_blob_sha256": "df6d5ba0fbba5217e837de0e77d7b4b49f47ea1ea2ec5ddaa0ecad92aa418547"
+    },
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts": {
+      "raw_sha256": "78dc62e3b611c9bee4c8ce5df9fcfffe0f5f2ae2abb93c521cb42ac0ae903770",
+      "size": 26777,
+      "index_oid": "62e24c2f88d1420901f85b3fd5fb95187f454a8f",
+      "index_blob_sha256": "78dc62e3b611c9bee4c8ce5df9fcfffe0f5f2ae2abb93c521cb42ac0ae903770"
+    },
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/active-development-rules-contract.test.ts": {
+      "raw_sha256": "79513c0e7b10cd02f2a7b8ad896a540ee061c2040538140db4004ea5b192b830",
+      "size": 10104,
+      "index_oid": "4f3986e6a8ac982572add164525b2103290b70de",
+      "index_blob_sha256": "79513c0e7b10cd02f2a7b8ad896a540ee061c2040538140db4004ea5b192b830"
+    },
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/configuration-activation-loss.test.ts": {
+      "raw_sha256": "e1a959efa5a138a195854525e13ef1325db4a71bab6401e3aca8c7e62da9fd0c",
+      "size": 7971,
+      "index_oid": "dff9b937cdfc48dd07ca76d52f3e09d85583224c",
+      "index_blob_sha256": "e1a959efa5a138a195854525e13ef1325db4a71bab6401e3aca8c7e62da9fd0c"
+    },
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/git-detached-bootstrap.test.ts": {
+      "raw_sha256": "2cf11433f79d5aef06497cef8d4f58ae225e3f6a16034ead23faf85591ba6f17",
+      "size": 15661,
+      "index_oid": "13998cf62f659ef093da2ed7a2ace43550cb02c7",
+      "index_blob_sha256": "2cf11433f79d5aef06497cef8d4f58ae225e3f6a16034ead23faf85591ba6f17"
+    },
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/legacy-filesystem-mode-recovery.test.ts": {
+      "raw_sha256": "3056c9a2e0f8220a7784a907eb7f376758df7564ed1a90f60b5b2416db86970f",
+      "size": 16847,
+      "index_oid": "fba2da7cb9163cf9e8dae43e6fa8bdac558cbd6e",
+      "index_blob_sha256": "3056c9a2e0f8220a7784a907eb7f376758df7564ed1a90f60b5b2416db86970f"
+    },
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/runtime-history-integrity.test.ts": {
+      "raw_sha256": "fbdd687d661a0f39ce71285f99724bf01efd229597acfb61c4a9492b7dcea8fe",
+      "size": 8876,
+      "index_oid": "9c49be21900e6708c6b98b2471c83f5aba0b0279",
+      "index_blob_sha256": "fbdd687d661a0f39ce71285f99724bf01efd229597acfb61c4a9492b7dcea8fe"
+    },
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/semantic-closure-contract-alignment.test.ts": {
+      "raw_sha256": "c3f155e118750ebb88205cda2d212df89a68a51fcea07d3f556a4850d8536c58",
+      "size": 5861,
+      "index_oid": "93a4dde694ebeddddb990d99d159491bc8f73a1c",
+      "index_blob_sha256": "c3f155e118750ebb88205cda2d212df89a68a51fcea07d3f556a4850d8536c58"
+    },
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/unit/semantic-closure-producer-governance.test.ts": {
+      "raw_sha256": "6e0e3c228bfbfb7b16692f91c9aa34ca034ed74c731e6233705198e87d78ca79",
+      "size": 8087,
+      "index_oid": "526ce3b3786a3047499464085c3731c2170f2ebd",
+      "index_blob_sha256": "6e0e3c228bfbfb7b16692f91c9aa34ca034ed74c731e6233705198e87d78ca79"
+    },
+    "docs/archive/2026-11-07-verification-production/daemon-consumer-fixture-baseline/packages/daemon-core/tests/v11-section21-acceptance.test.ts": {
+      "raw_sha256": "d67eac7e36a2e44c9b89c13cb89bb705aade73f1d5650d943203dd193a40b09b",
+      "size": 58509,
+      "index_oid": "ccd46ef3b767b48842cba5c8ec4c6915f3c5d83a",
+      "index_blob_sha256": "d67eac7e36a2e44c9b89c13cb89bb705aade73f1d5650d943203dd193a40b09b"
+    },
+    "docs/project-status.md": {
+      "raw_sha256": "b365a52f8c6109c9da324f9670ce210c66a4941f7d878bc88de6932077dd7d94",
+      "size": 7518,
+      "parent_blob_oid": "776f2969e3c48c8b56742139acec7e3c197e136f",
+      "parent_blob_sha256": "5255fa8a45f317805093b701b71bbd1e8203376198c9a91cafc6980a5b73e700",
+      "index_oid": "155375d5f43e717e47b08ec1e642198b259d8552",
+      "index_blob_sha256": "cf8109325d5d1ac8f7643e112fa5b149d9d39a790995468edd537a3ffdf460f8"
+    },
+    "docs/rule/specforge-development-error-ledger-and-experience.md": {
+      "raw_sha256": "b386b7a32009bc17ad1c40633610d40b226c32b39b44f96866e9cf8ad0dbf531",
+      "size": 4460708,
+      "parent_blob_oid": "50fc6a393321b8d327bc36c7e34be4bd751cfc20",
+      "parent_blob_sha256": "271a805e888cde3f8c034bcef90b5ab29aac47d98374758934e05fde7c6dc462",
+      "index_oid": "fe302309054fed679482c00549680f21159b2e9d",
+      "index_blob_sha256": "5c57bc97a5aff8997c820e7e08f281cecc3204b818e80b274bbb2a4f1e1dd399"
+    },
+    "packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts": {
+      "raw_sha256": "1bae724375f7e1ad2d8cf948e89e548feb4eee02de4b180d3ad8aadd50a32bba",
+      "size": 47664,
+      "parent_blob_oid": "ad0c8ce1ffba6c31c389fa75f775f03a7339124e",
+      "parent_blob_sha256": "5130ffef44246c00e6289b520fe355ecd7fc668f213249fd13f47bf61b8f92fa",
+      "index_oid": "b7151543f3409ecf15e7a8b0fdf6d25caec7477f",
+      "index_blob_sha256": "1bae724375f7e1ad2d8cf948e89e548feb4eee02de4b180d3ad8aadd50a32bba"
+    },
+    "packages/daemon-core/tests/helpers/unit-execution-consumer.ts": {
+      "raw_sha256": "088131f8aab00d63c153ebd519cb012219d855428674112bebf83dac4acc49a4",
+      "size": 3497,
+      "index_oid": "d118a773aa6ca8cd47084ed3c0b8bd5a0ea6f36e",
+      "index_blob_sha256": "088131f8aab00d63c153ebd519cb012219d855428674112bebf83dac4acc49a4"
+    },
+    "packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts": {
+      "raw_sha256": "d38918c8292349dfaa26b7708cad954efd6d02e0f21161bdad5c69f9c822a652",
+      "size": 26988,
+      "parent_blob_oid": "62e24c2f88d1420901f85b3fd5fb95187f454a8f",
+      "parent_blob_sha256": "78dc62e3b611c9bee4c8ce5df9fcfffe0f5f2ae2abb93c521cb42ac0ae903770",
+      "index_oid": "f48311ffe7da7ad28becb1aacebfb383d64c6f75",
+      "index_blob_sha256": "d38918c8292349dfaa26b7708cad954efd6d02e0f21161bdad5c69f9c822a652"
+    },
+    "packages/daemon-core/tests/unit/active-development-rules-contract.test.ts": {
+      "raw_sha256": "717277a79e85c8dd81d4b720af69feddc21dfe7f22b9ea00cf806beb4f2cf843",
+      "size": 10426,
+      "parent_blob_oid": "4f3986e6a8ac982572add164525b2103290b70de",
+      "parent_blob_sha256": "79513c0e7b10cd02f2a7b8ad896a540ee061c2040538140db4004ea5b192b830",
+      "index_oid": "52de5c1e15a938dc1047cb894ab3d77c2b6fedad",
+      "index_blob_sha256": "717277a79e85c8dd81d4b720af69feddc21dfe7f22b9ea00cf806beb4f2cf843"
+    },
+    "packages/daemon-core/tests/unit/git-detached-bootstrap.test.ts": {
+      "raw_sha256": "16d443389ef3fec8a07c1774e834f1c79febbd0fc00ad867d53de072746787ff",
+      "size": 15841,
+      "parent_blob_oid": "13998cf62f659ef093da2ed7a2ace43550cb02c7",
+      "parent_blob_sha256": "2cf11433f79d5aef06497cef8d4f58ae225e3f6a16034ead23faf85591ba6f17",
+      "index_oid": "6d63563dccf444a8febdc41f5bf718f6d0871e1f",
+      "index_blob_sha256": "16d443389ef3fec8a07c1774e834f1c79febbd0fc00ad867d53de072746787ff"
+    },
+    "packages/daemon-core/tests/unit/git-detached-filter-exclusion.test.ts": {
+      "raw_sha256": "2e7749b69c4246fb36f128dd4975566a7904b31d42fca6a133fed8ef3b675b46",
+      "size": 2791,
+      "parent_blob_oid": "891eaf8120873e9bfee694562ce6c87f92cf7229",
+      "parent_blob_sha256": "ded756c0fcc8d415863a0ed90116b80561d6f2ea9ba9639abd5b920a5fa87ca3",
+      "index_oid": "3ef0d0dcaf00f3f031c8e43b7db17317ced62038",
+      "index_blob_sha256": "2e7749b69c4246fb36f128dd4975566a7904b31d42fca6a133fed8ef3b675b46"
+    },
+    "packages/daemon-core/tests/unit/legacy-filesystem-mode-recovery.test.ts": {
+      "raw_sha256": "e3aa2e1b08c34474e2ce6782d1d12eb9e2b41e957df763fff5dc53b7f1a8ba4a",
+      "size": 17542,
+      "parent_blob_oid": "fba2da7cb9163cf9e8dae43e6fa8bdac558cbd6e",
+      "parent_blob_sha256": "3056c9a2e0f8220a7784a907eb7f376758df7564ed1a90f60b5b2416db86970f",
+      "index_oid": "0f7f2c0e1e2b0af1616a8fb872b63a3f10314cb7",
+      "index_blob_sha256": "e3aa2e1b08c34474e2ce6782d1d12eb9e2b41e957df763fff5dc53b7f1a8ba4a"
+    },
+    "packages/daemon-core/tests/unit/semantic-closure-contract-alignment.test.ts": {
+      "raw_sha256": "36ba85ee1dd3c73ef785526390ebfbcace1e82c659a1f42fdff894dc8a5f5eee",
+      "size": 6110,
+      "parent_blob_oid": "93a4dde694ebeddddb990d99d159491bc8f73a1c",
+      "parent_blob_sha256": "c3f155e118750ebb88205cda2d212df89a68a51fcea07d3f556a4850d8536c58",
+      "index_oid": "04e9ba7128f8e37811d3565ecab2ecf9c2c38ab2",
+      "index_blob_sha256": "36ba85ee1dd3c73ef785526390ebfbcace1e82c659a1f42fdff894dc8a5f5eee"
+    },
+    "packages/daemon-core/tests/unit/semantic-closure-producer-governance.test.ts": {
+      "raw_sha256": "b47fbb4ae5ff4db86b368745bea821b00fc40b707de492a163f0b77cfd98ca17",
+      "size": 9307,
+      "parent_blob_oid": "526ce3b3786a3047499464085c3731c2170f2ebd",
+      "parent_blob_sha256": "6e0e3c228bfbfb7b16692f91c9aa34ca034ed74c731e6233705198e87d78ca79",
+      "index_oid": "e843b6f0118de4e5e094cc030944b2af273f931e",
+      "index_blob_sha256": "b47fbb4ae5ff4db86b368745bea821b00fc40b707de492a163f0b77cfd98ca17"
+    },
+    "packages/daemon-core/tests/v11-section21-acceptance.test.ts": {
+      "raw_sha256": "ef83ab834c6aa5290a96907fbe9be9baf10e706629197edbb487a65be2d55737",
+      "size": 58944,
+      "parent_blob_oid": "ccd46ef3b767b48842cba5c8ec4c6915f3c5d83a",
+      "parent_blob_sha256": "d67eac7e36a2e44c9b89c13cb89bb705aade73f1d5650d943203dd193a40b09b",
+      "index_oid": "49245f82318ea194282995b565ea5483709ef529",
+      "index_blob_sha256": "ef83ab834c6aa5290a96907fbe9be9baf10e706629197edbb487a65be2d55737"
+    }
+  }
+}

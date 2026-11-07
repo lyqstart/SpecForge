@@ -1,0 +1,96 @@
+{
+  "utc": "2026-11-07T08:37:37.411Z",
+  "main": "4d891569fb9e497bd1cfad498b0de79ae80c6b0a",
+  "old_main": "6fc9de2a844ecae27543c6c672319907105b578b",
+  "source_files_verified": 145,
+  "raw_checkout_transformations": [
+    {
+      "path": "bun.lock",
+      "before_sha256": "7d1c96e74775fc7cb3ad83a99d5c38a1f0f3b4860ed1f6be447ee4d3d208ba3a",
+      "after_sha256": "d437f69e108ad20703d48f814f20985329621c1b2cd210f2365fd1b09769b495",
+      "same_git_blob": true
+    },
+    {
+      "path": "docs/project-status.md",
+      "before_sha256": "b365a52f8c6109c9da324f9670ce210c66a4941f7d878bc88de6932077dd7d94",
+      "after_sha256": "53a52f4aa0399521006ccd23647fc726e8a4a4efe07f96177a0aab898078ca7b",
+      "same_git_blob": true
+    },
+    {
+      "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "before_sha256": "b386b7a32009bc17ad1c40633610d40b226c32b39b44f96866e9cf8ad0dbf531",
+      "after_sha256": "dc5a51f50c3b96e0d743ba39c11d7af59dadd064d7b2e8398187ede18db40c51",
+      "same_git_blob": true
+    },
+    {
+      "path": "packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md",
+      "before_sha256": "ee8f4751b8e4cfe55b911bdfaf5ad710e4ece14764642941667826f37300a764",
+      "after_sha256": "a447be7e35d5ffb56895233fe4ff77a471c04c5ae9f90cda6757d2c0c9b5c988",
+      "same_git_blob": true
+    },
+    {
+      "path": "packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md",
+      "before_sha256": "efb031c4d447728d43bcb005eaf99cfe76b6e7c94aa17016f3c6ea0e326669fd",
+      "after_sha256": "7f1e626f3b9a96ebeb18328a2f967b02af9a50e8a07e8697289e898c5ed52af4",
+      "same_git_blob": true
+    },
+    {
+      "path": "packages/workflow-runtime/docs/API.md",
+      "before_sha256": "86d5e6a7dc632eb39b47196fba9b1c5de350d6fc76eb67dce2da071f8974dad1",
+      "after_sha256": "a4ad76549a225c99f8c637eba0e5c1291cda7e1bad8a7be8fe7989a8ff8d744f",
+      "same_git_blob": true
+    },
+    {
+      "path": "packages/workflow-runtime/docs/DEPLOYMENT.md",
+      "before_sha256": "8c81be1829d631d0adbd79c0ebf7e8cde0ac0a3930fc4d962828eaac42da2bd7",
+      "after_sha256": "bc42d2f3cafbdb0e9a4c6d2086d45989d3ad8c88d975105473580e327a31c46e",
+      "same_git_blob": true
+    },
+    {
+      "path": "packages/workflow-runtime/docs/EXAMPLES.md",
+      "before_sha256": "876592c72daeb39fab4aa4dc4bd8862e7c88d7325d83adf9056c510b325125af",
+      "after_sha256": "bd58956e57993fd1ff5f50daede575eb652f29dac5597e551a2cc3daf328a8c1",
+      "same_git_blob": true
+    },
+    {
+      "path": "packages/workflow-runtime/docs/state-recovery-mechanism.md",
+      "before_sha256": "daf08306e02884fc7fc21b50b9e1ff45e45b87dec40f7056d30bc899949cb35b",
+      "after_sha256": "ae2de3eda6a4b3c0c11a38cf573a7898c2f91e8c0551be86c94cdb26d45a7423",
+      "same_git_blob": true
+    },
+    {
+      "path": "packages/workflow-runtime/docs/storage-implementation.md",
+      "before_sha256": "732c9cfa15daf61d453ee3254133837f9f3f0640b9a0dec012a3c1d088a0776b",
+      "after_sha256": "c879dc74036fc4672217447eea258ab89ada466f60b759cafb28f3a310b6508e",
+      "same_git_blob": true
+    },
+    {
+      "path": "packages/workflow-runtime/package.json",
+      "before_sha256": "1ce10dd161292957a8db767a599b88e08b28dc7c3705e899b13639504789e6f8",
+      "after_sha256": "d4076621e92c5e0157c15ae57149dda7d1c5e944e02fab1e69b922fca896b697",
+      "same_git_blob": true
+    },
+    {
+      "path": "setup/userlevel-opencode/AGENTS.md",
+      "before_sha256": "c110d70a7eed41f8a30e8b6ce1577a7454ce3df180bb3464dd5864cda7bd342b",
+      "after_sha256": "1d50c91e376e3cdeb49c508afcf391488cb3a0c0b9fb49732c06602c6261540c",
+      "same_git_blob": true
+    },
+    {
+      "path": "tests/root-test-role-registry.json",
+      "before_sha256": "cdc93794891d0e3a3ce2072536cf27647a6149b53ed6da722a2a2ff276ee057d",
+      "after_sha256": "69c5be18198ede243901ea4b12e163abbdad5c7040b6874945ec6c97b5ef9430",
+      "same_git_blob": true
+    }
+  ],
+  "native_assets_unchanged": 5,
+  "stat_refresh_only": [
+    "README.md",
+    "docs/conventions/directory-layout.md"
+  ],
+  "source_bytes_overwritten_by_refresh": false,
+  "tracked_clean": true,
+  "archive_untracked_expected": true,
+  "remote_push_performed": false,
+  "original_business_main_touched": false
+}

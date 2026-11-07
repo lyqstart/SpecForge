@@ -1,0 +1,11 @@
+{
+  "utc": "2026-11-07T03:47:19.364Z",
+  "session": "ses_e4be1d140ffeyL212XVlJNnfBZ",
+  "agent": "sf-verifier",
+  "tool": "sf_verification_run",
+  "args": {
+    "action": "prepare",
+    "work_item_id": "WI-9901",
+    "plan_id": "e635b7f18763877a7399cb5e9761938fe90e698a199472cf7ae2b0b27e4bb917"
+  }
+}

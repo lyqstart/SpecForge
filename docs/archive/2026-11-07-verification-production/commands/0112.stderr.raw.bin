@@ -1,0 +1,87 @@
+
+tests\unit\installer\generated_files.test.ts:
+(pass) GeneratedFileHandler > checkForCleanup > should return empty plan when no generated files exist [3.82ms]
+35 |       const journalPath = join(targetDir, "upgrade_journal.json")
+36 |       writeFileSync(journalPath, JSON.stringify({ status: "success" }))
+37 | 
+38 |       const plan = await generatedFileHandler.checkForCleanup(targetDir)
+39 | 
+40 |       expect(plan.filesToDelete).toHaveLength(1)
+                                      ^
+error: expect(received).toHaveLength(expected)
+
+Expected length: 1
+Received length: 0
+
+      at <anonymous> (D:\code\SpecForge\tests\unit\installer\generated_files.test.ts:40:34)
+(fail) GeneratedFileHandler > checkForCleanup > should detect upgrade_journal.json for cleanup [3.73ms]
+(pass) GeneratedFileHandler > checkForCleanup > should detect partial_commit.journal for cleanup [1.47ms]
+57 |       writeFileSync(join(targetDir, "upgrade_journal.json"), "{}")
+58 |       writeFileSync(join(targetDir, "partial_commit.journal"), "{}")
+59 | 
+60 |       const plan = await generatedFileHandler.checkForCleanup(targetDir)
+61 | 
+62 |       expect(plan.filesToDelete).toHaveLength(2)
+                                      ^
+error: expect(received).toHaveLength(expected)
+
+Expected length: 2
+Received length: 1
+
+      at <anonymous> (D:\code\SpecForge\tests\unit\installer\generated_files.test.ts:62:34)
+(fail) GeneratedFileHandler > checkForCleanup > should detect both files when both exist [1.60ms]
+(pass) GeneratedFileHandler > checkForCleanup > should not include unrelated files in cleanup plan [1.79ms]
+(pass) GeneratedFileHandler > executeCleanup > should delete files listed in the plan [3.09ms]
+(pass) GeneratedFileHandler > executeCleanup > should delete multiple files [1.76ms]
+(pass) GeneratedFileHandler > executeCleanup > should not throw when file does not exist (best-effort) [0.61ms]
+(pass) GeneratedFileHandler > executeCleanup > should handle empty plan gracefully [0.41ms]
+(pass) GeneratedFileHandler > executeCleanup > should continue deleting remaining files if one fails [1.14ms]
+158 |         status: "in_progress",
+159 |       }))
+160 | 
+161 |       // Simulate post-reconcile cleanup flow
+162 |       const plan = await generatedFileHandler.checkForCleanup(targetDir)
+163 |       expect(plan.filesToDelete).toHaveLength(1)
+                                       ^
+error: expect(received).toHaveLength(expected)
+
+Expected length: 1
+Received length: 0
+
+      at <anonymous> (D:\code\SpecForge\tests\unit\installer\generated_files.test.ts:163:34)
+(fail) GeneratedFileHandler > end-to-end: checkForCleanup → executeCleanup > should detect and clean up upgrade_journal.json after successful reconcile [1.32ms]
+(pass) GeneratedFileHandler > end-to-end: checkForCleanup → executeCleanup > should detect and clean up partial_commit.journal after recovery [1.16ms]
+
+tests\unit\installer\planner.test.ts:
+(pass) Planner — R14.2: create > should create when source exists but target does not [0.43ms]
+(pass) Planner — R14.3: skip > should skip when source matches current [0.07ms]
+(pass) Planner — R14.9: update when manifestHash undefined > should update customizable type without conflict when manifestHash is undefined [0.05ms]
+(pass) Planner — R14.9: update when manifestHash undefined > should update non-customizable type without tamper warning when manifestHash is undefined [0.29ms]
+(pass) Planner — R14.4: safe update > should update when current matches manifest (user hasn't modified) [0.27ms]
+(pass) Planner — R14.5: conflict for customizable types > should conflict when all three hashes differ for agent [0.11ms]
+(pass) Planner — R14.5: conflict for customizable types > should conflict when all three hashes differ for skill [0.04ms]
+(pass) Planner — R14.6: tamper warning for non-customizable types > should update with tamper warning for tool type [0.04ms]
+(pass) Planner — R14.6: tamper warning for non-customizable types > should update with tamper warning for plugin type [0.06ms]
+(pass) Planner — R14.6: tamper warning for non-customizable types > should update with tamper warning for tool_lib type [0.03ms]
+(pass) Planner — R14.7: delete orphan > should delete managed file not in desired state [0.04ms]
+(pass) Planner — R14.8: ignore non-managed > should ignore non-managed file not in desired state (via decideAction) [0.04ms]
+(pass) Planner — R14.8: ignore non-managed > should delete managed file via R14.7 (not ignore) through generatePlan [0.07ms]
+(pass) Planner — R14.10: skip stale manifest entry > should skip when only manifest entry exists (stale) [0.03ms]
+(pass) Planner — R14.11: no action > should produce no action when all hashes are undefined [0.03ms]
+(pass) Planner — force flag > should resolve conflict to update when force is true [0.05ms]
+(pass) Planner — edge cases > empty DesiredState + empty CurrentState → empty plan [0.43ms]
+(pass) Planner — edge cases > all skip scenario (states fully aligned) [0.22ms]
+(pass) Planner — edge cases > mixed actions in single plan [0.06ms]
+(pass) Planner — edge cases > PlanSummary counts are accurate [0.04ms]
+(pass) Planner — edge cases > diagnostics allDecisions includes all entries [0.05ms]
+(pass) Planner — edge cases > decideAction produces ignore for non-managed files (R14.8 diagnostics) [0.02ms]
+
+3 tests failed:
+(fail) GeneratedFileHandler > checkForCleanup > should detect upgrade_journal.json for cleanup [3.73ms]
+(fail) GeneratedFileHandler > checkForCleanup > should detect both files when both exist [1.60ms]
+(fail) GeneratedFileHandler > end-to-end: checkForCleanup → executeCleanup > should detect and clean up upgrade_journal.json after successful reconcile [1.32ms]
+
+ 31 pass
+ 3 fail
+ 92 expect() calls
+Ran 34 tests across 2 files. [236.00ms]

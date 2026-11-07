@@ -1,0 +1,10 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/project-session-bootstrap.test.ts (15 tests) 446ms
+
+ Test Files  1 passed (1)
+      Tests  15 passed (15)
+   Start at  08:19:47
+   Duration  1.17s (transform 44ms, setup 0ms, collect 55ms, tests 446ms, environment 0ms, prepare 450ms)
+

@@ -1,0 +1,1 @@
+Error: spawnSync C:/Users/lyq/.bun/bin/bun.exe ENOENT

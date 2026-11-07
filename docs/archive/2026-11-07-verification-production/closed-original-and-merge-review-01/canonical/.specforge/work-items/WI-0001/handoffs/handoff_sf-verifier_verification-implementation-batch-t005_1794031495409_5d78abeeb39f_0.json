@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "agent": "sf-verifier",
+  "work_item_id": "WI-0001",
+  "stage": "verification-implementation-batch-t005",
+  "timestamp": "2026-11-07T00:00:00Z",
+  "inputs_read": [
+    "plan 77d838a02c3166ae06570e67d9293fb7c7c9d32bb61d9af43b57e8f298ee684f (integration idx 0)",
+    "plan e9cc0a53f933aec3a6f978b396572f131bc09685925d9f651f78a69b9e71a161 (e2e idx 0)",
+    "original declarations: node --test tests/greet.test.ts; node -e \"import('./src/greet.ts')...E2E-OK\""
+  ],
+  "outputs_written": [],
+  "findings": [
+    "[integration idx 0] plan_id=77d838a02c3166ae06570e67d9293fb7c7c9d32bb61d9af43b57e8f298ee684f attempt_record_id=83bf91fb9ac7c8067035ccfeb87aa883931e84d4d37028268ace2e7e4546e22c receipt_id=73014cdd12b6147b3c8c6a0135340a164e44b1fe8b337ff14314747879a2154f | original: node --test tests/greet.test.ts | normalized argv: fixed readonly single-process Node profile per D23 normalization (tests 4/pass 4/fail 0 TAP output) | exit_code=0 (numeric) | cleanup_proved=true | outcome=passed | verdict: PASS (expected exit 0 + TAP tests 4 pass 4 fail 0 confirmed)",
+    "[e2e idx 0] plan_id=e9cc0a53f933aec3a6f978b396572f131bc09685925d9f651f78a69b9e71a161 attempt_record_id=7cce384e7b951b8af2a477d63cdc3b633206d9cf31f77c85ace2114996ca77d9 receipt_id=924a291abdaefe1a985fc85985ab111c617c582cc1783e5cdc4ee34ea7a1a1f1 | original: node -e \"import('./src/greet.ts').then(m => { const a = m.greet('Ada'); const b = m.greet(''); if (a !== 'Hello, Ada!' || b !== 'Hello, world!') { process.exit(1); } console.log('E2E-OK'); }).catch(() => process.exit(1))\" | normalized argv: fixed readonly single-process Node profile per D23 normalization | exit_code=0 (numeric) | cleanup_proved=true | outcome=passed | verdict: PASS (expected exit 0 + stdout contains 'E2E-OK')",
+    "Both Attempts consumed exactly once via prepare→run; run omitted plan_id per parameter contract; code permission remained revoked throughout (no write access requested or used)",
+    "SCOPE NOTE: this batch was executed for implementation purpose only; receipts are NOT valid for formal verification stage reuse"
+  ],
+  "unknowns": [],
+  "escalation_signals": [],
+  "next_step_recommendation": "Orchestrator may treat TASK-WI-0001-005 integration closure (T2C) as evidenced for the implementation batch; formal verification must later create fresh plans/receipts and must not reuse these implementation-purpose receipts.",
+  "boundary_statement": "sf-verifier executed only D23 readonly prepare/run for the two supplied plans; wrote no business or governance files (verification_report/evidence_manifest not produced for this implementation batch); did not touch state, gates, or code permissions."
+}

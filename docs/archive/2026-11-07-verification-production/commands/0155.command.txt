@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/capture-original-predeploy.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-original-predeploy-raw-baseline",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES original-predeploy-baseline.json hashes only; no original/user install writes",
+  "started_utc": "2026-11-07T03:52:43.700Z"
+}

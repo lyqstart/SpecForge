@@ -1,0 +1,19 @@
+{
+  "utc": "2026-11-07T06:11:50.703Z",
+  "probes": {
+    "actual_child": "0280.result.json",
+    "spawn_failure": "0281.result.json"
+  },
+  "actual_child_exit": 7,
+  "spawn_failure_actual_inner_exit": null,
+  "scope": "Evidence carrier semantics only; nonzero probes are intentional, not product failures. Null inner code is unavailable and cannot count as numeric execution coverage.",
+  "historical_supplement": {
+    "receipt": "0245",
+    "observed_error": "Error: spawnSync bun ENOENT",
+    "carrier_exit_code": 1,
+    "actual_inner_process_exit_available": false,
+    "actual_inner_exit_code": null,
+    "old_inner_exit_code_field": 1,
+    "qualification": "Old receipt retained unchanged; its1 reflected launcher failure, not a real child process exit. No product coverage used that command."
+  }
+}

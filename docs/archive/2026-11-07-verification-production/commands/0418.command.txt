@@ -1,0 +1,21 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/collect-original-execution-coverage.ts",
+    "06"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Independently match current original formal successes to exact approved22 Task selectors",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES coverage facts only; RUNTIME_OBSERVER_WRITES owned current Kernel reads; no state or model writes",
+  "started_utc": "2026-11-07T09:04:38.641Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\collect-original-execution-coverage.ts",
+      "sha256": "94a7794f62968d99dca6f0fdeda6c87ad115d9478cce97012d4959b9ac78a625",
+      "size": 6703,
+      "extension": ".ts"
+    }
+  ]
+}

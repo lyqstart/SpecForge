@@ -1,0 +1,1 @@
+{"criteria":20,"accepted":true,"version":"1.0.23","profile":"Windows x64; approved fixed single-process read-only Node24.19 SP-I01/SP-D01; arbitrary scripts/build/npm/multiprocess remain refused","publication_pending":true}

@@ -1,0 +1,16 @@
+{
+  "utc": "2026-11-07T10:56:49.837Z",
+  "run_id": "CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01",
+  "files": 13977,
+  "bytes": 1258431026,
+  "manifest_sha256": "856c4f5181648c91cbffea6c963e55d2690196806baf6b8964f66ff3d6b0ea39",
+  "self_check": "PASS",
+  "exclusions": {
+    "manifest_and_own_check": "Avoid recursive hash",
+    "local_originals_manifest": "publication-derivatives-01/manifest.json",
+    "local_originals": 176,
+    "publication_live": "Reserved ignored local transport receipts; each command has independent immutable four-piece/seal. Not part of the sealed source acceptance package; avoids recursive Git self-publication.",
+    "reason": "Local native reasoning copies retained; public hash-bound tool/evidence derivatives included"
+  },
+  "inner_exit_code": 0
+}

@@ -1,0 +1,15 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/node-command-proof-boundary.test.ts",
+    "tests/unit/node-command-contract.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "semantic-proof-boundary-after-fix",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=parser-only tests no supplied program executed;EXTERNAL_EVIDENCE_WRITES=regression raw receipts",
+  "started_utc": "2026-11-07T01:39:46.103Z"
+}

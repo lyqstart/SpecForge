@@ -1,0 +1,22 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/inspect-current-professional-artifacts.ts",
+    "02",
+    "original-current-execution-coverage-1794043059517.json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Independently freeze current technical-review report while matching unchanged22 native subjects",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=current professional copies and typed inspection",
+  "started_utc": "2026-11-07T09:52:59.428Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\inspect-current-professional-artifacts.ts",
+      "sha256": "59502f706ab983ed25aeab6ddf658ba0b317ef59504973b8521458d0826591b5",
+      "size": 3711,
+      "extension": ".ts"
+    }
+  ]
+}

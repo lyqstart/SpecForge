@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-07T09:49:53.609Z",
+  "session": "ses_e4a9b96f8ffeupa1lztDr9XzLQ",
+  "parent": "ses_e4a9cc696ffeyXUoWJNamUkRD5",
+  "latest_message": "msg_1b56a06a1001RE2vJsedrM7Cgz",
+  "agent": "sf-verifier",
+  "providerID": "zhipuai-coding-plan",
+  "modelID": "glm-5.3",
+  "source": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7\\.specforge\\work-items\\WI-0001\\evidence\\evidence_manifest.json",
+  "source_sha256": "f422d618bc876afd97ab4ee7dc646595b6cafa555d5485ba00816e0915b4affb",
+  "selector": [
+    "TASK-WI-0001-004",
+    "unit",
+    1
+  ],
+  "canonical_receipt_id": "d4b02894c31ab8312a16b370d4fc625fbd75dd6a0743f142797bd4c3d890838f",
+  "rejected_request_ids": [
+    "d4b02894c31ab8312a16b370d4fc625fbd75dd6a07af3f142797bd4d3d890838f",
+    "d4b02894c31ab8312a16b370d4fc625fbd75dd6a07af3f142797bd4d3d890838f"
+  ],
+  "raw_request_observation_sha256": "3c1b4594952244fbf140b6933598db92c22e8e3d2bbf88066216bde1694b156e"
+}

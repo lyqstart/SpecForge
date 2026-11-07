@@ -1,0 +1,54 @@
+{
+  "utc": "2026-11-07T07:56:08.725Z",
+  "root": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\7bb83150ebf54338975311185cadfade",
+  "project": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\7bb83150ebf54338975311185cadfade\\project",
+  "work_item_id": "WI-9901",
+  "head": "8c34acb9e896c73c31456e5baf58c670f57e666e",
+  "initialization": {
+    "success": true,
+    "created": [
+      ".specforge\\config\\observability.json",
+      ".specforge\\project\\modules\\CORE\\module.json",
+      ".specforge\\project\\modules\\CORE\\requirements.md",
+      ".specforge\\project\\modules\\CORE\\design.md",
+      ".specforge\\project\\modules\\CORE\\trace.md",
+      ".specforge\\config\\project-rules.md",
+      ".specforge\\config\\prod-environment.md",
+      ".specforge\\config\\project.json",
+      ".specforge\\project\\spec_manifest.json",
+      ".specforge\\project\\extension_registry.json",
+      ".specforge\\project\\requirements_index.md",
+      ".specforge\\project\\design_index.md",
+      ".specforge\\project\\architecture.md",
+      ".specforge\\project\\glossary.md",
+      ".specforge\\project\\decisions.md",
+      ".specforge\\project\\trace_matrix.md",
+      ".specforge\\.gitignore"
+    ],
+    "existed": [],
+    "errors": [],
+    "placeholderFiles": [
+      ".specforge\\config\\project-rules.md",
+      ".specforge\\config\\prod-environment.md"
+    ],
+    "normalized": [],
+    "moduleRegistry": {
+      "status": "unchanged",
+      "moduleCodes": [
+        "CORE"
+      ]
+    }
+  },
+  "authoritative_state": {
+    "work_item_id": "WI-9901",
+    "workflow_type": "feature_spec",
+    "current_state": "verification_running",
+    "created_at": 1794038168666,
+    "updated_at": 1794038168720
+  },
+  "purpose": "formal",
+  "upstream_governance": "SYNTHETIC_BASELINE_ONLY_NOT_BUSINESS_APPROVAL_ACCEPTANCE",
+  "real_state_owner": true,
+  "original_business_touched": false,
+  "profile_created": false
+}

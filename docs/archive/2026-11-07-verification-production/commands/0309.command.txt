@@ -1,0 +1,21 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/halt-original-verification.cjs",
+    "03"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Stop only original report run03 after repeated30s Artifact client timeouts to reconcile possible late writes",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES owned Kernel session abort; EXTERNAL_EVIDENCE_WRITES source-sealed stop receipts; no direct business truth edits or model prompt",
+  "started_utc": "2026-11-07T07:01:16.764Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\halt-original-verification.cjs",
+      "sha256": "fca3bca8c7c3d009f8c584a02d553eb34660b4f2752d5cecdff89128d1767036",
+      "size": 1699,
+      "extension": ".cjs"
+    }
+  ]
+}

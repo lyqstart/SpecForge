@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/review-public-selection.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Resolve all public-scan candidates against exact source contexts without exposing credentials",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=privacy classification review",
+  "started_utc": "2026-11-07T10:53:58.492Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\review-public-selection.cjs",
+      "sha256": "37b434bb96495725b67c48afbec0443e9b2c061bc9a6dff902366b68d8d55112",
+      "size": 2825,
+      "extension": ".cjs"
+    }
+  ]
+}

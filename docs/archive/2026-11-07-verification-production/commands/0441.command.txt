@@ -1,0 +1,18 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "--cwd",
+    "packages/daemon-core",
+    "test",
+    "--",
+    "tests/v11-agent-skill-contract-alignment.test.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Reproduce positive Close guidance contradiction against actual maintained Skill",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=one regression test already declared;RUNTIME_OBSERVER_WRITES=Vitest caches;EXTERNAL_EVIDENCE_WRITES=raw regression receipts",
+  "started_utc": "2026-11-07T09:23:13.022Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": []
+}

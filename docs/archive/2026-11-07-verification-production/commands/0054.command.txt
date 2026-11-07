@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/record-stale-harness.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "record-stale-harness-rejection",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=NONE;EXTERNAL_EVIDENCE_WRITES=unqualified old harness bytes and attribution",
+  "started_utc": "2026-11-07T01:49:59.845Z"
+}

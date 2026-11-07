@@ -1,0 +1,17 @@
+{
+  "stateVersion": 41,
+  "projectPath": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+  "activeSessions": [],
+  "workItems": [
+    {
+      "work_item_id": "WI-0001",
+      "workflow_type": "feature_spec",
+      "current_state": "closed",
+      "created_at": 1792905467014,
+      "updated_at": 1794045358653
+    }
+  ],
+  "lastEventId": "01a1b56f-b23d-75bc-b756-9ece6a39c396",
+  "lastEventTs": 1794045358653,
+  "schema_version": "1.0"
+}

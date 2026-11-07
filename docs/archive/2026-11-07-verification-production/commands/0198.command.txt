@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/freeze-public-trials.cjs",
+    "12",
+    "16"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-system-timeout-real-reproduction",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable public-native-evidence16 of installed12; private key omitted; original/user install untouched",
+  "started_utc": "2026-11-07T04:18:26.077Z"
+}

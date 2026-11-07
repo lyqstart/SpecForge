@@ -1,0 +1,7 @@
+{
+  "source": "D:\\code\\SpecForge\\setup\\userlevel-opencode\\tools\\sf_changed_files_audit.ts",
+  "sha256": "8f947807651094786e0a772c77a6fe48805fe705122d5a15421036a813926371",
+  "target": "D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\ec4e012955964ac080d38edc63c1db94\\config\\tools\\sf_changed_files_audit.ts",
+  "reused_exact_prior_owned_copy": false,
+  "reason": "One-time setup; actual audit owner creates an intentional fixture-precondition HardStop; no fabricated latch"
+}

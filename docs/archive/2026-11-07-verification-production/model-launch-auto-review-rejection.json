@@ -1,0 +1,12 @@
+{
+  "kind": "TOOL_LEVEL_AUTO_REVIEW_REJECTION",
+  "attempted_action": "Launch real professional Agents and GLM-5.3 on original WI verification continuation",
+  "reviewer_reason": "该操作会在真实原业务项目上启动 Agent/Provider 流程并可能向外部模型发送项目上下文；虽获批继续原 WI 验证，但未明确授权具体业务数据向该提供方外发，且会推进真实治理状态。",
+  "execution_performed": false,
+  "carrier_started": false,
+  "numeric_exit_code_available": false,
+  "inner_exit_code": null,
+  "note": "The execution tool rejected before starting the evidence carrier. No process exit code exists; no numeric code is fabricated. Product adoption/installation authorization is unchanged.",
+  "next_legal_action": "Complete local non-model runtime checks. Await explicit minimal-context external model consent; do not resend through an indirect route.",
+  "proposed_reduction": "Fresh session for same original WI; only project code/spec/Tasks/necessary governance records and path/environment data; no old session history or credentials; business main merge remains separate."
+}

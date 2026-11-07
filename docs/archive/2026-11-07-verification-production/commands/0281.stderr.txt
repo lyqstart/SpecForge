@@ -1,0 +1,1 @@
+Error: spawnSync D:/code/SpecForge/docs/archive/2026-11-07-verification-production/owned-nonexistent-probe.exe ENOENT

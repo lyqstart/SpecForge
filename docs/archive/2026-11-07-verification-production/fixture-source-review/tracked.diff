@@ -1,0 +1,412 @@
+diff --git a/docs/project-status.md b/docs/project-status.md
+index 776f2969e3c48c8b56742139acec7e3c197e136f..155375d5f43e717e47b08ec1e642198b259d8552 100644
+--- a/docs/project-status.md
++++ b/docs/project-status.md
+@@ -11,7 +11,7 @@ PROJECT_STATUS_SCHEMA=2
+ PROJECT_STATUS_DECLARATION=ACTIVE
+ ACTIVE_INITIATIVE=VERIFIER_GUIDANCE_AND_SPS_CONFORMANCE
+ OBJECTIVE=Repair verifier D18 guidance, deploy and verify; audit SPS clauses and real OpenCode chain with implemented/unimplemented/insufficient evidence results.
+-CURRENT_PHASE=VERIFICATION_PRODUCTION_INTEGRATION
++CURRENT_PHASE=VERIFICATION_PRODUCTION_DELIVERY_AND_ORIGINAL_REVALIDATION
+ OWNER_DECISIONS=AR-DEC-01:APPROVED;AR-DEC-02:APPROVED_WITH_ARCHIVE_CONSOLIDATION;AR-DEC-03:APPROVED_WITH_KIRO_RETIREMENT;AR-DEC-04:APPROVED_WITH_SINGLE_PROJECT_STATUS;AR-DEC-05:ONLY_TWO_EXTERNAL_EXECUTION_MODES_CODEX_DIRECT_AND_WORKBUDDY_COORDINATED;AR-DEC-06:ACTIVE_RULES_SEPARATED_FROM_HISTORICAL_LEDGER;D05:OPENCODE_ADAPTER_ENABLED;D10:NSSM_REMOVED_WINDOWS_DIRECT_DAEMON_ONLY;D11:GLOBAL_ONLY_THIN_PLUGIN_SINGLE_EXPORT;VR-DEC-01:NEW_EPOCH_1_0_0;VR-DEC-02:TAG_PREFIX_SPECFORGE_V;VR-DEC-03:INDEPENDENT_CONTRACT_VERSIONS;VR-DEC-04:ACTIVE_REFERENCES_CONVERGE_HISTORY_PRESERVED;D18:INTERNAL_READ_ONLY_COMMAND_CONTAINMENT;D20:BOUNDED_WINDOWS_LPAC_READONLY_NODE_APPROVED_ACCEPTANCE_FIRST;D21:REGISTRY_READ_SINGLE_CAPABILITY_SYNTHETIC_EXPERIMENT_ONLY;D22:STRICT_SINGLE_PROCESS_FIRST_PHASE_SCOPE_APPROVED_ACCEPTANCE_FIRST;D23:PRODUCTION_ADOPTION_AND_COMPLETE_CONTROLLED_VERIFICATION_IMPLEMENTATION_APPROVED
+ EXECUTION_MODE=CODEX_DIRECT
+ EXECUTION_STATE=IN_PROGRESS
+@@ -21,11 +21,11 @@ EXECUTION_ACTOR=CODEX
+ EXECUTION_AUDITOR=CODEX
+ EXECUTION_RUN_ID=CODEX-SF-20261107-VERIFICATION-PRODUCTION-A01
+ EXECUTION_EVIDENCE_ROOT=D:/code/SpecForge/docs/archive/2026-11-07-verification-production
+-LAST_EXECUTION_CHECKPOINT=Consumer sourcecf766382 committed,27 raw/index bindings independently verified;1.0.23 native candidate0331 and release precheck0334 passed,fixture18 actual117-file install0345/formal matrix0348 passed and481 members frozen0361. This native candidate predates newly confirmed work_log routing defect2001 and is not final delivery. R05 stopped0352 after actual work_log was redirected to canonical Evidence Manifest;0354 preserves actual input/response and current22 entries, no manual truth edit. Routing source repair now removes topic inference and missing-array default;0355 pre-fix11 failures,0357 related25/0358 full types/0359 root51-files748 all pass. Complete Daemon0338 actually227 files2306 pass and9 files20 fail; environmental rerun0360 active, remaining consumer/static/fixture failures require classification. Global remains old1.0.22.
++LAST_EXECUTION_CHECKPOINT=Routing source27d46bad committed and15 Git blobs verified;0368 current1.0.23 native build/0371 precheck/0372 actual117-file private install passed. Actual routing0376 preserves22 entries/all8 log topics and rejects missing array;0384 formal39-tool matrix and0387 authenticated/tampered/restored common Verification/FV/Close plusHardStop recovery passed. Frozen23=79 and24=666 members self-verified; no owner.key. Current canonical fullDaemon0389=236 files2338 tests all passed after classified fixture repairs; Root0359=51 files748 passed,all12 package rebuild0385 passed. Fixture-only repairs10 paths and status/ledger remain uncommitted. Actual private uninstall0390 removes117 managed files,preserves private/unmanaged data. Global remains1.0.22; original R05 stopped atverification_running,44 historical execution successes retained, no full original Gate/FV/Close.
+ NEXT_EXECUTION_STOP=COMPLETE_APPROVED_PRODUCT_VERIFICATION_CHAIN_SP_I01_SP_D01_AND_ORIGINAL_WI_SPS_ACCEPTANCE_OR_EVIDENCED_HARD_STOP
+ LAST_COMPLETED_CHECKPOINT=Original approved PSV-0002 nine-artifact merge and post_merge_gate retained. All22 implementation and22 formal controlled executions complete with actual exit0/output/cleanup receipts. Professional Evidence Manifest and Verification Report exist and independently validate; semantic closure and downstream Gate/FV/Close still pending. Business main8a692e88 unchanged, code permission revoked; no business-main merge approval.
+-CURRENT_BLOCKER=ARTIFACT_ROUTING_REPAIR_SOURCE_COMMIT_AND_NATIVE_INSTALL_ACCEPTANCE_PENDING;FULL_DAEMON20_FAILURES_CLASSIFICATION_AND_REPAIR_PENDING;ORIGINAL_VERIFICATION_GATES_FV_CLOSE_PENDING;SPS_MATRIX_AND_PRODUCT_GIT_DELIVERY_PENDING
+-NEXT_LEGAL_ACTION=Inspect0360 actual results then classify all20 Daemon failures from0338 against current authority and raw inputs; preserve failed tests and do not dilute assertions. Review/commit fully tested routing repair/status/ledger/active EXP17 and frozen baseline. Rebuild current1.0.23 native candidate, actual isolated install and real Kernel work_log/canonical preservation plus common consumers before deployment. Original R05 stopped; read live owner state and current22-entry Manifest before any continuation, reuse genuine44 successes where current receipt contract allows; fix through explicit professional owners only, no manual truth writes. Keep global1.0.22 assets unchanged until original legal completion or governed recovery; business-main merge still requires fresh concrete can_merge=true plan and separate user confirmation. Finish current SPS matrix and authorized direct-main product Git delivery.
++CURRENT_BLOCKER=VERIFIED_TEST_CONSUMER_SOURCE_COMMIT_AND_LOCAL_MAIN_INTEGRATION_PENDING;FINAL1_0_23_USER_UPGRADE_AND_ORIGINAL_FRESH_FORMAL_EVIDENCE_GATES_FV_CLOSE_PENDING;SPS_MATRIX_FINAL_ARCHIVE_AND_REMOTE_DELIVERY_PENDING
++NEXT_LEGAL_ACTION=Review/freeze exact10 fixture/helper source paths plus status/ledger and13 raw baseline paths; commit,then authorized local-main fast-forward after fresh remote check and raw EOL preservation. Runtime source/native tuple0368 is unchanged by test-only repairs; retain exact tested assets,regenerate/precheck final physical release manifest from main. Use prepared transactional1.0.23 upgrade driver only after final source/payload/owner checks: prove old Daemon stop,preserve current original snapshot and existing private owner records without reading key. Upgrade changes asset tuple, so old44 receipts stay history and original currentverification_running must obtain fresh22 formal receipts via real approved minimum-context GLM and explicit professional owners; no manual truth edits or code permission reopening. Complete real Gates/FV/Close and current SPS matrix; business-main merge still requires concrete fresh can_merge=true plan and separate user confirmation. Finish root product main push/tag and post-publication Bootstrap reconciliation.
+ ALLOWED_SCOPE=AGENTS.md;README.md;.gitattributes;.gitignore;package.json;bun.lock;docs/project-status.md;docs/product-specification/**;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/archive/**;docs/adr/**;docs/cli/**;docs/conventions/**;docs/user/**;docs/plugins/**;docs/tools/**;docs/engineering-lessons/**;docs/rule/**;scripts/**;setup/**;packages/**/package.json;packages/service-management/src/**;packages/configuration/src/**;packages/opencode-adapter/src/**;packages/permission-engine/src/**;packages/daemon-core/src/**;packages/cli/src/**;packages/types/src/**;packages/observability/src/**;packages/observability/examples/**;packages/workflow-runtime/src/**;packages/workflow-runtime/tsconfig.json;packages/workflow-runtime/examples/**;packages/workflow-runtime/vitest.config.ts;packages/**/README.md;packages/**/DEVELOPMENT.md;packages/**/docs/**;packages/**/src/**/*.md;packages/**/tests/**;tests/**;docs/design/windows-lpac-node-readonly-contract.md;packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md;packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md
+ PROHIBITED=Deleting ADR ERR audit or report evidence;creating another active handoff current-status or recovery-status file;modifying D:\code\t3 outside a separately authorized controlled recovery phase;reading or modifying D:\code\t2 during SpecForge repair;creating a SpecForge Work Item for SpecForge product self-development;using archive evidence as a current product contract
+ REQUIRED_RULES=docs/rule/specforge-active-development-rules.md;docs/product-specification/authority-registry.md;docs/product-specification/specforge-product-specification.md;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/rule/specforge-execution-mode-and-evidence-protocol.md
+diff --git a/docs/rule/specforge-development-error-ledger-and-experience.md b/docs/rule/specforge-development-error-ledger-and-experience.md
+index 50fc6a393321b8d327bc36c7e34be4bd751cfc20..fe302309054fed679482c00549680f21159b2e9d 100644
+--- a/docs/rule/specforge-development-error-ledger-and-experience.md
++++ b/docs/rule/specforge-development-error-ledger-and-experience.md
+@@ -32749,3 +32749,14 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制
+ ### ERR-1990 / ERR-1992 补充：路径猜测、PowerShell内联引号与依赖执行顺序再次失败
+ 
+ - 恢复期间猜测不存在build-native-release/credential-scan文件、Windows rg通配路径及内联嵌套引号造成只读/载体错误，未据此形成产品结论。0340 Bun读取父目录被EPERM拒绝，但随后安装夹具17已启动，沿用了原有旧fixture bundle；没有将其认作新source producer验收。0344宿主同命令重建成功后，另建fixture18，0345/347/348绑定新bundle，旧17保留。后续依赖动作只在前一步实际成功后启动，不能仅因顺序await就忽略exit失败。显示截断仍不计完整读取。EXP-007/008/014/021/193/296。
++
++### ERR-2003：测试入口、跨命令总时限及过期消费夹具未随当前合同闭环
++
++- 0367用正式Bun包入口确认Vitest3.2.4与root4.1.5不同；configuration/history四个进程失败消失，但Git恢复仍5项10秒超时。0374在不改源、不改生产Git30秒预算的单项诊断中完整通过，真实15858ms；证明外层10秒不足以观察该组合，不证明内部具体耗时根因。Git恢复组合改60秒后0380全部30项通过，保留所有引用、字节、锁、hook与恢复断言。
++- 0373正式入口仍复现三项静态合同及一个报告渲染夹具失败。当前活动规则允许可追溯ERR引用，旧“所有数字ERR均禁止”与正文来源绑定不符；新断言核验每个引用对应真实账本标题，继续禁止ERR状态/事故标题。Trace消费者只要求实际读取trace.jsonl的文档使用正确路径，不给未读取的入口强塞路径；只读能力按现行D18/D23语义检查。旧renderer夹具把自由文本test声称pass，D23正确拒绝；改用真实Schema允许的blocked/skipped报告，同时新增无凭据pass必须拒绝且不落盘的回归。中间空命令数组被正式Report Contract拒绝，未放宽非空要求。0381三文件68项通过。
++- §21/P0治理组合与filesystem eligibility原本已seed上游状态/产物；旧free-text执行结论和裸PASS不能再冒充新执行契约。新增仅tests/helpers的精确登记主体依赖double，显式synthetic-unit-dependency，不制造passed原生receipt，不进生产/安装集合；保留实际生产renderer/Gate/owner断言。0383三文件52项通过，只证明进程内组合；真实Kernel、MAC、Native和共同消费者以0384/387的实际Runtime证据独立验收，原WI仍待新安装重验。EXP-004/007/008/009/016/022/025/026/031/193。
++
++### ERR-2004：首次全量复验发现另一处旧日志推断断言和遗漏的Git过滤器测试时限
++
++- 0386正式完整套件234文件2336项通过，2项失败：design-governance所有权测试仍把work_log正文当task候选；Git clean-filter组合仍用默认10秒。消费者检索确认两份测试调用detached bootstrap。同步前者为日志确实归档且全部已写规范产物字节不变，显式错误专业owner仍被拒绝；后者采用相同60秒组合上限，不改生产30秒Git预算或filter拒绝证明。0388两文件18项通过，filter实际12033ms。
++- 0389正式Bun/Vitest3完整236文件2338项一次全绿。0359 Root51文件748项已通过；0385修复后全12包重新构建通过。0384新安装1.0.23原生正式矩阵39工具调用通过，0387真实共同Verification/FormalVersion/Close的认证正例、篡改拒绝/恢复与HardStop取消恢复通过；其上游为合成seed，未提升为完整原业务Gate成功。0392冻结24组最新666成员，自验PASS、无owner.key。0390正式卸载自有闲置fixture17删除117受管文件，保留私有哨兵和非受管SDK，不触及用户或原项目。EXP-004/007/008/022/026/193。
+diff --git a/packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts b/packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts
+index ad0c8ce1ffba6c31c389fa75f775f03a7339124e..b7151543f3409ecf15e7a8b0fdf6d25caec7477f 100644
+--- a/packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts
++++ b/packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts
+@@ -827,6 +827,7 @@ describe('Orchestrator governance execution closure', () => {
+       ['trace_delta', 'sf-task-planner'],
+     ] as const;
+ 
++    const canonicalBytes = new Map<string, string>();
+     for (const [fileType, requiredAgent] of ownershipCases) {
+       const denied = (await getHandler('sf_artifact_write')!(
+         {
+@@ -855,6 +856,7 @@ describe('Orchestrator governance execution closure', () => {
+ 
+       expect(written.success, JSON.stringify(written, null, 2)).toBe(true);
+       expect(existsSync(path.join(projectRoot, written.path))).toBe(true);
++      canonicalBytes.set(written.path, await readFile(path.join(projectRoot, written.path), 'utf8'));
+     }
+ 
+     const missingCaller = (await getHandler('sf_artifact_write')!(
+@@ -871,7 +873,7 @@ describe('Orchestrator governance execution closure', () => {
+     expect(missingCaller.caller_agent).toBe('unknown');
+     expect(missingCaller.required_agent).toBe('sf-design');
+ 
+-    const inferredBypass = (await getHandler('sf_artifact_write')!(
++    const archivedLog = (await getHandler('sf_artifact_write')!(
+       {
+         work_item_id: workItemId,
+         file_type: 'work_log',
+@@ -881,9 +883,11 @@ describe('Orchestrator governance execution closure', () => {
+       { directory: projectRoot, agent: 'sf-orchestrator' },
+       {} as any
+     )) as any;
+-    expect(inferredBypass.success).toBe(false);
+-    expect(inferredBypass.error).toBe('ARTIFACT_OWNER_MISMATCH');
+-    expect(inferredBypass.required_agent).toBe('sf-task-planner');
++    expect(archivedLog.success).toBe(true);
++    expect(archivedLog.path).toBe('.specforge/archive/agent_runs/task-planning/work_log.md');
++    for (const [relative, before] of canonicalBytes) {
++      expect(await readFile(path.join(projectRoot, relative), 'utf8')).toBe(before);
++    }
+   });
+ 
+   it('requires the create owner to persist a non-empty original request before intake_ready', async () => {
+diff --git a/packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts b/packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts
+index 62e24c2f88d1420901f85b3fd5fb95187f454a8f..f48311ffe7da7ad28becb1aacebfb383d64c6f75 100644
+--- a/packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts
++++ b/packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts
+@@ -20,6 +20,7 @@ import { ToolDispatcher, type ToolDeps } from '../../src/tools/ToolDispatcher';
+ import { renderVerificationReport } from '../../src/tools/lib/sf_artifact_write_core';
+ import { sealPassingCandidateAttemptFixture } from '../helpers/candidate-generation-fixture';
+ import { materializeImplementationBaseline } from '../../src/tools/lib/implementation-baseline';
++import { UnitExecutionConsumer } from '../helpers/unit-execution-consumer';
+ import '../../src/tools/index';
+ 
+ const execFileAsync = promisify(execFile);
+@@ -36,6 +37,7 @@ const DEFAULT_WORKFLOW_PATH: WorkflowPath = 'requirement_change_path';
+ 
+ let projectRoot: string;
+ let dispatcher: ToolDispatcher;
++let unitExecution: UnitExecutionConsumer;
+ 
+ async function git(args: string[]): Promise<void> {
+   await execFileAsync('git', args, { cwd: projectRoot });
+@@ -180,6 +182,7 @@ async function transitionRuntimeState(workItemId: string, fromState: string, toS
+ 
+ function makeDeps(): ToolDeps {
+   return {
++    verificationRuntime: unitExecution.consumer as unknown as ToolDeps['verificationRuntime'],
+     stateManager: {},
+     workflowEngine: {
+       transitionFull: async (input: Record<string, unknown>) => ({ success: true, ...input }),
+@@ -350,6 +353,7 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
+     ],
+   });
+ 
++  const execution = unitExecution.register(workItemId);
+   await writeJson(path.join(dir, 'evidence', 'evidence_manifest.json'), {
+     schema_version: '1.0',
+     work_item_id: workItemId,
+@@ -360,10 +364,8 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
+         type: 'test_output',
+         evidence_type: 'behavioral_e2e',
+         level: 'L5',
+-        path: 'verification_report.md',
+-        description: 'Current P0 behavioral E2E evidence',
+-        hash: 'sha256:fixture',
+-        created_at: '2026-09-04T00:00:00.000Z',
++        ...execution.entry,
++        description: 'Synthetic upstream execution-consumer model; not native E2E evidence',
+         status: 'passed',
+         supports: ['OUT-1', 'REQ-CORE-001', 'DD-1', 'TASK-001'],
+       },
+@@ -407,6 +409,7 @@ async function approveAndMergeFixture(workItemId: string): Promise<void> {
+ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
+   beforeEach(async () => {
+     projectRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-p0-governance-'));
++    unitExecution = new UnitExecutionConsumer(projectRoot);
+     await git(['init', '-b', 'main']);
+     await git(['config', 'user.name', 'SpecForge Test']);
+     await git(['config', 'user.email', 'specforge-test@example.invalid']);
+@@ -635,9 +638,7 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
+           L9_compatibility: 'not_applicable',
+           L10_uat: 'not_applicable',
+         },
+-        verification_commands: [
+-          { command: 'p0-governance-regression', status: 'pass', output_summary: 'passed' },
+-        ],
++        verification_commands: [unitExecution.register(workItemId).command],
+         acceptance_criteria: [
+           { req_id: 'REQ-CORE-001', name: 'governed lifecycle', status: 'pass', evidence: 'EV-1' },
+         ],
+diff --git a/packages/daemon-core/tests/unit/active-development-rules-contract.test.ts b/packages/daemon-core/tests/unit/active-development-rules-contract.test.ts
+index 4f3986e6a8ac982572add164525b2103290b70de..52de5c1e15a938dc1047cb894ab3d77c2b6fedad 100644
+--- a/packages/daemon-core/tests/unit/active-development-rules-contract.test.ts
++++ b/packages/daemon-core/tests/unit/active-development-rules-contract.test.ts
+@@ -135,8 +135,12 @@ describe('active development rules contract — semantic purity (FIX2)', () => {
+   const part34 = content.slice(0, migratedStart);
+   const sections = sectionsOf(content);
+ 
+-  it('whole file contains no concrete ERR-[0-9]+ ids', () => {
+-    expect(content.match(/ERR-[0-9]+/g) ?? []).toHaveLength(0);
++  it('keeps provenance references resolvable without turning incidents into active rule headings', () => {
++    const ledger = read(resolve(repoRoot, 'docs/rule/specforge-development-error-ledger-and-experience.md'));
++    for (const id of new Set(content.match(/ERR-[0-9]+/g) ?? [])) {
++      expect(ledger, id).toMatch(new RegExp(`^#{1,6}[^\\r\\n]*\\b${id}\\b`, 'm'));
++    }
++    expect(content.match(/^#{1,6}\s+ERR-[0-9]+/gm) ?? []).toHaveLength(0);
+   });
+ 
+   it('whole file contains no ^ERR-N= status lines', () => {
+diff --git a/packages/daemon-core/tests/unit/git-detached-bootstrap.test.ts b/packages/daemon-core/tests/unit/git-detached-bootstrap.test.ts
+index 13998cf62f659ef093da2ed7a2ace43550cb02c7..6d63563dccf444a8febdc41f5bf718f6d0871e1f 100644
+--- a/packages/daemon-core/tests/unit/git-detached-bootstrap.test.ts
++++ b/packages/daemon-core/tests/unit/git-detached-bootstrap.test.ts
+@@ -36,7 +36,9 @@ async function unchanged(f: Awaited<ReturnType<typeof fixture>>) {
+   expect(await git(f.root, 'rev-parse', 'HEAD')).toBe(f.head);
+ }
+ 
+-describe('controlled detached Git bootstrap', () => {
++// This composes many real Git operations and durable snapshots. The unchanged
++// first lifecycle takes ~16s on this host; each production Git call retains30s.
++describe('controlled detached Git bootstrap', { timeout: 60000 }, () => {
+   it('plans without creating refs, atomically binds two new branches and standard context, then retries idempotently', async () => {
+     const f = await prepared(); expect(await git(f.root, 'for-each-ref', '--format=%(refname)')).toBe(''); await unchanged(f);
+     const result = await executeDetachedGitBootstrap(f.execute);
+diff --git a/packages/daemon-core/tests/unit/git-detached-filter-exclusion.test.ts b/packages/daemon-core/tests/unit/git-detached-filter-exclusion.test.ts
+index 891eaf8120873e9bfee694562ce6c87f92cf7229..3ef0d0dcaf00f3f031c8e43b7db17317ced62038 100644
+--- a/packages/daemon-core/tests/unit/git-detached-filter-exclusion.test.ts
++++ b/packages/daemon-core/tests/unit/git-detached-filter-exclusion.test.ts
+@@ -32,4 +32,4 @@ it('never starts a repository clean filter while checking or publishing a detach
+     if (!path.basename(root).startsWith('sf-detached-filter-')) throw Error('UNOWNED_FIXTURE');
+     await fs.rm(root, { recursive: true, force: true });
+   }
+-});
++}, 60000);
+diff --git a/packages/daemon-core/tests/unit/legacy-filesystem-mode-recovery.test.ts b/packages/daemon-core/tests/unit/legacy-filesystem-mode-recovery.test.ts
+index fba2da7cb9163cf9e8dae43e6fa8bdac558cbd6e..0f7f2c0e1e2b0af1616a8fb872b63a3f10314cb7 100644
+--- a/packages/daemon-core/tests/unit/legacy-filesystem-mode-recovery.test.ts
++++ b/packages/daemon-core/tests/unit/legacy-filesystem-mode-recovery.test.ts
+@@ -7,6 +7,7 @@ import { promisify } from 'node:util';
+ 
+ import { getHandler, type ToolDeps } from '../../src/tools/ToolDispatcher';
+ import '../../src/tools/index';
++import { UnitExecutionConsumer } from '../helpers/unit-execution-consumer';
+ import {
+   assertFilesystemFormalVersionSnapshotCurrent,
+   checkFormalVersionEligibility,
+@@ -211,11 +212,18 @@ Work Item: WI-0001
+       work_item_id: 'WI-0001',
+       status: 'valid',
+     });
++    // Low-level version-control eligibility unit: upstream gate/state are seeded;
++    // this dependency model does not assert native execution or workflow acceptance.
++    const unitExecution = new UnitExecutionConsumer(projectRoot);
++    const artifacts = unitExecution.minimalArtifacts('WI-0001');
++    await writeJson(path.join(workItemDir, 'evidence/evidence_manifest.json'), artifacts.manifest);
++    await fs.writeFile(path.join(workItemDir, 'verification_report.md'), artifacts.report, 'utf8');
+     const formal = await checkFormalVersionEligibility({
+       projectRoot,
+       workItemDir,
+       workItemId: 'WI-0001',
+       workflowPath: 'requirement_change_path',
++      executionEvidenceConsumer: unitExecution.consumer,
+     });
+     expect(
+       formal.checks.find(check => check.check_id === 'formal_version_control_mode_evidence'),
+@@ -226,7 +234,7 @@ Work Item: WI-0001
+     expect(
+       formal.checks.find(check => check.check_id === 'formal_git_context'),
+     ).toMatchObject({ passed: true });
+-    expect(formal.passed).toBe(true);
++    expect(formal.passed, JSON.stringify(formal.checks.filter(check => !check.passed))).toBe(true);
+     const snapshot = JSON.parse(
+       await fs.readFile(path.join(workItemDir, 'formal_version_snapshot.json'), 'utf8'),
+     );
+diff --git a/packages/daemon-core/tests/unit/semantic-closure-contract-alignment.test.ts b/packages/daemon-core/tests/unit/semantic-closure-contract-alignment.test.ts
+index 93a4dde694ebeddddb990d99d159491bc8f73a1c..04e9ba7128f8e37811d3565ecab2ecf9c2c38ab2 100644
+--- a/packages/daemon-core/tests/unit/semantic-closure-contract-alignment.test.ts
++++ b/packages/daemon-core/tests/unit/semantic-closure-contract-alignment.test.ts
+@@ -16,9 +16,11 @@ describe('semantic closure contract alignment', () => {
+       'setup/userlevel-opencode/agents/sf-reviewer.md',
+       'setup/userlevel-opencode/skills/superpowers-knowledge-extraction/SKILL.md',
+     ];
+-    for (const path of consumers) {
++    const actualReaders = consumers.filter(path => read(path).includes('trace.jsonl'));
++    expect(actualReaders.length).toBeGreaterThan(0);
++    for (const path of consumers) expect(read(path), path).not.toContain('.specforge/logs/trace.jsonl');
++    for (const path of actualReaders) {
+       const content = read(path);
+-      expect(content, path).not.toContain('.specforge/logs/trace.jsonl');
+       expect(content, path).toContain('.specforge/runtime/logs/trace.jsonl');
+     }
+     expect(read('setup/userlevel-opencode/tools/lib/sf_artifact_write_core.ts'))
+@@ -71,7 +73,8 @@ describe('semantic closure contract alignment', () => {
+   it('routes verifier governance reads away from sf_safe_bash', () => {
+     const verifier = read('setup/userlevel-opencode/agents/sf-verifier.md');
+     expect(verifier).toContain('验证只读工具路由（强制）');
+-    expect(verifier).toContain('sf_safe_bash` 当前只提供 Runtime 内部受控只读操作');
++    expect(verifier).toMatch(/sf_safe_bash[^\r\n]*Runtime\s*内部受控(?:只读操作|读取)/);
++    expect(verifier).toContain('D23的Node验证仅走正式plan/run');
+     expect(verifier).toContain('读取已知文件使用 OpenCode `Read`');
+     expect(verifier).toContain('发现路径使用 `Glob`');
+     expect(verifier).toContain('搜索内容使用 `Grep`');
+diff --git a/packages/daemon-core/tests/unit/semantic-closure-producer-governance.test.ts b/packages/daemon-core/tests/unit/semantic-closure-producer-governance.test.ts
+index 526ce3b3786a3047499464085c3731c2170f2ebd..e843b6f0118de4e5e094cc030944b2af273f931e 100644
+--- a/packages/daemon-core/tests/unit/semantic-closure-producer-governance.test.ts
++++ b/packages/daemon-core/tests/unit/semantic-closure-producer-governance.test.ts
+@@ -8,26 +8,29 @@ import { buildSemanticClosureFromArtifacts } from '../../src/tools/lib/semantic-
+ 
+ function verificationPayload(workItemId: string) {
+   return {
+-    conclusion: 'pass',
++    conclusion: 'blocked',
+     test_matrix: {
+-      L1_unit: 'pass',
+-      L2_integration: 'pass',
++      L1_unit: 'skip',
++      L2_integration: 'skip',
+       L3_pbt: 'not_applicable',
+-      L4_e2e: 'pass',
+-      L5_smoke: 'pass',
++      L4_e2e: 'skip',
++      L5_smoke: 'skip',
+       L6_regression: 'not_applicable',
+       L7_performance: 'not_applicable',
+       L8_security: 'not_applicable',
+       L9_compatibility: 'not_applicable',
+       L10_uat: 'not_applicable',
+     },
+-    verification_commands: [{ command: 'test', status: 'pass', output_summary: 'passed' }],
++    // Renderer unit input makes no execution claim. Native and authenticated
++    // command acceptance have their own Runtime/installed integration coverage.
++    verification_commands: [{ command: 'node --test tests/owned.test.mjs', status: 'skipped',
++      output_summary: 'Renderer unit fixture; no command executed' }] as Array<Record<string, unknown>>,
+     acceptance_criteria: [
+-      { req_id: 'REQ-1', name: 'works', status: 'pass', evidence_refs: ['EV-1'] },
++      { req_id: 'REQ-1', name: 'works', status: 'fail', evidence_refs: ['EV-1'] },
+     ],
+-    e2e_tests: [{ name: 'e2e', status: 'pass', evidence_refs: ['EV-1'] }],
++    e2e_tests: [{ name: 'e2e', status: 'not_applicable', evidence_refs: ['EV-1'] }],
+     side_effects: 'none',
+-    summary: 'verified',
++    summary: 'Blocked renderer fixture; execution evidence is intentionally unavailable',
+     semantic_closure: {
+       schema_version: '1.0',
+       work_item_id: workItemId,
+@@ -89,7 +92,7 @@ describe('semantic closure producer governance', () => {
+       {} as any
+     );
+ 
+-    expect((result as any).success).toBe(true);
++    expect((result as any).success, JSON.stringify(result)).toBe(true);
+     const report = await fs.readFile(
+       path.join(projectRoot, '.specforge', 'work-items', workItemId, 'verification_report.md'),
+       'utf-8'
+@@ -103,6 +106,17 @@ describe('semantic closure producer governance', () => {
+     expect(build.source).toBe('verification_report_json');
+   });
+ 
++  it('rejects the former free-text passed command instead of treating renderer data as an execution receipt', async () => {
++    const input = verificationPayload(workItemId);
++    input.verification_commands = [{ command: 'test', status: 'pass', output_summary: 'unexecuted fixture claim' }];
++    const result = await getHandler('sf_artifact_write')!({ work_item_id: workItemId,
++      file_type: 'verification_report', template: 'verification_report', content: input },
++      { directory: projectRoot, agent: 'sf-verifier' }, depsWithState('verification_running')) as any;
++    expect(result.success).toBe(false);
++    expect(result.error).toBe('VERIFICATION_EXECUTION_EVIDENCE_REJECTED');
++    await expect(fs.access(path.join(projectRoot, '.specforge/work-items', workItemId, 'verification_report.md'))).rejects.toMatchObject({ code: 'ENOENT' });
++  });
++
+   it('rejects Orchestrator attempts to author verifier-owned artifacts', async () => {
+     const result = await getHandler('sf_artifact_write')!(
+       {
+diff --git a/packages/daemon-core/tests/v11-section21-acceptance.test.ts b/packages/daemon-core/tests/v11-section21-acceptance.test.ts
+index ccd46ef3b767b48842cba5c8ec4c6915f3c5d83a..49245f82318ea194282995b565ea5483709ef529 100644
+--- a/packages/daemon-core/tests/v11-section21-acceptance.test.ts
++++ b/packages/daemon-core/tests/v11-section21-acceptance.test.ts
+@@ -21,7 +21,8 @@ import { checkWrite, performChangedFilesAudit } from '../src/tools/lib/write-gua
+ import type { WriteGuardContext, AuditResult } from '../src/tools/lib/write-guard-v11';
+ import { recordUserDecision, invalidateUserDecision } from '../src/tools/lib/user-decision-recorder-v11';
+ import type { UserDecisionV11 } from '../src/tools/lib/user-decision-recorder-v11';
+-import { runGate, runRequiredGates } from '../src/tools/lib/gate-runner-v11';
++import { runGate, runRequiredGates as runProductionRequiredGates } from '../src/tools/lib/gate-runner-v11';
++import { UnitExecutionConsumer } from './helpers/unit-execution-consumer';
+ import type { GateContext, GateReportV11 } from '../src/tools/lib/gate-runner-v11';
+ import { executeMerge } from '../src/tools/lib/merge-runner-v11';
+ import { validateTraceDelta, validateVerificationReport, validateEvidenceManifest, checkTraceChain, writeEvidenceManifestTemplate } from '../src/tools/lib/verification-evidence-v11';
+@@ -42,10 +43,18 @@ let tempDir: string;
+ let projectRoot: string;
+ let workItemsRoot: string;
+ let projectDir: string;
++let unitExecution: UnitExecutionConsumer;
++
++// This suite composes production gates over seeded upstream dependency models.
++// Real Kernel, owner authentication and native execution are tested separately.
++function runRequiredGates(ids: Parameters<typeof runProductionRequiredGates>[0], ctx: GateContext) {
++  return runProductionRequiredGates(ids, { ...ctx, executionEvidenceConsumer: unitExecution.consumer });
++}
+ 
+ beforeEach(async () => {
+   tempDir = path.join(os.tmpdir(), `sf-s21-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+   projectRoot = tempDir;
++  unitExecution = new UnitExecutionConsumer(projectRoot);
+   workItemsRoot = path.join(tempDir, '.specforge', 'work-items');
+   projectDir = path.join(tempDir, '.specforge', 'project');
+   await fs.mkdir(workItemsRoot, { recursive: true });
+@@ -282,7 +291,8 @@ async function buildCompleteWI(
+     );
+   }
+ 
+-  // Register Evidence in both the legacy file schema and the active Verification Contract.
++  // Explicit unit dependency model; never a free-text claim that bun test ran.
++  const execution = unitExecution.register(wiId);
+   const evidenceDir = path.join(wiDir, 'evidence');
+   await fs.mkdir(evidenceDir, { recursive: true });
+   await fs.writeFile(
+@@ -304,10 +314,8 @@ async function buildCompleteWI(
+             level: 'L5',
+             type: 'test_output',
+             evidence_type: 'behavioral_e2e',
+-            path: 'evidence/test-output.txt',
+-            description: 'Behavioral end-to-end verification evidence',
+-            hash: 'sha256:abc123',
+-            created_at: new Date().toISOString(),
++            ...execution.entry,
++            description: 'Synthetic in-process governance dependency; not native end-to-end evidence',
+             supports: ['OUT-1', 'REQ-1', 'DD-1', 'TASK-1'],
+           },
+         ],
+@@ -333,13 +341,7 @@ async function buildCompleteWI(
+       L9_compatibility: 'not_applicable',
+       L10_uat: 'not_applicable',
+     },
+-    verification_commands: [
+-      {
+-        command: 'bun test section21 fixture',
+-        status: 'pass',
+-        output_summary: 'passed',
+-      },
+-    ],
++    verification_commands: [execution.command],
+     acceptance_criteria: [
+       {
+         req_id: 'REQ-1',

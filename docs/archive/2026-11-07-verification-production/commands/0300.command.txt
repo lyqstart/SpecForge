@@ -1,0 +1,21 @@
+{
+  "executable": "node",
+  "args": [
+    "--check",
+    "docs/archive/2026-11-07-verification-production/resume-original-verification.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Check future source-frozen original continuation driver syntax before authorized report-only resume",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES source-sealed receipts only; no Kernel/model/original action",
+  "started_utc": "2026-11-07T06:41:39.853Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 1,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\resume-original-verification.cjs",
+      "sha256": "2284bedc67669df237347d715b479f17e24a08960f83ec44eef08c91334ce5a1",
+      "size": 14195,
+      "extension": ".cjs"
+    }
+  ]
+}

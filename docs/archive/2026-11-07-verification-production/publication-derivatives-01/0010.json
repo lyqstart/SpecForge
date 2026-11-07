@@ -1,0 +1,717 @@
+{
+  "source": {
+    "path": "original-verification-run-02/child-ses_e4b52cd78ffehd8b3eV8Xvfk0P.json",
+    "sha256": "61f741b4f59b13b51c8142bcda7d66821094533acc18f7ca58545cf52adf1a1b",
+    "size": 35512
+  },
+  "method": "Native tool/input/output/Agent metadata retained; model reasoning and nested credential fields replaced by hashes. Original local copy preserved and excluded from Git publication.",
+  "data": {
+    "raw_sha256": "c9f488a596b759b2f058cbf285aaf36bcdd69ea23e5a300c79acc2f2440de48c",
+    "raw_path": "D:\\code\\SpecForge\\.tmp\\original-verification\\b1e06bd1-2783-40b5-a60c-9cd65e7663ee\\child-ses_e4b52cd78ffehd8b3eV8Xvfk0P.raw.json",
+    "data": [
+      {
+        "info": {
+          "id": "msg_1b4ad3293001fhMxc948VXhmFm",
+          "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+          "role": "user",
+          "time": {
+            "created": 1794032611989
+          },
+          "summary": {
+            "diffs": [
+              {
+                "file": ".specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-formal-batch-t005_1794032679204_0c135b8b9028_0.json",
+                "patch": "Index: .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-formal-batch-t005_1794032679204_0c135b8b9028_0.json\n===================================================================\n--- .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-formal-batch-t005_1794032679204_0c135b8b9028_0.json\t\n+++ .specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-formal-batch-t005_1794032679204_0c135b8b9028_0.json\t\n@@ -0,0 +1,22 @@\n+{\n+  \"agent\": \"sf-verifier\",\n+  \"boundary_statement\": \"只读验证角色：仅执行正式 verification_run prepare/run，未写任何业务或治理文件，未调用 Gate/状态推进工具，代码权限保持撤销。\",\n+  \"duration_ms\": 0,\n+  \"escalation_signals\": [],\n+  \"findings\": [\n+    \"integration idx0 判定 pass：原声明 node --test tests/greet.test.ts，归一化为 D23 固定只读 Node 执行；真实数值 exit_code=0；TAP 输出 tests 4 / pass 4 / fail 0 / cancelled 0 / skipped 0（A1 Hello, Ada!；A2 Hello, Grace!；A3 Hello, world!；A4 空白名保持 'Hello, ' + name + '!' 形式）；cleanup_proved=true；receipt_id=575a36f175b7cfe4a22df649867a7c4e70e0869710a3d64587b9a8e1440cb344；attempt_record_id=7ce9f5e935b5e9339229f462acaaac48456da6bbbac7798aa6661871c4ab4dc1；plan_id=d493273f56b77c14473465dfb3b922ec2b64a6c4a48b3b6dfef45ec09e31481e；输出完整未截断。\",\n+    \"e2e idx0 判定 pass：原声明 node -e \\\"import('./src/greet.ts').then(m => { const a = m.greet('Ada'); const b = m.greet(''); if (a !== 'Hello, Ada!' || b !== 'Hello, world!') { process.exit(1); } console.log('E2E-OK'); }).catch(() => process.exit(1))\\\"，归一化为同一隔离 Node 语义；真实数值 exit_code=0；stdout='E2E-OK\\\\n'，stderr 空，输出完整未截断；cleanup_proved=true；receipt_id=25074708ec87917bc53d6a1310b08144413b7ae70c1fa3f89249a3512e6c87ab；attempt_record_id=55b7594fb6594186d2e971e95fc05734393a621a6a2387f6c2bd15f08e931248；plan_id=2cb87c906f881b8cbae88ed36ba41a795df0558240567cd9427cb4b66135b3ba。\",\n+    \"两次 Attempt 各消费一次，run 均省略 plan_id，prepare 返回的 attempt_id 未用作 run 参数；无 Schema 拒绝、无取消、无超限、无过期、无清理未知。\"\n+  ],\n+  \"inputs_read\": [\n+    \"plan d493273f56b77c14473465dfb3b922ec2b64a6c4a48b3b6dfef45ec09e31481e (integration idx0)\",\n+    \"plan 2cb87c906f881b8cbae88ed36ba41a795df0558240567cd9427cb4b66135b3ba (e2e idx0)\"\n+  ],\n+  \"next_step_recommendation\": \"由 Orchestrator 将两条 receipt 证据按 formal 目的登记进 evidence_manifest / verification_report，并继续 TASK-WI-0001-005 T2C 闭环的后续验证与 Gate 流程。\",\n+  \"outputs_written\": [],\n+  \"schema_version\": \"1.0\",\n+  \"stage\": \"verification-formal-batch-t005\",\n+  \"timestamp\": \"2026-11-07T00:00:00Z\",\n+  \"unknowns\": [],\n+  \"work_item_id\": \"WI-0001\"\n+}\n",
+                "additions": 22,
+                "deletions": 0,
+                "status": "added"
+              }
+            ]
+          },
+          "agent": "sf-verifier",
+          "model": {
+            "providerID": "zhipuai-coding-plan",
+            "modelID": "glm-5.3",
+            "variant": "low"
+          }
+        },
+        "parts": [
+          {
+            "id": "prt_1b4ad329c001h7Bpq2sFW6e9NE",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ad3293001fhMxc948VXhmFm",
+            "type": "text",
+            "text": "你是真实 sf-verifier，为 Work Item WI-0001（feature_spec，权威状态 verification_running，代码权限撤销且保持撤销）执行 D23 formal 目的独立只读验证。项目根：C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7。目的：formal（implementation 目的回执一律不复用）。这是 TASK-WI-0001-005 集成闭环（T2C）的 formal 取证。\n\n两个 formal 计划：\n- integration idx0: plan_id=d493273f56b77c14473465dfb3b922ec2b64a6c4a48b3b6dfef45ec09e31481e，原声明 `node --test tests/greet.test.ts`，期望 exit 0 且 TAP tests 4 / pass 4 / fail 0\n- e2e idx0: plan_id=2cb87c906f881b8cbae88ed36ba41a795df0558240567cd9427cb4b66135b3ba，原声明 `node -e \"import('./src/greet.ts').then(m => { const a = m.greet('Ada'); const b = m.greet(''); if (a !== 'Hello, Ada!' || b !== 'Hello, world!') { process.exit(1); } console.log('E2E-OK'); }).catch(() => process.exit(1))\"`，期望 exit 0 且输出含 E2E-OK\n\n严格调用参数契约（逐字遵守）：\n- prepare 恰好传：{\"action\":\"prepare\",\"work_item_id\":\"WI-0001\",\"plan_id\":\"<plan_id>\"}\n- run 恰好传：{\"action\":\"run\",\"work_item_id\":\"WI-0001\",\"attempt_record_id\":\"<attempt_record_id>\"}\n- run/cancel/recover 必须省略 plan_id；prepare 返回的 attempt_id 不是 run 参数。每个调用/Attempt 只消费一次。Schema 拒绝时停下原样返回错误，不循环、不重建计划。\n\n执行：依次 prepare→run；如实记录原声明、归一化、真实数值 exit_code、完整输出摘要、cleanup_proved、完整 64 位 receipt_id（不截断）。失败/取消/超限/过期/清理未知不判 pass。不写任何业务或治理文件。\n\n完成后 sf_handoff(action=\"write\")（stage=verification-formal-batch-t005），返回两条的完整 plan_id、attempt_record_id、receipt_id、exit_code、输出、判定。"
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b4ad32b1001K8NBaJjXyGOE0X",
+          "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+          "role": "assistant",
+          "time": {
+            "created": 1794032612017,
+            "completed": 1794032617229
+          },
+          "parentID": "msg_1b4ad3293001fhMxc948VXhmFm",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-verifier",
+          "agent": "sf-verifier",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 30314,
+            "input": 529,
+            "output": 74,
+            "reasoning": 15,
+            "cache": {
+              "read": 29696,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1b4ad3b01001idKlyk3E6Blf1g",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ad32b1001K8NBaJjXyGOE0X",
+            "type": "step-start",
+            "snapshot": "6113c989c58184ff4763dd85aca9885c274f5404"
+          },
+          {
+            "type": "reasoning",
+            "withheld": true,
+            "original_sha256": "fd3ef003b37095fd1d86de072977d3c11e82d9eed9a274bf4a120854ce59417a",
+            "original_size": 294
+          },
+          {
+            "id": "prt_1b4ad3e9d001FFDIwddAFk5Mhf",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ad32b1001K8NBaJjXyGOE0X",
+            "type": "tool",
+            "callID": "call_8feac8d499fc4f7c8ef9bbdf",
+            "tool": "sf_verification_run",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "prepare",
+                "plan_id": "d493273f56b77c14473465dfb3b922ec2b64a6c4a48b3b6dfef45ec09e31481e",
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\"success\":true,\"attempt_record_id\":\"7ce9f5e935b5e9339229f462acaaac48456da6bbbac7798aa6661871c4ab4dc1\",\"attempt_id\":\"494b42c6fc1041ec8bfdb39c05d944af\",\"plan_id\":\"d493273f56b77c14473465dfb3b922ec2b64a6c4a48b3b6dfef45ec09e31481e\",\"application_started\":false}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794032615077,
+                "end": 1794032616476
+              }
+            }
+          },
+          {
+            "id": "prt_1b4ad4566001BDkW14rry0E7QA",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ad32b1001K8NBaJjXyGOE0X",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "6113c989c58184ff4763dd85aca9885c274f5404",
+            "cost": 0,
+            "tokens": {
+              "total": 30314,
+              "input": 529,
+              "output": 74,
+              "reasoning": 15,
+              "cache": {
+                "read": 29696,
+                "write": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b4ad4715001l4KTlxzZN6OjCR",
+          "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+          "role": "assistant",
+          "time": {
+            "created": 1794032617237,
+            "completed": 1794032633225
+          },
+          "parentID": "msg_1b4ad3293001fhMxc948VXhmFm",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-verifier",
+          "agent": "sf-verifier",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 30522,
+            "input": 240,
+            "output": 74,
+            "reasoning": 0,
+            "cache": {
+              "read": 30208,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1b4ad59a4001G2FIl21nYpCumj",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ad4715001l4KTlxzZN6OjCR",
+            "type": "step-start",
+            "snapshot": "6113c989c58184ff4763dd85aca9885c274f5404"
+          },
+          {
+            "id": "prt_1b4ad59a9001dWmgMzBdFqSEhl",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ad4715001l4KTlxzZN6OjCR",
+            "type": "tool",
+            "callID": "call_f6bb5e546e5044a5aa3c0edc",
+            "tool": "sf_verification_run",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "run",
+                "attempt_record_id": "7ce9f5e935b5e9339229f462acaaac48456da6bbbac7798aa6661871c4ab4dc1",
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\"success\":true,\"receipt_id\":\"575a36f175b7cfe4a22df649867a7c4e70e0869710a3d64587b9a8e1440cb344\",\"attempt_record_id\":\"7ce9f5e935b5e9339229f462acaaac48456da6bbbac7798aa6661871c4ab4dc1\",\"attempt_id\":\"494b42c6fc1041ec8bfdb39c05d944af\",\"plan_id\":\"d493273f56b77c14473465dfb3b922ec2b64a6c4a48b3b6dfef45ec09e31481e\",\"outcome\":\"passed\",\"exit_code\":0,\"cleanup_proved\":true,\"failure\":null,\"stdout\":\"TAP version 13\\n# Subtest: A1: greet('Ada') strictly equals 'Hello, Ada!'\\nok 1 - A1: greet('Ada') strictly equals 'Hello, Ada!'\\n  ---\\n  duration_ms: 1.149\\n  type: 'test'\\n  ...\\n# Subtest: A2: greet('Grace') strictly equals 'Hello, Grace!'\\nok 2 - A2: greet('Grace') strictly equals 'Hello, Grace!'\\n  ---\\n  duration_ms: 0.2135\\n  type: 'test'\\n  ...\\n# Subtest: A3: greet('') strictly equals 'Hello, world!'\\nok 3 - A3: greet('') strictly equals 'Hello, world!'\\n  ---\\n  duration_ms: 0.1368\\n  type: 'test'\\n  ...\\n# Subtest: A4: greet('  ') strictly equals 'Hello, ' + name + '!' form\\nok 4 - A4: greet('  ') strictly equals 'Hello, ' + name + '!' form\\n  ---\\n  duration_ms: 0.1261\\n  type: 'test'\\n  ...\\n1..4\\n# tests 4\\n# suites 0\\n# pass 4\\n# fail 0\\n# cancelled 0\\n# skipped 0\\n# todo 0\\n# duration_ms 68.1803\\n\",\"stderr\":\"\",\"output_preview_truncated\":false,\"output_complete\":true}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794032622002,
+                "end": 1794032632443
+              }
+            }
+          },
+          {
+            "id": "prt_1b4ad83f0001pK2zZlMA9MW0qV",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ad4715001l4KTlxzZN6OjCR",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "6113c989c58184ff4763dd85aca9885c274f5404",
+            "cost": 0,
+            "tokens": {
+              "total": 30522,
+              "input": 240,
+              "output": 74,
+              "reasoning": 0,
+              "cache": {
+                "read": 30208,
+                "write": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b4ad8591001J8FAI84Q2K1LGe",
+          "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+          "role": "assistant",
+          "time": {
+            "created": 1794032633233,
+            "completed": 1794032637869
+          },
+          "parentID": "msg_1b4ad3293001fhMxc948VXhmFm",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-verifier",
+          "agent": "sf-verifier",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 31132,
+            "input": 649,
+            "output": 83,
+            "reasoning": 0,
+            "cache": {
+              "read": 30400,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1b4ad8cc50015MfAPp1TFw5So1",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ad8591001J8FAI84Q2K1LGe",
+            "type": "step-start",
+            "snapshot": "6113c989c58184ff4763dd85aca9885c274f5404"
+          },
+          {
+            "id": "prt_1b4ad8cc90019Q7djcrbVWlPjm",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ad8591001J8FAI84Q2K1LGe",
+            "type": "text",
+            "text": "Integration passed。继续 e2e 计划。",
+            "time": {
+              "start": 1794032635081,
+              "end": 1794032635731
+            }
+          },
+          {
+            "id": "prt_1b4ad8f46001buz3sQYXBNXjzR",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ad8591001J8FAI84Q2K1LGe",
+            "type": "tool",
+            "callID": "call_43656656c3884c43b3bfd32d",
+            "tool": "sf_verification_run",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "prepare",
+                "plan_id": "2cb87c906f881b8cbae88ed36ba41a795df0558240567cd9427cb4b66135b3ba",
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\"success\":true,\"attempt_record_id\":\"55b7594fb6594186d2e971e95fc05734393a621a6a2387f6c2bd15f08e931248\",\"attempt_id\":\"4f93b8cd04eb422c96c54949e4af91c4\",\"plan_id\":\"2cb87c906f881b8cbae88ed36ba41a795df0558240567cd9427cb4b66135b3ba\",\"application_started\":false}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794032635727,
+                "end": 1794032637132
+              }
+            }
+          },
+          {
+            "id": "prt_1b4ad964d001NDlbo7aZA8ojDh",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ad8591001J8FAI84Q2K1LGe",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "6113c989c58184ff4763dd85aca9885c274f5404",
+            "cost": 0,
+            "tokens": {
+              "total": 31132,
+              "input": 649,
+              "output": 83,
+              "reasoning": 0,
+              "cache": {
+                "read": 30400,
+                "write": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b4ad97b30011zxKUpjmXxYwdt",
+          "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+          "role": "assistant",
+          "time": {
+            "created": 1794032637875,
+            "completed": 1794032653976
+          },
+          "parentID": "msg_1b4ad3293001fhMxc948VXhmFm",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-verifier",
+          "agent": "sf-verifier",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 31346,
+            "input": 229,
+            "output": 77,
+            "reasoning": 0,
+            "cache": {
+              "read": 31040,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1b4adad280014OL8pyBQ950oRU",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ad97b30011zxKUpjmXxYwdt",
+            "type": "step-start",
+            "snapshot": "6113c989c58184ff4763dd85aca9885c274f5404"
+          },
+          {
+            "id": "prt_1b4adad2e001kR4ET3K0AP71Uc",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ad97b30011zxKUpjmXxYwdt",
+            "type": "tool",
+            "callID": "call_eb7a03ad9a894f3c960a9df6",
+            "tool": "sf_verification_run",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "run",
+                "attempt_record_id": "55b7594fb6594186d2e971e95fc05734393a621a6a2387f6c2bd15f08e931248",
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\"success\":true,\"receipt_id\":\"25074708ec87917bc53d6a1310b08144413b7ae70c1fa3f89249a3512e6c87ab\",\"attempt_record_id\":\"55b7594fb6594186d2e971e95fc05734393a621a6a2387f6c2bd15f08e931248\",\"attempt_id\":\"4f93b8cd04eb422c96c54949e4af91c4\",\"plan_id\":\"2cb87c906f881b8cbae88ed36ba41a795df0558240567cd9427cb4b66135b3ba\",\"outcome\":\"passed\",\"exit_code\":0,\"cleanup_proved\":true,\"failure\":null,\"stdout\":\"E2E-OK\\n\",\"stderr\":\"\",\"output_preview_truncated\":false,\"output_complete\":true}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794032643382,
+                "end": 1794032653222
+              }
+            }
+          },
+          {
+            "id": "prt_1b4add508001kXseiaeptGwM7Q",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ad97b30011zxKUpjmXxYwdt",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "6113c989c58184ff4763dd85aca9885c274f5404",
+            "cost": 0,
+            "tokens": {
+              "total": 31346,
+              "input": 229,
+              "output": 77,
+              "reasoning": 0,
+              "cache": {
+                "read": 31040,
+                "write": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b4add6a40018gtinZmdcvUGiR",
+          "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+          "role": "assistant",
+          "time": {
+            "created": 1794032653988,
+            "completed": 1794032668144
+          },
+          "parentID": "msg_1b4ad3293001fhMxc948VXhmFm",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-verifier",
+          "agent": "sf-verifier",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 32474,
+            "input": 334,
+            "output": 908,
+            "reasoning": 0,
+            "cache": {
+              "read": 31232,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1b4ade782001cSoEUqWeL4UNyA",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4add6a40018gtinZmdcvUGiR",
+            "type": "step-start",
+            "snapshot": "6113c989c58184ff4763dd85aca9885c274f5404"
+          },
+          {
+            "id": "prt_1b4ade787001XXlc3UVDcE4Gpo",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4add6a40018gtinZmdcvUGiR",
+            "type": "text",
+            "text": "两条均通过。写入 handoff。",
+            "time": {
+              "start": 1794032658311,
+              "end": 1794032667401
+            }
+          },
+          {
+            "id": "prt_1b4ae0afa001ri3pBya7IyfDWo",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4add6a40018gtinZmdcvUGiR",
+            "type": "tool",
+            "callID": "call_8e5d09b6e1a24ebd9028c727",
+            "tool": "sf_handoff",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "write",
+                "handoff": {
+                  "agent": "sf-verifier",
+                  "boundary_statement": "只读验证角色：仅执行正式 verification_run prepare/run，未写任何业务或治理文件，未调用 Gate/状态推进工具，代码权限保持撤销。",
+                  "duration_ms": 0,
+                  "findings": [
+                    "integration idx0 判定 pass：原声明 node --test tests/greet.test.ts，归一化为 D23 固定只读 Node 执行；真实数值 exit_code=0；TAP 输出 tests 4 / pass 4 / fail 0 / cancelled 0 / skipped 0（A1 Hello, Ada!；A2 Hello, Grace!；A3 Hello, world!；A4 空白名保持 'Hello, ' + name + '!' 形式）；cleanup_proved=true；receipt_id=575a36f175b7cfe4a22df649867a7c4e70e0869710a3d64587b9a8e1440cb344；attempt_record_id=7ce9f5e935b5e9339229f462acaaac48456da6bbbac7798aa6661871c4ab4dc1；plan_id=d493273f56b77c14473465dfb3b922ec2b64a6c4a48b3b6dfef45ec09e31481e；输出完整未截断。",
+                    "e2e idx0 判定 pass：原声明 node -e \"import('./src/greet.ts').then(m => { const a = m.greet('Ada'); const b = m.greet(''); if (a !== 'Hello, Ada!' || b !== 'Hello, world!') { process.exit(1); } console.log('E2E-OK'); }).catch(() => process.exit(1))\"，归一化为同一隔离 Node 语义；真实数值 exit_code=0；stdout='E2E-OK\\n'，stderr 空，输出完整未截断；cleanup_proved=true；receipt_id=25074708ec87917bc53d6a1310b08144413b7ae70c1fa3f89249a3512e6c87ab；attempt_record_id=55b7594fb6594186d2e971e95fc05734393a621a6a2387f6c2bd15f08e931248；plan_id=2cb87c906f881b8cbae88ed36ba41a795df0558240567cd9427cb4b66135b3ba。",
+                    "两次 Attempt 各消费一次，run 均省略 plan_id，prepare 返回的 attempt_id 未用作 run 参数；无 Schema 拒绝、无取消、无超限、无过期、无清理未知。"
+                  ],
+                  "inputs_read": [
+                    "plan d493273f56b77c14473465dfb3b922ec2b64a6c4a48b3b6dfef45ec09e31481e (integration idx0)",
+                    "plan 2cb87c906f881b8cbae88ed36ba41a795df0558240567cd9427cb4b66135b3ba (e2e idx0)"
+                  ],
+                  "next_step_recommendation": "由 Orchestrator 将两条 receipt 证据按 formal 目的登记进 evidence_manifest / verification_report，并继续 TASK-WI-0001-005 T2C 闭环的后续验证与 Gate 流程。",
+                  "outputs_written": [],
+                  "schema_version": "1.0",
+                  "stage": "verification-formal-batch-t005",
+                  "timestamp": "2026-11-07T00:00:00Z",
+                  "unknowns": [],
+                  "work_item_id": "WI-0001"
+                },
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\n  \"success\": false,\n  \"error\": \"Handoff validation failed: Missing required field: escalation_signals (§14.3)\"\n}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794032667396,
+                "end": 1794032667465
+              }
+            }
+          },
+          {
+            "id": "prt_1b4ae0c7b001I8btnls6tZpZQQ",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4add6a40018gtinZmdcvUGiR",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "6113c989c58184ff4763dd85aca9885c274f5404",
+            "cost": 0,
+            "tokens": {
+              "total": 32474,
+              "input": 334,
+              "output": 908,
+              "reasoning": 0,
+              "cache": {
+                "read": 31232,
+                "write": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b4ae0dfc001y4tIZZYX3VmGaU",
+          "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+          "role": "assistant",
+          "time": {
+            "created": 1794032668156,
+            "completed": 1794032680477
+          },
+          "parentID": "msg_1b4ad3293001fhMxc948VXhmFm",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-verifier",
+          "agent": "sf-verifier",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 33414,
+            "input": 956,
+            "output": 906,
+            "reasoning": 0,
+            "cache": {
+              "read": 31552,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "tool-calls"
+        },
+        "parts": [
+          {
+            "id": "prt_1b4ae38db0013rB0P6XLZEJu0r",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ae0dfc001y4tIZZYX3VmGaU",
+            "type": "step-start",
+            "snapshot": "6113c989c58184ff4763dd85aca9885c274f5404"
+          },
+          {
+            "id": "prt_1b4ae38e0001zXjQys6tzIyTCM",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ae0dfc001y4tIZZYX3VmGaU",
+            "type": "tool",
+            "callID": "call_52feb9a82cc74e03bdafbe39",
+            "tool": "sf_handoff",
+            "state": {
+              "status": "completed",
+              "input": {
+                "action": "write",
+                "handoff": {
+                  "agent": "sf-verifier",
+                  "boundary_statement": "只读验证角色：仅执行正式 verification_run prepare/run，未写任何业务或治理文件，未调用 Gate/状态推进工具，代码权限保持撤销。",
+                  "duration_ms": 0,
+                  "escalation_signals": [],
+                  "findings": [
+                    "integration idx0 判定 pass：原声明 node --test tests/greet.test.ts，归一化为 D23 固定只读 Node 执行；真实数值 exit_code=0；TAP 输出 tests 4 / pass 4 / fail 0 / cancelled 0 / skipped 0（A1 Hello, Ada!；A2 Hello, Grace!；A3 Hello, world!；A4 空白名保持 'Hello, ' + name + '!' 形式）；cleanup_proved=true；receipt_id=575a36f175b7cfe4a22df649867a7c4e70e0869710a3d64587b9a8e1440cb344；attempt_record_id=7ce9f5e935b5e9339229f462acaaac48456da6bbbac7798aa6661871c4ab4dc1；plan_id=d493273f56b77c14473465dfb3b922ec2b64a6c4a48b3b6dfef45ec09e31481e；输出完整未截断。",
+                    "e2e idx0 判定 pass：原声明 node -e \"import('./src/greet.ts').then(m => { const a = m.greet('Ada'); const b = m.greet(''); if (a !== 'Hello, Ada!' || b !== 'Hello, world!') { process.exit(1); } console.log('E2E-OK'); }).catch(() => process.exit(1))\"，归一化为同一隔离 Node 语义；真实数值 exit_code=0；stdout='E2E-OK\\n'，stderr 空，输出完整未截断；cleanup_proved=true；receipt_id=25074708ec87917bc53d6a1310b08144413b7ae70c1fa3f89249a3512e6c87ab；attempt_record_id=55b7594fb6594186d2e971e95fc05734393a621a6a2387f6c2bd15f08e931248；plan_id=2cb87c906f881b8cbae88ed36ba41a795df0558240567cd9427cb4b66135b3ba。",
+                    "两次 Attempt 各消费一次，run 均省略 plan_id，prepare 返回的 attempt_id 未用作 run 参数；无 Schema 拒绝、无取消、无超限、无过期、无清理未知。"
+                  ],
+                  "inputs_read": [
+                    "plan d493273f56b77c14473465dfb3b922ec2b64a6c4a48b3b6dfef45ec09e31481e (integration idx0)",
+                    "plan 2cb87c906f881b8cbae88ed36ba41a795df0558240567cd9427cb4b66135b3ba (e2e idx0)"
+                  ],
+                  "next_step_recommendation": "由 Orchestrator 将两条 receipt 证据按 formal 目的登记进 evidence_manifest / verification_report，并继续 TASK-WI-0001-005 T2C 闭环的后续验证与 Gate 流程。",
+                  "outputs_written": [],
+                  "schema_version": "1.0",
+                  "stage": "verification-formal-batch-t005",
+                  "timestamp": "2026-11-07T00:00:00Z",
+                  "unknowns": [],
+                  "work_item_id": "WI-0001"
+                },
+                "work_item_id": "WI-0001"
+              },
+              "output": "{\n  \"success\": true,\n  \"action\": \"write\",\n  \"path\": \"C:\\\\Users\\\\lyq\\\\AppData\\\\Local\\\\Temp\\\\sf-conformance-business-R6ttE7\\\\.specforge\\\\work-items\\\\WI-0001\\\\handoffs\\\\handoff_sf-verifier_verification-formal-batch-t005_1794032679204_0c135b8b9028_0.json\"\n}",
+              "title": "",
+              "metadata": {
+                "truncated": false
+              },
+              "time": {
+                "start": 1794032679147,
+                "end": 1794032679242
+              }
+            }
+          },
+          {
+            "id": "prt_1b4ae3c53001T9q37JswMZeUa8",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ae0dfc001y4tIZZYX3VmGaU",
+            "type": "step-finish",
+            "reason": "tool-calls",
+            "snapshot": "9e5b1be31cf562ddba46d4b70112e6dbf314ac6a",
+            "cost": 0,
+            "tokens": {
+              "total": 33414,
+              "input": 956,
+              "output": 906,
+              "reasoning": 0,
+              "cache": {
+                "read": 31552,
+                "write": 0
+              }
+            }
+          },
+          {
+            "id": "prt_1b4ae3e17001hSbwbeXVPQ8lfy",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ae0dfc001y4tIZZYX3VmGaU",
+            "type": "patch",
+            "hash": "6113c989c58184ff4763dd85aca9885c274f5404",
+            "files": [
+              "C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7/.specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-formal-batch-t005_1794032679204_0c135b8b9028_0.json"
+            ]
+          }
+        ]
+      },
+      {
+        "info": {
+          "id": "msg_1b4ae3e22001U6URl7d1hlloE1",
+          "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+          "role": "assistant",
+          "time": {
+            "created": 1794032680482,
+            "completed": 1794032689609
+          },
+          "parentID": "msg_1b4ad3293001fhMxc948VXhmFm",
+          "modelID": "glm-5.3",
+          "providerID": "zhipuai-coding-plan",
+          "mode": "sf-verifier",
+          "agent": "sf-verifier",
+          "path": {
+            "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+            "root": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7"
+          },
+          "cost": 0,
+          "tokens": {
+            "total": 34227,
+            "input": 1064,
+            "output": 715,
+            "reasoning": 0,
+            "cache": {
+              "read": 32448,
+              "write": 0
+            }
+          },
+          "variant": "low",
+          "finish": "stop"
+        },
+        "parts": [
+          {
+            "id": "prt_1b4ae46d6001MBbP23J7KCpBRw",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ae3e22001U6URl7d1hlloE1",
+            "type": "step-start",
+            "snapshot": "9e5b1be31cf562ddba46d4b70112e6dbf314ac6a"
+          },
+          {
+            "id": "prt_1b4ae46d8001PsjQPL6M4XwUpx",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ae3e22001U6URl7d1hlloE1",
+            "type": "text",
+            "text": "## TASK-WI-0001-005（T2C）formal 取证完成 — 两条计划均 pass\n\n### 1. integration idx0 — pass\n- plan_id: `d493273f56b77c14473465dfb3b922ec2b64a6c4a48b3b6dfef45ec09e31481e`\n- attempt_record_id: `7ce9f5e935b5e9339229f462acaaac48456da6bbbac7798aa6661871c4ab4dc1`\n- receipt_id: `575a36f175b7cfe4a22df649867a7c4e70e0869710a3d64587b9a8e1440cb344`\n- 原声明: `node --test tests/greet.test.ts`（归一化为 D23 固定只读 Node 执行）\n- 真实 exit_code: **0**；cleanup_proved: true；输出完整未截断\n- 输出摘要: TAP v13，`# tests 4 / # pass 4 / # fail 0 / cancelled 0 / skipped 0`（A1 `Hello, Ada!`、A2 `Hello, Grace!`、A3 `Hello, world!`、A4 空白名保持 `'Hello, ' + name + '!'` 形式）\n\n### 2. e2e idx0 — pass\n- plan_id: `2cb87c906f881b8cbae88ed36ba41a795df0558240567cd9427cb4b66135b3ba`\n- attempt_record_id: `55b7594fb6594186d2e971e95fc05734393a621a6a2387f6c2bd15f08e931248`\n- receipt_id: `25074708ec87917bc53d6a1310b08144413b7ae70c1fa3f89249a3512e6c87ab`\n- 原声明: `node -e \"import('./src/greet.ts').then(...console.log('E2E-OK')...)\"`（归一化为同一隔离 Node 语义）\n- 真实 exit_code: **0**；stdout: `E2E-OK`（stderr 空，输出完整未截断）；cleanup_proved: true\n\n### 契约合规\n- prepare 只传 `{action, work_item_id, plan_id}`；run 只传 `{action, work_item_id, attempt_record_id}`，均逐字遵守，attempt_id 未误用为 run 参数\n- 每个 Attempt 只消费一次；无 Schema 拒绝、取消、超限、过期或清理未知\n- 未写任何业务或治理文件；代码权限保持撤销\n\nHandoff 已写入：`.specforge/work-items/WI-0001/handoffs/handoff_sf-verifier_verification-formal-batch-t005_1794032679204_0c135b8b9028_0.json`",
+            "time": {
+              "start": 1794032682712,
+              "end": 1794032689028
+            }
+          },
+          {
+            "id": "prt_1b4ae6098001JsVnvmUNg2gs30",
+            "sessionID": "ses_e4b52cd78ffehd8b3eV8Xvfk0P",
+            "messageID": "msg_1b4ae3e22001U6URl7d1hlloE1",
+            "type": "step-finish",
+            "reason": "stop",
+            "snapshot": "9e5b1be31cf562ddba46d4b70112e6dbf314ac6a",
+            "cost": 0,
+            "tokens": {
+              "total": 34227,
+              "input": 1064,
+              "output": 715,
+              "reasoning": 0,
+              "cache": {
+                "read": 32448,
+                "write": 0
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/public-kernel-chain.cjs",
+    "04",
+    "state"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "real-public-authoritative-state-and-safe-bash-negative",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES self-owned fixture04 Kernel/Daemon and official readonly wrapper copy only; no owner grant/profile or original; EXTERNAL_EVIDENCE_WRITES receipts",
+  "started_utc": "2026-11-07T03:07:03.152Z"
+}

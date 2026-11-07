@@ -1,0 +1,11 @@
+{
+  "utc": "2026-11-07T09:39:01.248Z",
+  "source_route": "/session/status",
+  "raw_sha256": "ab22210b31a251e38e0667c793d0e07fadfdba9d723b7c9f6daf1fcf6f452863",
+  "raw_size": 50,
+  "data": {
+    "ses_e4ac8aae4ffeEsRWe4BP4UbhnQ": {
+      "type": "busy"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/build-workflow-runtime.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Build current Workflow Runtime and remove only fixed obsolete package outputs",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES only package-owned dist outputs including fixed24 retired artifacts; EXTERNAL_EVIDENCE_WRITES receipts; no original or installed Daemon writes",
+  "started_utc": "2026-11-07T05:42:39.134Z"
+}

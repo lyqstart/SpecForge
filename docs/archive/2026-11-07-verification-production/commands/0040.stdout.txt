@@ -1,0 +1,3 @@
+src/http/HTTPServer.ts(1178,9): error TS2322: Type '{ [VERIFICATION_REQUEST_ABORT]: AbortSignal; sessionID?: string; messageID?: string; callID?: string; agent?: string; directory?: string; worktree?: string; projectPath?: string; trace_id?: string; }' is not assignable to type 'Record<string, unknown> | { sessionID?: string | undefined; messageID?: string | undefined; callID?: string | undefined; agent?: string | undefined; directory?: string | undefined; worktree?: string | undefined; projectPath?: string | undefined; trace_id?: string | undefined; } | undefined'.
+  Types of property '[VERIFICATION_REQUEST_ABORT]' are incompatible.
+    Type 'AbortSignal' is not assignable to type 'undefined'.

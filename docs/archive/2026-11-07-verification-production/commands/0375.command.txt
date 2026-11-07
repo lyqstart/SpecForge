@@ -1,0 +1,22 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/run-public-fixture-builder.cjs",
+    "19",
+    "formal"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Create isolated fixture19 formal owner baseline for actual routing regression",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES self-owned synthetic project/runtime only; EXTERNAL_EVIDENCE_WRITES fixture receipt; no business acceptance claimed",
+  "started_utc": "2026-11-07T07:56:04.166Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\run-public-fixture-builder.cjs",
+      "sha256": "5df93925adebf3616a421052ee82a9d41a3e6a48f9385c053096e3b8dfdbb8e6",
+      "size": 1881,
+      "extension": ".cjs"
+    }
+  ]
+}

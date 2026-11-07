@@ -1,0 +1,86 @@
+{
+  "utc": "2026-11-07T02:35:33.347Z",
+  "before": "1.0.21",
+  "after": "1.0.22",
+  "remote_tag_precheck": "2026-11-07 direct git ls-remote returned0 and no refs/tags/specforge-v1.0.22",
+  "source_version_only": true,
+  "installed_version_unchanged": true,
+  "preexisting_lock_workspace_version": "1.0.8",
+  "changes": [
+    {
+      "file": "package.json",
+      "before_sha256": "5f327c7d442230692e0801c6f3d53f07d0ee590513828feca5177d2fd890315c",
+      "after_sha256": "c44304090780142cce0efa0caa49489f1bd1bc8c1effe1170fd930a85303bf8d"
+    },
+    {
+      "file": "packages/cli/package.json",
+      "before_sha256": "0dac51e0d8802d7934186e86b39921201ae45d20461b9d0676148fbfbc7bbc95",
+      "after_sha256": "1725a183922ada023fb465934baa084ace9b2016a3e11c84d47153f461929364"
+    },
+    {
+      "file": "packages/configuration/package.json",
+      "before_sha256": "0c355e3db5d5f4bd3e8c6f7667edcbac697b11286adcde0b3396ea960e637760",
+      "after_sha256": "0a9b7e94f4efb62061099a5bfedbe4a0c3a306de80d9dd65b775c226275512f2"
+    },
+    {
+      "file": "packages/daemon-core/package.json",
+      "before_sha256": "562a04151098c3abe4d984bae8e554936a368052de3b9b59f7d33f18fa29f364",
+      "after_sha256": "dd3203350543b147e4a40004ed17379fefcc4d0b640841322d38b91c9b8a01b6"
+    },
+    {
+      "file": "packages/host-profile/package.json",
+      "before_sha256": "afda2322882fec9e9b895e255bbd8f1987eccb5ae28a4befb2e3ed3aba8cdf57",
+      "after_sha256": "eac582a676dbaf75f16b24e29065377f74b7808072691700db98b2a1ba78ba14"
+    },
+    {
+      "file": "packages/observability/package.json",
+      "before_sha256": "9599dcfed0764d2d402cc4a43b415422ffa951ae17b12bddb62528626b47f571",
+      "after_sha256": "fc327469fa683526f3157570fb2ca671be01cc88703896f4a45739dc76ef8e13"
+    },
+    {
+      "file": "packages/opencode-adapter/package.json",
+      "before_sha256": "8d0c4a1e4b5af3c7f8bcb9051c3426c6093a462031783e3c318172bad0c8608f",
+      "after_sha256": "02fbcaa7af83c8dafdfc2c9b2a352eb2874a39ea3a8e25eb562dccdc0d090dc4"
+    },
+    {
+      "file": "packages/permission-engine/package.json",
+      "before_sha256": "f4172322570119b97eb1289cce5bb588a21c2582012294390e7fab875303eebe",
+      "after_sha256": "4206146195e13a05cfefa8fb6638efddc2b50de3993751f7a9861b34d9842bbc"
+    },
+    {
+      "file": "packages/scope-gate/package.json",
+      "before_sha256": "144482a2c1852ed07edc630c7b19733604df3e83f80a88297696c048c7553597",
+      "after_sha256": "0b2ac1b96e149d4c6c155bc6f4f82db778ce51268ca617e702afdee55b622b82"
+    },
+    {
+      "file": "packages/service-management/package.json",
+      "before_sha256": "fd3e2d2389dde6797ad466554f437a80fce79ae9062b90cff6f114280c71ce9f",
+      "after_sha256": "0dc4db804da2fccc69ed9d1bad5d165066eed671040547f8458f648035e6f431"
+    },
+    {
+      "file": "packages/types/package.json",
+      "before_sha256": "af62ecd0cb7d719ec0f0ea474f2d9b15db79450f9c00fb211622520402b260cc",
+      "after_sha256": "8a94e020cc55805ef14058a2cd310e5ce44ba83bb38f3838b11765f961b065ec"
+    },
+    {
+      "file": "packages/version-unification/package.json",
+      "before_sha256": "1b0418029916ce8da3e858ddbf6567c1ca0c3349bb8168929cb6bd70c604635b",
+      "after_sha256": "0943a9aff9cf630c101281757e795b03c5edb897887e0ce89b85e4bf45b3f1bb"
+    },
+    {
+      "file": "packages/workflow-runtime/package.json",
+      "before_sha256": "ea1e514d1b9c80ba9b5e644816467ab7cb4076b8b250089393869e9f75d04980",
+      "after_sha256": "595aae781854d6165d00e88a34e88e854441deb9d39b6a7c68b01c6a46e75f1b"
+    },
+    {
+      "file": "bun.lock",
+      "before_sha256": "b26c2ccd8f47d076c8b926233a17719bc0defeb0686a6f79b602d18b6dd56a16",
+      "after_sha256": "dfc4911cadbed27c18da3aa277fda685395341bf6adb8d709df71e18bc343b3a"
+    },
+    {
+      "file": "docs/product-specification/specforge-product-specification.md",
+      "before_sha256": "eb08c4c75b1475a033642452b1322c64a2ef51ef1ad10bf62a3aa325b6e1dc97",
+      "after_sha256": "ada9b9926e71565ff6cd1594246a82ef047fb537d3974ba37c868a10ddcf254e"
+    }
+  ]
+}

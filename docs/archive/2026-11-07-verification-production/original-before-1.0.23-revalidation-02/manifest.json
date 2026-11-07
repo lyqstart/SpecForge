@@ -1,0 +1,135 @@
+{
+  "utc": "2026-11-07T08:54:01.325Z",
+  "scope": "Read-only pre-revalidation canonical preservation, no manual truth edits",
+  "old_successes": {
+    "implementation": 22,
+    "formal": 22
+  },
+  "new_formal_required": 22,
+  "code_files_unchanged": 5,
+  "permission_revoked": true,
+  "source_head": "f5fed085a8609f593592eca5e8035b2d1c958759",
+  "business_main": "8a692e88c0823984647622294f5199c18bb0c587",
+  "members": [
+    {
+      "path": "verification_report.md",
+      "sha256": "228dfddf59a04274871b4592d5442b81289ee342518352d106947b731944ea51",
+      "size": 46045
+    },
+    {
+      "path": "evidence/evidence_manifest.json",
+      "sha256": "504dd4fda524a992d244de3655bc0d01b5d26ff37d34ecdecbda49ef56b3590e",
+      "size": 36314
+    },
+    {
+      "path": ".semantic_closure.json",
+      "sha256": "b47408cb2b0c9e692b2cfbfed0d7e466178c2278d9f07b795a2545fed28ce443",
+      "size": 13164
+    },
+    {
+      "path": "semantic_closure_report.md",
+      "sha256": "4f58422c7d06b9670e33c14146d813cb43cda6e74bec6d489dde23e8072c147f",
+      "size": 12689
+    },
+    {
+      "path": "changed_files_audit.md",
+      "sha256": "05ec1226fb1b5fe260fb28ef46651ba1f714055cd2e7538e9c909477237362ad",
+      "size": 1624
+    },
+    {
+      "path": "work_item.json",
+      "sha256": "e2e7b8400ade8311f91b8e8a79a6d8a47cb830125c137dc290b9e544080a4fd0",
+      "size": 8898
+    },
+    {
+      "path": "candidate_manifest.json",
+      "sha256": "c1098af5ec6c5b232eaa936aabf077edcc8e1826163ee32d5e3942611cc77ab7",
+      "size": 2543
+    },
+    {
+      "path": "user_decision.json",
+      "sha256": "3a98030a90b7534eca2daa18399179c5929b4c0552ffdbfcf166d47c2f5d13ea",
+      "size": 913
+    },
+    {
+      "path": "merge_report.md",
+      "sha256": "5d892dd9e1ef6bc7fd14142d287f664eb8bacf9fe9766ba5e07962e2cc5d95f8",
+      "size": 1768
+    },
+    {
+      "path": "handoff_validation_state.json",
+      "sha256": "522f9de51a2a3e0ccf268299159429fb102bf45ba2fb2cb4743b17d991520e75",
+      "size": 8806
+    },
+    {
+      "path": "candidates/tasks.md",
+      "sha256": "0b73306b4a56b505b1cdc59f062fbe83f76d1d39ad2534cc1597faa61d1feae2",
+      "size": 31725
+    },
+    {
+      "path": "gates/candidate_manifest_gate.json",
+      "sha256": "bbfbf64c2713ac54d057242e98ac5f7cf2c62d20b7cc1b17371bf6c7861f225a",
+      "size": 12355
+    },
+    {
+      "path": "gates/contract_integrity_gate.json",
+      "sha256": "38dfe80576b61f93eeb5fc15fbb57d8f4595af0976a716f8c6ab44e11c4f7a9d",
+      "size": 13439
+    },
+    {
+      "path": "gates/entry_gate.json",
+      "sha256": "c125086de4dfd2c351e45ac24d9941a9e50b9c90bca064aef5c581ed6783d217",
+      "size": 802
+    },
+    {
+      "path": "gates/formal_version_gate.json",
+      "sha256": "62deebbd5dbe9e1f330599c70a9bbd5f4d9a89fc01cedaee475cfe1f456d92bf",
+      "size": 8246
+    },
+    {
+      "path": "gates/path_policy_gate.json",
+      "sha256": "b239087960464c274e06effd3448fcc37bc3341be6830c4bbb8b82abe70e4143",
+      "size": 558
+    },
+    {
+      "path": "gates/post_merge_gate.json",
+      "sha256": "5cc9ab5684c54ac8ecc799cb8e8d6d365031e35112841ba095f9c21ed8540a57",
+      "size": 1388
+    },
+    {
+      "path": "gates/required_files_gate.json",
+      "sha256": "b46143c4038f270bb5707e0e84e8c45f761795f08664431fe57d730fb56fc18f",
+      "size": 3978
+    },
+    {
+      "path": "gates/schema_gate.json",
+      "sha256": "0ea5478a393d938769a378c41d7a874afaa57d98c1bd987d4f17ad7215e47003",
+      "size": 1778
+    },
+    {
+      "path": "gates/spec_consistency_gate.json",
+      "sha256": "b8c63dee7356805d608871e365fba4edd868d026b5349279204f6fb093f63887",
+      "size": 35931
+    },
+    {
+      "path": "gates/trace_gate.json",
+      "sha256": "02250c207b08361a52e50894fc9045a24ee17dafe7ea93b6dc7fed25655e1430",
+      "size": 17535
+    },
+    {
+      "path": "gates/verification_gate.json",
+      "sha256": "0ec6b7c66c4d5fd55fe7587b4f41e8ee8d60f349af78cd761b285ac4a5f67303",
+      "size": 66522
+    },
+    {
+      "path": "gates/workflow_selection_gate.json",
+      "sha256": "98fbaff81435715e58211b43a9574cd7619dfae7c743bdddd4dd26e55075fd38",
+      "size": 841
+    },
+    {
+      "path": "gates/workflow_specific_gate.json",
+      "sha256": "5e65afdc0c56cbe9c63283d8d5a4014a872603ed51774221e1c343f243d20757",
+      "size": 1048
+    }
+  ]
+}

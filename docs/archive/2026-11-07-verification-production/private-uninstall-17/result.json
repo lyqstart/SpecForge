@@ -1,0 +1,9 @@
+{
+  "utc": "2026-11-07T08:21:51.797Z",
+  "actual_installer": "uninstall",
+  "managed_files_removed": 117,
+  "private_data_preserved": true,
+  "unmanaged_sdk_preserved": true,
+  "global_and_original_untouched": true,
+  "inner_exit_code": 0
+}

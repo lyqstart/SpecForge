@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-07T06:04:33.309Z",
+  "label": "before",
+  "paths_checked": 80,
+  "violations": [
+    "packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md",
+    "packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md"
+  ],
+  "baselineProof": [
+    {
+      "path": "packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md",
+      "old_raw_normalizes_to_parent_git_object": true,
+      "parent_oid": "e8bdb3e0b0f891c2689492e1a804ce0fcac6c752"
+    },
+    {
+      "path": "packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md",
+      "old_raw_normalizes_to_parent_git_object": true,
+      "parent_oid": "755330f51fd6266b42218cd9f502a39c4dd227d4"
+    }
+  ],
+  "status": "SCOPE_DECLARATION_OMISSION",
+  "scope_basis": "SPS8 repair plan explicitly covers obsolete documentation consumers; two module-root reports were omitted from status globs, not unclassified user modifications."
+}

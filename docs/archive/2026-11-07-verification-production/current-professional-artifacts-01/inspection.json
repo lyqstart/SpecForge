@@ -1,0 +1,24 @@
+{
+  "utc": "2026-11-07T09:36:13.846Z",
+  "project": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+  "coverage": "original-current-execution-coverage-1794043059517.json",
+  "coverage_sha256": "ed3b7ad4c60c8262c017d622a65c6a580546f7ef1c7dabf766d0c64f69de4cae",
+  "members": [
+    {
+      "path": "verification_report.md",
+      "sha256": "936eaf9afa5feda932c804dd16a93c58894e72430515ea55c269de4c1b1e779d",
+      "size": 38275
+    },
+    {
+      "path": "evidence/evidence_manifest.json",
+      "sha256": "f422d618bc876afd97ab4ee7dc646595b6cafa555d5485ba00816e0915b4affb",
+      "size": 29889
+    }
+  ],
+  "report_contract_valid": true,
+  "manifest_schema_valid": true,
+  "current_formal_subjects": 22,
+  "actual_successful_receipts": 23,
+  "conclusion": "pass",
+  "qualification": "Typed Schema and exact current selector/receipt/path/hash linkage of real professional artifacts. Separate actual production Gates must authenticate receipt MAC, freshness, semantic support and workflow acceptance. No canonical bytes or professional conclusion authored."
+}

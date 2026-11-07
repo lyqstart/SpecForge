@@ -1,0 +1,16 @@
+[codex/verification-production cf766382] fix(verification): reconcile timed-out consumer operations and canonical evidence guidance
+ 27 files changed, 251 insertions(+), 34 deletions(-)
+ create mode 100644 docs/archive/2026-11-07-verification-production/consumer-client-baseline/manifest.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/consumer-client-baseline/setup/userlevel-opencode/tools/lib/thin-client.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/consumer-client-baseline/setup/userlevel-opencode/tools/sf_artifact_write.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/consumer-client-baseline/setup/userlevel-opencode/tools/sf_close_gate.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/consumer-client-baseline/setup/userlevel-opencode/tools/sf_gate_run.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/consumer-client-baseline/setup/userlevel-opencode/tools/sf_verification_gate.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/docs/design/windows-lpac-node-readonly-contract.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/manifest.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/packages/daemon-core/src/tools/handlers/sf-artifact-write.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/agents/sf-verifier.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md
+ create mode 100644 docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/tools/sf_artifact_write.ts
+ create mode 100644 tests/unit/verification-consumer-http.test.ts
+ create mode 100644 tests/unit/verifier-evidence-manifest-example.test.ts

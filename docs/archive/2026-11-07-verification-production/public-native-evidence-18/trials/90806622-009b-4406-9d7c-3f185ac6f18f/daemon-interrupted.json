@@ -1,0 +1,3 @@
+{
+  "error": "AssertionError [ERR_ASSERTION]: {\"status\":\"error\",\"input\":{\"action\":\"run\",\"work_item_id\":\"WI-9901\",\"attempt_record_id\":\"434476b3e533aec93082540e8991546fc413ded18e0d989be0404a1a5e0617fc\"},\"error\":\"Daemon connection failed: The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch()\",\"time\":{\"start\":1794025713637,\"end\":1794025720389}}\n+ actual - expected\n\n+ 'error'\n- 'completed'\n"
+}

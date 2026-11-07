@@ -1,0 +1,22 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/observe-quickstart-smoke.cjs",
+    "02",
+    "running"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Independently verify documented interactive process owns loopback4096 and responds healthy",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=read-only process TCP and health observation;EXTERNAL_EVIDENCE_WRITES=smoke02 running evidence",
+  "started_utc": "2026-11-07T10:48:57.779Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\observe-quickstart-smoke.cjs",
+      "sha256": "a5dbeb46822dda83fc00e6b238afde4ba90094e3a2f3eab3eb9e067da3237496",
+      "size": 2843,
+      "extension": ".cjs"
+    }
+  ]
+}

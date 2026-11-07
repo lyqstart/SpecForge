@@ -1,0 +1,10 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/reconcile-module-and-original-07.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Reconcile tested SPS8 repair, strict action guidance, original real execution facts and remaining deployment boundaries",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES unique status and historical ledger; EXTERNAL_EVIDENCE_WRITES reconciliation and receipts; no original or user installation writes",
+  "started_utc": "2026-11-07T05:52:12.434Z"
+}

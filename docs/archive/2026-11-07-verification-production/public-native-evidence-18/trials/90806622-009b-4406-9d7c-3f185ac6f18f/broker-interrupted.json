@@ -1,0 +1,17 @@
+{
+  "value": {
+    "success": false,
+    "receipt_id": "73fdba63677e65cbdcaeca4e75a9d735f18bc9fdb474da9c8407559716a04cdc",
+    "attempt_record_id": "9c33f0f9fe84c41fca98f956ab898335f8ad3396980da377a3685dbeabb73a8b",
+    "attempt_id": "bc497d784e7e42979b1ac8bbca31833c",
+    "plan_id": "deb8e65f4d6d9eefcd134210e153fc3e63a7c53d26f97c96f0a0031461138f92",
+    "outcome": "interrupted",
+    "exit_code": null,
+    "cleanup_proved": false,
+    "failure": "NATIVE_RECEIPT_UNAVAILABLE_OR_INVALID",
+    "stdout": "",
+    "stderr": "",
+    "output_preview_truncated": false,
+    "output_complete": false
+  }
+}

@@ -1,0 +1,1 @@
+{"prompt":"original-verification-prompt-04.txt","expected_state":"verification_running","professional_artifact_rewritten":false,"successful_steps_to_reuse":"44 executions and2 professional artifacts"}

@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/observe-original-verification.cjs",
+    "02"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Observe actual original verification readiness and any new errors after first four implementation batches",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES local read-only Kernel observation and receipts; no prompt or business invocation",
+  "started_utc": "2026-11-07T06:05:21.191Z"
+}

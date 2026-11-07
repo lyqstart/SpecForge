@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/record-staging-preflight-error.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Record pre-mutation module parse failure,verify main/index unchanged,andqualify fixed Git carriers",
+  "expected_writes": "TRUTH_SOURCE_WRITES=historical experience ledger only;REPOSITORY_TRACKED_WRITES=ledger append;RUNTIME_OBSERVER_WRITES=read-only Git;EXTERNAL_EVIDENCE_WRITES=source checks and failure reconciliation",
+  "started_utc": "2026-11-07T10:30:49.701Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\record-staging-preflight-error.cjs",
+      "sha256": "6484dee755b17e59281669feb16edffc52bc2b4a374e82ab36051f8df7d3936c",
+      "size": 2554,
+      "extension": ".cjs"
+    }
+  ]
+}

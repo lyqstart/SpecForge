@@ -1,0 +1,10 @@
+[codex/verification-production 27d46bad] fix(runtime): keep execution logs out of canonical governance artifacts
+ 15 files changed, 75 insertions(+), 45 deletions(-)
+ create mode 100644 docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/actual-work-log-request-response.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/canonical-after-controlled-stop.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/plan.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/prior22-entry-request-0.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/prior22-entry-request-1.json
+ create mode 100644 docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/source/packages/daemon-core/src/tools/handlers/sf-artifact-write.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/source/packages/daemon-core/tests/unit/merge-report-owner.test.ts
+ create mode 100644 docs/archive/2026-11-07-verification-production/artifact-routing-baseline-02/source/packages/daemon-core/tests/unit/verification-evidence-producer.test.ts

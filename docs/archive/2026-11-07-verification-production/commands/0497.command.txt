@@ -1,0 +1,21 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/review-final-guidance-source.cjs",
+    "02"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Re-freeze exact9 reviewed source paths after recorded staging preflight error without overwriting review01",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=NONE;RUNTIME_OBSERVER_WRITES=read-only Git;EXTERNAL_EVIDENCE_WRITES=immutable review02 and canonical blob targets",
+  "started_utc": "2026-11-07T10:30:53.471Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\review-final-guidance-source.cjs",
+      "sha256": "4e65bab073135015cba753bb978ab9224b68bd1288cd1d12a9d4258aa0a0087f",
+      "size": 2823,
+      "extension": ".cjs"
+    }
+  ]
+}

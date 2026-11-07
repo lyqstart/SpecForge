@@ -1,0 +1,11 @@
+
+ RUN  v4.1.5 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/project-session-bootstrap.test.ts (15 tests | 1 failed) 453ms
+     × keeps bootstrap blocked when Git cannot provide the inventory 177ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 14 passed (15)
+   Start at  08:19:28
+   Duration  1.19s (transform 72ms, setup 0ms, import 113ms, tests 453ms, environment 0ms)
+

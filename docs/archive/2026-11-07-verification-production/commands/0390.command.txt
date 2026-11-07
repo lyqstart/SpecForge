@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/verify-private-uninstall.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Verify official uninstall removes117 managed files and preserves private/unmanaged data in inactive self-owned fixture17",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES bounded deletion of fixture17 managed installation only; EXTERNAL_EVIDENCE_WRITES immutable before/after proof; no global/original writes",
+  "started_utc": "2026-11-07T08:21:50.076Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\verify-private-uninstall.cjs",
+      "sha256": "7cb88159593afcac26e705e06e87030a84c0fb6daddad81fed3e6a559c44e634",
+      "size": 3090,
+      "extension": ".cjs"
+    }
+  ]
+}

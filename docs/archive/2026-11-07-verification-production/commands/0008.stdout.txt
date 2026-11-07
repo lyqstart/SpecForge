@@ -1,0 +1,3 @@
+src/integration/OpenCodeHttpRuntimeClient.ts(150,5): error TS2322: Type '{ observedAt: string; runtimeProjectionSha256: string; sessionId: string; messageId: string; callId: string; agent: string; directory: string; tool: "sf_verification_plan" | "sf_verification_run"; inputSha256: string; startedAt: number; source: "opencode-runtime-message/v1"; }' is not assignable to type 'OpenCodeToolInvocationProof'.
+  Types of property 'agent' are incompatible.
+    Type 'string' is not assignable to type '"sf-orchestrator" | "sf-verifier"'.

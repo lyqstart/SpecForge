@@ -1,0 +1,21 @@
+{
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/collect-original-execution-coverage.ts",
+    "02"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Count final formal and implementation Task command results independently of Agent summaries",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES coverage and source-sealed receipts; original/Kernel read-only, no prompt or workflow transition",
+  "started_utc": "2026-11-07T06:26:41.487Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\collect-original-execution-coverage.ts",
+      "sha256": "9a3d8d016884107aacbfacdf09e6e616b231594621f7bf0b4a0e97353acf0884",
+      "size": 6171,
+      "extension": ".ts"
+    }
+  ]
+}

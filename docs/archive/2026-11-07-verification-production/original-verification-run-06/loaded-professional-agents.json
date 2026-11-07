@@ -1,0 +1,52 @@
+[
+  {
+    "name": "sf-analyst",
+    "mode": "subagent",
+    "prompt_sha256": "03462219a97da986737b6abfb97e1d0eb95b586d33c12687babacf7148b2152f"
+  },
+  {
+    "name": "sf-debugger",
+    "mode": "subagent",
+    "prompt_sha256": "d4cc3a488563c37298bb9e73080b32a80dcca376200fdb64c253208f6f37b66a"
+  },
+  {
+    "name": "sf-design",
+    "mode": "subagent",
+    "prompt_sha256": "33f6ab1813262964680ed7fbbe6af1c934a5913a3d248d7d337708d9371c1243"
+  },
+  {
+    "name": "sf-executor",
+    "mode": "subagent",
+    "prompt_sha256": "b3bf6d7d99f84751c5a346f7c978556834be03ce61636744af8a7965cf8ecfe4"
+  },
+  {
+    "name": "sf-knowledge",
+    "mode": "subagent",
+    "prompt_sha256": "a1790f1dc51b142f7cd1b7ab22bb05a4efc392ca925a74a63d6dcfb72e740992"
+  },
+  {
+    "name": "sf-orchestrator",
+    "mode": "primary",
+    "prompt_sha256": "f904d2b4b55e5b7234179fd6660f93583e748d64ab9da75bdd2a1792aeb36c5e"
+  },
+  {
+    "name": "sf-requirements",
+    "mode": "subagent",
+    "prompt_sha256": "d55b336eb18c0dca26f1811e57ba2b4d787139e9e2969af37fa1b948b991030c"
+  },
+  {
+    "name": "sf-reviewer",
+    "mode": "subagent",
+    "prompt_sha256": "bad95d3e45c8e3e02ae34aa2c75bc4c24e6b97b438b93aa676a4390621b6a95c"
+  },
+  {
+    "name": "sf-task-planner",
+    "mode": "subagent",
+    "prompt_sha256": "36fc3ce4eaeedd99a20b3b5b69218852d822388435f20c6cd4a6f87bda36341c"
+  },
+  {
+    "name": "sf-verifier",
+    "mode": "subagent",
+    "prompt_sha256": "e11b123b42242641c844479be8813f99c6c793463de2bffc21ea3d8cf21c1b9c"
+  }
+]

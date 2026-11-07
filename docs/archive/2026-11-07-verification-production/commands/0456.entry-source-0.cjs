@@ -1,0 +1,5 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const root='C:/Users/lyq/AppData/Local/Temp/sf-conformance-business-R6ttE7',wi=path.join(root,'.specforge/work-items/WI-0001'),dir=path.join(wi,'gates'),out=path.join(__dirname,'original-gate-inspection-'+Date.now());fs.mkdirSync(out);
+const snapshots=[];for(const name of fs.readdirSync(dir).filter(n=>n.endsWith('.json'))){const bytes=fs.readFileSync(path.join(dir,name)),value=JSON.parse(bytes);fs.writeFileSync(path.join(out,name),bytes,{flag:'wx'});snapshots.push({name,size:bytes.length,sha256:crypto.createHash('sha256').update(bytes).digest('hex'),value});}
+const value={utc:new Date().toISOString(),project:root,scope:'Read-only canonical Gate artifacts, not StateManager authority',snapshots};fs.writeFileSync(path.join(out,'inspection.json'),JSON.stringify(value,null,2)+'\n',{flag:'wx'});
+console.log(JSON.stringify({snapshot:path.basename(out),gates:snapshots.map(x=>({name:x.name,keys:Object.keys(x.value),status:x.value.status,passed:x.value.passed,failed:(x.value.checks||[]).filter(c=>c.passed===false||c.status==='failed'||c.status==='fail'),errors:x.value.errors}))}));

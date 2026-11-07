@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/reconcile-original-report-timeouts.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Reconcile real30s Artifact client timeouts against actual Daemon completed responses and canonical professional bytes",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES immutable dispatcher/payload/artifact snapshots and source-sealed receipts; original and deployment strictly read-only",
+  "started_utc": "2026-11-07T07:05:46.704Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\reconcile-original-report-timeouts.cjs",
+      "sha256": "ae96c2ffaea5cecf4d3771760400e354d4cea85de7a333a168fa52f32a06f04e",
+      "size": 3194,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+{"error":true,"code":"daemon_unreachable","message":"无法连接到 Daemon，请确认 Daemon 已启动","hint":"请运行 \"specforge daemon start\" 启动 Daemon"}

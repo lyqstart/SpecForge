@@ -1,0 +1,12 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/run-public-fixture-builder.cjs",
+    "07",
+    "implementation"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "create-invocation-lease-lifetime-fixture07-real-owner",
+  "expected_writes": "TRUTH_SOURCE_WRITES owned ProjectInit/config/seeded implementation fixture only; EXTERNAL_EVIDENCE_WRITES receipts; original untouched",
+  "started_utc": "2026-11-07T03:27:38.924Z"
+}

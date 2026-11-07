@@ -1,0 +1,14 @@
+{
+  "executable": "git",
+  "args": [
+    "commit",
+    "-m",
+    "test(governance): align current execution evidence consumers and bounded recovery suites"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Commit complete green current governance test-consumer repair and preserved baselines",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES Git commit exact25 reviewed paths; EXTERNAL_EVIDENCE_WRITES sealed receipt",
+  "started_utc": "2026-11-07T08:33:48.507Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": []
+}

@@ -1,0 +1,36 @@
+{
+  "agent": "sf-requirements",
+  "boundary_statement": "仅生成需求候选（candidates 树），未推进工作流状态、未触发用户审批、未调度其他 Agent、未实现代码、未写入 .specforge/project/** 或任何治理真相源。",
+  "duration_ms": 0,
+  "escalation_signals": [],
+  "findings": [
+    "Extension Registry namespaces.requirement_types 为空；本候选仅使用标准 canonical 结构（REQ 三位编号 + EARS AC + Must/Should + Out-of-Scope），无自定义扩展类型，判定无 contract_gap",
+    "intake 四条用户原话全部转成可验收 REQ：UQ-1→REQ-001 导出契约、UQ-2→REQ-002、UQ-3→REQ-003、UQ-4→REQ-004（测试）+REQ-005（使用说明）；用户核心目标无遗漏进入 Out-of-Scope",
+    "两条行为规则固化为独立 MUST 需求 REQ-002/REQ-003，各自绑定 Required Evidence（EVREQ-2A：≥2 个非空名称断言；EVREQ-3A：greet(\"\") 严格等于 Hello, world! 断言），证据预期指向批准后验证阶段的真实运行输出",
+    "intake 禁止假设全部承接：『定义域边界』章节明确 null/undefined/非 string 行为未定义、实现不得编写分支、纯空白按非空规则直接处理不做 trim；全文经结构校验无『测试已通过』类表述；流程约束明确本 WI 停在 approval_required",
+    "unknowns 未伪造结论：以待决项 D-1（测试运行器与工程配置，零依赖优先）移交 sf-design、D-2（Node/TS 版本）移交批准后实现/验证阶段",
+    "REQ-006（Should）零运行时第三方依赖：源自 intake 决策边界『零依赖优先』，工具链开发期依赖选型显式留给设计阶段，不预设结论",
+    "写入过程修正记录：首版 AC 缺显式编号，已在同一受控写入窗口二次写入修正为 AC-001～AC-018 全局三位编号，与 Delta 说明引用逐字一致",
+    "只读验证结论：sf_doc_lint=pass（无 issues）；sf_batch_verify 19/20，唯一 fail 项为『^ 行首锚点无 multiline 支持』的正则引擎限制，grep 独立复核确认 6 个 REQ 标题全部存在（行 70/92/114/135/157/178）",
+    "Delta 结论：greenfield 全量新增 REQ-001～REQ-006/AC-001～AC-018，合并后更新 .specforge/project/modules/CORE/requirements.md（占位→首份）与 requirements_index.md；本阶段未直接写真相源"
+  ],
+  "inputs_read": [
+    ".specforge/work-items/WI-0001/intake.md",
+    ".specforge/work-items/WI-0001/trigger_result.json",
+    ".specforge/work-items/WI-0001/change_classification.md",
+    ".specforge/work-items/WI-0001/impact_analysis.md",
+    ".specforge/project/extension_registry.json"
+  ],
+  "next_step_recommendation": "调度 sf-design 生成设计候选（承接 D-1 测试运行器/零依赖工程配置决策，并为首份架构、数据模型、CORE 模块契约提供 candidate 产物）",
+  "outputs_written": [
+    ".specforge/work-items/WI-0001/candidates/project/modules/CORE/requirements.candidate.md"
+  ],
+  "schema_version": "1.0",
+  "stage": "candidate_requirements",
+  "timestamp": "2026-10-25T05:40:00.000Z",
+  "unknowns": [
+    "测试运行器与最小工程配置选型（package.json/tsconfig 形态）：由 sf-design 以零依赖方案优先决策并取证（候选内 D-1）",
+    "Node.js/TypeScript 具体可用版本未取证（D18 禁止外部命令探测）：由批准后实现/验证阶段以真实运行证据确认（候选内 D-2）"
+  ],
+  "work_item_id": "WI-0001"
+}

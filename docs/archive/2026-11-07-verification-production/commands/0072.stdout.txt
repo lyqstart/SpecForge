@@ -1,0 +1,1 @@
+{"fixture":"D:\\code\\SpecForge\\.tmp\\verification-public-kernel\\945f533696d441219a52f4dd31eade40","nonce":"945f533696d441219a52f4dd31eade40","reservation_sha256":"f8259ee89a552971ac10716d9cfdc1abd22141d29558efe5bdde7720c7089017","source_files":9,"profile_created":false}

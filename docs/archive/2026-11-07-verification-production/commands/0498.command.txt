@@ -1,0 +1,20 @@
+{
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-07-verification-production/stage-final-guidance-source.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Execute syntax-qualified exact final guidance staging against immutable review02 and fresh remote baseline",
+  "expected_writes": "TRUTH_SOURCE_WRITES=NONE;REPOSITORY_TRACKED_WRITES=local codex branch/index for exact reviewed source/baseline paths;RUNTIME_OBSERVER_WRITES=Git;EXTERNAL_EVIDENCE_WRITES=staged object bindings;no remote or business writes",
+  "started_utc": "2026-11-07T10:31:12.251Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\stage-final-guidance-source.cjs",
+      "sha256": "a0858fdde3a520dcabcbbbe8de4587a51cb2a1ccb787635d399d72cf5d1e7458",
+      "size": 3161,
+      "extension": ".cjs"
+    }
+  ]
+}

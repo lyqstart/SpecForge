@@ -1,0 +1,13 @@
+file:///D:/code/SpecForge/scripts/run-root-tests.mjs:88
+    throw new Error(
+          ^
+
+Error: ROOT_TEST_REGISTRY_INVALID: {"duplicates":[],"missing":[],"unknown":["tests/unit/verification-consumer-http.test.ts","tests/unit/verifier-evidence-manifest-example.test.ts"],"incompleteReplacements":[],"incompleteEnvironmentRequirements":[]}
+    at validateRootTestRoleRegistry (file:///D:/code/SpecForge/scripts/run-root-tests.mjs:88:11)
+    at main (file:///D:/code/SpecForge/scripts/run-root-tests.mjs:124:18)
+    at file:///D:/code/SpecForge/scripts/run-root-tests.mjs:137:3
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.19.0

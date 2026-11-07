@@ -1,0 +1,1 @@
+PTY stdout/stderr are merged by exec tool; no independent native stderr pipe is available.

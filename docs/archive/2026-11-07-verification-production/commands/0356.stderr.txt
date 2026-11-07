@@ -1,0 +1,20 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/verification-evidence-producer.test.ts > controlled verification evidence producer > does not invent an empty entries array for an explicit incomplete Evidence Manifest
+AssertionError: expected 'EVIDENCE_MANIFEST_SCHEMA_BLOCKED: SCH…' to be 'INVALID_ARTIFACT_JSON' // Object.is equality
+
+Expected: "INVALID_ARTIFACT_JSON"
+Received: "EVIDENCE_MANIFEST_SCHEMA_BLOCKED: SCHEMA_ID_MISSING"
+
+ ❯ tests/unit/verification-evidence-producer.test.ts:87:62
+     85|       schema_version: '1.0', work_item_id: workItemId, action: 'eviden…
+     86|     }) }) as any;
+     87|     expect(result.success).toBe(false); expect(result.error).toBe('INV…
+       |                                                              ^
+     88|     expect(await fs.readFile(target, 'utf8')).toBe(before);
+     89|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

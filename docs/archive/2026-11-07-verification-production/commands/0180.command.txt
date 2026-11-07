@@ -1,0 +1,11 @@
+{
+  "executable": "node",
+  "args": [
+    "node_modules/typescript/bin/tsc",
+    "--noEmit"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "bounded-private-diagnostic-full-types",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES typecheck only; no native or original/user install",
+  "started_utc": "2026-11-07T04:09:20.163Z"
+}

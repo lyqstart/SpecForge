@@ -1,0 +1,11 @@
+{
+  "utc": "2026-11-07T07:57:54.282Z",
+  "session": "ses_e4afc6719ffe3RLseyb5kKUj04",
+  "agent": "sf-verifier",
+  "tool": "sf_artifact_write",
+  "args": {
+    "work_item_id": "WI-9901",
+    "file_type": "evidence_manifest",
+    "content": "{\"schema_version\":\"1.0\",\"work_item_id\":\"WI-9901\",\"action\":\"evidence_manifest_supports_alignment\"}"
+  }
+}

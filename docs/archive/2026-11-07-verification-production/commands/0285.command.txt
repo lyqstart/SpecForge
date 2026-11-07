@@ -1,0 +1,21 @@
+{
+  "executable": "node",
+  "args": [
+    "D:/code/SpecForge/docs/archive/2026-11-07-verification-production/observe-original-verification.cjs",
+    "02"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "Observe formal command coverage progress through actual original child tool results",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES read-only Kernel projection and sealed entry/carrier sources; no prompt or business invocation",
+  "started_utc": "2026-11-07T06:20:44.183Z",
+  "carrier_source_sha256": "9f4d8286128fcb656d7a9e988454af7e7a90015c1f06977571f0d99a4ff93a22",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-07-verification-production\\observe-original-verification.cjs",
+      "sha256": "16d659e48aee1fb388f8ca5b9815f204941e02e17cfa771908d6e7bf7cc5c0ce",
+      "size": 1926,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+$ vitest run tests/unit/daemon-startup-readme-contract.test.ts "--maxWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/daemon-startup-readme-contract.test.ts > ERR-167 daemon startup README contract > opens the documented interactive Kernel on the actual Adapter default endpoint
+AssertionError: README.md must expose the Kernel endpoint used by the Adapter: expected null not to be null
+ ❯ tests/unit/daemon-startup-readme-contract.test.ts:26:94
+     24|     for (const document of ['README.md', 'docs/user/quick-start.md']) {
+     25|       const startup = readRepo(document).match(/^opencode\s+--port\s+(…
+     26|       expect(startup, `${document} must expose the Kernel endpoint use…
+       |                                                                                              ^
+     27|       expect(startup![1]).toBe(endpoint.port);
+     28|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+error: script "test" exited with code 1

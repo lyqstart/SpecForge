@@ -1,0 +1,21 @@
+{
+  "agent": "sf-design",
+  "boundary_statement": "仅恢复一处架构约束声明",
+  "duration_ms": 180000,
+  "escalation_signals": [],
+  "findings": [
+    "DATA-CORE-003 恢复 constrained_by: ARCH-CORE-003，契约说明保留为普通行"
+  ],
+  "inputs_read": [
+    ".specforge/work-items/WI-0001/candidates/project/data_model.candidate.md"
+  ],
+  "next_step_recommendation": "重试封存并跑 attempt-0004",
+  "outputs_written": [
+    ".specforge/work-items/WI-0001/candidates/project/data_model.candidate.md"
+  ],
+  "schema_version": "1.0",
+  "stage": "candidate_design",
+  "timestamp": "2026-11-03T00:00:00.000Z",
+  "unknowns": [],
+  "work_item_id": "WI-0001"
+}
