@@ -13,7 +13,7 @@ export function qualifyTemporaryEnvironment(requested = os.tmpdir()) {
     ancestors.unshift({ path: current, kind, ...(kind === 'symlink' ? { target: fs.readlinkSync(current) } : {}) });
     if (path.dirname(current) === current) break;
   }
-  const canonical = fs.realpathSync(absolute);
+  const canonical = fs.realpathSync.native(absolute);
   if (!fs.lstatSync(canonical).isDirectory()) throw new Error('QUALIFICATION_TEMP_NOT_DIRECTORY');
   return { requested: absolute, canonical, ancestors, environment: { TMPDIR: canonical, TEMP: canonical, TMP: canonical } };
 }

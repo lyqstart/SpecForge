@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { access, mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -188,7 +188,7 @@ describe('Candidate generation integrity', () => {
     expect(isSameOrDescendantResolvedPath(upper, join('fixture', 'PROJECT'), 'linux')).toBe(false);
   });
 
-  it('counts a Windows CORE/core Candidate alias once while preserving real noncanonical REQ failures', async () => {
+  it('keeps target-platform Candidate identities and real noncanonical REQ failures on the actual filesystem', async () => {
     const { projectRoot, workItemDir } = await makeProject();
     const requirementsPath = join(
       workItemDir,
@@ -219,14 +219,17 @@ describe('Candidate generation integrity', () => {
       workItemId: 'WI-0001',
       kind: 'requirements',
     });
-    expect(artifacts).toHaveLength(1);
-    expect(artifacts[0].path).toBe(requirementsPath);
+    const lowerPath=join(workItemDir,'candidates','project','modules','core','requirements.candidate.md');
+    const lowerExists=await access(lowerPath).then(()=>true,(error:NodeJS.ErrnoException)=>{if(error.code==='ENOENT')return false;throw error;});
+    const distinctPosixAlias=process.platform!=='win32'&&lowerExists;
+    expect(artifacts.map(artifact=>artifact.path)).toEqual(distinctPosixAlias?[requirementsPath,lowerPath]:[requirementsPath]);
 
     const result = await validateCandidateRequirementReferences({
       workItemDir,
       requirementArtifacts: artifacts,
     });
-    expect(result.errors.join('\n')).not.toContain('REQUIREMENT_DEFINITION_DUPLICATE');
+    if(distinctPosixAlias)expect(result.errors.join('\n')).toContain('REQUIREMENT_DEFINITION_DUPLICATE');
+    else expect(result.errors.join('\n')).not.toContain('REQUIREMENT_DEFINITION_DUPLICATE');
     expect(result.errors.join('\n')).toContain('REQUIREMENT_REFERENCE_NONCANONICAL');
     expect(result.errors.join('\n')).toContain('REQ-CORE-0001');
   });
