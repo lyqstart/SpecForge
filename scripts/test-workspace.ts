@@ -1,9 +1,11 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CURRENT_WORKSPACE_PACKAGES } from './lib/workspace-packages';
+import { qualifyTemporaryEnvironment } from './lib/qualification-environment.mjs';
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const bunExecutable = process.execPath;
+const temporary = qualifyTemporaryEnvironment();
 
 console.log('[test-workspace] Deterministic sequential workspace regression start');
 console.log(`[test-workspace] Bun executable: ${bunExecutable}`);
@@ -31,7 +33,7 @@ for (const packageName of CURRENT_WORKSPACE_PACKAGES) {
     cwd,
     stdout: 'inherit',
     stderr: 'inherit',
-    env: process.env,
+    env: { ...process.env, ...temporary.environment },
   });
   const exitCode = result.exitCode ?? 1;
   if (exitCode !== 0) {

@@ -24,6 +24,12 @@ async function fixture() {
   return {root,config,write,create,manager,state,events:resolver.resolveEventsPath(root),checkpoint:resolver.resolveStatePath(root),activation:path.join(resolver.resolveProjectRuntimeDir(root),'configuration-activation.json')};
 }
 describe('authoritative history integrity at configuration consumer',()=>{
+  it('bundles native/file assets beside the actual fresh-process entry instead of requiring a single output',()=>{
+    const root=fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()),'sf-process-assets-'));roots.push(root);
+    const source=path.join(root,'asset-entry.ts');fs.writeFileSync(path.join(root,'image.png'),Buffer.from([137,80,78,71,13,10,26,10]));
+    fs.writeFileSync(source,"import asset from './image.png'; console.log(asset);\n");
+    const entry=buildProcessFixture(source,root);expect(fs.existsSync(entry)).toBe(true);expect(fs.readdirSync(root).some(name=>/^image-.+\.png$/.test(name))).toBe(true);
+  });
   for(const fault of ['missing','invalid-schema','rotation']) {
     it(`validates ${fault} in a real fresh child process and preserves original evidence`,async()=>{
       const f=await fixture();const wal=f.state.getWal();

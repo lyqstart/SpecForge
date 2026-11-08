@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import * as fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { captureVerificationSource, readFrozenVerificationInputs } from '../../src/verification/source-snapshot';
 import { collectNodeCommandInputs, compileNodeCommand } from '../../src/verification/node-command-contract';
 
@@ -17,6 +17,14 @@ async function fixture() {
   await fs.writeFile(path.join(root, 'library.ts'), 'export const value = 1;\n');
   git(root, ['add', 'library.ts']);
   git(root, ['-c', 'user.name=Synthetic', '-c', 'user.email=synthetic@localhost.invalid', 'commit', '-q', '-m', 'synthetic baseline']);
+  const sourceEnvironment:NodeJS.ProcessEnv={};
+  for(const key of ['PATH','SystemRoot','WINDIR','TEMP','TMP','PATHEXT','SYSTEMDRIVE'])if(process.env[key]!==undefined)sourceEnvironment[key]=process.env[key];
+  Object.assign(sourceEnvironment,{GIT_OPTIONAL_LOCKS:'0',GIT_CONFIG_NOSYSTEM:'1',GIT_CONFIG_GLOBAL:process.platform==='win32'?'NUL':'/dev/null'});
+  const probe=(args:string[],env:NodeJS.ProcessEnv)=>{
+    const result=spawnSync('git',['--no-pager','-c','core.fsmonitor=false','-c','protocol.allow=never','-c','core.hooksPath='+(process.platform==='win32'?'NUL':'/dev/null'),'-c','gc.auto=0',...args],{cwd:root,env,encoding:'utf8',windowsHide:true,maxBuffer:65536});
+    return {exit:result.status,stdout:result.stdout,stderr:result.stderr,spawn_error_code:(result.error as NodeJS.ErrnoException|undefined)?.code};
+  };
+  console.log('QUALIFICATION_GIT_IDENTITY='+JSON.stringify({platform:process.platform,root,canonical:await fs.realpath(root),metadata_directory:(await fs.lstat(path.join(root,'.git'))).isDirectory(),plain:{top:probe(['rev-parse','--show-toplevel'],process.env),common:probe(['rev-parse','--git-common-dir'],process.env)},source_reader_environment:{top:probe(['rev-parse','--show-toplevel'],sourceEnvironment),common:probe(['rev-parse','--git-common-dir'],sourceEnvironment)}}));
   return root;
 }
 afterEach(async () => {

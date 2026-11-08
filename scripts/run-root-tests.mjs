@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process';
+import { qualifyTemporaryEnvironment } from './lib/qualification-environment.mjs';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -105,13 +106,14 @@ export function selectRootTests(registry, mode, platform = process.platform) {
 }
 
 function runVitest(testPaths, passthroughArguments) {
+  const temporary = qualifyTemporaryEnvironment();
   const vitestEntry = path.join(repositoryRoot, 'node_modules', 'vitest', 'vitest.mjs');
   if (!existsSync(vitestEntry)) {
     throw new Error(`ROOT_VITEST_NOT_INSTALLED: ${vitestEntry}`);
   }
   const result = spawnSync(process.execPath, [vitestEntry, 'run', ...testPaths, ...passthroughArguments], {
     cwd: repositoryRoot,
-    env: process.env,
+    env: { ...process.env, ...temporary.environment },
     stdio: 'inherit',
   });
   if (result.error) throw result.error;

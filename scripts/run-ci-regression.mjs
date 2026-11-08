@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { qualifyTemporaryEnvironment } from './lib/qualification-environment.mjs';
 import path from 'node:path';
 import os from 'node:os';
 import crypto from 'node:crypto';
@@ -13,8 +14,8 @@ const phases = Object.freeze({
   root: ['run', 'test:root'],
 });
 const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
-function run(executable, args) {
-  const result = spawnSync(executable, args, { cwd: root, windowsHide: true, maxBuffer: 32 * 1024 * 1024 });
+function run(executable, args, environment = process.env) {
+  const result = spawnSync(executable, args, { cwd: root, env: environment, windowsHide: true, maxBuffer: 32 * 1024 * 1024 });
   return { ...result, stdout: result.stdout ?? Buffer.alloc(0), stderr: result.stderr ?? Buffer.alloc(0) };
 }
 function gitStatus() {
@@ -25,6 +26,7 @@ function gitStatus() {
 async function main() {
   if (process.version !== 'v24.19.0') throw new Error('CI_NODE_VERSION_MISMATCH');
   const phase = process.argv[2];
+  const temporary = qualifyTemporaryEnvironment();
   if (!Object.hasOwn(phases, phase) || process.argv.length !== 3) throw new Error('CI_UNKNOWN_REGRESSION_PHASE');
   const reportRoot = process.env.SPECFORGE_CI_REPORT_DIR;
   if (!reportRoot || !path.isAbsolute(reportRoot)) throw new Error('CI_ABSOLUTE_REPORT_ROOT_REQUIRED');
@@ -39,7 +41,7 @@ async function main() {
   if (!path.isAbsolute(bun) || !fs.statSync(bun).isFile()) throw new Error('CI_BUN_IDENTITY_INVALID');
   const version = run(bun, ['--version']);
   if (version.status !== 0 || version.stdout.toString().trim() !== '1.3.14') throw new Error('CI_BUN_VERSION_MISMATCH');
-  const context = { source_commit: head.stdout.toString().trim(), platform: process.platform, arch: process.arch, os_release: os.release(), node: process.version, node_path: process.execPath, node_sha256: hash(fs.readFileSync(process.execPath)), bun: version.stdout.toString().trim(), bun_path: bun, bun_sha256: hash(fs.readFileSync(bun)) };
+  const context = { temporary_directory: { requested: temporary.requested, canonical: temporary.canonical, ancestors: temporary.ancestors }, source_commit: head.stdout.toString().trim(), platform: process.platform, arch: process.arch, os_release: os.release(), node: process.version, node_path: process.execPath, node_sha256: hash(fs.readFileSync(process.execPath)), bun: version.stdout.toString().trim(), bun_path: bun, bun_sha256: hash(fs.readFileSync(bun)) };
   const contextFile = path.join(reportRoot, 'context.json');
   if (fs.existsSync(contextFile)) {
     if (JSON.stringify(JSON.parse(fs.readFileSync(contextFile))) !== JSON.stringify(context)) throw new Error('CI_CONTEXT_DRIFT');
@@ -49,7 +51,7 @@ async function main() {
   const command = { phase, cwd: root, executable: bun, args: phases[phase], started_utc: new Date().toISOString(), context_sha256: hash(fs.readFileSync(contextFile)), expected_writes: 'RUNTIME_OBSERVER_WRITES:build/test outputs;EXTERNAL_EVIDENCE_WRITES:owned runner-temp report;no tracked source changes' };
   fs.writeFileSync(path.join(directory, 'command.json'), JSON.stringify(command, null, 2) + '\n', { flag: 'wx' });
   fs.writeFileSync(path.join(directory, 'entry-source.mjs'), fs.readFileSync(fileURLToPath(import.meta.url)), { flag: 'wx' });
-  const result = run(bun, phases[phase]);
+  const result = run(bun, phases[phase], { ...process.env, ...temporary.environment });
   fs.writeFileSync(path.join(directory, 'stdout.raw.log'), result.stdout, { flag: 'wx' });
   fs.writeFileSync(path.join(directory, 'stderr.raw.log'), result.stderr, { flag: 'wx' });
   const after = gitStatus();

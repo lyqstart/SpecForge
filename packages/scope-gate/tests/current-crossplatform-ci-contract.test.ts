@@ -1,8 +1,30 @@
-import {readFileSync,existsSync} from 'node:fs';import path from 'node:path';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 
-import {describe,it,expect} from 'vitest';
+import {describe,it,expect,afterEach} from 'vitest';
+
+import { qualifyTemporaryEnvironment } from '../../../scripts/lib/qualification-environment.mjs';
+const ownedTemporaryDirectories:Array<{owned:string;parent:string}>=[];
+afterEach(()=>{
+  for(const {owned,parent} of ownedTemporaryDirectories.splice(0)){
+    if(realpathSync(owned)!==owned||path.dirname(owned)!==parent||!path.basename(owned).startsWith('sf-qualification-temp-'))throw new Error('UNOWNED_TEMP_CLEANUP');
+    rmSync(owned,{recursive:true,force:true});
+  }
+});
 const root=path.resolve(import.meta.dirname,'../../..'),read=(p:string): string =>readFileSync(path.join(root,p),'utf8').replace(/\r\n/g,'\n');
 describe('current cross-platform CI deployment contract',()=>{
+  it('uses the same physical temporary target through an owned alias without changing product guards',()=>{
+    const parent=realpathSync(tmpdir()),owned=mkdtempSync(path.join(parent,'sf-qualification-temp-')),physical=path.join(owned,'physical'),alias=path.join(owned,'alias');
+    ownedTemporaryDirectories.push({owned,parent});
+    mkdirSync(physical);symlinkSync(physical,alias,process.platform==='win32'?'junction':'dir');
+    const result=qualifyTemporaryEnvironment(alias);
+    expect(result.canonical).toBe(realpathSync(physical));
+    expect(result.environment).toEqual({TMPDIR:result.canonical,TEMP:result.canonical,TMP:result.canonical});
+    expect(result.ancestors.some(item=>item.path===alias&&item.kind==='symlink')).toBe(true);
+    expect(()=>qualifyTemporaryEnvironment(path.join(owned,'missing'))).toThrow();
+    for(const file of ['scripts/test-workspace.ts','scripts/run-root-tests.mjs','scripts/run-ci-regression.mjs'])expect(read(file),file).toContain('...temporary.environment');
+  });
   it('uses the official current release and isolated userlevel installer instead of retired tarball deployment',()=>{
     const workflow=read('.github/workflows/distribution-smoke.yml');
     expect(workflow).not.toContain('scripts/smoke-runner.ts');
