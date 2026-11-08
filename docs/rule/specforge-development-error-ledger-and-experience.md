@@ -32875,3 +32875,11 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 ### ERR-2023：当前知识提取Skill有安装项却缺少实际加载元数据
 
 - 0025真实OpenCode API加载7/8当前Skill，superpowers-knowledge-extraction缺失；其安装字节与正式manifest一致，但源文件无frontmatter，而另7份均有name/description。SPS当前集合与sf-knowledge明确要求此Skill。0026增加全current Skill元数据红例，真实1失败/21通过；补齐name/description后0027全22通过。责任为派生Skill/部署发现契约，不是D23权限或原WI运行失败。需同一正式release/installer重验及全8Skill实际加载，不以静态测试代替。EXP-004/007/022/026/036/260/276。
+
+### ERR-2024：未核验升级载体最终回执就提前启动Daemon
+
+- 0039升级正式验收结束UTC01:44:35，0041冷启动开始UTC01:44:28，早约7秒。0042因此被严格创建时间断言拒绝；自有Kernel结束且Daemon健康。升级最终数字0，owner及原项目安装区间保持，但不能把过早启动冒充合规冷启动。0043在确认升级最终0后正式stop并独立证明身份结束，再正式start/health；0045保持原严格断言真实10Agent/8Skill通过。旧失败原件保留，不放宽观察器。EXP-007/008/193/260/283/296。
+
+### 本轮D18/D23角色统一与有界复评完成
+
+- 最终维护22项、相关9文件83项、Root51文件748项与正式precheck通过；真实红例和观察器/顺序失败保留。正式升级15+1 Markdown、verify117，原生5身份及owner/原项目安装区间保持。fresh-loader03实际10Agent/8Skill身份通过，自有Kernel退出、Daemon独立健康；sf_state_read从events重放原WI仍closed。37责任源码与10类历史原始回执逐封存SHA重新核验；SPS19逐项列事实/有限推断/未证明范围，不复用旧汇总PASS。当前修复闭合，整体无保留全规格结论仍INSUFFICIENT_EVIDENCE。

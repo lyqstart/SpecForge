@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261108-D18-D23-ROLE-ALIGNMENT-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-role-alignment/inventory-publication.cjs",
+    "01"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "public-evidence-credential-inventory",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T01:54:34.505Z",
+  "carrier_source_sha256": "a4322f7d32d8d7c1814e1fe3cdab8c914180d0cf799ce2a0d7cf7dde5793d6f1",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-role-alignment\\inventory-publication.cjs",
+      "sha256": "b37042e9d5da1ccaeafc4aaf8aaf4b5941a8749bb2822f07d358c54877caa1c6",
+      "size": 3509,
+      "extension": ".cjs"
+    }
+  ]
+}

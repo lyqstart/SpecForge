@@ -1,0 +1,16 @@
+<anonymous_script>:4
+write('gate.json',{utc:new Date().toISOString(),mode:'CODEX_DIRECT',run_id:'CODEX-SF-20261108-D18-D23-ROLE-ALIGNMENT-A01',head:git('rev-parse','HEAD'),remote:fs.readFileSync(path.join(root,'commands/0001.stdout.txt'),'utf8').split('
+                                                                                                                                                                                                                                       ^
+
+SyntaxError: Invalid or unexpected token
+    at new Function (<anonymous>)
+    at Object.<anonymous> (D:\code\SpecForge\docs\archive\2026-11-08-role-alignment\finish-initialization.cjs:10:1)
+    at Module._compile (node:internal/modules/cjs/loader:1872:14)
+    at Object..js (node:internal/modules/cjs/loader:2003:10)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47
+
+Node.js v24.19.0

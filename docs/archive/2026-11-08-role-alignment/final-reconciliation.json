@@ -1,0 +1,131 @@
+{
+  "utc": "2026-11-08T01:53:26.327Z",
+  "run_id": "CODEX-SF-20261108-D18-D23-ROLE-ALIGNMENT-A01",
+  "source_commit": "7ecc7cfe7862e1f0d3d1cf4acb9ca8b3b6dba46c",
+  "contract_hash": "EE897ADE183584DFB62D544512D62B890C19FF6DF88560F6C40D8CAFA3E7B6D3",
+  "values": {
+    "FINAL_EXITS": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "CURRENT_ROLE_CONTRACT_TESTS": 22,
+    "CURRENT_ROLE_NAMES": [
+      "sf-analyst",
+      "sf-debugger",
+      "sf-design",
+      "sf-executor",
+      "sf-knowledge",
+      "sf-orchestrator",
+      "sf-requirements",
+      "sf-reviewer",
+      "sf-task-planner",
+      "sf-verifier"
+    ],
+    "CURRENT_SKILL_COUNT": 8,
+    "INSTALLED_CURRENT_IDENTITIES": 117,
+    "NATIVE_TUPLE_UNCHANGED": true,
+    "OWNER_PRESERVED": true,
+    "BUSINESS_PRESERVED_CLOSED": true,
+    "FINAL_LOADER_CLEAN": true,
+    "AUTHORITY_UNCHANGED": true,
+    "STATUS_RECONCILED": true,
+    "FULL_PRODUCT_VERDICT_HONEST": "INSUFFICIENT_EVIDENCE"
+  },
+  "result": {
+    "validator_accepted": true,
+    "validation_result": "PASS",
+    "error": null,
+    "declared_blocking_assertions": 12,
+    "executed_blocking_assertions": 12,
+    "extra_blocking_assertions": 0,
+    "missing_blocking_assertions": 0,
+    "assertion_results": [
+      {
+        "assertion_id": "FINAL_EXITS",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "CURRENT_ROLE_CONTRACT_TESTS",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "CURRENT_ROLE_NAMES",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "CURRENT_SKILL_COUNT",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "INSTALLED_CURRENT_IDENTITIES",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "NATIVE_TUPLE_UNCHANGED",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "OWNER_PRESERVED",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "BUSINESS_PRESERVED_CLOSED",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "FINAL_LOADER_CLEAN",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "AUTHORITY_UNCHANGED",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "STATUS_RECONCILED",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      },
+      {
+        "assertion_id": "FULL_PRODUCT_VERDICT_HONEST",
+        "blocking": true,
+        "passed": true,
+        "detail": {}
+      }
+    ],
+    "validation_contract_gap": false
+  },
+  "selfChecks": {
+    "actual_fixture_pass": true,
+    "tamper_rejected": true,
+    "missing_evidence_rejected": true
+  },
+  "repair_scope": "Current D18/D23 role andSkill correction/deployment",
+  "full_product_verdict": "INSUFFICIENT_EVIDENCE",
+  "original_code_files": 5,
+  "original_canonical_files": 9,
+  "owner_key_content_read": false
+}

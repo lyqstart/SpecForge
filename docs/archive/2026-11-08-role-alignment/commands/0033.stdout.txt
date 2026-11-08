@@ -1,0 +1,6 @@
+Updating bbee0eb9..7ecc7cfe
+Fast-forward
+ .../specforge-development-error-ledger-and-experience.md  |  9 +++++++++
+ .../tests/v11-agent-skill-contract-alignment.test.ts      | 15 +++++++++++++++
+ .../skills/superpowers-knowledge-extraction/SKILL.md      |  5 +++++
+ 3 files changed, 29 insertions(+)

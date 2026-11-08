@@ -1,0 +1,782 @@
+diff --git a/.gitattributes b/.gitattributes
+index bf673d37..795d339f 100644
+--- a/.gitattributes
++++ b/.gitattributes
+@@ -55,3 +55,4 @@ docs/archive/2026-10-19-config-activation-loss-evidence/** -text -diff
+ /docs/archive/2026-11-07-verification-production/** -text -diff
+ 
+ /docs/archive/2026-11-07-consumer-conformance/** -text -diff
++/docs/archive/2026-11-08-role-alignment/** -text -diff
+diff --git a/.gitignore b/.gitignore
+index ca005755..e586170e 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -91,3 +91,4 @@ packages/observability/test-data/observability-req-[0-9]*/
+ 
+ # Same-run post-seal publication receipts have independent local seals.
+ /docs/archive/2026-11-07-consumer-conformance/publication-live/
++/docs/archive/2026-11-08-role-alignment/publication-live/
+diff --git a/docs/project-status.md b/docs/project-status.md
+index 4c47c157..35aa52d7 100644
+--- a/docs/project-status.md
++++ b/docs/project-status.md
+@@ -9,27 +9,27 @@
+ <!-- SPECFORGE_PROJECT_STATUS:START -->
+ PROJECT_STATUS_SCHEMA=2
+ PROJECT_STATUS_DECLARATION=ACTIVE
+-ACTIVE_INITIATIVE=CONSUMER_CONFORMANCE_REPAIR
+-OBJECTIVE=Repair three independently confirmed subordinate consumer gaps: resolved audit history, finite planning commands, and unique status reconciliation; preserve original closed business delivery.
+-CURRENT_PHASE=THREE_CONSUMER_GAPS_REPAIRED_AND_DEPLOYED
++ACTIVE_INITIATIVE=D18_D23_ROLE_ALIGNMENT
++OBJECTIVE=Unify all current D18/D23 role consumers, regressions and installed loading; reassess SPS/Authority with individually bounded evidence.
++CURRENT_PHASE=ROLE_CONSUMER_REPAIR
+ OWNER_DECISIONS=AR-DEC-01:APPROVED;AR-DEC-02:APPROVED_WITH_ARCHIVE_CONSOLIDATION;AR-DEC-03:APPROVED_WITH_KIRO_RETIREMENT;AR-DEC-04:APPROVED_WITH_SINGLE_PROJECT_STATUS;AR-DEC-05:ONLY_TWO_EXTERNAL_EXECUTION_MODES_CODEX_DIRECT_AND_WORKBUDDY_COORDINATED;AR-DEC-06:ACTIVE_RULES_SEPARATED_FROM_HISTORICAL_LEDGER;D05:OPENCODE_ADAPTER_ENABLED;D10:NSSM_REMOVED_WINDOWS_DIRECT_DAEMON_ONLY;D11:GLOBAL_ONLY_THIN_PLUGIN_SINGLE_EXPORT;VR-DEC-01:NEW_EPOCH_1_0_0;VR-DEC-02:TAG_PREFIX_SPECFORGE_V;VR-DEC-03:INDEPENDENT_CONTRACT_VERSIONS;VR-DEC-04:ACTIVE_REFERENCES_CONVERGE_HISTORY_PRESERVED;D18:INTERNAL_READ_ONLY_COMMAND_CONTAINMENT;D20:BOUNDED_WINDOWS_LPAC_READONLY_NODE_APPROVED_ACCEPTANCE_FIRST;D21:REGISTRY_READ_SINGLE_CAPABILITY_SYNTHETIC_EXPERIMENT_ONLY;D22:STRICT_SINGLE_PROCESS_FIRST_PHASE_SCOPE_APPROVED_ACCEPTANCE_FIRST;D23:PRODUCTION_ADOPTION_AND_COMPLETE_CONTROLLED_VERIFICATION_IMPLEMENTATION_APPROVED
+ EXECUTION_MODE=CODEX_DIRECT
+-EXECUTION_STATE=COMPLETE
++EXECUTION_STATE=IN_PROGRESS
+ EXECUTION_PROTOCOL=docs/rule/specforge-execution-mode-and-evidence-protocol.md
+ EXECUTION_PLANNER=CODEX
+ EXECUTION_ACTOR=CODEX
+ EXECUTION_AUDITOR=CODEX
+-EXECUTION_RUN_ID=CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01
+-EXECUTION_EVIDENCE_ROOT=D:/code/SpecForge/docs/archive/2026-11-07-consumer-conformance
+-LAST_EXECUTION_CHECKPOINT=Reviewed21 sourcepaths integrated tolocalmain24f6b0c7. Real audit-history positive/unresolved negative andfinite command positive/unsupported negative checks pass;maintained16 tests,related7files89 tests,Root51files748 tests andworkflow generationcheck allgreen. Officialinstaller updated13 Markdown/skipped104 andverified117;qualifiednative5 unchanged,ownerstore/keymetadata andoriginalwhole installerinterval preserved. Fresh OpenCode loader02 actuallyverified8 changedAgents and3 Skill rawbody identities;ownedKernel ended,independentDaemon healthy. First loaderfailure was CRLF/rawbody observer mismatch,diagnosed withreal API sources andpreserved;no modelprompt/business tool. Three specific consumer gapsclosed;old broad20-row aggregate acceptance is historical andcannot substitute for independent per-clause proof.
+-NEXT_EXECUTION_STOP=ALL_THREE_CONSUMER_GAPS_INDEPENDENTLY_VERIFIED_INSTALLED_AND_PUBLISHED_OR_EVIDENCED_HARD_BLOCKER
++EXECUTION_RUN_ID=CODEX-SF-20261108-D18-D23-ROLE-ALIGNMENT-A01
++EXECUTION_EVIDENCE_ROOT=D:/code/SpecForge/docs/archive/2026-11-08-role-alignment
++LAST_EXECUTION_CHECKPOINT=Clean main c641a8d4 equals independently read live origin main; baseline frozen. Confirmed installed base and Executor/Debugger positive instructions lag D23; existing Runtime owners support the path.
++NEXT_EXECUTION_STOP=ROLE_CONSUMERS_VERIFIED_DEPLOYED_AND_REASSESSED_OR_EVIDENCED_BLOCKER
+ LAST_COMPLETED_CHECKPOINT=OriginalWI0001 Verification/FormalVersion/Close anduser-approved localmain28c8e3d remain completed. This repair closed audit-rule,finite-planning andstale-status consumer gaps only,with real tests,official install andfreshloader evidence. Native1.0.23 tuple isunchanged;existing specforge-v1.0.23 tag remainsimmutable.
+ CURRENT_BLOCKER=NONE
+-NEXT_LEGAL_ACTION=No remaining action for these three repaired consumer gaps. Preserve originalclosedWI/localmain andqualifiednative tuple;do not rerun successfulbusiness verification orretag1.0.23. Future work begins withprotocol andread-onlyBootstrap,thencurrentSPS/Authority. Any wider full-product claim requires its own clause/consumer evidence,not thepreviousaggregatePASS. Same-run final evidence publication/remoteBootstrap isverified separately by immutable transport receipts.
++NEXT_LEGAL_ACTION=Complete current release role/Skill inventory, add meaningful red regressions, align subordinate D18/D23 instructions, run relevant Runtime and root tests, official installation and fresh loader proof, then evidence-scoped SPS assessment and publish.
+ ALLOWED_SCOPE=AGENTS.md;README.md;.gitattributes;.gitignore;package.json;bun.lock;docs/project-status.md;docs/product-specification/**;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/archive/**;docs/adr/**;docs/cli/**;docs/conventions/**;docs/user/**;docs/plugins/**;docs/tools/**;docs/engineering-lessons/**;docs/rule/**;scripts/**;setup/**;packages/**/package.json;packages/service-management/src/**;packages/configuration/src/**;packages/opencode-adapter/src/**;packages/permission-engine/src/**;packages/daemon-core/src/**;packages/cli/src/**;packages/types/src/**;packages/observability/src/**;packages/observability/examples/**;packages/workflow-runtime/src/**;packages/workflow-runtime/tsconfig.json;packages/workflow-runtime/examples/**;packages/workflow-runtime/vitest.config.ts;packages/**/README.md;packages/**/DEVELOPMENT.md;packages/**/docs/**;packages/**/src/**/*.md;packages/**/tests/**;tests/**;docs/design/windows-lpac-node-readonly-contract.md;packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md;packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md
+ PROHIBITED=Deleting ADR ERR audit or report evidence;creating another active handoff current-status or recovery-status file;modifying D:\code\t3 outside a separately authorized controlled recovery phase;reading or modifying D:\code\t2 during SpecForge repair;creating a SpecForge Work Item for SpecForge product self-development;using archive evidence as a current product contract
+ REQUIRED_RULES=docs/rule/specforge-active-development-rules.md;docs/product-specification/authority-registry.md;docs/product-specification/specforge-product-specification.md;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/rule/specforge-execution-mode-and-evidence-protocol.md
+-REQUIRED_VALIDATION=Completed inthisrepair: actual sharedaudit policies match Runtime resolved/unresolved verdicts;positive planning declarations compile undercurrent finitegrammar andunsupported examplesremain refused;maintained16,related89,Root748 andworkflowcheck passed;official117 install,fiveunchangednativeassets andfresh8Agent/3Skill loaderverified. OriginalWI/SP-I01/SP-D01 are completed historical gates,not pending actions. Future affected edits rerun corresponding consumer checks andphysical installation proof.
++REQUIRED_VALIDATION=Current release consumer inventory; red/green role contracts; actual owner/stage/permission and D18 refusal regressions; Root and workflow generation; official release/install117 and fresh loader; independent clause evidence assessment.
+ <!-- SPECFORGE_PROJECT_STATUS:END -->
+ 
+ ## Resume guidance
+diff --git a/docs/rule/specforge-development-error-ledger-and-experience.md b/docs/rule/specforge-development-error-ledger-and-experience.md
+index c3ae9081..8044c354 100644
+--- a/docs/rule/specforge-development-error-ledger-and-experience.md
++++ b/docs/rule/specforge-development-error-ledger-and-experience.md
+@@ -32861,3 +32861,8 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制
+ 
+ - 维护回归16项、相关7文件89项、Root51文件748项及生成器检查通过；0004真实红例3失败/13通过和观察器失败原件保留。正式安装13份Markdown、跳过104、verify117；五个合格原生资产未变。真实fresh-loader-02返回8个更新Agent与3份Skill，三份正文按实际raw/frontmatter域逐字核验，自有Kernel结束、独立Daemon健康，无模型提示/业务工具。
+ - 0031通过正式validation-contract-kernel冻结12条独立断言，逐项audit/planning/status均CLOSED；zero-total变异被拒绝，缺status证据为INSUFFICIENT_EVIDENCE。独立当前owner非秘密哈希及敏感文件仅元数据保持，原业务main28c8e3d、5实现/9验收成员保持，未重开或重跑原WI。ERR2019/2020的加载检查域与依赖步骤问题已按真实原件修正，未改安装文件以迎合观察器。旧20行aggregatePASS作为历史保留，不作为本轮全产品验收。
++
++### ERR-2021：基础角色完成条件与D18/D23执行归属不一致
++
++- 当前main c641a8d4的已安装_AGENT_BASE仍全面禁止Verifier测试，并要求Executor/Debugger自行手跑命令；Executor正向检查点又要求先全部验证通过。SPS §9.2.4及真实plan/run路径只允许实际Orchestrator建计划、Verifier受独立许可消费。责任为下游角色/模板/Skills指令消费者，不能靠顶部免责声明覆盖相反正文。保持Runtime权限和产品范围，补完整角色矩阵及真实拒绝回归。原业务关闭/合并有效，不重开、不重跑。EXP-004/022/025/026/036/251/276/287。
++- 本轮初始化在只读ls-remote时受限网络DNS失败，发生于gate写入前；冻结baseline和已创建载体保持。0001同一远端只读宿主核验成功，才恢复gate与产品修复。大段显示截断不作为完整读取，补读缺口；一次literal manifest*的rg路径错误未作为产品证据。
+diff --git a/packages/daemon-core/tests/unit/verification-runtime-plan.test.ts b/packages/daemon-core/tests/unit/verification-runtime-plan.test.ts
+index 346a829d..f0f72b4d 100644
+--- a/packages/daemon-core/tests/unit/verification-runtime-plan.test.ts
++++ b/packages/daemon-core/tests/unit/verification-runtime-plan.test.ts
+@@ -84,6 +84,21 @@ describe('verification Runtime plan/permission owner (unit dependencies)',()=>{
+     await fs.appendFile(path.join(f.wiRoot,'candidates','tasks.md'),'\nchanged approved task\n');
+     await expect(f.service.plan(f.args,f.context('changedTask'))).rejects.toThrow('APPROVED_CANDIDATE_CONTENT_CHANGED');
+   });
++  it('rejects orchestrator run ownership even with a verifier self-claim and preserves code permission',async()=>{
++    const f=await fixture(),plan=await f.service.plan(f.args,f.context('ownerPlan'));
++    const metadata=await fs.readFile(path.join(f.wiRoot,'work_item.json'));
++    const native=vi.spyOn(f.service.native,'execute').mockRejectedValue(Error('UNEXPECTED_NATIVE_START'));
++    f.setRole('sf-orchestrator');
++    await expect(f.service.run({action:'prepare',work_item_id:wi,plan_id:plan.plan_id},
++      {...f.context('wrongRunOwner'),agent:'sf-verifier'})).rejects.toThrow('OWNER_PROOF_INVALID');
++    expect(native).not.toHaveBeenCalled();
++    expect(await fs.readFile(path.join(f.wiRoot,'work_item.json'))).toEqual(metadata);
++    f.setRole('sf-verifier');
++    const prepared=await f.service.run({action:'prepare',work_item_id:wi,plan_id:plan.plan_id},f.context('actualVerifier'));
++    expect(prepared.application_started).toBe(false);
++    expect(await fs.readFile(path.join(f.wiRoot,'work_item.json'))).toEqual(metadata);
++    expect(native).not.toHaveBeenCalled();
++  });
+   it('revokes only the independent verification grant and blocks a new Attempt',async()=>{
+     const f=await fixture(), before=await fs.readFile(path.join(f.wiRoot,'work_item.json')), result=await f.service.plan(f.args,f.context('grant'));
+     await f.service.plan({action:'revoke',work_item_id:wi,plan_id:result.plan_id},f.context('revoke'));
+diff --git a/packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts b/packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts
+index 00081590..a0d4e3fe 100644
+--- a/packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts
++++ b/packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts
+@@ -92,6 +92,76 @@ function withoutContract(text: string): string {
+ }
+ 
+ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
++  it('keeps the base completion workflow on independent D23 owners without role-local shell execution', () => {
++    const base = read('setup/userlevel-opencode/agents/_AGENT_BASE.md');
++    const workflow = base.split('# 执行流程')[1]?.split('# 文档硬规则')[0] ?? '';
++    for (const token of ['D18', 'D23', 'sf_verification_plan', 'sf_verification_run', 'sf-orchestrator', 'sf-verifier', 'not_executed', 'blocked']) {
++      expect(base, token).toContain(token);
++    }
++    expect(workflow).not.toContain('代码 agent**：跑 verification_command');
++    expect(workflow).not.toContain('我手跑了验证');
++    expect(workflow).not.toContain('看不到真实副作用 → 回 Step 4');
++    expect(workflow).toContain('partial');
++    expect(base).not.toContain('D18 不允许借验证任务执行脚本、测试或构建');
++    expect(base).not.toContain('verification_commands 中每条命令都必须执行');
++    expect(base).not.toContain('.specforge/agents/AGENT_BASE.md');
++    expect(base).not.toContain('当一个 agent 完成当前阶段的工作后，产出一份 Candidate');
++    expect(base).toContain('Executor/Debugger');
++  });
++
++  it('aligns all current verification participants and their loaded debugging skill with the same owners', () => {
++    const participants = ['agents/_AGENT_BASE.md', 'AGENTS.md', 'agents/sf-executor.md',
++      'agents/sf-debugger.md', 'agents/sf-reviewer.md', 'agents/sf-task-planner.md',
++      'agents/sf-orchestrator.md', 'agents/sf-verifier.md',
++      'skills/superpowers-systematic-debugging/SKILL.md',
++      'skills/superpowers-writing-plans/SKILL.md',
++      'skills/superpowers-verification-before-completion/SKILL.md',
++      'skills/sf-workflow-feature-spec/SKILL.md'];
++    for (const file of participants) {
++      const text = read('setup/userlevel-opencode/' + file);
++      for (const token of ['D23', 'sf_verification_plan', 'sf_verification_run', 'sf-orchestrator', 'sf-verifier', 'blocked']) {
++        expect(text, file + ' / ' + token).toContain(token);
++      }
++    }
++  });
++
++  it('covers the SPS current role inventory and informational shared boundaries without enabling future roles', () => {
++    const sps = readFileSync(path.join(REPO_ROOT, 'docs/product-specification/specforge-product-specification.md'), 'utf8');
++    const projection = JSON.parse(sps.split('<!-- SPECFORGE_RELEASE_AUTHORITY_ITEMS:START -->')[1]!.split('```json')[1]!.split('```')[0]!);
++    const current: string[] = projection.itemGroups.filter((g: {classification: string}) => g.classification.startsWith('CURRENT_RELEASE'))
++      .flatMap((g: {ids: string[]}) => g.ids).filter((id: string) => id.startsWith('agent:') || id.startsWith('agent-template:'));
++    expect(current.length).toBeGreaterThan(0);
++    for (const id of current) {
++      const text = readFileSync(path.join(USERLEVEL_ROOT, 'agents', id.split(':')[1] + '.md'), 'utf8');
++      const body = contractBody(text);
++      expect(body, id).toContain('D18 / D23 verification ownership');
++      expect(body, id).toContain('Other roles hand off');
++      expect(body, id).toContain('does not reopen code permission or advance state');
++    }
++  });
++
++  it('allows implementation handoff before verifier-owned evidence without claiming verified completion', () => {
++    const executor = read('setup/userlevel-opencode/agents/sf-executor.md');
++    const handoff = executor.split('## Implementation Handoff')[1]?.split('---')[0] ?? '';
++    expect(handoff).toContain('sf_handoff');
++    expect(handoff).toContain('not_executed');
++    expect(handoff).toContain('sf-verifier');
++    expect(executor).not.toContain('未通过验证不产出 Candidate');
++    expect(executor).not.toContain('verification_command 真跑通且产生预期副作用');
++    expect(executor).not.toContain('blocked_write_attempts 必须计入 violations');
++  });
++
++  it('keeps debugger reproduction, repair confirmation and examples from impersonating verifier execution', () => {
++    const debuggerText = read('setup/userlevel-opencode/agents/sf-debugger.md');
++    expect(debuggerText).not.toContain('修复后必须跑 verification_command');
++    expect(debuggerText).not.toContain('修复后必须重新跑 verification_command');
++    expect(debuggerText).not.toContain('失败的 task 重新跑 verification_command 真通过');
++    const report = debuggerText.split('## Debugger Candidate Format')[1] ?? '';
++    expect(report).toContain('not_executed');
++    expect(report).not.toMatch(/"exit_code"\s*:\s*0/);
++    expect(report).not.toMatch(/"passed"\s*:\s*true/);
++  });
++
+   it('keeps every shared audit paragraph consistent with resolved-history Runtime verdicts', () => {
+     const audit = [
+       '# Changed Files Audit', 'Contract: changed-files-audit/v1', 'Work Item: WI-0001',
+diff --git a/setup/userlevel-opencode/AGENTS.md b/setup/userlevel-opencode/AGENTS.md
+index c2f6dfd7..9a26d380 100644
+--- a/setup/userlevel-opencode/AGENTS.md
++++ b/setup/userlevel-opencode/AGENTS.md
+@@ -87,6 +87,12 @@ If a requested action conflicts with this contract, stop and report the conflict
+ - 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
+ - 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
+ 
++### D18 / D23 verification ownership
++
++- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
++- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
++- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
++
+ <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
+ 
+ 
+diff --git a/setup/userlevel-opencode/agents/_AGENT_BASE.md b/setup/userlevel-opencode/agents/_AGENT_BASE.md
+index f92e7c5e..0c93716b 100644
+--- a/setup/userlevel-opencode/agents/_AGENT_BASE.md
++++ b/setup/userlevel-opencode/agents/_AGENT_BASE.md
+@@ -74,6 +74,12 @@ If a requested action conflicts with this contract, stop and report the conflict
+ - 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
+ - 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
+ 
++### D18 / D23 verification ownership
++
++- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
++- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
++- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
++
+ <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
+ 
+ # SpecForge Agent 公共骨架
+@@ -100,11 +106,11 @@ Layer 3 ✅  下游消费方能基于此产物完成自己的工作    ← 这
+ |---|---|
+ | sf-requirements | sf-design 能基于 requirements.md 产出 design.md，且 sf_requirements_gate 通过 |
+ | sf-design | sf-task-planner 能拆出可独立执行的 tasks.md，且 sf_design_gate 通过 |
+-| sf-task-planner | sf-executor 拿到任意 task 都能独立执行，verification_commands 真能机器跑 |
+-| sf-executor | verification_command 真跑通且产生预期副作用 |
+-| sf-debugger | 失败的 task 重新跑 verification_command 真通过 |
++| sf-task-planner | Task 可独立实施，验证声明有明确证据语义；支持的声明可进入 D23，超出能力的必需项明确 blocked |
++| sf-executor | 授权实现与测试源码可交接；实际行为通过须引用 sf-verifier 的当前有效回执，待验证交接不冒充完成 |
++| sf-debugger | 修复及根因证据可交接；由 sf-verifier 合法复验原声明，未取得证据前保留未确认状态 |
+ | sf-reviewer | review_report.md 列出的所有 finding 都能被 sf-executor 修复 |
+-| sf-verifier | verification_report.md 引用当前原始证据并报告 pass/fail/blocked；SPS §9.2 / D18 不允许借验证任务执行脚本、测试或构建 |
++| sf-verifier | verification_report.md 消费 D23 当前有效执行回执或适用独立原始证据，如实报告 pass/fail/blocked |
+ | sf-knowledge | 知识库新条目通过 sf_knowledge_base 的受控接口写入且非重复 |
+ 
+ ---
+@@ -208,13 +214,14 @@ Agent 的关键结论必须有可追踪依据。依据类型包括：
+ 
+ 遵守本文件的"硬规则"和各 agent 专属规则。
+ 
+-## Step 5 — 端到端手跑
++## Step 5 — 受控验证与交接
+ 
+-产物写完后，真跑一次验证：
+-- **代码 agent**：跑 verification_command，把命令和真实输出复制到 work_log
+-- **文档 agent**：跑 sf_doc_lint，把输出复制到 work_log；或把产物给"假想下游"读一遍
++产物写完后，按真实角色和当前能力取证：
++- **代码 agent**：提交实现、测试源码和原验证声明的交接，由真实 `sf-orchestrator` 调用 `sf_verification_plan`，真实 `sf-verifier` 调用 `sf_verification_run` prepare/run；本角色不自行运行命令、不代调这两个 owner 的工具。
++- **文档 agent**：通过获准的 `sf_doc_lint` 自检，记录真实结果；静态下游检查须说明方法，不能冒充动态测试。
++- **D18 / D23**：`sf_safe_bash` 仍为 Runtime 内部只读，不启动 Shell/子进程。D23 仅允许固定 Windows x64 单进程只读 Node 配置及已证明语义的有限归一化；计划独立只读许可不授予代码写权限，且不推进状态。未知、不支持、无新鲜回执或超出当前环境的必需项保持 `not_executed` / `blocked`，由 Orchestrator 路由责任 owner；不得换执行器或口头豁免。
+ 
+-看不到真实副作用 → 回 Step 4，不要进 Step 6。
++缺少必需行为证据时，不得声明完成。实现或取证输入已就绪时继续提交如实的待验证交接，报告 `partial` / `blocked` 及缺口；只有证据证明实现本身有缺陷时才回 Step 4，不得因本角色无执行能力而循环修代码或扣留交接。
+ 
+ ## Step 6 — 自审清单（10 条）
+ 
+@@ -224,7 +231,7 @@ Agent 的关键结论必须有可追踪依据。依据类型包括：
+ □ 1. 我能用一句话复述任务目标和最终副作用
+ □ 2. 我画了 vertical slice，没有 ❌ 残留段
+ □ 3. 我写的预检/测试满足 4 必备（真启动/真调用/真副作用/真清理）
+-□ 4. 我手跑了验证，输出贴在 work_log
++□ 4. 我已记录实际验证状态、合法 owner 的证据位置及当前回执；未执行项明确阻断
+ □ 5. 产物里没有 stub / TBD / 占位句假装完成
+ □ 6. 产物里没有模糊量词（"应该较快"→ 改成可测量值）
+ □ 7. 产物里没有"参见 XXX"代替实质内容
+@@ -251,7 +258,7 @@ Agent 的关键结论必须有可追踪依据。依据类型包括：
+ 
+ **报告纪律（4 条）**：
+ 1. 不允许只写"全部完成"——每条声明配可验证字段
+-2. 未完成不许伪装成"遗留项"——核心功能没做，status 必须是 failed
++2. 未完成不许伪装成"遗留项"——实际失败报告 failed；实现已交接但待合法验证报告 partial；能力或证据阻断报告 blocked，均不得冒充最终成功
+ 3. 发现的非本 task 问题写到 `out_of_scope_observations`，不要顺手改
+ 4. 自审清单必须如实勾选，勾不上的项写明原因
+ 
+@@ -407,7 +414,7 @@ grep -c "new Engine()" path/to/file.ts  # 期望 = 1
+ 
+ # Boundaries（所有 agent 共用）
+ 
+-本 Agent 遵守 `.specforge/agents/AGENT_BASE.md` 全部底线规则：
++本 Agent 遵守当前 OpenCode config root 下 `agents/_AGENT_BASE.md` 及随安装包提供的治理契约：
+ 不绕 Gate / 不伪造验证 / 不把推测当事实 / 不直接改权威状态 /
+ 不越权调工具 / 不直接向用户提问 / 不创建子 Agent。
+ 
+@@ -426,15 +433,9 @@ grep -c "new Engine()" path/to/file.ts  # 期望 = 1
+ 
+ ## Candidate (§8.2)
+ 
+-**Candidate** 是阶段转换的检查点文件。当一个 agent 完成当前阶段的工作后，产出一份 Candidate 文件，表明"本阶段产物已就绪，请求进入下一阶段"。
+-
+-Candidate 文件包含：
+-- 当前阶段名称与产出文件路径
+-- 自检清单（如 doc_lint / 单测结果）
+-- 请求的下一阶段名称
+-- 时间戳与 agent 签名
++正式 **Candidate** 是 SPS §6.4 的 Project Spec 变更提案，只在当前 Work Item 的 `candidates/**` 内由对应专业 owner 通过受控工具形成。Runtime 管理 Manifest、实现基线和 seal；随后依次 Gate、当前显式 User Decision 和 Atomic Spec Merge。
+ 
+-Candidate 必须通过 Gate（§9.1）检查后，才能被批准为正式阶段转换。未通过 Gate 的 Candidate 应被拒绝并退回修正。
++不是所有 Agent 每完成一个阶段都创建 Candidate。Executor/Debugger 的实现或修复交接通过 `sf_handoff` 提交，不创建额外阶段 Candidate，不修改 sealed Candidate，也不自行推进状态。D23 执行计划、Attempt 和回执由验证 owner 管理，不能以手写 Candidate/报告冒充。
+ 
+ ---
+ 
+@@ -446,7 +447,7 @@ Candidate 必须通过 Gate（§9.1）检查后，才能被批准为正式阶段
+ - 每个变更的简要描述（一句话说明改了什么、为什么改）
+ - 变更的类型标签（`feat` / `fix` / `refactor` / `docs` / `chore`）
+ 
+-Delta 使得 Orchestrator 和下游 agent 能够快速了解阶段间的差异，无需逐文件对比。每个 Candidate（§8.2）必须附带对应的 Delta。
++Delta 由正式 Task/产物合同确定其内容和 owner；不能把通用阶段摘要当作新的必需治理文件。它不替代真实 diff、正式 Candidate Manifest、Trace 或验证回执。
+ 
+ ---
+ 
+@@ -458,9 +459,9 @@ Gate 的核心属性：
+ - **机器可判**：Gate 检查结果必须是 pass / fail，不允许"部分通过"
+ - **非绕过性**：只有 Orchestrator 可调用 Gate 工具；sub-agent 不得绕过或跳过
+ - **前置性**：Gate 必须在状态转换之前执行；未通过 Gate 的 Candidate 不得推进状态
+-- **幂等性**：对同一产物多次执行 Gate，结果必须一致
++- **可复核性**：相同完整权威输入和同一实现应得相同判定；状态、来源或证据新鲜度变化时必须重新核验
+ 
+-Gate 失败时，agent 必须修正产物后重新提交 Candidate，不得降级或跳过。
++Gate 失败时，由 Orchestrator 定位失败 owner 并按正式恢复路径处理；封存 Candidate 不得直接修改，验证失败也不能擅自回到候选编制或跳过 Gate。
+ 
+ ---
+ 
+@@ -520,9 +521,9 @@ Extension 确保每个 task 的边界清晰，避免范围蔓延和隐式依赖
+ |---|------|------|
+ | 1 | 禁止调用 `sf_state_transition` | 状态转换仅限 Orchestrator，sub-agent 不得直接修改工作流状态 |
+ | 2 | 禁止调用 Gate 工具 | `sf_*_gate` 系列工具仅限 Orchestrator 调用；sub-agent 自检用 `sf_doc_lint` |
+-| 3 | 禁止伪造验证结果 | verification_command 必须真实运行，不得用 echo / echo true / stub 冒充通过 |
++| 3 | 禁止伪造验证结果 | 通过声明必须引用合法 owner 的当前原始执行证据，不得用 echo / echo true / stub 冒充通过 |
+ | 4 | 禁止越权修改 spec 文件 | requirements.md / design.md / tasks.md 仅限对应专属 agent 修改 |
+-| 5 | 禁止跳过验证步骤 | verification_commands 中每条命令都必须执行，不得省略或跳过 |
++| 5 | 禁止跳过验证步骤 | 每条必需验证声明都须有合法当前证据；未执行项记 not_executed/blocked 并阻断完成，不能强行执行或省略 |
+ | 6 | 禁止向用户直接提问 | sub-agent 不得绕过 Orchestrator 直接与用户交互 |
+ | 7 | 禁止创建子 Agent | sub-agent 不得 dispatch 或 fork 其他 agent |
+ | 8 | 禁止把推测当事实 | 未经 Evidence 支撑的判断必须标注为 `assumption`，不得声明为 `verified` |
+diff --git a/setup/userlevel-opencode/agents/sf-analyst.md b/setup/userlevel-opencode/agents/sf-analyst.md
+index 80694724..c85af1f9 100644
+--- a/setup/userlevel-opencode/agents/sf-analyst.md
++++ b/setup/userlevel-opencode/agents/sf-analyst.md
+@@ -42,6 +42,12 @@ permission:
+ - Only `sf-orchestrator` may invoke `sf_hard_stop_resolve` and then resume from the recorded safe step.
+ - If evidence is insufficient or a request conflicts with this contract, report the gap or conflict instead of guessing, modifying truth sources, or using a legacy path.
+ 
++### D18 / D23 verification ownership
++
++- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
++- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
++- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
++
+ <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
+ 
+ # sf-analyst — 架构可观测性分析 Agent
+diff --git a/setup/userlevel-opencode/agents/sf-debugger.md b/setup/userlevel-opencode/agents/sf-debugger.md
+index 7b320ac5..e894dfbd 100644
+--- a/setup/userlevel-opencode/agents/sf-debugger.md
++++ b/setup/userlevel-opencode/agents/sf-debugger.md
+@@ -86,6 +86,12 @@ If a requested action conflicts with this contract, stop and report the conflict
+ - 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
+ - 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
+ 
++### D18 / D23 verification ownership
++
++- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
++- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
++- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
++
+ <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
+ 
+ # Role
+@@ -101,7 +107,11 @@ If a requested action conflicts with this contract, stop and report the conflict
+ 
+ # 完成的定义
+ 
+-Layer 3 ✅：失败的 task 重新跑 verification_command 真通过。
++Layer 3 ✅：修复与根因证据可交接，sf-verifier 对原声明的合法当前证据确认修复；证据不足仍未确认。
++
++## D18 / D23 执行归属
++
++Debugger 仅在当前 Code Permission 范围修复代码及测试源码，不自行运行脚本、测试或构建。`sf_safe_bash` 保持 D18 内部只读；重现、假设实验及修复复验均由真实 `sf-orchestrator` 使用 `sf_verification_plan`、真实 `sf-verifier` 使用 `sf_verification_run` 完成。D23 独立只读许可不开放代码写权限，不推进状态；只支持固定 Windows x64 单进程只读 Node 及已证明的有限归一化。不支持、缺证据或无新鲜回执时记 `not_executed` / `blocked` 并交接，不换执行器、不循环派发同一不可执行动作。
+ 
+ ---
+ 
+@@ -128,7 +138,7 @@ Layer 3 ✅：失败的 task 重新跑 verification_command 真通过。
+ ## 步骤 1：复现问题（Reproduce）
+ 
+ - 根据 executor 的失败报告，理解失败的 verification_command 和错误输出
+-- 确认失败是稳定复现的，还是偶发的
++- 核验既有原始证据能否证明失败稳定复现；需要新执行时向 Orchestrator 交接原声明及证据需求，不自行复现
+ 
+ ## 步骤 2：收集证据（Gather Evidence）
+ 
+@@ -146,7 +156,7 @@ Layer 3 ✅：失败的 task 重新跑 verification_command 真通过。
+ ## 步骤 4：验证假设（Verify）
+ 
+ - 对每个假设设计验证方法
+-- 执行验证，记录结果
++- 由合法 owner 按 D23 取得支持范围内的新执行证据；本角色读取回执并记录结果，未执行项保持 blocked
+ - 排除不成立的假设
+ 
+ ## 步骤 5：确认根因（Confirm Root Cause）
+@@ -173,13 +183,13 @@ environment_defect
+ 
+ 如果失败原因是上游规格、设计、任务或依据不足，Debugger 不得强行修代码绕过问题。必须在报告中标记 `needs_requirements_change`、`needs_design_change`、`needs_task_change` 或 `needs_basis_resolution`。
+ 
+-修复后仍必须重新运行原 verification_command，并补充能解释根因的证据。
++修复后交接原 verification_command 和变化的输入，由 Orchestrator 安排 Verifier 合法复验并补充根因证据；不得复用修复前的旧成功回执。
+ 
+ # 修复规则
+ 
+ 1. **只修复与问题直接相关的文件**——不得顺手改其他文件
+ 2. **不得修改 requirements.md、design.md 或 tasks.md**
+-3. **修复后必须跑 verification_command 确认通过**
++3. **修复后必须取得 Verifier 的当前复验证据才能确认通过；待验证修复先交接并标记 partial**
+ 4. **不得在无法修复时强行标记为成功**
+ 5. **修复方案必须符合 project-rules.md 的工程规则**
+ 
+@@ -201,17 +211,17 @@ environment_defect
+ 
+ # Required Output
+ 
+-**修复成功报告**：
++**修复待验证交接报告**（实际确认 fixed 还须当前合法复验回执）：
+ ```json
+ {
+-  "status": "fixed",
++  "status": "partial",
+   "task_id": "<任务编号>",
+   "root_cause": "<根本原因描述>",
+   "root_cause_category": "env_mismatch | missing_dependency | logic_error | config_error | permission | other",
+   "fix_description": "<修复方案描述>",
+   "files_changed": ["<修改的文件路径列表>"],
+   "verification_results": [
+-    { "command": "<验证命令>", "passed": true, "output_excerpt": "<输出片段>" }
++    { "command": "<原验证声明>", "status": "not_executed", "reason": "awaiting orchestrator plan and verifier execution" }
+   ],
+   "env_diff_found": true,
+   "env_diff_description": "<如果是环境差异导致的，描述差异>"
+@@ -301,7 +311,7 @@ environment_defect
+ 
+ ## Debugger Candidate Format (§11)
+ 
+-Debugger 完成修复后，产出的修复报告即为 **fix candidate**。Candidate 必须满足以下格式要求：
++以下 **fix candidate** 仅是待验证修复报告的展示名称，不是正式 Project Spec Candidate，也不是额外治理文件。通过 `sf_handoff(action=write)` 按正式 Schema 交接给 Orchestrator；缺少复验证据仍为 partial，不改 seal 或状态。
+ 
+ ### Candidate 结构
+ 
+@@ -319,9 +329,8 @@ Debugger 完成修复后，产出的修复报告即为 **fix candidate**。Candi
+   "verification_results": [
+     {
+       "command": "<验证命令>",
+-      "exit_code": 0,
+-      "passed": true,
+-      "output_excerpt": "<输出摘要>"
++      "status": "not_executed",
++      "reason": "awaiting sf-verifier current receipt"
+     }
+   ]
+ }
+@@ -330,7 +339,7 @@ Debugger 完成修复后，产出的修复报告即为 **fix candidate**。Candi
+ ### Candidate 要求
+ 
+ 1. **files_changed 必须在 task 合同的 allowed_write_files 范围内**
+-2. **verification_results 必须包含真实命令输出**，不得写 `"verified"` 等模糊描述
++2. **verification_results 必须区分待验证和已执行**：待验证写 not_executed/blocked；已执行引用 sf-verifier 当前原始输出和回执，不得写模糊的 verified
+ 3. **trace_refs 必须引用真实的 Trace entries**
+ 4. **evidence_refs 必须引用实际存在的 Evidence artifacts**
+-5. **修复后必须重新跑 verification_command 并确认通过**
++5. **修复后由 Orchestrator 调度 Verifier 合法复验原声明，取得当前证据前不确认 fixed**
+diff --git a/setup/userlevel-opencode/agents/sf-design.md b/setup/userlevel-opencode/agents/sf-design.md
+index 7f71b194..21e9dbea 100644
+--- a/setup/userlevel-opencode/agents/sf-design.md
++++ b/setup/userlevel-opencode/agents/sf-design.md
+@@ -87,6 +87,12 @@ If a requested action conflicts with this contract, stop and report the conflict
+ - 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
+ - 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
+ 
++### D18 / D23 verification ownership
++
++- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
++- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
++- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
++
+ <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
+ 
+ ## HardStop 交接边界
+diff --git a/setup/userlevel-opencode/agents/sf-executor.md b/setup/userlevel-opencode/agents/sf-executor.md
+index 38056b33..e715aee4 100644
+--- a/setup/userlevel-opencode/agents/sf-executor.md
++++ b/setup/userlevel-opencode/agents/sf-executor.md
+@@ -9,7 +9,7 @@ permission:
+   task: deny
+   skill: allow
+ ---
+-> 当前执行范围（SPS §9.2 / D18）：sf_safe_bash 仅执行 Runtime 内部受控只读操作，绝不启动 Shell/子进程。脚本、构建和测试命令当前明确拒绝；不得把拒绝当作验证通过，也不得更换工具绕过。全文如有要求真实执行 verification_commands、在终端手跑、先运行 Red/Green/Refactor 或因未执行而报告 failed/success 的旧段落，均以本边界为准：命令状态只能记录为 `not_executed` 或 `blocked`，说明拒绝原因及所需证据，不得声称已验证。恢复这些能力须先完成隔离执行架构验收。
++> 当前执行范围（SPS §9.2 / D18、§9.2.4 / D23）：Executor 只实施获准代码和测试源码，不自行运行验证。`sf_safe_bash` 仅执行 Runtime 内部受控只读操作，绝不启动 Shell/子进程。验证交接由真实 `sf-orchestrator` 使用 `sf_verification_plan` 建立独立只读许可，真实 `sf-verifier` 使用 `sf_verification_run` 消费固定 Windows x64 单进程只读 Node 能力。未知或不支持的命令保持 `not_executed` / `blocked`；不得换执行器、开放代码权限或把拒绝当作通过。
+ 
+ 
+ <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:START -->
+@@ -88,6 +88,12 @@ If a requested action conflicts with this contract, stop and report the conflict
+ - 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
+ - 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
+ 
++### D18 / D23 verification ownership
++
++- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
++- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
++- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
++
+ <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
+ 
+ ## HardStop 交接边界
+@@ -196,7 +202,7 @@ executor 不负责 merge 到项目级规格，但必须输出 reviewer 和 verif
+ 
+ # 完成的定义
+ 
+-Layer 3 ✅：verification_command 真跑通且产生预期副作用。
++Layer 3 ✅：授权实现及测试源码可交接；行为完成声明有 sf-verifier 当前有效证据。待验证交接必须明确未完成的验证项。
+ 
+ ---
+ 
+@@ -271,8 +277,8 @@ executor 必须读取当前任务相关文件和相邻实现，确认 TASK 描
+ 3. **真副作用验证**：断言文件 size / 内容 / 返回值实质，不只断言"返回 success"
+ 4. **真清理**：测试结束清空临时文件、关进程
+ 
+-**Step 5（验证状态记录）**：
+-不得在终端运行 verification_command。将每条命令记录为 `not_executed`（或工具明确拒绝时为 `blocked`），保留拒绝信息和所需后续证据，不得伪造输出或通过替代工具绕行。
++**Step 5（验证状态记录与交接）**：
++不得在终端运行 verification_command。尚无合法当前回执的命令记录为 `not_executed`（工具明确拒绝时为 `blocked`），交给 Orchestrator → Verifier 的 D23 路径；已有回执仅可引用并核验其实际结果与新鲜度，不得伪造输出或通过替代工具绕行。
+ 
+ 
+ 
+@@ -287,7 +293,7 @@ executor 不得把以下情况报告为 `success`：
+ - 只写 mock / stub / placeholder；
+ - 只写 console 输出；
+ - 用 silent failure 掩盖失败；
+-- verification_command 没跑或输出不符合预期；
++- 必需 verification_command 没有合法当前证据或实际结果不符合预期；实现交接可先提交，但状态必须明确 `partial`，不能宣告行为完成；
+ - 外部副作用需求没有真实观察，例如服务器文件、数据库记录、HTTP 响应、UI 状态、APK 产物等。
+ 
+ 如果当前 TASK 本身只允许完成局部实现，则报告必须写明：
+@@ -396,7 +402,7 @@ def calculate_discount(amount, percent):
+   ],
+   "evidence": {
+     "side_effects_observed": ["<可观测的副作用 1>", "<2>"],
+-    "manual_run_excerpt": "<Step 5 手跑的命令 + 输出片段>"
++    "execution_receipt_refs": ["<sf-verifier 当前有效回执及原始输出位置；无回执时不得使用成功报告>"]
+   },
+   "self_check": {
+     "passed": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+@@ -617,7 +623,7 @@ executor 完成实现后，必须产出一份 **changed_files_audit**，记录
+ 
+ ### 核心规则
+ 
+-executor 执行 verification_commands 时，必须对每条命令进行安全性预检。**危险的 bash 命令不得执行**。
++Executor 审阅 verification_commands 时，必须标记不支持或危险的声明并交接；不启动任何命令。D23 的有限语义校验及运行由真实 plan/run owner 执行，文本危险模式不是安全执行证明。
+ 
+ ### 危险命令识别
+ 
+@@ -652,39 +658,13 @@ executor 执行 verification_commands 时，必须对每条命令进行安全性
+ 
+ ---
+ 
+-## Candidate Production（§8.2）
+-
+-**标准章节**：§8.2 — Candidate
+-
+-### 核心要求
+-
+-executor 完成实现和验证后，产出一组 **Candidate 文件**作为阶段检查点。Candidate 表明"本 task 的代码修改已就绪，请求进入 review / verification 阶段"。
+-
+-### Candidate 内容
+-
+-每个 Candidate 文件包含：
+-
+-| 字段 | 说明 |
+-|---|---|
+-| `task_id` | 所属 Task 编号 |
+-| `work_item_id` | 所属 Work Item |
+-| `stage` | 当前阶段名称（`development`） |
+-| `output_files` | 产出的文件路径列表 |
+-| `verification_results` | verification_command 执行结果摘要 |
+-| `changed_files_audit` | §12.7 的审计结果 |
+-| `timestamp` | ISO 8601 时间戳 |
+-| `agent_signature` | `sf-executor` |
+-
+-### 产出时机
++## Implementation Handoff（实现交接）
+ 
+-在 Step 7（提交结构化结果）中，Candidate 作为 executor 报告的一部分提交给 Orchestrator。Orchestrator 会将 Candidate 传递给 sf-reviewer / sf-verifier 作为输入。
++实现及测试源码准备就绪后，通过 `sf_handoff(action=write)` 提交当前 Task 的真实 inputs、outputs、findings、unknowns、escalations 和下一步；遵循该受控入口的正式 Schema。保留 Required Output 报告，不另造阶段 Candidate 文件或写治理目录。
+ 
+-### Candidate 纪律
++尚未取得验证证据也必须交接：逐条列出 `not_executed` / `blocked`、原声明及原因，报告 `partial`，请求 Orchestrator 调度 `sf-verifier`；不能因等待 Verifier 而扣留实现输入，也不能宣称验证通过。实际失败保持失败，HardStop 或审计异常上报，不由 Executor 改状态。
+ 
+-1. **未通过验证不产出 Candidate**：verification_command 未全部通过时，不得生成 Candidate
+-2. **越界写入不产出 Candidate**：changed_files_audit 状态为 `blocked` 时，不得生成 Candidate
+-3. **Candidate 不替代报告**：Candidate 是报告的附加产物，不能替代 Required Output 中的 JSON 报告
+-4. **内容必须真实**：Candidate 中的 verification_results 必须反映真实执行结果，不得伪造
++Orchestrator 核验本次 handoff、代码许可和范围审计，按正式状态安排 D23 计划/执行；验证报告及 Evidence Manifest 仍归 sf-verifier。正式 Project Spec Candidate 由对应专业 owner 在候选编制阶段通过受控工具形成，与本实现交接分开。
+ 
+ --- # R5 接口勘误（不改变 Executor 架构）
+ 
+@@ -738,7 +718,7 @@ sf-executor 不得使用 `sf_safe_bash` / shell / PowerShell / Node / Python 写
+ 4. 由 Orchestrator 调度对应责任 Agent 或调用受控工具处理。
+ ```
+ 
+-如果 executor 误写 `.specforge/work-items/`，不得只恢复文件后宣称无副作用；changed_files_audit 必须把 blocked_write_attempts 计入 violations。
++如果 Executor 误写 `.specforge/work-items/`，必须保留原始写入/拒绝记录并上报，不得仅恢复文件后宣称无副作用。审计由 owner 区分实际越界写入和拒绝尝试，未解决项阻断；历史已解决拒绝仍保留，不能把 total blocked_write_attempts 一概当成当前 violations。
+ 
+ <!-- SpecForge V11 Implementation Artifact Write Guard END -->
+ 
+diff --git a/setup/userlevel-opencode/agents/sf-knowledge.md b/setup/userlevel-opencode/agents/sf-knowledge.md
+index 07f448ce..f0de0b56 100644
+--- a/setup/userlevel-opencode/agents/sf-knowledge.md
++++ b/setup/userlevel-opencode/agents/sf-knowledge.md
+@@ -100,6 +100,12 @@ If a requested action conflicts with this contract, stop and report the conflict
+ - 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
+ - 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
+ 
++### D18 / D23 verification ownership
++
++- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
++- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
++- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
++
+ <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
+ 
+ # sf-knowledge — 知识积累专用子 Agent
+diff --git a/setup/userlevel-opencode/agents/sf-orchestrator.md b/setup/userlevel-opencode/agents/sf-orchestrator.md
+index f5c202d1..16648bd1 100644
+--- a/setup/userlevel-opencode/agents/sf-orchestrator.md
++++ b/setup/userlevel-opencode/agents/sf-orchestrator.md
+@@ -96,6 +96,12 @@ permission:
+ - 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
+ - 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
+ 
++### D18 / D23 verification ownership
++
++- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
++- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
++- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
++
+ <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
+ 
+ # 角色使命
+diff --git a/setup/userlevel-opencode/agents/sf-requirements.md b/setup/userlevel-opencode/agents/sf-requirements.md
+index f470a82e..a15efa58 100644
+--- a/setup/userlevel-opencode/agents/sf-requirements.md
++++ b/setup/userlevel-opencode/agents/sf-requirements.md
+@@ -86,6 +86,12 @@ If a requested action conflicts with this contract, stop and report the conflict
+ - 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
+ - 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
+ 
++### D18 / D23 verification ownership
++
++- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
++- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
++- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
++
+ <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
+ 
+ ## HardStop 交接边界
+diff --git a/setup/userlevel-opencode/agents/sf-reviewer.md b/setup/userlevel-opencode/agents/sf-reviewer.md
+index f42ca55f..9a1fa082 100644
+--- a/setup/userlevel-opencode/agents/sf-reviewer.md
++++ b/setup/userlevel-opencode/agents/sf-reviewer.md
+@@ -86,6 +86,12 @@ If a requested action conflicts with this contract, stop and report the conflict
+ - 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
+ - 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
+ 
++### D18 / D23 verification ownership
++
++- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
++- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
++- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
++
+ <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
+ 
+ # Role
+@@ -416,12 +422,12 @@ Reviewer 在审查时应利用 Trace 日志验证 executor 的操作是否合规
+ 
+ 1. **读取 Trace 日志**：从 `.specforge/runtime/logs/trace.jsonl` 筛选当前 task 的 entries
+ 2. **验证操作合规性**：确认 executor 只修改了 allowed_write_files 内的文件
+-3. **验证状态审查**：核对每条 verification_command 的状态；D18 禁止的命令可标记为 `not_executed` 或 `blocked`，不得当作通过或要求 Agent 绕过限制。
++3. **验证状态审查**：D18 的 `sf_safe_bash` 保持内部只读；D23 由真实 `sf-orchestrator` 调用 `sf_verification_plan`、真实 `sf-verifier` 调用 `sf_verification_run`。Reviewer 不自行执行、不代调 owner 工具。核对原声明与当前回执；未知、不支持或缺证据记 `not_executed` / `blocked`，不得当作通过或要求绕过。
+ 4. **检查操作序列**：确认 executor 的操作序列合理，没有遗漏或重复
+ 
+ ### Trace-based 审查发现
+ 
+-如果 Trace 日志显示异常（如跳过验证命令、修改范围外文件），Reviewer 必须将其记录为 finding：
++如果证据显示实际违规（如把必需未执行项冒充通过、修改范围外文件），Reviewer 必须记录 finding；如实待验证的实现交接不是伪造通过，也不能代替最终验证：
+ 
+ ```json
+ {
+diff --git a/setup/userlevel-opencode/agents/sf-task-planner.md b/setup/userlevel-opencode/agents/sf-task-planner.md
+index 23500581..32f6fd27 100644
+--- a/setup/userlevel-opencode/agents/sf-task-planner.md
++++ b/setup/userlevel-opencode/agents/sf-task-planner.md
+@@ -86,6 +86,12 @@ If a requested action conflicts with this contract, stop and report the conflict
+ - 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
+ - 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
+ 
++### D18 / D23 verification ownership
++
++- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
++- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
++- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
++
+ <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
+ 
+ ## HardStop 交接边界
+diff --git a/setup/userlevel-opencode/agents/sf-verifier.md b/setup/userlevel-opencode/agents/sf-verifier.md
+index c258b572..89ba25b6 100644
+--- a/setup/userlevel-opencode/agents/sf-verifier.md
++++ b/setup/userlevel-opencode/agents/sf-verifier.md
+@@ -86,6 +86,12 @@ If a requested action conflicts with this contract, stop and report the conflict
+ - 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
+ - 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
+ 
++### D18 / D23 verification ownership
++
++- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
++- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
++- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
++
+ <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
+ 
+ # Role
+diff --git a/setup/userlevel-opencode/skills/sf-intake/SKILL.md b/setup/userlevel-opencode/skills/sf-intake/SKILL.md
+index 6c5961a4..a408571d 100644
+--- a/setup/userlevel-opencode/skills/sf-intake/SKILL.md
++++ b/setup/userlevel-opencode/skills/sf-intake/SKILL.md
+@@ -79,6 +79,12 @@ If a requested action conflicts with this contract, stop and report the conflict
+ - 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
+ - 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
+ 
++### D18 / D23 verification ownership
++
++- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
++- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
++- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
++
+ <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
+ 
+ # Intake 阶段提问脚本
+diff --git a/setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md b/setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md
+index f8644d4e..6ee1d825 100644
+--- a/setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md
++++ b/setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md
+@@ -84,6 +84,12 @@ If a requested action conflicts with this contract, stop and report the conflict
+ - 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
+ - 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
+ 
++### D18 / D23 verification ownership
++
++- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
++- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
++- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
++
+ <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
+ 
+ # SpecForge v29 feature_spec 执行裁决（最小规则）
+diff --git a/setup/userlevel-opencode/skills/superpowers-systematic-debugging/SKILL.md b/setup/userlevel-opencode/skills/superpowers-systematic-debugging/SKILL.md
+index 450435a1..736ec559 100644
+--- a/setup/userlevel-opencode/skills/superpowers-systematic-debugging/SKILL.md
++++ b/setup/userlevel-opencode/skills/superpowers-systematic-debugging/SKILL.md
+@@ -7,10 +7,12 @@ description: 指导 Agent 进行系统化的缺陷分析和根因定位
+ 
+ ## 系统化调试步骤
+ 
++执行边界（SPS §9.2 / D18、§9.2.4 / D23）：调试角色不自行运行命令，`sf_safe_bash` 保持内部只读。需要复现或验证假设时，向真实 `sf-orchestrator` 交接声明，由其调用 `sf_verification_plan`，真实 `sf-verifier` 调用 `sf_verification_run`。仅固定 Windows x64 单进程只读 Node 和已证明语义的有限归一化受支持；独立验证许可不开放代码写权限。不支持或证据缺失保持 `not_executed` / `blocked`，不换执行器，不把待验证修复报告为已确认。
++
+ 在进行缺陷分析时，你必须按以下步骤系统化地进行：
+ 
+ ### 1. 复现问题（Reproduce）
+-- 根据用户描述，尝试复现问题
++- 根据用户描述核验既有复现证据；需新执行则请求上述 owner 路径
+ - 记录复现步骤和观察到的行为
+ - 如果无法复现，向 Orchestrator 报告并请求更多信息
+ 
+@@ -27,7 +29,7 @@ description: 指导 Agent 进行系统化的缺陷分析和根因定位
+ 
+ ### 4. 验证假设（Verify）
+ - 对每个假设设计验证方法
+-- 执行验证，记录结果
++- 消费合法 owner 的当前原始回执并记录结果；未执行项如实阻断
+ - 排除不成立的假设
+ 
+ ### 5. 确认根因（Confirm Root Cause）

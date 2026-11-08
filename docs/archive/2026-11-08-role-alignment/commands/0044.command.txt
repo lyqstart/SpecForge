@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-D18-D23-ROLE-ALIGNMENT-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-role-alignment/prepare-loader-retry.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-ordered-loader-retry",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T01:45:55.942Z",
+  "carrier_source_sha256": "a4322f7d32d8d7c1814e1fe3cdab8c914180d0cf799ce2a0d7cf7dde5793d6f1",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-role-alignment\\prepare-loader-retry.cjs",
+      "sha256": "9d0b112d0f92f2d043ae25734144021add350e3ec00d0bb4a346d03059d0bd2f",
+      "size": 1022,
+      "extension": ".cjs"
+    }
+  ]
+}

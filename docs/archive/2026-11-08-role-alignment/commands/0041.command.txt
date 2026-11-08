@@ -1,0 +1,17 @@
+{
+  "run_id": "CODEX-SF-20261108-D18-D23-ROLE-ALIGNMENT-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/.config/opencode/sf-user/bin/specforge.exe",
+  "args": [
+    "daemon",
+    "start",
+    "--detach",
+    "--json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-official-cold-daemon-start",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES",
+  "started_utc": "2026-11-08T01:44:28.677Z",
+  "carrier_source_sha256": "a4322f7d32d8d7c1814e1fe3cdab8c914180d0cf799ce2a0d7cf7dde5793d6f1",
+  "entry_sources": []
+}

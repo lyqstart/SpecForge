@@ -1,0 +1,13 @@
+{
+  "identity": {
+    "ProcessId": 48004,
+    "ExecutablePath": "C:\\Users\\lyq\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe",
+    "CreationDate": "2026-11-08T09:39:37.746976+08:00"
+  },
+  "sha256": "83567c13cc5e361ded7e48351cb024cd4503285960d82c30fc585194da46d757",
+  "health": {
+    "healthy": true,
+    "version": "1.18.35"
+  },
+  "directory": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-user-kernel-preflight-aH0i7k"
+}

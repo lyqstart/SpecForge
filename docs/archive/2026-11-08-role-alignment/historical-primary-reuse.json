@@ -1,0 +1,576 @@
+{
+  "utc": "2026-11-08T01:49:04.179Z",
+  "catalogs": {
+    "authority": {
+      "sources": [
+        {
+          "path": "docs/product-specification/authority-registry.md",
+          "historical_sha256": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e",
+          "current_sha256": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e",
+          "unchanged": true
+        },
+        {
+          "path": "scripts/project-session-bootstrap.mjs",
+          "historical_sha256": "51ddf3830add187bd281f04f1452838247c5407a1d67e9d35cb7baa910abd34e",
+          "current_sha256": "51ddf3830add187bd281f04f1452838247c5407a1d67e9d35cb7baa910abd34e",
+          "unchanged": true
+        },
+        {
+          "path": "scripts/lib/current-release-precheck.ts",
+          "historical_sha256": "b1528e723429d7f964a5e3fe2c1691660f2a57d228b0a3973601dd8aaf872057",
+          "current_sha256": "b1528e723429d7f964a5e3fe2c1691660f2a57d228b0a3973601dd8aaf872057",
+          "unchanged": true
+        }
+      ],
+      "receipts": [
+        {
+          "seq": "0359",
+          "purpose": "Run maintained root regression after explicit canonical artifact routing repair",
+          "inner_exit_code": 0,
+          "result_sha256": "f0e2fd637dc47add84a42a3b768aa35d300ae94aba0165eaee5cd10a898ae247",
+          "stdout_sha256": "2403d25aaa1479385ada603adadefa2ae569371cd74392bdb6fd4d8b0a68d673",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "seq": "0404",
+          "purpose": "Precheck final integrated-main1.0.23 release surfaces and physical payload",
+          "inner_exit_code": 0,
+          "result_sha256": "7563d876d18069d50babfa61cee16bc98130e0ebec4274a6a4fe30dfef60fb87",
+          "stdout_sha256": "09490e44a469896dc17d591d8ecb36d223f2345e1bf7c93a43e74aa8705be112",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "interpretation": "Only independently verified raw commands and actual source identities reused. Old aggregate verdict/pending text not adopted. Changed Markdown reviewed and deployed in current run."
+    },
+    "paths": {
+      "sources": [
+        {
+          "path": "packages/types/src/user-level-paths.ts",
+          "historical_sha256": "9f4c4bc477812a94ac56a167d1cb5fbf4b050d842dcc5000608a8681a0da073f",
+          "current_sha256": "9f4c4bc477812a94ac56a167d1cb5fbf4b050d842dcc5000608a8681a0da073f",
+          "unchanged": true
+        },
+        {
+          "path": "packages/daemon-core/src/daemon/path-resolver.ts",
+          "historical_sha256": "3bdd72e5281deaf8051405991e81fdcea9db31ff7977c46b210e10cca3a2d235",
+          "current_sha256": "3bdd72e5281deaf8051405991e81fdcea9db31ff7977c46b210e10cca3a2d235",
+          "unchanged": true
+        },
+        {
+          "path": "setup/userlevel-opencode/tools/lib/thin-client.ts",
+          "historical_sha256": "8a45f8971e18e9eca99851167f3d72655b23820e1f3a9a934cdb0bff1e5096f5",
+          "current_sha256": "8a45f8971e18e9eca99851167f3d72655b23820e1f3a9a934cdb0bff1e5096f5",
+          "unchanged": true
+        }
+      ],
+      "receipts": [
+        {
+          "seq": "0389",
+          "purpose": "Re-run complete canonical daemon-core suite after final two consumer fixes",
+          "inner_exit_code": 0,
+          "result_sha256": "23459b70734e18258a6e7a9ed3181ed99d00469e4d904065599be5a202bbfd8d",
+          "stdout_sha256": "65246d799e8dcfc91dff9802dcef3c182362099ee89ba4e4fc3ce2cd35b9c7be",
+          "stderr_sha256": "43ffb1d2f35ab11aafc05ba49d1d9ad711db4e87a78ebef2eac5d09433d1b366"
+        },
+        {
+          "seq": "0407",
+          "purpose": "Perform authorized transactional user upgrade1.0.22-to1.0.23 after verified controlled shutdown and preserve original/owner state",
+          "inner_exit_code": 0,
+          "result_sha256": "3df89aff2d837d092d66b19a2103a200176c98b3c934e5307af3c1015655f48d",
+          "stdout_sha256": "bc66fbc8798bff4505458ee3ad507121a0e7e2587f5ed88585275d94bbffe328",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "seq": "0408",
+          "purpose": "Independently start and verify fresh user1.0.23 CLI/Daemon,loaded professional Agents and owned policy negative",
+          "inner_exit_code": 0,
+          "result_sha256": "1eb8cbd7c6e37694ec27beb58fb82eca132359b3fb6709b9abf05a11b5880e94",
+          "stdout_sha256": "cd1f3fba99d545d697133261ed1df7333f8f36986622b61d34dc7d08a20ea446",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "interpretation": "Only independently verified raw commands and actual source identities reused. Old aggregate verdict/pending text not adopted. Changed Markdown reviewed and deployed in current run."
+    },
+    "plugin": {
+      "sources": [
+        {
+          "path": "setup/userlevel-opencode/plugins/sf_specforge.ts",
+          "historical_sha256": "fe4bf0ee410ebb993576e783a6102621dbdabe38d2d5882ed105097449c32b7c",
+          "current_sha256": "fe4bf0ee410ebb993576e783a6102621dbdabe38d2d5882ed105097449c32b7c",
+          "unchanged": true
+        },
+        {
+          "path": "setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts",
+          "historical_sha256": "f7e392aaf2022cb0595c05dc262736f99b3ec3bcf1fc7b804145256f93c7c8c6",
+          "current_sha256": "f7e392aaf2022cb0595c05dc262736f99b3ec3bcf1fc7b804145256f93c7c8c6",
+          "unchanged": true
+        }
+      ],
+      "receipts": [
+        {
+          "seq": "0389",
+          "purpose": "Re-run complete canonical daemon-core suite after final two consumer fixes",
+          "inner_exit_code": 0,
+          "result_sha256": "23459b70734e18258a6e7a9ed3181ed99d00469e4d904065599be5a202bbfd8d",
+          "stdout_sha256": "65246d799e8dcfc91dff9802dcef3c182362099ee89ba4e4fc3ce2cd35b9c7be",
+          "stderr_sha256": "43ffb1d2f35ab11aafc05ba49d1d9ad711db4e87a78ebef2eac5d09433d1b366"
+        },
+        {
+          "seq": "0408",
+          "purpose": "Independently start and verify fresh user1.0.23 CLI/Daemon,loaded professional Agents and owned policy negative",
+          "inner_exit_code": 0,
+          "result_sha256": "1eb8cbd7c6e37694ec27beb58fb82eca132359b3fb6709b9abf05a11b5880e94",
+          "stdout_sha256": "cd1f3fba99d545d697133261ed1df7333f8f36986622b61d34dc7d08a20ea446",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "interpretation": "Only independently verified raw commands and actual source identities reused. Old aggregate verdict/pending text not adopted. Changed Markdown reviewed and deployed in current run."
+    },
+    "state": {
+      "sources": [
+        {
+          "path": "packages/daemon-core/src/state/StateManager.ts",
+          "historical_sha256": "29984ed4a3729c120e7522d7dcb1aa49ad1961f08f1bd99fcb8d7ea99d95b171",
+          "current_sha256": "29984ed4a3729c120e7522d7dcb1aa49ad1961f08f1bd99fcb8d7ea99d95b171",
+          "unchanged": true
+        },
+        {
+          "path": "packages/daemon-core/src/wal/WAL.ts",
+          "historical_sha256": "578471380e8372ba5e216ca04855fb891d0058bfe045ca38b66fb78e335407d1",
+          "current_sha256": "578471380e8372ba5e216ca04855fb891d0058bfe045ca38b66fb78e335407d1",
+          "unchanged": true
+        },
+        {
+          "path": "packages/daemon-core/src/tools/lib/work-item-metadata.ts",
+          "historical_sha256": "134164e8843453265ce0394087f5bf0fb83930444508fbec74024e2353af5996",
+          "current_sha256": "134164e8843453265ce0394087f5bf0fb83930444508fbec74024e2353af5996",
+          "unchanged": true
+        },
+        {
+          "path": "packages/workflow-runtime/src/index.ts",
+          "historical_sha256": "268bed6a7251cf277787a7f1f708f67d39b4340b37816faa6b959746871b1047",
+          "current_sha256": "268bed6a7251cf277787a7f1f708f67d39b4340b37816faa6b959746871b1047",
+          "unchanged": true
+        }
+      ],
+      "receipts": [
+        {
+          "seq": "0250",
+          "purpose": "Verify current finite orchestration integration delegates persistence and recovery to real Daemon owner",
+          "inner_exit_code": 0,
+          "result_sha256": "39cdec602a6a09b6b19ccece4d54ae3c57d6e74d5034671f112443d37cde6b4f",
+          "stdout_sha256": "15469a58e81da3c8a1adaaf29b64967fc72296510a26c5ea9ad0939429bd6658",
+          "stderr_sha256": "080160dce648827d4654152d224dbf4df7a1c0058120f460bb3468a113b44f7c"
+        },
+        {
+          "seq": "0260",
+          "purpose": "Independently load freshly built public package with Node and verify retired output/deep-import closure",
+          "inner_exit_code": 0,
+          "result_sha256": "adc4af7c1bb16930c8b461c238fbbcb6a9f450ffd36fec82d10060658c22f029",
+          "stdout_sha256": "b1ff2abcd658fc068d60adbac3ad13326371b2a0e767e304d2adddc6f41f78f9",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "seq": "0389",
+          "purpose": "Re-run complete canonical daemon-core suite after final two consumer fixes",
+          "inner_exit_code": 0,
+          "result_sha256": "23459b70734e18258a6e7a9ed3181ed99d00469e4d904065599be5a202bbfd8d",
+          "stdout_sha256": "65246d799e8dcfc91dff9802dcef3c182362099ee89ba4e4fc3ce2cd35b9c7be",
+          "stderr_sha256": "43ffb1d2f35ab11aafc05ba49d1d9ad711db4e87a78ebef2eac5d09433d1b366"
+        },
+        {
+          "seq": "0409",
+          "purpose": "Read same original WI authoritative state from newly installed1.0.23 owner before formal revalidation",
+          "inner_exit_code": 0,
+          "result_sha256": "0b6aa469ac8f6c4506ffc6f646db896da80374434d4e16ee26778adf5f4b12c1",
+          "stdout_sha256": "a2f942e7fc83e2213307c2f12c16b417fba74d7c52d7c4111a39f849c2ca0d18",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "interpretation": "Only independently verified raw commands and actual source identities reused. Old aggregate verdict/pending text not adopted. Changed Markdown reviewed and deployed in current run."
+    },
+    "project": {
+      "sources": [
+        {
+          "path": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+          "historical_sha256": "68c5c8ea19b9c285f30f26b2b7e6d4d87535e0a7569ca5dbd207170e72b19f03",
+          "current_sha256": "68c5c8ea19b9c285f30f26b2b7e6d4d87535e0a7569ca5dbd207170e72b19f03",
+          "unchanged": true
+        },
+        {
+          "path": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+          "historical_sha256": "aed459ce70d2a43522a0fa9736ade3a4b7a167d28036763ccb2cdc851aebf62e",
+          "current_sha256": "aed459ce70d2a43522a0fa9736ade3a4b7a167d28036763ccb2cdc851aebf62e",
+          "unchanged": true
+        },
+        {
+          "path": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+          "historical_sha256": "76c09466dd3bb883bb87b6b0777893bfa2dc0611e7f66807bfd39e42cc4ec54a",
+          "current_sha256": "76c09466dd3bb883bb87b6b0777893bfa2dc0611e7f66807bfd39e42cc4ec54a",
+          "unchanged": true
+        },
+        {
+          "path": "packages/daemon-core/src/tools/lib/user-decision-recorder-v11.ts",
+          "historical_sha256": "e31da10f14902880af0c90f384842dc4ae2a0cc5f11cda61d879e9652762aa11",
+          "current_sha256": "e31da10f14902880af0c90f384842dc4ae2a0cc5f11cda61d879e9652762aa11",
+          "unchanged": true
+        }
+      ],
+      "receipts": [
+        {
+          "seq": "0389",
+          "purpose": "Re-run complete canonical daemon-core suite after final two consumer fixes",
+          "inner_exit_code": 0,
+          "result_sha256": "23459b70734e18258a6e7a9ed3181ed99d00469e4d904065599be5a202bbfd8d",
+          "stdout_sha256": "65246d799e8dcfc91dff9802dcef3c182362099ee89ba4e4fc3ce2cd35b9c7be",
+          "stderr_sha256": "43ffb1d2f35ab11aafc05ba49d1d9ad711db4e87a78ebef2eac5d09433d1b366"
+        },
+        {
+          "seq": "0409",
+          "purpose": "Read same original WI authoritative state from newly installed1.0.23 owner before formal revalidation",
+          "inner_exit_code": 0,
+          "result_sha256": "0b6aa469ac8f6c4506ffc6f646db896da80374434d4e16ee26778adf5f4b12c1",
+          "stdout_sha256": "a2f942e7fc83e2213307c2f12c16b417fba74d7c52d7c4111a39f849c2ca0d18",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "interpretation": "Only independently verified raw commands and actual source identities reused. Old aggregate verdict/pending text not adopted. Changed Markdown reviewed and deployed in current run."
+    },
+    "guard": {
+      "sources": [
+        {
+          "path": "packages/daemon-core/src/tools/lib/native-write-boundary.ts",
+          "historical_sha256": "e2691ccb101a8dd93b0a4d6ec1fab16d162af741bbae03ff1fc218662760a393",
+          "current_sha256": "e2691ccb101a8dd93b0a4d6ec1fab16d162af741bbae03ff1fc218662760a393",
+          "unchanged": true
+        },
+        {
+          "path": "packages/daemon-core/src/tools/lib/code-permission-service-v11.ts",
+          "historical_sha256": "4546f5ee9981be9a94aefa657ce582d13cc268199b8b698432126e918a9b82e7",
+          "current_sha256": "4546f5ee9981be9a94aefa657ce582d13cc268199b8b698432126e918a9b82e7",
+          "unchanged": true
+        },
+        {
+          "path": "packages/daemon-core/src/tools/lib/write-guard-audit-binding.ts",
+          "historical_sha256": "08e6d2a0fe7c41b990d8e082e28a858eee08fe5a59f02ece1d494278ee90b32b",
+          "current_sha256": "08e6d2a0fe7c41b990d8e082e28a858eee08fe5a59f02ece1d494278ee90b32b",
+          "unchanged": true
+        },
+        {
+          "path": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+          "historical_sha256": "c6d8262eadd511d7974a989e22b8c8cd9703b384c6ced61ffe05518e8640121c",
+          "current_sha256": "c6d8262eadd511d7974a989e22b8c8cd9703b384c6ced61ffe05518e8640121c",
+          "unchanged": true
+        }
+      ],
+      "receipts": [
+        {
+          "seq": "0376",
+          "purpose": "Verify actual deployed routing-repaired Kernel/Daemon preserves22 canonical entries across real work_log requests",
+          "inner_exit_code": 0,
+          "result_sha256": "abc5947051688056ae6a6d790feaf380bac67cf26beb43221b6d54e69360537c",
+          "stdout_sha256": "149a7d12114de2bd4ece323c40f1182f2534cafcb42d9d370acfa4da030a50bd",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "seq": "0387",
+          "purpose": "Verify actual current-native common consumers with authentic, tampered, restored and revoked evidence",
+          "inner_exit_code": 0,
+          "result_sha256": "003b414129cf055733f673b07af708fe0dc55063384827b800b6874d92aa9ca9",
+          "stdout_sha256": "da47e16352e39075be46e06eb88c0640d27a97e094235123ec6fbf6e83f185db",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "seq": "0389",
+          "purpose": "Re-run complete canonical daemon-core suite after final two consumer fixes",
+          "inner_exit_code": 0,
+          "result_sha256": "23459b70734e18258a6e7a9ed3181ed99d00469e4d904065599be5a202bbfd8d",
+          "stdout_sha256": "65246d799e8dcfc91dff9802dcef3c182362099ee89ba4e4fc3ce2cd35b9c7be",
+          "stderr_sha256": "43ffb1d2f35ab11aafc05ba49d1d9ad711db4e87a78ebef2eac5d09433d1b366"
+        },
+        {
+          "seq": "0408",
+          "purpose": "Independently start and verify fresh user1.0.23 CLI/Daemon,loaded professional Agents and owned policy negative",
+          "inner_exit_code": 0,
+          "result_sha256": "1eb8cbd7c6e37694ec27beb58fb82eca132359b3fb6709b9abf05a11b5880e94",
+          "stdout_sha256": "cd1f3fba99d545d697133261ed1df7333f8f36986622b61d34dc7d08a20ea446",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "interpretation": "Only independently verified raw commands and actual source identities reused. Old aggregate verdict/pending text not adopted. Changed Markdown reviewed and deployed in current run."
+    },
+    "release": {
+      "sources": [
+        {
+          "path": "scripts/lib/registry.ts",
+          "historical_sha256": "0ef48cffc26f2412d8ee463a941bd4e95833a5b17786708a1336fdb77db81c77",
+          "current_sha256": "0ef48cffc26f2412d8ee463a941bd4e95833a5b17786708a1336fdb77db81c77",
+          "unchanged": true
+        },
+        {
+          "path": "scripts/lib/current-release-precheck.ts",
+          "historical_sha256": "b1528e723429d7f964a5e3fe2c1691660f2a57d228b0a3973601dd8aaf872057",
+          "current_sha256": "b1528e723429d7f964a5e3fe2c1691660f2a57d228b0a3973601dd8aaf872057",
+          "unchanged": true
+        },
+        {
+          "path": "scripts/lib/release-manifest-producer.ts",
+          "historical_sha256": "1add54ca0a510d37d892b05f1c7d9ad52974d16a87c7425ab5c3900121c2a4e1",
+          "current_sha256": "1add54ca0a510d37d892b05f1c7d9ad52974d16a87c7425ab5c3900121c2a4e1",
+          "unchanged": true
+        },
+        {
+          "path": "packages/version-unification/package.json",
+          "historical_sha256": "a5d9a71dbc0e80e04967ad9a040e01f9dcd048f965bad4f2bcbb8d3e6c4fe543",
+          "current_sha256": "a5d9a71dbc0e80e04967ad9a040e01f9dcd048f965bad4f2bcbb8d3e6c4fe543",
+          "unchanged": true
+        },
+        {
+          "path": "packages/scope-gate/package.json",
+          "historical_sha256": "2e64ff5956659e530d80f216a74d7de54bb8eaf3991362ce256406cdd1f5e4dc",
+          "current_sha256": "2e64ff5956659e530d80f216a74d7de54bb8eaf3991362ce256406cdd1f5e4dc",
+          "unchanged": true
+        }
+      ],
+      "receipts": [
+        {
+          "seq": "0359",
+          "purpose": "Run maintained root regression after explicit canonical artifact routing repair",
+          "inner_exit_code": 0,
+          "result_sha256": "f0e2fd637dc47add84a42a3b768aa35d300ae94aba0165eaee5cd10a898ae247",
+          "stdout_sha256": "2403d25aaa1479385ada603adadefa2ae569371cd74392bdb6fd4d8b0a68d673",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "seq": "0385",
+          "purpose": "Rebuild all current12 workspace packages after committed artifact handler repair",
+          "inner_exit_code": 0,
+          "result_sha256": "164d48142182b7e8ef4d06b37dec2739f69e3240d1151b8327505742a27291ea",
+          "stdout_sha256": "7e9e3ba47de3b38b077d9f4249ce321e734a8ff0cce7c79a9c6d616949675a1d",
+          "stderr_sha256": "42580806f72966c011a56229da3d32784afbef0b7cde7cfe7d94dfef7da3aee9"
+        },
+        {
+          "seq": "0404",
+          "purpose": "Precheck final integrated-main1.0.23 release surfaces and physical payload",
+          "inner_exit_code": 0,
+          "result_sha256": "7563d876d18069d50babfa61cee16bc98130e0ebec4274a6a4fe30dfef60fb87",
+          "stdout_sha256": "09490e44a469896dc17d591d8ecb36d223f2345e1bf7c93a43e74aa8705be112",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "interpretation": "Only independently verified raw commands and actual source identities reused. Old aggregate verdict/pending text not adopted. Changed Markdown reviewed and deployed in current run."
+    },
+    "adapter": {
+      "sources": [
+        {
+          "path": "packages/opencode-adapter/src/OpenCodeAdapter.ts",
+          "historical_sha256": "498baae3f5da0963d4ec261f3cad6a02e4b347610e32961d4aa5de77a32aebd4",
+          "current_sha256": "498baae3f5da0963d4ec261f3cad6a02e4b347610e32961d4aa5de77a32aebd4",
+          "unchanged": true
+        },
+        {
+          "path": "packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts",
+          "historical_sha256": "2ec9c8140acba54118355026207bdb16becca882ea6c9c5725b92ea8b4fa7439",
+          "current_sha256": "2ec9c8140acba54118355026207bdb16becca882ea6c9c5725b92ea8b4fa7439",
+          "unchanged": true
+        },
+        {
+          "path": "packages/daemon-core/src/daemon/Daemon.ts",
+          "historical_sha256": "78593c960023ae0147eda151d4d4ec037836b0612e96314135c2cc3feaaff4be",
+          "current_sha256": "78593c960023ae0147eda151d4d4ec037836b0612e96314135c2cc3feaaff4be",
+          "unchanged": true
+        },
+        {
+          "path": "packages/daemon-core/src/http/HTTPServer.ts",
+          "historical_sha256": "92ddb2bec7d2e16ece4dbe4d7c84dd8e638903b5cd1b8ad3ef7838130c62ad21",
+          "current_sha256": "92ddb2bec7d2e16ece4dbe4d7c84dd8e638903b5cd1b8ad3ef7838130c62ad21",
+          "unchanged": true
+        }
+      ],
+      "receipts": [
+        {
+          "seq": "0384",
+          "purpose": "Run full real installed routing-repaired1.0.23 formal verification matrix after destination regression",
+          "inner_exit_code": 0,
+          "result_sha256": "eff5768ca4b8cae6d6e37f5326daa3803d4a31a5e35efaaa31f6f5032d610cba",
+          "stdout_sha256": "363e462d63a8b91af6d08354e4970f0eaa18bdefdcfdbc803efb468869e4c464",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "seq": "0387",
+          "purpose": "Verify actual current-native common consumers with authentic, tampered, restored and revoked evidence",
+          "inner_exit_code": 0,
+          "result_sha256": "003b414129cf055733f673b07af708fe0dc55063384827b800b6874d92aa9ca9",
+          "stdout_sha256": "da47e16352e39075be46e06eb88c0640d27a97e094235123ec6fbf6e83f185db",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "seq": "0408",
+          "purpose": "Independently start and verify fresh user1.0.23 CLI/Daemon,loaded professional Agents and owned policy negative",
+          "inner_exit_code": 0,
+          "result_sha256": "1eb8cbd7c6e37694ec27beb58fb82eca132359b3fb6709b9abf05a11b5880e94",
+          "stdout_sha256": "cd1f3fba99d545d697133261ed1df7333f8f36986622b61d34dc7d08a20ea446",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "interpretation": "Only independently verified raw commands and actual source identities reused. Old aggregate verdict/pending text not adopted. Changed Markdown reviewed and deployed in current run."
+    },
+    "installer": {
+      "sources": [
+        {
+          "path": "scripts/sf-installer.ts",
+          "historical_sha256": "e6c186adbfdb985e3b96518949eeb6d9560c8d5314d35fcc43a8a5279a3da629",
+          "current_sha256": "e6c186adbfdb985e3b96518949eeb6d9560c8d5314d35fcc43a8a5279a3da629",
+          "unchanged": true
+        },
+        {
+          "path": "scripts/lib/upgrade-journal.ts",
+          "historical_sha256": "491fac15a03bef0353cd0fb81ed7a568fa8c987d0d1068ee2d8fb490021b297c",
+          "current_sha256": "491fac15a03bef0353cd0fb81ed7a568fa8c987d0d1068ee2d8fb490021b297c",
+          "unchanged": true
+        },
+        {
+          "path": "scripts/lib/command-path.ts",
+          "historical_sha256": "7fe7f9413e0841052627dd98ee5f0925b423dd001a5719dd51f7bacda6b075cf",
+          "current_sha256": "7fe7f9413e0841052627dd98ee5f0925b423dd001a5719dd51f7bacda6b075cf",
+          "unchanged": true
+        }
+      ],
+      "receipts": [
+        {
+          "seq": "0359",
+          "purpose": "Run maintained root regression after explicit canonical artifact routing repair",
+          "inner_exit_code": 0,
+          "result_sha256": "f0e2fd637dc47add84a42a3b768aa35d300ae94aba0165eaee5cd10a898ae247",
+          "stdout_sha256": "2403d25aaa1479385ada603adadefa2ae569371cd74392bdb6fd4d8b0a68d673",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "seq": "0390",
+          "purpose": "Verify official uninstall removes117 managed files and preserves private/unmanaged data in inactive self-owned fixture17",
+          "inner_exit_code": 0,
+          "result_sha256": "11f8647c1ecf44d36f07c1751549a7301da49e184fcfea7c00b5de7c29d837f4",
+          "stdout_sha256": "0b0a696fd048c68565019f88d1ed3d115c7be13f0e2a29ce2bdbb502031fd2ab",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "seq": "0405",
+          "purpose": "Install and verify final integrated-main physical117-file payload in fresh private fixture20",
+          "inner_exit_code": 0,
+          "result_sha256": "d025e9843e924b4b829c40dc07ce1556a61508fab104809a8997aaacfafab51f",
+          "stdout_sha256": "48567319b9e7c846ebc75e3647039562be8d89e1addfb35eb8555266b4bc3cd4",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "seq": "0407",
+          "purpose": "Perform authorized transactional user upgrade1.0.22-to1.0.23 after verified controlled shutdown and preserve original/owner state",
+          "inner_exit_code": 0,
+          "result_sha256": "3df89aff2d837d092d66b19a2103a200176c98b3c934e5307af3c1015655f48d",
+          "stdout_sha256": "bc66fbc8798bff4505458ee3ad507121a0e7e2587f5ed88585275d94bbffe328",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "seq": "0408",
+          "purpose": "Independently start and verify fresh user1.0.23 CLI/Daemon,loaded professional Agents and owned policy negative",
+          "inner_exit_code": 0,
+          "result_sha256": "1eb8cbd7c6e37694ec27beb58fb82eca132359b3fb6709b9abf05a11b5880e94",
+          "stdout_sha256": "cd1f3fba99d545d697133261ed1df7333f8f36986622b61d34dc7d08a20ea446",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "interpretation": "Only independently verified raw commands and actual source identities reused. Old aggregate verdict/pending text not adopted. Changed Markdown reviewed and deployed in current run."
+    },
+    "alignment": {
+      "sources": [
+        {
+          "path": "README.md",
+          "historical_sha256": "2ae93b98ef2a7b1b8acd2bfe8a4ba45d3477597d769a59e17cdc6e6ac3cacc00",
+          "current_sha256": "549c967e604841f0fd3ce656d4e6d8f491bd1d12d3da0fa61b7b3f0230b43e4b",
+          "unchanged": false
+        },
+        {
+          "path": "docs/user/quick-start.md",
+          "historical_sha256": "8b46aff1e9bf9d6c11e010f83b99df89a0739fa1cec1c577aa92f8be5cecda56",
+          "current_sha256": "c7e2344870a61d0540539bcb95b063537138965d549e6c4770b7a3a2ef800e6d",
+          "unchanged": false
+        },
+        {
+          "path": "setup/userlevel-opencode/AGENTS.md",
+          "historical_sha256": "1d50c91e376e3cdeb49c508afcf391488cb3a0c0b9fb49732c06602c6261540c",
+          "current_sha256": "a0541e3b8bb679d50231967117aab59ba4600dfb6c76117d491be0c55c78042d",
+          "unchanged": false
+        },
+        {
+          "path": "setup/userlevel-opencode/agents/sf-verifier.md",
+          "historical_sha256": "9080216c04584f29638afdced3214afe7da77f67e2f519d66103727939350ea5",
+          "current_sha256": "5137b4d73916e486b06a2f3c140f225303942980b8fd0a998467f48d0fb7203d",
+          "unchanged": false
+        },
+        {
+          "path": "setup/userlevel-opencode/tools/sf_artifact_write.ts",
+          "historical_sha256": "06e3f0b6945bd5c458cd834e9608c3ac980f77b4319c6ad1ca68682bc0170742",
+          "current_sha256": "06e3f0b6945bd5c458cd834e9608c3ac980f77b4319c6ad1ca68682bc0170742",
+          "unchanged": true
+        },
+        {
+          "path": "docs/design/windows-lpac-node-readonly-contract.md",
+          "historical_sha256": "75312b393fd26c3b4ead623fc61600d6fe5304e04bb0cd394fbe62fd0a98e097",
+          "current_sha256": "75312b393fd26c3b4ead623fc61600d6fe5304e04bb0cd394fbe62fd0a98e097",
+          "unchanged": true
+        }
+      ],
+      "receipts": [
+        {
+          "seq": "0359",
+          "purpose": "Run maintained root regression after explicit canonical artifact routing repair",
+          "inner_exit_code": 0,
+          "result_sha256": "f0e2fd637dc47add84a42a3b768aa35d300ae94aba0165eaee5cd10a898ae247",
+          "stdout_sha256": "2403d25aaa1479385ada603adadefa2ae569371cd74392bdb6fd4d8b0a68d673",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "seq": "0389",
+          "purpose": "Re-run complete canonical daemon-core suite after final two consumer fixes",
+          "inner_exit_code": 0,
+          "result_sha256": "23459b70734e18258a6e7a9ed3181ed99d00469e4d904065599be5a202bbfd8d",
+          "stdout_sha256": "65246d799e8dcfc91dff9802dcef3c182362099ee89ba4e4fc3ce2cd35b9c7be",
+          "stderr_sha256": "43ffb1d2f35ab11aafc05ba49d1d9ad711db4e87a78ebef2eac5d09433d1b366"
+        },
+        {
+          "seq": "0402",
+          "purpose": "Verify local-main integration and exact native tuple; refresh only proven-identical README index metadata",
+          "inner_exit_code": 0,
+          "result_sha256": "604d4d821a5330a0febb8d211c7db2629dcbfca292bfef2bea2e451dd55000c2",
+          "stdout_sha256": "607461870ef43de9de90c80041d2c010b3436128a0cc2be977ddf91d3602f8b0",
+          "stderr_sha256": "69d15164d6d04637f83969373ad16d2788c8d2f27e36bb32e3b6cd9640a3b9f3"
+        },
+        {
+          "seq": "0404",
+          "purpose": "Precheck final integrated-main1.0.23 release surfaces and physical payload",
+          "inner_exit_code": 0,
+          "result_sha256": "7563d876d18069d50babfa61cee16bc98130e0ebec4274a6a4fe30dfef60fb87",
+          "stdout_sha256": "09490e44a469896dc17d591d8ecb36d223f2345e1bf7c93a43e74aa8705be112",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "seq": "0405",
+          "purpose": "Install and verify final integrated-main physical117-file payload in fresh private fixture20",
+          "inner_exit_code": 0,
+          "result_sha256": "d025e9843e924b4b829c40dc07ce1556a61508fab104809a8997aaacfafab51f",
+          "stdout_sha256": "48567319b9e7c846ebc75e3647039562be8d89e1addfb35eb8555266b4bc3cd4",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "seq": "0408",
+          "purpose": "Independently start and verify fresh user1.0.23 CLI/Daemon,loaded professional Agents and owned policy negative",
+          "inner_exit_code": 0,
+          "result_sha256": "1eb8cbd7c6e37694ec27beb58fb82eca132359b3fb6709b9abf05a11b5880e94",
+          "stdout_sha256": "cd1f3fba99d545d697133261ed1df7333f8f36986622b61d34dc7d08a20ea446",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "interpretation": "Only independently verified raw commands and actual source identities reused. Old aggregate verdict/pending text not adopted. Changed Markdown reviewed and deployed in current run."
+    }
+  },
+  "source": "Old report used solely as a locator; every referenced raw receipt and pipe rechecked against sealed manifest, current source hashes compared. No copied PASS rows."
+}

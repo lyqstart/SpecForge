@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-D18-D23-ROLE-ALIGNMENT-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-role-alignment/prepare-loader-acceptance.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "validate-observer-against-real-fixtures",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T01:44:07.015Z",
+  "carrier_source_sha256": "a4322f7d32d8d7c1814e1fe3cdab8c914180d0cf799ce2a0d7cf7dde5793d6f1",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-role-alignment\\prepare-loader-acceptance.cjs",
+      "sha256": "81e1fa532f625b969bfb0e0510a4f5570a778dba22c7c55c26d1bf1afd06eed1",
+      "size": 1894,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/v11-agent-skill-contract-alignment.test.ts (22 tests | 1 failed) 157ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps the base completion workflow on independent D23 owners without role-local shell execution 4ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > aligns all current verification participants and their loaded debugging skill with the same owners 11ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > covers the SPS current role inventory and informational shared boundaries without enabling future roles 7ms
+   × v1.1.5 Agent/Skill final governance contract alignment > makes every current release Skill discoverable by its actual declared loader identity 12ms
+     → superpowers-knowledge-extraction must have real Skill metadata: expected undefined to be defined
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > allows implementation handoff before verifier-owned evidence without claiming verified completion 1ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps debugger reproduction, repair confirmation and examples from impersonating verifier execution 1ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps every shared audit paragraph consistent with resolved-history Runtime verdicts 10ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > compiles positive planning command examples with the real finite execution grammar 54ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > makes planning consumers state the current independent execution owners and unsupported boundary 1ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps positive formal-verification delegation aligned with the D23 entry and consumer prerequisites 2ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps the orchestrator positive closure sequence on the same D23 and audit owners 1ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps the positive feature workflow Close steps owned by Close Gate 1ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > has target Agent/Skill markdown files to govern 2ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > task planning examples use typed verification_commands 2ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > injects the final governance contract into every userlevel SpecForge Agent and Skill markdown file 12ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > does not leave explicit legacy mainline transition instructions in governed Agent/Skill prose outside the contract block 16ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps professional Candidate writers on controlled Tools and Runtime-owned Manifest materialization 3ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps sf-orchestrator on read-only evidence tools in restricted states 2ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps setup wrappers aligned with final governance fields 3ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps daemon handlers aligned with the contract-enforced workflow 4ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > keeps Contract consumer truth-source and manual-review rules aligned in Agents and Skills 2ms
+   ✓ v1.1.5 Agent/Skill final governance contract alignment > aligns detached bootstrap fields across actual wrappers, handlers, orchestrator and workflow 3ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 21 passed (22)
+   Start at  09:40:53
+   Duration  2.19s (transform 593ms, setup 0ms, collect 1.35s, tests 157ms, environment 0ms, prepare 300ms)
+

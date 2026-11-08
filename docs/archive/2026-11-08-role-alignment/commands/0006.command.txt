@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-D18-D23-ROLE-ALIGNMENT-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-role-alignment/align-shared-contract.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "align-current-shared-contracts",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES",
+  "started_utc": "2026-11-08T01:32:01.601Z",
+  "carrier_source_sha256": "a4322f7d32d8d7c1814e1fe3cdab8c914180d0cf799ce2a0d7cf7dde5793d6f1",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-role-alignment\\align-shared-contract.cjs",
+      "sha256": "753474a4e2fe5c7b5edc27fb63c41d102141eb04d945514ae8e8ca3fe34302e7",
+      "size": 2918,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "utc": "2026-11-08T01:49:17.909Z",
+  "state": {
+    "success": true,
+    "rebuilt_from_events": true,
+    "work_item_id": "WI-0001",
+    "workflow_type": "feature_spec",
+    "current_state": "closed",
+    "created_at": 1792905467014,
+    "updated_at": 1794045358653
+  },
+  "daemon_pid": 45576,
+  "qualification": "Independent authenticated read-only state-owner audit. Not a genuine Agent identity or workflow execution. Runtime observability writes possible; no transitions, model prompt or application tests."
+}

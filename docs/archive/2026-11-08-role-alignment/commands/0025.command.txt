@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-D18-D23-ROLE-ALIGNMENT-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-role-alignment/diagnose-loader.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-loader-byte-domain-diagnosis",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES",
+  "started_utc": "2026-11-08T01:39:36.810Z",
+  "carrier_source_sha256": "a4322f7d32d8d7c1814e1fe3cdab8c914180d0cf799ce2a0d7cf7dde5793d6f1",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-role-alignment\\diagnose-loader.cjs",
+      "sha256": "3e9e7200f3db9fad4f4e6862f33e362423122b3996252b579493ea0a2af14035",
+      "size": 7528,
+      "extension": ".cjs"
+    }
+  ]
+}

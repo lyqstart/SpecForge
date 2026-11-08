@@ -1,0 +1,38 @@
+{
+  "utc": "2026-11-08T01:43:36.392Z",
+  "source_commit": "7ecc7cfe7862e1f0d3d1cf4acb9ca8b3b6dba46c",
+  "release_manifest_sha256": "25a3db852e6d95dc4c508a9579bf07b3be122ccb853b49b063b3dd3cc447a31d",
+  "version": "1.0.23",
+  "delta": [
+    "skills/superpowers-knowledge-extraction/SKILL.md"
+  ],
+  "native_unchanged": [
+    {
+      "target": "sf-user/bin/specforge.exe",
+      "sha256": "4e60c6b592434421240f92006abf63691a41dd9736967eeec39c45482d60ee8d"
+    },
+    {
+      "target": "sf-user/bin/specforged.exe",
+      "sha256": "003faf31d46f30a440c65037acae46dd8a9ab7df82e395160100ba44798daca8"
+    },
+    {
+      "target": "sf-user/bin/verification/assets.json",
+      "sha256": "28ee6f93f9a72a4e058004ade5cb79a22aacdbb3459090eee95ab04532bebc59"
+    },
+    {
+      "target": "sf-user/bin/verification/node.exe",
+      "sha256": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "target": "sf-user/bin/verification/specforge-verify.exe",
+      "sha256": "5cb378826469834143067b551108f2fc295e1e3e9a04dadb4d7293bc77a41d7f"
+    }
+  ],
+  "business_installer_writes_authorized": false,
+  "owner_key_content_read": false,
+  "driver_provenance": {
+    "path": "docs/archive/2026-11-07-consumer-conformance/upgrade-guidance.cjs",
+    "sealed_source_sha256": "7747c4d5133610f96a0efd976c19e3ab0c3491dbb4517b29a4f8d413b8dcb40b",
+    "driver_sha256": "b2b28186ef26fcf7638378a5f9b66009e0cccefc836e55e026c88e644a04cbbe"
+  }
+}

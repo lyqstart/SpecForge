@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-08T01:41:40.596Z",
+  "base": "bbee0eb9e8cdb4cafa39e482c474214b0d0b6934",
+  "members": [
+    {
+      "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "sha256": "b940dd734240be4d780fa65ae3bf7a7bbfc6c1ed8b49fb4d560081eaa5ea3ce3",
+      "snapshot": "0.raw"
+    },
+    {
+      "path": "packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts",
+      "sha256": "a56b512d1ca64ab16aefff8bc10f3e179af923c63163e3168c497984962a774d",
+      "snapshot": "1.raw"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/superpowers-knowledge-extraction/SKILL.md",
+      "sha256": "9a60f8b611daa9b33b95f4451cfd393f2acd234d1a80dd9c87af9b0cd6d56679",
+      "snapshot": "2.raw"
+    }
+  ],
+  "reason": "Actual current Skill missing from loader; only name/description metadata added. Current-set regression red1/green22. No Runtime/authority/native changes."
+}

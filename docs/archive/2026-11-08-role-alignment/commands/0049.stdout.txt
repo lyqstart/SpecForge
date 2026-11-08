@@ -1,0 +1,1 @@
+{"result":"PASS","selfChecks":{"actual_fixture_pass":true,"tamper_rejected":true,"missing_evidence_rejected":true},"assertions":12,"full_product":"INSUFFICIENT_EVIDENCE"}

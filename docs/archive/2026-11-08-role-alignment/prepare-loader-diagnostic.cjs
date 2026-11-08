@@ -1,0 +1,8 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),crypto=require('node:crypto'),sha=b=>crypto.createHash('sha256').update(b).digest('hex'),root=__dirname;
+const original=fs.readFileSync(path.join(root,'commands/0023.entry-source-0.cjs'));assert.equal(sha(original),JSON.parse(fs.readFileSync(path.join(root,'commands/0023.command.txt'))).entry_sources[0].sha256);let text=original.toString();
+function replace(a,b){assert.equal(text.split(a).length,2,a);text=text.replace(a,b);}
+replace("'fresh-loader-01'","'fresh-loader-diagnostic-01'");
+replace("return {name,loaded:!!a,prompt_sha256:","if(typeof a?.prompt==='string')fs.writeFileSync(path.join(out,'agent-'+name+'.raw'),a.prompt,{flag:'wx'});return {name,loaded:!!a,trim_file_match:a?.prompt===raw.trim(),trim_body_match:a?.prompt===body.trim(),lf_file_match:a?.prompt===raw.replaceAll('\\r\\n','\\n'),lf_body_match:a?.prompt===body.replaceAll('\\r\\n','\\n'),trim_lf_file_match:a?.prompt===raw.replaceAll('\\r\\n','\\n').trim(),trim_lf_body_match:a?.prompt===body.replaceAll('\\r\\n','\\n').trim(),prompt_sha256:");
+replace("assert.ok(a.raw_file_match||a.raw_body_match,'AGENT_SOURCE_IDENTITY:'+a.name);",'/* Diagnostic observation only; source identity not yet accepted. */');
+replace("'Actual loader/source identities only; not model behavioral execution, new WI validation, or proof of every platform.'","'Diagnostic only: actual selected SF prompt bytes frozen before source identity judgment; not acceptance or model behavior.'");
+fs.writeFileSync(path.join(root,'diagnose-loader.cjs'),text,{flag:'wx'});console.log(JSON.stringify({input_sha256:sha(original),diagnostic_sha256:sha(text)}));

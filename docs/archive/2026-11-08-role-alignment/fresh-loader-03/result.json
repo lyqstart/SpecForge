@@ -1,0 +1,28 @@
+{
+  "utc": "2026-11-08T01:46:10.430Z",
+  "inner_exit_code": 0,
+  "failure": null,
+  "owned_kernel_exit": {
+    "code": null,
+    "signal": "SIGTERM",
+    "utc": "2026-11-08T01:46:09.474Z"
+  },
+  "owned_kernel_absent": true,
+  "independent_daemon_healthy": {
+    "schema_version": "1.0",
+    "status": "ok",
+    "pid": 45576,
+    "version": "1.0.23",
+    "startedAt": 1794102340427,
+    "uptimeSec": 30,
+    "activeClients": 0,
+    "pendingEvents": 4,
+    "lastEventTs": 1794102340452
+  },
+  "installed_files_verified": 117,
+  "actual_current_agents": 10,
+  "actual_current_skills": 8,
+  "model_prompt_sent": false,
+  "business_tool_invoked": false,
+  "qualification": "Actual loader/source identities only; not model behavioral execution, new WI validation, or proof of every platform."
+}

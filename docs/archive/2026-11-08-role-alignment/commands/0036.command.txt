@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261108-D18-D23-ROLE-ALIGNMENT-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "scripts/run-root-tests.mjs",
+    "current"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-root-current-regressions",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T01:42:39.397Z",
+  "carrier_source_sha256": "a4322f7d32d8d7c1814e1fe3cdab8c914180d0cf799ce2a0d7cf7dde5793d6f1",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\scripts\\run-root-tests.mjs",
+      "sha256": "35d93a02e3888e286d1076e06d44a48b1e581b3f2b6e7279ed5a3375c9ad5a9c",
+      "size": 5208,
+      "extension": ".mjs"
+    }
+  ]
+}

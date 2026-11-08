@@ -1,0 +1,16 @@
+{
+  "utc": "2026-11-08T01:55:48.078Z",
+  "run_id": "CODEX-SF-20261108-D18-D23-ROLE-ALIGNMENT-A01",
+  "files": 729,
+  "bytes": 19470931,
+  "manifest_sha256": "ad348091d6e4b393c214616d12e15629e861df15728a1c8af156bce3b99e00fc",
+  "self_check": "PASS",
+  "exclusions": {
+    "manifest_and_own_check": "Avoid recursive hash",
+    "local_originals_manifest": "publication-derivatives-01/manifest.json",
+    "local_originals": 0,
+    "publication_live": "Reserved ignored local transport receipts; each command has independent immutable four-piece/seal. Not part of the sealed source acceptance package; avoids recursive Git self-publication.",
+    "reason": "Local native reasoning copies retained; public hash-bound tool/evidence derivatives included"
+  },
+  "inner_exit_code": 0
+}

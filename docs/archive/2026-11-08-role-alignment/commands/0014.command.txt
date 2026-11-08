@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-D18-D23-ROLE-ALIGNMENT-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-role-alignment/stage-source.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "stage-reviewed-source",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES",
+  "started_utc": "2026-11-08T01:36:00.057Z",
+  "carrier_source_sha256": "a4322f7d32d8d7c1814e1fe3cdab8c914180d0cf799ce2a0d7cf7dde5793d6f1",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-role-alignment\\stage-source.cjs",
+      "sha256": "910c526a803ca0b3fb844f4df16aca11ff95dd3096f104db4589fe48d88e7028",
+      "size": 1486,
+      "extension": ".cjs"
+    }
+  ]
+}

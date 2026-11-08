@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-D18-D23-ROLE-ALIGNMENT-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-role-alignment/collect-assessment.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "independent-authority-and-runtime-assessment",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES",
+  "started_utc": "2026-11-08T01:49:03.264Z",
+  "carrier_source_sha256": "a4322f7d32d8d7c1814e1fe3cdab8c914180d0cf799ce2a0d7cf7dde5793d6f1",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-role-alignment\\collect-assessment.cjs",
+      "sha256": "ba69354e5d1416d0399634b80b680e901e85593d898fc82d55964efed78bb747",
+      "size": 7442,
+      "extension": ".cjs"
+    }
+  ]
+}

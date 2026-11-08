@@ -1,0 +1,150 @@
+{
+  "validator_id": "role-alignment-final/v1",
+  "validation_target": "D18/D23 role/Skill repair,actual deployment and bounded reassessment",
+  "validation_contract_id": "SF-ROLE-ALIGNMENT-20261108",
+  "contract_source": "SPS9.2/9.2.4/19/20/22;Authority Registry D18/D23;EXP195/260/287",
+  "truth_source": "Immutable raw command receipts,current source,actual loader andinstalled owner reads",
+  "baseline_source": "c641a8d4 gate and installed117;final product source7ecc7cfe",
+  "baseline_freshness": "No Runtime/native changes;physical final installation/current facts freshly verified",
+  "assertions": [
+    {
+      "assertion_id": "FINAL_EXITS",
+      "expected": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "truth_source": "commands/0034,0036,0037,0039,0045 numeric results",
+      "contract_source": "SPS9.2/9.2.4/19/20/22;EXP195",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "CURRENT_ROLE_CONTRACT_TESTS",
+      "expected": 22,
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "truth_source": "0034 frozen maintained test source, raw test stdout and current source SHA",
+      "contract_source": "SPS9.2/9.2.4/19/20/22;EXP195",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "CURRENT_ROLE_NAMES",
+      "expected": [
+        "sf-analyst",
+        "sf-debugger",
+        "sf-design",
+        "sf-executor",
+        "sf-knowledge",
+        "sf-orchestrator",
+        "sf-requirements",
+        "sf-reviewer",
+        "sf-task-planner",
+        "sf-verifier"
+      ],
+      "assertion_type": "EXACT_HASH",
+      "truth_source": "fresh-loader-03/agents.json exact body identities",
+      "contract_source": "SPS9.2/9.2.4/19/20/22;EXP195",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "CURRENT_SKILL_COUNT",
+      "expected": 8,
+      "assertion_type": "EXACT_HASH",
+      "truth_source": "fresh-loader-03/skills.json exact raw body identities",
+      "contract_source": "SPS9.2/9.2.4/19/20/22;EXP195",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "INSTALLED_CURRENT_IDENTITIES",
+      "expected": 117,
+      "assertion_type": "EXACT_HASH",
+      "truth_source": "release/install manifest/source and independent actual installed bytes",
+      "contract_source": "SPS9.2/9.2.4/19/20/22;EXP195",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "NATIVE_TUPLE_UNCHANGED",
+      "expected": true,
+      "assertion_type": "EXACT_HASH",
+      "truth_source": "initial installed baseline and actual five native files",
+      "contract_source": "SPS9.2/9.2.4/19/20/22;EXP195",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "OWNER_PRESERVED",
+      "expected": true,
+      "assertion_type": "EXACT_HASH",
+      "truth_source": "owner baseline/nonsecret SHA and secret metadata; independent current snapshot",
+      "contract_source": "SPS9.2/9.2.4/19/20/22;EXP195",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "BUSINESS_PRESERVED_CLOSED",
+      "expected": true,
+      "assertion_type": "EXACT_HASH",
+      "truth_source": "installed StateManager event replay, local main,5 code and9 canonical raw identities",
+      "contract_source": "SPS9.2/9.2.4/19/20/22;EXP195",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "FINAL_LOADER_CLEAN",
+      "expected": true,
+      "assertion_type": "IMMUTABLE_EVIDENCE",
+      "truth_source": "strict ordered cold start and own Kernel ended/independent Daemon health",
+      "contract_source": "SPS9.2/9.2.4/19/20/22;EXP195",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "AUTHORITY_UNCHANGED",
+      "expected": true,
+      "assertion_type": "EXACT_HASH",
+      "truth_source": "gate baseline raw SPS/Registry versus current bytes",
+      "contract_source": "SPS9.2/9.2.4/19/20/22;EXP195",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "STATUS_RECONCILED",
+      "expected": true,
+      "assertion_type": "STRUCTURED_STATE",
+      "truth_source": "unique project-status schema/run/scope and completed repair assessment",
+      "contract_source": "SPS9.2/9.2.4/19/20/22;EXP195",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    },
+    {
+      "assertion_id": "FULL_PRODUCT_VERDICT_HONEST",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "assertion_type": "STRUCTURED_STATE",
+      "truth_source": "20 individually scoped findings; no aggregate PASS copied or inferred",
+      "contract_source": "SPS9.2/9.2.4/19/20/22;EXP195",
+      "comparator": "EQUALS",
+      "baseline_mode": "ABSOLUTE",
+      "blocking": true
+    }
+  ],
+  "validation_contract_frozen": true,
+  "validation_contract_hash": "EE897ADE183584DFB62D544512D62B890C19FF6DF88560F6C40D8CAFA3E7B6D3"
+}

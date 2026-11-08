@@ -1,0 +1,1 @@
+{"prior_source_sha256":"8fd3448a81f92a5c996ab201985059e19c1a93c28cc385b8fa5f752270d13ac6","new_source_sha256":"da52b027c80335ef72960cef3a88717f406bbc2aa12bfc0107d48b9a04bc8736","change":"Evidence output directory only; original strict lifecycle and source assertions retained."}

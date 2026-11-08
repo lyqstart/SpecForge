@@ -1,0 +1,841 @@
+{
+  "utc": "2026-11-08T01:49:17.562Z",
+  "members": [
+    {
+      "path": "agents",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116336404.4688
+    },
+    {
+      "path": "agents/sf-analyst.md",
+      "kind": "file",
+      "size": 3572,
+      "mtimeMs": 1787793136863.7412
+    },
+    {
+      "path": "agents/sf-debugger.md",
+      "kind": "file",
+      "size": 14667,
+      "mtimeMs": 1786456692125.395
+    },
+    {
+      "path": "agents/sf-design.md",
+      "kind": "file",
+      "size": 42644,
+      "mtimeMs": 1788080648252.0112
+    },
+    {
+      "path": "agents/sf-executor.md",
+      "kind": "file",
+      "size": 30215,
+      "mtimeMs": 1786456692128.3936
+    },
+    {
+      "path": "agents/sf-knowledge.md",
+      "kind": "file",
+      "size": 11904,
+      "mtimeMs": 1788172144260.7305
+    },
+    {
+      "path": "agents/sf-orchestrator.md",
+      "kind": "file",
+      "size": 40119,
+      "mtimeMs": 1788497258620.7358
+    },
+    {
+      "path": "agents/sf-requirements.md",
+      "kind": "file",
+      "size": 24636,
+      "mtimeMs": 1786456692133.3955
+    },
+    {
+      "path": "agents/sf-reviewer.md",
+      "kind": "file",
+      "size": 17681,
+      "mtimeMs": 1786456692133.3955
+    },
+    {
+      "path": "agents/sf-task-planner.md",
+      "kind": "file",
+      "size": 32054,
+      "mtimeMs": 1788172143328.3784
+    },
+    {
+      "path": "agents/sf-verifier.md",
+      "kind": "file",
+      "size": 37479,
+      "mtimeMs": 1789072359052.4395
+    },
+    {
+      "path": "agents/_AGENT_BASE.md",
+      "kind": "file",
+      "size": 26244,
+      "mtimeMs": 1788171506770.6243
+    },
+    {
+      "path": "AGENTS.md",
+      "kind": "file",
+      "size": 12368,
+      "mtimeMs": 1788171758701.8347
+    },
+    {
+      "path": "backups",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116341213.8684
+    },
+    {
+      "path": "bin",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116337618.58
+    },
+    {
+      "path": "bin/specforge.exe",
+      "kind": "file",
+      "size": 90132480,
+      "mtimeMs": 1789098393191.9941
+    },
+    {
+      "path": "bin/specforged.exe",
+      "kind": "file",
+      "size": 100282368,
+      "mtimeMs": 1789098394074.1318
+    },
+    {
+      "path": "config",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1788411195341.8882
+    },
+    {
+      "path": "config/plugin-grants.json",
+      "kind": "file",
+      "size": 211,
+      "mtimeMs": 1788411195390.2246
+    },
+    {
+      "path": "host-profile.json",
+      "kind": "file",
+      "size": 4317,
+      "mtimeMs": 1788411123376.5315
+    },
+    {
+      "path": "integrations",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116295030.5686
+    },
+    {
+      "path": "integrations/opencode",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116337687.1013
+    },
+    {
+      "path": "integrations/opencode/sf_specforge.ts",
+      "kind": "file",
+      "size": 8948,
+      "mtimeMs": 1788174669097.327
+    },
+    {
+      "path": "lib",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116337760.4905
+    },
+    {
+      "path": "lib/sf_plugin_client.ts",
+      "kind": "file",
+      "size": 14230,
+      "mtimeMs": 1788192071448.813
+    },
+    {
+      "path": "logs",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1791426829037.0132
+    },
+    {
+      "path": "logs/telemetry.jsonl",
+      "kind": "file",
+      "size": 256,
+      "mtimeMs": 1791426829072.5073
+    },
+    {
+      "path": "skills",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116295239.299
+    },
+    {
+      "path": "skills/sf-intake",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116337791.1572
+    },
+    {
+      "path": "skills/sf-intake/SKILL.md",
+      "kind": "file",
+      "size": 16615,
+      "mtimeMs": 1788080649630.7004
+    },
+    {
+      "path": "skills/sf-workflow-feature-spec",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116337833.9695
+    },
+    {
+      "path": "skills/sf-workflow-feature-spec/SKILL.md",
+      "kind": "file",
+      "size": 41213,
+      "mtimeMs": 1789094664969.0007
+    },
+    {
+      "path": "skills/superpowers-brainstorming",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116337852.443
+    },
+    {
+      "path": "skills/superpowers-brainstorming/SKILL.md",
+      "kind": "file",
+      "size": 3584,
+      "mtimeMs": 1786456692155.0881
+    },
+    {
+      "path": "skills/superpowers-code-review",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116337873.431
+    },
+    {
+      "path": "skills/superpowers-code-review/SKILL.md",
+      "kind": "file",
+      "size": 1442,
+      "mtimeMs": 1786456692156.0935
+    },
+    {
+      "path": "skills/superpowers-knowledge-extraction",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116337893.7158
+    },
+    {
+      "path": "skills/superpowers-knowledge-extraction/SKILL.md",
+      "kind": "file",
+      "size": 7602,
+      "mtimeMs": 1788171543327.5947
+    },
+    {
+      "path": "skills/superpowers-systematic-debugging",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116337913.5444
+    },
+    {
+      "path": "skills/superpowers-systematic-debugging/SKILL.md",
+      "kind": "file",
+      "size": 1450,
+      "mtimeMs": 1786456692158.0918
+    },
+    {
+      "path": "skills/superpowers-verification-before-completion",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116337935.3916
+    },
+    {
+      "path": "skills/superpowers-verification-before-completion/SKILL.md",
+      "kind": "file",
+      "size": 2186,
+      "mtimeMs": 1786456692159.0942
+    },
+    {
+      "path": "skills/superpowers-writing-plans",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116337958.828
+    },
+    {
+      "path": "skills/superpowers-writing-plans/SKILL.md",
+      "kind": "file",
+      "size": 1791,
+      "mtimeMs": 1786456692159.0942
+    },
+    {
+      "path": "specforge-manifest.json",
+      "kind": "file",
+      "size": 20243,
+      "mtimeMs": 1789116341162.7656
+    },
+    {
+      "path": "templates",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116338430.619
+    },
+    {
+      "path": "templates/dev-environment.md",
+      "kind": "file",
+      "size": 10821,
+      "mtimeMs": 1786456692225.1353
+    },
+    {
+      "path": "templates/prod-environment.md",
+      "kind": "file",
+      "size": 13342,
+      "mtimeMs": 1786456692226.1372
+    },
+    {
+      "path": "templates/project-rules",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116338036.9592
+    },
+    {
+      "path": "templates/project-rules/databases",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116338143.6096
+    },
+    {
+      "path": "templates/project-rules/databases/mongodb.md",
+      "kind": "file",
+      "size": 1077,
+      "mtimeMs": 1786456692228.1316
+    },
+    {
+      "path": "templates/project-rules/databases/mysql.md",
+      "kind": "file",
+      "size": 1221,
+      "mtimeMs": 1786456692229.14
+    },
+    {
+      "path": "templates/project-rules/databases/postgresql.md",
+      "kind": "file",
+      "size": 2130,
+      "mtimeMs": 1786456692230.1377
+    },
+    {
+      "path": "templates/project-rules/databases/redis.md",
+      "kind": "file",
+      "size": 1239,
+      "mtimeMs": 1786456692230.1377
+    },
+    {
+      "path": "templates/project-rules/databases/sqlite.md",
+      "kind": "file",
+      "size": 1236,
+      "mtimeMs": 1786456692230.9956
+    },
+    {
+      "path": "templates/project-rules/frameworks",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116338228.1038
+    },
+    {
+      "path": "templates/project-rules/frameworks/fastapi.md",
+      "kind": "file",
+      "size": 1636,
+      "mtimeMs": 1786456692232.135
+    },
+    {
+      "path": "templates/project-rules/frameworks/react.md",
+      "kind": "file",
+      "size": 2328,
+      "mtimeMs": 1786456692232.6487
+    },
+    {
+      "path": "templates/project-rules/frameworks/spring-boot.md",
+      "kind": "file",
+      "size": 1816,
+      "mtimeMs": 1786456692233.158
+    },
+    {
+      "path": "templates/project-rules/frameworks/vue.md",
+      "kind": "file",
+      "size": 1788,
+      "mtimeMs": 1786456692233.158
+    },
+    {
+      "path": "templates/project-rules/infra",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116338271.8694
+    },
+    {
+      "path": "templates/project-rules/infra/ci-github-actions.md",
+      "kind": "file",
+      "size": 1461,
+      "mtimeMs": 1786456692234.171
+    },
+    {
+      "path": "templates/project-rules/infra/docker.md",
+      "kind": "file",
+      "size": 1513,
+      "mtimeMs": 1786456692235.1902
+    },
+    {
+      "path": "templates/project-rules/languages",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116338405.3916
+    },
+    {
+      "path": "templates/project-rules/languages/go.md",
+      "kind": "file",
+      "size": 2939,
+      "mtimeMs": 1786456692235.8252
+    },
+    {
+      "path": "templates/project-rules/languages/java.md",
+      "kind": "file",
+      "size": 3371,
+      "mtimeMs": 1786456692236.3347
+    },
+    {
+      "path": "templates/project-rules/languages/nodejs.md",
+      "kind": "file",
+      "size": 4125,
+      "mtimeMs": 1786456692236.3347
+    },
+    {
+      "path": "templates/project-rules/languages/python.md",
+      "kind": "file",
+      "size": 4308,
+      "mtimeMs": 1786456692236.3347
+    },
+    {
+      "path": "templates/project-rules/_BASE.md",
+      "kind": "file",
+      "size": 5619,
+      "mtimeMs": 1786456692227.1409
+    },
+    {
+      "path": "templates/README.md",
+      "kind": "file",
+      "size": 3463,
+      "mtimeMs": 1786456692225.1353
+    },
+    {
+      "path": "tools",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116340860.691
+    },
+    {
+      "path": "tools/lib",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116339706.792
+    },
+    {
+      "path": "tools/lib/sf-observability-config.ts",
+      "kind": "file",
+      "size": 5027,
+      "mtimeMs": 1788139134252.5608
+    },
+    {
+      "path": "tools/lib/sf-observability.ts",
+      "kind": "file",
+      "size": 22379,
+      "mtimeMs": 1789072354628.8044
+    },
+    {
+      "path": "tools/lib/sf_artifact_write_core.ts",
+      "kind": "file",
+      "size": 19021,
+      "mtimeMs": 1788171408809.3723
+    },
+    {
+      "path": "tools/lib/sf_batch_verify_core.ts",
+      "kind": "file",
+      "size": 3804,
+      "mtimeMs": 1786456692165.0854
+    },
+    {
+      "path": "tools/lib/sf_design_gate_core.ts",
+      "kind": "file",
+      "size": 32893,
+      "mtimeMs": 1788171016634.184
+    },
+    {
+      "path": "tools/lib/sf_doctor_core.ts",
+      "kind": "file",
+      "size": 3748,
+      "mtimeMs": 1788050627956.8157
+    },
+    {
+      "path": "tools/lib/sf_doc_lint_core.ts",
+      "kind": "file",
+      "size": 84881,
+      "mtimeMs": 1789094532190.3298
+    },
+    {
+      "path": "tools/lib/sf_ears_parser.ts",
+      "kind": "file",
+      "size": 26566,
+      "mtimeMs": 1786456692168.4072
+    },
+    {
+      "path": "tools/lib/sf_ears_types.ts",
+      "kind": "file",
+      "size": 9033,
+      "mtimeMs": 1786456692169.424
+    },
+    {
+      "path": "tools/lib/sf_gate_types.ts",
+      "kind": "file",
+      "size": 1038,
+      "mtimeMs": 1788171332088.1343
+    },
+    {
+      "path": "tools/lib/sf_knowledge_base_core.ts",
+      "kind": "file",
+      "size": 30128,
+      "mtimeMs": 1786456692169.424
+    },
+    {
+      "path": "tools/lib/sf_markdown_verification_parser.ts",
+      "kind": "file",
+      "size": 9937,
+      "mtimeMs": 1786456692171.4236
+    },
+    {
+      "path": "tools/lib/sf_requirements_gate_core.ts",
+      "kind": "file",
+      "size": 22034,
+      "mtimeMs": 1788171330233.221
+    },
+    {
+      "path": "tools/lib/sf_safe_bash_core.ts",
+      "kind": "file",
+      "size": 11903,
+      "mtimeMs": 1786456692172.423
+    },
+    {
+      "path": "tools/lib/sf_safe_bash_executor.ts",
+      "kind": "file",
+      "size": 10234,
+      "mtimeMs": 1786456692172.423
+    },
+    {
+      "path": "tools/lib/sf_safe_bash_rules.ts",
+      "kind": "file",
+      "size": 23260,
+      "mtimeMs": 1786456692172.423
+    },
+    {
+      "path": "tools/lib/sf_safe_bash_types.ts",
+      "kind": "file",
+      "size": 2912,
+      "mtimeMs": 1786456692172.423
+    },
+    {
+      "path": "tools/lib/sf_tasks_gate_core.ts",
+      "kind": "file",
+      "size": 12647,
+      "mtimeMs": 1788171014803.9392
+    },
+    {
+      "path": "tools/lib/sf_trace_matrix_core.ts",
+      "kind": "file",
+      "size": 13195,
+      "mtimeMs": 1786456692173.4224
+    },
+    {
+      "path": "tools/lib/sf_verification_gate_core.ts",
+      "kind": "file",
+      "size": 25928,
+      "mtimeMs": 1788171015726.1313
+    },
+    {
+      "path": "tools/lib/sf_verification_types.ts",
+      "kind": "file",
+      "size": 8691,
+      "mtimeMs": 1786456692174.4207
+    },
+    {
+      "path": "tools/lib/sf_verifier_execution_core.ts",
+      "kind": "file",
+      "size": 12941,
+      "mtimeMs": 1786456692175.4194
+    },
+    {
+      "path": "tools/lib/thin-client.ts",
+      "kind": "file",
+      "size": 9909,
+      "mtimeMs": 1788192569819.2344
+    },
+    {
+      "path": "tools/lib/utils.ts",
+      "kind": "file",
+      "size": 3769,
+      "mtimeMs": 1788018536958.114
+    },
+    {
+      "path": "tools/sf_artifact_write.ts",
+      "kind": "file",
+      "size": 4228,
+      "mtimeMs": 1786456692176.4224
+    },
+    {
+      "path": "tools/sf_batch_verify.ts",
+      "kind": "file",
+      "size": 1052,
+      "mtimeMs": 1786456692176.4224
+    },
+    {
+      "path": "tools/sf_changed_files_audit.ts",
+      "kind": "file",
+      "size": 2669,
+      "mtimeMs": 1786456692176.4224
+    },
+    {
+      "path": "tools/sf_close_gate.ts",
+      "kind": "file",
+      "size": 1675,
+      "mtimeMs": 1786456692177.4238
+    },
+    {
+      "path": "tools/sf_code_permission.ts",
+      "kind": "file",
+      "size": 1208,
+      "mtimeMs": 1786456692177.4238
+    },
+    {
+      "path": "tools/sf_contract_register.ts",
+      "kind": "file",
+      "size": 3627,
+      "mtimeMs": 1786456692180.4253
+    },
+    {
+      "path": "tools/sf_design_gate.ts",
+      "kind": "file",
+      "size": 906,
+      "mtimeMs": 1786456692181.4246
+    },
+    {
+      "path": "tools/sf_doctor.ts",
+      "kind": "file",
+      "size": 575,
+      "mtimeMs": 1786456692182.424
+    },
+    {
+      "path": "tools/sf_doc_lint.ts",
+      "kind": "file",
+      "size": 703,
+      "mtimeMs": 1786456692182.424
+    },
+    {
+      "path": "tools/sf_gate_run.ts",
+      "kind": "file",
+      "size": 2815,
+      "mtimeMs": 1786456692183.4204
+    },
+    {
+      "path": "tools/sf_git_agent_lock_acquire.ts",
+      "kind": "file",
+      "size": 1081,
+      "mtimeMs": 1786456692184.4216
+    },
+    {
+      "path": "tools/sf_git_agent_lock_release.ts",
+      "kind": "file",
+      "size": 857,
+      "mtimeMs": 1786456692184.4216
+    },
+    {
+      "path": "tools/sf_git_auth_profile_config.ts",
+      "kind": "file",
+      "size": 1459,
+      "mtimeMs": 1786456692185.4202
+    },
+    {
+      "path": "tools/sf_git_branch_create.ts",
+      "kind": "file",
+      "size": 1122,
+      "mtimeMs": 1788190867871.0461
+    },
+    {
+      "path": "tools/sf_git_branch_plan.ts",
+      "kind": "file",
+      "size": 961,
+      "mtimeMs": 1786456692186.4214
+    },
+    {
+      "path": "tools/sf_git_checkpoint_commit.ts",
+      "kind": "file",
+      "size": 1268,
+      "mtimeMs": 1786456692188.4253
+    },
+    {
+      "path": "tools/sf_git_ignore_analyze.ts",
+      "kind": "file",
+      "size": 975,
+      "mtimeMs": 1786456692188.4253
+    },
+    {
+      "path": "tools/sf_git_ignore_decision_record.ts",
+      "kind": "file",
+      "size": 1029,
+      "mtimeMs": 1786456692188.4253
+    },
+    {
+      "path": "tools/sf_git_merge_plan.ts",
+      "kind": "file",
+      "size": 870,
+      "mtimeMs": 1786456692189.4265
+    },
+    {
+      "path": "tools/sf_git_merge_run.ts",
+      "kind": "file",
+      "size": 1127,
+      "mtimeMs": 1786456692189.4265
+    },
+    {
+      "path": "tools/sf_git_post_merge_verify.ts",
+      "kind": "file",
+      "size": 865,
+      "mtimeMs": 1786456692190.428
+    },
+    {
+      "path": "tools/sf_git_preflight.ts",
+      "kind": "file",
+      "size": 757,
+      "mtimeMs": 1786456692191.427
+    },
+    {
+      "path": "tools/sf_git_push_branch.ts",
+      "kind": "file",
+      "size": 848,
+      "mtimeMs": 1786456692192.421
+    },
+    {
+      "path": "tools/sf_git_release_tag_create.ts",
+      "kind": "file",
+      "size": 894,
+      "mtimeMs": 1786456692193.4219
+    },
+    {
+      "path": "tools/sf_git_release_tag_plan.ts",
+      "kind": "file",
+      "size": 983,
+      "mtimeMs": 1786456692193.4219
+    },
+    {
+      "path": "tools/sf_git_remote_config.ts",
+      "kind": "file",
+      "size": 1179,
+      "mtimeMs": 1786456692193.4219
+    },
+    {
+      "path": "tools/sf_git_remote_probe.ts",
+      "kind": "file",
+      "size": 681,
+      "mtimeMs": 1786456692194.4277
+    },
+    {
+      "path": "tools/sf_hard_stop_resolve.ts",
+      "kind": "file",
+      "size": 4965,
+      "mtimeMs": 1786456692196.6548
+    },
+    {
+      "path": "tools/sf_knowledge_base.ts",
+      "kind": "file",
+      "size": 2965,
+      "mtimeMs": 1786456692196.6548
+    },
+    {
+      "path": "tools/sf_merge_run.ts",
+      "kind": "file",
+      "size": 1031,
+      "mtimeMs": 1786456692198.6565
+    },
+    {
+      "path": "tools/sf_project_init.ts",
+      "kind": "file",
+      "size": 603,
+      "mtimeMs": 1786456692199.6604
+    },
+    {
+      "path": "tools/sf_requirements_gate.ts",
+      "kind": "file",
+      "size": 992,
+      "mtimeMs": 1786456692199.6604
+    },
+    {
+      "path": "tools/sf_safe_bash.ts",
+      "kind": "file",
+      "size": 2297,
+      "mtimeMs": 1786456692200.6587
+    },
+    {
+      "path": "tools/sf_semantic_closure_run.ts",
+      "kind": "file",
+      "size": 5093,
+      "mtimeMs": 1786456692201.6565
+    },
+    {
+      "path": "tools/sf_state_read.ts",
+      "kind": "file",
+      "size": 889,
+      "mtimeMs": 1786456692203.6526
+    },
+    {
+      "path": "tools/sf_state_transition.ts",
+      "kind": "file",
+      "size": 1727,
+      "mtimeMs": 1786456692204.657
+    },
+    {
+      "path": "tools/sf_tasks_gate.ts",
+      "kind": "file",
+      "size": 597,
+      "mtimeMs": 1786456692205.657
+    },
+    {
+      "path": "tools/sf_trace_matrix.ts",
+      "kind": "file",
+      "size": 607,
+      "mtimeMs": 1786456692205.657
+    },
+    {
+      "path": "tools/sf_user_decision_record.ts",
+      "kind": "file",
+      "size": 3685,
+      "mtimeMs": 1786456692206.6543
+    },
+    {
+      "path": "tools/sf_verification_gate.ts",
+      "kind": "file",
+      "size": 787,
+      "mtimeMs": 1786456692206.6543
+    },
+    {
+      "path": "workflows",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116297128.9053
+    },
+    {
+      "path": "workflows/builtin",
+      "kind": "directory",
+      "size": 0,
+      "mtimeMs": 1789116340905.7593
+    },
+    {
+      "path": "workflows/builtin/feature_spec.json",
+      "kind": "file",
+      "size": 12119,
+      "mtimeMs": 1786456689882.9595
+    }
+  ],
+  "contents_read": false,
+  "limitation": "Metadata/mtime and canonical source path owners corroborate observed no current writes; this is not universal filesystem tracing."
+}

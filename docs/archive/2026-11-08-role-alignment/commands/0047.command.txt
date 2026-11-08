@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-D18-D23-ROLE-ALIGNMENT-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "docs/archive/2026-11-08-role-alignment/freeze-validation.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-final-validation-contract",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T01:51:14.736Z",
+  "carrier_source_sha256": "a4322f7d32d8d7c1814e1fe3cdab8c914180d0cf799ce2a0d7cf7dde5793d6f1",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-role-alignment\\freeze-validation.ts",
+      "sha256": "7f88d3c386cd42bbfafcf6f49bd21cd8c6dd4c84fe1d2ae1376a815ab58c9ffc",
+      "size": 2972,
+      "extension": ".ts"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+# SpecForge Project Status
+
+> **Role**: the single current execution-status entry for SpecForge development.
+>
+> **Not product authority**: product requirements and architecture remain owned by the Product Specification and Authority Registry.
+>
+> **History boundary**: this file contains only the current resumable checkpoint. Historical plans, reports, handoffs, and evidence belong in Git or `docs/archive/`.
+
+<!-- SPECFORGE_PROJECT_STATUS:START -->
+PROJECT_STATUS_SCHEMA=2
+PROJECT_STATUS_DECLARATION=ACTIVE
+ACTIVE_INITIATIVE=CONSUMER_CONFORMANCE_REPAIR
+OBJECTIVE=Repair three independently confirmed subordinate consumer gaps: resolved audit history, finite planning commands, and unique status reconciliation; preserve original closed business delivery.
+CURRENT_PHASE=THREE_CONSUMER_GAPS_REPAIRED_AND_DEPLOYED
+OWNER_DECISIONS=AR-DEC-01:APPROVED;AR-DEC-02:APPROVED_WITH_ARCHIVE_CONSOLIDATION;AR-DEC-03:APPROVED_WITH_KIRO_RETIREMENT;AR-DEC-04:APPROVED_WITH_SINGLE_PROJECT_STATUS;AR-DEC-05:ONLY_TWO_EXTERNAL_EXECUTION_MODES_CODEX_DIRECT_AND_WORKBUDDY_COORDINATED;AR-DEC-06:ACTIVE_RULES_SEPARATED_FROM_HISTORICAL_LEDGER;D05:OPENCODE_ADAPTER_ENABLED;D10:NSSM_REMOVED_WINDOWS_DIRECT_DAEMON_ONLY;D11:GLOBAL_ONLY_THIN_PLUGIN_SINGLE_EXPORT;VR-DEC-01:NEW_EPOCH_1_0_0;VR-DEC-02:TAG_PREFIX_SPECFORGE_V;VR-DEC-03:INDEPENDENT_CONTRACT_VERSIONS;VR-DEC-04:ACTIVE_REFERENCES_CONVERGE_HISTORY_PRESERVED;D18:INTERNAL_READ_ONLY_COMMAND_CONTAINMENT;D20:BOUNDED_WINDOWS_LPAC_READONLY_NODE_APPROVED_ACCEPTANCE_FIRST;D21:REGISTRY_READ_SINGLE_CAPABILITY_SYNTHETIC_EXPERIMENT_ONLY;D22:STRICT_SINGLE_PROCESS_FIRST_PHASE_SCOPE_APPROVED_ACCEPTANCE_FIRST;D23:PRODUCTION_ADOPTION_AND_COMPLETE_CONTROLLED_VERIFICATION_IMPLEMENTATION_APPROVED
+EXECUTION_MODE=CODEX_DIRECT
+EXECUTION_STATE=COMPLETE
+EXECUTION_PROTOCOL=docs/rule/specforge-execution-mode-and-evidence-protocol.md
+EXECUTION_PLANNER=CODEX
+EXECUTION_ACTOR=CODEX
+EXECUTION_AUDITOR=CODEX
+EXECUTION_RUN_ID=CODEX-SF-20261107-CONSUMER-CONFORMANCE-A01
+EXECUTION_EVIDENCE_ROOT=D:/code/SpecForge/docs/archive/2026-11-07-consumer-conformance
+LAST_EXECUTION_CHECKPOINT=Reviewed21 sourcepaths integrated tolocalmain24f6b0c7. Real audit-history positive/unresolved negative andfinite command positive/unsupported negative checks pass;maintained16 tests,related7files89 tests,Root51files748 tests andworkflow generationcheck allgreen. Officialinstaller updated13 Markdown/skipped104 andverified117;qualifiednative5 unchanged,ownerstore/keymetadata andoriginalwhole installerinterval preserved. Fresh OpenCode loader02 actuallyverified8 changedAgents and3 Skill rawbody identities;ownedKernel ended,independentDaemon healthy. First loaderfailure was CRLF/rawbody observer mismatch,diagnosed withreal API sources andpreserved;no modelprompt/business tool. Three specific consumer gapsclosed;old broad20-row aggregate acceptance is historical andcannot substitute for independent per-clause proof.
+NEXT_EXECUTION_STOP=ALL_THREE_CONSUMER_GAPS_INDEPENDENTLY_VERIFIED_INSTALLED_AND_PUBLISHED_OR_EVIDENCED_HARD_BLOCKER
+LAST_COMPLETED_CHECKPOINT=OriginalWI0001 Verification/FormalVersion/Close anduser-approved localmain28c8e3d remain completed. This repair closed audit-rule,finite-planning andstale-status consumer gaps only,with real tests,official install andfreshloader evidence. Native1.0.23 tuple isunchanged;existing specforge-v1.0.23 tag remainsimmutable.
+CURRENT_BLOCKER=NONE
+NEXT_LEGAL_ACTION=No remaining action for these three repaired consumer gaps. Preserve originalclosedWI/localmain andqualifiednative tuple;do not rerun successfulbusiness verification orretag1.0.23. Future work begins withprotocol andread-onlyBootstrap,thencurrentSPS/Authority. Any wider full-product claim requires its own clause/consumer evidence,not thepreviousaggregatePASS. Same-run final evidence publication/remoteBootstrap isverified separately by immutable transport receipts.
+ALLOWED_SCOPE=AGENTS.md;README.md;.gitattributes;.gitignore;package.json;bun.lock;docs/project-status.md;docs/product-specification/**;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/archive/**;docs/adr/**;docs/cli/**;docs/conventions/**;docs/user/**;docs/plugins/**;docs/tools/**;docs/engineering-lessons/**;docs/rule/**;scripts/**;setup/**;packages/**/package.json;packages/service-management/src/**;packages/configuration/src/**;packages/opencode-adapter/src/**;packages/permission-engine/src/**;packages/daemon-core/src/**;packages/cli/src/**;packages/types/src/**;packages/observability/src/**;packages/observability/examples/**;packages/workflow-runtime/src/**;packages/workflow-runtime/tsconfig.json;packages/workflow-runtime/examples/**;packages/workflow-runtime/vitest.config.ts;packages/**/README.md;packages/**/DEVELOPMENT.md;packages/**/docs/**;packages/**/src/**/*.md;packages/**/tests/**;tests/**;docs/design/windows-lpac-node-readonly-contract.md;packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md;packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md
+PROHIBITED=Deleting ADR ERR audit or report evidence;creating another active handoff current-status or recovery-status file;modifying D:\code\t3 outside a separately authorized controlled recovery phase;reading or modifying D:\code\t2 during SpecForge repair;creating a SpecForge Work Item for SpecForge product self-development;using archive evidence as a current product contract
+REQUIRED_RULES=docs/rule/specforge-active-development-rules.md;docs/product-specification/authority-registry.md;docs/product-specification/specforge-product-specification.md;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/rule/specforge-execution-mode-and-evidence-protocol.md
+REQUIRED_VALIDATION=Completed inthisrepair: actual sharedaudit policies match Runtime resolved/unresolved verdicts;positive planning declarations compile undercurrent finitegrammar andunsupported examplesremain refused;maintained16,related89,Root748 andworkflowcheck passed;official117 install,fiveunchangednativeassets andfresh8Agent/3Skill loaderverified. OriginalWI/SP-I01/SP-D01 are completed historical gates,not pending actions. Future affected edits rerun corresponding consumer checks andphysical installation proof.
+<!-- SPECFORGE_PROJECT_STATUS:END -->
+
+## Resume guidance
+
+Run the read-only bootstrap before relying on this file:
+
+```text
+node scripts/project-session-bootstrap.mjs
+```
+
+Resume only from `NEXT_LEGAL_ACTION` after reviewing live Git facts and any worktree changes reported by the bootstrap. Execution mode, run id, evidence root and stop points are validated by the bootstrap under PROJECT_STATUS_SCHEMA=2.

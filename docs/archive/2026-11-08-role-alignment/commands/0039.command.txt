@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-D18-D23-ROLE-ALIGNMENT-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-role-alignment/upgrade-guidance-02.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "official-upgrade-skill-discovery",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES",
+  "started_utc": "2026-11-08T01:43:45.180Z",
+  "carrier_source_sha256": "a4322f7d32d8d7c1814e1fe3cdab8c914180d0cf799ce2a0d7cf7dde5793d6f1",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-role-alignment\\upgrade-guidance-02.cjs",
+      "sha256": "b2b28186ef26fcf7638378a5f9b66009e0cccefc836e55e026c88e644a04cbbe",
+      "size": 8132,
+      "extension": ".cjs"
+    }
+  ]
+}

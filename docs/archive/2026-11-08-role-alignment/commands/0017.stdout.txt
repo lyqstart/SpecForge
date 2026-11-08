@@ -1,0 +1,24 @@
+Updating c641a8d4..bbee0eb9
+Fast-forward
+ .gitattributes                                     |  1 +
+ .gitignore                                         |  1 +
+ docs/project-status.md                             | 20 +++----
+ ...orge-development-error-ledger-and-experience.md |  5 ++
+ .../tests/unit/verification-runtime-plan.test.ts   | 15 +++++
+ .../v11-agent-skill-contract-alignment.test.ts     | 70 ++++++++++++++++++++++
+ setup/userlevel-opencode/AGENTS.md                 |  6 ++
+ setup/userlevel-opencode/agents/_AGENT_BASE.md     | 51 ++++++++--------
+ setup/userlevel-opencode/agents/sf-analyst.md      |  6 ++
+ setup/userlevel-opencode/agents/sf-debugger.md     | 37 +++++++-----
+ setup/userlevel-opencode/agents/sf-design.md       |  6 ++
+ setup/userlevel-opencode/agents/sf-executor.md     | 56 ++++++-----------
+ setup/userlevel-opencode/agents/sf-knowledge.md    |  6 ++
+ setup/userlevel-opencode/agents/sf-orchestrator.md |  6 ++
+ setup/userlevel-opencode/agents/sf-requirements.md |  6 ++
+ setup/userlevel-opencode/agents/sf-reviewer.md     | 10 +++-
+ setup/userlevel-opencode/agents/sf-task-planner.md |  6 ++
+ setup/userlevel-opencode/agents/sf-verifier.md     |  6 ++
+ setup/userlevel-opencode/skills/sf-intake/SKILL.md |  6 ++
+ .../skills/sf-workflow-feature-spec/SKILL.md       |  6 ++
+ .../superpowers-systematic-debugging/SKILL.md      |  6 +-
+ 21 files changed, 241 insertions(+), 91 deletions(-)

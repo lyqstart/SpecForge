@@ -1,0 +1,142 @@
+{
+  "utc": "2026-11-08T01:35:41.974Z",
+  "base": "c641a8d4c777a72ae97a96bd225c82975da0c5ae",
+  "branch": "codex/d18-d23-role-alignment",
+  "members": [
+    {
+      "path": ".gitattributes",
+      "sha256": "854ad3a3e2c7a3ccd9cc8f1bc5212a64444668251dfa33396f5ac7c91abce57c",
+      "size": 3113,
+      "snapshot": "000.raw"
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "0c2c9a94db5054a9f545bde7a80cf696358e305736d392a3d224a8e5c10c8a9f",
+      "size": 3775,
+      "snapshot": "001.raw"
+    },
+    {
+      "path": "docs/project-status.md",
+      "sha256": "08fd7e36433894bbcffddfa6f0852997dc4fb6c7bc499b5caf3b075a9a98a21b",
+      "size": 5431,
+      "snapshot": "002.raw"
+    },
+    {
+      "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "sha256": "eb282a3ff2bad58cb8190a1901a24cd213bca45822e2275ed2730d95a4b3cb8e",
+      "size": 4483413,
+      "snapshot": "003.raw"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/verification-runtime-plan.test.ts",
+      "sha256": "5eedced2a96cb34fce42654ad170071b3b2b4d525985c330940d584283eda5ef",
+      "size": 15588,
+      "snapshot": "004.raw"
+    },
+    {
+      "path": "packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts",
+      "sha256": "7e3c2908a1f14dcee481fe45cbcc2815e920e06ab6cdf0a52e16e14e253844f6",
+      "size": 25961,
+      "snapshot": "005.raw"
+    },
+    {
+      "path": "setup/userlevel-opencode/AGENTS.md",
+      "sha256": "0ece529278f394a3c2625b9ce405373d07c20d49f71b45cbc21cbb528b73765c",
+      "size": 17300,
+      "snapshot": "006.raw"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/_AGENT_BASE.md",
+      "sha256": "afe5c68051449a4932b331941815d0e756916ad18e874ada49bf67e4848a602c",
+      "size": 30407,
+      "snapshot": "007.raw"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-analyst.md",
+      "sha256": "0e13faf3000d8fa47d3580f7e9be770b919e374020b54f96c260d405aefb16b2",
+      "size": 4662,
+      "snapshot": "008.raw"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-debugger.md",
+      "sha256": "5688a7cd86b8755afd0feba89e8f983b0954784687e6a2f11a02cd79f002206a",
+      "size": 17447,
+      "snapshot": "009.raw"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-design.md",
+      "sha256": "6b0aa947d5a26fdc0223efa48a40eb64275df5c96965fda65d36a7904c9674a5",
+      "size": 45675,
+      "snapshot": "010.raw"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-executor.md",
+      "sha256": "3c53ece7998ae26cbe895f6bf88a3cc91daf616606fd81023d0a8245fee5b0d2",
+      "size": 32743,
+      "snapshot": "011.raw"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-knowledge.md",
+      "sha256": "a69cea2369645641acf773606788f394677a54a67395802227af7c16c2c1953e",
+      "size": 13246,
+      "snapshot": "012.raw"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-orchestrator.md",
+      "sha256": "3278317b1daa7f90b72ca947b8a832fbb129ac4d4a6d4cb6d9fb946e63d741c6",
+      "size": 50932,
+      "snapshot": "013.raw"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-requirements.md",
+      "sha256": "38088c74b5c5c8df1dc8043262b689683746c5bdd4efb7a03f2abacbfccd1c1a",
+      "size": 26872,
+      "snapshot": "014.raw"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-reviewer.md",
+      "sha256": "6033a135a1441e7de4964a7c4f65a07eddc0c3224d8441e2f566fa21bb3e3f07",
+      "size": 19368,
+      "snapshot": "015.raw"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-task-planner.md",
+      "sha256": "d1d1258ef8403c2cd47f2a20f3972218dc23bb1675d7afd79ead9c0094883795",
+      "size": 36187,
+      "snapshot": "016.raw"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-verifier.md",
+      "sha256": "5137b4d73916e486b06a2f3c140f225303942980b8fd0a998467f48d0fb7203d",
+      "size": 41337,
+      "snapshot": "017.raw"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/sf-intake/SKILL.md",
+      "sha256": "744c051487ec1858518d87cd4bee7a3aef566bb429681ce928e1a15ff1cec6fa",
+      "size": 18731,
+      "snapshot": "018.raw"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md",
+      "sha256": "9010b776aa6d4540a1ba8af43283058dba47800d6f15d76b60a1a5a465469633",
+      "size": 49670,
+      "snapshot": "019.raw"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/superpowers-systematic-debugging/SKILL.md",
+      "sha256": "db3f7c14128ab7cf513d9482520fbf98294a43cf9414b581dabb803518b79434",
+      "size": 2101,
+      "snapshot": "020.raw"
+    }
+  ],
+  "review": "SPS D18 readonly vs D23 independent owner path; no Runtime/native/authority permission change. Base positive completion/handoff and Executor/Debugger bodies/examples now agree. All current role consumers informational only; inactive roles remain excluded. Existing failure/history intact. Tests include actual Runtime mismatch and code-permission preservation, finite compiler and shared consumers.",
+  "tests": [
+    "0005 red four failures/26 pass",
+    "0007 green31",
+    "0008 related9files82",
+    "0010 Root51files748",
+    "0012 final maintained21"
+  ],
+  "publication": "Explicit source list only; evidence root sealed separately after deployment."
+}

@@ -1,0 +1,24 @@
+{
+  "run_id": "CODEX-SF-20261108-D18-D23-ROLE-ALIGNMENT-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/run-current-release-precheck.ts",
+    "--candidate-id",
+    "7ecc7cfe7862e1f0d3d1cf4acb9ca8b3b6dba46c"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-official-release-precheck",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T01:43:29.461Z",
+  "carrier_source_sha256": "a4322f7d32d8d7c1814e1fe3cdab8c914180d0cf799ce2a0d7cf7dde5793d6f1",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\scripts\\run-current-release-precheck.ts",
+      "sha256": "27186c6a6ded4982e60e721902037bfca048558843d68fc44038c26baa206a04",
+      "size": 1021,
+      "extension": ".ts"
+    }
+  ]
+}

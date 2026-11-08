@@ -1,0 +1,159 @@
+{
+  "utc": "2026-11-08T01:54:36.558Z",
+  "method": "Read-only complete current archive regular-file inventory, named credential exclusions, known token/private-key shapes and parsed sensitive JSON fields. Candidate values are withheld. Pattern scan alone cannot prove absence of every possible credential.",
+  "files": 698,
+  "bytes": 19119558,
+  "groups": {
+    "[root]": {
+      "files": 50,
+      "bytes": 687515
+    },
+    "baseline": {
+      "files": 37,
+      "bytes": 958197
+    },
+    "commands": {
+      "files": 510,
+      "bytes": 3942225
+    },
+    "followup-review": {
+      "files": 5,
+      "bytes": 4520877
+    },
+    "fresh-loader-01": {
+      "files": 7,
+      "bytes": 12558
+    },
+    "fresh-loader-02": {
+      "files": 5,
+      "bytes": 8611
+    },
+    "fresh-loader-03": {
+      "files": 9,
+      "bytes": 15824
+    },
+    "fresh-loader-diagnostic-01": {
+      "files": 18,
+      "bytes": 304124
+    },
+    "ordered-cold-start-01": {
+      "files": 5,
+      "bytes": 1542
+    },
+    "publication-derivatives-01": {
+      "files": 1,
+      "bytes": 177
+    },
+    "role-guidance-upgrade-01": {
+      "files": 13,
+      "bytes": 1823444
+    },
+    "role-guidance-upgrade-02": {
+      "files": 13,
+      "bytes": 1823450
+    },
+    "source-review": {
+      "files": 25,
+      "bytes": 5021014
+    }
+  },
+  "largest": [
+    {
+      "path": "followup-review/0.raw",
+      "size": 4484904
+    },
+    {
+      "path": "source-review/003.raw",
+      "size": 4483413
+    },
+    {
+      "path": "role-guidance-upgrade-01/original-install-baseline.json",
+      "size": 716729
+    },
+    {
+      "path": "role-guidance-upgrade-02/original-install-baseline.json",
+      "size": 716729
+    },
+    {
+      "path": "role-guidance-upgrade-01/original-before-controlled-stop.json",
+      "size": 716613
+    },
+    {
+      "path": "role-guidance-upgrade-02/original-before-controlled-stop.json",
+      "size": 716613
+    },
+    {
+      "path": "owner-current-identity.json",
+      "size": 287682
+    },
+    {
+      "path": "role-guidance-upgrade-01/owner-before.json",
+      "size": 287653
+    },
+    {
+      "path": "role-guidance-upgrade-02/owner-before.json",
+      "size": 287653
+    },
+    {
+      "path": "baseline/002.raw",
+      "size": 174951
+    },
+    {
+      "path": "journal.jsonl",
+      "size": 105829
+    },
+    {
+      "path": "commands/0050.result.json",
+      "size": 100184
+    },
+    {
+      "path": "commands/0049.result.json",
+      "size": 98148
+    },
+    {
+      "path": "commands/0048.result.json",
+      "size": 96269
+    },
+    {
+      "path": "commands/0047.result.json",
+      "size": 94584
+    },
+    {
+      "path": "commands/0046.result.json",
+      "size": 92410
+    },
+    {
+      "path": "commands/0045.result.json",
+      "size": 89805
+    },
+    {
+      "path": "baseline/005.raw",
+      "size": 89704
+    },
+    {
+      "path": "baseline/027.raw",
+      "size": 87684
+    },
+    {
+      "path": "commands/0044.result.json",
+      "size": 87628
+    }
+  ],
+  "sensitive_names": [],
+  "candidates": [
+    {
+      "path": "commands/0051.entry-source-0.cjs",
+      "kind": "PRIVATE_KEY_MARKER",
+      "sha256": "b37042e9d5da1ccaeafc4aaf8aaf4b5941a8749bb2822f07d358c54877caa1c6"
+    },
+    {
+      "path": "inventory-publication.cjs",
+      "kind": "PRIVATE_KEY_MARKER",
+      "sha256": "b37042e9d5da1ccaeafc4aaf8aaf4b5941a8749bb2822f07d358c54877caa1c6"
+    }
+  ],
+  "reasoning_parts": 0,
+  "reasoning": [],
+  "source_read_scope": "Evidence root only; no private owner key or provider credential source read",
+  "active_archive": true
+}

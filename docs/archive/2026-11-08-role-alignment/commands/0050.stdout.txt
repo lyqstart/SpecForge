@@ -1,0 +1,1 @@
+{"publication_prepared":true,"algorithm_copies":3}

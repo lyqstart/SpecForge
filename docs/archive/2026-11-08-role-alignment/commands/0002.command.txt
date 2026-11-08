@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-D18-D23-ROLE-ALIGNMENT-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-role-alignment/finish-initialization.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "finish-baseline",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES",
+  "started_utc": "2026-11-08T01:28:21.069Z",
+  "carrier_source_sha256": "a4322f7d32d8d7c1814e1fe3cdab8c914180d0cf799ce2a0d7cf7dde5793d6f1",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-role-alignment\\finish-initialization.cjs",
+      "sha256": "e60e6204c25830fd1d3592f9d174bcbdf2d77ed2650814f537228d25636c41de",
+      "size": 5897,
+      "extension": ".cjs"
+    }
+  ]
+}

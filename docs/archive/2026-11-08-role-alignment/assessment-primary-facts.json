@@ -1,0 +1,1062 @@
+{
+  "utc": "2026-11-08T01:49:17.566Z",
+  "source_commit": "7ecc7cfe7862e1f0d3d1cf4acb9ca8b3b6dba46c",
+  "installation": [
+    {
+      "target": "AGENTS.md",
+      "release": "a0541e3b8bb679d50231967117aab59ba4600dfb6c76117d491be0c55c78042d",
+      "source": "a0541e3b8bb679d50231967117aab59ba4600dfb6c76117d491be0c55c78042d",
+      "installed": "a0541e3b8bb679d50231967117aab59ba4600dfb6c76117d491be0c55c78042d",
+      "managed": "a0541e3b8bb679d50231967117aab59ba4600dfb6c76117d491be0c55c78042d"
+    },
+    {
+      "target": "agents/_AGENT_BASE.md",
+      "release": "3f8c7629fb2b62d06d2224b570b0d6f0be367365e811715c4eb2f9c6370ccd10",
+      "source": "3f8c7629fb2b62d06d2224b570b0d6f0be367365e811715c4eb2f9c6370ccd10",
+      "installed": "3f8c7629fb2b62d06d2224b570b0d6f0be367365e811715c4eb2f9c6370ccd10",
+      "managed": "3f8c7629fb2b62d06d2224b570b0d6f0be367365e811715c4eb2f9c6370ccd10"
+    },
+    {
+      "target": "agents/sf-analyst.md",
+      "release": "2db21b1a0751728c18a25d61627602d903f7536ce4eb0fcebec088be04017402",
+      "source": "2db21b1a0751728c18a25d61627602d903f7536ce4eb0fcebec088be04017402",
+      "installed": "2db21b1a0751728c18a25d61627602d903f7536ce4eb0fcebec088be04017402",
+      "managed": "2db21b1a0751728c18a25d61627602d903f7536ce4eb0fcebec088be04017402"
+    },
+    {
+      "target": "agents/sf-debugger.md",
+      "release": "562632257591ed85396eb17918abffed028043378bcba937068e863ceb7dccd8",
+      "source": "562632257591ed85396eb17918abffed028043378bcba937068e863ceb7dccd8",
+      "installed": "562632257591ed85396eb17918abffed028043378bcba937068e863ceb7dccd8",
+      "managed": "562632257591ed85396eb17918abffed028043378bcba937068e863ceb7dccd8"
+    },
+    {
+      "target": "agents/sf-design.md",
+      "release": "087f710feb969a60d138d1932ca19041093862a5285d18c64ff4056377de8ae5",
+      "source": "087f710feb969a60d138d1932ca19041093862a5285d18c64ff4056377de8ae5",
+      "installed": "087f710feb969a60d138d1932ca19041093862a5285d18c64ff4056377de8ae5",
+      "managed": "087f710feb969a60d138d1932ca19041093862a5285d18c64ff4056377de8ae5"
+    },
+    {
+      "target": "agents/sf-executor.md",
+      "release": "3cef2f0d940bb16bb071447f5ba414b49c50457f48019ed94ccbb9e18f4a594d",
+      "source": "3cef2f0d940bb16bb071447f5ba414b49c50457f48019ed94ccbb9e18f4a594d",
+      "installed": "3cef2f0d940bb16bb071447f5ba414b49c50457f48019ed94ccbb9e18f4a594d",
+      "managed": "3cef2f0d940bb16bb071447f5ba414b49c50457f48019ed94ccbb9e18f4a594d"
+    },
+    {
+      "target": "agents/sf-knowledge.md",
+      "release": "0a81e623b2f0ce1b7a397f936be8c830da598427cafc40542d03281e11d4fb79",
+      "source": "0a81e623b2f0ce1b7a397f936be8c830da598427cafc40542d03281e11d4fb79",
+      "installed": "0a81e623b2f0ce1b7a397f936be8c830da598427cafc40542d03281e11d4fb79",
+      "managed": "0a81e623b2f0ce1b7a397f936be8c830da598427cafc40542d03281e11d4fb79"
+    },
+    {
+      "target": "agents/sf-orchestrator.md",
+      "release": "a808137c5f9b0a491fc57b3178974330da04f7828ab5ec886552dab2c56a13c2",
+      "source": "a808137c5f9b0a491fc57b3178974330da04f7828ab5ec886552dab2c56a13c2",
+      "installed": "a808137c5f9b0a491fc57b3178974330da04f7828ab5ec886552dab2c56a13c2",
+      "managed": "a808137c5f9b0a491fc57b3178974330da04f7828ab5ec886552dab2c56a13c2"
+    },
+    {
+      "target": "agents/sf-requirements.md",
+      "release": "08650aae4ae6f06ff38950b4bb78d0f3ab3b9b7976bdf8983fb105ac0c4f30cc",
+      "source": "08650aae4ae6f06ff38950b4bb78d0f3ab3b9b7976bdf8983fb105ac0c4f30cc",
+      "installed": "08650aae4ae6f06ff38950b4bb78d0f3ab3b9b7976bdf8983fb105ac0c4f30cc",
+      "managed": "08650aae4ae6f06ff38950b4bb78d0f3ab3b9b7976bdf8983fb105ac0c4f30cc"
+    },
+    {
+      "target": "agents/sf-reviewer.md",
+      "release": "d95b4fda4393598b228f97b1e535e6f96c541fb00b9531f24463107e0678fd21",
+      "source": "d95b4fda4393598b228f97b1e535e6f96c541fb00b9531f24463107e0678fd21",
+      "installed": "d95b4fda4393598b228f97b1e535e6f96c541fb00b9531f24463107e0678fd21",
+      "managed": "d95b4fda4393598b228f97b1e535e6f96c541fb00b9531f24463107e0678fd21"
+    },
+    {
+      "target": "agents/sf-task-planner.md",
+      "release": "d448e6223b7cf3b9c289ea1544e3930ca6ad74b02c9bee7e59cdb7ff39faeb0d",
+      "source": "d448e6223b7cf3b9c289ea1544e3930ca6ad74b02c9bee7e59cdb7ff39faeb0d",
+      "installed": "d448e6223b7cf3b9c289ea1544e3930ca6ad74b02c9bee7e59cdb7ff39faeb0d",
+      "managed": "d448e6223b7cf3b9c289ea1544e3930ca6ad74b02c9bee7e59cdb7ff39faeb0d"
+    },
+    {
+      "target": "agents/sf-verifier.md",
+      "release": "5137b4d73916e486b06a2f3c140f225303942980b8fd0a998467f48d0fb7203d",
+      "source": "5137b4d73916e486b06a2f3c140f225303942980b8fd0a998467f48d0fb7203d",
+      "installed": "5137b4d73916e486b06a2f3c140f225303942980b8fd0a998467f48d0fb7203d",
+      "managed": "5137b4d73916e486b06a2f3c140f225303942980b8fd0a998467f48d0fb7203d"
+    },
+    {
+      "target": "plugins/sf_specforge.ts",
+      "release": "fe4bf0ee410ebb993576e783a6102621dbdabe38d2d5882ed105097449c32b7c",
+      "source": "fe4bf0ee410ebb993576e783a6102621dbdabe38d2d5882ed105097449c32b7c",
+      "installed": "fe4bf0ee410ebb993576e783a6102621dbdabe38d2d5882ed105097449c32b7c",
+      "managed": "fe4bf0ee410ebb993576e783a6102621dbdabe38d2d5882ed105097449c32b7c"
+    },
+    {
+      "target": "sf-user/bin/specforge.exe",
+      "release": "4e60c6b592434421240f92006abf63691a41dd9736967eeec39c45482d60ee8d",
+      "source": "4e60c6b592434421240f92006abf63691a41dd9736967eeec39c45482d60ee8d",
+      "installed": "4e60c6b592434421240f92006abf63691a41dd9736967eeec39c45482d60ee8d",
+      "managed": "4e60c6b592434421240f92006abf63691a41dd9736967eeec39c45482d60ee8d"
+    },
+    {
+      "target": "sf-user/bin/specforged.exe",
+      "release": "003faf31d46f30a440c65037acae46dd8a9ab7df82e395160100ba44798daca8",
+      "source": "003faf31d46f30a440c65037acae46dd8a9ab7df82e395160100ba44798daca8",
+      "installed": "003faf31d46f30a440c65037acae46dd8a9ab7df82e395160100ba44798daca8",
+      "managed": "003faf31d46f30a440c65037acae46dd8a9ab7df82e395160100ba44798daca8"
+    },
+    {
+      "target": "sf-user/bin/verification/assets.json",
+      "release": "28ee6f93f9a72a4e058004ade5cb79a22aacdbb3459090eee95ab04532bebc59",
+      "source": "28ee6f93f9a72a4e058004ade5cb79a22aacdbb3459090eee95ab04532bebc59",
+      "installed": "28ee6f93f9a72a4e058004ade5cb79a22aacdbb3459090eee95ab04532bebc59",
+      "managed": "28ee6f93f9a72a4e058004ade5cb79a22aacdbb3459090eee95ab04532bebc59"
+    },
+    {
+      "target": "sf-user/bin/verification/node.exe",
+      "release": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "source": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "installed": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237",
+      "managed": "3602f2bb1a10f2cbab4c36886218a33c1ab3db87290e73b033c46c77147d0237"
+    },
+    {
+      "target": "sf-user/bin/verification/specforge-verify.exe",
+      "release": "5cb378826469834143067b551108f2fc295e1e3e9a04dadb4d7293bc77a41d7f",
+      "source": "5cb378826469834143067b551108f2fc295e1e3e9a04dadb4d7293bc77a41d7f",
+      "installed": "5cb378826469834143067b551108f2fc295e1e3e9a04dadb4d7293bc77a41d7f",
+      "managed": "5cb378826469834143067b551108f2fc295e1e3e9a04dadb4d7293bc77a41d7f"
+    },
+    {
+      "target": "sf-user/lib/sf_plugin_client.ts",
+      "release": "ded998751004fd597b920180a8cef11a78f5b72c21f6cc4c79f55875bf974c99",
+      "source": "ded998751004fd597b920180a8cef11a78f5b72c21f6cc4c79f55875bf974c99",
+      "installed": "ded998751004fd597b920180a8cef11a78f5b72c21f6cc4c79f55875bf974c99",
+      "managed": "ded998751004fd597b920180a8cef11a78f5b72c21f6cc4c79f55875bf974c99"
+    },
+    {
+      "target": "sf-user/lib/sf_thin_plugin.ts",
+      "release": "f7e392aaf2022cb0595c05dc262736f99b3ec3bcf1fc7b804145256f93c7c8c6",
+      "source": "f7e392aaf2022cb0595c05dc262736f99b3ec3bcf1fc7b804145256f93c7c8c6",
+      "installed": "f7e392aaf2022cb0595c05dc262736f99b3ec3bcf1fc7b804145256f93c7c8c6",
+      "managed": "f7e392aaf2022cb0595c05dc262736f99b3ec3bcf1fc7b804145256f93c7c8c6"
+    },
+    {
+      "target": "sf-user/templates/dev-environment.md",
+      "release": "3c47cb7ff3b948f7b345b4a82fc919049c1aab8fbb7ae21e57c3c2160277bca9",
+      "source": "3c47cb7ff3b948f7b345b4a82fc919049c1aab8fbb7ae21e57c3c2160277bca9",
+      "installed": "3c47cb7ff3b948f7b345b4a82fc919049c1aab8fbb7ae21e57c3c2160277bca9",
+      "managed": "3c47cb7ff3b948f7b345b4a82fc919049c1aab8fbb7ae21e57c3c2160277bca9"
+    },
+    {
+      "target": "sf-user/templates/prod-environment.md",
+      "release": "731c7120ccb2ad45d1a4a409b18dde9e0b0eea27a30532c3933fce6fe7a5c9b5",
+      "source": "731c7120ccb2ad45d1a4a409b18dde9e0b0eea27a30532c3933fce6fe7a5c9b5",
+      "installed": "731c7120ccb2ad45d1a4a409b18dde9e0b0eea27a30532c3933fce6fe7a5c9b5",
+      "managed": "731c7120ccb2ad45d1a4a409b18dde9e0b0eea27a30532c3933fce6fe7a5c9b5"
+    },
+    {
+      "target": "sf-user/templates/project-rules/_BASE.md",
+      "release": "632608a6032a060f88f5ba7246d0f13a7ed20f22bf4142e44f15e9c3f9fd241c",
+      "source": "632608a6032a060f88f5ba7246d0f13a7ed20f22bf4142e44f15e9c3f9fd241c",
+      "installed": "632608a6032a060f88f5ba7246d0f13a7ed20f22bf4142e44f15e9c3f9fd241c",
+      "managed": "632608a6032a060f88f5ba7246d0f13a7ed20f22bf4142e44f15e9c3f9fd241c"
+    },
+    {
+      "target": "sf-user/templates/project-rules/databases/mongodb.md",
+      "release": "74ede6f4630b55845082f117cbefc2eb2197e446773cc6066a3fa73b9ec55fc8",
+      "source": "74ede6f4630b55845082f117cbefc2eb2197e446773cc6066a3fa73b9ec55fc8",
+      "installed": "74ede6f4630b55845082f117cbefc2eb2197e446773cc6066a3fa73b9ec55fc8",
+      "managed": "74ede6f4630b55845082f117cbefc2eb2197e446773cc6066a3fa73b9ec55fc8"
+    },
+    {
+      "target": "sf-user/templates/project-rules/databases/mysql.md",
+      "release": "c7667ec7a2dee83d6c76940d6a4ef4909f81a457a25af2852e55c8c4ed4f8c16",
+      "source": "c7667ec7a2dee83d6c76940d6a4ef4909f81a457a25af2852e55c8c4ed4f8c16",
+      "installed": "c7667ec7a2dee83d6c76940d6a4ef4909f81a457a25af2852e55c8c4ed4f8c16",
+      "managed": "c7667ec7a2dee83d6c76940d6a4ef4909f81a457a25af2852e55c8c4ed4f8c16"
+    },
+    {
+      "target": "sf-user/templates/project-rules/databases/postgresql.md",
+      "release": "ffb74bd2b0871c2a3a5876b45bf81b9656d0b47cd0243ef77703b0486711746d",
+      "source": "ffb74bd2b0871c2a3a5876b45bf81b9656d0b47cd0243ef77703b0486711746d",
+      "installed": "ffb74bd2b0871c2a3a5876b45bf81b9656d0b47cd0243ef77703b0486711746d",
+      "managed": "ffb74bd2b0871c2a3a5876b45bf81b9656d0b47cd0243ef77703b0486711746d"
+    },
+    {
+      "target": "sf-user/templates/project-rules/databases/redis.md",
+      "release": "a48b4f7267f7ec554085fa738ec9da3250340981ec7c31228878eb35082e9bd4",
+      "source": "a48b4f7267f7ec554085fa738ec9da3250340981ec7c31228878eb35082e9bd4",
+      "installed": "a48b4f7267f7ec554085fa738ec9da3250340981ec7c31228878eb35082e9bd4",
+      "managed": "a48b4f7267f7ec554085fa738ec9da3250340981ec7c31228878eb35082e9bd4"
+    },
+    {
+      "target": "sf-user/templates/project-rules/databases/sqlite.md",
+      "release": "647e756c9fb46d47c3e692f8648cc3d2af852f63de219650d0a5adcb20ee88b2",
+      "source": "647e756c9fb46d47c3e692f8648cc3d2af852f63de219650d0a5adcb20ee88b2",
+      "installed": "647e756c9fb46d47c3e692f8648cc3d2af852f63de219650d0a5adcb20ee88b2",
+      "managed": "647e756c9fb46d47c3e692f8648cc3d2af852f63de219650d0a5adcb20ee88b2"
+    },
+    {
+      "target": "sf-user/templates/project-rules/frameworks/fastapi.md",
+      "release": "d1236dd749688894ebf2e30ea757118884a21f7f7efaeca8545e90b2c72735d6",
+      "source": "d1236dd749688894ebf2e30ea757118884a21f7f7efaeca8545e90b2c72735d6",
+      "installed": "d1236dd749688894ebf2e30ea757118884a21f7f7efaeca8545e90b2c72735d6",
+      "managed": "d1236dd749688894ebf2e30ea757118884a21f7f7efaeca8545e90b2c72735d6"
+    },
+    {
+      "target": "sf-user/templates/project-rules/frameworks/react.md",
+      "release": "0beaeda3e7bb6e376eeacc8c22153c11c4ae159fcfa2441f04725e725aa2582a",
+      "source": "0beaeda3e7bb6e376eeacc8c22153c11c4ae159fcfa2441f04725e725aa2582a",
+      "installed": "0beaeda3e7bb6e376eeacc8c22153c11c4ae159fcfa2441f04725e725aa2582a",
+      "managed": "0beaeda3e7bb6e376eeacc8c22153c11c4ae159fcfa2441f04725e725aa2582a"
+    },
+    {
+      "target": "sf-user/templates/project-rules/frameworks/spring-boot.md",
+      "release": "8897ec47ecf150160aa39ed19f96f74758e78ceb230429e08e048029e291b02c",
+      "source": "8897ec47ecf150160aa39ed19f96f74758e78ceb230429e08e048029e291b02c",
+      "installed": "8897ec47ecf150160aa39ed19f96f74758e78ceb230429e08e048029e291b02c",
+      "managed": "8897ec47ecf150160aa39ed19f96f74758e78ceb230429e08e048029e291b02c"
+    },
+    {
+      "target": "sf-user/templates/project-rules/frameworks/vue.md",
+      "release": "d8102a574dca286e9eb9dc7a96e5f615f098ba779bab0baa123dec422fe46ea4",
+      "source": "d8102a574dca286e9eb9dc7a96e5f615f098ba779bab0baa123dec422fe46ea4",
+      "installed": "d8102a574dca286e9eb9dc7a96e5f615f098ba779bab0baa123dec422fe46ea4",
+      "managed": "d8102a574dca286e9eb9dc7a96e5f615f098ba779bab0baa123dec422fe46ea4"
+    },
+    {
+      "target": "sf-user/templates/project-rules/infra/ci-github-actions.md",
+      "release": "8f9117ab882051f2ed7dc45e42698bf8b04565c79671bc60f2fdb9de85fbeff8",
+      "source": "8f9117ab882051f2ed7dc45e42698bf8b04565c79671bc60f2fdb9de85fbeff8",
+      "installed": "8f9117ab882051f2ed7dc45e42698bf8b04565c79671bc60f2fdb9de85fbeff8",
+      "managed": "8f9117ab882051f2ed7dc45e42698bf8b04565c79671bc60f2fdb9de85fbeff8"
+    },
+    {
+      "target": "sf-user/templates/project-rules/infra/docker.md",
+      "release": "033146181d3daf77a3044a198af7215934a35da4c52311ba35a656486083dc88",
+      "source": "033146181d3daf77a3044a198af7215934a35da4c52311ba35a656486083dc88",
+      "installed": "033146181d3daf77a3044a198af7215934a35da4c52311ba35a656486083dc88",
+      "managed": "033146181d3daf77a3044a198af7215934a35da4c52311ba35a656486083dc88"
+    },
+    {
+      "target": "sf-user/templates/project-rules/languages/go.md",
+      "release": "dce2d6a53943ba6df9e866c87fb0c86d141387d0484f62b7831edf550a8c3bed",
+      "source": "dce2d6a53943ba6df9e866c87fb0c86d141387d0484f62b7831edf550a8c3bed",
+      "installed": "dce2d6a53943ba6df9e866c87fb0c86d141387d0484f62b7831edf550a8c3bed",
+      "managed": "dce2d6a53943ba6df9e866c87fb0c86d141387d0484f62b7831edf550a8c3bed"
+    },
+    {
+      "target": "sf-user/templates/project-rules/languages/java.md",
+      "release": "02fdbfa4ca01d9e5220213b56aebeae23afe086c3d22b86c3a9d9dffc2a3d88e",
+      "source": "02fdbfa4ca01d9e5220213b56aebeae23afe086c3d22b86c3a9d9dffc2a3d88e",
+      "installed": "02fdbfa4ca01d9e5220213b56aebeae23afe086c3d22b86c3a9d9dffc2a3d88e",
+      "managed": "02fdbfa4ca01d9e5220213b56aebeae23afe086c3d22b86c3a9d9dffc2a3d88e"
+    },
+    {
+      "target": "sf-user/templates/project-rules/languages/nodejs.md",
+      "release": "984d0ad28863b12d6f81313e09d05afe54844b7099b833eee783bb8e0ee78dda",
+      "source": "984d0ad28863b12d6f81313e09d05afe54844b7099b833eee783bb8e0ee78dda",
+      "installed": "984d0ad28863b12d6f81313e09d05afe54844b7099b833eee783bb8e0ee78dda",
+      "managed": "984d0ad28863b12d6f81313e09d05afe54844b7099b833eee783bb8e0ee78dda"
+    },
+    {
+      "target": "sf-user/templates/project-rules/languages/python.md",
+      "release": "bf601ff0b7ccc41a707746345fa90539bff37539983d36c94d9a29769afa1c3e",
+      "source": "bf601ff0b7ccc41a707746345fa90539bff37539983d36c94d9a29769afa1c3e",
+      "installed": "bf601ff0b7ccc41a707746345fa90539bff37539983d36c94d9a29769afa1c3e",
+      "managed": "bf601ff0b7ccc41a707746345fa90539bff37539983d36c94d9a29769afa1c3e"
+    },
+    {
+      "target": "sf-user/templates/README.md",
+      "release": "d43c88523bb59c81aee8e924e33bf839e140889c4b882ed5ff6ab5d3809e3c64",
+      "source": "d43c88523bb59c81aee8e924e33bf839e140889c4b882ed5ff6ab5d3809e3c64",
+      "installed": "d43c88523bb59c81aee8e924e33bf839e140889c4b882ed5ff6ab5d3809e3c64",
+      "managed": "d43c88523bb59c81aee8e924e33bf839e140889c4b882ed5ff6ab5d3809e3c64"
+    },
+    {
+      "target": "sf-user/workflows/builtin/feature_spec.json",
+      "release": "9a174fdc58174f206387a1d9377e3a155b7e2aa8aa98d81c2785d67c5a87031f",
+      "source": "9a174fdc58174f206387a1d9377e3a155b7e2aa8aa98d81c2785d67c5a87031f",
+      "installed": "9a174fdc58174f206387a1d9377e3a155b7e2aa8aa98d81c2785d67c5a87031f",
+      "managed": "9a174fdc58174f206387a1d9377e3a155b7e2aa8aa98d81c2785d67c5a87031f"
+    },
+    {
+      "target": "skills/sf-intake/SKILL.md",
+      "release": "016114ccd4936141de4589f3042d4317c2eee35bd756aa9f7c3c0e206fde12dc",
+      "source": "016114ccd4936141de4589f3042d4317c2eee35bd756aa9f7c3c0e206fde12dc",
+      "installed": "016114ccd4936141de4589f3042d4317c2eee35bd756aa9f7c3c0e206fde12dc",
+      "managed": "016114ccd4936141de4589f3042d4317c2eee35bd756aa9f7c3c0e206fde12dc"
+    },
+    {
+      "target": "skills/sf-workflow-feature-spec/SKILL.md",
+      "release": "9010b776aa6d4540a1ba8af43283058dba47800d6f15d76b60a1a5a465469633",
+      "source": "9010b776aa6d4540a1ba8af43283058dba47800d6f15d76b60a1a5a465469633",
+      "installed": "9010b776aa6d4540a1ba8af43283058dba47800d6f15d76b60a1a5a465469633",
+      "managed": "9010b776aa6d4540a1ba8af43283058dba47800d6f15d76b60a1a5a465469633"
+    },
+    {
+      "target": "skills/superpowers-brainstorming/SKILL.md",
+      "release": "166e7a31c13385b19f4384c3c439805b21460efc98f27d6f9825d4648e4f7942",
+      "source": "166e7a31c13385b19f4384c3c439805b21460efc98f27d6f9825d4648e4f7942",
+      "installed": "166e7a31c13385b19f4384c3c439805b21460efc98f27d6f9825d4648e4f7942",
+      "managed": "166e7a31c13385b19f4384c3c439805b21460efc98f27d6f9825d4648e4f7942"
+    },
+    {
+      "target": "skills/superpowers-code-review/SKILL.md",
+      "release": "ccfd870c444096d04d0dd38eb3d766de72d1a0026a469e149b929ba34945b053",
+      "source": "ccfd870c444096d04d0dd38eb3d766de72d1a0026a469e149b929ba34945b053",
+      "installed": "ccfd870c444096d04d0dd38eb3d766de72d1a0026a469e149b929ba34945b053",
+      "managed": "ccfd870c444096d04d0dd38eb3d766de72d1a0026a469e149b929ba34945b053"
+    },
+    {
+      "target": "skills/superpowers-knowledge-extraction/SKILL.md",
+      "release": "9a60f8b611daa9b33b95f4451cfd393f2acd234d1a80dd9c87af9b0cd6d56679",
+      "source": "9a60f8b611daa9b33b95f4451cfd393f2acd234d1a80dd9c87af9b0cd6d56679",
+      "installed": "9a60f8b611daa9b33b95f4451cfd393f2acd234d1a80dd9c87af9b0cd6d56679",
+      "managed": "9a60f8b611daa9b33b95f4451cfd393f2acd234d1a80dd9c87af9b0cd6d56679"
+    },
+    {
+      "target": "skills/superpowers-systematic-debugging/SKILL.md",
+      "release": "db3f7c14128ab7cf513d9482520fbf98294a43cf9414b581dabb803518b79434",
+      "source": "db3f7c14128ab7cf513d9482520fbf98294a43cf9414b581dabb803518b79434",
+      "installed": "db3f7c14128ab7cf513d9482520fbf98294a43cf9414b581dabb803518b79434",
+      "managed": "db3f7c14128ab7cf513d9482520fbf98294a43cf9414b581dabb803518b79434"
+    },
+    {
+      "target": "skills/superpowers-verification-before-completion/SKILL.md",
+      "release": "9694011bc3b86f8a51b2493f56c321e6c9858accda7a94d9f51edd1c78c5fa27",
+      "source": "9694011bc3b86f8a51b2493f56c321e6c9858accda7a94d9f51edd1c78c5fa27",
+      "installed": "9694011bc3b86f8a51b2493f56c321e6c9858accda7a94d9f51edd1c78c5fa27",
+      "managed": "9694011bc3b86f8a51b2493f56c321e6c9858accda7a94d9f51edd1c78c5fa27"
+    },
+    {
+      "target": "skills/superpowers-writing-plans/SKILL.md",
+      "release": "69f7a7c1eb0c097ed5ab60c9f935e51cf125595fefb9477039230d0b066dac05",
+      "source": "69f7a7c1eb0c097ed5ab60c9f935e51cf125595fefb9477039230d0b066dac05",
+      "installed": "69f7a7c1eb0c097ed5ab60c9f935e51cf125595fefb9477039230d0b066dac05",
+      "managed": "69f7a7c1eb0c097ed5ab60c9f935e51cf125595fefb9477039230d0b066dac05"
+    },
+    {
+      "target": "tools/lib/sf_artifact_write_core.ts",
+      "release": "3fc31bf75ee6c072bfd18c854667122562db9f3916ffccea8cbe710499beb2ed",
+      "source": "3fc31bf75ee6c072bfd18c854667122562db9f3916ffccea8cbe710499beb2ed",
+      "installed": "3fc31bf75ee6c072bfd18c854667122562db9f3916ffccea8cbe710499beb2ed",
+      "managed": "3fc31bf75ee6c072bfd18c854667122562db9f3916ffccea8cbe710499beb2ed"
+    },
+    {
+      "target": "tools/lib/sf_batch_verify_core.ts",
+      "release": "afd1814ca5472274254f75226de078152a04bb97c44a82167da9de5888c8631e",
+      "source": "afd1814ca5472274254f75226de078152a04bb97c44a82167da9de5888c8631e",
+      "installed": "afd1814ca5472274254f75226de078152a04bb97c44a82167da9de5888c8631e",
+      "managed": "afd1814ca5472274254f75226de078152a04bb97c44a82167da9de5888c8631e"
+    },
+    {
+      "target": "tools/lib/sf_design_gate_core.ts",
+      "release": "bf2a58bcc9c1c349d3b955d81a3708c4c3ef9da3a32a4ae83178f9eb09672a41",
+      "source": "bf2a58bcc9c1c349d3b955d81a3708c4c3ef9da3a32a4ae83178f9eb09672a41",
+      "installed": "bf2a58bcc9c1c349d3b955d81a3708c4c3ef9da3a32a4ae83178f9eb09672a41",
+      "managed": "bf2a58bcc9c1c349d3b955d81a3708c4c3ef9da3a32a4ae83178f9eb09672a41"
+    },
+    {
+      "target": "tools/lib/sf_doc_lint_core.ts",
+      "release": "1c9b291307fcdc5173195733fd0770a5647c71290b76b34c610fe3d07e69b927",
+      "source": "1c9b291307fcdc5173195733fd0770a5647c71290b76b34c610fe3d07e69b927",
+      "installed": "1c9b291307fcdc5173195733fd0770a5647c71290b76b34c610fe3d07e69b927",
+      "managed": "1c9b291307fcdc5173195733fd0770a5647c71290b76b34c610fe3d07e69b927"
+    },
+    {
+      "target": "tools/lib/sf_doctor_core.ts",
+      "release": "6b63fa3217fb6a10d00f5822fe9917cafe2bc7677796e3a27205012058b38227",
+      "source": "6b63fa3217fb6a10d00f5822fe9917cafe2bc7677796e3a27205012058b38227",
+      "installed": "6b63fa3217fb6a10d00f5822fe9917cafe2bc7677796e3a27205012058b38227",
+      "managed": "6b63fa3217fb6a10d00f5822fe9917cafe2bc7677796e3a27205012058b38227"
+    },
+    {
+      "target": "tools/lib/sf_ears_parser.ts",
+      "release": "ad305bf66d5219d28bf891709a1d8152890f23884a1351a50326009009f14c71",
+      "source": "ad305bf66d5219d28bf891709a1d8152890f23884a1351a50326009009f14c71",
+      "installed": "ad305bf66d5219d28bf891709a1d8152890f23884a1351a50326009009f14c71",
+      "managed": "ad305bf66d5219d28bf891709a1d8152890f23884a1351a50326009009f14c71"
+    },
+    {
+      "target": "tools/lib/sf_ears_types.ts",
+      "release": "911b5814f97e91fad4d593c60e2e813bce0318371a52d3d2496f508e64a001d4",
+      "source": "911b5814f97e91fad4d593c60e2e813bce0318371a52d3d2496f508e64a001d4",
+      "installed": "911b5814f97e91fad4d593c60e2e813bce0318371a52d3d2496f508e64a001d4",
+      "managed": "911b5814f97e91fad4d593c60e2e813bce0318371a52d3d2496f508e64a001d4"
+    },
+    {
+      "target": "tools/lib/sf_gate_types.ts",
+      "release": "d7be1a8542047a21b4d990904c9fa73e7ce31e1f534ba5698b0e195f8c457d88",
+      "source": "d7be1a8542047a21b4d990904c9fa73e7ce31e1f534ba5698b0e195f8c457d88",
+      "installed": "d7be1a8542047a21b4d990904c9fa73e7ce31e1f534ba5698b0e195f8c457d88",
+      "managed": "d7be1a8542047a21b4d990904c9fa73e7ce31e1f534ba5698b0e195f8c457d88"
+    },
+    {
+      "target": "tools/lib/sf_knowledge_base_core.ts",
+      "release": "cbb5f8a8a1938be992779469622eaed122d7eba51777228b87c622e51f67c0c1",
+      "source": "cbb5f8a8a1938be992779469622eaed122d7eba51777228b87c622e51f67c0c1",
+      "installed": "cbb5f8a8a1938be992779469622eaed122d7eba51777228b87c622e51f67c0c1",
+      "managed": "cbb5f8a8a1938be992779469622eaed122d7eba51777228b87c622e51f67c0c1"
+    },
+    {
+      "target": "tools/lib/sf_markdown_verification_parser.ts",
+      "release": "35c143f8b5ceaf51cdd1bb855602ef3a4e94cd549b8766632f24c1b2031570b1",
+      "source": "35c143f8b5ceaf51cdd1bb855602ef3a4e94cd549b8766632f24c1b2031570b1",
+      "installed": "35c143f8b5ceaf51cdd1bb855602ef3a4e94cd549b8766632f24c1b2031570b1",
+      "managed": "35c143f8b5ceaf51cdd1bb855602ef3a4e94cd549b8766632f24c1b2031570b1"
+    },
+    {
+      "target": "tools/lib/sf_requirements_gate_core.ts",
+      "release": "a355228a774d5d0962c9bce889b8575a49b3006bd458ec86829bd96479fd3a68",
+      "source": "a355228a774d5d0962c9bce889b8575a49b3006bd458ec86829bd96479fd3a68",
+      "installed": "a355228a774d5d0962c9bce889b8575a49b3006bd458ec86829bd96479fd3a68",
+      "managed": "a355228a774d5d0962c9bce889b8575a49b3006bd458ec86829bd96479fd3a68"
+    },
+    {
+      "target": "tools/lib/sf_safe_bash_core.ts",
+      "release": "79dcc276ffe741b36c3339bd9beee1c16998b71c00b94ef404b77c71696c2950",
+      "source": "79dcc276ffe741b36c3339bd9beee1c16998b71c00b94ef404b77c71696c2950",
+      "installed": "79dcc276ffe741b36c3339bd9beee1c16998b71c00b94ef404b77c71696c2950",
+      "managed": "79dcc276ffe741b36c3339bd9beee1c16998b71c00b94ef404b77c71696c2950"
+    },
+    {
+      "target": "tools/lib/sf_safe_bash_executor.ts",
+      "release": "a32462eef8a42464633ce2061e98fee53fed123dfb69046bd61f18e17ea2cb00",
+      "source": "a32462eef8a42464633ce2061e98fee53fed123dfb69046bd61f18e17ea2cb00",
+      "installed": "a32462eef8a42464633ce2061e98fee53fed123dfb69046bd61f18e17ea2cb00",
+      "managed": "a32462eef8a42464633ce2061e98fee53fed123dfb69046bd61f18e17ea2cb00"
+    },
+    {
+      "target": "tools/lib/sf_safe_bash_rules.ts",
+      "release": "7193424e37496647df91e6e7860462ed5864ffc48ea52816c8052be0515e1d46",
+      "source": "7193424e37496647df91e6e7860462ed5864ffc48ea52816c8052be0515e1d46",
+      "installed": "7193424e37496647df91e6e7860462ed5864ffc48ea52816c8052be0515e1d46",
+      "managed": "7193424e37496647df91e6e7860462ed5864ffc48ea52816c8052be0515e1d46"
+    },
+    {
+      "target": "tools/lib/sf_safe_bash_types.ts",
+      "release": "cd483113079a7d2d79b60b0409e7c1b7486b5dbc3f099bc28a1577d192666d4e",
+      "source": "cd483113079a7d2d79b60b0409e7c1b7486b5dbc3f099bc28a1577d192666d4e",
+      "installed": "cd483113079a7d2d79b60b0409e7c1b7486b5dbc3f099bc28a1577d192666d4e",
+      "managed": "cd483113079a7d2d79b60b0409e7c1b7486b5dbc3f099bc28a1577d192666d4e"
+    },
+    {
+      "target": "tools/lib/sf_tasks_gate_core.ts",
+      "release": "02a7e821adf7c98881bfad81832c1d6d74e8af95ece1064dac17680abf05966c",
+      "source": "02a7e821adf7c98881bfad81832c1d6d74e8af95ece1064dac17680abf05966c",
+      "installed": "02a7e821adf7c98881bfad81832c1d6d74e8af95ece1064dac17680abf05966c",
+      "managed": "02a7e821adf7c98881bfad81832c1d6d74e8af95ece1064dac17680abf05966c"
+    },
+    {
+      "target": "tools/lib/sf_trace_matrix_core.ts",
+      "release": "616ddd348bc371fb2ed61cdf731778b11d9f3c1f084018901ae462fbeecdef23",
+      "source": "616ddd348bc371fb2ed61cdf731778b11d9f3c1f084018901ae462fbeecdef23",
+      "installed": "616ddd348bc371fb2ed61cdf731778b11d9f3c1f084018901ae462fbeecdef23",
+      "managed": "616ddd348bc371fb2ed61cdf731778b11d9f3c1f084018901ae462fbeecdef23"
+    },
+    {
+      "target": "tools/lib/sf_verification_gate_core.ts",
+      "release": "2a6d435bc6d7097951487448d34303b5b0fd8e59da127cf6f9311bec8cfea9d5",
+      "source": "2a6d435bc6d7097951487448d34303b5b0fd8e59da127cf6f9311bec8cfea9d5",
+      "installed": "2a6d435bc6d7097951487448d34303b5b0fd8e59da127cf6f9311bec8cfea9d5",
+      "managed": "2a6d435bc6d7097951487448d34303b5b0fd8e59da127cf6f9311bec8cfea9d5"
+    },
+    {
+      "target": "tools/lib/sf_verification_types.ts",
+      "release": "93e81632fcd7867eb2b5a987d9341b18d31be1a7ab7da5431c8c898f8edca9cc",
+      "source": "93e81632fcd7867eb2b5a987d9341b18d31be1a7ab7da5431c8c898f8edca9cc",
+      "installed": "93e81632fcd7867eb2b5a987d9341b18d31be1a7ab7da5431c8c898f8edca9cc",
+      "managed": "93e81632fcd7867eb2b5a987d9341b18d31be1a7ab7da5431c8c898f8edca9cc"
+    },
+    {
+      "target": "tools/lib/sf_verifier_execution_core.ts",
+      "release": "7b9ad7b6c3adf2653cea17b2a2bbb4b2045c9306e66c821929b837bc45f8baef",
+      "source": "7b9ad7b6c3adf2653cea17b2a2bbb4b2045c9306e66c821929b837bc45f8baef",
+      "installed": "7b9ad7b6c3adf2653cea17b2a2bbb4b2045c9306e66c821929b837bc45f8baef",
+      "managed": "7b9ad7b6c3adf2653cea17b2a2bbb4b2045c9306e66c821929b837bc45f8baef"
+    },
+    {
+      "target": "tools/lib/sf-observability-config.ts",
+      "release": "e4051e796895fd5375b3fcfab955b368e7b03e3bd7789684fc17cbb8fd4d10c7",
+      "source": "e4051e796895fd5375b3fcfab955b368e7b03e3bd7789684fc17cbb8fd4d10c7",
+      "installed": "e4051e796895fd5375b3fcfab955b368e7b03e3bd7789684fc17cbb8fd4d10c7",
+      "managed": "e4051e796895fd5375b3fcfab955b368e7b03e3bd7789684fc17cbb8fd4d10c7"
+    },
+    {
+      "target": "tools/lib/sf-observability.ts",
+      "release": "82a23d21cacf440c93a59e73a088eae24c7043ef86c73efc4ba1051b17a8a658",
+      "source": "82a23d21cacf440c93a59e73a088eae24c7043ef86c73efc4ba1051b17a8a658",
+      "installed": "82a23d21cacf440c93a59e73a088eae24c7043ef86c73efc4ba1051b17a8a658",
+      "managed": "82a23d21cacf440c93a59e73a088eae24c7043ef86c73efc4ba1051b17a8a658"
+    },
+    {
+      "target": "tools/lib/thin-client.ts",
+      "release": "8a45f8971e18e9eca99851167f3d72655b23820e1f3a9a934cdb0bff1e5096f5",
+      "source": "8a45f8971e18e9eca99851167f3d72655b23820e1f3a9a934cdb0bff1e5096f5",
+      "installed": "8a45f8971e18e9eca99851167f3d72655b23820e1f3a9a934cdb0bff1e5096f5",
+      "managed": "8a45f8971e18e9eca99851167f3d72655b23820e1f3a9a934cdb0bff1e5096f5"
+    },
+    {
+      "target": "tools/lib/utils.ts",
+      "release": "962672a8be6806752c24307254baea9a4920ce32ee28344bb84b4ce9dbed6321",
+      "source": "962672a8be6806752c24307254baea9a4920ce32ee28344bb84b4ce9dbed6321",
+      "installed": "962672a8be6806752c24307254baea9a4920ce32ee28344bb84b4ce9dbed6321",
+      "managed": "962672a8be6806752c24307254baea9a4920ce32ee28344bb84b4ce9dbed6321"
+    },
+    {
+      "target": "tools/sf_artifact_write.ts",
+      "release": "06e3f0b6945bd5c458cd834e9608c3ac980f77b4319c6ad1ca68682bc0170742",
+      "source": "06e3f0b6945bd5c458cd834e9608c3ac980f77b4319c6ad1ca68682bc0170742",
+      "installed": "06e3f0b6945bd5c458cd834e9608c3ac980f77b4319c6ad1ca68682bc0170742",
+      "managed": "06e3f0b6945bd5c458cd834e9608c3ac980f77b4319c6ad1ca68682bc0170742"
+    },
+    {
+      "target": "tools/sf_batch_verify.ts",
+      "release": "0186413da15e23ad804c4abee2fa89ee9e7336aa21940c08f83ba63536ade204",
+      "source": "0186413da15e23ad804c4abee2fa89ee9e7336aa21940c08f83ba63536ade204",
+      "installed": "0186413da15e23ad804c4abee2fa89ee9e7336aa21940c08f83ba63536ade204",
+      "managed": "0186413da15e23ad804c4abee2fa89ee9e7336aa21940c08f83ba63536ade204"
+    },
+    {
+      "target": "tools/sf_changed_files_audit.ts",
+      "release": "8f947807651094786e0a772c77a6fe48805fe705122d5a15421036a813926371",
+      "source": "8f947807651094786e0a772c77a6fe48805fe705122d5a15421036a813926371",
+      "installed": "8f947807651094786e0a772c77a6fe48805fe705122d5a15421036a813926371",
+      "managed": "8f947807651094786e0a772c77a6fe48805fe705122d5a15421036a813926371"
+    },
+    {
+      "target": "tools/sf_close_gate.ts",
+      "release": "fd004996a56dcd6844e82b5dc88feb49928cce263eea52e6c9e329e6f7cc527b",
+      "source": "fd004996a56dcd6844e82b5dc88feb49928cce263eea52e6c9e329e6f7cc527b",
+      "installed": "fd004996a56dcd6844e82b5dc88feb49928cce263eea52e6c9e329e6f7cc527b",
+      "managed": "fd004996a56dcd6844e82b5dc88feb49928cce263eea52e6c9e329e6f7cc527b"
+    },
+    {
+      "target": "tools/sf_code_permission.ts",
+      "release": "bb77e2a0163ac2730caf53c40904f112ec719c6db72fc38b15d70abd0d56d440",
+      "source": "bb77e2a0163ac2730caf53c40904f112ec719c6db72fc38b15d70abd0d56d440",
+      "installed": "bb77e2a0163ac2730caf53c40904f112ec719c6db72fc38b15d70abd0d56d440",
+      "managed": "bb77e2a0163ac2730caf53c40904f112ec719c6db72fc38b15d70abd0d56d440"
+    },
+    {
+      "target": "tools/sf_contract_register.ts",
+      "release": "24022e877f5a08fb1d3be3505981780cca2f7275be8e5375aed560a8ed6a9313",
+      "source": "24022e877f5a08fb1d3be3505981780cca2f7275be8e5375aed560a8ed6a9313",
+      "installed": "24022e877f5a08fb1d3be3505981780cca2f7275be8e5375aed560a8ed6a9313",
+      "managed": "24022e877f5a08fb1d3be3505981780cca2f7275be8e5375aed560a8ed6a9313"
+    },
+    {
+      "target": "tools/sf_design_gate.ts",
+      "release": "e0e845856c9954ccd232453928d409b2d16fcf949f581a5787c0e64169fe97af",
+      "source": "e0e845856c9954ccd232453928d409b2d16fcf949f581a5787c0e64169fe97af",
+      "installed": "e0e845856c9954ccd232453928d409b2d16fcf949f581a5787c0e64169fe97af",
+      "managed": "e0e845856c9954ccd232453928d409b2d16fcf949f581a5787c0e64169fe97af"
+    },
+    {
+      "target": "tools/sf_doc_lint.ts",
+      "release": "f2330e63b983a53010c738f7ae7ef666ebc1b62752d16a79a06e3c83936331b8",
+      "source": "f2330e63b983a53010c738f7ae7ef666ebc1b62752d16a79a06e3c83936331b8",
+      "installed": "f2330e63b983a53010c738f7ae7ef666ebc1b62752d16a79a06e3c83936331b8",
+      "managed": "f2330e63b983a53010c738f7ae7ef666ebc1b62752d16a79a06e3c83936331b8"
+    },
+    {
+      "target": "tools/sf_doctor.ts",
+      "release": "358ed45fbb58baa8b285c8f18ef937f100b9123ca59dae54c9b24aaa9978e8fb",
+      "source": "358ed45fbb58baa8b285c8f18ef937f100b9123ca59dae54c9b24aaa9978e8fb",
+      "installed": "358ed45fbb58baa8b285c8f18ef937f100b9123ca59dae54c9b24aaa9978e8fb",
+      "managed": "358ed45fbb58baa8b285c8f18ef937f100b9123ca59dae54c9b24aaa9978e8fb"
+    },
+    {
+      "target": "tools/sf_gate_run.ts",
+      "release": "1acfcd238f8affabdefa64eff62e0b6eb56bacd2a8eae2bdaa41423b7d75f2f0",
+      "source": "1acfcd238f8affabdefa64eff62e0b6eb56bacd2a8eae2bdaa41423b7d75f2f0",
+      "installed": "1acfcd238f8affabdefa64eff62e0b6eb56bacd2a8eae2bdaa41423b7d75f2f0",
+      "managed": "1acfcd238f8affabdefa64eff62e0b6eb56bacd2a8eae2bdaa41423b7d75f2f0"
+    },
+    {
+      "target": "tools/sf_git_agent_lock_acquire.ts",
+      "release": "04533568832e2de1c12cfedfdc0d509782a05f2fb5917cc68516a791563bae60",
+      "source": "04533568832e2de1c12cfedfdc0d509782a05f2fb5917cc68516a791563bae60",
+      "installed": "04533568832e2de1c12cfedfdc0d509782a05f2fb5917cc68516a791563bae60",
+      "managed": "04533568832e2de1c12cfedfdc0d509782a05f2fb5917cc68516a791563bae60"
+    },
+    {
+      "target": "tools/sf_git_agent_lock_release.ts",
+      "release": "5551e5156f75ebe38c6cc8c0c6f6c3432722bb9611584a68b54f54234e283a85",
+      "source": "5551e5156f75ebe38c6cc8c0c6f6c3432722bb9611584a68b54f54234e283a85",
+      "installed": "5551e5156f75ebe38c6cc8c0c6f6c3432722bb9611584a68b54f54234e283a85",
+      "managed": "5551e5156f75ebe38c6cc8c0c6f6c3432722bb9611584a68b54f54234e283a85"
+    },
+    {
+      "target": "tools/sf_git_auth_profile_config.ts",
+      "release": "29cecf1cb8fcec3186fd0b0c777de231bf86ff32856bbf120432a4b183146ea4",
+      "source": "29cecf1cb8fcec3186fd0b0c777de231bf86ff32856bbf120432a4b183146ea4",
+      "installed": "29cecf1cb8fcec3186fd0b0c777de231bf86ff32856bbf120432a4b183146ea4",
+      "managed": "29cecf1cb8fcec3186fd0b0c777de231bf86ff32856bbf120432a4b183146ea4"
+    },
+    {
+      "target": "tools/sf_git_branch_create.ts",
+      "release": "c2172972a1cc8057b2770f9a09ab5e15abedbe24e251b952499b6ee407292f8d",
+      "source": "c2172972a1cc8057b2770f9a09ab5e15abedbe24e251b952499b6ee407292f8d",
+      "installed": "c2172972a1cc8057b2770f9a09ab5e15abedbe24e251b952499b6ee407292f8d",
+      "managed": "c2172972a1cc8057b2770f9a09ab5e15abedbe24e251b952499b6ee407292f8d"
+    },
+    {
+      "target": "tools/sf_git_branch_plan.ts",
+      "release": "fe9632ef5aa043b0eebdd881fd1bd33e6417f3ba4d8496f9109b3707f50fa7c9",
+      "source": "fe9632ef5aa043b0eebdd881fd1bd33e6417f3ba4d8496f9109b3707f50fa7c9",
+      "installed": "fe9632ef5aa043b0eebdd881fd1bd33e6417f3ba4d8496f9109b3707f50fa7c9",
+      "managed": "fe9632ef5aa043b0eebdd881fd1bd33e6417f3ba4d8496f9109b3707f50fa7c9"
+    },
+    {
+      "target": "tools/sf_git_checkpoint_commit.ts",
+      "release": "3501e067ce34aa94c498d91e8f160d91bd233d4644d83ed08b4192a29cab366f",
+      "source": "3501e067ce34aa94c498d91e8f160d91bd233d4644d83ed08b4192a29cab366f",
+      "installed": "3501e067ce34aa94c498d91e8f160d91bd233d4644d83ed08b4192a29cab366f",
+      "managed": "3501e067ce34aa94c498d91e8f160d91bd233d4644d83ed08b4192a29cab366f"
+    },
+    {
+      "target": "tools/sf_git_ignore_analyze.ts",
+      "release": "bdf635e7c95e08f7473740902a67fc3b547f87718d091966ca4c7a2824748ea4",
+      "source": "bdf635e7c95e08f7473740902a67fc3b547f87718d091966ca4c7a2824748ea4",
+      "installed": "bdf635e7c95e08f7473740902a67fc3b547f87718d091966ca4c7a2824748ea4",
+      "managed": "bdf635e7c95e08f7473740902a67fc3b547f87718d091966ca4c7a2824748ea4"
+    },
+    {
+      "target": "tools/sf_git_ignore_decision_record.ts",
+      "release": "a54b93dbce0a8b35ba7abc6087bbaaba0a969aa6aac1a526b524846c3cc16e64",
+      "source": "a54b93dbce0a8b35ba7abc6087bbaaba0a969aa6aac1a526b524846c3cc16e64",
+      "installed": "a54b93dbce0a8b35ba7abc6087bbaaba0a969aa6aac1a526b524846c3cc16e64",
+      "managed": "a54b93dbce0a8b35ba7abc6087bbaaba0a969aa6aac1a526b524846c3cc16e64"
+    },
+    {
+      "target": "tools/sf_git_merge_plan.ts",
+      "release": "67274244eb39bc8f325a214862fa289cbf5b2d5f0e3790e4a5ca28c07cd30a40",
+      "source": "67274244eb39bc8f325a214862fa289cbf5b2d5f0e3790e4a5ca28c07cd30a40",
+      "installed": "67274244eb39bc8f325a214862fa289cbf5b2d5f0e3790e4a5ca28c07cd30a40",
+      "managed": "67274244eb39bc8f325a214862fa289cbf5b2d5f0e3790e4a5ca28c07cd30a40"
+    },
+    {
+      "target": "tools/sf_git_merge_run.ts",
+      "release": "ea21428c7cf65d5e51cbc7805776af4a1edd6fe848fe53fe56fa7bebc8fcdf8e",
+      "source": "ea21428c7cf65d5e51cbc7805776af4a1edd6fe848fe53fe56fa7bebc8fcdf8e",
+      "installed": "ea21428c7cf65d5e51cbc7805776af4a1edd6fe848fe53fe56fa7bebc8fcdf8e",
+      "managed": "ea21428c7cf65d5e51cbc7805776af4a1edd6fe848fe53fe56fa7bebc8fcdf8e"
+    },
+    {
+      "target": "tools/sf_git_post_merge_verify.ts",
+      "release": "149c12161ee858b9a95ec4bc0b372a6953b8af1ae209edf4d628c150a46a9700",
+      "source": "149c12161ee858b9a95ec4bc0b372a6953b8af1ae209edf4d628c150a46a9700",
+      "installed": "149c12161ee858b9a95ec4bc0b372a6953b8af1ae209edf4d628c150a46a9700",
+      "managed": "149c12161ee858b9a95ec4bc0b372a6953b8af1ae209edf4d628c150a46a9700"
+    },
+    {
+      "target": "tools/sf_git_preflight.ts",
+      "release": "5c37f2edc4f8a4f82b0c64e47b2a210820534f1d8d614bb001a78d5f53c7f074",
+      "source": "5c37f2edc4f8a4f82b0c64e47b2a210820534f1d8d614bb001a78d5f53c7f074",
+      "installed": "5c37f2edc4f8a4f82b0c64e47b2a210820534f1d8d614bb001a78d5f53c7f074",
+      "managed": "5c37f2edc4f8a4f82b0c64e47b2a210820534f1d8d614bb001a78d5f53c7f074"
+    },
+    {
+      "target": "tools/sf_git_push_branch.ts",
+      "release": "197d5042e10b3d8ae2a0a7552ad79e7710ea0ff7cb6c619d8b01ecb7ecab5727",
+      "source": "197d5042e10b3d8ae2a0a7552ad79e7710ea0ff7cb6c619d8b01ecb7ecab5727",
+      "installed": "197d5042e10b3d8ae2a0a7552ad79e7710ea0ff7cb6c619d8b01ecb7ecab5727",
+      "managed": "197d5042e10b3d8ae2a0a7552ad79e7710ea0ff7cb6c619d8b01ecb7ecab5727"
+    },
+    {
+      "target": "tools/sf_git_release_tag_create.ts",
+      "release": "9481f81a6b596d530d5dc5b6ac7aeddf8461f64b94a1183fa8bd3051cfcf7cd4",
+      "source": "9481f81a6b596d530d5dc5b6ac7aeddf8461f64b94a1183fa8bd3051cfcf7cd4",
+      "installed": "9481f81a6b596d530d5dc5b6ac7aeddf8461f64b94a1183fa8bd3051cfcf7cd4",
+      "managed": "9481f81a6b596d530d5dc5b6ac7aeddf8461f64b94a1183fa8bd3051cfcf7cd4"
+    },
+    {
+      "target": "tools/sf_git_release_tag_plan.ts",
+      "release": "e9cca8c9ca1539e939152f7f3e833a9d828d19aff62f3cad9786db7dd76d8670",
+      "source": "e9cca8c9ca1539e939152f7f3e833a9d828d19aff62f3cad9786db7dd76d8670",
+      "installed": "e9cca8c9ca1539e939152f7f3e833a9d828d19aff62f3cad9786db7dd76d8670",
+      "managed": "e9cca8c9ca1539e939152f7f3e833a9d828d19aff62f3cad9786db7dd76d8670"
+    },
+    {
+      "target": "tools/sf_git_remote_config.ts",
+      "release": "92dab204f0123baeaec6fabe55406d1bddbefae2374ebb6aad9cb2249f950e6d",
+      "source": "92dab204f0123baeaec6fabe55406d1bddbefae2374ebb6aad9cb2249f950e6d",
+      "installed": "92dab204f0123baeaec6fabe55406d1bddbefae2374ebb6aad9cb2249f950e6d",
+      "managed": "92dab204f0123baeaec6fabe55406d1bddbefae2374ebb6aad9cb2249f950e6d"
+    },
+    {
+      "target": "tools/sf_git_remote_probe.ts",
+      "release": "0fc53817e7a73fa7c66ef5a67449e4902091f32e6e80021ec072056d6b53494b",
+      "source": "0fc53817e7a73fa7c66ef5a67449e4902091f32e6e80021ec072056d6b53494b",
+      "installed": "0fc53817e7a73fa7c66ef5a67449e4902091f32e6e80021ec072056d6b53494b",
+      "managed": "0fc53817e7a73fa7c66ef5a67449e4902091f32e6e80021ec072056d6b53494b"
+    },
+    {
+      "target": "tools/sf_handoff.ts",
+      "release": "ed0006ffabfe6c924c770ec64c40033519ff32ae839d1caf1bdf10b5ddb3ed75",
+      "source": "ed0006ffabfe6c924c770ec64c40033519ff32ae839d1caf1bdf10b5ddb3ed75",
+      "installed": "ed0006ffabfe6c924c770ec64c40033519ff32ae839d1caf1bdf10b5ddb3ed75",
+      "managed": "ed0006ffabfe6c924c770ec64c40033519ff32ae839d1caf1bdf10b5ddb3ed75"
+    },
+    {
+      "target": "tools/sf_hard_stop_resolve.ts",
+      "release": "0eea48ff8f411ea1a7aa68c5d7ea1793c6a9fd8b3f229ac88ba1791e7a335bf2",
+      "source": "0eea48ff8f411ea1a7aa68c5d7ea1793c6a9fd8b3f229ac88ba1791e7a335bf2",
+      "installed": "0eea48ff8f411ea1a7aa68c5d7ea1793c6a9fd8b3f229ac88ba1791e7a335bf2",
+      "managed": "0eea48ff8f411ea1a7aa68c5d7ea1793c6a9fd8b3f229ac88ba1791e7a335bf2"
+    },
+    {
+      "target": "tools/sf_knowledge_base.ts",
+      "release": "2e087757a7c875ab44f1c9fdcff2bfc512e4a63216de12c68c58fbb68bed0d9b",
+      "source": "2e087757a7c875ab44f1c9fdcff2bfc512e4a63216de12c68c58fbb68bed0d9b",
+      "installed": "2e087757a7c875ab44f1c9fdcff2bfc512e4a63216de12c68c58fbb68bed0d9b",
+      "managed": "2e087757a7c875ab44f1c9fdcff2bfc512e4a63216de12c68c58fbb68bed0d9b"
+    },
+    {
+      "target": "tools/sf_merge_run.ts",
+      "release": "ce6e160fdf83df336bf0d48aa9aee9ba7c94db86aac0056d3fc814f68a75f6f2",
+      "source": "ce6e160fdf83df336bf0d48aa9aee9ba7c94db86aac0056d3fc814f68a75f6f2",
+      "installed": "ce6e160fdf83df336bf0d48aa9aee9ba7c94db86aac0056d3fc814f68a75f6f2",
+      "managed": "ce6e160fdf83df336bf0d48aa9aee9ba7c94db86aac0056d3fc814f68a75f6f2"
+    },
+    {
+      "target": "tools/sf_project_config.ts",
+      "release": "b63adf87dee13cccf7fc509070d723f7e6dc6871cb7fc429f67780359fb5e26d",
+      "source": "b63adf87dee13cccf7fc509070d723f7e6dc6871cb7fc429f67780359fb5e26d",
+      "installed": "b63adf87dee13cccf7fc509070d723f7e6dc6871cb7fc429f67780359fb5e26d",
+      "managed": "b63adf87dee13cccf7fc509070d723f7e6dc6871cb7fc429f67780359fb5e26d"
+    },
+    {
+      "target": "tools/sf_project_init.ts",
+      "release": "1792aee692d23c830bc30ee1728585814ee32ff66e6d5adfd593350e04d577b6",
+      "source": "1792aee692d23c830bc30ee1728585814ee32ff66e6d5adfd593350e04d577b6",
+      "installed": "1792aee692d23c830bc30ee1728585814ee32ff66e6d5adfd593350e04d577b6",
+      "managed": "1792aee692d23c830bc30ee1728585814ee32ff66e6d5adfd593350e04d577b6"
+    },
+    {
+      "target": "tools/sf_requirements_gate.ts",
+      "release": "bb63ca970669d24430253901618815c92b9c2aa7f5cf625d21f986de7a306373",
+      "source": "bb63ca970669d24430253901618815c92b9c2aa7f5cf625d21f986de7a306373",
+      "installed": "bb63ca970669d24430253901618815c92b9c2aa7f5cf625d21f986de7a306373",
+      "managed": "bb63ca970669d24430253901618815c92b9c2aa7f5cf625d21f986de7a306373"
+    },
+    {
+      "target": "tools/sf_safe_bash.ts",
+      "release": "c1b33ea1677cb53bcb4acb984caecbc219d213031f6bb3efba80b2f5b6a488d2",
+      "source": "c1b33ea1677cb53bcb4acb984caecbc219d213031f6bb3efba80b2f5b6a488d2",
+      "installed": "c1b33ea1677cb53bcb4acb984caecbc219d213031f6bb3efba80b2f5b6a488d2",
+      "managed": "c1b33ea1677cb53bcb4acb984caecbc219d213031f6bb3efba80b2f5b6a488d2"
+    },
+    {
+      "target": "tools/sf_semantic_closure_run.ts",
+      "release": "e56e3900d02cd3a713d4a0dbfac680c0f261bbc79d8c51bbf58e47a6e8dbfa98",
+      "source": "e56e3900d02cd3a713d4a0dbfac680c0f261bbc79d8c51bbf58e47a6e8dbfa98",
+      "installed": "e56e3900d02cd3a713d4a0dbfac680c0f261bbc79d8c51bbf58e47a6e8dbfa98",
+      "managed": "e56e3900d02cd3a713d4a0dbfac680c0f261bbc79d8c51bbf58e47a6e8dbfa98"
+    },
+    {
+      "target": "tools/sf_state_read.ts",
+      "release": "e3e7229724dc16d389e30378e3a570529f7a242b68a04dc925f4944779e68281",
+      "source": "e3e7229724dc16d389e30378e3a570529f7a242b68a04dc925f4944779e68281",
+      "installed": "e3e7229724dc16d389e30378e3a570529f7a242b68a04dc925f4944779e68281",
+      "managed": "e3e7229724dc16d389e30378e3a570529f7a242b68a04dc925f4944779e68281"
+    },
+    {
+      "target": "tools/sf_state_transition.ts",
+      "release": "fb44899116e5c9faa4299168e1ed97c066ced7d7f50b89a2f778bc123d7599ae",
+      "source": "fb44899116e5c9faa4299168e1ed97c066ced7d7f50b89a2f778bc123d7599ae",
+      "installed": "fb44899116e5c9faa4299168e1ed97c066ced7d7f50b89a2f778bc123d7599ae",
+      "managed": "fb44899116e5c9faa4299168e1ed97c066ced7d7f50b89a2f778bc123d7599ae"
+    },
+    {
+      "target": "tools/sf_tasks_gate.ts",
+      "release": "25790041c27bc9c848277eda4499248b32319917a5661995c89af1f1ec91ae0b",
+      "source": "25790041c27bc9c848277eda4499248b32319917a5661995c89af1f1ec91ae0b",
+      "installed": "25790041c27bc9c848277eda4499248b32319917a5661995c89af1f1ec91ae0b",
+      "managed": "25790041c27bc9c848277eda4499248b32319917a5661995c89af1f1ec91ae0b"
+    },
+    {
+      "target": "tools/sf_trace_matrix.ts",
+      "release": "fa67739bf47b7232195047ba022efe4aa7b925de7f384cd802cd03b528f8188a",
+      "source": "fa67739bf47b7232195047ba022efe4aa7b925de7f384cd802cd03b528f8188a",
+      "installed": "fa67739bf47b7232195047ba022efe4aa7b925de7f384cd802cd03b528f8188a",
+      "managed": "fa67739bf47b7232195047ba022efe4aa7b925de7f384cd802cd03b528f8188a"
+    },
+    {
+      "target": "tools/sf_user_decision_record.ts",
+      "release": "6d810d0315420192076ec365516c2fcdce4ff00cd62033f17ba017fb912ae9b1",
+      "source": "6d810d0315420192076ec365516c2fcdce4ff00cd62033f17ba017fb912ae9b1",
+      "installed": "6d810d0315420192076ec365516c2fcdce4ff00cd62033f17ba017fb912ae9b1",
+      "managed": "6d810d0315420192076ec365516c2fcdce4ff00cd62033f17ba017fb912ae9b1"
+    },
+    {
+      "target": "tools/sf_verification_gate.ts",
+      "release": "7f7c9a926ef07f50b39a13f805e97849b4b1faac606845ff46a32bff1e27936e",
+      "source": "7f7c9a926ef07f50b39a13f805e97849b4b1faac606845ff46a32bff1e27936e",
+      "installed": "7f7c9a926ef07f50b39a13f805e97849b4b1faac606845ff46a32bff1e27936e",
+      "managed": "7f7c9a926ef07f50b39a13f805e97849b4b1faac606845ff46a32bff1e27936e"
+    },
+    {
+      "target": "tools/sf_verification_plan.ts",
+      "release": "5e07a58933b7a038bb0fc4bdcf70b418ea060b607406b823b737253a1ed191a3",
+      "source": "5e07a58933b7a038bb0fc4bdcf70b418ea060b607406b823b737253a1ed191a3",
+      "installed": "5e07a58933b7a038bb0fc4bdcf70b418ea060b607406b823b737253a1ed191a3",
+      "managed": "5e07a58933b7a038bb0fc4bdcf70b418ea060b607406b823b737253a1ed191a3"
+    },
+    {
+      "target": "tools/sf_verification_run.ts",
+      "release": "0ab67a9a6ee97eebdc0b6597fd3ba30b9fbf79a2b4a58b91d1db81efcab9e141",
+      "source": "0ab67a9a6ee97eebdc0b6597fd3ba30b9fbf79a2b4a58b91d1db81efcab9e141",
+      "installed": "0ab67a9a6ee97eebdc0b6597fd3ba30b9fbf79a2b4a58b91d1db81efcab9e141",
+      "managed": "0ab67a9a6ee97eebdc0b6597fd3ba30b9fbf79a2b4a58b91d1db81efcab9e141"
+    },
+    {
+      "target": "tools/sf_work_item_create.ts",
+      "release": "da78786bcb106d9799d3287b244f4543c395ecf3a183a5ccd4cacae20083a207",
+      "source": "da78786bcb106d9799d3287b244f4543c395ecf3a183a5ccd4cacae20083a207",
+      "installed": "da78786bcb106d9799d3287b244f4543c395ecf3a183a5ccd4cacae20083a207",
+      "managed": "da78786bcb106d9799d3287b244f4543c395ecf3a183a5ccd4cacae20083a207"
+    }
+  ],
+  "native_unchanged": true,
+  "owner_preserved": true,
+  "business": {
+    "head": "28c8e3d850c81218af4598928569bf5420814372",
+    "branch": "main",
+    "delivery_reference_sha256": "3ce4823ebc7db0be44bc4dbd9f446701791c6e21f8975bd02fd5e154f334a495",
+    "non_governance_files": [
+      {
+        "path": "package.json",
+        "sha256": "35aab8937d4634f75182a1b812f0b71cf9e23ede47488b317b3a7ac89fc35494",
+        "expected": "35aab8937d4634f75182a1b812f0b71cf9e23ede47488b317b3a7ac89fc35494"
+      },
+      {
+        "path": "README.md",
+        "sha256": "d57538d59da2a671680fc5cd6d0df95ccea742eaeed77bc5adb7e408a96d169b",
+        "expected": "d57538d59da2a671680fc5cd6d0df95ccea742eaeed77bc5adb7e408a96d169b"
+      },
+      {
+        "path": "src/greet.ts",
+        "sha256": "7b8ddcc05cf84afed746d56e978563429b0ac79e03598ed359270ecd50993ec4",
+        "expected": "7b8ddcc05cf84afed746d56e978563429b0ac79e03598ed359270ecd50993ec4"
+      },
+      {
+        "path": "tests/greet.test.ts",
+        "sha256": "26d14693eccb088b0964e06f04dba9a4ea1eafc1090f73467019209d5b414981",
+        "expected": "26d14693eccb088b0964e06f04dba9a4ea1eafc1090f73467019209d5b414981"
+      },
+      {
+        "path": "tsconfig.json",
+        "sha256": "20b50fa167f1c62b27fc036eec23d39284041111d212b751b45e6b4e0a67d014",
+        "expected": "20b50fa167f1c62b27fc036eec23d39284041111d212b751b45e6b4e0a67d014"
+      }
+    ]
+  },
+  "authority": [
+    {
+      "path": "docs/product-specification/authority-registry.md",
+      "expected": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e",
+      "current": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e"
+    },
+    {
+      "path": "docs/product-specification/specforge-product-specification.md",
+      "expected": "0cf3cef264e84b198746852b340cb8d6b2b88562472357a78fa7850c83816d31",
+      "current": "0cf3cef264e84b198746852b340cb8d6b2b88562472357a78fa7850c83816d31"
+    }
+  ],
+  "kiro_root_absent": true,
+  "legacy_metadata_count": 139,
+  "legacy_latest_mtime_ms": 1791426829072.5073,
+  "current_source_owners": [
+    {
+      "path": "docs/product-specification/authority-registry.md",
+      "sha256": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e",
+      "size": 19052
+    },
+    {
+      "path": "scripts/project-session-bootstrap.mjs",
+      "sha256": "51ddf3830add187bd281f04f1452838247c5407a1d67e9d35cb7baa910abd34e",
+      "size": 13804
+    },
+    {
+      "path": "scripts/lib/current-release-precheck.ts",
+      "sha256": "b1528e723429d7f964a5e3fe2c1691660f2a57d228b0a3973601dd8aaf872057",
+      "size": 3257
+    },
+    {
+      "path": "packages/types/src/user-level-paths.ts",
+      "sha256": "9f4c4bc477812a94ac56a167d1cb5fbf4b050d842dcc5000608a8681a0da073f",
+      "size": 2356
+    },
+    {
+      "path": "packages/daemon-core/src/daemon/path-resolver.ts",
+      "sha256": "3bdd72e5281deaf8051405991e81fdcea9db31ff7977c46b210e10cca3a2d235",
+      "size": 8725
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/lib/thin-client.ts",
+      "sha256": "8a45f8971e18e9eca99851167f3d72655b23820e1f3a9a934cdb0bff1e5096f5",
+      "size": 12067
+    },
+    {
+      "path": "setup/userlevel-opencode/plugins/sf_specforge.ts",
+      "sha256": "fe4bf0ee410ebb993576e783a6102621dbdabe38d2d5882ed105097449c32b7c",
+      "size": 1696
+    },
+    {
+      "path": "setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts",
+      "sha256": "f7e392aaf2022cb0595c05dc262736f99b3ec3bcf1fc7b804145256f93c7c8c6",
+      "size": 7811
+    },
+    {
+      "path": "packages/daemon-core/src/state/StateManager.ts",
+      "sha256": "29984ed4a3729c120e7522d7dcb1aa49ad1961f08f1bd99fcb8d7ea99d95b171",
+      "size": 24119
+    },
+    {
+      "path": "packages/daemon-core/src/wal/WAL.ts",
+      "sha256": "578471380e8372ba5e216ca04855fb891d0058bfe045ca38b66fb78e335407d1",
+      "size": 7123
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/work-item-metadata.ts",
+      "sha256": "134164e8843453265ce0394087f5bf0fb83930444508fbec74024e2353af5996",
+      "size": 3560
+    },
+    {
+      "path": "packages/workflow-runtime/src/index.ts",
+      "sha256": "268bed6a7251cf277787a7f1f708f67d39b4340b37816faa6b959746871b1047",
+      "size": 3370
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "sha256": "68c5c8ea19b9c285f30f26b2b7e6d4d87535e0a7569ca5dbd207170e72b19f03",
+      "size": 20643
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "sha256": "aed459ce70d2a43522a0fa9736ade3a4b7a167d28036763ccb2cdc851aebf62e",
+      "size": 136386
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "sha256": "76c09466dd3bb883bb87b6b0777893bfa2dc0611e7f66807bfd39e42cc4ec54a",
+      "size": 39444
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/user-decision-recorder-v11.ts",
+      "sha256": "e31da10f14902880af0c90f384842dc4ae2a0cc5f11cda61d879e9652762aa11",
+      "size": 8729
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/native-write-boundary.ts",
+      "sha256": "e2691ccb101a8dd93b0a4d6ec1fab16d162af741bbae03ff1fc218662760a393",
+      "size": 4176
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/code-permission-service-v11.ts",
+      "sha256": "4546f5ee9981be9a94aefa657ce582d13cc268199b8b698432126e918a9b82e7",
+      "size": 11411
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/write-guard-audit-binding.ts",
+      "sha256": "08e6d2a0fe7c41b990d8e082e28a858eee08fe5a59f02ece1d494278ee90b32b",
+      "size": 4622
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "sha256": "c6d8262eadd511d7974a989e22b8c8cd9703b384c6ced61ffe05518e8640121c",
+      "size": 59170
+    },
+    {
+      "path": "scripts/lib/registry.ts",
+      "sha256": "0ef48cffc26f2412d8ee463a941bd4e95833a5b17786708a1336fdb77db81c77",
+      "size": 15173
+    },
+    {
+      "path": "scripts/lib/release-manifest-producer.ts",
+      "sha256": "1add54ca0a510d37d892b05f1c7d9ad52974d16a87c7425ab5c3900121c2a4e1",
+      "size": 21801
+    },
+    {
+      "path": "packages/version-unification/package.json",
+      "sha256": "a5d9a71dbc0e80e04967ad9a040e01f9dcd048f965bad4f2bcbb8d3e6c4fe543",
+      "size": 607
+    },
+    {
+      "path": "packages/scope-gate/package.json",
+      "sha256": "2e64ff5956659e530d80f216a74d7de54bb8eaf3991362ce256406cdd1f5e4dc",
+      "size": 2254
+    },
+    {
+      "path": "packages/opencode-adapter/src/OpenCodeAdapter.ts",
+      "sha256": "498baae3f5da0963d4ec261f3cad6a02e4b347610e32961d4aa5de77a32aebd4",
+      "size": 40846
+    },
+    {
+      "path": "packages/opencode-adapter/src/integration/OpenCodeHttpRuntimeClient.ts",
+      "sha256": "2ec9c8140acba54118355026207bdb16becca882ea6c9c5725b92ea8b4fa7439",
+      "size": 15295
+    },
+    {
+      "path": "packages/daemon-core/src/daemon/Daemon.ts",
+      "sha256": "78593c960023ae0147eda151d4d4ec037836b0612e96314135c2cc3feaaff4be",
+      "size": 10285
+    },
+    {
+      "path": "packages/daemon-core/src/http/HTTPServer.ts",
+      "sha256": "92ddb2bec7d2e16ece4dbe4d7c84dd8e638903b5cd1b8ad3ef7838130c62ad21",
+      "size": 75842
+    },
+    {
+      "path": "scripts/sf-installer.ts",
+      "sha256": "e6c186adbfdb985e3b96518949eeb6d9560c8d5314d35fcc43a8a5279a3da629",
+      "size": 25678
+    },
+    {
+      "path": "scripts/lib/upgrade-journal.ts",
+      "sha256": "491fac15a03bef0353cd0fb81ed7a568fa8c987d0d1068ee2d8fb490021b297c",
+      "size": 14349
+    },
+    {
+      "path": "scripts/lib/command-path.ts",
+      "sha256": "7fe7f9413e0841052627dd98ee5f0925b423dd001a5719dd51f7bacda6b075cf",
+      "size": 3249
+    },
+    {
+      "path": "README.md",
+      "sha256": "549c967e604841f0fd3ce656d4e6d8f491bd1d12d3da0fa61b7b3f0230b43e4b",
+      "size": 9704
+    },
+    {
+      "path": "docs/user/quick-start.md",
+      "sha256": "c7e2344870a61d0540539bcb95b063537138965d549e6c4770b7a3a2ef800e6d",
+      "size": 966
+    },
+    {
+      "path": "setup/userlevel-opencode/AGENTS.md",
+      "sha256": "a0541e3b8bb679d50231967117aab59ba4600dfb6c76117d491be0c55c78042d",
+      "size": 17306
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-verifier.md",
+      "sha256": "5137b4d73916e486b06a2f3c140f225303942980b8fd0a998467f48d0fb7203d",
+      "size": 41337
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_artifact_write.ts",
+      "sha256": "06e3f0b6945bd5c458cd834e9608c3ac980f77b4319c6ad1ca68682bc0170742",
+      "size": 5487
+    },
+    {
+      "path": "docs/design/windows-lpac-node-readonly-contract.md",
+      "sha256": "75312b393fd26c3b4ead623fc61600d6fe5304e04bb0cd394fbe62fd0a98e097",
+      "size": 20506
+    }
+  ],
+  "classification": "CONFIRMED for direct identities; historical command success proves that command/scope only, not every product behavior."
+}

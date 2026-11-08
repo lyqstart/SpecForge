@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-08T01:54:32.422Z",
+  "copies": [
+    {
+      "path": "seal-final-bounded.cjs",
+      "previous_sha256": "3645bfe5133ca3cf049b17cb5f324131ef6b782b974456040cde396dce5562be",
+      "current_sha256": "b65f2864b3d9d56fc3ecb9cb25ab1e500793c42641dc7bee4721fff5839bb874",
+      "changes": "Run identity only; reviewed sealed algorithm retained."
+    },
+    {
+      "path": "verify-final-publication-bounded.cjs",
+      "previous_sha256": "b6f4743a024a46e4049e4404bc5b11d4ca47744c699fbc19cff13208b5e2e3b6",
+      "current_sha256": "b6f4743a024a46e4049e4404bc5b11d4ca47744c699fbc19cff13208b5e2e3b6",
+      "changes": "Run identity only; reviewed sealed algorithm retained."
+    },
+    {
+      "path": "inventory-publication.cjs",
+      "previous_sha256": "b37042e9d5da1ccaeafc4aaf8aaf4b5941a8749bb2822f07d358c54877caa1c6",
+      "current_sha256": "b37042e9d5da1ccaeafc4aaf8aaf4b5941a8749bb2822f07d358c54877caa1c6",
+      "changes": "Run identity only; reviewed sealed algorithm retained."
+    }
+  ]
+}

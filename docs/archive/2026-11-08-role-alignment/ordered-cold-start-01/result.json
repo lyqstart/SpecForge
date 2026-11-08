@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-08T01:45:41.449Z",
+  "upgrade_completed_before_new_start": true,
+  "old_identity_ended": true,
+  "new_identity": {
+    "ProcessId": 45576,
+    "ExecutablePath": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforged.exe",
+    "CreationDate": "2026-11-08T09:45:40.017999+08:00"
+  },
+  "health": {
+    "schema_version": "1.0",
+    "status": "ok",
+    "pid": 45576,
+    "version": "1.0.23",
+    "startedAt": 1794102340427,
+    "uptimeSec": 0,
+    "activeClients": 0,
+    "pendingEvents": 4,
+    "lastEventTs": 1794102340452
+  },
+  "inner_exit_code": 0
+}

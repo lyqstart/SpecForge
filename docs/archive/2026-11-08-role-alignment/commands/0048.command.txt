@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-D18-D23-ROLE-ALIGNMENT-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-role-alignment/build-assessment.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "record-bounded-comprehensive-assessment",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES",
+  "started_utc": "2026-11-08T01:51:17.818Z",
+  "carrier_source_sha256": "a4322f7d32d8d7c1814e1fe3cdab8c914180d0cf799ce2a0d7cf7dde5793d6f1",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-role-alignment\\build-assessment.cjs",
+      "sha256": "dc164ead2b546d6ef0c8a19077870ade2d3ddeb727f977f1e359a54e512dc9d1",
+      "size": 12839,
+      "extension": ".cjs"
+    }
+  ]
+}

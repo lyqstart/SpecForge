@@ -1,0 +1,116 @@
+{
+  "utc": "2026-11-08T01:32:02.381Z",
+  "authority_sha256": "0cf3cef264e84b198746852b340cb8d6b2b88562472357a78fa7850c83816d31",
+  "current_assets": [
+    "agents/sf-orchestrator.md",
+    "agents/sf-requirements.md",
+    "agents/sf-design.md",
+    "agents/sf-task-planner.md",
+    "agents/sf-executor.md",
+    "agents/sf-debugger.md",
+    "agents/sf-reviewer.md",
+    "agents/sf-verifier.md",
+    "agents/sf-knowledge.md",
+    "agents/sf-analyst.md",
+    "agents/_AGENT_BASE.md",
+    "skills/sf-intake/SKILL.md",
+    "skills/sf-workflow-feature-spec/SKILL.md",
+    "skills/superpowers-brainstorming/SKILL.md",
+    "skills/superpowers-writing-plans/SKILL.md",
+    "skills/superpowers-systematic-debugging/SKILL.md",
+    "skills/superpowers-code-review/SKILL.md",
+    "skills/superpowers-verification-before-completion/SKILL.md",
+    "skills/superpowers-knowledge-extraction/SKILL.md"
+  ],
+  "shared_contract_consumers": [
+    {
+      "path": "setup/userlevel-opencode/agents/sf-orchestrator.md",
+      "before_sha256": "4f71e63bc34c02ef6827de60b34d622c0c0a71545314f9a43f6d6b167666ef17",
+      "after_sha256": "3278317b1daa7f90b72ca947b8a832fbb129ac4d4a6d4cb6d9fb946e63d741c6"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-requirements.md",
+      "before_sha256": "ee9d20936eda4d46ab7756687ce9b36d9f7216d1bc73f362c59f3603fd05086e",
+      "after_sha256": "38088c74b5c5c8df1dc8043262b689683746c5bdd4efb7a03f2abacbfccd1c1a"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-design.md",
+      "before_sha256": "b7303de0a9e5e2e55ee5620898a422c5499099a3a43f375d6e4e9c5adf9dc266",
+      "after_sha256": "6b0aa947d5a26fdc0223efa48a40eb64275df5c96965fda65d36a7904c9674a5"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-task-planner.md",
+      "before_sha256": "3e7b79216bff998b2efb8a3fddfd0f74a7a64281f43fec312ba5122953ceda94",
+      "after_sha256": "d1d1258ef8403c2cd47f2a20f3972218dc23bb1675d7afd79ead9c0094883795"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-executor.md",
+      "before_sha256": "dd8bd6ceec6c28b0306598e20cca39a6c9b93d30c768a6a76525db7f4c96d4de",
+      "after_sha256": "3c53ece7998ae26cbe895f6bf88a3cc91daf616606fd81023d0a8245fee5b0d2"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-debugger.md",
+      "before_sha256": "b4502ed799d4f4ee325c9a156b5cedb5a60754aa0a663821d36e527c4f4b2049",
+      "after_sha256": "8fb7e9eb30c4589952aa1faafd8e4c45eccf4d53e5761538d7afc52ff997299a"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-reviewer.md",
+      "before_sha256": "dbdd17d75f676ba56febf1afec91bbf1277e46e1bec03383b9fa6864faa66673",
+      "after_sha256": "6033a135a1441e7de4964a7c4f65a07eddc0c3224d8441e2f566fa21bb3e3f07"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-verifier.md",
+      "before_sha256": "87dfe943573df61f64240f11fea3240443d865d4580a7ea4c06f9db8723a2bff",
+      "after_sha256": "5137b4d73916e486b06a2f3c140f225303942980b8fd0a998467f48d0fb7203d"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-knowledge.md",
+      "before_sha256": "905e505ff81541ad4a5ff04c546f8f76f0c6ff05953861ff239a70d94e1616aa",
+      "after_sha256": "a69cea2369645641acf773606788f394677a54a67395802227af7c16c2c1953e"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-analyst.md",
+      "before_sha256": "d7d28f830bd7d206c6a73f5f6d6b3accc28a45ca9e83b54f02678decda7bcec1",
+      "after_sha256": "0e13faf3000d8fa47d3580f7e9be770b919e374020b54f96c260d405aefb16b2"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/_AGENT_BASE.md",
+      "before_sha256": "f219107eaca430a090e540029ecc984e28551ff7e6a48cef1ecb88229b7d9f74",
+      "after_sha256": "6cb9e28910b8981ba9d769df11b56838676471db18c2ae0758e8f00d6049b9cb"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/sf-intake/SKILL.md",
+      "before_sha256": "ad7b8c46f11ea76b4f2cad050629e0163ed03f15d8194355b54d86ace664bc8a",
+      "after_sha256": "744c051487ec1858518d87cd4bee7a3aef566bb429681ce928e1a15ff1cec6fa"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md",
+      "before_sha256": "7446e472084d12226fddb1a3560368bdd8ad571db480e27255cf60bf792cd06b",
+      "after_sha256": "9010b776aa6d4540a1ba8af43283058dba47800d6f15d76b60a1a5a465469633"
+    },
+    {
+      "path": "setup/userlevel-opencode/AGENTS.md",
+      "before_sha256": "6863f85a6d50503030abc7e0205eb1125f032cbb2df95d368a60a5c93d4dc68e",
+      "after_sha256": "0ece529278f394a3c2625b9ce405373d07c20d49f71b45cbc21cbb528b73765c"
+    }
+  ],
+  "built_not_enabled": [
+    "agent:sf-investigator",
+    "agent:sf-evidence-collector",
+    "agent:sf-extension",
+    "skill:sf-workflow-architecture-change",
+    "skill:sf-workflow-bugfix-spec",
+    "skill:sf-workflow-change-request",
+    "skill:sf-workflow-contract-change",
+    "skill:sf-workflow-design-first",
+    "skill:sf-workflow-investigation",
+    "skill:sf-workflow-ops-task",
+    "skill:sf-workflow-quick-change",
+    "skill:sf-workflow-refactor",
+    "skill:sf-workflow-spec-migration",
+    "skill:superpowers-subagent-driven-development",
+    "skill:superpowers-tdd",
+    "skill:superpowers-engineering-lessons"
+  ],
+  "interpretation": "Shared owner boundary is informational for readonly/planning roles, not permission to call owner tools; all current assets inventoried, only actual verification participants need detailed execution steps."
+}

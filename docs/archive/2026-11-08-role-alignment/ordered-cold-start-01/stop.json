@@ -1,0 +1,11 @@
+{
+  "utc": "2026-11-08T01:45:38.528Z",
+  "output": {
+    "success": true,
+    "data": {
+      "message": "shutdown initiated"
+    },
+    "requestId": "r4mqgbxy0hmw767kc8",
+    "timestamp": 1794102338744
+  }
+}

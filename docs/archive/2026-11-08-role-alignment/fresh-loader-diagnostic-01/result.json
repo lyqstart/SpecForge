@@ -1,0 +1,31 @@
+{
+  "utc": "2026-11-08T01:39:43.668Z",
+  "inner_exit_code": 1,
+  "failure": {
+    "name": "AssertionError",
+    "message": "SKILL_NOT_LOADED:superpowers-knowledge-extraction"
+  },
+  "owned_kernel_exit": {
+    "code": null,
+    "signal": "SIGTERM",
+    "utc": "2026-11-08T01:39:42.728Z"
+  },
+  "owned_kernel_absent": true,
+  "independent_daemon_healthy": {
+    "schema_version": "1.0",
+    "status": "ok",
+    "pid": 21724,
+    "version": "1.0.23",
+    "startedAt": 1794101910362,
+    "uptimeSec": 73,
+    "activeClients": 0,
+    "pendingEvents": 4,
+    "lastEventTs": 1794101910390
+  },
+  "installed_files_verified": 117,
+  "actual_current_agents": 10,
+  "actual_current_skills": 8,
+  "model_prompt_sent": false,
+  "business_tool_invoked": false,
+  "qualification": "Diagnostic only: actual selected SF prompt bytes frozen before source identity judgment; not acceptance or model behavior."
+}

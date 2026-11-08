@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-08T01:37:40.406Z",
+  "identity": [
+    {
+      "ProcessId": 36836,
+      "ExecutablePath": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforged.exe",
+      "CreationDate": "2026-11-07T21:31:02.119593+08:00"
+    }
+  ],
+  "health": {
+    "schema_version": "1.0",
+    "status": "ok",
+    "pid": 36836,
+    "version": "1.0.23",
+    "startedAt": 1794058262497,
+    "uptimeSec": 43597,
+    "activeClients": 0,
+    "pendingEvents": 4,
+    "lastEventTs": 1794058262520
+  },
+  "token_disclosed": false
+}

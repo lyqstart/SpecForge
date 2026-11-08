@@ -1,0 +1,29 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/sf-safe-bash-windows-invocation.test.ts (3 tests) 14ms
+ ✓ tests/verification-report-contract-delegation.test.ts (6 tests) 9ms
+ ✓ tests/unit/verification-evidence-integrity.test.ts (4 tests) 210ms
+ ✓ tests/unit/safe-bash-caller-role.test.ts (4 tests) 7ms
+ ✓ tests/v11-agent-skill-contract-alignment.test.ts (22 tests) 430ms
+ ✓ tests/unit/verification-evidence-producer.test.ts (13 tests) 1289ms
+ ✓ tests/unit/verification-governance-contract.test.ts (12 tests) 2664ms
+   ✓ verification governance contract > blocks an actual Contract consumer that formal Trace does not declare  448ms
+ ✓ tests/unit/current-release-tool-registry.test.ts (9 tests) 46ms
+ ✓ tests/unit/verification-runtime-plan.test.ts (10 tests) 37505ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > retains the legal code-only not_applicable merge path  6536ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > binds canonical WI-owned Tasks even when the Project Spec merge manifest has no Task entry  4681ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > rejects an actual role mismatch and caller-supplied commands before private writes  536ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > does not reuse an actual invocation or accept changed source/approved Tasks  6048ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > rejects orchestrator run ownership even with a verifier self-claim and preserves code permission  3669ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > revokes only the independent verification grant and blocks a new Attempt  2406ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > prepares immutable fixed config and can cancel it under HardStop without launching anything  3379ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > rejects prepare-only plan_id on run before native start and preserves the Attempt for controlled cancellation  2866ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > recovers an authenticated interrupted preparation and refuses unknown extra files  2616ms
+   ✓ verification Runtime plan/permission owner (unit dependencies) > cancels active work and waits for its receipt before completing graceful shutdown (unit backend)  4766ms
+
+ Test Files  9 passed (9)
+      Tests  83 passed (83)
+   Start at  09:42:39
+   Duration  44.30s (transform 16.64s, setup 0ms, collect 33.85s, tests 42.17s, environment 3ms, prepare 3.54s)
+

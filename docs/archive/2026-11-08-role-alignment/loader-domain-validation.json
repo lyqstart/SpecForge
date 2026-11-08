@@ -1,0 +1,10 @@
+{
+  "utc": "2026-11-08T01:44:08.015Z",
+  "actual_agent_fixtures": 10,
+  "positive_exact": 10,
+  "mutated_negative_rejected": 10,
+  "agent_domain": "UTF8 raw CRLF body minus YAML frontmatter then trim",
+  "skill_domain": "UTF8 raw body minus YAML frontmatter; preserve CRLF and empty lines; no trim",
+  "source_observation": "fresh-loader-diagnostic-01/agents.json",
+  "observer_sha256": "8fd3448a81f92a5c996ab201985059e19c1a93c28cc385b8fa5f752270d13ac6"
+}

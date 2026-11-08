@@ -1,0 +1,5 @@
+{
+  "base_sha256": "3f8c7629fb2b62d06d2224b570b0d6f0be367365e811715c4eb2f9c6370ccd10",
+  "global_sha256": "a0541e3b8bb679d50231967117aab59ba4600dfb6c76117d491be0c55c78042d",
+  "evidence": "Actual installed bytes, not a claim that _AGENT_BASE is an invocable Agent. All10 configured SF Agent prompts individually matched their installed source."
+}

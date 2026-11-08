@@ -1,0 +1,9 @@
+{
+  "utc": "2026-11-08T01:45:39.829Z",
+  "output": {
+    "success": true,
+    "message": "Daemon process started",
+    "pid": 45576,
+    "executable": "C:\\Users\\lyq\\.config\\opencode\\sf-user\\bin\\specforged.exe"
+  }
+}

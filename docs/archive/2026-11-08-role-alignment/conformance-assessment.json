@@ -1,0 +1,350 @@
+{
+  "utc": "2026-11-08T01:51:18.671Z",
+  "source_commit": "7ecc7cfe7862e1f0d3d1cf4acb9ca8b3b6dba46c",
+  "authority": [
+    {
+      "path": "docs/product-specification/authority-registry.md",
+      "expected": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e",
+      "current": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e"
+    },
+    {
+      "path": "docs/product-specification/specforge-product-specification.md",
+      "expected": "0cf3cef264e84b198746852b340cb8d6b2b88562472357a78fa7850c83816d31",
+      "current": "0cf3cef264e84b198746852b340cb8d6b2b88562472357a78fa7850c83816d31"
+    }
+  ],
+  "repair_verdict": "PASS_CURRENT_D18_D23_ROLE_AND_SKILL_SCOPE",
+  "unqualified_full_product_verdict": "INSUFFICIENT_EVIDENCE",
+  "known_confirmed_open_defects_in_repaired_scope": [],
+  "current_runtime_scope": "Windows x64 fixedNode24.19 single-process readonly LPAC profile; unsupported shell/build/thirdparty/network/writing commands remain refused by design.",
+  "rows": [
+    {
+      "number": 1,
+      "requirement": "Authority Registry 只指向一份 Product Specification，不再存在并列产品 authority。",
+      "grade": "CONFIRMED",
+      "primary_evidence_group": "authority",
+      "finding": "Registry唯一SPS指针、根入口及SPS/Registry当前字节身份一致。",
+      "limit": "权威关系得到直接证明，不代表所有下游实现自动合规。",
+      "evidence": [
+        "historical-primary-reuse.json#authority",
+        "assessment-primary-facts.json",
+        "commands/0036.result.json",
+        "commands/0037.result.json"
+      ]
+    },
+    {
+      "number": 2,
+      "requirement": "release precheck、Scope Gate 和 architecture-governance tests 不再把 .kiro V6 requirements/design 当作产品 authority。",
+      "grade": "CONFIRMED",
+      "primary_evidence_group": "authority",
+      "finding": "当前Root authority/scope消费者回归、正式precheck及.k iro退役事实；实际根.kiro缺失。",
+      "limit": "归档仅保留历史；未将旧标准或旧报告当产品行为权威。",
+      "evidence": [
+        "historical-primary-reuse.json#authority",
+        "assessment-primary-facts.json",
+        "commands/0036.result.json",
+        "commands/0037.result.json"
+      ]
+    },
+    {
+      "number": 3,
+      "requirement": "当前运行代码对 ~/.specforge 的写入为零。",
+      "grade": "CORROBORATED",
+      "primary_evidence_group": "paths",
+      "finding": "规范路径owner、当前CLI/安装器/ThinClient来源；旧home仅lstat元数据、无内容读取。",
+      "limit": "没有对任意运行负载做全机文件系统追踪，不能用元数据证明所有未来执行绝无旧home写入。",
+      "evidence": [
+        "historical-primary-reuse.json#paths",
+        "assessment-primary-facts.json",
+        "commands/0036.result.json",
+        "commands/0037.result.json"
+      ]
+    },
+    {
+      "number": 4,
+      "requirement": "user-level Manifest 位于 OpenCode config root；私有数据位于 sf-user。",
+      "grade": "CONFIRMED",
+      "primary_evidence_group": "paths",
+      "finding": "真实OpenCode config root内specforge-manifest及sf-user；117项逐字SHA一致。",
+      "limit": "证明本机当前安装与路径owner；用户自定义平台路径仍须相应实测。",
+      "evidence": [
+        "historical-primary-reuse.json#paths",
+        "assessment-primary-facts.json",
+        "commands/0036.result.json",
+        "commands/0037.result.json"
+      ]
+    },
+    {
+      "number": 5,
+      "requirement": "Thin Plugin 不启动、停止或重启 Daemon。",
+      "grade": "CORROBORATED",
+      "primary_evidence_group": "plugin",
+      "finding": "Thin Plugin源码/当前回归，正式CLI冷启动；自有Kernel退出后PID45576独立健康。",
+      "limit": "生命周期观察和静态调用边界共同支持；不是任意第三方插件行为的证明。",
+      "evidence": [
+        "historical-primary-reuse.json#plugin",
+        "assessment-primary-facts.json",
+        "commands/0036.result.json",
+        "commands/0037.result.json"
+      ]
+    },
+    {
+      "number": 6,
+      "requirement": "Daemon 可作为独立共享服务运行，客户端连接失败时治理写入 fail closed。",
+      "grade": "CONFIRMED",
+      "primary_evidence_group": "plugin",
+      "finding": "独立安装Daemon冷启动、健康及Kernel退出仍存活；历史真实拒绝和当前边界回归已绑定原始回执。",
+      "limit": "实测范围Windows本机；本轮未运行Linux systemd真实服务。",
+      "evidence": [
+        "historical-primary-reuse.json#plugin",
+        "assessment-primary-facts.json",
+        "commands/0036.result.json",
+        "commands/0037.result.json"
+      ]
+    },
+    {
+      "number": 7,
+      "requirement": "Project workflow state 可以从 events.jsonl 重放重建；state.json 只是 checkpoint/projection。",
+      "grade": "CONFIRMED",
+      "primary_evidence_group": "state",
+      "finding": "已安装sf_state_read明确rebuilt_from_events=true且closed；StateManager/WAL当前owner与历史回放回归来源核验。",
+      "limit": "未在原业务删除/损坏事件做实验；损坏恢复依赖自有合成回归，不能拿正常读取替代。",
+      "evidence": [
+        "historical-primary-reuse.json#state",
+        "assessment-primary-facts.json",
+        "commands/0036.result.json",
+        "commands/0037.result.json"
+      ]
+    },
+    {
+      "number": 8,
+      "requirement": "不再存在 runtime/wal.jsonl 当前合同或生产 consumer。",
+      "grade": "CONFIRMED",
+      "primary_evidence_group": "state",
+      "finding": "当前事件owner使用events.jsonl；Root路径投影/依赖方向回归和生产目录定向检索。",
+      "limit": "WAL类名表示语义，不等于runtime/wal.jsonl路径；历史负例不当正向消费者。",
+      "evidence": [
+        "historical-primary-reuse.json#state",
+        "assessment-primary-facts.json",
+        "commands/0036.result.json",
+        "commands/0037.result.json"
+      ]
+    },
+    {
+      "number": 9,
+      "requirement": "Project Spec 初始化只创建当前 Core 文件；不会默认创建 D09 暂缓的 multi-view/ADR Detail 文件。",
+      "grade": "CORROBORATED",
+      "primary_evidence_group": "project",
+      "finding": "ProjectInit owner模板/当前Core路径及历史原始初始化回归；D09暂缓集合在正式范围外。",
+      "limit": "未为此次文档修复重新初始化原业务；无破坏性现场实验。",
+      "evidence": [
+        "historical-primary-reuse.json#project",
+        "assessment-primary-facts.json",
+        "commands/0036.result.json",
+        "commands/0037.result.json"
+      ]
+    },
+    {
+      "number": 10,
+      "requirement": "Project Spec 修改必须通过 Candidate/Gate/Decision/Merge 受控链路。",
+      "grade": "CORROBORATED",
+      "primary_evidence_group": "project",
+      "finding": "真实原WI已受控完成的Candidate/Gate/Decision/Merge记录与owner源；合并HEAD及当前closed保留。",
+      "limit": "此为现有受控链和消费者证据，不是穷举所有并发/崩溃交错的数学证明。",
+      "evidence": [
+        "historical-primary-reuse.json#project",
+        "assessment-primary-facts.json",
+        "commands/0036.result.json",
+        "commands/0037.result.json"
+      ]
+    },
+    {
+      "number": 11,
+      "requirement": "Work Item authoritative state 不保存在 work_item.json。",
+      "grade": "CONFIRMED",
+      "primary_evidence_group": "state",
+      "finding": "当前work-item metadata validator与StateManager事件源；实际state owner返回重放状态。",
+      "limit": "元数据中的历史展示字段不能被当作当前状态权威。",
+      "evidence": [
+        "historical-primary-reuse.json#state",
+        "assessment-primary-facts.json",
+        "commands/0036.result.json",
+        "commands/0037.result.json"
+      ]
+    },
+    {
+      "number": 12,
+      "requirement": "Write Guard / code permission 覆盖真实写入口，越权写入可审计并拒绝。",
+      "grade": "CORROBORATED",
+      "primary_evidence_group": "guard",
+      "finding": "真实native boundary/write guard owner、既有实际拒绝原始回执、当前D18拒绝与D23 owner mismatch/permission保持回归。",
+      "limit": "本轮未重新跑完整原生攻防矩阵；五个合格原生资产逐字未变，旧失败仍保留。",
+      "evidence": [
+        "historical-primary-reuse.json#guard",
+        "assessment-primary-facts.json",
+        "commands/0036.result.json",
+        "commands/0037.result.json"
+      ]
+    },
+    {
+      "number": 13,
+      "requirement": "Migration 模块退出当前 release surface；仍有效 schema validation 已迁移到中立/owner contract。",
+      "grade": "CONFIRMED",
+      "primary_evidence_group": "release",
+      "finding": "当前权威投影/正式release precheck及中立schema owner；Migration不在当前安装运行集合。",
+      "limit": "出现migration审计分类或历史恢复术语不等于启用迁移产品模块。",
+      "evidence": [
+        "historical-primary-reuse.json#release",
+        "assessment-primary-facts.json",
+        "commands/0036.result.json",
+        "commands/0037.result.json"
+      ]
+    },
+    {
+      "number": 14,
+      "requirement": "Multimodal、Self-Healing、third-party Plugin Loader、OpenClaw 不出现在 current release 正向运行/安装集合。",
+      "grade": "CONFIRMED",
+      "primary_evidence_group": "release",
+      "finding": "SPS current/future分类与正式117物理清单一致，未安装未来模块/第三方Plugin Loader/OpenClaw。",
+      "limit": "只判断当前正向发布集合，不以存在源码/文档声称未来能力实现。",
+      "evidence": [
+        "historical-primary-reuse.json#release",
+        "assessment-primary-facts.json",
+        "commands/0036.result.json",
+        "commands/0037.result.json"
+      ]
+    },
+    {
+      "number": 15,
+      "requirement": "OpenCode Adapter 存在真实 Daemon production consumer 和端到端验证后，方可从 REQUIRED_NOT_YET_ENABLED 升为 ENABLED。",
+      "grade": "CORROBORATED",
+      "primary_evidence_group": "adapter",
+      "finding": "真实Daemon Adapter生产接线、历史Kernel/专业Agent/执行原始证据；当前loader源码身份/状态owner真实读取。",
+      "limit": "本轮没有发送新模型提示或重跑原WI；loader检查本身不等于模型业务行为验收。",
+      "evidence": [
+        "historical-primary-reuse.json#adapter",
+        "assessment-primary-facts.json",
+        "commands/0036.result.json",
+        "commands/0037.result.json"
+      ]
+    },
+    {
+      "number": 16,
+      "requirement": "Version Unification 不再承担 Migration、release scope 或 installer ownership。",
+      "grade": "CONFIRMED",
+      "primary_evidence_group": "release",
+      "finding": "Version Unification与Scope/Installer真实owner边界和当前Root回归；发布资产从正式registry生成。",
+      "limit": "证据限定当前release源码和依赖集合。",
+      "evidence": [
+        "historical-primary-reuse.json#release",
+        "assessment-primary-facts.json",
+        "commands/0036.result.json",
+        "commands/0037.result.json"
+      ]
+    },
+    {
+      "number": 17,
+      "requirement": "Installer 只安装 release manifest 批准的物理集合，并支持可验证的 install/upgrade/verify/uninstall。",
+      "grade": "CONFIRMED",
+      "primary_evidence_group": "installer",
+      "finding": "本轮正式升级15+1份Markdown、两次verify117；历史实际install/uninstall/事务恢复原始回执独立验封。",
+      "limit": "未在当前用户安装上做卸载破坏性复验；该能力沿用相同未变installer的原始验收。",
+      "evidence": [
+        "historical-primary-reuse.json#installer",
+        "assessment-primary-facts.json",
+        "commands/0036.result.json",
+        "commands/0037.result.json"
+      ]
+    },
+    {
+      "number": 18,
+      "requirement": "Scope Gate 只验证 release/build，不作为业务 Runtime。",
+      "grade": "CONFIRMED",
+      "primary_evidence_group": "release",
+      "finding": "Scope Gate导出/包清单/生产依赖边界与Root回归；只承担release/build。",
+      "limit": "历史Scope源码保留不代表业务Runtime启用。",
+      "evidence": [
+        "historical-primary-reuse.json#release",
+        "assessment-primary-facts.json",
+        "commands/0036.result.json",
+        "commands/0037.result.json"
+      ]
+    },
+    {
+      "number": 19,
+      "requirement": "代码、README、错误提示、帮助文本、模板、测试和安装资产与当前路径和 lifecycle 模型一致。",
+      "grade": "CORROBORATED",
+      "primary_evidence_group": "alignment",
+      "finding": "本轮完整当前10角色/模板/8Skill清单，正文/示例/交接统一；22维护、83相关、748Root，117安装及10/8真实加载。",
+      "limit": "本轮闭合所有已确认D18/D23消费者缺口；尚未逐句穷举全产品所有帮助、错误和文档正向分支，不能无保留声称所有消费者已证明一致。",
+      "evidence": [
+        "historical-primary-reuse.json#alignment",
+        "assessment-primary-facts.json",
+        "commands/0036.result.json",
+        "commands/0037.result.json",
+        "commands/0034.result.json",
+        "fresh-loader-03/result.json"
+      ]
+    },
+    {
+      "number": 20,
+      "requirement": "Future Capability Registry 中的内容不会仅因“文档存在”进入当前验收范围。",
+      "grade": "CONFIRMED",
+      "primary_evidence_group": "release",
+      "finding": "当前SPS machine projection、future分类、正式registry及实际安装集合共同绑定。",
+      "limit": "未来文档/disabled角色不进入当前运行或验收集合。",
+      "evidence": [
+        "historical-primary-reuse.json#release",
+        "assessment-primary-facts.json",
+        "commands/0036.result.json",
+        "commands/0037.result.json"
+      ]
+    }
+  ],
+  "body_sections": [
+    [
+      "0..4",
+      "authority/paths/state",
+      "当前权威/版本/目录/状态owner及原封存恢复；路径与状态实读取证。"
+    ],
+    [
+      "5..8",
+      "project/plugin/state",
+      "配置/Work Item/生命周期/角色边界，以当前owner和历史原始回归+实际原WI关闭取证；不重复业务执行。"
+    ],
+    [
+      "9",
+      "guard",
+      "D18内部只读与D23独立真实owner路径，当前正文/示例/实际加载统一。"
+    ],
+    [
+      "10..12",
+      "adapter/installer",
+      "生产Adapter/外部能力字段与正式发布安装owner；本机真实冷启动与loader；历史事务原始证据。"
+    ],
+    [
+      "13..18",
+      "release",
+      "范围、版本、中立schema和当前/未来machine projection；当前Root/precheck/物理安装绑定。"
+    ],
+    [
+      "19..22",
+      "authority/alignment",
+      "逐条验收、Gap边界、历史保留、唯一状态；不能用汇总PASS替代完整证据。"
+    ]
+  ],
+  "not_proved": [
+    "所有平台和任意工作负载的运行正确性，特别是本轮未提供Linux/macOS真实部署。",
+    "对全部用户文档/CLI错误/帮助/示例的每个正向分支进行穷举语义审计。",
+    "历史原项目文件缺失的根因和探测前逐字节现场还原。"
+  ],
+  "preservation": {
+    "original_wi": "closed",
+    "business_main": "28c8e3d850c81218af4598928569bf5420814372",
+    "native_tuple_unchanged": true,
+    "owner_nonsecret_hashes_and_secret_metadata_preserved": true,
+    "no_new_model_prompt": true,
+    "no_original_application_reexecution": true
+  },
+  "interpretation": "CONFIRMED只表示所列一手事实，CORROBORATED表示有限推断与范围；没有把20行一律标PASS。修复与部署验收完成，不把证据边界包装成已发现产品故障。"
+}

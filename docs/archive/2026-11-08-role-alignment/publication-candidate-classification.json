@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-08T01:55:25.656Z",
+  "classification": [
+    {
+      "path": "commands/0051.entry-source-0.cjs",
+      "kind": "PRIVATE_KEY_MARKER",
+      "sha256": "b37042e9d5da1ccaeafc4aaf8aaf4b5941a8749bb2822f07d358c54877caa1c6",
+      "classification": "BENIGN_SCANNER_LITERAL",
+      "basis": "Both files are byte-identical sealed accepted scanner source, containing its own constant marker detector, not a key value."
+    },
+    {
+      "path": "inventory-publication.cjs",
+      "kind": "PRIVATE_KEY_MARKER",
+      "sha256": "b37042e9d5da1ccaeafc4aaf8aaf4b5941a8749bb2822f07d358c54877caa1c6",
+      "classification": "BENIGN_SCANNER_LITERAL",
+      "basis": "Both files are byte-identical sealed accepted scanner source, containing its own constant marker detector, not a key value."
+    }
+  ],
+  "unresolved": 0,
+  "secret_named_files": 0,
+  "model_reasoning_parts": 0,
+  "qualification": "Complete selected-root named/pattern/structured-field scan plus independent candidate context classification; not a mathematical proof of every possible secret encoding."
+}

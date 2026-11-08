@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-D18-D23-ROLE-ALIGNMENT-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "docs/archive/2026-11-08-role-alignment/verify-final.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-structured-reconciliation",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T01:52:05.368Z",
+  "carrier_source_sha256": "a4322f7d32d8d7c1814e1fe3cdab8c914180d0cf799ce2a0d7cf7dde5793d6f1",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-role-alignment\\verify-final.ts",
+      "sha256": "fce3d0b6bfa488dc95da6b2bb1ee93fc71a784b7087b39636891680c073faeee",
+      "size": 6405,
+      "extension": ".ts"
+    }
+  ]
+}
