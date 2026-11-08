@@ -1,0 +1,258 @@
+{
+  "captured_utc": "2026-11-08T02:04:09.996Z",
+  "source": "GitHub connector latest run jobs",
+  "response": {
+    "jobs": [
+      {
+        "id": 128596141279,
+        "name": "Smoke Test (macos-latest)",
+        "status": "completed",
+        "conclusion": "failure",
+        "run_id": 42436426792,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Checkout repository",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Setup Bun",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Pack CLI package",
+            "status": "completed",
+            "conclusion": "failure",
+            "number": 4
+          },
+          {
+            "name": "Find tarball",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 5
+          },
+          {
+            "name": "Run smoke test",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 6
+          },
+          {
+            "name": "Upload smoke report",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Check smoke test result",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 8
+          },
+          {
+            "name": "Post Setup Bun",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 15
+          },
+          {
+            "name": "Post Checkout repository",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          }
+        ]
+      },
+      {
+        "id": 128596141472,
+        "name": "Smoke Test (windows-latest)",
+        "status": "completed",
+        "conclusion": "failure",
+        "run_id": 42436426792,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Checkout repository",
+            "status": "completed",
+            "conclusion": "failure",
+            "number": 2
+          },
+          {
+            "name": "Setup Bun",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 3
+          },
+          {
+            "name": "Pack CLI package",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 4
+          },
+          {
+            "name": "Find tarball",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 5
+          },
+          {
+            "name": "Run smoke test",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 6
+          },
+          {
+            "name": "Upload smoke report",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Check smoke test result",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 8
+          },
+          {
+            "name": "Post Checkout repository",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          }
+        ]
+      },
+      {
+        "id": 128596141506,
+        "name": "Smoke Test (ubuntu-latest)",
+        "status": "completed",
+        "conclusion": "failure",
+        "run_id": 42436426792,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Checkout repository",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Setup Bun",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Pack CLI package",
+            "status": "completed",
+            "conclusion": "failure",
+            "number": 4
+          },
+          {
+            "name": "Find tarball",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 5
+          },
+          {
+            "name": "Run smoke test",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 6
+          },
+          {
+            "name": "Upload smoke report",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Check smoke test result",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 8
+          },
+          {
+            "name": "Post Setup Bun",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 15
+          },
+          {
+            "name": "Post Checkout repository",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          }
+        ]
+      },
+      {
+        "id": 128596240193,
+        "name": "Aggregate Results",
+        "status": "completed",
+        "conclusion": "failure",
+        "run_id": 42436426792,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Check all jobs succeeded",
+            "status": "completed",
+            "conclusion": "failure",
+            "number": 2
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          }
+        ]
+      }
+    ]
+  }
+}

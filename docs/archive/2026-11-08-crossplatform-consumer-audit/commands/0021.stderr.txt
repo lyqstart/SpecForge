@@ -1,0 +1,563 @@
+$ node scripts/run-root-tests.mjs current
+[90mstderr[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould call process.exit(1) when totalShutdownTimeoutMs is exceeded
+[22m[39m[GracefulShutdown] Total shutdown timeout (50ms) exceeded. Force exiting.
+
+[90mstderr[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould call process.exit(1) when totalShutdownTimeoutMs is exceeded
+[22m[39m[GracefulShutdown] Task "blocking-drain" (drain) timed out after 200ms. Continuing...
+
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 7 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/installer/cmdVerify.test.ts[2m > [22mcmdVerify[2m > [22mshould pass verification when all files match their checksums
+[31m[1mAssertionError[22m: expected "log" to be called with arguments: [ StringContaining "校验通过" ][90m
+
+Received:
+
+[1m  1st log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "🔍 正在校验 SpecForge 共享组件完整性...",[90m
+[2m  ][22m
+
+[1m  2nd log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "   OpenCode 配置根: /tmp/sf-verify-cmd-LS9DxR",[90m
+[2m  ][22m
+
+[1m  3rd log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "",[90m
+[2m  ][22m
+
+[1m  4th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "🔍 SpecForge 安装完整性校验",[90m
+[2m  ][22m
+
+[1m  5th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "==================================================",[90m
+[2m  ][22m
+
+[1m  6th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "[90m
+[31m+ ❌ 缺失的文件（1 个）:",[90m
+[2m  ][22m
+
+[1m  7th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "  agents/sf-orchestrator.md (agent)",[90m
+[2m  ][22m
+
+[1m  8th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "    预期哈希: 802e2ebe790b967e...",[90m
+[2m  ][22m
+
+[1m  9th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "[90m
+[31m+ ==================================================",[90m
+[2m  ][22m
+
+[1m  10th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "❌ 校验失败: 1 个问题",[90m
+[2m  ][22m
+
+[1m  11th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "   建议: 执行 `upgrade --force` 恢复共享组件到预期状态",[90m
+[2m  ][22m
+[31m[90m
+
+Number of calls: [1m11[22m
+[31m[39m
+[36m [2m❯[22m tests/unit/installer/cmdVerify.test.ts:[2m117:24[22m[39m
+    [90m115|[39m     [35mawait[39m [34mcmdVerify[39m()
+    [90m116|[39m
+    [90m117|[39m     [34mexpect[39m(consoleSpy)[33m.[39m[34mtoHaveBeenCalledWith[39m(
+    [90m   |[39m                        [31m^[39m
+    [90m118|[39m       expect[33m.[39m[34mstringContaining[39m([32m"校验通过"[39m)
+    [90m119|[39m     )
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/installer/cmdVerify.test.ts[2m > [22mcmdVerify[2m > [22mshould report checksum mismatches and exit with exit code 6
+[31m[1mAssertionError[22m: expected "log" to be called with arguments: [ StringContaining "哈希不匹配的文件" ][90m
+
+Received:
+
+[1m  1st log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "🔍 正在校验 SpecForge 共享组件完整性...",[90m
+[2m  ][22m
+
+[1m  2nd log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "   OpenCode 配置根: /tmp/sf-verify-cmd-zIDHJS",[90m
+[2m  ][22m
+
+[1m  3rd log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "",[90m
+[2m  ][22m
+
+[1m  4th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "🔍 SpecForge 安装完整性校验",[90m
+[2m  ][22m
+
+[1m  5th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "==================================================",[90m
+[2m  ][22m
+
+[1m  6th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "[90m
+[31m+ ❌ 缺失的文件（1 个）:",[90m
+[2m  ][22m
+
+[1m  7th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "  agents/sf-orchestrator.md (agent)",[90m
+[2m  ][22m
+
+[1m  8th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "    预期哈希: 0000000000000000...",[90m
+[2m  ][22m
+
+[1m  9th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "[90m
+[31m+ ==================================================",[90m
+[2m  ][22m
+
+[1m  10th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "❌ 校验失败: 1 个问题",[90m
+[2m  ][22m
+
+[1m  11th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "   建议: 执行 `upgrade --force` 恢复共享组件到预期状态",[90m
+[2m  ][22m
+[31m[90m
+
+Number of calls: [1m11[22m
+[31m[39m
+[36m [2m❯[22m tests/unit/installer/cmdVerify.test.ts:[2m166:24[22m[39m
+    [90m164|[39m     [35mawait[39m [34mcmdVerify[39m()
+    [90m165|[39m
+    [90m166|[39m     [34mexpect[39m(consoleSpy)[33m.[39m[34mtoHaveBeenCalledWith[39m(
+    [90m   |[39m                        [31m^[39m
+    [90m167|[39m       expect[33m.[39m[34mstringContaining[39m([32m"哈希不匹配的文件"[39m)
+    [90m168|[39m     )
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/installer/cmdVerify.test.ts[2m > [22mcmdVerify[2m > [22mshould warn when sf-user/.specforge.lock exists but NOT acquire the lock
+[31m[1mAssertionError[22m: expected "log" to be called with arguments: [ StringContaining "校验通过" ][90m
+
+Received:
+
+[1m  1st log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "🔍 正在校验 SpecForge 共享组件完整性...",[90m
+[2m  ][22m
+
+[1m  2nd log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "   OpenCode 配置根: /tmp/sf-verify-cmd-dOrkIU",[90m
+[2m  ][22m
+
+[1m  3rd log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "",[90m
+[2m  ][22m
+
+[1m  4th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "",[90m
+[2m  ][22m
+
+[1m  5th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "🔍 SpecForge 安装完整性校验",[90m
+[2m  ][22m
+
+[1m  6th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "==================================================",[90m
+[2m  ][22m
+
+[1m  7th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "[90m
+[31m+ ❌ 缺失的文件（1 个）:",[90m
+[2m  ][22m
+
+[1m  8th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "  agents/sf-orchestrator.md (agent)",[90m
+[2m  ][22m
+
+[1m  9th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "    预期哈希: 9f86d081884c7d65...",[90m
+[2m  ][22m
+
+[1m  10th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "[90m
+[31m+ ==================================================",[90m
+[2m  ][22m
+
+[1m  11th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "❌ 校验失败: 1 个问题",[90m
+[2m  ][22m
+
+[1m  12th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "   建议: 执行 `upgrade --force` 恢复共享组件到预期状态",[90m
+[2m  ][22m
+[31m[90m
+
+Number of calls: [1m12[22m
+[31m[39m
+[36m [2m❯[22m tests/unit/installer/cmdVerify.test.ts:[2m212:24[22m[39m
+    [90m210|[39m       )
+    [90m211|[39m     )
+    [90m212|[39m     [34mexpect[39m(consoleSpy)[33m.[39m[34mtoHaveBeenCalledWith[39m(
+    [90m   |[39m                        [31m^[39m
+    [90m213|[39m       expect[33m.[39m[34mstringContaining[39m([32m"校验通过"[39m)
+    [90m214|[39m     )
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/installer/cmdVerify.test.ts[2m > [22mcmdVerify[2m > [22mshould display summary with failed and missing counts
+[31m[1mAssertionError[22m: expected "log" to be called with arguments: [ StringContaining "哈希不匹配的文件" ][90m
+
+Received:
+
+[1m  1st log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "🔍 正在校验 SpecForge 共享组件完整性...",[90m
+[2m  ][22m
+
+[1m  2nd log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "   OpenCode 配置根: /tmp/sf-verify-cmd-eroJDy",[90m
+[2m  ][22m
+
+[1m  3rd log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "",[90m
+[2m  ][22m
+
+[1m  4th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "🔍 SpecForge 安装完整性校验",[90m
+[2m  ][22m
+
+[1m  5th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "==================================================",[90m
+[2m  ][22m
+
+[1m  6th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "[90m
+[31m+ ❌ 缺失的文件（3 个）:",[90m
+[2m  ][22m
+
+[1m  7th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "  agents/sf-orchestrator.md (agent)",[90m
+[2m  ][22m
+
+[1m  8th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "    预期哈希: 44b0c4fb73f05eaf...",[90m
+[2m  ][22m
+
+[1m  9th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "  tools/sf_state_read.ts (tool)",[90m
+[2m  ][22m
+
+[1m  10th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "    预期哈希: 0000000000000000...",[90m
+[2m  ][22m
+
+[1m  11th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "  agents/sf-executor.md (agent)",[90m
+[2m  ][22m
+
+[1m  12th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "    预期哈希: aaaaaaaaaaaaaaaa...",[90m
+[2m  ][22m
+
+[1m  13th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "[90m
+[31m+ ==================================================",[90m
+[2m  ][22m
+
+[1m  14th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "❌ 校验失败: 3 个问题",[90m
+[2m  ][22m
+
+[1m  15th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "哈希不匹配的文件",[90m
+[31m+   "   建议: 执行 `upgrade --force` 恢复共享组件到预期状态",[90m
+[2m  ][22m
+[31m[90m
+
+Number of calls: [1m15[22m
+[31m[39m
+[36m [2m❯[22m tests/unit/installer/cmdVerify.test.ts:[2m254:24[22m[39m
+    [90m252|[39m     [35mawait[39m [34mcmdVerify[39m()
+    [90m253|[39m
+    [90m254|[39m     [34mexpect[39m(consoleSpy)[33m.[39m[34mtoHaveBeenCalledWith[39m(
+    [90m   |[39m                        [31m^[39m
+    [90m255|[39m       expect[33m.[39m[34mstringContaining[39m([32m"哈希不匹配的文件"[39m)
+    [90m256|[39m     )
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/installer/cmdVerify.test.ts[2m > [22mcmdVerify[2m > [22mshould not acquire install lock during verify
+[31m[1mAssertionError[22m: expected "log" to be called with arguments: [ StringContaining "校验通过" ][90m
+
+Received:
+
+[1m  1st log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "🔍 正在校验 SpecForge 共享组件完整性...",[90m
+[2m  ][22m
+
+[1m  2nd log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "   OpenCode 配置根: /tmp/sf-verify-cmd-FTYPbN",[90m
+[2m  ][22m
+
+[1m  3rd log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "",[90m
+[2m  ][22m
+
+[1m  4th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "🔍 SpecForge 安装完整性校验",[90m
+[2m  ][22m
+
+[1m  5th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "==================================================",[90m
+[2m  ][22m
+
+[1m  6th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "[90m
+[31m+ ❌ 缺失的文件（1 个）:",[90m
+[2m  ][22m
+
+[1m  7th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "  agents/sf-orchestrator.md (agent)",[90m
+[2m  ][22m
+
+[1m  8th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "    预期哈希: 9f86d081884c7d65...",[90m
+[2m  ][22m
+
+[1m  9th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "[90m
+[31m+ ==================================================",[90m
+[2m  ][22m
+
+[1m  10th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "❌ 校验失败: 1 个问题",[90m
+[2m  ][22m
+
+[1m  11th log call:
+
+[22m[2m  [[22m
+[32m-   StringContaining "校验通过",[90m
+[31m+   "   建议: 执行 `upgrade --force` 恢复共享组件到预期状态",[90m
+[2m  ][22m
+[31m[90m
+
+Number of calls: [1m11[22m
+[31m[39m
+[36m [2m❯[22m tests/unit/installer/cmdVerify.test.ts:[2m292:24[22m[39m
+    [90m290|[39m       [34mexistsSync[39m([34mjoin[39m(mockUserLevelDir[33m,[39m [32m".specforge.lock"[39m))
+    [90m291|[39m     )[33m.[39m[34mtoBe[39m([35mfalse[39m)
+    [90m292|[39m     [34mexpect[39m(consoleSpy)[33m.[39m[34mtoHaveBeenCalledWith[39m(
+    [90m   |[39m                        [31m^[39m
+    [90m293|[39m       expect[33m.[39m[34mstringContaining[39m([32m"校验通过"[39m)
+    [90m294|[39m     )
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/installer/command_path.test.ts[2m > [22minstalled CLI PATH guidance[2m > [22mresolves the CLI directory below the canonical user-level root
+[31m[1mAssertionError[22m: expected 'C:\Users\test\.config\opencode/sf-use…' to be 'C:\Users\test\.config\opencode\sf-use…' // Object.is equality[39m
+
+Expected: [32m"C:\Users\test\.config\opencode[7m\[27msf-user[7m\[27mbin"[39m
+Received: [31m"C:\Users\test\.config\opencode[7m/[27msf-user[7m/[27mbin"[39m
+
+[36m [2m❯[22m tests/unit/installer/command_path.test.ts:[2m11:8[22m[39m
+    [90m  9|[39m   it("resolves the CLI directory below the canonical user-level root",…
+    [90m 10|[39m     expect(resolveInstalledCliBinDirectory("C:\\Users\\test\\.config\\…
+    [90m 11|[39m       [33m.[39m[34mtoBe[39m([32m"C:\\Users\\test\\.config\\opencode\\sf-user\\bin"[39m)
+    [90m   |[39m        [31m^[39m
+    [90m 12|[39m   })
+    [90m 13|[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/installer/installer_manifest_path_contract.test.ts[2m > [22minstaller manifest path contract[2m > [22muses OpenCode config root as the canonical manifest path
+[31m[1mAssertionError[22m: expected 'C:\Users\luo\.config\opencode/specfor…' to be 'C:\Users\luo\.config\opencode\specfor…' // Object.is equality[39m
+
+Expected: [32m"C:\Users\luo\.config\opencode[7m\[27mspecforge-manifest.json"[39m
+Received: [31m"C:\Users\luo\.config\opencode[7m/[27mspecforge-manifest.json"[39m
+
+[36m [2m❯[22m tests/unit/installer/installer_manifest_path_contract.test.ts:[2m20:70[22m[39m
+    [90m 18|[39m [34mdescribe[39m([32m"installer manifest path contract"[39m[33m,[39m () [33m=>[39m {
+    [90m 19|[39m   it("uses OpenCode config root as the canonical manifest path", () =>…
+    [90m 20|[39m     expect(getUserManifestPath("C:\\Users\\luo\\.config\\opencode")).t…
+    [90m   |[39m                                                                      [31m^[39m
+    [90m 21|[39m       [32m"C:\\Users\\luo\\.config\\opencode\\specforge-manifest.json"[39m
+    [90m 22|[39m     )
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯[22m[39m
+
+error: script "test:root" exited with code 1

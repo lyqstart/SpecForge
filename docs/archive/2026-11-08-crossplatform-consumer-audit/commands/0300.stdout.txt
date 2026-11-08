@@ -1,0 +1,1 @@
+{"files":[".gitattributes","docs/archive/design/SpecForge架构一致性治理最终实施方案.full-history-20261006.md","docs/rule/specforge-development-error-ledger-and-experience.md","docs/project-status.md"],"full_suites":"PASS","runtime_source_changes":0}

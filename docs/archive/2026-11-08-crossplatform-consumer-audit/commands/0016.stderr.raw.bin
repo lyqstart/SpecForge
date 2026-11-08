@@ -1,0 +1,28 @@
+$ vitest run tests/unit/healthcheck-request-timer.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/healthcheck-request-timer.test.ts > health request timeout ownership > clears the explicit loser timer after httpGet success
+ FAIL  tests/unit/healthcheck-request-timer.test.ts > health request timeout ownership > clears the explicit loser timer after httpGet rejection
+ FAIL  tests/unit/healthcheck-request-timer.test.ts > health request timeout ownership > clears the explicit loser timer after httpGetRaw success
+ FAIL  tests/unit/healthcheck-request-timer.test.ts > health request timeout ownership > clears the explicit loser timer after httpGetRaw rejection
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ tests/unit/healthcheck-request-timer.test.ts:14:34
+     12|       const call=Reflect.get(checker,method).call(checker,'http://127.…
+     13|       if(outcome==='success')await expect(call).resolves.toBeDefined()…
+     14|       expect(vi.getTimerCount()).toBe(0);
+       |                                  ^
+     15|       checker[Symbol.dispose]();
+     16|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+error: script "test" exited with code 1

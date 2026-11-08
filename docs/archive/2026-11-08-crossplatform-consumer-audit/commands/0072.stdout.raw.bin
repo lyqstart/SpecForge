@@ -1,0 +1,18 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/service-management
+
+ ❯ tests/unit/reconnect-timer-ownership.test.ts (4 tests | 4 failed) 21ms
+   × workspace reconnect timer ownership > owns exactly one real timer and settles pending delivery on disposal 12ms
+     → expected 2 to be 1 // Object.is equality
+   × workspace reconnect timer ownership > settles superseded waits and leaves one current timer 4ms
+     → expected undefined to deeply equal { ok: false, dropped: true, …(1) }
+   × installed reconnect timer ownership > owns exactly one real timer and settles pending delivery on disposal 2ms
+     → expected 2 to be 1 // Object.is equality
+   × installed reconnect timer ownership > settles superseded waits and leaves one current timer 1ms
+     → expected undefined to deeply equal { ok: false, dropped: true, …(1) }
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  11:04:09
+   Duration  1.36s (transform 261ms, setup 0ms, collect 304ms, tests 21ms, environment 0ms, prepare 490ms)
+

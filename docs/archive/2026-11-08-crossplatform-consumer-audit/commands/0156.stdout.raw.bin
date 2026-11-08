@@ -1,0 +1,13 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/contract-authoring.test.ts (11 tests) 352ms
+ ✓ tests/unit/contract-authoring-cumulative.test.ts (11 tests) 195ms
+ ✓ tests/unit/err155-159-contract-governance-recovery.test.ts (10 tests) 57ms
+ ✓ tests/unit/current-contract-register-owner.test.ts (14 tests) 780ms
+
+ Test Files  4 passed (4)
+      Tests  46 passed (46)
+   Start at  12:21:02
+   Duration  4.53s (transform 859ms, setup 0ms, collect 1.98s, tests 1.38s, environment 1ms, prepare 440ms)
+

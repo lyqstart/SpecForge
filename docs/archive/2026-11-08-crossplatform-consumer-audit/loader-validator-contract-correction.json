@@ -1,0 +1,8 @@
+{
+  "utc": "2026-11-08T06:28:05.324Z",
+  "previous_driver_sha256": "4b431a01a34270a5b56718fd09c53738e2076952ce9c1da7f1926f8ba23de348",
+  "derived_driver_sha256": "046337761168f618d39b423448bd4054b4be2a54645fa8706c1c0111db344099",
+  "failure_preserved": "fresh-loader-final-01/result.json",
+  "correction": "Check actual API response schema first. If uniqueItems is required, keep blocking. Otherwise require exact distinct product ID set and byte-equivalent canonical definitions for every repeated row; retain raw multiplicity and all rows. No product files, user config or execution permissions changed.",
+  "still_metadata_only": true
+}

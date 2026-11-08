@@ -1,0 +1,16 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/packages/cli
+
+ ❯ tests/help-system.test.ts  (17 tests | 3 failed) 21ms
+   ❯ tests/help-system.test.ts > HelpSystem > General Help > describes config as readonly and daemon diagnostics through current health/handshake owners
+     → expected 'Show or modify CLI configuration' not to match /modify|write|edit/i
+   ❯ tests/help-system.test.ts > HelpSystem > General Help > should generate general help in interactive mode
+     → expected 'SpecForge v1.0.24\n\nUsage: specforge…' to contain 'SpecForge v1.0.21'
+   ❯ tests/help-system.test.ts > HelpSystem > General Help > should generate general help in JSON mode
+     → expected '1.0.24' to be '1.0.21' // Object.is equality
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 14 passed (17)
+   Start at  10:27:34
+   Duration  1.21s (transform 182ms, setup 0ms, collect 230ms, tests 21ms, environment 0ms, prepare 506ms)
+

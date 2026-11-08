@@ -1,0 +1,10 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/packages/scope-gate
+
+ ✓ tests/current-release-entry-interop.test.ts  (2 tests) 379ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  13:49:11
+   Duration  908ms (transform 37ms, setup 0ms, collect 43ms, tests 379ms, environment 0ms, prepare 209ms)
+

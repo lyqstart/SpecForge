@@ -1,0 +1,59 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/sf-semantic-closure-run.test.ts",
+    "tests/unit/semantic-closure-contract-alignment.test.ts",
+    "tests/unit/semantic-closure-fj1-regression.test.ts",
+    "tests/unit/close-gate-semantic-closure.test.ts",
+    "tests/unit/semantic-closure-producer-governance.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "semantic-persisted-schema-force-regressions",
+  "expected_writes": "owned-synthetic-tests-and-evidence",
+  "started_utc": "2026-11-08T05:19:31.222Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\sf-semantic-closure-run.test.ts",
+      "sha256": "2eabf13b55e1f4631c416f73f519e10159e6813a350afbc1a53afb518fe530f4",
+      "size": 16567,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 4,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\semantic-closure-contract-alignment.test.ts",
+      "sha256": "36ba85ee1dd3c73ef785526390ebfbcace1e82c659a1f42fdff894dc8a5f5eee",
+      "size": 6110,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 5,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\semantic-closure-fj1-regression.test.ts",
+      "sha256": "62c6013037e37a7f5b6dd75d7da76d641bc24b47795c042cb2dc5cf3040a36b2",
+      "size": 7751,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 6,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\close-gate-semantic-closure.test.ts",
+      "sha256": "dc69ab2a8e4608a0aefdec1b1843e2ffae0bdc5d1c6e7ac099ea69d43d0a5bde",
+      "size": 9244,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 7,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\semantic-closure-producer-governance.test.ts",
+      "sha256": "b47fbb4ae5ff4db86b368745bea821b00fc40b707de492a163f0b77cfd98ca17",
+      "size": 9307,
+      "extension": ".ts"
+    }
+  ]
+}

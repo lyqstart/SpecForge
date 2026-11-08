@@ -1,0 +1,15 @@
+{
+  "utc": "2026-11-08T02:12:12.786Z",
+  "platform": "linux",
+  "arch": "x64",
+  "linux_node": "v26.7.0",
+  "root": "/tmp/specforge-crossplatform-20261108-a01",
+  "project": "/tmp/specforge-crossplatform-20261108-a01/project",
+  "bun": "/tmp/specforge-crossplatform-20261108-a01/bin/bun",
+  "bun_sha256": "9fd36f87e4b90b07632b987a2e4ec81ca15a62c81bf983190cea6d715be2ad74",
+  "source_manifest_sha256": "c5ae8bba47851de9d16c9a6d525bde7c416bb7725ec78a7612ca6923c8afafb2",
+  "source_head": "bb0f172aab26fab79d6484c458e0122d9353f604",
+  "fixture_commit": "c472dc575a15c87352ad270d4e3cc344be50ef67",
+  "exported_files": 3021,
+  "qualification": "Real Linux ext4 source/ELF toolchain fixture, actual source hashes verified; separate synthetic fixture Git identity, no original business state or user credentials copied."
+}

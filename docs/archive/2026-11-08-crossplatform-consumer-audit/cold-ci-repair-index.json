@@ -1,0 +1,26 @@
+{
+  "utc": "2026-11-08T05:52:27.732Z",
+  "members": [
+    {
+      "path": "scripts/lib/prepare-current-release.ts",
+      "raw_sha256": "acda34980fecf68c1dfdc45f9152d486693a7172aed63f3000f8a744e0f07a5e",
+      "blob": "738a6910b6a43cb9e347924ce06564713ec325f2"
+    },
+    {
+      "path": "packages/scope-gate/tests/current-release-entry-interop.test.ts",
+      "raw_sha256": "2b49b4d1e1583081fae8d9fdabcd669086d1bc6c7fd673dc26b1c1329ae67db4",
+      "blob": "0ae4caa27b768413215e215d8067aa795fa9423d"
+    },
+    {
+      "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "raw_sha256": "f68bae87c21088a574b3278c43fdae736425ddbc3697b2346fb060d6c8375a7c",
+      "blob": "807bdde97e6a8f1be4b31639578784bf5267ffdc"
+    },
+    {
+      "path": "docs/project-status.md",
+      "raw_sha256": "18e3fb04c4d69aa6eec580429523bc25cf82888e25c3fec331c02be89ac9d586",
+      "blob": "30366e5c0858d4f6524a82b31fc46042d3e8e047"
+    }
+  ],
+  "check": "PASS"
+}

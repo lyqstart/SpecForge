@@ -1,0 +1,26 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "pwsh",
+  "args": [
+    "-NoProfile",
+    "-File",
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/extract-ci-artifact.ps1",
+    "-Label",
+    "ci-c0-linux"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "extract-final-linux-ci-artifact",
+  "expected_writes": "external-evidence-only",
+  "started_utc": "2026-11-08T06:01:25.620Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 2,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\extract-ci-artifact.ps1",
+      "sha256": "476181bbdff5af12e628e6054e5bf4c3b29b05fd745f27f79904dc8ce4309aee",
+      "size": 1376,
+      "extension": ".ps1"
+    }
+  ]
+}

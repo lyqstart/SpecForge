@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/close-audit-records.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "close-final-audit-records",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES:unique status,ledger;EXTERNAL_EVIDENCE_WRITES:final assessment and reconciliation",
+  "started_utc": "2026-11-08T06:56:23.636Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\close-audit-records.cjs",
+      "sha256": "b62ea2b326f666ae0c1f130c533fc1919f94e364b7fc8368f42a16287858bff1",
+      "size": 9896,
+      "extension": ".cjs"
+    }
+  ]
+}

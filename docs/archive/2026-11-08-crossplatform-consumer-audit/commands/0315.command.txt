@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/verify-final-loader.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-final-10-agent-8-skill-45-tool-metadata-loading",
+  "expected_writes": "owned-kernel-temp-runtime-observers-and-evidence",
+  "started_utc": "2026-11-08T06:24:11.007Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\verify-final-loader.cjs",
+      "sha256": "4b431a01a34270a5b56718fd09c53738e2076952ce9c1da7f1926f8ba23de348",
+      "size": 9259,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ rimraf dist && tsc
+$ bun ../../scripts/build-workflow-runtime.ts
+$ tsc
+$ tsc
+ 9 |   const root=path.resolve(options.candidateRoot),identity=await loadProductIdentity(root);await assertWorkspaceVersionAlignment(root,identity.version);
+10 |   const git=spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8',windowsHide:true,maxBuffer:32*1024*1024});if(git.status!==0||!/^[a-f0-9]{40}$/.test(git.stdout.trim()))throw Error('RELEASE_GIT_REFERENCE_UNAVAILABLE');const candidateId=git.stdout.trim();
+11 |   if(options.buildWorkspace!==false){const result=spawnSync(options.bunExecutable,['scripts/build-workspace.ts'],{cwd:root,windowsHide:true,stdio:'inherit'});if(result.status!==0)throw Error('RELEASE_WORKSPACE_BUILD_FAILED:'+String(result.status));}
+12 |   const runtimes=await buildReleaseRuntimeArtifacts({candidateRoot:root,bunExecutable:options.bunExecutable}),verificationAssets=await buildVerificationAssets({candidateRoot:root,nodeSource:options.nodeSource});
+13 |   const produced=await produceReleaseManifest({candidateRoot:root,releaseId:identity.releaseId,candidateId});if(produced.errors.length)throw Error('RELEASE_MANIFEST_INVALID:'+produced.errors.join(';'));
+14 |   const precheck=await runCurrentReleasePrecheck({candidateRoot:root,releaseId:identity.releaseId,candidateId});if(!precheck.passed)throw Error('RELEASE_PRECHECK_FAILED:'+JSON.stringify(precheck));
+                                                                                                                                               ^
+error: RELEASE_PRECHECK_FAILED:{"passed":false,"producerErrors":["clean_build:runtime:specforge:missing:release/bin/specforge.exe","clean_build:runtime:specforged:missing:release/bin/specforged.exe"],"inventoryErrors":["artifact_surface:clean_build:producer_incomplete"]}
+      at prepareCurrentRelease (/tmp/specforge-crossplatform-20261108-a01/project/scripts/lib/prepare-current-release.ts:14:139)
+
+Bun v1.3.14 (Linux x64)

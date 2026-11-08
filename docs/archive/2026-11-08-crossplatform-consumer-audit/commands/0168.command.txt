@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/probe-release-import-sync.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "release-import-without-top-level-await-probe",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T04:30:54.115Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\probe-release-import-sync.ts",
+      "sha256": "0643ee3e3b86bcf9f629ede5436f3ba6d5493ae947d82628f17ba402dba65169",
+      "size": 197,
+      "extension": ".ts"
+    }
+  ]
+}

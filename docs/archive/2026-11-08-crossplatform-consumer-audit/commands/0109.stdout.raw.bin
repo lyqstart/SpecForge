@@ -1,0 +1,11 @@
+
+ RUN  v3.2.4 /tmp/specforge-crossplatform-20261108-a01/project/packages/daemon-core
+
+ ✓ tests/design-governance-contract.test.ts (5 tests) 10ms
+ ✓ tests/design-governance-live-closure.test.ts (10 tests) 463ms
+
+ Test Files  2 passed (2)
+      Tests  15 passed (15)
+   Start at  11:26:07
+   Duration  3.23s (transform 1.31s, setup 0ms, collect 2.38s, tests 473ms, environment 0ms, prepare 341ms)
+

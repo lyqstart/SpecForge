@@ -1,0 +1,13 @@
+[root-test-registry] {"CURRENT_HERMETIC":51,"CURRENT_ENVIRONMENTAL":1,"MIGRATED_DUPLICATE":14,"HISTORICAL_EVIDENCE":122}
+[root-test-registry] mode=current selected=51
+
+ RUN  v4.1.5 D:/code/SpecForge
+
+ ❯ tests/unit/current-product-version-contract.test.ts (7 tests | 1 failed) 175ms
+     × keeps Bun workspace identity metadata on the same product version 81ms
+
+ Test Files  1 failed | 50 passed (51)
+      Tests  1 failed | 748 passed (749)
+   Start at  10:30:53
+   Duration  10.96s (transform 6.19s, setup 0ms, import 12.38s, tests 38.84s, environment 11ms)
+

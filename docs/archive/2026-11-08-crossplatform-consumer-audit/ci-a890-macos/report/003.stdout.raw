@@ -1,0 +1,72 @@
+{
+  "appName": "SpecForge",
+  "version": "1.0.24",
+  "commands": [
+    {
+      "name": "daemon",
+      "description": "Manage the SpecForge daemon"
+    },
+    {
+      "name": "config",
+      "description": "Show read-only CLI configuration and resolved paths"
+    },
+    {
+      "name": "version",
+      "description": "Show CLI version"
+    },
+    {
+      "name": "doctor",
+      "description": "Inspect local SpecForge installation and project status"
+    },
+    {
+      "name": "services",
+      "description": "Manage OS services through Linux systemd --user; unsupported on Windows/macOS"
+    },
+    {
+      "name": "opencode-server",
+      "description": "Manage the OpenCode user service through Linux systemd --user"
+    }
+  ],
+  "globalFlags": [
+    {
+      "name": "--json",
+      "type": "boolean",
+      "required": false,
+      "description": "Output in JSON format (machine-friendly)",
+      "aliases": [
+        "-j"
+      ],
+      "default": false
+    },
+    {
+      "name": "--verbose",
+      "type": "boolean",
+      "required": false,
+      "description": "Enable verbose output",
+      "aliases": [
+        "-v"
+      ],
+      "default": false
+    },
+    {
+      "name": "--help",
+      "type": "boolean",
+      "required": false,
+      "description": "Show help",
+      "aliases": [
+        "-h"
+      ],
+      "default": false
+    },
+    {
+      "name": "--version",
+      "type": "boolean",
+      "required": false,
+      "description": "Show version",
+      "aliases": [
+        "-V"
+      ],
+      "default": false
+    }
+  ]
+}

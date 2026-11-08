@@ -1,0 +1,19 @@
+{
+  "utc": "2026-11-08T06:58:36.717Z",
+  "public_files": 4989,
+  "public_bytes": 287290870,
+  "command_receipts": 328,
+  "numeric_inner_exit_receipts": 328,
+  "nonzero_preserved": 66,
+  "unavailable_inner_exit_preserved": 0,
+  "pending_commands": 0,
+  "receipt_hashes": "PASS",
+  "lossless_ci_log_reconstruction": "PASS",
+  "excluded_private_roots": [
+    "local-assets/",
+    "publication-live/"
+  ],
+  "credential_signature_findings": [],
+  "oversized_public_files": [],
+  "limitations": "Signature scan is supplemental; reviewed producer provenance/ignored private transport/owner preservation establish scope. Synthetic canary or example values are not automatically real credentials. No claim to scan every compressed binary member by text regex."
+}

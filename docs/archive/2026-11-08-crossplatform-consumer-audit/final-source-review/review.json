@@ -1,0 +1,1980 @@
+{
+  "utc": "2026-11-08T05:42:20.122Z",
+  "members": [
+    {
+      "path": ".gitattributes",
+      "sha256": "3339325b7f7fa6e364198783d6a1efdc1ec8ad475e87b08b14be4baf4331d652",
+      "bytes": 3183,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": ".github/workflows/code-quality.yml",
+      "sha256": "aa5d96d133986af7d0d08ef68850e6118c8fec663d801b310336b6de1c412813",
+      "bytes": 5474,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": ".github/workflows/distribution-smoke.yml",
+      "sha256": "e3651940dcca7cbd1e26893542ac65acc00796fae48148fb2e81aa03239df1e1",
+      "bytes": 2056,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "d1079c78c3f506a7ddeba555bab4cffdc05dbb9fcd80174f206a37628b803b7f",
+      "bytes": 3917,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "README.md",
+      "sha256": "2062e78291fed9fe65f422dee1bb1ae1667506b912c10c59df79aa7a7ed51638",
+      "bytes": 10334,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "bun.lock",
+      "sha256": "b98974779d4bb84652c76d59feef4579106d2f83cdf6adc00039188831c3a78b",
+      "bytes": 366461,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/adr/ADR-007-architecture-consistency-governance.md",
+      "sha256": "16555b249fc11db4ace77a03dd0d71f1044a3054deee3b373104c9133e266c5e",
+      "bytes": 10634,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/adr/ADR-008-new-project-governance-bootstrap.md",
+      "sha256": "8ec91d5e618d5b87d90113de433fa1909b1ab51b2aed390509754fe0025e449f",
+      "bytes": 7011,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/adr/ADR-010-installer-manifest-canonical-location.md",
+      "sha256": "713344d6dd7b4533d79a4631ab75842396f9819548aebc5ae869fe6f0c1adfe2",
+      "bytes": 3516,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/adr/ADR-011-user-level-runtime-path-boundary.md",
+      "sha256": "3ae5ed748142d1ebacbfd65afc65b2c1e02bda4deb9beeaf51c4652e791d455e",
+      "bytes": 3408,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/adr/ADR-014-authority-model-recovery-freeze.md",
+      "sha256": "825da1afba4d2d68d1adebd9032f7babf99229eea41f2ad5a0f45f9aeba1df1e",
+      "bytes": 3274,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/cli/installation-setup.md",
+      "sha256": "2fc8d5fc0f22c5c3ab2574c9a47a351aa471e6e0dad66629c0f75a6a6bc77cc2",
+      "bytes": 2582,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/conventions/README.md",
+      "sha256": "8531833b5577e8d51563e3681de3d3b9d976ba829636213c1106de2c7c19b90b",
+      "bytes": 1391,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/conventions/agent-roles.md",
+      "sha256": "04d0613fbdcde05bdf4a0737bdf3037bf6e3e8cc1126894c9d40dce6a079d3a7",
+      "bytes": 1441,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/conventions/meta-json-spec.md",
+      "sha256": "67e152306d08fd9490888214bdd6c338609e481cd4047d9b9ae3a855562cbca1",
+      "bytes": 1583,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/conventions/wi-lifecycle.md",
+      "sha256": "efd16d2c40acf5bc5e10218eeb76bdabae48430cb9fb696b8764da11e6bc54da",
+      "bytes": 1646,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/design/windows-lpac-node-readonly-contract.md",
+      "sha256": "37f982f86a6cba7cb7bcc00ced5750dcd0d12bbc0e577d47470cd28495c897d3",
+      "bytes": 20881,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/engineering-lessons/README.md",
+      "sha256": "764a1f1c25871667947729e44ba39d77f0d730fe76e6e3deae7144323d1b9274",
+      "bytes": 1726,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/engineering-lessons/_meta/schema.md",
+      "sha256": "d476ff152e07ca166c3062321723642914608ed544cb4bbd2b8aac953b05d74d",
+      "bytes": 4945,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/engineering-lessons/ai-tools/opencode/custom-tool-self-contained.md",
+      "sha256": "b680e7a4d2d33eb9854ffd3b528aedba050dfbaf1e310003ec995b60193856d3",
+      "bytes": 6899,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/engineering-lessons/universal/async-resource-lifecycle.md",
+      "sha256": "9df343d97a748386e24813c29c23d8a8ea055c77b8b69f8594407233f5c2c9bd",
+      "bytes": 20619,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/engineering-lessons/universal/host-environment-detection.md",
+      "sha256": "fbbb96a704e32b74d270f367e7ebfc927ce0eb81bbf6bc56613c111ceccd2388",
+      "bytes": 19273,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/engineering-lessons/universal/javascript-explicit-resource-management.md",
+      "sha256": "3b985df0a2aef30056d89a7088292385c3035931213845d0308b8a71fc3ccac7",
+      "bytes": 20353,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/engineering-lessons/universal/shell-command-execution.md",
+      "sha256": "d7426d3f3d0e609c28e8b110df0c5d11e8a66bb75149e72892f419301c5502e9",
+      "bytes": 21546,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/product-specification/specforge-product-specification.md",
+      "sha256": "8fe594be130fd751e60eef1a9a916867ef5dd8b401dbe6881a1f5295a43333ed",
+      "bytes": 89704,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/project-status.md",
+      "sha256": "e7ebb0c921bf69f7fa19cefb320fdb32e7adeab2128b1880c8b61a30cdca61bb",
+      "bytes": 6325,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "sha256": "a7f7992157a83a3d7b4729e8cee053b34407d3a72a483150cd5de756ab70e632",
+      "bytes": 4501480,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/user/install.md",
+      "sha256": "28399b6686b976497853dd1124e4da5f8afceb95d619a3fef657edc9ddedf72f",
+      "bytes": 2704,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/user/recovery-and-rollback.md",
+      "sha256": "9764fd87946a9e6ff7f7e9ea4380c353403fbc2404c1d7ed782c75b2874f5456",
+      "bytes": 958,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/user/uninstall.md",
+      "sha256": "64c5a976816c574e9c34f9209bd2f47af000e09086dbfe86260d0e7c89fa3330",
+      "bytes": 704,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "docs/user/work-item-flow.md",
+      "sha256": "d60761315f3dbf4d61a1051a620ed905256c8d340f52d03c2e01bb0f25558f0e",
+      "bytes": 1458,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "package.json",
+      "sha256": "9b327eb5ae2e3b57b3c82158405747fa4111b829cc71596cc9203897ed56230a",
+      "bytes": 2719,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/cli/docs/JobPoller.md",
+      "sha256": "5fd7cb9bba10349b299c185eaf95ca57e0501ab4a518724ba77d267dbe30e711",
+      "bytes": 1050,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/cli/docs/progress-indicators.md",
+      "sha256": "7fd4da0142dcf42b30802ed12f920da35ed8894042a7598143b845215a1ab44d",
+      "bytes": 929,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/cli/package.json",
+      "sha256": "3317195ce02a862975a9ad31e230d6f0416607b98e2df548bbb47aab967d886a",
+      "bytes": 1538,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/cli/src/commands/daemon-client.ts",
+      "sha256": "b07a2057c25b5b6c5624ddbfa3734ca58b2372b63ce9dc2e381b5acac628f7a0",
+      "bytes": 15636,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/cli/src/help/HelpSystem.ts",
+      "sha256": "f7eceb0c47a061c7e396a6a8912db6ba49186ca2a9b24c8cad9b26a00b95312c",
+      "bytes": 30415,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/cli/src/http/DaemonClient.ts",
+      "sha256": "16bf495b7e3bc89d7b14fe527616f677dd26959c103e76457f4986675e8bbc40",
+      "bytes": 22362,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/cli/src/utils/directory-layout.ts",
+      "sha256": "937e83bf96313d756d6fd05f5d4d43b7fbd41425f60254981a7168b3d822fe3a",
+      "bytes": 883,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/cli/tests/current-release-project-layout.test.ts",
+      "sha256": "87890dcf83ce92cec6284a66695c870c63281126bd0a412f9b3d58681e9f0de2",
+      "bytes": 3204,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/cli/tests/help-system.test.ts",
+      "sha256": "3069ed34896eda1ca136e3aa265c472ff8d52e00f464f55f9de6b068fe89a428",
+      "bytes": 12104,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/configuration/README.md",
+      "sha256": "0a69422b51cd4fe123019b27cfe7edb8b3b872237d01de0d0de11fa254c075c0",
+      "bytes": 1794,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/configuration/docs/README.md",
+      "sha256": "84d91d749fa955847fe9883372aaa152ac913ba8a0dc2a76d092b7d0a9e207b9",
+      "bytes": 663,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/configuration/docs/best-practices.md",
+      "sha256": "defd3de36121dd0afab062b01593b48dc4bdd74385520bab2964f1aafbd7c802",
+      "bytes": 1275,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/configuration/docs/configuration-format.md",
+      "sha256": "f48dc259b81e4635fa2063f7e448b7e3557b888a2ccc1f7dda5d17f58d83b6aa",
+      "bytes": 1666,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/configuration/docs/examples.md",
+      "sha256": "7fcf587760c5ddda86fe4c1b384d61eae6522665436a32cefc40632d1a70353b",
+      "bytes": 1121,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/configuration/package.json",
+      "sha256": "51fd875d124e7e5a445d5ce7aa70a797aa488da35c1ef82fdb2054525df916b6",
+      "bytes": 1248,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/configuration/src/accepted-config.ts",
+      "sha256": "87eefe636caf17980293b796acbe7d23d9dcdee816727eb741edfe39205a441b",
+      "bytes": 2839,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/configuration/src/logger.ts",
+      "sha256": "8c4408a2f98a2af77e24ecd3738e591758fb0c296afe1e2a85f866e317c50470",
+      "bytes": 2225,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/configuration/src/project-schema-descriptor.ts",
+      "sha256": "68f656cb5602763c33849e2f7494f79a5b176113484855dc5633a47e9f884ce3",
+      "bytes": 843,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/configuration/tests/logger-output-contract.test.ts",
+      "sha256": "490c0acb796d43bce71abfe3f9013642676f45121fc0b4aea1e4e6b98e41a8c1",
+      "bytes": 1092,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/DEVELOPMENT.md",
+      "sha256": "23998b5c72eda6d8c994caf8220fdbf4b54ca03c17b2495d5c9e3bf954636ba4",
+      "bytes": 1381,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/README.md",
+      "sha256": "eece2ed27df1cd8b0024410adfc182c959d20ce1bc1acaf3ae735b0dfaa89a0e",
+      "bytes": 1628,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/docs/README.md",
+      "sha256": "a6203cdd5ee40f81977bc2743d6df9470a35bed007d0f98c9700f0f69ccb30ae",
+      "bytes": 1035,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/docs/authentication.md",
+      "sha256": "dab39e1fb580f371f7715c295209a9b41e93aae08afcb5f77a94178505f2d9a4",
+      "bytes": 1513,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/docs/cli-integration.md",
+      "sha256": "3b92a7bbc9ec9abb3fe2d7c818ebccd3f030ba0a0ae0d1ac12f4a24e7b0f6481",
+      "bytes": 1238,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/docs/error-codes.md",
+      "sha256": "32ba79ebd74aeae559331cefa71bf6a3ae34f8f2f1ded15db396c1382a91ef46",
+      "bytes": 3476,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/docs/error-handling.md",
+      "sha256": "7931432c77a107bd8165bf44ce0ae3440395f2c6f0374615d0363ea867f8da16",
+      "bytes": 2224,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/docs/event-schema.md",
+      "sha256": "ff4bdbde3bde04d7f5c050fa6786b57c17495ff086725222b43132416c707555",
+      "bytes": 1700,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/docs/http-endpoints.md",
+      "sha256": "c1e3e28dbe4fe6558c2d0afa5a15013f7c409a2db797d593befb23a46c8446b8",
+      "bytes": 3869,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/docs/thin-plugin-integration.md",
+      "sha256": "ae6acbd01b5fd70501fd5a6d206d1658bd00f958a8e245869a3eb430a587bc4c",
+      "bytes": 1387,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/examples/01-cli-integration.ts",
+      "sha256": "194f5363bbd22af3752acec707929da98532afaf2d4ddef31a9f8b365ce9b575",
+      "bytes": 408,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/examples/02-thin-plugin-integration.ts",
+      "sha256": "743bf51048f5acd81a55d82dd129fd0ad73ffba518569efb6f2f9ceb3541e5c8",
+      "bytes": 530,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/examples/03-error-handling.ts",
+      "sha256": "d92e569ad17df3cb4047c2093d74cb0ed0beae3a2e215917c5b0cae7ca4cbaed",
+      "bytes": 439,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/examples/README.md",
+      "sha256": "1cd10ecc8b78e087bcf091c49b6463005be8e29f83e393c702c6aa94fa5d1153",
+      "bytes": 1523,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/examples/current-read-client.ts",
+      "sha256": "b7b03d779171fd1e7cb743e661dc495026a4e746d318953697f0533e7b1763e7",
+      "bytes": 2139,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/package.json",
+      "sha256": "67fce7c5ee61822feda4d23381a9aad6874780f8504c4ada934f2f6d49504460",
+      "bytes": 1875,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/http/HTTPServer.ts",
+      "sha256": "cf48b1f95609bcad82665166d6c06bf8eae6233cc073cfeafc4df86c29c62232",
+      "bytes": 76361,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/observability/observability-config.ts",
+      "sha256": "f08052225ff846e18b30e3e7588fe3b2300bfe33288d09a57211bea7617c5574",
+      "bytes": 2999,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/observability/observability-recorder.ts",
+      "sha256": "301b8f01188ad3ecf49139f14fdc82f9cd301e4ea893afa9bea662c24d99f943",
+      "bytes": 6232,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "sha256": "c577e1d8cf0a137099bb9f5ad5384fea1c927de82cc84e34e77bf60859824b26",
+      "bytes": 5089,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "sha256": "5c368ba5b892f5ec888f2374ef447e86998c9281dbcfcc4ac07b5030911646e4",
+      "bytes": 20116,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "sha256": "785486618461071e9997cac4a499d5465dbc40a2bebcc5e272d695e168696085",
+      "bytes": 59812,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-changed-files-audit.ts",
+      "sha256": "b7efcf81f936284fa5b01f433819a3ce8aad79f5c37d1fa0166f18b4d7672b41",
+      "bytes": 35104,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-contract-register.ts",
+      "sha256": "dd76948316894c2ec3eae02e99f2133398982a5b63f5f2ab95b361435053ffe3",
+      "bytes": 5117,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-design-gate.ts",
+      "sha256": "e86ef77fc5471da84219e22780dffc5d86f8fca820fb505b08c4c20be820f5e8",
+      "bytes": 1057,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-doc-lint.ts",
+      "sha256": "af890afa02fa24e54451533615e4c2c8cdf81656050dd91a557cd0db3b709f1f",
+      "bytes": 900,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-requirements-gate.ts",
+      "sha256": "f499b98f2626019e9192463cfcb18a8614b861189dd87df54f33d1eb74683722",
+      "bytes": 808,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "sha256": "65c1ddba98edff1db3b0b27cff43f3d655922860bfa0fd849e991ec8a6784333",
+      "bytes": 16818,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-semantic-closure-run.ts",
+      "sha256": "6df9c1036aeb8c5606036d3531963eb0404ce5ed80da9aabf63bf03062f9516e",
+      "bytes": 15261,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-state-transition.ts",
+      "sha256": "967a65d75705adfb2429c8ea3e3bb7cd751f2f5f534817318cbde83396d905c6",
+      "bytes": 30976,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts",
+      "sha256": "5a9bf40caca19d13bd6fe613e7a0f365117d0e07b06b7660462f732bf740ff78",
+      "bytes": 48782,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-code-permission.ts",
+      "sha256": "7e79b789a0d502bc76c784cf7ef6483b3b43fdb58d544b5531b44efdba6b2749",
+      "bytes": 16991,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-decision.ts",
+      "sha256": "4dad2408f88898b323aa344456ed6c5afc42ea1c09511068a601e5752c40db28",
+      "bytes": 22648,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts",
+      "sha256": "6c545da99d351d589ebaac1e0554c350b398a52c921b55511cae6af8c537c739",
+      "bytes": 43285,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-merge.ts",
+      "sha256": "6d50d5c7ad249a7a50505b1a3a429d0f90b9eb98182130e1046290eb1b0e5a82",
+      "bytes": 9927,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-rollback.ts",
+      "sha256": "7cdab3e7667d9c9e4f93090d75d359d7e5fff0e05b61b1b9745939344f08d4e7",
+      "bytes": 5265,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-verification.ts",
+      "sha256": "e2d3530f8be943de641d17b643088f6a3a4bb29360ed8451e7a5dd02cffad019",
+      "bytes": 6280,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-work-item-create.ts",
+      "sha256": "9f334c66a00daf94e6104555a3838cf793711f1d444942dcb0bf1080b56239ed",
+      "bytes": 6898,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-verification-gate.ts",
+      "sha256": "9cd9710697056b418de14315d13025f5a122c2594d51c8b3a914873cece46ec7",
+      "bytes": 1449,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/architecture-governance-v7-regression.test.ts",
+      "sha256": "0e9d37c8bc1f9343a9eb62678fa0c732804e7ef56de5c5b197bb2f07fb2c83b3",
+      "bytes": 6509,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/artifact-schema-validation.ts",
+      "sha256": "6c99c3586255550b14c3f5cc224d91e4b0fb364deb15b17b8a32c0e810fb366d",
+      "bytes": 22192,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/atomic-spec-merge-write-provenance.ts",
+      "sha256": "71d989ebcb282eb0d8722616bd6bead7e41dd555e7be3ac63cbd0d1e5e77f94b",
+      "bytes": 5634,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/authoritative-work-items.ts",
+      "sha256": "024d51ed5f45305c35f3cf6625543ffd63b93fc2fdcbff8bfefa5670d65aca1a",
+      "bytes": 1640,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/candidate-generation-integrity.ts",
+      "sha256": "41067e4017d277b98596d9c115b68a58d8b64b129405b28b8085e2a40faeb743",
+      "bytes": 9838,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/changed-files-audit.ts",
+      "sha256": "f6fd9f6c71be7bd45ef94e7cbd6edc10a00bf7313885dcb70a0aedc1d8b5f66b",
+      "bytes": 7272,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/contract-authoring.ts",
+      "sha256": "cccfba109a85e48aa377b83a6cd7a7eafde896f9b12af7d71d2643853c076f12",
+      "bytes": 46171,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/contract-integrity.ts",
+      "sha256": "080aed5bb321a13533d5fa6fe0c563787d1a687d17e80e3dd2d910e818a8dcce",
+      "bytes": 26460,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "sha256": "85531db73035c09d8602a21a25d11b86bd37b398230605ffe48b489b4b166898",
+      "bytes": 19782,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "sha256": "4a38a6ebcd4e94044068ac3851dff5cb6d1880920707a820cd5c6262d39af47f",
+      "bytes": 71674,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "sha256": "e95d7e1ae033d028020c384f7ab8bf136bbfe8cc1d081faaf147aa705f60d6de",
+      "bytes": 24292,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/git-governance-write-provenance.ts",
+      "sha256": "23d4cac4012ee0fb805b67dc084da8c38644b05844188fd1c54f61070c41e5ee",
+      "bytes": 5423,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "sha256": "0c725c1d3349af2be393d2b6bac8960370ca7a9efa9cac59445b7ec6ea729dbe",
+      "bytes": 50233,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts",
+      "sha256": "18564279d9d37afaf5d51d926190302235f5551e83dfdd679b2d951d2c308eb8",
+      "bytes": 19443,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "sha256": "b62e952e770333cc1a6686c4ac18632a3a970f105852dbf4071ae7ef096ebe03",
+      "bytes": 39614,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/native-write-boundary.ts",
+      "sha256": "f41723e20619a6561eb8c34f1bc7e3a8c3cb1849579f371e6a3048c9be3dbe1b",
+      "bytes": 4430,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/path-policy.ts",
+      "sha256": "6acf6f5ccff03f6cd58dabb07703dc3ffbb987ebdf46620980716c1abec19fce",
+      "bytes": 4099,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "sha256": "23357246f6131c56cb5682923bc3e5c1a7c0494c82f5a5b571ae16eccea651d8",
+      "bytes": 136454,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/project-init-reconstruction.ts",
+      "sha256": "42460ab553bd4673448f3e2eabb0b51ee996e51a7cfba6225bda55e4fcbdb151",
+      "bytes": 8124,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/regenerable-artifact-governance.ts",
+      "sha256": "160a3d0a77d945c93243e40beb08d49c9b0e1ec95289c2501d8589f8648d1b30",
+      "bytes": 4194,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/rollback-runner-v11.ts",
+      "sha256": "1df88250c840d47349bdf100a983fb2a10d1f0a5993331be2fbf9aba6ef8729f",
+      "bytes": 9795,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/semantic-closure-builder.ts",
+      "sha256": "e48c857d5ade0ff6bc8266777686f7421461ebd69dfce77cd17db67de496cfb2",
+      "bytes": 14460,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/semantic-closure-core.ts",
+      "sha256": "cb07194957bb14fbb73cf415621083d7a16643710b3a2966342f7a15205e6e54",
+      "bytes": 36513,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/sf_design_gate_core.ts",
+      "sha256": "503b4c3331273e244c9bd96cd9a9d7677594a4f418649ba1585114a8845650dd",
+      "bytes": 35879,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/sf_doc_lint_core.ts",
+      "sha256": "123a108af87bd1b801292a12b5f1f18947d0bcd6c1d88cb3f4dd1c8e7b22e701",
+      "bytes": 79679,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/sf_knowledge_base_core.ts",
+      "sha256": "d501a934aea989b682df536c045eec4709ecd19a1db683888701e3e608fc23a7",
+      "bytes": 31866,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "sha256": "64bce0d36f3a04a3a64fd4b94707e7282b37ec0b8b57d6fc058bfa66a9659038",
+      "bytes": 20847,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "sha256": "f36720a654541cb963a3fbb449e36a7041581a0d071b1a60b3dceb92619d2255",
+      "bytes": 2075,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/sf_safe_bash_executor.ts",
+      "sha256": "f0770286fddfc450f65b2711c98a7414f223efd9beeb11042eec41f41e5406f0",
+      "bytes": 9512,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "sha256": "08c4f8ac9610a29f75434360951bd5c130485ae2f1383cfcf56d19b84d96fd7f",
+      "bytes": 1023,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/sf_safe_bash_types.ts",
+      "sha256": "82d28448b6c6ee039c0cc7c7d3e1e763f18d3f5c7fd4291b16a19ef5d81a2701",
+      "bytes": 3271,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "sha256": "79639d821b5bd44457e0c6ad89acad68e7771e91855994a1348301cc259a7d87",
+      "bytes": 23315,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts",
+      "sha256": "d5387761ed490dc8e4359743d725b6dc72d6c464139d7a3870167f11e5cf0458",
+      "bytes": 7268,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/work-item-lifecycle-v11.ts",
+      "sha256": "5306257840dc173e21c0806a0b86429672a722c22deff8f2eb3391cdcc0b7313",
+      "bytes": 7864,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/write-guard-v11.ts",
+      "sha256": "2ba28944edda763ca4fd4039c134c48163ab19f26c3e34936e0763d2ea4df4f1",
+      "bytes": 5641,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "sha256": "81d526d7bb8042c77ff7cf3aea8ca21bcb2b7bb32f918c7bbb2185ec34fd2515",
+      "bytes": 14693,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/source-snapshot.ts",
+      "sha256": "fe14fa7443619948713f98c7a994ce01686342357da4118ff9d932aea9b13fd2",
+      "bytes": 6884,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/static-task-command.ts",
+      "sha256": "afb756a3c37e65408fcee856272b3464c1849756015067096bf0799a9f716a2c",
+      "bytes": 6272,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/verification-schema.ts",
+      "sha256": "66f9355c7405bffcf025d33f81399428bdcf27a4265b415b40d96a796b2afcbf",
+      "bytes": 14788,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/windows/README.md",
+      "sha256": "dc5e39b92b22cf088146b5faa149330c71535e13cba4f484f0f092ed2798070b",
+      "bytes": 2146,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/current-observability-owner.test.ts",
+      "sha256": "976f076cb19a1a08ceb5f5d099394559d52966b248829bdfb11d69191b56d2de",
+      "bytes": 4164,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/design-governance-live-closure.test.ts",
+      "sha256": "5ed033bf41836910f6fcc630490e39ee001a4f1c4bc485aced041bca204b3d46",
+      "bytes": 26731,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts",
+      "sha256": "3b862df3397fb967cf5f3b7a5eab7420f928b509e0caf6bd35f917b13d818740",
+      "bytes": 47560,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts",
+      "sha256": "5d5c914298fd59f641b2330dce219fca2f2e446b23ec50119dc6115642b08ff1",
+      "bytes": 26814,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/current-contract-register-owner.test.ts",
+      "sha256": "c9b7d757cce905bffb7b9935dcc818e76c2a247b7ce79058ccc583d15b52a41b",
+      "bytes": 5950,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/current-doc-lint-authority.test.ts",
+      "sha256": "a6dcfc2c894cffc5719dd390910ccb946b9fa4a47ffea680c959568d2e3cd5e4",
+      "bytes": 1501,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/current-operating-examples.test.ts",
+      "sha256": "ec8e3e8fe059fb43997392ac2c4f434d3eb41b1363145b409e79412002644005",
+      "bytes": 2851,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/daemon-startup-readme-contract.test.ts",
+      "sha256": "f46f5182c0ccd08e7b29683db4e92c8d7be3cf4ca0777d2289ce872598088f29",
+      "bytes": 4293,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/err155-159-contract-governance-recovery.test.ts",
+      "sha256": "01d14c0b921a7b626acafaaf1ef5583f930ac95c2b7180aefee7ba3e348d405b",
+      "bytes": 8295,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/governance-closure-e2e.test.ts",
+      "sha256": "ccb0d7d4d642ce9d8518d2d50b82f31576ab5bb703d6fc2635bd8a8401b94128",
+      "bytes": 36154,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/http-timeout-cleanup.test.ts",
+      "sha256": "a1b273665bf2670e554cf68e5df234820348a61fac0f1607504600a93413cb4f",
+      "bytes": 1500,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/knowledge-store-schema.test.ts",
+      "sha256": "f749df49e6952ac1b9508d7dc1a4ee9447af3ef4604c8ce78a58b880d9ccf1cf",
+      "bytes": 3410,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/manifest-compatibility.unit.test.ts",
+      "sha256": "6201332ee682d7e117c99d0e6904b690db13701c970aabf501ed9f21c6fd84b7",
+      "bytes": 2782,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/registered-current-workflow-boundary.test.ts",
+      "sha256": "b195415d54f59ca4567165b32cb9242b8240952fc2872caa3b658460b90fa273",
+      "bytes": 3408,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/registration-no-initialization.test.ts",
+      "sha256": "0eb7c434839864a558a0e841f6cc72dda97c54213a581a0da82a5d821589d135",
+      "bytes": 3069,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/retained-tool-library-boundary.test.ts",
+      "sha256": "0f60059fab763b76c8d67fe6ca8d29f71c9e785971536d5b3e227d13518c9c33",
+      "bytes": 2469,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/semantic-closure-core.test.ts",
+      "sha256": "968477e75821a5e5b01ed18cd74e3903d72d5287d820fa23d398633979453341",
+      "bytes": 4983,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/sf-semantic-closure-run.test.ts",
+      "sha256": "2eabf13b55e1f4631c416f73f519e10159e6813a350afbc1a53afb518fe530f4",
+      "bytes": 16567,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/sf-state-transition.test.ts",
+      "sha256": "b4a43a6da6880b07a514845b093cbf6b9ba79038ac958744edb4c22f340f4d3c",
+      "bytes": 43028,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/specforge-development-err125.test.ts",
+      "sha256": "21f1fddb2895e9c1133c96905857e82f1ed6a879f07f1e5017627ed90f466fcc",
+      "bytes": 4650,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/verifier-guidance-execution-boundary.test.ts",
+      "sha256": "ad41cd02f0f2c2a7d5a7465cc53445ae4a949f209f8e98be69fa3058f3d63b57",
+      "bytes": 3575,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/work-item-artifact-owner.test.ts",
+      "sha256": "5fd62a81808778528287f4189b4f759d357bba26099b115eacae1a967131e148",
+      "bytes": 1532,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/host-profile/package.json",
+      "sha256": "b7ec554bbb94606e0d2976a012e1b6f7416050adce1bca3c8ab23a39a634f1df",
+      "bytes": 604,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/host-profile/vitest.config.ts",
+      "sha256": "759cc8736d2bb25197881580a3cc170e88696ce2065025d479992d97a69f2291",
+      "bytes": 230,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/observability/README.md",
+      "sha256": "791bbfd6c804d3ff7ed72a3866dca5f268a7bd8fe5912cd1a0acf9106cd4050e",
+      "bytes": 1640,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/observability/VALIDATION_REPORT.md",
+      "sha256": "507e00ee668722b197f46041b13399c4ace83a3813c9561ed0ff5b41c27ae950",
+      "bytes": 4258,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/observability/docs/api.md",
+      "sha256": "36e913445894870c6055940ce2170213437622f284b98bd6c263279ec74350bf",
+      "bytes": 2163,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/observability/docs/north-star-scenarios.md",
+      "sha256": "cfc8c62660d568c5556801055d9ddcf473431ac99f43ee9d8453a0c01ff38be1",
+      "bytes": 1557,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/observability/docs/troubleshooting.md",
+      "sha256": "5d450828ca5ab660b1de28b09469b5ed25ad02f7c17b2c18d7b39923004f4c0f",
+      "bytes": 1533,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/observability/docs/user-guide.md",
+      "sha256": "9c9da407ed127174e41fbd509c2847d7a55041dc81315683954f7ccd40b2863c",
+      "bytes": 1718,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/observability/package.json",
+      "sha256": "3cfed7980d6860beef6bf44775fcdb0791f83a0db71283da463ff773a2d20307",
+      "bytes": 1991,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/observability/src/config-contract.ts",
+      "sha256": "4d3a48cdd99b92f9e35e54519e8047cbdd56bc08f49d3c83352245aaacc562a3",
+      "bytes": 2238,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/observability/tests/unit/project-structure.test.ts",
+      "sha256": "14c98b5d6d69eacbde623cbd21600d86cb045bdaece8acbf8af1fb8c4c762b4e",
+      "bytes": 2730,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/opencode-adapter/README.md",
+      "sha256": "8c695423f3d0b0e0f4a1011d0d9fd443e8efe9dde76ef5f89abcb4e50d347244",
+      "bytes": 955,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/opencode-adapter/docs/installation.md",
+      "sha256": "f2a58cdaab117f357433ef41f38bf7aecc48f88563541ed9967e3561c3ee3c5f",
+      "bytes": 1288,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/opencode-adapter/package.json",
+      "sha256": "6ebeaf5ff0675b12095682498418359ddf09307471c23c40c26714f6101f6a81",
+      "bytes": 1802,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/permission-engine/PROJECT_STRUCTURE.md",
+      "sha256": "754bba9598671759878fc4efbe8a8cd10652114e5f50acae8e2471cedd86aa41",
+      "bytes": 4020,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/permission-engine/README.md",
+      "sha256": "4871c1cbd0c6ec5b7804c31210b1866aca3d1a489919fd46f2007a56be0b279a",
+      "bytes": 1236,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/permission-engine/package.json",
+      "sha256": "55dc68819d305f110b49362f5e86c6e598ebc6f6625432ad113802554abdbe62",
+      "bytes": 2028,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/permission-engine/src/write-decision.ts",
+      "sha256": "be32ca2aa4162e37b5d7b828bed19f3501419cc52ec09da4d1f801a368ff8e13",
+      "bytes": 10065,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/scope-gate/package.json",
+      "sha256": "b56c0ad96b3d6f1971be012e9af79a0404baa11265fc7a70db06f0646a6fe2df",
+      "bytes": 2253,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/scope-gate/src/node-release-surface-producers.ts",
+      "sha256": "6867cb2df1de34f5fb6b9f9fb3ef8deae077d990f80bb8d8b4724ac50f5c59b7",
+      "bytes": 12877,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/scope-gate/tests/current-clean-boundary.test.ts",
+      "sha256": "b25e238197c086c6d6f93520f4e17c636a611fee74d3cc4529d2019f0528a8f3",
+      "bytes": 1733,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts",
+      "sha256": "f33318ccee26e37d0dff57e404d09172a22ae695d78cbcfb77aff44be18f26b1",
+      "bytes": 1932,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/scope-gate/tests/current-daemon-http-doc-contract.test.ts",
+      "sha256": "bee04b2755f92bae23bbefe450cf7f30fe1563b5e55328f6ebbf69577dc640e1",
+      "bytes": 967,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/scope-gate/tests/current-operating-doc-contract.test.ts",
+      "sha256": "fc27037aa5835691c39ab10bee214108362903a412875f57e67746c631eb5c9f",
+      "bytes": 4692,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/scope-gate/tests/current-release-entry-interop.test.ts",
+      "sha256": "d459f170f6eafc116c2b15cc80f242d8184e5ad173b31a5db12d1afca27bfc5d",
+      "bytes": 1112,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/scope-gate/tests/node-release-surface-producers.test.ts",
+      "sha256": "ea3266304312106867802325496be6e78697541fb988c248c9c054eeb111fc58",
+      "bytes": 7602,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/scope-gate/tests/root-test-role-registry.test.ts",
+      "sha256": "09b7ad28917cd04940443dde48918928576ec5e8df260faf823eaa4d3901760a",
+      "bytes": 2040,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/scope-gate/tests/source-policy-audit.test.ts",
+      "sha256": "3a53dd16796a70f0bfa2451d547f1ae3342314e4a84f2b0351175ef21caf2d71",
+      "bytes": 2028,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/service-management/README.md",
+      "sha256": "7b69626a323339a38ddec75a0df87491ae0bd8f7b870f9133c553eccdca4a945",
+      "bytes": 1172,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/service-management/package.json",
+      "sha256": "9fc84bee4b85cfb36415cf5b6899a7e7c49f305804dbe9d5651fcb11ef1b7cec",
+      "bytes": 1995,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/service-management/src/errors/service-error.ts",
+      "sha256": "e20c49304a99e0ce42cf1922b54be4423c45f49787e57f7d31b941ebb5e9de9d",
+      "bytes": 8729,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/service-management/src/orchestrator/healthcheck.ts",
+      "sha256": "369fe7005a8f3e62c0ed7fd2b23b0f348aead538f2415a711582a7a0ac40d849",
+      "bytes": 12287,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/service-management/src/plugin/reconnecting-daemon-client.ts",
+      "sha256": "8899878a441dafbb0c83efafbe5c590cfbbda1bc697fba7d9547a9ff5896f041",
+      "bytes": 25161,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/service-management/src/service-manager/systemd-service-manager.ts",
+      "sha256": "7b257a468a61dd7ea1331a77e5625cb924de0dcfa22b25b01aaf7f58d26c9545",
+      "bytes": 20298,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/service-management/src/types/specforge-types-directory-layout.d.ts",
+      "sha256": "41ef4ab74cd914a8ddf34a06dfa4c1b14b093d79d4373fa8dccd5fdf96c0eda6",
+      "bytes": 94,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/service-management/src/types/specforge-types-directory-layout.ts",
+      "sha256": "b5857925c90b41aad3c46a140716742efe09c89b5677db381451d899822a4530",
+      "bytes": 368,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/service-management/tests/unit/healthcheck-request-timer.test.ts",
+      "sha256": "5599a524aa2d77c222161521d6796e8f42fb453cafc10c6d6d6a49e7780fd05b",
+      "bytes": 1157,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/service-management/tests/unit/reconnect-timer-ownership.test.ts",
+      "sha256": "00fee2383fe9dda438e16d0adef93f8d8f8b82d35e214bcf6ce369caaa6068e3",
+      "bytes": 1521,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/service-management/tests/unit/service-error.test.ts",
+      "sha256": "4c02d7c2b358fd86c73ae83d206edf54ffef6547e647ab823681c27dbad3246b",
+      "bytes": 7258,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/service-management/tsconfig.json",
+      "sha256": "7f81e63608cdf7aa6574344766967a226687a1cf4c0941185daf447f47d7fa92",
+      "bytes": 880,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/types/package.json",
+      "sha256": "b259e41e9fb4f6f1784d00f50d5865ef215bcb50d7b507e1166d48a27d91d33a",
+      "bytes": 2827,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/types/src/constants.ts",
+      "sha256": "bb4359d06bd362ec410bb7b09f261df88eed80735b768ac012abb90b12faf362",
+      "bytes": 7365,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/types/src/control-plane-write-provenance-contract.ts",
+      "sha256": "fc0158805a35f763e25a6ffd80f11bf95f7484a19468681c8b810aec78cd1a6c",
+      "bytes": 2441,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/types/src/index.ts",
+      "sha256": "551f8f5cb10acb69588b5f34b04313419192bcea8a20cf7fbdc9a100ac627af7",
+      "bytes": 11969,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/types/src/project-spec-module.ts",
+      "sha256": "67d70ed63f371aef0f08a3bd87b498a11fd72eaf8ff43dbe3ad897cc61ec9c5c",
+      "bytes": 4535,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/version-unification/package.json",
+      "sha256": "7730c98a172e7bc28de4bf269764aa76bd7bbec3f9a4debc6f799587d2ede2a8",
+      "bytes": 635,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/workflow-runtime/AGENT_INTEGRATION_IMPLEMENTATION_SUMMARY.md",
+      "sha256": "132a9f30a3b9748ffa5d3c99078cd4f79525ad937dea604b67f1b69fe98bbb66",
+      "bytes": 5484,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md",
+      "sha256": "9df77604158501ebb446a4dd8aa43b28eb98ee064898da024585b66240755755",
+      "bytes": 890,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/workflow-runtime/GATE_ERROR_HANDLING_IMPLEMENTATION_SUMMARY.md",
+      "sha256": "6f3bb534d680394adca529064fd9a1411b8e3fc9eca94faf0c34bf7222bb35e9",
+      "bytes": 6937,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md",
+      "sha256": "ee66598aad41dea8ec548ae3f45eab6784260d1b20dcf59e268178d4bccbc302",
+      "bytes": 896,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/workflow-runtime/TASK_1_5_COMPLETION.md",
+      "sha256": "d48518977333a023f0310a0a877428a8f53c72cc43462e94c3c6321a4c547668",
+      "bytes": 7837,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/workflow-runtime/docs/GateResult.md",
+      "sha256": "9c1b949f1a60265314ef3f7bf7f8e62956d63209f1ca61bef385a6e34e4c820a",
+      "bytes": 1715,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/workflow-runtime/docs/WORKFLOW_DEFINITION_LOADER.md",
+      "sha256": "b4628e513ae05c796bcb3187b0273e4061f0f70b4a6804701987d375ff6e76c1",
+      "bytes": 2031,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/workflow-runtime/package.json",
+      "sha256": "b00351c969671a08e1224ce51e8db350e8b14f698cde1f34675af942dff7d43c",
+      "bytes": 2283,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/workflow-runtime/src/engine/WorkflowLoader.ts",
+      "sha256": "b1544416e5cb1b646113700dc3374d5192003bfc0e0640d6d6b76be3532d6a02",
+      "bytes": 8754,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/workflow-runtime/src/engine/index.ts",
+      "sha256": "6a956c83db3da14062db4ef5fa4759aa877429fff7121ad4b21c901364a834d7",
+      "bytes": 644,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/workflow-runtime/src/gates/CompositeGateSerializer.ts",
+      "sha256": "d48023fbde588f23023b0808395f9ed0bc7710f589ada86fd85ba156fd43e864",
+      "bytes": 11549,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/workflow-runtime/src/loaders/WorkflowDefinitionLoader.ts",
+      "sha256": "365ad7e03e8f6d1084bfe186a3b2700e34bd0a1445b3bfe02a39867d7dea4cf6",
+      "bytes": 21761,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/workflow-runtime/src/rbac/ProtectedFileMatcher.ts",
+      "sha256": "7c1621b19fea9a4decb28142b25c129b8cde43bc2dcabd70c87898a6aa5a5b0e",
+      "bytes": 5705,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/workflow-runtime/src/types.ts",
+      "sha256": "78249f18891fde54d61f68aa1768b198bfa1e1cc9445073703f7c67e82c89795",
+      "bytes": 6047,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/workflow-runtime/src/v11/runtime/CloseGate.ts",
+      "sha256": "7e7b5ce89af7f6015e5e81250a9e1417ee7c7a9eff0a81003dd7277d5089c8ac",
+      "bytes": 12093,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "sha256": "9973206eb9acff22f91d444430f5777f3b4cf478d03bedc6785710af91b3caf2",
+      "bytes": 13872,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/workflow-runtime/src/v11/runtime/PathService.ts",
+      "sha256": "8292cc8d6b583af27260850faca3512b768e511e8a774eb591e261839b57234d",
+      "bytes": 8150,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/workflow-runtime/tests/engine/WorkflowLoader.test.ts",
+      "sha256": "5dc0c52cd1bdbe4a1dee3e6ca390f2c45eaa7a767fe073de03384c16c93807f3",
+      "bytes": 17131,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/workflow-runtime/tests/unit/WorkflowDefinitionLoader.test.ts",
+      "sha256": "f166dc5c4c6babf5e0aff5bac38bd4a9910a205aa7bed8e0c9184b7c4c4097e2",
+      "bytes": 20445,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "packages/workflow-runtime/tests/unit/current-definition-schema-boundary.test.ts",
+      "sha256": "45198db7c80baa91c991a3662de7f9005a5655e68e3dd0967437ff6c45ea2131",
+      "bytes": 3893,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "scripts/audit-async-resources.ts",
+      "sha256": "f959bb9a43b6cf8d6c445e4a64b69be19fa44a125a93bbd803ace521d74ee2a4",
+      "bytes": 13821,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "scripts/clean-workspace.ts",
+      "sha256": "4b0beec725ba2c01e9aed0c2987431f7bbca6fa4b7449e1703d4fb70e4d356e8",
+      "bytes": 1791,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "scripts/lib/daemon-http-reference.ts",
+      "sha256": "7155b4032cdab1ef397e977538b9c41cf55df3894998f33465d9392e2e6a9616",
+      "bytes": 5537,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "scripts/lib/prepare-current-release.ts",
+      "sha256": "5ea60f503f3642342a2ae102e82ce08527b9470b50a233282b10dc98a996bc4a",
+      "bytes": 2370,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "scripts/lib/verify.ts",
+      "sha256": "08530df662dba748e9d71bda11867c60b9e7d951f19b689180fab3c389ecdeb3",
+      "bytes": 15121,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "scripts/lint-workspace.ts",
+      "sha256": "7f50df5a3b5d56e87e187d771e03c4c10c12dd60fd10bb5b1b0e27fae84066d1",
+      "bytes": 743,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "scripts/lint/check-hardcoded-paths.ts",
+      "sha256": "f5123635950783a65b90d6c75d73ed55a6ca32b9e52aac038f003fbfe2f7ed3b",
+      "bytes": 2480,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "scripts/lint/source-policy.ts",
+      "sha256": "d089eb83f88ca9b26b0f5ae82da096f666c99433a1041b4127d215b58484d729",
+      "bytes": 3291,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "scripts/prepare-current-release.ts",
+      "sha256": "03cf4843c9f79a82ca515258106fe584612efed4bbbcf2bf45ae2c0e579296f1",
+      "bytes": 474,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "scripts/render-daemon-http-reference.ts",
+      "sha256": "0799ca49f75b6b617f2b0ebc0597e4268d6dbed0f49de018a440fa0f51b59eb7",
+      "bytes": 641,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "scripts/run-root-task.mjs",
+      "sha256": "c4b6ac8b8ae0aaae053a4942f951acdd239807c6db174b85b6551bb04e48d313",
+      "bytes": 2597,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "scripts/sf-installer.ts",
+      "sha256": "99707343a881b74b24bf5b4c490b5eed11b3b7c0208ac0a0fb08b26a78a2d19a",
+      "bytes": 26465,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "scripts/verify-platform-release.ts",
+      "sha256": "06c9b2c69a68fa33c13967c86d00eaca25d6a9dda8cbab25a9ffee45a699b8f2",
+      "bytes": 10423,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/README.md",
+      "sha256": "0757874b1eac0cbf30521c7a5efb79e172aa7a1e82654ef68ee84ca3773f2b24",
+      "bytes": 669,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts",
+      "sha256": "50ad4f1f2d463046b4c542f228b8be2220a9d21820eca616dc2d5c7d6f0d0c39",
+      "bytes": 15712,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/lib/sf-observability.ts",
+      "sha256": "6f8f03bc52664f5f44c483210cce65ef606b7ad0b2d3016ed2495f2043d5eb4c",
+      "bytes": 22900,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/lib/sf_design_gate_core.ts",
+      "sha256": "738021fe8d77c0b2d5f466d3e173cdbfccae5258cc9b2fa3384e4b2dd884e606",
+      "bytes": 30328,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/lib/sf_doc_lint_core.ts",
+      "sha256": "e125f68a6660bbe56eba0c503d8278d37dca1170c09d72d2d6ba082b6a7c8ece",
+      "bytes": 80135,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/lib/sf_knowledge_base_core.ts",
+      "sha256": "ae63044fa9eb965b3b6a390bebccb4b105451037af39dc3ebcef858939611381",
+      "bytes": 32646,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/lib/sf_requirements_gate_core.ts",
+      "sha256": "5f6823e4ea12bf35882b14994efc48e91a1cc3463140fc982dd464dc4011cb64",
+      "bytes": 18507,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/lib/sf_safe_bash_core.ts",
+      "sha256": "f36720a654541cb963a3fbb449e36a7041581a0d071b1a60b3dceb92619d2255",
+      "bytes": 2075,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/lib/sf_safe_bash_rules.ts",
+      "sha256": "08c4f8ac9610a29f75434360951bd5c130485ae2f1383cfcf56d19b84d96fd7f",
+      "bytes": 1023,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/lib/sf_safe_bash_types.ts",
+      "sha256": "328e836b16ee4c4604be1ce1e703ea9e2a086dbd9781f1d9ba4e3932fa6f44fb",
+      "bytes": 3055,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/lib/sf_tasks_gate_core.ts",
+      "sha256": "e4725ca17b32ba42720dff150aafaceeeab97f7d00263b0a50fdf788f175f5ed",
+      "bytes": 8849,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/lib/sf_verification_gate_core.ts",
+      "sha256": "2bfe3880fa843a08119f5844e4fe9f22a9afa08bb268042ce44bdf5a2ac989e6",
+      "bytes": 20578,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_artifact_write.ts",
+      "sha256": "641c374b49c7958ea8b79c29015105f696fb1c2315c1fb2a41abc671edbda8dd",
+      "bytes": 5548,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_changed_files_audit.ts",
+      "sha256": "9ea4c1108aadce050cce3300db29777ef57260edf8e92ac744912d0fba1817df",
+      "bytes": 2684,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_contract_register.ts",
+      "sha256": "da511c7b4cf179f6eeef646d04e7f5fce9119462de54587ead85a84d00fc119e",
+      "bytes": 1551,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_design_gate.ts",
+      "sha256": "588d1946fbffc40ca4f0f2a75381a71e5a5b261706eb1c06555434f47f4eec89",
+      "bytes": 724,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_doc_lint.ts",
+      "sha256": "e36317074d9f793bac71ad2dad08fc44d40f7c5410641abcf13543e45fd50275",
+      "bytes": 693,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_gate_run.ts",
+      "sha256": "8d10039867eb488b3470f6c9435b2765cddbed4a6ad19d64bc476f9b39f74a1a",
+      "bytes": 2732,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_git_post_merge_verify.ts",
+      "sha256": "166b45b3e6ba88908b93e1c4c0b9243c41f08f7f4b6cce479cbcaad92315a869",
+      "bytes": 983,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_knowledge_base.ts",
+      "sha256": "c4f9e55df8c5ecb11f2969d827ee431680c22a22dc83d27647dcae6aa44569b1",
+      "bytes": 3122,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_requirements_gate.ts",
+      "sha256": "6bce88c80118a07cad77d5187963da6b6761248b5ab90a1ac67aa46bfacd4aec",
+      "bytes": 812,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_semantic_closure_run.ts",
+      "sha256": "bff412c5e9ec1408f168bdda532f6326ead1d531b605a5ecb5ee42d2dccdff74",
+      "bytes": 5289,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_state_transition.ts",
+      "sha256": "a5fddc5f29571ab52e2017f7e35b68207c7a728ba3a50767837c12659074719b",
+      "bytes": 1644,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_verification_gate.ts",
+      "sha256": "4c62a46390364ae6b6bae70b35007be943e6cefb668966895019f914d1cd6352",
+      "bytes": 633,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_verification_plan.ts",
+      "sha256": "98ef30b8ffc6b701dbb3cc6cca3577cb8c6c960413a44a70a589cc2e0a61e5ac",
+      "bytes": 1221,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_verification_run.ts",
+      "sha256": "d1a77cd03175258c49581bbc6f68fc0f9c08b4072d7fad20cbfa151253a6a18a",
+      "bytes": 1324,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-templates/README.md",
+      "sha256": "9b44c9035823d2315cd77672bebeca9cf460e7b31dbee9faf512d9ba753d8c30",
+      "bytes": 2006,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-templates/dev-environment.md",
+      "sha256": "6912698e8bcca7cef78966466e57ffa959b91d256c0772ed57cb521184484bc2",
+      "bytes": 1308,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-templates/prod-environment.md",
+      "sha256": "e4a607a20b1ecd7812678502d15f06153c3f9c4262dd92ea23f93e622ef457a4",
+      "bytes": 13878,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/_BASE.md",
+      "sha256": "7ca607ad261434bb1d4c8915af44d1cc5e7753cbad7b6bac865fd4c4308a57c3",
+      "bytes": 5894,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/databases/mongodb.md",
+      "sha256": "d61ace659d17221ea37aaa7aa6fc4c2a95c204ffd8570d55f132cad81aac01aa",
+      "bytes": 1374,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/databases/mysql.md",
+      "sha256": "067f34917f9198974365c94d75f773eec16eba01a972f75e8623e49049924b83",
+      "bytes": 1533,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/databases/postgresql.md",
+      "sha256": "93236c5c7c8c9c917d286a8146b83952f7d1e4134c106ae52587ec3a847e70f9",
+      "bytes": 2484,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/databases/redis.md",
+      "sha256": "deec6933e953ea43e0a8c4b89407e6585dc89cc25a7599d4f17dc4f229537792",
+      "bytes": 1616,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/databases/sqlite.md",
+      "sha256": "84b7c182b186f9cc6a093c71bafdd114995394c69104baba9171abbdd68317b3",
+      "bytes": 1608,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/frameworks/fastapi.md",
+      "sha256": "ec62d06a7c42f9528642b098fc652cf9f8c79b193f2ae0ed7c62909a5d843fa5",
+      "bytes": 2014,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/frameworks/react.md",
+      "sha256": "f3a6604d5ddceadb2e0f032ae77cb1d12df6fb60caa9ecf7a3ce118f4794a767",
+      "bytes": 2501,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/frameworks/spring-boot.md",
+      "sha256": "265316f3e0f7645595d7298a7c208cc0dc06ad56d8c34050afc04314c1e9c2dc",
+      "bytes": 2100,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/frameworks/vue.md",
+      "sha256": "668bdd5f4758431833176339e88bb3e49a24e4f0debdd0729cce213675f4e21b",
+      "bytes": 2055,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/infra/ci-github-actions.md",
+      "sha256": "00d8441a3ca5fce99e536ceb322ebb45bde575d9b2430f20672998362c5236f7",
+      "bytes": 1830,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/infra/docker.md",
+      "sha256": "2cd8d263809d1f09320a95f9bd998671acb5f2ee0726f1a7611a923e57cf0f3b",
+      "bytes": 1876,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/languages/go.md",
+      "sha256": "1d337356d0a1e54658a8be3b51e69a8c6c06c169d7d15b4a73177e709f6319e9",
+      "bytes": 3096,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/languages/java.md",
+      "sha256": "7621be9820a06b46b2be2a54bac773107e76418ffccafb70040258f78539f5d3",
+      "bytes": 3462,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/languages/nodejs.md",
+      "sha256": "0592f8ecf0625d60490ac9d7e7d75a583db902f8ff381696568b1a4e7fe9b739",
+      "bytes": 4319,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/languages/python.md",
+      "sha256": "9a04679b1df16689cf712beb7146925cee513971dbaf325e10df1fadc44b8eaa",
+      "bytes": 4281,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "tests/integration/service-management/linux-systemd-full-lifecycle.test.ts",
+      "sha256": "00c806603c80d9ac790e63761eecec06588d4d86297370208bfd279853e1c97e",
+      "bytes": 9995,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "tests/unit/current-product-version-contract.test.ts",
+      "sha256": "4b7d8475a7014d3aa77efa359970e2e58b4661b853a5ef04bd92f84ac6e7eff2",
+      "bytes": 4976,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "tests/unit/installer/cmdVerify.test.ts",
+      "sha256": "eb6de0be33c7068af19fc15c0335346f8e84703489cba1a24e1bc8c1b8fe7468",
+      "bytes": 8217,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "tests/unit/installer/command_path.test.ts",
+      "sha256": "6ec08340f76a6bb5e3b4c7bba96d4aab149a01a855290f4a5bb4ebf655688b87",
+      "bytes": 1969,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "tests/unit/installer/installer_manifest_path_contract.test.ts",
+      "sha256": "14e7e8e2288ebd7dc518d4e06787ac01854a33d10f71f2965eda3d0515ee52c7",
+      "bytes": 2489,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    },
+    {
+      "path": "tests/unit/installer/parseArgs.test.ts",
+      "sha256": "b9fc3394582c6bb8c5d8a3b98d4da7879c25dff0132746e31c0b34373fb2a965",
+      "bytes": 5128,
+      "classification": "REPOSITORY_TRACKED_WRITES",
+      "origin": "Clean initial gate; current task changes only"
+    }
+  ],
+  "qualification": "Source-only integration subject after owner/source/document audit, full frozen03 failure attribution and targeted repairs. Final exact-commit cross-platform CI/full Windows and deployment remain required; no unconditional acceptance claimed."
+}

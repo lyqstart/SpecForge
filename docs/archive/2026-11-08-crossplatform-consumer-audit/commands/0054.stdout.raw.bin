@@ -1,0 +1,18 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/packages/scope-gate
+
+ ❯ tests/current-operating-doc-contract.test.ts  (4 tests | 4 failed) 17ms
+   ❯ tests/current-operating-doc-contract.test.ts > current operating documentation contracts > uses actual public configuration exports and does not invent a ConfigManager API
+     → ConfigManager: expected false to be true // Object.is equality
+   ❯ tests/current-operating-doc-contract.test.ts > current operating documentation contracts > documents release preparation before userlevel source installation
+     → docs/user/install.md: expected '# 安装 SpecForge\r\n\r\n> Role: DERIVED…' to contain 'scripts/prepare-current-release.ts'
+   ❯ tests/current-operating-doc-contract.test.ts > current operating documentation contracts > keeps active Daemon guides on independent CLI lifecycle and current handshake schema
+     → packages/daemon-core/docs/README.md: expected '# Daemon Core API Documentation\r\n\r…' to contain 'specforge daemon start --detach'
+   ❯ tests/current-operating-doc-contract.test.ts > current operating documentation contracts > keeps Adapter deployment guidance on the official installed production consumer
+     → expected '# Installation and Setup Guide\r\n\r\…' to contain 'scripts/sf-installer.ts'
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  10:52:13
+   Duration  2.87s (transform 1.82s, setup 0ms, collect 2.21s, tests 17ms, environment 0ms, prepare 237ms)
+

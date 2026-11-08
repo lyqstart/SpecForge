@@ -1,0 +1,33 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/current-observability-owner.test.ts",
+    "tests/current-observability-config-contract.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "green-current-diagnostic-metadata-redaction",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T03:31:01.966Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\current-observability-owner.test.ts",
+      "sha256": "976f076cb19a1a08ceb5f5d099394559d52966b248829bdfb11d69191b56d2de",
+      "size": 4164,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 4,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\current-observability-config-contract.test.ts",
+      "sha256": "28b523d3013e99c707b41defabb47489d2249d001655576e281e859b6010ac06",
+      "size": 5259,
+      "extension": ".ts"
+    }
+  ]
+}

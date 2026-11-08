@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "wsl.exe",
+  "args": [
+    "--distribution",
+    "Ubuntu-24.04",
+    "--cd",
+    "/tmp/specforge-crossplatform-20261108-a01/project",
+    "--exec",
+    "/usr/bin/env",
+    "PATH=/tmp/specforge-crossplatform-20261108-a01/bin:/usr/local/bin:/usr/bin:/bin",
+    "BUN_RUNTIME_TRANSPILER_CACHE_PATH=0",
+    "/tmp/specforge-crossplatform-20261108-a01/bin/bun",
+    "/mnt/d/code/SpecForge/docs/archive/2026-11-08-crossplatform-consumer-audit/verify-linux-daemon-systemd.mjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "linux-frozen03-actual-current-daemon-systemd",
+  "expected_writes": "owned-linux-unique-systemd-unit-config-runtime-and-evidence",
+  "started_utc": "2026-11-08T05:30:11.359Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": []
+}

@@ -1,0 +1,2 @@
+$ vitest run tests/unit/retained-tool-library-boundary.test.ts tests/unit/shell-readonly-boundary.test.ts tests/design-governance-contract.test.ts "--maxWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m

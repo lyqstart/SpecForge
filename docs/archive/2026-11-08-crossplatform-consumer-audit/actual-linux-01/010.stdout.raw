@@ -1,0 +1,30 @@
+{
+  "command": "opencode-server",
+  "description": "Manage the OpenCode user service through Linux systemd --user",
+  "subcommands": [
+    {
+      "name": "install-service",
+      "description": "install-service the OpenCode user service"
+    },
+    {
+      "name": "uninstall-service",
+      "description": "uninstall-service the OpenCode user service"
+    },
+    {
+      "name": "start",
+      "description": "start the OpenCode user service"
+    },
+    {
+      "name": "stop",
+      "description": "stop the OpenCode user service"
+    },
+    {
+      "name": "restart",
+      "description": "restart the OpenCode user service"
+    },
+    {
+      "name": "status",
+      "description": "status the OpenCode user service"
+    }
+  ]
+}

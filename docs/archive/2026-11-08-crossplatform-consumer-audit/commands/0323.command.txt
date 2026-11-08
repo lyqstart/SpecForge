@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/verify-final-loader-03.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "final-loader-persisted-response-schema-and-identities",
+  "expected_writes": "owned-kernel-temp-runtime-observers-and-evidence",
+  "started_utc": "2026-11-08T06:33:08.894Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\verify-final-loader-03.cjs",
+      "sha256": "0ccfba29359e554d82d233d3245f1152b2c649ff413d074318f9794298d2edf3",
+      "size": 10656,
+      "extension": ".cjs"
+    }
+  ]
+}

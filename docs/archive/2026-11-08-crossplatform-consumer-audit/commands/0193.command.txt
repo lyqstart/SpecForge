@@ -1,0 +1,24 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/build-release-manifest.ts",
+    "--candidate-id",
+    "commit-bb0f172aab26fab79d6484c458e0122d9353f604"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "windows-final-toolset-formal-manifest-refresh",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T04:44:05.310Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\scripts\\build-release-manifest.ts",
+      "sha256": "5e89794f912f1f694983d33baf0f95652a12c7ed82fab03fa18597ba487ecb1a",
+      "size": 1480,
+      "extension": ".ts"
+    }
+  ]
+}

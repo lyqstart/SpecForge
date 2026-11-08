@@ -1,0 +1,15 @@
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ rimraf dist && tsc
+$ bun ../../scripts/build-workflow-runtime.ts
+$ tsc
+$ tsc
+error: Cannot find module '@specforge/types' from '/tmp/specforge-crossplatform-20261108-a01/project/scripts/lib/prepare-current-release.ts'
+
+Bun v1.3.14 (Linux x64)

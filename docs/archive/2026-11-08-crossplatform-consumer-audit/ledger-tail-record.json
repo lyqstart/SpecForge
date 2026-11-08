@@ -1,0 +1,19 @@
+{
+  "utc": "2026-11-08T04:27:57.132Z",
+  "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+  "before_sha256": "f8c4e991f8afc30ea1adc5ec8a02d400bd4d3827a69fdfa582c5bf802dd5e3e6",
+  "after_sha256": "d2d01d8c8f3ca3329191fbb248388f28a679997c86ef526f4ad5503184b41dd0",
+  "applied_active_rules": [
+    "EXP-076",
+    "EXP-179",
+    "EXP-180",
+    "EXP-182",
+    "EXP-193",
+    "EXP-251",
+    "EXP-260",
+    "EXP-261",
+    "EXP-283",
+    "EXP-287"
+  ],
+  "new_active_rule_created": false
+}

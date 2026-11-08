@@ -1,0 +1,17 @@
+$ vitest run tests/unit/reconnect-timer-ownership.test.ts tests/unit/reconnecting-daemon-client.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+stderr | tests/unit/reconnecting-daemon-client.test.ts > ReconnectingDaemonClient > TASK-2: 客户端错误分类 (PostAttemptResult + isClientError) > 413 响应不触发退避，返回 rejected + dropped
+[specforge] Event rejected by daemon (HTTP 413): sessionId=test-session, type=test.event. Dropping event without retry.
+
+stderr | tests/unit/reconnecting-daemon-client.test.ts > ReconnectingDaemonClient > TASK-2: 客户端错误分类 (PostAttemptResult + isClientError) > 400/401/403/404 响应不触发退避（遍历验证）
+[specforge] Event rejected by daemon (HTTP 400): sessionId=test-session, type=test. Dropping event without retry.
+
+stderr | tests/unit/reconnecting-daemon-client.test.ts > ReconnectingDaemonClient > TASK-2: 客户端错误分类 (PostAttemptResult + isClientError) > 400/401/403/404 响应不触发退避（遍历验证）
+[specforge] Event rejected by daemon (HTTP 401): sessionId=test-session, type=test. Dropping event without retry.
+
+stderr | tests/unit/reconnecting-daemon-client.test.ts > ReconnectingDaemonClient > TASK-2: 客户端错误分类 (PostAttemptResult + isClientError) > 400/401/403/404 响应不触发退避（遍历验证）
+[specforge] Event rejected by daemon (HTTP 403): sessionId=test-session, type=test. Dropping event without retry.
+
+stderr | tests/unit/reconnecting-daemon-client.test.ts > ReconnectingDaemonClient > TASK-2: 客户端错误分类 (PostAttemptResult + isClientError) > 400/401/403/404 响应不触发退避（遍历验证）
+[specforge] Event rejected by daemon (HTTP 404): sessionId=test-session, type=test. Dropping event without retry.
+

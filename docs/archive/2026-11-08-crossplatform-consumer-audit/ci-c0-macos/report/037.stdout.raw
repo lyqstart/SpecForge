@@ -1,0 +1,14 @@
+🔄 正在升级 SpecForge 共享组件...
+   目标目录: /var/folders/h5/t85nd63d71x27_8gl5gw3l_w0000gn/T/sf-platform-acceptance-uBPHR3/opencode
+
+   已升级: 0 个文件
+   已跳过: 114 个文件（无变化）
+
+✅ 升级完成
+   已部署: 0 个共享组件文件
+   OpenCode 配置根: /var/folders/h5/t85nd63d71x27_8gl5gw3l_w0000gn/T/sf-platform-acceptance-uBPHR3/opencode
+   CLI 命令目录: /var/folders/h5/t85nd63d71x27_8gl5gw3l_w0000gn/T/sf-platform-acceptance-uBPHR3/opencode/sf-user/bin
+   ⚠ 当前 shell 尚不能直接运行 specforge。请执行:
+   export PATH='/var/folders/h5/t85nd63d71x27_8gl5gw3l_w0000gn/T/sf-platform-acceptance-uBPHR3/opencode/sf-user/bin':"$PATH"
+   并将同一行加入当前 shell 的 profile，随后打开新终端。
+   提示: 需要重启 OpenCode 才能加载新版 Plugin

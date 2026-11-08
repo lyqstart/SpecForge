@@ -1,0 +1,20 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/packages/workflow-runtime
+
+ ❯ tests/unit/current-definition-schema-boundary.test.ts  (7 tests | 5 failed) 54ms
+   ❯ tests/unit/current-definition-schema-boundary.test.ts > current definition persistent schema boundary > rejects a missing identity without mutating an object
+     → expected [Function] to throw an error
+   ❯ tests/unit/current-definition-schema-boundary.test.ts > current definition persistent schema boundary > rejects missing persistent schema and preserves source bytes
+     → promise resolved "{ id: 'synthetic-definition', …(5) }" instead of rejecting
+   ❯ tests/unit/current-definition-schema-boundary.test.ts > current definition persistent schema boundary > fails a directory as a whole on unsupported schema without partial registration
+     → promise resolved "[ { schema_version: '1.0', …(5) } ]" instead of rejecting
+   ❯ tests/unit/current-definition-schema-boundary.test.ts > current definition persistent schema boundary > does not replace a missing required builtin with an empty successful set
+     → promise resolved "[]" instead of rejecting
+   ❯ tests/unit/current-definition-schema-boundary.test.ts > current definition persistent schema boundary > does not expose schema conversion as a current loader responsibility
+     → expected [Function migrate] to be undefined
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 2 passed (7)
+   Start at  11:28:36
+   Duration  890ms (transform 96ms, setup 43ms, collect 73ms, tests 54ms, environment 0ms, prepare 332ms)
+

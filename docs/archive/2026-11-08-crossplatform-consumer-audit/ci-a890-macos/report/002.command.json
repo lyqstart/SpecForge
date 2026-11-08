@@ -1,0 +1,14 @@
+{
+  "number": "002",
+  "name": "official-verify",
+  "executable": "/Users/runner/.bun/bin/bun",
+  "args": [
+    "scripts/sf-installer.ts",
+    "verify"
+  ],
+  "started_utc": "2026-11-08T05:46:48.556Z",
+  "finished_utc": "2026-11-08T05:46:48.772Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

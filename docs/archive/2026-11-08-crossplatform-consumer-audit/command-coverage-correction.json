@@ -1,0 +1,20 @@
+{
+  "utc": "2026-11-08T03:20:06.761Z",
+  "members": [
+    {
+      "receipt": "0043.result.json",
+      "purpose": "actual-linux-live-design-rejection-details",
+      "inner_exit_code": 0,
+      "coverage": "NOT_EXECUTED_USAGE_ONLY",
+      "qualification": "Numeric exit 0 is not evidence that the requested script/test ran. Any earlier corresponding pass claim is withdrawn; original bytes retained."
+    },
+    {
+      "receipt": "0053.result.json",
+      "purpose": "red-operating-doc-contract-resolved-fixture",
+      "inner_exit_code": 0,
+      "coverage": "NOT_EXECUTED_USAGE_ONLY",
+      "qualification": "Numeric exit 0 is not evidence that the requested script/test ran. Any earlier corresponding pass claim is withdrawn; original bytes retained."
+    }
+  ],
+  "rule": "Require actual test/build/result marker as well as numeric exit before counting coverage."
+}

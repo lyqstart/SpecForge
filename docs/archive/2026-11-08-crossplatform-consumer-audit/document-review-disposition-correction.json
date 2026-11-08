@@ -1,0 +1,6 @@
+{
+  "utc": "2026-11-08T04:49:02.741Z",
+  "superseded": "document-review-final-inputs.json",
+  "replacement": "document-review-final-inputs-v2.json",
+  "error": "The generic fallback incorrectly called two current authority/registry files and the required targeted-search ledger noncurrent. This role labelling is withdrawn. The original role inventory and authority itself were unchanged; no runtime/source modification."
+}

@@ -1,0 +1,14 @@
+{
+  "number": "001",
+  "name": "official-install",
+  "executable": "/home/runner/.bun/bin/bun",
+  "args": [
+    "scripts/sf-installer.ts",
+    "install"
+  ],
+  "started_utc": "2026-11-08T05:54:41.276Z",
+  "finished_utc": "2026-11-08T05:54:41.886Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

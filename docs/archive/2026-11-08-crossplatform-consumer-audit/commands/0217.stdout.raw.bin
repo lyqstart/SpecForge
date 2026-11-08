@@ -1,0 +1,16 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/work-item-artifact-owner.test.ts (3 tests | 3 failed) 44ms
+   × Runtime-owned Work Item metadata > refuses generic permission and identity replacement by sf-orchestrator without writes 25ms
+     → expected true to be false // Object.is equality
+   × Runtime-owned Work Item metadata > refuses generic permission and identity replacement by sf-verifier without writes 11ms
+     → expected true to be false // Object.is equality
+   × Runtime-owned Work Item metadata > refuses generic permission and identity replacement by sf-executor without writes 7ms
+     → expected 'EXECUTOR_CANNOT_WRITE_GOVERNANCE_ARTI…' to be 'WORK_ITEM_METADATA_OWNED_BY_RUNTIME' // Object.is equality
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  13:17:56
+   Duration  1.87s (transform 781ms, setup 0ms, collect 1.45s, tests 44ms, environment 0ms, prepare 140ms)
+

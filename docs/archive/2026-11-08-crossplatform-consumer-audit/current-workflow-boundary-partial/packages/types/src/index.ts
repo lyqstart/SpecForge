@@ -1,0 +1,410 @@
+/**
+ * @specforge/types - Shared type definitions for SpecForge modules
+ *
+ * 产品边界：SPS-1.0。当前可执行合同由本模块导出、Runtime 消费者与回归测试固定；归档 v1.1 标准仅作历史证据。
+ *
+ * 本包是 SpecForge 的类型真相源，提供：
+ * - 目录布局与路径服务（directory-layout.ts）
+ * - ID 规则（id-rules.ts，§3）
+ * - Work Item 核心类型（work-item-types.ts，§4-§13）
+ * - 当前 Work Item metadata/schema contract（work-item-metadata-contract.ts / schema-contract.ts）
+ */
+
+// ---- 目录布局与路径服务（§1.5 / §1.6）----
+export {
+  SPEC_DIR_NAME,
+  LAYOUT,
+  legacyPaths,
+  type LayoutKey,
+  // 路径构造函数
+  resolveProjectPath,
+  // 项目级正式规格路径服务（§1.5）
+  projectRoot,
+  projectSpecManifest,
+  projectExtensionRegistry,
+  projectRequirementsIndex,
+  projectDesignIndex,
+  projectArchitecture,
+  projectGlossary,
+  projectDecisions,
+  projectTraceMatrix,
+  projectModulesRoot,
+  moduleRoot,
+  moduleJson,
+  moduleRequirements,
+  moduleDesign,
+  moduleTrace,
+  // Work Item 路径服务（§4.2）
+  workItemsRoot,
+  workItemRoot,
+  workItemJson,
+  workItemIntake,
+  workItemChangeClassification,
+  workItemImpactAnalysis,
+  workItemTriggerResult,
+  workItemRequirements,
+  workItemDesign,
+  workItemTasks,
+  workItemTraceDelta,
+  workItemRuntimeLog,
+  workItemCandidateManifest,
+  workItemCandidatesRoot,
+  workItemCandidateProjectRoot,
+  workItemCandidateModulesRoot,
+  workItemCandidateModuleRoot,
+  workItemCandidateRequirements,
+  workItemCandidateDesign,
+  workItemCandidateTasks,
+  workItemCandidateTraceDelta,
+  workItemSpecArtifactReadCandidates,
+  type WorkItemSpecArtifactKind,
+  workItemGatesRoot,
+  workItemGateSummary,
+  workItemUserDecision,
+  workItemVerificationReport,
+  workItemMergeReport,
+  workItemEvidenceRoot,
+  workItemEvidenceManifest,
+  // Path Policy（§1.6）
+  validatePathPolicy,
+  isProjectSpecPath,
+  isWorkItemPath,
+} from "./directory-layout.js";
+
+// ---- Actor Roles — 统一角色枚举 ----
+export { ACTOR_ROLES, type ActorRole } from "./actor-roles.js";
+
+// ---- Cross-module contract model ----
+export {
+  ContractRegistrySchema,
+  ModuleContractFileSchema,
+  SharedEnumContractSchema,
+  InvariantContractSchema,
+  PublicInterfaceContractSchema,
+  ExtensionPointContractSchema,
+  type ContractRegistry,
+  type ModuleContractFile,
+  type SharedEnumContract,
+  type InvariantContract,
+  type PublicInterfaceContract,
+  type ExtensionPointContract,
+} from "./contract-model.js";
+
+// ---- Task artifact protocol contract ----
+export {
+  TASK_ARTIFACT_CONTRACT_VERSION,
+  TASK_VERIFICATION_TYPES,
+  TaskArtifactReferenceSchema,
+  TaskAllowedWriteFileSchema,
+  TaskAllowedWriteFilesSchema,
+  TaskArtifactIdSchema,
+  TaskVerificationCommandsSchema,
+  TaskArtifactItemSchema,
+  TaskArtifactDocumentSchema,
+  isTaskRequirementRef,
+  isTaskDesignDecisionRef,
+  isTaskCorrectnessPropertyRef,
+  isLegacyTaskArtifactId,
+  type TaskVerificationType,
+  type TaskVerificationCommands,
+  type TaskArtifactItem,
+  type TaskArtifactDocument,
+} from "./task-artifact-contract.js";
+
+// ---- ID 规则（§3）----
+export {
+  MODULE_CODE_PATTERN,
+  WI_ID_PATTERN,
+  REQ_ID_PATTERN,
+  AC_ID_PATTERN,
+  DD_ID_PATTERN,
+  ARCH_ID_PATTERN,
+  DATA_ID_PATTERN,
+  CP_ID_PATTERN,
+  TASK_ID_PATTERN,
+  isValidModuleCode,
+  isValidWorkItemId,
+  isValidRequirementId,
+  isValidAcceptanceCriteriaId,
+  isValidDesignDecisionId,
+  isValidArchitectureId,
+  isValidDataModelId,
+  isValidCorrectnessPropertyId,
+  isValidTaskId,
+  extractModuleFromReqId,
+  extractModuleFromAcId,
+  extractModuleFromDdId,
+  extractWiFromTaskId,
+} from "./id-rules.js";
+
+// ---- Project Spec module identity ----
+export {
+  SPEC_MODULE_IDENTITY_FIELDS,
+  normalizeModuleCodeReference,
+  resolveSpecModuleIdentity,
+  moduleCodeFromProjectSpecPath,
+  canonicalProjectSpecModuleEntry,
+  type SpecModuleIdentityField,
+  type SpecModuleIdentityResolution,
+} from "./project-spec-module.js";
+
+// ---- Work Item 核心类型（§4-§13）----
+export {
+  WORK_ITEM_METADATA_SCHEMA_VERSION,
+  FORBIDDEN_WORK_ITEM_DECISION_FIELDS,
+  findForbiddenWorkItemDecisionFields,
+  validateCurrentWorkItemMetadataJson,
+  type WorkItemMetadataValidationResult,
+} from "./work-item-metadata-contract.js";
+
+export {
+  USER_DECISION_SCHEMA_VERSION,
+  USER_DECISION_TYPES,
+  UserDecisionWaiverSchema,
+  validateCurrentUserDecisionValue,
+  validateCurrentUserDecisionJson,
+  type UserDecisionType,
+  type UserDecisionValidationResult,
+} from "./user-decision-contract.js";
+
+export {
+  CANDIDATE_MANIFEST_SCHEMA_VERSION,
+  CandidateManifestContractPromotionSchema,
+  validateCurrentCandidateManifestValue,
+  validateCurrentCandidateManifestJson,
+  type CandidateManifestValidationResult,
+} from "./candidate-manifest-contract.js";
+
+// ---- Gate Attempt persistent evidence contract ----
+export {
+  GATE_ATTEMPT_SCHEMA_VERSION,
+  GateReportCheckSchema,
+  GateAttemptStartSchema,
+  GateAttemptInputSnapshotEntrySchema,
+  GateAttemptInputSnapshotSchema,
+  GateAttemptSuccessResultSchema,
+  GateAttemptErrorResultSchema,
+  GateAttemptResultSchema,
+  validateCurrentGateReportValue,
+  validateCurrentGateAttemptStartValue,
+  validateCurrentGateAttemptInputSnapshotValue,
+  validateCurrentGateAttemptResultValue,
+  type GateReportCheck,
+  type GateAttemptStart,
+  type GateAttemptInputSnapshotEntry,
+  type GateAttemptInputSnapshot,
+  type GateAttemptSuccessResult,
+  type GateAttemptErrorResult,
+  type GateAttemptResult,
+  type GateAttemptContractValidationResult,
+} from "./gate-attempt-contract.js";
+
+// ---- HardStop persistent governance contract ----
+export {
+  HARD_STOP_SCHEMA_VERSION,
+  HARD_STOP_RESOLUTION_SCHEMA_VERSION,
+  HardStopScopeSchema,
+  HardStopRecordSchema,
+  HardStopResolutionRecordSchema,
+  validateCurrentHardStopRecordValue,
+  validateCurrentHardStopResolutionRecordValue,
+  type HardStopScope,
+  type HardStopRecord,
+  type HardStopResolutionRecord,
+  type HardStopContractValidationResult,
+} from "./hard-stop-contract.js";
+
+// ---- WriteGuard Authorization persistent governance contract ----
+export {
+  WRITE_GUARD_AUTHORIZATION_SCHEMA_VERSION,
+  WriteGuardAuthorizationScopeSchema,
+  WriteGuardAuthorizationTypeSchema,
+  WriteGuardAuthorizationRecordSchema,
+  validateCurrentWriteGuardAuthorizationRecordValue,
+  type WriteGuardAuthorizationScope,
+  type WriteGuardAuthorizationType,
+  type WriteGuardAuthorizationRecord,
+} from "./write-guard-authorization-contract.js";
+
+// ---- Control-plane trusted-write provenance contracts ----
+export {
+  ATOMIC_SPEC_MERGE_WRITE_PROVENANCE_SCHEMA_VERSION,
+  GIT_GOVERNANCE_WRITE_PROVENANCE_SCHEMA_VERSION,
+  AtomicSpecMergeTrustedWriteSchema,
+  AtomicSpecMergeWriteProvenanceSchema,
+  GitGovernanceProjectMetadataPathSchema,
+  GitGovernanceTrustedWriteSchema,
+  GitGovernanceWriteProvenanceSchema,
+  validateAtomicSpecMergeWriteProvenanceValue,
+  validateGitGovernanceWriteProvenanceValue,
+  type AtomicSpecMergeTrustedWrite,
+  type AtomicSpecMergeWriteProvenance,
+  type GitGovernanceTrustedWrite,
+  type GitGovernanceWriteProvenance,
+} from "./control-plane-write-provenance-contract.js";
+
+export {
+  // §5 状态机
+  WI_STATUSES,
+  FORBIDDEN_TRANSITIONS,
+  isForbiddenTransition,
+  // §6 workflow_path
+  WORKFLOW_PATHS,
+  MATCH_RESULT_TYPES,
+  // §9 Gate
+  GATE_IDS,
+  GATE_TYPES,
+  GATE_SUMMARY_STATUSES,
+  // §10 User Decision
+  USER_DECISION_STATUSES,
+  // Schemas
+  WorkItemJsonSchema,
+  CandidateManifestEntrySchema,
+  CandidateManifestSchema,
+  GateReportSchema,
+  UserDecisionSchema,
+  SpecModuleEntrySchema,
+  SpecManifestSchema,
+  ExtensionRegistrySchema,
+  ExtensionRequestSchema,
+  EvidenceManifestEntrySchema,
+  EvidenceManifestSchema,
+  // Types
+  type WIStatus,
+  type WorkflowPath as V11WorkflowPath,
+  type MatchResultType,
+  type WorkItemJson,
+  type CandidateManifestEntry,
+  type CandidateManifest,
+  type GateId,
+  type GateType as V11GateType,
+  type GateReport,
+  type GateSummaryStatus,
+  type UserDecisionStatus,
+  type UserDecision,
+  type SpecModuleEntry,
+  type SpecManifest,
+  type ExtensionRegistry,
+  type ExtensionRequest,
+  type EvidenceManifestEntry,
+  type EvidenceManifest,
+} from "./work-item-types.js";
+
+// ---- Constants — 常量与枚举（§5-§10）----
+export {
+  // 版本常量
+  SCHEMA_VERSION,
+  CURRENT_RELEASE_WORKFLOW_TYPE,
+  CURRENT_RELEASE_WORKFLOW_TYPE,
+  // §5 状态机
+  WI_STATUSES as ConstWIStatuses,
+  FORBIDDEN_TRANSITIONS as ConstForbiddenTransitions,
+  isForbiddenTransition as isConstForbiddenTransition,
+  // §5 Evidence-guarded Critical States
+  CRITICAL_STATES,
+  isCriticalState,
+  // §6 workflow_path
+  WORKFLOW_PATHS as ConstWorkflowPaths,
+  MATCH_RESULT_TYPES as ConstMatchResultTypes,
+  // §9 Gate
+  GATE_IDS as ConstGateIds,
+  GATE_TYPES as ConstGateTypes,
+  GATE_SUMMARY_STATUSES as ConstGateSummaryStatuses,
+  // §10 User Decision
+  USER_DECISION_STATUSES as ConstUserDecisionStatuses,
+  // §5 Deletable States (P3)
+  DELETABLE_STATES,
+  isDeletableState,
+  // Types
+  type WIStatus as ConstWIStatus,
+  type WorkflowPath as ConstWorkflowPath,
+  type MatchResultType as ConstMatchResultType,
+  type GateId as ConstGateId,
+  type GateType as ConstGateType,
+  type GateSummaryStatus as ConstGateSummaryStatus,
+  type UserDecisionStatus as ConstUserDecisionStatus,
+} from "./constants.js";
+
+// ---- Schema — Zod Schema 定义（§2-§13）----
+export {
+  // §4 Work Item JSON
+  WorkItemJsonSchema as SchemaWorkItemJsonSchema,
+  // §8 Candidate Manifest
+  CandidateManifestEntrySchema as SchemaCandidateManifestEntrySchema,
+  CandidateManifestSchema as SchemaCandidateManifestSchema,
+  // §9 Gate Report
+  GateReportSchema as SchemaGateReportSchema,
+  // §10 User Decision
+  UserDecisionSchema as SchemaUserDecisionSchema,
+  // §2 Spec Manifest
+  SpecModuleEntrySchema as SchemaSpecModuleEntrySchema,
+  SpecManifestSchema as SchemaSpecManifestSchema,
+  // Extension Registry / Request
+  ExtensionRegistrySchema as SchemaExtensionRegistrySchema,
+  ExtensionRequestSchema as SchemaExtensionRequestSchema,
+  // §13 Evidence
+  EvidenceManifestEntrySchema as SchemaEvidenceManifestEntrySchema,
+  EvidenceManifestSchema as SchemaEvidenceManifestSchema,
+  // Types
+  type WorkItemJson as SchemaWorkItemJson,
+  type CandidateManifestEntry as SchemaCandidateManifestEntry,
+  type CandidateManifest as SchemaCandidateManifest,
+  type GateReport as SchemaGateReport,
+  type UserDecision as SchemaUserDecision,
+  type SpecModuleEntry as SchemaSpecModuleEntry,
+  type SpecManifest as SchemaSpecManifest,
+  type ExtensionRegistry as SchemaExtensionRegistry,
+  type ExtensionRequest as SchemaExtensionRequest,
+  type EvidenceManifestEntry as SchemaEvidenceManifestEntry,
+  type EvidenceManifest as SchemaEvidenceManifest,
+} from "./schema.js";
+
+// ---- Principal — 统一身份模型（Phase 1 RBAC）----
+export {
+  type AgentRole,
+  type PrincipalSource,
+  type PrincipalRole,
+  type Principal,
+} from "./principal.js";
+
+// ---- Permissions — 权限类型（Phase 1 RBAC）----
+export {
+  type ResourceType,
+  type Operation,
+  type Permission,
+  type PermissionContext,
+  type PermissionDecision,
+} from "./permissions.js";
+
+// ---- Seal Transitions — Seal transition 定义（Phase 1 RBAC）----
+export {
+  SEAL_TRANSITIONS,
+  isSealTransition,
+  getSealTransition,
+  REQUESTABLE_TRANSITIONS,
+  type SealTransitionEntry,
+} from "./seal-transitions.js";
+
+// ---- Merge Report — persistent artifact contract ----
+export {
+  MERGE_REPORT_CONTRACT_ID,
+  evaluateMergeReport,
+  type MergeReportStatus,
+  type MergeReportVerdict,
+} from './merge-report-contract.js';
+
+// ---- Neutral LLM Kernel boundary ----
+export type {
+  LLMKernelAdapter,
+  UserMessage,
+  KernelEvent,
+  SpawnAgentParams,
+  SessionSpawnOptions,
+  SpawnAgentResult,
+  SessionInfo,
+  SessionStatus,
+  ModelCapabilities,
+  OutputFormat,
+} from './llm-kernel-contract.js';
+
+export type { TrustedToolInvocationRequest, TrustedToolInvocationProof, ToolInvocationVerifier } from './trusted-tool-invocation.js';

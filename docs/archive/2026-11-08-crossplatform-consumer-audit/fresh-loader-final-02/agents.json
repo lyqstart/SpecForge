@@ -1,0 +1,92 @@
+[
+  {
+    "name": "sf-analyst",
+    "loaded": true,
+    "prompt_sha256": "3df185020fc33fa8d4bcf77c3cee00f3283d132186af91251668ebe0ac20e2ac",
+    "installed_sha256": "2db21b1a0751728c18a25d61627602d903f7536ce4eb0fcebec088be04017402",
+    "raw_file_match": false,
+    "raw_body_match": true,
+    "ownership_clause": true
+  },
+  {
+    "name": "sf-debugger",
+    "loaded": true,
+    "prompt_sha256": "7dd412d04b93924f93d4922f5339a87dfc93c7b77e89da8c893fc7ff953beb2a",
+    "installed_sha256": "562632257591ed85396eb17918abffed028043378bcba937068e863ceb7dccd8",
+    "raw_file_match": false,
+    "raw_body_match": true,
+    "ownership_clause": true
+  },
+  {
+    "name": "sf-design",
+    "loaded": true,
+    "prompt_sha256": "68538acd9a7866d1c2d7c151e086bf550650441fa4b05998b37498e7ab8678b3",
+    "installed_sha256": "087f710feb969a60d138d1932ca19041093862a5285d18c64ff4056377de8ae5",
+    "raw_file_match": false,
+    "raw_body_match": true,
+    "ownership_clause": true
+  },
+  {
+    "name": "sf-executor",
+    "loaded": true,
+    "prompt_sha256": "2f98df7c80c326c39171cb52cebd21fabe9947e9818b65095f875619bf02de3c",
+    "installed_sha256": "3cef2f0d940bb16bb071447f5ba414b49c50457f48019ed94ccbb9e18f4a594d",
+    "raw_file_match": false,
+    "raw_body_match": true,
+    "ownership_clause": true
+  },
+  {
+    "name": "sf-knowledge",
+    "loaded": true,
+    "prompt_sha256": "1da213977f4bb49a6e9f8e49cc3f3a13991cc6ee56322d36a6cec424049e2b7f",
+    "installed_sha256": "0a81e623b2f0ce1b7a397f936be8c830da598427cafc40542d03281e11d4fb79",
+    "raw_file_match": false,
+    "raw_body_match": true,
+    "ownership_clause": true
+  },
+  {
+    "name": "sf-orchestrator",
+    "loaded": true,
+    "prompt_sha256": "d69f39a4364e866b37743b6656d7b7d0fc9ad04cb7bb84d249ef05e8a09609d1",
+    "installed_sha256": "a808137c5f9b0a491fc57b3178974330da04f7828ab5ec886552dab2c56a13c2",
+    "raw_file_match": false,
+    "raw_body_match": true,
+    "ownership_clause": true
+  },
+  {
+    "name": "sf-requirements",
+    "loaded": true,
+    "prompt_sha256": "5597561995ecf2f6541bbf8a7a564b202e1b6670b081228f6d688ea7cd8337fe",
+    "installed_sha256": "08650aae4ae6f06ff38950b4bb78d0f3ab3b9b7976bdf8983fb105ac0c4f30cc",
+    "raw_file_match": false,
+    "raw_body_match": true,
+    "ownership_clause": true
+  },
+  {
+    "name": "sf-reviewer",
+    "loaded": true,
+    "prompt_sha256": "d4436a5b1bae44552c0eecb88d290687e74d9fc060dc26bf606d0cbf9f6d5abe",
+    "installed_sha256": "d95b4fda4393598b228f97b1e535e6f96c541fb00b9531f24463107e0678fd21",
+    "raw_file_match": false,
+    "raw_body_match": true,
+    "ownership_clause": true
+  },
+  {
+    "name": "sf-task-planner",
+    "loaded": true,
+    "prompt_sha256": "be77b13a0558a479a3a481dfe51dafbe4426078b27d20d9382909aec4dac9c39",
+    "installed_sha256": "d448e6223b7cf3b9c289ea1544e3930ca6ad74b02c9bee7e59cdb7ff39faeb0d",
+    "raw_file_match": false,
+    "raw_body_match": true,
+    "ownership_clause": true
+  },
+  {
+    "name": "sf-verifier",
+    "loaded": true,
+    "prompt_sha256": "e8f9804ab5784e594ced16ac326e4fb296d64f30411c060c4456facbd720a05c",
+    "installed_sha256": "5137b4d73916e486b06a2f3c140f225303942980b8fd0a998467f48d0fb7203d",
+    "raw_file_match": false,
+    "raw_body_match": true,
+    "ownership_clause": true
+  }
+]

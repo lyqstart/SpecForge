@@ -1,0 +1,4 @@
+M	docs/project-status.md
+M	docs/rule/specforge-development-error-ledger-and-experience.md
+M	packages/scope-gate/tests/current-release-entry-interop.test.ts
+M	scripts/lib/prepare-current-release.ts

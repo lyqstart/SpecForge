@@ -1,0 +1,11 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/packages/scope-gate
+
+ ✓ tests/source-policy-audit.test.ts  (4 tests) 35ms
+ ✓ tests/current-clean-boundary.test.ts  (2 tests) 16ms
+
+ Test Files  2 passed (2)
+      Tests  6 passed (6)
+   Start at  12:00:44
+   Duration  3.26s (transform 1.85s, setup 0ms, collect 2.26s, tests 51ms, environment 0ms, prepare 443ms)
+

@@ -1,0 +1,37 @@
+[
+  {
+    "path": "packages/daemon-core/src/tools/lib/sf_knowledge_base_core.ts",
+    "before_sha256": "40eda9eba4b166c21583c917474b11991532e17f33e6a628c7602366a5a3ba9c",
+    "after_sha256": "eee58484064de4c6ff05d312197829263c87f7a5d6332fde038a2e69ce656c62"
+  },
+  {
+    "path": "setup/userlevel-opencode/tools/lib/sf_knowledge_base_core.ts",
+    "before_sha256": "cbb5f8a8a1938be992779469622eaed122d7eba51777228b87c622e51f67c0c1",
+    "after_sha256": "39a3b5ed48ef4dc574c16f00adebba36b146cc0fa24aa9fa758e41c8b4195c96"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/handlers/sf-state-transition.ts",
+    "before_sha256": "86c1b2f027332b546edc2bd8072f02285843055d06c4bd5a16f614bbeaf97ae0",
+    "after_sha256": "967a65d75705adfb2429c8ea3e3bb7cd751f2f5f534817318cbde83396d905c6"
+  },
+  {
+    "path": "packages/daemon-core/tests/unit/governance-closure-e2e.test.ts",
+    "before_sha256": "04fcda0b1c75296a4fc8cf10cbb40668f1c6736dfee7873461fe7ea0c1f94dd8",
+    "after_sha256": "ccb0d7d4d642ce9d8518d2d50b82f31576ab5bb703d6fc2635bd8a8401b94128"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/handlers/sf-changed-files-audit.ts",
+    "before_sha256": "20e6b70030b56503f797750d3c53cffe0a27a53617d012117f37df6d5d582051",
+    "after_sha256": "b7efcf81f936284fa5b01f433819a3ce8aad79f5c37d1fa0166f18b4d7672b41"
+  },
+  {
+    "path": "packages/service-management/src/service-manager/systemd-service-manager.ts",
+    "before_sha256": "03dcd745efaf0d5acdd7585e9b466c7fc7eb08f8ad4bdc7c76110463fd355adc",
+    "after_sha256": "7b257a468a61dd7ea1331a77e5625cb924de0dcfa22b25b01aaf7f58d26c9545"
+  },
+  {
+    "path": "setup/userlevel-opencode/tools/sf_semantic_closure_run.ts",
+    "before_sha256": "77f969f78c38308f7929443afb84111057a238314f0e9f37f55a2cab9b57375e",
+    "after_sha256": "bff412c5e9ec1408f168bdda532f6326ead1d531b605a5ecb5ee42d2dccdff74"
+  }
+]

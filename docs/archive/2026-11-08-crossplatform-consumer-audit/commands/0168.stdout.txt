@@ -1,0 +1,1 @@
+{"entry":"without_top_level_await","loaded":true}

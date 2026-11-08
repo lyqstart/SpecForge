@@ -1,0 +1,1 @@
+{"platform":"linux","result":"PASS","report":"/tmp/sf-platform-acceptance-IwXZx6/report","checks":{"installed_files":114,"help_cases":23,"unauthorized_governance_write":"REFUSED_401","current_read_examples":"PASS","protected_and_unsupported_routes":"PASS","official_start_restart_stop":"PASS","uninstall_private_and_unmanaged_retained":true}}

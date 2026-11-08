@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/freeze-linux-current-update.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-current-source-linux-delta",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T02:37:14.662Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\freeze-linux-current-update.cjs",
+      "sha256": "69682e35443acbc35892a24636748b8f4697b6d7bb86281589b9126db25017dd",
+      "size": 1536,
+      "extension": ".cjs"
+    }
+  ]
+}

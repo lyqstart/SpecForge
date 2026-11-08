@@ -1,0 +1,1 @@
+{"version":"1.0.24","installed":117,"agents":10,"skills":8,"tools":45,"state":"closed","owner_preserved":true,"tag_unchanged":true}

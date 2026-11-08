@@ -1,0 +1,50 @@
+$ vitest run tests/unit/knowledge-store-schema.test.ts "tests/unit/governance-closure-e2e.test.ts" tests/unit/current-work-item-metadata-owner.test.ts tests/unit/registered-current-workflow-boundary.test.ts tests/unit/sf-state-transition.test.ts "--maxWorkers=1" "--minWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/knowledge-store-schema.test.ts > current knowledge store owner: source > creates the existing1.0 format and preserves legal CRUD
+ FAIL  tests/unit/knowledge-store-schema.test.ts > current knowledge store owner: installed > creates the existing1.0 format and preserves legal CRUD
+AssertionError: expected [ { …(21) } ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "anti_conditions": [],
++     "applicability": "synthetic only",
++     "applicable_file_patterns": [],
++     "category": "workflow_tip",
++     "confidence": "medium",
++     "content": "Verified example",
++     "created_at": "2026-11-08T05:38:53.241Z",
++     "helpful_count": 0,
++     "id": "KE-1794116333241-516",
++     "last_used_at": null,
++     "normalized_key": "workflow_tip:owned-example",
++     "rejected_count": 0,
++     "source_project": "fixture",
++     "source_work_item": "WI-0001",
++     "status": "archived",
++     "tags": [],
++     "title": "Updated synthetic knowledge",
++     "updated_at": "2026-11-08T05:38:53.254Z",
++     "usage_count": 0,
++     "verification_status": "unverified",
++     "version": 3,
++   },
++ ]
+
+ ❯ tests/unit/knowledge-store-schema.test.ts:17:115
+     15|   expect(added.success).toBe(true);expect((await owner.loadStore()).en…
+     16|   expect((await owner.updateEntry({entry_id:added.entry_id!,title:'Upd…
+     17|   expect((await owner.removeEntry(added.entry_id!)).success).toBe(true…
+       |                                                                                                                   ^
+     18|  });
+     19|  it.each(['9.0',undefined,1])('preserves unsupported version %s on rea…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+error: script "test" exited with code 1

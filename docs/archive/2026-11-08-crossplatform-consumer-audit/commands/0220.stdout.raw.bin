@@ -1,0 +1,14 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/sf-semantic-closure-run.test.ts (15 tests) 433ms
+ ✓ tests/unit/close-gate-semantic-closure.test.ts (4 tests) 200ms
+ ✓ tests/unit/semantic-closure-producer-governance.test.ts (7 tests) 92ms
+ ✓ tests/unit/semantic-closure-contract-alignment.test.ts (7 tests) 16ms
+ ✓ tests/unit/semantic-closure-fj1-regression.test.ts (5 tests) 12ms
+
+ Test Files  5 passed (5)
+      Tests  38 passed (38)
+   Start at  13:19:32
+   Duration  5.10s (transform 1.03s, setup 0ms, collect 2.45s, tests 752ms, environment 1ms, prepare 721ms)
+

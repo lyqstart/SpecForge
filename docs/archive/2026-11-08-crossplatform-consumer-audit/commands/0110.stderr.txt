@@ -1,0 +1,142 @@
+$ vitest run tests/unit/current-definition-schema-boundary.test.ts
+stderr | tests/unit/current-definition-schema-boundary.test.ts > current definition persistent schema boundary > fails a directory as a whole on unsupported schema without partial registration
+Failed to load workflow from C:\Users\lyq\AppData\Local\Temp\sf-definition-schema-XDnx02\b-unknown.json: Error: Failed to load workflow from file C:\Users\lyq\AppData\Local\Temp\sf-definition-schema-XDnx02\b-unknown.json: Failed to load workflow definition from C:\Users\lyq\AppData\Local\Temp\sf-definition-schema-XDnx02\b-unknown.json: Workflow definition validation failed:
+schema_version: Unsupported schema version: 999.0. Expected: 1.0 or 2.0
+    at WorkflowLoader.loadFromFile (D:\code\SpecForge\packages\workflow-runtime\src\engine\WorkflowLoader.ts:66:15)
+    at WorkflowLoader.loadFromDirectory (D:\code\SpecForge\packages\workflow-runtime\src\engine\WorkflowLoader.ts:146:32)
+    at D:\code\SpecForge\packages\workflow-runtime\tests\unit\current-definition-schema-boundary.test.ts:10:348
+    at runTest (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:781:11)
+    at runSuite (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:909:15)
+    at runSuite (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:909:15)
+    at runFiles (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:958:5)
+    at startTests (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:967:3)
+    at file:///D:/code/SpecForge/node_modules/.bun/vitest@1.6.1+7b6df19a7009ccf0/node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+    at withEnv (file:///D:/code/SpecForge/node_modules/.bun/vitest@1.6.1+7b6df19a7009ccf0/node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:83:5)
+
+stderr | tests/unit/current-definition-schema-boundary.test.ts > current definition persistent schema boundary > does not replace a missing required builtin with an empty successful set
+Failed to load builtin workflows from C:\Users\lyq\AppData\Local\Temp\sf-definition-schema-Q4ripP: Error: Failed to load workflow from file C:\Users\lyq\AppData\Local\Temp\sf-definition-schema-Q4ripP\feature_spec.json: Failed to load workflow definition from C:\Users\lyq\AppData\Local\Temp\sf-definition-schema-Q4ripP\feature_spec.json: ENOENT: no such file or directory, open 'C:\Users\lyq\AppData\Local\Temp\sf-definition-schema-Q4ripP\feature_spec.json'
+    at WorkflowLoader.loadFromFile (D:\code\SpecForge\packages\workflow-runtime\src\engine\WorkflowLoader.ts:66:15)
+    at WorkflowLoader.loadBuiltinWorkflows (D:\code\SpecForge\packages\workflow-runtime\src\engine\WorkflowLoader.ts:271:26)
+    at D:\code\SpecForge\packages\workflow-runtime\tests\unit\current-definition-schema-boundary.test.ts:11:90
+    at runTest (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:781:11)
+    at runSuite (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:909:15)
+    at runSuite (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:909:15)
+    at runFiles (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:958:5)
+    at startTests (file:///D:/code/SpecForge/node_modules/.bun/@vitest+runner@1.6.1/node_modules/@vitest/runner/dist/index.js:967:3)
+    at file:///D:/code/SpecForge/node_modules/.bun/vitest@1.6.1+7b6df19a7009ccf0/node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:116:7
+    at withEnv (file:///D:/code/SpecForge/node_modules/.bun/vitest@1.6.1+7b6df19a7009ccf0/node_modules/vitest/dist/chunks/runtime-runBaseTests.oAvMKtQC.js:83:5)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/current-definition-schema-boundary.test.ts > current definition persistent schema boundary > rejects a missing identity without mutating an object
+AssertionError: expected [Function] to throw an error
+
+- Expected: 
+null
+
++ Received: 
+undefined
+
+ ❯ tests/unit/current-definition-schema-boundary.test.ts:8:242
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/unit/current-definition-schema-boundary.test.ts > current definition persistent schema boundary > rejects missing persistent schema and preserves source bytes
+AssertionError: promise resolved "{ id: 'synthetic-definition', …(5) }" instead of rejecting
+
+- Expected
++ Received
+
+- [Error: rejected promise]
++ Object {
++   "artifacts": Array [],
++   "displayName": "Synthetic definition",
++   "id": "synthetic-definition",
++   "intent": "Read-only schema fixture",
++   "schema_version": "1.0",
++   "stateMachine": Object {
++     "initial": "start",
++     "schema_version": "1.0",
++     "states": Object {
++       "start": Object {
++         "agent": "sf-design",
++         "gate": Object {
++           "id": "check",
++           "name": "Check",
++           "schema_version": "1.0",
++           "type": "simple",
++         },
++         "schema_version": "1.0",
++         "skills": Array [],
++       },
++     },
++   },
++ }
+
+ ❯ tests/unit/current-definition-schema-boundary.test.ts:9:299
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/unit/current-definition-schema-boundary.test.ts > current definition persistent schema boundary > fails a directory as a whole on unsupported schema without partial registration
+AssertionError: promise resolved "[ { schema_version: '1.0', …(5) } ]" instead of rejecting
+
+- Expected: 
+[Error: rejected promise]
+
++ Received: 
+Array [
+  Object {
+    "artifacts": Array [],
+    "displayName": "Synthetic definition",
+    "id": "synthetic-definition",
+    "intent": "Read-only schema fixture",
+    "schema_version": "1.0",
+    "stateMachine": Object {
+      "initial": "start",
+      "schema_version": "1.0",
+      "states": Object {
+        "start": Object {
+          "agent": "sf-design",
+          "gate": Object {
+            "id": "check",
+            "name": "Check",
+            "schema_version": "1.0",
+            "type": "simple",
+          },
+          "schema_version": "1.0",
+          "skills": Array [],
+        },
+      },
+    },
+  },
+]
+
+ ❯ tests/unit/current-definition-schema-boundary.test.ts:10:391
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  tests/unit/current-definition-schema-boundary.test.ts > current definition persistent schema boundary > does not replace a missing required builtin with an empty successful set
+AssertionError: promise resolved "[]" instead of rejecting
+
+- Expected: 
+[Error: rejected promise]
+
++ Received: 
+Array []
+
+ ❯ tests/unit/current-definition-schema-boundary.test.ts:11:150
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  tests/unit/current-definition-schema-boundary.test.ts > current definition persistent schema boundary > does not expose schema conversion as a current loader responsibility
+AssertionError: expected [Function migrate] to be undefined
+ ❯ tests/unit/current-definition-schema-boundary.test.ts:12:153
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+error: script "test" exited with code 1

@@ -1,0 +1,544 @@
+﻿2026-11-08T01:57:12.4242663Z Current runner version: '2.338.2'
+2026-11-08T01:57:12.4258951Z ##[group]Runner Image Provisioner
+2026-11-08T01:57:12.4259455Z Hosted Compute Agent
+2026-11-08T01:57:12.4259902Z Version: 20261028.624
+2026-11-08T01:57:12.4260263Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-08T01:57:12.4260696Z Build Date: 2026-10-28T21:51:42Z
+2026-11-08T01:57:12.4261102Z Worker ID: {dab42179-06ef-45a4-b5ef-3d2ef22307f2}
+2026-11-08T01:57:12.4261505Z Region: northcentralus
+2026-11-08T01:57:12.4261867Z Cloud: Azure
+2026-11-08T01:57:12.4262207Z ##[endgroup]
+2026-11-08T01:57:12.4262913Z ##[group]Operating System
+2026-11-08T01:57:12.4263329Z Ubuntu
+2026-11-08T01:57:12.4263708Z 26.04.1
+2026-11-08T01:57:12.4264202Z LTS
+2026-11-08T01:57:12.4264508Z ##[endgroup]
+2026-11-08T01:57:12.4264811Z ##[group]Runner Image
+2026-11-08T01:57:12.4265190Z Image: ubuntu-26.04
+2026-11-08T01:57:12.4265515Z Version: 20261101.186.1
+2026-11-08T01:57:12.4266303Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261101.186/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-08T01:57:12.4267112Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261101.186
+2026-11-08T01:57:12.4267969Z ##[endgroup]
+2026-11-08T01:57:12.4268636Z ##[group]GITHUB_TOKEN Permissions
+2026-11-08T01:57:12.4269830Z Contents: read
+2026-11-08T01:57:12.4270158Z Metadata: read
+2026-11-08T01:57:12.4270519Z Packages: read
+2026-11-08T01:57:12.4270874Z ##[endgroup]
+2026-11-08T01:57:12.4272332Z Secret source: Actions
+2026-11-08T01:57:12.4272892Z Cache mode: write
+2026-11-08T01:57:12.4273387Z Prepare workflow directory
+2026-11-08T01:57:12.4500147Z Prepare all required actions
+2026-11-08T01:57:12.4530380Z Getting action download info
+2026-11-08T01:57:12.6463401Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-08T01:57:12.7850438Z Download action repository 'oven-sh/setup-bun@v2' (SHA:0c5077e51419868618aeaa5fe8019c62421857d6)
+2026-11-08T01:57:13.0715429Z Complete job name: 单元测试
+2026-11-08T01:57:13.1232340Z ##[group]Run actions/checkout@v4
+2026-11-08T01:57:13.1233020Z with:
+2026-11-08T01:57:13.1233406Z   repository: lyqstart/SpecForge
+2026-11-08T01:57:13.1235851Z   token: ***
+2026-11-08T01:57:13.1236089Z   ssh-strict: true
+2026-11-08T01:57:13.1236426Z   ssh-user: git
+2026-11-08T01:57:13.1236741Z   persist-credentials: true
+2026-11-08T01:57:13.1237058Z   clean: true
+2026-11-08T01:57:13.1237388Z   sparse-checkout-cone-mode: true
+2026-11-08T01:57:13.1237675Z   fetch-depth: 1
+2026-11-08T01:57:13.1237974Z   fetch-tags: false
+2026-11-08T01:57:13.1238218Z   show-progress: true
+2026-11-08T01:57:13.1238463Z   lfs: false
+2026-11-08T01:57:13.1238692Z   submodules: false
+2026-11-08T01:57:13.1238941Z   set-safe-directory: true
+2026-11-08T01:57:13.1239220Z   allow-unsafe-pr-checkout: false
+2026-11-08T01:57:13.1239692Z ##[endgroup]
+2026-11-08T01:57:13.3048575Z Syncing repository: lyqstart/SpecForge
+2026-11-08T01:57:13.3049993Z ##[group]Getting Git version info
+2026-11-08T01:57:13.3050485Z Working directory is '/home/runner/work/SpecForge/SpecForge'
+2026-11-08T01:57:13.3051042Z [command]/usr/bin/git version
+2026-11-08T01:57:13.3055922Z git version 2.56.0
+2026-11-08T01:57:13.3067239Z ##[endgroup]
+2026-11-08T01:57:13.3075815Z Temporarily overriding HOME='/home/runner/work/_temp/636c1ff3-019d-401d-8e6a-dab9bb4b0770' before making global git config changes
+2026-11-08T01:57:13.3076989Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-08T01:57:13.3079433Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/SpecForge/SpecForge
+2026-11-08T01:57:13.3133431Z Deleting the contents of '/home/runner/work/SpecForge/SpecForge'
+2026-11-08T01:57:13.3139701Z ##[group]Initializing the repository
+2026-11-08T01:57:13.3140352Z [command]/usr/bin/git init /home/runner/work/SpecForge/SpecForge
+2026-11-08T01:57:13.3218931Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-08T01:57:13.3219639Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-08T01:57:13.3220595Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-08T01:57:13.3220996Z hint: call:
+2026-11-08T01:57:13.3221219Z hint:
+2026-11-08T01:57:13.3221529Z hint: 	git config --global init.defaultBranch <name>
+2026-11-08T01:57:13.3221869Z hint:
+2026-11-08T01:57:13.3222257Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-08T01:57:13.3222794Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-08T01:57:13.3223191Z hint:
+2026-11-08T01:57:13.3223426Z hint: 	git branch -m <name>
+2026-11-08T01:57:13.3223784Z hint:
+2026-11-08T01:57:13.3224274Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-08T01:57:13.3227890Z Initialized empty Git repository in /home/runner/work/SpecForge/SpecForge/.git/
+2026-11-08T01:57:13.3237252Z [command]/usr/bin/git remote add origin https://github.com/lyqstart/SpecForge
+2026-11-08T01:57:13.3277428Z ##[endgroup]
+2026-11-08T01:57:13.3277869Z ##[group]Disabling automatic garbage collection
+2026-11-08T01:57:13.3280325Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-08T01:57:13.3307170Z ##[endgroup]
+2026-11-08T01:57:13.3307771Z ##[group]Setting up auth
+2026-11-08T01:57:13.3312181Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-08T01:57:13.3340558Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-08T01:57:13.3696832Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-08T01:57:13.3724349Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-08T01:57:13.3939708Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-08T01:57:13.3966164Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-08T01:57:13.4186376Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-08T01:57:13.4218113Z ##[endgroup]
+2026-11-08T01:57:13.4218631Z ##[group]Fetching the repository
+2026-11-08T01:57:13.4225341Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +bb0f172aab26fab79d6484c458e0122d9353f604:refs/remotes/origin/main
+2026-11-08T01:57:21.0388831Z From https://github.com/lyqstart/SpecForge
+2026-11-08T01:57:21.0389626Z  * [new ref]           bb0f172aab26fab79d6484c458e0122d9353f604 -> origin/main
+2026-11-08T01:57:21.0396771Z ##[endgroup]
+2026-11-08T01:57:21.0397461Z ##[group]Determining the checkout info
+2026-11-08T01:57:21.0398106Z ##[endgroup]
+2026-11-08T01:57:21.0399752Z [command]/usr/bin/git sparse-checkout disable
+2026-11-08T01:57:21.0441157Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-08T01:57:21.0466439Z ##[group]Checking out the ref
+2026-11-08T01:57:21.0469314Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-11-08T01:57:22.0755685Z Updating files:  27% (7807/28662)
+2026-11-08T01:57:22.0955754Z Updating files:  28% (8026/28662)
+2026-11-08T01:57:22.1126723Z Updating files:  29% (8312/28662)
+2026-11-08T01:57:22.2558684Z Updating files:  30% (8599/28662)
+2026-11-08T01:57:22.2749927Z Updating files:  31% (8886/28662)
+2026-11-08T01:57:22.2915706Z Updating files:  32% (9172/28662)
+2026-11-08T01:57:22.3105643Z Updating files:  33% (9459/28662)
+2026-11-08T01:57:22.3475510Z Updating files:  34% (9746/28662)
+2026-11-08T01:57:22.3568039Z Updating files:  35% (10032/28662)
+2026-11-08T01:57:22.4211587Z Updating files:  36% (10319/28662)
+2026-11-08T01:57:22.4641879Z Updating files:  37% (10605/28662)
+2026-11-08T01:57:22.5665438Z Updating files:  38% (10892/28662)
+2026-11-08T01:57:22.6556635Z Updating files:  39% (11179/28662)
+2026-11-08T01:57:22.7053005Z Updating files:  40% (11465/28662)
+2026-11-08T01:57:22.8192753Z Updating files:  41% (11752/28662)
+2026-11-08T01:57:22.9499161Z Updating files:  42% (12039/28662)
+2026-11-08T01:57:23.0666670Z Updating files:  43% (12325/28662)
+2026-11-08T01:57:23.0974751Z Updating files:  43% (12552/28662)
+2026-11-08T01:57:23.2618332Z Updating files:  44% (12612/28662)
+2026-11-08T01:57:23.4146533Z Updating files:  45% (12898/28662)
+2026-11-08T01:57:23.5451179Z Updating files:  46% (13185/28662)
+2026-11-08T01:57:23.6823204Z Updating files:  47% (13472/28662)
+2026-11-08T01:57:23.8030121Z Updating files:  48% (13758/28662)
+2026-11-08T01:57:23.9159743Z Updating files:  49% (14045/28662)
+2026-11-08T01:57:24.0076022Z Updating files:  50% (14331/28662)
+2026-11-08T01:57:24.0644780Z Updating files:  51% (14618/28662)
+2026-11-08T01:57:24.1431548Z Updating files:  51% (14728/28662)
+2026-11-08T01:57:24.2575809Z Updating files:  52% (14905/28662)
+2026-11-08T01:57:24.3150848Z Updating files:  53% (15191/28662)
+2026-11-08T01:57:24.3917885Z Updating files:  54% (15478/28662)
+2026-11-08T01:57:24.4190317Z Updating files:  55% (15765/28662)
+2026-11-08T01:57:24.4291347Z Updating files:  56% (16051/28662)
+2026-11-08T01:57:24.4446601Z Updating files:  57% (16338/28662)
+2026-11-08T01:57:24.4603349Z Updating files:  58% (16624/28662)
+2026-11-08T01:57:24.4795364Z Updating files:  59% (16911/28662)
+2026-11-08T01:57:24.5744365Z Updating files:  60% (17198/28662)
+2026-11-08T01:57:24.5866110Z Updating files:  61% (17484/28662)
+2026-11-08T01:57:24.6000965Z Updating files:  62% (17771/28662)
+2026-11-08T01:57:24.6108066Z Updating files:  63% (18058/28662)
+2026-11-08T01:57:24.6209450Z Updating files:  64% (18344/28662)
+2026-11-08T01:57:24.6327076Z Updating files:  65% (18631/28662)
+2026-11-08T01:57:24.6422197Z Updating files:  66% (18917/28662)
+2026-11-08T01:57:24.6530158Z Updating files:  67% (19204/28662)
+2026-11-08T01:57:24.6630543Z Updating files:  68% (19491/28662)
+2026-11-08T01:57:24.6742832Z Updating files:  69% (19777/28662)
+2026-11-08T01:57:24.6847199Z Updating files:  70% (20064/28662)
+2026-11-08T01:57:24.6956933Z Updating files:  71% (20351/28662)
+2026-11-08T01:57:24.7056327Z Updating files:  72% (20637/28662)
+2026-11-08T01:57:24.7146593Z Updating files:  73% (20924/28662)
+2026-11-08T01:57:24.7254147Z Updating files:  74% (21210/28662)
+2026-11-08T01:57:24.7357157Z Updating files:  75% (21497/28662)
+2026-11-08T01:57:24.7468421Z Updating files:  76% (21784/28662)
+2026-11-08T01:57:24.7580291Z Updating files:  77% (22070/28662)
+2026-11-08T01:57:24.7705861Z Updating files:  78% (22357/28662)
+2026-11-08T01:57:24.7810004Z Updating files:  79% (22643/28662)
+2026-11-08T01:57:24.7942878Z Updating files:  80% (22930/28662)
+2026-11-08T01:57:24.8051635Z Updating files:  81% (23217/28662)
+2026-11-08T01:57:24.8177746Z Updating files:  82% (23503/28662)
+2026-11-08T01:57:24.8723220Z Updating files:  83% (23790/28662)
+2026-11-08T01:57:24.9277550Z Updating files:  84% (24077/28662)
+2026-11-08T01:57:24.9516780Z Updating files:  85% (24363/28662)
+2026-11-08T01:57:24.9605094Z Updating files:  86% (24650/28662)
+2026-11-08T01:57:24.9929868Z Updating files:  87% (24936/28662)
+2026-11-08T01:57:25.0173321Z Updating files:  88% (25223/28662)
+2026-11-08T01:57:25.0333071Z Updating files:  89% (25510/28662)
+2026-11-08T01:57:25.0697745Z Updating files:  90% (25796/28662)
+2026-11-08T01:57:25.2722463Z Updating files:  90% (25863/28662)
+2026-11-08T01:57:25.2866706Z Updating files:  91% (26083/28662)
+2026-11-08T01:57:25.2987415Z Updating files:  92% (26370/28662)
+2026-11-08T01:57:25.3080137Z Updating files:  93% (26656/28662)
+2026-11-08T01:57:25.3175888Z Updating files:  94% (26943/28662)
+2026-11-08T01:57:25.3293258Z Updating files:  95% (27229/28662)
+2026-11-08T01:57:25.3415361Z Updating files:  96% (27516/28662)
+2026-11-08T01:57:25.3540917Z Updating files:  97% (27803/28662)
+2026-11-08T01:57:25.3657089Z Updating files:  98% (28089/28662)
+2026-11-08T01:57:25.3789122Z Updating files:  99% (28376/28662)
+2026-11-08T01:57:25.3789358Z Updating files: 100% (28662/28662)
+2026-11-08T01:57:25.3789511Z Updating files: 100% (28662/28662), done.
+2026-11-08T01:57:25.4030913Z Switched to a new branch 'main'
+2026-11-08T01:57:25.4036485Z branch 'main' set up to track 'origin/main'.
+2026-11-08T01:57:25.4144042Z ##[endgroup]
+2026-11-08T01:57:25.4181567Z [command]/usr/bin/git log -1 --format=%H
+2026-11-08T01:57:25.4202737Z bb0f172aab26fab79d6484c458e0122d9353f604
+2026-11-08T01:57:25.4447581Z ##[group]Run oven-sh/setup-bun@v2
+2026-11-08T01:57:25.4447734Z with:
+2026-11-08T01:57:25.4447849Z   bun-version: latest
+2026-11-08T01:57:25.4447974Z   no-cache: false
+2026-11-08T01:57:25.4449280Z   token: ***
+2026-11-08T01:57:25.4449394Z ##[endgroup]
+2026-11-08T01:57:25.8825926Z Downloading a new version of Bun: https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/bun-linux-x64.zip
+2026-11-08T01:57:26.1306868Z [command]/usr/bin/unzip -o -q /home/runner/work/_temp/d212eee8-7e44-4d67-8034-cba609d26d7c.zip
+2026-11-08T01:57:26.7555308Z [command]/home/runner/.bun/bin/bun --revision
+2026-11-08T01:57:26.7602801Z 1.4.4+38afee6c8
+2026-11-08T01:57:26.8444859Z ##[group]Run bun install --frozen-lockfile
+2026-11-08T01:57:26.8445091Z [36;1mbun install --frozen-lockfile[0m
+2026-11-08T01:57:26.8488728Z shell: /usr/bin/bash -e {0}
+2026-11-08T01:57:26.8488874Z ##[endgroup]
+2026-11-08T01:57:26.8654613Z bun install v1.4.4 (38afee6c8)
+2026-11-08T01:57:28.9952659Z 
+2026-11-08T01:57:28.9953159Z + @types/node@25.7.0
+2026-11-08T01:57:28.9953384Z + @types/proper-lockfile@4.1.4
+2026-11-08T01:57:28.9953558Z + @typescript-eslint/eslint-plugin@8.59.3
+2026-11-08T01:57:28.9953728Z + @typescript-eslint/parser@8.59.3
+2026-11-08T01:57:28.9954106Z + @vitest/coverage-v8@4.1.5
+2026-11-08T01:57:28.9954303Z + eslint@9.39.4
+2026-11-08T01:57:28.9954505Z + eslint-config-prettier@10.1.8
+2026-11-08T01:57:28.9954750Z + eslint-plugin-import@2.32.0
+2026-11-08T01:57:28.9954968Z + fast-check@4.8.0
+2026-11-08T01:57:28.9955145Z + globals@17.6.0
+2026-11-08T01:57:28.9955373Z + proper-lockfile@4.1.2
+2026-11-08T01:57:28.9955564Z + typescript@6.0.3
+2026-11-08T01:57:28.9955822Z + vitest@4.1.5
+2026-11-08T01:57:28.9955993Z + zod@4.4.3
+2026-11-08T01:57:28.9956087Z 
+2026-11-08T01:57:28.9956180Z 522 packages installed [2.13s]
+2026-11-08T01:57:29.1047010Z ##[group]Run for pkg in packages/*/; do
+2026-11-08T01:57:29.1047335Z [36;1mfor pkg in packages/*/; do[0m
+2026-11-08T01:57:29.1047729Z [36;1m  if [ -f "$pkg/package.json" ] && grep -q '"test"' "$pkg/package.json"; then[0m
+2026-11-08T01:57:29.1048084Z [36;1m    echo "=== 测试 $pkg ==="[0m
+2026-11-08T01:57:29.1048312Z [36;1m    cd "$pkg"[0m
+2026-11-08T01:57:29.1048520Z [36;1m    bun run test 2>&1 || exit 1[0m
+2026-11-08T01:57:29.1048748Z [36;1m    cd ../..[0m
+2026-11-08T01:57:29.1048959Z [36;1m  fi[0m
+2026-11-08T01:57:29.1049127Z [36;1mdone[0m
+2026-11-08T01:57:29.1091836Z shell: /usr/bin/bash -e {0}
+2026-11-08T01:57:29.1091980Z ##[endgroup]
+2026-11-08T01:57:29.2350955Z === 测试 packages/cli/ ===
+2026-11-08T01:57:29.2367455Z $ vitest run
+2026-11-08T01:57:29.6025633Z [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+2026-11-08T01:57:29.6175930Z 
+2026-11-08T01:57:29.6177086Z [7m[1m[36m RUN [39m[22m[27m [36mv1.6.1[39m [90m/home/runner/work/SpecForge/SpecForge/packages/cli[39m
+2026-11-08T01:57:29.6177479Z 
+2026-11-08T01:57:29.9174094Z  [32m✓[39m tests/unit/package-validator.test.ts [2m ([22m[2m65 tests[22m[2m)[22m[90m 19[2mms[22m[39m
+2026-11-08T01:57:29.9527928Z [90mstdout[2m | tests/performance/performance-validation.test.ts[2m > [22m[2mCLI Performance Validation (Task 11.3)[2m > [22m[2m1. Command Execution Time[2m > [22m[2m1.1 Command Parsing Performance[2m > [22m[2mshould parse simple command in < 50ms[22m[39m
+2026-11-08T01:57:29.9529313Z Command parsing took: 0.01ms
+2026-11-08T01:57:29.9529603Z 
+2026-11-08T01:57:29.9530699Z [90mstdout[2m | tests/performance/performance-validation.test.ts[2m > [22m[2mCLI Performance Validation (Task 11.3)[2m > [22m[2m1. Command Execution Time[2m > [22m[2m1.1 Command Parsing Performance[2m > [22m[2mshould parse complex command with multiple options in < 50ms[22m[39m
+2026-11-08T01:57:29.9532104Z Complex command parsing took: 0.02ms
+2026-11-08T01:57:29.9532398Z 
+2026-11-08T01:57:29.9533387Z [90mstdout[2m | tests/performance/performance-validation.test.ts[2m > [22m[2mCLI Performance Validation (Task 11.3)[2m > [22m[2m1. Command Execution Time[2m > [22m[2m1.2 Output Formatting Performance[2m > [22m[2mshould format JSON output in < 20ms[22m[39m
+2026-11-08T01:57:29.9534593Z JSON output formatting took: 0.01ms
+2026-11-08T01:57:29.9534884Z 
+2026-11-08T01:57:29.9535938Z [90mstdout[2m | tests/performance/performance-validation.test.ts[2m > [22m[2mCLI Performance Validation (Task 11.3)[2m > [22m[2m1. Command Execution Time[2m > [22m[2m1.2 Output Formatting Performance[2m > [22m[2mshould format human-readable output in < 20ms[22m[39m
+2026-11-08T01:57:29.9537069Z Human-readable output formatting took: 30.59ms
+2026-11-08T01:57:29.9537388Z 
+2026-11-08T01:57:29.9558544Z [90mstdout[2m | tests/performance/performance-validation.test.ts[2m > [22m[2mCLI Performance Validation (Task 11.3)[2m > [22m[2m2. Blob Handling Performance (Requirements 2.1-2.4)[2m > [22m[2m2.1 Blob Conversion Performance (Requirement 2.1)[2m > [22m[2mshould convert >64KB content to blob reference in < 500ms[22m[39m
+2026-11-08T01:57:29.9559809Z Blob conversion (100KB) took: 3.71ms
+2026-11-08T01:57:29.9560231Z 
+2026-11-08T01:57:29.9785884Z [90mstdout[2m | tests/performance/performance-validation.test.ts[2m > [22m[2mCLI Performance Validation (Task 11.3)[2m > [22m[2m2. Blob Handling Performance (Requirements 2.1-2.4)[2m > [22m[2m2.1 Blob Conversion Performance (Requirement 2.1)[2m > [22m[2mshould handle content exactly at 64KB threshold[22m[39m
+2026-11-08T01:57:29.9804656Z Blob conversion (64KB threshold) took: 0.96ms
+2026-11-08T01:57:29.9824537Z 
+2026-11-08T01:57:29.9826604Z [90mstdout[2m | tests/performance/performance-validation.test.ts[2m > [22m[2mCLI Performance Validation (Task 11.3)[2m > [22m[2m2. Blob Handling Performance (Requirements 2.1-2.4)[2m > [22m[2m2.1 Blob Conversion Performance (Requirement 2.1)[2m > [22m[2mshould leave <=64KB content inline (not convert to blob)[22m[39m
+2026-11-08T01:57:29.9827989Z Small content (10KB) stays inline as expected
+2026-11-08T01:57:29.9828324Z 
+2026-11-08T01:57:29.9829218Z [90mstdout[2m | tests/async-command-property-18.test.ts[2m > [22m[2mProperty 18: Async Command Contract[2m > [22m[2m**Validates: Requirements 11.1, 11.3, 11.4** - wait results in terminal state[22m[39m
+2026-11-08T01:57:29.9830247Z ✓ Job job-1794103049978-el0c7xi6 completed
+2026-11-08T01:57:29.9830725Z ✗ Job job-1794103049978-ajcckhxi failed: Error occurred
+2026-11-08T01:57:29.9831184Z Job job-1794103049979-4362rb1t ended with status: blocked
+2026-11-08T01:57:29.9831645Z Job job-1794103049979-dskpwfal ended with status: cancelled
+2026-11-08T01:57:29.9832019Z 
+2026-11-08T01:57:29.9950711Z [90mstdout[2m | tests/performance/performance-validation.test.ts[2m > [22m[2mCLI Performance Validation (Task 11.3)[2m > [22m[2m2. Blob Handling Performance (Requirements 2.1-2.4)[2m > [22m[2m2.2 Streaming Performance (Requirement 2.2)[2m > [22m[2mshould stream large file with memory usage < 50MB[22m[39m
+2026-11-08T01:57:29.9974591Z Streaming 20MB file: 9.84ms, memory increase: 0.17MB
+2026-11-08T01:57:29.9974825Z 
+2026-11-08T01:57:30.0110467Z [90mstdout[2m | tests/performance/performance-validation.test.ts[2m > [22m[2mCLI Performance Validation (Task 11.3)[2m > [22m[2m2. Blob Handling Performance (Requirements 2.1-2.4)[2m > [22m[2m2.2 Streaming Performance (Requirement 2.2)[2m > [22m[2mshould process chunks efficiently (< 10ms per chunk)[22m[39m
+2026-11-08T01:57:30.0111225Z Average chunk processing time: 0.49ms
+2026-11-08T01:57:30.0111338Z 
+2026-11-08T01:57:30.0112372Z [90mstdout[2m | tests/performance/performance-validation.test.ts[2m > [22m[2mCLI Performance Validation (Task 11.3)[2m > [22m[2m2. Blob Handling Performance (Requirements 2.1-2.4)[2m > [22m[2m2.3 Transparent Blob Handling (Requirement 2.3)[2m > [22m[2mshould resolve blob reference to content[22m[39m
+2026-11-08T01:57:30.0113016Z Blob resolution took: 0.00ms
+2026-11-08T01:57:30.0113215Z 
+2026-11-08T01:57:30.0114174Z [90mstdout[2m | tests/performance/performance-validation.test.ts[2m > [22m[2mCLI Performance Validation (Task 11.3)[2m > [22m[2m2. Blob Handling Performance (Requirements 2.1-2.4)[2m > [22m[2m2.4 HTTP Body Size Enforcement (Requirement 2.4)[2m > [22m[2mshould enforce 64KB inline limit in request body[22m[39m
+2026-11-08T01:57:30.0115366Z Large payload (100KB) converted to blob reference: blob://8b77ec70310a4f694fff9ad0bf5f1e9da39b97ec5ccb3ced6a6261ac4effee4c
+2026-11-08T01:57:30.0115771Z 
+2026-11-08T01:57:30.0116696Z [90mstdout[2m | tests/performance/performance-validation.test.ts[2m > [22m[2mCLI Performance Validation (Task 11.3)[2m > [22m[2m2. Blob Handling Performance (Requirements 2.1-2.4)[2m > [22m[2m2.4 HTTP Body Size Enforcement (Requirement 2.4)[2m > [22m[2mshould keep small payload inline[22m[39m
+2026-11-08T01:57:30.0117610Z Small payload (10KB) stays inline
+2026-11-08T01:57:30.0117758Z 
+2026-11-08T01:57:30.0118679Z [90mstdout[2m | tests/performance/performance-validation.test.ts[2m > [22m[2mCLI Performance Validation (Task 11.3)[2m > [22m[2m3. Async Job Tracking Performance (Requirements 3.1-3.5)[2m > [22m[2m3.1 Job Creation Performance (Requirement 3.1)[2m > [22m[2mshould generate job ID in < 100ms[22m[39m
+2026-11-08T01:57:30.0119580Z Job ID generation took: 0.01ms
+2026-11-08T01:57:30.0119713Z 
+2026-11-08T01:57:30.0120644Z [90mstdout[2m | tests/performance/performance-validation.test.ts[2m > [22m[2mCLI Performance Validation (Task 11.3)[2m > [22m[2m3. Async Job Tracking Performance (Requirements 3.1-3.5)[2m > [22m[2m3.2 Status Query Performance (Requirement 3.2)[2m > [22m[2mshould create job response in < 100ms[22m[39m
+2026-11-08T01:57:30.0121243Z Job creation response took: 0.01ms
+2026-11-08T01:57:30.0121337Z 
+2026-11-08T01:57:30.0122081Z [90mstdout[2m | tests/performance/performance-validation.test.ts[2m > [22m[2mCLI Performance Validation (Task 11.3)[2m > [22m[2m3. Async Job Tracking Performance (Requirements 3.1-3.5)[2m > [22m[2m3.2 Status Query Performance (Requirement 3.2)[2m > [22m[2mshould query status in < 50ms[22m[39m
+2026-11-08T01:57:30.0122625Z Status query took: 0.01ms
+2026-11-08T01:57:30.0122703Z 
+2026-11-08T01:57:30.0895815Z  [33m❯[39m tests/AuthManager.test.ts [2m ([22m[2m0 test[22m[2m)[22m
+2026-11-08T01:57:30.2336870Z  [32m✓[39m tests/unit/services-cli.test.ts [2m ([22m[2m48 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+2026-11-08T01:57:30.2870627Z [90mstdout[2m | tests/async-command-property-18.test.ts[2m > [22m[2mProperty 18: Async Command Contract[2m > [22m[2m**Validates: Requirements 11.1, 11.3, 11.4** - jobs eventually reach terminal state[22m[39m
+2026-11-08T01:57:30.2871355Z ✓ Job job-1794103049979-fhbz2ym6 completed
+2026-11-08T01:57:30.2871530Z 
+2026-11-08T01:57:30.3674181Z [90mstdout[2m | tests/performance/performance-validation.test.ts[2m > [22m[2mCLI Performance Validation (Task 11.3)[2m > [22m[2m3. Async Job Tracking Performance (Requirements 3.1-3.5)[2m > [22m[2m3.3 Polling Performance with Exponential Backoff (Requirement 3.3)[2m > [22m[2mshould implement exponential backoff polling[22m[39m
+2026-11-08T01:57:30.3674918Z Polling interval stats: min=52ms, max=200ms, avg=152ms
+2026-11-08T01:57:30.3675044Z 
+2026-11-08T01:57:30.3719685Z  [32m✓[39m tests/unit/dependency-rewriter.test.ts [2m ([22m[2m19 tests[22m[2m)[22m[90m 5[2mms[22m[39m
+2026-11-08T01:57:30.3984123Z [90mstdout[2m | tests/performance/performance-validation.test.ts[2m > [22m[2mCLI Performance Validation (Task 11.3)[2m > [22m[2m3. Async Job Tracking Performance (Requirements 3.1-3.5)[2m > [22m[2m3.3 Polling Performance with Exponential Backoff (Requirement 3.3)[2m > [22m[2mshould detect terminal state in < 1000ms[22m[39m
+2026-11-08T01:57:30.3985500Z Terminal state detection took: 31.00ms (3 polls)
+2026-11-08T01:57:30.3985628Z 
+2026-11-08T01:57:30.4747853Z [90mstdout[2m | tests/performance/performance-validation.test.ts[2m > [22m[2mCLI Performance Validation (Task 11.3)[2m > [22m[2m3. Async Job Tracking Performance (Requirements 3.1-3.5)[2m > [22m[2m3.4 Wait Mode Performance (Requirement 3.4)[2m > [22m[2mshould wait for terminal state and return final state[22m[39m
+2026-11-08T01:57:30.4748973Z Wait mode completed in: 70.00ms, final status: completed
+2026-11-08T01:57:30.4749186Z 
+2026-11-08T01:57:30.4750182Z [90mstdout[2m | tests/performance/performance-validation.test.ts[2m > [22m[2mCLI Performance Validation (Task 11.3)[2m > [22m[2m3. Async Job Tracking Performance (Requirements 3.1-3.5)[2m > [22m[2m3.5 Terminal State Set Validation (Requirement 3.5)[2m > [22m[2mshould ensure all jobs end in terminal state[22m[39m
+2026-11-08T01:57:30.4751175Z All terminal states validated: completed, failed, blocked, cancelled
+2026-11-08T01:57:30.4751394Z 
+2026-11-08T01:57:30.4751893Z [90mstdout[2m | tests/performance/performance-validation.test.ts[2m > [22m[2mCLI Performance Validation (Task 11.3)[2m > [22m[2m4. Performance Summary[2m > [22m[2mshould generate performance report[22m[39m
+2026-11-08T01:57:30.4752262Z 
+2026-11-08T01:57:30.4752323Z === Performance Validation Report ===
+2026-11-08T01:57:30.4752471Z {
+2026-11-08T01:57:30.4752583Z   "timestamp": "2026-11-08T01:57:30.468Z",
+2026-11-08T01:57:30.4752735Z   "thresholds": {
+2026-11-08T01:57:30.4752860Z     "blobConversionMs": 500,
+2026-11-08T01:57:30.4752998Z     "blobResolutionMs": 300,
+2026-11-08T01:57:30.4753135Z     "streamingMemoryLimitMB": 50,
+2026-11-08T01:57:30.4753281Z     "chunkProcessingMs": 10,
+2026-11-08T01:57:30.4753412Z     "jobCreationMs": 100,
+2026-11-08T01:57:30.4753543Z     "statusQueryMs": 50,
+2026-11-08T01:57:30.4753675Z     "pollingIntervalMs": 200,
+2026-11-08T01:57:30.4753818Z     "terminalStateDetectionMs": 1000,
+2026-11-08T01:57:30.4754157Z     "commandParseMs": 50,
+2026-11-08T01:57:30.4754287Z     "outputFormattingMs": 50
+2026-11-08T01:57:30.4754670Z   },
+2026-11-08T01:57:30.4754772Z   "summary": {
+2026-11-08T01:57:30.4754940Z     "commandParsing": "Pass",
+2026-11-08T01:57:30.4755155Z     "outputFormatting": "Pass",
+2026-11-08T01:57:30.4755379Z     "blobConversion": "Pass",
+2026-11-08T01:57:30.4755594Z     "streaming": "Pass",
+2026-11-08T01:57:30.4755731Z     "jobTracking": "Pass",
+2026-11-08T01:57:30.4755856Z     "polling": "Pass"
+2026-11-08T01:57:30.4755968Z   }
+2026-11-08T01:57:30.4756062Z }
+2026-11-08T01:57:30.4756161Z =====================================
+2026-11-08T01:57:30.4756257Z 
+2026-11-08T01:57:30.4756260Z 
+2026-11-08T01:57:30.4756563Z  [32m✓[39m tests/performance/performance-validation.test.ts [2m ([22m[2m21 tests[22m[2m)[22m[33m 560[2mms[22m[39m
+2026-11-08T01:57:30.5941423Z [90mstdout[2m | tests/async-command-property-18.test.ts[2m > [22m[2mProperty 18: Async Command Contract[2m > [22m[2m**Validates: Requirements 11.1, 11.3, 11.4** - jobs eventually reach terminal state[22m[39m
+2026-11-08T01:57:30.5942081Z ✗ Job job-1794103050286-1kcwabyz failed: Unknown error
+2026-11-08T01:57:30.5942246Z 
+2026-11-08T01:57:30.7382772Z [90mstdout[2m | tests/commands/spec.test.ts[2m > [22m[2mSpec Commands[2m > [22m[2mspec start (async)[2m > [22m[2mshould support --wait flag to block until completion[22m[39m
+2026-11-08T01:57:30.7383205Z ✓ Job job-spec-456 completed
+2026-11-08T01:57:30.7383300Z 
+2026-11-08T01:57:30.8447073Z [90mstdout[2m | tests/commands/spec.test.ts[2m > [22m[2mSpec Commands[2m > [22m[2mspec status <id>[2m > [22m[2mshould support --wait flag for spec status[22m[39m
+2026-11-08T01:57:30.8447471Z ✓ Job spec-456 completed
+2026-11-08T01:57:30.8447564Z 
+2026-11-08T01:57:30.9059822Z [90mstdout[2m | tests/async-command-property-18.test.ts[2m > [22m[2mProperty 18: Async Command Contract[2m > [22m[2m**Validates: Requirements 11.1, 11.3, 11.4** - jobs eventually reach terminal state[22m[39m
+2026-11-08T01:57:30.9060553Z Job job-1794103050593-jrb9q3no ended with status: blocked
+2026-11-08T01:57:30.9060697Z 
+2026-11-08T01:57:31.1669956Z [90mstdout[2m | tests/commands/spec.test.ts[2m > [22m[2mSpec Commands[2m > [22m[2masync command contract (Property 18)[2m > [22m[2mshould block until terminal state when --wait is used[22m[39m
+2026-11-08T01:57:31.1670492Z ✓ Job spec-prop18-3 completed
+2026-11-08T01:57:31.1670614Z 
+2026-11-08T01:57:31.2108232Z [90mstdout[2m | tests/async-command-property-18.test.ts[2m > [22m[2mProperty 18: Async Command Contract[2m > [22m[2m**Validates: Requirements 11.1, 11.3, 11.4** - jobs eventually reach terminal state[22m[39m
+2026-11-08T01:57:31.2108820Z Job job-1794103050904-izt2e95x ended with status: cancelled
+2026-11-08T01:57:31.2108962Z 
+2026-11-08T01:57:31.2706145Z [90mstdout[2m | tests/commands/spec.test.ts[2m > [22m[2mSpec Commands[2m > [22m[2masync command contract (Property 18)[2m > [22m[2mshould ensure all specs end in terminal state set[22m[39m
+2026-11-08T01:57:31.2706697Z ✓ Job spec-terminal-completed completed
+2026-11-08T01:57:31.2706822Z 
+2026-11-08T01:57:31.3731366Z [90mstdout[2m | tests/commands/spec.test.ts[2m > [22m[2mSpec Commands[2m > [22m[2masync command contract (Property 18)[2m > [22m[2mshould ensure all specs end in terminal state set[22m[39m
+2026-11-08T01:57:31.3731933Z ✗ Job spec-terminal-failed failed: Spec failed: timeout
+2026-11-08T01:57:31.3732077Z 
+2026-11-08T01:57:31.4254201Z [90mstdout[2m | tests/async-command-property-18.test.ts[2m > [22m[2mProperty 18: Async Command Contract[2m > [22m[2m**Validates: Requirements 11.1, 11.3, 11.4** - valid status transitions[22m[39m
+2026-11-08T01:57:31.4254709Z ✓ Job job-1794103051318-dredkqg0 completed
+2026-11-08T01:57:31.4254819Z 
+2026-11-08T01:57:31.4785956Z [90mstdout[2m | tests/commands/spec.test.ts[2m > [22m[2mSpec Commands[2m > [22m[2masync command contract (Property 18)[2m > [22m[2mshould ensure all specs end in terminal state set[22m[39m
+2026-11-08T01:57:31.4786639Z Job spec-terminal-blocked ended with status: blocked
+2026-11-08T01:57:31.4787054Z 
+2026-11-08T01:57:31.5308454Z [90mstdout[2m | tests/async-command-property-18.test.ts[2m > [22m[2mProperty 18: Async Command Contract[2m > [22m[2m**Validates: Requirements 11.1, 11.3, 11.4** - valid status transitions[22m[39m
+2026-11-08T01:57:31.5309018Z ✗ Job job-1794103051424-hh32jjbz failed: Unknown error
+2026-11-08T01:57:31.5309152Z 
+2026-11-08T01:57:31.5870368Z [90mstdout[2m | tests/commands/spec.test.ts[2m > [22m[2mSpec Commands[2m > [22m[2masync command contract (Property 18)[2m > [22m[2mshould ensure all specs end in terminal state set[22m[39m
+2026-11-08T01:57:31.5870872Z Job spec-terminal-cancelled ended with status: cancelled
+2026-11-08T01:57:31.5871012Z 
+2026-11-08T01:57:31.5872686Z  [32m✓[39m tests/commands/spec.test.ts [2m ([22m[2m23 tests[22m[2m)[22m[33m 959[2mms[22m[39m
+2026-11-08T01:57:31.6398046Z [90mstdout[2m | tests/async-command-property-18.test.ts[2m > [22m[2mProperty 18: Async Command Contract[2m > [22m[2m**Validates: Requirements 11.1, 11.3, 11.4** - valid status transitions[22m[39m
+2026-11-08T01:57:31.6398540Z Job job-1794103051529-l59z20j5 ended with status: blocked
+2026-11-08T01:57:31.6398678Z 
+2026-11-08T01:57:31.7267777Z  [32m✓[39m tests/job-wait.test.ts [2m ([22m[2m18 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+2026-11-08T01:57:31.7402520Z [90mstdout[2m | tests/async-command-property-18.test.ts[2m > [22m[2mProperty 18: Async Command Contract[2m > [22m[2m**Validates: Requirements 11.1, 11.3, 11.4** - valid status transitions[22m[39m
+2026-11-08T01:57:31.7403290Z Job job-1794103051638-8stlltzy ended with status: cancelled
+2026-11-08T01:57:31.7403514Z 
+2026-11-08T01:57:31.8845572Z  [33m❯[39m tests/unit/version-cmd.test.ts [2m ([22m[2m0 test[22m[2m)[22m
+2026-11-08T01:57:31.8869172Z [90mstdout[2m | tests/async-command-property-18.test.ts[2m > [22m[2mProperty 18: Async Command Contract[2m > [22m[2m**Validates: Requirements 11.1, 11.3, 11.4** - valid status transitions[22m[39m
+2026-11-08T01:57:31.8870122Z Job job-1794103051738-xokn0ygl ended with status: cancelled
+2026-11-08T01:57:31.8870430Z 
+2026-11-08T01:57:31.8870983Z  [32m✓[39m tests/async-command-property-18.test.ts [2m ([22m[2m20 tests[22m[2m)[22m[33m 1911[2mms[22m[39m
+2026-11-08T01:57:32.0634417Z  [32m✓[39m tests/commands/plugin.test.ts [2m ([22m[2m23 tests[22m[2m)[22m[90m 10[2mms[22m[39m
+2026-11-08T01:57:32.0764334Z  [32m✓[39m tests/OutputFormatter.test.ts [2m ([22m[2m48 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+2026-11-08T01:57:32.2399077Z  [32m✓[39m tests/comprehensive-error-handling.test.ts [2m ([22m[2m23 tests[22m[2m)[22m[90m 6[2mms[22m[39m
+2026-11-08T01:57:32.3915104Z  [33m❯[39m tests/cross-platform.test.ts [2m ([22m[2m0 test[22m[2m)[22m
+2026-11-08T01:57:32.4260700Z [90mstdout[2m | tests/performance/BlobOptimizer.perf.test.ts[2m > [22m[2mBlobOptimizer Performance Tests[2m > [22m[2mMemory Usage Tests[2m > [22m[2mshould stream 100MB file with memory usage < 50MB[22m[39m
+2026-11-08T01:57:32.4261585Z 
+2026-11-08T01:57:32.4261746Z         File size: 100 MB
+2026-11-08T01:57:32.4261998Z         Chunks processed: 100
+2026-11-08T01:57:32.4262220Z         Initial memory: 14.11 MB
+2026-11-08T01:57:32.4262438Z         Peak memory: 14.58 MB
+2026-11-08T01:57:32.4262670Z         Memory increase: 475.12 KB (0.46MB)
+2026-11-08T01:57:32.4262904Z       
+2026-11-08T01:57:32.4263000Z 
+2026-11-08T01:57:32.5331328Z  [32m✓[39m tests/unit/terminal-states.test.ts [2m ([22m[2m38 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+2026-11-08T01:57:32.5787727Z [90mstdout[2m | tests/performance/BlobOptimizer.perf.test.ts[2m > [22m[2mBlobOptimizer Performance Tests[2m > [22m[2mMemory Usage Tests[2m > [22m[2mshould track peak memory usage accurately[22m[39m
+2026-11-08T01:57:32.5788504Z Peak memory tracked: 11.82 MB
+2026-11-08T01:57:32.5788655Z 
+2026-11-08T01:57:32.6882960Z [90mstdout[2m | tests/performance/BlobOptimizer.perf.test.ts[2m > [22m[2mBlobOptimizer Performance Tests[2m > [22m[2mStreaming Efficiency Tests[2m > [22m[2mshould process chunks efficiently[22m[39m
+2026-11-08T01:57:32.6883708Z 
+2026-11-08T01:57:32.6883818Z         File size: 10 MB
+2026-11-08T01:57:32.6884160Z         Chunks: 10
+2026-11-08T01:57:32.6884339Z         Time: 2ms
+2026-11-08T01:57:32.6884520Z         Throughput: 5000.00 MB/s
+2026-11-08T01:57:32.6884729Z       
+2026-11-08T01:57:32.6884819Z 
+2026-11-08T01:57:32.9448787Z [90mstdout[2m | tests/performance/BlobOptimizer.perf.test.ts[2m > [22m[2mBlobOptimizer Performance Tests[2m > [22m[2mUpload Stream Tests[2m > [22m[2mshould upload stream with memory monitoring[22m[39m
+2026-11-08T01:57:32.9449204Z 
+2026-11-08T01:57:32.9449264Z         Upload result:
+2026-11-08T01:57:32.9449551Z         - Blob ID: blob://fc2895f9c18086604f6e96cfc756d1580456bb9c66b998294ee3970ef8446e3f
+2026-11-08T01:57:32.9449885Z         - SHA256: fc2895f9c18086604f6e96cfc756d1580456bb9c66b998294ee3970ef8446e3f
+2026-11-08T01:57:32.9450097Z         - Size: 30 MB
+2026-11-08T01:57:32.9450227Z         - Chunks: 30
+2026-11-08T01:57:32.9450354Z         - Peak memory: 10.45 MB
+2026-11-08T01:57:32.9450485Z         - Time: 29ms
+2026-11-08T01:57:32.9450617Z         - Memory warnings: 0
+2026-11-08T01:57:32.9450741Z       
+2026-11-08T01:57:32.9450799Z 
+2026-11-08T01:57:33.3200674Z  [32m✓[39m tests/performance/BlobOptimizer.perf.test.ts [2m ([22m[2m12 tests[22m[2m)[22m[33m 1079[2mms[22m[39m
+2026-11-08T01:57:33.5879565Z [90mstdout[2m | tests/commands/workflow.test.ts[2m > [22m[2mWorkflow Commands[2m > [22m[2mspec start (async)[2m > [22m[2mshould support --wait flag to block until completion[22m[39m
+2026-11-08T01:57:33.5880042Z ✓ Job job-test-456 completed
+2026-11-08T01:57:33.5880142Z 
+2026-11-08T01:57:33.6943530Z [90mstdout[2m | tests/commands/workflow.test.ts[2m > [22m[2mWorkflow Commands[2m > [22m[2mworkflow status <id>[2m > [22m[2mshould support --wait flag for workflow status[22m[39m
+2026-11-08T01:57:33.6944347Z ✓ Job workflow-456 completed
+2026-11-08T01:57:33.6944537Z 
+2026-11-08T01:57:34.0087136Z [90mstdout[2m | tests/commands/workflow.test.ts[2m > [22m[2mWorkflow Commands[2m > [22m[2masync command contract (Property 18)[2m > [22m[2mshould block until terminal state when --wait is used[22m[39m
+2026-11-08T01:57:34.0087655Z ✓ Job job-prop18-3 completed
+2026-11-08T01:57:34.0087757Z 
+2026-11-08T01:57:34.1170875Z [90mstdout[2m | tests/commands/workflow.test.ts[2m > [22m[2mWorkflow Commands[2m > [22m[2masync command contract (Property 18)[2m > [22m[2mshould ensure all jobs end in terminal state set[22m[39m
+2026-11-08T01:57:34.1171386Z ✓ Job job-terminal-completed completed
+2026-11-08T01:57:34.1171499Z 
+2026-11-08T01:57:34.2199381Z [90mstdout[2m | tests/commands/workflow.test.ts[2m > [22m[2mWorkflow Commands[2m > [22m[2masync command contract (Property 18)[2m > [22m[2mshould ensure all jobs end in terminal state set[22m[39m
+2026-11-08T01:57:34.2199957Z ✗ Job job-terminal-failed failed: error message
+2026-11-08T01:57:34.2200081Z 
+2026-11-08T01:57:34.2448491Z  [32m✓[39m tests/unit/JobPoller.test.ts [2m ([22m[2m33 tests[22m[2m)[22m[33m 3740[2mms[22m[39m
+2026-11-08T01:57:34.3246036Z [90mstdout[2m | tests/commands/workflow.test.ts[2m > [22m[2mWorkflow Commands[2m > [22m[2masync command contract (Property 18)[2m > [22m[2mshould ensure all jobs end in terminal state set[22m[39m
+2026-11-08T01:57:34.3262257Z Job job-terminal-blocked ended with status: blocked
+2026-11-08T01:57:34.3262560Z 
+2026-11-08T01:57:34.4025155Z  [32m✓[39m tests/BlobHandler.test.ts [2m ([22m[2m41 tests[22m[2m)[22m[90m 8[2mms[22m[39m
+2026-11-08T01:57:34.4297444Z [90mstdout[2m | tests/commands/workflow.test.ts[2m > [22m[2mWorkflow Commands[2m > [22m[2masync command contract (Property 18)[2m > [22m[2mshould ensure all jobs end in terminal state set[22m[39m
+2026-11-08T01:57:34.4298416Z Job job-terminal-cancelled ended with status: cancelled
+2026-11-08T01:57:34.4298721Z 
+2026-11-08T01:57:34.4299621Z  [32m✓[39m tests/commands/workflow.test.ts [2m ([22m[2m15 tests[22m[2m)[22m[33m 947[2mms[22m[39m
+2026-11-08T01:57:34.6018073Z  [33m❯[39m tests/commands/daemon.test.ts [2m ([22m[2m0 test[22m[2m)[22m
+2026-11-08T01:57:34.6378446Z [90mstdout[2m | tests/JobTracker.test.ts[2m > [22m[2mJobTracker[2m > [22m[2mwaitForJob[2m > [22m[2mshould return immediately if job is already in terminal state[22m[39m
+2026-11-08T01:57:34.6379095Z ✓ Job job-123 completed
+2026-11-08T01:57:34.6379288Z 
+2026-11-08T01:57:34.7571915Z  [33m❯[39m tests/help-system.test.ts [2m ([22m[2m0 test[22m[2m)[22m
+2026-11-08T01:57:34.9196391Z  [32m✓[39m tests/progress-indicator.test.ts [2m ([22m[2m19 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+2026-11-08T01:57:34.9444022Z [90mstdout[2m | tests/JobTracker.test.ts[2m > [22m[2mJobTracker[2m > [22m[2mwaitForJob[2m > [22m[2mshould poll until terminal state is reached[22m[39m
+2026-11-08T01:57:34.9444763Z ✓ Job job-123 completed
+2026-11-08T01:57:34.9445026Z 
+2026-11-08T01:57:35.0765509Z  [32m✓[39m tests/errors.test.ts [2m ([22m[2m22 tests[22m[2m)[22m[90m 5[2mms[22m[39m
+2026-11-08T01:57:35.1540746Z [90mstdout[2m | tests/JobTracker.test.ts[2m > [22m[2mJobTracker[2m > [22m[2mwaitForJob[2m > [22m[2mshould call onUpdate callback on each poll[22m[39m
+2026-11-08T01:57:35.1554699Z ✓ Job job-123 completed
+2026-11-08T01:57:35.1554954Z 
+2026-11-08T01:57:35.1574328Z  [32m✓[39m tests/JobTracker.test.ts [2m ([22m[2m17 tests[22m[2m)[22m[33m 522[2mms[22m[39m
+2026-11-08T01:57:35.3851643Z  [32m✓[39m tests/blob-integration.test.ts [2m ([22m[2m25 tests[22m[2m)[22m[90m 8[2mms[22m[39m
+2026-11-08T01:57:35.6899718Z  [32m✓[39m tests/blob-handler-property-17.test.ts [2m ([22m[2m12 tests[22m[2m)[22m[33m 2976[2mms[22m[39m
+2026-11-08T01:57:35.8466374Z  [32m✓[39m tests/current-release-shared-directory-layout.test.ts [2m ([22m[2m8 tests[22m[2m)[22m[90m 3[2mms[22m[39m
+2026-11-08T01:57:35.9898389Z  [33m❯[39m tests/help-command.test.ts [2m ([22m[2m0 test[22m[2m)[22m
+2026-11-08T01:57:36.1392093Z  [32m✓[39m tests/current-release-installer-root.test.ts [2m ([22m[2m5 tests[22m[2m)[22m[90m 3[2mms[22m[39m
+2026-11-08T01:57:36.2752029Z  [33m❯[39m tests/unit/version-command.test.ts [2m ([22m[2m0 test[22m[2m)[22m
+2026-11-08T01:57:36.4045413Z  [32m✓[39m tests/mode-switch.test.ts [2m ([22m[2m21 tests[22m[2m)[22m[90m 4[2mms[22m[39m
+2026-11-08T01:57:36.5398553Z  [32m✓[39m tests/simple-progress.test.ts [2m ([22m[2m12 tests[22m[2m)[22m[90m 5[2mms[22m[39m
+2026-11-08T01:57:36.6681245Z  [33m❯[39m tests/commands/version.test.ts [2m ([22m[2m0 test[22m[2m)[22m
+2026-11-08T01:57:36.7900597Z  [33m❯[39m tests/commands/doctor.test.ts [2m ([22m[2m0 test[22m[2m)[22m
+2026-11-08T01:57:36.9127898Z  [33m❯[39m tests/current-release-project-layout.test.ts [2m ([22m[2m0 test[22m[2m)[22m
+2026-11-08T01:57:37.0398061Z  [33m❯[39m tests/unit/path-resolver.test.ts [2m ([22m[2m0 test[22m[2m)[22m
+2026-11-08T01:57:37.1683472Z  [32m✓[39m tests/unit/schema-version-manager.test.ts [2m ([22m[2m6 tests[22m[2m)[22m[90m 3[2mms[22m[39m
+2026-11-08T01:57:37.2961860Z  [33m❯[39m tests/user-level-path-boundary.test.ts [2m ([22m[2m0 test[22m[2m)[22m
+2026-11-08T01:57:37.4190914Z  [32m✓[39m tests/cli-async-parser-regression.test.ts [2m ([22m[2m2 tests[22m[2m)[22m[90m 2[2mms[22m[39m
+2026-11-08T01:57:38.2994718Z  [32m✓[39m tests/DaemonClient.test.ts [2m ([22m[2m21 tests[22m[2m)[22m[33m 3013[2mms[22m[39m
+2026-11-08T01:57:43.7003983Z  [32m✓[39m tests/unit/JobPoller.performance.test.ts [2m ([22m[2m8 tests[22m[2m)[22m[33m 8157[2mms[22m[39m
+2026-11-08T01:57:43.7124194Z 
+2026-11-08T01:57:43.7135271Z [31m⎯⎯⎯⎯⎯⎯[1m[7m Failed Suites 12 [27m[22m⎯⎯⎯⎯⎯⎯[39m
+2026-11-08T01:57:43.7143446Z 
+2026-11-08T01:57:43.7144086Z [31m[1m[7m FAIL [27m[22m[39m tests/AuthManager.test.ts [2m[ tests/AuthManager.test.ts ][22m
+2026-11-08T01:57:43.7145082Z [31m[1m[7m FAIL [27m[22m[39m tests/cross-platform.test.ts [2m[ tests/cross-platform.test.ts ][22m
+2026-11-08T01:57:43.7145794Z [31m[1m[7m FAIL [27m[22m[39m tests/user-level-path-boundary.test.ts [2m[ tests/user-level-path-boundary.test.ts ][22m
+2026-11-08T01:57:43.7146472Z [31m[1m[7m FAIL [27m[22m[39m tests/commands/daemon.test.ts [2m[ tests/commands/daemon.test.ts ][22m
+2026-11-08T01:57:43.7147083Z [31m[1m[7m FAIL [27m[22m[39m tests/commands/version.test.ts [2m[ tests/commands/version.test.ts ][22m
+2026-11-08T01:57:43.7147712Z [31m[1m[7m FAIL [27m[22m[39m tests/unit/path-resolver.test.ts [2m[ tests/unit/path-resolver.test.ts ][22m
+2026-11-08T01:57:43.7148339Z [31m[1m[7m FAIL [27m[22m[39m tests/unit/version-cmd.test.ts [2m[ tests/unit/version-cmd.test.ts ][22m
+2026-11-08T01:57:43.7149447Z [31m[1mError[22m: Failed to load url @specforge/types/user-level-paths (resolved id: @specforge/types/user-level-paths) in /home/runner/work/SpecForge/SpecForge/packages/cli/tests/AuthManager.test.ts. Does the file exist?[39m
+2026-11-08T01:57:43.7150670Z [90m [2m❯[22m loadAndTransform ../../node_modules/.bun/vite@5.4.21+7b6df19a7009ccf0/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m51969:17[22m[39m
+2026-11-08T01:57:43.7151144Z 
+2026-11-08T01:57:43.7151296Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯[22m[39m
+2026-11-08T01:57:43.7151464Z 
+2026-11-08T01:57:43.7151911Z [31m[1m[7m FAIL [27m[22m[39m tests/current-release-project-layout.test.ts [2m[ tests/current-release-project-layout.test.ts ][22m
+2026-11-08T01:57:43.7152617Z [31m[1m[7m FAIL [27m[22m[39m tests/commands/doctor.test.ts [2m[ tests/commands/doctor.test.ts ][22m
+2026-11-08T01:57:43.7153480Z [31m[1mError[22m: Failed to resolve entry for package "@specforge/version-unification". The package may have incorrect main/module/exports specified in its package.json.[39m
+2026-11-08T01:57:43.7154796Z [90m [2m❯[22m packageEntryFailure ../../node_modules/.bun/vite@5.4.21+7b6df19a7009ccf0/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m46638:15[22m[39m
+2026-11-08T01:57:43.7155778Z [90m [2m❯[22m resolvePackageEntry ../../node_modules/.bun/vite@5.4.21+7b6df19a7009ccf0/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m46635:3[22m[39m
+2026-11-08T01:57:43.7156727Z [90m [2m❯[22m tryNodeResolve ../../node_modules/.bun/vite@5.4.21+7b6df19a7009ccf0/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m46451:16[22m[39m
+2026-11-08T01:57:43.7157689Z [90m [2m❯[22m ResolveIdContext.resolveId ../../node_modules/.bun/vite@5.4.21+7b6df19a7009ccf0/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m46201:19[22m[39m
+2026-11-08T01:57:43.7158699Z [90m [2m❯[22m PluginContainer.resolveId ../../node_modules/.bun/vite@5.4.21+7b6df19a7009ccf0/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m49018:17[22m[39m
+2026-11-08T01:57:43.7159766Z [90m [2m❯[22m TransformPluginContext.resolve ../../node_modules/.bun/vite@5.4.21+7b6df19a7009ccf0/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m49178:15[22m[39m
+2026-11-08T01:57:43.7160746Z [90m [2m❯[22m normalizeUrl ../../node_modules/.bun/vite@5.4.21+7b6df19a7009ccf0/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m64300:26[22m[39m
+2026-11-08T01:57:43.7161749Z [90m [2m❯[22m async file:/home/runner/work/SpecForge/SpecForge/node_modules/.bun/vite@5.4.21+7b6df19a7009ccf0/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m64439:39[22m[39m
+2026-11-08T01:57:43.7162296Z 
+2026-11-08T01:57:43.7162444Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯[22m[39m
+2026-11-08T01:57:43.7162608Z 
+2026-11-08T01:57:43.7162908Z [31m[1m[7m FAIL [27m[22m[39m tests/help-command.test.ts [2m[ tests/help-command.test.ts ][22m
+2026-11-08T01:57:43.7163482Z [31m[1m[7m FAIL [27m[22m[39m tests/help-system.test.ts [2m[ tests/help-system.test.ts ][22m
+2026-11-08T01:57:43.7164215Z [31m[1m[7m FAIL [27m[22m[39m tests/unit/version-command.test.ts [2m[ tests/unit/version-command.test.ts ][22m
+2026-11-08T01:57:43.7165227Z [31m[1mError[22m: Failed to resolve entry for package "@specforge/version-unification". The package may have incorrect main/module/exports specified in its package.json.[39m
+2026-11-08T01:57:43.7166248Z [90m [2m❯[22m packageEntryFailure ../../node_modules/.bun/vite@5.4.21+7b6df19a7009ccf0/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m46638:15[22m[39m
+2026-11-08T01:57:43.7167210Z [90m [2m❯[22m resolvePackageEntry ../../node_modules/.bun/vite@5.4.21+7b6df19a7009ccf0/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m46635:3[22m[39m
+2026-11-08T01:57:43.7168138Z [90m [2m❯[22m tryNodeResolve ../../node_modules/.bun/vite@5.4.21+7b6df19a7009ccf0/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m46451:16[22m[39m
+2026-11-08T01:57:43.7169121Z [90m [2m❯[22m ResolveIdContext.resolveId ../../node_modules/.bun/vite@5.4.21+7b6df19a7009ccf0/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m46201:19[22m[39m
+2026-11-08T01:57:43.7170189Z [90m [2m❯[22m PluginContainer.resolveId ../../node_modules/.bun/vite@5.4.21+7b6df19a7009ccf0/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m49018:17[22m[39m
+2026-11-08T01:57:43.7171257Z [90m [2m❯[22m TransformPluginContext.resolve ../../node_modules/.bun/vite@5.4.21+7b6df19a7009ccf0/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m49178:15[22m[39m
+2026-11-08T01:57:43.7172242Z [90m [2m❯[22m normalizeUrl ../../node_modules/.bun/vite@5.4.21+7b6df19a7009ccf0/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m64300:26[22m[39m
+2026-11-08T01:57:43.7173273Z [90m [2m❯[22m async file:/home/runner/work/SpecForge/SpecForge/node_modules/.bun/vite@5.4.21+7b6df19a7009ccf0/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:[2m64439:39[22m[39m
+2026-11-08T01:57:43.7173835Z 
+2026-11-08T01:57:43.7175742Z [31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/12]⎯[22m[39m
+2026-11-08T01:57:43.7176098Z 
+2026-11-08T01:57:43.7176397Z [2m Test Files [22m [1m[31m12 failed[39m[22m[2m | [22m[1m[32m28 passed[39m[22m[90m (40)[39m
+2026-11-08T01:57:43.7176857Z [2m      Tests [22m [1m[32m625 passed[39m[22m[90m (625)[39m
+2026-11-08T01:57:43.7177179Z [2m   Start at [22m 01:57:29
+2026-11-08T01:57:43.7177674Z [2m   Duration [22m 14.09s[2m (transform 623ms, setup 3ms, collect 885ms, tests 23.98s, environment 5ms, prepare 1.77s)[22m
+2026-11-08T01:57:43.7178041Z 
+2026-11-08T01:57:43.7423036Z error: script "test" exited with code 1
+2026-11-08T01:57:43.7439511Z ##[error]Process completed with exit code 1.
+2026-11-08T01:57:43.7526967Z Post job cleanup.
+2026-11-08T01:57:43.8073046Z [command]/usr/bin/git version
+2026-11-08T01:57:43.8103459Z git version 2.56.0
+2026-11-08T01:57:43.8125487Z Temporarily overriding HOME='/home/runner/work/_temp/3f35cba9-f351-4a2a-8e0d-acdd793fa540' before making global git config changes
+2026-11-08T01:57:43.8126200Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-08T01:57:43.8127309Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/SpecForge/SpecForge
+2026-11-08T01:57:43.8156604Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-08T01:57:43.8182829Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-08T01:57:43.8462254Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-08T01:57:43.8484710Z http.https://github.com/.extraheader
+2026-11-08T01:57:43.8492227Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-08T01:57:43.8521898Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-08T01:57:43.8770563Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-08T01:57:43.8796721Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-08T01:57:43.9147825Z Cleaning up orphan processes
+2026-11-08T01:57:43.9414849Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+

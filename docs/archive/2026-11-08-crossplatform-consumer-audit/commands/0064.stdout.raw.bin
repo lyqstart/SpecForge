@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-08T02:58:25.303Z",
+  "platform": "linux",
+  "architecture": "x64",
+  "inner_exit_code": 1,
+  "checks": {
+    "installed_files": 114
+  },
+  "failure": {
+    "name": "SyntaxError",
+    "message": "JSON Parse error: Unexpected identifier \"Config\""
+  },
+  "commands": 17,
+  "original_business_touched": false,
+  "product_authority_modified": false,
+  "scope": "Official release build/precheck,actual installed bytes,current help/unsupported commands,independent Daemon/auth refusal/restart/stop,upgrade/verify/uninstall retention. D23 readonly Node execution remains Windows x64 only;no unsupported platform is promoted."
+}

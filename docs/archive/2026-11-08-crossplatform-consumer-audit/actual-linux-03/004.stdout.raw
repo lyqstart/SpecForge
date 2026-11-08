@@ -1,0 +1,38 @@
+{
+  "command": "daemon",
+  "description": "Manage the SpecForge daemon",
+  "subcommands": [
+    {
+      "name": "start",
+      "description": "Start the daemon"
+    },
+    {
+      "name": "stop",
+      "description": "Stop the daemon"
+    },
+    {
+      "name": "status",
+      "description": "Check daemon status"
+    },
+    {
+      "name": "restart",
+      "description": "Restart the installed daemon and verify health"
+    }
+  ],
+  "examples": [
+    {
+      "description": "Start daemon and check status",
+      "command": "specforge daemon start --detach && specforge daemon status"
+    }
+  ],
+  "troubleshooting": [
+    {
+      "problem": "Daemon fails to start",
+      "solution": "Run `specforge daemon status`; use the current OpenCode config root handshake and daemon logs for the actual endpoint. Do not create or repair handshake by hand."
+    },
+    {
+      "problem": "Cannot connect to daemon",
+      "solution": "Ensure daemon is running: `specforge daemon status`. If not, start it: `specforge daemon start`"
+    }
+  ]
+}

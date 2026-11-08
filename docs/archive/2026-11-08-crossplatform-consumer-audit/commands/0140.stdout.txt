@@ -1,0 +1,12 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/shell-readonly-boundary.test.ts (136 tests) 1669ms
+ ✓ tests/design-governance-contract.test.ts (5 tests) 20ms
+ ✓ tests/unit/retained-tool-library-boundary.test.ts (3 tests) 9ms
+
+ Test Files  3 passed (3)
+      Tests  144 passed (144)
+   Start at  12:04:36
+   Duration  4.72s (transform 888ms, setup 0ms, collect 1.65s, tests 1.70s, environment 1ms, prepare 511ms)
+

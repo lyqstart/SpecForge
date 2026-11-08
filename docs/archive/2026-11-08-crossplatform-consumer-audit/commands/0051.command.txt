@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/record-progress.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "record-classified-crossplatform-findings",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES",
+  "started_utc": "2026-11-08T02:46:51.076Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\record-progress.cjs",
+      "sha256": "7ad08a09c0bcdcc02913acd3be83096e507345446d6499a6a8e3b7992a845054",
+      "size": 6750,
+      "extension": ".cjs"
+    }
+  ]
+}

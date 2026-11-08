@@ -1,0 +1,25 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/healthcheck-request-timer.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\service-management",
+  "purpose": "red-health-request-timer-ownership",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T02:14:08.737Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\packages\\service-management\\tests\\unit\\healthcheck-request-timer.test.ts",
+      "sha256": "5599a524aa2d77c222161521d6796e8f42fb453cafc10c6d6d6a49e7780fd05b",
+      "size": 1157,
+      "extension": ".ts"
+    }
+  ]
+}

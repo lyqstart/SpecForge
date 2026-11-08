@@ -1,0 +1,76 @@
+$ node scripts/run-root-tests.mjs environmental
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 6 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/integration/service-management/linux-systemd-full-lifecycle.test.ts[2m > [22mLinux systemd full lifecycle[2m > [22menable: enables the service for auto-start
+[31m[1mError[22m: Command failed: systemctl --user enable specforge-daemon-test-2b865a19-98ff-47bc-8053-9d31c7a92808.service
+Failed to enable unit: Unit file specforge-daemon-test-2b865a19-98ff-47bc-8053-9d31c7a92808.service does not exist.
+[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/service-management/linux-systemd-full-lifecycle.test.ts[2m > [22mLinux systemd full lifecycle[2m > [22mstart: service enters running state
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m tests/integration/service-management/linux-systemd-full-lifecycle.test.ts:[2m183:28[22m[39m
+    [90m181|[39m     [35mconst[39m result [33m=[39m [35mawait[39m manager[33m.[39m[34mstart[39m(serviceName)[33m;[39m
+    [90m182|[39m
+    [90m183|[39m     [34mexpect[39m(result[33m.[39msuccess)[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m   |[39m                            [31m^[39m
+    [90m184|[39m     [34mexpect[39m(result[33m.[39mserviceName)[33m.[39m[34mtoBe[39m(serviceName)[33m;[39m
+    [90m185|[39m     [34mexpect[39m([[32m'running'[39m[33m,[39m [32m'already-running'[39m])[33m.[39m[34mtoContain[39m(result[33m.[39mstate)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/service-management/linux-systemd-full-lifecycle.test.ts[2m > [22mLinux systemd full lifecycle[2m > [22mstatus: reports running with PID
+[31m[1mAssertionError[22m: expected 'uninstalled' to be 'running' // Object.is equality[39m
+
+Expected: [32m"running"[39m
+Received: [31m"uninstalled"[39m
+
+[36m [2m❯[22m tests/integration/service-management/linux-systemd-full-lifecycle.test.ts:[2m196:26[22m[39m
+    [90m194|[39m
+    [90m195|[39m     [34mexpect[39m(status[33m.[39mname)[33m.[39m[34mtoBe[39m(serviceName)[33m;[39m
+    [90m196|[39m     [34mexpect[39m(status[33m.[39mstate)[33m.[39m[34mtoBe[39m([32m'running'[39m)[33m;[39m
+    [90m   |[39m                          [31m^[39m
+    [90m197|[39m     [34mexpect[39m(status[33m.[39mpid)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m198|[39m     [34mexpect[39m([35mtypeof[39m status[33m.[39mpid)[33m.[39m[34mtoBe[39m([32m'number'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/service-management/linux-systemd-full-lifecycle.test.ts[2m > [22mLinux systemd full lifecycle[2m > [22mrestart: service stays running after restart
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m tests/integration/service-management/linux-systemd-full-lifecycle.test.ts:[2m207:28[22m[39m
+    [90m205|[39m     [35mconst[39m result [33m=[39m [35mawait[39m manager[33m.[39m[34mrestart[39m(serviceName)[33m;[39m
+    [90m206|[39m
+    [90m207|[39m     [34mexpect[39m(result[33m.[39msuccess)[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m   |[39m                            [31m^[39m
+    [90m208|[39m     [34mexpect[39m(result[33m.[39mserviceName)[33m.[39m[34mtoBe[39m(serviceName)[33m;[39m
+    [90m209|[39m     [34mexpect[39m(result[33m.[39mstate)[33m.[39m[34mtoBe[39m([32m'running'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/service-management/linux-systemd-full-lifecycle.test.ts[2m > [22mLinux systemd full lifecycle[2m > [22mstop: service enters stopped state
+[31m[1mError[22m: Command failed: systemctl --user is-active specforge-daemon-test-2b865a19-98ff-47bc-8053-9d31c7a92808.service
+[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/service-management/linux-systemd-full-lifecycle.test.ts[2m > [22mLinux systemd full lifecycle[2m > [22mdisable: disables auto-start
+[31m[1mError[22m: Command failed: systemctl --user disable specforge-daemon-test-2b865a19-98ff-47bc-8053-9d31c7a92808.service
+Failed to disable unit: Unit file specforge-daemon-test-2b865a19-98ff-47bc-8053-9d31c7a92808.service does not exist.
+[39m
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯[22m[39m
+
+error: script "test:root:environmental" exited with code 1

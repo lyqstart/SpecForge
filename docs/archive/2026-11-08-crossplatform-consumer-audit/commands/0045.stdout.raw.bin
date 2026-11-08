@@ -1,0 +1,18 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/packages/scope-gate
+
+ ❯ tests/node-release-surface-producers.test.ts  (10 tests | 4 failed) 239ms
+   ❯ tests/node-release-surface-producers.test.ts > Node release surface producers > resolves a platform executable declaration against the actual win32 filename
+     → expected [ …(2) ] to deeply equal []
+   ❯ tests/node-release-surface-producers.test.ts > Node release surface producers > resolves a platform executable declaration against the actual linux filename
+     → expected [ Array(1) ] to deeply equal []
+   ❯ tests/node-release-surface-producers.test.ts > Node release surface producers > resolves a platform executable declaration against the actual darwin filename
+     → expected [ Array(1) ] to deeply equal []
+   ❯ tests/node-release-surface-producers.test.ts > Node release surface producers > rejects an invalid platform marker instead of silently selecting another artifact
+     → expected [ Array(1) ] to include 'clean_build:runtime:specforged:platfo…'
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 6 passed (10)
+   Start at  10:40:14
+   Duration  1.19s (transform 95ms, setup 0ms, collect 108ms, tests 239ms, environment 0ms, prepare 276ms)
+

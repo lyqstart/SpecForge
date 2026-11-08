@@ -1,0 +1,33 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/help-system.test.ts",
+    "tests/help-command.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\cli",
+  "purpose": "green-complete-service-help-consumers",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T02:44:45.142Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\packages\\cli\\tests\\help-system.test.ts",
+      "sha256": "3069ed34896eda1ca136e3aa265c472ff8d52e00f464f55f9de6b068fe89a428",
+      "size": 12104,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 4,
+      "path": "D:\\code\\SpecForge\\packages\\cli\\tests\\help-command.test.ts",
+      "sha256": "be06930ef3c65be88f50171c2ac0366efa3f4c7d7b68cb16e7d23f546823917d",
+      "size": 5806,
+      "extension": ".ts"
+    }
+  ]
+}

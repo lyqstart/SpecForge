@@ -1,0 +1,213 @@
+$ vitest run tests/unit/registered-current-workflow-boundary.test.ts tests/unit/sf-state-transition.test.ts tests/design-governance-live-closure.test.ts "--maxWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/sf-state-transition.test.ts > sf_state_transition - spec_migration verification recovery > allows only stale-provenance spec_migration recovery and rejects recovery while provenance is current
+AssertionError: expected 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW' to contain 'provenance is current'
+
+Expected: "provenance is current"
+Received: "UNSUPPORTED_CURRENT_RELEASE_WORKFLOW"
+
+ ❯ tests/unit/sf-state-transition.test.ts:534:33
+    532|     );
+    533|     expect(currentResult.success).toBe(false);
+    534|     expect(currentResult.error).toContain("provenance is current");
+       |                                 ^
+    535|     expect(smTransition).not.toHaveBeenCalled();
+    536| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯
+
+ FAIL  tests/unit/sf-state-transition.test.ts > sf_state_transition - Candidate Manifest materialization > materializes the complete Classification-driven manifest before advancing state
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/unit/sf-state-transition.test.ts:860:28
+    858|     );
+    859| 
+    860|     expect(result.success).toBe(true);
+       |                            ^
+    861|     expect(result.candidate_manifest_materialization.entry_count).toBe…
+    862|     expect(smTransition).toHaveBeenCalledTimes(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯
+
+ FAIL  tests/unit/sf-state-transition.test.ts > sf_state_transition - Candidate Manifest materialization > does not materialize or advance an unknown Candidate Manifest schema
+AssertionError: expected 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW' to contain 'CANDIDATE_MANIFEST_SCHEMA_BLOCKED: SC…'
+
+Expected: "CANDIDATE_MANIFEST_SCHEMA_BLOCKED: SCHEMA_VERSION_MISMATCH"
+Received: "UNSUPPORTED_CURRENT_RELEASE_WORKFLOW"
+
+ ❯ tests/unit/sf-state-transition.test.ts:918:26
+    916| 
+    917|     expect(result.success).toBe(false);
+    918|     expect(result.error).toContain("CANDIDATE_MANIFEST_SCHEMA_BLOCKED:…
+       |                          ^
+    919|     expect(smTransition).not.toHaveBeenCalled();
+    920|     expect(await fs.readFile(manifestPath, "utf-8")).toBe(unknown);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/12]⎯
+
+ FAIL  tests/unit/sf-state-transition.test.ts > sf_state_transition - Candidate Manifest materialization > materializes new-module requirements, trace and Project Contract before advancing
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/unit/sf-state-transition.test.ts:939:28
+    937|     );
+    938| 
+    939|     expect(result.success).toBe(true);
+       |                            ^
+    940|     expect(result.candidate_manifest_materialization.entry_count).toBe…
+    941|     const manifest = JSON.parse(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/12]⎯
+
+ FAIL  tests/unit/sf-state-transition.test.ts > sf_state_transition - Candidate Manifest materialization > does not advance when a required Candidate is missing
+AssertionError: expected 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW' to be 'CANDIDATE_MANIFEST_MATERIALIZATION_FA…' // Object.is equality
+
+Expected: "CANDIDATE_MANIFEST_MATERIALIZATION_FAILED"
+Received: "UNSUPPORTED_CURRENT_RELEASE_WORKFLOW"
+
+ ❯ tests/unit/sf-state-transition.test.ts:979:25
+    977| 
+    978|     expect(result.success).toBe(false);
+    979|     expect(result.code).toBe("CANDIDATE_MANIFEST_MATERIALIZATION_FAILE…
+       |                         ^
+    980|     expect(result.error).toContain("CANDIDATE_MANIFEST_REQUIRED_ENTRY_…
+    981|     expect(result.state_advanced).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/12]⎯
+
+ FAIL  tests/unit/sf-state-transition.test.ts > sf_state_transition - Candidate Manifest materialization > fails before changing the Candidate Manifest when current Project Spec binding is unavailable
+AssertionError: expected 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW' to contain 'PROJECT_SPEC_BINDING_UNAVAILABLE'
+
+Expected: "PROJECT_SPEC_BINDING_UNAVAILABLE"
+Received: "UNSUPPORTED_CURRENT_RELEASE_WORKFLOW"
+
+ ❯ tests/unit/sf-state-transition.test.ts:1009:26
+    1007| 
+    1008|     expect(result.success).toBe(false);
+    1009|     expect(result.error).toContain("PROJECT_SPEC_BINDING_UNAVAILABLE");
+       |                          ^
+    1010|     expect(smTransition).not.toHaveBeenCalled();
+    1011|     expect(await fs.readFile(manifestPath, "utf-8")).toBe(before);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/12]⎯
+
+ FAIL  tests/unit/sf-state-transition.test.ts > sf_state_transition - Candidate Manifest materialization > rejects a missing authoritative state before changing the Manifest
+AssertionError: expected 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW' to be 'CANDIDATE_MANIFEST_STATE_MISMATCH' // Object.is equality
+
+Expected: "CANDIDATE_MANIFEST_STATE_MISMATCH"
+Received: "UNSUPPORTED_CURRENT_RELEASE_WORKFLOW"
+
+ ❯ tests/unit/sf-state-transition.test.ts:1037:25
+    1035| 
+    1036|     expect(result.success).toBe(false);
+    1037|     expect(result.code).toBe("CANDIDATE_MANIFEST_STATE_MISMATCH");
+       |                         ^
+    1038|     expect(smTransition).not.toHaveBeenCalled();
+    1039|     expect(await fs.readFile(manifestPath, "utf-8")).toBe(before);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/12]⎯
+
+ FAIL  tests/unit/sf-state-transition.test.ts > sf_state_transition - Candidate Manifest materialization > rejects an authoritative-state mismatch before changing the Manifest
+AssertionError: expected 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW' to be 'CANDIDATE_MANIFEST_STATE_MISMATCH' // Object.is equality
+
+Expected: "CANDIDATE_MANIFEST_STATE_MISMATCH"
+Received: "UNSUPPORTED_CURRENT_RELEASE_WORKFLOW"
+
+ ❯ tests/unit/sf-state-transition.test.ts:1066:25
+    1064| 
+    1065|     expect(result.success).toBe(false);
+    1066|     expect(result.code).toBe("CANDIDATE_MANIFEST_STATE_MISMATCH");
+       |                         ^
+    1067|     expect(smTransition).not.toHaveBeenCalled();
+    1068|     expect(await fs.readFile(manifestPath, "utf-8")).toBe(before);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/12]⎯
+
+ FAIL  tests/unit/sf-state-transition.test.ts > sf_state_transition - Candidate Manifest materialization > rebinds a Project Spec repair plan to the final frozen Candidate Manifest
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/unit/sf-state-transition.test.ts:1090:28
+    1088|     );
+    1089| 
+    1090|     expect(result.success).toBe(true);
+       |                            ^
+    1091|     expect(
+    1092|       result.candidate_manifest_materialization.repair_plan_binding_up…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/12]⎯
+
+ FAIL  tests/unit/sf-state-transition.test.ts > sf_state_transition - Candidate Manifest materialization > fails closed before state advance when the repair plan was already stale before Candidate freeze
+AssertionError: expected 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW' to be 'CANDIDATE_MANIFEST_MATERIALIZATION_FA…' // Object.is equality
+
+Expected: "CANDIDATE_MANIFEST_MATERIALIZATION_FAILED"
+Received: "UNSUPPORTED_CURRENT_RELEASE_WORKFLOW"
+
+ ❯ tests/unit/sf-state-transition.test.ts:1137:25
+    1135| 
+    1136|     expect(result.success).toBe(false);
+    1137|     expect(result.code).toBe("CANDIDATE_MANIFEST_MATERIALIZATION_FAILE…
+       |                         ^
+    1138|     expect(result.error).toContain(
+    1139|       "PROJECT_SPEC_REPAIR_PLAN_PRE_FREEZE_BINDING_STALE",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/12]⎯
+
+ FAIL  tests/unit/sf-state-transition.test.ts > sf_state_transition - Candidate Manifest materialization > rolls back both Candidate Manifest and repair-plan binding when StateManager transition fails
+AssertionError: expected undefined to be true // Object.is equality
+
+- Expected: 
+true
+
++ Received: 
+undefined
+
+ ❯ tests/unit/sf-state-transition.test.ts:1174:51
+    1172| 
+    1173|     expect(result.success).toBe(false);
+    1174|     expect(result.candidate_manifest_rolled_back).toBe(true);
+       |                                                   ^
+    1175|     expect(result.repair_plan_rolled_back).toBe(true);
+    1176|     expect(smTransition).toHaveBeenCalledTimes(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/12]⎯
+
+ FAIL  tests/unit/sf-state-transition.test.ts > sf_state_transition - Candidate Manifest materialization > restores the previous Manifest when the authoritative transition fails
+AssertionError: expected undefined to be true // Object.is equality
+
+- Expected: 
+true
+
++ Received: 
+undefined
+
+ ❯ tests/unit/sf-state-transition.test.ts:1208:51
+    1206| 
+    1207|     expect(result.success).toBe(false);
+    1208|     expect(result.candidate_manifest_rolled_back).toBe(true);
+       |                                                   ^
+    1209|     expect(smTransition).toHaveBeenCalledTimes(1);
+    1210|     expect(await fs.readFile(manifestPath, "utf-8")).toBe(before);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/12]⎯
+
+error: script "test" exited with code 1

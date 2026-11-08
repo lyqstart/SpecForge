@@ -1,0 +1,188 @@
+{
+  "utc": "2026-11-08T02:37:16.916Z",
+  "target": "/tmp/specforge-crossplatform-20261108-a01",
+  "source": "/mnt/d/code/SpecForge",
+  "members": [
+    {
+      "path": ".github/workflows/code-quality.yml",
+      "sha256": "75baa2776bbbc543d6b8b443fba53ef30ae196a68a9a4de15d28610cae1dd5ca",
+      "bytes": 5474,
+      "before_sha256": "f20e5e004844b88f313d6adf0c36e60d13f9126fc838d437425174a33fc2482c"
+    },
+    {
+      "path": ".github/workflows/distribution-smoke.yml",
+      "sha256": "e3651940dcca7cbd1e26893542ac65acc00796fae48148fb2e81aa03239df1e1",
+      "bytes": 2056,
+      "before_sha256": "2449ab99c88ba1f48512008dbba5fb47c1ec3cec2ff407c82e7237cd38509d2e"
+    },
+    {
+      "path": "bun.lock",
+      "sha256": "b98974779d4bb84652c76d59feef4579106d2f83cdf6adc00039188831c3a78b",
+      "bytes": 366461,
+      "before_sha256": "d437f69e108ad20703d48f814f20985329621c1b2cd210f2365fd1b09769b495"
+    },
+    {
+      "path": "docs/product-specification/specforge-product-specification.md",
+      "sha256": "8fe594be130fd751e60eef1a9a916867ef5dd8b401dbe6881a1f5295a43333ed",
+      "bytes": 89704,
+      "before_sha256": "0cf3cef264e84b198746852b340cb8d6b2b88562472357a78fa7850c83816d31"
+    },
+    {
+      "path": "package.json",
+      "sha256": "7c58f73f2dd404dc25c77ed79f99b6b46fe392ac342178d329241158ee723fe9",
+      "bytes": 2611,
+      "before_sha256": "f6f2d1f5a4a4c1932e1eb4238aee90458f0ef5f3370fb6189d0bfd7e69bd6ba0"
+    },
+    {
+      "path": "packages/cli/package.json",
+      "sha256": "01a1f9000a2627514fd1e172c56abbf84afcc4b297d4eccfc2579f53620a8583",
+      "bytes": 1604,
+      "before_sha256": "13819361399cd243cbb08b7091509e3bcd322ee94607af2ed50e0b414b60a8b0"
+    },
+    {
+      "path": "packages/cli/src/commands/daemon-client.ts",
+      "sha256": "b07a2057c25b5b6c5624ddbfa3734ca58b2372b63ce9dc2e381b5acac628f7a0",
+      "bytes": 15636,
+      "before_sha256": "da7ff9ddb560f884e34eb328c1c91e0296b03f33b0ae1c67c083efd9a45f52ea"
+    },
+    {
+      "path": "packages/cli/src/help/HelpSystem.ts",
+      "sha256": "56833d6bc914c5dae6d619a6042b4208aa3eddc15ec79d072c3a2a54a79cc93e",
+      "bytes": 29042,
+      "before_sha256": "f6ecc053b90a3258347f99e016cf095f416c0d3e0fc2fb39fca67d2012e94836"
+    },
+    {
+      "path": "packages/cli/tests/help-system.test.ts",
+      "sha256": "79cee240e5985f6a9c30a3e5ab13237d0829204f16397b2f8f2f0f45981ddba4",
+      "bytes": 10406,
+      "before_sha256": "aee652bac8969ae0c026d0dd44c0c091bd522c561d39c262eeb6a2174c815a6b"
+    },
+    {
+      "path": "packages/configuration/package.json",
+      "sha256": "e667e0cb081b7c65924293dd0b2f1bfa25668577e0bb55f1650a60d7b77bb7c3",
+      "bytes": 1243,
+      "before_sha256": "37430e312528dcab305692994d39af3c035dfa8a107dc68a2669f8e831ca7036"
+    },
+    {
+      "path": "packages/daemon-core/package.json",
+      "sha256": "300d23ae2aa725b010f70a70032eff12e146b8cccbcac98ed885c2e2a10080c5",
+      "bytes": 1890,
+      "before_sha256": "d6cef585df5f43eef9df7534dd42923338bd7fef0ec084a3db9a701584971e4d"
+    },
+    {
+      "path": "packages/daemon-core/tests/design-governance-live-closure.test.ts",
+      "sha256": "c6ca199dc961b0731bbb09d4818ee2c31082ea22860b536a0572bbbf5a8d67a2",
+      "bytes": 25171,
+      "before_sha256": "616152db8fe289ba7bd12d8709949b17eb68b9ddfc3118adcb16f494c9a5c5cc"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/specforge-development-err125.test.ts",
+      "sha256": "21f1fddb2895e9c1133c96905857e82f1ed6a879f07f1e5017627ed90f466fcc",
+      "bytes": 4650,
+      "before_sha256": "845c7375c24604fc40927267ab8a8ad51e45093f3f9752bfdfa04395a2e78e00"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/verifier-guidance-execution-boundary.test.ts",
+      "sha256": "ad41cd02f0f2c2a7d5a7465cc53445ae4a949f209f8e98be69fa3058f3d63b57",
+      "bytes": 3575,
+      "before_sha256": "d1bfef13f399fe9ecb441bbc76a3e5da086666bec2fe103e3c1fa4f26263fbe0"
+    },
+    {
+      "path": "packages/host-profile/package.json",
+      "sha256": "da1a519483b42310d6ed7a787436cc912f72eb5381afc84dbe207a7eaad5b153",
+      "bytes": 583,
+      "before_sha256": "fa1e7da49aaba119da836add89a992b2eaa9c8215aa00155d4a4fc87155c3ba1"
+    },
+    {
+      "path": "packages/observability/package.json",
+      "sha256": "3185587858d2a01828735245012ae6c9c7dd4f70d0e205dd4c86ddb3370a6c64",
+      "bytes": 2007,
+      "before_sha256": "ed29b6ac0b87e60fdf308c9f886e0bd89c827a100c5875dca7a0b6145f2397ad"
+    },
+    {
+      "path": "packages/observability/tests/unit/project-structure.test.ts",
+      "sha256": "14c98b5d6d69eacbde623cbd21600d86cb045bdaece8acbf8af1fb8c4c762b4e",
+      "bytes": 2730,
+      "before_sha256": "4eb3f46ae5b0f76072c62490e564ec3ca3cd8c34e7259b53c53a356abac5e102"
+    },
+    {
+      "path": "packages/opencode-adapter/package.json",
+      "sha256": "6b5663d6ee14059b07e9124e7eb5fc25dcf8b5928f7218d6774e796cd71f7719",
+      "bytes": 1817,
+      "before_sha256": "73f9e116ebcde11c30fb5a81c88d01450587402ff0ad1a0702b7f702e5631241"
+    },
+    {
+      "path": "packages/permission-engine/package.json",
+      "sha256": "e403121b493ff966c71ccfda45f963e24a29e40ad2b66ad7c0a2b4a44a6c102a",
+      "bytes": 2040,
+      "before_sha256": "b22ddb6cf6fe2e7218b0618a106030276b072ed747b884375f2811b9cc4303b4"
+    },
+    {
+      "path": "packages/scope-gate/package.json",
+      "sha256": "b2991295199dcc3fa4d90e63f9580bbea7416ecd290d66ed8c66572285806c78",
+      "bytes": 2254,
+      "before_sha256": "2e64ff5956659e530d80f216a74d7de54bb8eaf3991362ce256406cdd1f5e4dc"
+    },
+    {
+      "path": "packages/scope-gate/tests/root-test-role-registry.test.ts",
+      "sha256": "09b7ad28917cd04940443dde48918928576ec5e8df260faf823eaa4d3901760a",
+      "bytes": 2040,
+      "before_sha256": "1cb495f5beaea11ddd33a65c161d6aa42cb5f1d64f22d9bb758cf21fcc1e20d1"
+    },
+    {
+      "path": "packages/service-management/package.json",
+      "sha256": "b1039a500160e680ce5ff14c5a7af8368f43869bb864e7b074c4f6f58073acc7",
+      "bytes": 2008,
+      "before_sha256": "fe6c25069a3e5e5060c867d8d038b499bdf760a29b8827056c93b387658b48e0"
+    },
+    {
+      "path": "packages/types/package.json",
+      "sha256": "a143993ddbcae8a1d95f205d25bc9b08191f3337c94a7dce1f5530a1e729ff4c",
+      "bytes": 2890,
+      "before_sha256": "f06bd9e03ba21bdf5dca0d0f50ccb0c71fbdf0ba8c635fa32a4ea38a34a06907"
+    },
+    {
+      "path": "packages/version-unification/package.json",
+      "sha256": "07475e61e7be10454db2b43e533063c1d48c8afbabdd41686288b02e3c081f7c",
+      "bytes": 607,
+      "before_sha256": "a5d9a71dbc0e80e04967ad9a040e01f9dcd048f965bad4f2bcbb8d3e6c4fe543"
+    },
+    {
+      "path": "packages/workflow-runtime/package.json",
+      "sha256": "809dfd182500c2ff995b8e8bdc16c1a68cf40106966a9a33238c2628a172e0b3",
+      "bytes": 2307,
+      "before_sha256": "d4076621e92c5e0157c15ae57149dda7d1c5e944e02fab1e69b922fca896b697"
+    },
+    {
+      "path": "tests/unit/current-product-version-contract.test.ts",
+      "sha256": "4b7d8475a7014d3aa77efa359970e2e58b4661b853a5ef04bd92f84ac6e7eff2",
+      "bytes": 4976,
+      "before_sha256": "eae996aee190fd643418da418bf02a8ebce7a630231ae26fff8959cf79deb31b"
+    },
+    {
+      "path": "packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts",
+      "sha256": "f33318ccee26e37d0dff57e404d09172a22ae695d78cbcfb77aff44be18f26b1",
+      "bytes": 1932,
+      "before_sha256": null
+    },
+    {
+      "path": "scripts/lib/prepare-current-release.ts",
+      "sha256": "d6557602eaa761cdaedc1543b9c2da7edb236ba4b400d141469db801cb29860b",
+      "bytes": 2062,
+      "before_sha256": null
+    },
+    {
+      "path": "scripts/prepare-current-release.ts",
+      "sha256": "03cf4843c9f79a82ca515258106fe584612efed4bbbcf2bf45ae2c0e579296f1",
+      "bytes": 474,
+      "before_sha256": null
+    },
+    {
+      "path": "scripts/verify-platform-release.ts",
+      "sha256": "eca998e6d094d9b3935f699687a05b76ddcc60e1a867617d97a2225d51bc36a1",
+      "bytes": 8610,
+      "before_sha256": null
+    }
+  ],
+  "qualification": "Tracked working-source delta plus explicitly inventoried new product/test scripts; historical evidence copied in separate update02."
+}

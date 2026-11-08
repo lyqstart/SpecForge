@@ -1,0 +1,20 @@
+{
+  "utc": "2026-11-08T04:37:18.242Z",
+  "target": "/tmp/specforge-crossplatform-20261108-a01",
+  "source": "/mnt/d/code/SpecForge",
+  "members": [
+    {
+      "path": "packages/scope-gate/tests/current-release-entry-interop.test.ts",
+      "sha256": "d459f170f6eafc116c2b15cc80f242d8184e5ad173b31a5db12d1afca27bfc5d",
+      "bytes": 1112,
+      "before_sha256": null
+    },
+    {
+      "path": "scripts/lib/prepare-current-release.ts",
+      "sha256": "cf1c207347df38c97ae19ee4a13cbf82e769e8f1b5bf3316b0ed423524d0a994",
+      "bytes": 2352,
+      "before_sha256": "88dbafae0473cc58e3e652b9cbcf7c2a9fea73a4addde653f634ae32cb46bff3"
+    }
+  ],
+  "qualification": "Exact current-source delta; previous update receipts required. Generated release assets are not source."
+}

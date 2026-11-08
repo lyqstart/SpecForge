@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/verify-source-commit-tree.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "independently-verify-final-source-commit-tree",
+  "expected_writes": "external-evidence-only",
+  "started_utc": "2026-11-08T05:44:39.087Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\verify-source-commit-tree.cjs",
+      "sha256": "ec0b0f715c942c18cca05ae52753057af837f536920b4d5da171a1481f931770",
+      "size": 2029,
+      "extension": ".cjs"
+    }
+  ]
+}

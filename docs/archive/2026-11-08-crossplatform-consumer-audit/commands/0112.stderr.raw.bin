@@ -1,0 +1,1 @@
+$ vitest run tests/unit/current-definition-schema-boundary.test.ts tests/unit/WorkflowDefinitionLoader.test.ts tests/engine/WorkflowLoader.test.ts tests/unit/current-release-builtin-workflow.test.ts

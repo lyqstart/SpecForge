@@ -1,0 +1,36 @@
+
+[1m[36m═══ 异步资源规范审查 ═══[0m
+
+扫描目录: D:\code\SpecForge\packages
+
+发现文件：源码 479 个，测试 472 个，vitest 配置 11 个
+
+[31m✗[0m [1m规则 C1[0m：Promise.race 败者 timer 必须在 finally 中 clearTimeout
+  发现 2 处问题
+
+  [31mERROR[0m packages\daemon-core\src\http\HTTPServer.ts:1387
+  [36m代码[0m：await Promise.race([processing, overallTimeout]);
+  [36m问题[0m：Promise.race 的作用域内存在 timer，未识别到覆盖所有 timer 的外层 finally 清理；需要核对实际所有权
+  [32m建议[0m：在 Promise.race 外层加 try/finally，在 finally 中 clearTimeout 所有 timer
+
+  [31mERROR[0m packages\service-management\src\plugin\reconnecting-daemon-client.ts:288
+  [36m代码[0m：Promise.race([backoffPromise, timeoutPromise])
+  [36m问题[0m：Promise.race 的作用域内存在 timer，未识别到覆盖所有 timer 的外层 finally 清理；需要核对实际所有权
+  [32m建议[0m：在 Promise.race 外层加 try/finally，在 finally 中 clearTimeout 所有 timer
+
+[33m⚠[0m [1m规则 C2[0m：while 循环不能用 setTimeout 轮询，必须有终止条件
+  发现 1 处问题
+
+  [33mWARNING[0m packages\daemon-core\src\verification\invocation-lease.ts:41
+  [36m代码[0m：while(!this.closed&&!this.signal.aborted){
+  [36m问题[0m：while 循环有终止条件，但缺少超时兜底（防止信号永远不来）
+  [32m建议[0m：在 while 内加 Promise.race([waitForNotify(), timeoutPromise]) 作为兜底
+
+[1m═══ 审查结果汇总 ═══[0m
+总计：3 个问题
+  [31m错误[0m：2 个（必须修复）
+  [33m警告[0m：1 个（建议修复）
+
+完整经验文档：docs/engineering-lessons/universal/async-resource-lifecycle.md
+规范文档：docs/engineering-lessons/universal/async-resource-lifecycle.md
+

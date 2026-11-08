@@ -1,0 +1,15 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/current-observability-owner.test.ts (4 tests | 1 failed) 44ms
+   × current diagnostic observability persistent owner > redacts credential metadata in both actual diagnostic recorders 23ms
+     → expected '{"schema_version":"1.4","source":"dae…' not to contain 'SYNTHETIC_OBSERVATION_CREDENTIAL'
+   ✓ current diagnostic observability persistent owner > does not publish inactive duplicate runtime implementations 1ms
+   ✓ current diagnostic observability persistent owner > gives userlevel and daemon recorders disjoint physical roots 12ms
+   ✓ current diagnostic observability persistent owner > keeps the userlevel category stream separate from its index stream 7ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  11:30:52
+   Duration  966ms (transform 169ms, setup 0ms, collect 236ms, tests 44ms, environment 0ms, prepare 248ms)
+

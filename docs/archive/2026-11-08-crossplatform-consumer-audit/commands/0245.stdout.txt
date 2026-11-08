@@ -1,0 +1,59 @@
+{
+  "fixture": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-knowledge-schema-probe-AqllqA",
+  "results": [
+    {
+      "owner": "source",
+      "operation": "read",
+      "version": "9.0",
+      "rejected": true
+    },
+    {
+      "owner": "source",
+      "operation": "write",
+      "version": "9.0",
+      "rejected": true,
+      "preserved": true
+    },
+    {
+      "owner": "source",
+      "operation": "read",
+      "version": "<missing>",
+      "rejected": true
+    },
+    {
+      "owner": "source",
+      "operation": "write",
+      "version": "<missing>",
+      "rejected": true,
+      "preserved": true
+    },
+    {
+      "owner": "installed",
+      "operation": "read",
+      "version": "9.0",
+      "rejected": true
+    },
+    {
+      "owner": "installed",
+      "operation": "write",
+      "version": "9.0",
+      "rejected": true,
+      "preserved": true
+    },
+    {
+      "owner": "installed",
+      "operation": "read",
+      "version": "<missing>",
+      "rejected": true
+    },
+    {
+      "owner": "installed",
+      "operation": "write",
+      "version": "<missing>",
+      "rejected": true,
+      "preserved": true
+    }
+  ],
+  "all_rejected": true,
+  "original_business_or_global_store_touched": false
+}

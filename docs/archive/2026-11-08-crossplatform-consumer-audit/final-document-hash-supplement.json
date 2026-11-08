@@ -1,0 +1,17 @@
+{
+  "utc": "2026-11-08T06:56:24.697Z",
+  "prior_inventory": "document-review-final-inputs-v5.json",
+  "reason": "Final execution/ledger closure after accepted source freeze; no runtime, authority capability, role or Skill changes.",
+  "files": [
+    {
+      "file": "docs/project-status.md",
+      "sha256": "fac81c77cc02eb7b7749f14843be66d718baab65f0b0ceede4767ff844b0d6fb",
+      "disposition": "Unique execution status updated to completed acceptance; not product authority."
+    },
+    {
+      "file": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "sha256": "20dda1f246a86f9a75f1ea0c885c86c73d28fab8368922ea3ee1042f80af7843",
+      "disposition": "Historical errors appended; earlier raw evidence retained; not product authority."
+    }
+  ]
+}

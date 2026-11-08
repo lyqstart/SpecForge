@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/export-linux-source.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-linux-source-export",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T02:08:09.544Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\export-linux-source.cjs",
+      "sha256": "dae4a6b7f260ede670ab73618c1048ec9cc8e66bfb090da7ef8600e920681e5f",
+      "size": 1771,
+      "extension": ".cjs"
+    }
+  ]
+}

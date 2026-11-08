@@ -1,0 +1,11 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/sf-state-transition.test.ts (33 tests) 750ms
+ ✓ tests/unit/registration-no-initialization.test.ts (2 tests) 71ms
+
+ Test Files  2 passed (2)
+      Tests  35 passed (35)
+   Start at  12:14:19
+   Duration  4.39s (transform 1.31s, setup 0ms, collect 2.78s, tests 821ms, environment 1ms, prepare 300ms)
+

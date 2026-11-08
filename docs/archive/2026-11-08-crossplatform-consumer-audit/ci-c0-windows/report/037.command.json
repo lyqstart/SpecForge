@@ -1,0 +1,14 @@
+{
+  "number": "037",
+  "name": "official-upgrade",
+  "executable": "C:\\Users\\runneradmin\\.bun\\bin\\bun.exe",
+  "args": [
+    "scripts/sf-installer.ts",
+    "upgrade"
+  ],
+  "started_utc": "2026-11-08T05:56:36.670Z",
+  "finished_utc": "2026-11-08T05:56:37.333Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

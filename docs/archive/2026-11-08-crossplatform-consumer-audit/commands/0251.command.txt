@@ -1,0 +1,18 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "-c",
+    "core.longpaths=true",
+    "commit",
+    "-m",
+    "fix: align current consumers and cross-platform release acceptance"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "commit-reviewed-current-consumer-repairs",
+  "expected_writes": "repository-git-commit-and-evidence",
+  "started_utc": "2026-11-08T05:42:52.310Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": []
+}

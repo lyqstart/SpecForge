@@ -1,0 +1,83 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/work-item-artifact-owner.test.ts",
+    "tests/unit/registered-current-workflow-boundary.test.ts",
+    "tests/unit/sf-state-transition.test.ts",
+    "tests/unit/semantic-closure-core.test.ts",
+    "tests/unit/sf-semantic-closure-run.test.ts",
+    "tests/unit/semantic-closure-builder.test.ts",
+    "tests/unit/semantic-closure-provenance.test.ts",
+    "tests/design-governance-orchestrator-closure.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "current-workflow-schema-and-metadata-owner-regressions",
+  "expected_writes": "owned-synthetic-tests-and-evidence",
+  "started_utc": "2026-11-08T05:18:47.384Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\work-item-artifact-owner.test.ts",
+      "sha256": "5fd62a81808778528287f4189b4f759d357bba26099b115eacae1a967131e148",
+      "size": 1532,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 4,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\registered-current-workflow-boundary.test.ts",
+      "sha256": "b195415d54f59ca4567165b32cb9242b8240952fc2872caa3b658460b90fa273",
+      "size": 3408,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 5,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\sf-state-transition.test.ts",
+      "sha256": "b4a43a6da6880b07a514845b093cbf6b9ba79038ac958744edb4c22f340f4d3c",
+      "size": 43028,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 6,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\semantic-closure-core.test.ts",
+      "sha256": "968477e75821a5e5b01ed18cd74e3903d72d5287d820fa23d398633979453341",
+      "size": 4983,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 7,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\sf-semantic-closure-run.test.ts",
+      "sha256": "54ae68f322cd497941bd801c18ee344368721cbd3d1f0a3a61788963bfd1c02b",
+      "size": 15788,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 8,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\semantic-closure-builder.test.ts",
+      "sha256": "d6e505d2d5892625123dba45b2ed55279347308f4cb61710b4baa870b6409c83",
+      "size": 3665,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 9,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\semantic-closure-provenance.test.ts",
+      "sha256": "3580053ba7b78c617b8330f34a13381dd7e920411f1f26e43849c6daf875527c",
+      "size": 3948,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 10,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\design-governance-orchestrator-closure.test.ts",
+      "sha256": "3b862df3397fb967cf5f3b7a5eab7420f928b509e0caf6bd35f917b13d818740",
+      "size": 47560,
+      "extension": ".ts"
+    }
+  ]
+}

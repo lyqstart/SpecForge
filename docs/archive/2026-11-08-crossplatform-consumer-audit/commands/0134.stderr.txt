@@ -1,0 +1,2 @@
+$ vitest run tests/unit/daemon-startup-readme-contract.test.ts "src/tools/lib/architecture-governance-v7-regression.test.ts" "--maxWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m

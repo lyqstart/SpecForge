@@ -1,0 +1,55 @@
+$ vitest run tests/node-release-surface-producers.test.ts
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/node-release-surface-producers.test.ts > Node release surface producers > resolves a platform executable declaration against the actual win32 filename
+AssertionError: expected [ …(2) ] to deeply equal []
+
+- Expected
++ Received
+
+- Array []
++ Array [
++   "clean_build:packages_directory_missing",
++   "clean_build:runtime:specforged:missing:release/bin/specforged",
++ ]
+
+ ❯ tests/node-release-surface-producers.test.ts:43:27
+     41|     await write(root,runtime,'synthetic physical runtime');
+     42|     const result=await produceCleanBuildSurfaceReport({candidateRoot:r…
+     43|     expect(result.errors).toEqual([]);expect(result.report.items.find(…
+       |                           ^
+     44|   });
+     45|   it('rejects an invalid platform marker instead of silently selecting…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/node-release-surface-producers.test.ts > Node release surface producers > resolves a platform executable declaration against the actual linux filename
+ FAIL  tests/node-release-surface-producers.test.ts > Node release surface producers > resolves a platform executable declaration against the actual darwin filename
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- Array []
++ Array [
++   "clean_build:packages_directory_missing",
++ ]
+
+ ❯ tests/node-release-surface-producers.test.ts:43:27
+     41|     await write(root,runtime,'synthetic physical runtime');
+     42|     const result=await produceCleanBuildSurfaceReport({candidateRoot:r…
+     43|     expect(result.errors).toEqual([]);expect(result.report.items.find(…
+       |                           ^
+     44|   });
+     45|   it('rejects an invalid platform marker instead of silently selecting…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/node-release-surface-producers.test.ts > Node release surface producers > rejects an invalid platform marker instead of silently selecting another artifact
+AssertionError: expected [ Array(1) ] to include 'clean_build:runtime:specforged:platfo…'
+ ❯ tests/node-release-surface-producers.test.ts:48:27
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+error: script "test" exited with code 1

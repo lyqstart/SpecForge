@@ -1,0 +1,72 @@
+[
+  {
+    "path": "package.json",
+    "before_sha256": "eb9e74ff893cc6aa205fb661ed4fd5f78918589eb27b7cde48737424399103c9",
+    "after_sha256": "9b327eb5ae2e3b57b3c82158405747fa4111b829cc71596cc9203897ed56230a"
+  },
+  {
+    "path": "packages/types/package.json",
+    "before_sha256": "a143993ddbcae8a1d95f205d25bc9b08191f3337c94a7dce1f5530a1e729ff4c",
+    "after_sha256": "b259e41e9fb4f6f1784d00f50d5865ef215bcb50d7b507e1166d48a27d91d33a"
+  },
+  {
+    "path": "packages/version-unification/package.json",
+    "before_sha256": "07475e61e7be10454db2b43e533063c1d48c8afbabdd41686288b02e3c081f7c",
+    "after_sha256": "7730c98a172e7bc28de4bf269764aa76bd7bbec3f9a4debc6f799587d2ede2a8"
+  },
+  {
+    "path": "packages/configuration/package.json",
+    "before_sha256": "e667e0cb081b7c65924293dd0b2f1bfa25668577e0bb55f1650a60d7b77bb7c3",
+    "after_sha256": "51fd875d124e7e5a445d5ce7aa70a797aa488da35c1ef82fdb2054525df916b6"
+  },
+  {
+    "path": "packages/service-management/package.json",
+    "before_sha256": "b1039a500160e680ce5ff14c5a7af8368f43869bb864e7b074c4f6f58073acc7",
+    "after_sha256": "9fc84bee4b85cfb36415cf5b6899a7e7c49f305804dbe9d5651fcb11ef1b7cec"
+  },
+  {
+    "path": "packages/host-profile/package.json",
+    "before_sha256": "da1a519483b42310d6ed7a787436cc912f72eb5381afc84dbe207a7eaad5b153",
+    "after_sha256": "b7ec554bbb94606e0d2976a012e1b6f7416050adce1bca3c8ab23a39a634f1df"
+  },
+  {
+    "path": "packages/observability/package.json",
+    "before_sha256": "3185587858d2a01828735245012ae6c9c7dd4f70d0e205dd4c86ddb3370a6c64",
+    "after_sha256": "3cfed7980d6860beef6bf44775fcdb0791f83a0db71283da463ff773a2d20307"
+  },
+  {
+    "path": "packages/permission-engine/package.json",
+    "before_sha256": "e403121b493ff966c71ccfda45f963e24a29e40ad2b66ad7c0a2b4a44a6c102a",
+    "after_sha256": "55dc68819d305f110b49362f5e86c6e598ebc6f6625432ad113802554abdbe62"
+  },
+  {
+    "path": "packages/opencode-adapter/package.json",
+    "before_sha256": "6b5663d6ee14059b07e9124e7eb5fc25dcf8b5928f7218d6774e796cd71f7719",
+    "after_sha256": "6ebeaf5ff0675b12095682498418359ddf09307471c23c40c26714f6101f6a81"
+  },
+  {
+    "path": "packages/scope-gate/package.json",
+    "before_sha256": "b2991295199dcc3fa4d90e63f9580bbea7416ecd290d66ed8c66572285806c78",
+    "after_sha256": "b56c0ad96b3d6f1971be012e9af79a0404baa11265fc7a70db06f0646a6fe2df"
+  },
+  {
+    "path": "packages/workflow-runtime/package.json",
+    "before_sha256": "809dfd182500c2ff995b8e8bdc16c1a68cf40106966a9a33238c2628a172e0b3",
+    "after_sha256": "b00351c969671a08e1224ce51e8db350e8b14f698cde1f34675af942dff7d43c"
+  },
+  {
+    "path": "packages/cli/package.json",
+    "before_sha256": "01a1f9000a2627514fd1e172c56abbf84afcc4b297d4eccfc2579f53620a8583",
+    "after_sha256": "3317195ce02a862975a9ad31e230d6f0416607b98e2df548bbb47aab967d886a"
+  },
+  {
+    "path": "packages/daemon-core/package.json",
+    "before_sha256": "300d23ae2aa725b010f70a70032eff12e146b8cccbcac98ed885c2e2a10080c5",
+    "after_sha256": "67fce7c5ee61822feda4d23381a9aad6874780f8504c4ada934f2f6d49504460"
+  },
+  {
+    "path": "packages/permission-engine/README.md",
+    "before_sha256": "c9c264ddaf6db3229a8198e76c67cdd0d8e4a2aaddef8961c3ebacf26360eac1",
+    "after_sha256": "4871c1cbd0c6ec5b7804c31210b1866aca3d1a489919fd46f2007a56be0b279a"
+  }
+]

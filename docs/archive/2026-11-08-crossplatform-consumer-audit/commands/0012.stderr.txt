@@ -1,0 +1,338 @@
+$ vitest run tests/current-crossplatform-ci-contract.test.ts
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/current-crossplatform-ci-contract.test.ts > current cross-platform CI deployment contract > uses the official current release and isolated userlevel installer instead of retired tarball deployment
+AssertionError: expected '# Distribution Smoke Test Workflow\n#…' not to contain 'scripts/smoke-runner.ts'
+
+- Expected
++ Received
+
+- scripts/smoke-runner.ts
++ # Distribution Smoke Test Workflow
++ #
++ # 三平台烟雾测试（REQ-5.2）
++ # - 在 Windows/macOS/Ubuntu 上运行完整的安装-初始化-基本命令验证
++ # - 任一矩阵作业非 0 即整 workflow 失败
++ #
++ # Requirements: 5.2, 5.6
++
++ name: Distribution Smoke Tests
++
++ on:
++   push:
++     branches:
++       - main
++       - release/**
++   pull_request:
++     branches:
++       - main
++       - release/**
++   workflow_dispatch:
++     inputs:
++       tarball:
++         description: 'Optional path to local tarball'
++         required: false
++         type: string
++
++ jobs:
++   smoke:
++     name: Smoke Test (${{ matrix.os }})
++     runs-on: ${{ matrix.os }}
++     timeout-minutes: 15
++     
++     strategy:
++       fail-fast: false
++       matrix:
++         os: [windows-latest, macos-latest, ubuntu-latest]
++     
++     steps:
++       - name: Checkout repository
++         uses: actions/checkout@v4
++       
++       - name: Setup Bun
++         uses: oven-sh/setup-bun@v1
++         with:
++           bun-version: latest
++       
++       - name: Pack CLI package
++         run: |
++           cd packages/cli
++           bun run build
++           cd ../..
++           bun pack packages/cli
++         shell: bash
++       
++       - name: Find tarball
++         id: find-tarball
++         run: |
++           # Find the most recent .tgz file in the packages/cli directory
++           TARBALL=$(find packages/cli -name "*.tgz" -type f | head -n 1)
++           if [ -z "$TARBALL" ]; then
++             echo "No tarball found"
++             exit 1
++           fi
++           echo "tarball=$TARBALL" >> $GITHUB_OUTPUT
++         shell: bash
++       
++       - name: Run smoke test
++         env:
++           TARBALL: ${{ matrix.os == 'windows-latest' && 'packages\cli\*.tgz' || 'packages/cli/*.tgz' }}
++           TEMP_HOME: ${{ runner.temp }}/specforge-smoke
++           SMOKE_REPORT_PATH: ${{ github.workspace }}/smoke-report.json
++         run: |
++           # Find the actual tarball path
++           if [ -n "${{ github.event.inputs.tarball }}" ]; then
++             TARBALL_PATH="${{ github.event.inputs.tarball }}"
++           else
++             # Use glob pattern to find tarball
++             if [ "$RUNNER_OS" == "Windows" ]; then
++               TARBALL_PATH=$(Get-ChildItem packages/cli/*.tgz | Select-Object -First 1 -ExpandProperty FullName)
++             else
++               TARBALL_PATH=$(ls packages/cli/*.tgz | head -n 1)
++             fi
++           fi
++           
++           echo "Using tarball: $TARBALL_PATH"
++           
++           # Create temp home directory
++           if [ "$RUNNER_OS" == "Windows" ]; then
++             New-Item -ItemType Directory -Force -Path ${{ runner.temp }}/specforge-smoke
++           else
++             mkdir -p ${{ runner.temp }}/specforge-smoke
++           fi
++           
++           # Run smoke test
++           bun run scripts/smoke-runner.ts \
++             --tarball="$TARBALL_PATH" \
++             --temp-home=${{ runner.temp }}/specforge-smoke \
++             --report-path=${{ github.workspace }}/smoke-report.json
++         shell: bash
++       
++       - name: Upload smoke report
++         if: always()
++         uses: actions/upload-artifact@v4
++         with:
++           name: smoke-report-${{ matrix.os }}
++           path: smoke-report.json
++           retention-days: 30
++       
++       - name: Check smoke test result
++         run: |
++           if [ -f smoke-report.json ]; then
++             STATUS=$(cat smoke-report.json | jq -r '.overallStatus')
++             echo "Smoke test status: $STATUS"
++             if [ "$STATUS" != "passed" ]; then
++               echo "Smoke test failed with status: $STATUS"
++               exit 1
++             fi
++           else
++             echo "Smoke report not found"
++             exit 1
++           fi
++         shell: bash
++
++   # Aggregate job to ensure all matrix jobs succeed
++   aggregate:
++     name: Aggregate Results
++     needs: smoke
++     if: always()
++     runs-on: ubuntu-latest
++     steps:
++       - name: Check all jobs succeeded
++         run: |
++           # Check if any smoke job failed
++           if echo '${{ toJson(needs.smoke.result) }}' | grep -q '"failure"'; then
++             echo "One or more smoke tests failed"
++             exit 1
++           fi
++           if echo '${{ toJson(needs.smoke.result) }}' | grep -q '"cancelled"'; then
++             echo "One or more smoke tests were cancelled"
++             exit 1
++           fi
++           echo "All smoke tests passed!"
+
+ ❯ tests/current-crossplatform-ci-contract.test.ts:6:26
+      4|   it('uses the official current release and isolated userlevel install…
+      5|     const workflow=read('.github/workflows/distribution-smoke.yml');
+      6|     expect(workflow).not.toContain('scripts/smoke-runner.ts');
+       |                          ^
+      7|     expect(workflow).not.toContain('bun pack');
+      8|     expect(workflow).toContain('scripts/verify-platform-release.ts');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/current-crossplatform-ci-contract.test.ts > current cross-platform CI deployment contract > builds current workspace packages before their tests and never restores disabled packages through a wildcard
+AssertionError: expected 'name: Code Quality\n\n# 触发时机：向 main 推…' not to contain 'for pkg in packages/*/'
+
+- Expected
++ Received
+
+- for pkg in packages/*/
++ name: Code Quality
++
++ # 触发时机：向 main 推送，或提交 PR 到 main
++ on:
++   push:
++     branches: [main]
++   pull_request:
++     branches: [main]
++
++ jobs:
++   # ─── Windows 源码行尾治理 ────────────────────────────────────────────────────
++   windows-line-ending-governance:
++     name: Windows 源码 LF 检出治理
++     runs-on: windows-latest
++     timeout-minutes: 5
++     steps:
++       - name: 检出代码
++         uses: actions/checkout@v4
++
++       - name: 验证源码在索引和 Windows 工作树中均为 LF
++         shell: pwsh
++         run: |
++           $patterns = @(
++             '*.ts',
++             '*.tsx',
++             '*.mts',
++             '*.cts',
++             '*.js',
++             '*.jsx',
++             '*.mjs',
++             '*.cjs'
++           )
++
++           $eolState = git ls-files --eol -- $patterns
++           $violations = @(
++             $eolState | Where-Object {
++               $_ -notmatch '^i/lf\s+w/lf\s+attr/text eol=lf\s+'
++             }
++           )
++
++           if ($violations.Count -gt 0) {
++             Write-Error '以下源码文件未同时满足 index=LF、Windows worktree=LF、attribute=eol=lf：'
++             $violations | ForEach-Object { Write-Error $_ }
++             exit 1
++           }
++
++           Write-Host "Validated $($eolState.Count) source files: index=LF, worktree=LF, attribute=eol=lf."
++
++   # ─── 异步资源规范审查 ────────────────────────────────────────────────────────
++   async-resource-audit:
++     name: 异步资源规范审查
++     runs-on: ubuntu-latest
++     timeout-minutes: 5
++     steps:
++       - name: 检出代码
++         uses: actions/checkout@v4
++       - name: 安装 Bun
++         uses: oven-sh/setup-bun@v2
++         with:
++           bun-version: latest
++       - name: 安装依赖
++         run: bun install --frozen-lockfile
++       - name: 运行异步资源规范审查
++         run: bun run scripts/audit-async-resources.ts
++         # 脚本发现 error 级别问题时返回 exit code 1，GitHub Actions 自动标记失败
++
++   # ─── 工作流文档同步检查 ──────────────────────────────────────────────────────
++   workflow-docs-sync:
++     name: 工作流文档同步检查
++     runs-on: ubuntu-latest
++     timeout-minutes: 5
++     steps:
++       - name: 检出代码
++         uses: actions/checkout@v4
++       - name: 安装 Bun
++         uses: oven-sh/setup-bun@v2
++         with:
++           bun-version: latest
++       - name: 安装依赖
++         run: bun install --frozen-lockfile
++       - name: Verify workflow docs in sync with JSON
++         run: bun run check-workflows
++
++   # ─── 单元测试 ────────────────────────────────────────────────────────────────
++   test:
++     name: 单元测试
++     runs-on: ubuntu-latest
++     timeout-minutes: 15
++     steps:
++       - name: 检出代码
++         uses: actions/checkout@v4
++       - name: 安装 Bun
++         uses: oven-sh/setup-bun@v2
++         with:
++           bun-version: latest
++       - name: 安装依赖
++         run: bun install --frozen-lockfile
++       - name: 运行测试（各模块）
++         run: |
++           for pkg in packages/*/; do
++             if [ -f "$pkg/package.json" ] && grep -q '"test"' "$pkg/package.json"; then
++               echo "=== 测试 $pkg ==="
++               cd "$pkg"
++               bun run test 2>&1 || exit 1
++               cd ../..
++             fi
++           done
++
++   # ─── 硬编码路径 Lint ────────────────────────────────────────────────────────
++   lint-hardcoded-paths:
++     name: 硬编码路径 Lint
++     runs-on: ubuntu-latest
++     timeout-minutes: 5
++     steps:
++       - name: 检出代码
++         uses: actions/checkout@v4
++       - name: 安装 Bun
++         uses: oven-sh/setup-bun@v2
++         with:
++           bun-version: latest
++       - name: 安装依赖
++         run: bun install --frozen-lockfile
++       - name: 运行硬编码路径 Lint
++         run: bun run scripts/lint/check-hardcoded-paths.ts
++
++   # ─── 目录布局一致性检查 ──────────────────────────────────────────────────────
++   render-layout-consistency:
++     name: 目录布局一致性检查
++     runs-on: ubuntu-latest
++     timeout-minutes: 5
++     steps:
++       - name: 检出代码
++         uses: actions/checkout@v4
++       - name: 安装 Bun
++         uses: oven-sh/setup-bun@v2
++         with:
++           bun-version: latest
++       - name: 安装依赖
++         run: bun install --frozen-lockfile
++       - name: 生成目录布局
++         run: bun run scripts/render-layout.ts
++       - name: 检查生成物与提交一致
++         run: git diff --exit-code -- README.md AGENTS.md docs/conventions/directory-layout.md
++
+
+ ❯ tests/current-crossplatform-ci-contract.test.ts:14:25
+     12|   it('builds current workspace packages before their tests and never r…
+     13|     const quality=read('.github/workflows/code-quality.yml');
+     14|     expect(quality).not.toContain('for pkg in packages/*/');
+       |                         ^
+     15|     expect(quality).toContain('scripts/build-workspace.ts');
+     16|     expect(quality).toContain('scripts/test-workspace.ts');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/current-crossplatform-ci-contract.test.ts > current cross-platform CI deployment contract > configures Windows long paths before checkout and keeps historical evidence outside source EOL checks
+AssertionError: .github/workflows/distribution-smoke.yml: expected -1 to be greater than or equal to 0
+ ❯ tests/current-crossplatform-ci-contract.test.ts:22:30
+     20|     for(const file of ['.github/workflows/distribution-smoke.yml','.gi…
+     21|       const t=read(file),configure=t.indexOf('core.longpaths'),checkou…
+     22|       expect(configure,file).toBeGreaterThanOrEqual(0);expect(configur…
+       |                              ^
+     23|     }
+     24|     expect(read('.github/workflows/code-quality.yml')).toContain(':(ex…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+error: script "test" exited with code 1

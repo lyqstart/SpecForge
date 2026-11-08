@@ -1,0 +1,141 @@
+{
+  "utc": "2026-11-08T04:29:46.580Z",
+  "observations": [
+    {
+      "path": "docs/project-status.md",
+      "before_sha256": "4fb83690bbd5936a9b3bef8c4de56305b71a5a22bc963ea00d01424288199d76",
+      "after_sha256": "18a3ae1c59fc96fd8f7eedba1764fd289f3eb17ee7d065a1b831534e7ad5cee6"
+    },
+    {
+      "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "before_sha256": "f8c4e991f8afc30ea1adc5ec8a02d400bd4d3827a69fdfa582c5bf802dd5e3e6",
+      "after_sha256": "d2d01d8c8f3ca3329191fbb248388f28a679997c86ef526f4ad5503184b41dd0"
+    },
+    {
+      "path": "docs/user/install.md",
+      "before_sha256": "73b5a70cb4c6c30bcf63621cfaa9e70eab5e3f5d67f9e6e49e5789872ff0fc3f",
+      "after_sha256": "28399b6686b976497853dd1124e4da5f8afceb95d619a3fef657edc9ddedf72f"
+    },
+    {
+      "path": "docs/user/recovery-and-rollback.md",
+      "before_sha256": "343cf1d86641ac24505e542d0d392e4365fb09f791ca8fd176d8588ae49beeef",
+      "after_sha256": "9764fd87946a9e6ff7f7e9ea4380c353403fbc2404c1d7ed782c75b2874f5456"
+    },
+    {
+      "path": "packages/cli/src/http/DaemonClient.ts",
+      "before_sha256": "e70d0b49b83a8b60f03156332fa41eb7000493ad9f7e716286c3cc3141a344dc",
+      "after_sha256": "16bf495b7e3bc89d7b14fe527616f677dd26959c103e76457f4986675e8bbc40"
+    },
+    {
+      "path": "packages/daemon-core/src/http/HTTPServer.ts",
+      "before_sha256": "a251e207a6cfa2e34b0a997e7cf7b3f42d0f855887de5e33cc8d677208faee6e",
+      "after_sha256": "cf48b1f95609bcad82665166d6c06bf8eae6233cc073cfeafc4df86c29c62232"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-contract-register.ts",
+      "before_sha256": "d325375f6255bbe0cddda83200bfda247258ece4561f88ffa1e1abb3455880fd",
+      "after_sha256": "dd76948316894c2ec3eae02e99f2133398982a5b63f5f2ab95b361435053ffe3"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-semantic-closure-run.ts",
+      "before_sha256": "f0efde45f2166c6dd78df4157457a353bfaa9ff0a4d311157a5fa3c41ff42df0",
+      "after_sha256": "930fb18904db02354dfacd0b6bac32094dc7ca82e7c51d5e9b161f3fc611ed84"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-state-transition.ts",
+      "before_sha256": "335119f32c56de678a02eaaae551de78bf9cfb3d37904b971a9439fc4fcde9d6",
+      "after_sha256": "78a47da6ec9052707a0f70096714719e123800470aa78f7c8ff1e11ce64e6921"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/contract-authoring.ts",
+      "before_sha256": "344971a89ea3809550d0873bb1130931c90ce1608a88885e49f6407435445c47",
+      "after_sha256": "cccfba109a85e48aa377b83a6cd7a7eafde896f9b12af7d71d2643853c076f12"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/native-write-boundary.ts",
+      "before_sha256": "9f8c2c329f1847b246cada1653f1e87a6a475369e521cf5218887a5e45866ced",
+      "after_sha256": "f41723e20619a6561eb8c34f1bc7e3a8c3cb1849579f371e6a3048c9be3dbe1b"
+    },
+    {
+      "path": "packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts",
+      "before_sha256": "d38918c8292349dfaa26b7708cad954efd6d02e0f21161bdad5c69f9c822a652",
+      "after_sha256": "5d5c914298fd59f641b2330dce219fca2f2e446b23ec50119dc6115642b08ff1"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/err155-159-contract-governance-recovery.test.ts",
+      "before_sha256": "0a531137b9b86b82ece6afc2852e5789219fab4c34be0879d5b4a8274c4f0e2f",
+      "after_sha256": "01d14c0b921a7b626acafaaf1ef5583f930ac95c2b7180aefee7ba3e348d405b"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/registration-no-initialization.test.ts",
+      "before_sha256": "dcfc8c5057222a0861ca0175a34a054847104cee912c26ecd2f472bd7bd8acd6",
+      "after_sha256": "0eb7c434839864a558a0e841f6cc72dda97c54213a581a0da82a5d821589d135"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/sf-semantic-closure-run.test.ts",
+      "before_sha256": "aab8b8e419e1a7c6eb12b678154a9fd966306c36a100e73d7437cdbc5f568069",
+      "after_sha256": "3cc75c4d1be483988b4c113e90c75a1e1c3fa056bc70d574468e474f7fdf08b4"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/sf-state-transition.test.ts",
+      "before_sha256": "bad3672ffa007372095808a1c738da85f8094c22ea0ca216d14b26e787a558e1",
+      "after_sha256": "2dba437b7a60b1d9bee6e9270f847d7283cb37618315db017cab67183869b103"
+    },
+    {
+      "path": "packages/service-management/src/errors/service-error.ts",
+      "before_sha256": "dca1c08ead6c2c4cc09ac143e12f8355614b5a066dc593751679babfe6ecd193",
+      "after_sha256": "e20c49304a99e0ce42cf1922b54be4423c45f49787e57f7d31b941ebb5e9de9d"
+    },
+    {
+      "path": "packages/service-management/tests/unit/service-error.test.ts",
+      "before_sha256": "c087e6f1b219833126925bcb6ef11a19ec2af86055fbab632c5302a264f15645",
+      "after_sha256": "4c02d7c2b358fd86c73ae83d206edf54ffef6547e647ab823681c27dbad3246b"
+    },
+    {
+      "path": "scripts/lib/verify.ts",
+      "before_sha256": "ab324fe7e6118d1707250d72372cc05083c19930b6d0d4a7a76cbc621973337a",
+      "after_sha256": "08530df662dba748e9d71bda11867c60b9e7d951f19b689180fab3c389ecdeb3"
+    },
+    {
+      "path": "scripts/sf-installer.ts",
+      "before_sha256": "e6c186adbfdb985e3b96518949eeb6d9560c8d5314d35fcc43a8a5279a3da629",
+      "after_sha256": "99707343a881b74b24bf5b4c490b5eed11b3b7c0208ac0a0fb08b26a78a2d19a"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_changed_files_audit.ts",
+      "before_sha256": "8f947807651094786e0a772c77a6fe48805fe705122d5a15421036a813926371",
+      "after_sha256": "9ea4c1108aadce050cce3300db29777ef57260edf8e92ac744912d0fba1817df"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_contract_register.ts",
+      "before_sha256": "24022e877f5a08fb1d3be3505981780cca2f7275be8e5375aed560a8ed6a9313",
+      "after_sha256": "da511c7b4cf179f6eeef646d04e7f5fce9119462de54587ead85a84d00fc119e"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_semantic_closure_run.ts",
+      "before_sha256": "e56e3900d02cd3a713d4a0dbfac680c0f261bbc79d8c51bbf58e47a6e8dbfa98",
+      "after_sha256": "b4700ad282363686563844e2799b1b589f5626363efa95ad9a90fe82db0f264b"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_verification_plan.ts",
+      "before_sha256": "5e07a58933b7a038bb0fc4bdcf70b418ea060b607406b823b737253a1ed191a3",
+      "after_sha256": "98ef30b8ffc6b701dbb3cc6cca3577cb8c6c960413a44a70a589cc2e0a61e5ac"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_verification_run.ts",
+      "before_sha256": "0ab67a9a6ee97eebdc0b6597fd3ba30b9fbf79a2b4a58b91d1db81efcab9e141",
+      "after_sha256": "d1a77cd03175258c49581bbc6f68fc0f9c08b4072d7fad20cbfa151253a6a18a"
+    },
+    {
+      "path": "tests/unit/installer/parseArgs.test.ts",
+      "before_sha256": "55d8400a7c900698aeffc8962492c8e87bed2cd568f2e7cdbd3e92439e6dfde2",
+      "after_sha256": "b9fc3394582c6bb8c5d8a3b98d4da7879c25dff0132746e31c0b34373fb2a965"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/current-contract-register-owner.test.ts",
+      "before_sha256": null,
+      "after_sha256": "c9b7d757cce905bffb7b9935dcc818e76c2a247b7ce79058ccc583d15b52a41b"
+    }
+  ],
+  "source_identity_check": "PASS"
+}

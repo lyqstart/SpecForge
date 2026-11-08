@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/download-linux-bun.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "download-pinned-linux-bun",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T02:07:58.941Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\download-linux-bun.cjs",
+      "sha256": "12e437e847f08f7ae6bcc74a595ffc91edb4984b9c5f6b7f60cdaf3096b2f25d",
+      "size": 1242,
+      "extension": ".cjs"
+    }
+  ]
+}

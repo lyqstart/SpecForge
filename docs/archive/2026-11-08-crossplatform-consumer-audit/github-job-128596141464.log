@@ -1,0 +1,696 @@
+﻿2026-11-08T01:57:13.3338215Z Current runner version: '2.338.2'
+2026-11-08T01:57:13.3364556Z ##[group]Runner Image Provisioner
+2026-11-08T01:57:13.3365468Z Hosted Compute Agent
+2026-11-08T01:57:13.3366574Z Version: 20261028.624
+2026-11-08T01:57:13.3367200Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-08T01:57:13.3367979Z Build Date: 2026-10-28T21:51:42Z
+2026-11-08T01:57:13.3368668Z Worker ID: {6bf256b1-cff9-47ff-9ada-4fdf413d30e8}
+2026-11-08T01:57:13.3369395Z Region: westus
+2026-11-08T01:57:13.3370015Z Cloud: Azure
+2026-11-08T01:57:13.3370548Z ##[endgroup]
+2026-11-08T01:57:13.3372131Z ##[group]Operating System
+2026-11-08T01:57:13.3372796Z Ubuntu
+2026-11-08T01:57:13.3373353Z 26.04.1
+2026-11-08T01:57:13.3373942Z LTS
+2026-11-08T01:57:13.3374454Z ##[endgroup]
+2026-11-08T01:57:13.3375029Z ##[group]Runner Image
+2026-11-08T01:57:13.3375826Z Image: ubuntu-26.04
+2026-11-08T01:57:13.3376538Z Version: 20261101.186.1
+2026-11-08T01:57:13.3377910Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261101.186/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-08T01:57:13.3379900Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261101.186
+2026-11-08T01:57:13.3380922Z ##[endgroup]
+2026-11-08T01:57:13.3382207Z ##[group]GITHUB_TOKEN Permissions
+2026-11-08T01:57:13.3384154Z Contents: read
+2026-11-08T01:57:13.3384765Z Metadata: read
+2026-11-08T01:57:13.3385420Z Packages: read
+2026-11-08T01:57:13.3386196Z ##[endgroup]
+2026-11-08T01:57:13.3388468Z Secret source: Actions
+2026-11-08T01:57:13.3389558Z Cache mode: write
+2026-11-08T01:57:13.3390260Z Prepare workflow directory
+2026-11-08T01:57:13.3749051Z Prepare all required actions
+2026-11-08T01:57:13.3801612Z Getting action download info
+2026-11-08T01:57:13.7216496Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-08T01:57:13.8228531Z Download action repository 'oven-sh/setup-bun@v2' (SHA:0c5077e51419868618aeaa5fe8019c62421857d6)
+2026-11-08T01:57:14.2406071Z Complete job name: 硬编码路径 Lint
+2026-11-08T01:57:14.3418121Z ##[group]Run actions/checkout@v4
+2026-11-08T01:57:14.3419058Z with:
+2026-11-08T01:57:14.3419527Z   repository: lyqstart/SpecForge
+2026-11-08T01:57:14.3423571Z   token: ***
+2026-11-08T01:57:14.3424022Z   ssh-strict: true
+2026-11-08T01:57:14.3424465Z   ssh-user: git
+2026-11-08T01:57:14.3424912Z   persist-credentials: true
+2026-11-08T01:57:14.3425404Z   clean: true
+2026-11-08T01:57:14.3426277Z   sparse-checkout-cone-mode: true
+2026-11-08T01:57:14.3426806Z   fetch-depth: 1
+2026-11-08T01:57:14.3427244Z   fetch-tags: false
+2026-11-08T01:57:14.3427690Z   show-progress: true
+2026-11-08T01:57:14.3428142Z   lfs: false
+2026-11-08T01:57:14.3428559Z   submodules: false
+2026-11-08T01:57:14.3429018Z   set-safe-directory: true
+2026-11-08T01:57:14.3429532Z   allow-unsafe-pr-checkout: false
+2026-11-08T01:57:14.3430380Z ##[endgroup]
+2026-11-08T01:57:14.6154262Z Syncing repository: lyqstart/SpecForge
+2026-11-08T01:57:14.6157229Z ##[group]Getting Git version info
+2026-11-08T01:57:14.6158564Z Working directory is '/home/runner/work/SpecForge/SpecForge'
+2026-11-08T01:57:14.6160614Z [command]/usr/bin/git version
+2026-11-08T01:57:14.6180653Z git version 2.56.0
+2026-11-08T01:57:14.6207294Z ##[endgroup]
+2026-11-08T01:57:14.6223913Z Temporarily overriding HOME='/home/runner/work/_temp/4f37ffb0-a3a7-4992-beef-1408e936bd99' before making global git config changes
+2026-11-08T01:57:14.6226354Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-08T01:57:14.6230265Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/SpecForge/SpecForge
+2026-11-08T01:57:14.6315920Z Deleting the contents of '/home/runner/work/SpecForge/SpecForge'
+2026-11-08T01:57:14.6320890Z ##[group]Initializing the repository
+2026-11-08T01:57:14.6328073Z [command]/usr/bin/git init /home/runner/work/SpecForge/SpecForge
+2026-11-08T01:57:14.6462131Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-08T01:57:14.6463297Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-08T01:57:14.6464609Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-08T01:57:14.6465346Z hint: call:
+2026-11-08T01:57:14.6466077Z hint:
+2026-11-08T01:57:14.6466619Z hint: 	git config --global init.defaultBranch <name>
+2026-11-08T01:57:14.6467240Z hint:
+2026-11-08T01:57:14.6467818Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-08T01:57:14.6468743Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-08T01:57:14.6469477Z hint:
+2026-11-08T01:57:14.6469907Z hint: 	git branch -m <name>
+2026-11-08T01:57:14.6470381Z hint:
+2026-11-08T01:57:14.6471004Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-08T01:57:14.6487464Z Initialized empty Git repository in /home/runner/work/SpecForge/SpecForge/.git/
+2026-11-08T01:57:14.6499119Z [command]/usr/bin/git remote add origin https://github.com/lyqstart/SpecForge
+2026-11-08T01:57:14.6554937Z ##[endgroup]
+2026-11-08T01:57:14.6556074Z ##[group]Disabling automatic garbage collection
+2026-11-08T01:57:14.6560376Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-08T01:57:14.6605458Z ##[endgroup]
+2026-11-08T01:57:14.6607453Z ##[group]Setting up auth
+2026-11-08T01:57:14.6616674Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-08T01:57:14.6664370Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-08T01:57:14.7158994Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-08T01:57:14.7193790Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-08T01:57:14.7482546Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-08T01:57:14.7521420Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-08T01:57:14.7802034Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-08T01:57:14.7843002Z ##[endgroup]
+2026-11-08T01:57:14.7843810Z ##[group]Fetching the repository
+2026-11-08T01:57:14.7853091Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +bb0f172aab26fab79d6484c458e0122d9353f604:refs/remotes/origin/main
+2026-11-08T01:57:24.5667681Z From https://github.com/lyqstart/SpecForge
+2026-11-08T01:57:24.5673155Z  * [new ref]           bb0f172aab26fab79d6484c458e0122d9353f604 -> origin/main
+2026-11-08T01:57:24.5677242Z ##[endgroup]
+2026-11-08T01:57:24.5678504Z ##[group]Determining the checkout info
+2026-11-08T01:57:24.5680264Z ##[endgroup]
+2026-11-08T01:57:24.5681753Z [command]/usr/bin/git sparse-checkout disable
+2026-11-08T01:57:24.5738254Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-08T01:57:24.5770452Z ##[group]Checking out the ref
+2026-11-08T01:57:24.5775063Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-11-08T01:57:25.7190433Z Updating files:  14% (4111/28662)
+2026-11-08T01:57:25.7471450Z Updating files:  15% (4300/28662)
+2026-11-08T01:57:25.7602231Z Updating files:  16% (4586/28662)
+2026-11-08T01:57:25.8102066Z Updating files:  17% (4873/28662)
+2026-11-08T01:57:25.8470452Z Updating files:  18% (5160/28662)
+2026-11-08T01:57:25.8742343Z Updating files:  19% (5446/28662)
+2026-11-08T01:57:25.9056244Z Updating files:  20% (5733/28662)
+2026-11-08T01:57:25.9232940Z Updating files:  21% (6020/28662)
+2026-11-08T01:57:25.9558568Z Updating files:  22% (6306/28662)
+2026-11-08T01:57:25.9698677Z Updating files:  23% (6593/28662)
+2026-11-08T01:57:25.9847493Z Updating files:  24% (6879/28662)
+2026-11-08T01:57:26.0078406Z Updating files:  25% (7166/28662)
+2026-11-08T01:57:26.0307839Z Updating files:  26% (7453/28662)
+2026-11-08T01:57:26.0518550Z Updating files:  27% (7739/28662)
+2026-11-08T01:57:26.0782058Z Updating files:  28% (8026/28662)
+2026-11-08T01:57:26.1033724Z Updating files:  29% (8312/28662)
+2026-11-08T01:57:26.3097813Z Updating files:  30% (8599/28662)
+2026-11-08T01:57:26.3440367Z Updating files:  31% (8886/28662)
+2026-11-08T01:57:26.3695964Z Updating files:  32% (9172/28662)
+2026-11-08T01:57:26.3978152Z Updating files:  33% (9459/28662)
+2026-11-08T01:57:26.4576032Z Updating files:  34% (9746/28662)
+2026-11-08T01:57:26.4749765Z Updating files:  35% (10032/28662)
+2026-11-08T01:57:26.5684940Z Updating files:  36% (10319/28662)
+2026-11-08T01:57:26.6213286Z Updating files:  37% (10605/28662)
+2026-11-08T01:57:26.6320745Z Updating files:  37% (10856/28662)
+2026-11-08T01:57:26.7899101Z Updating files:  38% (10892/28662)
+2026-11-08T01:57:26.9292265Z Updating files:  39% (11179/28662)
+2026-11-08T01:57:27.0057338Z Updating files:  40% (11465/28662)
+2026-11-08T01:57:27.1821805Z Updating files:  41% (11752/28662)
+2026-11-08T01:57:27.3876831Z Updating files:  42% (12039/28662)
+2026-11-08T01:57:27.6086492Z Updating files:  43% (12325/28662)
+2026-11-08T01:57:27.6158340Z Updating files:  43% (12600/28662)
+2026-11-08T01:57:27.8715373Z Updating files:  44% (12612/28662)
+2026-11-08T01:57:28.1047719Z Updating files:  45% (12898/28662)
+2026-11-08T01:57:28.3058034Z Updating files:  46% (13185/28662)
+2026-11-08T01:57:28.5152041Z Updating files:  47% (13472/28662)
+2026-11-08T01:57:28.6054030Z Updating files:  48% (13758/28662)
+2026-11-08T01:57:28.7001418Z Updating files:  48% (13901/28662)
+2026-11-08T01:57:28.8730048Z Updating files:  49% (14045/28662)
+2026-11-08T01:57:29.0091581Z Updating files:  50% (14331/28662)
+2026-11-08T01:57:29.2167424Z Updating files:  51% (14618/28662)
+2026-11-08T01:57:29.3873205Z Updating files:  52% (14905/28662)
+2026-11-08T01:57:29.4746478Z Updating files:  53% (15191/28662)
+2026-11-08T01:57:29.5834842Z Updating files:  54% (15478/28662)
+2026-11-08T01:57:29.6041217Z Updating files:  55% (15765/28662)
+2026-11-08T01:57:29.6236273Z Updating files:  55% (15951/28662)
+2026-11-08T01:57:29.6391867Z Updating files:  56% (16051/28662)
+2026-11-08T01:57:29.6634996Z Updating files:  57% (16338/28662)
+2026-11-08T01:57:29.6869276Z Updating files:  58% (16624/28662)
+2026-11-08T01:57:29.7625411Z Updating files:  59% (16911/28662)
+2026-11-08T01:57:29.7765838Z Updating files:  60% (17198/28662)
+2026-11-08T01:57:29.7994679Z Updating files:  61% (17484/28662)
+2026-11-08T01:57:29.8227986Z Updating files:  62% (17771/28662)
+2026-11-08T01:57:29.8393649Z Updating files:  63% (18058/28662)
+2026-11-08T01:57:29.8557404Z Updating files:  64% (18344/28662)
+2026-11-08T01:57:29.8748262Z Updating files:  65% (18631/28662)
+2026-11-08T01:57:29.8901080Z Updating files:  66% (18917/28662)
+2026-11-08T01:57:29.9070040Z Updating files:  67% (19204/28662)
+2026-11-08T01:57:29.9229696Z Updating files:  68% (19491/28662)
+2026-11-08T01:57:29.9406607Z Updating files:  69% (19777/28662)
+2026-11-08T01:57:29.9570124Z Updating files:  70% (20064/28662)
+2026-11-08T01:57:29.9721979Z Updating files:  71% (20351/28662)
+2026-11-08T01:57:29.9879885Z Updating files:  72% (20637/28662)
+2026-11-08T01:57:30.0024695Z Updating files:  73% (20924/28662)
+2026-11-08T01:57:30.0195104Z Updating files:  74% (21210/28662)
+2026-11-08T01:57:30.0364726Z Updating files:  75% (21497/28662)
+2026-11-08T01:57:30.0535256Z Updating files:  76% (21784/28662)
+2026-11-08T01:57:30.0753575Z Updating files:  77% (22070/28662)
+2026-11-08T01:57:30.0959260Z Updating files:  78% (22357/28662)
+2026-11-08T01:57:30.1142988Z Updating files:  79% (22643/28662)
+2026-11-08T01:57:30.1346405Z Updating files:  80% (22930/28662)
+2026-11-08T01:57:30.1513354Z Updating files:  81% (23217/28662)
+2026-11-08T01:57:30.1707952Z Updating files:  82% (23503/28662)
+2026-11-08T01:57:30.2467373Z Updating files:  83% (23790/28662)
+2026-11-08T01:57:30.3289939Z Updating files:  84% (24077/28662)
+2026-11-08T01:57:30.3660145Z Updating files:  85% (24363/28662)
+2026-11-08T01:57:30.3800869Z Updating files:  86% (24650/28662)
+2026-11-08T01:57:30.4257844Z Updating files:  87% (24936/28662)
+2026-11-08T01:57:30.4612979Z Updating files:  88% (25223/28662)
+2026-11-08T01:57:30.4848738Z Updating files:  89% (25510/28662)
+2026-11-08T01:57:30.6079135Z Updating files:  90% (25796/28662)
+2026-11-08T01:57:30.8550372Z Updating files:  90% (25906/28662)
+2026-11-08T01:57:30.8766032Z Updating files:  91% (26083/28662)
+2026-11-08T01:57:30.8952453Z Updating files:  92% (26370/28662)
+2026-11-08T01:57:30.9097744Z Updating files:  93% (26656/28662)
+2026-11-08T01:57:30.9248495Z Updating files:  94% (26943/28662)
+2026-11-08T01:57:30.9430528Z Updating files:  95% (27229/28662)
+2026-11-08T01:57:30.9619085Z Updating files:  96% (27516/28662)
+2026-11-08T01:57:30.9812056Z Updating files:  97% (27803/28662)
+2026-11-08T01:57:30.9994397Z Updating files:  98% (28089/28662)
+2026-11-08T01:57:31.0199449Z Updating files:  99% (28376/28662)
+2026-11-08T01:57:31.0199999Z Updating files: 100% (28662/28662)
+2026-11-08T01:57:31.0200446Z Updating files: 100% (28662/28662), done.
+2026-11-08T01:57:31.0536144Z Switched to a new branch 'main'
+2026-11-08T01:57:31.0537931Z branch 'main' set up to track 'origin/main'.
+2026-11-08T01:57:31.0670052Z ##[endgroup]
+2026-11-08T01:57:31.0716895Z [command]/usr/bin/git log -1 --format=%H
+2026-11-08T01:57:31.0751057Z bb0f172aab26fab79d6484c458e0122d9353f604
+2026-11-08T01:57:31.1246717Z ##[group]Run oven-sh/setup-bun@v2
+2026-11-08T01:57:31.1247195Z with:
+2026-11-08T01:57:31.1247522Z   bun-version: latest
+2026-11-08T01:57:31.1247885Z   no-cache: false
+2026-11-08T01:57:31.1253171Z   token: ***
+2026-11-08T01:57:31.1253407Z ##[endgroup]
+2026-11-08T01:57:31.6774964Z Downloading a new version of Bun: https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/bun-linux-x64.zip
+2026-11-08T01:57:32.0109049Z [command]/usr/bin/unzip -o -q /home/runner/work/_temp/617dd9a5-6857-490f-aef2-eedab501b59a.zip
+2026-11-08T01:57:32.8528598Z [command]/home/runner/.bun/bin/bun --revision
+2026-11-08T01:57:32.8587706Z 1.4.4+38afee6c8
+2026-11-08T01:57:32.8773979Z ##[group]Run bun install --frozen-lockfile
+2026-11-08T01:57:32.8774399Z [36;1mbun install --frozen-lockfile[0m
+2026-11-08T01:57:32.8831842Z shell: /usr/bin/bash -e {0}
+2026-11-08T01:57:32.8832132Z ##[endgroup]
+2026-11-08T01:57:32.8957858Z bun install v1.4.4 (38afee6c8)
+2026-11-08T01:57:35.2535115Z 
+2026-11-08T01:57:35.2536214Z + @types/node@25.7.0
+2026-11-08T01:57:35.2536514Z + @types/proper-lockfile@4.1.4
+2026-11-08T01:57:35.2536808Z + @typescript-eslint/eslint-plugin@8.59.3
+2026-11-08T01:57:35.2537111Z + @typescript-eslint/parser@8.59.3
+2026-11-08T01:57:35.2537374Z + @vitest/coverage-v8@4.1.5
+2026-11-08T01:57:35.2537604Z + eslint@9.39.4
+2026-11-08T01:57:35.2537823Z + eslint-config-prettier@10.1.8
+2026-11-08T01:57:35.2538082Z + eslint-plugin-import@2.32.0
+2026-11-08T01:57:35.2538326Z + fast-check@4.8.0
+2026-11-08T01:57:35.2538522Z + globals@17.6.0
+2026-11-08T01:57:35.2538746Z + proper-lockfile@4.1.2
+2026-11-08T01:57:35.2538988Z + typescript@6.0.3
+2026-11-08T01:57:35.2539245Z + vitest@4.1.5
+2026-11-08T01:57:35.2539434Z + zod@4.4.3
+2026-11-08T01:57:35.2539534Z 
+2026-11-08T01:57:35.2539630Z 522 packages installed [2.36s]
+2026-11-08T01:57:35.2630215Z ##[group]Run bun run scripts/lint/check-hardcoded-paths.ts
+2026-11-08T01:57:35.2630693Z [36;1mbun run scripts/lint/check-hardcoded-paths.ts[0m
+2026-11-08T01:57:35.2683140Z shell: /usr/bin/bash -e {0}
+2026-11-08T01:57:35.2683403Z ##[endgroup]
+2026-11-08T01:57:35.4721865Z VIOLATION: .patch-backups/r5_20260615_123529/userlevel/plugins/sf_specforge.ts:428: ".specforge", "
+2026-11-08T01:57:35.4723585Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4724699Z VIOLATION: .patch-backups/r5_20260615_123529/userlevel/plugins/sf_specforge.ts:442: ".specforge", "
+2026-11-08T01:57:35.4726239Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4727250Z VIOLATION: .patch-backups/r5_20260615_123529/userlevel/plugins/sf_specforge.ts:482: ".specforge", "
+2026-11-08T01:57:35.4728620Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4729306Z VIOLATION: .patch-backups/r5_20260615_123529/userlevel/tools/lib/sf-observability-config.ts:86: ".specforge", "
+2026-11-08T01:57:35.4730152Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4730801Z VIOLATION: .patch-backups/r5_20260615_123529/userlevel/tools/lib/sf-observability.ts:131: ".specforge", "
+2026-11-08T01:57:35.4731759Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4732874Z VIOLATION: .patch-backups/r5_20260615_123529/repo/setup/userlevel-opencode/plugins/sf_specforge.ts:428: ".specforge", "
+2026-11-08T01:57:35.4734048Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4735121Z VIOLATION: .patch-backups/r5_20260615_123529/repo/setup/userlevel-opencode/plugins/sf_specforge.ts:442: ".specforge", "
+2026-11-08T01:57:35.4736575Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4737572Z VIOLATION: .patch-backups/r5_20260615_123529/repo/setup/userlevel-opencode/plugins/sf_specforge.ts:482: ".specforge", "
+2026-11-08T01:57:35.4738605Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4739308Z VIOLATION: .patch-backups/r5_20260615_123529/repo/setup/userlevel-opencode/tools/lib/sf-observability-config.ts:183: ".specforge", "
+2026-11-08T01:57:35.4739971Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4740574Z VIOLATION: .patch-backups/r5_20260615_123529/repo/packages/daemon-core/src/observability/observability-recorder.ts:127: ".specforge", "
+2026-11-08T01:57:35.4741222Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4741796Z VIOLATION: .patch-backups/r5_20260615_123529/repo/packages/daemon-core/src/observability/observability-config.ts:120: ".specforge", "
+2026-11-08T01:57:35.4742427Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4743083Z VIOLATION: .patch-backups/r5_20260615_123529/repo/packages/daemon-core/src/tools/lib/sf_project_init_core.ts:93: ".specforge/project/extension_registry.json"
+2026-11-08T01:57:35.4743864Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4744554Z VIOLATION: .patch-backups/r5_20260615_123529/repo/packages/daemon-core/src/tools/lib/sf_project_init_core.ts:94: ".specforge/project/requirements_index.md"
+2026-11-08T01:57:35.4745262Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4746510Z VIOLATION: .patch-backups/r5_20260615_123529/repo/packages/daemon-core/src/tools/lib/sf_project_init_core.ts:95: ".specforge/project/design_index.md"
+2026-11-08T01:57:35.4747804Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4748907Z VIOLATION: .patch-backups/r5_20260615_123529/repo/packages/daemon-core/src/tools/lib/sf_project_init_core.ts:96: ".specforge/project/architecture.md"
+2026-11-08T01:57:35.4750072Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4751102Z VIOLATION: .patch-backups/r5_20260615_123529/repo/packages/daemon-core/src/tools/lib/sf_project_init_core.ts:97: ".specforge/project/glossary.md"
+2026-11-08T01:57:35.4752220Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4753244Z VIOLATION: .patch-backups/r5_20260615_123529/repo/packages/daemon-core/src/tools/lib/sf_project_init_core.ts:98: ".specforge/project/decisions.md"
+2026-11-08T01:57:35.4754647Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4755880Z VIOLATION: .patch-backups/r5_20260615_123529/repo/packages/daemon-core/src/tools/lib/sf_project_init_core.ts:99: ".specforge/project/trace_matrix.md"
+2026-11-08T01:57:35.4757053Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4757978Z VIOLATION: .patch-backups/r5_20260615_123529/repo/packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts:76: ".specforge", "
+2026-11-08T01:57:35.4759011Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4759901Z VIOLATION: .patch-backups/r6_restore_known_good_plugin_20260615_142525/userlevel/plugins/sf_specforge.ts:428: ".specforge", "
+2026-11-08T01:57:35.4760890Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4761787Z VIOLATION: .patch-backups/r6_restore_known_good_plugin_20260615_142525/userlevel/plugins/sf_specforge.ts:442: ".specforge", "
+2026-11-08T01:57:35.4762992Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4763891Z VIOLATION: .patch-backups/r6_restore_known_good_plugin_20260615_142525/userlevel/plugins/sf_specforge.ts:482: ".specforge", "
+2026-11-08T01:57:35.4764925Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4766299Z VIOLATION: .patch-backups/r6_restore_known_good_plugin_20260615_142525/repo/setup/userlevel-opencode/plugins/sf_specforge.ts:428: ".specforge", "
+2026-11-08T01:57:35.4767512Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4768579Z VIOLATION: .patch-backups/r6_restore_known_good_plugin_20260615_142525/repo/setup/userlevel-opencode/plugins/sf_specforge.ts:442: ".specforge", "
+2026-11-08T01:57:35.4769744Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4770791Z VIOLATION: .patch-backups/r6_restore_known_good_plugin_20260615_142525/repo/setup/userlevel-opencode/plugins/sf_specforge.ts:482: ".specforge", "
+2026-11-08T01:57:35.4771972Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4773114Z VIOLATION: .patch-backups/r7_1_gate_summary_writeguard_20260615_152220/repo/packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts:87: ".specforge", "
+2026-11-08T01:57:35.4774354Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4775485Z VIOLATION: .patch-backups/r7_natural_workflow_closure_20260615_150227/repo/packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts:76: ".specforge", "
+2026-11-08T01:57:35.4777002Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4777922Z VIOLATION: .patch-backups/r5_1_plugin_passthrough_20260615_125027/userlevel/plugins/sf_specforge.ts:428: ".specforge", "
+2026-11-08T01:57:35.4778946Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4779854Z VIOLATION: .patch-backups/r5_1_plugin_passthrough_20260615_125027/userlevel/plugins/sf_specforge.ts:442: ".specforge", "
+2026-11-08T01:57:35.4780861Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4781782Z VIOLATION: .patch-backups/r5_1_plugin_passthrough_20260615_125027/userlevel/plugins/sf_specforge.ts:482: ".specforge", "
+2026-11-08T01:57:35.4782802Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4783847Z VIOLATION: .patch-backups/r5_1_plugin_passthrough_20260615_125027/repo/setup/userlevel-opencode/plugins/sf_specforge.ts:428: ".specforge", "
+2026-11-08T01:57:35.4784985Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4786183Z VIOLATION: .patch-backups/r5_1_plugin_passthrough_20260615_125027/repo/setup/userlevel-opencode/plugins/sf_specforge.ts:442: ".specforge", "
+2026-11-08T01:57:35.4787348Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4788370Z VIOLATION: .patch-backups/r5_1_plugin_passthrough_20260615_125027/repo/setup/userlevel-opencode/plugins/sf_specforge.ts:482: ".specforge", "
+2026-11-08T01:57:35.4789534Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4790666Z VIOLATION: .patch-backups/r5_2_plugin_no_chat_hooks_20260615_134700/repo/setup/userlevel-opencode/plugins/sf_specforge.ts:430: ".specforge", "
+2026-11-08T01:57:35.4791852Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4793121Z VIOLATION: .patch-backups/r5_2_plugin_no_chat_hooks_20260615_134700/repo/setup/userlevel-opencode/plugins/sf_specforge.ts:444: ".specforge", "
+2026-11-08T01:57:35.4794278Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4795293Z VIOLATION: .patch-backups/r5_2_plugin_no_chat_hooks_20260615_134700/repo/setup/userlevel-opencode/plugins/sf_specforge.ts:484: ".specforge", "
+2026-11-08T01:57:35.4796472Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4797150Z VIOLATION: .patch-backups/r7_1_gate_summary_writeguard_20260615_153117/repo/packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts:88: ".specforge", "
+2026-11-08T01:57:35.4797864Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4798463Z VIOLATION: .patch-backups/r5_2_plugin_no_chat_hooks_20260615_134821/repo/setup/userlevel-opencode/plugins/sf_specforge.ts:430: ".specforge", "
+2026-11-08T01:57:35.4799620Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4800654Z VIOLATION: .patch-backups/r5_2_plugin_no_chat_hooks_20260615_134821/repo/setup/userlevel-opencode/plugins/sf_specforge.ts:444: ".specforge", "
+2026-11-08T01:57:35.4801693Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4802306Z VIOLATION: .patch-backups/r5_2_plugin_no_chat_hooks_20260615_134821/repo/setup/userlevel-opencode/plugins/sf_specforge.ts:484: ".specforge", "
+2026-11-08T01:57:35.4802955Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4803350Z VIOLATION: scripts/lessons/render-opencode-skill.ts:42: 'specforge'
+2026-11-08T01:57:35.4803760Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4804109Z VIOLATION: scripts/lessons/render-prompt-block.ts:51: 'specforge'
+2026-11-08T01:57:35.4804513Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4804919Z VIOLATION: packages/cli/src/utils/directory-layout.ts:186: '.specforge/project/'
+2026-11-08T01:57:35.4805390Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4806111Z VIOLATION: packages/cli/src/utils/directory-layout.ts:190: '.specforge/work-items/'
+2026-11-08T01:57:35.4806610Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4807164Z VIOLATION: packages/types/src/control-plane-write-provenance-contract.ts:27: '.specforge/project/git_policy.json'
+2026-11-08T01:57:35.4807769Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4808344Z VIOLATION: packages/types/src/control-plane-write-provenance-contract.ts:28: '.specforge/project/git_ignore_decisions.json'
+2026-11-08T01:57:35.4808970Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4809523Z VIOLATION: packages/types/src/control-plane-write-provenance-contract.ts:29: '.specforge/project/git_adoption_report.md'
+2026-11-08T01:57:35.4810125Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4810571Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathService.ts:233: '.specforge/specs/'
+2026-11-08T01:57:35.4811083Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4811707Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathService.ts:239: '.specforge/project/'
+2026-11-08T01:57:35.4812230Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4812684Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathService.ts:245: '.specforge/work-items/'
+2026-11-08T01:57:35.4813408Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4813824Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:114: '.specforge/'
+2026-11-08T01:57:35.4814298Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4814708Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:114: '.specforge\\'
+2026-11-08T01:57:35.4815191Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4815872Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:127: '.specforge/specs/'
+2026-11-08T01:57:35.4816654Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4817094Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:127: '.specforge/specs'
+2026-11-08T01:57:35.4817617Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4818072Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:135: '.specforge/project/'
+2026-11-08T01:57:35.4818580Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4819024Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:135: '.specforge/project'
+2026-11-08T01:57:35.4819526Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4819981Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:143: '.specforge/work-items/'
+2026-11-08T01:57:35.4820502Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4820961Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:143: '.specforge/work-items'
+2026-11-08T01:57:35.4821465Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4821923Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:161: '.specforge/project/'
+2026-11-08T01:57:35.4822429Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4822873Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:192: '.specforge/project/'
+2026-11-08T01:57:35.4823369Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4823798Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:220: '.specforge/archive'
+2026-11-08T01:57:35.4824288Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4824804Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:221: '.specforge/state'
+2026-11-08T01:57:35.4825296Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4825950Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:222: '.specforge/gates'
+2026-11-08T01:57:35.4826470Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4826910Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:240: '.specforge/archive'
+2026-11-08T01:57:35.4827416Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4827870Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:241: '.specforge/standards'
+2026-11-08T01:57:35.4828370Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4828803Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:242: '.specforge/state'
+2026-11-08T01:57:35.4829286Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4829717Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:243: '.specforge/reports'
+2026-11-08T01:57:35.4830208Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4830649Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:244: '.specforge/snapshots'
+2026-11-08T01:57:35.4831147Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4831581Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:300: '.specforge/project/'
+2026-11-08T01:57:35.4832236Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4832669Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:300: '.specforge/project'
+2026-11-08T01:57:35.4833372Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4833824Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:332: '.specforge/project/'
+2026-11-08T01:57:35.4834324Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4834758Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:332: '.specforge/project'
+2026-11-08T01:57:35.4835243Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4835837Z VIOLATION: packages/workflow-runtime/src/v11/runtime/PathPolicy.ts:374: '.specforge/'
+2026-11-08T01:57:35.4836327Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4836753Z VIOLATION: packages/workflow-runtime/src/rbac/ProtectedFileMatcher.ts:115: '.specforge/'
+2026-11-08T01:57:35.4837234Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4837683Z VIOLATION: packages/permission-engine/src/write-decision.ts:35: '.specforge/work-items/'
+2026-11-08T01:57:35.4838161Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4838559Z VIOLATION: packages/permission-engine/src/write-decision.ts:94: '.specforge/'
+2026-11-08T01:57:35.4839007Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4839402Z VIOLATION: packages/permission-engine/src/write-decision.ts:162: '.specforge/'
+2026-11-08T01:57:35.4839849Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4840266Z VIOLATION: packages/permission-engine/src/write-decision.ts:167: '.specforge/project/'
+2026-11-08T01:57:35.4840740Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4841149Z VIOLATION: packages/permission-engine/src/write-decision.ts:220: '.specforge/'
+2026-11-08T01:57:35.4841601Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4841984Z VIOLATION: packages/permission-engine/src/write-decision.ts:225: '.specforge/'
+2026-11-08T01:57:35.4842424Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4842910Z VIOLATION: packages/observability/src/config-contract.ts:46: '.specforge/config/observability.json'
+2026-11-08T01:57:35.4843501Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4843892Z VIOLATION: packages/configuration/src/accepted-config.ts:41: '.specforge', '
+2026-11-08T01:57:35.4844333Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4844831Z VIOLATION: packages/configuration/src/project-schema-descriptor.ts:16: '.specforge/config/project.json'
+2026-11-08T01:57:35.4845394Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4846123Z VIOLATION: packages/daemon-core/src/http/HTTPServer.ts:2021: '.specforge', '
+2026-11-08T01:57:35.4846678Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4847135Z VIOLATION: packages/daemon-core/src/observability/observability-config.ts:70: '.specforge', '
+2026-11-08T01:57:35.4847646Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4848104Z VIOLATION: packages/daemon-core/src/recovery/ProjectArchiveRestore.ts:211: '.specforge/runtime'
+2026-11-08T01:57:35.4848630Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4849284Z VIOLATION: packages/daemon-core/src/recovery/ProjectArchiveRestore.ts:281: '.specforge/runtime/events.jsonl'
+2026-11-08T01:57:35.4849857Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4850359Z VIOLATION: packages/daemon-core/src/recovery/ProjectArchiveRestore.ts:284: '.specforge/runtime/state.json'
+2026-11-08T01:57:35.4850909Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4851447Z VIOLATION: packages/daemon-core/src/project/project-schema-descriptors.ts:62: '.specforge/project/spec_manifest.json'
+2026-11-08T01:57:35.4852043Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4852592Z VIOLATION: packages/daemon-core/src/project/project-schema-descriptors.ts:73: '.specforge/project/extension_registry.json'
+2026-11-08T01:57:35.4853194Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4853765Z VIOLATION: packages/daemon-core/src/project/project-schema-descriptors.ts:121: '.specforge', '
+2026-11-08T01:57:35.4854275Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4854708Z VIOLATION: packages/daemon-core/src/verification/source-snapshot.ts:59: '.specforge/'
+2026-11-08T01:57:35.4855181Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4855811Z VIOLATION: packages/daemon-core/src/verification/source-snapshot.ts:74: '.specforge/'
+2026-11-08T01:57:35.4856297Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4856749Z VIOLATION: packages/daemon-core/src/verification/node-command-contract.ts:177: '.specforge', '
+2026-11-08T01:57:35.4857250Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4857679Z VIOLATION: packages/daemon-core/src/verification/static-task-command.ts:16: '.specforge','
+2026-11-08T01:57:35.4858169Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4858605Z VIOLATION: packages/daemon-core/src/verification/verification-schema.ts:59: '.specforge','
+2026-11-08T01:57:35.4859101Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4859535Z VIOLATION: packages/daemon-core/src/verification/verification-schema.ts:73: '.specforge/'
+2026-11-08T01:57:35.4860039Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4860604Z VIOLATION: packages/daemon-core/src/tools/lib/git-governance-write-provenance.ts:17: '.specforge/project/git_policy.json'
+2026-11-08T01:57:35.4861217Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4861805Z VIOLATION: packages/daemon-core/src/tools/lib/git-governance-write-provenance.ts:18: '.specforge/project/git_ignore_decisions.json'
+2026-11-08T01:57:35.4862450Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4863023Z VIOLATION: packages/daemon-core/src/tools/lib/git-governance-write-provenance.ts:19: '.specforge/project/git_adoption_report.md'
+2026-11-08T01:57:35.4863797Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4864327Z VIOLATION: packages/daemon-core/src/tools/lib/contract-integrity.ts:52: '.specforge/project/extension_registry.json'
+2026-11-08T01:57:35.4864923Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4865358Z VIOLATION: packages/daemon-core/src/tools/lib/contract-integrity.ts:446: '.specforge', '
+2026-11-08T01:57:35.4866052Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4866581Z VIOLATION: packages/daemon-core/src/tools/lib/sf_project_init_core.ts:76: '.specforge/project/extension_registry.json'
+2026-11-08T01:57:35.4867156Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4867666Z VIOLATION: packages/daemon-core/src/tools/lib/sf_project_init_core.ts:77: '.specforge/project/requirements_index.md'
+2026-11-08T01:57:35.4868237Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4868731Z VIOLATION: packages/daemon-core/src/tools/lib/sf_project_init_core.ts:78: '.specforge/project/design_index.md'
+2026-11-08T01:57:35.4869284Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4869787Z VIOLATION: packages/daemon-core/src/tools/lib/sf_project_init_core.ts:79: '.specforge/project/architecture.md'
+2026-11-08T01:57:35.4870500Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4871088Z VIOLATION: packages/daemon-core/src/tools/lib/sf_project_init_core.ts:80: '.specforge/project/glossary.md'
+2026-11-08T01:57:35.4871638Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4872121Z VIOLATION: packages/daemon-core/src/tools/lib/sf_project_init_core.ts:81: '.specforge/project/decisions.md'
+2026-11-08T01:57:35.4872660Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4873143Z VIOLATION: packages/daemon-core/src/tools/lib/sf_project_init_core.ts:82: '.specforge/project/trace_matrix.md'
+2026-11-08T01:57:35.4873682Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4874167Z VIOLATION: packages/daemon-core/src/tools/lib/sf_project_init_core.ts:88: '.specforge/project/modules/CORE'
+2026-11-08T01:57:35.4874698Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4875224Z VIOLATION: packages/daemon-core/src/tools/lib/sf_project_init_core.ts:89: '.specforge/project/modules/CORE/module.json'
+2026-11-08T01:57:35.4876051Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4876595Z VIOLATION: packages/daemon-core/src/tools/lib/sf_project_init_core.ts:90: '.specforge/project/modules/CORE/requirements.md'
+2026-11-08T01:57:35.4877185Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4877694Z VIOLATION: packages/daemon-core/src/tools/lib/sf_project_init_core.ts:91: '.specforge/project/modules/CORE/design.md'
+2026-11-08T01:57:35.4878259Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4878766Z VIOLATION: packages/daemon-core/src/tools/lib/sf_project_init_core.ts:92: '.specforge/project/modules/CORE/trace.md'
+2026-11-08T01:57:35.4879323Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4879885Z VIOLATION: packages/daemon-core/src/tools/lib/artifact-schema-validation.ts:388: '.specforge/project/extension_registry.json'
+2026-11-08T01:57:35.4880515Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4881041Z VIOLATION: packages/daemon-core/src/tools/lib/contract-authoring.ts:65: '.specforge/project/extension_registry.json'
+2026-11-08T01:57:35.4881616Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4882052Z VIOLATION: packages/daemon-core/src/tools/lib/filesystem-diff.ts:78: '.specforge/logs/'
+2026-11-08T01:57:35.4882537Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4882977Z VIOLATION: packages/daemon-core/src/tools/lib/filesystem-diff.ts:79: '.specforge/runtime/'
+2026-11-08T01:57:35.4883470Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4883889Z VIOLATION: packages/daemon-core/src/tools/lib/filesystem-diff.ts:80: '.specforge/archive/'
+2026-11-08T01:57:35.4884374Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4884783Z VIOLATION: packages/daemon-core/src/tools/lib/filesystem-diff.ts:81: '.specforge/cas/'
+2026-11-08T01:57:35.4885254Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4885932Z VIOLATION: packages/daemon-core/src/tools/lib/filesystem-diff.ts:82: '.specforge/tmp/'
+2026-11-08T01:57:35.4886435Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4886999Z VIOLATION: packages/daemon-core/src/tools/lib/filesystem-diff.ts:83: '.specforge/temp/'
+2026-11-08T01:57:35.4887518Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4887969Z VIOLATION: packages/daemon-core/src/tools/lib/filesystem-diff.ts:84: '.specforge/work-items/'
+2026-11-08T01:57:35.4888480Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4888895Z VIOLATION: packages/daemon-core/src/tools/lib/filesystem-diff.ts:88: '.specforge/logs'
+2026-11-08T01:57:35.4889366Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4889792Z VIOLATION: packages/daemon-core/src/tools/lib/filesystem-diff.ts:89: '.specforge/runtime'
+2026-11-08T01:57:35.4890279Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4890700Z VIOLATION: packages/daemon-core/src/tools/lib/filesystem-diff.ts:90: '.specforge/archive'
+2026-11-08T01:57:35.4891322Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4891744Z VIOLATION: packages/daemon-core/src/tools/lib/filesystem-diff.ts:91: '.specforge/cas'
+2026-11-08T01:57:35.4892213Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4892615Z VIOLATION: packages/daemon-core/src/tools/lib/filesystem-diff.ts:92: '.specforge/tmp'
+2026-11-08T01:57:35.4893076Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4893481Z VIOLATION: packages/daemon-core/src/tools/lib/filesystem-diff.ts:93: '.specforge/temp'
+2026-11-08T01:57:35.4893946Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4894380Z VIOLATION: packages/daemon-core/src/tools/lib/filesystem-diff.ts:94: '.specforge/work-items'
+2026-11-08T01:57:35.4894875Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4895383Z VIOLATION: packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts:132: '.specforge', '
+2026-11-08T01:57:35.4896161Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4896666Z VIOLATION: packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts:482: '.specforge', '
+2026-11-08T01:57:35.4897229Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4897666Z VIOLATION: packages/daemon-core/src/tools/lib/work-item-lifecycle-v11.ts:34: '.specforge', '
+2026-11-08T01:57:35.4898166Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4898595Z VIOLATION: packages/daemon-core/src/tools/lib/work-item-lifecycle-v11.ts:50: '.specforge', '
+2026-11-08T01:57:35.4899085Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4899596Z VIOLATION: packages/daemon-core/src/tools/lib/atomic-spec-merge-write-provenance.ts:16: '.specforge/project/'
+2026-11-08T01:57:35.4900162Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4900657Z VIOLATION: packages/daemon-core/src/tools/lib/project-init-reconstruction.ts:44: '.specforge/manifest.json'
+2026-11-08T01:57:35.4901211Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4901795Z VIOLATION: packages/daemon-core/src/tools/lib/project-init-reconstruction.ts:71: '.specforge/project/modules/CORE/module.json'
+2026-11-08T01:57:35.4902433Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4902994Z VIOLATION: packages/daemon-core/src/tools/lib/project-init-reconstruction.ts:81: '.specforge/runtime/init-recovery/owner.lock'
+2026-11-08T01:57:35.4903612Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4904100Z VIOLATION: packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts:31: '.specforge', '
+2026-11-08T01:57:35.4904634Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4905142Z VIOLATION: packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts:113: '.specforge/work-items/'
+2026-11-08T01:57:35.4905927Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4906531Z VIOLATION: packages/daemon-core/src/tools/lib/regenerable-artifact-governance.ts:22: '.specforge/project/git_ignore_decisions.json'
+2026-11-08T01:57:35.4907337Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4908027Z VIOLATION: packages/daemon-core/src/tools/lib/regenerable-artifact-governance.ts:58: '.specforge/project/git_ignore_decisions.json'
+2026-11-08T01:57:35.4908678Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4909271Z VIOLATION: packages/daemon-core/src/tools/lib/regenerable-artifact-governance.ts:108: '.specforge/project/git_ignore_decisions.json'
+2026-11-08T01:57:35.4909914Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4910340Z VIOLATION: packages/daemon-core/src/tools/lib/sf_safe_bash_executor.ts:45: '.specforge', '
+2026-11-08T01:57:35.4910827Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4911250Z VIOLATION: packages/daemon-core/src/tools/lib/sf_safe_bash_executor.ts:71: '.specforge', '
+2026-11-08T01:57:35.4911735Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4912167Z VIOLATION: packages/daemon-core/src/tools/lib/native-write-boundary.ts:43: '.specforge', '
+2026-11-08T01:57:35.4912668Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4913168Z VIOLATION: packages/daemon-core/src/tools/lib/merge-runner-v11.ts:513: '.specforge/project/trace_matrix.md'
+2026-11-08T01:57:35.4913725Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4914131Z VIOLATION: packages/daemon-core/src/tools/lib/merge-runner-v11.ts:539: '.specforge', '
+2026-11-08T01:57:35.4914598Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4915000Z VIOLATION: packages/daemon-core/src/tools/lib/merge-runner-v11.ts:831: '.specforge', '
+2026-11-08T01:57:35.4915464Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4916152Z VIOLATION: packages/daemon-core/src/tools/lib/merge-runner-v11.ts:1074: '.specforge/project/spec_manifest.json'
+2026-11-08T01:57:35.4916721Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4917240Z VIOLATION: packages/daemon-core/src/tools/lib/merge-runner-v11.ts:1075: '.specforge/project/extension_registry.json'
+2026-11-08T01:57:35.4917827Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4918238Z VIOLATION: packages/daemon-core/src/tools/lib/path-policy.ts:16: '.specforge/project/'
+2026-11-08T01:57:35.4918721Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4919184Z VIOLATION: packages/daemon-core/src/tools/lib/path-policy.ts:21: '.specforge/project/data_model.md'
+2026-11-08T01:57:35.4919704Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4920160Z VIOLATION: packages/daemon-core/src/tools/lib/path-policy.ts:29: '.specforge/project/data_model.md'
+2026-11-08T01:57:35.4920677Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4921132Z VIOLATION: packages/daemon-core/src/tools/lib/path-policy.ts:52: '.specforge/project/data_model.md'
+2026-11-08T01:57:35.4921651Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4922038Z VIOLATION: packages/daemon-core/src/tools/lib/path-policy.ts:68: '.specforge/'
+2026-11-08T01:57:35.4922481Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4923009Z VIOLATION: packages/daemon-core/src/tools/lib/governance-invariants-v11.ts:363: '.specforge/project/data_model.md'
+2026-11-08T01:57:35.4923736Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4924286Z VIOLATION: packages/daemon-core/src/tools/lib/governance-invariants-v11.ts:365: '.specforge/project/requirements_index.md'
+2026-11-08T01:57:35.4924894Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4925421Z VIOLATION: packages/daemon-core/src/tools/lib/governance-invariants-v11.ts:367: '.specforge/project/design_index.md'
+2026-11-08T01:57:35.4926268Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4926796Z VIOLATION: packages/daemon-core/src/tools/lib/governance-invariants-v11.ts:374: '.specforge/project/trace_matrix.md'
+2026-11-08T01:57:35.4927381Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4927901Z VIOLATION: packages/daemon-core/src/tools/lib/governance-invariants-v11.ts:376: '.specforge/project/architecture.md'
+2026-11-08T01:57:35.4928637Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4929155Z VIOLATION: packages/daemon-core/src/tools/lib/governance-invariants-v11.ts:378: '.specforge/project/glossary.md'
+2026-11-08T01:57:35.4929728Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4930245Z VIOLATION: packages/daemon-core/src/tools/lib/governance-invariants-v11.ts:380: '.specforge/project/decisions.md'
+2026-11-08T01:57:35.4930821Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4931301Z VIOLATION: packages/daemon-core/src/tools/lib/governance-invariants-v11.ts:410: '.specforge/project/'
+2026-11-08T01:57:35.4931831Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4932353Z VIOLATION: packages/daemon-core/src/tools/lib/governance-invariants-v11.ts:495: '.specforge/project/architecture.md'
+2026-11-08T01:57:35.4932937Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4933453Z VIOLATION: packages/daemon-core/src/tools/lib/governance-invariants-v11.ts:500: '.specforge/project/data_model.md'
+2026-11-08T01:57:35.4934037Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4934598Z VIOLATION: packages/daemon-core/src/tools/lib/governance-invariants-v11.ts:505: '.specforge/project/extension_registry.json'
+2026-11-08T01:57:35.4935210Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4935924Z VIOLATION: packages/daemon-core/src/tools/lib/governance-invariants-v11.ts:556: '.specforge/project/trace_matrix.md'
+2026-11-08T01:57:35.4936513Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4937028Z VIOLATION: packages/daemon-core/src/tools/lib/governance-invariants-v11.ts:917: '.specforge/project/trace_matrix.md'
+2026-11-08T01:57:35.4937603Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4938049Z VIOLATION: packages/daemon-core/src/tools/lib/governance-invariants-v11.ts:969: '.specforge', '
+2026-11-08T01:57:35.4938553Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4939023Z VIOLATION: packages/daemon-core/src/tools/lib/governance-invariants-v11.ts:1029: '.specforge/project/'
+2026-11-08T01:57:35.4939561Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4940239Z VIOLATION: packages/daemon-core/src/tools/lib/state-coordinator-v11.ts:102: '.specforge/project/extension_registry.json'
+2026-11-08T01:57:35.4940839Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4941285Z VIOLATION: packages/daemon-core/src/tools/lib/state-coordinator-v11.ts:119: '.specforge/project/'
+2026-11-08T01:57:35.4941794Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4942243Z VIOLATION: packages/daemon-core/src/tools/lib/state-coordinator-v11.ts:133: '.specforge/project/'
+2026-11-08T01:57:35.4942744Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4943174Z VIOLATION: packages/daemon-core/src/tools/lib/gate-runner-v11.ts:728: '.specforge/project/'
+2026-11-08T01:57:35.4943705Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4944119Z VIOLATION: packages/daemon-core/src/tools/lib/gate-runner-v11.ts:1488: '.specforge', '
+2026-11-08T01:57:35.4944726Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4945227Z VIOLATION: packages/daemon-core/src/tools/lib/gate-runner-v11.ts:1492: '.specforge/project/ directory exists'
+2026-11-08T01:57:35.4946002Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4946433Z VIOLATION: packages/daemon-core/src/tools/lib/gate-runner-v11.ts:1828: '.specforge/project/'
+2026-11-08T01:57:35.4946922Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4947383Z VIOLATION: packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts:62: '.specforge/work-items'
+2026-11-08T01:57:35.4947909Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4948365Z VIOLATION: packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts:63: '.specforge/runtime'
+2026-11-08T01:57:35.4948871Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4949294Z VIOLATION: packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts:141: '.specforge/'
+2026-11-08T01:57:35.4949803Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4950233Z VIOLATION: packages/daemon-core/src/tools/lib/write-guard-v11.ts:119: '.specforge/project/'
+2026-11-08T01:57:35.4950728Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4951168Z VIOLATION: packages/daemon-core/src/tools/lib/authoritative-work-items.ts:17: '.specforge', '
+2026-11-08T01:57:35.4951671Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4952114Z VIOLATION: packages/daemon-core/src/tools/lib/changed-files-audit.ts:46: '.specforge/project/'
+2026-11-08T01:57:35.4952620Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4953039Z VIOLATION: packages/daemon-core/src/tools/lib/rollback-runner-v11.ts:111: '.specforge', '
+2026-11-08T01:57:35.4953523Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4953971Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-v11-work-item-create.ts:38: '.specforge', '
+2026-11-08T01:57:35.4954482Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4954914Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-v11-decision.ts:273: '.specforge', '
+2026-11-08T01:57:35.4955396Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4956015Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts:903: ".specforge", "
+2026-11-08T01:57:35.4956528Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4956984Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-semantic-closure-run.ts:145: '.specforge', '
+2026-11-08T01:57:35.4957500Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4957907Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-v11-merge.ts:249: '.specforge', '
+2026-11-08T01:57:35.4958378Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4958812Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-v11-verification.ts:37: '.specforge', '
+2026-11-08T01:57:35.4959304Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4959718Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-v11-rollback.ts:29: '.specforge', '
+2026-11-08T01:57:35.4960203Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4960755Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-v11-rollback.ts:66: '.specforge', '
+2026-11-08T01:57:35.4961241Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4961652Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-v11-rollback.ts:80: '.specforge', '
+2026-11-08T01:57:35.4962124Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4962579Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-artifact-write.ts:311: '.specforge/project/'
+2026-11-08T01:57:35.4963091Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4963603Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-artifact-write.ts:498: '.specforge/project/architecture.md'
+2026-11-08T01:57:35.4964174Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4964681Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-artifact-write.ts:506: '.specforge/project/data_model.md'
+2026-11-08T01:57:35.4965410Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4966204Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-artifact-write.ts:568: '.specforge/project/trace_matrix.md'
+2026-11-08T01:57:35.4966798Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4967308Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-artifact-write.ts:641: '.specforge/project/architecture.md'
+2026-11-08T01:57:35.4967871Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4968366Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-artifact-write.ts:644: '.specforge/project/data_model.md'
+2026-11-08T01:57:35.4968923Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4969434Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-artifact-write.ts:707: '.specforge/project/architecture.md'
+2026-11-08T01:57:35.4969997Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4970493Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-artifact-write.ts:712: '.specforge/project/data_model.md'
+2026-11-08T01:57:35.4971058Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4971593Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-v11-code-permission.ts:190: '.specforge' || p.startsWith('
+2026-11-08T01:57:35.4972160Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4992035Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-v11-code-permission.ts:215: '.specforge', '
+2026-11-08T01:57:35.4992692Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4993136Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-safe-bash.ts:98: '.specforge/**'
+2026-11-08T01:57:35.4993640Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4994084Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-safe-bash.ts:149: '.specforge/'
+2026-11-08T01:57:35.4994565Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4995048Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-safe-bash.ts:209: '.specforge/project/'
+2026-11-08T01:57:35.4995816Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4996524Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-safe-bash.ts:210: '.specforge/config/'
+2026-11-08T01:57:35.4997089Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4997548Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-safe-bash.ts:211: '.specforge/runtime/'
+2026-11-08T01:57:35.4998060Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4998524Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-safe-bash.ts:212: '.specforge/work-items/'
+2026-11-08T01:57:35.4999034Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.4999460Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-safe-bash.ts:213: '.specforge/logs/'
+2026-11-08T01:57:35.4999952Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.5000392Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-safe-bash.ts:214: '.specforge/specs/'
+2026-11-08T01:57:35.5000894Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.5001457Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-safe-bash.ts:215: '.specforge/cas/'
+2026-11-08T01:57:35.5001957Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.5002399Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-safe-bash.ts:222: '.specforge/runtime/'
+2026-11-08T01:57:35.5002908Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.5003339Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-safe-bash.ts:259: '.specforge/reports'
+2026-11-08T01:57:35.5003829Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.5004261Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-safe-bash.ts:259: '.specforge/reports/'
+2026-11-08T01:57:35.5004754Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.5005167Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-safe-bash.ts:318: '.specforge/**'
+2026-11-08T01:57:35.5005888Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.5006360Z VIOLATION: packages/daemon-core/src/tools/handlers/sf-verification-gate.ts:26: '.specforge','
+2026-11-08T01:57:35.5006889Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.5007350Z VIOLATION: packages/daemon-core/tests/helpers/current-daemon-test-config.ts:10: '.specforge', '
+2026-11-08T01:57:35.5007857Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.5008479Z VIOLATION: packages/daemon-core/tests/fixtures/configuration-activation-process.ts:18: '.specforge/runtime/configuration-activation.json'
+2026-11-08T01:57:35.5009170Z   → 建议：使用 directory-layout.ts 的常量/函数调用替代
+2026-11-08T01:57:35.5009355Z 
+2026-11-08T01:57:35.5009451Z Found 220 violation(s) in 74 file(s).
+2026-11-08T01:57:35.5020996Z ##[error]Process completed with exit code 1.
+2026-11-08T01:57:35.5176617Z Post job cleanup.
+2026-11-08T01:57:35.6113826Z [command]/usr/bin/git version
+2026-11-08T01:57:35.6163176Z git version 2.56.0
+2026-11-08T01:57:35.6205746Z Temporarily overriding HOME='/home/runner/work/_temp/1b2e647c-b83d-4b8b-a021-a74f9c6f40da' before making global git config changes
+2026-11-08T01:57:35.6207165Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-08T01:57:35.6210981Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/SpecForge/SpecForge
+2026-11-08T01:57:35.6260395Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-08T01:57:35.6305896Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-08T01:57:35.6716644Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-08T01:57:35.6749302Z http.https://github.com/.extraheader
+2026-11-08T01:57:35.6763678Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-08T01:57:35.6817565Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-08T01:57:35.7209226Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-08T01:57:35.7247140Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-08T01:57:35.7744383Z Cleaning up orphan processes
+2026-11-08T01:57:35.8183311Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+

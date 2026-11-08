@@ -1,0 +1,8 @@
+{
+  "current_tools": 45,
+  "metadata_only": true,
+  "retired_artifact_selectors_absent": true,
+  "current_workflow_only": true,
+  "semantic_schema_explicit": true,
+  "no_model_prompt": true
+}

@@ -1,0 +1,37 @@
+ M .github/workflows/code-quality.yml
+ M .github/workflows/distribution-smoke.yml
+ M bun.lock
+ M docs/product-specification/specforge-product-specification.md
+ M package.json
+ M packages/cli/package.json
+ M packages/cli/src/commands/daemon-client.ts
+ M packages/cli/src/help/HelpSystem.ts
+ M packages/cli/tests/help-system.test.ts
+ M packages/configuration/package.json
+ M packages/daemon-core/package.json
+ M packages/daemon-core/tests/design-governance-live-closure.test.ts
+ M packages/daemon-core/tests/unit/specforge-development-err125.test.ts
+ M packages/daemon-core/tests/unit/verifier-guidance-execution-boundary.test.ts
+ M packages/host-profile/package.json
+ M packages/observability/package.json
+ M packages/observability/tests/unit/project-structure.test.ts
+ M packages/opencode-adapter/package.json
+ M packages/permission-engine/package.json
+ M packages/scope-gate/package.json
+ M packages/scope-gate/tests/root-test-role-registry.test.ts
+ M packages/service-management/package.json
+ M packages/service-management/src/orchestrator/healthcheck.ts
+ M packages/types/package.json
+ M packages/version-unification/package.json
+ M packages/workflow-runtime/package.json
+ M tests/integration/service-management/linux-systemd-full-lifecycle.test.ts
+ M tests/unit/current-product-version-contract.test.ts
+ M tests/unit/installer/cmdVerify.test.ts
+ M tests/unit/installer/command_path.test.ts
+ M tests/unit/installer/installer_manifest_path_contract.test.ts
+?? docs/archive/
+?? packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts
+?? packages/service-management/tests/unit/healthcheck-request-timer.test.ts
+?? scripts/lib/prepare-current-release.ts
+?? scripts/prepare-current-release.ts
+?? scripts/verify-platform-release.ts

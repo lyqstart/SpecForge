@@ -1,0 +1,1 @@
+{"platform":"linux","result":"FAIL","report":"/tmp/sf-platform-acceptance-LnU2Kn/report","checks":{"installed_files":114}}

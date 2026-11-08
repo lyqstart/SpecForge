@@ -1,0 +1,15 @@
+{
+  "number": "036",
+  "name": "official-daemon-stop",
+  "executable": "/tmp/sf-platform-acceptance-ENg2N6/opencode/sf-user/bin/specforge",
+  "args": [
+    "daemon",
+    "stop",
+    "--json"
+  ],
+  "started_utc": "2026-11-08T05:54:46.424Z",
+  "finished_utc": "2026-11-08T05:54:46.533Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

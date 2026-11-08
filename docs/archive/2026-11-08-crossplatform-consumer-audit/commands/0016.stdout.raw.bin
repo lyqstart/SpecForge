@@ -1,0 +1,18 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/service-management
+
+ ❯ tests/unit/healthcheck-request-timer.test.ts (4 tests | 4 failed) 29ms
+   × health request timeout ownership > clears the explicit loser timer after httpGet success 21ms
+     → expected 1 to be +0 // Object.is equality
+   × health request timeout ownership > clears the explicit loser timer after httpGet rejection 2ms
+     → expected 1 to be +0 // Object.is equality
+   × health request timeout ownership > clears the explicit loser timer after httpGetRaw success 2ms
+     → expected 1 to be +0 // Object.is equality
+   × health request timeout ownership > clears the explicit loser timer after httpGetRaw rejection 2ms
+     → expected 1 to be +0 // Object.is equality
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  10:14:10
+   Duration  1.28s (transform 154ms, setup 0ms, collect 209ms, tests 29ms, environment 0ms, prepare 334ms)
+

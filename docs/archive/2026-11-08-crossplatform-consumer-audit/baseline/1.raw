@@ -1,0 +1,142 @@
+# Distribution Smoke Test Workflow
+#
+# 三平台烟雾测试（REQ-5.2）
+# - 在 Windows/macOS/Ubuntu 上运行完整的安装-初始化-基本命令验证
+# - 任一矩阵作业非 0 即整 workflow 失败
+#
+# Requirements: 5.2, 5.6
+
+name: Distribution Smoke Tests
+
+on:
+  push:
+    branches:
+      - main
+      - release/**
+  pull_request:
+    branches:
+      - main
+      - release/**
+  workflow_dispatch:
+    inputs:
+      tarball:
+        description: 'Optional path to local tarball'
+        required: false
+        type: string
+
+jobs:
+  smoke:
+    name: Smoke Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      
+      - name: Pack CLI package
+        run: |
+          cd packages/cli
+          bun run build
+          cd ../..
+          bun pack packages/cli
+        shell: bash
+      
+      - name: Find tarball
+        id: find-tarball
+        run: |
+          # Find the most recent .tgz file in the packages/cli directory
+          TARBALL=$(find packages/cli -name "*.tgz" -type f | head -n 1)
+          if [ -z "$TARBALL" ]; then
+            echo "No tarball found"
+            exit 1
+          fi
+          echo "tarball=$TARBALL" >> $GITHUB_OUTPUT
+        shell: bash
+      
+      - name: Run smoke test
+        env:
+          TARBALL: ${{ matrix.os == 'windows-latest' && 'packages\cli\*.tgz' || 'packages/cli/*.tgz' }}
+          TEMP_HOME: ${{ runner.temp }}/specforge-smoke
+          SMOKE_REPORT_PATH: ${{ github.workspace }}/smoke-report.json
+        run: |
+          # Find the actual tarball path
+          if [ -n "${{ github.event.inputs.tarball }}" ]; then
+            TARBALL_PATH="${{ github.event.inputs.tarball }}"
+          else
+            # Use glob pattern to find tarball
+            if [ "$RUNNER_OS" == "Windows" ]; then
+              TARBALL_PATH=$(Get-ChildItem packages/cli/*.tgz | Select-Object -First 1 -ExpandProperty FullName)
+            else
+              TARBALL_PATH=$(ls packages/cli/*.tgz | head -n 1)
+            fi
+          fi
+          
+          echo "Using tarball: $TARBALL_PATH"
+          
+          # Create temp home directory
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            New-Item -ItemType Directory -Force -Path ${{ runner.temp }}/specforge-smoke
+          else
+            mkdir -p ${{ runner.temp }}/specforge-smoke
+          fi
+          
+          # Run smoke test
+          bun run scripts/smoke-runner.ts \
+            --tarball="$TARBALL_PATH" \
+            --temp-home=${{ runner.temp }}/specforge-smoke \
+            --report-path=${{ github.workspace }}/smoke-report.json
+        shell: bash
+      
+      - name: Upload smoke report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-report-${{ matrix.os }}
+          path: smoke-report.json
+          retention-days: 30
+      
+      - name: Check smoke test result
+        run: |
+          if [ -f smoke-report.json ]; then
+            STATUS=$(cat smoke-report.json | jq -r '.overallStatus')
+            echo "Smoke test status: $STATUS"
+            if [ "$STATUS" != "passed" ]; then
+              echo "Smoke test failed with status: $STATUS"
+              exit 1
+            fi
+          else
+            echo "Smoke report not found"
+            exit 1
+          fi
+        shell: bash
+
+  # Aggregate job to ensure all matrix jobs succeed
+  aggregate:
+    name: Aggregate Results
+    needs: smoke
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check all jobs succeeded
+        run: |
+          # Check if any smoke job failed
+          if echo '${{ toJson(needs.smoke.result) }}' | grep -q '"failure"'; then
+            echo "One or more smoke tests failed"
+            exit 1
+          fi
+          if echo '${{ toJson(needs.smoke.result) }}' | grep -q '"cancelled"'; then
+            echo "One or more smoke tests were cancelled"
+            exit 1
+          fi
+          echo "All smoke tests passed!"

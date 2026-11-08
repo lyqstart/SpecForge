@@ -1,0 +1,24 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/run-linux.cjs",
+    "run",
+    "test:root:environmental"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-linux-systemd-lifecycle-fixed",
+  "expected_writes": "RUNTIME_OBSERVER_WRITES",
+  "started_utc": "2026-11-08T02:22:26.726Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\run-linux.cjs",
+      "sha256": "3e423eb0376a1ffde8eff75475df07392c94c134b92c2673a6c62cce8efd8a33",
+      "size": 1240,
+      "extension": ".cjs"
+    }
+  ]
+}

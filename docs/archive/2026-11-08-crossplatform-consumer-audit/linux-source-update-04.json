@@ -1,0 +1,176 @@
+{
+  "utc": "2026-11-08T02:56:50.660Z",
+  "target": "/tmp/specforge-crossplatform-20261108-a01",
+  "source": "/mnt/d/code/SpecForge",
+  "members": [
+    {
+      "path": "docs/cli/installation-setup.md",
+      "sha256": "2fc8d5fc0f22c5c3ab2574c9a47a351aa471e6e0dad66629c0f75a6a6bc77cc2",
+      "bytes": 2582,
+      "before_sha256": "d5075dce2cc611dae4b57643e8b89d0c8dc750602944b43ba1f359ce7a22c2ef"
+    },
+    {
+      "path": "docs/conventions/agent-roles.md",
+      "sha256": "04d0613fbdcde05bdf4a0737bdf3037bf6e3e8cc1126894c9d40dce6a079d3a7",
+      "bytes": 1441,
+      "before_sha256": "4b54fa6d7356ea48e2988c5b26049bd350cd18e49fcedfdf5c4e75bdd0268ca1"
+    },
+    {
+      "path": "docs/conventions/wi-lifecycle.md",
+      "sha256": "efd16d2c40acf5bc5e10218eeb76bdabae48430cb9fb696b8764da11e6bc54da",
+      "bytes": 1646,
+      "before_sha256": "16acebcd2dbb231366b111a4b009099a17ad44675ffc0d66950d4ddee56766b0"
+    },
+    {
+      "path": "docs/engineering-lessons/README.md",
+      "sha256": "764a1f1c25871667947729e44ba39d77f0d730fe76e6e3deae7144323d1b9274",
+      "bytes": 1726,
+      "before_sha256": "b8b235edd10b7d782538e61df7d2db647a149a959353b77b17e4ecfc9c74b981"
+    },
+    {
+      "path": "docs/project-status.md",
+      "sha256": "b415183edce6bcecb9d3b31c0422fe509e1a74ef9d78f9d62a828718a1c37221",
+      "bytes": 5979,
+      "before_sha256": "0042b8f13003ce3d0e8a46357a84877b4a6af88d4cb6c827eeb0837f21d86e09"
+    },
+    {
+      "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "sha256": "f8c4e991f8afc30ea1adc5ec8a02d400bd4d3827a69fdfa582c5bf802dd5e3e6",
+      "bytes": 4490651,
+      "before_sha256": "8fb62bf6391eafbb804e558db809eb41ad004a7a123023b520be2aece7514f1d"
+    },
+    {
+      "path": "docs/user/install.md",
+      "sha256": "73b5a70cb4c6c30bcf63621cfaa9e70eab5e3f5d67f9e6e49e5789872ff0fc3f",
+      "bytes": 2509,
+      "before_sha256": "91fb0b1e994dfb41a90cfa6f4a9576b36fcc2495fa90807b0badbcfde2c2ae57"
+    },
+    {
+      "path": "docs/user/work-item-flow.md",
+      "sha256": "790dc2b12e5f95ca9c0a8a153160f09cafe8e7ff27c326205b055bdb58062cc5",
+      "bytes": 1406,
+      "before_sha256": "10c3381d192a0ed54bac29800e72a8a6cef2d8d1d55d0fc7c4f546a77a337509"
+    },
+    {
+      "path": "package.json",
+      "sha256": "eb9e74ff893cc6aa205fb661ed4fd5f78918589eb27b7cde48737424399103c9",
+      "bytes": 2659,
+      "before_sha256": "7c58f73f2dd404dc25c77ed79f99b6b46fe392ac342178d329241158ee723fe9"
+    },
+    {
+      "path": "packages/cli/src/help/HelpSystem.ts",
+      "sha256": "f7eceb0c47a061c7e396a6a8912db6ba49186ca2a9b24c8cad9b26a00b95312c",
+      "bytes": 30415,
+      "before_sha256": "56833d6bc914c5dae6d619a6042b4208aa3eddc15ec79d072c3a2a54a79cc93e"
+    },
+    {
+      "path": "packages/cli/tests/help-system.test.ts",
+      "sha256": "3069ed34896eda1ca136e3aa265c472ff8d52e00f464f55f9de6b068fe89a428",
+      "bytes": 12104,
+      "before_sha256": "79cee240e5985f6a9c30a3e5ab13237d0829204f16397b2f8f2f0f45981ddba4"
+    },
+    {
+      "path": "packages/configuration/README.md",
+      "sha256": "0a69422b51cd4fe123019b27cfe7edb8b3b872237d01de0d0de11fa254c075c0",
+      "bytes": 1794,
+      "before_sha256": "38eece47bff811aad9c771a1d45dd0529567d86f5966c6ba96b3687aa10bce08"
+    },
+    {
+      "path": "packages/configuration/docs/README.md",
+      "sha256": "84d91d749fa955847fe9883372aaa152ac913ba8a0dc2a76d092b7d0a9e207b9",
+      "bytes": 663,
+      "before_sha256": "b531ddb132af1777303c78f2537f6dc8f06d78550f18363490103c3153747dbc"
+    },
+    {
+      "path": "packages/configuration/docs/best-practices.md",
+      "sha256": "defd3de36121dd0afab062b01593b48dc4bdd74385520bab2964f1aafbd7c802",
+      "bytes": 1275,
+      "before_sha256": "bb856401e17c7fbda3bce526d05676743430b8bb8d55991f0161eddc966ced73"
+    },
+    {
+      "path": "packages/configuration/docs/configuration-format.md",
+      "sha256": "f48dc259b81e4635fa2063f7e448b7e3557b888a2ccc1f7dda5d17f58d83b6aa",
+      "bytes": 1666,
+      "before_sha256": "fd669c36fedfbbd027ffa6abf48731107d94c8305753235d36147d5247ba181e"
+    },
+    {
+      "path": "packages/configuration/docs/examples.md",
+      "sha256": "7fcf587760c5ddda86fe4c1b384d61eae6522665436a32cefc40632d1a70353b",
+      "bytes": 1121,
+      "before_sha256": "83c222a3f424de203b81caa1a4fd07aa6e88e9bdc4be87400d48b47425977a42"
+    },
+    {
+      "path": "packages/daemon-core/docs/README.md",
+      "sha256": "a6203cdd5ee40f81977bc2743d6df9470a35bed007d0f98c9700f0f69ccb30ae",
+      "bytes": 1035,
+      "before_sha256": "cd8d99fad4a0417b1701811afa9ff7e0e08cb5a2b40970fc7477fe34eb4e97a6"
+    },
+    {
+      "path": "packages/daemon-core/docs/authentication.md",
+      "sha256": "dab39e1fb580f371f7715c295209a9b41e93aae08afcb5f77a94178505f2d9a4",
+      "bytes": 1513,
+      "before_sha256": "7a01e9cff28d8b413b0df0418ba0b02f22993521048196740ba461872354536a"
+    },
+    {
+      "path": "packages/daemon-core/docs/cli-integration.md",
+      "sha256": "3b92a7bbc9ec9abb3fe2d7c818ebccd3f030ba0a0ae0d1ac12f4a24e7b0f6481",
+      "bytes": 1238,
+      "before_sha256": "1c2de3b4c21ae4cf6562a196918fbd94f35d3e7a241e484671a0fb56dc592375"
+    },
+    {
+      "path": "packages/daemon-core/docs/thin-plugin-integration.md",
+      "sha256": "ae6acbd01b5fd70501fd5a6d206d1658bd00f958a8e245869a3eb430a587bc4c",
+      "bytes": 1387,
+      "before_sha256": "c6a36abec005e4b7b2681726d14f839050834e6094c4a92e29c831eb5396f0f4"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/manifest-compatibility.unit.test.ts",
+      "sha256": "6201332ee682d7e117c99d0e6904b690db13701c970aabf501ed9f21c6fd84b7",
+      "bytes": 2782,
+      "before_sha256": "0b46c14d94674c076a03ce25781875cfce262da640466353b4ede0621ea24f2d"
+    },
+    {
+      "path": "packages/opencode-adapter/README.md",
+      "sha256": "8c695423f3d0b0e0f4a1011d0d9fd443e8efe9dde76ef5f89abcb4e50d347244",
+      "bytes": 955,
+      "before_sha256": "2e06a731de4b0be3cf4431a651388327847a42e8c2d7de798181ff33e2ae2f63"
+    },
+    {
+      "path": "packages/opencode-adapter/docs/installation.md",
+      "sha256": "f2a58cdaab117f357433ef41f38bf7aecc48f88563541ed9967e3561c3ee3c5f",
+      "bytes": 1288,
+      "before_sha256": "a85e269c897873bb315df84911e985455b2a071a72fb0434d545e300e38e5339"
+    },
+    {
+      "path": "packages/scope-gate/src/node-release-surface-producers.ts",
+      "sha256": "6867cb2df1de34f5fb6b9f9fb3ef8deae077d990f80bb8d8b4724ac50f5c59b7",
+      "bytes": 12877,
+      "before_sha256": "96fa1e719c1262e7e8ed7344fa2f92517e13ae4acbc220be1ea944d5142af7eb"
+    },
+    {
+      "path": "packages/scope-gate/tests/node-release-surface-producers.test.ts",
+      "sha256": "ea3266304312106867802325496be6e78697541fb988c248c9c054eeb111fc58",
+      "bytes": 7602,
+      "before_sha256": "6ae63ab2b14f854306eea1c92cee462db3566b4ebad60c14963423ff629dcaa6"
+    },
+    {
+      "path": "setup/README.md",
+      "sha256": "0757874b1eac0cbf30521c7a5efb79e172aa7a1e82654ef68ee84ca3773f2b24",
+      "bytes": 669,
+      "before_sha256": "502f4d8443b4ec3fd80c8f5165d9295d159e2c1da9bcd5670beb75532b7bf69c"
+    },
+    {
+      "path": "packages/scope-gate/tests/current-operating-doc-contract.test.ts",
+      "sha256": "70408bd8410d4aa77c54aff3272d1b5f943833412457a609053a8d4d6232d590",
+      "bytes": 2693,
+      "before_sha256": null
+    },
+    {
+      "path": "scripts/verify-platform-release.ts",
+      "sha256": "0a2db7a108bd31db4583ee1f06e4626a3b483d3c9da820d8b89e94f969fbb0d2",
+      "bytes": 8916,
+      "before_sha256": "eca998e6d094d9b3935f699687a05b76ddcc60e1a867617d97a2225d51bc36a1"
+    }
+  ],
+  "qualification": "Exact current-source delta; previous update receipts required. Generated release assets are not source."
+}

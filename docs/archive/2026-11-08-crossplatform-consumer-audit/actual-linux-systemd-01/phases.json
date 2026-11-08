@@ -1,0 +1,80 @@
+[
+  {
+    "file": "/tmp/specforge-crossplatform-20261108-a01/bin/bun",
+    "args": [
+      "scripts/sf-installer.ts",
+      "install"
+    ],
+    "exit": 0,
+    "stdout": "📦 正在安装 SpecForge 共享组件...\n   OpenCode 配置根: /tmp/sf-systemd-daemon-Sw2ReR/config\n\n\n✅ 安装完成\n   已部署: 114 个共享组件文件\n   OpenCode 配置根: /tmp/sf-systemd-daemon-Sw2ReR/config\n   CLI 命令目录: /tmp/sf-systemd-daemon-Sw2ReR/config/sf-user/bin\n   ⚠ 当前 shell 尚不能直接运行 specforge。请执行:\n   export PATH='/tmp/sf-systemd-daemon-Sw2ReR/config/sf-user/bin':\"$PATH\"\n   并将同一行加入当前 shell 的 profile，随后打开新终端。\n   提示: 需要重启 OpenCode 才能加载新版 Plugin\n",
+    "stderr": ""
+  },
+  {
+    "file": "/tmp/specforge-crossplatform-20261108-a01/bin/bun",
+    "args": [
+      "scripts/sf-installer.ts",
+      "verify"
+    ],
+    "exit": 0,
+    "stdout": "🔍 正在校验 SpecForge 共享组件完整性...\n   OpenCode 配置根: /tmp/sf-systemd-daemon-Sw2ReR/config\n\n🔍 SpecForge 安装完整性校验\n==================================================\n✅ 校验通过（114 个文件完整）\n",
+    "stderr": ""
+  },
+  {
+    "file": "systemctl",
+    "args": [
+      "--user",
+      "show",
+      "specforge-daemon-audit-ff1fd25b-1466-4605-8e1b-b4370a868977",
+      "--property=MainPID",
+      "--value"
+    ],
+    "exit": 0,
+    "stdout": "209711\n",
+    "stderr": ""
+  },
+  {
+    "file": "systemctl",
+    "args": [
+      "--user",
+      "show",
+      "specforge-daemon-audit-ff1fd25b-1466-4605-8e1b-b4370a868977",
+      "--property=MainPID",
+      "--value"
+    ],
+    "exit": 0,
+    "stdout": "209750\n",
+    "stderr": ""
+  },
+  {
+    "file": "systemctl",
+    "args": [
+      "--user",
+      "is-active",
+      "specforge-daemon-audit-ff1fd25b-1466-4605-8e1b-b4370a868977"
+    ],
+    "exit": 3,
+    "stdout": "inactive\n",
+    "stderr": ""
+  },
+  {
+    "file": "systemctl",
+    "args": [
+      "--user",
+      "is-enabled",
+      "specforge-daemon-audit-ff1fd25b-1466-4605-8e1b-b4370a868977"
+    ],
+    "exit": 4,
+    "stdout": "not-found\n",
+    "stderr": ""
+  },
+  {
+    "file": "/tmp/specforge-crossplatform-20261108-a01/bin/bun",
+    "args": [
+      "scripts/sf-installer.ts",
+      "uninstall"
+    ],
+    "exit": 0,
+    "stdout": "🗑️ 正在卸载 SpecForge 共享组件...\n   OpenCode 配置根: /tmp/sf-systemd-daemon-Sw2ReR/config\n\n\n✅ 卸载完成\n   已删除: 114 个文件\n",
+    "stderr": ""
+  }
+]

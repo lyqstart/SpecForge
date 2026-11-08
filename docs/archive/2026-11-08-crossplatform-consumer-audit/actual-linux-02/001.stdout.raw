@@ -1,0 +1,12 @@
+📦 正在安装 SpecForge 共享组件...
+   OpenCode 配置根: /tmp/sf-platform-acceptance-sj8XYG/opencode
+
+
+✅ 安装完成
+   已部署: 114 个共享组件文件
+   OpenCode 配置根: /tmp/sf-platform-acceptance-sj8XYG/opencode
+   CLI 命令目录: /tmp/sf-platform-acceptance-sj8XYG/opencode/sf-user/bin
+   ⚠ 当前 shell 尚不能直接运行 specforge。请执行:
+   export PATH='/tmp/sf-platform-acceptance-sj8XYG/opencode/sf-user/bin':"$PATH"
+   并将同一行加入当前 shell 的 profile，随后打开新终端。
+   提示: 需要重启 OpenCode 才能加载新版 Plugin

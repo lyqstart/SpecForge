@@ -1,0 +1,27 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "wsl.exe",
+  "args": [
+    "--distribution",
+    "Ubuntu-24.04",
+    "--cd",
+    "/tmp/specforge-crossplatform-20261108-a01/project/packages/daemon-core",
+    "--exec",
+    "/usr/bin/env",
+    "PATH=/tmp/specforge-crossplatform-20261108-a01/bin:/usr/local/bin:/usr/bin:/bin",
+    "OPENCODE_CONFIG_DIR=/tmp/specforge-crossplatform-20261108-a01/test-opencode",
+    "/tmp/specforge-crossplatform-20261108-a01/bin/bun",
+    "run",
+    "test",
+    "--",
+    "tests/design-governance-live-closure.test.ts",
+    "tests/design-governance-contract.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-linux-canonical-design-phase-tests",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T03:26:06.667Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": []
+}

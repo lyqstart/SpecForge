@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-08T06:57:49.304Z",
+  "updates": [
+    {
+      "file": "docs/project-status.md",
+      "old_sha256": "d364f09b0f992036e29f57ddbd7153210c80555614f6a0b1e2a5ab1a5194d479",
+      "new_sha256": "fac81c77cc02eb7b7749f14843be66d718baab65f0b0ceede4767ff844b0d6fb"
+    }
+  ],
+  "old": "conformance-assessment-v2.json",
+  "new": "conformance-assessment-v3.json",
+  "reason": "The final status closure intentionally followed original assessment generation; runtime owners and all judgments unchanged."
+}

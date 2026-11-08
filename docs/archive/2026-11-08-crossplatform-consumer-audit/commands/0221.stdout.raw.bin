@@ -1,0 +1,14 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/current-doc-lint-authority.test.ts (2 tests | 2 failed) 28ms
+   × current document lint authority > does not impose historical V6 product acceptance lists on a business Candidate 26ms
+     → expected 'fail' to be 'pass' // Object.is equality
+   × current document lint authority > refuses a retired document type before reading an unowned path 1ms
+     → expected undefined to be 'UNSUPPORTED_CURRENT_DOCUMENT_TYPE' // Object.is equality
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  13:21:42
+   Duration  970ms (transform 305ms, setup 0ms, collect 546ms, tests 28ms, environment 0ms, prepare 159ms)
+

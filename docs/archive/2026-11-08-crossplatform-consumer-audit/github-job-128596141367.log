@@ -1,0 +1,161 @@
+﻿2026-11-08T01:57:12.9235533Z Current runner version: '2.338.2'
+2026-11-08T01:57:12.9257115Z ##[group]Runner Image Provisioner
+2026-11-08T01:57:12.9257699Z Hosted Compute Agent
+2026-11-08T01:57:12.9258042Z Version: 20261103.629
+2026-11-08T01:57:12.9258426Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-08T01:57:12.9258850Z Build Date: 2026-11-03T17:26:59Z
+2026-11-08T01:57:12.9259257Z Worker ID: {63218db4-0e7f-4d33-8951-826c94fdaf09}
+2026-11-08T01:57:12.9259664Z Region: westus3
+2026-11-08T01:57:12.9259967Z Cloud: Azure
+2026-11-08T01:57:12.9260273Z ##[endgroup]
+2026-11-08T01:57:12.9261072Z ##[group]Operating System
+2026-11-08T01:57:12.9261435Z Microsoft Windows Server 2025
+2026-11-08T01:57:12.9261792Z 10.0.26100
+2026-11-08T01:57:12.9262093Z Datacenter
+2026-11-08T01:57:12.9262377Z ##[endgroup]
+2026-11-08T01:57:12.9262693Z ##[group]Runner Image
+2026-11-08T01:57:12.9263067Z Image: windows-2025-vs2026
+2026-11-08T01:57:12.9263409Z Version: 20261103.298.1
+2026-11-08T01:57:12.9264343Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20261103.298/images/windows/Windows2025-VS2026-Readme.md
+2026-11-08T01:57:12.9265239Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20261103.298
+2026-11-08T01:57:12.9265789Z ##[endgroup]
+2026-11-08T01:57:12.9266498Z ##[group]GITHUB_TOKEN Permissions
+2026-11-08T01:57:12.9267802Z Contents: read
+2026-11-08T01:57:12.9268126Z Metadata: read
+2026-11-08T01:57:12.9268434Z Packages: read
+2026-11-08T01:57:12.9268724Z ##[endgroup]
+2026-11-08T01:57:12.9270201Z Secret source: Actions
+2026-11-08T01:57:12.9270721Z Cache mode: write
+2026-11-08T01:57:12.9271179Z Prepare workflow directory
+2026-11-08T01:57:12.9502916Z Prepare all required actions
+2026-11-08T01:57:12.9537970Z Getting action download info
+2026-11-08T01:57:13.2382580Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-08T01:57:13.3972684Z Complete job name: Windows 源码 LF 检出治理
+2026-11-08T01:57:13.5160046Z ##[group]Run actions/checkout@v4
+2026-11-08T01:57:13.5160801Z with:
+2026-11-08T01:57:13.5161040Z   repository: lyqstart/SpecForge
+2026-11-08T01:57:13.5164169Z   token: ***
+2026-11-08T01:57:13.5164402Z   ssh-strict: true
+2026-11-08T01:57:13.5164642Z   ssh-user: git
+2026-11-08T01:57:13.5164888Z   persist-credentials: true
+2026-11-08T01:57:13.5165158Z   clean: true
+2026-11-08T01:57:13.5165396Z   sparse-checkout-cone-mode: true
+2026-11-08T01:57:13.5165683Z   fetch-depth: 1
+2026-11-08T01:57:13.5165920Z   fetch-tags: false
+2026-11-08T01:57:13.5166159Z   show-progress: true
+2026-11-08T01:57:13.5166403Z   lfs: false
+2026-11-08T01:57:13.5166629Z   submodules: false
+2026-11-08T01:57:13.5166875Z   set-safe-directory: true
+2026-11-08T01:57:13.5167157Z   allow-unsafe-pr-checkout: false
+2026-11-08T01:57:13.5167570Z ##[endgroup]
+2026-11-08T01:57:13.6182299Z Syncing repository: lyqstart/SpecForge
+2026-11-08T01:57:13.6183381Z ##[group]Getting Git version info
+2026-11-08T01:57:13.6183916Z Working directory is 'D:\a\SpecForge\SpecForge'
+2026-11-08T01:57:13.6657935Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-08T01:57:13.9749314Z git version 2.56.0.windows.4
+2026-11-08T01:57:13.9796525Z ##[endgroup]
+2026-11-08T01:57:13.9813202Z Temporarily overriding HOME='D:\a\_temp\2bd681b2-5a7e-4467-b7b8-74b3f9e9b33b' before making global git config changes
+2026-11-08T01:57:13.9814779Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-08T01:57:13.9823086Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\SpecForge\SpecForge
+2026-11-08T01:57:14.0367785Z Deleting the contents of 'D:\a\SpecForge\SpecForge'
+2026-11-08T01:57:14.0372600Z ##[group]Initializing the repository
+2026-11-08T01:57:14.0379580Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\SpecForge\SpecForge
+2026-11-08T01:57:14.1056066Z Initialized empty Git repository in D:/a/SpecForge/SpecForge/.git/
+2026-11-08T01:57:14.1098621Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/lyqstart/SpecForge
+2026-11-08T01:57:14.1852311Z ##[endgroup]
+2026-11-08T01:57:14.1852921Z ##[group]Disabling automatic garbage collection
+2026-11-08T01:57:14.1860611Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-11-08T01:57:14.2150079Z ##[endgroup]
+2026-11-08T01:57:14.2150613Z ##[group]Setting up auth
+2026-11-08T01:57:14.2159521Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-08T01:57:14.2460354Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-08T01:57:15.5237250Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-08T01:57:15.5542526Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-08T01:57:16.0269771Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-08T01:57:16.0561714Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-08T01:57:16.4824279Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-11-08T01:57:16.5123869Z ##[endgroup]
+2026-11-08T01:57:16.5124365Z ##[group]Fetching the repository
+2026-11-08T01:57:16.5132735Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +bb0f172aab26fab79d6484c458e0122d9353f604:refs/remotes/origin/main
+2026-11-08T01:57:21.7368221Z From https://github.com/lyqstart/SpecForge
+2026-11-08T01:57:21.7368957Z  * [new ref]           bb0f172aab26fab79d6484c458e0122d9353f604 -> origin/main
+2026-11-08T01:57:21.7404592Z ##[endgroup]
+2026-11-08T01:57:21.7404966Z ##[group]Determining the checkout info
+2026-11-08T01:57:21.7405753Z ##[endgroup]
+2026-11-08T01:57:21.7413523Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-11-08T01:57:21.7869093Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-11-08T01:57:21.8154044Z ##[group]Checking out the ref
+2026-11-08T01:57:21.8161147Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B main refs/remotes/origin/main
+2026-11-08T01:57:23.0131395Z Updating files:  11% (3312/28662)
+2026-11-08T01:57:23.0438482Z Updating files:  12% (3440/28662)
+2026-11-08T01:57:23.0728345Z Updating files:  13% (3727/28662)
+2026-11-08T01:57:23.2061579Z Updating files:  14% (4013/28662)
+2026-11-08T01:57:23.2568961Z Updating files:  15% (4300/28662)
+2026-11-08T01:57:23.2878934Z Updating files:  16% (4586/28662)
+2026-11-08T01:57:23.3577414Z Updating files:  17% (4873/28662)
+2026-11-08T01:57:23.4125577Z Updating files:  18% (5160/28662)
+2026-11-08T01:57:23.4622616Z Updating files:  19% (5446/28662)
+2026-11-08T01:57:23.5122085Z Updating files:  20% (5733/28662)
+2026-11-08T01:57:23.5941410Z Updating files:  21% (6020/28662)
+2026-11-08T01:57:23.6415438Z Updating files:  22% (6306/28662)
+2026-11-08T01:57:23.6750535Z Updating files:  23% (6593/28662)
+2026-11-08T01:57:23.7073065Z Updating files:  24% (6879/28662)
+2026-11-08T01:57:23.7451488Z Updating files:  25% (7166/28662)
+2026-11-08T01:57:23.7832847Z Updating files:  26% (7453/28662)
+2026-11-08T01:57:23.8206400Z Updating files:  27% (7739/28662)
+2026-11-08T01:57:23.8601175Z Updating files:  28% (8026/28662)
+2026-11-08T01:57:23.8932640Z Updating files:  29% (8312/28662)
+2026-11-08T01:57:23.9005485Z Updating files:  29% (8544/28662)
+2026-11-08T01:57:24.0755688Z Updating files:  30% (8599/28662)
+2026-11-08T01:57:24.1288721Z Updating files:  31% (8886/28662)
+2026-11-08T01:57:24.1699644Z Updating files:  32% (9172/28662)
+2026-11-08T01:57:24.2129177Z Updating files:  33% (9459/28662)
+2026-11-08T01:57:24.4276667Z Updating files:  34% (9746/28662)
+2026-11-08T01:57:24.4587555Z Updating files:  35% (10032/28662)
+2026-11-08T01:57:24.5414449Z Updating files:  36% (10319/28662)
+2026-11-08T01:57:24.5434142Z ##[error]error: unable to create file docs/archive/2026-11-07-verification-production/boundary-source-review/current/docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/src/storage/AtomicWorkflowInstanceStorage.ts: Filename too long
+2026-11-08T01:57:24.5440935Z ##[error]error: unable to create file docs/archive/2026-11-07-verification-production/boundary-source-review/current/docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/integration/persistence-comprehensive.test.ts: Filename too long
+2026-11-08T01:57:24.5443024Z ##[error]error: unable to create file docs/archive/2026-11-07-verification-production/boundary-source-review/current/docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/tests/unit/AtomicWorkflowInstanceStorage.test.ts: Filename too long
+2026-11-08T01:57:24.6011933Z Updating files:  37% (10605/28662)
+2026-11-08T01:57:24.6014522Z ##[error]error: unable to create file docs/archive/2026-11-07-verification-production/closed-original-and-merge-review-01/canonical/.specforge/work-items/WI-0001/handoffs/handoff_sf-executor_implementation_running-fix-round-task-wi-0001-004_1793720850902_be1a6f98db6c_0.json: Filename too long
+2026-11-08T01:57:24.8817544Z Updating files:  38% (10892/28662)
+2026-11-08T01:57:24.8937900Z Updating files:  39% (11179/28662)
+2026-11-08T01:57:25.0809967Z Updating files:  39% (11200/28662)
+2026-11-08T01:57:25.1916297Z Updating files:  40% (11465/28662)
+2026-11-08T01:57:25.4846133Z Updating files:  41% (11752/28662)
+2026-11-08T01:57:25.8973982Z Updating files:  42% (12039/28662)
+2026-11-08T01:57:25.8988480Z Updating files:  42% (12320/28662)
+2026-11-08T01:57:26.2850394Z Updating files:  43% (12325/28662)
+2026-11-08T01:57:26.6430941Z Updating files:  44% (12612/28662)
+2026-11-08T01:57:26.8990881Z Updating files:  45% (12898/28662)
+2026-11-08T01:57:26.9627982Z Updating files:  45% (13114/28662)
+2026-11-08T01:57:27.3498863Z Updating files:  46% (13185/28662)
+2026-11-08T01:57:27.6285985Z Updating files:  47% (13472/28662)
+2026-11-08T01:57:27.8718360Z Updating files:  48% (13758/28662)
+2026-11-08T01:57:27.9077962Z Updating files:  49% (14045/28662)
+2026-11-08T01:57:28.0983157Z Updating files:  49% (14085/28662)
+2026-11-08T01:57:28.2729110Z Updating files:  50% (14331/28662)
+2026-11-08T01:57:28.5827537Z Updating files:  51% (14618/28662)
+2026-11-08T01:57:28.7949382Z Updating files:  52% (14905/28662)
+2026-11-08T01:57:28.9079420Z Updating files:  53% (15191/28662)
+2026-11-08T01:57:28.9079743Z Updating files:  53% (15477/28662)
+2026-11-08T01:57:28.9382668Z Updating files:  54% (15478/28662)
+2026-11-08T01:57:28.9385129Z ##[error]fatal: cannot create directory at 'docs/archive/2026-11-07-verification-production/consumer-source-review/current/docs/archive/2026-11-07-verification-production/evidence-guidance-baseline/setup/userlevel-opencode/skills/superpowers-verification-before-completion': Filename too long
+2026-11-08T01:57:28.9559706Z ##[error]The process 'C:\Program Files\Git\bin\git.exe' failed with exit code 128
+2026-11-08T01:57:28.9873403Z Post job cleanup.
+2026-11-08T01:57:29.0953872Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-08T01:57:29.1221671Z git version 2.56.0.windows.4
+2026-11-08T01:57:29.1279245Z Temporarily overriding HOME='D:\a\_temp\95b820bf-5d7d-4d53-a3ce-096185b668fd' before making global git config changes
+2026-11-08T01:57:29.1279931Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-08T01:57:29.1287138Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\SpecForge\SpecForge
+2026-11-08T01:57:29.1609131Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-08T01:57:29.1922292Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-08T01:57:29.7660934Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-08T01:57:29.8015345Z http.https://github.com/.extraheader
+2026-11-08T01:57:29.8060249Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+2026-11-08T01:57:29.8390955Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-08T01:57:30.3085895Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-08T01:57:30.3416272Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-08T01:57:30.8167837Z Cleaning up orphan processes
+2026-11-08T01:57:30.8308342Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+

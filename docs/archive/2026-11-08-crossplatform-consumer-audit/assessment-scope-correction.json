@@ -1,0 +1,7 @@
+{
+  "utc": "2026-11-08T06:56:24.655Z",
+  "old": "conformance-assessment.json",
+  "new": "conformance-assessment-v2.json",
+  "correction": "Ambiguous root_each_platform_tests renamed root_tests_windows_and_linux; macOS full regression explicitly not claimed. Original Markdown platform table was already correct.",
+  "old_sha256": "6a39083bda6da229abf2ec961b2a6198a34ca8ef2d460f125c696db43006f7de"
+}

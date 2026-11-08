@@ -1,0 +1,40 @@
+$ vitest run tests/unit/reconnect-timer-ownership.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/reconnect-timer-ownership.test.ts > workspace reconnect timer ownership > owns exactly one real timer and settles pending delivery on disposal
+ FAIL  tests/unit/reconnect-timer-ownership.test.ts > installed reconnect timer ownership > owns exactly one real timer and settles pending delivery on disposal
+AssertionError: expected 2 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 2
+
+ ❯ tests/unit/reconnect-timer-ownership.test.ts:9:34
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/unit/reconnect-timer-ownership.test.ts > workspace reconnect timer ownership > settles superseded waits and leaves one current timer
+ FAIL  tests/unit/reconnect-timer-ownership.test.ts > installed reconnect timer ownership > settles superseded waits and leaves one current timer
+AssertionError: expected undefined to deeply equal { ok: false, dropped: true, …(1) }
+
+- Expected: 
+{
+  "dropped": true,
+  "ok": false,
+  "reason": "rejected",
+}
+
++ Received: 
+undefined
+
+ ❯ tests/unit/reconnect-timer-ownership.test.ts:14:115
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+error: script "test" exited with code 1

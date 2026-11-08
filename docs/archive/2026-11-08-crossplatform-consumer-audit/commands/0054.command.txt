@@ -1,0 +1,25 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/current-operating-doc-contract.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\scope-gate",
+  "purpose": "red-operating-doc-contract-current-entry",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T02:52:12.206Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\packages\\scope-gate\\tests\\current-operating-doc-contract.test.ts",
+      "sha256": "70408bd8410d4aa77c54aff3272d1b5f943833412457a609053a8d4d6232d590",
+      "size": 2693,
+      "extension": ".ts"
+    }
+  ]
+}

@@ -1,0 +1,396 @@
+---
+name: sf-intake
+description: SpecForge intake 阶段提问脚本，由 sf-orchestrator 在 intake 阶段引用执行
+---
+
+<!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:START -->
+## SpecForge Current Governance Contract
+
+This Agent/Skill must follow the current governance contract below. Product scope comes from SPS-1.0; these are executable Runtime rules, not independent product authority.
+
+### 1. State authority
+
+- `StateManager/events.jsonl` is the only authoritative workflow state source.
+- `runtime/state.json` is only a projection cache.
+- work_item.json is metadata only. `work_item.json` must not be used as the actual state source.
+- Do not write, repair, or advance governance state by editing `work_item.json.status`.
+- Do not call or instruct use of `workflowEngine.transitionFull()` for current governance transitions.
+- All state movement must go through approved SpecForge tools and the final state machine.
+
+### 2. Final state machine
+
+Use only the current states:
+
+`created`, `intake_ready`, `impact_analyzing`, `impact_analyzed`, `workflow_selected`, `candidate_preparing`, `candidate_prepared`, `gates_running`, `gates_failed`, `approval_required`, `approved`, `merge_ready`, `merging`, `merged`, `post_merge_verified`, `implementation_ready`, `implementation_running`, `implementation_done`, `verification_running`, `verification_done`, `closed`, `blocked`, `rejected`, `superseded`.
+
+The legacy mainline states `development`, `review`, `implementation`, `done`, `completed`, `intake`, `requirements`, and `design` must not be used as workflow states.
+
+### 3. Workflow identity
+
+- Every newly created current-release Work Item uses `workflow_type=feature_spec`.
+- `workflow_path` is the fact-derived governance route and must not create a second workflow identity.
+- Requirement, design, architecture, task, contract and code-only routes remain inside the same `feature_spec` lifecycle.
+- Built-not-enabled or historical workflow names must fail with `UNSUPPORTED_CURRENT_RELEASE_WORKFLOW`; do not translate or persist them.
+- Existing historical Work Items may be read for governed recovery, but their identity must not be copied into a new Work Item.
+
+### 4. Approval authority
+
+- User approval must be recorded only through `sf_user_decision_record`.
+- `user_approved` requires top-level `user_response_quote`.
+- `auto_approved` requires `auto_approval_policy_id`.
+- `comments` and `reason` are notes only. They must not be treated as structured approval evidence.
+- `work_item.json` must never carry approval fields such as `decision_status`, `decision_type`, `user_response_quote`, `auto_approval_policy_id`, `approved`, `approval`, `approval_status`, `user_decision`, `decision_id`, `decided_by`, `decision_scope`, or `waivers`.
+
+### 5. Candidate and merge authority
+
+- Candidate artifacts must stay under the current Work Item `candidates/**` tree.
+- `candidate_manifest.entries` must reference canonical candidate paths.
+- For `feature_spec` on `code_only_fast_path`, `candidate_manifest.entries` must be `[]`.
+- For `code_only_fast_path`, `merge_report.status=not_applicable` is valid.
+- After `approved`, call `sf_merge_run`; do not manually force `approved -> merge_ready`.
+- `sf_merge_run` owns `approved -> merge_ready -> merging -> merged`.
+
+### 6. Code permission and executor boundary
+
+- Implementation requires `sf_code_permission`.
+- For the final code-only path, `sf_code_permission` owns `post_merge_verified -> implementation_ready -> implementation_running`.
+- Executor may only modify files explicitly granted by code permission.
+- Executor must not write `.specforge/work-items/**` or governance artifacts.
+- `sf_changed_files_audit` must pass with `unresolved_blocked_write_attempts=0`, no audit violations and no out-of-scope writes before implementation can complete. Historical/resolved blocked write attempts remain visible and need not be zero; never erase them or reinterpret a resolved denial as a current violation. Audit source changes require a fresh owner audit before Gate/Close consumption.
+
+### 7. Verification and close gate
+
+- Verification must produce required evidence before close.
+- `sf_close_gate` may close only from authoritative `verification_done`.
+- If authoritative state is not `verification_done`, `sf_close_gate` must fail fast with `AUTHORITATIVE_STATE_MISMATCH`.
+- `closed` must be written only by `close_gate`.
+
+### 8. Required behavior on uncertainty
+
+If a requested action conflicts with this contract, stop and report the conflict instead of using an old workflow, direct file edits, shell bypass, or hand-written governance JSON.
+
+### 9. 可恢复 HardStop 协议
+
+- HardStop 是 `recoverable safety latch`（可恢复安全锁存），不是终止工作流的结果。它只阻断危险动作及依赖写入/状态推进，不得丢弃已完成工作或永久停止开发。
+- 专业 Agent 收到 `hard_stop=true`、`HARD_STOP_ACTIVE` 或发现未解决 `hard_stop.json` 后，必须停止被阻断动作及其依赖动作，不得绕过，也不得调用 `sf_hard_stop_resolve`。
+- 专业 Agent 必须向 `sf-orchestrator` 返回 `hard_stop_id`、触发 Tool、被阻断动作/目标、原因、最后成功步骤、阻断步骤、安全替代 Tool 和 `resume_from_step`。
+- `sf-orchestrator` 必须在存在安全且不扩大权限的恢复路径时，于同一工作流轮次完成分类和恢复。`operator_error`、`prohibited_action_replaced` 必须放弃原动作，改走合法 Tool，不等待用户重复批准，也不得扩大授权。
+- `scope_expanded`、`user_authorized_retry`、`risk_accepted` 或安装任何新授权时，必须引用当前真实 `user_response_quote`；任务提示、业务目标、Agent 转述或历史泛化同意均不能代替用户决定。
+- 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
+- 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
+
+### D18 / D23 verification ownership
+
+- `sf_safe_bash` remains D18 Runtime-internal readonly; it never starts a shell or child process.
+- Under SPS §9.2.4 / D23, only real `sf-orchestrator` may create `sf_verification_plan`; only real `sf-verifier` may consume `sf_verification_run`. Other roles hand off declarations and evidence needs, never invoke these owners’ tools.
+- The independent readonly verification grant does not reopen code permission or advance state. Only the fixed Windows x64 single-process readonly Node profile and proved finite normalization are supported. Missing, unsupported or stale evidence stays `not_executed` / `blocked`; no alternate executor, repeated impossible dispatch or waiver. A passed claim requires the current owner-bound raw receipt and common-consumer validation.
+
+<!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
+
+# Intake 阶段提问脚本
+
+## Governance Model Workflow Contract（依据 / 承接 / 验证 / 融合）
+
+本 workflow skill 只定义流程控制和阶段责任，不替代 Agent 角色职责，也不替代 daemon gate。所有阶段继续遵守上方 Current Governance Contract；当本节与 daemon 返回冲突时，以 daemon 返回为准。
+
+每个 workflow 阶段推进前，orchestrator 必须用四问模型做轻量自检：
+
+1. **依据**：当前阶段输入是否有明确来源（用户原话、项目规格、代码观测、运行观测、环境观测或已批准决策）？不得把 unknown / assumption 当作事实继续推进。
+2. **承接**：当前阶段是否承接了上游的责任项和约束项？不要求覆盖上游所有说明文字，但必须处理 Must 需求、设计决策、系统边界、验证义务、关闭阻断项。
+3. **验证**：当前阶段是否产生或要求了能证明用户目标的证据？文件存在、文档非空、构建成功只能证明工程动作，不自动证明用户结果。
+4. **融合**：本 WI 对项目级真相源的影响是否清楚？必须明确属于规格变更、设计变更、证据追加、知识沉淀或无项目规格变更，并在 Candidate / merge / close 产物中保持一致。
+
+调度子 Agent 时，prompt 必须明确传入本阶段的四问重点：
+
+```text
+basis_inputs: 本阶段依据来源
+upstream_to_cover: 必须承接的上游责任项/约束项
+required_evidence: 本阶段或后续阶段必须产生的证据
+project_integration_effect: 本 WI 对项目级真相源的预期影响
+```
+
+如果某项无法确认，orchestrator 必须选择 `ask_user`、`investigate`、`mark_unknown` 或 `block`，不得靠合理猜测继续推进。
+
+
+## Intake Governance Contract（事实、未知项、决策边界）
+
+intake 阶段不是只记录用户一句话，而是为后续 requirements / design / tasks 提供依据。生成 `intake.md` 时必须包含：
+
+1. **用户明确事实**：逐条摘录用户已明确表达的信息，保留关键原话。
+2. **用户目标**：用户最终希望系统达成的可观察结果。
+3. **未知项**：会影响需求、设计、实现或验证的未确认事实。
+4. **决策边界**：哪些决策可由项目事实推导，哪些必须用户确认。
+5. **禁止假设**：不得被后续 Agent 默认为事实的内容。
+6. **建议调查项**：可通过读取项目规格、代码、环境或运行结果确认的问题。
+
+写入 `intake.md` 时，至少使用以下结构：
+
+```markdown
+## 用户原始目标
+
+## 明确事实
+
+## 用户结果
+
+## 未知项
+
+## 决策边界
+
+## 禁止假设
+
+## 建议调查项
+```
+
+如果需求涉及服务器、远程上传、同步、数据库、部署、外部系统、用户可见功能、安全合规或数据归属，`未知项` 不得为空；若确实为空，必须说明依据。
+
+
+> 本文件由 sf-orchestrator 在 intake 阶段加载。
+> 它定义了 orchestrator 在 intake 阶段必须完成的两件事：
+> 1. 验证项目初始化状态（A 阶段）
+> 2. 收集用户需求 + 首次 WI 时收集技术栈决策（B 阶段）
+
+---
+
+# 阶段 A：项目初始化验证（仅首次）
+
+## A1 检测与版本验证
+
+```
+检测 .specforge/project/spec_manifest.json：
+  不存在 → 停止并调用 sf_project_init 建立当前项目骨架
+  存在 → 继续
+  仅存在旧根级 manifest 或旧 .specforge/specs/** → 返回 UNSUPPORTED_CURRENT_RELEASE_PROJECT，
+      不兼容读取、不自动迁移、不要求用户手动改写真相源
+```
+
+> **注意**：主机环境扫描（原 A2 步骤）已迁移到 `sf_project_init` 工具。
+> 在 OpenCode 启动时自动执行，无需在 intake 阶段处理。
+> 扫描结果存储在 `<OpenCode config>/sf-user/host-profile.json`（用户级，非项目级）。
+
+---
+
+# 阶段 B：需求与技术栈收集（每个 WI 的 intake）
+
+## B0 检查已有配置
+
+```
+检测 .specforge/config/prod-environment.md 和 .specforge/config/project-rules.md：
+
+两个文件都存在：
+  展示摘要：
+  "📋 项目已有以下配置：
+   - 生产环境：{deployment_target} / {os.platform}
+   - 主语言：{runtimes 列表}
+   - 工程规则：{project-rules.md 的技术栈摘要}
+   是否沿用？[y] 沿用  [n] 重新配置"
+  用户选 y → 跳到 B1（只收集需求）
+  用户选 n → 进入 B2（重新收集技术栈）
+
+只有部分文件存在：
+  → 提示缺少的文件，进入对应的收集步骤
+
+两个文件都不存在（首次 WI）：
+  → 进入 B1
+```
+
+## B1 收集用户需求（所有 WI 必做）
+
+orchestrator 必须覆盖以下 10 个维度，**一次问完，不分批**：
+
+```
+📋 请告诉我关于这个项目/功能的信息：
+
+1. 业务功能
+   "你想要做什么？请描述核心功能和业务目标。"
+
+2. 用户群体
+   "谁会使用这个系统？"
+   选项：
+   [a] 个人使用（只有我自己用）
+   [b] 小团队（5-20 人）
+   [c] 企业内部（公司员工）
+   [d] 对外发布的产品（面向公众）
+   [e] 开源项目
+
+3. 使用规模
+   "预计有多少用户？数据量大概多少？"
+   例：100 人 / 1 万人 / 100 万人；1GB 数据 / 1TB 数据
+
+4. 并发与性能要求
+   "对响应速度有要求吗？同时使用的人多吗？"
+   例：无特殊要求 / P95 < 500ms / 支持 1000 并发
+
+5. 可用性要求
+   "如果系统挂了，影响有多大？"
+   选项：
+   [a] 个人工具，偶尔挂一下没关系
+   [b] 内部工具，工作时间可用就行（99%）
+   [c] 商业服务，需要高可用（99.9%+）
+   [d] 关键业务，不能停（99.99%+）
+
+6. 安全合规要求
+   "有没有特殊的安全或合规要求？"
+   例：无 / 需要保护个人隐私（GDPR/个保法）/ 金融合规 / 医疗合规
+
+7. 未来打算
+   "这个项目的长期计划是什么？"
+   选项：
+   [a] 一次性工具，用完就扔
+   [b] 长期维护，但功能相对稳定
+   [c] 持续演进，功能会不断增加
+   [d] 计划开源
+   [e] 计划商业化
+
+8. 团队情况
+   "谁来开发和维护？"
+   选项：
+   [a] 只有我一个人
+   [b] 2-5 人小团队
+   [c] 10 人以上团队
+
+9. 预算约束
+   "对基础设施成本有限制吗？"
+   例：免费方案 / 月 $50 以内 / 月 $500 以内 / 无限制
+
+10. 其他约束
+    "有没有其他重要约束？"
+    例：必须用某种语言 / 必须部署在某个平台 / 必须兼容某个系统
+```
+
+## B2 推荐技术栈（首次 WI 或用户选择重新配置时）
+
+基于 B1 的回答，orchestrator 给出 2-3 套候选方案：
+
+```
+推荐格式：
+
+🔧 方案 A：[方案名称]
+  - 主语言/框架：[具体技术]
+  - 数据库：[具体技术]
+  - 缓存：[具体技术 / 无]
+  - 消息队列：[具体技术 / 无]
+  - 部署方式：[具体方式]
+  - CI/CD：[具体平台]
+  ✅ 适合：[适用场景描述]
+  ⚠️ 注意：[潜在风险或限制]
+
+🔧 方案 B：...
+
+🔧 方案 C：...
+
+请选择方案（A/B/C），或告诉我你的偏好：
+```
+
+**推荐时必须考虑的 10 个维度**：
+1. 需求规模匹配（小→ SQLite + 单服务；大→ PostgreSQL + 微服务）
+2. 团队熟悉度（已知技术栈 vs 学习成本）
+3. 生态成熟度（首选有大量参考实现的栈）
+4. 性能/资源契合度
+5. 可维护性/招聘难度（团队场景）
+6. 部署复杂度（用户偏好简单 vs 接受 K8s）
+7. 许可证（商业用途必须避开 GPL/AGPL）
+8. 长期演进风险（避免冷门栈）
+9. 与已有系统的集成
+10. 用户明示偏好（如"不要 Java"）
+
+## B3 技术栈决策细节（用户选定方案后）
+
+按选定技术栈，逐字段问决策细节。**只问相关字段，不相关的跳过**：
+
+```
+对于每个相关字段：
+  "X 的版本/配置是什么？"
+  推荐值：[默认推荐值]（[推荐理由]）
+  [Enter] 使用推荐值  [输入] 自定义值
+
+例：
+  "Python 最低版本？"
+  推荐值：3.10（支持 match/case，2026 年前有维护）
+  [Enter] 使用 3.10  [输入] 自定义
+
+  "数据库端口？"
+  推荐值：5432（PostgreSQL 默认）
+  [Enter] 使用 5432  [输入] 自定义
+```
+
+**必须覆盖的字段类别**（按选定技术栈筛选）：
+- 语言最低版本（生产）
+- 数据库连接信息（host/port/name，不含密码）
+- 缓存连接信息（如有）
+- 部署目标详情（服务器 IP/域名/SSL）
+- 日志框架选择
+- 测试框架选择
+- CI/CD 平台
+
+在接受“全部按推荐”或同义回复前，必须先向用户展示并在 `intake.md` 中保存完整的编号决策目录。每项必须在同一条文本中同时写出“字段标签、推荐值、推荐理由”；不得使用只有序号或值、依赖易丢失表头的表格。任何标签或推荐值在可见记录中缺失时，该项仍属于 `unknowns`，不得宣称已确认。
+
+## B4 生成两份配置文件
+
+```
+基于 B1-B3 的回答：
+
+1. 从 <OpenCode config>/sf-user/templates/ 选择对应模板：
+   - prod-environment 模板：按部署目标选
+   - project-rules 模板：_BASE + 主语言 + 框架 + 数据库 + infra 拼装
+
+2. 填入用户的决策值
+
+3. 只能通过受控工具写入：
+   - `sf_artifact_write(file_type=project_prod_environment)` → `.specforge/config/prod-environment.md`
+   - `sf_artifact_write(file_type=project_rules)` → `.specforge/config/project-rules.md`
+   两次调用都必须携带当前 `work_item_id`，且只能发生在 `intake_ready`。若 Write Guard 或工具拒绝，必须停止并报告；不得改用 General Task、原生 Write/Edit、shell 或辅助脚本。
+
+4. 展示摘要让用户确认：
+   "✅ 已生成以下配置：
+    - 生产环境：{deployment_target} / Python {python_min}
+    - 工程规则：Python + FastAPI + PostgreSQL + GitHub Actions
+    是否确认？[y] 确认  [n] 修改"
+```
+
+## B5 技术栈最佳实践提醒
+
+```
+基于选定技术栈，主动告知用户：
+
+"📌 基于你选择的技术栈，建议同时做以下事情：
+
+1. .gitignore 建议添加：
+   [列出对应技术栈的 .gitignore 条目]
+
+2. 推荐目录结构：
+   [列出对应技术栈的目录结构]
+
+3. 推荐同时配置：
+   [列出对应技术栈的配套工具]
+
+是否需要我帮你创建这些文件？[y] 是  [n] 稍后自己处理"
+```
+
+## B6 进入 requirements 阶段
+
+```
+intake 完成后：
+  - 两份配置文件已通过受控工具生成（或已确认沿用）
+  - 需求信息已收集（B1 的 10 个维度）
+  - 写入 .specforge/work-items/{WI-ID}/intake.md
+
+调度 sf-requirements：
+  - 传入 intake.md（需求信息）
+  - 不传入技术栈信息（sf-requirements 不需要，需求与技术栈无关）
+```
+
+---
+
+# 注意事项
+
+1. **需求先于技术栈**：必须先完成 B1（收集需求），再做 B2（推荐技术栈）。
+   不得在不了解需求的情况下推荐技术栈。
+
+2. **技术栈是项目级的**：一旦确定，整个项目所有 WI 都用同一套技术栈。
+   不会随着 WI 变化而变化。
+
+3. **sf-requirements 不看技术栈**：需求文档描述"做什么"，
+   技术栈是"怎么做"，属于 sf-design 的决策范围。
+
+4. **配置文件不含密码**：所有密码/密钥通过环境变量或密钥管理服务注入，
+   不写入 .specforge/ 目录下的任何文件。

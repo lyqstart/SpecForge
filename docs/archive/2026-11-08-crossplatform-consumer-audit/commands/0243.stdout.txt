@@ -1,0 +1,36 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/governance-closure-e2e.test.ts (33 tests) 1770ms
+ ✓ tests/unit/current-work-item-metadata-owner.test.ts (22 tests) 220ms
+ ✓ tests/unit/sf-state-transition.test.ts (33 tests) 641ms
+ ✓ tests/unit/registered-current-workflow-boundary.test.ts (7 tests) 28ms
+ ❯ tests/unit/knowledge-store-schema.test.ts (20 tests | 2 failed) 143ms
+   × current knowledge store owner: source > creates the existing1.0 format and preserves legal CRUD 37ms
+     → expected [ { …(21) } ] to deeply equal []
+   ✓ current knowledge store owner: source > preserves unsupported version 9.0 on read and on valid replacement 10ms
+   ✓ current knowledge store owner: source > preserves unsupported version undefined on read and on valid replacement 5ms
+   ✓ current knowledge store owner: source > preserves unsupported version 1 on read and on valid replacement 6ms
+   ✓ current knowledge store owner: source > preserves corrupt or incomplete storage: {broken 6ms
+   ✓ current knowledge store owner: source > preserves corrupt or incomplete storage: null 3ms
+   ✓ current knowledge store owner: source > preserves corrupt or incomplete storage: [] 4ms
+   ✓ current knowledge store owner: source > preserves corrupt or incomplete storage: {"version":"1.0","entries":[],"categories":[],"metadata":{}} 7ms
+   ✓ current knowledge store owner: source > rejects an invalid new value before creating files or changing input 2ms
+   ✓ current knowledge store owner: source > requires the source and installed validators to be identical 1ms
+   × current knowledge store owner: installed > creates the existing1.0 format and preserves legal CRUD 20ms
+     → expected [ { …(21) } ] to deeply equal []
+   ✓ current knowledge store owner: installed > preserves unsupported version 9.0 on read and on valid replacement 8ms
+   ✓ current knowledge store owner: installed > preserves unsupported version undefined on read and on valid replacement 6ms
+   ✓ current knowledge store owner: installed > preserves unsupported version 1 on read and on valid replacement 6ms
+   ✓ current knowledge store owner: installed > preserves corrupt or incomplete storage: {broken 5ms
+   ✓ current knowledge store owner: installed > preserves corrupt or incomplete storage: null 4ms
+   ✓ current knowledge store owner: installed > preserves corrupt or incomplete storage: [] 3ms
+   ✓ current knowledge store owner: installed > preserves corrupt or incomplete storage: {"version":"1.0","entries":[],"categories":[],"metadata":{}} 7ms
+   ✓ current knowledge store owner: installed > rejects an invalid new value before creating files or changing input 1ms
+   ✓ current knowledge store owner: installed > requires the source and installed validators to be identical 1ms
+
+ Test Files  1 failed | 4 passed (5)
+      Tests  2 failed | 113 passed (115)
+   Start at  13:38:42
+   Duration  10.98s (transform 2.38s, setup 0ms, collect 6.30s, tests 2.80s, environment 1ms, prepare 690ms)
+

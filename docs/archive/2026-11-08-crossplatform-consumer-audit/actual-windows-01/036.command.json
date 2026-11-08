@@ -1,0 +1,15 @@
+{
+  "number": "036",
+  "name": "official-daemon-stop",
+  "executable": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-platform-acceptance-tH7rje\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "daemon",
+    "stop",
+    "--json"
+  ],
+  "started_utc": "2026-11-08T03:41:24.136Z",
+  "finished_utc": "2026-11-08T03:41:24.331Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

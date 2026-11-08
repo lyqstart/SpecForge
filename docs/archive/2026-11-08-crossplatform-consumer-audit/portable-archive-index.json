@@ -1,0 +1,31 @@
+{
+  "utc": "2026-11-08T06:11:55.757Z",
+  "members": [
+    {
+      "path": ".gitattributes",
+      "raw_sha256": "a87914a8b4de39dbe830a5ea43e965c901ecb814c75589c53f75a3b084c57e81",
+      "index_sha256": "2a403b712ccdc842b1023c3c6482ac82f95786fc028e5d36fbbb55fd38b9cfc7",
+      "blob": "eeeb5109738a2fda68a87e498e9db3d87b22c60c"
+    },
+    {
+      "path": "docs/archive/design/SpecForge架构一致性治理最终实施方案.full-history-20261006.md",
+      "raw_sha256": "25861569ced52f8017a68c7c9765c32c376b25afe70568e924db3eed5380b7d8",
+      "index_sha256": "25861569ced52f8017a68c7c9765c32c376b25afe70568e924db3eed5380b7d8",
+      "blob": "4268b8d3e3a010b7bb8982eedc25500b5b61730b"
+    },
+    {
+      "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "raw_sha256": "067acba910c6baa2abcef0eee45f84ee57c35ceefce28de0e935f268cc11ad08",
+      "index_sha256": "51408491378e193273b3089f06c16863659061394af1d8ca31d5f3d0a1755fb5",
+      "blob": "e98e66b5c8db832e251762580f6cb6cdd70e3a76"
+    },
+    {
+      "path": "docs/project-status.md",
+      "raw_sha256": "d364f09b0f992036e29f57ddbd7153210c80555614f6a0b1e2a5ab1a5194d479",
+      "index_sha256": "18425252247a582af43464b2aabbaf7f455303a362cca7fdbc12e9666f31204e",
+      "blob": "154b5ff9fd26474a9ddb29ec7fc62780c9ec8b55"
+    }
+  ],
+  "check": "PASS",
+  "unchanged_registered_original_hash": true
+}

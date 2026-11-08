@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/close-metadata-artifact-owner.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "close-runtime-owned-metadata-artifact-write",
+  "expected_writes": "tracked-source-help-regression-and-evidence",
+  "started_utc": "2026-11-08T05:18:23.120Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\close-metadata-artifact-owner.cjs",
+      "sha256": "2fba9a188ada7f0405e702382a191b7d905c79e64914f874bd4e6958e16ebac8",
+      "size": 2730,
+      "extension": ".cjs"
+    }
+  ]
+}

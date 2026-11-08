@@ -1,0 +1,5 @@
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+[build-workspace] FAILED @specforge/service-management exitCode=2

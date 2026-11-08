@@ -1,0 +1,30 @@
+{
+  "command": "services",
+  "description": "Manage OS services through Linux systemd --user; unsupported on Windows/macOS",
+  "subcommands": [
+    {
+      "name": "install",
+      "description": "install the installed SpecForge/OpenCode user services"
+    },
+    {
+      "name": "uninstall",
+      "description": "uninstall the installed SpecForge/OpenCode user services"
+    },
+    {
+      "name": "start",
+      "description": "start the installed SpecForge/OpenCode user services"
+    },
+    {
+      "name": "stop",
+      "description": "stop the installed SpecForge/OpenCode user services"
+    },
+    {
+      "name": "restart",
+      "description": "restart the installed SpecForge/OpenCode user services"
+    },
+    {
+      "name": "status",
+      "description": "status the installed SpecForge/OpenCode user services"
+    }
+  ]
+}

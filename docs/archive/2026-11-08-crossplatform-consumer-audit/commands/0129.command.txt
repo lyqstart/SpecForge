@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/repair-current-consumer-tail.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "current-consumer-tail-authority-repair",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES",
+  "started_utc": "2026-11-08T03:57:15.897Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\repair-current-consumer-tail.cjs",
+      "sha256": "07fa8b4872776b48b5e17e233e05f8a23edb919f23d5764afa857c5e6e3e43ef",
+      "size": 7768,
+      "extension": ".cjs"
+    }
+  ]
+}

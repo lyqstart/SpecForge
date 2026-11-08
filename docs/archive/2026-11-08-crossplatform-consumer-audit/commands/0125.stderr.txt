@@ -1,0 +1,1 @@
+$ vitest run tests/current-daemon-http-doc-contract.test.ts tests/current-operating-doc-contract.test.ts tests/current-crossplatform-ci-contract.test.ts tests/source-policy-audit.test.ts

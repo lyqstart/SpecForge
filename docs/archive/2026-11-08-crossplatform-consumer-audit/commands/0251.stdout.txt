@@ -1,0 +1,29 @@
+[codex/crossplatform-consumer-audit a8900cba] fix: align current consumers and cross-platform release acceptance
+ 282 files changed, 2554 insertions(+), 15861 deletions(-)
+ create mode 100644 packages/configuration/tests/logger-output-contract.test.ts
+ create mode 100644 packages/daemon-core/examples/current-read-client.ts
+ create mode 100644 packages/daemon-core/tests/unit/current-contract-register-owner.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/current-doc-lint-authority.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/current-operating-examples.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/http-timeout-cleanup.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/knowledge-store-schema.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/registered-current-workflow-boundary.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/retained-tool-library-boundary.test.ts
+ create mode 100644 packages/daemon-core/tests/unit/work-item-artifact-owner.test.ts
+ create mode 100644 packages/scope-gate/tests/current-clean-boundary.test.ts
+ create mode 100644 packages/scope-gate/tests/current-crossplatform-ci-contract.test.ts
+ create mode 100644 packages/scope-gate/tests/current-daemon-http-doc-contract.test.ts
+ create mode 100644 packages/scope-gate/tests/current-operating-doc-contract.test.ts
+ create mode 100644 packages/scope-gate/tests/current-release-entry-interop.test.ts
+ create mode 100644 packages/scope-gate/tests/source-policy-audit.test.ts
+ create mode 100644 packages/service-management/tests/unit/healthcheck-request-timer.test.ts
+ create mode 100644 packages/service-management/tests/unit/reconnect-timer-ownership.test.ts
+ create mode 100644 packages/workflow-runtime/tests/unit/current-definition-schema-boundary.test.ts
+ create mode 100644 scripts/clean-workspace.ts
+ create mode 100644 scripts/lib/daemon-http-reference.ts
+ create mode 100644 scripts/lib/prepare-current-release.ts
+ create mode 100644 scripts/lint-workspace.ts
+ create mode 100644 scripts/lint/source-policy.ts
+ create mode 100644 scripts/prepare-current-release.ts
+ create mode 100644 scripts/render-daemon-http-reference.ts
+ create mode 100644 scripts/verify-platform-release.ts

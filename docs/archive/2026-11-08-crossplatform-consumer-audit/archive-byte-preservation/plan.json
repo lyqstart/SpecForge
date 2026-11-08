@@ -1,0 +1,10 @@
+{
+  "utc": "2026-11-08T06:04:54.189Z",
+  "file": "docs/archive/design/SpecForge架构一致性治理最终实施方案.full-history-20261006.md",
+  "registered_original_sha256": "25861569ced52f8017a68c7c9765c32c376b25afe70568e924db3eed5380b7d8",
+  "current_worktree_sha256": "25861569ced52f8017a68c7c9765c32c376b25afe70568e924db3eed5380b7d8",
+  "current_git_blob_sha256": "58de888409a0467ac073f99a2ca1fd446af54a7e01391d7d1f65013102a3e886",
+  "confirmed_difference": "CRLF to LF normalization only",
+  "remedy": "Apply -text -diff only to this exact historical file, then stage the unchanged registered original bytes. Preserve both previous representations; retain original hash assertion.",
+  "authority": "SPS22 historical evidence preservation; current subordinate contract and archive index both register original hash; actual CI failure on normalized Git bytes."
+}

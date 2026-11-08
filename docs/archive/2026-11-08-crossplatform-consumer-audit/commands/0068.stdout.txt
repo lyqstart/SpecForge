@@ -1,0 +1,11 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/manifest-compatibility.unit.test.ts (3 tests) 398ms
+ ✓ tests/unit/http-timeout-cleanup.test.ts (3 tests) 9ms
+
+ Test Files  2 passed (2)
+      Tests  6 passed (6)
+   Start at  11:00:39
+   Duration  2.26s (transform 964ms, setup 0ms, collect 2.24s, tests 407ms, environment 1ms, prepare 506ms)
+

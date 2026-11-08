@@ -1,0 +1,71 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/freeze-linux-update.cjs",
+    "01",
+    "tests/unit/installer/command_path.test.ts",
+    "tests/unit/installer/installer_manifest_path_contract.test.ts",
+    "tests/unit/installer/cmdVerify.test.ts",
+    "tests/integration/service-management/linux-systemd-full-lifecycle.test.ts",
+    "packages/service-management/src/orchestrator/healthcheck.ts",
+    "packages/service-management/tests/unit/healthcheck-request-timer.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-linux-fixture-and-timer-fixes",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T02:22:11.261Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\freeze-linux-update.cjs",
+      "sha256": "456d1cc84345635f0590982a4cad4f17931bf8f27aeff8c6a87608d64231a2c0",
+      "size": 1163,
+      "extension": ".cjs"
+    },
+    {
+      "argument_index": 2,
+      "path": "D:\\code\\SpecForge\\tests\\unit\\installer\\command_path.test.ts",
+      "sha256": "6ec08340f76a6bb5e3b4c7bba96d4aab149a01a855290f4a5bb4ebf655688b87",
+      "size": 1969,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\tests\\unit\\installer\\installer_manifest_path_contract.test.ts",
+      "sha256": "14e7e8e2288ebd7dc518d4e06787ac01854a33d10f71f2965eda3d0515ee52c7",
+      "size": 2489,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 4,
+      "path": "D:\\code\\SpecForge\\tests\\unit\\installer\\cmdVerify.test.ts",
+      "sha256": "eb6de0be33c7068af19fc15c0335346f8e84703489cba1a24e1bc8c1b8fe7468",
+      "size": 8217,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 5,
+      "path": "D:\\code\\SpecForge\\tests\\integration\\service-management\\linux-systemd-full-lifecycle.test.ts",
+      "sha256": "00c806603c80d9ac790e63761eecec06588d4d86297370208bfd279853e1c97e",
+      "size": 9995,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 6,
+      "path": "D:\\code\\SpecForge\\packages\\service-management\\src\\orchestrator\\healthcheck.ts",
+      "sha256": "369fe7005a8f3e62c0ed7fd2b23b0f348aead538f2415a711582a7a0ac40d849",
+      "size": 12287,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 7,
+      "path": "D:\\code\\SpecForge\\packages\\service-management\\tests\\unit\\healthcheck-request-timer.test.ts",
+      "sha256": "5599a524aa2d77c222161521d6796e8f42fb453cafc10c6d6d6a49e7780fd05b",
+      "size": 1157,
+      "extension": ".ts"
+    }
+  ]
+}

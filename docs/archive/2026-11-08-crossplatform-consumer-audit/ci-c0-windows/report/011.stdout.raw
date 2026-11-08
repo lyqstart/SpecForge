@@ -1,0 +1,4 @@
+{
+  "command": "doctor",
+  "description": "Inspect local SpecForge installation and project status"
+}

@@ -1,0 +1,15 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/unit/http-timeout-cleanup.test.ts (3 tests | 2 failed) 13ms
+   × HTTP event fallback timeout ownership > clears the losing timer after success 10ms
+     → expected 1 to be +0 // Object.is equality
+   × HTTP event fallback timeout ownership > clears the losing timer after rejection 1ms
+     → expected 1 to be +0 // Object.is equality
+   ✓ HTTP event fallback timeout ownership > retains the bounded fallback when timeout actually wins 1ms
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed (3)
+   Start at  11:00:13
+   Duration  2.48s (transform 687ms, setup 0ms, collect 1.32s, tests 13ms, environment 0ms, prepare 292ms)
+

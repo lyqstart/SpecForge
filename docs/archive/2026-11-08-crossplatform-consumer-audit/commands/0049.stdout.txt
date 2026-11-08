@@ -1,0 +1,12 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/packages/cli
+
+ ❯ tests/help-system.test.ts  (18 tests | 1 failed) 75ms
+   ❯ tests/help-system.test.ts > HelpSystem > General Help > documents every registered service subcommand and its explicit option names
+     → Cannot read properties of undefined (reading 'map')
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 17 passed (18)
+   Start at  10:44:33
+   Duration  3.47s (transform 2.12s, setup 0ms, collect 2.60s, tests 75ms, environment 0ms, prepare 316ms)
+

@@ -1,0 +1,854 @@
+{
+  "utc": "2026-11-08T02:37:02.003Z",
+  "target": "/tmp/specforge-crossplatform-20261108-a01",
+  "source": "/mnt/d/code/SpecForge",
+  "members": [
+    {
+      "path": "docs/archive/design/contract-model-followups-handoff.md",
+      "sha256": "6ceb4abf366cfefba1a1e92b1c6527564bd24e82703359519d1204dd8d42e27b",
+      "bytes": 22322,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/design/contract-model-followups-implementation-report.md",
+      "sha256": "8ae66cf7d957ed0107c405dc12611512befb97ff0b02e596b0a4e88a216d1829",
+      "bytes": 11022,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/design/semantic-closure-contract-governance.md",
+      "sha256": "ba6c70b8e80bc9062affca9ead0ba1706868342470597aa084f09f683592f494",
+      "bytes": 6581,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/design/specforge-design-governance-contract-model.md",
+      "sha256": "7cbec6342c2f1e20b07e66366bf514d3aa0f586a4380e0ffcb31c0c67f7ad65f",
+      "bytes": 35669,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/design/specforge-v1.1-rbac-governance-final-report.md",
+      "sha256": "ed7897d9407b14cf069af235d0edcec69940e246a8223462ce9dcfccca9f088e",
+      "bytes": 8493,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/design/specforge-v1.1-runtime-state-consistency-model.md",
+      "sha256": "5864414e7bf7377f3c6233b35a906d2c13029fa65b72087695df91244c5ab92b",
+      "bytes": 10335,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/design/specforge-v1.2-acceptance-matrix.md",
+      "sha256": "40969d9814bf7fc0aea721f1e4f0097eb522ba45fbb4510cfa2ee70f3355dbbe",
+      "bytes": 2704,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/design/specforge-v1.2-design-freeze-roadmap.md",
+      "sha256": "b3489525dc3737953fd3f65a8dbbc86da432aa0c6f57d8d50c39d5902787dcd8",
+      "bytes": 1934,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/design/specforge-v1.2-extension-subflow-design.md",
+      "sha256": "b8e0dbcbcccd2bb79dea69d2a7f30d3baf746aa5a0434658a528f3c0baf676d5",
+      "bytes": 3027,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/design/specforge-v1.2-first-development-slice.md",
+      "sha256": "570c4abf4b2ff60c830f097776a605f6dbd1fcb79f1883d94d3a422dad1d2115",
+      "bytes": 2126,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/design/specforge-v1.2-project-spec-architecture.md",
+      "sha256": "f4bdd264e6ec1d1ce1890913b9d4e8eab8e3f28e5ce5071459348735c71d9478",
+      "bytes": 3031,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/design/specforge-v1.2-rbac-governance-final-report.md",
+      "sha256": "d76f8195d7b777561716b1e50610db5fdc261a98320733094276f8f011c97b2a",
+      "bytes": 10390,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/design/specforge-v1.2-rbac-governance-roadmap.md",
+      "sha256": "0370b13720f2a194a363ef134d0caf08edca3d8f99de06d66382409aa1381d9a",
+      "bytes": 22353,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/design/specforge-v1.2-roadmap.md",
+      "sha256": "e9f6a5b9aab776954eecdeb278ec496664a74cfeb177fa78072dbcdfd9ade038",
+      "bytes": 3190,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/design/specforge-v1.2-write-guard-control-plane.md",
+      "sha256": "f1de21f03aa9bb7033cc8b08f4e0d6d1a686b8f7bceaf0cedc6d19e5a4b21bcb",
+      "bytes": 3015,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/design/specforge-v1.2.8-write-guard-authorization-flow.md",
+      "sha256": "68cdb5fa8070928227d104b69e8fd221db758837f79134f92ce6c57a04360acb",
+      "bytes": 2193,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/design/specforge_git_governance_v1.md",
+      "sha256": "c3234c226fc7909f3280b7ae506ee92e5630c4faf0f9fc497ed25329454ce45e",
+      "bytes": 17609,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/design/SpecForge架构一致性治理最终实施方案.full-history-20261006.md",
+      "sha256": "25861569ced52f8017a68c7c9765c32c376b25afe70568e924db3eed5380b7d8",
+      "bytes": 211486,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/design/workflow-runtime-rbac-model.md",
+      "sha256": "30bef4d4fd9d68cb23958a59fbdcfdc8021f311e932f32aa84b378bbf8793079",
+      "bytes": 54234,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/rule/specforge_script_failure_review_and_batch_rules.md",
+      "sha256": "393fdc034cbfd108618bbd72da1c654a5083b07a08101dc06d3b8201e2bc52e2",
+      "bytes": 22201,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/README.md",
+      "sha256": "7563136c4801d2d98a2a3693c83328bb889110ef859c1e85d08c1468dc59f6f8",
+      "bytes": 907,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-post-v1.1-deprecated-state-scan.md",
+      "sha256": "f65215be500cf4665568fa669ed29bab25be5383aac04ad76dcaa83dfa86a593",
+      "bytes": 155,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-post-v1.1-hygiene-audit.md",
+      "sha256": "2746fac56348a9cf98694da25a4f9be4689305337f7517c5fbdc0e188b377a3b",
+      "bytes": 588,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-post-v1.1-script-inventory.md",
+      "sha256": "9f55c05b594d244e82e8f4211c23d6e96c61f05e0f1124cf2f37c1678462fa7f",
+      "bytes": 1386,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-post-v1.1-stable-total-closure-report.md",
+      "sha256": "f1d6640b5887fb629c32b6a43b60c697bff0ffaf1cc914901108217f48da1aba",
+      "bytes": 935,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-build-unblock-debt-inventory.md",
+      "sha256": "abdfe3ca84d5bfffa27da895c9658a802082e400a424a6a1abad2bba71704426",
+      "bytes": 3530,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-clean-worktree-build-order-fix.md",
+      "sha256": "e7f5cd7a82601d7329a503ef6da9f525aac05bc8667c25c8bf2511fd560b90b9",
+      "bytes": 757,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-daemon-core-service-management-workspace-dependency-fix.md",
+      "sha256": "08f5fc49f447e862aa4a30b79ec9536559f6ba2f7f163bd6fed542a47964b2d3",
+      "bytes": 1077,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-final-release-main-integration-preflight-report.md",
+      "sha256": "9d96141f06381ac64820cf7c988b4daf4623a1a33fd778b274c9c830365d23a8",
+      "bytes": 3403,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-final-release-main-integration-report.md",
+      "sha256": "b04ffdb8a7870e1e8250229da4f110419506e78654103cab8045acbaee6713e5",
+      "bytes": 3899,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-final-release-tag-seal-report.md",
+      "sha256": "5c4117081c8bb6dc3da77f205f1e9468448d9e3a27a96fa1c8cfcb3a2aea4a35",
+      "bytes": 2419,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-full-test-health-after-batch-2.md",
+      "sha256": "7c6b021ab59498415590f160ad777e57e7c2c77140b22a0b13f396c2b23ee17c",
+      "bytes": 11917,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-full-test-health-batch-3-merge-report.md",
+      "sha256": "c0b8fe6c6e255af56e7e4feadf2db40e17cc9b9110dc4bda45f2fd101df4f722",
+      "bytes": 1531,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-full-test-health-batch-3-report.md",
+      "sha256": "841d11f86023bc46299bcc71856f83da8538d36e45c0d177c3340eadb907c38d",
+      "bytes": 996,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-post-p0-final-health-report.md",
+      "sha256": "29a699eb604019de678c139021f7ecc2380a6f04703e7f7699c9c1d30cc0f7ec",
+      "bytes": 1231,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-post-p0-hardening-completion-report.md",
+      "sha256": "0206b06db1300d6ce29d96985601bc500b4b9be827a9c6531286bbd158a9bb39",
+      "bytes": 4383,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-post-p0-stable5-tag-validation-report.md",
+      "sha256": "a6c4c2e7185567ccd7b22fcf34d7e2fde2ba32c841ad10513dfb5ff3cfde40b0",
+      "bytes": 1688,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-production-trial-consolidated-validation-report.md",
+      "sha256": "412452e0727b4e6e771a334d8d50a0c9c06b4dd6b5adaf70fea25df3f8012b13",
+      "bytes": 2975,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-production-trial-final-release-candidate-report.md",
+      "sha256": "dde29aadab1fcc8f27abd1ee82c223fce59b2732d62c026579f0b183e0513b1f",
+      "bytes": 2978,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-production-trial-pre-release-real-chain-report.md",
+      "sha256": "6ce990a4d3e210ff897ddde6fa284240d071f8e4450c0119e856e3003114b34c",
+      "bytes": 2638,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-production-trial-round1-smoke-report.md",
+      "sha256": "73adac468b0d46677f9cdf740c861733e2654de53d3c920f5203f304368bf0ea",
+      "bytes": 2466,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-production-trial-round2-install-assets-report.md",
+      "sha256": "1a55f7aef7b40dc43aa1d9dee80270447c649bed34e74b74c6f0ffa989598638",
+      "bytes": 2090,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-production-trial-tag-seal-report.md",
+      "sha256": "42180a82589dee175812292d7bc25c7b4496a4349fb667e751b600fbaf9bb804",
+      "bytes": 1905,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-service-management-shutdown-import-clean-build-fix.md",
+      "sha256": "7ca4b03211c241494ab035c80f6ea2c9af1454906244a5261061526f39224f74",
+      "bytes": 1593,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-stable-final-gate-report.md",
+      "sha256": "1b03bac8977811c88d27160a1236a586cd8b86486df4837660dac712a6440cfa",
+      "bytes": 780,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-stable-rc-closure-report.md",
+      "sha256": "8b36b5e732765a6ee9e9142b2b1ec4e53160f61264c4559cefe7731c2edddedb",
+      "bytes": 2168,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-stable-readiness-checklist.md",
+      "sha256": "cef7e7aa251b52f727497c767a2ec6c6efa1614aff84c153cfd745ab7fc5de19",
+      "bytes": 3368,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-stable-real-run-acceptance-report.md",
+      "sha256": "4addb3b0c8de3c0741920841eebfbd12212450f73c185cfea42edfb196cf256f",
+      "bytes": 690,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-stable-real-run-opencode-prompt.txt",
+      "sha256": "764abd17172143146e6539bd6a2b826e62e1d1804a345ce36ed1b088e94769a2",
+      "bytes": 909,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-test-debt-fix-batch-1.md",
+      "sha256": "47c083f3581ab9637de89320cd2b1495aa786c91a8775ce15712af268ecd5154",
+      "bytes": 2565,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-test-debt-fix-batch-2.md",
+      "sha256": "527b92e2d2e1b43b276d16aeb934eb8b61fd7098ef8f8e8dfaba2c68224e1793",
+      "bytes": 2200,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-workflow-skill-eol-idempotency-fix.md",
+      "sha256": "4b96f658c7f6945a83867b8bb707630f0a6fa20e9200f18fe5ddf392bae013f4",
+      "bytes": 1141,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1-workflow-skill-render-idempotency-fix.md",
+      "sha256": "d1789c5a682ac28ca4044a272827081b59fc9b7efe561798816f8995d5e7c0c9",
+      "bytes": 1519,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1.1-daemon-runtime-import-fix-report.md",
+      "sha256": "8dbd3e902961e9e8fb3936ba44b0871b15a1c9083b87145c5143a5603eb5e22f",
+      "bytes": 2278,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1.1-daemon-runtime-import-main-integration-report.md",
+      "sha256": "04ed93da59c999d7be77d612783a319f53335e3d1c05076b65aa4612cfa933e5",
+      "bytes": 25162,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1.1-final-tag-seal-report.md",
+      "sha256": "0ad00a2536fe97bf93eb8c37ce58231965c51ecc3cb9653aecc96c86d44fd04a",
+      "bytes": 1220,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1.1-real-world-observation-batch1-result-report.md",
+      "sha256": "663c9d6b2de8c558474e779b1b6aade6db2203b53fa338df66dd7a6371cd5f55",
+      "bytes": 1593,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1.2-final-tag-seal-report.md",
+      "sha256": "bf4f177a052bd3bd771c161f7a3c08167c695371d3746a21f23f36a68acab42a",
+      "bytes": 1960,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1.2-real-world-batch1-fixes-report.md",
+      "sha256": "1d120870df6ea09f95337e8a7411b97d3ce3e9ee0f6c245d5b83480278ab8aa4",
+      "bytes": 2423,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1.2-real-world-batch1-main-integration-report.md",
+      "sha256": "d15b71a057b629e73d31394cf242896d79671106ac47225e429e51b68b8069eb",
+      "bytes": 1341,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1.3-daemon-control-plane-code-responsibility-audit.md",
+      "sha256": "4be3da9ba82cdd12e79ac781fe6bf7363fc9e4e4dd598b45ea337dc44e9191d9",
+      "bytes": 72566,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1.3-daemon-state-control-plane-test-report.md",
+      "sha256": "e9328b0fdd356951a985a8dd372b9c408a8251b7b36c1d9b9360211c283e21ce",
+      "bytes": 14137,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1.3-v114-minimal-executable-model-ba1-report.md",
+      "sha256": "0631f96dd8986f9688fe6bab8732d198c16a471132533d9448f4f1aa3196a82a",
+      "bytes": 1910,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1.3-v114-minimal-executable-model-bb6-report.md",
+      "sha256": "4306352a9d97bfe2643f2ad7b0c7aeb46d82ac8e60f3e6b18f2791fe9a818e59",
+      "bytes": 1032,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1.3-v114-minimal-executable-model-bc5-report.md",
+      "sha256": "84830cd434a600b227c26377863e4b8a91c4c18f967c8475d93a96480109262d",
+      "bytes": 884,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1.3-v114-minimal-executable-model-bd1-report.md",
+      "sha256": "8a1864766c190e62464781497e682da143284df8ab2ad000f24c0abbebaa6bd8",
+      "bytes": 940,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1.3-v114-minimal-executable-model-bf3-report.md",
+      "sha256": "02c6526a14a0cbda50130944ba590bcf09e0cfbf95b3a88c5be9359266f7977b",
+      "bytes": 1012,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1.3-v114-minimal-executable-model-bg4-report.md",
+      "sha256": "2db2c5339e0756d00c55f06e0f96ea015f64f7ea147a2e3a28a5fd5ec8d3f975",
+      "bytes": 1196,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1.3-v114-minimal-executable-model-bh1-report.md",
+      "sha256": "da63a0e83ea9c2d08fe0c068ed4ad667217ff82f524b5fbcbb22945a1000ff63",
+      "bytes": 1197,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1.4-final-rule-test-coverage-matrix.md",
+      "sha256": "a1c2aa76dee382717819a04e9549a9b2ac91b3a382e4e31ec52c2c37fc64e4a5",
+      "bytes": 3934,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1.5-agent-skill-tool-contract-alignment-report.md",
+      "sha256": "dda3a554f7ca3b22ecc1563a1cdf7fbd1bcb953a980420a3b8e9b7471e80b962",
+      "bytes": 1766,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.1.6-install-deployment-consistency-closure-report.md",
+      "sha256": "a24d3a599be76d652389845b6b3eae41ba66c8997f1a1a6185376674db06028f",
+      "bytes": 2319,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-candidate-manifest-gate-inference-hotfix-report.md",
+      "sha256": "dd160e01a561e0b72145ad0c8dc9ebf134b1867292b3aad512a7601004d90718",
+      "bytes": 813,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-design-freeze-report.md",
+      "sha256": "6c74d20737d4ff393199d4db162f6f9bb38c29bd5cd7941ae0e87b268a82f96e",
+      "bytes": 472,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-empty-wi-hardstop-fix12-continue01-failure.md",
+      "sha256": "0b3e219c403a2a13b8c084891a8cc310dd07cd56456069792140f51a618ad5bd",
+      "bytes": 298,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-empty-wi-hardstop-fix12-continue01-report.md",
+      "sha256": "08055ea5f1810d0578021e80368065eb9bca89cceafb13c043ca2bdfa3edd518",
+      "bytes": 432,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-empty-wi-hardstop-fix12-failure.md",
+      "sha256": "63edf3e0e971d9d7d388ed760d1d2699db101bccfab08b63cda505f63d672d89",
+      "bytes": 306,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-empty-wi-hardstop-fix12-success.md",
+      "sha256": "df947c4554e0beaea558650d4366d997437b27ec7d40c149d29d517cd72a8528",
+      "bytes": 393,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-extension-subflow-slice-report.md",
+      "sha256": "25963a8d8dee9e4a156a886b6a6da3d880d4c552b0a28ebc79002eccf618e350",
+      "bytes": 1142,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-integration-rc-report.md",
+      "sha256": "ac3b664b8fdaf0ff692289aca0faa2eabd0353dc4b19e56897d6da7553766f14",
+      "bytes": 768,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-live-opencode-acceptance-prompt.txt",
+      "sha256": "3af537e21cccb6bc4e1666f00f71f4d2984ecb411bd5d8ae110dcb2aa55fc616",
+      "bytes": 1245,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-merge-runner-module-registry-hotfix-report.md",
+      "sha256": "d357147e6d55414e1402753d6fa18d6ce7b74ebd081ced31063480879972bc7e",
+      "bytes": 798,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-project-spec-module-routing-hotfix-report.md",
+      "sha256": "d1511547411507fd63650cb4564a994e96993e668f3f7b6ffe41046f33a9fb10",
+      "bytes": 794,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-project-spec-store-slice-report.md",
+      "sha256": "e1a8b644eed4e619bb2e88d3fd126a88eccabc3bfd5f25f1e67185f255f1f705",
+      "bytes": 427,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-stable-final-live-acceptance-failed.md",
+      "sha256": "8b471aa2242311aecedd404acd9fd609de95487a2e9e5881d42b45d96ff1779e",
+      "bytes": 1375,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-stable-final-live-acceptance-fix-report.md",
+      "sha256": "6aa342f2143bd85258a938a85beac09c5367c3d0b8e1242f5c074ca2468a2646",
+      "bytes": 1871,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-stable-final-live-acceptance-fix02-report.md",
+      "sha256": "17eb4551539651d997a734dafaf595f748bd8c33c0a3d1c811751404f25c6721",
+      "bytes": 1457,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-stable-final-live-acceptance-fix03-report.md",
+      "sha256": "5f46ba819c881599a23bcc9dbf6658b1424d55dd3c78b30c92646567c89417ec",
+      "bytes": 1371,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-stable-final-live-acceptance-fix05-report.md",
+      "sha256": "8f6e2fa73e268e8d1d269c5b0f348cea17dbe654a732b39ea3aa8aa80838c25d",
+      "bytes": 1571,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-stable-final-live-acceptance-fix06-transaction-closure-report.md",
+      "sha256": "4c35055c1c68cbcb8f0841248a77d5bfc5e642676ff59cefb32a45e305c9e491",
+      "bytes": 1707,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-stable-final-live-acceptance-passed.md",
+      "sha256": "706d855dcf510cf0934e5ca465750819b85195e73e5c3c5064a1a8b6256167d5",
+      "bytes": 9644,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-stable-rc-closure-report.md",
+      "sha256": "163ce4ae2544c8a21fdfe719a2ccd90a31afe6bcfc77e975db3c2cca7fe21354",
+      "bytes": 722,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-stable-readiness-sweep-report.md",
+      "sha256": "f2af5e134021351ee78a382df4f16b710c70f3f6630e5e495d9ebf222db19ae1",
+      "bytes": 2731,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-userlevel-tool-wrapper-import-hotfix-report.md",
+      "sha256": "078bf95de83ec355e620d5e254769c87444bd639552a51246f09a2e3d3da6cc6",
+      "bytes": 650,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-control-plane-hardening-fix05-failure.md",
+      "sha256": "853fd3fbd5bd569e8d5b65f11b1039588ac01ebbc2eb2fec7e29d593de58df26",
+      "bytes": 976,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-control-plane-hardening-fix07-failure.md",
+      "sha256": "1f0c92d47ac6954c27ca15cf555aecb2633cd3f306062b70e1d8c7124767d851",
+      "bytes": 408,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-control-plane-hardening-fix07-report.md",
+      "sha256": "17662ae0930db5c2693abe8a480dfa0802f34c1beb625a067b2077cd8bbb9afb",
+      "bytes": 998,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-control-plane-hardening-fix08-report.md",
+      "sha256": "a7e164d4f2360e199a7598db09004d4d3baac1aa36a76bc11624e31441bd4825",
+      "bytes": 936,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-control-plane-hardening-fix08-success.md",
+      "sha256": "22c79864df55096bb25b3433a8c38a0e224733db18850439ba62fd8748a2bdaf",
+      "bytes": 154,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-control-plane-hardening-report.md",
+      "sha256": "d302051e83d82ed2164387b7b9b8c93585f121d90eab4377f98da07432ab9b7f",
+      "bytes": 1281,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-control-plane-live-acceptance-failed.md",
+      "sha256": "5247b32f6ad97e6bb29e3628a4cd8e50e2b9b7a4bb21a0e4baabdec2e47ae5de",
+      "bytes": 581,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-control-plane-post-merge-verification.md",
+      "sha256": "1f54057ebb4d044b3212188fa148bbcfec20b6b57fd57d85a6c471e65544e30d",
+      "bytes": 480,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-fix11-empty-wi-hardstop-blocker.md",
+      "sha256": "1ce110ac5b6c2f03090e6a4064470e0b1534eb019575f72a8f6a2aaed985d7ae",
+      "bytes": 916,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-fix12-report-path-blocker.md",
+      "sha256": "d697b76cd95620e3590a1e17f78a797b49ebf1c941a4c99b27e99bef1ebb4c69",
+      "bytes": 936,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-fix13-global-hardstop-blocker.md",
+      "sha256": "1e3f5e0a9a2d7bb65c0e4040c4343c53296eea40a2d8b72a91383cb0ee00642b",
+      "bytes": 1161,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-hardstop-alignment-closure-report.md",
+      "sha256": "019a94e9834151d7b379fa2c704e889c8c104dbaea2d8383758190ae32db7294",
+      "bytes": 2543,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-hardstop-alignment-impl01-continue01-success.md",
+      "sha256": "eb7bee054414fa86a695a50eb67ac41d208c2d6fd6aaa7752ff390d4351902c6",
+      "bytes": 314,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-hardstop-alignment-impl01.md",
+      "sha256": "d19ce838728db3ee727080c75b10d61a1d0bbf48896c797d9303931d64321a06",
+      "bytes": 1562,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-hardstop-alignment-live-acceptance-passed.md",
+      "sha256": "1579102d57b18f1e7d4826990296ea0f08dc4731b452318facc3c731268ef9df",
+      "bytes": 691,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-native-tool-shadow-fix09-continue01-failure.md",
+      "sha256": "5146bdd45b1d848cf7117e001840e982fcc3ec0f9c61d83b9328e26fd82e80c5",
+      "bytes": 313,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-native-tool-shadow-fix09-continue02-failure.md",
+      "sha256": "234bdc6c2a5d91a8f569de84f6dbd7ee0077cbbdc082e629300588bca139e874",
+      "bytes": 296,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-native-tool-shadow-fix09-continue03-report.md",
+      "sha256": "ea66d466ddfd7bac810c0b5cc436b2f0eb2eb4667dc71e17883f9935dd8cb858",
+      "bytes": 677,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-native-tool-shadow-fix09-continue03-success.md",
+      "sha256": "9dd4edcec08bf5fc195c9f9bf5fe973e1e83c46e2756719d5bb014e62c5018dd",
+      "bytes": 806,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-native-tool-shadow-fix09-failure.md",
+      "sha256": "6ae2e53cabe66d1af92d3d5bcb70da3c57909c408d6c30e8b71330033f00784c",
+      "bytes": 317,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-native-tool-shadow-fix09-live-acceptance-failed.md",
+      "sha256": "86fea227446f3dbef3996fc94370e998bd804f42e70f68c1d12e32b9727a0245",
+      "bytes": 1370,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-native-tool-shadow-fix10-continue04-failure.md",
+      "sha256": "14d231898447e8fbcf8b45d5d53497c51db346f252fced2a2adb8d2b22c9ff9e",
+      "bytes": 366,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-native-tool-shadow-fix10-continue04-success.md",
+      "sha256": "f170dfac3309d263f1e39adf46b8874d74977ca2a232ce76c74a92298c5893ec",
+      "bytes": 352,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-native-tool-shadow-fix10-failure.md",
+      "sha256": "b224e179ab5b519115cb3703a187563c4dc8f80f572db8d18e16db4cc353a02c",
+      "bytes": 296,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-native-tool-shadow-fix10-live-acceptance-failed.md",
+      "sha256": "630728a7f9682946af4a95c494035245d687244e129fae62aea0ddb3730c067b",
+      "bytes": 933,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-native-tool-shadow-fix10-report.md",
+      "sha256": "ae62db6a3796585b82788d6a27fc75d63fda148421192969cf93f44b6207430f",
+      "bytes": 1249,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-native-tool-shadow-fix11-report.md",
+      "sha256": "42c2642385967eae42487126c8180ee43e15577584114284ac2f5739119baa23",
+      "bytes": 835,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-native-tool-shadow-fix11-success.md",
+      "sha256": "fbbcca0e29efc41fb5e1d8a9e810f3cb38088e9dde95f3022d74bdbb2629258a",
+      "bytes": 330,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-native-tool-shadow-hotfix.md",
+      "sha256": "f79d2fbe4fd762ff10792dd1ad6abf23d5d811c5b4a9a92a8ee5d630b67f2afd",
+      "bytes": 1113,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-preflight-slice-report.md",
+      "sha256": "321269c84594bd2c8f345436ed44ffbcd0e9bfe3d4634268cca5311bae32de04",
+      "bytes": 1394,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-report-path-fix13-report.md",
+      "sha256": "6bc37c00562f5157e3006406b2afda0024774f9e93dd7b5e28107b5831c4880d",
+      "bytes": 326,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2-write-guard-report-path-fix13-success.md",
+      "sha256": "00456eb84e69d8af06f9eb1dbf38f68a65f1460900f98038248350fc62fceb43",
+      "bytes": 483,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2.3-changed-files-audit-historical-blocks-hotfix-report.md",
+      "sha256": "018fd32a186099d27167ce736aae3387b3fb31ce0b4a8f10827419d36be0f4c4",
+      "bytes": 3853,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2.4-changed-files-audit-verdict-unification-hotfix-report.md",
+      "sha256": "eb819c8888afbea56658e3e23043a630ba0da4b697a20319468b65b653d80ae7",
+      "bytes": 3426,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2.5-remote-ops-boundary-hard-stop-resolution-hotfix-report.md",
+      "sha256": "01088794e3370fdb58ded0ccf39f62fb5c3c6eaa20cab6124c3254c28d29c542",
+      "bytes": 1988,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2.6-plugin-hard-stop-resolve-pass-through-hotfix-report.md",
+      "sha256": "2f48030212a88add0b791668a4b95595261d375524600232c68e07991cd546d5",
+      "bytes": 1730,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2.7-safe-bash-context-audit-resolution-hotfix-report.md",
+      "sha256": "7ccfb5a8cf7ed74baceaffaf9a519a0cc20e583be7e3790e20acf74045f8c78a",
+      "bytes": 1376,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/reports/specforge-v1.2.8-write-guard-authorization-flow-hotfix-report.md",
+      "sha256": "b2e1e35152ec2b4e57805dbacc05d97cbc445ba7779aae816351cbb5acfd8c30",
+      "bytes": 2587,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/implementation/architecture-consistency/authority-model-recovery.md",
+      "sha256": "644c92bd1e8ce676a02c78b5aaa69db015923502a638e3cba5f9bf4d3891315c",
+      "bytes": 8050,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/implementation/architecture-consistency/current-handoff.md",
+      "sha256": "2e25437709ce602339f3763552ef685d07b3767cec0d1c830970db2664bd5bb0",
+      "bytes": 2201482,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/implementation/architecture-consistency/current-release-actual-architecture-and-module-inventory.md",
+      "sha256": "273830a0405da4aa9fe75a5267e7dc12c42dea79d5feea1590371a5927498e08",
+      "bytes": 25961,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/implementation/architecture-consistency/current-release-boundary-and-module-convergence-plan.md",
+      "sha256": "320bccc1e5e449977690b40594d2b35e278593d6f6f7efd831e0beb4301e7ac9",
+      "bytes": 11478,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/implementation/architecture-consistency/current-release-boundary-and-module-convergence-progress.md",
+      "sha256": "5552235c0052b952933c69543db777c830ed61bee482c6c2dba4ba2284bc48e3",
+      "bytes": 183478,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/implementation/architecture-consistency/current-release-module-and-change-disposition-matrix.md",
+      "sha256": "50169cdefbb975efcba0fac2fdab5d23d2758a436550954e3974fb5fe379a39f",
+      "bytes": 55241,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/implementation/architecture-consistency/current-release-persistent-file-owner-inventory.md",
+      "sha256": "38f0c106ad05232aed2e66e48a7a78a186376ef70e601b593bcc6cfeb8bad00b",
+      "bytes": 47469,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/implementation/architecture-consistency/P0-contract-consumer-closure.md",
+      "sha256": "29ca323fd0a167766ebe57c1f43b13a6ca64bae95be01dc3da53be39ce24c789",
+      "bytes": 156294,
+      "before_sha256": null
+    },
+    {
+      "path": "docs/archive/implementation/architecture-consistency/P0-project-spec-version-binding-defect.md",
+      "sha256": "48d97f618d4038f25be71377eefd3c268777e47dcbf05f86976b158c20d8f4e8",
+      "bytes": 9471,
+      "before_sha256": null
+    }
+  ],
+  "purpose": "Restore only immutable historical proof inputs needed by existing evidence-retention tests. These files are not current product/implementation authority; original .specforge state stays excluded."
+}

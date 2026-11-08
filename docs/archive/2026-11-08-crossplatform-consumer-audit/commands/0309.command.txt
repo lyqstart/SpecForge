@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/finalize-audit-inputs-v5.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "finalize-all-current-document-inputs-v5",
+  "expected_writes": "external-evidence-only",
+  "started_utc": "2026-11-08T06:16:33.019Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\finalize-audit-inputs-v5.cjs",
+      "sha256": "fc3e98bd62af02c1fd631cf7ddaab8ba7da491f50c81a0b5c5ba5e04b4f08365",
+      "size": 1898,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ src/tools/lib/architecture-governance-v7-regression.test.ts (7 tests) 14ms
+ ✓ tests/unit/daemon-startup-readme-contract.test.ts (5 tests) 8ms
+
+ Test Files  2 passed (2)
+      Tests  12 passed (12)
+   Start at  12:00:44
+   Duration  1.24s (transform 157ms, setup 0ms, collect 335ms, tests 22ms, environment 0ms, prepare 346ms)
+

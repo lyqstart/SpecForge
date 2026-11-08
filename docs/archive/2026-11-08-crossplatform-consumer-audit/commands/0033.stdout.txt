@@ -1,0 +1,13 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/packages/cli
+
+ ❯ tests/help-system.test.ts  (17 tests | 1 failed) 22ms
+   ❯ tests/help-system.test.ts > HelpSystem > General Help > should generate general help in interactive mode
+     → expected 'SpecForge v1.0.24\n\nUsage: specforge…' to contain 'SpecForge v1.0.21'
+ ✓ tests/help-command.test.ts  (11 tests) 45ms
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 27 passed (28)
+   Start at  10:28:58
+   Duration  1.36s (transform 209ms, setup 0ms, collect 708ms, tests 67ms, environment 1ms, prepare 824ms)
+

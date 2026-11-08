@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/prepare-loader-contract-correction.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-evidence-bound-loader-validator-correction",
+  "expected_writes": "external-evidence-only",
+  "started_utc": "2026-11-08T06:28:04.372Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\prepare-loader-contract-correction.cjs",
+      "sha256": "be5ba1092d35507d2d1c1a169ab15dd947d66a9235eca99aac3a7ef3e7575a49",
+      "size": 3207,
+      "extension": ".cjs"
+    }
+  ]
+}

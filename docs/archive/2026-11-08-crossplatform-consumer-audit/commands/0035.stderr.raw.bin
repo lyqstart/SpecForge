@@ -1,0 +1,21 @@
+$ node scripts/run-root-tests.mjs current tests/unit/current-product-version-contract.test.ts
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/current-product-version-contract.test.ts > current product version contract > keeps Bun workspace identity metadata on the same product version
+AssertionError: expected '1.0.23' to be '1.0.24' // Object.is equality
+
+Expected: "1.0.24"
+Received: "1.0.23"
+
+ ❯ tests/unit/current-product-version-contract.test.ts:73:70
+     71|     expect(parsed.error).toBeUndefined();
+     72|     for (const workspace of Object.values(parsed.config.workspaces) as…
+     73|       if (workspace.version !== undefined) expect(workspace.version).t…
+       |                                                                      ^
+     74|     }
+     75|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+error: script "test:root" exited with code 1

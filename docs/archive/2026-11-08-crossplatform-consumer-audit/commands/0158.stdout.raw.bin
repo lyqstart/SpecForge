@@ -1,0 +1,11 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/current-contract-register-owner.test.ts (14 tests) 870ms
+ ✓ tests/unit/sf-semantic-closure-run.test.ts (10 tests) 174ms
+
+ Test Files  2 passed (2)
+      Tests  24 passed (24)
+   Start at  12:23:43
+   Duration  3.39s (transform 841ms, setup 0ms, collect 1.78s, tests 1.04s, environment 0ms, prepare 217ms)
+

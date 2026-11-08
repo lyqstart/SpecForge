@@ -1,0 +1,88 @@
+$ vitest run tests/help-system.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/help-system.test.ts > HelpSystem > General Help > describes config as readonly and daemon diagnostics through current health/handshake owners
+AssertionError: expected 'Show or modify CLI configuration' not to match /modify|write|edit/i
+
+- Expected: 
+/modify|write|edit/i
+
++ Received: 
+"Show or modify CLI configuration"
+
+ ❯ tests/help-system.test.ts:25:38
+     23|     it('describes config as readonly and daemon diagnostics through cu…
+     24|       const config = JSON.parse(helpSystem.generateCommandHelp('config…
+     25|       expect(config.description).not.toMatch(/modify|write|edit/i);
+       |                                      ^
+     26|       const daemon = JSON.parse(helpSystem.generateCommandHelp('daemon…
+     27|       expect(JSON.stringify(daemon.troubleshooting)).not.toContain('38…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/help-system.test.ts > HelpSystem > General Help > should generate general help in interactive mode
+AssertionError: expected 'SpecForge v1.0.24\n\nUsage: specforge…' to contain 'SpecForge v1.0.21'
+
+- Expected
++ Received
+
+- SpecForge v1.0.21
++ SpecForge v1.0.24
++
++ Usage: specforge <command> [options]
++
++ Available commands:
++
++   daemon          Manage the SpecForge daemon
++   config          Show or modify CLI configuration
++   version         Show CLI version
++   doctor          Inspect local SpecForge installation and project status
++   services        Manage supported OS services
++   opencode-server Manage the OpenCode Server service
++
++ Global options:
++   --json, -j
++       Output in JSON format (machine-friendly) [default: false]
++   --verbose, -v
++       Enable verbose output [default: false]
++   --help, -h
++       Show help [default: false]
++   --version, -V
++       Show version [default: false]
++
++ For more information on a specific command, run:
++   specforge <command> --help
++   specforge <command> <subcommand> --help
++
+
+ ❯ tests/help-system.test.ts:36:24
+     34|       const helpText = helpSystem.generateGeneralHelp(modeSwitch);
+     35|       
+     36|       expect(helpText).toContain('SpecForge v1.0.21');
+       |                        ^
+     37|       expect(helpText).toContain('Usage: specforge <command> [options]…
+     38|       expect(helpText).toContain('Available commands:');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/help-system.test.ts > HelpSystem > General Help > should generate general help in JSON mode
+AssertionError: expected '1.0.24' to be '1.0.21' // Object.is equality
+
+- Expected
++ Received
+
+- 1.0.21
++ 1.0.24
+
+ ❯ tests/help-system.test.ts:52:30
+     50|       
+     51|       expect(parsed.appName).toBe('SpecForge');
+     52|       expect(parsed.version).toBe('1.0.21');
+       |                              ^
+     53|       expect(Array.isArray(parsed.commands)).toBe(true);
+     54|       expect(parsed.commands.length).toBeGreaterThan(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+error: script "test" exited with code 1

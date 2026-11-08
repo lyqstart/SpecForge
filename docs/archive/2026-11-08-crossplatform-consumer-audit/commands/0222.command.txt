@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/close-retained-local-gates.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "close-retained-local-gates-and-historical-lint-dispatch",
+  "expected_writes": "tracked-source-and-evidence",
+  "started_utc": "2026-11-08T05:22:05.055Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\close-retained-local-gates.cjs",
+      "sha256": "4d23262a6953356087612422cbfac78b3956f35635bc1c32fbf294a3fd388d7b",
+      "size": 3521,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/run-linux.cjs",
+    "run",
+    "test:root",
+    "--",
+    "--maxWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "linux-frozen05-final-full-root-regression",
+  "expected_writes": "owned-linux-test-fixtures-and-evidence",
+  "started_utc": "2026-11-08T06:08:19.077Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\run-linux.cjs",
+      "sha256": "ae308ce36eb3828d58a8c83a31f70df76fda7e529c3f1f198853bcfb107da963",
+      "size": 1341,
+      "extension": ".cjs"
+    }
+  ]
+}

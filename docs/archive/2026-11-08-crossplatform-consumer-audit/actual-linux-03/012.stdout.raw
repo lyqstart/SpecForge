@@ -1,0 +1,10 @@
+{
+  "command": "config",
+  "description": "Show read-only CLI configuration and resolved paths",
+  "examples": [
+    {
+      "description": "Show current configuration",
+      "command": "specforge config"
+    }
+  ]
+}

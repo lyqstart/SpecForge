@@ -1,0 +1,15 @@
+{
+  "number": "004",
+  "name": "current-help",
+  "executable": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-platform-acceptance-FhZpWr\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "daemon",
+    "--help",
+    "--json"
+  ],
+  "started_utc": "2026-11-08T05:24:40.731Z",
+  "finished_utc": "2026-11-08T05:24:40.934Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

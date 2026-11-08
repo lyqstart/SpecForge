@@ -1,0 +1,31 @@
+$ vitest run tests/unit/current-doc-lint-authority.test.ts "--maxWorkers=1" "--minWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/current-doc-lint-authority.test.ts > current document lint authority > does not impose historical V6 product acceptance lists on a business Candidate
+AssertionError: expected 'fail' to be 'pass' // Object.is equality
+
+Expected: "pass"
+Received: "fail"
+
+ ❯ tests/unit/current-doc-lint-authority.test.ts:11:89
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/unit/current-doc-lint-authority.test.ts > current document lint authority > refuses a retired document type before reading an unowned path
+AssertionError: expected undefined to be 'UNSUPPORTED_CURRENT_DOCUMENT_TYPE' // Object.is equality
+
+- Expected: 
+"UNSUPPORTED_CURRENT_DOCUMENT_TYPE"
+
++ Received: 
+undefined
+
+ ❯ tests/unit/current-doc-lint-authority.test.ts:15:167
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+error: script "test" exited with code 1

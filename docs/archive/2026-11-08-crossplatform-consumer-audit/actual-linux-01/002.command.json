@@ -1,0 +1,14 @@
+{
+  "number": "002",
+  "name": "official-verify",
+  "executable": "/tmp/specforge-crossplatform-20261108-a01/bin/bun",
+  "args": [
+    "scripts/sf-installer.ts",
+    "verify"
+  ],
+  "started_utc": "2026-11-08T02:58:22.708Z",
+  "finished_utc": "2026-11-08T02:58:23.164Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

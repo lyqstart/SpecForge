@@ -1,0 +1,476 @@
+{
+  "utc": "2026-11-08T03:22:51.513Z",
+  "target": "/tmp/specforge-crossplatform-20261108-a01",
+  "source": "/mnt/d/code/SpecForge",
+  "members": [
+    {
+      "path": "docs/user/work-item-flow.md",
+      "sha256": "d60761315f3dbf4d61a1051a620ed905256c8d340f52d03c2e01bb0f25558f0e",
+      "bytes": 1458,
+      "before_sha256": "790dc2b12e5f95ca9c0a8a153160f09cafe8e7ff27c326205b055bdb58062cc5"
+    },
+    {
+      "path": "packages/cli/src/utils/directory-layout.ts",
+      "sha256": "937e83bf96313d756d6fd05f5d4d43b7fbd41425f60254981a7168b3d822fe3a",
+      "bytes": 883,
+      "before_sha256": "3e344e13257d18de05be6cb001e6f610992b5869a4e7bf7039a8475b775f1928"
+    },
+    {
+      "path": "packages/cli/tests/current-release-project-layout.test.ts",
+      "sha256": "87890dcf83ce92cec6284a66695c870c63281126bd0a412f9b3d58681e9f0de2",
+      "bytes": 3204,
+      "before_sha256": "59f0d676f54b7d4b6da5fd8c170127b51d0592ab7827fb2d6a5b21122308a122"
+    },
+    {
+      "path": "packages/configuration/src/accepted-config.ts",
+      "sha256": "87eefe636caf17980293b796acbe7d23d9dcdee816727eb741edfe39205a441b",
+      "bytes": 2839,
+      "before_sha256": "6d91c5fc6404ab88c8c9c8afc0c8dc3abc2205230585d3adc5d1098274c3923f"
+    },
+    {
+      "path": "packages/configuration/src/project-schema-descriptor.ts",
+      "sha256": "68f656cb5602763c33849e2f7494f79a5b176113484855dc5633a47e9f884ce3",
+      "bytes": 843,
+      "before_sha256": "3c29dec92ef0ef37f7ebd6bbd53b84a9628932bd1bf67af04e12ec636f6ab7c9"
+    },
+    {
+      "path": "packages/daemon-core/docs/error-codes.md",
+      "sha256": "32ba79ebd74aeae559331cefa71bf6a3ae34f8f2f1ded15db396c1382a91ef46",
+      "bytes": 3476,
+      "before_sha256": "83a054839f362d2fd40dbc9b599af2c59ca875352b14c99277736bd1de1bfb75"
+    },
+    {
+      "path": "packages/daemon-core/docs/error-handling.md",
+      "sha256": "7931432c77a107bd8165bf44ce0ae3440395f2c6f0374615d0363ea867f8da16",
+      "bytes": 2224,
+      "before_sha256": "d1096c71e54d6fa1424bf00851201f0830cd50b8778838eb8f915c015ab022d6"
+    },
+    {
+      "path": "packages/daemon-core/docs/event-schema.md",
+      "sha256": "ff4bdbde3bde04d7f5c050fa6786b57c17495ff086725222b43132416c707555",
+      "bytes": 1700,
+      "before_sha256": "510d5d02a881e14b4bcb2f5f7bf17af0ae1022febb526bbd266a009b528ba83e"
+    },
+    {
+      "path": "packages/daemon-core/docs/http-endpoints.md",
+      "sha256": "0f998cbb26a99a6e704de035b13712bc7623044405cf155ccce17e6e152f8613",
+      "bytes": 3609,
+      "before_sha256": "3a3e4c3d09b1c2d551e349790adceff6d6e72360c78b82fb2298cbd8cb5de36a"
+    },
+    {
+      "path": "packages/daemon-core/src/http/HTTPServer.ts",
+      "sha256": "a251e207a6cfa2e34b0a997e7cf7b3f42d0f855887de5e33cc8d677208faee6e",
+      "bytes": 76115,
+      "before_sha256": "9cd877053b7f9b76e294cf368994d81eb07e9a12b7564fcefbe060ab5f76f4eb"
+    },
+    {
+      "path": "packages/daemon-core/src/observability/observability-config.ts",
+      "sha256": "f08052225ff846e18b30e3e7588fe3b2300bfe33288d09a57211bea7617c5574",
+      "bytes": 2999,
+      "before_sha256": "827e383b1871e873bbffee4ff47c5ee29cc81be38c865fe8f9054c330bf5c3a0"
+    },
+    {
+      "path": "packages/daemon-core/src/observability/observability-recorder.ts",
+      "sha256": "109610349fe5e28d8161cd105e6422a2285184612d93556622bccd24ea5b89c7",
+      "bytes": 6176,
+      "before_sha256": "24b0bc9cd0bceeb9f8b87cc15334001c8be705e27ca93deab003608dcd26e135"
+    },
+    {
+      "path": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "sha256": "d038b228bf0fa6a3ef59ebd0d36abdecedd92aa5133befc77781241ded24539f",
+      "bytes": 5083,
+      "before_sha256": "9dade6c3a27f760ac80842242ce4eda837dd75f8911f5b6118b96f097b7f9e48"
+    },
+    {
+      "path": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "sha256": "5c368ba5b892f5ec888f2374ef447e86998c9281dbcfcc4ac07b5030911646e4",
+      "bytes": 20116,
+      "before_sha256": "fc7293adcb2de1b240817300b83a718c4a6cb2c5420335ac4c7b14d9fb76f8be"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "sha256": "6c33b0a00314940acea4c7e6df4ecd16e6689fe0c0de1a44af15a03f8e62ca89",
+      "bytes": 59306,
+      "before_sha256": "c6d8262eadd511d7974a989e22b8c8cd9703b384c6ced61ffe05518e8640121c"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "sha256": "65c1ddba98edff1db3b0b27cff43f3d655922860bfa0fd849e991ec8a6784333",
+      "bytes": 16818,
+      "before_sha256": "8533e51576685f3867fe891cc8c93fe32415942b5ed444d79f514c431c984a0d"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-semantic-closure-run.ts",
+      "sha256": "f0efde45f2166c6dd78df4157457a353bfaa9ff0a4d311157a5fa3c41ff42df0",
+      "bytes": 13222,
+      "before_sha256": "9932f3a6ba225e1171eb1f81b5c56d6cbdf1fcdf30205e40ab822b905df3bb0f"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts",
+      "sha256": "5a9bf40caca19d13bd6fe613e7a0f365117d0e07b06b7660462f732bf740ff78",
+      "bytes": 48782,
+      "before_sha256": "b2d13209700c040690bbdbedcb03fa36155d8780220c5e56d3ac2a6821c07b24"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-code-permission.ts",
+      "sha256": "7e79b789a0d502bc76c784cf7ef6483b3b43fdb58d544b5531b44efdba6b2749",
+      "bytes": 16991,
+      "before_sha256": "aea9f65d82820c3d6f623e546f46d5cf5bd6112667b793f97f9086f9fe1bcd7e"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-decision.ts",
+      "sha256": "4dad2408f88898b323aa344456ed6c5afc42ea1c09511068a601e5752c40db28",
+      "bytes": 22648,
+      "before_sha256": "1472ca3317946b9d8fc2b8215fe75018790db6e6a596904eae0036d8a621dc75"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-merge.ts",
+      "sha256": "6d50d5c7ad249a7a50505b1a3a429d0f90b9eb98182130e1046290eb1b0e5a82",
+      "bytes": 9927,
+      "before_sha256": "cdcdf4c7ba90c29056b6a119845f8bd0b4cf02b79f924c50bc46f611c2081c5a"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-rollback.ts",
+      "sha256": "7cdab3e7667d9c9e4f93090d75d359d7e5fff0e05b61b1b9745939344f08d4e7",
+      "bytes": 5265,
+      "before_sha256": "999971addc5b39274aed48ee35000bc19cdcd2569dd10cf494b01f92b9b444d5"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-verification.ts",
+      "sha256": "e2d3530f8be943de641d17b643088f6a3a4bb29360ed8451e7a5dd02cffad019",
+      "bytes": 6280,
+      "before_sha256": "d8e15e323805aa6df9360e7b89ad33071e4db52c9da9233185db2b5ae1d9a6f2"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-work-item-create.ts",
+      "sha256": "9f334c66a00daf94e6104555a3838cf793711f1d444942dcb0bf1080b56239ed",
+      "bytes": 6898,
+      "before_sha256": "aada6f2bbac6fb092cbe9d2379feee39476388850df4c19b24ca5e76a916b90f"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-verification-gate.ts",
+      "sha256": "392d001476b6c39fbbe416ba2455c47188ac0d832cfce294f0d3ef0ffbf72f54",
+      "bytes": 1646,
+      "before_sha256": "3a6f9eb6bf4362c7943827382d41c9397889cb3e91f8690bb6ce9edff03f617d"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/artifact-schema-validation.ts",
+      "sha256": "6c99c3586255550b14c3f5cc224d91e4b0fb364deb15b17b8a32c0e810fb366d",
+      "bytes": 22192,
+      "before_sha256": "ccfcf8acb0c44abc1509e9301070947cedc50e8c884df315fc409b1ff3662899"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/atomic-spec-merge-write-provenance.ts",
+      "sha256": "71d989ebcb282eb0d8722616bd6bead7e41dd555e7be3ac63cbd0d1e5e77f94b",
+      "bytes": 5634,
+      "before_sha256": "8f89502d07ee662e161ba55a5f830cab75d55fda1e409d293dbcbe5e86235018"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/authoritative-work-items.ts",
+      "sha256": "024d51ed5f45305c35f3cf6625543ffd63b93fc2fdcbff8bfefa5670d65aca1a",
+      "bytes": 1640,
+      "before_sha256": "3f150425e168b9cc9d78fe4c13bd0645dc70a8c556163743a121b1aae3b606ca"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/candidate-generation-integrity.ts",
+      "sha256": "41067e4017d277b98596d9c115b68a58d8b64b129405b28b8085e2a40faeb743",
+      "bytes": 9838,
+      "before_sha256": "19e3451b7ed6172ba41f33533d7c90c64b63af11374fb92ea923e14b1ebb995e"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/changed-files-audit.ts",
+      "sha256": "f6fd9f6c71be7bd45ef94e7cbd6edc10a00bf7313885dcb70a0aedc1d8b5f66b",
+      "bytes": 7272,
+      "before_sha256": "1df514f8409c2c186387caa0c81478a29337cde859af83b5feb93a16d1618aaf"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/contract-authoring.ts",
+      "sha256": "61d228879b530304ba864f53f3d1b0766c3480cac0d3bee017eeeb3fd9ecb0bd",
+      "bytes": 45445,
+      "before_sha256": "38da50c3bf398538ef74379b6fe97f2c34c9622c521797ad597d06a5d28d0075"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/contract-integrity.ts",
+      "sha256": "de413fd8d917cca5a3f258fc56116943348697c6459a8e4aeedef5939fbae794",
+      "bytes": 26454,
+      "before_sha256": "fa3ddff296626387183992222cf6c4a24d64fb88961676a28ee493c1543a5531"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "sha256": "85531db73035c09d8602a21a25d11b86bd37b398230605ffe48b489b4b166898",
+      "bytes": 19782,
+      "before_sha256": "18dca560c7d4d15ac54d9611f24b187c4194990f762dc891735d70e1ec82ad4e"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "sha256": "20f6b8f7a5441d104801193b552e37394e5bbbdbc48a59bfb1a7dc7ca40d071d",
+      "bytes": 71668,
+      "before_sha256": "da579fb63009c79632c8a05b2c0a29fd87ba6909af3c594fb0b0bd57c1428af2"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "sha256": "e95d7e1ae033d028020c384f7ab8bf136bbfe8cc1d081faaf147aa705f60d6de",
+      "bytes": 24292,
+      "before_sha256": "ca8850eb44265b16513c02cb3f7ea2aa2ab791713314b802866312c9ad7d3052"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/git-governance-write-provenance.ts",
+      "sha256": "23d4cac4012ee0fb805b67dc084da8c38644b05844188fd1c54f61070c41e5ee",
+      "bytes": 5423,
+      "before_sha256": "2fe2c4e17df0e96095a835f5491931d49dc367844e59b0701261b64c4c4d67cc"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "sha256": "36807fa9e0d8e96ffc8c6f95c42aeae30b5fa51a2567a1c9261a0dd1192e829c",
+      "bytes": 50179,
+      "before_sha256": "d3d07846e7acde54a60a9092ca419ee2b6137e4ac91dc1fb1b3c981a2507623c"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts",
+      "sha256": "18564279d9d37afaf5d51d926190302235f5551e83dfdd679b2d951d2c308eb8",
+      "bytes": 19443,
+      "before_sha256": "cfd886c0db08041f7c3ddff8b800cedea8e3ccd6f4b8eb2838b6bbb0b57a7cf4"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "sha256": "acf32e13dc0ec51eb430bc35cc7c03da016924ba1e73ab3e4110ec95d1c465af",
+      "bytes": 39572,
+      "before_sha256": "76c09466dd3bb883bb87b6b0777893bfa2dc0611e7f66807bfd39e42cc4ec54a"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/native-write-boundary.ts",
+      "sha256": "9f8c2c329f1847b246cada1653f1e87a6a475369e521cf5218887a5e45866ced",
+      "bytes": 4244,
+      "before_sha256": "e2691ccb101a8dd93b0a4d6ec1fab16d162af741bbae03ff1fc218662760a393"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/path-policy.ts",
+      "sha256": "7183c8137360123f3918701427567d77e41504ec1ca4a8b4b6077c4f64042220",
+      "bytes": 4087,
+      "before_sha256": "310198b941575e0ae230e5dc26fb9f3326f5c2aaafd8c4fb96e2d873c9c08021"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "sha256": "23357246f6131c56cb5682923bc3e5c1a7c0494c82f5a5b571ae16eccea651d8",
+      "bytes": 136454,
+      "before_sha256": "aed459ce70d2a43522a0fa9736ade3a4b7a167d28036763ccb2cdc851aebf62e"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/project-init-reconstruction.ts",
+      "sha256": "25d7782f455a151d2a9f899516432be44e9607e6e425bb5758e51ec186e6caa4",
+      "bytes": 8118,
+      "before_sha256": "7a139d8f37016b377448770900fcb4f956b7f3b46a96eaf1b13ad0bda2555c9d"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/regenerable-artifact-governance.ts",
+      "sha256": "160a3d0a77d945c93243e40beb08d49c9b0e1ec95289c2501d8589f8648d1b30",
+      "bytes": 4194,
+      "before_sha256": "775ff5f7a505b87294109581adcfb75d6e437f9cea76696cd4006ae4a2ac8cd6"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/rollback-runner-v11.ts",
+      "sha256": "1df88250c840d47349bdf100a983fb2a10d1f0a5993331be2fbf9aba6ef8729f",
+      "bytes": 9795,
+      "before_sha256": "809ab374e332c78fbf2900f60c9da73a2203c31a0200892a91b7a2f09de336c2"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/sf_design_gate_core.ts",
+      "sha256": "503b4c3331273e244c9bd96cd9a9d7677594a4f418649ba1585114a8845650dd",
+      "bytes": 35879,
+      "before_sha256": "d425f7cb7b2744872d85f6cee9ddc2b3d65f8a616f68009d8f90005a96f93cab"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "sha256": "64bce0d36f3a04a3a64fd4b94707e7282b37ec0b8b57d6fc058bfa66a9659038",
+      "bytes": 20847,
+      "before_sha256": "68c5c8ea19b9c285f30f26b2b7e6d4d87535e0a7569ca5dbd207170e72b19f03"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/sf_safe_bash_executor.ts",
+      "sha256": "f0770286fddfc450f65b2711c98a7414f223efd9beeb11042eec41f41e5406f0",
+      "bytes": 9512,
+      "before_sha256": "a32462eef8a42464633ce2061e98fee53fed123dfb69046bd61f18e17ea2cb00"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "sha256": "79639d821b5bd44457e0c6ad89acad68e7771e91855994a1348301cc259a7d87",
+      "bytes": 23315,
+      "before_sha256": "e9fe5d9de76a71085d94603c6bb8c1f6a3df0391c54c297e530c7be30995b5ac"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts",
+      "sha256": "d5387761ed490dc8e4359743d725b6dc72d6c464139d7a3870167f11e5cf0458",
+      "bytes": 7268,
+      "before_sha256": "dae174002aba2d5118c1a25456fd8dcea016779c6f4e3ee7e554da9a7e703146"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/work-item-lifecycle-v11.ts",
+      "sha256": "5306257840dc173e21c0806a0b86429672a722c22deff8f2eb3391cdcc0b7313",
+      "bytes": 7864,
+      "before_sha256": "7072a1e53462e50622b63f2048b27687a4eb95511d6c0508c7aac1bbc2a1f867"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/write-guard-v11.ts",
+      "sha256": "2ba28944edda763ca4fd4039c134c48163ab19f26c3e34936e0763d2ea4df4f1",
+      "bytes": 5641,
+      "before_sha256": "75896a7b82401d58f6adebbaf1c4026a56b05f5d7dd4e241e8f248257b4b1f05"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "sha256": "81d526d7bb8042c77ff7cf3aea8ca21bcb2b7bb32f918c7bbb2185ec34fd2515",
+      "bytes": 14693,
+      "before_sha256": "fca4bbe28811e01af347b5b78e1504d7dc84676e23a7f302dfc7699bfb819a58"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/source-snapshot.ts",
+      "sha256": "fe14fa7443619948713f98c7a994ce01686342357da4118ff9d932aea9b13fd2",
+      "bytes": 6884,
+      "before_sha256": "53feab9b435256ed38ed824dcc79d50ed85181cba0333f46bee99f5d43a0141b"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/static-task-command.ts",
+      "sha256": "afb756a3c37e65408fcee856272b3464c1849756015067096bf0799a9f716a2c",
+      "bytes": 6272,
+      "before_sha256": "2815a701ed6f918d65e0e41a9e7bcdf631d26130689311b3cbba1b42f69bb324"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/verification-schema.ts",
+      "sha256": "66f9355c7405bffcf025d33f81399428bdcf27a4265b415b40d96a796b2afcbf",
+      "bytes": 14788,
+      "before_sha256": "a8f77606598816d36113a3b8719bbd1a16f3e97ba055e75942fbfd96d2277973"
+    },
+    {
+      "path": "packages/daemon-core/tests/design-governance-live-closure.test.ts",
+      "sha256": "167b7f225490eab1a236d92a9ec5cebfe67b9f19f4ff741269a4d51c5657a46b",
+      "bytes": 26029,
+      "before_sha256": "c6ca199dc961b0731bbb09d4818ee2c31082ea22860b536a0572bbbf5a8d67a2"
+    },
+    {
+      "path": "packages/observability/README.md",
+      "sha256": "791bbfd6c804d3ff7ed72a3866dca5f268a7bd8fe5912cd1a0acf9106cd4050e",
+      "bytes": 1640,
+      "before_sha256": "967db0bf9b3ef5c18cd78f6079460595fb06440b1df3d39cd2ecc33190d691c6"
+    },
+    {
+      "path": "packages/observability/docs/api.md",
+      "sha256": "36e913445894870c6055940ce2170213437622f284b98bd6c263279ec74350bf",
+      "bytes": 2163,
+      "before_sha256": "50fd5fc4d318795ffe59ec58046591e070437908c5f408e3cb6a1e3197a79f30"
+    },
+    {
+      "path": "packages/observability/docs/north-star-scenarios.md",
+      "sha256": "cfc8c62660d568c5556801055d9ddcf473431ac99f43ee9d8453a0c01ff38be1",
+      "bytes": 1557,
+      "before_sha256": "44d6fb9fbf82a02ce7164b9ddd55e0c6699e5c097c2987bd82daebdef53aa8f8"
+    },
+    {
+      "path": "packages/observability/docs/troubleshooting.md",
+      "sha256": "5d450828ca5ab660b1de28b09469b5ed25ad02f7c17b2c18d7b39923004f4c0f",
+      "bytes": 1533,
+      "before_sha256": "41cc09a5e24bf818e65697f9abde2dcc667fb6b58572bb951771c887fac2b278"
+    },
+    {
+      "path": "packages/observability/docs/user-guide.md",
+      "sha256": "9c9da407ed127174e41fbd509c2847d7a55041dc81315683954f7ccd40b2863c",
+      "bytes": 1718,
+      "before_sha256": "6c8db1ba721d44ed3918a8e13570f519a53ad72687f4c9bd30f45835bb3a49cf"
+    },
+    {
+      "path": "packages/observability/src/config-contract.ts",
+      "sha256": "4d3a48cdd99b92f9e35e54519e8047cbdd56bc08f49d3c83352245aaacc562a3",
+      "bytes": 2238,
+      "before_sha256": "eca9b41340fdb876d2bbce18aaeedccc275dd5e776f5a427d06cd9e08070de28"
+    },
+    {
+      "path": "packages/permission-engine/src/write-decision.ts",
+      "sha256": "be32ca2aa4162e37b5d7b828bed19f3501419cc52ec09da4d1f801a368ff8e13",
+      "bytes": 10065,
+      "before_sha256": "75c66ddf7ae27709bac3930e6e12f1c63f0c5d9e7630d605e72dea2c7ba22b65"
+    },
+    {
+      "path": "packages/service-management/src/types/specforge-types-directory-layout.d.ts",
+      "sha256": "41ef4ab74cd914a8ddf34a06dfa4c1b14b093d79d4373fa8dccd5fdf96c0eda6",
+      "bytes": 94,
+      "before_sha256": "e9aeb43252313db8e78f0a2a5ea8b4e88f9f9806bca1a71758a4eeb33e3b227f"
+    },
+    {
+      "path": "packages/service-management/src/types/specforge-types-directory-layout.ts",
+      "sha256": "b5857925c90b41aad3c46a140716742efe09c89b5677db381451d899822a4530",
+      "bytes": 368,
+      "before_sha256": "d7b8cf22d8d9aebcf5b522d56095b89426c6b6478a061890888669becdaca462"
+    },
+    {
+      "path": "packages/service-management/tsconfig.json",
+      "sha256": "7f81e63608cdf7aa6574344766967a226687a1cf4c0941185daf447f47d7fa92",
+      "bytes": 880,
+      "before_sha256": "207c36a8911fa469df3d907724384e7165f28032e199c4cd3c0d8f584ea66b74"
+    },
+    {
+      "path": "packages/types/src/control-plane-write-provenance-contract.ts",
+      "sha256": "fc0158805a35f763e25a6ffd80f11bf95f7484a19468681c8b810aec78cd1a6c",
+      "bytes": 2441,
+      "before_sha256": "57ae5123d254e1a7b2725a2c19fad4098b8ad8020c16f0613fc974454333f663"
+    },
+    {
+      "path": "packages/workflow-runtime/src/rbac/ProtectedFileMatcher.ts",
+      "sha256": "7c1621b19fea9a4decb28142b25c129b8cde43bc2dcabd70c87898a6aa5a5b0e",
+      "bytes": 5705,
+      "before_sha256": "d1d53d80ada0ee06c1fd1888dc6e7c6b05a7ee780e3b3b852493aae8a26c51f3"
+    },
+    {
+      "path": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "sha256": "9973206eb9acff22f91d444430f5777f3b4cf478d03bedc6785710af91b3caf2",
+      "bytes": 13872,
+      "before_sha256": "fd9b7077fa756fb2ffe10ae7d318020128b78285c8915cbdeaea8a43fb0f198e"
+    },
+    {
+      "path": "packages/workflow-runtime/src/v11/runtime/PathService.ts",
+      "sha256": "8292cc8d6b583af27260850faca3512b768e511e8a774eb591e261839b57234d",
+      "bytes": 8150,
+      "before_sha256": "123ffb4a53a36c7e1c3818a906b03d51de169be3e20c59aa25db61a1fa96a50d"
+    },
+    {
+      "path": "scripts/lint/check-hardcoded-paths.ts",
+      "sha256": "f5123635950783a65b90d6c75d73ed55a6ca32b9e52aac038f003fbfe2f7ed3b",
+      "bytes": 2480,
+      "before_sha256": "8e61fea86d95b5564064dc3ce6ada62a971e3ce94d7559daf2c1492bf313ebd7"
+    },
+    {
+      "path": "packages/scope-gate/tests/current-daemon-http-doc-contract.test.ts",
+      "sha256": "bee04b2755f92bae23bbefe450cf7f30fe1563b5e55328f6ebbf69577dc640e1",
+      "bytes": 967,
+      "before_sha256": null
+    },
+    {
+      "path": "packages/scope-gate/tests/current-operating-doc-contract.test.ts",
+      "sha256": "431a3246bae355ba3fdf4644dd55585f6c8982eb77d824d8883ec1bc242d2fa9",
+      "bytes": 4035,
+      "before_sha256": "70408bd8410d4aa77c54aff3272d1b5f943833412457a609053a8d4d6232d590"
+    },
+    {
+      "path": "packages/service-management/tests/unit/reconnect-timer-ownership.test.ts",
+      "sha256": "00fee2383fe9dda438e16d0adef93f8d8f8b82d35e214bcf6ce369caaa6068e3",
+      "bytes": 1521,
+      "before_sha256": "55e88472bb01f3048bc4f3bbeb3463528258355cc1a7f6270c6201ef8f4d919b"
+    },
+    {
+      "path": "scripts/lib/daemon-http-reference.ts",
+      "sha256": "4b07afbfbabc00009cfad4ff7e46f42fac97ec3398a40fb87de1fc2c3ec5d22f",
+      "bytes": 5275,
+      "before_sha256": null
+    },
+    {
+      "path": "scripts/lib/prepare-current-release.ts",
+      "sha256": "88dbafae0473cc58e3e652b9cbcf7c2a9fea73a4addde653f634ae32cb46bff3",
+      "bytes": 2072,
+      "before_sha256": "d6557602eaa761cdaedc1543b9c2da7edb236ba4b400d141469db801cb29860b"
+    },
+    {
+      "path": "scripts/render-daemon-http-reference.ts",
+      "sha256": "0799ca49f75b6b617f2b0ebc0597e4268d6dbed0f49de018a440fa0f51b59eb7",
+      "bytes": 641,
+      "before_sha256": null
+    }
+  ],
+  "qualification": "Exact current-source delta; previous update receipts required. Generated release assets are not source."
+}

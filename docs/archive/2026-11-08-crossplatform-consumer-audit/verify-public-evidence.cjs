@@ -1,0 +1,19 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),crypto=require('node:crypto');
+const root=__dirname,sha=b=>crypto.createHash('sha256').update(b).digest('hex'),files=[];
+function walk(dir,rel=''){for(const d of fs.readdirSync(dir,{withFileTypes:true})){if(!rel&&['local-assets','publication-live'].includes(d.name))continue;const n=rel?rel+'/'+d.name:d.name,p=path.join(dir,d.name);assert(!d.isSymbolicLink(),n);if(d.isDirectory())walk(p,n);else if(d.isFile())files.push(n);else throw Error('UNSUPPORTED_ENTRY:'+n);}}
+walk(root);const receipts=files.filter(f=>/^commands\/\d{4}\.result\.json$/.test(f));let numeric=0,failures=0,unavailable=0;
+for(const f of receipts){const seq=path.basename(f).slice(0,4),r=JSON.parse(fs.readFileSync(path.join(root,f)));if(Number.isInteger(r.inner_exit_code)){numeric++;if(r.inner_exit_code!==0)failures++;}else unavailable++;
+ const mf=path.join(root,'commands',seq+'.manifest.sha256');assert(fs.existsSync(mf),'UNSEALED:'+seq);
+ for(const line of fs.readFileSync(mf,'utf8').trimEnd().split('\n')){assert.match(line,/^[a-f0-9]{64}  [^/\\]+$/);assert.equal(sha(fs.readFileSync(path.join(root,'commands',line.slice(66)))),line.slice(0,64),seq+':'+line.slice(66));}
+ assert(fs.existsSync(path.join(root,'commands',seq+'.command.txt')));assert(fs.existsSync(path.join(root,'commands',seq+'.stdout.txt')));assert(fs.existsSync(path.join(root,'commands',seq+'.stderr.txt')));
+}
+const starts=files.filter(f=>/^commands\/\d{4}\.command\.txt$/.test(f));assert.equal(starts.length,receipts.length,'PENDING_COMMAND');
+const logs=JSON.parse(fs.readFileSync(path.join(root,'large-log-derivatives/manifest.json')));
+for(const r of logs.records){const chunks=r.public_parts.map(p=>{const b=fs.readFileSync(path.join(root,p.path));assert.equal(b.length,p.bytes);assert.equal(sha(b),p.sha256);return b;});const all=Buffer.concat(chunks);assert.equal(all.length,r.original_bytes);assert.equal(sha(all),r.original_sha256);}
+const signatures=[['signed_download_url',/[?&](?:sig|X-Amz-Signature|X-Goog-Signature)=[A-Za-z0-9%+/_=-]{20,}/g],['github_credential',/\b(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{40,})\b/g],['private_key_material',/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/g]];
+const findings=[];let bytes=0;const oversized=[];
+for(const f of files){const b=fs.readFileSync(path.join(root,f));bytes+=b.length;if(b.length>5*1024*1024)oversized.push({file:f,bytes:b.length});if(f===path.basename(__filename))continue;const text=b.toString('utf8');for(const[k,re]of signatures){re.lastIndex=0;const hits=[...text.matchAll(re)];if(hits.length)findings.push({file:f,signature:k,count:hits.length});}assert(!/(?:^|\/)owner\.key$/.test(f),'PRIVATE_OWNER_KEY');}
+const out={utc:new Date().toISOString(),public_files:files.length,public_bytes:bytes,command_receipts:receipts.length,numeric_inner_exit_receipts:numeric,nonzero_preserved:failures,unavailable_inner_exit_preserved:unavailable,pending_commands:0,receipt_hashes:'PASS',lossless_ci_log_reconstruction:'PASS',excluded_private_roots:['local-assets/','publication-live/'],credential_signature_findings:findings,oversized_public_files:oversized,limitations:'Signature scan is supplemental; reviewed producer provenance/ignored private transport/owner preservation establish scope. Synthetic canary or example values are not automatically real credentials. No claim to scan every compressed binary member by text regex.'};
+const output=process.argv[2]||'public-evidence-verification.json';assert.match(output,/^public-evidence-verification(?:-v\d+)?\.json$/);
+fs.writeFileSync(path.join(root,output),JSON.stringify(out,null,2)+'\n',{flag:'wx'});
+console.log(JSON.stringify(out));assert.equal(findings.length,0,'REVIEW_CREDENTIAL_SIGNATURE_FINDINGS');assert.equal(oversized.length,0,'PUBLIC_FILE_SIZE_BOUND');

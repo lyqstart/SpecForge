@@ -1,0 +1,9 @@
+{
+  "utc": "2026-11-08T02:09:50.436Z",
+  "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.3.14/bun-linux-x64.zip",
+  "release": "bun-v1.3.14",
+  "sha256": "951ee2aee855f08595aeec6225226a298d3fea83a3dcd6465c09cbccdf7e848f",
+  "size": 35969274,
+  "primary_digest_source": "GitHub official oven-sh/bun release assets API, independently read via connected GitHub tool",
+  "scope": "Own temporary Linux fixture only; no global install or Windows payload replacement."
+}

@@ -1,0 +1,1343 @@
+{
+  "files": 527,
+  "findings": [
+    {
+      "file": "packages/configuration/src/accepted-config.ts",
+      "line": 41,
+      "col": 113,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/configuration/src/project-schema-descriptor.ts",
+      "line": 16,
+      "col": 17,
+      "text": "'.specforge/config/project.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "line": 2029,
+      "col": 68,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/observability/observability-config.ts",
+      "line": 70,
+      "col": 33,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/observability/observability-recorder.ts",
+      "line": 130,
+      "col": 7,
+      "text": "\".specforge\"",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "line": 62,
+      "col": 19,
+      "text": "'.specforge/project/spec_manifest.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "line": 73,
+      "col": 19,
+      "text": "'.specforge/project/extension_registry.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "line": 121,
+      "col": 23,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "line": 211,
+      "col": 112,
+      "text": "'.specforge/runtime'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "line": 281,
+      "col": 49,
+      "text": "'.specforge/runtime/events.jsonl'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "line": 284,
+      "col": 63,
+      "text": "'.specforge/runtime/state.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "line": 311,
+      "col": 33,
+      "text": "'.specforge/project/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "line": 498,
+      "col": 20,
+      "text": "'.specforge/project/architecture.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "line": 506,
+      "col": 20,
+      "text": "'.specforge/project/data_model.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "line": 568,
+      "col": 20,
+      "text": "'.specforge/project/trace_matrix.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "line": 641,
+      "col": 35,
+      "text": "'.specforge/project/architecture.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "line": 644,
+      "col": 35,
+      "text": "'.specforge/project/data_model.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "line": 707,
+      "col": 5,
+      "text": "'.specforge/project/architecture.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "line": 712,
+      "col": 5,
+      "text": "'.specforge/project/data_model.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "line": 98,
+      "col": 11,
+      "text": "'.specforge/**'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "line": 149,
+      "col": 63,
+      "text": "'.specforge/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "line": 209,
+      "col": 19,
+      "text": "'.specforge/project/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "line": 210,
+      "col": 19,
+      "text": "'.specforge/config/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "line": 211,
+      "col": 19,
+      "text": "'.specforge/runtime/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "line": 212,
+      "col": 19,
+      "text": "'.specforge/work-items/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "line": 213,
+      "col": 19,
+      "text": "'.specforge/logs/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "line": 214,
+      "col": 19,
+      "text": "'.specforge/specs/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "line": 215,
+      "col": 19,
+      "text": "'.specforge/cas/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "line": 222,
+      "col": 19,
+      "text": "'.specforge/runtime/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "line": 259,
+      "col": 27,
+      "text": "'.specforge/reports'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "line": 259,
+      "col": 73,
+      "text": "'.specforge/reports/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "line": 318,
+      "col": 27,
+      "text": "'.specforge/**'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-semantic-closure-run.ts",
+      "line": 145,
+      "col": 46,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts",
+      "line": 903,
+      "col": 46,
+      "text": "\".specforge\"",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-code-permission.ts",
+      "line": 190,
+      "col": 26,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-code-permission.ts",
+      "line": 190,
+      "col": 55,
+      "text": "'.specforge/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-code-permission.ts",
+      "line": 215,
+      "col": 46,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-decision.ts",
+      "line": 273,
+      "col": 46,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-merge.ts",
+      "line": 249,
+      "col": 46,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-rollback.ts",
+      "line": 29,
+      "col": 52,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-rollback.ts",
+      "line": 66,
+      "col": 52,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-rollback.ts",
+      "line": 80,
+      "col": 52,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-verification.ts",
+      "line": 37,
+      "col": 42,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-work-item-create.ts",
+      "line": 38,
+      "col": 40,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-verification-gate.ts",
+      "line": 26,
+      "col": 115,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/artifact-schema-validation.ts",
+      "line": 388,
+      "col": 26,
+      "text": "'.specforge/project/extension_registry.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/atomic-spec-merge-write-provenance.ts",
+      "line": 16,
+      "col": 19,
+      "text": "'.specforge/project/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/atomic-spec-merge-write-provenance.ts",
+      "line": 27,
+      "col": 5,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/authoritative-work-items.ts",
+      "line": 17,
+      "col": 49,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/candidate-generation-integrity.ts",
+      "line": 33,
+      "col": 5,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/changed-files-audit.ts",
+      "line": 46,
+      "col": 36,
+      "text": "'.specforge/project/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-authoring.ts",
+      "line": 65,
+      "col": 20,
+      "text": "'.specforge/project/extension_registry.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-integrity.ts",
+      "line": 52,
+      "col": 25,
+      "text": "'.specforge/project/extension_registry.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-integrity.ts",
+      "line": 446,
+      "col": 36,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "line": 78,
+      "col": 3,
+      "text": "'.specforge/logs/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "line": 79,
+      "col": 3,
+      "text": "'.specforge/runtime/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "line": 80,
+      "col": 3,
+      "text": "'.specforge/archive/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "line": 81,
+      "col": 3,
+      "text": "'.specforge/cas/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "line": 82,
+      "col": 3,
+      "text": "'.specforge/tmp/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "line": 83,
+      "col": 3,
+      "text": "'.specforge/temp/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "line": 84,
+      "col": 3,
+      "text": "'.specforge/work-items/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "line": 88,
+      "col": 3,
+      "text": "'.specforge/logs'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "line": 89,
+      "col": 3,
+      "text": "'.specforge/runtime'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "line": 90,
+      "col": 3,
+      "text": "'.specforge/archive'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "line": 91,
+      "col": 3,
+      "text": "'.specforge/cas'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "line": 92,
+      "col": 3,
+      "text": "'.specforge/tmp'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "line": 93,
+      "col": 3,
+      "text": "'.specforge/temp'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "line": 94,
+      "col": 3,
+      "text": "'.specforge/work-items'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "line": 361,
+      "col": 5,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "line": 728,
+      "col": 33,
+      "text": "'.specforge/project/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "line": 1488,
+      "col": 49,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "line": 1492,
+      "col": 18,
+      "text": "'.specforge/project/ directory exists'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "line": 1828,
+      "col": 72,
+      "text": "'.specforge/project/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "line": 62,
+      "col": 30,
+      "text": "'.specforge/work-items'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "line": 63,
+      "col": 124,
+      "text": "'.specforge/runtime'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "line": 141,
+      "col": 27,
+      "text": "'.specforge/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-write-provenance.ts",
+      "line": 17,
+      "col": 3,
+      "text": "'.specforge/project/git_policy.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-write-provenance.ts",
+      "line": 18,
+      "col": 3,
+      "text": "'.specforge/project/git_ignore_decisions.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-write-provenance.ts",
+      "line": 19,
+      "col": 3,
+      "text": "'.specforge/project/git_adoption_report.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 363,
+      "col": 12,
+      "text": "'.specforge/project/data_model.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 365,
+      "col": 12,
+      "text": "'.specforge/project/requirements_index.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 367,
+      "col": 12,
+      "text": "'.specforge/project/design_index.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 374,
+      "col": 12,
+      "text": "'.specforge/project/trace_matrix.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 376,
+      "col": 12,
+      "text": "'.specforge/project/architecture.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 378,
+      "col": 12,
+      "text": "'.specforge/project/glossary.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 380,
+      "col": 12,
+      "text": "'.specforge/project/decisions.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 410,
+      "col": 39,
+      "text": "'.specforge/project/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 495,
+      "col": 5,
+      "text": "'.specforge/project/architecture.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 500,
+      "col": 5,
+      "text": "'.specforge/project/data_model.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 505,
+      "col": 5,
+      "text": "'.specforge/project/extension_registry.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 556,
+      "col": 5,
+      "text": "'.specforge/project/trace_matrix.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 917,
+      "col": 20,
+      "text": "'.specforge/project/trace_matrix.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 969,
+      "col": 28,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 1029,
+      "col": 30,
+      "text": "'.specforge/project/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts",
+      "line": 132,
+      "col": 53,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts",
+      "line": 482,
+      "col": 34,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "line": 111,
+      "col": 5,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "line": 203,
+      "col": 7,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "line": 322,
+      "col": 5,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "line": 513,
+      "col": 57,
+      "text": "'.specforge/project/trace_matrix.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "line": 539,
+      "col": 30,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "line": 572,
+      "col": 5,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "line": 781,
+      "col": 7,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "line": 831,
+      "col": 59,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "line": 885,
+      "col": 5,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "line": 891,
+      "col": 5,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "line": 903,
+      "col": 9,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "line": 1074,
+      "col": 11,
+      "text": "'.specforge/project/spec_manifest.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "line": 1075,
+      "col": 11,
+      "text": "'.specforge/project/extension_registry.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/native-write-boundary.ts",
+      "line": 43,
+      "col": 40,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/path-policy.ts",
+      "line": 16,
+      "col": 29,
+      "text": "'.specforge/project/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/path-policy.ts",
+      "line": 21,
+      "col": 18,
+      "text": "'.specforge/project/data_model.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/path-policy.ts",
+      "line": 29,
+      "col": 39,
+      "text": "'.specforge/project/data_model.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/path-policy.ts",
+      "line": 52,
+      "col": 21,
+      "text": "'.specforge/project/data_model.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/path-policy.ts",
+      "line": 68,
+      "col": 26,
+      "text": "'.specforge/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "line": 46,
+      "col": 18,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-init-reconstruction.ts",
+      "line": 44,
+      "col": 45,
+      "text": "'.specforge/manifest.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-init-reconstruction.ts",
+      "line": 71,
+      "col": 47,
+      "text": "'.specforge/project/modules/CORE/module.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-init-reconstruction.ts",
+      "line": 81,
+      "col": 40,
+      "text": "'.specforge/runtime/init-recovery/owner.lock'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/regenerable-artifact-governance.ts",
+      "line": 22,
+      "col": 18,
+      "text": "'.specforge/project/git_ignore_decisions.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/regenerable-artifact-governance.ts",
+      "line": 58,
+      "col": 23,
+      "text": "'.specforge/project/git_ignore_decisions.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/regenerable-artifact-governance.ts",
+      "line": 108,
+      "col": 22,
+      "text": "'.specforge/project/git_ignore_decisions.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/rollback-runner-v11.ts",
+      "line": 111,
+      "col": 46,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "line": 76,
+      "col": 31,
+      "text": "'.specforge/project/extension_registry.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "line": 77,
+      "col": 31,
+      "text": "'.specforge/project/requirements_index.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "line": 78,
+      "col": 25,
+      "text": "'.specforge/project/design_index.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "line": 79,
+      "col": 25,
+      "text": "'.specforge/project/architecture.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "line": 80,
+      "col": 21,
+      "text": "'.specforge/project/glossary.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "line": 81,
+      "col": 22,
+      "text": "'.specforge/project/decisions.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "line": 82,
+      "col": 25,
+      "text": "'.specforge/project/trace_matrix.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "line": 88,
+      "col": 19,
+      "text": "'.specforge/project/modules/CORE'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "line": 89,
+      "col": 26,
+      "text": "'.specforge/project/modules/CORE/module.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "line": 90,
+      "col": 27,
+      "text": "'.specforge/project/modules/CORE/requirements.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "line": 91,
+      "col": 21,
+      "text": "'.specforge/project/modules/CORE/design.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "line": 92,
+      "col": 20,
+      "text": "'.specforge/project/modules/CORE/trace.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_executor.ts",
+      "line": 45,
+      "col": 25,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_executor.ts",
+      "line": 71,
+      "col": 24,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "line": 102,
+      "col": 21,
+      "text": "'.specforge/project/extension_registry.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "line": 119,
+      "col": 26,
+      "text": "'.specforge/project/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "line": 133,
+      "col": 33,
+      "text": "'.specforge/project/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts",
+      "line": 31,
+      "col": 52,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts",
+      "line": 113,
+      "col": 30,
+      "text": "'.specforge/work-items/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/work-item-lifecycle-v11.ts",
+      "line": 34,
+      "col": 48,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/work-item-lifecycle-v11.ts",
+      "line": 50,
+      "col": 46,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/work-item-lifecycle-v11.ts",
+      "line": 118,
+      "col": 5,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/write-guard-v11.ts",
+      "line": 119,
+      "col": 45,
+      "text": "'.specforge/project/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "line": 177,
+      "col": 46,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/source-snapshot.ts",
+      "line": 59,
+      "col": 40,
+      "text": "'.specforge/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/source-snapshot.ts",
+      "line": 74,
+      "col": 43,
+      "text": "'.specforge/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/static-task-command.ts",
+      "line": 16,
+      "col": 75,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/verification-schema.ts",
+      "line": 59,
+      "col": 65,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/verification/verification-schema.ts",
+      "line": 73,
+      "col": 133,
+      "text": "'.specforge/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/observability/src/config-contract.ts",
+      "line": 46,
+      "col": 17,
+      "text": "'.specforge/config/observability.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/permission-engine/src/write-decision.ts",
+      "line": 35,
+      "col": 59,
+      "text": "'.specforge/work-items/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/permission-engine/src/write-decision.ts",
+      "line": 94,
+      "col": 63,
+      "text": "'.specforge/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/permission-engine/src/write-decision.ts",
+      "line": 162,
+      "col": 50,
+      "text": "'.specforge/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/permission-engine/src/write-decision.ts",
+      "line": 167,
+      "col": 29,
+      "text": "'.specforge/project/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/permission-engine/src/write-decision.ts",
+      "line": 220,
+      "col": 54,
+      "text": "'.specforge/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/permission-engine/src/write-decision.ts",
+      "line": 225,
+      "col": 46,
+      "text": "'.specforge/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/service-management/src/types/specforge-types-directory-layout.ts",
+      "line": 5,
+      "col": 30,
+      "text": "\".specforge\"",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/types/src/control-plane-write-provenance-contract.ts",
+      "line": 27,
+      "col": 3,
+      "text": "'.specforge/project/git_policy.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/types/src/control-plane-write-provenance-contract.ts",
+      "line": 28,
+      "col": 3,
+      "text": "'.specforge/project/git_ignore_decisions.json'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/types/src/control-plane-write-provenance-contract.ts",
+      "line": 29,
+      "col": 3,
+      "text": "'.specforge/project/git_adoption_report.md'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/rbac/ProtectedFileMatcher.ts",
+      "line": 115,
+      "col": 30,
+      "text": "'.specforge/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 114,
+      "col": 32,
+      "text": "'.specforge/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 114,
+      "col": 73,
+      "text": "'.specforge\\\\'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 127,
+      "col": 34,
+      "text": "'.specforge/specs/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 127,
+      "col": 73,
+      "text": "'.specforge/specs'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 135,
+      "col": 34,
+      "text": "'.specforge/project/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 135,
+      "col": 75,
+      "text": "'.specforge/project'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 143,
+      "col": 34,
+      "text": "'.specforge/work-items/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 143,
+      "col": 78,
+      "text": "'.specforge/work-items'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 161,
+      "col": 33,
+      "text": "'.specforge/project/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 192,
+      "col": 60,
+      "text": "'.specforge/project/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 220,
+      "col": 7,
+      "text": "'.specforge/archive'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 221,
+      "col": 7,
+      "text": "'.specforge/state'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 222,
+      "col": 7,
+      "text": "'.specforge/gates'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 240,
+      "col": 5,
+      "text": "'.specforge/archive'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 241,
+      "col": 5,
+      "text": "'.specforge/standards'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 242,
+      "col": 5,
+      "text": "'.specforge/state'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 243,
+      "col": 5,
+      "text": "'.specforge/reports'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 244,
+      "col": 5,
+      "text": "'.specforge/snapshots'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 300,
+      "col": 33,
+      "text": "'.specforge/project/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 300,
+      "col": 74,
+      "text": "'.specforge/project'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 332,
+      "col": 33,
+      "text": "'.specforge/project/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 332,
+      "col": 74,
+      "text": "'.specforge/project'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "line": 374,
+      "col": 32,
+      "text": "'.specforge/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathService.ts",
+      "line": 11,
+      "col": 30,
+      "text": "'.specforge'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathService.ts",
+      "line": 233,
+      "col": 32,
+      "text": "'.specforge/specs/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathService.ts",
+      "line": 239,
+      "col": 32,
+      "text": "'.specforge/project/'",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/PathService.ts",
+      "line": 245,
+      "col": 32,
+      "text": "'.specforge/work-items/'",
+      "rule": "PATH_LITERAL"
+    }
+  ],
+  "qualification": "Syntax-level current production source check. Historical/fixture documentation is reviewed separately; no success claim for excluded runtime scope."
+}

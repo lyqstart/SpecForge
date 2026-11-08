@@ -1,0 +1,5 @@
+/usr/bin/node
+/mnt/c/Users/lyq/AppData/Roaming/npm/bun
+/usr/bin/systemctl
+/usr/bin/git
+1000

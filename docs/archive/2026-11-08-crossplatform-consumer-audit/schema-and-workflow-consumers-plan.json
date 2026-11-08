@@ -1,0 +1,32 @@
+[
+  {
+    "path": "packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts",
+    "before_sha256": "842938e44ef7280582cd58e178c384a215fa576bbb0bc5e4b9aacd5a205d404e",
+    "after_sha256": "6c545da99d351d589ebaac1e0554c350b398a52c921b55511cae6af8c537c739"
+  },
+  {
+    "path": "packages/daemon-core/tests/unit/sf-state-transition.test.ts",
+    "before_sha256": "2dba437b7a60b1d9bee6e9270f847d7283cb37618315db017cab67183869b103",
+    "after_sha256": "b4a43a6da6880b07a514845b093cbf6b9ba79038ac958744edb4c22f340f4d3c"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/lib/semantic-closure-core.ts",
+    "before_sha256": "864127702600a2b9b8a841af2dd488b75f28e27986b7889cfadbe30f1f99d105",
+    "after_sha256": "cb07194957bb14fbb73cf415621083d7a16643710b3a2966342f7a15205e6e54"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/lib/semantic-closure-builder.ts",
+    "before_sha256": "09ddee807fa9b45f3abbbcacc6568243bf7f5960a188c28cc53f3aad2d0a78bf",
+    "after_sha256": "e48c857d5ade0ff6bc8266777686f7421461ebd69dfce77cd17db67de496cfb2"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/handlers/sf-semantic-closure-run.ts",
+    "before_sha256": "930fb18904db02354dfacd0b6bac32094dc7ca82e7c51d5e9b161f3fc611ed84",
+    "after_sha256": "8122cd56ffff5faf0498a8076856fef46bed090537a7a8eb5ec69688bcb928aa"
+  },
+  {
+    "path": "setup/userlevel-opencode/tools/sf_semantic_closure_run.ts",
+    "before_sha256": "b4700ad282363686563844e2799b1b589f5626363efa95ad9a90fe82db0f264b",
+    "after_sha256": "77f969f78c38308f7929443afb84111057a238314f0e9f37f55a2cab9b57375e"
+  }
+]

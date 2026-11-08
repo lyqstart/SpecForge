@@ -1,0 +1,15 @@
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ rimraf dist && tsc
+$ bun ../../scripts/build-workflow-runtime.ts
+$ tsc
+$ tsc
+error: Cannot find module '@specforge/types' from 'D:\code\SpecForge\scripts\lib\prepare-current-release.ts'
+
+Bun v1.3.14 (Windows x64)

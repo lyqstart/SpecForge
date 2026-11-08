@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/verify-platform-release.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "windows-frozen05-final-official-platform-acceptance",
+  "expected_writes": "ignored-release-assets-owned-install-runtime-and-evidence",
+  "started_utc": "2026-11-08T05:54:37.023Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\scripts\\verify-platform-release.ts",
+      "sha256": "06c9b2c69a68fa33c13967c86d00eaca25d6a9dda8cbab25a9ffee45a699b8f2",
+      "size": 10423,
+      "extension": ".ts"
+    }
+  ]
+}

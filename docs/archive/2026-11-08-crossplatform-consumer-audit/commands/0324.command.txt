@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/split-large-ci-logs.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "losslessly-bound-large-raw-ci-evidence",
+  "expected_writes": "external-evidence-only",
+  "started_utc": "2026-11-08T06:44:06.566Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\split-large-ci-logs.cjs",
+      "sha256": "6d08570729d081489034b30f91460eb904670283a82472c31d18bcb92f148f37",
+      "size": 2286,
+      "extension": ".cjs"
+    }
+  ]
+}

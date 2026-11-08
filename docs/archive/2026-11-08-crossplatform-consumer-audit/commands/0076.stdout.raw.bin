@@ -1,0 +1,31 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/service-management
+
+ ❯ tests/unit/reconnect-timer-ownership.test.ts (4 tests | 4 failed) 16ms
+   × workspace reconnect timer ownership > owns exactly one real timer and settles pending delivery on disposal 12ms
+     → expected undefined to deeply equal { ok: false, dropped: true, …(1) }
+   × workspace reconnect timer ownership > settles superseded waits and leaves one current timer 1ms
+     → expected undefined to deeply equal { ok: false, dropped: true, …(1) }
+   × installed reconnect timer ownership > owns exactly one real timer and settles pending delivery on disposal 1ms
+     → expected undefined to deeply equal { ok: false, dropped: true, …(1) }
+   × installed reconnect timer ownership > settles superseded waits and leaves one current timer 1ms
+     → expected undefined to deeply equal { ok: false, dropped: true, …(1) }
+stdout | tests/unit/reconnecting-daemon-client.test.ts > ReconnectingDaemonClient > TASK-3: Degraded 恢复机制 (30s probe + on-demand probe) > degraded 后推进 30s + healthz 返回 ok → isDegraded() === false
+[specforge] Daemon recovered, exiting degraded mode
+
+stdout | tests/unit/reconnecting-daemon-client.test.ts > ReconnectingDaemonClient > TASK-3: Degraded 恢复机制 (30s probe + on-demand probe) > 恢复后 postEvent 正常发送（不再返回 degraded）
+[specforge] Daemon recovered, exiting degraded mode
+
+stdout | tests/unit/reconnecting-daemon-client.test.ts > ReconnectingDaemonClient > TASK-3: Degraded 恢复机制 (30s probe + on-demand probe) > 恢复后 degradedWarningPrinted 已重置 → 再次进入 degraded 时 warning 打印 2 次（总共）
+[specforge] Daemon recovered, exiting degraded mode
+
+stdout | tests/unit/reconnecting-daemon-client.test.ts > ReconnectingDaemonClient > TASK-3: Degraded 恢复机制 (30s probe + on-demand probe) > triggerDegradedProbeOnce 触发即时恢复（不需要等 30s）
+[specforge] Daemon recovered (on-demand probe), exiting degraded mode
+
+ ✓ tests/unit/reconnecting-daemon-client.test.ts (49 tests) 104ms
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  4 failed | 49 passed (53)
+   Start at  11:05:07
+   Duration  1.49s (transform 162ms, setup 0ms, collect 296ms, tests 120ms, environment 0ms, prepare 507ms)
+

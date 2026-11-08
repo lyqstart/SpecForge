@@ -1,0 +1,323 @@
+$ vitest run tests/current-operating-doc-contract.test.ts
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/current-operating-doc-contract.test.ts > current operating documentation contracts > uses actual public configuration exports and does not invent a ConfigManager API
+AssertionError: ConfigManager: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/current-operating-doc-contract.test.ts:7:433
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/current-operating-doc-contract.test.ts > current operating documentation contracts > documents release preparation before userlevel source installation
+AssertionError: docs/user/install.md: expected '# 安装 SpecForge\r\n\r\n> Role: DERIVED…' to contain 'scripts/prepare-current-release.ts'
+
+- Expected
++ Received
+
+- scripts/prepare-current-release.ts
++ # 安装 SpecForge
++ 
++ > Role: DERIVED OPERATING DOCUMENTATION。命令与当前仓库安装器、发布 Manifest 和 SPS D02–D04 对齐。
++ 
++ 前提：安装 Bun，并准备 OpenCode 用户配置目录。默认配置根是 `<home>/.config/opencode`；设置 `OPENCODE_CONFIG_DIR` 时使用该值。
++ 
++ 在 SpecForge 仓库根执行：
++ 
++ ```bash
++ bun scripts/sf-installer.ts install
++ bun scripts/sf-installer.ts verify
++ ```
++ 
++ 安装器将共享 Agent、Tool、Skill、Plugin 写入 OpenCode 配置根，把 SpecForge 私有运行依赖与二进制写入 `<OpenCode config>/sf-user/`，并把安装清单写到 `<OpenCode config>/specforge-manifest.json`。
++ 
++ 安装器不会静默修改用户 PATH。若成功回执提示当前 shell 尚不能运行 `specforge`，复制其中的一次性 PATH 配置命令；完成后当前窗口和新终端都使用短命令。完整说明见 [CLI 安装与运行配置](../cli/installation-setup.md)。
++ 
++ 安装完成后先启动独立 daemon：
++ 
++ ```bash
++ specforge daemon start --detach
++ specforge daemon status
++ specforge daemon restart
++ specforge daemon stop
++ ```
++ 
++ 随后重启 OpenCode 以加载新版 Plugin。Plugin 只连接 daemon，不负责启动、停止或重启它。新安装不得写入用户主目录 `~/.specforge/`。
++ 
++ 升级使用 `bun scripts/sf-installer.ts upgrade`；只有明确需要覆盖用户改动时才使用 `--force`。
++
+
+ ❯ tests/current-operating-doc-contract.test.ts:11:113
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/current-operating-doc-contract.test.ts > current operating documentation contracts > keeps active Daemon guides on independent CLI lifecycle and current handshake schema
+AssertionError: packages/daemon-core/docs/README.md: expected '# Daemon Core API Documentation\r\n\r…' to contain 'specforge daemon start --detach'
+
+- Expected
++ Received
+
+- specforge daemon start --detach
++ # Daemon Core API Documentation
++ 
++ Welcome to the Daemon Core API documentation. This section covers all public APIs, endpoints, event schemas, and error codes for the SpecForge Daemon Core module.
++ 
++ ## Table of Contents
++ 
++ - [HTTP Endpoints](./http-endpoints.md)
++ - [Event Schema](./event-schema.md)
++ - [Error Codes](./error-codes.md)
++ - [Authentication](./authentication.md)
++ - [CLI Integration](./cli-integration.md)
++ - [Thin Plugin Integration](./thin-plugin-integration.md)
++ - [Error Handling](./error-handling.md)
++ 
++ ## Overview
++ 
++ The Daemon Core is the central process and **Single Source of Truth** for the entire V6 architecture. It provides:
++ 
++ - HTTP/1.1 + SSE communication protocol
++ - Event Bus for cross-layer communication
++ - Session Registry with pending/active/history states
++ - Project isolation via path-based namespacing
++ - WAL (Write-Ahead Log) for crash recovery
++ 
++ ## Quick Start
++ 
++ ### Starting the Daemon
++ 
++ ```bash
++ # Start as thin plugin (auto-exit on idle)
++ bun run src/index.ts
++ 
++ # Start in detached mode (persistent)
++ bun run src/index.ts --detach
++ ```
++ 
++ ### Connecting Clients
++ 
++ 1. Read the handshake file at `~/.config/opencode/sf-user/runtime/handshake.json`
++ 2. Use the `port` to connect to the HTTP server
++ 3. Include `Authorization: Bearer <token>` header in all requests
++ 
++ ```bash
++ # Example request
++ curl -H "Authorization: Bearer <token>" http://127.0.0.1:<port>/
++ ```
++ 
++ ## Related Documentation
++ 
++ - [Requirements](../requirements.md)
++ - [Design](../design.md)
++ - [Development Guide](../DEVELOPMENT.md)
++
+
+ ❯ tests/current-operating-doc-contract.test.ts:14:197
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/current-operating-doc-contract.test.ts > current operating documentation contracts > keeps Adapter deployment guidance on the official installed production consumer
+AssertionError: expected '# Installation and Setup Guide\r\n\r\…' to contain 'scripts/sf-installer.ts'
+
+- Expected
++ Received
+
+- scripts/sf-installer.ts
++ # Installation and Setup Guide
++ 
++ ## Prerequisites
++ 
++ ### Required Software
++ 
++ - **Node.js**: Version 18 or higher
++ - **Bun**: Recommended (for development and testing)
++ - **OpenCode**: Version 1.14 or higher
++ 
++ ### System Requirements
++ 
++ - Operating System: Windows 10+, macOS 12+, or Linux
++ - Memory: 4GB RAM minimum
++ - Disk Space: 100MB for package installation
++ 
++ ## Installation
++ 
++ ### From Workspace (Development)
++ 
++ ```bash
++ # Install dependencies
++ bun install
++ 
++ # Build the package
++ cd packages/opencode-adapter
++ bun run build
++ ```
++ 
++ ### From npm (Production)
++ 
++ ```bash
++ npm install @specforge/opencode-adapter
++ # or
++ bun add @specforge/opencode-adapter
++ ```
++ 
++ ## Version Compatibility
++ 
++ | Adapter Version | OpenCode Version | Node.js | Notes |
++ |-----------------|------------------|---------|-------|
++ | 1.0.0           | ^1.14            | 18+     | Initial release |
++ 
++ ### Upgrading OpenCode
++ 
++ When upgrading OpenCode to a new major version:
++ 
++ 1. Check the adapter's `compatibleKernelRange` in your config
++ 2. Upgrade the adapter to a compatible version
++ 3. Test your integration before deploying to production
++ 
++ ## Configuration
++ 
++ ### Basic Configuration
++ 
++ ```typescript
++ import { OpenCodeAdapter, loadConfig } from '@specforge/opencode-adapter';
++ 
++ // Load configuration from environment or file
++ const config = await loadConfig();
++ 
++ // Create adapter
++ const adapter = new OpenCodeAdapter({
++   version: '1.0.0',
++   compatibleKernelRange: 'opencode ^1.14',
++ });
++ ```
++ 
++ ### Environment Variables
++ 
++ | Variable | Description | Default |
++ |----------|-------------|---------|
++ | `OPENCODE_ADAPTER_VERSION` | Adapter version | 1.0.0 |
++ | `OPENCODE_KERNEL_RANGE` | Compatible OpenCode range | opencode ^1.14 |
++ | `OPENCODE_PLUGIN_ENDPOINT` | Thin Plugin endpoint | http://localhost:3001 |
++ 
++ ### Configuration File
++ 
++ Create `opencode-adapter.config.json` in your project root:
++ 
++ ```json
++ {
++   "version": "1.0.0",
++   "compatibleKernelRange": "opencode ^1.14",
++   "translation": {
++     "strictMode": true,
++     "logUntranslated": false
++   },
++   "compatibility": {
++     "checkOnStartup": true,
++     "allowOverride": false
++   },
++   "integration": {
++     "thinPluginEndpoint": "http://localhost:3001",
++     "reconnectAttempts": 3,
++     "reconnectDelayMs": 1000
++   }
++ }
++ ```
++ 
++ ## Troubleshooting
++ 
++ ### Version Mismatch Errors
++ 
++ **Error**: `Adapter version mismatch: OpenCode version X is not compatible with adapter range Y`
++ 
++ **Solution**:
++ 1. Check your OpenCode version: `opencode --version`
++ 2. Upgrade or downgrade OpenCode to match the adapter's compatible range
++ 3. Or update the adapter to a version that supports your OpenCode version
++ 
++ ### Connection Errors
++ 
++ **Error**: `Failed to connect to Thin Plugin`
++ 
++ **Solution**:
++ 1. Ensure Thin Plugin is running
++ 2. Check the `thinPluginEndpoint` configuration
++ 3. Verify network connectivity
++ 
++ ### Session Binding Errors
++ 
++ **Error**: `Failed to bind session: spawnIntentId not found`
++ 
++ **Solution**:
++ 1. Ensure the session was created via `spawnAgent` first
++ 2. Check that the spawnIntentId matches
++ 3. Verify the Thin Plugin is reporting events correctly
++ 
++ ## Upgrade Procedures
++ 
++ ### Upgrading the Adapter
++ 
++ 1. Update your dependency:
++    ```bash
++    npm install @specforge/opencode-adapter@latest
++    ```
++ 
++ 2. Check for breaking changes in the CHANGELOG
++ 
++ 3. Test your integration
++ 
++ 4. Deploy to production
++ 
++ ### Downgrading the Adapter
++ 
++ If you encounter compatibility issues:
++ 
++ 1. Check the version compatibility table
++ 2. Install a compatible version:
++    ```bash
++    npm install @specforge/opencode-adapter@1.0.0
++    ```
++ 
++ 3. Test thoroughly before deploying
++ 
++ ## Testing Your Installation
++ 
++ ```typescript
++ import { OpenCodeAdapter, VersionChecker } from '@specforge/opencode-adapter';
++ 
++ // Test version compatibility
++ const checker = new VersionChecker();
++ const result = checker.check('opencode ^1.14', '1.14.0');
++ 
++ if (result.status === 'compatible') {
++   console.log('Version check passed!');
++   
++   // Test adapter creation
++   const adapter = new OpenCodeAdapter({
++     version: '1.0.0',
++     compatibleKernelRange: 'opencode ^1.14',
++   });
++   
++   console.log('Adapter created successfully');
++ }
++ ```
++ 
++ ## Support
++ 
++ For issues and questions:
++ - GitHub Issues: https://github.com/specforge/specforge/issues
++ - Documentation: https://specforge.dev/docs
+
+ ❯ tests/current-operating-doc-contract.test.ts:18:84
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+error: script "test" exited with code 1

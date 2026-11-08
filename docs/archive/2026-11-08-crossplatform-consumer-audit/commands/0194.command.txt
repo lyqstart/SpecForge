@@ -1,0 +1,24 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/run-current-release-precheck.ts",
+    "--candidate-id",
+    "commit-bb0f172aab26fab79d6484c458e0122d9353f604"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "windows-formal-precheck-direct-entry-final-set",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T04:44:23.017Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\scripts\\run-current-release-precheck.ts",
+      "sha256": "27186c6a6ded4982e60e721902037bfca048558843d68fc44038c26baa206a04",
+      "size": 1021,
+      "extension": ".ts"
+    }
+  ]
+}

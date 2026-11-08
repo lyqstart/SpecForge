@@ -1,0 +1,1 @@
+{"artifact_id":13605523705,"sha256":"0570cd34b10c08ca81826cc6f31381649e51ebca484d6847e6062882d1e9cf88","bytes":41870,"dir":"D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\ci-c0-windows"}

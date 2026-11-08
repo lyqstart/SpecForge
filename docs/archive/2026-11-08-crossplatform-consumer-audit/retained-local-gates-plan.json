@@ -1,0 +1,37 @@
+[
+  {
+    "path": "setup/userlevel-opencode/tools/lib/sf_requirements_gate_core.ts",
+    "before_sha256": "a355228a774d5d0962c9bce889b8575a49b3006bd458ec86829bd96479fd3a68",
+    "after_sha256": "5f6823e4ea12bf35882b14994efc48e91a1cc3463140fc982dd464dc4011cb64"
+  },
+  {
+    "path": "setup/userlevel-opencode/tools/lib/sf_tasks_gate_core.ts",
+    "before_sha256": "02a7e821adf7c98881bfad81832c1d6d74e8af95ece1064dac17680abf05966c",
+    "after_sha256": "e4725ca17b32ba42720dff150aafaceeeab97f7d00263b0a50fdf788f175f5ed"
+  },
+  {
+    "path": "setup/userlevel-opencode/tools/lib/sf_verification_gate_core.ts",
+    "before_sha256": "2a6d435bc6d7097951487448d34303b5b0fd8e59da127cf6f9311bec8cfea9d5",
+    "after_sha256": "2bfe3880fa843a08119f5844e4fe9f22a9afa08bb268042ce44bdf5a2ac989e6"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/lib/sf_doc_lint_core.ts",
+    "before_sha256": "5d75cec38db71c4d0b542bf7496e0330a773127bc71b2076900427021b3b6026",
+    "after_sha256": "123a108af87bd1b801292a12b5f1f18947d0bcd6c1d88cb3f4dd1c8e7b22e701"
+  },
+  {
+    "path": "setup/userlevel-opencode/tools/lib/sf_doc_lint_core.ts",
+    "before_sha256": "1c9b291307fcdc5173195733fd0770a5647c71290b76b34c610fe3d07e69b927",
+    "after_sha256": "e125f68a6660bbe56eba0c503d8278d37dca1170c09d72d2d6ba082b6a7c8ece"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/handlers/sf-doc-lint.ts",
+    "before_sha256": "f82bde6ab16fcf5c55a99401d2be817a446ab656b445606a29a15b48a4e51197",
+    "after_sha256": "af890afa02fa24e54451533615e4c2c8cdf81656050dd91a557cd0db3b709f1f"
+  },
+  {
+    "path": "setup/userlevel-opencode/tools/sf_doc_lint.ts",
+    "before_sha256": "f2330e63b983a53010c738f7ae7ef666ebc1b62752d16a79a06e3c83936331b8",
+    "after_sha256": "e36317074d9f793bac71ad2dad08fc44d40f7c5410641abcf13543e45fd50275"
+  }
+]

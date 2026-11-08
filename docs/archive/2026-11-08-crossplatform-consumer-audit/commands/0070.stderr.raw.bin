@@ -1,0 +1,1 @@
+$ vitest run tests/source-policy-audit.test.ts

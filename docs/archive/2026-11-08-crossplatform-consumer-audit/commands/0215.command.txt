@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/finish-schema-and-workflow-consumers.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "finish-current-schema-and-workflow-consumer-contract",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES",
+  "started_utc": "2026-11-08T05:08:32.540Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\finish-schema-and-workflow-consumers.cjs",
+      "sha256": "4afaa51948960739b5b15fd6e0fa0af2b3d0fb3fec08e1de06ed4dbf100b987d",
+      "size": 5075,
+      "extension": ".cjs"
+    }
+  ]
+}

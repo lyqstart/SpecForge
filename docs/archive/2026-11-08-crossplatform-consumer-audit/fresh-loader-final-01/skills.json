@@ -1,0 +1,66 @@
+[
+  {
+    "name": "sf-intake",
+    "loaded": true,
+    "content_sha256": "6324b85e2f12dbccedf08c06df9b1d00ac3c479660fe5b525145db1b1eb885e1",
+    "expected_raw_body_sha256": "6324b85e2f12dbccedf08c06df9b1d00ac3c479660fe5b525145db1b1eb885e1",
+    "installed_sha256": "016114ccd4936141de4589f3042d4317c2eee35bd756aa9f7c3c0e206fde12dc",
+    "body_equal": true
+  },
+  {
+    "name": "sf-workflow-feature-spec",
+    "loaded": true,
+    "content_sha256": "8776b8c1f7c79cc9d2e5ebf15e47fd325c53b5b175659c1a55e4faf12e4ad980",
+    "expected_raw_body_sha256": "8776b8c1f7c79cc9d2e5ebf15e47fd325c53b5b175659c1a55e4faf12e4ad980",
+    "installed_sha256": "9010b776aa6d4540a1ba8af43283058dba47800d6f15d76b60a1a5a465469633",
+    "body_equal": true
+  },
+  {
+    "name": "superpowers-brainstorming",
+    "loaded": true,
+    "content_sha256": "aef094550a23ac5000f3d197910c715f971193211c56698b34e6d4f3d2b07a49",
+    "expected_raw_body_sha256": "aef094550a23ac5000f3d197910c715f971193211c56698b34e6d4f3d2b07a49",
+    "installed_sha256": "166e7a31c13385b19f4384c3c439805b21460efc98f27d6f9825d4648e4f7942",
+    "body_equal": true
+  },
+  {
+    "name": "superpowers-code-review",
+    "loaded": true,
+    "content_sha256": "55cdc319b6636c2f7837d55179ee78cb4420653c1d4a5164201303c2e0d9ccee",
+    "expected_raw_body_sha256": "55cdc319b6636c2f7837d55179ee78cb4420653c1d4a5164201303c2e0d9ccee",
+    "installed_sha256": "ccfd870c444096d04d0dd38eb3d766de72d1a0026a469e149b929ba34945b053",
+    "body_equal": true
+  },
+  {
+    "name": "superpowers-knowledge-extraction",
+    "loaded": true,
+    "content_sha256": "1655a47d0c306042eab3198ec295f91f9a462e2209271da658fa23802a24e534",
+    "expected_raw_body_sha256": "1655a47d0c306042eab3198ec295f91f9a462e2209271da658fa23802a24e534",
+    "installed_sha256": "9a60f8b611daa9b33b95f4451cfd393f2acd234d1a80dd9c87af9b0cd6d56679",
+    "body_equal": true
+  },
+  {
+    "name": "superpowers-systematic-debugging",
+    "loaded": true,
+    "content_sha256": "41ee01da12209a386a9600f1e65cba2b28f07ed1778e5cf0ff368900e527caf1",
+    "expected_raw_body_sha256": "41ee01da12209a386a9600f1e65cba2b28f07ed1778e5cf0ff368900e527caf1",
+    "installed_sha256": "db3f7c14128ab7cf513d9482520fbf98294a43cf9414b581dabb803518b79434",
+    "body_equal": true
+  },
+  {
+    "name": "superpowers-verification-before-completion",
+    "loaded": true,
+    "content_sha256": "cb682e4f24065d901adc0b15a052b0055b144561b3b58f28769837d217ff23c9",
+    "expected_raw_body_sha256": "cb682e4f24065d901adc0b15a052b0055b144561b3b58f28769837d217ff23c9",
+    "installed_sha256": "9694011bc3b86f8a51b2493f56c321e6c9858accda7a94d9f51edd1c78c5fa27",
+    "body_equal": true
+  },
+  {
+    "name": "superpowers-writing-plans",
+    "loaded": true,
+    "content_sha256": "24611db52bc70101e767ebbe5fe9d3a6bdb5b8b969ebbce77ae9da4aa57b192c",
+    "expected_raw_body_sha256": "24611db52bc70101e767ebbe5fe9d3a6bdb5b8b969ebbce77ae9da4aa57b192c",
+    "installed_sha256": "69f7a7c1eb0c097ed5ab60c9f935e51cf125595fefb9477039230d0b066dac05",
+    "body_equal": true
+  }
+]

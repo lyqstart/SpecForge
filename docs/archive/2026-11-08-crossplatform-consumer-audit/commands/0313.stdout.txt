@@ -1,0 +1,1 @@
+{"version":"1.0.24","managed_files":117,"old_daemon_exit_proved":true,"original_installer_writes":"NONE","owner_preserved":true,"key_content_read":false}

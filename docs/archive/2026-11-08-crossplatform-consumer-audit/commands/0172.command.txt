@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/probe-cold-release-preparation.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "owned-cold-release-before-source-repair",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T04:36:55.181Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\probe-cold-release-preparation.cjs",
+      "sha256": "77015a9152597ef910bf626bc29e7564f5eda04bf1a266dc9937e80b93f44317",
+      "size": 1958,
+      "extension": ".cjs"
+    }
+  ]
+}

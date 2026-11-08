@@ -1,0 +1,12 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/packages/configuration
+
+ ❯ tests/logger-output-contract.test.ts  (1 test | 1 failed) 19ms
+   ❯ tests/logger-output-contract.test.ts > configuration diagnostic output contract > keeps machine-readable stdout clear and preserves metadata redaction on stderr
+     → expected [ [ '[Config] INFO', …(2) ], …(1) ] to have a length of +0 but got 2
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  11:00:13
+   Duration  1.26s (transform 48ms, setup 0ms, collect 55ms, tests 19ms, environment 0ms, prepare 354ms)
+

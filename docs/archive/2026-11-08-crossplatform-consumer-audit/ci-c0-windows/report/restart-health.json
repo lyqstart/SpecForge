@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "status": "ok",
+  "pid": 4392,
+  "version": "1.0.24",
+  "startedAt": 1794117396356,
+  "uptimeSec": 0,
+  "activeClients": 0,
+  "pendingEvents": 4,
+  "lastEventTs": 1794117396382
+}

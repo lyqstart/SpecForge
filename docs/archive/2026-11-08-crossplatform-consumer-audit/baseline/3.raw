@@ -1,0 +1,37 @@
+name: Version Guard
+
+# 触发时机：所有 PR（不限目标分支）
+# 依据：version-unification spec Requirement 9.1
+#   - "THE SpecForge_System SHALL run CI_Version_Guard on every pull request
+#      that modifies any file under the SpecForge repository."
+on:
+  pull_request:
+
+jobs:
+  # ─── CI Version Guard ────────────────────────────────────────────────────────
+  # 检查 PR 是否违反版本字段规则（Requirement 5/6/7/8）
+  # - 内层 30s 硬超时由 scripts/ci/version-guard.ts 自身保证（R9.4）
+  # - 外层 5min OS 级超时是最后防线，防 fork/spawn/git 异常导致挂起
+  version-guard:
+    name: CI Version Guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: 检出代码（含完整 git 历史，给 diff 用）
+        uses: actions/checkout@v4
+        with:
+          # version-guard 需要对 base_ref 做 git diff，必须有完整历史
+          fetch-depth: 0
+
+      - name: 安装 Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: 安装依赖
+        run: bun install --frozen-lockfile
+
+      - name: 运行 CI Version Guard
+        run: bun run scripts/ci/version-guard.ts --diff-base=origin/${{ github.base_ref }}
+        # 命中违规时脚本以非零退出码结束，GitHub Actions 自动标记失败（R9.2/R9.3）

@@ -1,0 +1,2 @@
+[root-test-registry] {"CURRENT_HERMETIC":51,"CURRENT_ENVIRONMENTAL":1,"MIGRATED_DUPLICATE":14,"HISTORICAL_EVIDENCE":122}
+[root-test-registry] mode=current selected=51

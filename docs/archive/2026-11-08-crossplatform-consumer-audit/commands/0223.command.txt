@@ -1,0 +1,43 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/current-doc-lint-authority.test.ts",
+    "tests/unit/retained-tool-library-boundary.test.ts",
+    "tests/v6-authority-consumer-alignment.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "current-document-and-retained-gate-closure-regressions",
+  "expected_writes": "owned-synthetic-tests-and-evidence",
+  "started_utc": "2026-11-08T05:22:28.452Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\current-doc-lint-authority.test.ts",
+      "sha256": "a6dcfc2c894cffc5719dd390910ccb946b9fa4a47ffea680c959568d2e3cd5e4",
+      "size": 1501,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 4,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\retained-tool-library-boundary.test.ts",
+      "sha256": "0f60059fab763b76c8d67fe6ca8d29f71c9e785971536d5b3e227d13518c9c33",
+      "size": 2469,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 5,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\v6-authority-consumer-alignment.test.ts",
+      "sha256": "793647132e81ff5933a12d14d0557de21390365f53c8cefe3eb38a4ebd6a96b0",
+      "size": 3582,
+      "extension": ".ts"
+    }
+  ]
+}

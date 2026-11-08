@@ -1,0 +1,1 @@
+{"version":"1.0.24","package_manifests":13,"authority_behavior_change":false}

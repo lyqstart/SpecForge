@@ -1,0 +1,29 @@
+{
+  "command": "opencode-server",
+  "subcommand": "restart",
+  "description": "restart the OpenCode user service",
+  "parameters": [
+    {
+      "name": "--json",
+      "type": "boolean",
+      "required": false,
+      "description": "Output as JSON",
+      "aliases": [
+        "-j"
+      ],
+      "default": false
+    },
+    {
+      "name": "--timeout",
+      "type": "number",
+      "required": false,
+      "description": "Stop timeout in seconds; default comes from accepted configuration"
+    }
+  ],
+  "examples": [
+    {
+      "description": "Linux systemd user service operation",
+      "command": "specforge opencode-server restart --json"
+    }
+  ]
+}

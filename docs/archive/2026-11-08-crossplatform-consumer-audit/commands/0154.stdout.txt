@@ -1,0 +1,1 @@
+{"coverage":"All selected throw/message/call fields without keyword filtering, including remediation and suggestion, plus matching array/string/template candidates. Semantic review remains separate."}

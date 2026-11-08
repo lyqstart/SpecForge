@@ -1,0 +1,1 @@
+{"baseline":9254,"current":9193,"added":{"prettier/prettier":277},"removed":{"prettier/prettier":326,"@typescript-eslint/no-unused-vars":12}}

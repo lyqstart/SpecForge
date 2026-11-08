@@ -1,0 +1,33 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/http-timeout-cleanup.test.ts",
+    "tests/unit/manifest-compatibility.unit.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\daemon-core",
+  "purpose": "green-http-event-timeout-and-current-manifest",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T03:00:38.201Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\http-timeout-cleanup.test.ts",
+      "sha256": "086ec343dbbaa8daf2b32c4f493eb9bba15b60bba067b22c5b3c8bf75a57875c",
+      "size": 1002,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 4,
+      "path": "D:\\code\\SpecForge\\packages\\daemon-core\\tests\\unit\\manifest-compatibility.unit.test.ts",
+      "sha256": "6201332ee682d7e117c99d0e6904b690db13701c970aabf501ed9f21c6fd84b7",
+      "size": 2782,
+      "extension": ".ts"
+    }
+  ]
+}

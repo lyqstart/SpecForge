@@ -1,0 +1,14 @@
+{
+  "utc": "2026-11-08T04:42:03.486Z",
+  "target": "/tmp/specforge-crossplatform-20261108-a01",
+  "source": "/mnt/d/code/SpecForge",
+  "members": [
+    {
+      "path": "setup/userlevel-opencode/tools/sf_git_post_merge_verify.ts",
+      "sha256": "166b45b3e6ba88908b93e1c4c0b9243c41f08f7f4b6cce479cbcaad92315a869",
+      "bytes": 983,
+      "before_sha256": "149c12161ee858b9a95ec4bc0b372a6953b8af1ae209edf4d628c150a46a9700"
+    }
+  ],
+  "qualification": "Exact current-source delta; previous update receipts required. Generated release assets are not source."
+}

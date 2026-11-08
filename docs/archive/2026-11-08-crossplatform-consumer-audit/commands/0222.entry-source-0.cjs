@@ -1,0 +1,17 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),ts=require('typescript'),crypto=require('node:crypto'),changes=[],sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+function plan(file,fn){const before=fs.readFileSync(file),after=Buffer.from(fn(before.toString('utf8')));assert.equal(ts.createSourceFile(file,after.toString(),ts.ScriptTarget.Latest,true).parseDiagnostics.length,0,file);changes.push({file,before,after});}
+function once(s,a,b){assert.equal(s.split(a).length,2,a);return s.replace(a,b);}
+for(const [base,names,owner] of [['sf_requirements_gate_core',['checkRequirementsGate','checkBugfixGate'],'sf_requirements_gate'],['sf_tasks_gate_core',['checkTasksGate'],'sf_tasks_gate'],['sf_verification_gate_core',['checkVerificationGate'],'sf_verification_gate']]){
+ plan('setup/userlevel-opencode/tools/lib/'+base+'.ts',s=>{const source=ts.createSourceFile(base,s,ts.ScriptTarget.Latest,true),edits=names.map(name=>{const fn=source.statements.find(n=>ts.isFunctionDeclaration(n)&&n.name?.text===name);assert(fn?.body,name);return {start:fn.body.getStart(source),end:fn.body.end,text:`{\n  return {status:"blocked",blocking_issues:["LOCAL_GATE_NOT_CURRENT_OWNER"],warnings:[],next_action:"revise",details:{required_owner:"Daemon ${owner}",recovery:"Use the exposed controlled tool with the real caller context. Retained content helpers cannot produce an authoritative Gate result."}};\n}`};});for(const e of edits.sort((a,b)=>b.start-a.start))s=s.slice(0,e.start)+e.text+s.slice(e.end);return s;});
+}
+for(const file of ['packages/daemon-core/src/tools/lib/sf_doc_lint_core.ts','setup/userlevel-opencode/tools/lib/sf_doc_lint_core.ts'])plan(file,s=>{
+ const source=ts.createSourceFile(file,s,ts.ScriptTarget.Latest,true),edits=[];
+ for(const name of ['lintRequirements','lintDesign']){const fn=source.statements.find(n=>ts.isFunctionDeclaration(n)&&n.name?.text===name);assert(fn?.body,name);let found=0;
+  for(const n of fn.body.statements){if((ts.isIfStatement(n)&&n.expression.getText(source)==='isV6ArchitectureDoc')||(ts.isVariableStatement(n)&&n.declarationList.declarations.some(d=>d.name.getText(source)==='isV6ArchitectureDoc'))){edits.push({start:n.getStart(source),end:n.end});found++;}}assert.equal(found,2,name);
+ }for(const e of edits.sort((a,b)=>b.start-a.start))s=s.slice(0,e.start)+'/* Historical V6 content algorithms are retained below, but are not current product lint policy. */'+s.slice(e.end);return s;
+});
+plan('packages/daemon-core/src/tools/handlers/sf-doc-lint.ts',s=>once(s,"  const docType = args['doc_type'] as string;","  const docType = args['doc_type'] as string;\n  if (docType && !['requirements','design','tasks'].includes(docType)) return {success:false,error:'UNSUPPORTED_CURRENT_DOCUMENT_TYPE'};"));
+plan('setup/userlevel-opencode/tools/sf_doc_lint.ts',s=>once(s,'.enum(["requirements", "design", "tasks", "bugfix"])','.enum(["requirements", "design", "tasks"])'));
+for(const c of changes){const dest=path.join(__dirname,'retained-local-gates-before',c.file);fs.mkdirSync(path.dirname(dest),{recursive:true});fs.writeFileSync(dest,c.before,{flag:'wx'});}
+fs.writeFileSync(path.join(__dirname,'retained-local-gates-plan.json'),JSON.stringify(changes.map(c=>({path:c.file,before_sha256:sha(c.before),after_sha256:sha(c.after)})),null,2)+'\n',{flag:'wx'});
+for(const c of changes){assert.equal(sha(fs.readFileSync(c.file)),sha(c.before));fs.writeFileSync(c.file,c.after);}console.log(JSON.stringify({changed:changes.length}));

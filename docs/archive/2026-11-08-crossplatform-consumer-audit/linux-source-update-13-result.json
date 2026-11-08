@@ -1,0 +1,181 @@
+{
+  "utc": "2026-11-08T05:23:57.182Z",
+  "observations": [
+    {
+      "path": "docs/conventions/meta-json-spec.md",
+      "before_sha256": "676ed6e53ae0a91d0ed4d5eccb8b490f0a749d9d16411995fb3129d6236f7f57",
+      "after_sha256": "9090f537ecf659b641423838da1af2025fac0fb625142d7b856932ef712bae14"
+    },
+    {
+      "path": "docs/design/windows-lpac-node-readonly-contract.md",
+      "before_sha256": "75312b393fd26c3b4ead623fc61600d6fe5304e04bb0cd394fbe62fd0a98e097",
+      "after_sha256": "37f982f86a6cba7cb7bcc00ced5750dcd0d12bbc0e577d47470cd28495c897d3"
+    },
+    {
+      "path": "docs/project-status.md",
+      "before_sha256": "75e3123637abefab25fb5d50bcd8582eb491c29c348e5a4ca059af4bc2b7cf10",
+      "after_sha256": "f784f4d3613d9a256bc2a7731b9ca1741edf83b93bf4ac5f29f16e2f94d4e595"
+    },
+    {
+      "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "before_sha256": "06c966deaccd653c9b1aba992e3baa87c6803a62afabb50762cdd35899864007",
+      "after_sha256": "770e61b54a952c55007bafca28a90019b671be582a98185a772f0078d0557a6a"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "before_sha256": "9e6e5f1b6fa60b96fe18f2cb3a31045c49cf11accd112ae477f742bedd311059",
+      "after_sha256": "785486618461071e9997cac4a499d5465dbc40a2bebcc5e272d695e168696085"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-doc-lint.ts",
+      "before_sha256": "f82bde6ab16fcf5c55a99401d2be817a446ab656b445606a29a15b48a4e51197",
+      "after_sha256": "af890afa02fa24e54451533615e4c2c8cdf81656050dd91a557cd0db3b709f1f"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-requirements-gate.ts",
+      "before_sha256": "7b5f930a2a516bb31aa9e3cbd2c8d64cfe26afa3590bd7e989de0f915becb898",
+      "after_sha256": "f499b98f2626019e9192463cfcb18a8614b861189dd87df54f33d1eb74683722"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-semantic-closure-run.ts",
+      "before_sha256": "930fb18904db02354dfacd0b6bac32094dc7ca82e7c51d5e9b161f3fc611ed84",
+      "after_sha256": "6df9c1036aeb8c5606036d3531963eb0404ce5ed80da9aabf63bf03062f9516e"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-state-transition.ts",
+      "before_sha256": "78a47da6ec9052707a0f70096714719e123800470aa78f7c8ff1e11ce64e6921",
+      "after_sha256": "86c1b2f027332b546edc2bd8072f02285843055d06c4bd5a16f614bbeaf97ae0"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts",
+      "before_sha256": "b565bb409a07fb4b541d9be85c022dc8675603d4fd8cc613bccf838e70a8183d",
+      "after_sha256": "6c545da99d351d589ebaac1e0554c350b398a52c921b55511cae6af8c537c739"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-verification-gate.ts",
+      "before_sha256": "392d001476b6c39fbbe416ba2455c47188ac0d832cfce294f0d3ef0ffbf72f54",
+      "after_sha256": "9cd9710697056b418de14315d13025f5a122c2594d51c8b3a914873cece46ec7"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/semantic-closure-builder.ts",
+      "before_sha256": "09ddee807fa9b45f3abbbcacc6568243bf7f5960a188c28cc53f3aad2d0a78bf",
+      "after_sha256": "e48c857d5ade0ff6bc8266777686f7421461ebd69dfce77cd17db67de496cfb2"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/semantic-closure-core.ts",
+      "before_sha256": "864127702600a2b9b8a841af2dd488b75f28e27986b7889cfadbe30f1f99d105",
+      "after_sha256": "cb07194957bb14fbb73cf415621083d7a16643710b3a2966342f7a15205e6e54"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/sf_doc_lint_core.ts",
+      "before_sha256": "5d75cec38db71c4d0b542bf7496e0330a773127bc71b2076900427021b3b6026",
+      "after_sha256": "123a108af87bd1b801292a12b5f1f18947d0bcd6c1d88cb3f4dd1c8e7b22e701"
+    },
+    {
+      "path": "packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts",
+      "before_sha256": "1bae724375f7e1ad2d8cf948e89e548feb4eee02de4b180d3ad8aadd50a32bba",
+      "after_sha256": "3b862df3397fb967cf5f3b7a5eab7420f928b509e0caf6bd35f917b13d818740"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/semantic-closure-core.test.ts",
+      "before_sha256": "56136aa7eb9fe96bbe593f76d572c094df70b9c828f043a3cfd41396800ecb4c",
+      "after_sha256": "968477e75821a5e5b01ed18cd74e3903d72d5287d820fa23d398633979453341"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/sf-semantic-closure-run.test.ts",
+      "before_sha256": "3cc75c4d1be483988b4c113e90c75a1e1c3fa056bc70d574468e474f7fdf08b4",
+      "after_sha256": "2eabf13b55e1f4631c416f73f519e10159e6813a350afbc1a53afb518fe530f4"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/sf-state-transition.test.ts",
+      "before_sha256": "2dba437b7a60b1d9bee6e9270f847d7283cb37618315db017cab67183869b103",
+      "after_sha256": "b4a43a6da6880b07a514845b093cbf6b9ba79038ac958744edb4c22f340f4d3c"
+    },
+    {
+      "path": "packages/types/src/constants.ts",
+      "before_sha256": "68e026d34c0fb598c6b41bbf499133165b23a69130da3ed67ea50bcbbe3a090d",
+      "after_sha256": "bb4359d06bd362ec410bb7b09f261df88eed80735b768ac012abb90b12faf362"
+    },
+    {
+      "path": "packages/types/src/index.ts",
+      "before_sha256": "db8cffa5aba330c4a1f645e2ca813de4515fbc24eeda869ab33bd4f8e8444158",
+      "after_sha256": "551f8f5cb10acb69588b5f34b04313419192bcea8a20cf7fbdc9a100ac627af7"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/lib/sf_doc_lint_core.ts",
+      "before_sha256": "1c9b291307fcdc5173195733fd0770a5647c71290b76b34c610fe3d07e69b927",
+      "after_sha256": "e125f68a6660bbe56eba0c503d8278d37dca1170c09d72d2d6ba082b6a7c8ece"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/lib/sf_requirements_gate_core.ts",
+      "before_sha256": "a355228a774d5d0962c9bce889b8575a49b3006bd458ec86829bd96479fd3a68",
+      "after_sha256": "5f6823e4ea12bf35882b14994efc48e91a1cc3463140fc982dd464dc4011cb64"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/lib/sf_tasks_gate_core.ts",
+      "before_sha256": "02a7e821adf7c98881bfad81832c1d6d74e8af95ece1064dac17680abf05966c",
+      "after_sha256": "e4725ca17b32ba42720dff150aafaceeeab97f7d00263b0a50fdf788f175f5ed"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/lib/sf_verification_gate_core.ts",
+      "before_sha256": "2a6d435bc6d7097951487448d34303b5b0fd8e59da127cf6f9311bec8cfea9d5",
+      "after_sha256": "2bfe3880fa843a08119f5844e4fe9f22a9afa08bb268042ce44bdf5a2ac989e6"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_artifact_write.ts",
+      "before_sha256": "06e3f0b6945bd5c458cd834e9608c3ac980f77b4319c6ad1ca68682bc0170742",
+      "after_sha256": "641c374b49c7958ea8b79c29015105f696fb1c2315c1fb2a41abc671edbda8dd"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_doc_lint.ts",
+      "before_sha256": "f2330e63b983a53010c738f7ae7ef666ebc1b62752d16a79a06e3c83936331b8",
+      "after_sha256": "e36317074d9f793bac71ad2dad08fc44d40f7c5410641abcf13543e45fd50275"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_gate_run.ts",
+      "before_sha256": "1acfcd238f8affabdefa64eff62e0b6eb56bacd2a8eae2bdaa41423b7d75f2f0",
+      "after_sha256": "8d10039867eb488b3470f6c9435b2765cddbed4a6ad19d64bc476f9b39f74a1a"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_requirements_gate.ts",
+      "before_sha256": "bb63ca970669d24430253901618815c92b9c2aa7f5cf625d21f986de7a306373",
+      "after_sha256": "6bce88c80118a07cad77d5187963da6b6761248b5ab90a1ac67aa46bfacd4aec"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_semantic_closure_run.ts",
+      "before_sha256": "b4700ad282363686563844e2799b1b589f5626363efa95ad9a90fe82db0f264b",
+      "after_sha256": "77f969f78c38308f7929443afb84111057a238314f0e9f37f55a2cab9b57375e"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_state_transition.ts",
+      "before_sha256": "fb44899116e5c9faa4299168e1ed97c066ced7d7f50b89a2f778bc123d7599ae",
+      "after_sha256": "a5fddc5f29571ab52e2017f7e35b68207c7a728ba3a50767837c12659074719b"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_verification_gate.ts",
+      "before_sha256": "7f7c9a926ef07f50b39a13f805e97849b4b1faac606845ff46a32bff1e27936e",
+      "after_sha256": "4c62a46390364ae6b6bae70b35007be943e6cefb668966895019f914d1cd6352"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/current-doc-lint-authority.test.ts",
+      "before_sha256": null,
+      "after_sha256": "a6dcfc2c894cffc5719dd390910ccb946b9fa4a47ffea680c959568d2e3cd5e4"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/registered-current-workflow-boundary.test.ts",
+      "before_sha256": null,
+      "after_sha256": "b195415d54f59ca4567165b32cb9242b8240952fc2872caa3b658460b90fa273"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/retained-tool-library-boundary.test.ts",
+      "before_sha256": "c319dcb53edd02224209983540686d36de2db14d18de310ba4e5e4114f511bbd",
+      "after_sha256": "0f60059fab763b76c8d67fe6ca8d29f71c9e785971536d5b3e227d13518c9c33"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/work-item-artifact-owner.test.ts",
+      "before_sha256": null,
+      "after_sha256": "5fd62a81808778528287f4189b4f759d357bba26099b115eacae1a967131e148"
+    }
+  ],
+  "source_identity_check": "PASS"
+}

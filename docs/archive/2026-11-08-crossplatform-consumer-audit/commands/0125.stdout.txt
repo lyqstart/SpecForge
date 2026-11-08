@@ -1,0 +1,13 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/packages/scope-gate
+
+ ✓ tests/current-crossplatform-ci-contract.test.ts  (3 tests) 8ms
+ ✓ tests/source-policy-audit.test.ts  (4 tests) 30ms
+ ✓ tests/current-daemon-http-doc-contract.test.ts  (2 tests) 164ms
+ ✓ tests/current-operating-doc-contract.test.ts  (7 tests) 27ms
+
+ Test Files  4 passed (4)
+      Tests  16 passed (16)
+   Start at  11:46:18
+   Duration  5.59s (transform 5.97s, setup 0ms, collect 13.78s, tests 229ms, environment 1ms, prepare 1.13s)
+

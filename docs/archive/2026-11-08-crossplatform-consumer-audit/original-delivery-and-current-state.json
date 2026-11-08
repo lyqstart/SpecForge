@@ -1,0 +1,124 @@
+{
+  "utc": "2026-11-08T06:32:29.802Z",
+  "source_delivery_sha256": "3ce4823ebc7db0be44bc4dbd9f446701791c6e21f8975bd02fd5e154f334a495",
+  "project": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-conformance-business-R6ttE7",
+  "head": "28c8e3d850c81218af4598928569bf5420814372",
+  "branch": "main",
+  "code": [
+    {
+      "path": "README.md",
+      "snapshot": "0000.raw",
+      "size": 508,
+      "sha256": "d57538d59da2a671680fc5cd6d0df95ccea742eaeed77bc5adb7e408a96d169b",
+      "actual_sha256": "d57538d59da2a671680fc5cd6d0df95ccea742eaeed77bc5adb7e408a96d169b"
+    },
+    {
+      "path": "package.json",
+      "snapshot": "0001.raw",
+      "size": 182,
+      "sha256": "35aab8937d4634f75182a1b812f0b71cf9e23ede47488b317b3a7ac89fc35494",
+      "actual_sha256": "35aab8937d4634f75182a1b812f0b71cf9e23ede47488b317b3a7ac89fc35494"
+    },
+    {
+      "path": "src/greet.ts",
+      "snapshot": "0002.raw",
+      "size": 207,
+      "sha256": "7b8ddcc05cf84afed746d56e978563429b0ac79e03598ed359270ecd50993ec4",
+      "actual_sha256": "7b8ddcc05cf84afed746d56e978563429b0ac79e03598ed359270ecd50993ec4"
+    },
+    {
+      "path": "tests/greet.test.ts",
+      "snapshot": "0003.raw",
+      "size": 690,
+      "sha256": "26d14693eccb088b0964e06f04dba9a4ea1eafc1090f73467019209d5b414981",
+      "actual_sha256": "26d14693eccb088b0964e06f04dba9a4ea1eafc1090f73467019209d5b414981"
+    },
+    {
+      "path": "tsconfig.json",
+      "snapshot": "0004.raw",
+      "size": 243,
+      "sha256": "20b50fa167f1c62b27fc036eec23d39284041111d212b751b45e6b4e0a67d014",
+      "actual_sha256": "20b50fa167f1c62b27fc036eec23d39284041111d212b751b45e6b4e0a67d014"
+    }
+  ],
+  "canonical": [
+    {
+      "path": "canonical/gates/verification_gate.json",
+      "size": 64702,
+      "sha256": "d9f787cfd2aca7beb886c6eb61a09d84e8d076ea520f7a332ed11c3f77a49a01",
+      "live_path": "gates/verification_gate.json",
+      "actual_sha256": "d9f787cfd2aca7beb886c6eb61a09d84e8d076ea520f7a332ed11c3f77a49a01"
+    },
+    {
+      "path": "canonical/gates/formal_version_gate.json",
+      "size": 8242,
+      "sha256": "175b4ad95172f5efa4a4fff3de6830706d9b48704457eab536f96a3a3fb10b9c",
+      "live_path": "gates/formal_version_gate.json",
+      "actual_sha256": "175b4ad95172f5efa4a4fff3de6830706d9b48704457eab536f96a3a3fb10b9c"
+    },
+    {
+      "path": "canonical/gates/close_gate.json",
+      "size": 7783,
+      "sha256": "2659f5548d40f737cc7ec71a20c8e0b2b07514453b34aa4cf65734714a708f61",
+      "live_path": "gates/close_gate.json",
+      "actual_sha256": "2659f5548d40f737cc7ec71a20c8e0b2b07514453b34aa4cf65734714a708f61"
+    },
+    {
+      "path": "canonical/formal_version_snapshot.json",
+      "size": 767,
+      "sha256": "cdb2a88578273a7e517b6040eae98c842f6d5c8e20a814079cbd68356d3d695b",
+      "live_path": "formal_version_snapshot.json",
+      "actual_sha256": "cdb2a88578273a7e517b6040eae98c842f6d5c8e20a814079cbd68356d3d695b"
+    },
+    {
+      "path": "canonical/verification_report.md",
+      "size": 40717,
+      "sha256": "3c11f166064f34070d13533fde6bf1f359332bec36e5bd5c4e8447c8672e1d14",
+      "live_path": "verification_report.md",
+      "actual_sha256": "3c11f166064f34070d13533fde6bf1f359332bec36e5bd5c4e8447c8672e1d14"
+    },
+    {
+      "path": "canonical/evidence/evidence_manifest.json",
+      "size": 29889,
+      "sha256": "f422d618bc876afd97ab4ee7dc646595b6cafa555d5485ba00816e0915b4affb",
+      "live_path": "evidence/evidence_manifest.json",
+      "actual_sha256": "f422d618bc876afd97ab4ee7dc646595b6cafa555d5485ba00816e0915b4affb"
+    },
+    {
+      "path": "canonical/.semantic_closure.json",
+      "size": 13163,
+      "sha256": "d34176c9d3fc01c26a6fb37098af0a3128ec4e8be13eaa3f4c06c13873800e0a",
+      "live_path": ".semantic_closure.json",
+      "actual_sha256": "d34176c9d3fc01c26a6fb37098af0a3128ec4e8be13eaa3f4c06c13873800e0a"
+    },
+    {
+      "path": "canonical/changed_files_audit.md",
+      "size": 1606,
+      "sha256": "1b0e974f54ab2952918559be8e6a47f90b28629b8119f4f0713237549048d101",
+      "live_path": "changed_files_audit.md",
+      "actual_sha256": "1b0e974f54ab2952918559be8e6a47f90b28629b8119f4f0713237549048d101"
+    },
+    {
+      "path": "canonical/work_item.json",
+      "size": 8898,
+      "sha256": "43ff6a0f65118806f1d5629aff962e435f68e690577540d9fa226cce35ff6da4",
+      "live_path": "work_item.json",
+      "actual_sha256": "43ff6a0f65118806f1d5629aff962e435f68e690577540d9fa226cce35ff6da4"
+    }
+  ],
+  "state": {
+    "success": true,
+    "rebuilt_from_events": true,
+    "work_item_id": "WI-0001",
+    "workflow_type": "feature_spec",
+    "current_state": "closed",
+    "created_at": 1792905467014,
+    "updated_at": 1794045358653
+  },
+  "daemon_pid": 43024,
+  "daemon_version": "1.0.24",
+  "source": "Authenticated read-only state-owner audit against installed1.0.24; independent auditor context, not a genuine Agent invocation or Workflow advancement. Runtime observability/projection writes may occur.",
+  "application_reexecuted": false,
+  "model_prompt_sent": false,
+  "business_mutation_tool_invoked": false
+}

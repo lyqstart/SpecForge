@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/correct-document-authority-disposition.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "correct-explicit-authority-and-ledger-audit-roles",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T04:49:01.123Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\correct-document-authority-disposition.cjs",
+      "sha256": "2d90b9d2ca36a8afa06983cfd4d562bec1222ae89ff8be21c82aa14045de53e0",
+      "size": 1820,
+      "extension": ".cjs"
+    }
+  ]
+}

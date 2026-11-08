@@ -1,0 +1,22 @@
+{
+  "utc": "2026-11-08T05:44:40.592Z",
+  "head": "a8900cba9da5b4b8e9a49a57bb78bd1455b30dc3",
+  "files": 282,
+  "commit_tree_matches_reviewed_index": true,
+  "working_tree_source_matches": true,
+  "sequencing_incident": "Commit was started before index-verification process completion; all index verification later succeeded and this separate full commit-tree comparison proves exact reviewed blobs. No push occurred before these checks.",
+  "receipts": [
+    {
+      "n": "0250",
+      "started_utc": "2026-11-08T05:42:36.367Z",
+      "finished_utc": "2026-11-08T05:43:23.825Z",
+      "inner_exit_code": 0
+    },
+    {
+      "n": "0251",
+      "started_utc": "2026-11-08T05:42:52.310Z",
+      "finished_utc": "2026-11-08T05:42:53.197Z",
+      "inner_exit_code": 0
+    }
+  ]
+}

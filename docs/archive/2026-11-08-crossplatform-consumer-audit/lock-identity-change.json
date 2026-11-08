@@ -1,0 +1,6 @@
+{
+  "utc": "2026-11-08T02:32:09.175Z",
+  "workspace_versions": 12,
+  "resolved_dependency_changes": 0,
+  "reason": "Bun1.3.14 --lockfile-only left unchanged workspace identity fields. Canonical JSONC parser proves only12 workspace version values change; no dependency resolutions changed."
+}

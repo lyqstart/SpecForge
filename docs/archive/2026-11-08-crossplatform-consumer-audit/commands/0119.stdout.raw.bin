@@ -1,0 +1,1 @@
+{"platform":"win32","result":"PASS","report":"C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-platform-acceptance-tH7rje\\report","checks":{"installed_files":117,"help_cases":23,"unauthorized_governance_write":"REFUSED_401","official_start_restart_stop":"PASS","uninstall_private_and_unmanaged_retained":true}}

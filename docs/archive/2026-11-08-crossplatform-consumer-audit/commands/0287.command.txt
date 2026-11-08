@@ -1,0 +1,30 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/run-linux.cjs",
+    "scripts/test-workspace.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "linux-frozen05-final-full-workspace-regression",
+  "expected_writes": "owned-linux-test-fixtures-and-evidence",
+  "started_utc": "2026-11-08T05:57:48.496Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\run-linux.cjs",
+      "sha256": "ae308ce36eb3828d58a8c83a31f70df76fda7e529c3f1f198853bcfb107da963",
+      "size": 1341,
+      "extension": ".cjs"
+    },
+    {
+      "argument_index": 1,
+      "path": "D:\\code\\SpecForge\\scripts\\test-workspace.ts",
+      "sha256": "ca07c9f9c24d5e07df939f435a0c611c313c0764e94ee1df8e11ecb3e54bce13",
+      "size": 2071,
+      "extension": ".ts"
+    }
+  ]
+}

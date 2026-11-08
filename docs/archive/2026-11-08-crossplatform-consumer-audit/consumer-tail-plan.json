@@ -1,0 +1,152 @@
+[
+  {
+    "path": "docs/adr/ADR-010-installer-manifest-canonical-location.md",
+    "before_sha256": "99b971eb7bd636a1ad124f8e1e2300398fcd1673e51a8286f7ddba7e6b03bae2",
+    "after_sha256": "713344d6dd7b4533d79a4631ab75842396f9819548aebc5ae869fe6f0c1adfe2"
+  },
+  {
+    "path": "docs/adr/ADR-011-user-level-runtime-path-boundary.md",
+    "before_sha256": "63411e52e0a7e67a27e6bf21c960a8840ab8b935a5890311bdbf0f091b008452",
+    "after_sha256": "3ae5ed748142d1ebacbfd65afc65b2c1e02bda4deb9beeaf51c4652e791d455e"
+  },
+  {
+    "path": "docs/adr/ADR-007-architecture-consistency-governance.md",
+    "before_sha256": "ee1ec3968225fbb0428d9f9e828699b6a6ee07fffd5c056ae48f2088d1507f70",
+    "after_sha256": "16555b249fc11db4ace77a03dd0d71f1044a3054deee3b373104c9133e266c5e"
+  },
+  {
+    "path": "docs/adr/ADR-008-new-project-governance-bootstrap.md",
+    "before_sha256": "e381a6d0d9eadbdcbdd42ad1780da38dfa9841a19087ba512560c81596136656",
+    "after_sha256": "8ec91d5e618d5b87d90113de433fa1909b1ab51b2aed390509754fe0025e449f"
+  },
+  {
+    "path": "docs/adr/ADR-014-authority-model-recovery-freeze.md",
+    "before_sha256": "2f5671f052a5d974edc442168f8013a684d7c2474fcf5f0496c438dc0387c1f0",
+    "after_sha256": "b0a78b4f48fc9ac0ffe710095152c802fb1438f9af2717754103390b24f9e989"
+  },
+  {
+    "path": "packages/observability/VALIDATION_REPORT.md",
+    "before_sha256": "b8291a79d047416f0a40d7dc62c2113c3bf32ee89e55c43fbd5d6e7bb312051f",
+    "after_sha256": "507e00ee668722b197f46041b13399c4ace83a3813c9561ed0ff5b41c27ae950"
+  },
+  {
+    "path": "packages/permission-engine/PROJECT_STRUCTURE.md",
+    "before_sha256": "dce822d164212fd786028cfb0dd0695a4b50917e875ce304221d26021e33b52d",
+    "after_sha256": "754bba9598671759878fc4efbe8a8cd10652114e5f50acae8e2471cedd86aa41"
+  },
+  {
+    "path": "packages/workflow-runtime/AGENT_INTEGRATION_IMPLEMENTATION_SUMMARY.md",
+    "before_sha256": "917b321c508f1221defb9c7d5c2be5eab2cf26679ebaa444e70ee2915a93f9de",
+    "after_sha256": "132a9f30a3b9748ffa5d3c99078cd4f79525ad937dea604b67f1b69fe98bbb66"
+  },
+  {
+    "path": "packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md",
+    "before_sha256": "a447be7e35d5ffb56895233fe4ff77a471c04c5ae9f90cda6757d2c0c9b5c988",
+    "after_sha256": "9df77604158501ebb446a4dd8aa43b28eb98ee064898da024585b66240755755"
+  },
+  {
+    "path": "packages/workflow-runtime/GATE_ERROR_HANDLING_IMPLEMENTATION_SUMMARY.md",
+    "before_sha256": "bb9f684389c9f92b331db700582bc91c82e531eb96ad180a512d6235de2ebd9b",
+    "after_sha256": "6f3bb534d680394adca529064fd9a1411b8e3fc9eca94faf0c34bf7222bb35e9"
+  },
+  {
+    "path": "packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md",
+    "before_sha256": "7f1e626f3b9a96ebeb18328a2f967b02af9a50e8a07e8697289e898c5ed52af4",
+    "after_sha256": "ee66598aad41dea8ec548ae3f45eab6784260d1b20dcf59e268178d4bccbc302"
+  },
+  {
+    "path": "packages/workflow-runtime/TASK_1_5_COMPLETION.md",
+    "before_sha256": "5bd210d01a9488594a4a5c939380f647c0b51c701db657ff36e0f1e41caa8680",
+    "after_sha256": "d48518977333a023f0310a0a877428a8f53c72cc43462e94c3c6321a4c547668"
+  },
+  {
+    "path": "docs/engineering-lessons/universal/async-resource-lifecycle.md",
+    "before_sha256": "e6820ef09d7a56f439176af7c86074975ee0a52a99c84ac332e43e36769007e7",
+    "after_sha256": "9df343d97a748386e24813c29c23d8a8ea055c77b8b69f8594407233f5c2c9bd"
+  },
+  {
+    "path": "docs/engineering-lessons/universal/javascript-explicit-resource-management.md",
+    "before_sha256": "a30010be26a7a1b8f6bb676cc5b3f4440859897a45f2664758b9c2c7a21d631b",
+    "after_sha256": "3b985df0a2aef30056d89a7088292385c3035931213845d0308b8a71fc3ccac7"
+  },
+  {
+    "path": "docs/engineering-lessons/universal/shell-command-execution.md",
+    "before_sha256": "a64e05c631c39f24b8ce91b9d99887ef8ebcee439c77f5c4ae7b8e0628ae1670",
+    "after_sha256": "d7426d3f3d0e609c28e8b110df0c5d11e8a66bb75149e72892f419301c5502e9"
+  },
+  {
+    "path": "docs/engineering-lessons/universal/host-environment-detection.md",
+    "before_sha256": "c440e3173105c72fe33646044505eb806f9c4984c524e367cef7343fa7e75703",
+    "after_sha256": "fbbb96a704e32b74d270f367e7ebfc927ce0eb81bbf6bc56613c111ceccd2388"
+  },
+  {
+    "path": "docs/engineering-lessons/ai-tools/opencode/custom-tool-self-contained.md",
+    "before_sha256": "1f3bb229b23d08a8efc24fb479a17763219d7cfe8040a7cd971253264e5f253c",
+    "after_sha256": "b680e7a4d2d33eb9854ffd3b528aedba050dfbaf1e310003ec995b60193856d3"
+  },
+  {
+    "path": "docs/project-status.md",
+    "before_sha256": "b415183edce6bcecb9d3b31c0422fe509e1a74ef9d78f9d62a828718a1c37221",
+    "after_sha256": "4fb83690bbd5936a9b3bef8c4de56305b71a5a22bc963ea00d01424288199d76"
+  },
+  {
+    "path": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+    "before_sha256": "d038b228bf0fa6a3ef59ebd0d36abdecedd92aa5133befc77781241ded24539f",
+    "after_sha256": "c577e1d8cf0a137099bb9f5ad5384fea1c927de82cc84e34e77bf60859824b26"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+    "before_sha256": "6c33b0a00314940acea4c7e6df4ecd16e6689fe0c0de1a44af15a03f8e62ca89",
+    "after_sha256": "9e6e5f1b6fa60b96fe18f2cb3a31045c49cf11accd112ae477f742bedd311059"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/handlers/sf-changed-files-audit.ts",
+    "before_sha256": "6bbc38c6199ec39aaaf59fc6d99829080cf82ed07a3ddcd71285e77b77b13672",
+    "after_sha256": "20e6b70030b56503f797750d3c53cffe0a27a53617d012117f37df6d5d582051"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/lib/contract-authoring.ts",
+    "before_sha256": "61d228879b530304ba864f53f3d1b0766c3480cac0d3bee017eeeb3fd9ecb0bd",
+    "after_sha256": "344971a89ea3809550d0873bb1130931c90ce1608a88885e49f6407435445c47"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/lib/contract-integrity.ts",
+    "before_sha256": "de413fd8d917cca5a3f258fc56116943348697c6459a8e4aeedef5939fbae794",
+    "after_sha256": "080aed5bb321a13533d5fa6fe0c563787d1a687d17e80e3dd2d910e818a8dcce"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+    "before_sha256": "20f6b8f7a5441d104801193b552e37394e5bbbdbc48a59bfb1a7dc7ca40d071d",
+    "after_sha256": "4a38a6ebcd4e94044068ac3851dff5cb6d1880920707a820cd5c6262d39af47f"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+    "before_sha256": "36807fa9e0d8e96ffc8c6f95c42aeae30b5fa51a2567a1c9261a0dd1192e829c",
+    "after_sha256": "0c725c1d3349af2be393d2b6bac8960370ca7a9efa9cac59445b7ec6ea729dbe"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+    "before_sha256": "acf32e13dc0ec51eb430bc35cc7c03da016924ba1e73ab3e4110ec95d1c465af",
+    "after_sha256": "b62e952e770333cc1a6686c4ac18632a3a970f105852dbf4071ae7ef096ebe03"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/lib/path-policy.ts",
+    "before_sha256": "7183c8137360123f3918701427567d77e41504ec1ca4a8b4b6077c4f64042220",
+    "after_sha256": "6acf6f5ccff03f6cd58dabb07703dc3ffbb987ebdf46620980716c1abec19fce"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/lib/project-init-reconstruction.ts",
+    "before_sha256": "25d7782f455a151d2a9f899516432be44e9607e6e425bb5758e51ec186e6caa4",
+    "after_sha256": "42460ab553bd4673448f3e2eabb0b51ee996e51a7cfba6225bda55e4fcbdb151"
+  },
+  {
+    "path": "packages/types/src/project-spec-module.ts",
+    "before_sha256": "9beb2fcd20ee766202f200425f181c8d22cf9775f9905de79fd47d16536d8c0d",
+    "after_sha256": "67d70ed63f371aef0f08a3bd87b498a11fd72eaf8ff43dbe3ad897cc61ec9c5c"
+  },
+  {
+    "path": "packages/workflow-runtime/src/v11/runtime/CloseGate.ts",
+    "before_sha256": "3fe61e6196e727806aa3313770817959216469b215f8b7883ccc9fdf975dd3fd",
+    "after_sha256": "7e7b5ce89af7f6015e5e81250a9e1417ee7c7a9eff0a81003dd7277d5089c8ac"
+  }
+]

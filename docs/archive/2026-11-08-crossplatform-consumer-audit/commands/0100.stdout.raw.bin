@@ -1,0 +1,21 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ❯ tests/design-governance-live-closure.test.ts (9 tests | 2 failed) 1200ms
+   × Design Governance live closure > writes design once to the canonical Candidate path and never mirrors work-item design.md 128ms
+     → {"success":false,"error":"CANDIDATE_MANIFEST_SCHEMA_BLOCKED: SCHEMA_INVALID","hard_stop":true,"retry_allowed":false}: expected false to be true // Object.is equality
+   ✓ Design Governance live closure > derives analysis_scope before authoring and rejects a mismatched design before write 64ms
+   ✓ Design Governance live closure > blocks module-scoped Candidates when an existing manifest declares no modules 62ms
+   ✓ Design Governance live closure > recovers an empty module registry through governed init and then writes a CORE Candidate 119ms
+   × Design Governance live closure > runs the real Design Gate through sf_gate_run, uses the design phase profile, and stops at approval_required 96ms
+     → {"success":false,"error":"CANDIDATE_SEAL_INVALID: VALIDATION_FAILED","work_item_id":"WI-0001"}: expected false to be true // Object.is equality
+   ✓ Design Governance live closure > fails candidate_manifest_gate when a module-scoped Candidate is not declared  317ms
+   ✓ Design Governance live closure > rejects an incomplete trigger classification through the same sf_gate_run path 279ms
+   ✓ Design Governance live closure > passes no_code_change audit for the approved design-only phase without enabling code permission 68ms
+   ✓ Design Governance live closure > rejects no_code_change once the authoritative state has entered implementation 64ms
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 7 passed (9)
+   Start at  11:18:31
+   Duration  4.51s (transform 1.30s, setup 0ms, collect 2.60s, tests 1.20s, environment 0ms, prepare 247ms)
+

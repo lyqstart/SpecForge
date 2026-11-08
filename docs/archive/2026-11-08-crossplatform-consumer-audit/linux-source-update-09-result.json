@@ -1,0 +1,16 @@
+{
+  "utc": "2026-11-08T04:37:25.675Z",
+  "observations": [
+    {
+      "path": "packages/scope-gate/tests/current-release-entry-interop.test.ts",
+      "before_sha256": null,
+      "after_sha256": "d459f170f6eafc116c2b15cc80f242d8184e5ad173b31a5db12d1afca27bfc5d"
+    },
+    {
+      "path": "scripts/lib/prepare-current-release.ts",
+      "before_sha256": "88dbafae0473cc58e3e652b9cbcf7c2a9fea73a4addde653f634ae32cb46bff3",
+      "after_sha256": "cf1c207347df38c97ae19ee4a13cbf82e769e8f1b5bf3316b0ed423524d0a994"
+    }
+  ],
+  "source_identity_check": "PASS"
+}

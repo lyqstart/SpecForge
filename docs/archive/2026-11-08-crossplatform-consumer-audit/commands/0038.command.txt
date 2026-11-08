@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/export-history-fixtures.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "freeze-missing-history-preservation-fixtures",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T02:37:00.701Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\export-history-fixtures.cjs",
+      "sha256": "d3186c2f3435a6afc0042fc31f2b880ab3c90c992bf122ebe053d11c6fe98359",
+      "size": 1176,
+      "extension": ".cjs"
+    }
+  ]
+}

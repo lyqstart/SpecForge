@@ -1,0 +1,28 @@
+{
+  "utc": "2026-11-08T06:57:49.306Z",
+  "mode": "CODEX_DIRECT",
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "expected_parent": "f17a532a98d5716cfbae57b26916ae3dfdfce4b8",
+  "branch": "codex/crossplatform-consumer-audit",
+  "allowed_paths": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/**",
+    "docs/project-status.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md"
+  ],
+  "excluded": [
+    "local-assets/**",
+    "publication-live/**"
+  ],
+  "steps": [
+    "seal public archive and self-check",
+    "stage exact whitelist; compare every archive Git blob to raw sealed bytes",
+    "commit only after numeric index verification completion",
+    "verify direct parent and complete staged tree equality",
+    "fast-forward local main using expected old ref",
+    "push main with exact expected old remote lease",
+    "read-only clean READY Bootstrap and final source/runtime equivalence proof"
+  ],
+  "runtime_changes": false,
+  "tag_changes": false,
+  "pr": false
+}

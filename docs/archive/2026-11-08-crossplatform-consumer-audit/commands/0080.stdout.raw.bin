@@ -1,0 +1,23 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/service-management
+
+ ✓ tests/unit/reconnect-timer-ownership.test.ts (4 tests) 7ms
+stdout | tests/unit/reconnecting-daemon-client.test.ts > ReconnectingDaemonClient > TASK-3: Degraded 恢复机制 (30s probe + on-demand probe) > degraded 后推进 30s + healthz 返回 ok → isDegraded() === false
+[specforge] Daemon recovered, exiting degraded mode
+
+stdout | tests/unit/reconnecting-daemon-client.test.ts > ReconnectingDaemonClient > TASK-3: Degraded 恢复机制 (30s probe + on-demand probe) > 恢复后 postEvent 正常发送（不再返回 degraded）
+[specforge] Daemon recovered, exiting degraded mode
+
+stdout | tests/unit/reconnecting-daemon-client.test.ts > ReconnectingDaemonClient > TASK-3: Degraded 恢复机制 (30s probe + on-demand probe) > 恢复后 degradedWarningPrinted 已重置 → 再次进入 degraded 时 warning 打印 2 次（总共）
+[specforge] Daemon recovered, exiting degraded mode
+
+stdout | tests/unit/reconnecting-daemon-client.test.ts > ReconnectingDaemonClient > TASK-3: Degraded 恢复机制 (30s probe + on-demand probe) > triggerDegradedProbeOnce 触发即时恢复（不需要等 30s）
+[specforge] Daemon recovered (on-demand probe), exiting degraded mode
+
+ ✓ tests/unit/reconnecting-daemon-client.test.ts (49 tests) 68ms
+
+ Test Files  2 passed (2)
+      Tests  53 passed (53)
+   Start at  11:06:18
+   Duration  904ms (transform 162ms, setup 0ms, collect 278ms, tests 75ms, environment 0ms, prepare 504ms)
+

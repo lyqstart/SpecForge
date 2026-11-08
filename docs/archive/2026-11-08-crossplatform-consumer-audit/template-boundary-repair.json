@@ -1,0 +1,101 @@
+{
+  "utc": "2026-11-08T03:37:33.944Z",
+  "members": [
+    {
+      "path": "setup/userlevel-templates/project-rules/_BASE.md",
+      "before_sha256": "632608a6032a060f88f5ba7246d0f13a7ed20f22bf4142e44f15e9c3f9fd241c",
+      "after_sha256": "7ca607ad261434bb1d4c8915af44d1cc5e7753cbad7b6bac865fd4c4308a57c3",
+      "disposition": "DERIVED_TEMPLATE_DATA; execution/permission remains D18/D23 owners; time-sensitive version rankings removed without inventing replacement recommendations."
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/databases/mongodb.md",
+      "before_sha256": "74ede6f4630b55845082f117cbefc2eb2197e446773cc6066a3fa73b9ec55fc8",
+      "after_sha256": "d61ace659d17221ea37aaa7aa6fc4c2a95c204ffd8570d55f132cad81aac01aa",
+      "disposition": "DERIVED_TEMPLATE_DATA; execution/permission remains D18/D23 owners; time-sensitive version rankings removed without inventing replacement recommendations."
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/databases/mysql.md",
+      "before_sha256": "c7667ec7a2dee83d6c76940d6a4ef4909f81a457a25af2852e55c8c4ed4f8c16",
+      "after_sha256": "067f34917f9198974365c94d75f773eec16eba01a972f75e8623e49049924b83",
+      "disposition": "DERIVED_TEMPLATE_DATA; execution/permission remains D18/D23 owners; time-sensitive version rankings removed without inventing replacement recommendations."
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/databases/postgresql.md",
+      "before_sha256": "ffb74bd2b0871c2a3a5876b45bf81b9656d0b47cd0243ef77703b0486711746d",
+      "after_sha256": "93236c5c7c8c9c917d286a8146b83952f7d1e4134c106ae52587ec3a847e70f9",
+      "disposition": "DERIVED_TEMPLATE_DATA; execution/permission remains D18/D23 owners; time-sensitive version rankings removed without inventing replacement recommendations."
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/databases/redis.md",
+      "before_sha256": "a48b4f7267f7ec554085fa738ec9da3250340981ec7c31228878eb35082e9bd4",
+      "after_sha256": "deec6933e953ea43e0a8c4b89407e6585dc89cc25a7599d4f17dc4f229537792",
+      "disposition": "DERIVED_TEMPLATE_DATA; execution/permission remains D18/D23 owners; time-sensitive version rankings removed without inventing replacement recommendations."
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/databases/sqlite.md",
+      "before_sha256": "647e756c9fb46d47c3e692f8648cc3d2af852f63de219650d0a5adcb20ee88b2",
+      "after_sha256": "84b7c182b186f9cc6a093c71bafdd114995394c69104baba9171abbdd68317b3",
+      "disposition": "DERIVED_TEMPLATE_DATA; execution/permission remains D18/D23 owners; time-sensitive version rankings removed without inventing replacement recommendations."
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/frameworks/fastapi.md",
+      "before_sha256": "d1236dd749688894ebf2e30ea757118884a21f7f7efaeca8545e90b2c72735d6",
+      "after_sha256": "ec62d06a7c42f9528642b098fc652cf9f8c79b193f2ae0ed7c62909a5d843fa5",
+      "disposition": "DERIVED_TEMPLATE_DATA; execution/permission remains D18/D23 owners; time-sensitive version rankings removed without inventing replacement recommendations."
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/frameworks/react.md",
+      "before_sha256": "0beaeda3e7bb6e376eeacc8c22153c11c4ae159fcfa2441f04725e725aa2582a",
+      "after_sha256": "f3a6604d5ddceadb2e0f032ae77cb1d12df6fb60caa9ecf7a3ce118f4794a767",
+      "disposition": "DERIVED_TEMPLATE_DATA; execution/permission remains D18/D23 owners; time-sensitive version rankings removed without inventing replacement recommendations."
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/frameworks/spring-boot.md",
+      "before_sha256": "8897ec47ecf150160aa39ed19f96f74758e78ceb230429e08e048029e291b02c",
+      "after_sha256": "265316f3e0f7645595d7298a7c208cc0dc06ad56d8c34050afc04314c1e9c2dc",
+      "disposition": "DERIVED_TEMPLATE_DATA; execution/permission remains D18/D23 owners; time-sensitive version rankings removed without inventing replacement recommendations."
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/frameworks/vue.md",
+      "before_sha256": "d8102a574dca286e9eb9dc7a96e5f615f098ba779bab0baa123dec422fe46ea4",
+      "after_sha256": "668bdd5f4758431833176339e88bb3e49a24e4f0debdd0729cce213675f4e21b",
+      "disposition": "DERIVED_TEMPLATE_DATA; execution/permission remains D18/D23 owners; time-sensitive version rankings removed without inventing replacement recommendations."
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/infra/ci-github-actions.md",
+      "before_sha256": "8f9117ab882051f2ed7dc45e42698bf8b04565c79671bc60f2fdb9de85fbeff8",
+      "after_sha256": "00d8441a3ca5fce99e536ceb322ebb45bde575d9b2430f20672998362c5236f7",
+      "disposition": "DERIVED_TEMPLATE_DATA; execution/permission remains D18/D23 owners; time-sensitive version rankings removed without inventing replacement recommendations."
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/infra/docker.md",
+      "before_sha256": "033146181d3daf77a3044a198af7215934a35da4c52311ba35a656486083dc88",
+      "after_sha256": "2cd8d263809d1f09320a95f9bd998671acb5f2ee0726f1a7611a923e57cf0f3b",
+      "disposition": "DERIVED_TEMPLATE_DATA; execution/permission remains D18/D23 owners; time-sensitive version rankings removed without inventing replacement recommendations."
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/languages/go.md",
+      "before_sha256": "dce2d6a53943ba6df9e866c87fb0c86d141387d0484f62b7831edf550a8c3bed",
+      "after_sha256": "1d337356d0a1e54658a8be3b51e69a8c6c06c169d7d15b4a73177e709f6319e9",
+      "disposition": "DERIVED_TEMPLATE_DATA; execution/permission remains D18/D23 owners; time-sensitive version rankings removed without inventing replacement recommendations."
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/languages/java.md",
+      "before_sha256": "02fdbfa4ca01d9e5220213b56aebeae23afe086c3d22b86c3a9d9dffc2a3d88e",
+      "after_sha256": "7621be9820a06b46b2be2a54bac773107e76418ffccafb70040258f78539f5d3",
+      "disposition": "DERIVED_TEMPLATE_DATA; execution/permission remains D18/D23 owners; time-sensitive version rankings removed without inventing replacement recommendations."
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/languages/nodejs.md",
+      "before_sha256": "984d0ad28863b12d6f81313e09d05afe54844b7099b833eee783bb8e0ee78dda",
+      "after_sha256": "0592f8ecf0625d60490ac9d7e7d75a583db902f8ff381696568b1a4e7fe9b739",
+      "disposition": "DERIVED_TEMPLATE_DATA; execution/permission remains D18/D23 owners; time-sensitive version rankings removed without inventing replacement recommendations."
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/languages/python.md",
+      "before_sha256": "bf601ff0b7ccc41a707746345fa90539bff37539983d36c94d9a29769afa1c3e",
+      "after_sha256": "9a04679b1df16689cf712beb7146925cee513971dbaf325e10df1fadc44b8eaa",
+      "disposition": "DERIVED_TEMPLATE_DATA; execution/permission remains D18/D23 owners; time-sensitive version rankings removed without inventing replacement recommendations."
+    }
+  ]
+}

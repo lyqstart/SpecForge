@@ -1,0 +1,16 @@
+{
+  "number": "034",
+  "name": "official-daemon-start",
+  "executable": "/tmp/sf-platform-acceptance-ENg2N6/opencode/sf-user/bin/specforge",
+  "args": [
+    "daemon",
+    "start",
+    "--detach",
+    "--json"
+  ],
+  "started_utc": "2026-11-08T05:54:44.928Z",
+  "finished_utc": "2026-11-08T05:54:45.029Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

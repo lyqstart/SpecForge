@@ -1,0 +1,12 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/packages/scope-gate
+
+ ✓ tests/source-policy-audit.test.ts  (4 tests) 44ms
+ ✓ tests/current-daemon-http-doc-contract.test.ts  (2 tests) 160ms
+ ✓ tests/current-operating-doc-contract.test.ts  (5 tests) 15ms
+
+ Test Files  3 passed (3)
+      Tests  11 passed (11)
+   Start at  11:19:57
+   Duration  5.50s (transform 6.21s, setup 1ms, collect 13.40s, tests 219ms, environment 1ms, prepare 1.05s)
+

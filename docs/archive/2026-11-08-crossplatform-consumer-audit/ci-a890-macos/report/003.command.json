@@ -1,0 +1,14 @@
+{
+  "number": "003",
+  "name": "current-help",
+  "executable": "/var/folders/h5/t85nd63d71x27_8gl5gw3l_w0000gn/T/sf-platform-acceptance-DVYcpY/opencode/sf-user/bin/specforge",
+  "args": [
+    "--help",
+    "--json"
+  ],
+  "started_utc": "2026-11-08T05:46:48.985Z",
+  "finished_utc": "2026-11-08T05:46:49.090Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

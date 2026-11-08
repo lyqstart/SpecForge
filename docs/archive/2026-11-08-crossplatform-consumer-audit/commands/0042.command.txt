@@ -1,0 +1,21 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "wsl.exe",
+  "args": [
+    "--distribution",
+    "Ubuntu-24.04",
+    "--cd",
+    "/tmp/specforge-crossplatform-20261108-a01/project",
+    "--exec",
+    "/usr/bin/git",
+    "status",
+    "--porcelain=v1"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "inspect-owned-linux-git-delta",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T02:37:57.421Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": []
+}

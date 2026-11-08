@@ -1,0 +1,61 @@
+{
+  "utc": "2026-11-08T05:01:50.714Z",
+  "source": "Actual Linux freeze02 bytes, verified against the independent Windows acceptance-source-02 inventory",
+  "members": [
+    {
+      "path": "packages/types/src/constants.ts",
+      "sha256": "68e026d34c0fb598c6b41bbf499133165b23a69130da3ed67ea50bcbbe3a090d",
+      "bytes": 7151
+    },
+    {
+      "path": "packages/types/src/index.ts",
+      "sha256": "db8cffa5aba330c4a1f645e2ca813de4515fbc24eeda869ab33bd4f8e8444158",
+      "bytes": 11936
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-state-transition.ts",
+      "sha256": "78a47da6ec9052707a0f70096714719e123800470aa78f7c8ff1e11ce64e6921",
+      "bytes": 30281
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts",
+      "sha256": "b565bb409a07fb4b541d9be85c022dc8675603d4fd8cc613bccf838e70a8183d",
+      "bytes": 43334
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-requirements-gate.ts",
+      "sha256": "7b5f930a2a516bb31aa9e3cbd2c8d64cfe26afa3590bd7e989de0f915becb898",
+      "bytes": 1112
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-verification-gate.ts",
+      "sha256": "392d001476b6c39fbbe416ba2455c47188ac0d832cfce294f0d3ef0ffbf72f54",
+      "bytes": 1646
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_requirements_gate.ts",
+      "sha256": "bb63ca970669d24430253901618815c92b9c2aa7f5cf625d21f986de7a306373",
+      "bytes": 992
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_verification_gate.ts",
+      "sha256": "7f7c9a926ef07f50b39a13f805e97849b4b1faac606845ff46a32bff1e27936e",
+      "bytes": 690
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_state_transition.ts",
+      "sha256": "fb44899116e5c9faa4299168e1ed97c066ced7d7f50b89a2f778bc123d7599ae",
+      "bytes": 1630
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_gate_run.ts",
+      "sha256": "1acfcd238f8affabdefa64eff62e0b6eb56bacd2a8eae2bdaa41423b7d75f2f0",
+      "bytes": 2718
+    },
+    {
+      "path": "docs/design/windows-lpac-node-readonly-contract.md",
+      "sha256": "75312b393fd26c3b4ead623fc61600d6fe5304e04bb0cd394fbe62fd0a98e097",
+      "bytes": 20506
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "switch",
+    "main"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "select-fastforwarded-local-main",
+  "expected_writes": "repository-head-ref-and-evidence",
+  "started_utc": "2026-11-08T05:45:13.137Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": []
+}

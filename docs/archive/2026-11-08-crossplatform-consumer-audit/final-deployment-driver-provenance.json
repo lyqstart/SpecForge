@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-08T06:00:06.773Z",
+  "source_path": "docs/archive/2026-11-08-role-alignment/upgrade-guidance-02.cjs",
+  "sealed_sha256": "b2b28186ef26fcf7638378a5f9b66009e0cccefc836e55e026c88e644a04cbbe",
+  "derived_driver_sha256": "88fcb4bec9466503197f5643aa15109a21eeac62a80e10e0d91dc11e8aa27a38",
+  "changes": [
+    "Evidence output and readiness filenames",
+    "Approved complete audited release delta",
+    "New source/target1.0.24, existing old1.0.23 health preserved",
+    "Truthful native lineage qualification"
+  ],
+  "retained": "Official stop/upgrade/verify, full original-project install-interval hash preservation, immutable owner files and secret-key metadata preservation, no force/manual file copy"
+}

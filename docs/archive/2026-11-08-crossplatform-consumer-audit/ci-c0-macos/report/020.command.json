@@ -1,0 +1,16 @@
+{
+  "number": "020",
+  "name": "current-help",
+  "executable": "/var/folders/h5/t85nd63d71x27_8gl5gw3l_w0000gn/T/sf-platform-acceptance-uBPHR3/opencode/sf-user/bin/specforge",
+  "args": [
+    "opencode-server",
+    "install-service",
+    "--help",
+    "--json"
+  ],
+  "started_utc": "2026-11-08T05:54:52.028Z",
+  "finished_utc": "2026-11-08T05:54:52.093Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

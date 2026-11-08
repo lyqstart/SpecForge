@@ -1,0 +1,20 @@
+{
+  "utc": "2026-11-08T05:25:21.084Z",
+  "platform": "linux",
+  "architecture": "x64",
+  "inner_exit_code": 0,
+  "checks": {
+    "installed_files": 114,
+    "help_cases": 23,
+    "unauthorized_governance_write": "REFUSED_401",
+    "current_read_examples": "PASS",
+    "protected_and_unsupported_routes": "PASS",
+    "official_start_restart_stop": "PASS",
+    "uninstall_private_and_unmanaged_retained": true
+  },
+  "failure": null,
+  "commands": 39,
+  "original_business_touched": false,
+  "product_authority_modified": false,
+  "scope": "Official release build/precheck,actual installed bytes,current help/unsupported commands,independent Daemon/auth refusal/restart/stop,upgrade/verify/uninstall retention. D23 readonly Node execution remains Windows x64 only;no unsupported platform is promoted."
+}

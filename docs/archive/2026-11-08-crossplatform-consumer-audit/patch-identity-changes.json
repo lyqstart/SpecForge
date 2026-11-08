@@ -1,0 +1,80 @@
+{
+  "utc": "2026-11-08T02:27:16.664Z",
+  "version": "1.0.24",
+  "authority": "SPS0.1 rootpackage identity andfixed workspace strategy",
+  "changes": [
+    {
+      "path": "package.json",
+      "before_sha256": "f6f2d1f5a4a4c1932e1eb4238aee90458f0ef5f3370fb6189d0bfd7e69bd6ba0",
+      "after_sha256": "7c58f73f2dd404dc25c77ed79f99b6b46fe392ac342178d329241158ee723fe9"
+    },
+    {
+      "path": "packages\\cli\\package.json",
+      "before_sha256": "13819361399cd243cbb08b7091509e3bcd322ee94607af2ed50e0b414b60a8b0",
+      "after_sha256": "01a1f9000a2627514fd1e172c56abbf84afcc4b297d4eccfc2579f53620a8583"
+    },
+    {
+      "path": "packages\\configuration\\package.json",
+      "before_sha256": "37430e312528dcab305692994d39af3c035dfa8a107dc68a2669f8e831ca7036",
+      "after_sha256": "e667e0cb081b7c65924293dd0b2f1bfa25668577e0bb55f1650a60d7b77bb7c3"
+    },
+    {
+      "path": "packages\\daemon-core\\package.json",
+      "before_sha256": "d6cef585df5f43eef9df7534dd42923338bd7fef0ec084a3db9a701584971e4d",
+      "after_sha256": "300d23ae2aa725b010f70a70032eff12e146b8cccbcac98ed885c2e2a10080c5"
+    },
+    {
+      "path": "packages\\host-profile\\package.json",
+      "before_sha256": "fa1e7da49aaba119da836add89a992b2eaa9c8215aa00155d4a4fc87155c3ba1",
+      "after_sha256": "da1a519483b42310d6ed7a787436cc912f72eb5381afc84dbe207a7eaad5b153"
+    },
+    {
+      "path": "packages\\observability\\package.json",
+      "before_sha256": "ed29b6ac0b87e60fdf308c9f886e0bd89c827a100c5875dca7a0b6145f2397ad",
+      "after_sha256": "3185587858d2a01828735245012ae6c9c7dd4f70d0e205dd4c86ddb3370a6c64"
+    },
+    {
+      "path": "packages\\opencode-adapter\\package.json",
+      "before_sha256": "73f9e116ebcde11c30fb5a81c88d01450587402ff0ad1a0702b7f702e5631241",
+      "after_sha256": "6b5663d6ee14059b07e9124e7eb5fc25dcf8b5928f7218d6774e796cd71f7719"
+    },
+    {
+      "path": "packages\\permission-engine\\package.json",
+      "before_sha256": "b22ddb6cf6fe2e7218b0618a106030276b072ed747b884375f2811b9cc4303b4",
+      "after_sha256": "e403121b493ff966c71ccfda45f963e24a29e40ad2b66ad7c0a2b4a44a6c102a"
+    },
+    {
+      "path": "packages\\scope-gate\\package.json",
+      "before_sha256": "2e64ff5956659e530d80f216a74d7de54bb8eaf3991362ce256406cdd1f5e4dc",
+      "after_sha256": "b2991295199dcc3fa4d90e63f9580bbea7416ecd290d66ed8c66572285806c78"
+    },
+    {
+      "path": "packages\\service-management\\package.json",
+      "before_sha256": "fe6c25069a3e5e5060c867d8d038b499bdf760a29b8827056c93b387658b48e0",
+      "after_sha256": "b1039a500160e680ce5ff14c5a7af8368f43869bb864e7b074c4f6f58073acc7"
+    },
+    {
+      "path": "packages\\types\\package.json",
+      "before_sha256": "f06bd9e03ba21bdf5dca0d0f50ccb0c71fbdf0ba8c635fa32a4ea38a34a06907",
+      "after_sha256": "a143993ddbcae8a1d95f205d25bc9b08191f3337c94a7dce1f5530a1e729ff4c"
+    },
+    {
+      "path": "packages\\version-unification\\package.json",
+      "before_sha256": "a5d9a71dbc0e80e04967ad9a040e01f9dcd048f965bad4f2bcbb8d3e6c4fe543",
+      "after_sha256": "07475e61e7be10454db2b43e533063c1d48c8afbabdd41686288b02e3c081f7c"
+    },
+    {
+      "path": "packages\\workflow-runtime\\package.json",
+      "before_sha256": "d4076621e92c5e0157c15ae57149dda7d1c5e944e02fab1e69b922fca896b697",
+      "after_sha256": "809dfd182500c2ff995b8e8bdc16c1a68cf40106966a9a33238c2628a172e0b3"
+    },
+    {
+      "path": "docs/product-specification/specforge-product-specification.md",
+      "before_sha256": "0cf3cef264e84b198746852b340cb8d6b2b88562472357a78fa7850c83816d31",
+      "after_sha256": "8fe594be130fd751e60eef1a9a916867ef5dd8b401dbe6881a1f5295a43333ed",
+      "scope": "Release identity header only; all normative product rules,Specification ID,technical contracts and capability boundaries unchanged."
+    }
+  ],
+  "existing_tag_mutated": false,
+  "disabled_capabilities_enabled": false
+}

@@ -1,0 +1,10 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/service-management
+
+ ✓ tests/unit/healthcheck-request-timer.test.ts (4 tests) 14ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  10:14:55
+   Duration  1.16s (transform 143ms, setup 0ms, collect 188ms, tests 14ms, environment 0ms, prepare 236ms)
+

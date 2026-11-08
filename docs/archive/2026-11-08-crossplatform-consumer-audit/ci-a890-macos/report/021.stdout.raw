@@ -1,0 +1,23 @@
+{
+  "command": "opencode-server",
+  "subcommand": "uninstall-service",
+  "description": "uninstall-service the OpenCode user service",
+  "parameters": [
+    {
+      "name": "--json",
+      "type": "boolean",
+      "required": false,
+      "description": "Output as JSON",
+      "aliases": [
+        "-j"
+      ],
+      "default": false
+    }
+  ],
+  "examples": [
+    {
+      "description": "Linux systemd user service operation",
+      "command": "specforge opencode-server uninstall-service --json"
+    }
+  ]
+}

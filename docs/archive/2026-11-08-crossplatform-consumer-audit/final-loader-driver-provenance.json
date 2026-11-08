@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-08T06:07:34.893Z",
+  "sealed_source_path": "docs/archive/2026-11-08-role-alignment/verify-fresh-loader-03.cjs",
+  "sealed_source_sha256": "da52b027c80335ef72960cef3a88717f406bbc2aa12bfc0107d48b9a04bc8736",
+  "derived_sha256": "4b431a01a34270a5b56718fd09c53738e2076952ce9c1da7f1926f8ba23de348",
+  "changes": [
+    "New clean owned metadata-only working directory",
+    "Actual final1.0.24 install proof and manifest-derived inventory",
+    "Actual OpenAPI-discovered Tool metadata routes and45currentschemas",
+    "No session creation, model prompt, provider inference or business tool call"
+  ]
+}

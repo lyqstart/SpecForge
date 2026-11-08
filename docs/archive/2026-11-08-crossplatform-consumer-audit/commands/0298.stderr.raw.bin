@@ -1,0 +1,7 @@
+$ node scripts/run-root-tests.mjs current "--maxWorkers=1"
+[90mstderr[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould call process.exit(1) when totalShutdownTimeoutMs is exceeded
+[22m[39m[GracefulShutdown] Total shutdown timeout (50ms) exceeded. Force exiting.
+
+[90mstderr[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould call process.exit(1) when totalShutdownTimeoutMs is exceeded
+[22m[39m[GracefulShutdown] Task "blocking-drain" (drain) timed out after 200ms. Continuing...
+

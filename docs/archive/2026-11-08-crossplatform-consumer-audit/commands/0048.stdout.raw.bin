@@ -1,0 +1,11 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/packages/scope-gate
+
+ ✓ tests/current-crossplatform-ci-contract.test.ts  (3 tests) 6ms
+ ✓ tests/node-release-surface-producers.test.ts  (10 tests) 127ms
+
+ Test Files  2 passed (2)
+      Tests  13 passed (13)
+   Start at  10:41:38
+   Duration  1.16s (transform 100ms, setup 0ms, collect 133ms, tests 133ms, environment 0ms, prepare 635ms)
+

@@ -1,0 +1,15 @@
+{
+  "number": "009",
+  "name": "current-help",
+  "executable": "/tmp/sf-platform-acceptance-LnU2Kn/opencode/sf-user/bin/specforge",
+  "args": [
+    "services",
+    "--help",
+    "--json"
+  ],
+  "started_utc": "2026-11-08T02:58:24.328Z",
+  "finished_utc": "2026-11-08T02:58:24.434Z",
+  "inner_exit_code": 0,
+  "signal": null,
+  "spawn_error": null
+}

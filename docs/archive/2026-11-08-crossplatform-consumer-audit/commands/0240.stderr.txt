@@ -1,0 +1,17 @@
+15 |    const before=await fs.readFile(file,'utf8');rejected=false;try{await owner.saveStore({...valid,version} as any);}catch{rejected=true;}
+16 |    results.push({owner:name,operation:'write',version:version??'<missing>',rejected,preserved:(await fs.readFile(file,'utf8'))===before});
+17 |   }
+18 |  }
+19 |  console.log(JSON.stringify({fixture:base,results,all_rejected:results.every(r=>r.rejected),original_business_or_global_store_touched:false},null,2));
+20 |  assert(results.every(r=>r.rejected),'UNKNOWN_OR_MISSING_KNOWLEDGE_SCHEMA_ACCEPTED');
+      ^
+AssertionError: UNKNOWN_OR_MISSING_KNOWLEDGE_SCHEMA_ACCEPTED
+ generatedMessage: false,
+     actual: false,
+   expected: true,
+   operator: "==",
+       code: "ERR_ASSERTION"
+
+      at D:\code\SpecForge\docs\archive\2026-11-08-crossplatform-consumer-audit\probe-knowledge-store-schema.ts:20:2
+
+Bun v1.3.14 (Windows x64)

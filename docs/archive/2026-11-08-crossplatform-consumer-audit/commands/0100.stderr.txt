@@ -1,0 +1,44 @@
+$ vitest run tests/design-governance-live-closure.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/design-governance-live-closure.test.ts > Design Governance live closure > writes design once to the canonical Candidate path and never mirrors work-item design.md
+AssertionError: {"success":false,"error":"CANDIDATE_MANIFEST_SCHEMA_BLOCKED: SCHEMA_INVALID","hard_stop":true,"retry_allowed":false}: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/design-governance-live-closure.test.ts:258:77
+    256|     );
+    257| 
+    258|     expect((manifestResult as any).success, JSON.stringify(manifestRes…
+       |                                                                             ^
+    259|     const manifest = JSON.parse(
+    260|       await readFile(workItemCandidateManifest(projectRoot, workItemId…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/design-governance-live-closure.test.ts > Design Governance live closure > runs the real Design Gate through sf_gate_run, uses the design phase profile, and stops at approval_required
+AssertionError: {"success":false,"error":"CANDIDATE_SEAL_INVALID: VALIDATION_FAILED","work_item_id":"WI-0001"}: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/design-governance-live-closure.test.ts:420:61
+    418|     );
+    419| 
+    420|     expect((result as any).success, JSON.stringify(result)).toBe(true);
+       |                                                             ^
+    421|     const candidateManifestReport = JSON.parse(
+    422|       await readFile(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+error: script "test" exited with code 1

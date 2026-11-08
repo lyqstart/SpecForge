@@ -1,0 +1,16 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/packages/scope-gate
+
+ ❯ tests/current-crossplatform-ci-contract.test.ts  (3 tests | 3 failed) 22ms
+   ❯ tests/current-crossplatform-ci-contract.test.ts > current cross-platform CI deployment contract > uses the official current release and isolated userlevel installer instead of retired tarball deployment
+     → expected '# Distribution Smoke Test Workflow\n#…' not to contain 'scripts/smoke-runner.ts'
+   ❯ tests/current-crossplatform-ci-contract.test.ts > current cross-platform CI deployment contract > builds current workspace packages before their tests and never restores disabled packages through a wildcard
+     → expected 'name: Code Quality\n\n# 触发时机：向 main 推…' not to contain 'for pkg in packages/*/'
+   ❯ tests/current-crossplatform-ci-contract.test.ts > current cross-platform CI deployment contract > configures Windows long paths before checkout and keeps historical evidence outside source EOL checks
+     → .github/workflows/distribution-smoke.yml: expected -1 to be greater than or equal to 0
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  10:11:20
+   Duration  2.17s (transform 86ms, setup 0ms, collect 107ms, tests 22ms, environment 0ms, prepare 1.36s)
+

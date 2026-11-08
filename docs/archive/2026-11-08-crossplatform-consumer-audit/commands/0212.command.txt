@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/complete-current-workflow-boundary.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "complete-verified-current-workflow-entry-boundary",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES",
+  "started_utc": "2026-11-08T05:02:51.672Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\complete-current-workflow-boundary.cjs",
+      "sha256": "b66053c9462324460e3b38d44125da0c372a5397eaa7dd421d1569b8c95287f9",
+      "size": 9033,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/packages/workflow-runtime
+
+ ✓ tests/unit/CompositeGateSerializer.test.ts  (28 tests) 15ms
+ ✓ tests/unit/current-definition-schema-boundary.test.ts  (8 tests) 37ms
+ ✓ tests/engine/WorkflowLoader.test.ts  (22 tests) 74ms
+ ✓ tests/unit/WorkflowDefinitionLoader.test.ts  (29 tests) 70ms
+
+ Test Files  4 passed (4)
+      Tests  87 passed (87)
+   Start at  11:39:04
+   Duration  1.04s (transform 244ms, setup 105ms, collect 397ms, tests 196ms, environment 1ms, prepare 1.33s)
+

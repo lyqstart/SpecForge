@@ -1,0 +1,61 @@
+{
+  "utc": "2026-11-08T03:05:26.781Z",
+  "observations": [
+    {
+      "path": "packages/configuration/src/logger.ts",
+      "before_sha256": "1274481f3664e3aee1bbbc80cafea4e15a4cb46bc59636a620dc0b7f601ef789",
+      "after_sha256": "8c4408a2f98a2af77e24ecd3738e591758fb0c296afe1e2a85f866e317c50470"
+    },
+    {
+      "path": "packages/daemon-core/src/http/HTTPServer.ts",
+      "before_sha256": "92ddb2bec7d2e16ece4dbe4d7c84dd8e638903b5cd1b8ad3ef7838130c62ad21",
+      "after_sha256": "9cd877053b7f9b76e294cf368994d81eb07e9a12b7564fcefbe060ab5f76f4eb"
+    },
+    {
+      "path": "packages/host-profile/vitest.config.ts",
+      "before_sha256": "ab62155f398c51eab4e82c644ad2c943e15fe60e4ee983ecaa916f4567d93e9f",
+      "after_sha256": "759cc8736d2bb25197881580a3cc170e88696ce2065025d479992d97a69f2291"
+    },
+    {
+      "path": "packages/service-management/src/plugin/reconnecting-daemon-client.ts",
+      "before_sha256": "b3f998f9bfd59b3406d191ed277abbcadfe4e115625f8aeb943432aeee259c97",
+      "after_sha256": "8899878a441dafbb0c83efafbe5c590cfbbda1bc697fba7d9547a9ff5896f041"
+    },
+    {
+      "path": "scripts/audit-async-resources.ts",
+      "before_sha256": "14d921e3b5a2c1e75ce0a95c4eac157fd8afe78f2dc23df9c1d070d4489cb6a5",
+      "after_sha256": "f959bb9a43b6cf8d6c445e4a64b69be19fa44a125a93bbd803ace521d74ee2a4"
+    },
+    {
+      "path": "setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts",
+      "before_sha256": "ded998751004fd597b920180a8cef11a78f5b72c21f6cc4c79f55875bf974c99",
+      "after_sha256": "50ad4f1f2d463046b4c542f228b8be2220a9d21820eca616dc2d5c7d6f0d0c39"
+    },
+    {
+      "path": "packages/configuration/tests/logger-output-contract.test.ts",
+      "before_sha256": null,
+      "after_sha256": "490c0acb796d43bce71abfe3f9013642676f45121fc0b4aea1e4e6b98e41a8c1"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/http-timeout-cleanup.test.ts",
+      "before_sha256": null,
+      "after_sha256": "a1b273665bf2670e554cf68e5df234820348a61fac0f1607504600a93413cb4f"
+    },
+    {
+      "path": "packages/scope-gate/tests/source-policy-audit.test.ts",
+      "before_sha256": null,
+      "after_sha256": "f175b6c4ffa6fd4736e3b9bf00667c1294405d57da2340b713ad0875d8472319"
+    },
+    {
+      "path": "packages/service-management/tests/unit/reconnect-timer-ownership.test.ts",
+      "before_sha256": null,
+      "after_sha256": "55e88472bb01f3048bc4f3bbeb3463528258355cc1a7f6270c6201ef8f4d919b"
+    },
+    {
+      "path": "scripts/lint/source-policy.ts",
+      "before_sha256": null,
+      "after_sha256": "9bd5db6db0adabb632e9d9ef3ba78868a66298741f6094a6f37f297a48431c1b"
+    }
+  ],
+  "source_identity_check": "PASS"
+}

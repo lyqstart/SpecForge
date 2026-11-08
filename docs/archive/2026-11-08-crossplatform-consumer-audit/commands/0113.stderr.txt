@@ -1,0 +1,26 @@
+$ vitest run tests/current-observability-owner.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/current-observability-owner.test.ts > current diagnostic observability persistent owner > redacts credential metadata in both actual diagnostic recorders
+AssertionError: expected '{"schema_version":"1.4","source":"dae…' not to contain 'SYNTHETIC_OBSERVATION_CREDENTIAL'
+
+- Expected
++ Received
+
+- SYNTHETIC_OBSERVATION_CREDENTIAL
++ {"schema_version":"1.4","source":"daemon","timestamp":"2026-11-08T03:30:53.797Z","trace_id":"sftr_20261108033053796_5c65bad2a8d4","category":"dispatcher","phase":"metadata-redaction","payload_bytes":0,"error_bytes":0,"metadata":{"authorization":"Bearer SYNTHETIC_OBSERVATION_CREDENTIAL","nested":{"apiKey":"SYNTHETIC_OBSERVATION_CREDENTIAL"},"count":2}}
++
+
+ ❯ tests/current-observability-owner.test.ts:34:24
+     32|     for (const [owner, category] of [['daemon', 'dispatcher'], ['userl…
+     33|       const text = readFileSync(join(projectRoot, '.specforge/logs/obs…
+     34|       expect(text).not.toContain('SYNTHETIC_OBSERVATION_CREDENTIAL');
+       |                        ^
+     35|       expect(JSON.parse(text.trim()).metadata.count).toBe(2);
+     36|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+error: script "test" exited with code 1

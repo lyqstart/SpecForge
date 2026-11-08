@@ -1,0 +1,24 @@
+node:internal/assert/utils:77
+    throw err;
+    ^
+
+AssertionError [ERR_ASSERTION]: TYPE_LITERAL_REQUIRES_OWNER_REVIEW:packages/daemon-core/src/tools/lib/regenerable-artifact-governance.ts
+    at visit (D:\code\SpecForge\docs\archive\2026-11-08-crossplatform-consumer-audit\centralize-current-path-prefixes.cjs:11:11)
+    at visitNode2 (D:\code\SpecForge\node_modules\.bun\typescript@6.0.3\node_modules\typescript\lib\typescript.js:32551:18)
+    at forEachChildInLiteralType (D:\code\SpecForge\node_modules\.bun\typescript@6.0.3\node_modules\typescript\lib\typescript.js:32697:12)
+    at Object.forEachChild (D:\code\SpecForge\node_modules\.bun\typescript@6.0.3\node_modules\typescript\lib\typescript.js:33072:35)
+    at visit (D:\code\SpecForge\docs\archive\2026-11-08-crossplatform-consumer-audit\centralize-current-path-prefixes.cjs:16:6)
+    at visitNode2 (D:\code\SpecForge\node_modules\.bun\typescript@6.0.3\node_modules\typescript\lib\typescript.js:32551:18)
+    at forEachChildInPropertySignature (D:\code\SpecForge\node_modules\.bun\typescript@6.0.3\node_modules\typescript\lib\typescript.js:32607:134)
+    at Object.forEachChild (D:\code\SpecForge\node_modules\.bun\typescript@6.0.3\node_modules\typescript\lib\typescript.js:33072:35)
+    at visit (D:\code\SpecForge\docs\archive\2026-11-08-crossplatform-consumer-audit\centralize-current-path-prefixes.cjs:16:6)
+    at visitNodes (D:\code\SpecForge\node_modules\.bun\typescript@6.0.3\node_modules\typescript\lib\typescript.js:32559:22) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

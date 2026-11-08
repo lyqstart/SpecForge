@@ -1,0 +1,10 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/service-management
+
+ ✓ tests/unit/service-error.test.ts (30 tests) 11ms
+
+ Test Files  1 passed (1)
+      Tests  30 passed (30)
+   Start at  12:14:19
+   Duration  517ms (transform 78ms, setup 0ms, collect 102ms, tests 11ms, environment 0ms, prepare 159ms)
+

@@ -1,0 +1,3 @@
+M	.gitattributes
+M	docs/project-status.md
+M	docs/rule/specforge-development-error-ledger-and-experience.md

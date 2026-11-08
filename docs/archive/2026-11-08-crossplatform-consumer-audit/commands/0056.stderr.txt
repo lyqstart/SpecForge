@@ -1,0 +1,1 @@
+$ vitest run tests/current-operating-doc-contract.test.ts

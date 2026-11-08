@@ -1,0 +1,58 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/design-governance-live-closure.test.ts (11 tests) 1389ms
+   ✓ Design Governance live closure > runs the real Design Gate through sf_gate_run, uses the design phase profile, and stops at approval_required  312ms
+ ❯ tests/unit/sf-state-transition.test.ts (33 tests | 12 failed) 498ms
+   ✓ sf_state_transition - project initialization guard > routes all create attempts to the dedicated Work Item create owner without writing 6ms
+   ✓ sf_state_transition - project initialization guard > returns a real current-state catalog and safe recovery advice for invalid targets 16ms
+   ✓ sf_state_transition - project initialization guard > rejects the legacy from=''->intake transition (v1.1 uses 'created') 2ms
+   ✓ sf_state_transition - project initialization guard > does NOT apply the init guard to a non-create transition (guard is create-only) 11ms
+   ✓ sf_state_transition - StateManager authority and transition contract > routes transitions through StateManager, never workflowEngine.transitionFull 16ms
+   ✓ sf_state_transition - StateManager authority and transition contract > materializes the real implementation baseline before entering candidate_preparing 22ms
+   ✓ sf_state_transition - StateManager authority and transition contract > rolls back a newly materialized implementation baseline when StateManager rejects entry 16ms
+   ✓ sf_state_transition - StateManager authority and transition contract > passes correct from/to/workItemId to StateManager.transition 11ms
+   ✓ sf_state_transition - StateManager authority and transition contract > rejects a forbidden transition (created -> implementation_running) 15ms
+   ✓ sf_state_transition - StateManager authority and transition contract > rejects an invalid transition (intake_ready -> closed) 14ms
+   ✓ sf_state_transition - StateManager authority and transition contract > rejects an invalid work_item_id format (must be WI-NNNN) 10ms
+   ✓ sf_state_transition - StateManager authority and transition contract > returns projectPath error when context has no directory/worktree 11ms
+   ✓ sf_state_transition - StateManager authority and transition contract > returns 'ProjectManager not available' when deps has no projectManager 18ms
+   ✓ sf_state_transition - StateManager authority and transition contract > blocks implementation_running -> implementation_done without a passing changed_files_audit.md 11ms
+   × sf_state_transition - spec_migration verification recovery > allows only stale-provenance spec_migration recovery and rejects recovery while provenance is current 18ms
+     → expected 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW' to contain 'provenance is current'
+   ✓ sf_state_transition - close (verification_done -> closed) > rejects close when verification_report.md is missing 10ms
+   ✓ sf_state_transition - close (verification_done -> closed) > rejects close when changed_files_audit.md is missing 10ms
+   ✓ sf_state_transition - close (verification_done -> closed) > rejects close when neither close_gate.md nor close_gate.json exists 10ms
+   ✓ sf_state_transition - close (verification_done -> closed) > reports all three files missing when the WI dir is empty 9ms
+   ✓ sf_state_transition - close (verification_done -> closed) > accepts close_gate.json as an alternative to close_gate.md 12ms
+   ✓ sf_state_transition - close (verification_done -> closed) > succeeds when all evidence is present and actor is close_gate 10ms
+   ✓ sf_state_transition - close (verification_done -> closed) > rejects close by a non-close_gate actor (seal transition) 11ms
+   × sf_state_transition - Candidate Manifest materialization > materializes the complete Classification-driven manifest before advancing state 20ms
+     → expected false to be true // Object.is equality
+   × sf_state_transition - Candidate Manifest materialization > does not materialize or advance an unknown Candidate Manifest schema 25ms
+     → expected 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW' to contain 'CANDIDATE_MANIFEST_SCHEMA_BLOCKED: SC…'
+   × sf_state_transition - Candidate Manifest materialization > materializes new-module requirements, trace and Project Contract before advancing 19ms
+     → expected false to be true // Object.is equality
+   × sf_state_transition - Candidate Manifest materialization > does not advance when a required Candidate is missing 19ms
+     → expected 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW' to be 'CANDIDATE_MANIFEST_MATERIALIZATION_FA…' // Object.is equality
+   × sf_state_transition - Candidate Manifest materialization > fails before changing the Candidate Manifest when current Project Spec binding is unavailable 18ms
+     → expected 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW' to contain 'PROJECT_SPEC_BINDING_UNAVAILABLE'
+   × sf_state_transition - Candidate Manifest materialization > rejects a missing authoritative state before changing the Manifest 19ms
+     → expected 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW' to be 'CANDIDATE_MANIFEST_STATE_MISMATCH' // Object.is equality
+   × sf_state_transition - Candidate Manifest materialization > rejects an authoritative-state mismatch before changing the Manifest 24ms
+     → expected 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW' to be 'CANDIDATE_MANIFEST_STATE_MISMATCH' // Object.is equality
+   × sf_state_transition - Candidate Manifest materialization > rebinds a Project Spec repair plan to the final frozen Candidate Manifest 19ms
+     → expected false to be true // Object.is equality
+   × sf_state_transition - Candidate Manifest materialization > fails closed before state advance when the repair plan was already stale before Candidate freeze 21ms
+     → expected 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW' to be 'CANDIDATE_MANIFEST_MATERIALIZATION_FA…' // Object.is equality
+   × sf_state_transition - Candidate Manifest materialization > rolls back both Candidate Manifest and repair-plan binding when StateManager transition fails 19ms
+     → expected undefined to be true // Object.is equality
+   × sf_state_transition - Candidate Manifest materialization > restores the previous Manifest when the authoritative transition fails 21ms
+     → expected undefined to be true // Object.is equality
+ ✓ tests/unit/registered-current-workflow-boundary.test.ts (7 tests) 29ms
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  12 failed | 39 passed (51)
+   Start at  13:07:10
+   Duration  7.75s (transform 1.75s, setup 0ms, collect 4.64s, tests 1.92s, environment 1ms, prepare 403ms)
+

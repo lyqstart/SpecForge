@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/inventory-consumers.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "inventory-complete-current-consumers",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T02:04:51.282Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\inventory-consumers.cjs",
+      "sha256": "5c5cace14d3376f4cc7ef24b58651a7896266b079c0aaf391cda2d0ed4afd206",
+      "size": 3957,
+      "extension": ".cjs"
+    }
+  ]
+}

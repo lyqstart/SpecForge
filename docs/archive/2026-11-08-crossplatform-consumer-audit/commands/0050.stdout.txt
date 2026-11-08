@@ -1,0 +1,11 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/packages/cli
+
+ ✓ tests/help-command.test.ts  (11 tests) 46ms
+ ✓ tests/help-system.test.ts  (18 tests) 92ms
+
+ Test Files  2 passed (2)
+      Tests  29 passed (29)
+   Start at  10:44:46
+   Duration  3.83s (transform 2.27s, setup 0ms, collect 3.02s, tests 138ms, environment 1ms, prepare 923ms)
+

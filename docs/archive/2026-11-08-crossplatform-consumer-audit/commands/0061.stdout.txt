@@ -1,0 +1,71 @@
+
+[1m[36m═══ 异步资源规范审查 ═══[0m
+
+扫描目录: D:\code\SpecForge\packages
+
+发现文件：源码 479 个，测试 469 个，vitest 配置 11 个
+
+[31m✗[0m [1m规则 C1[0m：Promise.race 败者 timer 必须在 finally 中 clearTimeout
+  发现 7 处问题
+
+  [31mERROR[0m packages\daemon-core\src\http\HTTPServer.ts:1698
+  [36m代码[0m：const result = await Promise.race([
+  [36m问题[0m：Promise.race 中有 setTimeout，但附近没有 finally + clearTimeout
+  [32m建议[0m：在 Promise.race 外层加 try/finally，在 finally 中 clearTimeout 所有 timer
+
+  [31mERROR[0m packages\opencode-adapter\src\OpenCodeAdapter.ts:426
+  [36m代码[0m：await Promise.race([
+  [36m问题[0m：Promise.race 中有 setTimeout，但附近没有 finally + clearTimeout
+  [32m建议[0m：在 Promise.race 外层加 try/finally，在 finally 中 clearTimeout 所有 timer
+
+  [31mERROR[0m packages\service-management\src\orchestrator\healthcheck.ts:240
+  [36m代码[0m：* Perform HTTP GET request with timeout (Promise.race pattern per C1)
+  [36m问题[0m：Promise.race 中有 setTimeout，但附近没有 finally + clearTimeout
+  [32m建议[0m：在 Promise.race 外层加 try/finally，在 finally 中 clearTimeout 所有 timer
+
+  [31mERROR[0m packages\service-management\src\orchestrator\lifecycle-events.ts:184
+  [36m代码[0m：* Uses Promise.race with timeout, clears loser in finally per C1
+  [36m问题[0m：Promise.race 中有 setTimeout，但附近没有 finally + clearTimeout
+  [32m建议[0m：在 Promise.race 外层加 try/finally，在 finally 中 clearTimeout 所有 timer
+
+  [31mERROR[0m packages\service-management\src\service-manager\systemd-service-manager.ts:596
+  [36m代码[0m：* Per lessons-injected C1: Promise.race loser timer cleaned up in finally
+  [36m问题[0m：Promise.race 中有 setTimeout，但附近没有 finally + clearTimeout
+  [32m建议[0m：在 Promise.race 外层加 try/finally，在 finally 中 clearTimeout 所有 timer
+
+  [31mERROR[0m packages\service-management\src\shutdown\graceful-shutdown-handler.ts:44
+  [36m代码[0m：* - Promise.race loser timers are cleaned up in finally block (C1)
+  [36m问题[0m：Promise.race 中有 setTimeout，但附近没有 finally + clearTimeout
+  [32m建议[0m：在 Promise.race 外层加 try/finally，在 finally 中 clearTimeout 所有 timer
+
+  [31mERROR[0m packages\workflow-runtime\src\agent\LLMKernelIntegration.ts:161
+  [36m代码[0m：* Implements Rule C1: Promise.race败者清理
+  [36m问题[0m：Promise.race 中有 setTimeout，但附近没有 finally + clearTimeout
+  [32m建议[0m：在 Promise.race 外层加 try/finally，在 finally 中 clearTimeout 所有 timer
+
+[33m⚠[0m [1m规则 C2[0m：while 循环不能用 setTimeout 轮询，必须有终止条件
+  发现 1 处问题
+
+  [33mWARNING[0m packages\daemon-core\src\verification\invocation-lease.ts:41
+  [36m代码[0m：while(!this.closed&&!this.signal.aborted){
+  [36m问题[0m：while 循环有终止条件，但缺少超时兜底（防止信号永远不来）
+  [32m建议[0m：在 while 内加 Promise.race([waitForNotify(), timeoutPromise]) 作为兜底
+
+[31m✗[0m [1m规则 T3[0m：vitest.config.ts 必须设置 testTimeout
+  发现 1 处问题
+
+  [31mERROR[0m packages\host-profile\vitest.config.ts:1
+  [36m代码[0m：（整个文件）
+  [36m问题[0m：vitest.config.ts 缺少 testTimeout 配置
+  [32m建议[0m：在 test: {} 中加入 testTimeout: 10000, hookTimeout: 5000, teardownTimeout: 3000
+
+[1m═══ 审查结果汇总 ═══[0m
+总计：9 个问题
+  [31m错误[0m：8 个（必须修复）
+  [33m警告[0m：1 个（建议修复）
+
+完整经验文档：docs/engineering-lessons/async-resource-lifecycle.md
+规范文档：docs/engineering-lessons/universal/async-resource-lifecycle.md
+
+提示：运行 [36mbun run scripts/audit-async-resources.ts --fix-config[0m 可自动修复 vitest.config.ts
+

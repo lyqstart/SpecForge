@@ -1,0 +1,14 @@
+
+ RUN  v1.6.1 D:/code/SpecForge/packages/scope-gate
+
+ ❯ tests/current-daemon-http-doc-contract.test.ts  (2 tests | 2 failed) 95ms
+   ❯ tests/current-daemon-http-doc-contract.test.ts > current Daemon HTTP documentation consumer > matches the exact registered route and static error-code owners
+     → packages/daemon-core/docs/http-endpoints.md: expected '# HTTP Endpoints\n\nThe Daemon Core e…' to be '# Current Daemon HTTP routes\n\nDeriv…' // Object.is equality
+   ❯ tests/current-daemon-http-doc-contract.test.ts > current Daemon HTTP documentation consumer > resolves controlled Project Init and distinguishes protected routes from public health
+     → expected false to be true // Object.is equality
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  11:13:52
+   Duration  2.99s (transform 1.74s, setup 0ms, collect 2.11s, tests 95ms, environment 0ms, prepare 408ms)
+

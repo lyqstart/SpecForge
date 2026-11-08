@@ -1,0 +1,59 @@
+{
+  "fixture": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-knowledge-schema-probe-pkMdmg",
+  "results": [
+    {
+      "owner": "source",
+      "operation": "read",
+      "version": "9.0",
+      "rejected": false
+    },
+    {
+      "owner": "source",
+      "operation": "write",
+      "version": "9.0",
+      "rejected": false,
+      "preserved": false
+    },
+    {
+      "owner": "source",
+      "operation": "read",
+      "version": "<missing>",
+      "rejected": false
+    },
+    {
+      "owner": "source",
+      "operation": "write",
+      "version": "<missing>",
+      "rejected": false,
+      "preserved": false
+    },
+    {
+      "owner": "installed",
+      "operation": "read",
+      "version": "9.0",
+      "rejected": false
+    },
+    {
+      "owner": "installed",
+      "operation": "write",
+      "version": "9.0",
+      "rejected": false,
+      "preserved": false
+    },
+    {
+      "owner": "installed",
+      "operation": "read",
+      "version": "<missing>",
+      "rejected": false
+    },
+    {
+      "owner": "installed",
+      "operation": "write",
+      "version": "<missing>",
+      "rejected": false,
+      "preserved": false
+    }
+  ],
+  "all_rejected": false,
+  "original_business_or_global_store_touched": false
+}

@@ -1,0 +1,37 @@
+[
+  {
+    "path": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+    "before_sha256": "aa2baef9938c782a48c055a8d1b5eacb196ef3da9ae7eccc473cf889382a4df7",
+    "after_sha256": "f36720a654541cb963a3fbb449e36a7041581a0d071b1a60b3dceb92619d2255"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+    "before_sha256": "14775210a3c1cc85433237cdea76fa5015dcd523419d89f392c4e8f9dae99bad",
+    "after_sha256": "08c4f8ac9610a29f75434360951bd5c130485ae2f1383cfcf56d19b84d96fd7f"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/lib/sf_safe_bash_types.ts",
+    "before_sha256": "1af7a250d54a58ea7c41aa47b6564437807d67d3dd1cc60d0806701102d04451",
+    "after_sha256": "82d28448b6c6ee039c0cc7c7d3e1e763f18d3f5c7fd4291b16a19ef5d81a2701"
+  },
+  {
+    "path": "setup/userlevel-opencode/tools/lib/sf_safe_bash_core.ts",
+    "before_sha256": "79dcc276ffe741b36c3339bd9beee1c16998b71c00b94ef404b77c71696c2950",
+    "after_sha256": "f36720a654541cb963a3fbb449e36a7041581a0d071b1a60b3dceb92619d2255"
+  },
+  {
+    "path": "setup/userlevel-opencode/tools/lib/sf_safe_bash_rules.ts",
+    "before_sha256": "7193424e37496647df91e6e7860462ed5864ffc48ea52816c8052be0515e1d46",
+    "after_sha256": "08c4f8ac9610a29f75434360951bd5c130485ae2f1383cfcf56d19b84d96fd7f"
+  },
+  {
+    "path": "setup/userlevel-opencode/tools/lib/sf_safe_bash_types.ts",
+    "before_sha256": "cd483113079a7d2d79b60b0409e7c1b7486b5dbc3f099bc28a1577d192666d4e",
+    "after_sha256": "328e836b16ee4c4604be1ce1e703ea9e2a086dbd9781f1d9ba4e3932fa6f44fb"
+  },
+  {
+    "path": "setup/userlevel-opencode/tools/lib/sf_design_gate_core.ts",
+    "before_sha256": "bf2a58bcc9c1c349d3b955d81a3708c4c3ef9da3a32a4ae83178f9eb09672a41",
+    "after_sha256": "10458e35e775f00bfcb532a5b9068dc523168b6286cc1a1d132e70584d2f4618"
+  }
+]

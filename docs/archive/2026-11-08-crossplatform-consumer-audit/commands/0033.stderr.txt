@@ -1,0 +1,50 @@
+$ vitest run tests/help-system.test.ts tests/help-command.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/help-system.test.ts > HelpSystem > General Help > should generate general help in interactive mode
+AssertionError: expected 'SpecForge v1.0.24\n\nUsage: specforge…' to contain 'SpecForge v1.0.21'
+
+- Expected
++ Received
+
+- SpecForge v1.0.21
++ SpecForge v1.0.24
++
++ Usage: specforge <command> [options]
++
++ Available commands:
++
++   daemon          Manage the SpecForge daemon
++   config          Show read-only CLI configuration and resolved paths
++   version         Show CLI version
++   doctor          Inspect local SpecForge installation and project status
++   services        Manage supported OS services
++   opencode-server Manage the OpenCode Server service
++
++ Global options:
++   --json, -j
++       Output in JSON format (machine-friendly) [default: false]
++   --verbose, -v
++       Enable verbose output [default: false]
++   --help, -h
++       Show help [default: false]
++   --version, -V
++       Show version [default: false]
++
++ For more information on a specific command, run:
++   specforge <command> --help
++   specforge <command> <subcommand> --help
++
+
+ ❯ tests/help-system.test.ts:38:24
+     36|       const helpText = helpSystem.generateGeneralHelp(modeSwitch);
+     37|       
+     38|       expect(helpText).toContain('SpecForge v1.0.21');
+       |                        ^
+     39|       expect(helpText).toContain('Usage: specforge <command> [options]…
+     40|       expect(helpText).toContain('Available commands:');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+error: script "test" exited with code 1

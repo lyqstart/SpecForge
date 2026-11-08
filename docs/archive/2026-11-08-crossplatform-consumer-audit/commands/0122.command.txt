@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/render-daemon-http-reference.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "refresh-http-reference-explicit-unsupported-routes",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES",
+  "started_utc": "2026-11-08T03:45:30.996Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\scripts\\render-daemon-http-reference.ts",
+      "sha256": "0799ca49f75b6b617f2b0ebc0597e4268d6dbed0f49de018a440fa0f51b59eb7",
+      "size": 641,
+      "extension": ".ts"
+    }
+  ]
+}

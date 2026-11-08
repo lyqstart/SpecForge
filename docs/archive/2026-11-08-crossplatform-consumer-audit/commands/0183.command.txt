@@ -1,0 +1,30 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/run-linux.cjs",
+    "scripts/prepare-current-release.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "linux-cold-release-complete-owner-closure",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T04:39:59.749Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\run-linux.cjs",
+      "sha256": "ae308ce36eb3828d58a8c83a31f70df76fda7e529c3f1f198853bcfb107da963",
+      "size": 1341,
+      "extension": ".cjs"
+    },
+    {
+      "argument_index": 1,
+      "path": "D:\\code\\SpecForge\\scripts\\prepare-current-release.ts",
+      "sha256": "03cf4843c9f79a82ca515258106fe584612efed4bbbcf2bf45ae2c0e579296f1",
+      "size": 474,
+      "extension": ".ts"
+    }
+  ]
+}

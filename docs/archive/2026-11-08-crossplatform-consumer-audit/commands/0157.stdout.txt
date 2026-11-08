@@ -1,0 +1,11 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/sf-semantic-closure-run.test.ts (7 tests) 157ms
+ ✓ tests/unit/semantic-closure-contract-alignment.test.ts (7 tests) 14ms
+
+ Test Files  2 passed (2)
+      Tests  14 passed (14)
+   Start at  12:23:10
+   Duration  2.21s (transform 765ms, setup 0ms, collect 1.42s, tests 171ms, environment 0ms, prepare 225ms)
+

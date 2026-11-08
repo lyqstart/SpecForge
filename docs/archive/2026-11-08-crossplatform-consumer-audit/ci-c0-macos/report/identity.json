@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-08T05:54:48.000Z",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "node": "v24.3.0",
+  "bun": "1.3.14",
+  "bun_executable": "/Users/runner/.bun/bin/bun",
+  "candidate": "c0fff6b9aa88313efd01f9e10211dd5676661e79",
+  "version": "1.0.24",
+  "fixture": "/var/folders/h5/t85nd63d71x27_8gl5gw3l_w0000gn/T/sf-platform-acceptance-uBPHR3",
+  "config": "/var/folders/h5/t85nd63d71x27_8gl5gw3l_w0000gn/T/sf-platform-acceptance-uBPHR3/opencode",
+  "qualification": "Actual host execution; platform mocks and skipped cases do not count as this evidence."
+}

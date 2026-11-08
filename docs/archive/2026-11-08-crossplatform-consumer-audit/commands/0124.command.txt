@@ -1,0 +1,24 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/collect-windows-platform-report.cjs",
+    "C:/Users/lyq/AppData/Local/Temp/sf-platform-acceptance-tH7rje/report",
+    "01"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "preserve-host-owned-windows-platform-report",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T03:46:10.744Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\collect-windows-platform-report.cjs",
+      "sha256": "d7383de56d9cabf2eb1c0edd7de0fd939a4cf26f0063d5c657b5011610e9abb3",
+      "size": 1286,
+      "extension": ".cjs"
+    }
+  ]
+}

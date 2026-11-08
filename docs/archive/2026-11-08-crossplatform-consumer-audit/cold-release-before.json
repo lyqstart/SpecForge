@@ -1,0 +1,37 @@
+{
+  "utc": "2026-11-08T04:36:56.154Z",
+  "commands": [
+    {
+      "label": "clean",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "scripts/clean-workspace.ts"
+      ],
+      "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-lint-ab-XXRSsG\\project",
+      "started_utc": "2026-11-08T04:36:55.528Z",
+      "finished_utc": "2026-11-08T04:36:55.902Z",
+      "exit_code": 0,
+      "signal": null,
+      "spawn_error": null
+    },
+    {
+      "label": "prepare",
+      "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+      "args": [
+        "scripts/prepare-current-release.ts"
+      ],
+      "cwd": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-lint-ab-XXRSsG\\project",
+      "started_utc": "2026-11-08T04:36:55.902Z",
+      "finished_utc": "2026-11-08T04:36:56.154Z",
+      "exit_code": 1,
+      "signal": null,
+      "spawn_error": null
+    }
+  ],
+  "cache_policy": {
+    "name": "BUN_RUNTIME_TRANSPILER_CACHE_PATH",
+    "value": "0",
+    "reference": "https://bun.com/docs/runtime/environment-variables"
+  },
+  "qualification": "Owned full-source-subset fixture. Clean build outputs are removed only through the bounded current-workspace owner. Missing setup/docs may affect later precheck; an import-before-build failure is separately evidenced by absence of workspace build markers."
+}

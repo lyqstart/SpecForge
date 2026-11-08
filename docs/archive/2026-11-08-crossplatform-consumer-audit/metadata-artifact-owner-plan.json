@@ -1,0 +1,17 @@
+[
+  {
+    "path": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+    "before_sha256": "9e6e5f1b6fa60b96fe18f2cb3a31045c49cf11accd112ae477f742bedd311059",
+    "after_sha256": "785486618461071e9997cac4a499d5465dbc40a2bebcc5e272d695e168696085"
+  },
+  {
+    "path": "setup/userlevel-opencode/tools/sf_artifact_write.ts",
+    "before_sha256": "06e3f0b6945bd5c458cd834e9608c3ac980f77b4319c6ad1ca68682bc0170742",
+    "after_sha256": "641c374b49c7958ea8b79c29015105f696fb1c2315c1fb2a41abc671edbda8dd"
+  },
+  {
+    "path": "packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts",
+    "before_sha256": "1bae724375f7e1ad2d8cf948e89e548feb4eee02de4b180d3ad8aadd50a32bba",
+    "after_sha256": "3b862df3397fb967cf5f3b7a5eab7420f928b509e0caf6bd35f917b13d818740"
+  }
+]

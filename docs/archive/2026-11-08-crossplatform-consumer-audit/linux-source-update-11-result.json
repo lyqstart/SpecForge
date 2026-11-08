@@ -1,0 +1,11 @@
+{
+  "utc": "2026-11-08T04:42:10.596Z",
+  "observations": [
+    {
+      "path": "setup/userlevel-opencode/tools/sf_git_post_merge_verify.ts",
+      "before_sha256": "149c12161ee858b9a95ec4bc0b372a6953b8af1ae209edf4d628c150a46a9700",
+      "after_sha256": "166b45b3e6ba88908b93e1c4c0b9243c41f08f7f4b6cce479cbcaad92315a869"
+    }
+  ],
+  "source_identity_check": "PASS"
+}

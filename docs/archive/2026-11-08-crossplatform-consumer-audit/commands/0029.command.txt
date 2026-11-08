@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/bump-patch-identity.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "advance-patch-release-identity",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES",
+  "started_utc": "2026-11-08T02:27:15.555Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\bump-patch-identity.cjs",
+      "sha256": "90458b000148b752d17a0e27a6b4d1b9ee95eca75047bc8260bb24155323ee32",
+      "size": 2221,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "utc": "2026-11-08T04:43:18.951Z",
+  "target": "/tmp/specforge-crossplatform-20261108-a01",
+  "source": "/mnt/d/code/SpecForge",
+  "members": [
+    {
+      "path": "docs/engineering-lessons/_meta/schema.md",
+      "sha256": "d476ff152e07ca166c3062321723642914608ed544cb4bbd2b8aac953b05d74d",
+      "bytes": 4945,
+      "before_sha256": "b1d8838e5839f45d1e65be97702bcd541a5ce9e03ac43c7d4a4a3617725a3758"
+    },
+    {
+      "path": "docs/project-status.md",
+      "sha256": "75e3123637abefab25fb5d50bcd8582eb491c29c348e5a4ca059af4bc2b7cf10",
+      "bytes": 6265,
+      "before_sha256": "18a3ae1c59fc96fd8f7eedba1764fd289f3eb17ee7d065a1b831534e7ad5cee6"
+    },
+    {
+      "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "sha256": "06c966deaccd653c9b1aba992e3baa87c6803a62afabb50762cdd35899864007",
+      "bytes": 4496601,
+      "before_sha256": "d2d01d8c8f3ca3329191fbb248388f28a679997c86ef526f4ad5503184b41dd0"
+    }
+  ],
+  "qualification": "Exact current-source delta; previous update receipts required. Generated release assets are not source."
+}

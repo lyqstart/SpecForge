@@ -1,0 +1,17 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/.config/opencode/sf-user/bin/specforge.exe",
+  "args": [
+    "daemon",
+    "start",
+    "--detach",
+    "--json"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "official-upgraded-daemon-independent-cold-start",
+  "expected_writes": "user-runtime-owner-and-evidence",
+  "started_utc": "2026-11-08T06:23:55.616Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": []
+}

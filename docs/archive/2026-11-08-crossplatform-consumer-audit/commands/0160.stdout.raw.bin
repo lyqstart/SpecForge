@@ -1,0 +1,22 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/sf-state-transition.test.ts (33 tests) 896ms
+ ✓ tests/unit/registration-no-initialization.test.ts (2 tests) 65ms
+ ✓ tests/integration/p0-governance-regression-flow.test.ts (8 tests) 6359ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > rejects user_approved when Gate failed  428ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > rejects user_approved while gates are still running  550ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > records sf-orchestrator only as recorded_by while decided_by remains user and state advances to approved  583ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > auto-advances gates_running to approval_required after all required gates pass  584ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > rejects code_permission enable before successful merge for spec-changing workflows  523ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > allows code_permission enable only after successful merge for spec-changing workflows  923ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > forbids invalidating user_decision after merge success  659ms
+   ✓ SpecForge v1.1 Post-P0 governance regression flow > passes close_gate after verification evidence and revoked code permission even when pre-merge hashes changed after merge  2109ms
+ ✓ tests/unit/current-contract-register-owner.test.ts (14 tests) 1360ms
+ ✓ tests/unit/sf-semantic-closure-run.test.ts (10 tests) 297ms
+
+ Test Files  5 passed (5)
+      Tests  67 passed (67)
+   Start at  12:25:30
+   Duration  16.15s (transform 2.06s, setup 0ms, collect 5.44s, tests 8.98s, environment 1ms, prepare 649ms)
+

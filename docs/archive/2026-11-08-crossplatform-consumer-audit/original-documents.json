@@ -1,0 +1,756 @@
+{
+  "utc": "2026-11-08T02:52:34.387Z",
+  "members": [
+    {
+      "path": "AGENTS.md",
+      "classification": "CURRENT_ROOT_ENTRY",
+      "sha256": "eeb90f36dfda4f25285728c53048413ef3be2bd562b5f5eb4758c9435c03bffc",
+      "bytes": 11675
+    },
+    {
+      "path": "README.md",
+      "classification": "CURRENT_ROOT_ENTRY",
+      "sha256": "549c967e604841f0fd3ce656d4e6d8f491bd1d12d3da0fa61b7b3f0230b43e4b",
+      "bytes": 9704
+    },
+    {
+      "path": "docs/adr/ADR-006-specforge-dir-naming.md",
+      "classification": "ADR_REVIEW",
+      "sha256": "b453e5c439d984304b1722f0e28414d3c4df3a6112929204782990e91b5ceddd",
+      "bytes": 7153
+    },
+    {
+      "path": "docs/adr/ADR-007-architecture-consistency-governance.md",
+      "classification": "ADR_REVIEW",
+      "sha256": "ee1ec3968225fbb0428d9f9e828699b6a6ee07fffd5c056ae48f2088d1507f70",
+      "bytes": 10346
+    },
+    {
+      "path": "docs/adr/ADR-008-new-project-governance-bootstrap.md",
+      "classification": "ADR_REVIEW",
+      "sha256": "e381a6d0d9eadbdcbdd42ad1780da38dfa9841a19087ba512560c81596136656",
+      "bytes": 6740
+    },
+    {
+      "path": "docs/adr/ADR-009-daemon-deployment-contract.md",
+      "classification": "ADR_REVIEW",
+      "sha256": "c1dfa9c43b07d91b34dc0a07c78d2811954bde92ad1ccc6e0acc6a16564e9d73",
+      "bytes": 3660
+    },
+    {
+      "path": "docs/adr/ADR-010-installer-manifest-canonical-location.md",
+      "classification": "ADR_REVIEW",
+      "sha256": "99b971eb7bd636a1ad124f8e1e2300398fcd1673e51a8286f7ddba7e6b03bae2",
+      "bytes": 3152
+    },
+    {
+      "path": "docs/adr/ADR-011-user-level-runtime-path-boundary.md",
+      "classification": "ADR_REVIEW",
+      "sha256": "63411e52e0a7e67a27e6bf21c960a8840ab8b935a5890311bdbf0f091b008452",
+      "bytes": 3046
+    },
+    {
+      "path": "docs/adr/ADR-012-project-bound-recovery-checkpoints.md",
+      "classification": "ADR_REVIEW",
+      "sha256": "599eaebf4bb72d3ebf4790d76cf4f75cef20a241e74707109802f6286603da27",
+      "bytes": 3242
+    },
+    {
+      "path": "docs/adr/ADR-013-current-release-boundary-and-no-legacy-compatibility.md",
+      "classification": "ADR_REVIEW",
+      "sha256": "b02da99cd8fcd5793cc3c14d554afcb2b6c0efb1e2dcfe9a4417ce98438405d1",
+      "bytes": 7328
+    },
+    {
+      "path": "docs/adr/ADR-014-authority-model-recovery-freeze.md",
+      "classification": "ADR_REVIEW",
+      "sha256": "2f5671f052a5d974edc442168f8013a684d7c2474fcf5f0496c438dc0387c1f0",
+      "bytes": 3100
+    },
+    {
+      "path": "docs/adr/ADR-015-remove-nssm-from-current-release.md",
+      "classification": "ADR_REVIEW",
+      "sha256": "ed2abeee3c657acbc5af8c01f7202035b86ec36b30e52ade21ce1a7fb95950ee",
+      "bytes": 1650
+    },
+    {
+      "path": "docs/adr/ADR-016-verification-evidence-closure-recovery.md",
+      "classification": "ADR_REVIEW",
+      "sha256": "367e78790079a0779f1038eeec973eb56da2da04a06bd06e20c701c6c34ef2c8",
+      "bytes": 1807
+    },
+    {
+      "path": "docs/cli/command-reference.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "6edb2b9a3343c09cdc8eb65baf1bc01f58645c76fc1e921f92213f6abbfd9151",
+      "bytes": 2224
+    },
+    {
+      "path": "docs/cli/installation-setup.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "d5075dce2cc611dae4b57643e8b89d0c8dc750602944b43ba1f359ce7a22c2ef",
+      "bytes": 2107
+    },
+    {
+      "path": "docs/conventions/README.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "561da33a314a68020dc773ef9f99da306149620d8c646217262f88cac0df3af4",
+      "bytes": 1380
+    },
+    {
+      "path": "docs/conventions/agent-roles.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "4b54fa6d7356ea48e2988c5b26049bd350cd18e49fcedfdf5c4e75bdd0268ca1",
+      "bytes": 1390
+    },
+    {
+      "path": "docs/conventions/directory-layout.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "11b9241efc071ea992801c58496e4399cd4a2c6cde974bfbddf427a0ee434bd4",
+      "bytes": 4241
+    },
+    {
+      "path": "docs/conventions/file-naming.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "e05bdc93541e02938ab97a19a66bf67745b7a8ada08bdd61ee92d3ee1817b6d0",
+      "bytes": 1039
+    },
+    {
+      "path": "docs/conventions/glossary.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "5dd74a7a2f9b809f6d4e75f18ef485cec769d8696d9f81452281813566a60420",
+      "bytes": 1606
+    },
+    {
+      "path": "docs/conventions/meta-json-spec.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "676ed6e53ae0a91d0ed4d5eccb8b490f0a749d9d16411995fb3129d6236f7f57",
+      "bytes": 820
+    },
+    {
+      "path": "docs/conventions/wi-lifecycle.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "16acebcd2dbb231366b111a4b009099a17ad44675ffc0d66950d4ddee56766b0",
+      "bytes": 1484
+    },
+    {
+      "path": "docs/conventions/workflow-types.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "0e1b6904e1a4dd7ba321a3a9cfbe7f16453d40a82f37edd77a401e26894ead36",
+      "bytes": 1021
+    },
+    {
+      "path": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "956df3943a44d1b99636790a32e9b2a0dc266b7116f50b60b7b8c6f2614423ac",
+      "bytes": 15676
+    },
+    {
+      "path": "docs/design/windows-lpac-node-readonly-contract.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "75312b393fd26c3b4ead623fc61600d6fe5304e04bb0cd394fbe62fd0a98e097",
+      "bytes": 20506
+    },
+    {
+      "path": "docs/engineering-lessons/README.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "b8b235edd10b7d782538e61df7d2db647a149a959353b77b17e4ecfc9c74b981",
+      "bytes": 5559
+    },
+    {
+      "path": "docs/engineering-lessons/_meta/schema.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "b1d8838e5839f45d1e65be97702bcd541a5ce9e03ac43c7d4a4a3617725a3758",
+      "bytes": 4607
+    },
+    {
+      "path": "docs/engineering-lessons/ai-tools/opencode/custom-tool-self-contained.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "1f3bb229b23d08a8efc24fb479a17763219d7cfe8040a7cd971253264e5f253c",
+      "bytes": 6502
+    },
+    {
+      "path": "docs/engineering-lessons/universal/async-resource-lifecycle.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "e6820ef09d7a56f439176af7c86074975ee0a52a99c84ac332e43e36769007e7",
+      "bytes": 20222
+    },
+    {
+      "path": "docs/engineering-lessons/universal/host-environment-detection.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "c440e3173105c72fe33646044505eb806f9c4984c524e367cef7343fa7e75703",
+      "bytes": 18876
+    },
+    {
+      "path": "docs/engineering-lessons/universal/javascript-explicit-resource-management.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "a30010be26a7a1b8f6bb676cc5b3f4440859897a45f2664758b9c2c7a21d631b",
+      "bytes": 19956
+    },
+    {
+      "path": "docs/engineering-lessons/universal/shell-command-execution.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "a64e05c631c39f24b8ce91b9d99887ef8ebcee439c77f5c4ae7b8e0628ae1670",
+      "bytes": 21149
+    },
+    {
+      "path": "docs/project-status.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "b415183edce6bcecb9d3b31c0422fe509e1a74ef9d78f9d62a828718a1c37221",
+      "bytes": 5979
+    },
+    {
+      "path": "docs/rule/specforge-active-development-rules.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "678d838160f2ab80146d60d5921f2604bf456ae93e1cd63a3e7706f730a82272",
+      "bytes": 174951
+    },
+    {
+      "path": "docs/rule/specforge-execution-mode-and-evidence-protocol.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef",
+      "bytes": 8566
+    },
+    {
+      "path": "docs/user/evidence-and-audit.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "85e9071f596067a5fa1bb768996eccbb519a2f2ff986b7dc059b6fbb0a066c39",
+      "bytes": 641
+    },
+    {
+      "path": "docs/user/install.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "91fb0b1e994dfb41a90cfa6f4a9576b36fcc2495fa90807b0badbcfde2c2ae57",
+      "bytes": 1401
+    },
+    {
+      "path": "docs/user/quick-start.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "c7e2344870a61d0540539bcb95b063537138965d549e6c4770b7a3a2ef800e6d",
+      "bytes": 966
+    },
+    {
+      "path": "docs/user/recovery-and-rollback.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "343cf1d86641ac24505e542d0d392e4365fb09f791ca8fd176d8588ae49beeef",
+      "bytes": 747
+    },
+    {
+      "path": "docs/user/uninstall.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "ce99d8b158621668f6a9041e4f2f13589b4e5ff0c7d70a11eb2c5b92f7b24526",
+      "bytes": 617
+    },
+    {
+      "path": "docs/user/work-item-flow.md",
+      "classification": "CURRENT_DOCUMENT_REVIEW",
+      "sha256": "10c3381d192a0ed54bac29800e72a8a6cef2d8d1d55d0fc7c4f546a77a337509",
+      "bytes": 901
+    },
+    {
+      "path": "packages/cli/README.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "5fbe71c7f607d662fc24270cf03104a707ead03d0c383decf5e50d0b654f94b1",
+      "bytes": 2154
+    },
+    {
+      "path": "packages/cli/docs/JobPoller.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "59e57ef32552bc9bdc4705c888755de3d457a8eccf56500f74f788549e330f22",
+      "bytes": 9555
+    },
+    {
+      "path": "packages/cli/docs/progress-indicators.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "16048b8182485b701fd1b1fb7693409cde8539c1cac1f6e7d9d405b30635f74c",
+      "bytes": 3591
+    },
+    {
+      "path": "packages/configuration/README.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "38eece47bff811aad9c771a1d45dd0529567d86f5966c6ba96b3687aa10bce08",
+      "bytes": 934
+    },
+    {
+      "path": "packages/configuration/docs/README.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "b531ddb132af1777303c78f2537f6dc8f06d78550f18363490103c3153747dbc",
+      "bytes": 1525
+    },
+    {
+      "path": "packages/configuration/docs/best-practices.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "bb856401e17c7fbda3bce526d05676743430b8bb8d55991f0161eddc966ced73",
+      "bytes": 8486
+    },
+    {
+      "path": "packages/configuration/docs/configuration-format.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "fd669c36fedfbbd027ffa6abf48731107d94c8305753235d36147d5247ba181e",
+      "bytes": 9579
+    },
+    {
+      "path": "packages/configuration/docs/examples.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "83c222a3f424de203b81caa1a4fd07aa6e88e9bdc4be87400d48b47425977a42",
+      "bytes": 15846
+    },
+    {
+      "path": "packages/daemon-core/DEVELOPMENT.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "fb2fac885d2b76d6db847d2f97383fd867dcc6b46e763e6fb98f881aa1a1cc24",
+      "bytes": 1817
+    },
+    {
+      "path": "packages/daemon-core/README.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "f220981d8b5600a0f26e494f54f9ee83da70f774e4f97365daadf5b75e4f7aaf",
+      "bytes": 3457
+    },
+    {
+      "path": "packages/daemon-core/docs/README.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "cd8d99fad4a0417b1701811afa9ff7e0e08cb5a2b40970fc7477fe34eb4e97a6",
+      "bytes": 1549
+    },
+    {
+      "path": "packages/daemon-core/docs/authentication.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "7a01e9cff28d8b413b0df0418ba0b02f22993521048196740ba461872354536a",
+      "bytes": 8652
+    },
+    {
+      "path": "packages/daemon-core/docs/cli-integration.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "1c2de3b4c21ae4cf6562a196918fbd94f35d3e7a241e484671a0fb56dc592375",
+      "bytes": 10681
+    },
+    {
+      "path": "packages/daemon-core/docs/error-codes.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "83a054839f362d2fd40dbc9b599af2c59ca875352b14c99277736bd1de1bfb75",
+      "bytes": 9604
+    },
+    {
+      "path": "packages/daemon-core/docs/error-handling.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "d1096c71e54d6fa1424bf00851201f0830cd50b8778838eb8f915c015ab022d6",
+      "bytes": 25456
+    },
+    {
+      "path": "packages/daemon-core/docs/event-schema.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "510d5d02a881e14b4bcb2f5f7bf17af0ae1022febb526bbd266a009b528ba83e",
+      "bytes": 8341
+    },
+    {
+      "path": "packages/daemon-core/docs/http-endpoints.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "3a3e4c3d09b1c2d551e349790adceff6d6e72360c78b82fb2298cbd8cb5de36a",
+      "bytes": 8276
+    },
+    {
+      "path": "packages/daemon-core/docs/thin-plugin-integration.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "c6a36abec005e4b7b2681726d14f839050834e6094c4a92e29c831eb5396f0f4",
+      "bytes": 22935
+    },
+    {
+      "path": "packages/daemon-core/examples/README.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "3ba1f0bfc996cac117c93af0d5167098dd5f014bf210f804a5596f24e33e97b2",
+      "bytes": 2596
+    },
+    {
+      "path": "packages/daemon-core/src/verification/windows/README.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "22ced91be203647158e75915e9d2119151b5a1aca81386bee8c17feb291d0453",
+      "bytes": 7979
+    },
+    {
+      "path": "packages/observability/README.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "967db0bf9b3ef5c18cd78f6079460595fb06440b1df3d39cd2ecc33190d691c6",
+      "bytes": 6967
+    },
+    {
+      "path": "packages/observability/VALIDATION_REPORT.md",
+      "classification": "PACKAGE_HISTORY_REVIEW",
+      "sha256": "b8291a79d047416f0a40d7dc62c2113c3bf32ee89e55c43fbd5d6e7bb312051f",
+      "bytes": 3891
+    },
+    {
+      "path": "packages/observability/docs/api.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "50fd5fc4d318795ffe59ec58046591e070437908c5f408e3cb6a1e3197a79f30",
+      "bytes": 20331
+    },
+    {
+      "path": "packages/observability/docs/north-star-scenarios.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "44d6fb9fbf82a02ce7164b9ddd55e0c6699e5c097c2987bd82daebdef53aa8f8",
+      "bytes": 17036
+    },
+    {
+      "path": "packages/observability/docs/troubleshooting.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "41cc09a5e24bf818e65697f9abde2dcc667fb6b58572bb951771c887fac2b278",
+      "bytes": 13769
+    },
+    {
+      "path": "packages/observability/docs/user-guide.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "6c8db1ba721d44ed3918a8e13570f519a53ad72687f4c9bd30f45835bb3a49cf",
+      "bytes": 10412
+    },
+    {
+      "path": "packages/opencode-adapter/README.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "2e06a731de4b0be3cf4431a651388327847a42e8c2d7de798181ff33e2ae2f63",
+      "bytes": 2745
+    },
+    {
+      "path": "packages/opencode-adapter/docs/installation.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "a85e269c897873bb315df84911e985455b2a071a72fb0434d545e300e38e5339",
+      "bytes": 4360
+    },
+    {
+      "path": "packages/permission-engine/PROJECT_STRUCTURE.md",
+      "classification": "PACKAGE_HISTORY_REVIEW",
+      "sha256": "dce822d164212fd786028cfb0dd0695a4b50917e875ce304221d26021e33b52d",
+      "bytes": 3630
+    },
+    {
+      "path": "packages/permission-engine/README.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "c9c264ddaf6db3229a8198e76c67cdd0d8e4a2aaddef8961c3ebacf26360eac1",
+      "bytes": 2088
+    },
+    {
+      "path": "packages/scope-gate/README.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "932259c75bd848f449130347c044b2306a6d522f8f56b949eaa1150542e3c117",
+      "bytes": 1770
+    },
+    {
+      "path": "packages/service-management/README.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "91fe9c13bd0bf2b84fa2d3c0bec80feed58f470bbf4b15be11d43a4f17054340",
+      "bytes": 1044
+    },
+    {
+      "path": "packages/workflow-runtime/AGENT_INTEGRATION_IMPLEMENTATION_SUMMARY.md",
+      "classification": "PACKAGE_HISTORY_REVIEW",
+      "sha256": "917b321c508f1221defb9c7d5c2be5eab2cf26679ebaa444e70ee2915a93f9de",
+      "bytes": 5117
+    },
+    {
+      "path": "packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md",
+      "classification": "PACKAGE_HISTORY_REVIEW",
+      "sha256": "a447be7e35d5ffb56895233fe4ff77a471c04c5ae9f90cda6757d2c0c9b5c988",
+      "bytes": 523
+    },
+    {
+      "path": "packages/workflow-runtime/GATE_ERROR_HANDLING_IMPLEMENTATION_SUMMARY.md",
+      "classification": "PACKAGE_HISTORY_REVIEW",
+      "sha256": "bb9f684389c9f92b331db700582bc91c82e531eb96ad180a512d6235de2ebd9b",
+      "bytes": 6570
+    },
+    {
+      "path": "packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md",
+      "classification": "PACKAGE_HISTORY_REVIEW",
+      "sha256": "7f1e626f3b9a96ebeb18328a2f967b02af9a50e8a07e8697289e898c5ed52af4",
+      "bytes": 529
+    },
+    {
+      "path": "packages/workflow-runtime/TASK_1_5_COMPLETION.md",
+      "classification": "PACKAGE_HISTORY_REVIEW",
+      "sha256": "5bd210d01a9488594a4a5c939380f647c0b51c701db657ff36e0f1e41caa8680",
+      "bytes": 7470
+    },
+    {
+      "path": "packages/workflow-runtime/docs/API.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "a4ad76549a225c99f8c637eba0e5c1291cda7e1bad8a7be8fe7989a8ff8d744f",
+      "bytes": 1412
+    },
+    {
+      "path": "packages/workflow-runtime/docs/DEPLOYMENT.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "bc42d2f3cafbdb0e9a4c6d2086d45989d3ad8c88d975105473580e327a31c46e",
+      "bytes": 1022
+    },
+    {
+      "path": "packages/workflow-runtime/docs/EXAMPLES.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "bd58956e57993fd1ff5f50daede575eb652f29dac5597e551a2cc3daf328a8c1",
+      "bytes": 906
+    },
+    {
+      "path": "packages/workflow-runtime/docs/GateResult.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "8a484a66a9654e823a905b49166fbb40412f1d9d2ae05243b3a7259c2e371675",
+      "bytes": 5911
+    },
+    {
+      "path": "packages/workflow-runtime/docs/WORKFLOW_DEFINITION_LOADER.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "960a0c7c8b414de136906ad409cd7677874b28f252f567a40bcc1b1e23dbc68e",
+      "bytes": 10790
+    },
+    {
+      "path": "packages/workflow-runtime/docs/state-recovery-mechanism.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "ae2de3eda6a4b3c0c11a38cf573a7898c2f91e8c0551be86c94cdb26d45a7423",
+      "bytes": 524
+    },
+    {
+      "path": "packages/workflow-runtime/docs/storage-implementation.md",
+      "classification": "CURRENT_PACKAGE_DOCUMENT",
+      "sha256": "c879dc74036fc4672217447eea258ab89ada466f60b759cafb28f3a310b6508e",
+      "bytes": 522
+    },
+    {
+      "path": "setup/README.md",
+      "classification": "CURRENT_SETUP_ENTRY",
+      "sha256": "502f4d8443b4ec3fd80c8f5165d9295d159e2c1da9bcd5670beb75532b7bf69c",
+      "bytes": 491
+    },
+    {
+      "path": "setup/userlevel-opencode/AGENTS.md",
+      "classification": "SETUP_REFERENCE_REVIEW",
+      "sha256": "a0541e3b8bb679d50231967117aab59ba4600dfb6c76117d491be0c55c78042d",
+      "bytes": 17306
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/_AGENT_BASE.md",
+      "classification": "CURRENT_AGENT",
+      "sha256": "3f8c7629fb2b62d06d2224b570b0d6f0be367365e811715c4eb2f9c6370ccd10",
+      "bytes": 30413
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-analyst.md",
+      "classification": "CURRENT_AGENT",
+      "sha256": "2db21b1a0751728c18a25d61627602d903f7536ce4eb0fcebec088be04017402",
+      "bytes": 4668
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-debugger.md",
+      "classification": "CURRENT_AGENT",
+      "sha256": "562632257591ed85396eb17918abffed028043378bcba937068e863ceb7dccd8",
+      "bytes": 17453
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-design.md",
+      "classification": "CURRENT_AGENT",
+      "sha256": "087f710feb969a60d138d1932ca19041093862a5285d18c64ff4056377de8ae5",
+      "bytes": 45681
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-executor.md",
+      "classification": "CURRENT_AGENT",
+      "sha256": "3cef2f0d940bb16bb071447f5ba414b49c50457f48019ed94ccbb9e18f4a594d",
+      "bytes": 32749
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-knowledge.md",
+      "classification": "CURRENT_AGENT",
+      "sha256": "0a81e623b2f0ce1b7a397f936be8c830da598427cafc40542d03281e11d4fb79",
+      "bytes": 13252
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-orchestrator.md",
+      "classification": "CURRENT_AGENT",
+      "sha256": "a808137c5f9b0a491fc57b3178974330da04f7828ab5ec886552dab2c56a13c2",
+      "bytes": 50938
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-requirements.md",
+      "classification": "CURRENT_AGENT",
+      "sha256": "08650aae4ae6f06ff38950b4bb78d0f3ab3b9b7976bdf8983fb105ac0c4f30cc",
+      "bytes": 26878
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-reviewer.md",
+      "classification": "CURRENT_AGENT",
+      "sha256": "d95b4fda4393598b228f97b1e535e6f96c541fb00b9531f24463107e0678fd21",
+      "bytes": 19374
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-task-planner.md",
+      "classification": "CURRENT_AGENT",
+      "sha256": "d448e6223b7cf3b9c289ea1544e3930ca6ad74b02c9bee7e59cdb7ff39faeb0d",
+      "bytes": 36193
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-verifier.md",
+      "classification": "CURRENT_AGENT",
+      "sha256": "5137b4d73916e486b06a2f3c140f225303942980b8fd0a998467f48d0fb7203d",
+      "bytes": 41337
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/sf-intake/SKILL.md",
+      "classification": "CURRENT_SKILL",
+      "sha256": "016114ccd4936141de4589f3042d4317c2eee35bd756aa9f7c3c0e206fde12dc",
+      "bytes": 18737
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md",
+      "classification": "CURRENT_SKILL",
+      "sha256": "9010b776aa6d4540a1ba8af43283058dba47800d6f15d76b60a1a5a465469633",
+      "bytes": 49670
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/superpowers-brainstorming/SKILL.md",
+      "classification": "CURRENT_SKILL",
+      "sha256": "166e7a31c13385b19f4384c3c439805b21460efc98f27d6f9825d4648e4f7942",
+      "bytes": 3584
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/superpowers-code-review/SKILL.md",
+      "classification": "CURRENT_SKILL",
+      "sha256": "ccfd870c444096d04d0dd38eb3d766de72d1a0026a469e149b929ba34945b053",
+      "bytes": 1442
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/superpowers-knowledge-extraction/SKILL.md",
+      "classification": "CURRENT_SKILL",
+      "sha256": "9a60f8b611daa9b33b95f4451cfd393f2acd234d1a80dd9c87af9b0cd6d56679",
+      "bytes": 7763
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/superpowers-systematic-debugging/SKILL.md",
+      "classification": "CURRENT_SKILL",
+      "sha256": "db3f7c14128ab7cf513d9482520fbf98294a43cf9414b581dabb803518b79434",
+      "bytes": 2101
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md",
+      "classification": "CURRENT_SKILL",
+      "sha256": "9694011bc3b86f8a51b2493f56c321e6c9858accda7a94d9f51edd1c78c5fa27",
+      "bytes": 4467
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/superpowers-writing-plans/SKILL.md",
+      "classification": "CURRENT_SKILL",
+      "sha256": "69f7a7c1eb0c097ed5ab60c9f935e51cf125595fefb9477039230d0b066dac05",
+      "bytes": 2949
+    },
+    {
+      "path": "setup/userlevel-templates/README.md",
+      "classification": "CURRENT_INSTALLED_TEMPLATE",
+      "sha256": "d43c88523bb59c81aee8e924e33bf839e140889c4b882ed5ff6ab5d3809e3c64",
+      "bytes": 3463
+    },
+    {
+      "path": "setup/userlevel-templates/dev-environment.md",
+      "classification": "CURRENT_INSTALLED_TEMPLATE",
+      "sha256": "3c47cb7ff3b948f7b345b4a82fc919049c1aab8fbb7ae21e57c3c2160277bca9",
+      "bytes": 10821
+    },
+    {
+      "path": "setup/userlevel-templates/prod-environment.md",
+      "classification": "CURRENT_INSTALLED_TEMPLATE",
+      "sha256": "731c7120ccb2ad45d1a4a409b18dde9e0b0eea27a30532c3933fce6fe7a5c9b5",
+      "bytes": 13342
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/_BASE.md",
+      "classification": "CURRENT_INSTALLED_TEMPLATE",
+      "sha256": "632608a6032a060f88f5ba7246d0f13a7ed20f22bf4142e44f15e9c3f9fd241c",
+      "bytes": 5619
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/databases/mongodb.md",
+      "classification": "CURRENT_INSTALLED_TEMPLATE",
+      "sha256": "74ede6f4630b55845082f117cbefc2eb2197e446773cc6066a3fa73b9ec55fc8",
+      "bytes": 1077
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/databases/mysql.md",
+      "classification": "CURRENT_INSTALLED_TEMPLATE",
+      "sha256": "c7667ec7a2dee83d6c76940d6a4ef4909f81a457a25af2852e55c8c4ed4f8c16",
+      "bytes": 1221
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/databases/postgresql.md",
+      "classification": "CURRENT_INSTALLED_TEMPLATE",
+      "sha256": "ffb74bd2b0871c2a3a5876b45bf81b9656d0b47cd0243ef77703b0486711746d",
+      "bytes": 2130
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/databases/redis.md",
+      "classification": "CURRENT_INSTALLED_TEMPLATE",
+      "sha256": "a48b4f7267f7ec554085fa738ec9da3250340981ec7c31228878eb35082e9bd4",
+      "bytes": 1239
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/databases/sqlite.md",
+      "classification": "CURRENT_INSTALLED_TEMPLATE",
+      "sha256": "647e756c9fb46d47c3e692f8648cc3d2af852f63de219650d0a5adcb20ee88b2",
+      "bytes": 1236
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/frameworks/fastapi.md",
+      "classification": "CURRENT_INSTALLED_TEMPLATE",
+      "sha256": "d1236dd749688894ebf2e30ea757118884a21f7f7efaeca8545e90b2c72735d6",
+      "bytes": 1636
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/frameworks/react.md",
+      "classification": "CURRENT_INSTALLED_TEMPLATE",
+      "sha256": "0beaeda3e7bb6e376eeacc8c22153c11c4ae159fcfa2441f04725e725aa2582a",
+      "bytes": 2328
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/frameworks/spring-boot.md",
+      "classification": "CURRENT_INSTALLED_TEMPLATE",
+      "sha256": "8897ec47ecf150160aa39ed19f96f74758e78ceb230429e08e048029e291b02c",
+      "bytes": 1816
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/frameworks/vue.md",
+      "classification": "CURRENT_INSTALLED_TEMPLATE",
+      "sha256": "d8102a574dca286e9eb9dc7a96e5f615f098ba779bab0baa123dec422fe46ea4",
+      "bytes": 1788
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/infra/ci-github-actions.md",
+      "classification": "CURRENT_INSTALLED_TEMPLATE",
+      "sha256": "8f9117ab882051f2ed7dc45e42698bf8b04565c79671bc60f2fdb9de85fbeff8",
+      "bytes": 1461
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/infra/docker.md",
+      "classification": "CURRENT_INSTALLED_TEMPLATE",
+      "sha256": "033146181d3daf77a3044a198af7215934a35da4c52311ba35a656486083dc88",
+      "bytes": 1513
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/languages/go.md",
+      "classification": "CURRENT_INSTALLED_TEMPLATE",
+      "sha256": "dce2d6a53943ba6df9e866c87fb0c86d141387d0484f62b7831edf550a8c3bed",
+      "bytes": 2939
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/languages/java.md",
+      "classification": "CURRENT_INSTALLED_TEMPLATE",
+      "sha256": "02fdbfa4ca01d9e5220213b56aebeae23afe086c3d22b86c3a9d9dffc2a3d88e",
+      "bytes": 3371
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/languages/nodejs.md",
+      "classification": "CURRENT_INSTALLED_TEMPLATE",
+      "sha256": "984d0ad28863b12d6f81313e09d05afe54844b7099b833eee783bb8e0ee78dda",
+      "bytes": 4125
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/languages/python.md",
+      "classification": "CURRENT_INSTALLED_TEMPLATE",
+      "sha256": "bf601ff0b7ccc41a707746345fa90539bff37539983d36c94d9a29769afa1c3e",
+      "bytes": 4308
+    }
+  ],
+  "meaning": "Raw pre-document-repair bytes; not current authority. Earlier source fixes are separately preserved in their receipts."
+}

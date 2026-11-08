@@ -1,0 +1,692 @@
+import { existsSync } from 'node:fs';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import {
+  projectSpecManifest,
+  workItemCandidateDesign,
+  workItemCandidateManifest,
+  workItemDesign,
+  workItemRoot,
+} from '@specforge/types/directory-layout';
+import '../src/tools/handlers/sf-artifact-write.js';
+import '../src/tools/handlers/sf-v11-gate-run.js';
+import '../src/tools/handlers/sf-changed-files-audit.js';
+import '../src/tools/handlers/sf-design-gate.js';
+import { getHandler } from '../src/tools/ToolDispatcher.js';
+import { getRequiredGates } from '../src/tools/lib/required-gates.js';
+import { ensureProjectInit } from '../src/tools/lib/sf_project_init_core.js';
+import { readCurrentProjectSpecBinding } from '../src/tools/lib/candidate-generation-integrity.js';
+import { materializeImplementationBaseline } from '../src/tools/lib/implementation-baseline.js';
+import { checkDesignGate } from '../src/tools/lib/sf_design_gate_core.js';
+
+function completeClassification(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+  return {
+    requirement_changed: false,
+    acceptance_criteria_changed: true,
+    business_rule_changed: false,
+    user_visible_behavior_changed: true,
+    data_semantics_changed: true,
+    design_changed: true,
+    module_boundary_changed: false,
+    api_contract_changed: false,
+    architecture_changed: true,
+    data_model_changed: false,
+    module_contract_changed: false,
+    unknowns: [
+      'Bun runtime support for request-scoped async context is not yet verified',
+      'Compatibility requirements for setCurrentTenant/getCurrentTenant are unresolved',
+    ],
+    ...overrides,
+  };
+}
+
+function designCandidate(): string {
+  return `---
+module_code: CORE
+analysis_scope: system_governance
+capability_verdict: reuse_existing
+---
+
+## 1. Problem Understanding
+
+### Symptom
+
+当前进程级 tenant 状态在异步让出点后可能被其他请求覆盖，导致跨请求串读。
+
+### Target Outcome
+
+每个请求必须在自己的异步调用链中读取自身 tenant，并以并发隔离测试作为验收条件。
+
+## 2. Existing Architecture Analysis
+
+### State Authority
+
+现有唯一状态权威是 StateStore 中的进程级 currentTenant；RequestHandler 在让出点前写入、恢复后读取。
+
+### Write Boundary
+
+当前写入和读取都经过既有 StateStore 接口，但存储槽位由所有请求共享。
+
+## 3. Governance Classification
+
+目标项目问题属于状态权威与架构设计变化。SpecForge 治理层继续使用现有 Design-First Skill、sf-design、Gate Runner、Design Gate Core 和 Audit，不需要新增治理组件。
+
+## 4. Existing Capability Assessment
+
+Standard、Contract、Workflow Skill、Agent、Tool、Runtime 与 Audit 已能直接承载本次系统治理分析、Candidate Gate、approval_required 状态推进和 no-code 审计。
+
+## 5. Solution Strategy
+
+目标项目优先在现有 runtime 模块边界内引入请求级 tenant context；先验证 Bun 异步上下文能力，若不满足则采用显式请求上下文传递。SpecForge 治理链保持不变。
+
+## 6. Impact Analysis
+
+目标项目将影响 StateStore 状态语义、RequestHandler 调用链和并发验收测试；本次 Design-Only 阶段只生成 Candidate，不修改业务源码。
+
+## 7. Verification Plan
+
+验证完整 classification、唯一 design Candidate、真实 Design Gate、approval_required 自动推进、no_code_change 审计，以及后续并发请求隔离和单请求回归测试。
+`;
+}
+
+async function writeDeclaredCoreManifest(projectRoot: string): Promise<void> {
+  const result = await ensureProjectInit(projectRoot, 'live-closure-fixture', { ensureHostProfile: async () => {} });
+  expect(result.success, JSON.stringify(result.errors)).toBe(true);
+}
+
+async function writeBaseWorkItem(projectRoot: string, workItemId: string): Promise<void> {
+  await writeDeclaredCoreManifest(projectRoot);
+  const projectSpecBinding = await readCurrentProjectSpecBinding(projectRoot);
+  const wiDir = workItemRoot(projectRoot, workItemId);
+  await mkdir(wiDir, { recursive: true });
+  await writeFile(
+    path.join(wiDir, 'work_item.json'),
+    JSON.stringify(
+      {
+        schema_version: '1.1',
+        work_item_id: workItemId,
+        workflow_type: 'feature_spec',
+        workflow_path: 'design_change_path',
+        code_change_allowed: false,
+        allowed_write_files: [],
+      },
+      null,
+      2
+    )
+  );
+  await writeFile(path.join(wiDir, 'intake.md'), '# Intake\n\nDesign-only live acceptance.\n');
+  await writeFile(
+    path.join(wiDir, 'change_classification.md'),
+    '# Change Classification\n\narchitecture_change\n'
+  );
+  await writeFile(
+    path.join(wiDir, 'impact_analysis.md'),
+    '# Impact Analysis\n\nState authority and Gate chain.\n'
+  );
+  await writeFile(
+    path.join(wiDir, 'trigger_result.json'),
+    JSON.stringify(
+      {
+        schema_version: '1.1',
+        work_item_id: workItemId,
+        status: 'triggered',
+        workflow_type: 'feature_spec',
+        workflow_path: 'design_change_path',
+        classification: completeClassification(),
+        impact_scope: {
+          affected_modules: ['CORE'],
+          architecture_refs: [],
+          data_model_refs: [],
+          design_refs: [],
+          project_contract_refs: [],
+          module_contract_refs: [],
+          planned_code_paths: [],
+        },
+      },
+      null,
+      2
+    )
+  );
+  await writeFile(
+    path.join(wiDir, 'candidate_manifest.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      work_item_id: workItemId,
+      workflow_type: 'feature_spec',
+      workflow_path: 'design_change_path',
+      base_spec_version: 'PSV-0001',
+      project_spec_precondition_sha256: projectSpecBinding.sha256,
+      merge_required: true,
+      entries: [],
+    }, null, 2),
+  );
+  await materializeImplementationBaseline(projectRoot, workItemId);
+}
+
+function mockDeps(initialState = 'gates_running') {
+  let currentState = initialState;
+  const transitions: Array<{ from: string; to: string }> = [];
+  const stateManager = {
+    async rebuildFromEventsFile() {},
+    async getState() {
+      return { current_state: currentState };
+    },
+    async transition(_workItemId: string, from: string, to: string) {
+      if (currentState !== from) {
+        throw new Error(`unexpected transition source: expected ${currentState}, got ${from}`);
+      }
+      transitions.push({ from, to });
+      currentState = to;
+    },
+  };
+  return {
+    deps: {
+      projectManager: {
+        async getProjectStateManager() {
+          return stateManager;
+        },
+      },
+    } as any,
+    getState: () => currentState,
+    transitions,
+  };
+}
+
+describe('Design Governance live closure', () => {
+  let projectRoot: string;
+
+  beforeEach(async () => {
+    projectRoot = await mkdtemp(path.join(tmpdir(), 'sf-design-live-closure-'));
+  });
+
+  afterEach(async () => {
+    await rm(projectRoot, { recursive: true, force: true });
+  });
+
+  it('requires a valid current design-phase subject and retains full-phase requirement checks', async () => {
+    const workItemId = 'WI-0001';
+    await writeBaseWorkItem(projectRoot, workItemId);
+    const candidatePath = workItemCandidateDesign(projectRoot, workItemId, 'CORE');
+    await mkdir(path.dirname(candidatePath), { recursive: true });
+    await writeFile(candidatePath, designCandidate());
+    const manifest = {
+      schema_version: '1.0', work_item_id: workItemId, workflow_type: 'feature_spec',
+      workflow_path: 'design_change_path', candidate_phase: 'design',
+      base_spec_version: 'PSV-0001', merge_required: true,
+      project_spec_precondition_sha256: (await readCurrentProjectSpecBinding(projectRoot)).sha256,
+      entries: [{ candidate_path: 'candidates/project/modules/CORE/design.candidate.md',
+        target_path: '.specforge/project/modules/CORE/design.md', operation: 'replace', type: 'design', module_id: 'CORE' }],
+    };
+    const save = (value: unknown) => writeFile(workItemCandidateManifest(projectRoot, workItemId), JSON.stringify(value));
+    await save(manifest);
+    expect((await checkDesignGate(workItemId, projectRoot, 'feature_spec')).status).toBe('pass');
+    await save({ ...manifest, candidate_phase: 'full' });
+    expect((await checkDesignGate(workItemId, projectRoot, 'feature_spec')).status).toBe('fail');
+    await save({ ...manifest, unsupported_shadow: true });
+    expect((await checkDesignGate(workItemId, projectRoot, 'feature_spec')).status).toBe('blocked');
+    await save({ ...manifest, work_item_id: 'WI-9999' });
+    expect((await checkDesignGate(workItemId, projectRoot, 'feature_spec')).status).toBe('blocked');
+  });
+
+  it('rejects retired workflow identities and mode overrides through the registered tool', async () => {
+    const handler = getHandler('sf_design_gate')!;
+    const context = { directory: projectRoot, agent: 'sf-orchestrator' };
+    expect(await handler({ work_item_id: 'WI-0001', workflow_type: 'feature_spec_design_first' }, context, {} as any)).toMatchObject({ success: false, error: 'WORKFLOW_TYPE_NOT_CURRENT' });
+    for (const key of ['mode', 'gate_mode']) expect(await handler({ work_item_id: 'WI-0001', [key]: 'investigation' }, context, {} as any)).toMatchObject({ success: false, error: 'DESIGN_GATE_MODE_NOT_CURRENT' });
+  });
+
+  it('writes design once to the canonical Candidate path and never mirrors work-item design.md', async () => {
+    const workItemId = 'WI-0001';
+    await writeBaseWorkItem(projectRoot, workItemId);
+    const handler = getHandler('sf_artifact_write');
+    expect(handler).toBeDefined();
+    const state = mockDeps('candidate_preparing');
+
+    const result = await handler!(
+      {
+        work_item_id: workItemId,
+        file_type: 'design',
+        content: designCandidate(),
+      },
+      { directory: projectRoot, agent: 'sf-design' },
+      state.deps
+    );
+
+    expect((result as any).success, JSON.stringify(result)).toBe(true);
+    expect((result as any).path.replace(/\\/g, '/')).toContain(
+      '.specforge/work-items/WI-0001/candidates/project/modules/CORE/design.candidate.md'
+    );
+    expect(existsSync(workItemCandidateDesign(projectRoot, workItemId, 'CORE'))).toBe(true);
+    expect(existsSync(workItemDesign(projectRoot, workItemId))).toBe(false);
+
+    const manifestResult = await handler!(
+      {
+        work_item_id: workItemId,
+        file_type: 'candidate_manifest',
+        content: JSON.stringify({
+          schema_version: '1.0',
+          work_item_id: workItemId,
+          workflow_type: 'feature_spec',
+          workflow_path: 'design_change_path',
+          candidate_phase: 'design',
+          base_spec_version: 'PSV-0001',
+          project_spec_precondition_sha256: (await readCurrentProjectSpecBinding(projectRoot)).sha256,
+          merge_required: true,
+          entries: [
+            {
+              candidate_path: 'candidates/project/modules/CORE/design.candidate.md',
+              target_path: '.specforge/project/modules/CORE/design.md',
+              operation: 'replace',
+              type: 'design',
+              module_id: 'CORE',
+            },
+          ],
+        }),
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      state.deps
+    );
+
+    expect((manifestResult as any).success, JSON.stringify(manifestResult)).toBe(true);
+    const manifest = JSON.parse(
+      await readFile(workItemCandidateManifest(projectRoot, workItemId), 'utf8')
+    );
+    expect(manifest.candidate_phase).toBe('design');
+    expect(manifest.entries[0].candidate_path).toBe(
+      'candidates/project/modules/CORE/design.candidate.md'
+    );
+    expect(manifest.entries[0].path).toBeUndefined();
+    expect(manifest.entries[0].operation).toBe('replace');
+  });
+
+  it('derives analysis_scope before authoring and rejects a mismatched design before write', async () => {
+    const workItemId = 'WI-0001';
+    await writeBaseWorkItem(projectRoot, workItemId);
+
+    const handler = getHandler('sf_artifact_write');
+    const result = (await handler!(
+      {
+        work_item_id: workItemId,
+        file_type: 'design',
+        content: designCandidate().replace(
+          'analysis_scope: system_governance',
+          'analysis_scope: solution_design'
+        ),
+      },
+      { directory: projectRoot, agent: 'sf-design' },
+      mockDeps('candidate_preparing').deps
+    )) as any;
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe('DESIGN_SCOPE_CONTRACT_MISMATCH');
+    expect(result.required_analysis_scope).toBe('system_governance');
+    expect(existsSync(workItemCandidateDesign(projectRoot, workItemId, 'CORE'))).toBe(false);
+  });
+
+  it('blocks module-scoped Candidates when an existing manifest declares no modules', async () => {
+    const workItemId = 'WI-0001';
+    await writeBaseWorkItem(projectRoot, workItemId);
+    await writeFile(
+      projectSpecManifest(projectRoot),
+      JSON.stringify({
+        schema_version: '1.0',
+        project_spec_version: 'PSV-0001',
+        project_name: 'legacy-empty-modules',
+        project: {},
+        modules: [],
+      })
+    );
+
+    const handler = getHandler('sf_artifact_write');
+    const result = await handler!(
+      {
+        work_item_id: workItemId,
+        file_type: 'design',
+        content: designCandidate(),
+      },
+      { directory: projectRoot, agent: 'sf-design' },
+      {} as any
+    );
+
+    expect((result as any).success).toBe(false);
+    expect((result as any).error).toContain('MODULE_OWNERSHIP_UNRESOLVED');
+    expect(existsSync(workItemCandidateDesign(projectRoot, workItemId, 'CORE'))).toBe(false);
+  });
+
+  it('recovers an empty module registry through governed init and then writes a CORE Candidate', async () => {
+    const workItemId = 'WI-0001';
+
+    // Bootstrap a canonical project so the authoritative modules/CORE/module.json
+    // exists on disk, then reproduce the legacy deadlock precondition.
+    await ensureProjectInit(projectRoot, 'legacy-recovery-fixture', { ensureHostProfile: async () => {} });
+    await writeBaseWorkItem(projectRoot, workItemId);
+
+    const mp = projectSpecManifest(projectRoot);
+    const broken = JSON.parse(await readFile(mp, 'utf8'));
+    broken.modules = [];
+    delete broken.default_module;
+    await writeFile(mp, JSON.stringify(broken, null, 2));
+
+    // The write guard still blocks while the registry is empty.
+    const handler = getHandler('sf_artifact_write');
+    const blocked = await handler!(
+      { work_item_id: workItemId, file_type: 'design', content: designCandidate() },
+      { directory: projectRoot, agent: 'sf-design' },
+      mockDeps('candidate_preparing').deps
+    );
+    expect((blocked as any).success).toBe(false);
+    expect((blocked as any).error).toContain('MODULE_OWNERSHIP_UNRESOLVED');
+
+    // Governed repair: init re-establishes the canonical CORE declaration.
+    const repaired = await ensureProjectInit(projectRoot, 'legacy-recovery-fixture', { ensureHostProfile: async () => {} });
+    expect(repaired.moduleRegistry.status).toBe('normalized');
+
+    // Deadlock resolved: the same CORE-scoped design Candidate now writes.
+    const result = await handler!(
+      { work_item_id: workItemId, file_type: 'design', content: designCandidate() },
+      { directory: projectRoot, agent: 'sf-design' },
+      mockDeps('candidate_preparing').deps
+    );
+    expect((result as any).error ?? '').not.toContain('MODULE_OWNERSHIP_UNRESOLVED');
+    expect((result as any).success, JSON.stringify(result)).toBe(true);
+    expect(existsSync(workItemCandidateDesign(projectRoot, workItemId, 'CORE'))).toBe(true);
+  }, 30000);
+
+  it('runs the real Design Gate through sf_gate_run, uses the design phase profile, and stops at approval_required', async () => {
+    const workItemId = 'WI-0001';
+    await writeBaseWorkItem(projectRoot, workItemId);
+    const designPath = workItemCandidateDesign(projectRoot, workItemId, 'CORE');
+    await mkdir(path.dirname(designPath), { recursive: true });
+    await writeFile(designPath, designCandidate());
+    await writeFile(
+      workItemCandidateManifest(projectRoot, workItemId),
+      JSON.stringify(
+        {
+          schema_version: '1.0',
+          work_item_id: workItemId,
+          workflow_path: 'design_change_path',
+          workflow_type: 'feature_spec',
+          candidate_phase: 'design',
+          base_spec_version: 'PSV-0001',
+          project_spec_precondition_sha256: (await readCurrentProjectSpecBinding(projectRoot)).sha256,
+          merge_required: true,
+          entries: [
+            {
+              candidate_path: 'candidates/project/modules/CORE/design.candidate.md',
+              target_path: '.specforge/project/modules/CORE/design.md',
+              operation: 'replace',
+              type: 'design',
+              module_id: 'CORE',
+            },
+          ],
+        },
+        null,
+        2
+      )
+    );
+
+    const triggerResult = JSON.parse(
+      await readFile(
+        path.join(workItemRoot(projectRoot, workItemId), 'trigger_result.json'),
+        'utf8'
+      )
+    );
+    expect(triggerResult.classification.architecture_changed).toBe(true);
+    expect(triggerResult.classification.acceptance_criteria_changed).toBe(true);
+    expect(triggerResult.classification.unknowns).toHaveLength(2);
+    expect(designCandidate()).toContain('capability_verdict: reuse_existing');
+
+    const required = getRequiredGates('design_change_path', 'candidate', 'design');
+    expect(required).toContain('workflow_specific_gate');
+    expect(required).toContain('trace_gate');
+
+    const state = mockDeps();
+    const handler = getHandler('sf_v11_gate_run');
+    expect(handler).toBeDefined();
+    const result = await handler!(
+      { work_item_id: workItemId, gate_type: 'candidate' },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      state.deps
+    );
+
+    expect((result as any).success, JSON.stringify(result)).toBe(true);
+    const candidateManifestReport = JSON.parse(
+      await readFile(
+        path.join(workItemRoot(projectRoot, workItemId), 'gates', 'candidate_manifest_gate.json'),
+        'utf8',
+      ),
+    );
+    expect((result as any).success).toBe(true);
+    expect(
+      (result as any).summary_status,
+      JSON.stringify({ result, candidateManifestReport }, null, 2),
+    ).toBe('passed');
+    expect((result as any).candidate_phase).toBe('design');
+    expect((result as any).normalized_gate_ids).toContain('trace_gate');
+    expect((result as any).reports).toContainEqual(
+      expect.objectContaining({
+        gate_id: 'trace_gate',
+        status: 'passed',
+        blocking_issues: 0,
+        warnings: 0,
+      })
+    );
+    expect((result as any).reports).toContainEqual(
+      expect.objectContaining({ gate_id: 'workflow_specific_gate', status: 'passed' })
+    );
+    expect(state.getState()).toBe('approval_required');
+    expect(state.transitions).toEqual([{ from: 'gates_running', to: 'approval_required' }]);
+
+    const traceReport = JSON.parse(
+      await readFile(
+        path.join(workItemRoot(projectRoot, workItemId), 'gates', 'trace_gate.json'),
+        'utf8'
+      )
+    );
+    expect(traceReport.gate_type).toBe('hard_gate');
+    expect(traceReport.status).toBe('passed');
+
+    const workflowReport = JSON.parse(
+      await readFile(
+        path.join(workItemRoot(projectRoot, workItemId), 'gates', 'workflow_specific_gate.json'),
+        'utf8'
+      )
+    );
+    expect(workflowReport.status).toBe('passed');
+    expect(workflowReport.input_files).toContain(designPath);
+
+    expect(existsSync(path.join(workItemRoot(projectRoot, workItemId), 'requirements.md'))).toBe(
+      false
+    );
+    expect(existsSync(path.join(workItemRoot(projectRoot, workItemId), 'tasks.md'))).toBe(false);
+    expect(existsSync(path.join(workItemRoot(projectRoot, workItemId), 'trace_delta.md'))).toBe(
+      false
+    );
+  });
+
+  it('fails candidate_manifest_gate when a module-scoped Candidate is not declared', async () => {
+    const workItemId = 'WI-0001';
+    await writeBaseWorkItem(projectRoot, workItemId);
+    await writeFile(
+      projectSpecManifest(projectRoot),
+      JSON.stringify({
+        schema_version: '1.0',
+        project_spec_version: 'PSV-0001',
+        project_name: 'legacy-empty-modules',
+        project: {},
+        modules: [],
+      })
+    );
+
+    const designPath = workItemCandidateDesign(projectRoot, workItemId, 'CORE');
+    await mkdir(path.dirname(designPath), { recursive: true });
+    await writeFile(designPath, designCandidate());
+    await writeFile(
+      workItemCandidateManifest(projectRoot, workItemId),
+      JSON.stringify({
+        schema_version: '1.0',
+        work_item_id: workItemId,
+        workflow_path: 'design_change_path',
+        workflow_type: 'feature_spec',
+        candidate_phase: 'design',
+        merge_required: true,
+        base_spec_version: 'PSV-0001',
+        project_spec_precondition_sha256: (await readCurrentProjectSpecBinding(projectRoot)).sha256,
+        entries: [
+          {
+            candidate_path: 'candidates/project/modules/CORE/design.candidate.md',
+            target_path: '.specforge/project/modules/CORE/design.md',
+            operation: 'replace',
+            type: 'design',
+          },
+        ],
+      })
+    );
+
+    const state = mockDeps();
+    const result = await getHandler('sf_v11_gate_run')!(
+      { work_item_id: workItemId, gate_type: 'candidate' },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      state.deps
+    );
+
+    expect((result as any).summary_status).toBe('failed');
+    const manifestReportSummary = (result as any).reports.find(
+      (report: any) => report.gate_id === 'candidate_manifest_gate'
+    );
+    expect(manifestReportSummary.status).toBe('failed');
+
+    const manifestReport = JSON.parse(
+      await readFile(
+        path.join(workItemRoot(projectRoot, workItemId), 'gates', 'candidate_manifest_gate.json'),
+        'utf-8'
+      )
+    );
+    expect(manifestReport.checks).toContainEqual(
+      expect.objectContaining({ check_id: 'entry_0_module_declared', passed: false })
+    );
+    expect(state.getState()).toBe('gates_failed');
+  });
+
+  it('rejects an incomplete trigger classification through the same sf_gate_run path', async () => {
+    const workItemId = 'WI-0001';
+    await writeBaseWorkItem(projectRoot, workItemId);
+    const wiDir = workItemRoot(projectRoot, workItemId);
+    await writeFile(
+      path.join(wiDir, 'trigger_result.json'),
+      JSON.stringify({
+        schema_version: '1.1',
+        work_item_id: workItemId,
+        status: 'triggered',
+        workflow_type: 'feature_spec',
+        workflow_path: 'design_change_path',
+        classification: 'architecture_change',
+        impact_scope: { planned_code_paths: [] },
+      })
+    );
+    const designPath = workItemCandidateDesign(projectRoot, workItemId, 'CORE');
+    await mkdir(path.dirname(designPath), { recursive: true });
+    await writeFile(designPath, designCandidate());
+    await writeFile(
+      workItemCandidateManifest(projectRoot, workItemId),
+      JSON.stringify({
+        schema_version: '1.0',
+        work_item_id: workItemId,
+        workflow_path: 'design_change_path',
+        workflow_type: 'feature_spec',
+        candidate_phase: 'design',
+        merge_required: true,
+        base_spec_version: 'PSV-0001',
+        project_spec_precondition_sha256: (await readCurrentProjectSpecBinding(projectRoot)).sha256,
+        entries: [
+          {
+            candidate_path: 'candidates/project/modules/CORE/design.candidate.md',
+            target_path: '.specforge/project/modules/CORE/design.md',
+            operation: 'replace',
+            type: 'design',
+          },
+        ],
+      })
+    );
+
+    const state = mockDeps();
+    const result = await getHandler('sf_v11_gate_run')!(
+      { work_item_id: workItemId, gate_type: 'candidate' },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      state.deps
+    );
+
+    expect((result as any).summary_status).toBe('failed');
+    expect((result as any).reports).toContainEqual(
+      expect.objectContaining({ gate_id: 'schema_gate', status: 'failed' })
+    );
+    expect((result as any).reports).toContainEqual(
+      expect.objectContaining({ gate_id: 'workflow_specific_gate', status: 'failed' })
+    );
+    expect(state.getState()).toBe('gates_failed');
+  });
+
+  it('passes no_code_change audit for the approved design-only phase without enabling code permission', async () => {
+    const workItemId = 'WI-0001';
+    await writeBaseWorkItem(projectRoot, workItemId);
+    await writeFile(
+      workItemCandidateManifest(projectRoot, workItemId),
+      JSON.stringify({
+        schema_version: '1.1',
+        work_item_id: workItemId,
+        workflow_path: 'design_change_path',
+        workflow_type: 'feature_spec',
+        candidate_phase: 'design',
+        entries: [],
+      })
+    );
+
+    const state = mockDeps('approval_required');
+    const result = await getHandler('sf_changed_files_audit')!(
+      { work_item_id: workItemId, mode: 'no_code_change' },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      state.deps
+    );
+
+    expect((result as any).success).toBe(true);
+    expect((result as any).passed).toBe(true);
+    expect((result as any).pre_implementation_spec_phase).toBe(true);
+    expect((result as any).candidate_phase).toBe('design');
+    expect((result as any).code_permission_was_never_enabled).toBe(true);
+    expect(existsSync(path.join(workItemRoot(projectRoot, workItemId), 'hard_stop.json'))).toBe(
+      false
+    );
+  });
+
+  it('rejects no_code_change once the authoritative state has entered implementation', async () => {
+    const workItemId = 'WI-0001';
+    await writeBaseWorkItem(projectRoot, workItemId);
+    await writeFile(
+      workItemCandidateManifest(projectRoot, workItemId),
+      JSON.stringify({
+        schema_version: '1.1',
+        work_item_id: workItemId,
+        workflow_path: 'design_change_path',
+        workflow_type: 'feature_spec',
+        candidate_phase: 'design',
+        entries: [],
+      })
+    );
+
+    const state = mockDeps('implementation_running');
+    const result = await getHandler('sf_changed_files_audit')!(
+      { work_item_id: workItemId, mode: 'no_code_change' },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      state.deps
+    );
+
+    expect((result as any).success).toBe(true);
+    expect((result as any).passed).toBe(false);
+    expect((result as any).pre_implementation_spec_phase).toBe(false);
+    expect((result as any).violations.join('\n')).toContain(
+      'workflow_type/workflow_path is not allowed'
+    );
+  });
+});

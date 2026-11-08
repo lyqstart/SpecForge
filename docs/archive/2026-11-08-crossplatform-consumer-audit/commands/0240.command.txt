@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/probe-knowledge-store-schema.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "knowledge-store-schema-owner-probe",
+  "expected_writes": "owned-synthetic-store-and-evidence",
+  "started_utc": "2026-11-08T05:33:05.679Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\probe-knowledge-store-schema.ts",
+      "sha256": "0339ca1065424d079dee21f53bfd467d8bb1fb3c2593faad3f6e58b32add434c",
+      "size": 2041,
+      "extension": ".ts"
+    }
+  ]
+}

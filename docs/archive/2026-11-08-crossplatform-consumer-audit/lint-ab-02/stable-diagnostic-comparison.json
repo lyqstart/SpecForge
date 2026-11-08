@@ -1,0 +1,3630 @@
+{
+  "utc": "2026-11-08T04:41:04.499Z",
+  "source_subject": "Exact source_members and commands in lint-ab-result.json, before later owner repairs; not the final acceptance freeze",
+  "baseline_diagnostics": 9254,
+  "current_diagnostics": 9193,
+  "added": [
+    {
+      "file": "packages/configuration/src/accepted-config.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/configuration/src/accepted-config.ts",
+      "severity": "error",
+      "message": "Insert `··`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/configuration/src/accepted-config.ts",
+      "severity": "error",
+      "message": "Replace `·type:·'project',·data:·options.projectData·??·(options.projectPath·?·readObject(join(options.projectPath,·SPEC_DIR_NAME,·'config',·'project.json'),·false)·:·{}),·timestamp:·0,·schemaVersion:·CONFIG_SCHEMA_VERSION` with `⏎······type:·'project',⏎······data:⏎········options.projectData·??⏎········(options.projectPath⏎··········?·readObject(join(options.projectPath,·SPEC_DIR_NAME,·'config',·'project.json'),·false)⏎··········:·{}),⏎······timestamp:·0,⏎······schemaVersion:·CONFIG_SCHEMA_VERSION,⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/configuration/src/project-schema-descriptor.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/configuration/src/project-schema-descriptor.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/config/project.json`·as·const)` with ``${SPEC_DIR_NAME}/config/project.json`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "severity": "error",
+      "message": "Replace `······` with `········`",
+      "rule": "prettier/prettier",
+      "count": 2
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "severity": "error",
+      "message": "Replace `········` with `··········`",
+      "rule": "prettier/prettier",
+      "count": 3
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "severity": "error",
+      "message": "Replace `·input·=·JSON.parse(body);·}` with `⏎······input·=·JSON.parse(body);`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "severity": "error",
+      "message": "Replace `·catch·{·return·this.sendJsonResponse(res,·400,·this.errorBody('INVALID_JSON',·'Invalid·JSON'));` with `·}·catch·{⏎······return·this.sendJsonResponse(res,·400,·this.errorBody('INVALID_JSON',·'Invalid·JSON'));⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "severity": "error",
+      "message": "Replace `············` with `··············`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "severity": "error",
+      "message": "Replace `·{·...payload,·sessionId:·payload.sessionId·??·sessionId·}` with `·...payload,⏎········sessionId:·payload.sessionId·??·sessionId`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "severity": "error",
+      "message": "Replace `()·=>·reject(new·Error(`HTTP·event·timeout·after·${timeoutMs}ms`)),·timeoutMs` with `⏎············()·=>·reject(new·Error(`HTTP·event·timeout·after·${timeoutMs}ms`)),⏎············timeoutMs⏎··········`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "severity": "error",
+      "message": "Replace `reason:·'NATIVE_SHELL_REQUIRES_CONTROLLED_EXECUTION:·sf_safe_bash·supports·internal·reads·only;·approved·verification·uses·sf_verification_plan·/·sf_verification_run.·Declared·filenames·cannot·constrain·arbitrary·shell·writes;·do·not·retry·through·another·shell·or·helper.'·})` with `··reason:⏎··········'NATIVE_SHELL_REQUIRES_CONTROLLED_EXECUTION:·sf_safe_bash·supports·internal·reads·only;·approved·verification·uses·sf_verification_plan·/·sf_verification_run.·Declared·filenames·cannot·constrain·arbitrary·shell·writes;·do·not·retry·through·another·shell·or·helper.',⏎······})⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "severity": "error",
+      "message": "Replace `path.join(projectPath,·SPEC_DIR_NAME,·'work-items',·state.work_item_id),·state.work_item_id` with `⏎········path.join(projectPath,·SPEC_DIR_NAME,·'work-items',·state.work_item_id),⏎········state.work_item_id⏎······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/observability/observability-config.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/observability/observability-config.ts",
+      "severity": "error",
+      "message": "Replace `(decision)` with `decision`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/observability/observability-recorder.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/observability/observability-recorder.ts",
+      "severity": "error",
+      "message": "Replace `⏎······projectRoot,⏎······SPEC_DIR_NAME,⏎······\"logs\",⏎······\"observability\",⏎······\"daemon\",⏎····` with `projectRoot,·SPEC_DIR_NAME,·'logs',·'observability',·'daemon'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `·&&·value.module_file·===·`${root}/module.json`` with `·value.module_file·===·`${root}/module.json`·&&`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `·&&·value.requirements·===·`${root}/requirements.md`⏎····&&·value.design·===·`${root}/design.md`⏎····&&` with `·value.requirements·===·`${root}/requirements.md`·&&⏎····value.design·===·`${root}/design.md`·&&⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `||·value.project_spec_version.length·===·0` with `value.project_spec_version.length·===·0·||`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `||·typeof·value.project_name·!==·'string'` with `typeof·value.project_name·!==·'string'·||`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `||·value.project_name.length·===·0` with `value.project_name.length·===·0·||`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/spec_manifest.json`·as·const)` with ``${SPEC_DIR_NAME}/project/spec_manifest.json`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/extension_registry.json`·as·const)` with ``${SPEC_DIR_NAME}/project/extension_registry.json`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `⏎········&&·value.project_spec_version.length·>·0` with `·&&⏎········value.project_spec_version.length·>·0·&&`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `·&&·isRecord(value.namespaces)` with `·isRecord(value.namespaces)·&&`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Delete `·&&`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `·&&·value.module_code·===·moduleCode` with `·value.module_code·===·moduleCode·&&`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `·&&·!LEGACY_MODULE_IDENTITY_FIELDS.some((field)·=>·field·in·value)⏎······)` with `·!LEGACY_MODULE_IDENTITY_FIELDS.some(field·=>·field·in·value)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `await·readFile(⏎····join(projectPath,·SPEC_DIR_NAME,·'project',·'spec_manifest.json'),⏎····'utf8',` with `⏎····await·readFile(join(projectPath,·SPEC_DIR_NAME,·'project',·'spec_manifest.json'),·'utf8')`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "severity": "error",
+      "message": "Replace `··!/^[a-f0-9]{64}$/.test(input.archive_sha256)·||` with `!/^[a-f0-9]{64}$/.test(input.archive_sha256)·||⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "severity": "error",
+      "message": "Replace `projectPathIdentity(resolver.resolveProjectRuntimeDir(target))·!==·projectPathIdentity(path.join(target,·(`${SPEC_DIR_NAME}/runtime`·as·const))))` with `⏎····projectPathIdentity(resolver.resolveProjectRuntimeDir(target))·!==⏎····projectPathIdentity(path.join(target,·`${SPEC_DIR_NAME}/runtime`·as·const))⏎··)⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "severity": "error",
+      "message": "Replace `·catch·(error)·{·if·((error·as·NodeJS.ErrnoException).code·!==·'ESRCH')·throw·error;` with `·}·catch·(error)·{⏎······if·((error·as·NodeJS.ErrnoException).code·!==·'ESRCH')·throw·error;⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "severity": "error",
+      "message": "Replace `await·exists(target` with `(await·exists(target)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "severity": "error",
+      "message": "Replace `entry·=>·entry.path·===·(`${SPEC_DIR_NAME}/runtime/state.json`·as·const)` with `⏎········entry·=>·entry.path·===·(`${SPEC_DIR_NAME}/runtime/state.json`·as·const)⏎······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "severity": "error",
+      "message": "Replace `await·exists(doneFile)·||·!equal(await·inventory(plan.stage),·ready.inventory))` with `(await·exists(doneFile))·||·!equal(await·inventory(plan.stage),·ready.inventory))⏎·······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/`·as·const)` with ``${SPEC_DIR_NAME}/project/`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/architecture.md`·as·const)` with ``${SPEC_DIR_NAME}/project/architecture.md`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 2
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/data_model.md`·as·const)` with ``${SPEC_DIR_NAME}/project/data_model.md`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 2
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-design-gate.ts",
+      "severity": "error",
+      "message": "Replace `⏎······workItemId,⏎······baseDir,⏎······workflowType⏎····` with `workItemId,·baseDir,·workflowType`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/**`·as·const)` with ``${SPEC_DIR_NAME}/**`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 2
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/`·as·const)))` with ``${SPEC_DIR_NAME}/`·as·const))⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/`·as·const))` with ``${SPEC_DIR_NAME}/project/`·as·const)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "severity": "error",
+      "message": "Replace `((`${SPEC_DIR_NAME}/config/`·as·const))` with `(`${SPEC_DIR_NAME}/config/`·as·const)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "severity": "error",
+      "message": "Replace `((`${SPEC_DIR_NAME}/runtime/`·as·const)` with `(`${SPEC_DIR_NAME}/runtime/`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/work-items/`·as·const)` with ``${SPEC_DIR_NAME}/work-items/`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/logs/`·as·const)` with ``${SPEC_DIR_NAME}/logs/`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/specs/`·as·const))` with ``${SPEC_DIR_NAME}/specs/`·as·const)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "severity": "error",
+      "message": "Replace `((`${SPEC_DIR_NAME}/cas/`·as·const))` with `(`${SPEC_DIR_NAME}/cas/`·as·const)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/runtime/`·as·const)` with ``${SPEC_DIR_NAME}/runtime/`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "severity": "error",
+      "message": "Replace `normalized·===·(`${SPEC_DIR_NAME}/reports`·as·const)·||·normalized.startsWith((`${SPEC_DIR_NAME}/reports/`·as·const)` with `(⏎······normalized·===·(`${SPEC_DIR_NAME}/reports`·as·const)·||⏎······normalized.startsWith(`${SPEC_DIR_NAME}/reports/`·as·const)⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "severity": "error",
+      "message": "Replace `·authoritativeItems·=·await·readAuthoritativeWorkItems(_deps,·baseDir);·}` with `⏎····authoritativeItems·=·await·readAuthoritativeWorkItems(_deps,·baseDir);`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "severity": "error",
+      "message": "Replace `catch·{·return·{·success:·false,·error:·'AUTHORITATIVE_STATE_UNAVAILABLE',·policy_violation:·true·};` with `}·catch·{⏎····return·{·success:·false,·error:·'AUTHORITATIVE_STATE_UNAVAILABLE',·policy_violation:·true·};⏎·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-semantic-closure-run.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts",
+      "severity": "error",
+      "message": "Replace `··input.workItem.code_permission_revoked·!==·true` with `input.workItem.code_permission_revoked·!==·true⏎··`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts",
+      "severity": "error",
+      "message": "Replace `······` with `····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts",
+      "severity": "error",
+      "message": "Replace `⏎······.catch(()·=>·undefined` with `.catch(⏎······()·=>·undefined⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts",
+      "severity": "error",
+      "message": "Replace `\"work-items\"` with `'work-items'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-code-permission.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-code-permission.ts",
+      "severity": "error",
+      "message": "Replace `(file)` with `file`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-code-permission.ts",
+      "severity": "error",
+      "message": "Replace `(p)·=>·p·===·SPEC_DIR_NAME·||·p.startsWith((`${SPEC_DIR_NAME}/`·as·const))·||·p.includes('/.specforge/')` with `⏎······p·=>⏎········p·===·SPEC_DIR_NAME·||⏎········p.startsWith(`${SPEC_DIR_NAME}/`·as·const)·||⏎········p.includes('/.specforge/')⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-decision.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-decision.ts",
+      "severity": "error",
+      "message": "Insert `··`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-merge.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-rollback.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-verification.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-work-item-create.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-verification-gate.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-verification-gate.ts",
+      "severity": "error",
+      "message": "Replace `=await·inspectVerificationEvidenceIntegrity({projectRoot:baseDir,workItemDir:path.join(baseDir,SPEC_DIR_NAME,'work-items',workItemId),workItemId,executionEvidenceConsumer:deps.verificationRuntime` with `·=·await·inspectVerificationEvidenceIntegrity({⏎······projectRoot:·baseDir,⏎······workItemDir:·path.join(baseDir,·SPEC_DIR_NAME,·'work-items',·workItemId),⏎······workItemId,⏎······executionEvidenceConsumer:·deps.verificationRuntime,⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/architecture-governance-v7-regression.test.ts",
+      "severity": "error",
+      "message": "Replace `=mkdtempSync(join(tmpdir(),` with `·=·mkdtempSync(join(tmpdir(),·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/architecture-governance-v7-regression.test.ts",
+      "severity": "error",
+      "message": "Replace `=projectSpecManifest(root);mkdirSync(dirname(manifest),{recursive:true` with `·=·projectSpecManifest(root);⏎······mkdirSync(dirname(manifest),·{·recursive:·true·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/architecture-governance-v7-regression.test.ts",
+      "severity": "error",
+      "message": "Replace `manifest,JSON.stringify({modules:[{module_code:'CORE'},{module_code:'AUTH'},{module_code:'../escape'}]})` with `⏎········manifest,⏎········JSON.stringify({⏎··········modules:·[{·module_code:·'CORE'·},·{·module_code:·'AUTH'·},·{·module_code:·'../escape'·}],⏎········})⏎······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/architecture-governance-v7-regression.test.ts",
+      "severity": "error",
+      "message": "Replace `=` with `·=·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/architecture-governance-v7-regression.test.ts",
+      "severity": "error",
+      "message": "Replace `=>` with `·=>·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/architecture-governance-v7-regression.test.ts",
+      "severity": "error",
+      "message": "Replace `rmSync(root,{recursive:true,force:true});` with `⏎······rmSync(root,·{·recursive:·true,·force:·true·});⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/artifact-schema-validation.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/artifact-schema-validation.ts",
+      "severity": "error",
+      "message": "Replace `········` with `··············`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/artifact-schema-validation.ts",
+      "severity": "error",
+      "message": "Replace `······` with `············`",
+      "rule": "prettier/prettier",
+      "count": 3
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/artifact-schema-validation.ts",
+      "severity": "error",
+      "message": "Replace `··········` with `················`",
+      "rule": "prettier/prettier",
+      "count": 2
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/atomic-spec-merge-write-provenance.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/atomic-spec-merge-write-provenance.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/`·as·const)` with ``${SPEC_DIR_NAME}/project/`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/authoritative-work-items.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/authoritative-work-items.ts",
+      "severity": "error",
+      "message": "Replace `······return·typeof·state·===·'string'` with `········return·typeof·state·===·'string'⏎·········`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/authoritative-work-items.ts",
+      "severity": "error",
+      "message": "Replace `})` with `··})⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/candidate-generation-integrity.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/candidate-generation-integrity.ts",
+      "severity": "error",
+      "message": "Replace `⏎····projectRoot,⏎····SPEC_DIR_NAME,⏎····'project',⏎····'spec_manifest.json',⏎··` with `projectRoot,·SPEC_DIR_NAME,·'project',·'spec_manifest.json'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/candidate-generation-integrity.ts",
+      "severity": "error",
+      "message": "Replace `await·walkFiles(fullPath` with `(await·walkFiles(fullPath)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/changed-files-audit.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/changed-files-audit.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/`·as·const)` with ``${SPEC_DIR_NAME}/project/`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-authoring.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/extension_registry.json`·as·const)` with ``${SPEC_DIR_NAME}/project/extension_registry.json`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-integrity.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-integrity.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/extension_registry.json`·as·const)` with ``${SPEC_DIR_NAME}/project/extension_registry.json`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-integrity.ts",
+      "severity": "error",
+      "message": "Insert `⏎··)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/logs/`·as·const)` with ``${SPEC_DIR_NAME}/logs/`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/runtime/`·as·const)` with ``${SPEC_DIR_NAME}/runtime/`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/archive/`·as·const)` with ``${SPEC_DIR_NAME}/archive/`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/cas/`·as·const)` with ``${SPEC_DIR_NAME}/cas/`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/tmp/`·as·const)` with ``${SPEC_DIR_NAME}/tmp/`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/temp/`·as·const)` with ``${SPEC_DIR_NAME}/temp/`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/work-items/`·as·const)` with ``${SPEC_DIR_NAME}/work-items/`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/logs`·as·const)` with ``${SPEC_DIR_NAME}/logs`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/runtime`·as·const)` with ``${SPEC_DIR_NAME}/runtime`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/archive`·as·const)` with ``${SPEC_DIR_NAME}/archive`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/cas`·as·const)` with ``${SPEC_DIR_NAME}/cas`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/tmp`·as·const)` with ``${SPEC_DIR_NAME}/tmp`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/temp`·as·const)` with ``${SPEC_DIR_NAME}/temp`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/work-items`·as·const)` with ``${SPEC_DIR_NAME}/work-items`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "severity": "error",
+      "message": "Replace `((p)` with `(p`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "severity": "error",
+      "message": "Replace `((c)` with `(c`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/`·as·const))·||` with ``${SPEC_DIR_NAME}/project/`·as·const)·||⏎·········`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/·directory·exists`·as·const)` with ``${SPEC_DIR_NAME}/project/·directory·exists`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "severity": "error",
+      "message": "Replace `typeof·evidencePath·!==·'string'·||·!evidencePath.startsWith((`${SPEC_DIR_NAME}/project/`·as·const))` with `⏎········typeof·evidencePath·!==·'string'·||⏎········!evidencePath.startsWith(`${SPEC_DIR_NAME}/project/`·as·const)⏎······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "severity": "error",
+      "message": "Replace `!part·||·part·===·'.'·||·part·===·'..'·||·/[<>:\"|?*\\x00-\\x1f]/.test(part)·||·/[.·]$/.test(part)·||·/^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\\.|$)/i.test(part)))` with `······!part·||⏎··········part·===·'.'·||⏎··········part·===·'..'·||⏎··········/[<>:\"|?*\\x00-\\x1f]/.test(part)·||⏎··········/[.·]$/.test(part)·||⏎··········/^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\\.|$)/i.test(part)⏎······)⏎··)⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "severity": "error",
+      "message": "Replace `receipt.args.every((arg:·unknown)·=>·typeof·arg·===·'string')·&&·typeof·receipt.cwd·===·'string'·&&` with `····receipt.args.every((arg:·unknown)·=>·typeof·arg·===·'string')·&&⏎········typeof·receipt.cwd·===·'string'·&&⏎·······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/work-items`·as·const)` with ``${SPEC_DIR_NAME}/work-items`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "severity": "error",
+      "message": "Replace `·wi,·owner:·path.join(wi,·'git_bootstrap'),·context:·path.join(wi,·'git_context.json'),·runtime:·path.join(root,·(`${SPEC_DIR_NAME}/runtime`·as·const))` with `⏎····wi,⏎····owner:·path.join(wi,·'git_bootstrap'),⏎····context:·path.join(wi,·'git_context.json'),⏎····runtime:·path.join(root,·`${SPEC_DIR_NAME}/runtime`·as·const),⏎·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "severity": "error",
+      "message": "Replace `····expected_writes:·args[0]·===·'update-ref'·||·args[0]·===·'symbolic-ref'·&&·args.length·>·2·?·'Git·refs/HEAD·only'·:·'Read-only;·optional·index·refresh·disabled'·})·+·'\\n'` with `········expected_writes:⏎··········args[0]·===·'update-ref'·||·(args[0]·===·'symbolic-ref'·&&·args.length·>·2)⏎············?·'Git·refs/HEAD·only'⏎············:·'Read-only;·optional·index·refresh·disabled',⏎······})·+·'\\n'⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/`·as·const)` with ``${SPEC_DIR_NAME}/`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-write-provenance.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/git_policy.json`·as·const)` with ``${SPEC_DIR_NAME}/project/git_policy.json`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-write-provenance.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/git_ignore_decisions.json`·as·const)` with ``${SPEC_DIR_NAME}/project/git_ignore_decisions.json`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-governance-write-provenance.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/git_adoption_report.md`·as·const)` with ``${SPEC_DIR_NAME}/project/git_adoption_report.md`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/data_model.md`·as·const)` with ``${SPEC_DIR_NAME}/project/data_model.md`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 2
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/requirements_index.md`·as·const)` with ``${SPEC_DIR_NAME}/project/requirements_index.md`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/design_index.md`·as·const)` with ``${SPEC_DIR_NAME}/project/design_index.md`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/trace_matrix.md`·as·const)` with ``${SPEC_DIR_NAME}/project/trace_matrix.md`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 3
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/architecture.md`·as·const)` with ``${SPEC_DIR_NAME}/project/architecture.md`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 2
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/glossary.md`·as·const)` with ``${SPEC_DIR_NAME}/project/glossary.md`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/decisions.md`·as·const)` with ``${SPEC_DIR_NAME}/project/decisions.md`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/`·as·const)` with ``${SPEC_DIR_NAME}/project/`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 2
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/extension_registry.json`·as·const)` with ``${SPEC_DIR_NAME}/project/extension_registry.json`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts",
+      "severity": "error",
+      "message": "Insert `····`",
+      "rule": "prettier/prettier",
+      "count": 2
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts",
+      "severity": "error",
+      "message": "Replace `].map(filePath·=>·path.resolve(filePath)))` with `····].map(filePath·=>·path.resolve(filePath))⏎····)⏎··`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts",
+      "severity": "error",
+      "message": "Replace `await·collectWorkItemFiles({·...input,·directory:·fullPath·}))` with `(await·collectWorkItemFiles({·...input,·directory:·fullPath·})))`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts",
+      "severity": "error",
+      "message": "Replace `········` with `··········`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts",
+      "severity": "error",
+      "message": "Replace `······})` with `········})⏎······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "severity": "error",
+      "message": "Replace `⏎······projectRoot,⏎······SPEC_DIR_NAME,⏎······'project',⏎······'modules',⏎······moduleCode⏎····` with `projectRoot,·SPEC_DIR_NAME,·'project',·'modules',·moduleCode`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "severity": "error",
+      "message": "Replace `normalizeProjectSpecTargetPath(targetPath)·===·(`${SPEC_DIR_NAME}/project/trace_matrix.md`·as·const)` with `(⏎····normalizeProjectSpecTargetPath(targetPath)·===⏎····(`${SPEC_DIR_NAME}/project/trace_matrix.md`·as·const)⏎··)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "severity": "error",
+      "message": "Replace `⏎····input.projectRoot,⏎····SPEC_DIR_NAME,⏎····'project',⏎····'trace_matrix.md',⏎··` with `input.projectRoot,·SPEC_DIR_NAME,·'project',·'trace_matrix.md'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "severity": "error",
+      "message": "Replace `⏎········input.projectRoot,⏎········SPEC_DIR_NAME,⏎········'project',⏎········'modules',⏎········moduleCode,⏎········'trace.md',⏎······),` with `input.projectRoot,·SPEC_DIR_NAME,·'project',·'modules',·moduleCode,·'trace.md')`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "severity": "error",
+      "message": "Insert `··`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/spec_manifest.json`·as·const)` with ``${SPEC_DIR_NAME}/project/spec_manifest.json`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/extension_registry.json`·as·const)` with ``${SPEC_DIR_NAME}/project/extension_registry.json`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/native-write-boundary.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/native-write-boundary.ts",
+      "severity": "error",
+      "message": "Replace `·allowed:·false,·reason:·'NATIVE_TOOL_REQUIRES_CONTROLLED_EXECUTION:·sf_safe_bash·supports·internal·reads·only;·verification·requires·the·approved·sf_verification_plan·/·sf_verification_run·path·and·platform/profile.·Scripts,·builds·and·tests·were·not·executed;·do·not·retry·through·a·shell·or·helper.'` with `⏎······allowed:·false,⏎······reason:⏎········'NATIVE_TOOL_REQUIRES_CONTROLLED_EXECUTION:·sf_safe_bash·supports·internal·reads·only;·verification·requires·the·approved·sf_verification_plan·/·sf_verification_run·path·and·platform/profile.·Scripts,·builds·and·tests·were·not·executed;·do·not·retry·through·a·shell·or·helper.',⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/native-write-boundary.ts",
+      "severity": "error",
+      "message": "Replace `workItem:·{·work_item_id:·state.work_item_id,` with `········workItem:·{⏎··············work_item_id:·state.work_item_id,⏎·············`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/native-write-boundary.ts",
+      "severity": "error",
+      "message": "Replace `allowed_write_files:·Array.isArray(wi.allowed_write_files)·?·wi.allowed_write_files·as·any` with `········allowed_write_files:·Array.isArray(wi.allowed_write_files)⏎················?·(wi.allowed_write_files·as·any)⏎···············`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/path-policy.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/path-policy.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/`·as·const)` with ``${SPEC_DIR_NAME}/project/`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/path-policy.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/data_model.md`·as·const)` with ``${SPEC_DIR_NAME}/project/data_model.md`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 2
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/path-policy.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/`·as·const)))` with ``${SPEC_DIR_NAME}/`·as·const))⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "severity": "error",
+      "message": "Insert `··`",
+      "rule": "prettier/prettier",
+      "count": 2
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "severity": "error",
+      "message": "Replace `··.filter(` with `).filter(⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "severity": "error",
+      "message": "Replace `······modules.length·>·0,` with `····modules.length·>·0`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "severity": "error",
+      "message": "Replace `······` with `····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "severity": "error",
+      "message": "Replace `··········` with `········`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "severity": "error",
+      "message": "Replace `··········module.code_paths.length·>·0,` with `········module.code_paths.length·>·0`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "severity": "error",
+      "message": "Replace `········` with `····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "severity": "error",
+      "message": "Replace `⏎······'git',⏎······['rev-parse',·'--show-toplevel'],` with `'git',·['rev-parse',·'--show-toplevel'],·{`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "severity": "error",
+      "message": "Replace `·{·cwd:·projectRoot·}` with `·cwd:·projectRoot`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "severity": "error",
+      "message": "Replace `········` with `······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-init-reconstruction.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-init-reconstruction.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/manifest.json`·as·const)))` with ``${SPEC_DIR_NAME}/manifest.json`·as·const))`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-init-reconstruction.ts",
+      "severity": "error",
+      "message": "Replace `root,·(`${SPEC_DIR_NAME}/runtime/init-recovery/owner.lock`·as·const)` with `⏎······root,⏎······`${SPEC_DIR_NAME}/runtime/init-recovery/owner.lock`·as·const⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/regenerable-artifact-governance.ts",
+      "severity": "error",
+      "message": "Replace `((`${SPEC_DIR_NAME}/project/git_ignore_decisions.json`·as·const))` with `(`${SPEC_DIR_NAME}/project/git_ignore_decisions.json`·as·const)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/regenerable-artifact-governance.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/git_ignore_decisions.json`·as·const)` with ``${SPEC_DIR_NAME}/project/git_ignore_decisions.json`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/rollback-runner-v11.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/rollback-runner-v11.ts",
+      "severity": "error",
+      "message": "Replace `·step.operation·===·'restore_from_backup'·?·'restored'·as·const·:⏎··········'modified'·as·const` with `·:·step.operation·===·'restore_from_backup'⏎············?·('restored'·as·const)⏎············:·('modified'·as·const)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_design_gate_core.ts",
+      "severity": "error",
+      "message": "Replace `⏎··workItemRoot,⏎··workItemCandidateManifest,⏎` with `·workItemRoot,·workItemCandidateManifest·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_design_gate_core.ts",
+      "severity": "error",
+      "message": "Replace `await·readFile(workItemCandidateManifest(baseDir,·workItemId),·'utf8')` with `⏎········await·readFile(workItemCandidateManifest(baseDir,·workItemId),·'utf8')⏎······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_design_gate_core.ts",
+      "severity": "error",
+      "message": "Insert `⏎·········`",
+      "rule": "prettier/prettier",
+      "count": 2
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_design_gate_core.ts",
+      "severity": "error",
+      "message": "Replace `··········status:·'blocked',` with `············status:·'blocked',⏎···········`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_design_gate_core.ts",
+      "severity": "error",
+      "message": "Replace `warnings:·[],` with `··warnings:·[],⏎···········`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_design_gate_core.ts",
+      "severity": "error",
+      "message": "Insert `··`",
+      "rule": "prettier/prettier",
+      "count": 2
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_design_gate_core.ts",
+      "severity": "error",
+      "message": "Insert `⏎·······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_design_gate_core.ts",
+      "severity": "error",
+      "message": "Replace `········status:·'blocked',` with `··········status:·'blocked',⏎·········`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_design_gate_core.ts",
+      "severity": "error",
+      "message": "Replace `········warnings:·[],` with `··········warnings:·[],⏎·········`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/extension_registry.json`·as·const)` with ``${SPEC_DIR_NAME}/project/extension_registry.json`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/requirements_index.md`·as·const)` with ``${SPEC_DIR_NAME}/project/requirements_index.md`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/design_index.md`·as·const)` with ``${SPEC_DIR_NAME}/project/design_index.md`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/architecture.md`·as·const)` with ``${SPEC_DIR_NAME}/project/architecture.md`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/glossary.md`·as·const)` with ``${SPEC_DIR_NAME}/project/glossary.md`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/decisions.md`·as·const)` with ``${SPEC_DIR_NAME}/project/decisions.md`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/trace_matrix.md`·as·const)` with ``${SPEC_DIR_NAME}/project/trace_matrix.md`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/modules/CORE`·as·const)` with ``${SPEC_DIR_NAME}/project/modules/CORE`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/modules/CORE/module.json`·as·const)` with ``${SPEC_DIR_NAME}/project/modules/CORE/module.json`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/modules/CORE/requirements.md`·as·const)` with ``${SPEC_DIR_NAME}/project/modules/CORE/requirements.md`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/modules/CORE/design.md`·as·const)` with ``${SPEC_DIR_NAME}/project/modules/CORE/design.md`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/modules/CORE/trace.md`·as·const)` with ``${SPEC_DIR_NAME}/project/modules/CORE/trace.md`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `\"node:path\"` with `'node:path'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `SafeBashArgs,·SafeBashResult}·from·\"./sf_safe_bash_types\"` with `·SafeBashArgs,·SafeBashResult·}·from·'./sf_safe_bash_types'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `executeCommand,·appendShellAudit}·from·\"./sf_safe_bash_executor\"` with `·executeCommand,·appendShellAudit·}·from·'./sf_safe_bash_executor'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `HostProfile` with `·HostProfile·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_executor.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_executor.ts",
+      "severity": "error",
+      "message": "Replace `parts.some(p·=>·[SPEC_DIR_NAME,·'.git',·'sf-user'].includes(p.toLowerCase()))·||·parts.some(p·=>·p.includes(':')))` with `⏎····parts.some(p·=>·[SPEC_DIR_NAME,·'.git',·'sf-user'].includes(p.toLowerCase()))·||⏎····parts.some(p·=>·p.includes(':'))⏎··)⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `RuleResult}·from·\"./sf_safe_bash_types\"` with `·RuleResult·}·from·'./sf_safe_bash_types'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `HostProfile}·from·\"./sf_safe_bash_core\"` with `·HostProfile·}·from·'./sf_safe_bash_core'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `parseReadOnlyCommand}·from·\"./sf_safe_bash_executor\"` with `·parseReadOnlyCommand·}·from·'./sf_safe_bash_executor'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `string,_profile:HostProfile):` with `·string,·_profile:·HostProfile):·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `if(parseReadOnlyCommand(command))return·{kind:\"pass\"` with `·if·(parseReadOnlyCommand(command))·return·{·kind:·'pass'·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `return·{kind:\"reject\",rejection:` with `·return·{⏎····kind:·'reject',⏎····rejection:·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `rule:\"SHELL_EXECUTION_UNAVAILABLE\"` with `····rule:·'SHELL_EXECUTION_UNAVAILABLE'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `reason:\"D18·sf_safe_bash·supports·internal·read·operations·only;·no·shell·or·child·process·is·available.\"` with `····reason:⏎········'D18·sf_safe_bash·supports·internal·read·operations·only;·no·shell·or·child·process·is·available.'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `··suggestion:\"Scripts,·builds·and·tests·were·not·executed.·D23·verification·requires·sf-orchestrator·/·sf_verification_plan·and·sf-verifier·/·sf_verification_run·within·the·approved·platform/profile;·otherwise·remain·not_executed/blocked.\"` with `······suggestion:⏎········'Scripts,·builds·and·tests·were·not·executed.·D23·verification·requires·sf-orchestrator·/·sf_verification_plan·and·sf-verifier·/·sf_verification_run·within·the·approved·platform/profile;·otherwise·remain·not_executed/blocked.'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `hint:\"Do·not·retry·through·another·shell,·temporary·script,·native·tool·or·direct·Daemon·HTTP·call.·A·syntax·pass·does·not·grant·path,·role,·state·or·execution·permission.\"` with `····hint:·'Do·not·retry·through·another·shell,·temporary·script,·native·tool·or·direct·Daemon·HTTP·call.·A·syntax·pass·does·not·grant·path,·role,·state·or·execution·permission.',`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `}` with `···},⏎··`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "severity": "error",
+      "message": "Insert `(⏎······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "severity": "error",
+      "message": "Insert `⏎····)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "severity": "error",
+      "message": "Replace `········String((entry·as·Record<string,·unknown>).target_path·??·'')` with `··········String((entry·as·Record<string,·unknown>).target_path·??·'')⏎············`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "severity": "error",
+      "message": "Replace `.endsWith((`${SPEC_DIR_NAME}/project/extension_registry.json`·as·const))` with `··.endsWith(`${SPEC_DIR_NAME}/project/extension_registry.json`·as·const)⏎······)⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "severity": "error",
+      "message": "Replace `value.startsWith((`${SPEC_DIR_NAME}/project/`·as·const))` with `··value.startsWith(`${SPEC_DIR_NAME}/project/`·as·const)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/`·as·const)` with ``${SPEC_DIR_NAME}/project/`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "severity": "error",
+      "message": "Replace `··})` with `····})⏎··`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts",
+      "severity": "error",
+      "message": "Replace `await·new·WAL(path.join(projectRoot,·SPEC_DIR_NAME,·'runtime',·'events.jsonl')).readAllEvents()` with `⏎······await·new·WAL(⏎········path.join(projectRoot,·SPEC_DIR_NAME,·'runtime',·'events.jsonl')⏎······).readAllEvents()⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts",
+      "severity": "error",
+      "message": "Replace `··!relative.startsWith((`${SPEC_DIR_NAME}/work-items/`·as·const))·&&·!relative.startsWith('evidence/')` with `(!relative.startsWith(`${SPEC_DIR_NAME}/work-items/`·as·const)·&&⏎········!relative.startsWith('evidence/'))⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/work-item-lifecycle-v11.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/work-item-lifecycle-v11.ts",
+      "severity": "error",
+      "message": "Replace `⏎····projectRoot,⏎····SPEC_DIR_NAME,⏎····'project',⏎····'spec_manifest.json',⏎··` with `projectRoot,·SPEC_DIR_NAME,·'project',·'spec_manifest.json'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/write-guard-v11.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/write-guard-v11.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/project/`·as·const)` with ``${SPEC_DIR_NAME}/project/`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `·if·(started)·fail('CONCATENATED_QUOTING');·quote·=·char;·started·=·true;·}` with `⏎······if·(started)·fail('CONCATENATED_QUOTING');⏎······quote·=·char;⏎······started·=·true;`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `·else·if·(/\\s/.test(char))·{·if·(started)·{·tokens.push(token);·token·=·'';·started·=·false;·closedQuote·=·false;·}` with `·}·else·if·(/\\s/.test(char))·{⏎······if·(started)·{⏎········tokens.push(token);⏎········token·=·'';⏎········started·=·false;⏎········closedQuote·=·false;⏎·····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `·else·{·if·(/[;&|<>`$%\\\\]/.test(char))·fail('SHELL_SYNTAX');·token·+=·char;·started·=·true;` with `·}·else·{⏎······if·(/[;&|<>`$%\\\\]/.test(char))·fail('SHELL_SYNTAX');⏎······token·+=·char;⏎······started·=·true;⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `······checker.getShorthandAssignmentValueSymbol(node.parent):checker.getSymbolAtLocation(node))?.declarations??[]).some(d` with `··········?·checker.getShorthandAssignmentValueSymbol(node.parent)⏎··········:·checker.getSymbolAtLocation(node)⏎········)?.declarations·??·[]⏎······).some(⏎········d·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `······d.getSourceFile()===file·&&·(ts.isVariableDeclaration(d)||ts.isBindingElement(d)||ts.isParameter(d)` with `··········d.getSourceFile()·===·file·&&⏎··········(ts.isVariableDeclaration(d)·||⏎············ts.isBindingElement(d)·||⏎············ts.isParameter(d)·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `ts.isFunctionDeclaration(d)||ts.isFunctionExpression(d)||ts.isImportClause(d)||ts.isImportSpecifier(d)||ts.isNamespaceImport(d))` with `····ts.isFunctionDeclaration(d)·||⏎············ts.isFunctionExpression(d)·||⏎············ts.isImportClause(d)·||⏎············ts.isImportSpecifier(d)·||⏎············ts.isNamespaceImport(d))⏎······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `········ts.SyntaxKind.ThisKeyword,·ts.SyntaxKind.SuperKeyword,` with `··········ts.SyntaxKind.ThisKeyword,⏎··········ts.SyntaxKind.SuperKeyword,⏎·········`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `········ts.SyntaxKind.EnumDeclaration,·ts.SyntaxKind.ModuleDeclaration,` with `··········ts.SyntaxKind.EnumDeclaration,⏎··········ts.SyntaxKind.ModuleDeclaration,⏎·········`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `ts.isIdentifier(node.expression)·&&·node.expression.text·===·'require'))` with `(ts.isIdentifier(node.expression)·&&·node.expression.text·===·'require'))⏎······)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `(ts.isPropertyAssignment(parent)·||·ts.isMethodDeclaration(parent))·&&·parent.name·===·node` with `((ts.isPropertyAssignment(parent)·||·ts.isMethodDeclaration(parent))·&&⏎············parent.name·===·node)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `(node.text·===·'module'·&&·parent.name.text·===·'exports'·||·node.text·===·'exports')` with `((node.text·===·'module'·&&·parent.name.text·===·'exports')·||⏎··············node.text·===·'exports'))`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `(node.text·===·'process'·&&·parent.name.text·===·'exit'·||·node.text·===·'console'·&&·parent.name.text·===·'log'` with `((node.text·===·'process'·&&·parent.name.text·===·'exit')·||⏎··············(node.text·===·'console'·&&·parent.name.text·===·'log'))`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `name.split('/').some(p·=>·['.git',·SPEC_DIR_NAME,·'node_modules'].includes(p.toLowerCase()))·||·!tracked.has(name))` with `⏎········name⏎··········.split('/')⏎··········.some(p·=>·['.git',·SPEC_DIR_NAME,·'node_modules'].includes(p.toLowerCase()))·||⏎········!tracked.has(name)⏎······)⏎·······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/source-snapshot.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/source-snapshot.ts",
+      "severity": "error",
+      "message": "Replace `{·cwd:·root,·env,·encoding:·'utf8',·windowsHide:·true,·shell:false,·timeout:·15000,·maxBuffer:·16·*·1024·*·1024·},(error,stdout)=>` with `····{⏎········cwd:·root,⏎········env,⏎········encoding:·'utf8',⏎········windowsHide:·true,⏎········shell:·false,⏎········timeout:·15000,⏎········maxBuffer:·16·*·1024·*·1024,⏎······},⏎······(error,·stdout)·=>·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/source-snapshot.ts",
+      "severity": "error",
+      "message": "Insert `··}·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/source-snapshot.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/`·as·const)))` with ``${SPEC_DIR_NAME}/`·as·const))⏎·····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/source-snapshot.ts",
+      "severity": "error",
+      "message": "Replace `(`${SPEC_DIR_NAME}/`·as·const)` with ``${SPEC_DIR_NAME}/`·as·const`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/static-task-command.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/static-task-command.ts",
+      "severity": "error",
+      "message": "Replace `(!/^[A-Za-z0-9_.\\-/]+$/.test(value)||value.split('/').some(p=>['.git',SPEC_DIR_NAME,'node_modules'].includes(p.toLowerCase()))||!/(?:\\.md|\\.json|\\.[cm]?js|\\.ts)$/.test(value))` with `·(⏎····!/^[A-Za-z0-9_.\\-/]+$/.test(value)·||⏎····value.split('/').some(p·=>·['.git',·SPEC_DIR_NAME,·'node_modules'].includes(p.toLowerCase()))·||⏎····!/(?:\\.md|\\.json|\\.[cm]?js|\\.ts)$/.test(value)⏎··)⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/static-task-command.ts",
+      "severity": "error",
+      "message": "Replace `else·if(c==='^'){if(alternative)fail('ANCHOR');output+='^';}` with `}·else·if·(c·===·'^')·{⏎······if·(alternative)·fail('ANCHOR');⏎······output·+=·'^';`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/static-task-command.ts",
+      "severity": "error",
+      "message": "Replace `else·if(c==='*'){fail('REPETITION');}` with `}·else·if·(c·===·'*')·{⏎······fail('REPETITION');`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/static-task-command.ts",
+      "severity": "error",
+      "message": "Replace `else·if(c==='.')·{output+='[\\\\s\\\\S]';alternative=true;}` with `}·else·if·(c·===·'.')·{⏎······output·+=·'[\\\\s\\\\S]';⏎······alternative·=·true;`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/verification-schema.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/verification-schema.ts",
+      "severity": "error",
+      "message": "Replace `!f.path.split('/').some(part·=>·['.git',SPEC_DIR_NAME,'node_modules'].includes(part.toLowerCase())),·'PROTECTED_INPUT'` with `⏎······!f.path⏎········.split('/')⏎········.some(part·=>·['.git',·SPEC_DIR_NAME,·'node_modules'].includes(part.toLowerCase())),⏎······'PROTECTED_INPUT'⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/verification-schema.ts",
+      "severity": "error",
+      "message": "Replace `['unit','property','integration','e2e','regression'].includes(String(a.verificationType))·&&·Number.isSafeInteger(a.commandIndex)·&&·(a.commandIndex·as·number)·>=·0·&&·(a.commandIndex·as·number)·<=·63·&&·typeof·a.command·===·'string'·&&·typeof·a.taskPath·===·'string',·'AUTHORITY_SCHEMA_INVALID'` with `··['unit',·'property',·'integration',·'e2e',·'regression'].includes(⏎········String(a.verificationType)⏎······)·&&⏎······Number.isSafeInteger(a.commandIndex)·&&⏎······(a.commandIndex·as·number)·>=·0·&&⏎······(a.commandIndex·as·number)·<=·63·&&⏎······typeof·a.command·===·'string'·&&⏎······typeof·a.taskPath·===·'string',⏎····'AUTHORITY_SCHEMA_INVALID'⏎··`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/verification-schema.ts",
+      "severity": "error",
+      "message": "Replace `·assertVerificationRelativePath(name);·verificationRequire(name.startsWith((`${SPEC_DIR_NAME}/`·as·const)),·'AUTHORITY_PATH_INVALID');·verificationHash(identity);` with `⏎····assertVerificationRelativePath(name);⏎····verificationRequire(name.startsWith(`${SPEC_DIR_NAME}/`·as·const),·'AUTHORITY_PATH_INVALID');⏎····verificationHash(identity);⏎·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    }
+  ],
+  "removed": [
+    {
+      "file": "packages/configuration/src/accepted-config.ts",
+      "severity": "error",
+      "message": "Replace `··` with `····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/configuration/src/accepted-config.ts",
+      "severity": "error",
+      "message": "Replace `·type:·'project',·data:·options.projectData·??·(options.projectPath·?·readObject(join(options.projectPath,·'.specforge',·'config',·'project.json'),·false)·:·{}),·timestamp:·0,·schemaVersion:·CONFIG_SCHEMA_VERSION` with `⏎······type:·'project',⏎······data:⏎········options.projectData·??⏎········(options.projectPath⏎··········?·readObject(join(options.projectPath,·'.specforge',·'config',·'project.json'),·false)⏎··········:·{}),⏎······timestamp:·0,⏎······schemaVersion:·CONFIG_SCHEMA_VERSION,⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "severity": "error",
+      "message": "Insert `··`",
+      "rule": "prettier/prettier",
+      "count": 5
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "severity": "error",
+      "message": "Replace `·input·=·JSON.parse(body);·}⏎····catch·{·return·this.sendJsonResponse(res,·400,·this.errorBody('INVALID_JSON',·'Invalid·JSON'));` with `⏎······input·=·JSON.parse(body);⏎····}·catch·{⏎······return·this.sendJsonResponse(res,·400,·this.errorBody('INVALID_JSON',·'Invalid·JSON'));⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "severity": "error",
+      "message": "Replace `··········` with `············`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "severity": "error",
+      "message": "Replace `{·...payload,·sessionId:·payload.sessionId·??·sessionId·}` with `...payload,⏎········sessionId:·payload.sessionId·??·sessionId`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "severity": "error",
+      "message": "Replace `reason:·'NATIVE_SHELL_REQUIRES_CONTROLLED_EXECUTION:·use·sf_safe_bash;·declared·filenames·cannot·constrain·arbitrary·shell·writes'·})` with `··reason:⏎··········'NATIVE_SHELL_REQUIRES_CONTROLLED_EXECUTION:·use·sf_safe_bash;·declared·filenames·cannot·constrain·arbitrary·shell·writes',⏎······})⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/http/HTTPServer.ts",
+      "severity": "error",
+      "message": "Replace `path.join(projectPath,·'.specforge',·'work-items',·state.work_item_id),·state.work_item_id` with `⏎········path.join(projectPath,·'.specforge',·'work-items',·state.work_item_id),⏎········state.work_item_id⏎······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/observability/observability-config.ts",
+      "severity": "error",
+      "message": "Replace `((decision)` with `(decision`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/observability/observability-recorder.ts",
+      "severity": "error",
+      "message": "Replace `⏎······projectRoot,⏎······\".specforge\",⏎······\"logs\",⏎······\"observability\",⏎······\"daemon\",⏎····` with `projectRoot,·'.specforge',·'logs',·'observability',·'daemon'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `&&·value.module_file·===·`${root}/module.json`` with `value.module_file·===·`${root}/module.json`·&&`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `&&·value.requirements·===·`${root}/requirements.md`` with `value.requirements·===·`${root}/requirements.md`·&&`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `&&·value.design·===·`${root}/design.md`` with `value.design·===·`${root}/design.md`·&&`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Delete `&&·`",
+      "rule": "prettier/prettier",
+      "count": 2
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `·||·value.project_spec_version.length·===·0` with `·value.project_spec_version.length·===·0·||`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `·||·typeof·value.project_name·!==·'string'` with `·typeof·value.project_name·!==·'string'·||`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `·||·value.project_name.length·===·0` with `·value.project_name.length·===·0·||`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `&&·value.project_spec_version.length·>·0` with `value.project_spec_version.length·>·0·&&`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `&&·isRecord(value.namespaces)` with `isRecord(value.namespaces)·&&`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `⏎········&&·value.module_code·===·moduleCode⏎········&&·!LEGACY_MODULE_IDENTITY_FIELDS.some((field)·=>·field·in·value)⏎······)` with `·&&⏎········value.module_code·===·moduleCode·&&⏎········!LEGACY_MODULE_IDENTITY_FIELDS.some(field·=>·field·in·value)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "severity": "error",
+      "message": "Replace `await·readFile(⏎····join(projectPath,·'.specforge',·'project',·'spec_manifest.json'),⏎····'utf8',` with `⏎····await·readFile(join(projectPath,·'.specforge',·'project',·'spec_manifest.json'),·'utf8')`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "severity": "error",
+      "message": "Replace `······!/^[a-f0-9]{64}$/.test(input.archive_sha256)·||` with `····!/^[a-f0-9]{64}$/.test(input.archive_sha256)·||⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "severity": "error",
+      "message": "Replace `projectPathIdentity(resolver.resolveProjectRuntimeDir(target))·!==·projectPathIdentity(path.join(target,·'.specforge/runtime')))` with `⏎····projectPathIdentity(resolver.resolveProjectRuntimeDir(target))·!==⏎····projectPathIdentity(path.join(target,·'.specforge/runtime'))⏎··)⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "severity": "error",
+      "message": "Replace `catch·(error)·{·if·((error·as·NodeJS.ErrnoException).code·!==·'ESRCH')·throw·error;` with `}·catch·(error)·{⏎······if·((error·as·NodeJS.ErrnoException).code·!==·'ESRCH')·throw·error;⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "severity": "error",
+      "message": "Replace `await·exists(target)` with `(await·exists(target))`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "severity": "error",
+      "message": "Replace `(await·exists(doneFile)·||·!equal(await·inventory(plan.stage),·ready.inventory))` with `((await·exists(doneFile))·||·!equal(await·inventory(plan.stage),·ready.inventory))⏎·······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-design-gate.ts",
+      "severity": "error",
+      "message": "Insert `⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "severity": "error",
+      "message": "'SPEC_DIR_NAME' is defined but never used. Allowed unused vars must match /^_/u",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "severity": "error",
+      "message": "Replace `·authoritativeItems·=·await·readAuthoritativeWorkItems(_deps,·baseDir);·}⏎··catch·{·return·{·success:·false,·error:·'AUTHORITATIVE_STATE_UNAVAILABLE',·policy_violation:·true·};` with `⏎····authoritativeItems·=·await·readAuthoritativeWorkItems(_deps,·baseDir);⏎··}·catch·{⏎····return·{·success:·false,·error:·'AUTHORITATIVE_STATE_UNAVAILABLE',·policy_violation:·true·};⏎·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts",
+      "severity": "error",
+      "message": "Replace `······input.workItem.code_permission_revoked·!==·true` with `····input.workItem.code_permission_revoked·!==·true⏎··`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts",
+      "severity": "error",
+      "message": "Insert `.catch(`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts",
+      "severity": "error",
+      "message": "Replace `.catch(()·=>·undefined` with `()·=>·undefined⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts",
+      "severity": "error",
+      "message": "Replace `········` with `······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts",
+      "severity": "error",
+      "message": "Replace `\".specforge\",·\"work-items\"` with `'.specforge',·'work-items'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-code-permission.ts",
+      "severity": "error",
+      "message": "Replace `((file)` with `(file`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-code-permission.ts",
+      "severity": "error",
+      "message": "Replace `(p)` with `p`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-v11-decision.ts",
+      "severity": "error",
+      "message": "Replace `··` with `····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-verification-gate.ts",
+      "severity": "error",
+      "message": "Replace `=await·inspectVerificationEvidenceIntegrity({projectRoot:baseDir,workItemDir:path.join(baseDir,'.specforge','work-items',workItemId),workItemId,executionEvidenceConsumer:deps.verificationRuntime` with `·=·await·inspectVerificationEvidenceIntegrity({⏎······projectRoot:·baseDir,⏎······workItemDir:·path.join(baseDir,·'.specforge',·'work-items',·workItemId),⏎······workItemId,⏎······executionEvidenceConsumer:·deps.verificationRuntime,⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/artifact-schema-validation.ts",
+      "severity": "error",
+      "message": "Insert `······`",
+      "rule": "prettier/prettier",
+      "count": 6
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/authoritative-work-items.ts",
+      "severity": "error",
+      "message": "Replace `return·typeof·state·===·'string'` with `··return·typeof·state·===·'string'⏎·········`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/authoritative-work-items.ts",
+      "severity": "error",
+      "message": "Replace `····})` with `······})⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/candidate-generation-integrity.ts",
+      "severity": "error",
+      "message": "Replace `⏎····projectRoot,⏎····'.specforge',⏎····'project',⏎····'spec_manifest.json',⏎··` with `projectRoot,·'.specforge',·'project',·'spec_manifest.json'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/candidate-generation-integrity.ts",
+      "severity": "error",
+      "message": "Replace `await·walkFiles(fullPath))` with `(await·walkFiles(fullPath)))`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-integrity.ts",
+      "severity": "error",
+      "message": "Insert `)⏎··`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "severity": "error",
+      "message": "Replace `(p)` with `p`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "severity": "error",
+      "message": "Replace `(c)` with `c`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "severity": "error",
+      "message": "Replace `····!part·||·part·===·'.'·||·part·===·'..'·||·/[<>:\"|?*\\x00-\\x1f]/.test(part)·||·/[.·]$/.test(part)·||·/^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\\.|$)/i.test(part)))` with `··········!part·||⏎··········part·===·'.'·||⏎··········part·===·'..'·||⏎··········/[<>:\"|?*\\x00-\\x1f]/.test(part)·||⏎··········/[.·]$/.test(part)·||⏎··········/^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\\.|$)/i.test(part)⏎······)⏎··)⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "severity": "error",
+      "message": "Replace `····receipt.args.every((arg:·unknown)·=>·typeof·arg·===·'string')·&&·typeof·receipt.cwd·===·'string'·&&` with `········receipt.args.every((arg:·unknown)·=>·typeof·arg·===·'string')·&&⏎········typeof·receipt.cwd·===·'string'·&&⏎·······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "severity": "error",
+      "message": "Replace `·wi,·owner:·path.join(wi,·'git_bootstrap'),·context:·path.join(wi,·'git_context.json'),·runtime:·path.join(root,·'.specforge/runtime')` with `⏎····wi,⏎····owner:·path.join(wi,·'git_bootstrap'),⏎····context:·path.join(wi,·'git_context.json'),⏎····runtime:·path.join(root,·'.specforge/runtime'),⏎·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "severity": "error",
+      "message": "Replace `expected_writes:·args[0]·===·'update-ref'·||·args[0]·===·'symbolic-ref'·&&·args.length·>·2·?·'Git·refs/HEAD·only'·:·'Read-only;·optional·index·refresh·disabled'·})·+·'\\n'` with `····expected_writes:⏎··········args[0]·===·'update-ref'·||·(args[0]·===·'symbolic-ref'·&&·args.length·>·2)⏎············?·'Git·refs/HEAD·only'⏎············:·'Read-only;·optional·index·refresh·disabled',⏎······})·+·'\\n'⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "severity": "error",
+      "message": "Replace `⏎····'candidates/trace_delta.md',⏎····'.specforge/project/trace_matrix.md',⏎····'trace_delta'⏎··` with `'candidates/trace_delta.md',·'.specforge/project/trace_matrix.md',·'trace_delta'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts",
+      "severity": "error",
+      "message": "Replace `····` with `········`",
+      "rule": "prettier/prettier",
+      "count": 2
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts",
+      "severity": "error",
+      "message": "Replace `··].map(filePath·=>·path.resolve(filePath)))` with `······].map(filePath·=>·path.resolve(filePath))⏎····)⏎··`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts",
+      "severity": "error",
+      "message": "Replace `await·collectWorkItemFiles({·...input,·directory:·fullPath·}` with `(await·collectWorkItemFiles({·...input,·directory:·fullPath·})`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts",
+      "severity": "error",
+      "message": "Insert `··`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts",
+      "severity": "error",
+      "message": "Replace `})` with `··})⏎······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "severity": "error",
+      "message": "Replace `⏎······projectRoot,⏎······'.specforge',⏎······'project',⏎······'modules',⏎······moduleCode⏎····` with `projectRoot,·'.specforge',·'project',·'modules',·moduleCode`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "severity": "error",
+      "message": "Delete `⏎·······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "severity": "error",
+      "message": "Replace `⏎····input.projectRoot,⏎····'.specforge',⏎····'project',⏎····'trace_matrix.md',⏎··` with `input.projectRoot,·'.specforge',·'project',·'trace_matrix.md'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "severity": "error",
+      "message": "Replace `⏎········input.projectRoot,⏎········'.specforge',⏎········'project',⏎········'modules',⏎········moduleCode,⏎········'trace.md',⏎······),` with `input.projectRoot,·'.specforge',·'project',·'modules',·moduleCode,·'trace.md')`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "severity": "error",
+      "message": "Replace `········` with `··········`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/native-write-boundary.ts",
+      "severity": "error",
+      "message": "Replace `·allowed:·false,·reason:·'NATIVE_TOOL_REQUIRES_CONTROLLED_EXECUTION:·use·sf_safe_bash·or·an·approved·SpecForge·tool'` with `⏎······allowed:·false,⏎······reason:⏎········'NATIVE_TOOL_REQUIRES_CONTROLLED_EXECUTION:·use·sf_safe_bash·or·an·approved·SpecForge·tool',⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/native-write-boundary.ts",
+      "severity": "error",
+      "message": "Replace `····workItem:·{·work_item_id:·state.work_item_id,` with `············workItem:·{⏎··············work_item_id:·state.work_item_id,⏎·············`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/native-write-boundary.ts",
+      "severity": "error",
+      "message": "Replace `······allowed_write_files:·Array.isArray(wi.allowed_write_files)·?·wi.allowed_write_files·as·any` with `··············allowed_write_files:·Array.isArray(wi.allowed_write_files)⏎················?·(wi.allowed_write_files·as·any)⏎···············`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "severity": "error",
+      "message": "Replace `······` with `········`",
+      "rule": "prettier/prettier",
+      "count": 2
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "severity": "error",
+      "message": "Replace `····.filter(` with `··).filter(⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "severity": "error",
+      "message": "Delete `··`",
+      "rule": "prettier/prettier",
+      "count": 3
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "severity": "error",
+      "message": "Replace `··modules.length·>·0,` with `modules.length·>·0`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "severity": "error",
+      "message": "Replace `··module.code_paths.length·>·0,` with `module.code_paths.length·>·0`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "severity": "error",
+      "message": "Delete `····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "severity": "error",
+      "message": "Replace `⏎······'git',⏎······['rev-parse',·'--show-toplevel'],⏎······{·cwd:·projectRoot·}` with `'git',·['rev-parse',·'--show-toplevel'],·{⏎······cwd:·projectRoot`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/rollback-runner-v11.ts",
+      "severity": "error",
+      "message": "Replace `·step.operation·===·'restore_from_backup'·?·'restored'·as·const·:` with `·:·step.operation·===·'restore_from_backup'⏎············?·('restored'·as·const)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/rollback-runner-v11.ts",
+      "severity": "error",
+      "message": "Replace `'modified'·as·const` with `··:·('modified'·as·const)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_design_gate_core.ts",
+      "severity": "error",
+      "message": "Replace `⏎··workItemRoot,⏎` with `·workItemRoot·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `\"node:os\"` with `'node:os';`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `\"node:path\"` with `'node:path';`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `\"node:fs/promises\"` with `'node:fs/promises';`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "'existsSync' is defined but never used. Allowed unused vars must match /^_/u",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `\"node:fs\"` with `'node:fs';`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "'SPEC_DIR_NAME' is defined but never used. Allowed unused vars must match /^_/u",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/types/directory-layout\"` with `'@specforge/types/directory-layout';`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `\"@specforge/host-profile\"` with `'@specforge/host-profile';`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `\"./sf_safe_bash_types\"` with `'./sf_safe_bash_types';`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "'applyRules' is defined but never used. Allowed unused vars must match /^_/u",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `\"./sf_safe_bash_rules\"` with `'./sf_safe_bash_rules';`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "'resolveCwd' is defined but never used. Allowed unused vars must match /^_/u",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `\"./sf_safe_bash_executor\"` with `'./sf_safe_bash_executor';`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "'guardBashCommand' is defined but never used. Allowed unused vars must match /^_/u",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `\"./bash-guard\"` with `'./bash-guard';`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Insert `;`",
+      "rule": "prettier/prettier",
+      "count": 11
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "'loadHostProfile' is defined but never used. Allowed unused vars must match /^_/u",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `\"host-profile.json\")` with `'host-profile.json');`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `\"utf-8\")` with `'utf-8');`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "'buildDefaultProfile' is defined but never used. Allowed unused vars must match /^_/u",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `\"win32\"` with `'win32';`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `\"1.0\"` with `'1.0'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `·platform,·release:·os.release(),·version:·`${platform}·${os.release()}`,·arch:·os.arch(),·totalmem_gb:·Math.round(os.totalmem()·/·1024·/·1024·/·1024),·cpu_count:·os.cpus().length` with `⏎······platform,⏎······release:·os.release(),⏎······version:·`${platform}·${os.release()}`,⏎······arch:·os.arch(),⏎······totalmem_gb:·Math.round(os.totalmem()·/·1024·/·1024·/·1024),⏎······cpu_count:·os.cpus().length,⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `·system_lang:·\"en-US\",·console_codepage:·null,·encoding:·\"UTF-8\",·timezone:·Intl.DateTimeFormat().resolvedOptions().timeZone·||·\"UTC\",·tz_offset_minutes:·-new·Date().getTimezoneOffset(),·datetime_now:·new·Date().toISOString()` with `⏎······system_lang:·'en-US',⏎······console_codepage:·null,⏎······encoding:·'UTF-8',⏎······timezone:·Intl.DateTimeFormat().resolvedOptions().timeZone·||·'UTC',⏎······tz_offset_minutes:·-new·Date().getTimezoneOffset(),⏎······datetime_now:·new·Date().toISOString(),⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `·name:·\"pwsh\",·path:·\"pwsh.exe\",·version:·null,·default_encoding:·\"UTF-8\",·needs_encoding_fix:·true,·available:·true,·preferred:·true` with `⏎············name:·'pwsh',⏎············path:·'pwsh.exe',⏎············version:·null,⏎············default_encoding:·'UTF-8',⏎············needs_encoding_fix:·true,⏎············available:·true,⏎············preferred:·true,⏎·········`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `·name:·\"powershell\",·path:·\"powershell.exe\",·version:·null,·default_encoding:·\"UTF-8\",·needs_encoding_fix:·true,·available:·true,·preferred:·false` with `⏎············name:·'powershell',⏎············path:·'powershell.exe',⏎············version:·null,⏎············default_encoding:·'UTF-8',⏎············needs_encoding_fix:·true,⏎············available:·true,⏎············preferred:·false,⏎·········`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `·name:·\"cmd\",·path:·\"cmd.exe\",·version:·null,·default_encoding:·\"UTF-8\",·needs_encoding_fix:·true,·available:·true,·preferred:·false` with `⏎············name:·'cmd',⏎············path:·'cmd.exe',⏎············version:·null,⏎············default_encoding:·'UTF-8',⏎············needs_encoding_fix:·true,⏎············available:·true,⏎············preferred:·false,⏎·········`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `{·name:·\"bash\",·path:·\"/bin/bash\",·version:·null,·default_encoding:·\"UTF-8\",·needs_encoding_fix:·false,·available:·true,·preferred:·true·}` with `⏎··········{⏎············name:·'bash',⏎············path:·'/bin/bash',⏎············version:·null,⏎············default_encoding:·'UTF-8',⏎············needs_encoding_fix:·false,⏎············available:·true,⏎············preferred:·true,⏎··········},⏎········`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `\"pwsh\"·:·\"bash\"` with `'pwsh'·:·'bash'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `·?·\"$OutputEncoding·=·[System.Text.Encoding]::UTF8;·[Console]::OutputEncoding·=·[System.Text.Encoding]::UTF8;·[Console]::InputEncoding·=·[System.Text.Encoding]::UTF8\"·:·\"\"` with `⏎········?·'$OutputEncoding·=·[System.Text.Encoding]::UTF8;·[Console]::OutputEncoding·=·[System.Text.Encoding]::UTF8;·[Console]::InputEncoding·=·[System.Text.Encoding]::UTF8'⏎········:·''`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `\"\\\\\"·:·\"/\"` with `'\\\\'·:·'/'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "Replace `\"logs\"` with `'logs'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "'DEFAULT_TIMEOUT_MS' is assigned a value but never used. Allowed unused vars must match /^_/u",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "'DEFAULT_OUTPUT_LIMIT' is assigned a value but never used. Allowed unused vars must match /^_/u",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "'MIN_TIMEOUT_MS' is assigned a value but never used. Allowed unused vars must match /^_/u",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts",
+      "severity": "error",
+      "message": "'MAX_TIMEOUT_MS' is assigned a value but never used. Allowed unused vars must match /^_/u",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_executor.ts",
+      "severity": "error",
+      "message": "Replace `parts.some(p·=>·['.specforge',·'.git',·'sf-user'].includes(p.toLowerCase()))·||·parts.some(p·=>·p.includes(':')))` with `⏎····parts.some(p·=>·['.specforge',·'.git',·'sf-user'].includes(p.toLowerCase()))·||⏎····parts.some(p·=>·p.includes(':'))⏎··)⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"./sf_safe_bash_types\"` with `'./sf_safe_bash_types';`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"./sf_safe_bash_core\"` with `'./sf_safe_bash_core';`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Insert `;`",
+      "rule": "prettier/prettier",
+      "count": 56
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"pass\")·return·result` with `'pass')·return·result;`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"pass\"·}` with `'pass'·};`",
+      "rule": "prettier/prettier",
+      "count": 2
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"reject\",·rejection·})` with `'reject',·rejection·});`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"rewrite\",·rewrite·})` with `'rewrite',·rewrite·});`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `⏎····/\\brm\\s+-[rRf]+\\s+\\/(\\s|$)/.test(trimmed)·||⏎····/\\brm\\s+-[rRf]+\\s+\\/\\*/.test(trimmed)⏎··` with `/\\brm\\s+-[rRf]+\\s+\\/(\\s|$)/.test(trimmed)·||·/\\brm\\s+-[rRf]+\\s+\\/\\*/.test(trimmed)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"dangerous-rm-rf-root\"` with `'dangerous-rm-rf-root'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"禁止·rm·-rf·根目录或·/*。\"` with `'禁止·rm·-rf·根目录或·/*。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"如果你要清理具体目录，请用绝对路径并避免通配符：rm·-rf·/specific/path/。\"` with `'如果你要清理具体目录，请用绝对路径并避免通配符：rm·-rf·/specific/path/。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"这是不可逆操作。工具不会执行任何·rm·-rf·/·形式的命令。\"` with `'这是不可逆操作。工具不会执行任何·rm·-rf·/·形式的命令。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"dangerous-rm-rf-home\"` with `'dangerous-rm-rf-home'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"禁止·rm·-rf·~·或·$HOME。\"` with `'禁止·rm·-rf·~·或·$HOME。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"如要清理·home·下特定目录，用绝对路径：rm·-rf·/Users/xxx/specific-dir。\"` with `'如要清理·home·下特定目录，用绝对路径：rm·-rf·/Users/xxx/specific-dir。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"误删整个·home·后果严重。工具拒绝执行。\"` with `'误删整个·home·后果严重。工具拒绝执行。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"dangerous-remove-item-drive-root\"` with `'dangerous-remove-item-drive-root'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"禁止·Remove-Item·删除驱动器根目录。\"` with `'禁止·Remove-Item·删除驱动器根目录。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"请指定具体子路径。\"` with `'请指定具体子路径。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"工具拒绝执行驱动器根目录的递归删除。\"` with `'工具拒绝执行驱动器根目录的递归删除。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"dangerous-sudo\"` with `'dangerous-sudo'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"禁止使用·sudo。\"` with `'禁止使用·sudo。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"用户级开发任务不应需要提权。如需修改系统级配置，请用户手动操作。\"` with `'用户级开发任务不应需要提权。如需修改系统级配置，请用户手动操作。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"工具不允许·agent·提权操作，避免误改系统状态。\"` with `'工具不允许·agent·提权操作，避免误改系统状态。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `/(curl|wget|fetch|iwr|invoke-webrequest)\\s+.*\\|\\s*(sh|bash|zsh|pwsh|powershell|iex)/i.test(trimmed)` with `⏎····/(curl|wget|fetch|iwr|invoke-webrequest)\\s+.*\\|\\s*(sh|bash|zsh|pwsh|powershell|iex)/i.test(⏎······trimmed⏎····)⏎··`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"dangerous-pipe-to-shell\"` with `'dangerous-pipe-to-shell'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"禁止下载内容直接管道执行。\"` with `'禁止下载内容直接管道执行。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"先下载到本地查看：curl·-o·/tmp/installer.sh·URL，检查内容后再执行。\"` with `'先下载到本地查看：curl·-o·/tmp/installer.sh·URL，检查内容后再执行。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"管道执行远程脚本是严重安全风险。\"` with `'管道执行远程脚本是严重安全风险。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"dangerous-disk-format\"` with `'dangerous-disk-format'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"禁止格式化或分区操作。\"` with `'禁止格式化或分区操作。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"磁盘管理操作请用户手动执行。\"` with `'磁盘管理操作请用户手动执行。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"工具拒绝任何磁盘破坏性操作。\"` with `'工具拒绝任何磁盘破坏性操作。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"dangerous-dd-to-device\"` with `'dangerous-dd-to-device'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"禁止·dd·写入设备文件。\"` with `'禁止·dd·写入设备文件。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"如需写入磁盘镜像或设备，请用户手动执行并加·sudo。\"` with `'如需写入磁盘镜像或设备，请用户手动执行并加·sudo。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"dd·写错设备会瞬间销毁整个磁盘。工具拒绝任何·of=/dev/*·形式的命令。\"` with `'dd·写错设备会瞬间销毁整个磁盘。工具拒绝任何·of=/dev/*·形式的命令。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"dangerous-redirect-to-device\"` with `'dangerous-redirect-to-device'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"禁止重定向到设备文件。\"` with `'禁止重定向到设备文件。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"如需写入设备，请用户手动执行。\"` with `'如需写入设备，请用户手动执行。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"重定向到·/dev/sd*·等会破坏磁盘数据。\"` with `'重定向到·/dev/sd*·等会破坏磁盘数据。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"dangerous-chmod-777-root\"` with `'dangerous-chmod-777-root'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"禁止·chmod·-R·777·根目录。\"` with `'禁止·chmod·-R·777·根目录。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"请指定具体目录：chmod·-R·777·/your/specific/path。\"` with `'请指定具体目录：chmod·-R·777·/your/specific/path。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"全局放开权限会破坏系统安全。\"` with `'全局放开权限会破坏系统安全。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"dangerous-fork-bomb\"` with `'dangerous-fork-bomb'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"检测到·fork·bomb·模式。\"` with `'检测到·fork·bomb·模式。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"工具拒绝执行任何·fork·bomb·形式的命令。\"` with `'工具拒绝执行任何·fork·bomb·形式的命令。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"fork·bomb·会瞬间耗尽系统资源。\"` with `'fork·bomb·会瞬间耗尽系统资源。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `⏎····/git\\s+push\\s+(--force|-f)(\\s|$)/.test(trimmed)·&&⏎····!/--force-with-lease/.test(trimmed)⏎··` with `/git\\s+push\\s+(--force|-f)(\\s|$)/.test(trimmed)·&&·!/--force-with-lease/.test(trimmed)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"dangerous-git-push-force\"` with `'dangerous-git-push-force'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"禁止·git·push·--force（不带·--force-with-lease）。\"` with `'禁止·git·push·--force（不带·--force-with-lease）。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"用·git·push·--force-with-lease·替代。它会在远程被改时失败，更安全。\"` with `'用·git·push·--force-with-lease·替代。它会在远程被改时失败，更安全。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"--force·会无条件覆盖远程分支，可能导致他人工作丢失。--force-with-lease·在远程被改时会失败，更安全。\"` with `'--force·会无条件覆盖远程分支，可能导致他人工作丢失。--force-with-lease·在远程被改时会失败，更安全。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"dangerous-git-reset-hard-origin\"` with `'dangerous-git-reset-hard-origin'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"禁止·git·reset·--hard·到远程分支引用。\"` with `'禁止·git·reset·--hard·到远程分支引用。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `·\"如确实想丢弃本地工作，先备份当前分支：git·branch·backup-$(date·+%s)，然后执行·reset。\"` with `⏎········'如确实想丢弃本地工作，先备份当前分支：git·branch·backup-$(date·+%s)，然后执行·reset。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"git·reset·--hard·origin/main·会无条件丢弃所有本地未提交的修改。\"` with `'git·reset·--hard·origin/main·会无条件丢弃所有本地未提交的修改。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"no-cd-in-command\"` with `'no-cd-in-command'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"禁止在命令里使用·cd·改变工作目录。\"` with `'禁止在命令里使用·cd·改变工作目录。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"cd·在命令拼接中常见但脆弱：路径含特殊字符会断、cd·失败时后续命令仍执行、跨平台行为不一致。cwd·参数由工具层处理这些边界情况。\"` with `'cd·在命令拼接中常见但脆弱：路径含特殊字符会断、cd·失败时后续命令仍执行、跨平台行为不一致。cwd·参数由工具层处理这些边界情况。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"no-heredoc\"` with `'no-heredoc'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"禁止使用·heredoc·语法（<<EOF）。\"` with `'禁止使用·heredoc·语法（<<EOF）。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"heredoc·在受控壳中解析复杂，跨平台不兼容。\"` with `'heredoc·在受控壳中解析复杂，跨平台不兼容。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"no-multiline-inline\"` with `'no-multiline-inline'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"禁止使用·-c·跑多行内联代码。\"` with `'禁止使用·-c·跑多行内联代码。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"多行·-c·在·Windows·/·受控壳里会被截断或解析错。\"` with `'多行·-c·在·Windows·/·受控壳里会被截断或解析错。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"|\"` with `'|'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"use-read-file-instead-of-cat\"` with `'use-read-file-instead-of-cat'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"不要用·cat·读文件。\"` with `'不要用·cat·读文件。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"cat·在·Windows·cmd·上不存在。read_file·跨平台、支持行号范围、有内置截断。\"` with `'cat·在·Windows·cmd·上不存在。read_file·跨平台、支持行号范围、有内置截断。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"use-file-search-instead-of-find\"` with `'use-file-search-instead-of-find'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"不要用·find·搜索文件。\"` with `'不要用·find·搜索文件。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"find·在·Windows·上语法不同（没有·GNU·find）。file_search·跨平台、底层用·ripgrep·更快。\"` with `'find·在·Windows·上语法不同（没有·GNU·find）。file_search·跨平台、底层用·ripgrep·更快。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"use-grep-search-instead-of-grep\"` with `'use-grep-search-instead-of-grep'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"不要用·grep·搜索内容。\"` with `'不要用·grep·搜索内容。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"grep·在·Windows·cmd·上不存在。grep_search·用·ripgrep，跨平台·+·更快·+·自动尊重·.gitignore。\"` with `'grep·在·Windows·cmd·上不存在。grep_search·用·ripgrep，跨平台·+·更快·+·自动尊重·.gitignore。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"use-fs-write-instead-of-mkdir\"` with `'use-fs-write-instead-of-mkdir'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"不要用·mkdir·单独创建目录。\"` with `'不要用·mkdir·单独创建目录。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Insert `⏎·······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"如果只需要空目录占位，写一个·.gitkeep·文件即可。\"` with `'如果只需要空目录占位，写一个·.gitkeep·文件即可。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"use-fs-write-instead-of-echo-redirect\"` with `'use-fs-write-instead-of-echo-redirect'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"不要用·echo·+·>·写文件。\"` with `'不要用·echo·+·>·写文件。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"echo·在·Windows·cmd·上对引号转义处理不同；fs_write·跨平台。\"` with `'echo·在·Windows·cmd·上对引号转义处理不同；fs_write·跨平台。'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"bun·test\"` with `'bun·test'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"bun·run·build\"` with `'bun·run·build'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"bun·install\"` with `'bun·install'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"npm·test\"` with `'npm·test'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"pnpm·test\"` with `'pnpm·test'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"yarn·test\"` with `'yarn·test'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"npm·install\"` with `'npm·install'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"pnpm·install\"` with `'pnpm·install'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"npm·run·build\"` with `'npm·run·build'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"pnpm·run·build\"` with `'pnpm·run·build'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"cargo·build/test\"` with `'cargo·build/test'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"git·clone\"` with `'git·clone'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"docker·build\"` with `'docker·build'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"pwsh\"·&&·shell·!==·\"powershell\")·return·pass` with `'pwsh'·&&·shell·!==·'powershell')·return·pass;`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"auto-wrap-long-running\"` with `'auto-wrap-long-running'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"\\n\")` with `'\\n');`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"-\")·&&·/^[A-Z]/.test(firstToken))·return·pass` with `'-')·&&·/^[A-Z]/.test(firstToken))·return·pass;`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"tool-not-available\"` with `'tool-not-available'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"(未安装)\"` with `'(未安装)'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"win32\"` with `'win32'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"安装·bun:·powershell·-c·\\\"irm·bun.sh/install.ps1·|·iex\\\"·或·npm·install·-g·bun\"` with `'安装·bun:·powershell·-c·\"irm·bun.sh/install.ps1·|·iex\"·或·npm·install·-g·bun'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"从·https://nodejs.org·下载安装\"` with `'从·https://nodejs.org·下载安装'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"从·https://git-scm.com/download/win·下载安装\"` with `'从·https://git-scm.com/download/win·下载安装'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"npm·install·-g·pnpm\"` with `'npm·install·-g·pnpm'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"npm·install·-g·yarn\"` with `'npm·install·-g·yarn'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"scoop·install·ripgrep·/·winget·install·BurntSushi.ripgrep.MSVC\"` with `'scoop·install·ripgrep·/·winget·install·BurntSushi.ripgrep.MSVC'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"从·https://python.org·下载安装\"` with `'从·https://python.org·下载安装'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"从·https://docker.com/products/docker-desktop·下载安装\"` with `'从·https://docker.com/products/docker-desktop·下载安装'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"scoop·install·jq·/·winget·install·jqlang.jq\"` with `'scoop·install·jq·/·winget·install·jqlang.jq'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"scoop·install·gh·/·winget·install·GitHub.cli\"` with `'scoop·install·gh·/·winget·install·GitHub.cli'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `\"darwin\"` with `'darwin'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/sf_safe_bash_rules.ts",
+      "severity": "error",
+      "message": "Replace `⏎` with `;`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "severity": "error",
+      "message": "Insert `·(⏎·····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "severity": "error",
+      "message": "Replace `String((entry·as·Record<string,·unknown>).target_path·??·'')` with `··String((entry·as·Record<string,·unknown>).target_path·??·'')⏎············`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "severity": "error",
+      "message": "Replace `··········.endsWith('.specforge/project/extension_registry.json')` with `············.endsWith('.specforge/project/extension_registry.json')⏎······)⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "severity": "error",
+      "message": "Insert `··`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "severity": "error",
+      "message": "Insert `)⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "severity": "error",
+      "message": "Replace `})` with `··})⏎··`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts",
+      "severity": "error",
+      "message": "Replace `await·new·WAL(path.join(projectRoot,·'.specforge',·'runtime',·'events.jsonl')).readAllEvents()` with `⏎······await·new·WAL(path.join(projectRoot,·'.specforge',·'runtime',·'events.jsonl')).readAllEvents()⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts",
+      "severity": "error",
+      "message": "Replace `··!relative.startsWith('.specforge/work-items/')·&&·!relative.startsWith('evidence/')` with `(!relative.startsWith('.specforge/work-items/')·&&·!relative.startsWith('evidence/'))⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/work-item-lifecycle-v11.ts",
+      "severity": "error",
+      "message": "Replace `⏎····projectRoot,⏎····'.specforge',⏎····'project',⏎····'spec_manifest.json',⏎··` with `projectRoot,·'.specforge',·'project',·'spec_manifest.json'`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `·if·(started)·fail('CONCATENATED_QUOTING');·quote·=·char;·started·=·true;·}⏎····else·if·(/\\s/.test(char))·{·if·(started)·{·tokens.push(token);·token·=·'';·started·=·false;·closedQuote·=·false;·}` with `⏎······if·(started)·fail('CONCATENATED_QUOTING');⏎······quote·=·char;⏎······started·=·true;⏎····}·else·if·(/\\s/.test(char))·{⏎······if·(started)·{⏎········tokens.push(token);⏎········token·=·'';⏎········started·=·false;⏎········closedQuote·=·false;⏎·····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `else·{·if·(/[;&|<>`$%\\\\]/.test(char))·fail('SHELL_SYNTAX');·token·+=·char;·started·=·true;` with `}·else·{⏎······if·(/[;&|<>`$%\\\\]/.test(char))·fail('SHELL_SYNTAX');⏎······token·+=·char;⏎······started·=·true;⏎···`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `checker.getShorthandAssignmentValueSymbol(node.parent):checker.getSymbolAtLocation(node))?.declarations??[]).some(d` with `····?·checker.getShorthandAssignmentValueSymbol(node.parent)⏎··········:·checker.getSymbolAtLocation(node)⏎········)?.declarations·??·[]⏎······).some(⏎········d·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `d.getSourceFile()===file·&&·(ts.isVariableDeclaration(d)||ts.isBindingElement(d)||ts.isParameter(d)` with `····d.getSourceFile()·===·file·&&⏎··········(ts.isVariableDeclaration(d)·||⏎············ts.isBindingElement(d)·||⏎············ts.isParameter(d)·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `········ts.isFunctionDeclaration(d)||ts.isFunctionExpression(d)||ts.isImportClause(d)||ts.isImportSpecifier(d)||ts.isNamespaceImport(d))` with `············ts.isFunctionDeclaration(d)·||⏎············ts.isFunctionExpression(d)·||⏎············ts.isImportClause(d)·||⏎············ts.isImportSpecifier(d)·||⏎············ts.isNamespaceImport(d))⏎······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `ts.SyntaxKind.ThisKeyword,·ts.SyntaxKind.SuperKeyword,` with `··ts.SyntaxKind.ThisKeyword,⏎··········ts.SyntaxKind.SuperKeyword,⏎·········`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `ts.SyntaxKind.EnumDeclaration,·ts.SyntaxKind.ModuleDeclaration,` with `··ts.SyntaxKind.EnumDeclaration,⏎··········ts.SyntaxKind.ModuleDeclaration,⏎·········`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `ts.isIdentifier(node.expression)·&&·node.expression.text·===·'require')` with `(ts.isIdentifier(node.expression)·&&·node.expression.text·===·'require'))⏎······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `ts.isPropertyAssignment(parent)·||·ts.isMethodDeclaration(parent))·&&·parent.name·===·node` with `(ts.isPropertyAssignment(parent)·||·ts.isMethodDeclaration(parent))·&&⏎············parent.name·===·node)`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `(node.text·===·'module'·&&·parent.name.text·===·'exports'·||·node.text·===·'exports'` with `((node.text·===·'module'·&&·parent.name.text·===·'exports')·||⏎··············node.text·===·'exports')`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `(node.text·===·'process'·&&·parent.name.text·===·'exit'·||·node.text·===·'console'·&&·parent.name.text·===·'log')` with `((node.text·===·'process'·&&·parent.name.text·===·'exit')·||⏎··············(node.text·===·'console'·&&·parent.name.text·===·'log')))`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "severity": "error",
+      "message": "Replace `name.split('/').some(p·=>·['.git',·'.specforge',·'node_modules'].includes(p.toLowerCase()))·||·!tracked.has(name))` with `⏎········name⏎··········.split('/')⏎··········.some(p·=>·['.git',·'.specforge',·'node_modules'].includes(p.toLowerCase()))·||⏎········!tracked.has(name)⏎······)⏎·······`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/source-snapshot.ts",
+      "severity": "error",
+      "message": "Replace `··{·cwd:·root,·env,·encoding:·'utf8',·windowsHide:·true,·shell:false,·timeout:·15000,·maxBuffer:·16·*·1024·*·1024·},(error,stdout)=>` with `······{⏎········cwd:·root,⏎········env,⏎········encoding:·'utf8',⏎········windowsHide:·true,⏎········shell:·false,⏎········timeout:·15000,⏎········maxBuffer:·16·*·1024·*·1024,⏎······},⏎······(error,·stdout)·=>·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/source-snapshot.ts",
+      "severity": "error",
+      "message": "Replace `······` with `········}·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/source-snapshot.ts",
+      "severity": "error",
+      "message": "Insert `⏎·····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/static-task-command.ts",
+      "severity": "error",
+      "message": "Replace `(!/^[A-Za-z0-9_.\\-/]+$/.test(value)||value.split('/').some(p=>['.git','.specforge','node_modules'].includes(p.toLowerCase()))||!/(?:\\.md|\\.json|\\.[cm]?js|\\.ts)$/.test(value))` with `·(⏎····!/^[A-Za-z0-9_.\\-/]+$/.test(value)·||⏎····value.split('/').some(p·=>·['.git',·'.specforge',·'node_modules'].includes(p.toLowerCase()))·||⏎····!/(?:\\.md|\\.json|\\.[cm]?js|\\.ts)$/.test(value)⏎··)⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/static-task-command.ts",
+      "severity": "error",
+      "message": "Replace `·else·if(c==='^'){if(alternative)fail('ANCHOR');output+='^';}` with `·}·else·if·(c·===·'^')·{⏎······if·(alternative)·fail('ANCHOR');⏎······output·+=·'^';`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/static-task-command.ts",
+      "severity": "error",
+      "message": "Replace `·else·if(c==='*'){fail('REPETITION');}` with `·}·else·if·(c·===·'*')·{⏎······fail('REPETITION');`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/static-task-command.ts",
+      "severity": "error",
+      "message": "Replace `·else·if(c==='.')·{output+='[\\\\s\\\\S]';alternative=true;}` with `·}·else·if·(c·===·'.')·{⏎······output·+=·'[\\\\s\\\\S]';⏎······alternative·=·true;`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/verification-schema.ts",
+      "severity": "error",
+      "message": "Replace `!f.path.split('/').some(part·=>·['.git','.specforge','node_modules'].includes(part.toLowerCase())),·'PROTECTED_INPUT'` with `⏎······!f.path⏎········.split('/')⏎········.some(part·=>·['.git',·'.specforge',·'node_modules'].includes(part.toLowerCase())),⏎······'PROTECTED_INPUT'⏎····`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/verification-schema.ts",
+      "severity": "error",
+      "message": "Replace `····['unit','property','integration','e2e','regression'].includes(String(a.verificationType))·&&·Number.isSafeInteger(a.commandIndex)·&&·(a.commandIndex·as·number)·>=·0·&&·(a.commandIndex·as·number)·<=·63·&&·typeof·a.command·===·'string'·&&·typeof·a.taskPath·===·'string',·'AUTHORITY_SCHEMA_INVALID'` with `······['unit',·'property',·'integration',·'e2e',·'regression'].includes(⏎········String(a.verificationType)⏎······)·&&⏎······Number.isSafeInteger(a.commandIndex)·&&⏎······(a.commandIndex·as·number)·>=·0·&&⏎······(a.commandIndex·as·number)·<=·63·&&⏎······typeof·a.command·===·'string'·&&⏎······typeof·a.taskPath·===·'string',⏎····'AUTHORITY_SCHEMA_INVALID'⏎··`",
+      "rule": "prettier/prettier",
+      "count": 1
+    },
+    {
+      "file": "packages/daemon-core/src/verification/verification-schema.ts",
+      "severity": "error",
+      "message": "Replace `·assertVerificationRelativePath(name);·verificationRequire(name.startsWith('.specforge/'),·'AUTHORITY_PATH_INVALID');·verificationHash(identity);` with `⏎····assertVerificationRelativePath(name);⏎····verificationRequire(name.startsWith('.specforge/'),·'AUTHORITY_PATH_INVALID');⏎····verificationHash(identity);⏎·`",
+      "rule": "prettier/prettier",
+      "count": 1
+    }
+  ],
+  "added_by_rule": {
+    "prettier/prettier": 277
+  },
+  "removed_by_rule": {
+    "prettier/prettier": 326,
+    "@typescript-eslint/no-unused-vars": 12
+  },
+  "qualification": "Stable keys = relative file + severity + message + rule; line/column ignored. Parser/config crashes remain raw separate failures and are not counted as zero-error scans. No full lint PASS."
+}

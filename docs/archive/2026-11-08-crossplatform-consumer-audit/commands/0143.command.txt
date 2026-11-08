@@ -1,0 +1,30 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/run-linux.cjs",
+    "scripts/build-workspace.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "linux-final-workspace-ordered-build",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T04:05:58.839Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\run-linux.cjs",
+      "sha256": "b64476de976c19a14766f82aae7c200e151fab84384c0bcb70887af0c6ff5433",
+      "size": 1303,
+      "extension": ".cjs"
+    },
+    {
+      "argument_index": 1,
+      "path": "D:\\code\\SpecForge\\scripts\\build-workspace.ts",
+      "sha256": "42f88fb9686fbcfbd0bdcdebc9b056536018ca778a61555c04b0671f88c12aca",
+      "size": 1441,
+      "extension": ".ts"
+    }
+  ]
+}

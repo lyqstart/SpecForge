@@ -1,0 +1,11 @@
+{
+  "utc": "2026-11-08T04:39:34.775Z",
+  "observations": [
+    {
+      "path": "scripts/lib/prepare-current-release.ts",
+      "before_sha256": "cf1c207347df38c97ae19ee4a13cbf82e769e8f1b5bf3316b0ed423524d0a994",
+      "after_sha256": "5ea60f503f3642342a2ae102e82ce08527b9470b50a233282b10dc98a996bc4a"
+    }
+  ],
+  "source_identity_check": "PASS"
+}

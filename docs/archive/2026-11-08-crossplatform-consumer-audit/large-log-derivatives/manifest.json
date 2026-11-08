@@ -1,0 +1,98 @@
+{
+  "utc": "2026-11-08T06:44:07.867Z",
+  "records": [
+    {
+      "original_path": "ci-c0-quality-unit.raw.log",
+      "original_sha256": "0c2e0f08e596cf6c402fb7ab28f0db9f922af8cc180b288ee258cda64b25f3df",
+      "original_bytes": 5644467,
+      "retained_local_original": "local-assets/raw-log-originals/ci-c0-quality-unit.raw.log",
+      "public_parts": [
+        {
+          "path": "large-log-derivatives/ci-c0-quality-unit.raw.log/part-001.raw",
+          "offset": 0,
+          "bytes": 1048576,
+          "sha256": "bf33d39ad6dbd8ae6505a10b642782811e507857d9a3c3dcc625d2666629eff3"
+        },
+        {
+          "path": "large-log-derivatives/ci-c0-quality-unit.raw.log/part-002.raw",
+          "offset": 1048576,
+          "bytes": 1048576,
+          "sha256": "eeb80c550e51d4ce3e7317f263e760e8f4b6ca22b646453902a9de16a657aedf"
+        },
+        {
+          "path": "large-log-derivatives/ci-c0-quality-unit.raw.log/part-003.raw",
+          "offset": 2097152,
+          "bytes": 1048576,
+          "sha256": "3f463b25eb46c02ca9dddeef6f79b0d3fba403cf12ce974b20ef577811e2d9c3"
+        },
+        {
+          "path": "large-log-derivatives/ci-c0-quality-unit.raw.log/part-004.raw",
+          "offset": 3145728,
+          "bytes": 1048576,
+          "sha256": "8040ac104f98c6e9d3531972194bd34f2987d840f08ab8e7aa0ff2b7b6957784"
+        },
+        {
+          "path": "large-log-derivatives/ci-c0-quality-unit.raw.log/part-005.raw",
+          "offset": 4194304,
+          "bytes": 1048576,
+          "sha256": "4f771fcdc172dc2ac2450c4955822580de002d068e4a86bbccac29dd60547f8d"
+        },
+        {
+          "path": "large-log-derivatives/ci-c0-quality-unit.raw.log/part-006.raw",
+          "offset": 5242880,
+          "bytes": 401587,
+          "sha256": "3e3cd9a102428a6ddec120f364e873b10a5b395c39bbf90b8f67dec7508eca4b"
+        }
+      ],
+      "reconstruction": "Concatenate public_parts in listed offset order; exact original UTF-8/raw bytes, no text normalization or redaction.",
+      "reconstructed_sha256": "0c2e0f08e596cf6c402fb7ab28f0db9f922af8cc180b288ee258cda64b25f3df"
+    },
+    {
+      "original_path": "ci-f17-final-quality.raw.log",
+      "original_sha256": "241da65ed6218fc6f7dbb3f8e79d0b848c3b369a08c19a5311f8c94943d0622d",
+      "original_bytes": 5679285,
+      "retained_local_original": "local-assets/raw-log-originals/ci-f17-final-quality.raw.log",
+      "public_parts": [
+        {
+          "path": "large-log-derivatives/ci-f17-final-quality.raw.log/part-001.raw",
+          "offset": 0,
+          "bytes": 1048576,
+          "sha256": "cb94fe63d41a11a8811bf6e66c6850005af8a9c68a7b0ce5590421a50e77f740"
+        },
+        {
+          "path": "large-log-derivatives/ci-f17-final-quality.raw.log/part-002.raw",
+          "offset": 1048576,
+          "bytes": 1048576,
+          "sha256": "12c77731950129825195680334930944faa932b5385e47a86c4174ecbb259775"
+        },
+        {
+          "path": "large-log-derivatives/ci-f17-final-quality.raw.log/part-003.raw",
+          "offset": 2097152,
+          "bytes": 1048576,
+          "sha256": "f1c718fc0dfa0525263637e180934ea88b49c742d7669f73896e80796f3662a6"
+        },
+        {
+          "path": "large-log-derivatives/ci-f17-final-quality.raw.log/part-004.raw",
+          "offset": 3145728,
+          "bytes": 1048576,
+          "sha256": "a9e24693867770b2dd835511db29269052095427b1fea7b5ec994629ca7f365b"
+        },
+        {
+          "path": "large-log-derivatives/ci-f17-final-quality.raw.log/part-005.raw",
+          "offset": 4194304,
+          "bytes": 1048576,
+          "sha256": "fd4c73abfad508870f47bd8460cd0bc9c9bdd37bc28d1bcab208ec044da968ee"
+        },
+        {
+          "path": "large-log-derivatives/ci-f17-final-quality.raw.log/part-006.raw",
+          "offset": 5242880,
+          "bytes": 436405,
+          "sha256": "65c1affb39897f6e883c03a062460aed4ecae9a1942dcd9ab0055e7cb9389fe4"
+        }
+      ],
+      "reconstruction": "Concatenate public_parts in listed offset order; exact original UTF-8/raw bytes, no text normalization or redaction.",
+      "reconstructed_sha256": "241da65ed6218fc6f7dbb3f8e79d0b848c3b369a08c19a5311f8c94943d0622d"
+    }
+  ],
+  "qualification": "Full originals retained under ignored local-assets; all original bytes are also published in <=1MiB hash-bound chunks. This is lossless size bounding, not evidence deletion or a filtered success summary."
+}

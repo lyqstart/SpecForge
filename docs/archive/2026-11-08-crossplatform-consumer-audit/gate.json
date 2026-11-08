@@ -1,0 +1,129 @@
+{
+  "utc": "2026-11-08T02:01:20.843Z",
+  "mode": "CODEX_DIRECT",
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "head": "bb0f172aab26fab79d6484c458e0122d9353f604",
+  "bootstrap": "READY clean local/live remote bb0f172a, independently observed before initialization",
+  "EXPERIENCE_FILE_READ": "YES",
+  "ACTIVE_EXPERIENCE_RULES_FILE_READ": "YES",
+  "APPLICABLE_EXPERIENCE_RULES": [
+    "EXP-002",
+    "EXP-004",
+    "EXP-007",
+    "EXP-008",
+    "EXP-022",
+    "EXP-025",
+    "EXP-026",
+    "EXP-033",
+    "EXP-036",
+    "EXP-082",
+    "EXP-193",
+    "EXP-195",
+    "EXP-251",
+    "EXP-260",
+    "EXP-261",
+    "EXP-276",
+    "EXP-283",
+    "EXP-287"
+  ],
+  "REPEATED_ERROR_CHECK": "PASS",
+  "HISTORICAL_LEDGER_SEARCH": "Cross-platform/systemd/deployment/help/error; EXP002/004/007/008/022/025/026/036/082/193/195/251/260/261/276/283/287; ERR2010..2024",
+  "rules": [
+    {
+      "path": "docs/rule/specforge-active-development-rules.md",
+      "sha256": "678d838160f2ab80146d60d5921f2604bf456ae93e1cd63a3e7706f730a82272",
+      "same_chat_full_read_reused": true
+    },
+    {
+      "path": "docs/rule/specforge-execution-mode-and-evidence-protocol.md",
+      "sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef",
+      "same_chat_full_read_reused": true
+    },
+    {
+      "path": "docs/product-specification/authority-registry.md",
+      "sha256": "5ba13ce20545eb660aa8556097f2d5cbdea0a018c46ce60674985784e87d9a1e",
+      "same_chat_full_read_reused": true
+    },
+    {
+      "path": "docs/product-specification/specforge-product-specification.md",
+      "sha256": "0cf3cef264e84b198746852b340cb8d6b2b88562472357a78fa7850c83816d31",
+      "same_chat_full_read_reused": true
+    },
+    {
+      "path": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "sha256": "956df3943a44d1b99636790a32e9b2a0dc266b7116f50b60b7b8c6f2614423ac",
+      "same_chat_full_read_reused": true
+    }
+  ],
+  "active_full_read_proof": {
+    "source": "docs/archive/2026-11-08-role-alignment/gate.json",
+    "source_sha256": "4bc0a0c0cc47d1aa17ce24e49b9c994dabd4d99cdbc059f56abf3cd3ba6b40df",
+    "lines": 2650,
+    "chunks": [
+      {
+        "start": 1,
+        "end": 490,
+        "sha256": "b7bc61d261d6b5ced7ed645f7c65c61a54e6220ae3e77f22c4ecc2493c9f420e"
+      },
+      {
+        "start": 491,
+        "end": 1540,
+        "sha256": "ffba76bf250282de79c9e938c9cd4b4f47d78312c90410b4a8b621a6610a667d"
+      },
+      {
+        "start": 1541,
+        "end": 2090,
+        "sha256": "1b6e3cb005423244b2f49e333357a18c1d79940c9d32da4ecbf47c4150afd5cf"
+      },
+      {
+        "start": 2091,
+        "end": 2250,
+        "sha256": "bba521d26d15777eaf27693eea5ea1050e6a83487b5e4a3efceb13ecfd1ed76c"
+      },
+      {
+        "start": 2251,
+        "end": 2300,
+        "sha256": "fa178edd27e6eb0089fda809caaaad96a434515f2b7bd69f267f0f3cc463ac93"
+      },
+      {
+        "start": 2301,
+        "end": 2445,
+        "sha256": "131b85ec2a13a93bfe26277e5efec6d21035e105693f46bf93728bf669324f8e"
+      },
+      {
+        "start": 2446,
+        "end": 2480,
+        "sha256": "1ee00190d0b1ffef4c6ae39774ac11a1777540912bc6406672c993adb5932764"
+      },
+      {
+        "start": 2481,
+        "end": 2530,
+        "sha256": "1b079003f7130955b260d724342a66bc61682997f41f342d3bd12d7031880870"
+      },
+      {
+        "start": 2531,
+        "end": 2650,
+        "sha256": "6cb0dfdb8a986f9cabdcea1d02b106d2abbae70f602f415913b801c2baa1cec1"
+      }
+    ],
+    "joined_equal_original": true,
+    "raw_sha256": "678d838160f2ab80146d60d5921f2604bf456ae93e1cd63a3e7706f730a82272"
+  },
+  "carrier_provenance": [
+    {
+      "path": "run-command.cjs",
+      "previous_sha256": "a4322f7d32d8d7c1814e1fe3cdab8c914180d0cf799ce2a0d7cf7dde5793d6f1",
+      "current_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d"
+    },
+    {
+      "path": "seal-receipts.cjs",
+      "previous_sha256": "b26b9ae560ea5e1a5fa778877d162e9681e6e895be2a4b9fdbc840551c25a2a4",
+      "current_sha256": "b26b9ae560ea5e1a5fa778877d162e9681e6e895be2a4b9fdbc840551c25a2a4"
+    },
+    {
+      "path": "run-publication-command.cjs",
+      "previous_sha256": "47f775517a2d20a4cbe2ce9aef2f71495b4494d5cebec58ecd3896c207fcd982",
+      "current_sha256": "e9228d76b550893f1781e6e8309b93c9ff554cf85cb9390e597e151a6bec142f"
+    }
+  ]
+}

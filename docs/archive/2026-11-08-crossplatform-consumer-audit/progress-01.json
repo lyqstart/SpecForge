@@ -1,0 +1,15 @@
+{
+  "utc": "2026-11-08T02:46:51.993Z",
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "status": "IN_PROGRESS",
+  "current_source_branch": "codex/crossplatform-consumer-audit",
+  "original_business": "No workflow/model/application actions in this phase",
+  "global_windows_installation": "Still qualified1.0.23;not upgraded in this phase",
+  "remaining": [
+    "full current documents/help/error review andsource fixes",
+    "actual newLinux release entry andisolated install/lifecycle",
+    "remaining fullworkspace regression failures andCI audit producers",
+    "realGitHubmacOS/Windowsjobs aftersource commit/push",
+    "officialWindowsnewpatchdeployment,freshloader,independent finalassessment andseal/publication"
+  ]
+}

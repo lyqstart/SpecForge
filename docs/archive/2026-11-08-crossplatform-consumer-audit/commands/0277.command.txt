@@ -1,0 +1,17 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "push",
+    "--force-with-lease=refs/heads/main:a8900cba9da5b4b8e9a49a57bb78bd1455b30dc3",
+    "origin",
+    "main:refs/heads/main"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "publish-cold-entry-repair-for-final-ci",
+  "expected_writes": "remote-main-expected-fastforward-and-evidence",
+  "started_utc": "2026-11-08T05:53:34.359Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": []
+}

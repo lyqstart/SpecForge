@@ -1,0 +1,36 @@
+{
+  "utc": "2026-11-08T02:22:19.428Z",
+  "observations": [
+    {
+      "path": "tests/unit/installer/command_path.test.ts",
+      "before_sha256": "d6bd2c86ac42459cdbdf064d7cca10f01dd770de1bfb9a34b2bf7e9e662691e7",
+      "after_sha256": "6ec08340f76a6bb5e3b4c7bba96d4aab149a01a855290f4a5bb4ebf655688b87"
+    },
+    {
+      "path": "tests/unit/installer/installer_manifest_path_contract.test.ts",
+      "before_sha256": "c333af2d227a75ff3136760e3894c8ef0cfc528851fc14f60264d1d2055d2307",
+      "after_sha256": "14e7e8e2288ebd7dc518d4e06787ac01854a33d10f71f2965eda3d0515ee52c7"
+    },
+    {
+      "path": "tests/unit/installer/cmdVerify.test.ts",
+      "before_sha256": "7a63d78810ab709fd998c8c1d349c7ad7c66a25b4d250c14e2af3b30128916eb",
+      "after_sha256": "eb6de0be33c7068af19fc15c0335346f8e84703489cba1a24e1bc8c1b8fe7468"
+    },
+    {
+      "path": "tests/integration/service-management/linux-systemd-full-lifecycle.test.ts",
+      "before_sha256": "41dda211e2b7b0bf7f99b09c628d60dfa9943d25165ed37b12f49068b58b1bb5",
+      "after_sha256": "00c806603c80d9ac790e63761eecec06588d4d86297370208bfd279853e1c97e"
+    },
+    {
+      "path": "packages/service-management/src/orchestrator/healthcheck.ts",
+      "before_sha256": "ea512e77ead6f93c49e72f6dcc16c6f73e7962d6a4c0b87816562cd2f98464a5",
+      "after_sha256": "369fe7005a8f3e62c0ed7fd2b23b0f348aead538f2415a711582a7a0ac40d849"
+    },
+    {
+      "path": "packages/service-management/tests/unit/healthcheck-request-timer.test.ts",
+      "before_sha256": null,
+      "after_sha256": "5599a524aa2d77c222161521d6796e8f42fb453cafc10c6d6d6a49e7780fd05b"
+    }
+  ],
+  "source_identity_check": "PASS"
+}

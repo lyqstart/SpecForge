@@ -1,0 +1,2011 @@
+{
+  "utc": "2026-11-08T04:01:53.779Z",
+  "documents": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "eeb90f36dfda4f25285728c53048413ef3be2bd562b5f5eb4758c9435c03bffc",
+      "bytes": 11675,
+      "role": "CURRENT_ROOT_ENTRY"
+    },
+    {
+      "path": "README.md",
+      "sha256": "2062e78291fed9fe65f422dee1bb1ae1667506b912c10c59df79aa7a7ed51638",
+      "bytes": 10334,
+      "role": "CURRENT_ROOT_ENTRY"
+    },
+    {
+      "path": "docs/adr/ADR-006-specforge-dir-naming.md",
+      "sha256": "b453e5c439d984304b1722f0e28414d3c4df3a6112929204782990e91b5ceddd",
+      "bytes": 7153,
+      "role": "ADR_REVIEW"
+    },
+    {
+      "path": "docs/adr/ADR-007-architecture-consistency-governance.md",
+      "sha256": "16555b249fc11db4ace77a03dd0d71f1044a3054deee3b373104c9133e266c5e",
+      "bytes": 10634,
+      "role": "ADR_REVIEW"
+    },
+    {
+      "path": "docs/adr/ADR-008-new-project-governance-bootstrap.md",
+      "sha256": "8ec91d5e618d5b87d90113de433fa1909b1ab51b2aed390509754fe0025e449f",
+      "bytes": 7011,
+      "role": "ADR_REVIEW"
+    },
+    {
+      "path": "docs/adr/ADR-009-daemon-deployment-contract.md",
+      "sha256": "c1dfa9c43b07d91b34dc0a07c78d2811954bde92ad1ccc6e0acc6a16564e9d73",
+      "bytes": 3660,
+      "role": "ADR_REVIEW"
+    },
+    {
+      "path": "docs/adr/ADR-010-installer-manifest-canonical-location.md",
+      "sha256": "713344d6dd7b4533d79a4631ab75842396f9819548aebc5ae869fe6f0c1adfe2",
+      "bytes": 3516,
+      "role": "ADR_REVIEW"
+    },
+    {
+      "path": "docs/adr/ADR-011-user-level-runtime-path-boundary.md",
+      "sha256": "3ae5ed748142d1ebacbfd65afc65b2c1e02bda4deb9beeaf51c4652e791d455e",
+      "bytes": 3408,
+      "role": "ADR_REVIEW"
+    },
+    {
+      "path": "docs/adr/ADR-012-project-bound-recovery-checkpoints.md",
+      "sha256": "599eaebf4bb72d3ebf4790d76cf4f75cef20a241e74707109802f6286603da27",
+      "bytes": 3242,
+      "role": "ADR_REVIEW"
+    },
+    {
+      "path": "docs/adr/ADR-013-current-release-boundary-and-no-legacy-compatibility.md",
+      "sha256": "b02da99cd8fcd5793cc3c14d554afcb2b6c0efb1e2dcfe9a4417ce98438405d1",
+      "bytes": 7328,
+      "role": "ADR_REVIEW"
+    },
+    {
+      "path": "docs/adr/ADR-014-authority-model-recovery-freeze.md",
+      "sha256": "825da1afba4d2d68d1adebd9032f7babf99229eea41f2ad5a0f45f9aeba1df1e",
+      "bytes": 3274,
+      "role": "ADR_REVIEW"
+    },
+    {
+      "path": "docs/adr/ADR-015-remove-nssm-from-current-release.md",
+      "sha256": "ed2abeee3c657acbc5af8c01f7202035b86ec36b30e52ade21ce1a7fb95950ee",
+      "bytes": 1650,
+      "role": "ADR_REVIEW"
+    },
+    {
+      "path": "docs/adr/ADR-016-verification-evidence-closure-recovery.md",
+      "sha256": "367e78790079a0779f1038eeec973eb56da2da04a06bd06e20c701c6c34ef2c8",
+      "bytes": 1807,
+      "role": "ADR_REVIEW"
+    },
+    {
+      "path": "docs/cli/command-reference.md",
+      "sha256": "6edb2b9a3343c09cdc8eb65baf1bc01f58645c76fc1e921f92213f6abbfd9151",
+      "bytes": 2224,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/cli/installation-setup.md",
+      "sha256": "2fc8d5fc0f22c5c3ab2574c9a47a351aa471e6e0dad66629c0f75a6a6bc77cc2",
+      "bytes": 2582,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/conventions/README.md",
+      "sha256": "8531833b5577e8d51563e3681de3d3b9d976ba829636213c1106de2c7c19b90b",
+      "bytes": 1391,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/conventions/agent-roles.md",
+      "sha256": "04d0613fbdcde05bdf4a0737bdf3037bf6e3e8cc1126894c9d40dce6a079d3a7",
+      "bytes": 1441,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/conventions/directory-layout.md",
+      "sha256": "11b9241efc071ea992801c58496e4399cd4a2c6cde974bfbddf427a0ee434bd4",
+      "bytes": 4241,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/conventions/file-naming.md",
+      "sha256": "e05bdc93541e02938ab97a19a66bf67745b7a8ada08bdd61ee92d3ee1817b6d0",
+      "bytes": 1039,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/conventions/glossary.md",
+      "sha256": "5dd74a7a2f9b809f6d4e75f18ef485cec769d8696d9f81452281813566a60420",
+      "bytes": 1606,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/conventions/meta-json-spec.md",
+      "sha256": "676ed6e53ae0a91d0ed4d5eccb8b490f0a749d9d16411995fb3129d6236f7f57",
+      "bytes": 820,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/conventions/wi-lifecycle.md",
+      "sha256": "efd16d2c40acf5bc5e10218eeb76bdabae48430cb9fb696b8764da11e6bc54da",
+      "bytes": 1646,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/conventions/workflow-types.md",
+      "sha256": "0e1b6904e1a4dd7ba321a3a9cfbe7f16453d40a82f37edd77a401e26894ead36",
+      "bytes": 1021,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "sha256": "956df3943a44d1b99636790a32e9b2a0dc266b7116f50b60b7b8c6f2614423ac",
+      "bytes": 15676,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/design/windows-lpac-node-readonly-contract.md",
+      "sha256": "75312b393fd26c3b4ead623fc61600d6fe5304e04bb0cd394fbe62fd0a98e097",
+      "bytes": 20506,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/engineering-lessons/README.md",
+      "sha256": "764a1f1c25871667947729e44ba39d77f0d730fe76e6e3deae7144323d1b9274",
+      "bytes": 1726,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/engineering-lessons/_meta/schema.md",
+      "sha256": "b1d8838e5839f45d1e65be97702bcd541a5ce9e03ac43c7d4a4a3617725a3758",
+      "bytes": 4607,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/engineering-lessons/ai-tools/opencode/custom-tool-self-contained.md",
+      "sha256": "b680e7a4d2d33eb9854ffd3b528aedba050dfbaf1e310003ec995b60193856d3",
+      "bytes": 6899,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/engineering-lessons/universal/async-resource-lifecycle.md",
+      "sha256": "9df343d97a748386e24813c29c23d8a8ea055c77b8b69f8594407233f5c2c9bd",
+      "bytes": 20619,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/engineering-lessons/universal/host-environment-detection.md",
+      "sha256": "fbbb96a704e32b74d270f367e7ebfc927ce0eb81bbf6bc56613c111ceccd2388",
+      "bytes": 19273,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/engineering-lessons/universal/javascript-explicit-resource-management.md",
+      "sha256": "3b985df0a2aef30056d89a7088292385c3035931213845d0308b8a71fc3ccac7",
+      "bytes": 20353,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/engineering-lessons/universal/shell-command-execution.md",
+      "sha256": "d7426d3f3d0e609c28e8b110df0c5d11e8a66bb75149e72892f419301c5502e9",
+      "bytes": 21546,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/project-status.md",
+      "sha256": "4fb83690bbd5936a9b3bef8c4de56305b71a5a22bc963ea00d01424288199d76",
+      "bytes": 6217,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/rule/specforge-active-development-rules.md",
+      "sha256": "678d838160f2ab80146d60d5921f2604bf456ae93e1cd63a3e7706f730a82272",
+      "bytes": 174951,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/rule/specforge-execution-mode-and-evidence-protocol.md",
+      "sha256": "166db21aecece99aa7787bc62978a1bdb89c8b17750182ea1030fedd17a063ef",
+      "bytes": 8566,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/user/evidence-and-audit.md",
+      "sha256": "85e9071f596067a5fa1bb768996eccbb519a2f2ff986b7dc059b6fbb0a066c39",
+      "bytes": 641,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/user/install.md",
+      "sha256": "73b5a70cb4c6c30bcf63621cfaa9e70eab5e3f5d67f9e6e49e5789872ff0fc3f",
+      "bytes": 2509,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/user/quick-start.md",
+      "sha256": "c7e2344870a61d0540539bcb95b063537138965d549e6c4770b7a3a2ef800e6d",
+      "bytes": 966,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/user/recovery-and-rollback.md",
+      "sha256": "343cf1d86641ac24505e542d0d392e4365fb09f791ca8fd176d8588ae49beeef",
+      "bytes": 747,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/user/uninstall.md",
+      "sha256": "64c5a976816c574e9c34f9209bd2f47af000e09086dbfe86260d0e7c89fa3330",
+      "bytes": 704,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "docs/user/work-item-flow.md",
+      "sha256": "d60761315f3dbf4d61a1051a620ed905256c8d340f52d03c2e01bb0f25558f0e",
+      "bytes": 1458,
+      "role": "CURRENT_DOCUMENT_REVIEW"
+    },
+    {
+      "path": "packages/cli/README.md",
+      "sha256": "5fbe71c7f607d662fc24270cf03104a707ead03d0c383decf5e50d0b654f94b1",
+      "bytes": 2154,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/cli/docs/JobPoller.md",
+      "sha256": "5fd7cb9bba10349b299c185eaf95ca57e0501ab4a518724ba77d267dbe30e711",
+      "bytes": 1050,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/cli/docs/progress-indicators.md",
+      "sha256": "7fd4da0142dcf42b30802ed12f920da35ed8894042a7598143b845215a1ab44d",
+      "bytes": 929,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/configuration/README.md",
+      "sha256": "0a69422b51cd4fe123019b27cfe7edb8b3b872237d01de0d0de11fa254c075c0",
+      "bytes": 1794,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/configuration/docs/README.md",
+      "sha256": "84d91d749fa955847fe9883372aaa152ac913ba8a0dc2a76d092b7d0a9e207b9",
+      "bytes": 663,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/configuration/docs/best-practices.md",
+      "sha256": "defd3de36121dd0afab062b01593b48dc4bdd74385520bab2964f1aafbd7c802",
+      "bytes": 1275,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/configuration/docs/configuration-format.md",
+      "sha256": "f48dc259b81e4635fa2063f7e448b7e3557b888a2ccc1f7dda5d17f58d83b6aa",
+      "bytes": 1666,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/configuration/docs/examples.md",
+      "sha256": "7fcf587760c5ddda86fe4c1b384d61eae6522665436a32cefc40632d1a70353b",
+      "bytes": 1121,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/daemon-core/DEVELOPMENT.md",
+      "sha256": "23998b5c72eda6d8c994caf8220fdbf4b54ca03c17b2495d5c9e3bf954636ba4",
+      "bytes": 1381,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/daemon-core/README.md",
+      "sha256": "eece2ed27df1cd8b0024410adfc182c959d20ce1bc1acaf3ae735b0dfaa89a0e",
+      "bytes": 1628,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/daemon-core/docs/README.md",
+      "sha256": "a6203cdd5ee40f81977bc2743d6df9470a35bed007d0f98c9700f0f69ccb30ae",
+      "bytes": 1035,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/daemon-core/docs/authentication.md",
+      "sha256": "dab39e1fb580f371f7715c295209a9b41e93aae08afcb5f77a94178505f2d9a4",
+      "bytes": 1513,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/daemon-core/docs/cli-integration.md",
+      "sha256": "3b92a7bbc9ec9abb3fe2d7c818ebccd3f030ba0a0ae0d1ac12f4a24e7b0f6481",
+      "bytes": 1238,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/daemon-core/docs/error-codes.md",
+      "sha256": "32ba79ebd74aeae559331cefa71bf6a3ae34f8f2f1ded15db396c1382a91ef46",
+      "bytes": 3476,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/daemon-core/docs/error-handling.md",
+      "sha256": "7931432c77a107bd8165bf44ce0ae3440395f2c6f0374615d0363ea867f8da16",
+      "bytes": 2224,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/daemon-core/docs/event-schema.md",
+      "sha256": "ff4bdbde3bde04d7f5c050fa6786b57c17495ff086725222b43132416c707555",
+      "bytes": 1700,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/daemon-core/docs/http-endpoints.md",
+      "sha256": "c1e3e28dbe4fe6558c2d0afa5a15013f7c409a2db797d593befb23a46c8446b8",
+      "bytes": 3869,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/daemon-core/docs/thin-plugin-integration.md",
+      "sha256": "ae6acbd01b5fd70501fd5a6d206d1658bd00f958a8e245869a3eb430a587bc4c",
+      "bytes": 1387,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/daemon-core/examples/README.md",
+      "sha256": "1cd10ecc8b78e087bcf091c49b6463005be8e29f83e393c702c6aa94fa5d1153",
+      "bytes": 1523,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/daemon-core/src/verification/windows/README.md",
+      "sha256": "dc5e39b92b22cf088146b5faa149330c71535e13cba4f484f0f092ed2798070b",
+      "bytes": 2146,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/observability/README.md",
+      "sha256": "791bbfd6c804d3ff7ed72a3866dca5f268a7bd8fe5912cd1a0acf9106cd4050e",
+      "bytes": 1640,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/observability/VALIDATION_REPORT.md",
+      "sha256": "507e00ee668722b197f46041b13399c4ace83a3813c9561ed0ff5b41c27ae950",
+      "bytes": 4258,
+      "role": "PACKAGE_HISTORY_REVIEW"
+    },
+    {
+      "path": "packages/observability/docs/api.md",
+      "sha256": "36e913445894870c6055940ce2170213437622f284b98bd6c263279ec74350bf",
+      "bytes": 2163,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/observability/docs/north-star-scenarios.md",
+      "sha256": "cfc8c62660d568c5556801055d9ddcf473431ac99f43ee9d8453a0c01ff38be1",
+      "bytes": 1557,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/observability/docs/troubleshooting.md",
+      "sha256": "5d450828ca5ab660b1de28b09469b5ed25ad02f7c17b2c18d7b39923004f4c0f",
+      "bytes": 1533,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/observability/docs/user-guide.md",
+      "sha256": "9c9da407ed127174e41fbd509c2847d7a55041dc81315683954f7ccd40b2863c",
+      "bytes": 1718,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/opencode-adapter/README.md",
+      "sha256": "8c695423f3d0b0e0f4a1011d0d9fd443e8efe9dde76ef5f89abcb4e50d347244",
+      "bytes": 955,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/opencode-adapter/docs/installation.md",
+      "sha256": "f2a58cdaab117f357433ef41f38bf7aecc48f88563541ed9967e3561c3ee3c5f",
+      "bytes": 1288,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/permission-engine/PROJECT_STRUCTURE.md",
+      "sha256": "754bba9598671759878fc4efbe8a8cd10652114e5f50acae8e2471cedd86aa41",
+      "bytes": 4020,
+      "role": "PACKAGE_HISTORY_REVIEW"
+    },
+    {
+      "path": "packages/permission-engine/README.md",
+      "sha256": "4871c1cbd0c6ec5b7804c31210b1866aca3d1a489919fd46f2007a56be0b279a",
+      "bytes": 1236,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/scope-gate/README.md",
+      "sha256": "932259c75bd848f449130347c044b2306a6d522f8f56b949eaa1150542e3c117",
+      "bytes": 1770,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/service-management/README.md",
+      "sha256": "7b69626a323339a38ddec75a0df87491ae0bd8f7b870f9133c553eccdca4a945",
+      "bytes": 1172,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/workflow-runtime/AGENT_INTEGRATION_IMPLEMENTATION_SUMMARY.md",
+      "sha256": "132a9f30a3b9748ffa5d3c99078cd4f79525ad937dea604b67f1b69fe98bbb66",
+      "bytes": 5484,
+      "role": "PACKAGE_HISTORY_REVIEW"
+    },
+    {
+      "path": "packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md",
+      "sha256": "9df77604158501ebb446a4dd8aa43b28eb98ee064898da024585b66240755755",
+      "bytes": 890,
+      "role": "PACKAGE_HISTORY_REVIEW"
+    },
+    {
+      "path": "packages/workflow-runtime/GATE_ERROR_HANDLING_IMPLEMENTATION_SUMMARY.md",
+      "sha256": "6f3bb534d680394adca529064fd9a1411b8e3fc9eca94faf0c34bf7222bb35e9",
+      "bytes": 6937,
+      "role": "PACKAGE_HISTORY_REVIEW"
+    },
+    {
+      "path": "packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md",
+      "sha256": "ee66598aad41dea8ec548ae3f45eab6784260d1b20dcf59e268178d4bccbc302",
+      "bytes": 896,
+      "role": "PACKAGE_HISTORY_REVIEW"
+    },
+    {
+      "path": "packages/workflow-runtime/TASK_1_5_COMPLETION.md",
+      "sha256": "d48518977333a023f0310a0a877428a8f53c72cc43462e94c3c6321a4c547668",
+      "bytes": 7837,
+      "role": "PACKAGE_HISTORY_REVIEW"
+    },
+    {
+      "path": "packages/workflow-runtime/docs/API.md",
+      "sha256": "a4ad76549a225c99f8c637eba0e5c1291cda7e1bad8a7be8fe7989a8ff8d744f",
+      "bytes": 1412,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/workflow-runtime/docs/DEPLOYMENT.md",
+      "sha256": "bc42d2f3cafbdb0e9a4c6d2086d45989d3ad8c88d975105473580e327a31c46e",
+      "bytes": 1022,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/workflow-runtime/docs/EXAMPLES.md",
+      "sha256": "bd58956e57993fd1ff5f50daede575eb652f29dac5597e551a2cc3daf328a8c1",
+      "bytes": 906,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/workflow-runtime/docs/GateResult.md",
+      "sha256": "9c1b949f1a60265314ef3f7bf7f8e62956d63209f1ca61bef385a6e34e4c820a",
+      "bytes": 1715,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/workflow-runtime/docs/WORKFLOW_DEFINITION_LOADER.md",
+      "sha256": "b4628e513ae05c796bcb3187b0273e4061f0f70b4a6804701987d375ff6e76c1",
+      "bytes": 2031,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/workflow-runtime/docs/state-recovery-mechanism.md",
+      "sha256": "ae2de3eda6a4b3c0c11a38cf573a7898c2f91e8c0551be86c94cdb26d45a7423",
+      "bytes": 524,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "packages/workflow-runtime/docs/storage-implementation.md",
+      "sha256": "c879dc74036fc4672217447eea258ab89ada466f60b759cafb28f3a310b6508e",
+      "bytes": 522,
+      "role": "CURRENT_PACKAGE_DOCUMENT"
+    },
+    {
+      "path": "setup/README.md",
+      "sha256": "0757874b1eac0cbf30521c7a5efb79e172aa7a1e82654ef68ee84ca3773f2b24",
+      "bytes": 669,
+      "role": "CURRENT_SETUP_ENTRY"
+    },
+    {
+      "path": "setup/userlevel-opencode/AGENTS.md",
+      "sha256": "a0541e3b8bb679d50231967117aab59ba4600dfb6c76117d491be0c55c78042d",
+      "bytes": 17306,
+      "role": "SETUP_REFERENCE_REVIEW"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/_AGENT_BASE.md",
+      "sha256": "3f8c7629fb2b62d06d2224b570b0d6f0be367365e811715c4eb2f9c6370ccd10",
+      "bytes": 30413,
+      "role": "CURRENT_AGENT"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-analyst.md",
+      "sha256": "2db21b1a0751728c18a25d61627602d903f7536ce4eb0fcebec088be04017402",
+      "bytes": 4668,
+      "role": "CURRENT_AGENT"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-debugger.md",
+      "sha256": "562632257591ed85396eb17918abffed028043378bcba937068e863ceb7dccd8",
+      "bytes": 17453,
+      "role": "CURRENT_AGENT"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-design.md",
+      "sha256": "087f710feb969a60d138d1932ca19041093862a5285d18c64ff4056377de8ae5",
+      "bytes": 45681,
+      "role": "CURRENT_AGENT"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-executor.md",
+      "sha256": "3cef2f0d940bb16bb071447f5ba414b49c50457f48019ed94ccbb9e18f4a594d",
+      "bytes": 32749,
+      "role": "CURRENT_AGENT"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-knowledge.md",
+      "sha256": "0a81e623b2f0ce1b7a397f936be8c830da598427cafc40542d03281e11d4fb79",
+      "bytes": 13252,
+      "role": "CURRENT_AGENT"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-orchestrator.md",
+      "sha256": "a808137c5f9b0a491fc57b3178974330da04f7828ab5ec886552dab2c56a13c2",
+      "bytes": 50938,
+      "role": "CURRENT_AGENT"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-requirements.md",
+      "sha256": "08650aae4ae6f06ff38950b4bb78d0f3ab3b9b7976bdf8983fb105ac0c4f30cc",
+      "bytes": 26878,
+      "role": "CURRENT_AGENT"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-reviewer.md",
+      "sha256": "d95b4fda4393598b228f97b1e535e6f96c541fb00b9531f24463107e0678fd21",
+      "bytes": 19374,
+      "role": "CURRENT_AGENT"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-task-planner.md",
+      "sha256": "d448e6223b7cf3b9c289ea1544e3930ca6ad74b02c9bee7e59cdb7ff39faeb0d",
+      "bytes": 36193,
+      "role": "CURRENT_AGENT"
+    },
+    {
+      "path": "setup/userlevel-opencode/agents/sf-verifier.md",
+      "sha256": "5137b4d73916e486b06a2f3c140f225303942980b8fd0a998467f48d0fb7203d",
+      "bytes": 41337,
+      "role": "CURRENT_AGENT"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/sf-intake/SKILL.md",
+      "sha256": "016114ccd4936141de4589f3042d4317c2eee35bd756aa9f7c3c0e206fde12dc",
+      "bytes": 18737,
+      "role": "CURRENT_SKILL"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md",
+      "sha256": "9010b776aa6d4540a1ba8af43283058dba47800d6f15d76b60a1a5a465469633",
+      "bytes": 49670,
+      "role": "CURRENT_SKILL"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/superpowers-brainstorming/SKILL.md",
+      "sha256": "166e7a31c13385b19f4384c3c439805b21460efc98f27d6f9825d4648e4f7942",
+      "bytes": 3584,
+      "role": "CURRENT_SKILL"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/superpowers-code-review/SKILL.md",
+      "sha256": "ccfd870c444096d04d0dd38eb3d766de72d1a0026a469e149b929ba34945b053",
+      "bytes": 1442,
+      "role": "CURRENT_SKILL"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/superpowers-knowledge-extraction/SKILL.md",
+      "sha256": "9a60f8b611daa9b33b95f4451cfd393f2acd234d1a80dd9c87af9b0cd6d56679",
+      "bytes": 7763,
+      "role": "CURRENT_SKILL"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/superpowers-systematic-debugging/SKILL.md",
+      "sha256": "db3f7c14128ab7cf513d9482520fbf98294a43cf9414b581dabb803518b79434",
+      "bytes": 2101,
+      "role": "CURRENT_SKILL"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md",
+      "sha256": "9694011bc3b86f8a51b2493f56c321e6c9858accda7a94d9f51edd1c78c5fa27",
+      "bytes": 4467,
+      "role": "CURRENT_SKILL"
+    },
+    {
+      "path": "setup/userlevel-opencode/skills/superpowers-writing-plans/SKILL.md",
+      "sha256": "69f7a7c1eb0c097ed5ab60c9f935e51cf125595fefb9477039230d0b066dac05",
+      "bytes": 2949,
+      "role": "CURRENT_SKILL"
+    },
+    {
+      "path": "setup/userlevel-templates/README.md",
+      "sha256": "9b44c9035823d2315cd77672bebeca9cf460e7b31dbee9faf512d9ba753d8c30",
+      "bytes": 2006,
+      "role": "CURRENT_INSTALLED_TEMPLATE"
+    },
+    {
+      "path": "setup/userlevel-templates/dev-environment.md",
+      "sha256": "6912698e8bcca7cef78966466e57ffa959b91d256c0772ed57cb521184484bc2",
+      "bytes": 1308,
+      "role": "CURRENT_INSTALLED_TEMPLATE"
+    },
+    {
+      "path": "setup/userlevel-templates/prod-environment.md",
+      "sha256": "e4a607a20b1ecd7812678502d15f06153c3f9c4262dd92ea23f93e622ef457a4",
+      "bytes": 13878,
+      "role": "CURRENT_INSTALLED_TEMPLATE"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/_BASE.md",
+      "sha256": "7ca607ad261434bb1d4c8915af44d1cc5e7753cbad7b6bac865fd4c4308a57c3",
+      "bytes": 5894,
+      "role": "CURRENT_INSTALLED_TEMPLATE"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/databases/mongodb.md",
+      "sha256": "d61ace659d17221ea37aaa7aa6fc4c2a95c204ffd8570d55f132cad81aac01aa",
+      "bytes": 1374,
+      "role": "CURRENT_INSTALLED_TEMPLATE"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/databases/mysql.md",
+      "sha256": "067f34917f9198974365c94d75f773eec16eba01a972f75e8623e49049924b83",
+      "bytes": 1533,
+      "role": "CURRENT_INSTALLED_TEMPLATE"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/databases/postgresql.md",
+      "sha256": "93236c5c7c8c9c917d286a8146b83952f7d1e4134c106ae52587ec3a847e70f9",
+      "bytes": 2484,
+      "role": "CURRENT_INSTALLED_TEMPLATE"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/databases/redis.md",
+      "sha256": "deec6933e953ea43e0a8c4b89407e6585dc89cc25a7599d4f17dc4f229537792",
+      "bytes": 1616,
+      "role": "CURRENT_INSTALLED_TEMPLATE"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/databases/sqlite.md",
+      "sha256": "84b7c182b186f9cc6a093c71bafdd114995394c69104baba9171abbdd68317b3",
+      "bytes": 1608,
+      "role": "CURRENT_INSTALLED_TEMPLATE"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/frameworks/fastapi.md",
+      "sha256": "ec62d06a7c42f9528642b098fc652cf9f8c79b193f2ae0ed7c62909a5d843fa5",
+      "bytes": 2014,
+      "role": "CURRENT_INSTALLED_TEMPLATE"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/frameworks/react.md",
+      "sha256": "f3a6604d5ddceadb2e0f032ae77cb1d12df6fb60caa9ecf7a3ce118f4794a767",
+      "bytes": 2501,
+      "role": "CURRENT_INSTALLED_TEMPLATE"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/frameworks/spring-boot.md",
+      "sha256": "265316f3e0f7645595d7298a7c208cc0dc06ad56d8c34050afc04314c1e9c2dc",
+      "bytes": 2100,
+      "role": "CURRENT_INSTALLED_TEMPLATE"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/frameworks/vue.md",
+      "sha256": "668bdd5f4758431833176339e88bb3e49a24e4f0debdd0729cce213675f4e21b",
+      "bytes": 2055,
+      "role": "CURRENT_INSTALLED_TEMPLATE"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/infra/ci-github-actions.md",
+      "sha256": "00d8441a3ca5fce99e536ceb322ebb45bde575d9b2430f20672998362c5236f7",
+      "bytes": 1830,
+      "role": "CURRENT_INSTALLED_TEMPLATE"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/infra/docker.md",
+      "sha256": "2cd8d263809d1f09320a95f9bd998671acb5f2ee0726f1a7611a923e57cf0f3b",
+      "bytes": 1876,
+      "role": "CURRENT_INSTALLED_TEMPLATE"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/languages/go.md",
+      "sha256": "1d337356d0a1e54658a8be3b51e69a8c6c06c169d7d15b4a73177e709f6319e9",
+      "bytes": 3096,
+      "role": "CURRENT_INSTALLED_TEMPLATE"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/languages/java.md",
+      "sha256": "7621be9820a06b46b2be2a54bac773107e76418ffccafb70040258f78539f5d3",
+      "bytes": 3462,
+      "role": "CURRENT_INSTALLED_TEMPLATE"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/languages/nodejs.md",
+      "sha256": "0592f8ecf0625d60490ac9d7e7d75a583db902f8ff381696568b1a4e7fe9b739",
+      "bytes": 4319,
+      "role": "CURRENT_INSTALLED_TEMPLATE"
+    },
+    {
+      "path": "setup/userlevel-templates/project-rules/languages/python.md",
+      "sha256": "9a04679b1df16689cf712beb7146925cee513971dbaf325e10df1fadc44b8eaa",
+      "bytes": 4281,
+      "role": "CURRENT_INSTALLED_TEMPLATE"
+    }
+  ],
+  "links": [
+    {
+      "source": "README.md",
+      "line": 7,
+      "target": "docs/product-specification/specforge-product-specification.md",
+      "resolved": "docs/product-specification/specforge-product-specification.md",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "line": 8,
+      "target": "docs/product-specification/authority-registry.md",
+      "resolved": "docs/product-specification/authority-registry.md",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "line": 9,
+      "target": "docs/project-status.md",
+      "resolved": "docs/project-status.md",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "line": 10,
+      "target": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "resolved": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "line": 11,
+      "target": "docs/rule/specforge-active-development-rules.md",
+      "resolved": "docs/rule/specforge-active-development-rules.md",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "line": 41,
+      "target": "docs/user/install.md",
+      "resolved": "docs/user/install.md",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "line": 50,
+      "target": "docs/cli/installation-setup.md",
+      "resolved": "docs/cli/installation-setup.md",
+      "exists": true
+    },
+    {
+      "source": "docs/adr/ADR-006-specforge-dir-naming.md",
+      "line": 7,
+      "target": "../archive/proposals/2026-05-29-directory-structure-governance.md",
+      "resolved": "docs/archive/proposals/2026-05-29-directory-structure-governance.md",
+      "exists": true
+    },
+    {
+      "source": "docs/adr/ADR-006-specforge-dir-naming.md",
+      "line": 102,
+      "target": "../archive/proposals/2026-05-29-directory-structure-governance.md",
+      "resolved": "docs/archive/proposals/2026-05-29-directory-structure-governance.md",
+      "exists": true
+    },
+    {
+      "source": "docs/adr/ADR-006-specforge-dir-naming.md",
+      "line": 103,
+      "target": "../../.specforge/specs/WI-004/impact_analysis.md",
+      "resolved": ".specforge/specs/WI-004/impact_analysis.md",
+      "exists": true
+    },
+    {
+      "source": "docs/adr/ADR-006-specforge-dir-naming.md",
+      "line": 104,
+      "target": "../../.specforge/specs/WI-010/refactor_analysis.md",
+      "resolved": ".specforge/specs/WI-010/refactor_analysis.md",
+      "exists": true
+    },
+    {
+      "source": "docs/adr/ADR-006-specforge-dir-naming.md",
+      "line": 105,
+      "target": "../../.specforge/specs/WI-010/refactor_plan.md",
+      "resolved": ".specforge/specs/WI-010/refactor_plan.md",
+      "exists": true
+    },
+    {
+      "source": "docs/adr/ADR-006-specforge-dir-naming.md",
+      "line": 107,
+      "target": "../archive/proposals/2026-05-29-engineering-playbook-framework.md",
+      "resolved": "docs/archive/proposals/2026-05-29-engineering-playbook-framework.md",
+      "exists": true
+    },
+    {
+      "source": "docs/adr/ADR-007-architecture-consistency-governance.md",
+      "line": 6,
+      "target": "../design/SpecForge架构一致性治理最终实施方案.md",
+      "resolved": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "exists": true
+    },
+    {
+      "source": "docs/adr/ADR-007-architecture-consistency-governance.md",
+      "line": 7,
+      "target": "ADR-008-new-project-governance-bootstrap.md",
+      "resolved": "docs/adr/ADR-008-new-project-governance-bootstrap.md",
+      "exists": true
+    },
+    {
+      "source": "docs/adr/ADR-007-architecture-consistency-governance.md",
+      "line": 8,
+      "target": "../archive/SpecForge治理架构完整修改方案-已取代.md",
+      "resolved": "docs/archive/SpecForge治理架构完整修改方案-已取代.md",
+      "exists": true
+    },
+    {
+      "source": "docs/cli/installation-setup.md",
+      "line": 14,
+      "target": "../user/install.md",
+      "resolved": "docs/user/install.md",
+      "exists": true
+    },
+    {
+      "source": "docs/conventions/README.md",
+      "line": 9,
+      "target": "directory-layout.md",
+      "resolved": "docs/conventions/directory-layout.md",
+      "exists": true
+    },
+    {
+      "source": "docs/conventions/README.md",
+      "line": 10,
+      "target": "file-naming.md",
+      "resolved": "docs/conventions/file-naming.md",
+      "exists": true
+    },
+    {
+      "source": "docs/conventions/README.md",
+      "line": 11,
+      "target": "wi-lifecycle.md",
+      "resolved": "docs/conventions/wi-lifecycle.md",
+      "exists": true
+    },
+    {
+      "source": "docs/conventions/README.md",
+      "line": 12,
+      "target": "workflow-types.md",
+      "resolved": "docs/conventions/workflow-types.md",
+      "exists": true
+    },
+    {
+      "source": "docs/conventions/README.md",
+      "line": 13,
+      "target": "agent-roles.md",
+      "resolved": "docs/conventions/agent-roles.md",
+      "exists": true
+    },
+    {
+      "source": "docs/conventions/README.md",
+      "line": 14,
+      "target": "glossary.md",
+      "resolved": "docs/conventions/glossary.md",
+      "exists": true
+    },
+    {
+      "source": "docs/conventions/README.md",
+      "line": 15,
+      "target": "meta-json-spec.md",
+      "resolved": "docs/conventions/meta-json-spec.md",
+      "exists": true
+    },
+    {
+      "source": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "line": 8,
+      "target": "../product-specification/specforge-product-specification.md",
+      "resolved": "docs/product-specification/specforge-product-specification.md",
+      "exists": true
+    },
+    {
+      "source": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "line": 9,
+      "target": "../product-specification/authority-registry.md",
+      "resolved": "docs/product-specification/authority-registry.md",
+      "exists": true
+    },
+    {
+      "source": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "line": 12,
+      "target": "../archive/design/SpecForge架构一致性治理最终实施方案.full-history-20261006.md",
+      "resolved": "docs/archive/design/SpecForge架构一致性治理最终实施方案.full-history-20261006.md",
+      "exists": true
+    },
+    {
+      "source": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "line": 55,
+      "target": "../rule/specforge-execution-mode-and-evidence-protocol.md",
+      "resolved": "docs/rule/specforge-execution-mode-and-evidence-protocol.md",
+      "exists": true
+    },
+    {
+      "source": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "line": 59,
+      "target": "../rule/specforge-active-development-rules.md",
+      "resolved": "docs/rule/specforge-active-development-rules.md",
+      "exists": true
+    },
+    {
+      "source": "docs/design/SpecForge架构一致性治理最终实施方案.md",
+      "line": 60,
+      "target": "../rule/specforge-development-error-ledger-and-experience.md",
+      "resolved": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/README.md",
+      "line": 5,
+      "target": "../rule/specforge-active-development-rules.md",
+      "resolved": "docs/rule/specforge-active-development-rules.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/README.md",
+      "line": 5,
+      "target": "../rule/specforge-development-error-ledger-and-experience.md",
+      "resolved": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/README.md",
+      "line": 5,
+      "target": "../product-specification/specforge-product-specification.md",
+      "resolved": "docs/product-specification/specforge-product-specification.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/README.md",
+      "line": 5,
+      "target": "../product-specification/authority-registry.md",
+      "resolved": "docs/product-specification/authority-registry.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/README.md",
+      "line": 7,
+      "target": "universal/async-resource-lifecycle.md",
+      "resolved": "docs/engineering-lessons/universal/async-resource-lifecycle.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/README.md",
+      "line": 8,
+      "target": "universal/javascript-explicit-resource-management.md",
+      "resolved": "docs/engineering-lessons/universal/javascript-explicit-resource-management.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/README.md",
+      "line": 9,
+      "target": "universal/shell-command-execution.md",
+      "resolved": "docs/engineering-lessons/universal/shell-command-execution.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/README.md",
+      "line": 10,
+      "target": "universal/host-environment-detection.md",
+      "resolved": "docs/engineering-lessons/universal/host-environment-detection.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/README.md",
+      "line": 11,
+      "target": "ai-tools/opencode/custom-tool-self-contained.md",
+      "resolved": "docs/engineering-lessons/ai-tools/opencode/custom-tool-self-contained.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/README.md",
+      "line": 12,
+      "target": "_meta/schema.md",
+      "resolved": "docs/engineering-lessons/_meta/schema.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/README.md",
+      "line": 14,
+      "target": "../archive/engineering-lessons/ARCHITECTURE.md",
+      "resolved": "docs/archive/engineering-lessons/ARCHITECTURE.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/ai-tools/opencode/custom-tool-self-contained.md",
+      "line": 167,
+      "target": "../../universal/shell-command-execution.md",
+      "resolved": "docs/engineering-lessons/universal/shell-command-execution.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/universal/host-environment-detection.md",
+      "line": 18,
+      "target": "shell-command-execution.md",
+      "resolved": "docs/engineering-lessons/universal/shell-command-execution.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/universal/host-environment-detection.md",
+      "line": 367,
+      "target": "async-resource-lifecycle.md",
+      "resolved": "docs/engineering-lessons/universal/async-resource-lifecycle.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/universal/host-environment-detection.md",
+      "line": 588,
+      "target": "shell-command-execution.md",
+      "resolved": "docs/engineering-lessons/universal/shell-command-execution.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/universal/host-environment-detection.md",
+      "line": 589,
+      "target": "shell-command-execution.md",
+      "resolved": "docs/engineering-lessons/universal/shell-command-execution.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/universal/host-environment-detection.md",
+      "line": 590,
+      "target": "shell-command-execution.md",
+      "resolved": "docs/engineering-lessons/universal/shell-command-execution.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/universal/host-environment-detection.md",
+      "line": 598,
+      "target": "shell-command-execution.md",
+      "resolved": "docs/engineering-lessons/universal/shell-command-execution.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/universal/javascript-explicit-resource-management.md",
+      "line": 18,
+      "target": "async-resource-lifecycle.md",
+      "resolved": "docs/engineering-lessons/universal/async-resource-lifecycle.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/universal/javascript-explicit-resource-management.md",
+      "line": 336,
+      "target": "async-resource-lifecycle.md#t3",
+      "resolved": "docs/engineering-lessons/universal/async-resource-lifecycle.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/universal/javascript-explicit-resource-management.md",
+      "line": 517,
+      "target": "async-resource-lifecycle.md",
+      "resolved": "docs/engineering-lessons/universal/async-resource-lifecycle.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/universal/javascript-explicit-resource-management.md",
+      "line": 518,
+      "target": "async-resource-lifecycle.md",
+      "resolved": "docs/engineering-lessons/universal/async-resource-lifecycle.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/universal/javascript-explicit-resource-management.md",
+      "line": 519,
+      "target": "async-resource-lifecycle.md",
+      "resolved": "docs/engineering-lessons/universal/async-resource-lifecycle.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/universal/javascript-explicit-resource-management.md",
+      "line": 520,
+      "target": "async-resource-lifecycle.md",
+      "resolved": "docs/engineering-lessons/universal/async-resource-lifecycle.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/universal/javascript-explicit-resource-management.md",
+      "line": 521,
+      "target": "shell-command-execution.md",
+      "resolved": "docs/engineering-lessons/universal/shell-command-execution.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/universal/javascript-explicit-resource-management.md",
+      "line": 536,
+      "target": "async-resource-lifecycle.md",
+      "resolved": "docs/engineering-lessons/universal/async-resource-lifecycle.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/universal/shell-command-execution.md",
+      "line": 21,
+      "target": "host-environment-detection.md",
+      "resolved": "docs/engineering-lessons/universal/host-environment-detection.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/universal/shell-command-execution.md",
+      "line": 587,
+      "target": "async-resource-lifecycle.md",
+      "resolved": "docs/engineering-lessons/universal/async-resource-lifecycle.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/universal/shell-command-execution.md",
+      "line": 589,
+      "target": "host-environment-detection.md",
+      "resolved": "docs/engineering-lessons/universal/host-environment-detection.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/universal/shell-command-execution.md",
+      "line": 598,
+      "target": "host-environment-detection.md",
+      "resolved": "docs/engineering-lessons/universal/host-environment-detection.md",
+      "exists": true
+    },
+    {
+      "source": "docs/engineering-lessons/universal/shell-command-execution.md",
+      "line": 599,
+      "target": "async-resource-lifecycle.md",
+      "resolved": "docs/engineering-lessons/universal/async-resource-lifecycle.md",
+      "exists": true
+    },
+    {
+      "source": "docs/user/install.md",
+      "line": 25,
+      "target": "../cli/installation-setup.md",
+      "resolved": "docs/cli/installation-setup.md",
+      "exists": true
+    },
+    {
+      "source": "packages/cli/docs/JobPoller.md",
+      "line": 9,
+      "target": "../../../docs/archive/2026-11-08-crossplatform-consumer-audit/original-documents/packages/cli/docs/JobPoller.md",
+      "resolved": "docs/archive/2026-11-08-crossplatform-consumer-audit/original-documents/packages/cli/docs/JobPoller.md",
+      "exists": true
+    },
+    {
+      "source": "packages/cli/docs/JobPoller.md",
+      "line": 9,
+      "target": "../../../docs/cli/command-reference.md",
+      "resolved": "docs/cli/command-reference.md",
+      "exists": true
+    },
+    {
+      "source": "packages/cli/docs/progress-indicators.md",
+      "line": 7,
+      "target": "../../../docs/cli/command-reference.md",
+      "resolved": "docs/cli/command-reference.md",
+      "exists": true
+    },
+    {
+      "source": "packages/cli/docs/progress-indicators.md",
+      "line": 7,
+      "target": "JobPoller.md",
+      "resolved": "packages/cli/docs/JobPoller.md",
+      "exists": true
+    },
+    {
+      "source": "packages/cli/docs/progress-indicators.md",
+      "line": 9,
+      "target": "../../../docs/archive/2026-11-08-crossplatform-consumer-audit/original-documents/packages/cli/docs/progress-indicators.md",
+      "resolved": "docs/archive/2026-11-08-crossplatform-consumer-audit/original-documents/packages/cli/docs/progress-indicators.md",
+      "exists": true
+    },
+    {
+      "source": "packages/configuration/README.md",
+      "line": 3,
+      "target": "../../docs/product-specification/specforge-product-specification.md",
+      "resolved": "docs/product-specification/specforge-product-specification.md",
+      "exists": true
+    },
+    {
+      "source": "packages/configuration/README.md",
+      "line": 5,
+      "target": "../../docs/user/install.md",
+      "resolved": "docs/user/install.md",
+      "exists": true
+    },
+    {
+      "source": "packages/configuration/README.md",
+      "line": 21,
+      "target": "docs/configuration-format.md",
+      "resolved": "packages/configuration/docs/configuration-format.md",
+      "exists": true
+    },
+    {
+      "source": "packages/configuration/README.md",
+      "line": 21,
+      "target": "docs/examples.md",
+      "resolved": "packages/configuration/docs/examples.md",
+      "exists": true
+    },
+    {
+      "source": "packages/configuration/README.md",
+      "line": 21,
+      "target": "docs/best-practices.md",
+      "resolved": "packages/configuration/docs/best-practices.md",
+      "exists": true
+    },
+    {
+      "source": "packages/configuration/README.md",
+      "line": 21,
+      "target": "src/accepted-config.ts",
+      "resolved": "packages/configuration/src/accepted-config.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/configuration/README.md",
+      "line": 21,
+      "target": "src/config-access.ts",
+      "resolved": "packages/configuration/src/config-access.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/configuration/docs/README.md",
+      "line": 5,
+      "target": "../README.md",
+      "resolved": "packages/configuration/README.md",
+      "exists": true
+    },
+    {
+      "source": "packages/configuration/docs/README.md",
+      "line": 6,
+      "target": "configuration-format.md",
+      "resolved": "packages/configuration/docs/configuration-format.md",
+      "exists": true
+    },
+    {
+      "source": "packages/configuration/docs/README.md",
+      "line": 7,
+      "target": "examples.md",
+      "resolved": "packages/configuration/docs/examples.md",
+      "exists": true
+    },
+    {
+      "source": "packages/configuration/docs/README.md",
+      "line": 8,
+      "target": "best-practices.md",
+      "resolved": "packages/configuration/docs/best-practices.md",
+      "exists": true
+    },
+    {
+      "source": "packages/configuration/docs/README.md",
+      "line": 10,
+      "target": "../src/accepted-config.ts",
+      "resolved": "packages/configuration/src/accepted-config.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/configuration/docs/README.md",
+      "line": 10,
+      "target": "../../../docs/product-specification/specforge-product-specification.md",
+      "resolved": "docs/product-specification/specforge-product-specification.md",
+      "exists": true
+    },
+    {
+      "source": "packages/configuration/docs/README.md",
+      "line": 10,
+      "target": "../../../docs/archive/2026-11-08-crossplatform-consumer-audit/original-documents/packages/configuration/docs/",
+      "resolved": "docs/archive/2026-11-08-crossplatform-consumer-audit/original-documents/packages/configuration/docs",
+      "exists": true
+    },
+    {
+      "source": "packages/configuration/docs/best-practices.md",
+      "line": 3,
+      "target": "../src/accepted-config.ts",
+      "resolved": "packages/configuration/src/accepted-config.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/configuration/docs/best-practices.md",
+      "line": 11,
+      "target": "../../../docs/user/install.md",
+      "resolved": "docs/user/install.md",
+      "exists": true
+    },
+    {
+      "source": "packages/configuration/docs/configuration-format.md",
+      "line": 3,
+      "target": "../src/accepted-config.ts",
+      "resolved": "packages/configuration/src/accepted-config.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/configuration/docs/examples.md",
+      "line": 23,
+      "target": "configuration-format.md",
+      "resolved": "packages/configuration/docs/configuration-format.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/DEVELOPMENT.md",
+      "line": 3,
+      "target": "../../AGENTS.md",
+      "resolved": "AGENTS.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/DEVELOPMENT.md",
+      "line": 19,
+      "target": "../../docs/product-specification/specforge-product-specification.md",
+      "resolved": "docs/product-specification/specforge-product-specification.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/DEVELOPMENT.md",
+      "line": 19,
+      "target": "../../docs/product-specification/authority-registry.md",
+      "resolved": "docs/product-specification/authority-registry.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/DEVELOPMENT.md",
+      "line": 19,
+      "target": "../../docs/rule/specforge-active-development-rules.md",
+      "resolved": "docs/rule/specforge-active-development-rules.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/README.md",
+      "line": 3,
+      "target": "../../docs/product-specification/specforge-product-specification.md",
+      "resolved": "docs/product-specification/specforge-product-specification.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/README.md",
+      "line": 5,
+      "target": "../../docs/user/install.md",
+      "resolved": "docs/user/install.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/README.md",
+      "line": 20,
+      "target": "docs/README.md",
+      "resolved": "packages/daemon-core/docs/README.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/README.md",
+      "line": 20,
+      "target": "DEVELOPMENT.md",
+      "resolved": "packages/daemon-core/DEVELOPMENT.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/README.md",
+      "line": 20,
+      "target": "src/index.ts",
+      "resolved": "packages/daemon-core/src/index.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/README.md",
+      "line": 20,
+      "target": "tests/",
+      "resolved": "packages/daemon-core/tests",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/README.md",
+      "line": 3,
+      "target": "../../../docs/product-specification/specforge-product-specification.md",
+      "resolved": "docs/product-specification/specforge-product-specification.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/README.md",
+      "line": 5,
+      "target": "../../../docs/user/install.md",
+      "resolved": "docs/user/install.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/README.md",
+      "line": 16,
+      "target": "cli-integration.md",
+      "resolved": "packages/daemon-core/docs/cli-integration.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/README.md",
+      "line": 17,
+      "target": "thin-plugin-integration.md",
+      "resolved": "packages/daemon-core/docs/thin-plugin-integration.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/README.md",
+      "line": 18,
+      "target": "authentication.md",
+      "resolved": "packages/daemon-core/docs/authentication.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/README.md",
+      "line": 19,
+      "target": "http-endpoints.md",
+      "resolved": "packages/daemon-core/docs/http-endpoints.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/README.md",
+      "line": 20,
+      "target": "error-handling.md",
+      "resolved": "packages/daemon-core/docs/error-handling.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/README.md",
+      "line": 21,
+      "target": "error-codes.md",
+      "resolved": "packages/daemon-core/docs/error-codes.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/README.md",
+      "line": 22,
+      "target": "event-schema.md",
+      "resolved": "packages/daemon-core/docs/event-schema.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/authentication.md",
+      "line": 3,
+      "target": "../src/http/HTTPServer.ts",
+      "resolved": "packages/daemon-core/src/http/HTTPServer.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/authentication.md",
+      "line": 3,
+      "target": "../../service-management/src/types/handshake.ts",
+      "resolved": "packages/service-management/src/types/handshake.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/cli-integration.md",
+      "line": 3,
+      "target": "../../../docs/user/install.md",
+      "resolved": "docs/user/install.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/cli-integration.md",
+      "line": 16,
+      "target": "../../service-management/src/types/handshake.ts",
+      "resolved": "packages/service-management/src/types/handshake.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/error-codes.md",
+      "line": 3,
+      "target": "../src/http/HTTPServer.ts",
+      "resolved": "packages/daemon-core/src/http/HTTPServer.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/error-codes.md",
+      "line": 40,
+      "target": "error-handling.md",
+      "resolved": "packages/daemon-core/docs/error-handling.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/error-handling.md",
+      "line": 3,
+      "target": "../src/http/HTTPServer.ts",
+      "resolved": "packages/daemon-core/src/http/HTTPServer.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/error-handling.md",
+      "line": 3,
+      "target": "error-codes.md",
+      "resolved": "packages/daemon-core/docs/error-codes.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/event-schema.md",
+      "line": 14,
+      "target": "../src/state/StateManager.ts",
+      "resolved": "packages/daemon-core/src/state/StateManager.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/event-schema.md",
+      "line": 14,
+      "target": "http-endpoints.md",
+      "resolved": "packages/daemon-core/docs/http-endpoints.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/event-schema.md",
+      "line": 14,
+      "target": "../src/event-bus/EventBus.ts",
+      "resolved": "packages/daemon-core/src/event-bus/EventBus.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/event-schema.md",
+      "line": 14,
+      "target": "../src/observability/observability-recorder.ts",
+      "resolved": "packages/daemon-core/src/observability/observability-recorder.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/event-schema.md",
+      "line": 14,
+      "target": "../../observability/src/types/index.ts",
+      "resolved": "packages/observability/src/types/index.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/http-endpoints.md",
+      "line": 3,
+      "target": "../src/http/HTTPServer.ts",
+      "resolved": "packages/daemon-core/src/http/HTTPServer.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/http-endpoints.md",
+      "line": 3,
+      "target": "../../../docs/product-specification/specforge-product-specification.md",
+      "resolved": "docs/product-specification/specforge-product-specification.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/http-endpoints.md",
+      "line": 51,
+      "target": "authentication.md",
+      "resolved": "packages/daemon-core/docs/authentication.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/http-endpoints.md",
+      "line": 51,
+      "target": "error-handling.md",
+      "resolved": "packages/daemon-core/docs/error-handling.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/thin-plugin-integration.md",
+      "line": 3,
+      "target": "../../../docs/user/install.md",
+      "resolved": "docs/user/install.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/thin-plugin-integration.md",
+      "line": 18,
+      "target": "authentication.md",
+      "resolved": "packages/daemon-core/docs/authentication.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/thin-plugin-integration.md",
+      "line": 18,
+      "target": "cli-integration.md",
+      "resolved": "packages/daemon-core/docs/cli-integration.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/docs/thin-plugin-integration.md",
+      "line": 18,
+      "target": "../../../setup/userlevel-opencode/",
+      "resolved": "setup/userlevel-opencode",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/examples/README.md",
+      "line": 5,
+      "target": "../../../docs/user/install.md",
+      "resolved": "docs/user/install.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/examples/README.md",
+      "line": 15,
+      "target": "../docs/http-endpoints.md",
+      "resolved": "packages/daemon-core/docs/http-endpoints.md",
+      "exists": true
+    },
+    {
+      "source": "packages/daemon-core/examples/README.md",
+      "line": 15,
+      "target": "../docs/authentication.md",
+      "resolved": "packages/daemon-core/docs/authentication.md",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/README.md",
+      "line": 3,
+      "target": "../../docs/product-specification/specforge-product-specification.md",
+      "resolved": "docs/product-specification/specforge-product-specification.md",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/README.md",
+      "line": 16,
+      "target": "docs/api.md",
+      "resolved": "packages/observability/docs/api.md",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/README.md",
+      "line": 17,
+      "target": "docs/user-guide.md",
+      "resolved": "packages/observability/docs/user-guide.md",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/README.md",
+      "line": 18,
+      "target": "docs/north-star-scenarios.md",
+      "resolved": "packages/observability/docs/north-star-scenarios.md",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/README.md",
+      "line": 19,
+      "target": "docs/troubleshooting.md",
+      "resolved": "packages/observability/docs/troubleshooting.md",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/README.md",
+      "line": 20,
+      "target": "src/index.ts",
+      "resolved": "packages/observability/src/index.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/README.md",
+      "line": 21,
+      "target": "../daemon-core/src/observability/observability-recorder.ts",
+      "resolved": "packages/daemon-core/src/observability/observability-recorder.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/README.md",
+      "line": 23,
+      "target": "../../docs/user/install.md",
+      "resolved": "docs/user/install.md",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/docs/api.md",
+      "line": 3,
+      "target": "../src/index.ts",
+      "resolved": "packages/observability/src/index.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/docs/api.md",
+      "line": 3,
+      "target": "../src/config-contract.ts",
+      "resolved": "packages/observability/src/config-contract.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/docs/api.md",
+      "line": 12,
+      "target": "../src/types/index.ts",
+      "resolved": "packages/observability/src/types/index.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/docs/api.md",
+      "line": 12,
+      "target": "../src/types/event-utils.ts",
+      "resolved": "packages/observability/src/types/event-utils.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/docs/api.md",
+      "line": 24,
+      "target": "../../daemon-core/src/observability/observability-config.ts",
+      "resolved": "packages/daemon-core/src/observability/observability-config.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/docs/api.md",
+      "line": 24,
+      "target": "../../daemon-core/src/observability/observability-recorder.ts",
+      "resolved": "packages/daemon-core/src/observability/observability-recorder.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/docs/north-star-scenarios.md",
+      "line": 15,
+      "target": "../../../docs/product-specification/specforge-product-specification.md",
+      "resolved": "docs/product-specification/specforge-product-specification.md",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/docs/north-star-scenarios.md",
+      "line": 15,
+      "target": "../../../docs/user/recovery-and-rollback.md",
+      "resolved": "docs/user/recovery-and-rollback.md",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/docs/troubleshooting.md",
+      "line": 11,
+      "target": "api.md",
+      "resolved": "packages/observability/docs/api.md",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/docs/troubleshooting.md",
+      "line": 11,
+      "target": "user-guide.md",
+      "resolved": "packages/observability/docs/user-guide.md",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/docs/troubleshooting.md",
+      "line": 11,
+      "target": "../../../docs/user/evidence-and-audit.md",
+      "resolved": "docs/user/evidence-and-audit.md",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/docs/user-guide.md",
+      "line": 3,
+      "target": "../src/config-contract.ts",
+      "resolved": "packages/observability/src/config-contract.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/docs/user-guide.md",
+      "line": 3,
+      "target": "../../daemon-core/src/observability/observability-config.ts",
+      "resolved": "packages/daemon-core/src/observability/observability-config.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/docs/user-guide.md",
+      "line": 3,
+      "target": "../../daemon-core/src/observability/observability-recorder.ts",
+      "resolved": "packages/daemon-core/src/observability/observability-recorder.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/docs/user-guide.md",
+      "line": 17,
+      "target": "troubleshooting.md",
+      "resolved": "packages/observability/docs/troubleshooting.md",
+      "exists": true
+    },
+    {
+      "source": "packages/observability/docs/user-guide.md",
+      "line": 17,
+      "target": "../../../docs/user/install.md",
+      "resolved": "docs/user/install.md",
+      "exists": true
+    },
+    {
+      "source": "packages/opencode-adapter/README.md",
+      "line": 3,
+      "target": "../../docs/user/install.md",
+      "resolved": "docs/user/install.md",
+      "exists": true
+    },
+    {
+      "source": "packages/opencode-adapter/README.md",
+      "line": 9,
+      "target": "docs/installation.md",
+      "resolved": "packages/opencode-adapter/docs/installation.md",
+      "exists": true
+    },
+    {
+      "source": "packages/opencode-adapter/README.md",
+      "line": 9,
+      "target": "src/",
+      "resolved": "packages/opencode-adapter/src",
+      "exists": true
+    },
+    {
+      "source": "packages/opencode-adapter/README.md",
+      "line": 9,
+      "target": "../../docs/product-specification/authority-registry.md",
+      "resolved": "docs/product-specification/authority-registry.md",
+      "exists": true
+    },
+    {
+      "source": "packages/opencode-adapter/docs/installation.md",
+      "line": 14,
+      "target": "../../../docs/user/install.md",
+      "resolved": "docs/user/install.md",
+      "exists": true
+    },
+    {
+      "source": "packages/service-management/README.md",
+      "line": 3,
+      "target": "../../docs/product-specification/specforge-product-specification.md",
+      "resolved": "docs/product-specification/specforge-product-specification.md",
+      "exists": true
+    },
+    {
+      "source": "packages/service-management/README.md",
+      "line": 18,
+      "target": "../../docs/user/install.md",
+      "resolved": "docs/user/install.md",
+      "exists": true
+    },
+    {
+      "source": "packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md",
+      "line": 7,
+      "target": "../../docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md",
+      "resolved": "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/EVENT_REPLAY_COMPLETION_SUMMARY.md",
+      "exists": true
+    },
+    {
+      "source": "packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md",
+      "line": 7,
+      "target": "../../docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md",
+      "resolved": "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/STATE_RECOVERY_IMPLEMENTATION_SUMMARY.md",
+      "exists": true
+    },
+    {
+      "source": "packages/workflow-runtime/docs/API.md",
+      "line": 11,
+      "target": "../../../docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/API.md",
+      "resolved": "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/API.md",
+      "exists": true
+    },
+    {
+      "source": "packages/workflow-runtime/docs/API.md",
+      "line": 11,
+      "target": "../../../docs/product-specification/specforge-product-specification.md",
+      "resolved": "docs/product-specification/specforge-product-specification.md",
+      "exists": true
+    },
+    {
+      "source": "packages/workflow-runtime/docs/DEPLOYMENT.md",
+      "line": 7,
+      "target": "../../../docs/product-specification/specforge-product-specification.md",
+      "resolved": "docs/product-specification/specforge-product-specification.md",
+      "exists": true
+    },
+    {
+      "source": "packages/workflow-runtime/docs/DEPLOYMENT.md",
+      "line": 7,
+      "target": "../../../docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/DEPLOYMENT.md",
+      "resolved": "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/DEPLOYMENT.md",
+      "exists": true
+    },
+    {
+      "source": "packages/workflow-runtime/docs/EXAMPLES.md",
+      "line": 5,
+      "target": "../../../tests/e2e/feature-spec-e2e.test.ts",
+      "resolved": "tests/e2e/feature-spec-e2e.test.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/workflow-runtime/docs/EXAMPLES.md",
+      "line": 5,
+      "target": "../tests/unit/persistence-owner-boundary.test.ts",
+      "resolved": "packages/workflow-runtime/tests/unit/persistence-owner-boundary.test.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/workflow-runtime/docs/EXAMPLES.md",
+      "line": 7,
+      "target": "../../../docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/manifest.json",
+      "resolved": "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/manifest.json",
+      "exists": true
+    },
+    {
+      "source": "packages/workflow-runtime/docs/GateResult.md",
+      "line": 3,
+      "target": "../src/types.ts",
+      "resolved": "packages/workflow-runtime/src/types.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/workflow-runtime/docs/GateResult.md",
+      "line": 3,
+      "target": "../src/GateRunner.ts",
+      "resolved": "packages/workflow-runtime/src/GateRunner.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/workflow-runtime/docs/WORKFLOW_DEFINITION_LOADER.md",
+      "line": 3,
+      "target": "../src/loaders/WorkflowDefinitionLoader.ts",
+      "resolved": "packages/workflow-runtime/src/loaders/WorkflowDefinitionLoader.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/workflow-runtime/docs/WORKFLOW_DEFINITION_LOADER.md",
+      "line": 3,
+      "target": "../src/engine/WorkflowLoader.ts",
+      "resolved": "packages/workflow-runtime/src/engine/WorkflowLoader.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/workflow-runtime/docs/WORKFLOW_DEFINITION_LOADER.md",
+      "line": 5,
+      "target": "../src/types.ts",
+      "resolved": "packages/workflow-runtime/src/types.ts",
+      "exists": true
+    },
+    {
+      "source": "packages/workflow-runtime/docs/WORKFLOW_DEFINITION_LOADER.md",
+      "line": 20,
+      "target": "API.md",
+      "resolved": "packages/workflow-runtime/docs/API.md",
+      "exists": true
+    },
+    {
+      "source": "packages/workflow-runtime/docs/WORKFLOW_DEFINITION_LOADER.md",
+      "line": 20,
+      "target": "DEPLOYMENT.md",
+      "resolved": "packages/workflow-runtime/docs/DEPLOYMENT.md",
+      "exists": true
+    },
+    {
+      "source": "packages/workflow-runtime/docs/WORKFLOW_DEFINITION_LOADER.md",
+      "line": 20,
+      "target": "GateResult.md",
+      "resolved": "packages/workflow-runtime/docs/GateResult.md",
+      "exists": true
+    },
+    {
+      "source": "packages/workflow-runtime/docs/WORKFLOW_DEFINITION_LOADER.md",
+      "line": 20,
+      "target": "../../../docs/product-specification/specforge-product-specification.md",
+      "resolved": "docs/product-specification/specforge-product-specification.md",
+      "exists": true
+    },
+    {
+      "source": "packages/workflow-runtime/docs/state-recovery-mechanism.md",
+      "line": 5,
+      "target": "../../../docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/state-recovery-mechanism.md",
+      "resolved": "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/state-recovery-mechanism.md",
+      "exists": true
+    },
+    {
+      "source": "packages/workflow-runtime/docs/storage-implementation.md",
+      "line": 5,
+      "target": "../../../docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/storage-implementation.md",
+      "resolved": "docs/archive/2026-11-07-verification-production/workflow-persistence-baseline/original/packages/workflow-runtime/docs/storage-implementation.md",
+      "exists": true
+    }
+  ],
+  "qualification": "All selected current/installed/subordinate/retained package-history Markdown link targets outside fenced code were checked for filesystem existence. No external HTTP or anchor semantic validation claim."
+}

@@ -1,0 +1,23 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "scripts/render-workflow-docs.ts",
+    "--check"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "frozen02-workflow-documentation-sync-check",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T04:47:02.523Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\scripts\\render-workflow-docs.ts",
+      "sha256": "a3bbcda805cd52f0c19752eb1055943871b14c8a2859e42e14466297fc8793eb",
+      "size": 8805,
+      "extension": ".ts"
+    }
+  ]
+}

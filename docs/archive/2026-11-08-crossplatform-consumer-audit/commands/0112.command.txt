@@ -1,0 +1,49 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/current-definition-schema-boundary.test.ts",
+    "tests/unit/WorkflowDefinitionLoader.test.ts",
+    "tests/engine/WorkflowLoader.test.ts",
+    "tests/unit/current-release-builtin-workflow.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\workflow-runtime",
+  "purpose": "green-definition-schema-and-loader-consumers",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T03:29:50.968Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\packages\\workflow-runtime\\tests\\unit\\current-definition-schema-boundary.test.ts",
+      "sha256": "8c4b030854302a1b26d7e3afe3753af0e450daf4e85e6289fbb5a016dfd2928f",
+      "size": 3065,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 4,
+      "path": "D:\\code\\SpecForge\\packages\\workflow-runtime\\tests\\unit\\WorkflowDefinitionLoader.test.ts",
+      "sha256": "f166dc5c4c6babf5e0aff5bac38bd4a9910a205aa7bed8e0c9184b7c4c4097e2",
+      "size": 20445,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 5,
+      "path": "D:\\code\\SpecForge\\packages\\workflow-runtime\\tests\\engine\\WorkflowLoader.test.ts",
+      "sha256": "5dc0c52cd1bdbe4a1dee3e6ca390f2c45eaa7a767fe073de03384c16c93807f3",
+      "size": 17131,
+      "extension": ".ts"
+    },
+    {
+      "argument_index": 6,
+      "path": "D:\\code\\SpecForge\\packages\\workflow-runtime\\tests\\unit\\current-release-builtin-workflow.test.ts",
+      "sha256": "af039bff20b2e14528e36733c5d965f2554a963a253df516d296dbf553c6f322",
+      "size": 668,
+      "extension": ".ts"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/knowledge-store-schema.test.ts (20 tests) 182ms
+
+ Test Files  1 passed (1)
+      Tests  20 passed (20)
+   Start at  13:41:41
+   Duration  719ms (transform 122ms, setup 0ms, collect 155ms, tests 182ms, environment 0ms, prepare 160ms)
+

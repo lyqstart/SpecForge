@@ -1,0 +1,25 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe",
+  "args": [
+    "run",
+    "test",
+    "--",
+    "tests/unit/current-definition-schema-boundary.test.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge\\packages\\workflow-runtime",
+  "purpose": "red-definition-persistent-schema-and-loader-owner",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T03:28:35.707Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 3,
+      "path": "D:\\code\\SpecForge\\packages\\workflow-runtime\\tests\\unit\\current-definition-schema-boundary.test.ts",
+      "sha256": "8c4b030854302a1b26d7e3afe3753af0e450daf4e85e6289fbb5a016dfd2928f",
+      "size": 3065,
+      "extension": ".ts"
+    }
+  ]
+}

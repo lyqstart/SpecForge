@@ -1,0 +1,12 @@
+{"package":"types","removed":true}
+{"package":"version-unification","removed":true}
+{"package":"configuration","removed":true}
+{"package":"service-management","removed":true}
+{"package":"host-profile","removed":true}
+{"package":"observability","removed":true}
+{"package":"permission-engine","removed":true}
+{"package":"opencode-adapter","removed":true}
+{"package":"scope-gate","removed":true}
+{"package":"workflow-runtime","removed":true}
+{"package":"cli","removed":true}
+{"package":"daemon-core","removed":true}

@@ -1,0 +1,13 @@
+{
+  "number": "030",
+  "name": "unsupported-command-rejected",
+  "executable": "C:\\Users\\lyq\\AppData\\Local\\Temp\\sf-platform-acceptance-FhZpWr\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "plugin"
+  ],
+  "started_utc": "2026-11-08T05:24:46.122Z",
+  "finished_utc": "2026-11-08T05:24:46.321Z",
+  "inner_exit_code": 1,
+  "signal": null,
+  "spawn_error": null
+}

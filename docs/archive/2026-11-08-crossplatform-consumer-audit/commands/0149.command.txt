@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/inventory-message-surfaces-v2.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "complete-message-source-inventory-v2",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T04:09:37.694Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\inventory-message-surfaces-v2.cjs",
+      "sha256": "ad9790bfa1d89298b91a8d5a65fff6b75cb9cbfd4d6df32261870b6854fb4307",
+      "size": 4389,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+$ vitest run tests/design-governance-live-closure.test.ts
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/design-governance-live-closure.test.ts > Design Governance live closure > writes design once to the canonical Candidate path and never mirrors work-item design.md
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/design-governance-live-closure.test.ts:258:45
+    256|     );
+    257| 
+    258|     expect((manifestResult as any).success).toBe(true);
+       |                                             ^
+    259|     const manifest = JSON.parse(
+    260|       await readFile(workItemCandidateManifest(projectRoot, workItemId…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/design-governance-live-closure.test.ts > Design Governance live closure > runs the real Design Gate through sf_gate_run, uses the design phase profile, and stops at approval_required
+Error: ENOENT: no such file or directory, open 'C:\Users\lyq\AppData\Local\Temp\sf-design-live-closure-LOA5FB\.specforge\work-items\WI-0001\gates\candidate_manifest_gate.json'
+ ❯ tests/design-governance-live-closure.test.ts:421:7
+    419| 
+    420|     const candidateManifestReport = JSON.parse(
+    421|       await readFile(
+       |       ^
+    422|         path.join(workItemRoot(projectRoot, workItemId), 'gates', 'can…
+    423|         'utf8',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+error: script "test" exited with code 1

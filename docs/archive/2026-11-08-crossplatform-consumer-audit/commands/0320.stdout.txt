@@ -1,0 +1,1 @@
+{"head":"28c8e3d850c81218af4598928569bf5420814372","code_files":5,"canonical_files":9,"state":{"success":true,"rebuilt_from_events":true,"work_item_id":"WI-0001","workflow_type":"feature_spec","current_state":"closed","created_at":1792905467014,"updated_at":1794045358653},"application_reexecuted":false}

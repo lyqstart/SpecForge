@@ -1,0 +1,18 @@
+$ vitest run tests/current-daemon-http-doc-contract.test.ts tests/current-operating-doc-contract.test.ts tests/source-policy-audit.test.ts
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/current-daemon-http-doc-contract.test.ts > current Daemon HTTP documentation consumer > resolves controlled Project Init and distinguishes protected routes from public health
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/current-daemon-http-doc-contract.test.ts:6:319
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+error: script "test" exited with code 1

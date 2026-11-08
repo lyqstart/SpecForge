@@ -1,0 +1,14 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/knowledge-store-schema.test.ts (20 tests) 178ms
+ ✓ tests/unit/governance-closure-e2e.test.ts (33 tests) 1821ms
+ ✓ tests/unit/sf-state-transition.test.ts (33 tests) 633ms
+ ✓ tests/unit/current-work-item-metadata-owner.test.ts (22 tests) 272ms
+ ✓ tests/unit/registered-current-workflow-boundary.test.ts (7 tests) 31ms
+
+ Test Files  5 passed (5)
+      Tests  115 passed (115)
+   Start at  13:39:41
+   Duration  10.88s (transform 2.31s, setup 0ms, collect 6.04s, tests 2.94s, environment 1ms, prepare 719ms)
+

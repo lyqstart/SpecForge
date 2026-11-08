@@ -1,0 +1,18 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "ls-remote",
+    "origin",
+    "refs/heads/main",
+    "refs/tags/specforge-v1.0.23",
+    "refs/tags/specforge-v1.0.23^{}"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-live-main-and-immutable-existing-release-tag",
+  "expected_writes": "read-only-remote-git-and-evidence",
+  "started_utc": "2026-11-08T06:44:14.710Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": []
+}

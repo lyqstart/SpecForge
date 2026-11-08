@@ -1,0 +1,30 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/run-linux.cjs",
+    "scripts/verify-platform-release.ts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "actual-linux-official-release-lifecycle-01",
+  "expected_writes": "EXTERNAL_EVIDENCE_WRITES",
+  "started_utc": "2026-11-08T02:58:18.033Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\run-linux.cjs",
+      "sha256": "b64476de976c19a14766f82aae7c200e151fab84384c0bcb70887af0c6ff5433",
+      "size": 1303,
+      "extension": ".cjs"
+    },
+    {
+      "argument_index": 1,
+      "path": "D:\\code\\SpecForge\\scripts\\verify-platform-release.ts",
+      "sha256": "0a2db7a108bd31db4583ee1f06e4626a3b483d3c9da820d8b89e94f969fbb0d2",
+      "size": 8916,
+      "extension": ".ts"
+    }
+  ]
+}

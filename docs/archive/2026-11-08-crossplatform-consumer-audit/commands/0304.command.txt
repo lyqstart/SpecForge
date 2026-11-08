@@ -1,0 +1,16 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "commit",
+    "-m",
+    "fix: preserve registered historical bytes across platform checkouts"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "commit-portable-original-archive-byte-preservation",
+  "expected_writes": "repository-git-commit-and-evidence",
+  "started_utc": "2026-11-08T06:12:17.074Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": []
+}

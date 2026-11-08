@@ -1,0 +1,15 @@
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ rimraf dist && tsc
+$ bun ../../scripts/build-workflow-runtime.ts
+error: Cannot find module 'typescript/bin/tsc' from '\\wsl.localhost\Ubuntu-24.04\tmp\specforge-crossplatform-20261108-a01\project\packages\workflow-runtime\package.json'
+
+Bun v1.3.14 (Windows x64)
+error: script "build" exited with code 1
+[build-workspace] FAILED @specforge/workflow-runtime exitCode=1

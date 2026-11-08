@@ -1,0 +1,1823 @@
+{
+  "utc": "2026-11-08T03:10:28.672Z",
+  "members": [
+    {
+      "path": "packages/configuration/src/accepted-config.ts",
+      "before_sha256": "6d91c5fc6404ab88c8c9c8afc0c8dc3abc2205230585d3adc5d1098274c3923f",
+      "observed_sha256": "87eefe636caf17980293b796acbe7d23d9dcdee816727eb741edfe39205a441b",
+      "after_sha256": "87eefe636caf17980293b796acbe7d23d9dcdee816727eb741edfe39205a441b",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/configuration/src/project-schema-descriptor.ts",
+      "before_sha256": "3c29dec92ef0ef37f7ebd6bbd53b84a9628932bd1bf67af04e12ec636f6ab7c9",
+      "observed_sha256": "f245bc03ea112bb14b725eac83aeef1e0e52baa02ffac533a5316d600b874902",
+      "after_sha256": "68f656cb5602763c33849e2f7494f79a5b176113484855dc5633a47e9f884ce3",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/config/project.json",
+          "prefix": ".specforge",
+          "suffix": "/config/project.json",
+          "reconstructed": ".specforge/config/project.json",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/http/HTTPServer.ts",
+      "before_sha256": "9cd877053b7f9b76e294cf368994d81eb07e9a12b7564fcefbe060ab5f76f4eb",
+      "observed_sha256": "a251e207a6cfa2e34b0a997e7cf7b3f42d0f855887de5e33cc8d677208faee6e",
+      "after_sha256": "a251e207a6cfa2e34b0a997e7cf7b3f42d0f855887de5e33cc8d677208faee6e",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/observability/observability-config.ts",
+      "before_sha256": "827e383b1871e873bbffee4ff47c5ee29cc81be38c865fe8f9054c330bf5c3a0",
+      "observed_sha256": "f08052225ff846e18b30e3e7588fe3b2300bfe33288d09a57211bea7617c5574",
+      "after_sha256": "f08052225ff846e18b30e3e7588fe3b2300bfe33288d09a57211bea7617c5574",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/observability/observability-recorder.ts",
+      "before_sha256": "24b0bc9cd0bceeb9f8b87cc15334001c8be705e27ca93deab003608dcd26e135",
+      "observed_sha256": "109610349fe5e28d8161cd105e6422a2285184612d93556622bccd24ea5b89c7",
+      "after_sha256": "109610349fe5e28d8161cd105e6422a2285184612d93556622bccd24ea5b89c7",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "before_sha256": "9dade6c3a27f760ac80842242ce4eda837dd75f8911f5b6118b96f097b7f9e48",
+      "observed_sha256": "fecfb136fc8b111005dee6e90ec70dbdc0f7b16ab8ece3c67e40071b32d040e0",
+      "after_sha256": "d038b228bf0fa6a3ef59ebd0d36abdecedd92aa5133befc77781241ded24539f",
+      "edits": 3,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/project/spec_manifest.json",
+          "prefix": ".specforge",
+          "suffix": "/project/spec_manifest.json",
+          "reconstructed": ".specforge/project/spec_manifest.json",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/extension_registry.json",
+          "prefix": ".specforge",
+          "suffix": "/project/extension_registry.json",
+          "reconstructed": ".specforge/project/extension_registry.json",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/recovery/ProjectArchiveRestore.ts",
+      "before_sha256": "fc7293adcb2de1b240817300b83a718c4a6cb2c5420335ac4c7b14d9fb76f8be",
+      "observed_sha256": "de4add2b3fc8d3505854f32199cdab6fa5cee3a973713d9a69d55a9bb493d5e8",
+      "after_sha256": "5c368ba5b892f5ec888f2374ef447e86998c9281dbcfcc4ac07b5030911646e4",
+      "edits": 3,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/runtime",
+          "prefix": ".specforge",
+          "suffix": "/runtime",
+          "reconstructed": ".specforge/runtime",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/runtime/events.jsonl",
+          "prefix": ".specforge",
+          "suffix": "/runtime/events.jsonl",
+          "reconstructed": ".specforge/runtime/events.jsonl",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/runtime/state.json",
+          "prefix": ".specforge",
+          "suffix": "/runtime/state.json",
+          "reconstructed": ".specforge/runtime/state.json",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "before_sha256": "c6d8262eadd511d7974a989e22b8c8cd9703b384c6ced61ffe05518e8640121c",
+      "observed_sha256": "e1d1388a11b953604eb65ba44246bc2564e0adf0f804d10ddc18871fe36015d2",
+      "after_sha256": "6c33b0a00314940acea4c7e6df4ecd16e6689fe0c0de1a44af15a03f8e62ca89",
+      "edits": 8,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/project/",
+          "prefix": ".specforge",
+          "suffix": "/project/",
+          "reconstructed": ".specforge/project/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/architecture.md",
+          "prefix": ".specforge",
+          "suffix": "/project/architecture.md",
+          "reconstructed": ".specforge/project/architecture.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/data_model.md",
+          "prefix": ".specforge",
+          "suffix": "/project/data_model.md",
+          "reconstructed": ".specforge/project/data_model.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/trace_matrix.md",
+          "prefix": ".specforge",
+          "suffix": "/project/trace_matrix.md",
+          "reconstructed": ".specforge/project/trace_matrix.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/architecture.md",
+          "prefix": ".specforge",
+          "suffix": "/project/architecture.md",
+          "reconstructed": ".specforge/project/architecture.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/data_model.md",
+          "prefix": ".specforge",
+          "suffix": "/project/data_model.md",
+          "reconstructed": ".specforge/project/data_model.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/architecture.md",
+          "prefix": ".specforge",
+          "suffix": "/project/architecture.md",
+          "reconstructed": ".specforge/project/architecture.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/data_model.md",
+          "prefix": ".specforge",
+          "suffix": "/project/data_model.md",
+          "reconstructed": ".specforge/project/data_model.md",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-safe-bash.ts",
+      "before_sha256": "8533e51576685f3867fe891cc8c93fe32415942b5ed444d79f514c431c984a0d",
+      "observed_sha256": "9c5f7198211bd2aa35953f95f2daf10949cec2522fe22f0bc221703952d8abc1",
+      "after_sha256": "65c1ddba98edff1db3b0b27cff43f3d655922860bfa0fd849e991ec8a6784333",
+      "edits": 13,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/**",
+          "prefix": ".specforge",
+          "suffix": "/**",
+          "reconstructed": ".specforge/**",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/",
+          "prefix": ".specforge",
+          "suffix": "/",
+          "reconstructed": ".specforge/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/",
+          "prefix": ".specforge",
+          "suffix": "/project/",
+          "reconstructed": ".specforge/project/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/config/",
+          "prefix": ".specforge",
+          "suffix": "/config/",
+          "reconstructed": ".specforge/config/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/runtime/",
+          "prefix": ".specforge",
+          "suffix": "/runtime/",
+          "reconstructed": ".specforge/runtime/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/work-items/",
+          "prefix": ".specforge",
+          "suffix": "/work-items/",
+          "reconstructed": ".specforge/work-items/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/logs/",
+          "prefix": ".specforge",
+          "suffix": "/logs/",
+          "reconstructed": ".specforge/logs/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/specs/",
+          "prefix": ".specforge",
+          "suffix": "/specs/",
+          "reconstructed": ".specforge/specs/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/cas/",
+          "prefix": ".specforge",
+          "suffix": "/cas/",
+          "reconstructed": ".specforge/cas/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/runtime/",
+          "prefix": ".specforge",
+          "suffix": "/runtime/",
+          "reconstructed": ".specforge/runtime/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/reports",
+          "prefix": ".specforge",
+          "suffix": "/reports",
+          "reconstructed": ".specforge/reports",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/reports/",
+          "prefix": ".specforge",
+          "suffix": "/reports/",
+          "reconstructed": ".specforge/reports/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/**",
+          "prefix": ".specforge",
+          "suffix": "/**",
+          "reconstructed": ".specforge/**",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-semantic-closure-run.ts",
+      "before_sha256": "9932f3a6ba225e1171eb1f81b5c56d6cbdf1fcdf30205e40ab822b905df3bb0f",
+      "observed_sha256": "f0efde45f2166c6dd78df4157457a353bfaa9ff0a4d311157a5fa3c41ff42df0",
+      "after_sha256": "f0efde45f2166c6dd78df4157457a353bfaa9ff0a4d311157a5fa3c41ff42df0",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts",
+      "before_sha256": "b2d13209700c040690bbdbedcb03fa36155d8780220c5e56d3ac2a6821c07b24",
+      "observed_sha256": "5a9bf40caca19d13bd6fe613e7a0f365117d0e07b06b7660462f732bf740ff78",
+      "after_sha256": "5a9bf40caca19d13bd6fe613e7a0f365117d0e07b06b7660462f732bf740ff78",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-code-permission.ts",
+      "before_sha256": "aea9f65d82820c3d6f623e546f46d5cf5bd6112667b793f97f9086f9fe1bcd7e",
+      "observed_sha256": "5dcde76d6ef89d9caa8e5caec13db84553081d90f16972d9aacffb34617c5938",
+      "after_sha256": "7e79b789a0d502bc76c784cf7ef6483b3b43fdb58d544b5531b44efdba6b2749",
+      "edits": 3,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/",
+          "prefix": ".specforge",
+          "suffix": "/",
+          "reconstructed": ".specforge/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-decision.ts",
+      "before_sha256": "1472ca3317946b9d8fc2b8215fe75018790db6e6a596904eae0036d8a621dc75",
+      "observed_sha256": "4dad2408f88898b323aa344456ed6c5afc42ea1c09511068a601e5752c40db28",
+      "after_sha256": "4dad2408f88898b323aa344456ed6c5afc42ea1c09511068a601e5752c40db28",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-merge.ts",
+      "before_sha256": "cdcdf4c7ba90c29056b6a119845f8bd0b4cf02b79f924c50bc46f611c2081c5a",
+      "observed_sha256": "6d50d5c7ad249a7a50505b1a3a429d0f90b9eb98182130e1046290eb1b0e5a82",
+      "after_sha256": "6d50d5c7ad249a7a50505b1a3a429d0f90b9eb98182130e1046290eb1b0e5a82",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-rollback.ts",
+      "before_sha256": "999971addc5b39274aed48ee35000bc19cdcd2569dd10cf494b01f92b9b444d5",
+      "observed_sha256": "7cdab3e7667d9c9e4f93090d75d359d7e5fff0e05b61b1b9745939344f08d4e7",
+      "after_sha256": "7cdab3e7667d9c9e4f93090d75d359d7e5fff0e05b61b1b9745939344f08d4e7",
+      "edits": 3,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-verification.ts",
+      "before_sha256": "d8e15e323805aa6df9360e7b89ad33071e4db52c9da9233185db2b5ae1d9a6f2",
+      "observed_sha256": "e2d3530f8be943de641d17b643088f6a3a4bb29360ed8451e7a5dd02cffad019",
+      "after_sha256": "e2d3530f8be943de641d17b643088f6a3a4bb29360ed8451e7a5dd02cffad019",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-v11-work-item-create.ts",
+      "before_sha256": "aada6f2bbac6fb092cbe9d2379feee39476388850df4c19b24ca5e76a916b90f",
+      "observed_sha256": "9f334c66a00daf94e6104555a3838cf793711f1d444942dcb0bf1080b56239ed",
+      "after_sha256": "9f334c66a00daf94e6104555a3838cf793711f1d444942dcb0bf1080b56239ed",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-verification-gate.ts",
+      "before_sha256": "3a6f9eb6bf4362c7943827382d41c9397889cb3e91f8690bb6ce9edff03f617d",
+      "observed_sha256": "392d001476b6c39fbbe416ba2455c47188ac0d832cfce294f0d3ef0ffbf72f54",
+      "after_sha256": "392d001476b6c39fbbe416ba2455c47188ac0d832cfce294f0d3ef0ffbf72f54",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/artifact-schema-validation.ts",
+      "before_sha256": "ccfcf8acb0c44abc1509e9301070947cedc50e8c884df315fc409b1ff3662899",
+      "observed_sha256": "ab753818a3455cf72cd7a1ec3d4f155d9708a9a7c9889df1453f9e43d8da4419",
+      "after_sha256": "6c99c3586255550b14c3f5cc224d91e4b0fb364deb15b17b8a32c0e810fb366d",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/project/extension_registry.json",
+          "prefix": ".specforge",
+          "suffix": "/project/extension_registry.json",
+          "reconstructed": ".specforge/project/extension_registry.json",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/atomic-spec-merge-write-provenance.ts",
+      "before_sha256": "8f89502d07ee662e161ba55a5f830cab75d55fda1e409d293dbcbe5e86235018",
+      "observed_sha256": "3e2d17995b0b2582575b308fdb145028a213fb909ea3016cf7a3a7abe979eac0",
+      "after_sha256": "71d989ebcb282eb0d8722616bd6bead7e41dd555e7be3ac63cbd0d1e5e77f94b",
+      "edits": 2,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/project/",
+          "prefix": ".specforge",
+          "suffix": "/project/",
+          "reconstructed": ".specforge/project/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/authoritative-work-items.ts",
+      "before_sha256": "3f150425e168b9cc9d78fe4c13bd0645dc70a8c556163743a121b1aae3b606ca",
+      "observed_sha256": "024d51ed5f45305c35f3cf6625543ffd63b93fc2fdcbff8bfefa5670d65aca1a",
+      "after_sha256": "024d51ed5f45305c35f3cf6625543ffd63b93fc2fdcbff8bfefa5670d65aca1a",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/candidate-generation-integrity.ts",
+      "before_sha256": "19e3451b7ed6172ba41f33533d7c90c64b63af11374fb92ea923e14b1ebb995e",
+      "observed_sha256": "41067e4017d277b98596d9c115b68a58d8b64b129405b28b8085e2a40faeb743",
+      "after_sha256": "41067e4017d277b98596d9c115b68a58d8b64b129405b28b8085e2a40faeb743",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/changed-files-audit.ts",
+      "before_sha256": "1df514f8409c2c186387caa0c81478a29337cde859af83b5feb93a16d1618aaf",
+      "observed_sha256": "4ddfcc6399fab9ef7a82d80140e3489cfd6ba8a36c423bf7d491ba2b0383eeda",
+      "after_sha256": "f6fd9f6c71be7bd45ef94e7cbd6edc10a00bf7313885dcb70a0aedc1d8b5f66b",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/project/",
+          "prefix": ".specforge",
+          "suffix": "/project/",
+          "reconstructed": ".specforge/project/",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/contract-authoring.ts",
+      "before_sha256": "38da50c3bf398538ef74379b6fe97f2c34c9622c521797ad597d06a5d28d0075",
+      "observed_sha256": "20cf02c984fb3ef64fbb2321cdb43fde76f60fde008e97a68987a1970149a120",
+      "after_sha256": "61d228879b530304ba864f53f3d1b0766c3480cac0d3bee017eeeb3fd9ecb0bd",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/project/extension_registry.json",
+          "prefix": ".specforge",
+          "suffix": "/project/extension_registry.json",
+          "reconstructed": ".specforge/project/extension_registry.json",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/contract-integrity.ts",
+      "before_sha256": "fa3ddff296626387183992222cf6c4a24d64fb88961676a28ee493c1543a5531",
+      "observed_sha256": "9b02b7b0f6d0f75f87704676965d2149651213f4306f08ca30e308fb2eddf34a",
+      "after_sha256": "de413fd8d917cca5a3f258fc56116943348697c6459a8e4aeedef5939fbae794",
+      "edits": 2,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/project/extension_registry.json",
+          "prefix": ".specforge",
+          "suffix": "/project/extension_registry.json",
+          "reconstructed": ".specforge/project/extension_registry.json",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/filesystem-diff.ts",
+      "before_sha256": "18dca560c7d4d15ac54d9611f24b187c4194990f762dc891735d70e1ec82ad4e",
+      "observed_sha256": "39b1d0f89bc7f6d3341985c438af798bc5096c353bd13fce6c26015515cdea9d",
+      "after_sha256": "6bb2aae8dbae537707db59078346c243e8616e60a392985674adc0d48724a3e7",
+      "edits": 15,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/logs/",
+          "prefix": ".specforge",
+          "suffix": "/logs/",
+          "reconstructed": ".specforge/logs/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/runtime/",
+          "prefix": ".specforge",
+          "suffix": "/runtime/",
+          "reconstructed": ".specforge/runtime/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/archive/",
+          "prefix": ".specforge",
+          "suffix": "/archive/",
+          "reconstructed": ".specforge/archive/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/cas/",
+          "prefix": ".specforge",
+          "suffix": "/cas/",
+          "reconstructed": ".specforge/cas/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/tmp/",
+          "prefix": ".specforge",
+          "suffix": "/tmp/",
+          "reconstructed": ".specforge/tmp/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/temp/",
+          "prefix": ".specforge",
+          "suffix": "/temp/",
+          "reconstructed": ".specforge/temp/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/work-items/",
+          "prefix": ".specforge",
+          "suffix": "/work-items/",
+          "reconstructed": ".specforge/work-items/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/logs",
+          "prefix": ".specforge",
+          "suffix": "/logs",
+          "reconstructed": ".specforge/logs",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/runtime",
+          "prefix": ".specforge",
+          "suffix": "/runtime",
+          "reconstructed": ".specforge/runtime",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/archive",
+          "prefix": ".specforge",
+          "suffix": "/archive",
+          "reconstructed": ".specforge/archive",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/cas",
+          "prefix": ".specforge",
+          "suffix": "/cas",
+          "reconstructed": ".specforge/cas",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/tmp",
+          "prefix": ".specforge",
+          "suffix": "/tmp",
+          "reconstructed": ".specforge/tmp",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/temp",
+          "prefix": ".specforge",
+          "suffix": "/temp",
+          "reconstructed": ".specforge/temp",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/work-items",
+          "prefix": ".specforge",
+          "suffix": "/work-items",
+          "reconstructed": ".specforge/work-items",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "before_sha256": "da579fb63009c79632c8a05b2c0a29fd87ba6909af3c594fb0b0bd57c1428af2",
+      "observed_sha256": "8cb949198a3edbe4f9ceb2132863cb6c4aeb8e8a67a301c5dccc4535e51e53d4",
+      "after_sha256": "20f6b8f7a5441d104801193b552e37394e5bbbdbc48a59bfb1a7dc7ca40d071d",
+      "edits": 4,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/project/",
+          "prefix": ".specforge",
+          "suffix": "/project/",
+          "reconstructed": ".specforge/project/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/ directory exists",
+          "prefix": ".specforge",
+          "suffix": "/project/ directory exists",
+          "reconstructed": ".specforge/project/ directory exists",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/",
+          "prefix": ".specforge",
+          "suffix": "/project/",
+          "reconstructed": ".specforge/project/",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/git-detached-bootstrap.ts",
+      "before_sha256": "ca8850eb44265b16513c02cb3f7ea2aa2ab791713314b802866312c9ad7d3052",
+      "observed_sha256": "3ed4f955bc48aacd9a383b9ad1179330be940b30c93b3c8391c37337783d8018",
+      "after_sha256": "e95d7e1ae033d028020c384f7ab8bf136bbfe8cc1d081faaf147aa705f60d6de",
+      "edits": 3,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/work-items",
+          "prefix": ".specforge",
+          "suffix": "/work-items",
+          "reconstructed": ".specforge/work-items",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/runtime",
+          "prefix": ".specforge",
+          "suffix": "/runtime",
+          "reconstructed": ".specforge/runtime",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/",
+          "prefix": ".specforge",
+          "suffix": "/",
+          "reconstructed": ".specforge/",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/git-governance-write-provenance.ts",
+      "before_sha256": "2fe2c4e17df0e96095a835f5491931d49dc367844e59b0701261b64c4c4d67cc",
+      "observed_sha256": "a91c0e7f334064f1b104f1ad15312efb6875c89be9f130379b5587b3fc6861fc",
+      "after_sha256": "23d4cac4012ee0fb805b67dc084da8c38644b05844188fd1c54f61070c41e5ee",
+      "edits": 3,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/project/git_policy.json",
+          "prefix": ".specforge",
+          "suffix": "/project/git_policy.json",
+          "reconstructed": ".specforge/project/git_policy.json",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/git_ignore_decisions.json",
+          "prefix": ".specforge",
+          "suffix": "/project/git_ignore_decisions.json",
+          "reconstructed": ".specforge/project/git_ignore_decisions.json",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/git_adoption_report.md",
+          "prefix": ".specforge",
+          "suffix": "/project/git_adoption_report.md",
+          "reconstructed": ".specforge/project/git_adoption_report.md",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "before_sha256": "d3d07846e7acde54a60a9092ca419ee2b6137e4ac91dc1fb1b3c981a2507623c",
+      "observed_sha256": "18d2155441a498e8bfc5f156b766b06fb5d47bc0d46c45e0b869d98f6daca560",
+      "after_sha256": "36807fa9e0d8e96ffc8c6f95c42aeae30b5fa51a2567a1c9261a0dd1192e829c",
+      "edits": 15,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/project/data_model.md",
+          "prefix": ".specforge",
+          "suffix": "/project/data_model.md",
+          "reconstructed": ".specforge/project/data_model.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/requirements_index.md",
+          "prefix": ".specforge",
+          "suffix": "/project/requirements_index.md",
+          "reconstructed": ".specforge/project/requirements_index.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/design_index.md",
+          "prefix": ".specforge",
+          "suffix": "/project/design_index.md",
+          "reconstructed": ".specforge/project/design_index.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/trace_matrix.md",
+          "prefix": ".specforge",
+          "suffix": "/project/trace_matrix.md",
+          "reconstructed": ".specforge/project/trace_matrix.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/architecture.md",
+          "prefix": ".specforge",
+          "suffix": "/project/architecture.md",
+          "reconstructed": ".specforge/project/architecture.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/glossary.md",
+          "prefix": ".specforge",
+          "suffix": "/project/glossary.md",
+          "reconstructed": ".specforge/project/glossary.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/decisions.md",
+          "prefix": ".specforge",
+          "suffix": "/project/decisions.md",
+          "reconstructed": ".specforge/project/decisions.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/",
+          "prefix": ".specforge",
+          "suffix": "/project/",
+          "reconstructed": ".specforge/project/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/architecture.md",
+          "prefix": ".specforge",
+          "suffix": "/project/architecture.md",
+          "reconstructed": ".specforge/project/architecture.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/data_model.md",
+          "prefix": ".specforge",
+          "suffix": "/project/data_model.md",
+          "reconstructed": ".specforge/project/data_model.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/extension_registry.json",
+          "prefix": ".specforge",
+          "suffix": "/project/extension_registry.json",
+          "reconstructed": ".specforge/project/extension_registry.json",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/trace_matrix.md",
+          "prefix": ".specforge",
+          "suffix": "/project/trace_matrix.md",
+          "reconstructed": ".specforge/project/trace_matrix.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/trace_matrix.md",
+          "prefix": ".specforge",
+          "suffix": "/project/trace_matrix.md",
+          "reconstructed": ".specforge/project/trace_matrix.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/",
+          "prefix": ".specforge",
+          "suffix": "/project/",
+          "reconstructed": ".specforge/project/",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/invalid-merged-spec-closure-recovery.ts",
+      "before_sha256": "cfd886c0db08041f7c3ddff8b800cedea8e3ccd6f4b8eb2838b6bbb0b57a7cf4",
+      "observed_sha256": "18564279d9d37afaf5d51d926190302235f5551e83dfdd679b2d951d2c308eb8",
+      "after_sha256": "18564279d9d37afaf5d51d926190302235f5551e83dfdd679b2d951d2c308eb8",
+      "edits": 2,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "before_sha256": "76c09466dd3bb883bb87b6b0777893bfa2dc0611e7f66807bfd39e42cc4ec54a",
+      "observed_sha256": "86546ef4bd0ee9a0763d6e43fd2a100961e0080cecfa0b5989f92526fbf7fb0e",
+      "after_sha256": "acf32e13dc0ec51eb430bc35cc7c03da016924ba1e73ab3e4110ec95d1c465af",
+      "edits": 13,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/trace_matrix.md",
+          "prefix": ".specforge",
+          "suffix": "/project/trace_matrix.md",
+          "reconstructed": ".specforge/project/trace_matrix.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/spec_manifest.json",
+          "prefix": ".specforge",
+          "suffix": "/project/spec_manifest.json",
+          "reconstructed": ".specforge/project/spec_manifest.json",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/extension_registry.json",
+          "prefix": ".specforge",
+          "suffix": "/project/extension_registry.json",
+          "reconstructed": ".specforge/project/extension_registry.json",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/native-write-boundary.ts",
+      "before_sha256": "e2691ccb101a8dd93b0a4d6ec1fab16d162af741bbae03ff1fc218662760a393",
+      "observed_sha256": "9f8c2c329f1847b246cada1653f1e87a6a475369e521cf5218887a5e45866ced",
+      "after_sha256": "9f8c2c329f1847b246cada1653f1e87a6a475369e521cf5218887a5e45866ced",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/path-policy.ts",
+      "before_sha256": "310198b941575e0ae230e5dc26fb9f3326f5c2aaafd8c4fb96e2d873c9c08021",
+      "observed_sha256": "a071dc656a3154a63098461e106fec9896e80e8a1c7027845cb96ad9c89da27a",
+      "after_sha256": "7183c8137360123f3918701427567d77e41504ec1ca4a8b4b6077c4f64042220",
+      "edits": 5,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/project/",
+          "prefix": ".specforge",
+          "suffix": "/project/",
+          "reconstructed": ".specforge/project/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/data_model.md",
+          "prefix": ".specforge",
+          "suffix": "/project/data_model.md",
+          "reconstructed": ".specforge/project/data_model.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/data_model.md",
+          "prefix": ".specforge",
+          "suffix": "/project/data_model.md",
+          "reconstructed": ".specforge/project/data_model.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/data_model.md",
+          "prefix": ".specforge",
+          "suffix": "/project/data_model.md",
+          "reconstructed": ".specforge/project/data_model.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/",
+          "prefix": ".specforge",
+          "suffix": "/",
+          "reconstructed": ".specforge/",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/project-governance-v2.ts",
+      "before_sha256": "aed459ce70d2a43522a0fa9736ade3a4b7a167d28036763ccb2cdc851aebf62e",
+      "observed_sha256": "23357246f6131c56cb5682923bc3e5c1a7c0494c82f5a5b571ae16eccea651d8",
+      "after_sha256": "23357246f6131c56cb5682923bc3e5c1a7c0494c82f5a5b571ae16eccea651d8",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/project-init-reconstruction.ts",
+      "before_sha256": "7a139d8f37016b377448770900fcb4f956b7f3b46a96eaf1b13ad0bda2555c9d",
+      "observed_sha256": "7585d723ecfe8c679e0101be4fbc650bf5c1f7503fc70da05c5d6c37e830d0b3",
+      "after_sha256": "25d7782f455a151d2a9f899516432be44e9607e6e425bb5758e51ec186e6caa4",
+      "edits": 3,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/manifest.json",
+          "prefix": ".specforge",
+          "suffix": "/manifest.json",
+          "reconstructed": ".specforge/manifest.json",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/modules/CORE/module.json",
+          "prefix": ".specforge",
+          "suffix": "/project/modules/CORE/module.json",
+          "reconstructed": ".specforge/project/modules/CORE/module.json",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/runtime/init-recovery/owner.lock",
+          "prefix": ".specforge",
+          "suffix": "/runtime/init-recovery/owner.lock",
+          "reconstructed": ".specforge/runtime/init-recovery/owner.lock",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/regenerable-artifact-governance.ts",
+      "before_sha256": "775ff5f7a505b87294109581adcfb75d6e437f9cea76696cd4006ae4a2ac8cd6",
+      "observed_sha256": "775ff5f7a505b87294109581adcfb75d6e437f9cea76696cd4006ae4a2ac8cd6",
+      "after_sha256": "160a3d0a77d945c93243e40beb08d49c9b0e1ec95289c2501d8589f8648d1b30",
+      "edits": 3,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/project/git_ignore_decisions.json",
+          "prefix": ".specforge",
+          "suffix": "/project/git_ignore_decisions.json",
+          "reconstructed": ".specforge/project/git_ignore_decisions.json",
+          "domain": "TYPE"
+        },
+        {
+          "old_value": ".specforge/project/git_ignore_decisions.json",
+          "prefix": ".specforge",
+          "suffix": "/project/git_ignore_decisions.json",
+          "reconstructed": ".specforge/project/git_ignore_decisions.json",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/git_ignore_decisions.json",
+          "prefix": ".specforge",
+          "suffix": "/project/git_ignore_decisions.json",
+          "reconstructed": ".specforge/project/git_ignore_decisions.json",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/rollback-runner-v11.ts",
+      "before_sha256": "809ab374e332c78fbf2900f60c9da73a2203c31a0200892a91b7a2f09de336c2",
+      "observed_sha256": "809ab374e332c78fbf2900f60c9da73a2203c31a0200892a91b7a2f09de336c2",
+      "after_sha256": "1df88250c840d47349bdf100a983fb2a10d1f0a5993331be2fbf9aba6ef8729f",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/sf_project_init_core.ts",
+      "before_sha256": "68c5c8ea19b9c285f30f26b2b7e6d4d87535e0a7569ca5dbd207170e72b19f03",
+      "observed_sha256": "68c5c8ea19b9c285f30f26b2b7e6d4d87535e0a7569ca5dbd207170e72b19f03",
+      "after_sha256": "64bce0d36f3a04a3a64fd4b94707e7282b37ec0b8b57d6fc058bfa66a9659038",
+      "edits": 12,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/project/extension_registry.json",
+          "prefix": ".specforge",
+          "suffix": "/project/extension_registry.json",
+          "reconstructed": ".specforge/project/extension_registry.json",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/requirements_index.md",
+          "prefix": ".specforge",
+          "suffix": "/project/requirements_index.md",
+          "reconstructed": ".specforge/project/requirements_index.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/design_index.md",
+          "prefix": ".specforge",
+          "suffix": "/project/design_index.md",
+          "reconstructed": ".specforge/project/design_index.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/architecture.md",
+          "prefix": ".specforge",
+          "suffix": "/project/architecture.md",
+          "reconstructed": ".specforge/project/architecture.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/glossary.md",
+          "prefix": ".specforge",
+          "suffix": "/project/glossary.md",
+          "reconstructed": ".specforge/project/glossary.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/decisions.md",
+          "prefix": ".specforge",
+          "suffix": "/project/decisions.md",
+          "reconstructed": ".specforge/project/decisions.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/trace_matrix.md",
+          "prefix": ".specforge",
+          "suffix": "/project/trace_matrix.md",
+          "reconstructed": ".specforge/project/trace_matrix.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/modules/CORE",
+          "prefix": ".specforge",
+          "suffix": "/project/modules/CORE",
+          "reconstructed": ".specforge/project/modules/CORE",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/modules/CORE/module.json",
+          "prefix": ".specforge",
+          "suffix": "/project/modules/CORE/module.json",
+          "reconstructed": ".specforge/project/modules/CORE/module.json",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/modules/CORE/requirements.md",
+          "prefix": ".specforge",
+          "suffix": "/project/modules/CORE/requirements.md",
+          "reconstructed": ".specforge/project/modules/CORE/requirements.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/modules/CORE/design.md",
+          "prefix": ".specforge",
+          "suffix": "/project/modules/CORE/design.md",
+          "reconstructed": ".specforge/project/modules/CORE/design.md",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/modules/CORE/trace.md",
+          "prefix": ".specforge",
+          "suffix": "/project/modules/CORE/trace.md",
+          "reconstructed": ".specforge/project/modules/CORE/trace.md",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/sf_safe_bash_executor.ts",
+      "before_sha256": "a32462eef8a42464633ce2061e98fee53fed123dfb69046bd61f18e17ea2cb00",
+      "observed_sha256": "a32462eef8a42464633ce2061e98fee53fed123dfb69046bd61f18e17ea2cb00",
+      "after_sha256": "f0770286fddfc450f65b2711c98a7414f223efd9beeb11042eec41f41e5406f0",
+      "edits": 2,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/state-coordinator-v11.ts",
+      "before_sha256": "e9fe5d9de76a71085d94603c6bb8c1f6a3df0391c54c297e530c7be30995b5ac",
+      "observed_sha256": "e9fe5d9de76a71085d94603c6bb8c1f6a3df0391c54c297e530c7be30995b5ac",
+      "after_sha256": "79639d821b5bd44457e0c6ad89acad68e7771e91855994a1348301cc259a7d87",
+      "edits": 3,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/project/extension_registry.json",
+          "prefix": ".specforge",
+          "suffix": "/project/extension_registry.json",
+          "reconstructed": ".specforge/project/extension_registry.json",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/",
+          "prefix": ".specforge",
+          "suffix": "/project/",
+          "reconstructed": ".specforge/project/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/",
+          "prefix": ".specforge",
+          "suffix": "/project/",
+          "reconstructed": ".specforge/project/",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/verification-evidence-integrity.ts",
+      "before_sha256": "dae174002aba2d5118c1a25456fd8dcea016779c6f4e3ee7e554da9a7e703146",
+      "observed_sha256": "dae174002aba2d5118c1a25456fd8dcea016779c6f4e3ee7e554da9a7e703146",
+      "after_sha256": "d5387761ed490dc8e4359743d725b6dc72d6c464139d7a3870167f11e5cf0458",
+      "edits": 2,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/work-items/",
+          "prefix": ".specforge",
+          "suffix": "/work-items/",
+          "reconstructed": ".specforge/work-items/",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/work-item-lifecycle-v11.ts",
+      "before_sha256": "7072a1e53462e50622b63f2048b27687a4eb95511d6c0508c7aac1bbc2a1f867",
+      "observed_sha256": "7072a1e53462e50622b63f2048b27687a4eb95511d6c0508c7aac1bbc2a1f867",
+      "after_sha256": "5306257840dc173e21c0806a0b86429672a722c22deff8f2eb3391cdcc0b7313",
+      "edits": 3,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/write-guard-v11.ts",
+      "before_sha256": "75896a7b82401d58f6adebbaf1c4026a56b05f5d7dd4e241e8f248257b4b1f05",
+      "observed_sha256": "75896a7b82401d58f6adebbaf1c4026a56b05f5d7dd4e241e8f248257b4b1f05",
+      "after_sha256": "2ba28944edda763ca4fd4039c134c48163ab19f26c3e34936e0763d2ea4df4f1",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/project/",
+          "prefix": ".specforge",
+          "suffix": "/project/",
+          "reconstructed": ".specforge/project/",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/verification/node-command-contract.ts",
+      "before_sha256": "fca4bbe28811e01af347b5b78e1504d7dc84676e23a7f302dfc7699bfb819a58",
+      "observed_sha256": "fca4bbe28811e01af347b5b78e1504d7dc84676e23a7f302dfc7699bfb819a58",
+      "after_sha256": "81d526d7bb8042c77ff7cf3aea8ca21bcb2b7bb32f918c7bbb2185ec34fd2515",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/verification/source-snapshot.ts",
+      "before_sha256": "53feab9b435256ed38ed824dcc79d50ed85181cba0333f46bee99f5d43a0141b",
+      "observed_sha256": "53feab9b435256ed38ed824dcc79d50ed85181cba0333f46bee99f5d43a0141b",
+      "after_sha256": "fe14fa7443619948713f98c7a994ce01686342357da4118ff9d932aea9b13fd2",
+      "edits": 2,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/",
+          "prefix": ".specforge",
+          "suffix": "/",
+          "reconstructed": ".specforge/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/",
+          "prefix": ".specforge",
+          "suffix": "/",
+          "reconstructed": ".specforge/",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/verification/static-task-command.ts",
+      "before_sha256": "2815a701ed6f918d65e0e41a9e7bcdf631d26130689311b3cbba1b42f69bb324",
+      "observed_sha256": "2815a701ed6f918d65e0e41a9e7bcdf631d26130689311b3cbba1b42f69bb324",
+      "after_sha256": "afb756a3c37e65408fcee856272b3464c1849756015067096bf0799a9f716a2c",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/daemon-core/src/verification/verification-schema.ts",
+      "before_sha256": "a8f77606598816d36113a3b8719bbd1a16f3e97ba055e75942fbfd96d2277973",
+      "observed_sha256": "a8f77606598816d36113a3b8719bbd1a16f3e97ba055e75942fbfd96d2277973",
+      "after_sha256": "66f9355c7405bffcf025d33f81399428bdcf27a4265b415b40d96a796b2afcbf",
+      "edits": 2,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge",
+          "prefix": ".specforge",
+          "suffix": "",
+          "reconstructed": ".specforge",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/",
+          "prefix": ".specforge",
+          "suffix": "/",
+          "reconstructed": ".specforge/",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/observability/src/config-contract.ts",
+      "before_sha256": "eca9b41340fdb876d2bbce18aaeedccc275dd5e776f5a427d06cd9e08070de28",
+      "observed_sha256": "eca9b41340fdb876d2bbce18aaeedccc275dd5e776f5a427d06cd9e08070de28",
+      "after_sha256": "4d3a48cdd99b92f9e35e54519e8047cbdd56bc08f49d3c83352245aaacc562a3",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/config/observability.json",
+          "prefix": ".specforge",
+          "suffix": "/config/observability.json",
+          "reconstructed": ".specforge/config/observability.json",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/permission-engine/src/write-decision.ts",
+      "before_sha256": "75c66ddf7ae27709bac3930e6e12f1c63f0c5d9e7630d605e72dea2c7ba22b65",
+      "observed_sha256": "75c66ddf7ae27709bac3930e6e12f1c63f0c5d9e7630d605e72dea2c7ba22b65",
+      "after_sha256": "be32ca2aa4162e37b5d7b828bed19f3501419cc52ec09da4d1f801a368ff8e13",
+      "edits": 6,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/work-items/",
+          "prefix": ".specforge",
+          "suffix": "/work-items/",
+          "reconstructed": ".specforge/work-items/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/",
+          "prefix": ".specforge",
+          "suffix": "/",
+          "reconstructed": ".specforge/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/",
+          "prefix": ".specforge",
+          "suffix": "/",
+          "reconstructed": ".specforge/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/",
+          "prefix": ".specforge",
+          "suffix": "/project/",
+          "reconstructed": ".specforge/project/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/",
+          "prefix": ".specforge",
+          "suffix": "/",
+          "reconstructed": ".specforge/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/",
+          "prefix": ".specforge",
+          "suffix": "/",
+          "reconstructed": ".specforge/",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/service-management/src/types/specforge-types-directory-layout.ts",
+      "before_sha256": "d7b8cf22d8d9aebcf5b522d56095b89426c6b6478a061890888669becdaca462",
+      "observed_sha256": "d7b8cf22d8d9aebcf5b522d56095b89426c6b6478a061890888669becdaca462",
+      "after_sha256": "b5857925c90b41aad3c46a140716742efe09c89b5677db381451d899822a4530",
+      "edits": 1,
+      "unchanged_values": []
+    },
+    {
+      "path": "packages/types/src/control-plane-write-provenance-contract.ts",
+      "before_sha256": "57ae5123d254e1a7b2725a2c19fad4098b8ad8020c16f0613fc974454333f663",
+      "observed_sha256": "57ae5123d254e1a7b2725a2c19fad4098b8ad8020c16f0613fc974454333f663",
+      "after_sha256": "fc0158805a35f763e25a6ffd80f11bf95f7484a19468681c8b810aec78cd1a6c",
+      "edits": 3,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/project/git_policy.json",
+          "prefix": ".specforge",
+          "suffix": "/project/git_policy.json",
+          "reconstructed": ".specforge/project/git_policy.json",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/git_ignore_decisions.json",
+          "prefix": ".specforge",
+          "suffix": "/project/git_ignore_decisions.json",
+          "reconstructed": ".specforge/project/git_ignore_decisions.json",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/git_adoption_report.md",
+          "prefix": ".specforge",
+          "suffix": "/project/git_adoption_report.md",
+          "reconstructed": ".specforge/project/git_adoption_report.md",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/workflow-runtime/src/rbac/ProtectedFileMatcher.ts",
+      "before_sha256": "d1d53d80ada0ee06c1fd1888dc6e7c6b05a7ee780e3b3b852493aae8a26c51f3",
+      "observed_sha256": "d1d53d80ada0ee06c1fd1888dc6e7c6b05a7ee780e3b3b852493aae8a26c51f3",
+      "after_sha256": "7c1621b19fea9a4decb28142b25c129b8cde43bc2dcabd70c87898a6aa5a5b0e",
+      "edits": 1,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/",
+          "prefix": ".specforge",
+          "suffix": "/",
+          "reconstructed": ".specforge/",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/workflow-runtime/src/v11/runtime/PathPolicy.ts",
+      "before_sha256": "fd9b7077fa756fb2ffe10ae7d318020128b78285c8915cbdeaea8a43fb0f198e",
+      "observed_sha256": "fd9b7077fa756fb2ffe10ae7d318020128b78285c8915cbdeaea8a43fb0f198e",
+      "after_sha256": "9973206eb9acff22f91d444430f5777f3b4cf478d03bedc6785710af91b3caf2",
+      "edits": 23,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/",
+          "prefix": ".specforge",
+          "suffix": "/",
+          "reconstructed": ".specforge/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge\\",
+          "prefix": ".specforge",
+          "suffix": "\\",
+          "reconstructed": ".specforge\\",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/specs/",
+          "prefix": ".specforge",
+          "suffix": "/specs/",
+          "reconstructed": ".specforge/specs/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/specs",
+          "prefix": ".specforge",
+          "suffix": "/specs",
+          "reconstructed": ".specforge/specs",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/",
+          "prefix": ".specforge",
+          "suffix": "/project/",
+          "reconstructed": ".specforge/project/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project",
+          "prefix": ".specforge",
+          "suffix": "/project",
+          "reconstructed": ".specforge/project",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/work-items/",
+          "prefix": ".specforge",
+          "suffix": "/work-items/",
+          "reconstructed": ".specforge/work-items/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/work-items",
+          "prefix": ".specforge",
+          "suffix": "/work-items",
+          "reconstructed": ".specforge/work-items",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/",
+          "prefix": ".specforge",
+          "suffix": "/project/",
+          "reconstructed": ".specforge/project/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/",
+          "prefix": ".specforge",
+          "suffix": "/project/",
+          "reconstructed": ".specforge/project/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/archive",
+          "prefix": ".specforge",
+          "suffix": "/archive",
+          "reconstructed": ".specforge/archive",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/state",
+          "prefix": ".specforge",
+          "suffix": "/state",
+          "reconstructed": ".specforge/state",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/gates",
+          "prefix": ".specforge",
+          "suffix": "/gates",
+          "reconstructed": ".specforge/gates",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/archive",
+          "prefix": ".specforge",
+          "suffix": "/archive",
+          "reconstructed": ".specforge/archive",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/standards",
+          "prefix": ".specforge",
+          "suffix": "/standards",
+          "reconstructed": ".specforge/standards",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/state",
+          "prefix": ".specforge",
+          "suffix": "/state",
+          "reconstructed": ".specforge/state",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/reports",
+          "prefix": ".specforge",
+          "suffix": "/reports",
+          "reconstructed": ".specforge/reports",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/snapshots",
+          "prefix": ".specforge",
+          "suffix": "/snapshots",
+          "reconstructed": ".specforge/snapshots",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/",
+          "prefix": ".specforge",
+          "suffix": "/project/",
+          "reconstructed": ".specforge/project/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project",
+          "prefix": ".specforge",
+          "suffix": "/project",
+          "reconstructed": ".specforge/project",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/",
+          "prefix": ".specforge",
+          "suffix": "/project/",
+          "reconstructed": ".specforge/project/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project",
+          "prefix": ".specforge",
+          "suffix": "/project",
+          "reconstructed": ".specforge/project",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/",
+          "prefix": ".specforge",
+          "suffix": "/",
+          "reconstructed": ".specforge/",
+          "domain": "RUNTIME"
+        }
+      ]
+    },
+    {
+      "path": "packages/workflow-runtime/src/v11/runtime/PathService.ts",
+      "before_sha256": "123ffb4a53a36c7e1c3818a906b03d51de169be3e20c59aa25db61a1fa96a50d",
+      "observed_sha256": "123ffb4a53a36c7e1c3818a906b03d51de169be3e20c59aa25db61a1fa96a50d",
+      "after_sha256": "8292cc8d6b583af27260850faca3512b768e511e8a774eb591e261839b57234d",
+      "edits": 4,
+      "unchanged_values": [
+        {
+          "old_value": ".specforge/specs/",
+          "prefix": ".specforge",
+          "suffix": "/specs/",
+          "reconstructed": ".specforge/specs/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/project/",
+          "prefix": ".specforge",
+          "suffix": "/project/",
+          "reconstructed": ".specforge/project/",
+          "domain": "RUNTIME"
+        },
+        {
+          "old_value": ".specforge/work-items/",
+          "prefix": ".specforge",
+          "suffix": "/work-items/",
+          "reconstructed": ".specforge/work-items/",
+          "domain": "RUNTIME"
+        }
+      ]
+    }
+  ],
+  "qualification": "Type and runtime values preserved; complete plan parsed and checked before writes; build and behavioral regression still required."
+}

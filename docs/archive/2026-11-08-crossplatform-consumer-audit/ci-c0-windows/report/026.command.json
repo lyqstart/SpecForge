@@ -1,0 +1,13 @@
+{
+  "number": "026",
+  "name": "unsupported-command-rejected",
+  "executable": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\sf-platform-acceptance-JXZ3Aj\\opencode\\sf-user\\bin\\specforge.exe",
+  "args": [
+    "spec"
+  ],
+  "started_utc": "2026-11-08T05:56:33.827Z",
+  "finished_utc": "2026-11-08T05:56:33.959Z",
+  "inner_exit_code": 1,
+  "signal": null,
+  "spawn_error": null
+}

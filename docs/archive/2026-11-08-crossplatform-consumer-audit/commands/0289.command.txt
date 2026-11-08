@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/prepare-final-deployment.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "prepare-reviewed-official-global-upgrade",
+  "expected_writes": "read-only-installed-identities-and-evidence",
+  "started_utc": "2026-11-08T06:00:04.193Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\prepare-final-deployment.cjs",
+      "sha256": "152ec8fa886c53a776e4b2ce4529a009d90849a80dbd008f89fb409aa79dc930",
+      "size": 4355,
+      "extension": ".cjs"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/unit/current-doc-lint-authority.test.ts (2 tests) 21ms
+ ✓ tests/v6-authority-consumer-alignment.test.ts (3 tests) 20ms
+ ✓ tests/unit/retained-tool-library-boundary.test.ts (4 tests) 11ms
+
+ Test Files  3 passed (3)
+      Tests  9 passed (9)
+   Start at  13:22:29
+   Duration  2.18s (transform 541ms, setup 0ms, collect 1.02s, tests 53ms, environment 1ms, prepare 414ms)
+

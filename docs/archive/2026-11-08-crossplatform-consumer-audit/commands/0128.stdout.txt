@@ -1,0 +1,230 @@
+{
+  "files": 529,
+  "findings": [
+    {
+      "file": "packages/daemon-core/src/project/project-schema-descriptors.ts",
+      "line": 24,
+      "col": 10,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "line": 312,
+      "col": 53,
+      "text": "`.specforge/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "line": 647,
+      "col": 35,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "line": 656,
+      "col": 35,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "line": 659,
+      "col": 35,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-artifact-write.ts",
+      "line": 723,
+      "col": 26,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/handlers/sf-changed-files-audit.ts",
+      "line": 230,
+      "col": 18,
+      "text": "`.specforge/work-items/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-authoring.ts",
+      "line": 813,
+      "col": 19,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-authoring.ts",
+      "line": 1076,
+      "col": 19,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/contract-integrity.ts",
+      "line": 395,
+      "col": 35,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/gate-runner-v11.ts",
+      "line": 739,
+      "col": 42,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 351,
+      "col": 12,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 356,
+      "col": 12,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 361,
+      "col": 12,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 518,
+      "col": 26,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 854,
+      "col": 26,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 863,
+      "col": 26,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 872,
+      "col": 26,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 881,
+      "col": 26,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/governance-invariants-v11.ts",
+      "line": 890,
+      "col": 26,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "line": 178,
+      "col": 41,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "line": 255,
+      "col": 9,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "line": 349,
+      "col": 27,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "line": 427,
+      "col": 28,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "line": 470,
+      "col": 26,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "line": 520,
+      "col": 39,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/merge-runner-v11.ts",
+      "line": 1030,
+      "col": 28,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/path-policy.ts",
+      "line": 18,
+      "col": 49,
+      "text": "`.specforge/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/path-policy.ts",
+      "line": 43,
+      "col": 22,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/daemon-core/src/tools/lib/project-init-reconstruction.ts",
+      "line": 79,
+      "col": 29,
+      "text": "`.specforge/runtime/init-recovery/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/types/src/project-spec-module.ts",
+      "line": 88,
+      "col": 16,
+      "text": "`.specforge/project/modules/${",
+      "rule": "PATH_LITERAL"
+    },
+    {
+      "file": "packages/workflow-runtime/src/v11/runtime/CloseGate.ts",
+      "line": 191,
+      "col": 25,
+      "text": "`.specforge/work-items/${",
+      "rule": "PATH_LITERAL"
+    }
+  ],
+  "qualification": "Syntax-level current production source check. Historical/fixture documentation is reviewed separately; no success claim for excluded runtime scope."
+}

@@ -1,0 +1,9 @@
+{
+  "utc": "2026-11-08T05:30:13.824Z",
+  "fixture": "/tmp/sf-systemd-daemon-Sw2ReR",
+  "name": "specforge-daemon-audit-ff1fd25b-1466-4605-8e1b-b4370a868977",
+  "unit": "/home/lyq/.config/systemd/user/specforge-daemon-audit-ff1fd25b-1466-4605-8e1b-b4370a868977.service",
+  "binary": "/tmp/sf-systemd-daemon-Sw2ReR/config/sf-user/bin/specforged",
+  "binary_sha256": "26447b92d1961c84cabafee437bd882425a68f8f4e33f5cb4cfa8e70c12cc0ec",
+  "subject": "Current official installed1.0.24 Daemon, actual user systemd; unique name is test isolation only."
+}

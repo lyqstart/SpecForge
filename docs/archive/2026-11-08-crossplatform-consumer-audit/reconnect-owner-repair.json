@@ -1,0 +1,16 @@
+{
+  "utc": "2026-11-08T03:04:46.881Z",
+  "members": [
+    {
+      "path": "packages/service-management/src/plugin/reconnecting-daemon-client.ts",
+      "before_sha256": "b3f998f9bfd59b3406d191ed277abbcadfe4e115625f8aeb943432aeee259c97",
+      "after_sha256": "8899878a441dafbb0c83efafbe5c590cfbbda1bc697fba7d9547a9ff5896f041"
+    },
+    {
+      "path": "setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts",
+      "before_sha256": "ded998751004fd597b920180a8cef11a78f5b72c21f6cc4c79f55875bf974c99",
+      "after_sha256": "50ad4f1f2d463046b4c542f228b8be2220a9d21820eca616dc2d5c7d6f0d0c39"
+    }
+  ],
+  "contract": "Existing PostResult reasons retained; superseded waits are rejected and disposed waits are disposed; no second timer or uncompleted cancelled wait."
+}

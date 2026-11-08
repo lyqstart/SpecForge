@@ -1,0 +1,12 @@
+3 |  * Configuration constants
+4 |  */
+5 | Object.defineProperty(exports, "__esModule", { value: true });
+6 | exports.CONFIG_SCHEMA_VERSION = exports.CONFIG_LAYER_ORDER = exports.CONFIG_DIRS = exports.CONFIG_FILE_NAMES = exports.SENSITIVE_FIELDS = exports.DEFAULT_CONFIG = void 0;
+7 | const directory_layout_1 = require("@specforge/types/directory-layout");
+8 | const user_level_paths_1 = require("@specforge/types/user-level-paths");
+          ^
+TypeError: require() async module "D:\code\SpecForge\packages\types\dist\user-level-paths.js" is unsupported. use "await import()" instead.
+      at <anonymous> (D:\code\SpecForge\packages\configuration\dist\constants.js:8:7)
+      at <anonymous> (D:\code\SpecForge\packages\configuration\dist\index.js:27:1)
+
+Bun v1.3.14 (Windows x64)

@@ -1,0 +1,29 @@
+{
+  "200": {
+    "description": "Tool IDs",
+    "content": {
+      "application/json": {
+        "schema": {
+          "$ref": "#/components/schemas/ToolIDs"
+        }
+      }
+    }
+  },
+  "400": {
+    "description": "BadRequest | InvalidRequestError",
+    "content": {
+      "application/json": {
+        "schema": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
+            },
+            {
+              "$ref": "#/components/schemas/InvalidRequestError"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

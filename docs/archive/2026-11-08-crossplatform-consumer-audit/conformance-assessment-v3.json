@@ -1,0 +1,603 @@
+{
+  "utc": "2026-11-08T06:57:49.301Z",
+  "version": "1.0.24",
+  "source_head": "f17a532a98d5716cfbae57b26916ae3dfdfce4b8",
+  "runtime_source": "c0fff6b9aa88313efd01f9e10211dd5676661e79",
+  "verdict": "PASS_CURRENT_ENABLED_RELEASE_ACCEPTANCE",
+  "known_confirmed_open_product_conformance_gaps": [],
+  "rows": [
+    {
+      "number": 1,
+      "requirement": "Authority Registry 只指向一份 Product Specification，不再存在并列产品 authority。",
+      "grade": "CONFIRMED",
+      "finding": "唯一SPS/Registry身份、优先级及当前发布投影一致。",
+      "limit": "登记关系不等于对任意实现的自动背书。",
+      "primary_evidence": [
+        "gate.json",
+        "final-primary-facts.json",
+        "final-source-review/review.json"
+      ]
+    },
+    {
+      "number": 2,
+      "requirement": "release precheck、Scope Gate 和 architecture-governance tests 不再把 .kiro V6 requirements/design 当作产品 authority。",
+      "grade": "CONFIRMED",
+      "finding": "真实冷构建/发布预检、Scope及权威消费者测试通过；根.kiro缺失。",
+      "limit": "历史测试只读取归档，不重新赋予其产品权威。",
+      "primary_evidence": [
+        "final-deployment-acceptance-gate.json",
+        "ci-f17-final-runs.raw.json",
+        "ci-f17-final-quality-jobs.raw.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ]
+    },
+    {
+      "number": 3,
+      "requirement": "当前运行代码对 ~/.specforge 的写入为零。",
+      "grade": "CORROBORATED",
+      "finding": "当前路径owner与实际安装/运行均落在OpenCode config root和sf-user。",
+      "limit": "没有对任意配置、任意未来负载做全机写入追踪；不以此声称数学意义的全时零写入。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "final-current-document-link-audit.json",
+        "document-review-final-inputs-v5.json"
+      ]
+    },
+    {
+      "number": 4,
+      "requirement": "user-level Manifest 位于 OpenCode config root；私有数据位于 sf-user。",
+      "grade": "CONFIRMED",
+      "finding": "本机Manifest根位置与117物理项逐字核验；三平台正式安装通过。",
+      "limit": "当前验证过的默认/自有配置根；任意用户自定义环境需对应验证。",
+      "primary_evidence": [
+        "final-primary-facts.json",
+        "final-current-document-link-audit.json",
+        "document-review-final-inputs-v5.json"
+      ]
+    },
+    {
+      "number": 5,
+      "requirement": "Thin Plugin 不启动、停止或重启 Daemon。",
+      "grade": "CORROBORATED",
+      "finding": "正式CLI独立冷启动新Daemon；自有Kernel退出后Daemon仍健康，源码生命周期归属一致。",
+      "limit": "不是任意第三方OpenCode插件行为的证明。",
+      "primary_evidence": [
+        "fresh-loader-final-03/result.json",
+        "fresh-loader-final-03/agents.json",
+        "fresh-loader-final-03/skills.json",
+        "fresh-loader-final-03/tools.json",
+        "fresh-loader-final-03/tool-contract-checks.json"
+      ]
+    },
+    {
+      "number": 6,
+      "requirement": "Daemon 可作为独立共享服务运行，客户端连接失败时治理写入 fail closed。",
+      "grade": "CONFIRMED",
+      "finding": "Windows/Linux/macOS真实独立生命周期通过；Linux真实当前Daemon systemd完整安装启停卸载通过。",
+      "limit": "Windows/macOS按当前规格走独立进程；未启用不受支持的服务后端。",
+      "primary_evidence": [
+        "ci-c0-macos/report/result.json",
+        "ci-c0-windows/report/result.json",
+        "ci-c0-linux/report/result.json",
+        "actual-linux-systemd-01/result.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ]
+    },
+    {
+      "number": 7,
+      "requirement": "Project workflow state 可以从 events.jsonl 重放重建；state.json 只是 checkpoint/projection。",
+      "grade": "CONFIRMED",
+      "finding": "新1.0.24 StateManager返回rebuilt_from_events=true、closed；重放/损坏恢复回归通过。",
+      "limit": "没有在原项目删除或损坏事件做实验。",
+      "primary_evidence": [
+        "original-delivery-and-current-state.json",
+        "final-user-upgrade-01/result.json"
+      ]
+    },
+    {
+      "number": 8,
+      "requirement": "不再存在 runtime/wal.jsonl 当前合同或生产 consumer。",
+      "grade": "CONFIRMED",
+      "finding": "当前路径/生产owner、全量回归与发布预检绑定events.jsonl。",
+      "limit": "WAL类名保留语义，不恢复runtime/wal.jsonl合同。",
+      "primary_evidence": [
+        "final-deployment-acceptance-gate.json",
+        "ci-f17-final-runs.raw.json",
+        "ci-f17-final-quality-jobs.raw.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ]
+    },
+    {
+      "number": 9,
+      "requirement": "Project Spec 初始化只创建当前 Core 文件；不会默认创建 D09 暂缓的 multi-view/ADR Detail 文件。",
+      "grade": "CORROBORATED",
+      "finding": "当前Project Init/Core与D09排除的实际回归通过，未重新初始化已交付原项目。",
+      "limit": "沿用明确绑定源码的既有初始化证据与本轮合成回归。",
+      "primary_evidence": [
+        "../2026-11-08-role-alignment/historical-primary-reuse.json",
+        "../2026-11-07-verification-production/approved-business-delivery-01/result.json"
+      ]
+    },
+    {
+      "number": 10,
+      "requirement": "Project Spec 修改必须通过 Candidate/Gate/Decision/Merge 受控链路。",
+      "grade": "CORROBORATED",
+      "finding": "原真实Candidate/Gate/Decision/Merge/Close交付、5代码/9封存证据及main提交保留，当前受控链回归通过。",
+      "limit": "本轮未再发模型提示、重开原WI或执行原应用。",
+      "primary_evidence": [
+        "original-delivery-and-current-state.json",
+        "final-user-upgrade-01/result.json"
+      ]
+    },
+    {
+      "number": 11,
+      "requirement": "Work Item authoritative state 不保存在 work_item.json。",
+      "grade": "CONFIRMED",
+      "finding": "状态由事件owner重建；通用work_item写入口全部拒绝，权限及身份不能经产物工具覆盖。",
+      "limit": "历史元数据不是当前状态来源。",
+      "primary_evidence": [
+        "original-delivery-and-current-state.json",
+        "final-user-upgrade-01/result.json"
+      ]
+    },
+    {
+      "number": 12,
+      "requirement": "Write Guard / code permission 覆盖真实写入口，越权写入可审计并拒绝。",
+      "grade": "CORROBORATED",
+      "finding": "当前Guard/权限回归通过；新旧原生程序除已解析的编译标识外全部字节相同，重用已核验隔离与恢复证据。",
+      "limit": "未把本轮零参数拒绝当作新完整LPAC矩阵；受控执行仅限D23 Windows x64固定Node24.19单进程只读。",
+      "primary_evidence": [
+        "native-program-lineage/result.json",
+        "final-primary-facts.json",
+        "../2026-11-08-role-alignment/historical-primary-reuse.json"
+      ]
+    },
+    {
+      "number": 13,
+      "requirement": "Migration 模块退出当前 release surface；仍有效 schema validation 已迁移到中立/owner contract。",
+      "grade": "CONFIRMED",
+      "finding": "Migration不在当前发布集合；Workflow/Gate/Closure/metadata/Knowledge各owner执行独立版本校验。",
+      "limit": "未知或损坏格式阻断并保留，不自动转换。",
+      "primary_evidence": [
+        "final-deployment-acceptance-gate.json",
+        "ci-f17-final-runs.raw.json",
+        "ci-f17-final-quality-jobs.raw.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ]
+    },
+    {
+      "number": 14,
+      "requirement": "Multimodal、Self-Healing、third-party Plugin Loader、OpenClaw 不出现在 current release 正向运行/安装集合。",
+      "grade": "CONFIRMED",
+      "finding": "当前12包/45工具/10角色/8Skill/物理清单与SPS发布投影一致，未来模块不进入正向安装。",
+      "limit": "保留源码、通用技术模板与历史算法不等于功能启用。",
+      "primary_evidence": [
+        "final-deployment-acceptance-gate.json",
+        "ci-f17-final-runs.raw.json",
+        "ci-f17-final-quality-jobs.raw.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ]
+    },
+    {
+      "number": 15,
+      "requirement": "OpenCode Adapter 存在真实 Daemon production consumer 和端到端验证后，方可从 REQUIRED_NOT_YET_ENABLED 升为 ENABLED。",
+      "grade": "CORROBORATED",
+      "finding": "真实Daemon Adapter既有生产接线与原真实Kernel链证据保留；本轮新Kernel实际加载10/8/45并匹配安装身份。",
+      "limit": "元数据加载不冒充新的模型业务行为验收。",
+      "primary_evidence": [
+        "fresh-loader-final-03/result.json",
+        "fresh-loader-final-03/agents.json",
+        "fresh-loader-final-03/skills.json",
+        "fresh-loader-final-03/tools.json",
+        "fresh-loader-final-03/tool-contract-checks.json"
+      ]
+    },
+    {
+      "number": 16,
+      "requirement": "Version Unification 不再承担 Migration、release scope 或 installer ownership。",
+      "grade": "CONFIRMED",
+      "finding": "根/12workspace/SPS发布身份为1.0.24，技术Schema独立；Version/Scope/Installer职责保持分离。",
+      "limit": "旧1.0.23标签保持，未把Schema机械改成产品版本。",
+      "primary_evidence": [
+        "final-deployment-acceptance-gate.json",
+        "ci-f17-final-runs.raw.json",
+        "ci-f17-final-quality-jobs.raw.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ]
+    },
+    {
+      "number": 17,
+      "requirement": "Installer 只安装 release manifest 批准的物理集合，并支持可验证的 install/upgrade/verify/uninstall。",
+      "grade": "CONFIRMED",
+      "finding": "三平台实际install/upgrade/verify/uninstall及留存检查通过；本机官方stop/upgrade/verify117、私有owner及原项目保护通过。",
+      "limit": "未在用户真实安装上做卸载破坏性复验；卸载在独立自有配置中执行。",
+      "primary_evidence": [
+        "ci-c0-macos/report/result.json",
+        "ci-c0-windows/report/result.json",
+        "ci-c0-linux/report/result.json",
+        "actual-linux-systemd-01/result.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ]
+    },
+    {
+      "number": 18,
+      "requirement": "Scope Gate 只验证 release/build，不作为业务 Runtime。",
+      "grade": "CONFIRMED",
+      "finding": "Scope仅在正式发布/构建链使用，实际Owner快照与依赖边界回归通过。",
+      "limit": "不以开发脚本调用Scope推断业务Runtime使用Scope。",
+      "primary_evidence": [
+        "final-deployment-acceptance-gate.json",
+        "ci-f17-final-runs.raw.json",
+        "ci-f17-final-quality-jobs.raw.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ]
+    },
+    {
+      "number": 19,
+      "requirement": "代码、README、错误提示、帮助文本、模板、测试和安装资产与当前路径和 lifecycle 模型一致。",
+      "grade": "CORROBORATED",
+      "finding": "576文档逐文件角色/适用性审核；1125源文件6254表达式枚举；45真实工具Schema、23项帮助/平台与当前HTTP/错误/模板消费者核对，已确认偏离已修复。",
+      "limit": "语法清单不是6254个不同错误，也不是穷举动态分支PASS。完整ESLint仍失败/有债务，不计为通过。",
+      "primary_evidence": [
+        "document-review-final-inputs-v5.json",
+        "message-surfaces-inventory-v5.json",
+        "final-current-document-link-audit.json",
+        "fresh-loader-final-03/tool-id-resolved-response-contract.json"
+      ]
+    },
+    {
+      "number": 20,
+      "requirement": "Future Capability Registry 中的内容不会仅因“文档存在”进入当前验收范围。",
+      "grade": "CONFIRMED",
+      "finding": "未来能力按显式SPS分类处理，不因文档或私有算法存在而进入当前验收。",
+      "limit": "不推广多进程、任意Shell、框架/网络验证或其他D23后端。",
+      "primary_evidence": [
+        "final-deployment-acceptance-gate.json",
+        "ci-f17-final-runs.raw.json",
+        "ci-f17-final-quality-jobs.raw.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ]
+    }
+  ],
+  "chapters": [
+    {
+      "chapter": 1,
+      "title": "产品目标与边界",
+      "owner": "packages/scope-gate/src/release-authority-projection.ts",
+      "owner_sha256": "89ad4ba4e1c18e27660fa7da3feff4ad97f1b9e37a6d9bce2324a0942471632d",
+      "evidence": [
+        "final-deployment-acceptance-gate.json",
+        "ci-f17-final-runs.raw.json",
+        "ci-f17-final-quality-jobs.raw.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 2,
+      "title": "总体架构",
+      "owner": "packages/daemon-core/src/daemon/Daemon.ts",
+      "owner_sha256": "78593c960023ae0147eda151d4d4ec037836b0612e96314135c2cc3feaaff4be",
+      "evidence": [
+        "fresh-loader-final-03/result.json",
+        "fresh-loader-final-03/agents.json",
+        "fresh-loader-final-03/skills.json",
+        "fresh-loader-final-03/tools.json",
+        "fresh-loader-final-03/tool-contract-checks.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 3,
+      "title": "权威与事实模型",
+      "owner": "packages/daemon-core/src/state/StateManager.ts",
+      "owner_sha256": "29984ed4a3729c120e7522d7dcb1aa49ad1961f08f1bd99fcb8d7ea99d95b171",
+      "evidence": [
+        "original-delivery-and-current-state.json",
+        "final-user-upgrade-01/result.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 4,
+      "title": "文件与目录",
+      "owner": "packages/types/src/user-level-paths.ts",
+      "owner_sha256": "9f4c4bc477812a94ac56a167d1cb5fbf4b050d842dcc5000608a8681a0da073f",
+      "evidence": [
+        "final-primary-facts.json",
+        "final-current-document-link-audit.json",
+        "document-review-final-inputs-v5.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 5,
+      "title": "配置",
+      "owner": "packages/configuration/src/accepted-config.ts",
+      "owner_sha256": "87eefe636caf17980293b796acbe7d23d9dcdee816727eb741edfe39205a441b",
+      "evidence": [
+        "final-deployment-acceptance-gate.json",
+        "ci-f17-final-runs.raw.json",
+        "ci-f17-final-quality-jobs.raw.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 6,
+      "title": "Work Item治理链",
+      "owner": "packages/daemon-core/src/tools/handlers/sf-v11-work-item-create.ts",
+      "owner_sha256": "9f334c66a00daf94e6104555a3838cf793711f1d444942dcb0bf1080b56239ed",
+      "evidence": [
+        "original-delivery-and-current-state.json",
+        "final-user-upgrade-01/result.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 7,
+      "title": "Daemon",
+      "owner": "packages/daemon-core/src/daemon/Daemon.ts",
+      "owner_sha256": "78593c960023ae0147eda151d4d4ec037836b0612e96314135c2cc3feaaff4be",
+      "evidence": [
+        "ci-c0-macos/report/result.json",
+        "ci-c0-windows/report/result.json",
+        "ci-c0-linux/report/result.json",
+        "actual-linux-systemd-01/result.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 8,
+      "title": "Workflow",
+      "owner": "packages/workflow-runtime/src/engine/WorkflowLoader.ts",
+      "owner_sha256": "b1544416e5cb1b646113700dc3374d5192003bfc0e0640d6d6b76be3532d6a02",
+      "evidence": [
+        "final-deployment-acceptance-gate.json",
+        "ci-f17-final-runs.raw.json",
+        "ci-f17-final-quality-jobs.raw.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 9,
+      "title": "权限/Guard/HardStop",
+      "owner": "packages/daemon-core/src/verification/VerificationRuntime.ts",
+      "owner_sha256": "cd80ac1879a87991a745f00e8d28f8a4badff28a692976c496be1dd492678d9c",
+      "evidence": [
+        "native-program-lineage/result.json",
+        "final-primary-facts.json",
+        "../2026-11-08-role-alignment/historical-primary-reuse.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 10,
+      "title": "OpenCode集成",
+      "owner": "packages/opencode-adapter/src/OpenCodeAdapter.ts",
+      "owner_sha256": "498baae3f5da0963d4ec261f3cad6a02e4b347610e32961d4aa5de77a32aebd4",
+      "evidence": [
+        "fresh-loader-final-03/result.json",
+        "fresh-loader-final-03/agents.json",
+        "fresh-loader-final-03/skills.json",
+        "fresh-loader-final-03/tools.json",
+        "fresh-loader-final-03/tool-contract-checks.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 11,
+      "title": "CLI",
+      "owner": "packages/cli/src/help/HelpSystem.ts",
+      "owner_sha256": "f7eceb0c47a061c7e396a6a8912db6ba49186ca2a9b24c8cad9b26a00b95312c",
+      "evidence": [
+        "ci-c0-macos/report/result.json",
+        "ci-c0-windows/report/result.json",
+        "ci-c0-linux/report/result.json",
+        "actual-linux-systemd-01/result.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 12,
+      "title": "Installer/Distribution",
+      "owner": "scripts/sf-installer.ts",
+      "owner_sha256": "99707343a881b74b24bf5b4c490b5eed11b3b7c0208ac0a0fb08b26a78a2d19a",
+      "evidence": [
+        "ci-c0-macos/report/result.json",
+        "ci-c0-windows/report/result.json",
+        "ci-c0-linux/report/result.json",
+        "actual-linux-systemd-01/result.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 13,
+      "title": "Service/Host Profile",
+      "owner": "packages/service-management/src/service-manager/systemd-service-manager.ts",
+      "owner_sha256": "7b257a468a61dd7ea1331a77e5625cb924de0dcfa22b25b01aaf7f58d26c9545",
+      "evidence": [
+        "ci-c0-macos/report/result.json",
+        "ci-c0-windows/report/result.json",
+        "ci-c0-linux/report/result.json",
+        "actual-linux-systemd-01/result.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 14,
+      "title": "Observability",
+      "owner": "packages/daemon-core/src/observability/observability-recorder.ts",
+      "owner_sha256": "301b8f01188ad3ecf49139f14fdc82f9cd301e4ea893afa9bea662c24d99f943",
+      "evidence": [
+        "final-deployment-acceptance-gate.json",
+        "ci-f17-final-runs.raw.json",
+        "ci-f17-final-quality-jobs.raw.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 15,
+      "title": "持久Schema",
+      "owner": "packages/daemon-core/src/tools/lib/work-item-metadata.ts",
+      "owner_sha256": "134164e8843453265ce0394087f5bf0fb83930444508fbec74024e2353af5996",
+      "evidence": [
+        "final-deployment-acceptance-gate.json",
+        "ci-f17-final-runs.raw.json",
+        "ci-f17-final-quality-jobs.raw.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 16,
+      "title": "Version",
+      "owner": "scripts/lib/product-identity.ts",
+      "owner_sha256": "678d8b260b480d2349bb917dc7fa2c51294604fe5c2a15aa3279ff84fb32960c",
+      "evidence": [
+        "final-deployment-acceptance-gate.json",
+        "ci-f17-final-runs.raw.json",
+        "ci-f17-final-quality-jobs.raw.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 17,
+      "title": "Release/Scope",
+      "owner": "scripts/lib/current-release-precheck.ts",
+      "owner_sha256": "b1528e723429d7f964a5e3fe2c1691660f2a57d228b0a3973601dd8aaf872057",
+      "evidence": [
+        "final-deployment-acceptance-gate.json",
+        "ci-f17-final-runs.raw.json",
+        "ci-f17-final-quality-jobs.raw.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 18,
+      "title": "当前模块集合",
+      "owner": "scripts/lib/workspace-packages.ts",
+      "owner_sha256": "e0178f99adc340be3c04b235eaef834ddbbb175449e43ce8cef329b92a3c5a0d",
+      "evidence": [
+        "final-deployment-acceptance-gate.json",
+        "ci-f17-final-runs.raw.json",
+        "ci-f17-final-quality-jobs.raw.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 19,
+      "title": "验收条款",
+      "owner": "docs/product-specification/specforge-product-specification.md",
+      "owner_sha256": "8fe594be130fd751e60eef1a9a916867ef5dd8b401dbe6881a1f5295a43333ed",
+      "evidence": [
+        "gate.json",
+        "final-primary-facts.json",
+        "final-source-review/review.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 20,
+      "title": "Gap记录",
+      "owner": "docs/project-status.md",
+      "owner_sha256": "fac81c77cc02eb7b7749f14843be66d718baab65f0b0ceede4767ff844b0d6fb",
+      "evidence": [
+        "gate.json",
+        "final-primary-facts.json",
+        "final-source-review/review.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 21,
+      "title": "Future晋升",
+      "owner": "docs/product-specification/specforge-product-specification.md",
+      "owner_sha256": "8fe594be130fd751e60eef1a9a916867ef5dd8b401dbe6881a1f5295a43333ed",
+      "evidence": [
+        "final-deployment-acceptance-gate.json",
+        "ci-f17-final-runs.raw.json",
+        "ci-f17-final-quality-jobs.raw.json",
+        "ci-f17-final-platform-jobs.raw.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    },
+    {
+      "chapter": 22,
+      "title": "权威与连续性",
+      "owner": "scripts/project-session-bootstrap.mjs",
+      "owner_sha256": "51ddf3830add187bd281f04f1452838247c5407a1d67e9d35cb7baa910abd34e",
+      "evidence": [
+        "gate.json",
+        "final-primary-facts.json",
+        "final-source-review/review.json"
+      ],
+      "judgment": "Evidence-bound current release acceptance; see explicit clause limits, no new capability inferred."
+    }
+  ],
+  "repairs": [
+    "current workflow/Gate/profile refusals",
+    "Runtime metadata write ownership",
+    "explicit independent schema prechecks",
+    "retained local Gate and historical lint dispatch closure",
+    "canonical paths and release platform projection",
+    "bounded timers/stdout/privacy behavior",
+    "all current documentation/help/error guidance",
+    "cold shared ESM export initialization",
+    "original historical bytes preserved through Git"
+  ],
+  "validation": {
+    "actual_platforms": [
+      "Windows x64",
+      "Linux x64",
+      "macOS arm64"
+    ],
+    "daemon_tests": {
+      "windows": 2423,
+      "linux": 2422,
+      "linux_windows_specific_skips": 1
+    },
+    "current_workspace_packages": 12,
+    "packages_with_test_script": 11,
+    "agents": 10,
+    "skills": 8,
+    "distinct_tools": 45,
+    "installed_windows_files": 117,
+    "installed_linux_macos_files": 114,
+    "local_link_documents": 125,
+    "local_links": 179,
+    "root_tests_windows_and_linux": 753,
+    "macos_full_workspace_regression_claimed": false
+  },
+  "remaining_limits": {
+    "full_eslint": "Not passed; both baseline/current frozen A/B failed, current added diagnostics included formatting. No blanket baseline attribution. See lint-ab-02/stable-diagnostic-comparison.json.",
+    "new_model_or_original_app_run": "Not performed; unchanged qualified source/native program and sealed genuine prior chain explicitly reused.",
+    "dynamic_branch_exhaustiveness": "Not claimed; static extraction, per-owner review and concrete regressions/runtime checks are separate evidence.",
+    "old_pre_probe_data_loss_cause": "INSUFFICIENT_EVIDENCE remains; authorized Git/archive reconstruction does not establish byte-exact pre-probe restoration."
+  },
+  "primary_facts": "final-primary-facts.json",
+  "ci": [
+    {
+      "id": 42453849631,
+      "name": "Distribution Smoke Tests",
+      "conclusion": "success",
+      "url": "https://github.com/lyqstart/SpecForge/actions/runs/42453849631"
+    },
+    {
+      "id": 42453849580,
+      "name": "Code Quality",
+      "conclusion": "success",
+      "url": "https://github.com/lyqstart/SpecForge/actions/runs/42453849580"
+    }
+  ],
+  "supersedes": "conformance-assessment-v2.json: refresh unique execution-status owner hash after final closure; all runtime owners unchanged."
+}

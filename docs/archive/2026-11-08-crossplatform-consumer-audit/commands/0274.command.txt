@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/verify-cold-repair-commit.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "verify-cold-repair-commit-tree",
+  "expected_writes": "external-evidence-only",
+  "started_utc": "2026-11-08T05:53:12.075Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\verify-cold-repair-commit.cjs",
+      "sha256": "36746ea9449f77867edc6f2f5b08b33487690dddb9ef3c2049c6601825bcc869",
+      "size": 1170,
+      "extension": ".cjs"
+    }
+  ]
+}

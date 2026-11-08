@@ -1,0 +1,22 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "node",
+  "args": [
+    "docs/archive/2026-11-08-crossplatform-consumer-audit/align-retained-tool-libraries.cjs"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "retained-library-current-execution-boundary-repair",
+  "expected_writes": "REPOSITORY_TRACKED_WRITES",
+  "started_utc": "2026-11-08T04:04:16.665Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": [
+    {
+      "argument_index": 0,
+      "path": "D:\\code\\SpecForge\\docs\\archive\\2026-11-08-crossplatform-consumer-audit\\align-retained-tool-libraries.cjs",
+      "sha256": "193d8df9426cc7c7994b820270768d56fcfc6f65d1218304406de8b72d4764e4",
+      "size": 4914,
+      "extension": ".cjs"
+    }
+  ]
+}

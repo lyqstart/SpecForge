@@ -1,0 +1,15 @@
+{
+  "utc": "2026-11-08T06:58:51.957Z",
+  "mode": "CODEX_DIRECT",
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "payload_files": 4990,
+  "payload_bytes": 287291625,
+  "manifest_includes": "all public files including this summary, excluding manifest itself",
+  "excluded_private_roots": [
+    "local-assets/",
+    "publication-live/"
+  ],
+  "command_receipts": 328,
+  "entry": "acceptance.md",
+  "self_check": "Every manifest member re-read and SHA-256 compared before success; publication command owns independent outside-manifest receipt."
+}

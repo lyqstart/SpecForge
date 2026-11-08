@@ -1,0 +1,32 @@
+{
+  "utc": "2026-11-08T05:54:08.811Z",
+  "target": "/tmp/specforge-crossplatform-20261108-a01",
+  "source": "/mnt/d/code/SpecForge",
+  "members": [
+    {
+      "path": "docs/project-status.md",
+      "sha256": "18e3fb04c4d69aa6eec580429523bc25cf82888e25c3fec331c02be89ac9d586",
+      "bytes": 6224,
+      "before_sha256": "e7ebb0c921bf69f7fa19cefb320fdb32e7adeab2128b1880c8b61a30cdca61bb"
+    },
+    {
+      "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "sha256": "f68bae87c21088a574b3278c43fdae736425ddbc3697b2346fb060d6c8375a7c",
+      "bytes": 4503194,
+      "before_sha256": "a7f7992157a83a3d7b4729e8cee053b34407d3a72a483150cd5de756ab70e632"
+    },
+    {
+      "path": "packages/scope-gate/tests/current-release-entry-interop.test.ts",
+      "sha256": "2b49b4d1e1583081fae8d9fdabcd669086d1bc6c7fd673dc26b1c1329ae67db4",
+      "bytes": 2237,
+      "before_sha256": "d459f170f6eafc116c2b15cc80f242d8184e5ad173b31a5db12d1afca27bfc5d"
+    },
+    {
+      "path": "scripts/lib/prepare-current-release.ts",
+      "sha256": "acda34980fecf68c1dfdc45f9152d486693a7172aed63f3000f8a744e0f07a5e",
+      "bytes": 3272,
+      "before_sha256": "5ea60f503f3642342a2ae102e82ce08527b9470b50a233282b10dc98a996bc4a"
+    }
+  ],
+  "qualification": "Exact current-source delta; previous update receipts required. Generated release assets are not source."
+}

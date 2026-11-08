@@ -1,0 +1,13 @@
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ tsc
+$ rimraf dist && tsc
+$ bun ../../scripts/build-workflow-runtime.ts
+$ tsc
+$ tsc
+[build-workspace] FAILED @specforge/daemon-core exitCode=2

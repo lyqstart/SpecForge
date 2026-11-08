@@ -1,0 +1,2 @@
+$ vitest run tests/unit/knowledge-store-schema.test.ts "tests/unit/governance-closure-e2e.test.ts" tests/unit/current-work-item-metadata-owner.test.ts tests/unit/registered-current-workflow-boundary.test.ts tests/unit/sf-state-transition.test.ts "--maxWorkers=1" "--minWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m

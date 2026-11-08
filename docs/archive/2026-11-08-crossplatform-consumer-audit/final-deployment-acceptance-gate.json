@@ -1,0 +1,57 @@
+{
+  "utc": "2026-11-08T06:21:03.273Z",
+  "source_head": "f17a532a98d5716cfbae57b26916ae3dfdfce4b8",
+  "qualified_runtime_source": "c0fff6b9aa88313efd01f9e10211dd5676661e79",
+  "runtime_source_equivalence": true,
+  "metadata_only_delta": [
+    ".gitattributes",
+    "docs/archive/design/SpecForge架构一致性治理最终实施方案.full-history-20261006.md",
+    "docs/project-status.md",
+    "docs/rule/specforge-development-error-ledger-and-experience.md"
+  ],
+  "actual_ci_runs": [
+    {
+      "id": 42453849631,
+      "name": "Distribution Smoke Tests",
+      "conclusion": "success",
+      "url": "https://github.com/lyqstart/SpecForge/actions/runs/42453849631"
+    },
+    {
+      "id": 42453849580,
+      "name": "Code Quality",
+      "conclusion": "success",
+      "url": "https://github.com/lyqstart/SpecForge/actions/runs/42453849580"
+    }
+  ],
+  "local_receipts": [
+    {
+      "file": "0283.result.json",
+      "purpose": "windows-frozen05-final-full-workspace-regression",
+      "exit": 0
+    },
+    {
+      "file": "0287.result.json",
+      "purpose": "linux-frozen05-final-full-workspace-regression",
+      "exit": 0
+    },
+    {
+      "file": "0286.result.json",
+      "purpose": "windows-frozen05-final-full-root-regression-correct-vitest4",
+      "exit": 0
+    },
+    {
+      "file": "0298.result.json",
+      "purpose": "linux-frozen05-final-full-root-regression",
+      "exit": 0
+    },
+    {
+      "file": "0299.result.json",
+      "purpose": "verify-final-frozen05-after-all-local-full-suites",
+      "exit": 0
+    }
+  ],
+  "version": "1.0.24",
+  "payload_files": 117,
+  "global_upgrade_gate": "PASS",
+  "scope": "Current exact physical payload from qualified Runtime source; subsequent source commit changes only archive delivery attributes/bytes and execution evidence. Does not relabel metadata-only checks as model or application execution."
+}

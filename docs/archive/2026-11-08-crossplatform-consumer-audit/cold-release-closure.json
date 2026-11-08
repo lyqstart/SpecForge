@@ -1,0 +1,8 @@
+{
+  "utc": "2026-11-08T04:43:09.026Z",
+  "windows_receipt": "0184.result.json",
+  "linux_receipt": "0183.result.json",
+  "top_level_await_root_cause": "NOT_PROVEN",
+  "cold_build_order_defect": "CONFIRMED",
+  "internal_bun_async_module_cause": "INSUFFICIENT_EVIDENCE"
+}

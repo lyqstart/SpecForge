@@ -1,0 +1,17 @@
+{
+  "run_id": "CODEX-SF-20261108-CROSSPLATFORM-CONSUMER-A01",
+  "mode": "CODEX_DIRECT",
+  "executable": "git",
+  "args": [
+    "update-ref",
+    "refs/heads/main",
+    "c0fff6b9aa88313efd01f9e10211dd5676661e79",
+    "a8900cba9da5b4b8e9a49a57bb78bd1455b30dc3"
+  ],
+  "cwd": "D:\\code\\SpecForge",
+  "purpose": "fastforward-local-main-cold-entry-repair",
+  "expected_writes": "repository-main-ref-and-evidence",
+  "started_utc": "2026-11-08T05:53:20.360Z",
+  "carrier_source_sha256": "7c83a2fa9a611477137a9c564415dc7b263ac677ac6db8f98a77ae11c608ee4d",
+  "entry_sources": []
+}

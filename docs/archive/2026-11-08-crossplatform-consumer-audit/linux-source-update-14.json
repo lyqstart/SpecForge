@@ -1,0 +1,80 @@
+{
+  "utc": "2026-11-08T05:46:06.515Z",
+  "target": "/tmp/specforge-crossplatform-20261108-a01",
+  "source": "/mnt/d/code/SpecForge",
+  "members": [
+    {
+      "path": "docs/conventions/meta-json-spec.md",
+      "sha256": "67e152306d08fd9490888214bdd6c338609e481cd4047d9b9ae3a855562cbca1",
+      "bytes": 1583,
+      "before_sha256": "9090f537ecf659b641423838da1af2025fac0fb625142d7b856932ef712bae14"
+    },
+    {
+      "path": "docs/project-status.md",
+      "sha256": "e7ebb0c921bf69f7fa19cefb320fdb32e7adeab2128b1880c8b61a30cdca61bb",
+      "bytes": 6325,
+      "before_sha256": "f784f4d3613d9a256bc2a7731b9ca1741edf83b93bf4ac5f29f16e2f94d4e595"
+    },
+    {
+      "path": "docs/rule/specforge-development-error-ledger-and-experience.md",
+      "sha256": "a7f7992157a83a3d7b4729e8cee053b34407d3a72a483150cd5de756ab70e632",
+      "bytes": 4501480,
+      "before_sha256": "770e61b54a952c55007bafca28a90019b671be582a98185a772f0078d0557a6a"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-changed-files-audit.ts",
+      "sha256": "b7efcf81f936284fa5b01f433819a3ce8aad79f5c37d1fa0166f18b4d7672b41",
+      "bytes": 35104,
+      "before_sha256": "20e6b70030b56503f797750d3c53cffe0a27a53617d012117f37df6d5d582051"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/handlers/sf-state-transition.ts",
+      "sha256": "967a65d75705adfb2429c8ea3e3bb7cd751f2f5f534817318cbde83396d905c6",
+      "bytes": 30976,
+      "before_sha256": "86c1b2f027332b546edc2bd8072f02285843055d06c4bd5a16f614bbeaf97ae0"
+    },
+    {
+      "path": "packages/daemon-core/src/tools/lib/sf_knowledge_base_core.ts",
+      "sha256": "d501a934aea989b682df536c045eec4709ecd19a1db683888701e3e608fc23a7",
+      "bytes": 31866,
+      "before_sha256": "40eda9eba4b166c21583c917474b11991532e17f33e6a628c7602366a5a3ba9c"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/governance-closure-e2e.test.ts",
+      "sha256": "ccb0d7d4d642ce9d8518d2d50b82f31576ab5bb703d6fc2635bd8a8401b94128",
+      "bytes": 36154,
+      "before_sha256": "04fcda0b1c75296a4fc8cf10cbb40668f1c6736dfee7873461fe7ea0c1f94dd8"
+    },
+    {
+      "path": "packages/daemon-core/tests/unit/knowledge-store-schema.test.ts",
+      "sha256": "f749df49e6952ac1b9508d7dc1a4ee9447af3ef4604c8ce78a58b880d9ccf1cf",
+      "bytes": 3410,
+      "before_sha256": null
+    },
+    {
+      "path": "packages/service-management/src/service-manager/systemd-service-manager.ts",
+      "sha256": "7b257a468a61dd7ea1331a77e5625cb924de0dcfa22b25b01aaf7f58d26c9545",
+      "bytes": 20298,
+      "before_sha256": "03dcd745efaf0d5acdd7585e9b466c7fc7eb08f8ad4bdc7c76110463fd355adc"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/lib/sf_knowledge_base_core.ts",
+      "sha256": "ae63044fa9eb965b3b6a390bebccb4b105451037af39dc3ebcef858939611381",
+      "bytes": 32646,
+      "before_sha256": "cbb5f8a8a1938be992779469622eaed122d7eba51777228b87c622e51f67c0c1"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_knowledge_base.ts",
+      "sha256": "c4f9e55df8c5ecb11f2969d827ee431680c22a22dc83d27647dcae6aa44569b1",
+      "bytes": 3122,
+      "before_sha256": "2e087757a7c875ab44f1c9fdcff2bfc512e4a63216de12c68c58fbb68bed0d9b"
+    },
+    {
+      "path": "setup/userlevel-opencode/tools/sf_semantic_closure_run.ts",
+      "sha256": "bff412c5e9ec1408f168bdda532f6326ead1d531b605a5ecb5ee42d2dccdff74",
+      "bytes": 5289,
+      "before_sha256": "77f969f78c38308f7929443afb84111057a238314f0e9f37f55a2cab9b57375e"
+    }
+  ],
+  "qualification": "Exact current-source delta; previous update receipts required. Generated release assets are not source."
+}

@@ -1,0 +1,68 @@
+[
+  {
+    "path": "packages/types/src/constants.ts",
+    "frozen02_sha256": "68e026d34c0fb598c6b41bbf499133165b23a69130da3ed67ea50bcbbe3a090d",
+    "partial_before_sha256": "53e181db0417463d1d775ecfbd724ee8f98734e8df1c40fdb47e5a6fa66c67b6",
+    "after_sha256": "2b7096c81b0d3007b7d5677f17c959b0834b65e519f414a57c1abf953d4fc517"
+  },
+  {
+    "path": "packages/types/src/index.ts",
+    "frozen02_sha256": "db8cffa5aba330c4a1f645e2ca813de4515fbc24eeda869ab33bd4f8e8444158",
+    "partial_before_sha256": "e65ddb8de209d65eb4cb9f6dd7f944820fcf7c34e06b9bd0cda3b1d8b2f6e69d",
+    "after_sha256": "551f8f5cb10acb69588b5f34b04313419192bcea8a20cf7fbdc9a100ac627af7"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/handlers/sf-state-transition.ts",
+    "frozen02_sha256": "78a47da6ec9052707a0f70096714719e123800470aa78f7c8ff1e11ce64e6921",
+    "partial_before_sha256": "7ee72d7fe71d6143f7cf9334ba24cc262873c803f641612673fb33c3597a01f9",
+    "after_sha256": "86c1b2f027332b546edc2bd8072f02285843055d06c4bd5a16f614bbeaf97ae0"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts",
+    "frozen02_sha256": "b565bb409a07fb4b541d9be85c022dc8675603d4fd8cc613bccf838e70a8183d",
+    "partial_before_sha256": "58ca983eba2594012376d419743db33bb9a6b6554fc473c7ad41bddab4ffda13",
+    "after_sha256": "842938e44ef7280582cd58e178c384a215fa576bbb0bc5e4b9aacd5a205d404e"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/handlers/sf-requirements-gate.ts",
+    "frozen02_sha256": "7b5f930a2a516bb31aa9e3cbd2c8d64cfe26afa3590bd7e989de0f915becb898",
+    "partial_before_sha256": "f499b98f2626019e9192463cfcb18a8614b861189dd87df54f33d1eb74683722",
+    "after_sha256": "f499b98f2626019e9192463cfcb18a8614b861189dd87df54f33d1eb74683722"
+  },
+  {
+    "path": "packages/daemon-core/src/tools/handlers/sf-verification-gate.ts",
+    "frozen02_sha256": "392d001476b6c39fbbe416ba2455c47188ac0d832cfce294f0d3ef0ffbf72f54",
+    "partial_before_sha256": "392d001476b6c39fbbe416ba2455c47188ac0d832cfce294f0d3ef0ffbf72f54",
+    "after_sha256": "9cd9710697056b418de14315d13025f5a122c2594d51c8b3a914873cece46ec7"
+  },
+  {
+    "path": "setup/userlevel-opencode/tools/sf_requirements_gate.ts",
+    "frozen02_sha256": "bb63ca970669d24430253901618815c92b9c2aa7f5cf625d21f986de7a306373",
+    "partial_before_sha256": "bb63ca970669d24430253901618815c92b9c2aa7f5cf625d21f986de7a306373",
+    "after_sha256": "6bce88c80118a07cad77d5187963da6b6761248b5ab90a1ac67aa46bfacd4aec"
+  },
+  {
+    "path": "setup/userlevel-opencode/tools/sf_verification_gate.ts",
+    "frozen02_sha256": "7f7c9a926ef07f50b39a13f805e97849b4b1faac606845ff46a32bff1e27936e",
+    "partial_before_sha256": "7f7c9a926ef07f50b39a13f805e97849b4b1faac606845ff46a32bff1e27936e",
+    "after_sha256": "4c62a46390364ae6b6bae70b35007be943e6cefb668966895019f914d1cd6352"
+  },
+  {
+    "path": "setup/userlevel-opencode/tools/sf_state_transition.ts",
+    "frozen02_sha256": "fb44899116e5c9faa4299168e1ed97c066ced7d7f50b89a2f778bc123d7599ae",
+    "partial_before_sha256": "fb44899116e5c9faa4299168e1ed97c066ced7d7f50b89a2f778bc123d7599ae",
+    "after_sha256": "a5fddc5f29571ab52e2017f7e35b68207c7a728ba3a50767837c12659074719b"
+  },
+  {
+    "path": "setup/userlevel-opencode/tools/sf_gate_run.ts",
+    "frozen02_sha256": "1acfcd238f8affabdefa64eff62e0b6eb56bacd2a8eae2bdaa41423b7d75f2f0",
+    "partial_before_sha256": "1acfcd238f8affabdefa64eff62e0b6eb56bacd2a8eae2bdaa41423b7d75f2f0",
+    "after_sha256": "8d10039867eb488b3470f6c9435b2765cddbed4a6ad19d64bc476f9b39f74a1a"
+  },
+  {
+    "path": "docs/design/windows-lpac-node-readonly-contract.md",
+    "frozen02_sha256": "75312b393fd26c3b4ead623fc61600d6fe5304e04bb0cd394fbe62fd0a98e097",
+    "partial_before_sha256": "75312b393fd26c3b4ead623fc61600d6fe5304e04bb0cd394fbe62fd0a98e097",
+    "after_sha256": "37f982f86a6cba7cb7bcc00ced5750dcd0d12bbc0e577d47470cd28495c897d3"
+  }
+]

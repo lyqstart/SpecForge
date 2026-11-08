@@ -1,0 +1,1 @@
+{"files":["scripts/lib/prepare-current-release.ts","packages/scope-gate/tests/current-release-entry-interop.test.ts","docs/rule/specforge-development-error-ledger-and-experience.md","docs/project-status.md"],"original_main":"a8900cba9da5b4b8e9a49a57bb78bd1455b30dc3"}

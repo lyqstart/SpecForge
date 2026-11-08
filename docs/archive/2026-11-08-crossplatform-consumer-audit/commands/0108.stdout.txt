@@ -1,0 +1,12 @@
+
+ RUN  v3.2.4 D:/code/SpecForge/packages/daemon-core
+
+ ✓ tests/design-governance-contract.test.ts (5 tests) 17ms
+ ✓ tests/design-governance-live-closure.test.ts (11 tests) 1414ms
+   ✓ Design Governance live closure > runs the real Design Gate through sf_gate_run, uses the design phase profile, and stops at approval_required  344ms
+
+ Test Files  2 passed (2)
+      Tests  16 passed (16)
+   Start at  11:25:23
+   Duration  4.86s (transform 1.42s, setup 0ms, collect 2.75s, tests 1.43s, environment 0ms, prepare 551ms)
+

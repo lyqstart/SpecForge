@@ -32997,3 +32997,15 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 ### ERR-2051：历史合同原始字节在Git交付时被行尾规范化
 
 - 真实c0fff6b CI已完成冷构建，三平台正式Distribution全部通过，但完整测试唯一失败是历史合同SHA：Git blob58de8884（LF）不等于已登记原始25861569（CRLF）。同一Windows工作树原文件、当前从属合同及archive index均指向25861569；捕获两种完整原始表示，逐字证明差异仅CRLF→LF。修复仅为该确切历史文件添加-text/-diff并把未修改的原始字节正确存入Git，保留旧规范化blob和原始哈希断言，不以改测试或放宽摘要掩盖交付缺陷。最终c0本机Windows/Linux完整包与Root通过、freeze05输入逐字未漂移。该Git交付修复不改变Runtime源码或安装物理集合，仍需实际CI检出后核验。
+
+### ERR-2052：元数据观察器把允许重复的列表误当唯一集合
+
+- fresh-loader-final-01 对实际90行/45种工具错误地要求行唯一。真实 ToolIDs 响应 Schema 只有 array/string、没有 uniqueItems；02按真实合同核对唯一产品集合且要求每一重复定义全部规范字段相同，03进一步封存已解析响应合同，实际10角色/8Skill/45唯一工具通过。未修改产品或用户配置，也未把重复原因推测成Kernel或环境缺陷。API载体判断必须绑定实际合同，不能放宽不一致定义。适用EXP-007/008/025/026。
+
+### ERR-2053：封存标签 canonical 被误拼为业务现场目录
+
+- 最终原交付只读核对的两次载体因将封存结果标签 canonical/ 直接拼入现场路径返回ENOENT；封存producer源码证明标签需要剥离后才是实际WI路径。改正映射后 original-delivery-and-current-state.json 核验5代码/9封存文件、main及事件重放closed全部通过。失败均在读状态API前，没有修改原项目；不能由错误路径推出现场文件缺失。保留两次失败，不把先前路径分隔符规范化说成已证明根因。适用EXP-002/007/008/025。
+
+### ERR-2054：最终载体与报告范围必须显式核对
+
+- loader03准备曾用内联node -e穿过PowerShell引号并在解析期失败；改用独立CJS构造器后执行成功，未产生产品修改。首份机器评估字段 root_each_platform_tests 命名可能误含macOS，原文平台表仅声称Windows/Linux全量；保留原稿，以v2显式 root_tests_windows_and_linux 和 macOS未全量声明纠正。不能把解析失败算作执行或把简写字段扩大成平台覆盖。完整ESLint失败和旧现场原因INSUFFICIENT_EVIDENCE继续明确保留。适用EXP-007/008/025/026/283。

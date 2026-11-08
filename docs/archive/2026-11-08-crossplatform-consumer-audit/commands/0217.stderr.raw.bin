@@ -1,0 +1,32 @@
+$ vitest run tests/unit/work-item-artifact-owner.test.ts "--maxWorkers=1" "--minWorkers=1"
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/work-item-artifact-owner.test.ts > Runtime-owned Work Item metadata > refuses generic permission and identity replacement by sf-orchestrator without writes
+ FAIL  tests/unit/work-item-artifact-owner.test.ts > Runtime-owned Work Item metadata > refuses generic permission and identity replacement by sf-verifier without writes
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/unit/work-item-artifact-owner.test.ts:17:30
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/unit/work-item-artifact-owner.test.ts > Runtime-owned Work Item metadata > refuses generic permission and identity replacement by sf-executor without writes
+AssertionError: expected 'EXECUTOR_CANNOT_WRITE_GOVERNANCE_ARTI…' to be 'WORK_ITEM_METADATA_OWNED_BY_RUNTIME' // Object.is equality
+
+Expected: "WORK_ITEM_METADATA_OWNED_BY_RUNTIME"
+Received: "EXECUTOR_CANNOT_WRITE_GOVERNANCE_ARTIFACTS"
+
+ ❯ tests/unit/work-item-artifact-owner.test.ts:17:63
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+error: script "test" exited with code 1
