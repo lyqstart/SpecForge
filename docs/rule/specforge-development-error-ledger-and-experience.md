@@ -32866,3 +32866,12 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 
 - 当前main c641a8d4的已安装_AGENT_BASE仍全面禁止Verifier测试，并要求Executor/Debugger自行手跑命令；Executor正向检查点又要求先全部验证通过。SPS §9.2.4及真实plan/run路径只允许实际Orchestrator建计划、Verifier受独立许可消费。责任为下游角色/模板/Skills指令消费者，不能靠顶部免责声明覆盖相反正文。保持Runtime权限和产品范围，补完整角色矩阵及真实拒绝回归。原业务关闭/合并有效，不重开、不重跑。EXP-004/022/025/026/036/251/276/287。
 - 本轮初始化在只读ls-remote时受限网络DNS失败，发生于gate写入前；冻结baseline和已创建载体保持。0001同一远端只读宿主核验成功，才恢复gate与产品修复。大段显示截断不作为完整读取，补读缺口；一次literal manifest*的rg路径错误未作为产品证据。
+
+### ERR-2022：新观察器误用Agent原始正文域，初始化恢复模板出现转义错误
+
+- 0023真实加载当前10角色但严格raw/body原文匹配失败，自有Kernel独立证明退出，Daemon健康。0025保存各SF提示原文后证明10/10均逐字等于去frontmatter后trim的raw正文；Skill仍是保留CRLF与空行的raw正文，两类域不同，不得混用。保持原失败和源字节，正式observer应先用真实原件正例及变异反例验收。
+- 0002证据初始化恢复器的动态源码拼接把字符串\n解释成物理换行，实际SyntaxError，gate和产品状态尚未写入；0003改为直接结构化写gate后通过。首次红回归未结束即尝试读取尚未生成的stdout，读取失败不算测试结果，后续读取已结束receipt。EXP-007/008/193/260/296。
+
+### ERR-2023：当前知识提取Skill有安装项却缺少实际加载元数据
+
+- 0025真实OpenCode API加载7/8当前Skill，superpowers-knowledge-extraction缺失；其安装字节与正式manifest一致，但源文件无frontmatter，而另7份均有name/description。SPS当前集合与sf-knowledge明确要求此Skill。0026增加全current Skill元数据红例，真实1失败/21通过；补齐name/description后0027全22通过。责任为派生Skill/部署发现契约，不是D23权限或原WI运行失败。需同一正式release/installer重验及全8Skill实际加载，不以静态测试代替。EXP-004/007/022/026/036/260/276。

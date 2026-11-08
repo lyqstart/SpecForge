@@ -1,3 +1,8 @@
+---
+name: superpowers-knowledge-extraction
+description: 指导 sf-knowledge 按证据盘点、根因分析和边界检查提取可复核知识
+---
+
 # superpowers-knowledge-extraction
 
 > 知识提取框架流程 — sf-knowledge Agent 必须严格按以下 6 个 Phase 顺序执行。

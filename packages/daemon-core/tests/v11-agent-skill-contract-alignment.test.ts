@@ -140,6 +140,21 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
     }
   });
 
+  it('makes every current release Skill discoverable by its actual declared loader identity', () => {
+    const sps = readFileSync(path.join(REPO_ROOT, 'docs/product-specification/specforge-product-specification.md'), 'utf8');
+    const projection = JSON.parse(sps.split('<!-- SPECFORGE_RELEASE_AUTHORITY_ITEMS:START -->')[1]!.split('```json')[1]!.split('```')[0]!);
+    const skills: string[] = projection.itemGroups.filter((g: {classification: string}) => g.classification.startsWith('CURRENT_RELEASE'))
+      .flatMap((g: {ids: string[]}) => g.ids).filter((id: string) => id.startsWith('skill:'));
+    expect(skills.length).toBeGreaterThan(0);
+    for (const id of skills) {
+      const name = id.slice('skill:'.length), text = readFileSync(path.join(USERLEVEL_ROOT, 'skills', name, 'SKILL.md'), 'utf8');
+      const frontmatter = text.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/)?.[1];
+      expect(frontmatter, name + ' must have real Skill metadata').toBeDefined();
+      expect(frontmatter, name).toMatch(new RegExp('^name: ' + name + '\\s*$', 'm'));
+      expect(frontmatter, name).toMatch(/^description: \S.+$/m);
+    }
+  });
+
   it('allows implementation handoff before verifier-owned evidence without claiming verified completion', () => {
     const executor = read('setup/userlevel-opencode/agents/sf-executor.md');
     const handoff = executor.split('## Implementation Handoff')[1]?.split('---')[0] ?? '';
