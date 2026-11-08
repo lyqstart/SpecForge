@@ -123,15 +123,13 @@ export class GracefulShutdownHandler implements AsyncDisposable {
     // SIGINT - Interrupt from keyboard (Ctrl+C)
     // SERVICE_CONTROL_STOP - Windows service stop signal
 
+    const sigtermHandler = () => handleSignal('SIGTERM');
+    process.on('SIGTERM', sigtermHandler);
+    this._signalHandlers.set('SIGTERM', sigtermHandler);
     if (process.platform !== 'win32') {
-      process.on('SIGTERM', () => handleSignal('SIGTERM'));
-      process.on('SIGINT', () => handleSignal('SIGINT'));
-      this._signalHandlers.set('SIGTERM', handleSignal);
-      this._signalHandlers.set('SIGINT', handleSignal);
-    } else {
-      // Handle SIGTERM consistently when the host process forwards it.
-      process.on('SIGTERM', () => handleSignal('SIGTERM'));
-      this._signalHandlers.set('SIGTERM', handleSignal);
+      const sigintHandler = () => handleSignal('SIGINT');
+      process.on('SIGINT', sigintHandler);
+      this._signalHandlers.set('SIGINT', sigintHandler);
     }
 
     this._attached = true;

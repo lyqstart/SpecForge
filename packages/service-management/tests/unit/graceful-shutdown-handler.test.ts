@@ -391,21 +391,35 @@ describe('GracefulShutdownHandler', () => {
       await handler.dispose();
     });
 
-    it('should not attach twice if already attached', () => {
+    it('should not attach twice if already attached', async () => {
       const handler = new GracefulShutdownHandler();
       handlers.push(handler);
 
+      const before=process.listenerCount('SIGTERM');
       handler.attachToProcess();
-      // Should not throw or cause issues when called again
+      expect(process.listenerCount('SIGTERM')).toBe(before+1);
       handler.attachToProcess();
-
-      // Multiple attaches should be idempotent
-      expect(true).toBe(true);
-
-      // Note: We can't easily test cleanup here since we can't remove listeners
-      // but the code has the _attached guard
+      expect(process.listenerCount('SIGTERM')).toBe(before+1);
+      await handler.dispose();
+      expect(process.listenerCount('SIGTERM')).toBe(before);
     });
 
+    it('releases exact signal callbacks and preserves foreign listeners across repeated lifecycles', async () => {
+      const signals=process.platform==='win32'?['SIGTERM'] as const:['SIGTERM','SIGINT'] as const;
+      const foreign=()=>undefined;
+      for(const signal of signals)process.on(signal,foreign);
+      const before=new Map(signals.map(signal=>[signal,process.listeners(signal)]));
+      try {
+        for(let index=0;index<12;index++){
+          const handler=new GracefulShutdownHandler();handlers.push(handler);
+          handler.attachToProcess();handler.attachToProcess();
+          for(const signal of signals)expect(process.listenerCount(signal)).toBe(before.get(signal)!.length+1);
+          if(index%2===0)await handler.trigger('owned lifecycle regression');else await handler.dispose();
+          for(const signal of signals)expect(process.listeners(signal)).toEqual(before.get(signal));
+          expect(handler.getActiveTaskCount()).toBe(0);expect(handler.getActiveTimerCount()).toBe(0);
+        }
+      } finally {for(const signal of signals)process.removeListener(signal,foreign);}
+    });
     it('should log shutdown reason on SIGTERM', async () => {
       const handler = new GracefulShutdownHandler();
       handlers.push(handler);
