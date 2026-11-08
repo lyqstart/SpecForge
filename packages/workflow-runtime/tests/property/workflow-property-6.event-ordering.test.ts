@@ -1,29 +1,24 @@
 /**
  * Property Test: Event Ordering
- * 
+ *
  * Feature: workflow, Property 6: Event Ordering
- * 
+ *
  * Validates: Requirements 4.3 - THE Workflow_Runtime SHALL 保证事件的有序性和一致性
- * 
+ *
  * For all workflow instances w, events must be recorded in chronological order,
  * and event order must reflect actual execution order.
- * 
+ *
  * Derived-From: v6-architecture-overview Property 4
  */
 
-import { describe, it, expect } from 'vitest';
 import * as fc from 'fast-check';
-import { WorkflowEngine, type WorkflowEvent } from '../../src/WorkflowEngine';
+import { describe, it, expect } from 'vitest';
+
 import { EventPublisher } from '../../src/events/EventPublisher';
-import type { 
-  WorkflowDefinition, 
-  WorkflowInstance, 
-  SimpleGateDefinition,
-  CompositeGateDefinition,
-  GateResult,
-  IEventBus,
-  Event
-} from '../../src/types';
+import type { WorkflowDefinition, SimpleGateDefinition, IEventBus, Event } from '../../src/types';
+import { WorkflowEngine } from '../../src/WorkflowEngine';
+import { requiredTestValue } from '../required-test-value';
+
 import { workflowDefinitionArb } from './generators';
 
 // Configure iterations as per spec requirements (>= 100)
@@ -45,7 +40,7 @@ class MockEventBus implements IEventBus {
     if (!this.subscriptions.has(topic)) {
       this.subscriptions.set(topic, new Set());
     }
-    this.subscriptions.get(topic)!.add(handler);
+    requiredTestValue(this.subscriptions.get(topic)).add(handler);
     return { id: `sub-${topic}-${Date.now()}`, topic, handler };
   }
 
@@ -81,8 +76,8 @@ class MockEventBus implements IEventBus {
  * Create a simple gate with configurable result
  */
 function createTestGate(
-  id: string, 
-  name: string, 
+  id: string,
+  name: string,
   passResult: boolean = true,
   delayMs: number = 0
 ): SimpleGateDefinition {
@@ -113,12 +108,12 @@ function createTestWorkflow(
   stateNames: string[],
   allPass: boolean = true
 ): WorkflowDefinition {
-  const states: Record<string, any> = {};
-  
+  const states: WorkflowDefinition['stateMachine']['states'] = {};
+
   for (let i = 0; i < stateNames.length; i++) {
     const stateName = stateNames[i];
     const isLastState = i === stateNames.length - 1;
-    
+
     states[stateName] = {
       schema_version: '1.0',
       agent: `agent-${stateName}`,
@@ -127,7 +122,7 @@ function createTestWorkflow(
       next: isLastState ? undefined : stateNames[i + 1]
     };
   }
-  
+
   return {
     schema_version: '1.0',
     id,
@@ -145,32 +140,14 @@ function createTestWorkflow(
 /**
  * Collect all events from a workflow execution
  */
-async function executeWorkflowAndCollectEvents(
-  engine: WorkflowEngine,
-  workflowDef: WorkflowDefinition,
-  eventPublisher: EventPublisher
-): Promise<{ instance: WorkflowInstance; events: Event[] }> {
-  const mockBus = eventPublisher.getEventBus() as MockEventBus;
-  mockBus.clearEvents();
-  
-  engine.loadWorkflow(workflowDef);
-  const instance = engine.createInstance(workflowDef.id);
-  
-  // Execute the workflow
-  await engine.execute(instance.id);
-  
-  return {
-    instance,
-    events: mockBus.getEvents()
-  };
-}
+
 
 describe('Property 6: Event Ordering', () => {
-  
+
   describe('Chronological Order', () => {
     /**
      * Property: Events MUST be recorded in chronological order
-     * 
+     *
      * For any workflow execution, the timestamps of events must be non-decreasing.
      * This verifies Requirement 4.3 - "事件必须按时间顺序记录"
      */
@@ -182,17 +159,17 @@ describe('Property 6: Event Ordering', () => {
           async (numStates, allPass) => {
             const stateNames = Array.from({ length: numStates }, (_, i) => `state${i}`);
             const workflow = createTestWorkflow('test-workflow', stateNames, allPass);
-            
+
             const mockBus = new MockEventBus();
             const eventPublisher = new EventPublisher({
               projectId: 'test-project',
               eventBus: mockBus
             });
-            
+
             const engine = new WorkflowEngine({ eventPublisher });
             engine.loadWorkflow(workflow);
             const instance = engine.createInstance(workflow.id);
-            
+
             try {
               await engine.execute(instance.id);
             } catch (error) {
@@ -200,9 +177,9 @@ describe('Property 6: Event Ordering', () => {
                 throw error;
               }
             }
-            
+
             const events = mockBus.getEvents();
-            
+
             // Verify events are in chronological order
             let lastTimestamp = 0;
             for (const event of events) {
@@ -214,7 +191,7 @@ describe('Property 6: Event Ordering', () => {
               }
               lastTimestamp = event.ts;
             }
-            
+
             // Ensure at least some events were generated
             if (events.length === 0) {
               throw new Error('No events were generated');
@@ -227,7 +204,7 @@ describe('Property 6: Event Ordering', () => {
 
     /**
      * Property: Event timestamps must be monotonically increasing
-     * 
+     *
      * Equal timestamps are allowed (same millisecond), but never decreasing
      */
     it('should have non-decreasing timestamps across all event types', async () => {
@@ -237,22 +214,22 @@ describe('Property 6: Event Ordering', () => {
           async (numStates) => {
             const stateNames = Array.from({ length: numStates }, (_, i) => `state${i}`);
             const workflow = createTestWorkflow('monotonic-workflow', stateNames, true);
-            
+
             const mockBus = new MockEventBus();
             const eventPublisher = new EventPublisher({
               projectId: 'test-project',
               eventBus: mockBus
             });
-            
+
             const engine = new WorkflowEngine({ eventPublisher });
             engine.loadWorkflow(workflow);
             const instance = engine.createInstance(workflow.id);
-            
+
             await engine.execute(instance.id);
-            
+
             const events = mockBus.getEvents();
             const timestamps = events.map(e => e.ts);
-            
+
             // Check monotonically increasing
             for (let i = 1; i < timestamps.length; i++) {
               if (timestamps[i] < timestamps[i - 1]) {
@@ -272,7 +249,7 @@ describe('Property 6: Event Ordering', () => {
   describe('Execution Order Reflection', () => {
     /**
      * Property: Event order must reflect actual execution order
-     * 
+     *
      * For workflows with multiple states, workflow.started must come before
      * all gate events, which must come before workflow.completed
      */
@@ -283,43 +260,43 @@ describe('Property 6: Event Ordering', () => {
           async (numStates) => {
             const stateNames = Array.from({ length: numStates }, (_, i) => `state${i}`);
             const workflow = createTestWorkflow('order-workflow', stateNames, true);
-            
+
             const mockBus = new MockEventBus();
             const eventPublisher = new EventPublisher({
               projectId: 'test-project',
               eventBus: mockBus
             });
-            
+
             const engine = new WorkflowEngine({ eventPublisher });
             engine.loadWorkflow(workflow);
             const instance = engine.createInstance(workflow.id);
-            
+
             await engine.execute(instance.id);
-            
+
             const events = mockBus.getEvents();
-            
+
             // Find indices of key event types
             const workflowStartedIdx = events.findIndex(e => e.action === 'workflow.started');
             const firstGateStartedIdx = events.findIndex(e => e.action === 'workflow.gate.started');
-            const lastGateCompletedIdx = events.findLastIndex(e => e.action === 'workflow.gate.completed');
+            const lastGateCompletedIdx = events.map(event => event.action).lastIndexOf('workflow.gate.completed');
             const workflowCompletedIdx = events.findIndex(e => e.action === 'workflow.completed');
-            
+
             // Verify execution order constraints
             // 1. workflow.started must be first
             expect(workflowStartedIdx).toBe(0);
-            
+
             // 2. First gate execution must start after workflow started
             expect(firstGateStartedIdx).toBeGreaterThan(workflowStartedIdx);
-            
+
             // 3. Last gate completion must be before workflow completed (if completed)
             if (workflowCompletedIdx !== -1) {
               expect(lastGateCompletedIdx).toBeLessThan(workflowCompletedIdx);
             }
-            
+
             // 4. Gate started should come before corresponding gate completed
             const gateStartedEvents = events.filter(e => e.action === 'workflow.gate.started');
             const gateCompletedEvents = events.filter(e => e.action === 'workflow.gate.completed');
-            
+
             expect(gateStartedEvents.length).toBe(numStates);
             expect(gateCompletedEvents.length).toBe(numStates);
           }
@@ -330,7 +307,7 @@ describe('Property 6: Event Ordering', () => {
 
     /**
      * Property: State change events must follow gate events
-     * 
+     *
      * The core property being tested is that events are in chronological order.
      * For workflows with multiple states, we verify there are gate execution events
      * in the event sequence.
@@ -342,40 +319,40 @@ describe('Property 6: Event Ordering', () => {
           async (numStates) => {
             const stateNames = Array.from({ length: numStates }, (_, i) => `state${i}`);
             const workflow = createTestWorkflow('transition-workflow', stateNames, true);
-            
+
             const mockBus = new MockEventBus();
             const eventPublisher = new EventPublisher({
               projectId: 'test-project',
               eventBus: mockBus
             });
-            
+
             const engine = new WorkflowEngine({ eventPublisher });
             engine.loadWorkflow(workflow);
             const instance = engine.createInstance(workflow.id);
-            
+
             await engine.execute(instance.id);
-            
+
             const events = mockBus.getEvents();
-            
+
             // Verify basic event structure - these are the key requirements from Req 4.3
             const hasWorkflowStarted = events.some(e => e.action === 'workflow.started');
             const hasGateStarted = events.some(e => e.action === 'workflow.gate.started');
             const hasGateCompleted = events.some(e => e.action === 'workflow.gate.completed');
             const hasWorkflowCompleted = events.some(e => e.action === 'workflow.completed');
-            
+
             // Core requirement: all these event types should exist
             expect(hasWorkflowStarted).toBe(true);
             expect(hasGateStarted).toBe(true);
             expect(hasGateCompleted).toBe(true);
             expect(hasWorkflowCompleted).toBe(true);
-            
+
             // The number of gate events should match the number of states
             const gateStartedCount = events.filter(e => e.action === 'workflow.gate.started').length;
             const gateCompletedCount = events.filter(e => e.action === 'workflow.gate.completed').length;
-            
+
             expect(gateStartedCount).toBe(numStates);
             expect(gateCompletedCount).toBe(numStates);
-            
+
             // Verify chronological ordering (the main property from Req 4.3)
             for (let i = 1; i < events.length; i++) {
               expect(events[i].ts).toBeGreaterThanOrEqual(events[i - 1].ts);
@@ -390,7 +367,7 @@ describe('Property 6: Event Ordering', () => {
   describe('Event Consistency', () => {
     /**
      * Property: Events must have consistent instance ID
-     * 
+     *
      * All events for a workflow instance must have the same instanceId
      */
     it('should have consistent instance ID across all events', async () => {
@@ -400,22 +377,22 @@ describe('Property 6: Event Ordering', () => {
           async (numStates) => {
             const stateNames = Array.from({ length: numStates }, (_, i) => `state${i}`);
             const workflow = createTestWorkflow('consistency-workflow', stateNames, true);
-            
+
             const mockBus = new MockEventBus();
             const eventPublisher = new EventPublisher({
               projectId: 'test-project',
               eventBus: mockBus
             });
-            
+
             const engine = new WorkflowEngine({ eventPublisher });
             engine.loadWorkflow(workflow);
             const instance = engine.createInstance(workflow.id);
             const expectedInstanceId = instance.id;
-            
+
             await engine.execute(instance.id);
-            
+
             const events = mockBus.getEvents();
-            
+
             // All events should have the same instance ID
             const instanceIds = new Set(events.map(e => e.payload.instanceId));
             expect(instanceIds.size).toBe(1);
@@ -428,7 +405,7 @@ describe('Property 6: Event Ordering', () => {
 
     /**
      * Property: Events must have valid structure
-     * 
+     *
      * Each event must have required fields: eventId, ts, action, payload
      */
     it('should have valid event structure for all events', async () => {
@@ -438,21 +415,21 @@ describe('Property 6: Event Ordering', () => {
           async (numStates) => {
             const stateNames = Array.from({ length: numStates }, (_, i) => `state${i}`);
             const workflow = createTestWorkflow('structure-workflow', stateNames, true);
-            
+
             const mockBus = new MockEventBus();
             const eventPublisher = new EventPublisher({
               projectId: 'test-project',
               eventBus: mockBus
             });
-            
+
             const engine = new WorkflowEngine({ eventPublisher });
             engine.loadWorkflow(workflow);
             const instance = engine.createInstance(workflow.id);
-            
+
             await engine.execute(instance.id);
-            
+
             const events = mockBus.getEvents();
-            
+
             for (const event of events) {
               // Check required fields
               if (!event.eventId) throw new Error('Missing eventId');
@@ -460,7 +437,7 @@ describe('Property 6: Event Ordering', () => {
               if (!event.action) throw new Error('Missing action');
               if (!event.payload) throw new Error('Missing payload');
               if (!event.metadata) throw new Error('Missing metadata');
-              
+
               // Check timestamp is reasonable (after 2020-01-01)
               if (event.ts < 1577836800000) {
                 throw new Error(`Invalid timestamp: ${event.ts}`);
@@ -483,24 +460,24 @@ describe('Property 6: Event Ordering', () => {
           async (numStates) => {
             const stateNames = Array.from({ length: numStates }, (_, i) => `state${i}`);
             const workflow = createTestWorkflow('duplicate-workflow', stateNames, true);
-            
+
             const mockBus = new MockEventBus();
             const eventPublisher = new EventPublisher({
               projectId: 'test-project',
               eventBus: mockBus
             });
-            
+
             const engine = new WorkflowEngine({ eventPublisher });
             engine.loadWorkflow(workflow);
             const instance = engine.createInstance(workflow.id);
-            
+
             await engine.execute(instance.id);
-            
+
             const events = mockBus.getEvents();
-            
+
             // Check for duplicate gate started events per state
             const gateStartedByState = new Map<string, number>();
-            
+
             for (const event of events) {
               if (event.action === 'workflow.gate.started') {
                 const state = event.payload.state as string;
@@ -508,7 +485,7 @@ describe('Property 6: Event Ordering', () => {
                 gateStartedByState.set(state, count + 1);
               }
             }
-            
+
             // Each state should have at most one gate.started
             for (const [state, count] of gateStartedByState) {
               if (count > 1) {
@@ -525,41 +502,41 @@ describe('Property 6: Event Ordering', () => {
   describe('Sequential vs Parallel Event Ordering', () => {
     /**
      * Property: Sequential execution produces sequential events
-     * 
-     * Events should be: started -> gate0.started -> gate0.completed -> 
+     *
+     * Events should be: started -> gate0.started -> gate0.completed ->
      * state_changed -> gate1.started -> ...
      */
     it('should produce sequential event flow for sequential execution', async () => {
       const stateNames = ['state0', 'state1', 'state2'];
       const workflow = createTestWorkflow('seq-workflow', stateNames, true);
-      
+
       const mockBus = new MockEventBus();
       const eventPublisher = new EventPublisher({
         projectId: 'test-project',
         eventBus: mockBus
       });
-      
+
       const engine = new WorkflowEngine({ eventPublisher });
       engine.loadWorkflow(workflow);
       const instance = engine.createInstance(workflow.id);
-      
+
       await engine.execute(instance.id);
-      
+
       const events = mockBus.getEvents();
       const actions = events.map(e => e.action);
-      
+
       // Verify pattern: workflow.started, (gate.started, gate.completed, state_changed)*, workflow.completed
       expect(actions[0]).toBe('workflow.started');
-      
+
       // Count gate-related events
       const gateStartedCount = actions.filter(a => a === 'workflow.gate.started').length;
       const gateCompletedCount = actions.filter(a => a === 'workflow.gate.completed').length;
       const stateChangedCount = actions.filter(a => a === 'workflow.state_changed').length;
-      
+
       expect(gateStartedCount).toBe(3); // 3 states
       expect(gateCompletedCount).toBe(3);
       expect(stateChangedCount).toBe(2); // 2 transitions (state0->state1, state1->state2)
-      
+
       // Last event should be workflow.completed
       expect(actions[actions.length - 1]).toBe('workflow.completed');
     });
@@ -568,7 +545,7 @@ describe('Property 6: Event Ordering', () => {
   describe('Error Event Ordering', () => {
     /**
      * Property: Failed workflows should still have valid event ordering
-     * 
+     *
      * Even when gates fail, events should be in chronological order
      */
     it('should maintain event ordering on workflow failure', async () => {
@@ -578,15 +555,15 @@ describe('Property 6: Event Ordering', () => {
           async (numStates) => {
             // Create a workflow where some gates fail
             const stateNames = Array.from({ length: numStates }, (_, i) => `state${i}`);
-            
-            const states: Record<string, any> = {};
+
+            const states: WorkflowDefinition['stateMachine']['states'] = {};
             for (let i = 0; i < stateNames.length; i++) {
               const stateName = stateNames[i];
               const isLastState = i === stateNames.length - 1;
-              
+
               // Make middle states fail
               const willFail = i > 0 && i < numStates - 1 && Math.random() > 0.5;
-              
+
               states[stateName] = {
                 schema_version: '1.0',
                 agent: `agent-${stateName}`,
@@ -595,7 +572,7 @@ describe('Property 6: Event Ordering', () => {
                 next: isLastState ? undefined : stateNames[i + 1]
               };
             }
-            
+
             const workflow: WorkflowDefinition = {
               schema_version: '1.0',
               id: 'failure-workflow',
@@ -608,25 +585,25 @@ describe('Property 6: Event Ordering', () => {
               },
               artifacts: []
             };
-            
+
             const mockBus = new MockEventBus();
             const eventPublisher = new EventPublisher({
               projectId: 'test-project',
               eventBus: mockBus
             });
-            
+
             const engine = new WorkflowEngine({ eventPublisher });
             engine.loadWorkflow(workflow);
             const instance = engine.createInstance(workflow.id);
-            
+
             try {
               await engine.execute(instance.id);
             } catch {
               // Execution may fail - that's ok for this test
             }
-            
+
             const events = mockBus.getEvents();
-            
+
             // Verify chronological order even on failure
             let lastTimestamp = 0;
             for (const event of events) {
@@ -674,29 +651,29 @@ describe('Property 6: Event Ordering', () => {
         },
         artifacts: []
       };
-      
+
       const mockBus = new MockEventBus();
       const eventPublisher = new EventPublisher({
         projectId: 'test-project',
         eventBus: mockBus
       });
-      
+
       const engine = new WorkflowEngine({ eventPublisher });
       engine.loadWorkflow(workflow);
       const instance = engine.createInstance(workflow.id);
-      
+
       try {
         await engine.execute(instance.id);
       } catch {
         // Expected to fail
       }
-      
+
       const events = mockBus.getEvents();
-      
+
       // Verify that if gate.failed exists, it comes after gate.started
       const failEvents = events.filter(e => e.action === 'workflow.gate.failed');
       const startEvents = events.filter(e => e.action === 'workflow.gate.started');
-      
+
       for (const failEvent of failEvents) {
         const correspondingStart = startEvents.find(
           se => se.payload.state === failEvent.payload.state && se.ts < failEvent.ts
@@ -717,32 +694,32 @@ describe('Property 6: Event Ordering', () => {
           async (numStates) => {
             const stateNames = Array.from({ length: numStates }, (_, i) => `state${i}`);
             const workflow = createTestWorkflow('accurate-workflow', stateNames, true);
-            
+
             const mockBus = new MockEventBus();
             const eventPublisher = new EventPublisher({
               projectId: 'test-project',
               eventBus: mockBus
             });
-            
+
             const engine = new WorkflowEngine({ eventPublisher });
             engine.loadWorkflow(workflow);
             const instance = engine.createInstance(workflow.id);
-            
+
             await engine.execute(instance.id);
-            
+
             const events = mockBus.getEvents();
             const stateChanges = events.filter(e => e.action === 'workflow.state_changed');
-            
+
             // Verify each state change has valid from/to
             for (let i = 0; i < stateChanges.length; i++) {
               const change = stateChanges[i];
               const fromState = change.payload.fromState as string;
               const toState = change.payload.toState as string;
-              
+
               // Both should be valid state names
               expect(stateNames).toContain(fromState);
               expect(stateNames).toContain(toState);
-              
+
               // toState should be the next state in sequence
               if (i < stateChanges.length - 1) {
                 const nextChange = stateChanges[i + 1];
@@ -766,22 +743,22 @@ describe('Property 6: Event Ordering', () => {
           async (numStates) => {
             const stateNames = Array.from({ length: numStates }, (_, i) => `state${i}`);
             const workflow = createTestWorkflow('status-workflow', stateNames, true);
-            
+
             const mockBus = new MockEventBus();
             const eventPublisher = new EventPublisher({
               projectId: 'test-project',
               eventBus: mockBus
             });
-            
+
             const engine = new WorkflowEngine({ eventPublisher });
             engine.loadWorkflow(workflow);
             const instance = engine.createInstance(workflow.id);
-            
+
             await engine.execute(instance.id);
-            
+
             const events = mockBus.getEvents();
             const gateCompletedEvents = events.filter(e => e.action === 'workflow.gate.completed');
-            
+
             // All gates in this test pass
             for (const event of gateCompletedEvents) {
               expect(event.payload.passed).toBe(true);
@@ -799,25 +776,25 @@ describe('Property 6: Event Ordering', () => {
      */
     it('should handle single state workflow event ordering', async () => {
       const workflow = createTestWorkflow('single-state', ['only-state'], true);
-      
+
       const mockBus = new MockEventBus();
       const eventPublisher = new EventPublisher({
         projectId: 'test-project',
         eventBus: mockBus
       });
-      
+
       const engine = new WorkflowEngine({ eventPublisher });
       engine.loadWorkflow(workflow);
       const instance = engine.createInstance(workflow.id);
-      
+
       await engine.execute(instance.id);
-      
+
       const events = mockBus.getEvents();
-      
+
       // Should have: started, gate.started, gate.completed, completed
       expect(events.length).toBeGreaterThanOrEqual(3);
       expect(events[0].action).toBe('workflow.started');
-      
+
       // Verify ordering
       let lastTs = 0;
       for (const event of events) {
@@ -833,27 +810,27 @@ describe('Property 6: Event Ordering', () => {
       const numStates = 10;
       const stateNames = Array.from({ length: numStates }, (_, i) => `state${i}`);
       const workflow = createTestWorkflow('long-workflow', stateNames, true);
-      
+
       const mockBus = new MockEventBus();
       const eventPublisher = new EventPublisher({
         projectId: 'test-project',
         eventBus: mockBus
       });
-      
+
       const engine = new WorkflowEngine({ eventPublisher });
       engine.loadWorkflow(workflow);
       const instance = engine.createInstance(workflow.id);
-      
+
       await engine.execute(instance.id);
-      
+
       const events = mockBus.getEvents();
-      
+
       // Verify all events are in order
       const timestamps = events.map(e => e.ts);
       for (let i = 1; i < timestamps.length; i++) {
         expect(timestamps[i]).toBeGreaterThanOrEqual(timestamps[i - 1]);
       }
-      
+
       // Should have expected number of gate events
       const gateStarted = events.filter(e => e.action === 'workflow.gate.started').length;
       expect(gateStarted).toBe(numStates);
@@ -865,26 +842,26 @@ describe('Property 6: Event Ordering', () => {
     it('should handle rapid transitions without timestamp collision issues', async () => {
       const stateNames = ['s1', 's2', 's3', 's4', 's5'];
       const workflow = createTestWorkflow('rapid-workflow', stateNames, true);
-      
+
       const mockBus = new MockEventBus();
       const eventPublisher = new EventPublisher({
         projectId: 'test-project',
         eventBus: mockBus
       });
-      
+
       const engine = new WorkflowEngine({ eventPublisher });
       engine.loadWorkflow(workflow);
       const instance = engine.createInstance(workflow.id);
-      
+
       const startTime = Date.now();
       await engine.execute(instance.id);
       const endTime = Date.now();
-      
+
       const events = mockBus.getEvents();
-      
+
       // Should complete quickly (no artificial delays)
       expect(endTime - startTime).toBeLessThan(1000);
-      
+
       // All events should still be in order even with rapid execution
       for (let i = 1; i < events.length; i++) {
         expect(events[i].ts).toBeGreaterThanOrEqual(events[i - 1].ts);
@@ -912,22 +889,22 @@ describe('Property 6: Using workflowDefinitionArb', () => {
               });
             }
           }
-          
+
           const mockBus = new MockEventBus();
           const eventPublisher = new EventPublisher({
             projectId: 'test-project',
             eventBus: mockBus
           });
-          
+
           const engine = new WorkflowEngine({ eventPublisher });
-          
+
           try {
             engine.loadWorkflow(workflowDef);
             const instance = engine.createInstance(workflowDef.id);
             await engine.execute(instance.id);
-            
+
             const events = mockBus.getEvents();
-            
+
             // Verify chronological ordering
             let lastTimestamp = 0;
             for (const event of events) {
@@ -936,14 +913,14 @@ describe('Property 6: Using workflowDefinitionArb', () => {
               }
               lastTimestamp = event.ts;
             }
-            
+
             // Verify event structure consistency
             for (const event of events) {
               if (!event.eventId || !event.action || !event.payload) {
                 throw new Error('Invalid event structure');
               }
             }
-          } catch (e) {
+          } catch  {
             // Some randomly generated workflows might be invalid
             // That's acceptable for this test
           }

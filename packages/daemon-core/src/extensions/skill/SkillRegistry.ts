@@ -1,3 +1,4 @@
+import { promiseFromSync } from '@specforge/types';
 /**
  * SkillRegistry
  * Manages skill registration, lookup and loading
@@ -45,49 +46,48 @@ export class SkillRegistry {
   /**
    * Parse a SKILL.md file and extract metadata from YAML frontmatter
    */
-  private async parseSkillFile(
-    filePath: string,
-    dirName: string,
-  ): Promise<SkillDefinition | null> {
-    try {
-      const content = fs.readFileSync(filePath, 'utf-8');
+  private parseSkillFile(filePath: string, dirName: string): Promise<SkillDefinition | null> {
+    return promiseFromSync(() => {
+      try {
+        const content = fs.readFileSync(filePath, 'utf-8');
 
-      const fm = this.parseFrontmatter(content);
+        const fm = this.parseFrontmatter(content);
 
-      const name = (fm['name'] as string) || dirName;
-      const description =
-        (fm['description'] as string) ||
-        content.match(/^#\s+(.+)$/m)?.[1]?.trim() ||
-        content.match(/^>\s*(.+)$/m)?.[1]?.trim() ||
-        `Skill: ${dirName}`;
+        const name = (fm['name'] as string) || dirName;
+        const description =
+          (fm['description'] as string) ||
+          content.match(/^#\s+(.+)$/m)?.[1]?.trim() ||
+          content.match(/^>\s*(.+)$/m)?.[1]?.trim() ||
+          `Skill: ${dirName}`;
 
-      const autoload = this.validateAutoloadStrategy(fm['autoload']);
+        const autoload = this.validateAutoloadStrategy(fm['autoload']);
 
-      const wt = fm['workflow_types'];
-      const workflowPattern = wt
-        ? Array.isArray(wt)
-          ? (wt as string[])
-          : [wt as string]
-        : undefined;
+        const wt = fm['workflow_types'];
+        const workflowPattern = wt
+          ? Array.isArray(wt)
+            ? (wt as string[])
+            : [wt as string]
+          : undefined;
 
-      const ph = fm['phases'];
-      const phasePattern = ph
-        ? Array.isArray(ph)
-          ? (ph as string[])
-          : [ph as string]
-        : undefined;
+        const ph = fm['phases'];
+        const phasePattern = ph
+          ? Array.isArray(ph)
+            ? (ph as string[])
+            : [ph as string]
+          : undefined;
 
-      return {
-        name: name as string,
-        description: description as string,
-        filePath,
-        workflowPattern,
-        phasePattern,
-        autoload,
-      };
-    } catch {
-      return null;
-    }
+        return {
+          name: name,
+          description: description,
+          filePath,
+          workflowPattern,
+          phasePattern,
+          autoload,
+        };
+      } catch {
+        return null;
+      }
+    });
   }
 
   /**
@@ -125,13 +125,13 @@ export class SkillRegistry {
     const listBlockRegex = /^(\w+):\s*\n((?:\s+- .+\n?)*)/gm;
     let listMatch: RegExpExecArray | null;
     while ((listMatch = listBlockRegex.exec(yaml)) !== null) {
-      const listKey = listMatch[1]!;
+      const listKey = listMatch[1];
       const listContent = listMatch[2] ?? '';
       const items = listContent
         .split('\n')
-        .map((l) => l.trim())
-        .filter((l) => l.startsWith('- '))
-        .map((l) => l.slice(2).trim());
+        .map(l => l.trim())
+        .filter(l => l.startsWith('- '))
+        .map(l => l.slice(2).trim());
       if (items.length > 0) {
         result[listKey] = items;
       }
@@ -176,32 +176,31 @@ export class SkillRegistry {
   /**
    * Load a skill's content (from cache or file system)
    */
-  async loadSkill(name: string): Promise<string> {
-    const cached = this.contentCache.get(name);
-    if (cached) {
-      return cached;
-    }
+  loadSkill(name: string): Promise<string> {
+    return promiseFromSync(() => {
+      const cached = this.contentCache.get(name);
+      if (cached) {
+        return cached;
+      }
 
-    const skill = this.skills.get(name);
-    if (!skill) {
-      throw new Error(`Skill not found: ${name}`);
-    }
+      const skill = this.skills.get(name);
+      if (!skill) {
+        throw new Error(`Skill not found: ${name}`);
+      }
 
-    const content = fs.readFileSync(skill.filePath, 'utf-8');
-    this.contentCache.set(name, content);
-    skill.content = content;
+      const content = fs.readFileSync(skill.filePath, 'utf-8');
+      this.contentCache.set(name, content);
+      skill.content = content;
 
-    return content;
+      return content;
+    });
   }
 
   /**
    * Load all skills matching the given workflow + phase
    * Returns a map of skill name → content
    */
-  async loadPhaseSkills(
-    workflowId: string,
-    phase: string,
-  ): Promise<Map<string, string>> {
+  async loadPhaseSkills(workflowId: string, phase: string): Promise<Map<string, string>> {
     const matching = this.findSkills(workflowId, phase);
     const result = new Map<string, string>();
 

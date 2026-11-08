@@ -1,37 +1,23 @@
 /**
  * Property Test: Error Handling
- * 
+ *
  * Feature: error-handling
  * Property: Error handling robustness and correctness
- * 
+ *
  * Validates: Requirements for error handling (Requirements 2.5)
  * - THE Workflow_Runtime SHALL process Gate execution failures
  * - THE Workflow_Runtime SHALL support workflow instance pause/resume
  * - THE Workflow_Runtime SHALL provide error retry mechanism
  * - THE Workflow_Runtime SHALL support workflow state recovery from crashes
- * 
+ *
  * Derived-From: workflow-runtime Requirements 5
  */
 
-import { describe, it, expect } from 'vitest';
+import { promiseFromSync } from '@specforge/types';
 import * as fc from 'fast-check';
-import {
-  handleGateError,
-  isGateError,
-  isRetryableError,
-  getErrorCode,
-  getErrorType,
-  createErrorResult,
-  GateError,
-  GateTimeoutError,
-  GateExecutionError,
-  GateValidationError,
-  GateConfigurationError,
-  GateDependencyError,
-  GateCancellationError,
-  GateResourceError,
-  GateErrorType,
-} from '../../src/error-handler';
+import { describe, it, expect } from 'vitest';
+
+import { handleGateError, isGateError, isRetryableError, getErrorCode, getErrorType, createErrorResult, GateTimeoutError, GateExecutionError, GateValidationError, GateConfigurationError, GateDependencyError, GateCancellationError, GateResourceError, GateErrorType } from '../../src/error-handler';
 import { SimpleGateRunner, CompositeGateRunner } from '../../src/GateRunner';
 import type { SimpleGateDefinition, CompositeGateDefinition } from '../../src/types';
 
@@ -39,7 +25,7 @@ import type { SimpleGateDefinition, CompositeGateDefinition } from '../../src/ty
 const NUM_ITERATIONS = 100;
 
 describe('Property: Error Handling - Error Classification', () => {
-  
+
   describe('Error Type Detection', () => {
     /**
      * Property: handleGateError correctly classifies timeout errors
@@ -56,7 +42,7 @@ describe('Property: Error Handling - Error Classification', () => {
               operation,
               timeoutMs
             });
-            
+
             expect(result).toBeInstanceOf(GateTimeoutError);
             expect(result.gateId).toBe(gateId);
             expect((result as GateTimeoutError).operation).toBe(operation);
@@ -83,7 +69,7 @@ describe('Property: Error Handling - Error Classification', () => {
               configPath,
               configValue
             });
-            
+
             expect(result).toBeInstanceOf(GateConfigurationError);
             expect(result.gateId).toBe(gateId);
             expect((result as GateConfigurationError).configPath).toBe(configPath);
@@ -107,7 +93,7 @@ describe('Property: Error Handling - Error Classification', () => {
             const result = handleGateError(error, gateId, 'simple', {
               missingDependencies: dependencies
             });
-            
+
             expect(result).toBeInstanceOf(GateDependencyError);
             expect(result.gateId).toBe(gateId);
             expect((result as GateDependencyError).missingDependencies).toEqual(dependencies);
@@ -131,7 +117,7 @@ describe('Property: Error Handling - Error Classification', () => {
             const result = handleGateError(error, gateId, 'simple', {
               validationErrors
             });
-            
+
             expect(result).toBeInstanceOf(GateValidationError);
             expect(result.gateId).toBe(gateId);
             expect((result as GateValidationError).validationErrors).toEqual(validationErrors);
@@ -159,7 +145,7 @@ describe('Property: Error Handling - Error Classification', () => {
               resourceLimit: limit,
               currentUsage: usage
             });
-            
+
             expect(result).toBeInstanceOf(GateResourceError);
             expect(result.gateId).toBe(gateId);
             expect((result as GateResourceError).resourceType).toBe(resourceType);
@@ -185,7 +171,7 @@ describe('Property: Error Handling - Error Classification', () => {
             const result = handleGateError(error, gateId, 'simple', {
               cancellationReason: reason
             });
-            
+
             expect(result).toBeInstanceOf(GateCancellationError);
             expect(result.gateId).toBe(gateId);
             expect((result as GateCancellationError).cancellationReason).toBe(reason);
@@ -209,7 +195,7 @@ describe('Property: Error Handling - Error Classification', () => {
           fc.integer({ min: 100, max: 60000 }),
           (gateId, operation, timeoutMs) => {
             const error = new GateTimeoutError({ gateId, operation, timeoutMs });
-            
+
             expect(error.message).toContain(gateId);
             expect(error.message).toContain(operation);
             expect(error.message).toContain(String(timeoutMs));
@@ -231,7 +217,7 @@ describe('Property: Error Handling - Error Classification', () => {
           fc.array(fc.string({ minLength: 1, maxLength: 50 }), { minLength: 1, maxLength: 5 }),
           (gateId, errors) => {
             const error = new GateValidationError({ gateId, validationErrors: errors });
-            
+
             for (const err of errors) {
               expect(error.message).toContain(err);
             }
@@ -253,7 +239,7 @@ describe('Property: Error Handling - Error Classification', () => {
           fc.oneof(fc.integer(), fc.string(), fc.boolean()),
           (gateId, configPath, configValue) => {
             const error = new GateConfigurationError({ gateId, configPath, configValue });
-            
+
             expect(error.message).toContain(configPath);
             expect(error.message).toContain(JSON.stringify(configValue));
             return true;
@@ -273,7 +259,7 @@ describe('Property: Error Handling - Error Classification', () => {
           fc.array(fc.string({ minLength: 1, maxLength: 20 }), { minLength: 1, maxLength: 5 }),
           (gateId, deps) => {
             const error = new GateDependencyError({ gateId, missingDependencies: deps });
-            
+
             for (const dep of deps) {
               expect(error.message).toContain(dep);
             }
@@ -298,7 +284,7 @@ describe('Property: Error Handling - Error Classification', () => {
             const error = new GateResourceError({
               gateId, resourceType, resourceLimit: limit, currentUsage: usage
             });
-            
+
             expect(error.message).toContain(resourceType);
             expect(error.message).toContain(String(limit));
             expect(error.message).toContain(String(usage));
@@ -443,25 +429,25 @@ describe('Property: Error Handling - Error Classification', () => {
           (gateId) => {
             const timeoutError = new GateTimeoutError({ gateId, operation: 'check', timeoutMs: 5000 });
             expect(getErrorCode(timeoutError)).toBe('GATE_TIMEOUT');
-            
+
             const execError = new GateExecutionError({ gateId, gateType: 'simple' });
             expect(getErrorCode(execError)).toBe('GATE_EXECUTION_ERROR');
-            
+
             const validationError = new GateValidationError({ gateId, validationErrors: ['error'] });
             expect(getErrorCode(validationError)).toBe('GATE_VALIDATION_ERROR');
-            
+
             const configError = new GateConfigurationError({ gateId, configPath: 'path', configValue: 'value' });
             expect(getErrorCode(configError)).toBe('GATE_CONFIGURATION_ERROR');
-            
+
             const depError = new GateDependencyError({ gateId, missingDependencies: ['dep'] });
             expect(getErrorCode(depError)).toBe('GATE_DEPENDENCY_ERROR');
-            
+
             const cancelError = new GateCancellationError({ gateId, cancellationReason: 'reason' });
             expect(getErrorCode(cancelError)).toBe('GATE_CANCELLATION_ERROR');
-            
+
             const resourceError = new GateResourceError({ gateId, resourceType: 'memory', resourceLimit: 100, currentUsage: 200 });
             expect(getErrorCode(resourceError)).toBe('GATE_RESOURCE_ERROR');
-            
+
             return true;
           }
         ),
@@ -479,25 +465,25 @@ describe('Property: Error Handling - Error Classification', () => {
           (gateId) => {
             const timeoutError = new GateTimeoutError({ gateId, operation: 'check', timeoutMs: 5000 });
             expect(getErrorType(timeoutError)).toBe(GateErrorType.TIMEOUT_ERROR);
-            
+
             const execError = new GateExecutionError({ gateId, gateType: 'simple' });
             expect(getErrorType(execError)).toBe(GateErrorType.EXECUTION_ERROR);
-            
+
             const validationError = new GateValidationError({ gateId, validationErrors: ['error'] });
             expect(getErrorType(validationError)).toBe(GateErrorType.VALIDATION_ERROR);
-            
+
             const configError = new GateConfigurationError({ gateId, configPath: 'path', configValue: 'value' });
             expect(getErrorType(configError)).toBe(GateErrorType.CONFIGURATION_ERROR);
-            
+
             const depError = new GateDependencyError({ gateId, missingDependencies: ['dep'] });
             expect(getErrorType(depError)).toBe(GateErrorType.DEPENDENCY_ERROR);
-            
+
             const cancelError = new GateCancellationError({ gateId, cancellationReason: 'reason' });
             expect(getErrorType(cancelError)).toBe(GateErrorType.CANCELLATION_ERROR);
-            
+
             const resourceError = new GateResourceError({ gateId, resourceType: 'memory', resourceLimit: 100, currentUsage: 200 });
             expect(getErrorType(resourceError)).toBe(GateErrorType.RESOURCE_ERROR);
-            
+
             return true;
           }
         ),
@@ -519,7 +505,7 @@ describe('Property: Error Handling - Error Classification', () => {
           (gateId, errorMessage, gateType) => {
             const error = new Error(errorMessage);
             const result = createErrorResult(error, gateId, gateType);
-            
+
             expect(result.passed).toBe(false);
             expect(result.reason).toBeDefined();
             expect(result.details).toBeDefined();
@@ -529,7 +515,7 @@ describe('Property: Error Handling - Error Classification', () => {
             expect(result.details.retryable).toBeDefined();
             expect(result.details.suggestion).toBeDefined();
             expect(result.details.timestamp).toBeDefined();
-            
+
             return true;
           }
         ),
@@ -553,43 +539,43 @@ describe('Property: Error Handling - Error Classification', () => {
             expect(timeoutJson.name).toBe('GateTimeoutError');
             expect(timeoutJson.operation).toBe('check');
             expect(timeoutJson.timeoutMs).toBe(5000);
-            
+
             // Execution error
             const execError = new GateExecutionError({ gateId, gateType: 'simple', originalError: new Error('test') });
             const execJson = execError.toJSON();
             expect(execJson.name).toBe('GateExecutionError');
             expect(execJson.gateType).toBe('simple');
-            
+
             // Validation error
             const validationError = new GateValidationError({ gateId, validationErrors: ['error1', 'error2'] });
             const validationJson = validationError.toJSON();
             expect(validationJson.name).toBe('GateValidationError');
             expect(validationJson.validationErrors).toEqual(['error1', 'error2']);
-            
+
             // Configuration error
             const configError = new GateConfigurationError({ gateId, configPath: 'path', configValue: 'value' });
             const configJson = configError.toJSON();
             expect(configJson.name).toBe('GateConfigurationError');
             expect(configJson.configPath).toBe('path');
-            
+
             // Dependency error
             const depError = new GateDependencyError({ gateId, missingDependencies: ['dep1'] });
             const depJson = depError.toJSON();
             expect(depJson.name).toBe('GateDependencyError');
             expect(depJson.missingDependencies).toEqual(['dep1']);
-            
+
             // Cancellation error
             const cancelError = new GateCancellationError({ gateId, cancellationReason: 'reason' });
             const cancelJson = cancelError.toJSON();
             expect(cancelJson.name).toBe('GateCancellationError');
             expect(cancelJson.cancellationReason).toBe('reason');
-            
+
             // Resource error
             const resourceError = new GateResourceError({ gateId, resourceType: 'memory', resourceLimit: 100, currentUsage: 200 });
             const resourceJson = resourceError.toJSON();
             expect(resourceJson.name).toBe('GateResourceError');
             expect(resourceJson.resourceType).toBe('memory');
-            
+
             return true;
           }
         ),
@@ -627,10 +613,10 @@ describe('Property: Error Handling - Error Classification', () => {
           (gateId) => {
             const nullResult = handleGateError(null, gateId, 'simple');
             expect(nullResult).toBeInstanceOf(GateExecutionError);
-            
+
             const undefinedResult = handleGateError(undefined, gateId, 'simple');
             expect(undefinedResult).toBeInstanceOf(GateExecutionError);
-            
+
             return true;
           }
         ),
@@ -654,7 +640,7 @@ describe('Property: Error Handling - Error Classification', () => {
           ),
           (gateId, value) => {
             if (value === null || value === undefined) return true;
-            
+
             const result = handleGateError(value, gateId, 'simple');
             expect(result).toBeInstanceOf(GateExecutionError);
             return true;
@@ -681,7 +667,7 @@ describe('Property: Error Handling - Error Classification', () => {
               'simple'
             );
             expect(validationError).toBeInstanceOf(GateValidationError);
-            
+
             // Configuration pattern
             const configError = handleGateError(
               new Error('Configuration error: invalid value'),
@@ -689,7 +675,7 @@ describe('Property: Error Handling - Error Classification', () => {
               'simple'
             );
             expect(configError).toBeInstanceOf(GateConfigurationError);
-            
+
             // Dependency pattern
             const depError = handleGateError(
               new Error('Missing dependency: module-x'),
@@ -697,7 +683,7 @@ describe('Property: Error Handling - Error Classification', () => {
               'simple'
             );
             expect(depError).toBeInstanceOf(GateDependencyError);
-            
+
             // Resource pattern
             const resourceError = handleGateError(
               new Error('Resource limit exceeded'),
@@ -705,7 +691,7 @@ describe('Property: Error Handling - Error Classification', () => {
               'simple'
             );
             expect(resourceError).toBeInstanceOf(GateResourceError);
-            
+
             return true;
           }
         ),
@@ -726,13 +712,13 @@ describe('Property: Error Handling - Error Classification', () => {
             const gateError = new GateTimeoutError({ gateId, operation: 'check', timeoutMs: 5000 });
             const regularError = new Error('Regular error');
             const stringError = 'string error';
-            
+
             expect(isGateError(gateError)).toBe(true);
             expect(isGateError(regularError)).toBe(false);
             expect(isGateError(stringError)).toBe(false);
             expect(isGateError(null)).toBe(false);
             expect(isGateError(undefined)).toBe(false);
-            
+
             return true;
           }
         ),
@@ -755,17 +741,17 @@ describe('Property: Error Handling - Error Classification', () => {
               type: 'simple',
               id: gateId,
               name: 'Test Gate',
-              checkFn: async () => {
+              checkFn:  () => { return promiseFromSync(() => {
                 throw new Error(errorMessage);
-              }
+              }); }
             };
-            
+
             const runner = new SimpleGateRunner(gateDefinition);
             const result = runner.check();
-            
+
             // The result should be a Promise
             expect(result).toBeInstanceOf(Promise);
-            
+
             return true;
           }
         ),
@@ -794,14 +780,14 @@ describe('Property: Error Handling - Error Classification', () => {
               type: 'simple' as const,
               id: child.id,
               name: `Child ${index}`,
-              checkFn: async () => {
+              checkFn:  () => { return promiseFromSync(() => {
                 if (child.shouldFail) {
                   throw new Error(`Child ${index} failed`);
                 }
                 return { passed: true, reason: `Child ${index} passed` };
-              }
+              }); }
             }));
-            
+
             const compositeGate: CompositeGateDefinition = {
               type: 'composite',
               id: compositeId,
@@ -810,12 +796,12 @@ describe('Property: Error Handling - Error Classification', () => {
               failPolicy,
               children: childGates
             };
-            
+
             const runner = new CompositeGateRunner(compositeGate);
             const result = runner.check();
-            
+
             expect(result).toBeInstanceOf(Promise);
-            
+
             return true;
           }
         ),
@@ -830,21 +816,21 @@ describe('Error Handling Edge Cases - Unit Tests', () => {
    * Edge Case: Circular reference in error
    */
   it('should handle errors with circular references', async () => {
-    const circularError: any = new Error('Circular error');
+    const circularError: Error & { self?: Error } = new Error('Circular error');
     circularError.self = circularError;
-    
+
     const gateDefinition: SimpleGateDefinition = {
       type: 'simple',
       id: 'circular-test',
       name: 'Circular Test',
-      checkFn: async () => {
+      checkFn:  () => { return promiseFromSync(() => {
         throw circularError;
-      }
+      }); }
     };
-    
+
     const runner = new SimpleGateRunner(gateDefinition);
     const result = await runner.check();
-    
+
     expect(result.passed).toBe(false);
     expect(result.details?.code).toBe('GATE_EXECUTION_ERROR');
   });
@@ -854,19 +840,19 @@ describe('Error Handling Edge Cases - Unit Tests', () => {
    */
   it('should handle very long error messages', async () => {
     const longMessage = 'x'.repeat(10000);
-    
+
     const gateDefinition: SimpleGateDefinition = {
       type: 'simple',
       id: 'long-message-test',
       name: 'Long Message Test',
-      checkFn: async () => {
+      checkFn:  () => { return promiseFromSync(() => {
         throw new Error(longMessage);
-      }
+      }); }
     };
-    
+
     const runner = new SimpleGateRunner(gateDefinition);
     const result = await runner.check();
-    
+
     expect(result.passed).toBe(false);
     expect(result.details?.code).toBe('GATE_EXECUTION_ERROR');
   });
@@ -876,19 +862,19 @@ describe('Error Handling Edge Cases - Unit Tests', () => {
    */
   it('should handle special characters in error messages', async () => {
     const specialMessage = 'Error with <xml> & "quotes" and unicode: 你好 🎉';
-    
+
     const gateDefinition: SimpleGateDefinition = {
       type: 'simple',
       id: 'special-char-test',
       name: 'Special Char Test',
-      checkFn: async () => {
+      checkFn:  () => { return promiseFromSync(() => {
         throw new Error(specialMessage);
-      }
+      }); }
     };
-    
+
     const runner = new SimpleGateRunner(gateDefinition);
     const result = await runner.check();
-    
+
     expect(result.passed).toBe(false);
     expect(result.reason).toContain(specialMessage);
   });
@@ -901,14 +887,14 @@ describe('Error Handling Edge Cases - Unit Tests', () => {
       type: 'simple',
       id: 'empty-message-test',
       name: 'Empty Message Test',
-      checkFn: async () => {
+      checkFn:  () => { return promiseFromSync(() => {
         throw new Error('');
-      }
+      }); }
     };
-    
+
     const runner = new SimpleGateRunner(gateDefinition);
     const result = await runner.check();
-    
+
     expect(result.passed).toBe(false);
   });
 
@@ -920,14 +906,16 @@ describe('Error Handling Edge Cases - Unit Tests', () => {
       type: 'simple',
       id: 'non-error-test',
       name: 'Non Error Test',
-      checkFn: async () => {
-        throw { message: 'Not an Error', code: 123 };
-      }
+      checkFn:  () => { return promiseFromSync(() => {
+        // An untyped external boundary may supply an opaque non-Error failure.
+        const externalFailure: unknown = { message: 'Not an Error', code: 123 };
+        throw externalFailure;
+      }); }
     };
-    
+
     const runner = new SimpleGateRunner(gateDefinition);
     const result = await runner.check();
-    
+
     expect(result.passed).toBe(false);
     expect(result.details?.code).toBe('GATE_EXECUTION_ERROR');
   });
@@ -940,14 +928,17 @@ describe('Error Handling Edge Cases - Unit Tests', () => {
       type: 'simple',
       id: 'promise-rejection-test',
       name: 'Promise Rejection Test',
-      checkFn: async () => {
-        return Promise.reject('string rejection');
-      }
+      checkFn: () => promiseFromSync(() => {
+        // Preserve the actual primitive failure received from an untyped boundary.
+        const externalFailure: unknown = 'string rejection';
+        throw externalFailure;
+      })
     };
-    
+
     const runner = new SimpleGateRunner(gateDefinition);
     const result = await runner.check();
-    
+
     expect(result.passed).toBe(false);
+    expect(result.reason).toContain('string rejection');
   });
 });

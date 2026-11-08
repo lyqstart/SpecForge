@@ -1,3 +1,4 @@
+import { promiseFromSync } from '@specforge/types';
 /**
  * HTTP Server unit tests
  */
@@ -21,10 +22,13 @@ class HTTPTestDaemonConfig extends DaemonConfig {
     super([]);
     const runtime = path.join(root, 'specforge-user', 'runtime');
     this.resolver = {
-      resolveProjectRuntimeDir: (projectPath) => path.join(projectPath, '.specforge', 'runtime'),
-      resolveStatePath: (projectPath) => path.join(projectPath, '.specforge', 'runtime', 'state.json'),
-      resolveEventsPath: (projectPath) => path.join(projectPath, '.specforge', 'runtime', 'events.jsonl'),
-      resolveSessionsDir: (projectPath) => path.join(projectPath, '.specforge', 'runtime', 'sessions'),
+      resolveProjectRuntimeDir: projectPath => path.join(projectPath, '.specforge', 'runtime'),
+      resolveStatePath: projectPath =>
+        path.join(projectPath, '.specforge', 'runtime', 'state.json'),
+      resolveEventsPath: projectPath =>
+        path.join(projectPath, '.specforge', 'runtime', 'events.jsonl'),
+      resolveSessionsDir: projectPath =>
+        path.join(projectPath, '.specforge', 'runtime', 'sessions'),
       resolveDaemonRuntimeDir: () => runtime,
       resolveHandshakePath: () => path.join(runtime, 'handshake.json'),
       resolveDaemonJsonPath: () => path.join(root, 'opencode', 'daemon.json'),
@@ -33,9 +37,15 @@ class HTTPTestDaemonConfig extends DaemonConfig {
     };
   }
 
-  override getPathResolver(): IPathResolver { return this.resolver; }
-  override getRuntimeDir(): string { return this.resolver.resolveDaemonRuntimeDir(); }
-  override getHandshakeFile(): string { return this.resolver.resolveHandshakePath(); }
+  override getPathResolver(): IPathResolver {
+    return this.resolver;
+  }
+  override getRuntimeDir(): string {
+    return this.resolver.resolveDaemonRuntimeDir();
+  }
+  override getHandshakeFile(): string {
+    return this.resolver.resolveHandshakePath();
+  }
 }
 
 describe('HTTPServer', () => {
@@ -70,7 +80,7 @@ describe('HTTPServer', () => {
 
   it('should return 401 for missing authorization', async () => {
     await server.start();
-    
+
     // This test would require a full HTTP client setup
     // For now, just verify the server starts
     expect(server).toBeDefined();
@@ -78,7 +88,7 @@ describe('HTTPServer', () => {
 
   it('should broadcast events to SSE clients', async () => {
     await server.start();
-    
+
     // This test would require SSE client setup
     // For now, just verify the method exists
     expect(typeof server.broadcastEvent).toBe('function');
@@ -92,34 +102,41 @@ describe('LLM Kernel production HTTP boundary', () => {
     const adapter: LLMKernelAdapter = {
       version: 'test',
       compatibleKernelRange: '>=1.14.0 <2.0.0',
-      spawnAgent: vi.fn(async () => ({ sessionId: 'oc-session-1' })),
-      getSession: vi.fn(async (sessionId: string) => ({
-        sessionId,
-        status: 'active' as const,
-        createdAt: new Date(0),
-        lastActivityAt: new Date(0),
-      })),
-      cancelSession: vi.fn(async () => undefined),
-      sendPrompt: vi.fn(async () => undefined),
+      spawnAgent: vi.fn(() => promiseFromSync(() => ({ sessionId: 'oc-session-1' }))),
+      getSession: vi.fn((sessionId: string) =>
+        promiseFromSync(() => ({
+          sessionId,
+          status: 'active' as const,
+          createdAt: new Date(0),
+          lastActivityAt: new Date(0),
+        }))
+      ),
+      cancelSession: vi.fn(() => promiseFromSync(() => undefined)),
+      sendPrompt: vi.fn(() => promiseFromSync(() => undefined)),
       subscribeEvents: vi.fn(() => ({
-        async *[Symbol.asyncIterator]() { /* empty test stream */ },
+        async *[Symbol.asyncIterator]() {
+          /* empty test stream */
+        },
       })),
-      getCapabilities: vi.fn(async () => ({
-        streaming: true,
-        maxContextLength: 1,
-        tools: true,
-        vision: false,
-        functionCalling: true,
-        outputFormats: ['text' as const],
-      })),
+      getCapabilities: vi.fn(() =>
+        promiseFromSync(() => ({
+          streaming: true,
+          maxContextLength: 1,
+          tools: true,
+          vision: false,
+          functionCalling: true,
+          outputFormats: ['text' as const],
+        }))
+      ),
     };
     const server = new HTTPServer({
       config,
       eventBus: new EventBus(),
-      stateManager: undefined as never,
-      wal: undefined as never,
+      stateManager: undefined,
+      wal: undefined,
       llmKernelAdapter: adapter,
     });
+    const spawnAgent = vi.spyOn(adapter, 'spawnAgent');
     server.setToken('kernel-test-token');
     try {
       const { port } = await server.start();
@@ -132,8 +149,11 @@ describe('LLM Kernel production HTTP boundary', () => {
         body: JSON.stringify({ agentRole: 'dev', spawnIntentId: 'intent-1', cwd: 'D:/project' }),
       });
       expect(response.status).toBe(201);
-      expect(await response.json()).toMatchObject({ success: true, data: { sessionId: 'oc-session-1' } });
-      expect(adapter.spawnAgent).toHaveBeenCalledWith({
+      expect(await response.json()).toMatchObject({
+        success: true,
+        data: { sessionId: 'oc-session-1' },
+      });
+      expect(spawnAgent).toHaveBeenCalledWith({
         agentRole: 'dev',
         spawnIntentId: 'intent-1',
         cwd: 'D:/project',
@@ -200,8 +220,8 @@ describe('CAS compression for oversized payloads', () => {
     const failingDeps: HTTPServerDeps = {
       config,
       eventBus,
-      stateManager: undefined as any,
-      wal: undefined as any,
+      stateManager: undefined,
+      wal: undefined,
     };
     server = new HTTPServer(failingDeps);
     server.setToken(token);
@@ -209,7 +229,11 @@ describe('CAS compression for oversized payloads', () => {
 
     // Replace the internal CAS with a failing one
     (server as any).cas = {
-      store: async () => { throw new Error('CAS disk full'); },
+      store: () => {
+        return promiseFromSync(() => {
+          throw new Error('CAS disk full');
+        });
+      },
     };
 
     const largeData = 'y'.repeat(65 * 1024);
@@ -296,7 +320,11 @@ describe('CAS compression for oversized payloads', () => {
     await server.start();
 
     // JSON without "data" field, padded to > 64 KiB
-    const payload = JSON.stringify({ sessionId: 's5', type: 'tool.invoked', bigField: 'a'.repeat(65 * 1024) });
+    const payload = JSON.stringify({
+      sessionId: 's5',
+      type: 'tool.invoked',
+      bigField: 'a'.repeat(65 * 1024),
+    });
 
     const result = await makeRequestToServer(server, {
       method: 'POST',
@@ -319,7 +347,12 @@ describe('CAS compression for oversized payloads', () => {
 describe('replaceDataWithCasRef pure function', () => {
   it('should replace data field with CAS reference', () => {
     const bodyJson = { sessionId: 'test', type: 'tool.invoked', data: 'original-big-data' };
-    const casRef = { type: 'cas-blob' as const, hash: 'abc123', size: 65537, reference: 'blob://abc123' };
+    const casRef = {
+      type: 'cas-blob' as const,
+      hash: 'abc123',
+      size: 65537,
+      reference: 'blob://abc123',
+    };
 
     const result = replaceDataWithCasRef(bodyJson, casRef);
     const parsed = JSON.parse(result);
@@ -377,9 +410,9 @@ function makeRequestToServer(
         method: options.method,
         headers: options.headers,
       },
-      (res) => {
+      res => {
         let body = '';
-        res.on('data', (chunk) => {
+        res.on('data', chunk => {
           body += chunk;
         });
         res.on('end', () => {

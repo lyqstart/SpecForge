@@ -1,15 +1,15 @@
 /**
  * Terminal States for Async Commands
- * 
+ *
  * Defines the terminal state set for asynchronous commands in the CLI.
  * Terminal states are states that a job will not transition out of once reached.
- * 
+ *
  * @packageDocumentation
  */
 
 /**
  * Terminal state constants for async commands
- * 
+ *
  * These represent the final states that an async job can reach:
  * - `completed`: Job finished successfully
  * - `failed`: Job encountered an error and failed
@@ -44,10 +44,10 @@ export const TERMINAL_STATE_VALUES: readonly TerminalState[] = [
 
 /**
  * Check if a given state is a terminal state
- * 
+ *
  * @param state - The state to check
  * @returns true if the state is terminal, false otherwise
- * 
+ *
  * @example
  * ```typescript
  * isTerminalState('completed'); // true
@@ -60,10 +60,10 @@ export function isTerminalState(state: string): state is TerminalState {
 
 /**
  * Validate that a state is a valid terminal state
- * 
+ *
  * @param state - The state to validate
  * @throws {Error} If the state is not a valid terminal state
- * 
+ *
  * @example
  * ```typescript
  * validateTerminalState('completed'); // OK
@@ -81,7 +81,7 @@ export function validateTerminalState(state: string): asserts state is TerminalS
 
 /**
  * Get all valid terminal states
- * 
+ *
  * @returns Array of all valid terminal state values
  */
 export function getAllTerminalStates(): readonly TerminalState[] {
@@ -90,7 +90,7 @@ export function getAllTerminalStates(): readonly TerminalState[] {
 
 /**
  * Check if a state represents a successful completion
- * 
+ *
  * @param state - The state to check
  * @returns true if the state represents success, false otherwise
  */
@@ -100,7 +100,7 @@ export function isSuccessfulTerminalState(state: TerminalState): boolean {
 
 /**
  * Check if a state represents a failure
- * 
+ *
  * @param state - The state to check
  * @returns true if the state represents failure, false otherwise
  */
@@ -110,7 +110,7 @@ export function isFailureTerminalState(state: TerminalState): boolean {
 
 /**
  * Check if a state represents user cancellation
- * 
+ *
  * @param state - The state to check
  * @returns true if the state represents cancellation, false otherwise
  */
@@ -120,7 +120,7 @@ export function isCancelledTerminalState(state: TerminalState): boolean {
 
 /**
  * Get a human-readable description of a terminal state
- * 
+ *
  * @param state - The terminal state
  * @returns Human-readable description
  */
@@ -134,8 +134,9 @@ export function getTerminalStateDescription(state: TerminalState): string {
       return 'Job was cancelled';
     case TERMINAL_STATES.TIMEOUT:
       return 'Job exceeded the maximum execution time';
-    default:
+    default: {
       const _exhaustive: never = state;
       return _exhaustive;
+    }
   }
 }

@@ -25,10 +25,7 @@ export class SkillLoader {
    * Load skills for a given phase transition
    * Called by WorkflowEngine after a state transition
    */
-  async loadSkillsForPhase(
-    workflowId: string,
-    phase: string,
-  ): Promise<Map<string, string>> {
+  async loadSkillsForPhase(workflowId: string, phase: string): Promise<Map<string, string>> {
     const loaded = await this.registry.loadPhaseSkills(workflowId, phase);
 
     // Emit skill.loaded events for each loaded skill

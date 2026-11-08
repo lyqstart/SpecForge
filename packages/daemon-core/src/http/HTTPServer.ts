@@ -1,9 +1,11 @@
+import type { SessionRegistry } from '../session/SessionRegistry';
+import { promiseFromSync } from '@specforge/types';
 /**
  * HTTP/SSE Server implementation
- * 
+ *
  * Handles HTTP/1.1 requests with Bearer Token authentication
  * and Server-Sent Events (SSE) for real-time updates.
- * 
+ *
  * Features:
  * - Route registration with exact and prefix matching
  * - /health endpoint with uptime tracking
@@ -17,9 +19,12 @@ import * as http from 'http';
 import { DaemonConfig } from '../daemon/DaemonConfig';
 import { EventBus } from '../event-bus/EventBus';
 import {
-  Event, DaemonError,
-  StateReadRequest, StateTransitionRequest,
-  EventLogRequest, EventQueryRequest,
+  Event,
+  DaemonError,
+  StateReadRequest,
+  StateTransitionRequest,
+  EventLogRequest,
+  EventQueryRequest,
 } from '../types';
 import { ToolInvokeRequest as DispatcherRequest } from '../tools';
 import { ContentAddressableStorage, CASBlobReference } from '../cas';
@@ -28,7 +33,10 @@ import { WAL } from '../wal/WAL';
 import { ToolDispatcher } from '../tools';
 import { WALWriteError } from '../session/SessionRegistry';
 import { ensureProjectInit } from '../tools/lib/sf_project_init_core';
-import { reconstructInitialization, type ReconstructionInput } from '../tools/lib/project-init-reconstruction';
+import {
+  reconstructInitialization,
+  type ReconstructionInput,
+} from '../tools/lib/project-init-reconstruction';
 import { CONTROLLED_HTTP_TOOLS } from '../tools/lib/controlled-http-tools';
 import { performChangedFilesAudit, type WriteGuardContext } from '../tools/lib/write-guard-v11';
 import { isCandidateFrozenState } from '../tools/lib/candidate-freeze-v11';
@@ -58,18 +66,18 @@ function isWALWriteError(err: unknown): err is WALWriteError {
 function buildToolCallRecord(
   sessionId: string,
   data: unknown,
-  ts: number,
+  ts: number
 ): Record<string, unknown> {
   const payload = (data ?? {}) as Record<string, unknown>;
   return {
     timestamp: ts ? new Date(ts).toISOString() : new Date().toISOString(),
     tool: payload.tool ?? '',
-    arguments: (payload.arguments ?? payload.args ?? {}) as Record<string, unknown>,
-    exit_code: payload.exit_code as number | undefined,
-    status: payload.status as string | undefined,
+    arguments: payload.arguments ?? payload.args ?? {},
+    exit_code: payload.exit_code,
+    status: payload.status,
     result: payload.result,
     session_id: sessionId,
-    call_id: payload.call_id as string | undefined,
+    call_id: payload.call_id,
   };
 }
 
@@ -82,17 +90,17 @@ function buildConversationRecord(
   eventType: string,
   sessionId: string,
   data: unknown,
-  ts: number,
+  ts: number
 ): Record<string, unknown> {
   const payload = (data ?? {}) as Record<string, unknown>;
   return {
     type: eventType,
     timestamp: ts ? new Date(ts).toISOString() : new Date().toISOString(),
     session_id: sessionId,
-    role: payload.role as string | undefined,
-    content: (payload.content ?? (typeof payload === 'object' ? JSON.stringify(payload) : undefined)) as string | undefined,
-    tool_name: payload.tool_name as string | undefined,
-    status: payload.status as string | undefined,
+    role: payload.role,
+    content: payload.content ?? (typeof payload === 'object' ? JSON.stringify(payload) : undefined),
+    tool_name: payload.tool_name,
+    status: payload.status,
   };
 }
 
@@ -102,20 +110,34 @@ function buildConversationRecord(
  */
 export function replaceDataWithCasRef(
   bodyJson: Record<string, unknown>,
-  casRef: CASBlobReference,
+  casRef: CASBlobReference
 ): string {
   return JSON.stringify({ ...bodyJson, data: casRef });
+}
+
+function isHttpRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 export interface HTTPServerDeps {
   config: DaemonConfig;
   eventBus: EventBus;
-  stateManager: StateManager;
-  wal: WAL;
+  /** Shared daemon has no business-global state/WAL; project owners supply them when needed. */
+  stateManager?: StateManager;
+  wal?: WAL;
   projectManager?: any;
   workflowEngine?: any;
   eventLogger?: any;
-  sessionRegistry?: any;
+  sessionRegistry?: Partial<
+    Pick<
+      SessionRegistry,
+      | 'getActiveSessionCount'
+      | 'listSessions'
+      | 'registerPluginSession'
+      | 'handleOpenCodeEvent'
+      | 'getProjectPath'
+    >
+  >;
   recoverySubsystem?: any;
   toolDispatcher?: ToolDispatcher;
   toolCallsLogger?: JsonlAppender;
@@ -132,7 +154,12 @@ export interface RouteMatch {
 }
 
 export interface RouteHandler {
-  (req: http.IncomingMessage, res: http.ServerResponse, body: string, match: RouteMatch): void | Promise<void>;
+  (
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string,
+    match: RouteMatch
+  ): void | Promise<void>;
 }
 
 interface RouteEntry {
@@ -168,7 +195,11 @@ export class HTTPServer {
 
   // SSE
   private sseClients: Map<string, http.ServerResponse> = new Map();
-  private sseSubscription: { topic: string; handler: (event: Event) => void; unsubscribe: () => void } | null = null;
+  private sseSubscription: {
+    topic: string;
+    handler: (event: Event) => void;
+    unsubscribe: () => void;
+  } | null = null;
   private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
   private readonly SSE_HEARTBEAT_INTERVAL = 30_000;
   private boundUncaughtHandler: ((err: Error) => void) | null = null;
@@ -198,7 +229,7 @@ export class HTTPServer {
 
   /**
    * Set the bearer token for authentication
-   * 
+   *
    * @param token The token to validate against
    */
   setToken(token: string): void {
@@ -213,7 +244,7 @@ export class HTTPServer {
   private getOrCreateAppender(
     map: Map<string, JsonlAppender>,
     projectPath: string,
-    layoutKey: 'runtimeLogsToolCalls' | 'runtimeLogsConversations',
+    layoutKey: 'runtimeLogsToolCalls' | 'runtimeLogsConversations'
   ): JsonlAppender {
     // Backward compat: if external logger was injected via deps (e.g. tests), use it
     if (layoutKey === 'runtimeLogsToolCalls' && this.deps.toolCallsLogger) {
@@ -225,10 +256,17 @@ export class HTTPServer {
 
     let appender = map.get(projectPath);
     if (!appender) {
-      const fileName = layoutKey === 'runtimeLogsToolCalls' ? 'tool_calls.jsonl' : 'conversations.jsonl';
+      const fileName =
+        layoutKey === 'runtimeLogsToolCalls' ? 'tool_calls.jsonl' : 'conversations.jsonl';
       const filePath = path.join(projectPath, SPEC_DIR_NAME, 'runtime', 'logs', fileName);
-      appender = new JsonlAppender(filePath, { maxFileSize: 10 * 1024 * 1024, maxArchiveFiles: 3, fsync: false });
-      appender.initialize().catch(e => console.warn(`[HTTPServer] Appender init failed for ${filePath}:`, e.message));
+      appender = new JsonlAppender(filePath, {
+        maxFileSize: 10 * 1024 * 1024,
+        maxArchiveFiles: 3,
+        fsync: false,
+      });
+      appender
+        .initialize()
+        .catch(e => console.warn(`[HTTPServer] Appender init failed for ${filePath}:`, e.message));
       map.set(projectPath, appender);
     }
     return appender;
@@ -264,7 +302,7 @@ export class HTTPServer {
 
     return new Promise((resolve, reject) => {
       if (this.server) {
-        this.server.close((err) => {
+        this.server.close(err => {
           if (err) {
             reject(err);
           } else {
@@ -279,10 +317,8 @@ export class HTTPServer {
     });
   }
 
-  broadcastEvent(event: Event): void {
-    if (this.eventBus) {
-      this.eventBus.publish(event);
-    }
+  broadcastEvent(event: Event): Promise<void> {
+    return this.eventBus ? this.eventBus.publish(event) : Promise.resolve();
   }
 
   // ── Route Registration ──
@@ -302,25 +338,53 @@ export class HTTPServer {
     this.addExactRoute('POST', '/api/v1/cas/store', this.handleCasStore.bind(this));
     this.addExactRoute('GET', '/api/v1/cas/retrieve', this.handleCasRetrieve.bind(this));
     this.addExactRoute('GET', '/api/v1/session/list', this.handleSessionList.bind(this));
-    this.addExactRoute('POST', '/api/v1/kernel/session/spawn', this.handleKernelSessionSpawn.bind(this));
-    this.addExactRoute('POST', '/api/v1/kernel/session/prompt', this.handleKernelSessionPrompt.bind(this));
-    this.addExactRoute('POST', '/api/v1/kernel/session/cancel', this.handleKernelSessionCancel.bind(this));
+    this.addExactRoute(
+      'POST',
+      '/api/v1/kernel/session/spawn',
+      this.handleKernelSessionSpawn.bind(this)
+    );
+    this.addExactRoute(
+      'POST',
+      '/api/v1/kernel/session/prompt',
+      this.handleKernelSessionPrompt.bind(this)
+    );
+    this.addExactRoute(
+      'POST',
+      '/api/v1/kernel/session/cancel',
+      this.handleKernelSessionCancel.bind(this)
+    );
     this.addExactRoute('GET', '/api/v1/kernel/session', this.handleKernelSessionGet.bind(this));
     this.addExactRoute('POST', '/api/v1/tool/invoke', this.handleToolInvoke.bind(this));
     this.addExactRoute('POST', '/api/v1/admin/stop', this.handleAdminStop.bind(this));
-    this.addExactRoute('POST', '/api/v1/recovery/project-archive/restore', this.handleProjectArchiveRestore.bind(this));
+    this.addExactRoute(
+      'POST',
+      '/api/v1/recovery/project-archive/restore',
+      this.handleProjectArchiveRestore.bind(this)
+    );
     this.addExactRoute('POST', '/api/v1/ingest/register', this.handleIngestRegister.bind(this));
     this.addExactRoute('POST', '/api/v1/ingest/event', this.handleIngestEvent.bind(this));
 
     // Project lifecycle
-    this.addExactRoute(CONTROLLED_HTTP_TOOLS.sf_project_init.method, CONTROLLED_HTTP_TOOLS.sf_project_init.path, this.handleProjectEnsure.bind(this));
+    this.addExactRoute(
+      CONTROLLED_HTTP_TOOLS.sf_project_init.method,
+      CONTROLLED_HTTP_TOOLS.sf_project_init.path,
+      this.handleProjectEnsure.bind(this)
+    );
 
     // v1.1 API routes — Work Item lifecycle
-    this.addExactRoute('POST', '/api/v1/v11/work-item/create', this.handleV11WorkItemCreate.bind(this));
+    this.addExactRoute(
+      'POST',
+      '/api/v1/v11/work-item/create',
+      this.handleV11WorkItemCreate.bind(this)
+    );
     this.addExactRoute('POST', '/api/v1/v11/gate/run', this.handleV11GateRun.bind(this));
     this.addExactRoute('POST', '/api/v1/v11/merge', this.handleV11Merge.bind(this));
     this.addExactRoute('POST', '/api/v1/v11/decision', this.handleV11Decision.bind(this));
-    this.addExactRoute('POST', '/api/v1/v11/code-permission', this.handleV11CodePermission.bind(this));
+    this.addExactRoute(
+      'POST',
+      '/api/v1/v11/code-permission',
+      this.handleV11CodePermission.bind(this)
+    );
     this.addExactRoute('POST', '/api/v1/v11/rollback', this.handleV11Rollback.bind(this));
     this.addExactRoute('POST', '/api/v1/v11/handoff', this.handleV11Handoff.bind(this));
     this.addExactRoute('POST', '/api/v1/v11/extension', this.handleV11Extension.bind(this));
@@ -329,23 +393,70 @@ export class HTTPServer {
     // v1.1 Write Guard routes
     this.addExactRoute('POST', '/api/v1/v11/write-guard/native', async (_req, res, body) => {
       try {
-        const request = JSON.parse(body);
-        if (typeof request.projectPath !== 'string' || typeof request.tool !== 'string' || !request.args || typeof request.args !== 'object') {
-          this.sendJsonResponse(res, 400, this.errorBody('INVALID_NATIVE_TOOL_REQUEST', 'projectPath/tool/args required'));
+        const request: unknown = JSON.parse(body);
+        if (
+          !isHttpRecord(request) ||
+          typeof request.projectPath !== 'string' ||
+          typeof request.tool !== 'string' ||
+          !isHttpRecord(request.args)
+        ) {
+          this.sendJsonResponse(
+            res,
+            400,
+            this.errorBody('INVALID_NATIVE_TOOL_REQUEST', 'projectPath/tool/args required')
+          );
           return;
         }
-        this.sendJsonResponse(res, 200, this.successBody(await checkNativeTool(this.deps, request.projectPath, request.tool, request.args)));
+        this.sendJsonResponse(
+          res,
+          200,
+          this.successBody(
+            await checkNativeTool(this.deps, request.projectPath, request.tool, request.args)
+          )
+        );
       } catch {
-        this.sendJsonResponse(res, 503, this.errorBody('WRITE_GUARD_UNAVAILABLE', 'Native tool authorization failed'));
+        this.sendJsonResponse(
+          res,
+          503,
+          this.errorBody('WRITE_GUARD_UNAVAILABLE', 'Native tool authorization failed')
+        );
       }
     });
-    this.addExactRoute('POST', '/api/v1/v11/write-guard/check', this.handleV11WriteGuardCheck.bind(this));
-    this.addExactRoute('POST', '/api/v1/v11/write-guard/bash', this.handleV11WriteGuardBash.bind(this));
-    this.addExactRoute('POST', '/api/v1/v11/write-guard/changed-files-audit', this.handleV11WriteGuardAudit.bind(this));
-    this.addExactRoute('POST', '/api/v1/v11/write-guard/escaped-write', this.handleV11WriteGuardEscapedWrite.bind(this));
+    this.addExactRoute(
+      'POST',
+      '/api/v1/v11/write-guard/check',
+      this.handleV11WriteGuardCheck.bind(this)
+    );
+    this.addExactRoute(
+      'POST',
+      '/api/v1/v11/write-guard/bash',
+      this.handleV11WriteGuardBash.bind(this)
+    );
+    this.addExactRoute(
+      'POST',
+      '/api/v1/v11/write-guard/changed-files-audit',
+      this.handleV11WriteGuardAudit.bind(this)
+    );
+    this.addExactRoute(
+      'POST',
+      '/api/v1/v11/write-guard/escaped-write',
+      this.handleV11WriteGuardEscapedWrite.bind(this)
+    );
 
     // Prefix routes for API v1 (fallback)
-    const prefixes = ['state', 'event', 'workflow', 'blob', 'tool', 'ingest', 'cas', 'session', 'kernel', 'admin', 'project'];
+    const prefixes = [
+      'state',
+      'event',
+      'workflow',
+      'blob',
+      'tool',
+      'ingest',
+      'cas',
+      'session',
+      'kernel',
+      'admin',
+      'project',
+    ];
     for (const segment of prefixes) {
       this.addPrefixRoute('GET', `/api/v1/${segment}/`, this.handleApiEndpoint.bind(this));
       this.addPrefixRoute('POST', `/api/v1/${segment}/`, this.handleApiEndpoint.bind(this));
@@ -362,7 +473,10 @@ export class HTTPServer {
     this.prefixRoutes.push({ prefix, method, handler });
   }
 
-  private matchRoute(method: string, pathname: string): { handler: RouteHandler; match: RouteMatch } | null {
+  private matchRoute(
+    method: string,
+    pathname: string
+  ): { handler: RouteHandler; match: RouteMatch } | null {
     // 1. Try exact match
     const entries = this.exactRoutes.get(pathname);
     if (entries) {
@@ -398,13 +512,10 @@ export class HTTPServer {
       chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
     });
 
-    req.on('end', async () => {
-      const body = Buffer.concat(chunks);
-      try {
-        await this.handleRequestWithBody(req, res, body);
-      } catch (err) {
-        this.handleHandlerError(res, err);
-      }
+    req.on('end', () => {
+      promiseFromSync(() => this.handleRequestWithBody(req, res, Buffer.concat(chunks))).catch(
+        (error: unknown) => this.handleHandlerError(res, error)
+      );
     });
 
     req.on('error', () => {
@@ -412,7 +523,11 @@ export class HTTPServer {
     });
   }
 
-  private async handleRequestWithBody(req: http.IncomingMessage, res: http.ServerResponse, rawBody: Buffer): Promise<void> {
+  private async handleRequestWithBody(
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    rawBody: Buffer
+  ): Promise<void> {
     try {
       const method = req.method ?? 'GET';
       const pathname = this.safeGetPathname(req);
@@ -422,7 +537,9 @@ export class HTTPServer {
       if (rawBody.length > maxSize) {
         try {
           rawBody = await this.storeAndReplaceDataField(rawBody, maxSize);
-          console.log(`[PAYLOAD] CAS compression successful, body reduced to ${rawBody.length} bytes`);
+          console.log(
+            `[PAYLOAD] CAS compression successful, body reduced to ${rawBody.length} bytes`
+          );
           // 不 return — 继续正常流程（CORS / Auth / JSON parse / Route match / Handler）
         } catch (err) {
           console.warn(`[PAYLOAD] CAS compression failed: ${(err as Error).message}`);
@@ -444,7 +561,11 @@ export class HTTPServer {
       if (!this.isPublicEndpoint(pathname)) {
         const authResult = this.checkAuth(req);
         if (authResult) {
-          this.sendJsonResponse(res, authResult.statusCode, this.errorBody(authResult.code, authResult.message));
+          this.sendJsonResponse(
+            res,
+            authResult.statusCode,
+            this.errorBody(authResult.code, authResult.message)
+          );
           return;
         }
       }
@@ -457,7 +578,11 @@ export class HTTPServer {
           try {
             JSON.parse(bodyString); // validate JSON
           } catch {
-            this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON in request body'));
+            this.sendJsonResponse(
+              res,
+              400,
+              this.errorBody('INVALID_JSON', 'Invalid JSON in request body')
+            );
             return;
           }
         }
@@ -466,7 +591,11 @@ export class HTTPServer {
       // Route matching
       const matched = this.matchRoute(method, pathname);
       if (!matched) {
-        this.sendJsonResponse(res, 404, this.errorBody('NOT_FOUND', `Route ${method} ${pathname} not found`));
+        this.sendJsonResponse(
+          res,
+          404,
+          this.errorBody('NOT_FOUND', `Route ${method} ${pathname} not found`)
+        );
         return;
       }
 
@@ -497,7 +626,9 @@ export class HTTPServer {
 
   // ── Auth ──
 
-  private checkAuth(req: http.IncomingMessage): { statusCode: number; code: string; message: string } | null {
+  private checkAuth(
+    req: http.IncomingMessage
+  ): { statusCode: number; code: string; message: string } | null {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -539,7 +670,9 @@ export class HTTPServer {
     };
 
     if (this.eventBus) {
-      this.eventBus.publish(event);
+      this.eventBus.publish(event).catch(() => {
+        console.error('[AUTH] Permission denied event persistence failed');
+      });
     }
 
     console.warn(`[AUTH] Permission denied: ${reason} - ${req.method} ${req.url}`);
@@ -561,7 +694,9 @@ export class HTTPServer {
     }
 
     const casRef = await this.cas.store(rawBody);
-    console.log(`[PAYLOAD] Stored oversized payload in CAS: ${casRef.reference} (${rawBody.length} bytes)`);
+    console.log(
+      `[PAYLOAD] Stored oversized payload in CAS: ${casRef.reference} (${rawBody.length} bytes)`
+    );
 
     const compressedBodyString = replaceDataWithCasRef(parsed, casRef);
     const compressedBuffer = Buffer.from(compressedBodyString, 'utf-8');
@@ -627,9 +762,7 @@ export class HTTPServer {
     };
     this.boundUnhandledRejectionHandler = (reason: unknown) => {
       console.error('[FATAL] unhandledRejection:', reason);
-      this.sendFatalErrorToSse(
-        reason instanceof Error ? reason : new Error(String(reason)),
-      );
+      this.sendFatalErrorToSse(reason instanceof Error ? reason : new Error(String(reason)));
     };
     process.on('uncaughtException', this.boundUncaughtHandler);
     process.on('unhandledRejection', this.boundUnhandledRejectionHandler);
@@ -673,7 +806,11 @@ export class HTTPServer {
 
   private handleHandlerError(res: http.ServerResponse, err: unknown): void {
     if (err instanceof DaemonError) {
-      this.sendJsonResponse(res, err.statusCode, this.errorBody(err.code, err.message, err.details));
+      this.sendJsonResponse(
+        res,
+        err.statusCode,
+        this.errorBody(err.code, err.message, err.details)
+      );
     } else if (err instanceof Error) {
       this.sendJsonResponse(res, 500, this.errorBody('INTERNAL_ERROR', err.message));
     } else {
@@ -690,7 +827,7 @@ export class HTTPServer {
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
+      Connection: 'keep-alive',
       'Access-Control-Allow-Origin': '*',
     });
 
@@ -800,12 +937,16 @@ export class HTTPServer {
 
   private handleHealth(_req: http.IncomingMessage, res: http.ServerResponse): void {
     const uptimeSeconds = Math.floor((Date.now() - this.startTime) / 1000);
-    this.sendJsonResponse(res, 200, this.successBody({
-      status: 'ok',
-      service: 'daemon-core',
-      version: this.config.getDaemonVersion(),
-      uptime: uptimeSeconds,
-    }));
+    this.sendJsonResponse(
+      res,
+      200,
+      this.successBody({
+        status: 'ok',
+        service: 'daemon-core',
+        version: this.config.getDaemonVersion(),
+        uptime: uptimeSeconds,
+      })
+    );
   }
 
   /**
@@ -816,26 +957,26 @@ export class HTTPServer {
   private handleHealthZ(_req: http.IncomingMessage, res: http.ServerResponse): void {
     const now = Date.now();
     const uptimeSeconds = Math.floor((now - this.startTime) / 1000);
-    
+
     // Get active client count from session registry if available
     let activeClients = 0;
     let pendingEvents = 0;
     let lastEventTs: number | null = null;
-    
+
     if (this.deps.sessionRegistry) {
       try {
-        activeClients = (this.deps.sessionRegistry as any).getActiveSessionCount?.() ?? 0;
+        activeClients = this.deps.sessionRegistry.getActiveSessionCount?.() ?? 0;
       } catch {
         // Ignore errors
       }
     }
-    
+
     if (this.eventBus) {
       try {
         const bufferedEvents = this.eventBus.getBufferedEvents();
         pendingEvents = bufferedEvents.length;
         if (bufferedEvents.length > 0) {
-          lastEventTs = bufferedEvents[bufferedEvents.length - 1]!.ts;
+          lastEventTs = bufferedEvents[bufferedEvents.length - 1].ts;
         }
       } catch {
         // Ignore errors
@@ -843,9 +984,9 @@ export class HTTPServer {
     }
 
     // Determine status based on current state
-    let status: 'ok' | 'degraded' | 'shutting-down' = 'ok';
+    const status: 'ok' | 'degraded' | 'shutting-down' = 'ok';
     // Note: isShuttingDown would need to be tracked by the daemon
-    
+
     this.sendJsonResponse(res, 200, {
       schema_version: '1.0',
       status,
@@ -860,34 +1001,60 @@ export class HTTPServer {
   }
 
   private handleRoot(_req: http.IncomingMessage, res: http.ServerResponse): void {
-    this.sendJsonResponse(res, 200, this.successBody({
-      status: 'ok',
-      service: 'daemon-core',
-    }));
+    this.sendJsonResponse(
+      res,
+      200,
+      this.successBody({
+        status: 'ok',
+        service: 'daemon-core',
+      })
+    );
   }
 
-  private handleApiEndpoint(req: http.IncomingMessage, res: http.ServerResponse, body: string, match: RouteMatch): void {
-    this.sendJsonResponse(res, 404, this.errorBody('NOT_FOUND', 'No implemented API route matches this request'));
+  private handleApiEndpoint(
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    __body: string,
+    _match: RouteMatch
+  ): void {
+    this.sendJsonResponse(
+      res,
+      404,
+      this.errorBody('NOT_FOUND', 'No implemented API route matches this request')
+    );
   }
 
-  private async handleStateRead(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
-    let request: Partial<StateReadRequest>;
+  private async handleStateRead(
+    _req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
+  ): Promise<void> {
+    let request: Partial<StateReadRequest> & { projectPath?: unknown };
     try {
       request = body ? JSON.parse(body) : {};
     } catch {
-      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON in request body'));
+      this.sendJsonResponse(
+        res,
+        400,
+        this.errorBody('INVALID_JSON', 'Invalid JSON in request body')
+      );
       return;
     }
 
     const wid = request.workItemId;
 
     try {
-      const projectPath = (request as any).projectPath;
-      const manager = typeof projectPath === 'string' && path.isAbsolute(projectPath)
-        ? await this.deps.projectManager?.getProjectStateManager(projectPath)
-        : undefined;
+      const projectPath = request.projectPath;
+      const manager =
+        typeof projectPath === 'string' && path.isAbsolute(projectPath)
+          ? await this.deps.projectManager?.getProjectStateManager(projectPath)
+          : undefined;
       if (!manager) {
-        this.sendJsonResponse(res, 400, this.errorBody('PROJECT_CONTEXT_REQUIRED', 'Provide an absolute projectPath'));
+        this.sendJsonResponse(
+          res,
+          400,
+          this.errorBody('PROJECT_CONTEXT_REQUIRED', 'Provide an absolute projectPath')
+        );
         return;
       }
       await manager.rebuildState?.();
@@ -896,7 +1063,11 @@ export class HTTPServer {
         return this.sendJsonResponse(res, 200, this.successBody({ workItems: all }));
       }
       if (!wid) {
-        return this.sendJsonResponse(res, 400, this.errorBody('MISSING_FIELDS', 'workItemId required'));
+        return this.sendJsonResponse(
+          res,
+          400,
+          this.errorBody('MISSING_FIELDS', 'workItemId required')
+        );
       }
       const state = await manager.getState(wid);
       if (!state) {
@@ -908,12 +1079,20 @@ export class HTTPServer {
     }
   }
 
-  private async handleStateTransition(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
-    let request: Partial<StateTransitionRequest>;
+  private async handleStateTransition(
+    _req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
+  ): Promise<void> {
+    let request: Partial<StateTransitionRequest> & { projectPath?: unknown };
     try {
       request = body ? JSON.parse(body) : {};
     } catch {
-      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON in request body'));
+      this.sendJsonResponse(
+        res,
+        400,
+        this.errorBody('INVALID_JSON', 'Invalid JSON in request body')
+      );
       return;
     }
 
@@ -921,48 +1100,92 @@ export class HTTPServer {
     const fromState = request.fromState;
     const toState = request.toState;
     if (!workItemId || fromState === undefined || !toState) {
-      this.sendJsonResponse(res, 400, this.errorBody('MISSING_FIELDS', 'workItemId / fromState / toState required'));
+      this.sendJsonResponse(
+        res,
+        400,
+        this.errorBody('MISSING_FIELDS', 'workItemId / fromState / toState required')
+      );
       return;
     }
 
-    if (!this.deps.toolDispatcher || typeof (request as any).projectPath !== 'string' || !path.isAbsolute((request as any).projectPath)) {
-      this.sendJsonResponse(res, 400, this.errorBody('PROJECT_CONTEXT_REQUIRED', 'Controlled state transitions require projectPath and ToolDispatcher'));
+    if (
+      !this.deps.toolDispatcher ||
+      typeof request.projectPath !== 'string' ||
+      !path.isAbsolute(request.projectPath)
+    ) {
+      this.sendJsonResponse(
+        res,
+        400,
+        this.errorBody(
+          'PROJECT_CONTEXT_REQUIRED',
+          'Controlled state transitions require projectPath and ToolDispatcher'
+        )
+      );
       return;
     }
 
     try {
       const result = await this.deps.toolDispatcher.dispatch({
         tool: 'sf_state_transition',
-        args: { work_item_id: workItemId, from_state: fromState, to_state: toState,
-          evidence: (request as any).evidence ?? '', workflow_type: request.workflowType },
-        context: { directory: (request as any).projectPath, agent: 'agent' },
+        args: {
+          work_item_id: workItemId,
+          from_state: fromState,
+          to_state: toState,
+          evidence: (request as any).evidence ?? '',
+          workflow_type: request.workflowType,
+        },
+        context: { directory: request.projectPath, agent: 'agent' },
       });
       if (!result || (result as any).success !== true) {
-        this.sendJsonResponse(res, 409, this.errorBody('TRANSITION_REJECTED', 'Controlled transition did not succeed'));
+        this.sendJsonResponse(
+          res,
+          409,
+          this.errorBody('TRANSITION_REJECTED', 'Controlled transition did not succeed')
+        );
         return;
       }
       this.sendJsonResponse(res, 200, this.successBody(result));
     } catch (err) {
-      this.sendJsonResponse(res, 409, this.errorBody('TRANSITION_REJECTED', (err as Error).message));
+      this.sendJsonResponse(
+        res,
+        409,
+        this.errorBody('TRANSITION_REJECTED', (err as Error).message)
+      );
     }
   }
 
-  private async handleEventLog(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
+  private async handleEventLog(
+    _req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
+  ): Promise<void> {
     let request: Partial<EventLogRequest>;
     try {
       request = body ? JSON.parse(body) : {};
     } catch {
-      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON in request body'));
+      this.sendJsonResponse(
+        res,
+        400,
+        this.errorBody('INVALID_JSON', 'Invalid JSON in request body')
+      );
       return;
     }
 
     if (!request.projectId || !request.action || !request.category) {
-      this.sendJsonResponse(res, 400, this.errorBody('MISSING_FIELDS', 'projectId, action, category required'));
+      this.sendJsonResponse(
+        res,
+        400,
+        this.errorBody('MISSING_FIELDS', 'projectId, action, category required')
+      );
       return;
     }
 
     if (!this.deps.eventLogger) {
-      this.sendJsonResponse(res, 503, this.errorBody('EVENT_LOGGER_UNAVAILABLE', 'Event was not recorded'));
+      this.sendJsonResponse(
+        res,
+        503,
+        this.errorBody('EVENT_LOGGER_UNAVAILABLE', 'Event was not recorded')
+      );
       return;
     }
 
@@ -975,7 +1198,7 @@ export class HTTPServer {
         projectId: request.projectId,
         workItemId: (request as any).workItemId,
         actor: request.actor,
-        category: request.category as any,
+        category: request.category,
         action: request.action,
         payload: request.payload ?? {},
         metadata: {
@@ -984,7 +1207,7 @@ export class HTTPServer {
         },
       };
 
-      await (this.deps.eventLogger as any).append(event);
+      await this.deps.eventLogger.append(event);
 
       if (this.eventBus) {
         await this.eventBus.publish(event);
@@ -996,16 +1219,33 @@ export class HTTPServer {
     }
   }
 
-  private handleEventQuery(_req: http.IncomingMessage, res: http.ServerResponse, body: string): void {
+  private handleEventQuery(
+    _req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
+  ): void {
     let request: Partial<EventQueryRequest>;
     try {
       request = body ? JSON.parse(body) : {};
     } catch {
-      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON in request body'));
+      this.sendJsonResponse(
+        res,
+        400,
+        this.errorBody('INVALID_JSON', 'Invalid JSON in request body')
+      );
       return;
     }
-    console.log(`[API] event/query projectId=${request.projectId ?? '(all)'} action=${request.action ?? '(all)'}`);
-    this.sendJsonResponse(res, 501, this.errorBody('EVENT_QUERY_UNSUPPORTED', 'Use the project event owner; this legacy query endpoint is not implemented'));
+    console.log(
+      `[API] event/query projectId=${request.projectId ?? '(all)'} action=${request.action ?? '(all)'}`
+    );
+    this.sendJsonResponse(
+      res,
+      501,
+      this.errorBody(
+        'EVENT_QUERY_UNSUPPORTED',
+        'Use the project event owner; this legacy query endpoint is not implemented'
+      )
+    );
   }
 
   private handleCasStore(_req: http.IncomingMessage, res: http.ServerResponse, body: string): void {
@@ -1017,37 +1257,61 @@ export class HTTPServer {
     const url = new URL(req.url ?? '/', `http://localhost:${this.port ?? 0}`);
     const hash = url.searchParams.get('hash') ?? '';
     console.log(`[API] cas/retrieve hash=${hash || '(not provided)'}`);
-    this.sendJsonResponse(res, 501, this.errorBody('CAS_API_UNSUPPORTED', 'No content was retrieved'));
+    this.sendJsonResponse(
+      res,
+      501,
+      this.errorBody('CAS_API_UNSUPPORTED', 'No content was retrieved')
+    );
   }
 
   private handleSessionList(_req: http.IncomingMessage, res: http.ServerResponse): void {
     console.log('[API] session/list');
     if (!this.deps.sessionRegistry?.listSessions) {
-      this.sendJsonResponse(res, 503, this.errorBody('SESSION_REGISTRY_UNAVAILABLE', 'Session list is unavailable'));
+      this.sendJsonResponse(
+        res,
+        503,
+        this.errorBody('SESSION_REGISTRY_UNAVAILABLE', 'Session list is unavailable')
+      );
       return;
     }
-    this.sendJsonResponse(res, 200, this.successBody({ sessions: this.deps.sessionRegistry.listSessions() }));
+    this.sendJsonResponse(
+      res,
+      200,
+      this.successBody({ sessions: this.deps.sessionRegistry.listSessions() })
+    );
   }
 
   private async handleKernelSessionSpawn(
     _req: http.IncomingMessage,
     res: http.ServerResponse,
-    body: string,
+    body: string
   ): Promise<void> {
     const adapter = this.deps.llmKernelAdapter;
     if (!adapter) {
-      this.sendJsonResponse(res, 503, this.errorBody('LLM_KERNEL_UNAVAILABLE', 'LLM kernel adapter is not configured'));
+      this.sendJsonResponse(
+        res,
+        503,
+        this.errorBody('LLM_KERNEL_UNAVAILABLE', 'LLM kernel adapter is not configured')
+      );
       return;
     }
     let request: Record<string, unknown>;
     try {
-      request = body ? JSON.parse(body) as Record<string, unknown> : {};
+      request = body ? (JSON.parse(body) as Record<string, unknown>) : {};
     } catch {
-      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON in request body'));
+      this.sendJsonResponse(
+        res,
+        400,
+        this.errorBody('INVALID_JSON', 'Invalid JSON in request body')
+      );
       return;
     }
     if (typeof request.agentRole !== 'string' || typeof request.spawnIntentId !== 'string') {
-      this.sendJsonResponse(res, 400, this.errorBody('INVALID_KERNEL_REQUEST', 'agentRole and spawnIntentId are required'));
+      this.sendJsonResponse(
+        res,
+        400,
+        this.errorBody('INVALID_KERNEL_REQUEST', 'agentRole and spawnIntentId are required')
+      );
       return;
     }
     try {
@@ -1060,29 +1324,45 @@ export class HTTPServer {
       });
       this.sendJsonResponse(res, 201, this.successBody(result));
     } catch (error) {
-      this.sendJsonResponse(res, 502, this.errorBody('LLM_KERNEL_ERROR', error instanceof Error ? error.message : String(error)));
+      this.sendJsonResponse(
+        res,
+        502,
+        this.errorBody('LLM_KERNEL_ERROR', error instanceof Error ? error.message : String(error))
+      );
     }
   }
 
   private async handleKernelSessionPrompt(
     _req: http.IncomingMessage,
     res: http.ServerResponse,
-    body: string,
+    body: string
   ): Promise<void> {
     const adapter = this.deps.llmKernelAdapter;
     if (!adapter) {
-      this.sendJsonResponse(res, 503, this.errorBody('LLM_KERNEL_UNAVAILABLE', 'LLM kernel adapter is not configured'));
+      this.sendJsonResponse(
+        res,
+        503,
+        this.errorBody('LLM_KERNEL_UNAVAILABLE', 'LLM kernel adapter is not configured')
+      );
       return;
     }
     let request: Record<string, unknown>;
     try {
-      request = body ? JSON.parse(body) as Record<string, unknown> : {};
+      request = body ? (JSON.parse(body) as Record<string, unknown>) : {};
     } catch {
-      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON in request body'));
+      this.sendJsonResponse(
+        res,
+        400,
+        this.errorBody('INVALID_JSON', 'Invalid JSON in request body')
+      );
       return;
     }
     if (typeof request.sessionId !== 'string' || typeof request.content !== 'string') {
-      this.sendJsonResponse(res, 400, this.errorBody('INVALID_KERNEL_REQUEST', 'sessionId and content are required'));
+      this.sendJsonResponse(
+        res,
+        400,
+        this.errorBody('INVALID_KERNEL_REQUEST', 'sessionId and content are required')
+      );
       return;
     }
     const role = request.role === 'assistant' || request.role === 'system' ? request.role : 'user';
@@ -1093,74 +1373,129 @@ export class HTTPServer {
     };
     try {
       await adapter.sendPrompt(request.sessionId, message);
-      this.sendJsonResponse(res, 200, this.successBody({ sessionId: request.sessionId, accepted: true }));
+      this.sendJsonResponse(
+        res,
+        200,
+        this.successBody({ sessionId: request.sessionId, accepted: true })
+      );
     } catch (error) {
-      this.sendJsonResponse(res, 502, this.errorBody('LLM_KERNEL_ERROR', error instanceof Error ? error.message : String(error)));
+      this.sendJsonResponse(
+        res,
+        502,
+        this.errorBody('LLM_KERNEL_ERROR', error instanceof Error ? error.message : String(error))
+      );
     }
   }
 
   private async handleKernelSessionCancel(
     _req: http.IncomingMessage,
     res: http.ServerResponse,
-    body: string,
+    body: string
   ): Promise<void> {
     const adapter = this.deps.llmKernelAdapter;
     if (!adapter) {
-      this.sendJsonResponse(res, 503, this.errorBody('LLM_KERNEL_UNAVAILABLE', 'LLM kernel adapter is not configured'));
+      this.sendJsonResponse(
+        res,
+        503,
+        this.errorBody('LLM_KERNEL_UNAVAILABLE', 'LLM kernel adapter is not configured')
+      );
       return;
     }
     let request: Record<string, unknown>;
     try {
-      request = body ? JSON.parse(body) as Record<string, unknown> : {};
+      request = body ? (JSON.parse(body) as Record<string, unknown>) : {};
     } catch {
-      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON in request body'));
+      this.sendJsonResponse(
+        res,
+        400,
+        this.errorBody('INVALID_JSON', 'Invalid JSON in request body')
+      );
       return;
     }
     if (typeof request.sessionId !== 'string') {
-      this.sendJsonResponse(res, 400, this.errorBody('INVALID_KERNEL_REQUEST', 'sessionId is required'));
+      this.sendJsonResponse(
+        res,
+        400,
+        this.errorBody('INVALID_KERNEL_REQUEST', 'sessionId is required')
+      );
       return;
     }
     try {
       await adapter.cancelSession(
         request.sessionId,
-        typeof request.reason === 'string' ? request.reason : 'Cancelled by Daemon client',
+        typeof request.reason === 'string' ? request.reason : 'Cancelled by Daemon client'
       );
-      this.sendJsonResponse(res, 200, this.successBody({ sessionId: request.sessionId, cancelled: true }));
+      this.sendJsonResponse(
+        res,
+        200,
+        this.successBody({ sessionId: request.sessionId, cancelled: true })
+      );
     } catch (error) {
-      this.sendJsonResponse(res, 502, this.errorBody('LLM_KERNEL_ERROR', error instanceof Error ? error.message : String(error)));
+      this.sendJsonResponse(
+        res,
+        502,
+        this.errorBody('LLM_KERNEL_ERROR', error instanceof Error ? error.message : String(error))
+      );
     }
   }
 
-  private async handleKernelSessionGet(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
+  private async handleKernelSessionGet(
+    req: http.IncomingMessage,
+    res: http.ServerResponse
+  ): Promise<void> {
     const adapter = this.deps.llmKernelAdapter;
     if (!adapter) {
-      this.sendJsonResponse(res, 503, this.errorBody('LLM_KERNEL_UNAVAILABLE', 'LLM kernel adapter is not configured'));
+      this.sendJsonResponse(
+        res,
+        503,
+        this.errorBody('LLM_KERNEL_UNAVAILABLE', 'LLM kernel adapter is not configured')
+      );
       return;
     }
     const url = new URL(req.url ?? '/', `http://localhost:${this.port ?? 0}`);
     const sessionId = url.searchParams.get('sessionId');
     if (!sessionId) {
-      this.sendJsonResponse(res, 400, this.errorBody('INVALID_KERNEL_REQUEST', 'sessionId query parameter is required'));
+      this.sendJsonResponse(
+        res,
+        400,
+        this.errorBody('INVALID_KERNEL_REQUEST', 'sessionId query parameter is required')
+      );
       return;
     }
     try {
       const session = await adapter.getSession(sessionId);
       if (!session) {
-        this.sendJsonResponse(res, 404, this.errorBody('KERNEL_SESSION_NOT_FOUND', `Session not found: ${sessionId}`));
+        this.sendJsonResponse(
+          res,
+          404,
+          this.errorBody('KERNEL_SESSION_NOT_FOUND', `Session not found: ${sessionId}`)
+        );
         return;
       }
       this.sendJsonResponse(res, 200, this.successBody(session));
     } catch (error) {
-      this.sendJsonResponse(res, 502, this.errorBody('LLM_KERNEL_ERROR', error instanceof Error ? error.message : String(error)));
+      this.sendJsonResponse(
+        res,
+        502,
+        this.errorBody('LLM_KERNEL_ERROR', error instanceof Error ? error.message : String(error))
+      );
     }
   }
 
-  private async handleToolInvoke(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
+  private async handleToolInvoke(
+    _req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
+  ): Promise<void> {
     let request: Partial<DispatcherRequest>;
     try {
       request = body ? JSON.parse(body) : {};
     } catch {
-      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON in request body'));
+      this.sendJsonResponse(
+        res,
+        400,
+        this.errorBody('INVALID_JSON', 'Invalid JSON in request body')
+      );
       return;
     }
 
@@ -1172,10 +1507,16 @@ export class HTTPServer {
     // Try real dispatcher first
     if (this.deps.toolDispatcher) {
       const controller = new AbortController();
-      const onDisconnect = () => { if (!res.writableEnded) controller.abort(); };
-      _req.once('aborted', onDisconnect); res.once('close', onDisconnect);
+      const onDisconnect = () => {
+        if (!res.writableEnded) controller.abort();
+      };
+      _req.once('aborted', onDisconnect);
+      res.once('close', onDisconnect);
       try {
-        request.context = { ...(request.context ?? {}), [VERIFICATION_REQUEST_ABORT]:controller.signal };
+        request.context = {
+          ...(request.context ?? {}),
+          [VERIFICATION_REQUEST_ABORT]: controller.signal,
+        };
         const result = await this.deps.toolDispatcher.dispatch(request as DispatcherRequest);
         this.sendJsonResponse(res, 200, this.successBody(result));
       } catch (err) {
@@ -1187,12 +1528,19 @@ export class HTTPServer {
         } else {
           this.sendJsonResponse(res, 500, this.errorBody('TOOL_ERROR', msg));
         }
-      } finally { _req.off('aborted', onDisconnect); res.off('close', onDisconnect); }
+      } finally {
+        _req.off('aborted', onDisconnect);
+        res.off('close', onDisconnect);
+      }
       return;
     }
 
     // Fallback placeholder
-    this.sendJsonResponse(res, 501, this.errorBody('NOT_IMPLEMENTED', `Tool dispatch not available for ${request.tool}`));
+    this.sendJsonResponse(
+      res,
+      501,
+      this.errorBody('NOT_IMPLEMENTED', `Tool dispatch not available for ${request.tool}`)
+    );
   }
 
   private handleAdminStop(_req: http.IncomingMessage, res: http.ServerResponse): void {
@@ -1201,7 +1549,7 @@ export class HTTPServer {
       this.sendJsonResponse(
         res,
         503,
-        this.errorBody('DAEMON_SHUTDOWN_UNAVAILABLE', 'Daemon shutdown owner is not configured'),
+        this.errorBody('DAEMON_SHUTDOWN_UNAVAILABLE', 'Daemon shutdown owner is not configured')
       );
       return;
     }
@@ -1215,7 +1563,9 @@ export class HTTPServer {
   }
 
   private async handleIngestRegister(
-    _req: http.IncomingMessage, res: http.ServerResponse, body: string
+    _req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
   ): Promise<void> {
     let request: { projectPath?: string };
     try {
@@ -1225,7 +1575,11 @@ export class HTTPServer {
     }
 
     if (!request.projectPath) {
-      return this.sendJsonResponse(res, 400, this.errorBody('MISSING_PROJECT_PATH', 'projectPath required'));
+      return this.sendJsonResponse(
+        res,
+        400,
+        this.errorBody('MISSING_PROJECT_PATH', 'projectPath required')
+      );
     }
 
     try {
@@ -1233,26 +1587,40 @@ export class HTTPServer {
       // schema prechecks accept the project. Initialization belongs to the
       // explicit /project/ensure owner; a rejected plugin registration must
       // never seed modules or normalize formal Project Spec files.
-      const ctx = await (this.deps.projectManager as any).registerProject(request.projectPath);
-      const identity = await (this.deps.sessionRegistry as any).registerPluginSession(ctx.projectId, request.projectPath);
-      this.sendJsonResponse(res, 200, this.successBody({
-        sessionId: identity.sessionId,
-        projectId: ctx.projectId,
-        mode: this.config.getMode(),
-      }));
+      const ctx = await this.deps.projectManager.registerProject(request.projectPath);
+      const registerSession = this.deps.sessionRegistry?.registerPluginSession;
+      if (!registerSession) throw new Error('SESSION_REGISTRATION_OWNER_UNAVAILABLE');
+      const identity = await registerSession.call(
+        this.deps.sessionRegistry,
+        ctx.projectId,
+        request.projectPath
+      );
+      this.sendJsonResponse(
+        res,
+        200,
+        this.successBody({
+          sessionId: identity.sessionId,
+          projectId: ctx.projectId,
+          mode: this.config.getMode(),
+        })
+      );
     } catch (err) {
       // B2: Handle PROJECT_NOT_INITIALIZED
       if ((err as Error).message === 'PROJECT_NOT_INITIALIZED') {
         this.sendJsonResponse(res, 409, {
           error: 'PROJECT_NOT_INITIALIZED',
-          message: '项目未初始化。请由 sf-orchestrator 使用受控 sf_project_init 完成初始化，再注册；不要手工创建或修复 Project Spec、Manifest 或 Runtime 状态。',
+          message:
+            '项目未初始化。请由 sf-orchestrator 使用受控 sf_project_init 完成初始化，再注册；不要手工创建或修复 Project Spec、Manifest 或 Runtime 状态。',
           projectPath: request.projectPath,
         });
         return;
       }
       if (isWALWriteError(err)) {
         res.setHeader('Retry-After', '5');
-        this.sendJsonResponse(res, 503, { error: 'WAL_WRITE_FAILED', message: 'WAL write failed — event not accepted. Please retry.' });
+        this.sendJsonResponse(res, 503, {
+          error: 'WAL_WRITE_FAILED',
+          message: 'WAL write failed — event not accepted. Please retry.',
+        });
       } else {
         this.sendJsonResponse(res, 500, this.errorBody('REGISTER_FAILED', (err as Error).message));
       }
@@ -1266,11 +1634,18 @@ export class HTTPServer {
    * 执行幂等初始化：遍历 LAYOUT，补齐缺失的目录和文件。
    */
   private async handleProjectEnsure(
-    _req: http.IncomingMessage, res: http.ServerResponse, body: string
+    _req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
   ): Promise<void> {
-    let request: { projectPath?: string; projectName?: string; action?: string; reconstruction?: ReconstructionInput };
+    let request: {
+      projectPath?: string;
+      projectName?: string;
+      action?: string;
+      reconstruction?: ReconstructionInput;
+    };
     try {
-      request = JSON.parse(body || "{}");
+      request = JSON.parse(body || '{}');
     } catch {
       return this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON'));
     }
@@ -1282,14 +1657,19 @@ export class HTTPServer {
         if (!request.reconstruction) throw new Error('RECOVERY_INPUT_REQUIRED');
         const reconstruction = request.reconstruction;
         const result = this.deps.projectManager?.withProjectOperation
-          ? await this.deps.projectManager.withProjectOperation(projectPath, () => reconstructInitialization(projectPath, reconstruction))
+          ? await this.deps.projectManager.withProjectOperation(projectPath, () =>
+              reconstructInitialization(projectPath, reconstruction)
+            )
           : await reconstructInitialization(projectPath, reconstruction);
         this.sendJsonResponse(res, 200, this.successBody(result));
         return;
       }
-      if (request.action && request.action !== 'ensure') throw new Error('UNKNOWN_PROJECT_INIT_ACTION');
+      if (request.action && request.action !== 'ensure')
+        throw new Error('UNKNOWN_PROJECT_INIT_ACTION');
       const result = this.deps.projectManager?.withProjectOperation
-        ? await this.deps.projectManager.withProjectOperation(projectPath, () => ensureProjectInit(projectPath, request.projectName))
+        ? await this.deps.projectManager.withProjectOperation(projectPath, () =>
+            ensureProjectInit(projectPath, request.projectName)
+          )
         : await ensureProjectInit(projectPath, request.projectName);
       this.sendJsonResponse(res, 200, this.successBody(result));
     } catch (err) {
@@ -1298,22 +1678,49 @@ export class HTTPServer {
   }
 
   /** Authenticated operator recovery. Deliberately absent from Agent Tool registries. */
-  private async handleProjectArchiveRestore(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
+  private async handleProjectArchiveRestore(
+    _req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
+  ): Promise<void> {
     let input;
-    try { input = JSON.parse(body); }
-    catch { return this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON')); }
-    if (!input || typeof input.project_path !== 'string' || !input.project_path) {
-      return this.sendJsonResponse(res, 400, this.errorBody('ARCHIVE_RECOVERY_INPUT_REQUIRED', 'project_path required'));
+    try {
+      input = JSON.parse(body);
+    } catch {
+      return this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON'));
     }
-    if (!this.deps.recoverySubsystem?.restoreProjectArchive || !this.deps.projectManager?.withProjectArchiveRecovery) {
-      return this.sendJsonResponse(res, 503, this.errorBody('ARCHIVE_RECOVERY_UNAVAILABLE', 'Recovery owner or project exclusion unavailable'));
+    if (!input || typeof input.project_path !== 'string' || !input.project_path) {
+      return this.sendJsonResponse(
+        res,
+        400,
+        this.errorBody('ARCHIVE_RECOVERY_INPUT_REQUIRED', 'project_path required')
+      );
+    }
+    if (
+      !this.deps.recoverySubsystem?.restoreProjectArchive ||
+      !this.deps.projectManager?.withProjectArchiveRecovery
+    ) {
+      return this.sendJsonResponse(
+        res,
+        503,
+        this.errorBody(
+          'ARCHIVE_RECOVERY_UNAVAILABLE',
+          'Recovery owner or project exclusion unavailable'
+        )
+      );
     }
     try {
-      const result = await this.deps.projectManager.withProjectArchiveRecovery(input.project_path,
-        () => this.deps.recoverySubsystem.restoreProjectArchive(input));
+      const result = await this.deps.projectManager.withProjectArchiveRecovery(
+        input.project_path,
+        () => this.deps.recoverySubsystem.restoreProjectArchive(input)
+      );
       this.sendJsonResponse(res, 200, this.successBody(result));
     } catch (error) {
-      this.sendJsonResponse(res, 409, this.errorBody('ARCHIVE_RECOVERY_BLOCKED', (error as Error).message));
+      this.sendJsonResponse(
+        res,
+        409,
+        this.errorBody('ARCHIVE_RECOVERY_BLOCKED', (error as Error).message)
+      );
     }
   }
 
@@ -1321,13 +1728,15 @@ export class HTTPServer {
 
   /**
    * Handle POST /api/v1/ingest/event
-   * 
+   *
    * Parses the event request, validates JSON, and routes to the appropriate
    * subsystem handler based on event type.  Satisfies CP-4: must return an
    * HTTP response within 15 s even when subsystems fail or time out.
    */
   private async handleIngestEvent(
-    _req: http.IncomingMessage, res: http.ServerResponse, body: string
+    _req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
   ): Promise<void> {
     let request: { sessionId?: string; type?: string; data?: unknown; ts?: number };
     try {
@@ -1351,13 +1760,16 @@ export class HTTPServer {
     };
 
     let overallTimer: ReturnType<typeof setTimeout> | undefined;
-    const overallTimeout = new Promise<void>((resolve) => {
+    const overallTimeout = new Promise<void>(resolve => {
       overallTimer = setTimeout(() => {
-        respond(200, this.successBody({
-          received: true,
-          type: request.type ?? 'unknown',
-          warning: 'Event processing timed out',
-        }));
+        respond(
+          200,
+          this.successBody({
+            received: true,
+            type: request.type ?? 'unknown',
+            warning: 'Event processing timed out',
+          })
+        );
         resolve();
       }, 15_000);
     });
@@ -1365,22 +1777,31 @@ export class HTTPServer {
     const processing = (async () => {
       try {
         const extra = await this.routeIngestEvent(request);
-        respond(200, this.successBody({
-          received: true,
-          type: request.type ?? 'unknown',
-          ...(extra ?? {}),
-        }));
-    } catch (err) {
-        if (isWALWriteError(err)) {
-          res.setHeader('Retry-After', '5');
-          respond(503, { error: 'WAL_WRITE_FAILED', message: 'WAL write failed — event not accepted. Please retry.' });
-        } else {
-          console.error(`[INGEST] Failed to process ${request.type}:`, err);
-          respond(200, this.successBody({
+        respond(
+          200,
+          this.successBody({
             received: true,
             type: request.type ?? 'unknown',
-            warning: `Event logged but processing failed: ${(err as Error).message}`,
-          }));
+            ...(extra ?? {}),
+          })
+        );
+      } catch (err) {
+        if (isWALWriteError(err)) {
+          res.setHeader('Retry-After', '5');
+          respond(503, {
+            error: 'WAL_WRITE_FAILED',
+            message: 'WAL write failed — event not accepted. Please retry.',
+          });
+        } else {
+          console.error(`[INGEST] Failed to process ${request.type}:`, err);
+          respond(
+            200,
+            this.successBody({
+              received: true,
+              type: request.type ?? 'unknown',
+              warning: `Event logged but processing failed: ${(err as Error).message}`,
+            })
+          );
         }
       }
     })();
@@ -1394,13 +1815,16 @@ export class HTTPServer {
 
   /**
    * Route an ingest event to the appropriate subsystem handler.
-   * 
+   *
    * Returns optional extra data to merge into the HTTP response.
    * Performs event normalization to handle both flat events and OpenCode envelope format.
    */
-  private async routeIngestEvent(
-    request: { sessionId?: string; type?: string; data?: unknown; ts?: number }
-  ): Promise<Record<string, unknown> | undefined> {
+  private async routeIngestEvent(request: {
+    sessionId?: string;
+    type?: string;
+    data?: unknown;
+    ts?: number;
+  }): Promise<Record<string, unknown> | undefined> {
     let sessionId = request.sessionId ?? '';
     let type = request.type ?? '';
     let data = request.data;
@@ -1417,7 +1841,9 @@ export class HTTPServer {
         if (envelope.data && typeof envelope.data === 'object') {
           const inner = envelope.data as Record<string, unknown>;
           if (typeof inner.type === 'string') {
-            console.warn(`[INGEST] Normalized envelope event: ${inner.type} (plugin needs upgrade)`);
+            console.warn(
+              `[INGEST] Normalized envelope event: ${inner.type} (plugin needs upgrade)`
+            );
             type = inner.type;
             data = inner;
             if (inner.properties && typeof inner.properties === 'object') {
@@ -1427,11 +1853,15 @@ export class HTTPServer {
               }
             }
           } else {
-            console.warn(`[INGEST] Non-string event type received (typeof ${typeof request.type}), cannot normalize — ignoring`);
+            console.warn(
+              `[INGEST] Non-string event type received (typeof ${typeof request.type}), cannot normalize — ignoring`
+            );
             return undefined;
           }
         } else {
-          console.warn(`[INGEST] Non-string event type received (typeof ${typeof request.type}), ignoring: ${JSON.stringify(type).slice(0, 200)}`);
+          console.warn(
+            `[INGEST] Non-string event type received (typeof ${typeof request.type}), ignoring: ${JSON.stringify(type).slice(0, 200)}`
+          );
           return undefined;
         }
       } else {
@@ -1484,9 +1914,7 @@ export class HTTPServer {
    * Handle tool.invoked events — log via EventLogger.
    * Timeout: 3 s. On timeout → lose this log entry (non-critical path).
    */
-  private async handleToolInvoked(
-    sessionId: string, data: unknown, ts: number
-  ): Promise<void> {
+  private async handleToolInvoked(sessionId: string, data: unknown, ts: number): Promise<void> {
     const payload = (data ?? {}) as Record<string, unknown>;
     try {
       await this.withTimeout(
@@ -1500,12 +1928,17 @@ export class HTTPServer {
             payload: { ...payload, sessionId },
             metadata: { schemaVersion: '1.0', source: 'client' },
           });
-          const projectPath = this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? process.cwd();
-          const appender = this.getOrCreateAppender(this.toolCallsAppenders, projectPath, 'runtimeLogsToolCalls');
+          const projectPath =
+            this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? process.cwd();
+          const appender = this.getOrCreateAppender(
+            this.toolCallsAppenders,
+            projectPath,
+            'runtimeLogsToolCalls'
+          );
           await appender.append(buildToolCallRecord(sessionId, payload, ts));
         })(),
         3_000,
-        undefined,
+        undefined
       );
     } catch {
       // Non-blocking: lose this log entry
@@ -1516,22 +1949,25 @@ export class HTTPServer {
    * Handle opencode.event — route to SessionRegistry.handleOpenCodeEvent.
    * Timeout: 2 s. On timeout → record WARNING.
    */
-  private async handleOpenCodeEvent(
-    sessionId: string, data: unknown, _ts: number
-  ): Promise<void> {
+  private async handleOpenCodeEvent(sessionId: string, data: unknown, _ts: number): Promise<void> {
     const payload = (data ?? {}) as { subType?: string; type?: string } & Record<string, unknown>;
     // OpenCode events use `type` field (e.g. "session.created"); support `subType` as fallback
-    const subType = (payload as any).type ?? payload.subType ?? 'unknown';
+    const eventType: unknown = payload.type ?? payload.subType ?? 'unknown';
+    if (typeof eventType !== 'string') throw new Error('INGEST_EVENT_TYPE_STRING_REQUIRED');
+    const subType = eventType;
     try {
-      await this.deps.sessionRegistry?.handleOpenCodeEvent?.(
-        subType,
-        { ...payload, sessionId: payload.sessionId ?? sessionId },
-      );
+      await this.deps.sessionRegistry?.handleOpenCodeEvent?.(subType, {
+        ...payload,
+        sessionId: payload.sessionId ?? sessionId,
+      });
     } catch (err) {
       if (isWALWriteError(err)) {
         throw err; // propagate to handleIngestEvent for 503 response
       }
-      console.warn(`[INGEST] SessionRegistry.handleOpenCodeEvent error for session ${sessionId}:`, err);
+      console.warn(
+        `[INGEST] SessionRegistry.handleOpenCodeEvent error for session ${sessionId}:`,
+        err
+      );
     }
   }
 
@@ -1540,7 +1976,9 @@ export class HTTPServer {
    * Timeout: 10 s. On timeout → record ERROR (do not block session compaction).
    */
   private async handleSessionCompacting(
-    sessionId: string, data: unknown, _ts: number
+    sessionId: string,
+    data: unknown,
+    _ts: number
   ): Promise<void> {
     try {
       await this.withTimeout(
@@ -1548,21 +1986,20 @@ export class HTTPServer {
           const projectPath = this.deps.sessionRegistry?.getProjectPath?.(sessionId);
           if (!projectPath) {
             console.error(
-              `[INGEST] Refusing checkpoint for session ${sessionId}: no project binding`,
+              `[INGEST] Refusing checkpoint for session ${sessionId}: no project binding`
             );
             return;
           }
-          await this.deps.recoverySubsystem?.saveCheckpoint?.(
-            sessionId,
-            data,
-            projectPath,
-          );
+          await this.deps.recoverySubsystem?.saveCheckpoint?.(sessionId, data, projectPath);
         })(),
         10_000,
-        undefined,
+        undefined
       );
     } catch (err) {
-      console.error(`[INGEST] RecoverySubsystem.saveCheckpoint error for session ${sessionId}:`, err);
+      console.error(
+        `[INGEST] RecoverySubsystem.saveCheckpoint error for session ${sessionId}:`,
+        err
+      );
     }
   }
 
@@ -1570,9 +2007,7 @@ export class HTTPServer {
    * Handle chat.params events — log via EventLogger.
    * Timeout: 3 s. On timeout → lose this log entry.
    */
-  private async handleChatParams(
-    sessionId: string, data: unknown, ts: number
-  ): Promise<void> {
+  private async handleChatParams(sessionId: string, data: unknown, ts: number): Promise<void> {
     try {
       await this.withTimeout(
         (async () => {
@@ -1585,12 +2020,17 @@ export class HTTPServer {
             payload: { params: data, sessionId },
             metadata: { schemaVersion: '1.0', source: 'client' },
           });
-          const projectPath = this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? process.cwd();
-          const appender = this.getOrCreateAppender(this.conversationsAppenders, projectPath, 'runtimeLogsConversations');
+          const projectPath =
+            this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? process.cwd();
+          const appender = this.getOrCreateAppender(
+            this.conversationsAppenders,
+            projectPath,
+            'runtimeLogsConversations'
+          );
           await appender.append(buildConversationRecord('chat.params', sessionId, data, ts));
         })(),
         3_000,
-        undefined,
+        undefined
       );
     } catch {
       // Non-blocking: lose this log entry
@@ -1607,7 +2047,10 @@ export class HTTPServer {
    * DD-4: record format is consumer-compatible with ToolCallRecord / ConversationMessage.
    */
   private async handleLlmEvent(
-    sessionId: string, eventType: string, data: unknown, ts: number
+    sessionId: string,
+    eventType: string,
+    data: unknown,
+    ts: number
   ): Promise<void> {
     try {
       await this.withTimeout(
@@ -1628,11 +2071,15 @@ export class HTTPServer {
           // 2. Append to conversationsLogger (per-project)
           const record = buildConversationRecord(eventType, sessionId, data, ts);
           const projectPath = projectId || process.cwd();
-          const appender = this.getOrCreateAppender(this.conversationsAppenders, projectPath, 'runtimeLogsConversations');
+          const appender = this.getOrCreateAppender(
+            this.conversationsAppenders,
+            projectPath,
+            'runtimeLogsConversations'
+          );
           await appender.append(record);
         })(),
         3_000,
-        undefined,
+        undefined
       );
     } catch {
       // Non-blocking: lose this log entry
@@ -1643,9 +2090,7 @@ export class HTTPServer {
    * Handle chat.headers events — log via EventLogger.
    * Timeout: 3 s. On timeout → lose this log entry.
    */
-  private async handleChatHeaders(
-    sessionId: string, data: unknown, ts: number
-  ): Promise<void> {
+  private async handleChatHeaders(sessionId: string, data: unknown, ts: number): Promise<void> {
     try {
       await this.withTimeout(
         (async () => {
@@ -1658,12 +2103,17 @@ export class HTTPServer {
             payload: { headers: data, sessionId },
             metadata: { schemaVersion: '1.0', source: 'client' },
           });
-          const projectPath = this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? process.cwd();
-          const appender = this.getOrCreateAppender(this.conversationsAppenders, projectPath, 'runtimeLogsConversations');
+          const projectPath =
+            this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? process.cwd();
+          const appender = this.getOrCreateAppender(
+            this.conversationsAppenders,
+            projectPath,
+            'runtimeLogsConversations'
+          );
           await appender.append(buildConversationRecord('chat.headers', sessionId, data, ts));
         })(),
         3_000,
-        undefined,
+        undefined
       );
     } catch {
       // Non-blocking: lose this log entry
@@ -1674,19 +2124,14 @@ export class HTTPServer {
    * Handle shell.env events — return environment variable key-value pairs.
    * Timeout: 2 s. On timeout → return empty object {}.
    */
-  private async handleShellEnv(
-    sessionId: string, _data: unknown
-  ): Promise<Record<string, string>> {
+  private async handleShellEnv(sessionId: string, _data: unknown): Promise<Record<string, string>> {
     try {
-      return await this.withTimeout(
-        Promise.resolve({
-          SPECFORGE_DAEMON_PORT: String(this.port ?? 0),
-          SPECFORGE_SESSION_ID: sessionId,
-          SPECFORGE_MODE: this.config.getMode(),
-        }),
-        2_000,
-        {} as Record<string, string>,
-      );
+      const variables: Record<string, string> = {
+        SPECFORGE_DAEMON_PORT: String(this.port ?? 0),
+        SPECFORGE_SESSION_ID: sessionId,
+        SPECFORGE_MODE: this.config.getMode(),
+      };
+      return await this.withTimeout(Promise.resolve(variables), 2_000, {});
     } catch {
       return {};
     }
@@ -1704,7 +2149,10 @@ export class HTTPServer {
       const result = await Promise.race([
         promise,
         new Promise<T>((_, reject) => {
-          timer = setTimeout(() => reject(new Error(`HTTP event timeout after ${timeoutMs}ms`)), timeoutMs);
+          timer = setTimeout(
+            () => reject(new Error(`HTTP event timeout after ${timeoutMs}ms`)),
+            timeoutMs
+          );
         }),
       ]);
       return result;
@@ -1729,7 +2177,9 @@ export class HTTPServer {
    * v1.1 POST /api/v1/v11/work-item/create
    */
   private async handleV11WorkItemCreate(
-    req: http.IncomingMessage, res: http.ServerResponse, body: string,
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
   ): Promise<void> {
     const dispatcher = this.deps.toolDispatcher;
     if (!dispatcher) {
@@ -1753,7 +2203,9 @@ export class HTTPServer {
    * v1.1 POST /api/v1/v11/gate/run
    */
   private async handleV11GateRun(
-    req: http.IncomingMessage, res: http.ServerResponse, body: string,
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
   ): Promise<void> {
     const dispatcher = this.deps.toolDispatcher;
     if (!dispatcher) {
@@ -1777,7 +2229,9 @@ export class HTTPServer {
    * v1.1 POST /api/v1/v11/merge
    */
   private async handleV11Merge(
-    req: http.IncomingMessage, res: http.ServerResponse, body: string,
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
   ): Promise<void> {
     const dispatcher = this.deps.toolDispatcher;
     if (!dispatcher) {
@@ -1801,7 +2255,9 @@ export class HTTPServer {
    * v1.1 POST /api/v1/v11/decision
    */
   private async handleV11Decision(
-    req: http.IncomingMessage, res: http.ServerResponse, body: string,
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
   ): Promise<void> {
     const dispatcher = this.deps.toolDispatcher;
     if (!dispatcher) {
@@ -1825,7 +2281,9 @@ export class HTTPServer {
    * v1.1 POST /api/v1/v11/code-permission
    */
   private async handleV11CodePermission(
-    req: http.IncomingMessage, res: http.ServerResponse, body: string,
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
   ): Promise<void> {
     const dispatcher = this.deps.toolDispatcher;
     if (!dispatcher) {
@@ -1856,7 +2314,9 @@ export class HTTPServer {
    * v1.1 POST /api/v1/v11/rollback
    */
   private async handleV11Rollback(
-    req: http.IncomingMessage, res: http.ServerResponse, body: string,
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
   ): Promise<void> {
     const dispatcher = this.deps.toolDispatcher;
     if (!dispatcher) {
@@ -1866,7 +2326,8 @@ export class HTTPServer {
     try {
       const args = JSON.parse(body);
       const result = await dispatcher.dispatch({
-        tool: 'sf_rollback', args,
+        tool: 'sf_rollback',
+        args,
         context: { directory: this.getProjectPathFromRequest(req) },
       });
       this.sendJsonResponse(res, 200, result);
@@ -1879,7 +2340,9 @@ export class HTTPServer {
    * v1.1 POST /api/v1/v11/handoff
    */
   private async handleV11Handoff(
-    req: http.IncomingMessage, res: http.ServerResponse, body: string,
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
   ): Promise<void> {
     const dispatcher = this.deps.toolDispatcher;
     if (!dispatcher) {
@@ -1889,7 +2352,8 @@ export class HTTPServer {
     try {
       const args = JSON.parse(body);
       const result = await dispatcher.dispatch({
-        tool: 'sf_handoff', args,
+        tool: 'sf_handoff',
+        args,
         context: { directory: this.getProjectPathFromRequest(req) },
       });
       this.sendJsonResponse(res, 200, result);
@@ -1902,7 +2366,9 @@ export class HTTPServer {
    * v1.1 POST /api/v1/v11/extension
    */
   private async handleV11Extension(
-    req: http.IncomingMessage, res: http.ServerResponse, body: string,
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
   ): Promise<void> {
     const dispatcher = this.deps.toolDispatcher;
     if (!dispatcher) {
@@ -1912,7 +2378,8 @@ export class HTTPServer {
     try {
       const args = JSON.parse(body);
       const result = await dispatcher.dispatch({
-        tool: 'sf_contract_register', args,
+        tool: 'sf_contract_register',
+        args,
         context: { directory: this.getProjectPathFromRequest(req) },
       });
       this.sendJsonResponse(res, 200, result);
@@ -1925,7 +2392,9 @@ export class HTTPServer {
    * v1.1 POST /api/v1/v11/verification
    */
   private async handleV11Verification(
-    req: http.IncomingMessage, res: http.ServerResponse, body: string,
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
   ): Promise<void> {
     const dispatcher = this.deps.toolDispatcher;
     if (!dispatcher) {
@@ -1935,7 +2404,8 @@ export class HTTPServer {
     try {
       const args = JSON.parse(body);
       const result = await dispatcher.dispatch({
-        tool: 'sf_verification', args,
+        tool: 'sf_verification',
+        args,
         context: { directory: this.getProjectPathFromRequest(req) },
       });
       this.sendJsonResponse(res, 200, result);
@@ -1946,27 +2416,68 @@ export class HTTPServer {
 
   // ── v1.1 Write Guard Routes ──────────────────────────────────────────────────
 
-  private async handleV11WriteGuardCheck(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
+  private async handleV11WriteGuardCheck(
+    _req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
+  ): Promise<void> {
     try {
-      const request = JSON.parse(body);
-      if (typeof request.projectPath !== 'string' || typeof request.targetPath !== 'string') {
-        this.sendJsonResponse(res, 400, this.errorBody('MISSING_PARAMS', 'projectPath and targetPath required'));
+      const request: unknown = JSON.parse(body);
+      if (
+        !isHttpRecord(request) ||
+        typeof request.projectPath !== 'string' ||
+        typeof request.targetPath !== 'string'
+      ) {
+        this.sendJsonResponse(
+          res,
+          400,
+          this.errorBody('MISSING_PARAMS', 'projectPath and targetPath required')
+        );
         return;
       }
-      const result = await checkNativeTool(this.deps, request.projectPath, 'write', { filePath: request.targetPath });
+      const result = await checkNativeTool(this.deps, request.projectPath, 'write', {
+        filePath: request.targetPath,
+      });
       this.sendJsonResponse(res, 200, this.successBody(result));
     } catch {
-      this.sendJsonResponse(res, 503, this.errorBody('WRITE_GUARD_UNAVAILABLE', 'Write was not authorized'));
+      this.sendJsonResponse(
+        res,
+        503,
+        this.errorBody('WRITE_GUARD_UNAVAILABLE', 'Write was not authorized')
+      );
     }
   }
 
-  private async handleV11WriteGuardBash(_req: http.IncomingMessage, res: http.ServerResponse, _body: string): Promise<void> {
-    this.sendJsonResponse(res, 200, this.successBody({ allowed: false,
-      reason: 'NATIVE_SHELL_REQUIRES_CONTROLLED_EXECUTION: sf_safe_bash supports internal reads only; approved verification uses sf_verification_plan / sf_verification_run. Declared filenames cannot constrain arbitrary shell writes; do not retry through another shell or helper.' }));
+  private handleV11WriteGuardBash(
+    _req: http.IncomingMessage,
+    res: http.ServerResponse,
+    _body: string
+  ): Promise<void> {
+    return promiseFromSync(() => {
+      this.sendJsonResponse(
+        res,
+        200,
+        this.successBody({
+          allowed: false,
+          reason:
+            'NATIVE_SHELL_REQUIRES_CONTROLLED_EXECUTION: sf_safe_bash supports internal reads only; approved verification uses sf_verification_plan / sf_verification_run. Declared filenames cannot constrain arbitrary shell writes; do not retry through another shell or helper.',
+        })
+      );
+    });
   }
 
-  private async handleV11WriteGuardAudit(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
-    let request: { command?: string; expectedFiles?: string[]; changedFiles?: Array<{ path: string; operation: string }>; projectPath?: string; tool?: string };
+  private async handleV11WriteGuardAudit(
+    _req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
+  ): Promise<void> {
+    let request: {
+      command?: string;
+      expectedFiles?: string[];
+      changedFiles?: Array<{ path: string; operation: string }>;
+      projectPath?: string;
+      tool?: string;
+    };
     try {
       request = JSON.parse(body);
     } catch {
@@ -1976,68 +2487,112 @@ export class HTTPServer {
 
     const resolvedProjectPath = request.projectPath;
     if (typeof resolvedProjectPath !== 'string' || !path.isAbsolute(resolvedProjectPath)) {
-      this.sendJsonResponse(res, 400, this.errorBody('PROJECT_CONTEXT_REQUIRED', 'Audit was not performed'));
+      this.sendJsonResponse(
+        res,
+        400,
+        this.errorBody('PROJECT_CONTEXT_REQUIRED', 'Audit was not performed')
+      );
       return;
     }
 
     const wiCtx = await this.loadWriteGuardContext(resolvedProjectPath, 'agent');
     if (wiCtx.metadata_error) {
-      this.sendJsonResponse(res, 200, this.successBody({
-        passed: false,
-        escapedWrites: [],
-        violations: [wiCtx.metadata_error],
-      }));
+      this.sendJsonResponse(
+        res,
+        200,
+        this.successBody({
+          passed: false,
+          escapedWrites: [],
+          violations: [wiCtx.metadata_error],
+        })
+      );
       return;
     }
     const allowedWriteFiles = wiCtx.workItem?.allowed_write_files ?? [];
 
     // Use changedFiles if provided, otherwise use expectedFiles as changed
-    const changedFiles = request.changedFiles ?? (request.expectedFiles ?? []).map(f => ({ path: f, operation: 'modify' as const }));
+    const changedFiles =
+      request.changedFiles ??
+      (request.expectedFiles ?? []).map(f => ({ path: f, operation: 'modify' as const }));
 
     const result = performChangedFilesAudit(
       changedFiles as Array<{ path: string; operation: 'create' | 'modify' | 'delete' }>,
       allowedWriteFiles,
-      'agent',
+      'agent'
     );
 
     const escapedWrites = result.entries
       .filter(e => !e.in_allowed_write_files && !e.is_spec_write)
       .map(e => e.path);
 
-    this.sendJsonResponse(res, 200, this.successBody({ passed: result.passed, escapedWrites, violations: result.violations }));
+    this.sendJsonResponse(
+      res,
+      200,
+      this.successBody({ passed: result.passed, escapedWrites, violations: result.violations })
+    );
   }
 
-  private async handleV11WriteGuardEscapedWrite(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
-    let request: { command?: string; expectedFiles?: string[]; escapedWrites?: string[]; timestamp?: string };
-    try {
-      request = JSON.parse(body);
-    } catch {
-      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON body'));
-      return;
-    }
+  private handleV11WriteGuardEscapedWrite(
+    _req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string
+  ): Promise<void> {
+    return promiseFromSync(() => {
+      try {
+        void JSON.parse(body);
+      } catch {
+        this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON body'));
+        return;
+      }
 
-    this.sendJsonResponse(res, 501, this.errorBody('ESCAPED_WRITE_API_UNSUPPORTED', 'Incident was not persisted; use the governed audit tool'));
+      this.sendJsonResponse(
+        res,
+        501,
+        this.errorBody(
+          'ESCAPED_WRITE_API_UNSUPPORTED',
+          'Incident was not persisted; use the governed audit tool'
+        )
+      );
+    });
   }
 
   // The audit consumes the same state owner as native authorization.
-  private async loadWriteGuardContext(projectPath: string, callerRole: string): Promise<HTTPWriteGuardContext> {
+  private async loadWriteGuardContext(
+    projectPath: string,
+    callerRole: string
+  ): Promise<HTTPWriteGuardContext> {
     try {
-      const active = (await readAuthoritativeWorkItems(this.deps, projectPath))
-        .filter(item => !['closed', 'rejected', 'superseded'].includes(item.current_state));
+      const active = (await readAuthoritativeWorkItems(this.deps, projectPath)).filter(
+        item => !['closed', 'rejected', 'superseded'].includes(item.current_state)
+      );
       if (active.length !== 1) throw new Error('UNAMBIGUOUS_ACTIVE_WORK_ITEM_REQUIRED');
       const state = active[0];
-      const wi = await readWorkItemMetadata(path.join(projectPath, SPEC_DIR_NAME, 'work-items', state.work_item_id), state.work_item_id);
+      const wi = await readWorkItemMetadata(
+        path.join(projectPath, SPEC_DIR_NAME, 'work-items', state.work_item_id),
+        state.work_item_id
+      );
       return {
-        hasActiveWI: true, callerRole: callerRole as any, isFrozen: isCandidateFrozenState(state.current_state),
-        workItem: { work_item_id: state.work_item_id, status: state.current_state,
-          code_change_allowed: wi.code_change_allowed === true, code_permission_revoked: wi.code_permission_revoked === true,
-          allowed_write_files: Array.isArray(wi.allowed_write_files) ? wi.allowed_write_files as any : [],
-          workflow_path: typeof wi.workflow_path === 'string' ? wi.workflow_path : null },
+        hasActiveWI: true,
+        callerRole: callerRole as any,
+        isFrozen: isCandidateFrozenState(state.current_state),
+        workItem: {
+          work_item_id: state.work_item_id,
+          status: state.current_state,
+          code_change_allowed: wi.code_change_allowed === true,
+          code_permission_revoked: wi.code_permission_revoked === true,
+          allowed_write_files: Array.isArray(wi.allowed_write_files)
+            ? (wi.allowed_write_files as any)
+            : [],
+          workflow_path: typeof wi.workflow_path === 'string' ? wi.workflow_path : null,
+        },
       };
     } catch (error) {
-      return { hasActiveWI: false, callerRole: callerRole as any, isFrozen: true,
-        metadata_error: error instanceof Error ? error.message : 'AUTHORITATIVE_STATE_UNAVAILABLE' };
+      return {
+        hasActiveWI: false,
+        callerRole: callerRole as any,
+        isFrozen: true,
+        metadata_error: error instanceof Error ? error.message : 'AUTHORITATIVE_STATE_UNAVAILABLE',
+      };
     }
   }
-
 }

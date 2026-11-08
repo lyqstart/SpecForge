@@ -1,4 +1,5 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { promiseFromSync } from '@specforge/types';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 /**
  * rollback-runner-v11 — §16 回滚与 superseded
  *
@@ -12,7 +13,19 @@ import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
  * 7. superseded 状态由 StateManager/WAL 推进；metadata 只记录 superseded_by。
  */
 
-import { readFile, writeFile, mkdir, copyFile } from 'node:fs/promises';
+/**
+ * rollback-runner-v11 — §16 回滚与 superseded
+ *
+ * 规则：
+ * 1. 回滚必须通过新的 rollback WI 完成，不得原地修改旧 WI。
+ * 2. 必须引用被回滚的 work_item_id / project_spec_version。
+ * 3. 必须生成 rollback_plan / rollback_delta / rollback Candidate。
+ * 4. 必须经过 Gate、User Decision、Merge Runner。
+ * 5. project_spec_version 必须递增（不得回退版本）。
+ * 6. 必须修复 Trace。
+ * 7. superseded 状态由 StateManager/WAL 推进；metadata 只记录 superseded_by。
+ */
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { existsSync } from 'node:fs';
 import { readWorkItemMetadata, writeWorkItemMetadata } from './work-item-metadata';
@@ -89,7 +102,9 @@ export async function generateRollbackPlan(params: {
     const mergeReport = await readFile(mergeReportPath, 'utf-8');
     const verdict = evaluateMergeReport(mergeReport, originalWorkItemId);
     if (!verdict.valid || verdict.status !== 'success') {
-      risks.push(`原 WI 的 merge_report.md 无法证明成功合并：${verdict.reason ?? `status=${verdict.status}`}`);
+      risks.push(
+        `原 WI 的 merge_report.md 无法证明成功合并：${verdict.reason ?? `status=${verdict.status}`}`
+      );
     }
   }
 
@@ -147,9 +162,8 @@ export async function generateRollbackPlan(params: {
   const versionNum = parseInt(currentVersion.replace('PSV-', ''), 10);
   const targetVersion = `PSV-${String(versionNum + 1).padStart(4, '0')}`;
 
-  const canAutoRollback = risks.length === 0 &&
-    steps.length > 0 &&
-    steps.every(s => s.operation !== 'manual');
+  const canAutoRollback =
+    risks.length === 0 && steps.length > 0 && steps.every(s => s.operation !== 'manual');
 
   return {
     rollbackWorkItemId,
@@ -167,31 +181,38 @@ export async function generateRollbackPlan(params: {
 /**
  * 生成回滚 delta。
  */
-export async function generateRollbackDelta(params: {
+export function generateRollbackDelta(params: {
   rollbackWorkItemId: string;
   originalWorkItemId: string;
   rollbackPlan: RollbackPlan;
 }): Promise<RollbackDelta> {
-  const { rollbackWorkItemId, originalWorkItemId, rollbackPlan } = params;
+  return promiseFromSync(() => {
+    const { rollbackWorkItemId, originalWorkItemId, rollbackPlan } = params;
 
-  const changes: RollbackDelta['changes'] = rollbackPlan.steps.map(step => ({
-    path: step.targetPath,
-    type: step.operation === 'delete' ? 'deleted' as const :
-          step.operation === 'restore_from_candidate' ? 'restored' as const :
-          step.operation === 'restore_from_backup' ? 'restored' as const :
-          'modified' as const,
-    description: step.description,
-  }));
+    const changes: RollbackDelta['changes'] = rollbackPlan.steps.map(step => ({
+      path: step.targetPath,
+      type:
+        step.operation === 'delete'
+          ? ('deleted' as const)
+          : step.operation === 'restore_from_candidate'
+            ? ('restored' as const)
+            : step.operation === 'restore_from_backup'
+              ? ('restored' as const)
+              : ('modified' as const),
+      description: step.description,
+    }));
 
-  return {
-    workItemId: rollbackWorkItemId,
-    originalWorkItemId,
-    changes,
-    traceImpact: 'modified',
-    traceDescription: `Rollback WI ${rollbackWorkItemId} 回滚 ${originalWorkItemId} 的合并操作。` +
-      `影响 ${changes.length} 个文件。` +
-      `project_spec_version 从 ${rollbackPlan.originalSpecVersion} 递增到 ${rollbackPlan.targetSpecVersion}。`,
-  };
+    return {
+      workItemId: rollbackWorkItemId,
+      originalWorkItemId,
+      changes,
+      traceImpact: 'modified',
+      traceDescription:
+        `Rollback WI ${rollbackWorkItemId} 回滚 ${originalWorkItemId} 的合并操作。` +
+        `影响 ${changes.length} 个文件。` +
+        `project_spec_version 从 ${rollbackPlan.originalSpecVersion} 递增到 ${rollbackPlan.targetSpecVersion}。`,
+    };
+  });
 }
 
 // ── Supersede Original WI ──
@@ -233,7 +254,7 @@ export async function markOriginalSuperseded(params: {
  */
 export async function writeRollbackPlan(
   rollbackWiDir: string,
-  plan: RollbackPlan,
+  plan: RollbackPlan
 ): Promise<string> {
   await mkdir(rollbackWiDir, { recursive: true });
 
@@ -262,14 +283,17 @@ export async function writeRollbackPlan(
     }
   }
 
-  lines.push('', '## Rules (§16.1)', '',
+  lines.push(
+    '',
+    '## Rules (§16.1)',
+    '',
     '1. Must reference original work_item_id and project_spec_version.',
     '2. Must generate rollback_plan, rollback_delta, and rollback Candidate.',
     '3. Must go through Gate → User Decision → Merge Runner.',
     '4. project_spec_version must increment (never decrement).',
     '5. Trace must be repaired.',
     '6. Original WI marked as superseded (not deleted, not closed).',
-    '',
+    ''
   );
 
   const planPath = join(rollbackWiDir, 'rollback_plan.md');
@@ -282,7 +306,7 @@ export async function writeRollbackPlan(
  */
 export async function writeRollbackDelta(
   rollbackWiDir: string,
-  delta: RollbackDelta,
+  delta: RollbackDelta
 ): Promise<string> {
   await mkdir(rollbackWiDir, { recursive: true });
 
@@ -301,10 +325,13 @@ export async function writeRollbackDelta(
     lines.push(`  ${change.description}`);
   }
 
-  lines.push('', '## Trace Impact', '',
+  lines.push(
+    '',
+    '## Trace Impact',
+    '',
     `**Type**: ${delta.traceImpact}`,
     `**Description**: ${delta.traceDescription}`,
-    '',
+    ''
   );
 
   const deltaPath = join(rollbackWiDir, 'rollback_delta.md');

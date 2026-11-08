@@ -15,7 +15,11 @@ export * from './types';
 export * from './errors';
 
 // Export main adapter class
-export { OpenCodeAdapter, SessionInitializationError, PromptDeliveryError } from './OpenCodeAdapter';
+export {
+  OpenCodeAdapter,
+  SessionInitializationError,
+  PromptDeliveryError,
+} from './OpenCodeAdapter';
 
 // Export translators
 export { ContextTranslator } from './translators/ContextTranslator';
@@ -43,7 +47,11 @@ export type {
 } from './version-checker';
 
 // Export integration components (Thin Plugin communication)
-export { ThinPluginClient, ThinPluginClientError, ThinPluginClientErrorCode } from './integration/ThinPluginClient';
+export {
+  ThinPluginClient,
+  ThinPluginClientError,
+  ThinPluginClientErrorCode,
+} from './integration/ThinPluginClient';
 export {
   OpenCodeHttpRuntimeClient,
   OpenCodeRuntimeError,
@@ -72,11 +80,7 @@ export type {
 
 // Export event logger (Task 7.2: Event logging)
 export { EventLogger, createEventLogger } from './event-logger/EventLogger';
-export type {
-  EventLoggerConfig,
-  EventBusLike,
-  DaemonEvent,
-} from './event-logger/EventLogger';
+export type { EventLoggerConfig, EventBusLike, DaemonEvent } from './event-logger/EventLogger';
 
 // Export diagnostics logger (Task 7.3: Diagnostics and logging)
 export { DiagnosticsLogger } from './diagnostics/DiagnosticsLogger';
@@ -101,7 +105,4 @@ export {
   CONFIG_PRIORITY,
   CONFIG_ENV_PREFIX,
 } from './configuration';
-export type {
-  LoadConfigOptions,
-  LoadedConfig,
-} from './configuration';
+export type { LoadConfigOptions, LoadedConfig } from './configuration';

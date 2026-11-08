@@ -40,8 +40,8 @@ export class SkillMatcher {
   static filterMatching(
     skills: SkillDefinition[],
     workflowId: string,
-    phase: string,
+    phase: string
   ): SkillDefinition[] {
-    return skills.filter((skill) => SkillMatcher.match(workflowId, phase, skill));
+    return skills.filter(skill => SkillMatcher.match(workflowId, phase, skill));
   }
 }

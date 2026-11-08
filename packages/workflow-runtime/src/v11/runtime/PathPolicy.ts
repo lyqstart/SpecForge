@@ -246,7 +246,7 @@ export class PathPolicy {
   ];
 
   /** Check if an actor can read the given path */
-  canReadPath(actor: PathCaller, path: string, context?: { workItemId?: string; state?: string }): ValidationResult {
+  canReadPath(actor: PathCaller, path: string, _context?: { workItemId?: string; state?: string }): ValidationResult {
     // First validate basic path syntax
     const syntaxResult = this.validatePath(path);
     if (!syntaxResult.valid) {
@@ -276,7 +276,7 @@ export class PathPolicy {
   }
 
   /** Check if an actor can write to the given path */
-  canWritePath(actor: PathCaller, path: string, context?: { workItemId?: string; state?: string }): ValidationResult {
+  canWritePath(actor: PathCaller, path: string, __context?: { workItemId?: string; state?: string }): ValidationResult {
     // First validate basic path syntax
     const syntaxResult = this.validatePath(path);
     if (!syntaxResult.valid) {

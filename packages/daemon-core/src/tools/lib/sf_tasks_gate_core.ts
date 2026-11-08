@@ -18,13 +18,8 @@ import {
   parseTaskVerification,
   validateTaskArtifactContract,
 } from './sf_markdown_verification_parser';
-import {
-  isTaskCorrectnessPropertyRef,
-  isTaskRequirementRef,
-} from '@specforge/types';
-import {
-  parseAllVerificationStrategies,
-} from './sf_verification_types';
+import { isTaskCorrectnessPropertyRef, isTaskRequirementRef } from '@specforge/types';
+import { parseAllVerificationStrategies } from './sf_verification_types';
 import type { VerificationType, ParsedTaskVerification } from './sf_verification_types';
 
 // Re-export GateResult for convenience
@@ -238,7 +233,7 @@ function findBooleanRecursively(value: unknown, key: string): boolean | undefine
   if (!value || typeof value !== 'object') return undefined;
   if (!Array.isArray(value)) {
     const record = value as Record<string, unknown>;
-    if (typeof record[key] === 'boolean') return record[key] as boolean;
+    if (typeof record[key] === 'boolean') return record[key];
     for (const nested of Object.values(record)) {
       const found = findBooleanRecursively(nested, key);
       if (found !== undefined) return found;
@@ -254,11 +249,17 @@ function findBooleanRecursively(value: unknown, key: string): boolean | undefine
 
 function findMarkdownBoolean(content: string, key: string): boolean | undefined {
   const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const match = new RegExp(`(?:^|\\n)\\s*(?:[-*|]\\s*)?${escaped}\\s*(?::|=|\\|)\\s*(true|false)\\b`, 'i').exec(content);
+  const match = new RegExp(
+    `(?:^|\\n)\\s*(?:[-*|]\\s*)?${escaped}\\s*(?::|=|\\|)\\s*(true|false)\\b`,
+    'i'
+  ).exec(content);
   return match ? match[1].toLowerCase() === 'true' : undefined;
 }
 
-async function readRequirementClassification(baseDir: string, workItemId: string): Promise<{
+async function readRequirementClassification(
+  baseDir: string,
+  workItemId: string
+): Promise<{
   values: Record<RequirementClassificationKey, boolean | null>;
   files: string[];
 }> {
@@ -266,7 +267,7 @@ async function readRequirementClassification(baseDir: string, workItemId: string
   const jsonPath = path.join(workItemDir, 'trigger_result.json');
   const markdownPath = path.join(workItemDir, 'change_classification.md');
   const values = Object.fromEntries(
-    REQUIREMENT_CLASSIFICATION_KEYS.map(key => [key, null]),
+    REQUIREMENT_CLASSIFICATION_KEYS.map(key => [key, null])
   ) as Record<RequirementClassificationKey, boolean | null>;
   const files: string[] = [];
 
@@ -322,7 +323,7 @@ async function collectFormalModuleRequirements(baseDir: string): Promise<SpecArt
 
 export async function resolveTaskRequirementArtifacts(
   baseDir: string,
-  workItemId: string,
+  workItemId: string
 ): Promise<RequirementResolution> {
   const classification = await readRequirementClassification(baseDir, workItemId);
   const values = classification.values;
@@ -331,7 +332,11 @@ export async function resolveTaskRequirementArtifacts(
   const source: RequirementSource = allUnchanged ? 'formal_module_requirements' : 'candidate';
   const artifacts =
     source === 'candidate'
-      ? await resolveWorkItemSpecArtifacts({ projectRoot: baseDir, workItemId, kind: 'requirements' })
+      ? await resolveWorkItemSpecArtifacts({
+          projectRoot: baseDir,
+          workItemId,
+          kind: 'requirements',
+        })
       : await collectFormalModuleRequirements(baseDir);
   return {
     source,
@@ -425,7 +430,7 @@ export async function checkTasksGate(workItemId: string, baseDir: string): Promi
         const taskId = extractTaskId(section.title);
         if (!requirementsContent) {
           blockingIssues.push(
-            `${label}: Task ${taskId} uses typed verification_commands but ${requirementResolution.source} requirements are missing or unreadable; cannot verify strategy coverage.`,
+            `${label}: Task ${taskId} uses typed verification_commands but ${requirementResolution.source} requirements are missing or unreadable; cannot verify strategy coverage.`
           );
           continue;
         }
@@ -438,7 +443,7 @@ export async function checkTasksGate(workItemId: string, baseDir: string): Promi
           taskId,
           taskVerification,
           requirementsContent,
-          designContent,
+          designContent
         );
         blockingIssues.push(...crossResult.blockingIssues.map(issue => `${label}: ${issue}`));
         warnings.push(...crossResult.warnings.map(warning => `${label}: ${warning}`));

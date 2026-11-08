@@ -5,10 +5,42 @@ import { readDeclaredProjectSpecTargetPaths } from './path-policy';
 import { projectSpecManifest, SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { describe, expect, it } from 'vitest';
 
+import ts from 'typescript';
+function hasRequiredModuleFiles(text: string): boolean {
+  const expected = ['module.json', 'requirements.md', 'design.md', 'contracts.json', 'trace.md'];
+  const tree = ts.createSourceFile('contract.ts', text, ts.ScriptTarget.Latest, true);
+  let found = false;
+  function visit(node: ts.Node): void {
+    if (
+      ts.isArrayLiteralExpression(node) &&
+      node.elements.length === expected.length &&
+      node.elements.every(
+        (element, index) => ts.isStringLiteral(element) && element.text === expected[index]
+      )
+    )
+      found = true;
+    ts.forEachChild(node, visit);
+  }
+  visit(tree);
+  return found;
+}
+
 function source(relativePath: string): string {
   return readFileSync(resolve(process.cwd(), relativePath), 'utf8');
 }
 describe('Architecture governance v7 closure', () => {
+  it('does not treat comments or incomplete module file arrays as the required contract', () => {
+    expect(
+      hasRequiredModuleFiles(
+        "// ['module.json', 'requirements.md', 'design.md', 'contracts.json', 'trace.md']"
+      )
+    ).toBe(false);
+    expect(
+      hasRequiredModuleFiles(
+        "const files = ['module.json', 'requirements.md', 'design.md', 'trace.md'];"
+      )
+    ).toBe(false);
+  });
   it('makes formal_version_gate a registered first-class Gate sequenced after verification', () => {
     const runner = source('src/tools/lib/gate-runner-v11.ts');
     const chain = source('src/tools/lib/gate-chain.ts');
@@ -21,14 +53,10 @@ describe('Architecture governance v7 closure', () => {
     const gateRunner = source('src/tools/lib/gate-runner-v11.ts');
     const mergeRunner = source('src/tools/lib/merge-runner-v11.ts');
     const invariants = source('src/tools/lib/governance-invariants-v11.ts');
-    expect(gateRunner).toContain(
-      "['module.json', 'requirements.md', 'design.md', 'contracts.json', 'trace.md']"
-    );
+    expect(hasRequiredModuleFiles(gateRunner)).toBe(true);
     expect(gateRunner).toContain('declares non-empty code_paths');
     expect(gateRunner).toContain('contracts.json has matching owner_module');
-    expect(mergeRunner).toContain(
-      "['module.json', 'requirements.md', 'design.md', 'contracts.json', 'trace.md']"
-    );
+    expect(hasRequiredModuleFiles(mergeRunner)).toBe(true);
     expect(mergeRunner).toContain('module.json must declare non-empty code_paths');
     expect(mergeRunner).toContain('contracts.json must declare schema_version=1.0');
     expect(invariants).toContain('contracts.candidate.json');
@@ -55,7 +83,9 @@ describe('Architecture governance v7 closure', () => {
     expect(governance).toContain('ACTUAL_SCOPE_EXCEEDS_APPROVED_MODULES');
     expect(governance).toContain("'actual_scope_audit_passed'");
     expect(governance).toContain("'formal_actual_governance_scope'");
-    expect(governance).toContain("execFileAsync('git', ['ls-files', '--others', '--exclude-standard']");
+    expect(governance).toContain(
+      "execFileAsync('git', ['ls-files', '--others', '--exclude-standard']"
+    );
   });
   it('exposes controlled first-project bootstrap Candidates only through sf-design', () => {
     const writer = source('src/tools/handlers/sf-artifact-write.ts');
@@ -78,15 +108,23 @@ describe('Architecture governance v7 closure', () => {
     expect(userTool).toContain('"candidate_module_contract"');
   });
   it('treats contracts.json as a declared governance target for every declared Module', async () => {
-    const root=mkdtempSync(join(tmpdir(),'sf-declared-contracts-'));
+    const root = mkdtempSync(join(tmpdir(), 'sf-declared-contracts-'));
     try {
-      const manifest=projectSpecManifest(root);mkdirSync(dirname(manifest),{recursive:true});
-      writeFileSync(manifest,JSON.stringify({modules:[{module_code:'CORE'},{module_code:'AUTH'},{module_code:'../escape'}]}));
-      const declared=await readDeclaredProjectSpecTargetPaths(root);
+      const manifest = projectSpecManifest(root);
+      mkdirSync(dirname(manifest), { recursive: true });
+      writeFileSync(
+        manifest,
+        JSON.stringify({
+          modules: [{ module_code: 'CORE' }, { module_code: 'AUTH' }, { module_code: '../escape' }],
+        })
+      );
+      const declared = await readDeclaredProjectSpecTargetPaths(root);
       expect(declared.has(`${SPEC_DIR_NAME}/project/modules/CORE/contracts.json`)).toBe(true);
       expect(declared.has(`${SPEC_DIR_NAME}/project/modules/AUTH/contracts.json`)).toBe(true);
-      expect([...declared].some(value=>value.includes('escape'))).toBe(false);
-    } finally {rmSync(root,{recursive:true,force:true});}
+      expect([...declared].some(value => value.includes('escape'))).toBe(false);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   });
   it('validates Module Contract provenance in the existing hard contract integrity Gate', () => {
     const integrity = source('src/tools/lib/contract-integrity.ts');

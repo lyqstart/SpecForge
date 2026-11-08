@@ -30,7 +30,7 @@ describe('StateManager', () => {
 
   it('should append events', async () => {
     await stateManager.initialize();
-    
+
     const event: Event = {
       schema_version: '1.0',
       eventId: '1',
@@ -46,15 +46,15 @@ describe('StateManager', () => {
         source: 'daemon',
       },
     };
-    
+
     await expect(stateManager.appendEvent(event)).resolves.not.toThrow();
   });
 
   it('should get current state', async () => {
     await stateManager.initialize();
-    
+
     const state = await stateManager.getCurrentState();
-    
+
     expect(state.projectPath).toBe(testProjectPath);
     // TASK-1: stateVersion should be present in ProjectState
     expect(state).toHaveProperty('stateVersion');
@@ -76,9 +76,9 @@ describe('StateManager', () => {
         },
       },
     ];
-    
+
     const state = await stateManager.rebuildFromEvents(events);
-    
+
     expect(state.projectPath).toBe(testProjectPath);
     expect(state.lastEventId).toBe('1');
   });

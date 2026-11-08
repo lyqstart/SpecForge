@@ -1,29 +1,26 @@
 /**
  * Spec Management Commands
- * 
+ *
  * Provides commands to manage specs:
  * - start: Start a new spec (async)
  * - list: List all specs
  * - status: Get spec status
  * - cancel: Cancel a running spec
- * 
+ *
  * @packageDocumentation
  */
 
 import yargs, { Argv, Arguments } from 'yargs';
 import { DaemonClient } from '../http/DaemonClient';
 import { ModeSwitch, formatError } from '../mode-switch';
-import { toCliError, DaemonUnreachableError, InvalidInputError } from '../errors';
+import { toCliError } from '../errors';
 import { JobTracker, createJobTracker } from '../job';
 import * as fs from 'fs';
-import * as path from 'path';
-import { resolveSpecForgeHandshakePath, resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
+import { resolveSpecForgeHandshakePath } from '@specforge/types/user-level-paths';
 /**
  * Runtime directory path under the canonical SpecForge user root
  */
-function getRuntimeDir(): string {
-  return path.join(resolveSpecForgeUserRoot(), 'runtime');
-}
+
 
 
 /**
@@ -38,12 +35,12 @@ function getHandshakePath(): string {
  */
 function getDaemonClient(): DaemonClient {
   const handshakePath = getHandshakePath();
-  
+
   // Default values
   let port = 3847;
   let token = '';
   let host = '127.0.0.1';
-  
+
   if (fs.existsSync(handshakePath)) {
     try {
       const handshake = JSON.parse(fs.readFileSync(handshakePath, 'utf-8'));
@@ -116,7 +113,7 @@ export async function commandStart(
   modeSwitch: ModeSwitch
 ): Promise<void> {
   const tracker = getJobTracker();
-  
+
   try {
     const job = await tracker.createJob('spec start', {
       template: argv.template,
@@ -184,7 +181,7 @@ export async function commandList(
   modeSwitch: ModeSwitch
 ): Promise<void> {
   const client = getDaemonClient();
-  
+
   try {
     // Build query parameters
     const queryParams = new URLSearchParams();
@@ -216,38 +213,38 @@ export async function commandList(
       }
 
       console.log(`Found ${response.total} spec(s) (page ${response.page}/${Math.ceil(response.total / response.pageSize)}):\n`);
-      
+
       for (const spec of response.specs) {
-        const statusIcon = spec.status === 'completed' ? '✓' : 
-                          spec.status === 'running' ? '⏳' : 
-                          spec.status === 'failed' ? '✗' : 
-                          spec.status === 'pending' ? '⏱️' : 
+        const statusIcon = spec.status === 'completed' ? '✓' :
+                          spec.status === 'running' ? '⏳' :
+                          spec.status === 'failed' ? '✗' :
+                          spec.status === 'pending' ? '⏱️' :
                           spec.status === 'blocked' ? '🚫' : '❌';
-        
+
         console.log(`${statusIcon} Spec: ${spec.id}`);
         console.log(`  Name: ${spec.name}`);
         console.log(`  Status: ${spec.status}`);
-        
+
         if (spec.template) {
           console.log(`  Template: ${spec.template}`);
         }
-        
+
         const created = new Date(spec.createdAt).toLocaleString();
         console.log(`  Created: ${created}`);
-        
+
         if (spec.updatedAt !== spec.createdAt) {
           const updated = new Date(spec.updatedAt).toLocaleString();
           console.log(`  Updated: ${updated}`);
         }
-        
+
         if (spec.completedAt) {
           const completed = new Date(spec.completedAt).toLocaleString();
           console.log(`  Completed: ${completed}`);
         }
-        
+
         console.log('');
       }
-      
+
       console.log('Use "specforge spec status <id>" to get detailed status of a spec.');
     }
   } catch (err) {
@@ -270,7 +267,7 @@ export async function commandStatus(
 ): Promise<void> {
   const client = getDaemonClient();
   const specId = argv.id;
-  
+
   try {
     if (argv.wait) {
       // Wait for spec completion using job tracker
@@ -305,37 +302,37 @@ export async function commandStatus(
       if (modeSwitch.isJson()) {
         console.log(modeSwitch.formatData(spec));
       } else {
-        const statusIcon = spec.status === 'completed' ? '✓' : 
-                          spec.status === 'running' ? '⏳' : 
-                          spec.status === 'failed' ? '✗' : 
-                          spec.status === 'pending' ? '⏱️' : 
+        const statusIcon = spec.status === 'completed' ? '✓' :
+                          spec.status === 'running' ? '⏳' :
+                          spec.status === 'failed' ? '✗' :
+                          spec.status === 'pending' ? '⏱️' :
                           spec.status === 'blocked' ? '🚫' : '❌';
-        
+
         console.log(`${statusIcon} Spec: ${spec.id}`);
         console.log(`  Name: ${spec.name}`);
         console.log(`  Status: ${spec.status}`);
-        
+
         if (spec.template) {
           console.log(`  Template: ${spec.template}`);
         }
-        
+
         const created = new Date(spec.createdAt).toLocaleString();
         console.log(`  Created: ${created}`);
-        
+
         if (spec.updatedAt !== spec.createdAt) {
           const updated = new Date(spec.updatedAt).toLocaleString();
           console.log(`  Updated: ${updated}`);
         }
-        
+
         if (spec.completedAt) {
           const completed = new Date(spec.completedAt).toLocaleString();
           console.log(`  Completed: ${completed}`);
         }
-        
+
         if (spec.error) {
           console.log(`  Error: ${spec.error}`);
         }
-        
+
         if (spec.result) {
           console.log(`  Result: ${JSON.stringify(spec.result, null, 2)}`);
         }
@@ -359,7 +356,7 @@ export async function commandCancel(
 ): Promise<void> {
   const client = getDaemonClient();
   const specId = argv.id;
-  
+
   try {
     // Call daemon-core /api/specs/:id/cancel endpoint
     const response = await client.post<{

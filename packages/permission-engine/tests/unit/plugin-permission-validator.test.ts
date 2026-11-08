@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { 
+
+import {
   PluginPermissionValidator,
   createPluginPermissionValidator,
   createDefaultPluginPermissionValidator,
@@ -207,7 +208,7 @@ describe('PluginPermissionValidator', () => {
   describe('Configuration', () => {
     it('should allow updating allowed permissions', () => {
       validator.setAllowedPermissions(['new.permission']);
-      
+
       expect(validator.getAllowedPermissions()).toContain('new.permission');
     });
 
@@ -224,7 +225,7 @@ describe('PluginPermissionValidator', () => {
 
     it('should get current configuration', () => {
       const config = validator.getConfig();
-      
+
       expect(config).toHaveProperty('projectId');
       expect(config).toHaveProperty('eventLoggingEnabled');
     });
@@ -235,7 +236,7 @@ describe('PluginPermissionValidator', () => {
       const invalidManifest = {
         // Missing required 'id' field
         name: 'Invalid Plugin'
-      } as any;
+      };
 
       const result = validator.validate(invalidManifest);
       expect(result.valid).toBe(false);
@@ -279,14 +280,14 @@ describe('createDefaultPluginPermissionValidator', () => {
     const validator = createDefaultPluginPermissionValidator('test-project');
 
     expect(validator).toBeInstanceOf(PluginPermissionValidator);
-    
+
     // Default permissions should be granted
     const manifest: PluginManifest = {
       id: 'test-plugin',
       name: 'Test Plugin',
       requires: ['filesystem.read']
     };
-    
+
     const result = validator.validate(manifest);
     expect(result.valid).toBe(true);
   });

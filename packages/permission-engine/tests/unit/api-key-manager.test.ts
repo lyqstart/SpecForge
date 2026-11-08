@@ -1,13 +1,14 @@
 /**
  * API Key Manager Unit Tests
- * 
+ *
  * Tests for the ApiKeyManager service implementing long-term API key management
  * for remote access as required by Property 26: Remote Access Guard
- * 
+ *
  * @specforge/permission-engine
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
+
 import { ApiKeyManager, createApiKeyManager } from '../../src/services/api-key-manager';
 
 describe('ApiKeyManager', () => {

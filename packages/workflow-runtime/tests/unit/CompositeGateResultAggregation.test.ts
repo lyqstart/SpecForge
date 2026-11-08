@@ -6,9 +6,19 @@
  * - compositeGate 结果生成
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+/**
+ * Unit tests for CompositeGateRunner result aggregation
+ * Tests Task 3.4: 结果汇总
+ * - 子 Gate 结果收集
+ * - 失败原因汇总
+ * - compositeGate 结果生成
+ */
+
+import { promiseFromSync } from '@specforge/types';
+import { describe, it, expect } from 'vitest';
+
 import { CompositeGateRunner } from '../../src/GateRunner.js';
-import { CompositeGateDefinition, SimpleGateDefinition } from '../../src/types.js';
+import type { CompositeGateDefinition, SimpleGateDefinition } from '../../src/types.js';
 
 describe('CompositeGateRunner Result Aggregation', () => {
   describe('子 Gate 结果收集', () => {
@@ -17,21 +27,21 @@ describe('CompositeGateRunner Result Aggregation', () => {
         type: 'simple',
         id: 'child-1',
         name: 'Child Gate 1',
-        checkFn: async () => ({ passed: true, reason: 'Child 1 passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Child 1 passed' }))),
       };
 
       const childGate2: SimpleGateDefinition = {
         type: 'simple',
         id: 'child-2',
         name: 'Child Gate 2',
-        checkFn: async () => ({ passed: true, reason: 'Child 2 passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Child 2 passed' }))),
       };
 
       const childGate3: SimpleGateDefinition = {
         type: 'simple',
         id: 'child-3',
         name: 'Child Gate 3',
-        checkFn: async () => ({ passed: true, reason: 'Child 3 passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Child 3 passed' }))),
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -50,7 +60,7 @@ describe('CompositeGateRunner Result Aggregation', () => {
       expect(result.passed).toBe(true);
       expect(result.details).toBeDefined();
       expect(result.details?.results).toHaveLength(3);
-      
+
       // Verify each child result is present
       const results = result.details?.results as Array<{ passed: boolean; reason: string }>;
       expect(results[0].passed).toBe(true);
@@ -66,14 +76,14 @@ describe('CompositeGateRunner Result Aggregation', () => {
         type: 'simple',
         id: 'child-1',
         name: 'Child Gate 1',
-        checkFn: async () => ({ passed: true, reason: 'Child 1 passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Child 1 passed' }))),
       };
 
       const childGate2: SimpleGateDefinition = {
         type: 'simple',
         id: 'child-2',
         name: 'Child Gate 2',
-        checkFn: async () => ({ passed: true, reason: 'Child 2 passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Child 2 passed' }))),
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -98,25 +108,25 @@ describe('CompositeGateRunner Result Aggregation', () => {
         type: 'simple',
         id: 'child-1',
         name: 'Child Gate 1',
-        checkFn: async () => ({ passed: true, reason: 'Passed', details: { score: 80 } }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Passed', details: { score: 80 } }))),
       };
 
       const childGate2: SimpleGateDefinition = {
         type: 'simple',
         id: 'child-2',
         name: 'Child Gate 2',
-        checkFn: async () => ({ 
-          passed: false, 
+        checkFn:  () => promiseFromSync(() => (({
+          passed: false,
           reason: 'Validation failed',
           details: { errorCode: 'VAL_001', field: 'email' }
-        }),
+        }))),
       };
 
       const childGate3: SimpleGateDefinition = {
         type: 'simple',
         id: 'child-3',
         name: 'Child Gate 3',
-        checkFn: async () => ({ passed: true, reason: 'Passed', details: { score: 90 } }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Passed', details: { score: 90 } }))),
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -134,16 +144,16 @@ describe('CompositeGateRunner Result Aggregation', () => {
       // Should aggregate results even with failure
       expect(result.passed).toBe(false);
       expect(result.details?.results).toHaveLength(3);
-      
+
       // First should pass
       expect((result.details?.results as Array<{ passed: boolean }>)[0].passed).toBe(true);
-      
+
       // Second should fail with details
       const failedResult = (result.details?.results as Array<{ passed: boolean; details?: Record<string, unknown> }>)[1];
       expect(failedResult.passed).toBe(false);
       expect(failedResult.details?.errorCode).toBe('VAL_001');
       expect(failedResult.details?.field).toBe('email');
-      
+
       // Third result should be present (with collect_all policy)
       expect((result.details?.results as Array<{ passed: boolean }>)[2].passed).toBe(true);
     });
@@ -155,14 +165,14 @@ describe('CompositeGateRunner Result Aggregation', () => {
         type: 'simple',
         id: 'child-1',
         name: 'Child Gate 1',
-        checkFn: async () => ({ passed: false, reason: 'Missing required field: name' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: false, reason: 'Missing required field: name' }))),
       };
 
       const childGate2: SimpleGateDefinition = {
         type: 'simple',
         id: 'child-2',
         name: 'Child Gate 2',
-        checkFn: async () => ({ passed: false, reason: 'Invalid format: email' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: false, reason: 'Invalid format: email' }))),
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -189,18 +199,18 @@ describe('CompositeGateRunner Result Aggregation', () => {
         type: 'simple',
         id: 'validate-schema',
         name: 'Validate Schema',
-        checkFn: async () => ({ 
-          passed: false, 
+        checkFn:  () => promiseFromSync(() => (({
+          passed: false,
           reason: 'Schema validation failed',
           details: { gateId: 'validate-schema' } // Explicitly include gateId in details
-        }),
+        }))),
       };
 
       const childGate2: SimpleGateDefinition = {
         type: 'simple',
         id: 'check-security',
         name: 'Check Security',
-        checkFn: async () => ({ passed: true, reason: 'Security check passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Security check passed' }))),
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -227,21 +237,21 @@ describe('CompositeGateRunner Result Aggregation', () => {
         type: 'simple',
         id: 'child-1',
         name: 'Child Gate 1',
-        checkFn: async () => ({ passed: true, reason: 'Passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Passed' }))),
       };
 
       const childGate2: SimpleGateDefinition = {
         type: 'simple',
         id: 'child-2',
         name: 'Child Gate 2',
-        checkFn: async () => ({ passed: false, reason: 'Failed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: false, reason: 'Failed' }))),
       };
 
       const childGate3: SimpleGateDefinition = {
         type: 'simple',
         id: 'child-3',
         name: 'Child Gate 3',
-        checkFn: async () => ({ passed: true, reason: 'Would pass but cancelled' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Would pass but cancelled' }))),
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -258,7 +268,7 @@ describe('CompositeGateRunner Result Aggregation', () => {
 
       expect(result.passed).toBe(false);
       expect(result.details?.failPolicy).toBe('fail_fast');
-      
+
       // In fail_fast, the failed gate ID should be recorded
       expect(result.details?.failedGateId).toBe('child-2');
     });
@@ -268,8 +278,8 @@ describe('CompositeGateRunner Result Aggregation', () => {
         type: 'simple',
         id: 'complex-validation',
         name: 'Complex Validation',
-        checkFn: async () => ({ 
-          passed: false, 
+        checkFn:  () => promiseFromSync(() => (({
+          passed: false,
           reason: 'Validation failed: multiple errors',
           details: {
             errors: [
@@ -278,7 +288,7 @@ describe('CompositeGateRunner Result Aggregation', () => {
               { field: 'password', message: 'Weak password' }
             ]
           }
-        }),
+        }))),
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -294,9 +304,9 @@ describe('CompositeGateRunner Result Aggregation', () => {
       const result = await runner.check();
 
       expect(result.passed).toBe(false);
-      const results = result.details?.results as Array<{ 
-        passed: boolean; 
-        details?: { errors?: Array<{ field: string; message: string }> } 
+      const results = result.details?.results as Array<{
+        passed: boolean;
+        details?: { errors?: Array<{ field: string; message: string }> }
       }>;
       const errorResult = results[0];
       expect(errorResult.details?.errors).toHaveLength(3);
@@ -310,7 +320,7 @@ describe('CompositeGateRunner Result Aggregation', () => {
         type: 'simple',
         id: 'child-1',
         name: 'Child Gate',
-        checkFn: async () => ({ passed: true, reason: 'All good' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'All good' }))),
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -338,14 +348,14 @@ describe('CompositeGateRunner Result Aggregation', () => {
         type: 'simple',
         id: 'child-1',
         name: 'Child Gate 1',
-        checkFn: async () => ({ passed: true, reason: 'Passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Passed' }))),
       };
 
       const childGate2: SimpleGateDefinition = {
         type: 'simple',
         id: 'child-2',
         name: 'Child Gate 2',
-        checkFn: async () => ({ passed: false, reason: 'Failed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: false, reason: 'Failed' }))),
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -374,14 +384,14 @@ describe('CompositeGateRunner Result Aggregation', () => {
         type: 'simple',
         id: 'child-1',
         name: 'Child Gate 1',
-        checkFn: async () => ({ passed: false, reason: 'Failed 1' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: false, reason: 'Failed 1' }))),
       };
 
       const childGate2: SimpleGateDefinition = {
         type: 'simple',
         id: 'child-2',
         name: 'Child Gate 2',
-        checkFn: async () => ({ passed: false, reason: 'Failed 2' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: false, reason: 'Failed 2' }))),
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -408,7 +418,7 @@ describe('CompositeGateRunner Result Aggregation', () => {
         type: 'simple',
         id: 'child-1',
         name: 'Child Gate',
-        checkFn: async () => ({ passed: false, reason: 'Failed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: false, reason: 'Failed' }))),
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -432,14 +442,14 @@ describe('CompositeGateRunner Result Aggregation', () => {
         type: 'simple',
         id: 'child-1',
         name: 'Child Gate 1',
-        checkFn: async () => ({ passed: false, reason: 'Failed at first gate' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: false, reason: 'Failed at first gate' }))),
       };
 
       const childGate2: SimpleGateDefinition = {
         type: 'simple',
         id: 'child-2',
         name: 'Child Gate 2',
-        checkFn: async () => ({ passed: true, reason: 'Would pass' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Would pass' }))),
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -463,11 +473,11 @@ describe('CompositeGateRunner Result Aggregation', () => {
         type: 'simple',
         id: 'test-gate',
         name: 'Test Gate',
-        checkFn: async () => ({ 
-          passed: false, 
+        checkFn:  () => promiseFromSync(() => (({
+          passed: false,
           reason: 'Test failure',
           details: { gateId: 'test-gate' } // Explicitly include gateId
-        }),
+        }))),
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -511,14 +521,14 @@ describe('CompositeGateRunner Result Aggregation', () => {
         type: 'simple',
         id: 'inner-1',
         name: 'Inner Child 1',
-        checkFn: async () => ({ passed: true, reason: 'Inner passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Inner passed' }))),
       };
 
       const innerChild2: SimpleGateDefinition = {
         type: 'simple',
         id: 'inner-2',
         name: 'Inner Child 2',
-        checkFn: async () => ({ passed: false, reason: 'Inner failed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: false, reason: 'Inner failed' }))),
       };
 
       const innerComposite: CompositeGateDefinition = {
@@ -534,7 +544,7 @@ describe('CompositeGateRunner Result Aggregation', () => {
         type: 'simple',
         id: 'outer-child',
         name: 'Outer Child',
-        checkFn: async () => ({ passed: true, reason: 'Outer passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Outer passed' }))),
       };
 
       const outerComposite: CompositeGateDefinition = {
@@ -552,11 +562,11 @@ describe('CompositeGateRunner Result Aggregation', () => {
       // Should aggregate results from nested composite
       expect(result.passed).toBe(false); // inner failed
       expect(result.details?.results).toHaveLength(2);
-      
+
       // First result is from inner composite (which failed)
       const innerResult = (result.details?.results as Array<{ passed: boolean }>)[0];
       expect(innerResult.passed).toBe(false);
-      
+
       // Second result is from outer child (which passed)
       const outerResult = (result.details?.results as Array<{ passed: boolean }>)[1];
       expect(outerResult.passed).toBe(true);
@@ -567,15 +577,15 @@ describe('CompositeGateRunner Result Aggregation', () => {
         type: 'simple',
         id: 'child-1',
         name: 'Child Gate',
-        checkFn: async () => ({ 
-          passed: true, 
+        checkFn:  () => promiseFromSync(() => (({
+          passed: true,
           reason: 'Validation complete',
           details: {
             validatedFields: ['name', 'email', 'age'],
             duration: 150,
             timestamp: '2024-01-15T10:30:00Z'
           }
-        }),
+        }))),
       };
 
       const compositeGate: CompositeGateDefinition = {

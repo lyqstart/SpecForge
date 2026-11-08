@@ -8,12 +8,12 @@
  * - 不配置 logger 不影响 RBACEngine.check() 行为
  */
 
-import type { Principal } from '@specforge/types/principal';
 import type {
   Permission,
   PermissionContext,
   PermissionDecision,
 } from '@specforge/types/permissions';
+import type { Principal } from '@specforge/types/principal';
 
 // ---------------------------------------------------------------------------
 // AuthorizationAuditRecord

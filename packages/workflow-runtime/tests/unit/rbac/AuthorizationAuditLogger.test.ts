@@ -1,15 +1,15 @@
 /**
  * AuthorizationAuditLogger.test.ts — 授权审计记录器测试
  */
+import type { Permission, PermissionContext, PermissionDecision } from '@specforge/types/permissions';
+import type { Principal } from '@specforge/types/principal';
 import { describe, it, expect } from 'vitest';
+
 import {
   AuthorizationAuditLogger,
   createAuthorizationAuditLogger,
   InMemoryAuditSink,
-} from '../../../src/rbac/AuthorizationAuditLogger.js';
-import type { AuditSink, AuthorizationAuditRecord } from '../../../src/rbac/AuthorizationAuditLogger.js';
-import type { Principal } from '@specforge/types/principal';
-import type { Permission, PermissionContext, PermissionDecision } from '@specforge/types/permissions';
+type  AuditSink,type  AuthorizationAuditRecord } from '../../../src/rbac/AuthorizationAuditLogger.js';
 
 // Helpers
 const testPrincipal: Principal = {

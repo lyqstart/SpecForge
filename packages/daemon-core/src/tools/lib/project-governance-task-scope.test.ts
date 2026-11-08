@@ -19,7 +19,10 @@ async function writeJson(filePath: string, value: unknown): Promise<void> {
   await writeText(filePath, JSON.stringify(value, null, 2) + '\n');
 }
 
-async function createFixture(plannedCodePaths: string[], taskFiles: string[]): Promise<{
+async function createFixture(
+  plannedCodePaths: string[],
+  taskFiles: string[]
+): Promise<{
   projectRoot: string;
   workItemDir: string;
 }> {
@@ -38,22 +41,24 @@ async function createFixture(plannedCodePaths: string[], taskFiles: string[]): P
       extension_registry: '.specforge/project/extension_registry.json',
       trace_matrix: '.specforge/project/trace_matrix.md',
     },
-    modules: [{
-      module_code: 'CORE',
-      path: '.specforge/project/modules/CORE',
-      module_file: '.specforge/project/modules/CORE/module.json',
-      requirements: '.specforge/project/modules/CORE/requirements.md',
-      design: '.specforge/project/modules/CORE/design.md',
-      contracts: '.specforge/project/modules/CORE/contracts.json',
-      trace: '.specforge/project/modules/CORE/trace.md',
-      code_paths: ['src/**'],
-    }],
+    modules: [
+      {
+        module_code: 'CORE',
+        path: '.specforge/project/modules/CORE',
+        module_file: '.specforge/project/modules/CORE/module.json',
+        requirements: '.specforge/project/modules/CORE/requirements.md',
+        design: '.specforge/project/modules/CORE/design.md',
+        contracts: '.specforge/project/modules/CORE/contracts.json',
+        trace: '.specforge/project/modules/CORE/trace.md',
+        code_paths: ['src/**'],
+      },
+    ],
   });
   await writeText(path.join(projectDir, 'architecture.md'), '# Architecture\n\nARCH-CORE-001\n');
   await writeText(path.join(projectDir, 'data_model.md'), '# Data Model\n\nDATA-CORE-001\n');
   await writeText(
     path.join(projectDir, 'trace_matrix.md'),
-    '| From | Relation | To |\n|---|---|---|\n| DATA-CORE-001 | constrained_by | ARCH-CORE-001 |\n| DD-CORE-001 | constrained_by | DATA-CORE-001 |\n',
+    '| From | Relation | To |\n|---|---|---|\n| DATA-CORE-001 | constrained_by | ARCH-CORE-001 |\n| DD-CORE-001 | constrained_by | DATA-CORE-001 |\n'
   );
   await writeJson(path.join(projectDir, 'extension_registry.json'), {
     schema_version: '1.0',
@@ -65,11 +70,20 @@ async function createFixture(plannedCodePaths: string[], taskFiles: string[]): P
     contracts: '.specforge/project/modules/CORE/contracts.json',
   });
   await writeText(path.join(projectDir, 'modules', 'CORE', 'requirements.md'), '# Requirements\n');
-  await writeText(path.join(projectDir, 'modules', 'CORE', 'design.md'), '# Design\n\nDD-CORE-001\n');
+  await writeText(
+    path.join(projectDir, 'modules', 'CORE', 'design.md'),
+    '# Design\n\nDD-CORE-001\n'
+  );
   await writeJson(path.join(projectDir, 'modules', 'CORE', 'contracts.json'), {
     schema_version: '1.0',
     owner_module: 'CORE',
-    contracts: { shared_enums: [], invariants: [], public_interfaces: [], extension_points: [], internal_contracts: [] },
+    contracts: {
+      shared_enums: [],
+      invariants: [],
+      public_interfaces: [],
+      extension_points: [],
+      internal_contracts: [],
+    },
   });
   await writeText(path.join(projectDir, 'modules', 'CORE', 'trace.md'), '');
 
@@ -103,7 +117,7 @@ async function createFixture(plannedCodePaths: string[], taskFiles: string[]): P
       '  - unit:',
       '    - `bun test`',
       '',
-    ].join('\n'),
+    ].join('\n')
   );
   return { projectRoot, workItemDir };
 }
@@ -116,12 +130,19 @@ describe('Candidate Task write scope consistency', () => {
   test('blocks a Task write path outside approved Impact Scope', async () => {
     const { projectRoot, workItemDir } = await createFixture(
       ['src/inside.ts'],
-      ['src/inside.ts', 'package.json', 'tsconfig.json'],
+      ['src/inside.ts', 'package.json', 'tsconfig.json']
     );
-    const result = await checkProjectGovernanceConsistency({ projectRoot, workItemDir, workItemId: 'WI-0001' });
+    const result = await checkProjectGovernanceConsistency({
+      projectRoot,
+      workItemDir,
+      workItemId: 'WI-0001',
+    });
     for (const outsidePath of ['package.json', 'tsconfig.json']) {
-      const check = result.checks.find(candidate =>
-        candidate.description === `Task TASK-WI-0001-001 write path must be covered by approved Impact Scope: ${outsidePath}`);
+      const check = result.checks.find(
+        candidate =>
+          candidate.description ===
+          `Task TASK-WI-0001-001 write path must be covered by approved Impact Scope: ${outsidePath}`
+      );
       expect(check?.passed, outsidePath).toBe(false);
     }
   });
@@ -129,24 +150,41 @@ describe('Candidate Task write scope consistency', () => {
   test('blocks an approved Task path with zero Module owners', async () => {
     const { projectRoot, workItemDir } = await createFixture(
       ['src/inside.ts', 'package.json'],
-      ['src/inside.ts', 'package.json'],
+      ['src/inside.ts', 'package.json']
     );
-    const result = await checkProjectGovernanceConsistency({ projectRoot, workItemDir, workItemId: 'WI-0001' });
-    const check = result.checks.find(candidate =>
-      candidate.description === 'Task TASK-WI-0001-001 write path maps to exactly one Module or approved cross-module test harness: package.json');
+    const result = await checkProjectGovernanceConsistency({
+      projectRoot,
+      workItemDir,
+      workItemId: 'WI-0001',
+    });
+    const check = result.checks.find(
+      candidate =>
+        candidate.description ===
+        'Task TASK-WI-0001-001 write path maps to exactly one Module or approved cross-module test harness: package.json'
+    );
     expect(check?.passed).toBe(false);
   });
 
   test('allows Task refinement as a subset and preserves the approved cross-module test exception', async () => {
     const { projectRoot, workItemDir } = await createFixture(
       ['src/inside.ts', 'src/runtime-only.ts', 'tests/cross.test.ts'],
-      ['src/inside.ts', 'tests/cross.test.ts'],
+      ['src/inside.ts', 'tests/cross.test.ts']
     );
-    const result = await checkProjectGovernanceConsistency({ projectRoot, workItemDir, workItemId: 'WI-0001' });
-    const taskChecks = result.checks.filter(check =>
-      check.check_id.startsWith('task_allowed_write_files_') || check.check_id.startsWith('task_write_'));
+    const result = await checkProjectGovernanceConsistency({
+      projectRoot,
+      workItemDir,
+      workItemId: 'WI-0001',
+    });
+    const taskChecks = result.checks.filter(
+      check =>
+        check.check_id.startsWith('task_allowed_write_files_') ||
+        check.check_id.startsWith('task_write_')
+    );
     expect(taskChecks.length).toBeGreaterThan(0);
-    expect(taskChecks.every(check => check.passed), JSON.stringify(taskChecks, null, 2)).toBe(true);
+    expect(
+      taskChecks.every(check => check.passed),
+      JSON.stringify(taskChecks, null, 2)
+    ).toBe(true);
   });
 
   test('shares exact, directory-prefix, and glob coverage semantics', () => {
@@ -159,13 +197,15 @@ describe('Candidate Task write scope consistency', () => {
       matchedPattern: 'tests/',
     });
     expect(isTaskPathCoveredByImpactScope('src/ui/board.ts', ['src/**/*.ts']).covered).toBe(true);
-    expect(isTaskPathCoveredByImpactScope('scripts/release.ts', ['src/', 'tests/**']).covered).toBe(false);
+    expect(isTaskPathCoveredByImpactScope('scripts/release.ts', ['src/', 'tests/**']).covered).toBe(
+      false
+    );
   });
 
   test('Code Permission reuses the same canonical Task write scope semantic source', async () => {
     const { projectRoot, workItemDir } = await createFixture(
       ['src/inside.ts', 'tests/cross.test.ts'],
-      ['src/inside.ts', 'tests/cross.test.ts'],
+      ['src/inside.ts', 'tests/cross.test.ts']
     );
     const result = await freezeGovernanceScopeForCodePermission({
       projectRoot,
@@ -173,12 +213,12 @@ describe('Candidate Task write scope consistency', () => {
       workItemId: 'WI-0001',
       allowedWriteFiles: [{ path: 'tests/cross.test.ts', operation: 'modify' }],
     });
-    const ownerCheck = result.checks.find(check =>
-      check.description ===
+    const ownerCheck = result.checks.find(
+      check =>
+        check.description ===
         'Allowed write file maps to exactly one Module or an approved cross-module test harness: tests/cross.test.ts'
     );
     expect(ownerCheck?.passed).toBe(true);
     expect(ownerCheck?.details).toContain('approved_cross_module_test_harness=true');
   });
-
 });

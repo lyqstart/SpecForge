@@ -7,9 +7,11 @@
  */
 
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync, unlinkSync } from 'node:fs';
-import { join } from 'node:path';
 import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+
 import { CloseGate } from '@/v11/index';
 
 describe('v1.1 Code-Only Fast Path Filesystem E2E', () => {
@@ -110,7 +112,7 @@ describe('v1.1 Code-Only Fast Path Filesystem E2E', () => {
     rmSync(tempDir, { recursive: true, force: true });
   });
 
-  function callValidateFromFileSystem(overrides: Partial<Parameters<CloseGate['validateFromFileSystem']>[0]> = {}) {
+  function callValidateFromFileSystem(overrides: Partial<Parameters<CloseGate['validateFromFileSystem']>[0]> = {}): ReturnType<CloseGate['validateFromFileSystem']> {
     const wiDir = `.specforge/work-items/${WI_ID}`;
     const mergeReportPath = join(tempDir, wiDir, 'merge_report.md');
     const mergeReportContent = existsSync(mergeReportPath)

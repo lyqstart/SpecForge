@@ -6,14 +6,17 @@
  */
 
 import { describe, it, expect } from 'vitest';
+
 import { JsonParser } from '@/v11/runtime/JsonParser';
+
+import { requiredTestValue } from '../../required-test-value';
 
 describe('JsonParser', () => {
   describe('parse', () => {
     it('should parse valid JSON', () => {
       const result = JsonParser.parse<{ name: string }>('{"name": "test"}');
       expect(result.success).toBe(true);
-      expect(result.data!.name).toBe('test');
+      expect(requiredTestValue(result.data).name).toBe('test');
     });
 
     it('should return descriptive error for invalid JSON', () => {
@@ -29,7 +32,7 @@ describe('JsonParser', () => {
     });
 
     it('should return error for non-string input', () => {
-      const result = JsonParser.parse(undefined as any);
+      const result = JsonParser.parse(undefined);
       expect(result.success).toBe(false);
       expect(result.error).toContain('expected string');
     });
@@ -43,7 +46,7 @@ describe('JsonParser', () => {
     it('should parse nested objects', () => {
       const result = JsonParser.parse<{ a: { b: number } }>('{"a": {"b": 42}}');
       expect(result.success).toBe(true);
-      expect(result.data!.a.b).toBe(42);
+      expect(requiredTestValue(result.data).a.b).toBe(42);
     });
   });
 
@@ -62,7 +65,7 @@ describe('JsonParser', () => {
     });
 
     it('should handle circular references gracefully', () => {
-      const obj: any = { name: 'test' };
+      const obj: { name: string; self?: unknown } = { name: 'test' };
       obj.self = obj;
       const result = JsonParser.serialize(obj);
       expect(result.success).toBe(false);

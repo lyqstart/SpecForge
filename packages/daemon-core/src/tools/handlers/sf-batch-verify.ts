@@ -8,7 +8,12 @@ registerHandler('sf_batch_verify', async (args, context, _deps) => {
   }
 
   const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
-  const checks = args['checks'] as Array<{ name: string; pattern: string; should_exist: boolean; count?: number }>;
+  const checks = args['checks'] as Array<{
+    name: string;
+    pattern: string;
+    should_exist: boolean;
+    count?: number;
+  }>;
 
   try {
     return await batchVerify(targetFile, checks ?? [], baseDir);

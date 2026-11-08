@@ -1,3 +1,4 @@
+import { codeContains } from '../../../tests/helpers/source-structure';
 import { describe, it, expect } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -126,7 +127,7 @@ describe('v1.1.3 final governance regression coverage', () => {
       const transition = source('src/tools/handlers/sf-state-transition.ts');
       expect(transition).not.toMatch(/workflowEngine\.transitionFull\s*\(/);
       expect(transition).toContain('workflow_engine_transition_full_used: false');
-      expect(transition).toContain('state_authority: "StateManager"');
+      expect(codeContains(transition, 'state_authority: "StateManager"')).toBe(true);
     });
 
     it('documents StateManager/events as authoritative and work_item.json as metadata', () => {
@@ -268,7 +269,7 @@ describe('v1.1.3 final governance regression coverage', () => {
       const mismatchIndex = closeGate.indexOf('AUTHORITATIVE_STATE_MISMATCH');
       expect(mismatchIndex).toBeGreaterThanOrEqual(0);
       expect(closeGate).toContain('current_state_not_verification_done');
-      expect(closeGate).toContain('expected_state: "verification_done"');
+      expect(codeContains(closeGate, 'expected_state: "verification_done"')).toBe(true);
       expect(closeGate).toContain('state_advanced: false');
 
       const verificationMissingIndex = closeGate.indexOf('verification_report.md not found');

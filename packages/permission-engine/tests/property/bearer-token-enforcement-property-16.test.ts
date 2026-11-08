@@ -1,30 +1,31 @@
 /**
  * Property-Based Test: Bearer Token Enforcement (Property 16)
- * 
+ *
  * Validates: Property 16, Requirements 5.4, 5.5
- * 
+ *
  * Property: For all HTTP/SSE requests r arriving at Daemon Edge layer,
  * if r does not carry valid `Authorization: Bearer <token>` (token matching
  * handshake file token), THEN Daemon returns HTTP 401 and writes a
  * `permission.denied` event to events.jsonl.
- * 
+ *
  * Iterations: ≥ 100
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fc from 'fast-check';
-import { 
-  PolicyEnforcementPoint, 
-  createPolicyEnforcementPoint, 
-  HttpRequestContext 
-} from '../../src/services/policy-enforcement-point';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+
 import { EventLogger } from '../../src/services/event-logger';
+import {
+  PolicyEnforcementPoint,
+  createPolicyEnforcementPoint,
+  HttpRequestContext
+} from '../../src/services/policy-enforcement-point';
 import { RuleMergingEngine } from '../../src/services/rule-merging-engine';
-import { PermissionEvent, PermissionDeniedEvent } from '../../src/types/events';
+import { PermissionDeniedEvent } from '../../src/types/events';
 
 /**
  * Feature: Bearer Token Enforcement, Property 16
- * 
+ *
  * Derived-From: v6-architecture-overview Property 16
  */
 
@@ -73,12 +74,12 @@ describe('Property 16: Bearer Token Enforcement', () => {
       'x-action': 'spec.read',
       'x-resource-type': 'spec'
     };
-    
+
     // Merge headers if overrides contains headers
-    const mergedHeaders = overrides?.headers 
+    const mergedHeaders = overrides?.headers
       ? { ...baseHeaders, ...overrides.headers }
       : baseHeaders;
-    
+
     return {
       method: 'GET',
       path: '/api/specs',
@@ -97,7 +98,7 @@ describe('Property 16: Bearer Token Enforcement', () => {
           fc.integer({ min: 1, max: 1000}),
           async (seed) => {
             eventLogger.clearEvents();
-            
+
             // Create request WITHOUT Authorization header
             const request = createBaseRequest({
               headers: {
@@ -126,7 +127,7 @@ describe('Property 16: Bearer Token Enforcement', () => {
             ) as PermissionDeniedEvent[];
 
             expect(deniedEvents.length).toBeGreaterThan(0);
-            
+
             // Verify event contains required information
             const event = deniedEvents[0];
             expect(event.payload.reason).toContain('Missing Authorization header');
@@ -250,7 +251,7 @@ describe('Property 16: Bearer Token Enforcement', () => {
             ) as PermissionDeniedEvent[];
 
             expect(deniedEvents.length).toBeGreaterThan(0);
-            
+
             const event = deniedEvents[0];
             expect(event.payload.reason).toContain('Invalid Bearer token');
             expect(event.payload.layer).toBe('auth');
@@ -321,7 +322,7 @@ describe('Property 16: Bearer Token Enforcement', () => {
             // But permission.evaluated should be logged
             const events = eventLogger.getEvents();
             const deniedEvents = events.filter(e => e.action === 'permission.denied');
-            
+
             // Valid token should NOT trigger permission.denied
             expect(deniedEvents.length).toBe(0);
           }
@@ -366,14 +367,14 @@ describe('Property 16: Bearer Token Enforcement', () => {
           expect(event).toHaveProperty('projectId');
           expect(event).toHaveProperty('action');
           expect(event.action).toBe('permission.denied');
-          
+
           // Payload required fields
           expect(event.payload).toHaveProperty('actor');
           expect(event.payload).toHaveProperty('action');
           expect(event.payload).toHaveProperty('resource');
           expect(event.payload).toHaveProperty('reason');
           expect(event.payload).toHaveProperty('layer');
-          
+
           // Layer should be 'auth' for bearer token failures
           expect(['auth', 'remote']).toContain(event.payload.layer);
         }
@@ -534,9 +535,9 @@ describe('Property 16: Bearer Token Enforcement', () => {
         fc.asyncProperty(
           fc.oneof(
             // Valid token
-            fc.constant({ 
-              token: validToken, 
-              shouldPass: true 
+            fc.constant({
+              token: validToken,
+              shouldPass: true
             }),
             // Invalid tokens
             fc.record({

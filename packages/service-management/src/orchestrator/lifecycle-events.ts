@@ -24,7 +24,7 @@
  */
 
 import * as fs from 'node:fs/promises';
-import * as path from 'node:path';
+
 import { createServiceError } from '../errors/service-error.js';
 import { parseHandshakeFile, type HandshakeFile } from '../types/handshake.js';
 import { resolveSpecForgeHandshakePath } from '@specforge/types/user-level-paths';
@@ -251,7 +251,7 @@ export class ServiceLifecycleEventEmitter implements Disposable {
           serviceName: 'specforge-daemon',
           operation: 'readHandshake',
           lastError: 'Handshake file not found - daemon may not be running',
-          details: { 
+          details: {
             handshakePath: this.handshakePath,
             suggestion: 'Start the daemon with: specforge daemon start',
           },

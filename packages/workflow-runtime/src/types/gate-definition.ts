@@ -16,6 +16,9 @@ import type {
   GateReportCheck as SharedGateReportCheck,
 } from '@specforge/types';
 
+import type { GateResult as GateResultContract } from './gate-result';
+
+
 // ---------------------------------------------------------------------------
 // §9.2 Gate ID 枚举
 // ---------------------------------------------------------------------------
@@ -169,7 +172,7 @@ export interface CompositeGateDefinition extends BaseGateDefinition {
 /**
  * Gate result interface (forward declaration)
  */
-export type GateResult = import('./gate-result').GateResult;
+export type GateResult = GateResultContract;
 
 /**
  * Union of all Gate definitions

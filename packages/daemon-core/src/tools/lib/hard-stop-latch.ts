@@ -73,7 +73,7 @@ function projectHardStopPath(projectRoot: string): string {
 function readHardStopFile(
   filePath: string,
   expectedWorkItemId: string,
-  expectedScope: HardStopScope,
+  expectedScope: HardStopScope
 ): HardStopRecord | null {
   if (!fs.existsSync(filePath)) return null;
   let parsed: unknown;
@@ -83,15 +83,17 @@ function readHardStopFile(
     throw new Error(
       `HARD_STOP_CONTRACT_INVALID: FILE_PARSE_FAILED: ${filePath}: ${
         error instanceof Error ? error.message : String(error)
-      }`,
+      }`
     );
   }
   const descriptor = createHardStopLatchSchemaDescriptor(expectedWorkItemId, expectedScope);
   if (!descriptor.validateCurrent(parsed)) {
-    const observed = typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)
-      ? (parsed as Record<string, unknown>).schema_version
-      : undefined;
-    const code = observed === HARD_STOP_SCHEMA_VERSION ? 'VALIDATION_FAILED' : 'SCHEMA_VERSION_MISMATCH';
+    const observed =
+      typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)
+        ? (parsed as Record<string, unknown>).schema_version
+        : undefined;
+    const code =
+      observed === HARD_STOP_SCHEMA_VERSION ? 'VALIDATION_FAILED' : 'SCHEMA_VERSION_MISMATCH';
     throw new Error(`HARD_STOP_CONTRACT_INVALID: ${code}: ${filePath}`);
   }
   return parsed as HardStopRecord;
@@ -155,7 +157,7 @@ export function setHardStop(
 
 export function readWorkItemHardStop(
   projectRoot: string,
-  workItemId: string,
+  workItemId: string
 ): HardStopRecord | null {
   if (!isValidWorkItemId(workItemId)) return null;
   return readHardStopFile(workItemHardStopPath(projectRoot, workItemId), workItemId, 'work_item');

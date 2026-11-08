@@ -1,7 +1,7 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import * as fs from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+
 import * as path from 'node:path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { withGitBranchMutationLease } from './git-detached-bootstrap';
@@ -9,7 +9,14 @@ import { withGitBranchMutationLease } from './git-detached-bootstrap';
 const execFileAsync = promisify(execFile);
 
 export type GitFileDecision = 'track' | 'ignore' | 'ask' | 'hard_stop';
-export type GitStatusKind = 'added' | 'modified' | 'deleted' | 'renamed' | 'copied' | 'untracked' | 'unknown';
+export type GitStatusKind =
+  | 'added'
+  | 'modified'
+  | 'deleted'
+  | 'renamed'
+  | 'copied'
+  | 'untracked'
+  | 'unknown';
 export type RegenerableArtifactClass = 'dependency_lockfile';
 
 export interface GitStatusEntry {
@@ -91,7 +98,9 @@ export interface CheckpointCommitResult {
 }
 
 export function normalizeSlashes(value: string): string {
-  return String(value ?? '').replace(/\\/g, '/').replace(/\/+/g, '/');
+  return String(value ?? '')
+    .replace(/\\/g, '/')
+    .replace(/\/+/g, '/');
 }
 
 export function normalizeRelativePath(value: string): string {
@@ -103,17 +112,26 @@ export function isForbiddenExactGitAdd(value: string): boolean {
   return trimmed === '.' || trimmed === '-A' || trimmed === '--all';
 }
 
-export function validateProjectRelativePath(input: string): { valid: boolean; reason?: string; path?: string } {
+export function validateProjectRelativePath(input: string): {
+  valid: boolean;
+  reason?: string;
+  path?: string;
+} {
   const rel = normalizeRelativePath(input).replace(/^['"]|['"]$/g, '');
   if (!rel) return { valid: false, reason: 'empty_path' };
-  if (path.isAbsolute(rel) || /^[A-Za-z]:/.test(rel)) return { valid: false, reason: 'absolute_path_not_allowed' };
+  if (path.isAbsolute(rel) || /^[A-Za-z]:/.test(rel))
+    return { valid: false, reason: 'absolute_path_not_allowed' };
   if (rel.includes('..')) return { valid: false, reason: 'parent_traversal_not_allowed' };
   if (rel.includes('~')) return { valid: false, reason: 'home_shorthand_not_allowed' };
   if (isForbiddenExactGitAdd(rel)) return { valid: false, reason: 'git_add_dot_or_all_forbidden' };
   return { valid: true, path: rel };
 }
 
-async function runGit(projectRoot: string, args: string[], allowFailure = false): Promise<{ stdout: string; stderr: string; code: number }> {
+async function runGit(
+  projectRoot: string,
+  args: string[],
+  allowFailure = false
+): Promise<{ stdout: string; stderr: string; code: number }> {
   try {
     const { stdout, stderr } = await execFileAsync('git', args, {
       cwd: projectRoot,
@@ -149,19 +167,23 @@ export async function getHeadCommit(projectRoot: string): Promise<string | null>
   return result.code === 0 ? result.stdout.trim() || null : null;
 }
 
-export async function getRemotes(projectRoot: string): Promise<Array<{ name: string; url: string; kind: 'fetch' | 'push' }>> {
+export async function getRemotes(
+  projectRoot: string
+): Promise<Array<{ name: string; url: string; kind: 'fetch' | 'push' }>> {
   const result = await runGit(projectRoot, ['remote', '-v'], true);
   if (result.code !== 0) return [];
   return result.stdout
     .split(/\r?\n/)
-    .map((line) => line.trim())
+    .map(line => line.trim())
     .filter(Boolean)
-    .map((line) => {
+    .map(line => {
       const match = line.match(/^(\S+)\s+(\S+)\s+\((fetch|push)\)$/);
       if (!match) return null;
       return { name: match[1], url: match[2], kind: match[3] as 'fetch' | 'push' };
     })
-    .filter((entry): entry is { name: string; url: string; kind: 'fetch' | 'push' } => entry !== null);
+    .filter(
+      (entry): entry is { name: string; url: string; kind: 'fetch' | 'push' } => entry !== null
+    );
 }
 
 function statusKind(index: string, worktree: string): GitStatusKind {
@@ -177,9 +199,9 @@ function statusKind(index: string, worktree: string): GitStatusKind {
 export function parseGitStatusShort(stdout: string): GitStatusEntry[] {
   return stdout
     .split(/\r?\n/)
-    .map((line) => line.replace(/\r$/, ''))
+    .map(line => line.replace(/\r$/, ''))
     .filter(Boolean)
-    .map((line) => {
+    .map(line => {
       const index = line[0] ?? ' ';
       const worktree = line[1] ?? ' ';
       let filePath = line.slice(3).trim();
@@ -220,9 +242,7 @@ const DEPENDENCY_LOCKFILE_NAMES = new Set([
   'bun.lockb',
 ]);
 
-export function classifyRegenerableArtifactPath(
-  filePath: string,
-): RegenerableArtifactClass | null {
+export function classifyRegenerableArtifactPath(filePath: string): RegenerableArtifactClass | null {
   const normalized = normalizeRelativePath(filePath);
   return DEPENDENCY_LOCKFILE_NAMES.has(base(normalized)) ? 'dependency_lockfile' : null;
 }
@@ -240,12 +260,20 @@ export function classifyGitPath(filePath: string): {
   if (lower.startsWith(`${SPEC_DIR_NAME}/runtime/`) || lower.startsWith(`${SPEC_DIR_NAME}/logs/`)) {
     return { decision: 'ignore', reason: '.specforge runtime/logs are gitignored runtime data' };
   }
-  if (lower.startsWith(`${SPEC_DIR_NAME}/project/`) || lower.startsWith(`${SPEC_DIR_NAME}/work-items/`)) {
+  if (
+    lower.startsWith(`${SPEC_DIR_NAME}/project/`) ||
+    lower.startsWith(`${SPEC_DIR_NAME}/work-items/`)
+  ) {
     return { decision: 'track', reason: 'SpecForge committed governance artifact' };
   }
-  if (lower === `${SPEC_DIR_NAME}/.gitignore`) return { decision: 'track', reason: 'SpecForge local ignore rule file' };
+  if (lower === `${SPEC_DIR_NAME}/.gitignore`)
+    return { decision: 'track', reason: 'SpecForge local ignore rule file' };
 
-  if (b === '.env' || b.startsWith('.env.') || ['.pem', '.key', '.p12', '.pfx', '.jks', '.keystore'].includes(e)) {
+  if (
+    b === '.env' ||
+    b.startsWith('.env.') ||
+    ['.pem', '.key', '.p12', '.pfx', '.jks', '.keystore'].includes(e)
+  ) {
     return { decision: 'hard_stop', reason: 'sensitive credential or signing key candidate' };
   }
   if (/^id_(rsa|dsa|ecdsa|ed25519)(\.pub)?$/.test(b)) {
@@ -254,7 +282,8 @@ export function classifyGitPath(filePath: string): {
   if (lower.endsWith('/local.properties') || lower === 'local.properties') {
     return { decision: 'ignore', reason: 'local machine Android SDK path file' };
   }
-  if (hasSegment(lower, 'node_modules')) return { decision: 'ignore', reason: 'dependency cache directory' };
+  if (hasSegment(lower, 'node_modules'))
+    return { decision: 'ignore', reason: 'dependency cache directory' };
   const artifactClass = classifyRegenerableArtifactPath(lower);
   if (artifactClass) {
     return {
@@ -264,9 +293,16 @@ export function classifyGitPath(filePath: string): {
       artifact_class: artifactClass,
     };
   }
-  if (hasSegment(lower, 'target')) return { decision: 'ignore', reason: 'Maven build output directory' };
-  if (hasSegment(lower, '.gradle')) return { decision: 'ignore', reason: 'Gradle cache/runtime directory' };
-  if (hasSegment(lower, 'dist') || hasSegment(lower, 'coverage') || hasSegment(lower, '.next') || hasSegment(lower, '.nuxt')) {
+  if (hasSegment(lower, 'target'))
+    return { decision: 'ignore', reason: 'Maven build output directory' };
+  if (hasSegment(lower, '.gradle'))
+    return { decision: 'ignore', reason: 'Gradle cache/runtime directory' };
+  if (
+    hasSegment(lower, 'dist') ||
+    hasSegment(lower, 'coverage') ||
+    hasSegment(lower, '.next') ||
+    hasSegment(lower, '.nuxt')
+  ) {
     return { decision: 'ignore', reason: 'generated build/test output directory' };
   }
   if (hasSegment(lower, 'build') && b !== 'build.gradle' && b !== 'build.gradle.kts') {
@@ -276,46 +312,90 @@ export function classifyGitPath(filePath: string): {
     return { decision: 'ignore', reason: 'generated binary/log/cache artifact' };
   }
   if (['.zip', '.rar', '.7z', '.tar', '.gz'].includes(e)) {
-    return { decision: 'ask', reason: 'archive may be delivery artifact or temporary build output' };
+    return {
+      decision: 'ask',
+      reason: 'archive may be delivery artifact or temporary build output',
+    };
   }
-  if (['.ts', '.tsx', '.js', '.jsx', '.java', '.kt', '.kts', '.py', '.go', '.rs', '.sql', '.md', '.json', '.yml', '.yaml', '.xml', '.gradle', '.properties', '.toml', '.sh', '.ps1', '.bat', '.css', '.scss', '.html'].includes(e)) {
+  if (
+    [
+      '.ts',
+      '.tsx',
+      '.js',
+      '.jsx',
+      '.java',
+      '.kt',
+      '.kts',
+      '.py',
+      '.go',
+      '.rs',
+      '.sql',
+      '.md',
+      '.json',
+      '.yml',
+      '.yaml',
+      '.xml',
+      '.gradle',
+      '.properties',
+      '.toml',
+      '.sh',
+      '.ps1',
+      '.bat',
+      '.css',
+      '.scss',
+      '.html',
+    ].includes(e)
+  ) {
     return { decision: 'track', reason: 'source/config/documentation file' };
   }
   if (['.doc', '.docx', '.xls', '.xlsx', '.pdf'].includes(e)) {
-    return { decision: 'ask', reason: 'office/pdf file may be project document or generated artifact' };
+    return {
+      decision: 'ask',
+      reason: 'office/pdf file may be project document or generated artifact',
+    };
   }
   return { decision: 'ask', reason: 'unclassified file type requires user decision' };
 }
 
-export async function analyzeIgnore(projectRoot: string, paths?: string[], writeAssessment = true): Promise<GitIgnoreAnalysisResult> {
+export async function analyzeIgnore(
+  projectRoot: string,
+  paths?: string[],
+  writeAssessment = true
+): Promise<GitIgnoreAnalysisResult> {
   const statusEntries = await getStatusEntries(projectRoot);
-  const entryByPath = new Map(statusEntries.map((entry) => [entry.path, entry]));
-  const candidatePaths = paths && paths.length > 0 ? paths.map(normalizeRelativePath) : statusEntries.map((entry) => entry.path);
+  const entryByPath = new Map(statusEntries.map(entry => [entry.path, entry]));
+  const candidatePaths =
+    paths && paths.length > 0
+      ? paths.map(normalizeRelativePath)
+      : statusEntries.map(entry => entry.path);
   const uniquePaths = Array.from(new Set(candidatePaths)).filter(Boolean);
-  const findings = uniquePaths.map((filePath) => {
+  const findings = uniquePaths.map(filePath => {
     const classification = classifyGitPath(filePath);
     return {
       path: filePath,
       decision: classification.decision,
       reason: classification.reason,
       status: entryByPath.get(filePath)?.kind,
-      ...(classification.artifact_class
-        ? { artifact_class: classification.artifact_class }
-        : {}),
+      ...(classification.artifact_class ? { artifact_class: classification.artifact_class } : {}),
     } satisfies GitIgnoreFinding;
   });
   const result: GitIgnoreAnalysisResult = {
     success: true,
     project_root: projectRoot,
     generated_at: new Date().toISOString(),
-    track: findings.filter((f) => f.decision === 'track'),
-    ignore: findings.filter((f) => f.decision === 'ignore'),
-    ask: findings.filter((f) => f.decision === 'ask'),
-    hard_stop: findings.filter((f) => f.decision === 'hard_stop'),
+    track: findings.filter(f => f.decision === 'track'),
+    ignore: findings.filter(f => f.decision === 'ignore'),
+    ask: findings.filter(f => f.decision === 'ask'),
+    hard_stop: findings.filter(f => f.decision === 'hard_stop'),
     status_entries: statusEntries,
   };
   if (writeAssessment) {
-    const assessmentPath = path.join(projectRoot, SPEC_DIR_NAME, 'runtime', 'git_ignore_assessment.json');
+    const assessmentPath = path.join(
+      projectRoot,
+      SPEC_DIR_NAME,
+      'runtime',
+      'git_ignore_assessment.json'
+    );
     await fs.mkdir(path.dirname(assessmentPath), { recursive: true });
     await fs.writeFile(assessmentPath, JSON.stringify(result, null, 2) + '\n', 'utf-8');
     result.assessment_path = normalizeRelativePath(path.relative(projectRoot, assessmentPath));
@@ -323,7 +403,10 @@ export async function analyzeIgnore(projectRoot: string, paths?: string[], write
   return result;
 }
 
-export async function preflight(projectRoot: string, defaultBranch = 'main'): Promise<GitPreflightResult> {
+export async function preflight(
+  projectRoot: string,
+  defaultBranch = 'main'
+): Promise<GitPreflightResult> {
   const inside = await isGitWorkTree(projectRoot);
   if (!inside) {
     return {
@@ -386,17 +469,30 @@ function normalizeWorkItemType(type: string): string {
   return 'feature';
 }
 
-export function branchPlan(input: { workItemId: string; title: string; workItemType?: string }): BranchPlanResult {
+export function branchPlan(input: {
+  workItemId: string;
+  title: string;
+  workItemType?: string;
+}): BranchPlanResult {
   const workItemId = input.workItemId.trim();
   const type = normalizeWorkItemType(input.workItemType ?? 'feature');
   const slug = slugify(input.title).slice(0, 60).replace(/-+$/g, '') || 'work-item';
   const wiSuffix = workItemId.toLowerCase().replace(/^wi-?/, 'wi-');
-  const candidates = Array.from(new Set([
-    `${type}/${slug}-${wiSuffix}`,
-    `${type}/${slug.split('-').slice(0, 4).join('-')}-${wiSuffix}`,
-    `${type}/specforge-${slug.split('-').slice(0, 3).join('-')}-${wiSuffix}`,
-  ]));
-  return { success: true, work_item_id: workItemId, work_item_type: type, title: input.title, candidates, recommended: candidates[0] };
+  const candidates = Array.from(
+    new Set([
+      `${type}/${slug}-${wiSuffix}`,
+      `${type}/${slug.split('-').slice(0, 4).join('-')}-${wiSuffix}`,
+      `${type}/specforge-${slug.split('-').slice(0, 3).join('-')}-${wiSuffix}`,
+    ])
+  );
+  return {
+    success: true,
+    work_item_id: workItemId,
+    work_item_type: type,
+    title: input.title,
+    candidates,
+    recommended: candidates[0],
+  };
 }
 
 export async function branchExists(projectRoot: string, branchName: string): Promise<boolean> {
@@ -404,32 +500,45 @@ export async function branchExists(projectRoot: string, branchName: string): Pro
   return result.code === 0;
 }
 
-export async function createBranch(input: { projectRoot: string; workItemId: string; branchName: string; baseBranch?: string; requireClean?: boolean }): Promise<BranchCreateResult> {
-  return withGitBranchMutationLease(input.projectRoot, input.workItemId, () => createBranchWithLease(input));
+export async function createBranch(input: {
+  projectRoot: string;
+  workItemId: string;
+  branchName: string;
+  baseBranch?: string;
+  requireClean?: boolean;
+}): Promise<BranchCreateResult> {
+  return withGitBranchMutationLease(input.projectRoot, input.workItemId, () =>
+    createBranchWithLease(input)
+  );
 }
 
-async function createBranchWithLease(input: { projectRoot: string; workItemId: string; branchName: string; baseBranch?: string; requireClean?: boolean }): Promise<BranchCreateResult> {
+async function createBranchWithLease(input: {
+  projectRoot: string;
+  workItemId: string;
+  branchName: string;
+  baseBranch?: string;
+  requireClean?: boolean;
+}): Promise<BranchCreateResult> {
   const projectRoot = input.projectRoot;
   const baseBranch = input.baseBranch || 'main';
   const requireClean = input.requireClean !== false;
   const pf = await preflight(projectRoot, baseBranch);
   if (!pf.inside_work_tree) throw new Error('NOT_A_GIT_WORK_TREE');
 
-  const unbornDefaultBranch =
-    pf.current_branch === baseBranch && pf.head_commit === null;
+  const unbornDefaultBranch = pf.current_branch === baseBranch && pf.head_commit === null;
 
   if (unbornDefaultBranch) {
     const invalidBootstrapEntries = pf.status_entries.filter(
-      (entry) =>
+      entry =>
         entry.kind !== 'untracked' ||
-        !normalizeRelativePath(entry.path).startsWith(`${SPEC_DIR_NAME}/`),
+        !normalizeRelativePath(entry.path).startsWith(`${SPEC_DIR_NAME}/`)
     );
     if (invalidBootstrapEntries.length > 0) {
       throw new Error(
         `UNBORN_DEFAULT_BRANCH_BOOTSTRAP_SCOPE_VIOLATION: ${invalidBootstrapEntries
-          .map((entry) => entry.path)
+          .map(entry => entry.path)
           .sort()
-          .join(',')}`,
+          .join(',')}`
       );
     }
   } else if (requireClean && !pf.worktree_clean) {
@@ -452,13 +561,13 @@ async function createBranchWithLease(input: { projectRoot: string; workItemId: s
     const bootstrapResult = await runGit(
       projectRoot,
       ['commit', '--allow-empty', '-m', 'chore: initialize SpecForge git baseline'],
-      true,
+      true
     );
     if (bootstrapResult.code !== 0) {
       throw new Error(
         `UNBORN_DEFAULT_BRANCH_BOOTSTRAP_COMMIT_FAILED: ${
           bootstrapResult.stderr || bootstrapResult.stdout || 'git commit failed'
-        }`,
+        }`
       );
     }
     baseCommit = await getHeadCommit(projectRoot);
@@ -504,18 +613,35 @@ async function createBranchWithLease(input: { projectRoot: string; workItemId: s
   };
 }
 
-export async function checkpointCommit(input: { projectRoot: string; workItemId?: string; files?: string[]; message: string; defaultBranch?: string; dryRun?: boolean; allowAskFiles?: boolean }): Promise<CheckpointCommitResult> {
+export async function checkpointCommit(input: {
+  projectRoot: string;
+  workItemId?: string;
+  files?: string[];
+  message: string;
+  defaultBranch?: string;
+  dryRun?: boolean;
+  allowAskFiles?: boolean;
+}): Promise<CheckpointCommitResult> {
   const projectRoot = input.projectRoot;
   const defaultBranch = input.defaultBranch || 'main';
   const branch = await getCurrentBranch(projectRoot);
-  if (branch === defaultBranch) throw new Error('MAIN_WRITE_GUARD_BLOCKED: checkpoint commit on default branch is forbidden');
+  if (branch === defaultBranch)
+    throw new Error('MAIN_WRITE_GUARD_BLOCKED: checkpoint commit on default branch is forbidden');
   if (!input.message || input.message.trim().length < 8) throw new Error('COMMIT_MESSAGE_REQUIRED');
-  const rawFiles = input.files && input.files.length > 0 ? input.files : (await getStatusEntries(projectRoot)).map((entry) => entry.path);
-  const normalizedFiles = Array.from(new Set(rawFiles.map((file) => {
-    const valid = validateProjectRelativePath(file);
-    if (!valid.valid || !valid.path) throw new Error(`INVALID_COMMIT_FILE_PATH: ${file} (${valid.reason})`);
-    return valid.path;
-  })));
+  const rawFiles =
+    input.files && input.files.length > 0
+      ? input.files
+      : (await getStatusEntries(projectRoot)).map(entry => entry.path);
+  const normalizedFiles = Array.from(
+    new Set(
+      rawFiles.map(file => {
+        const valid = validateProjectRelativePath(file);
+        if (!valid.valid || !valid.path)
+          throw new Error(`INVALID_COMMIT_FILE_PATH: ${file} (${valid.reason})`);
+        return valid.path;
+      })
+    )
+  );
   const analysis = await analyzeIgnore(projectRoot, normalizedFiles, true);
   if (analysis.hard_stop.length > 0) {
     return {
@@ -545,7 +671,10 @@ export async function checkpointCommit(input: { projectRoot: string; workItemId?
       dry_run: input.dryRun === true,
     };
   }
-  const staged = [...analysis.track.map((f) => f.path), ...(input.allowAskFiles ? analysis.ask.map((f) => f.path) : [])];
+  const staged = [
+    ...analysis.track.map(f => f.path),
+    ...(input.allowAskFiles ? analysis.ask.map(f => f.path) : []),
+  ];
   if (staged.length === 0) {
     return {
       success: true,

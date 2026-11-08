@@ -2,22 +2,24 @@
 // Build-unblock note: legacy permission-engine service has historical type drift; production build boundary is being restored
 /**
  * Built-in Policy Loader Service
- * 
+ *
  * Loads default agent role permissions from config files.
  * Supports JSON/YAML policy formats and validates policy schema.
- * 
+ *
  * Implements Layer 2 of the three-layer permission model.
- * 
+ *
  * @specforge/permission-engine
  */
 
 import fs from 'fs';
 import path from 'path';
-import yaml from 'yaml';
+
 import { resolveProjectPath } from '@specforge/types/directory-layout';
-import { 
-  BuiltinPolicy, 
-  BuiltinPolicyCollection, 
+import yaml from 'yaml';
+
+import {
+  BuiltinPolicy,
+  BuiltinPolicyCollection,
   BuiltinPolicyLoaderConfig,
   BuiltinPolicyEvaluationResult,
   PatternMatcher,
@@ -69,7 +71,7 @@ export class BuiltinPolicyLoader implements PatternMatcher {
    */
   private loadDefaultPolicies(): void {
     const defaultCollection = DEFAULT_BUILTIN_POLICY_COLLECTION;
-    
+
     // Validate default collection if validation is enabled
     if (this.config.validationEnabled) {
       try {
@@ -132,10 +134,10 @@ export class BuiltinPolicyLoader implements PatternMatcher {
   private async loadPoliciesFromDirectory(dirPath: string): Promise<void> {
     try {
       const files = await fs.promises.readdir(dirPath);
-      
+
       for (const file of files) {
         const filePath = path.join(dirPath, file);
-        
+
         // Only load JSON and YAML files
         if (file.endsWith('.json') || file.endsWith('.yaml') || file.endsWith('.yml')) {
           try {
@@ -156,9 +158,9 @@ export class BuiltinPolicyLoader implements PatternMatcher {
   private async loadPolicyFile(filePath: string): Promise<void> {
     const fileContent = await fs.promises.readFile(filePath, 'utf-8');
     const fileName = path.basename(filePath);
-    
-    let parsedContent: any;
-    
+
+    let parsedContent: unknown;
+
     // Parse based on file extension
     if (filePath.endsWith('.json')) {
       parsedContent = JSON.parse(fileContent);
@@ -175,12 +177,12 @@ export class BuiltinPolicyLoader implements PatternMatcher {
   /**
    * Load a policy collection
    */
-  private async loadPolicyCollection(collectionData: any, source: string): Promise<void> {
+  private async loadPolicyCollection(collectionData: unknown, source: string): Promise<void> {
     if (this.config.validationEnabled) {
       try {
         // Validate the collection schema
         const validatedCollection = BuiltinPolicyCollectionSchema.parse(collectionData);
-        
+
         // Validate each policy in the collection
         for (const policy of validatedCollection.policies) {
           BuiltinPolicySchema.parse(policy);
@@ -188,7 +190,7 @@ export class BuiltinPolicyLoader implements PatternMatcher {
 
         // Add to collections map
         this.policyCollections.set(source, validatedCollection);
-        
+
         // Add policies to the main list
         this.policies.push(...validatedCollection.policies);
 
@@ -202,7 +204,7 @@ export class BuiltinPolicyLoader implements PatternMatcher {
       const collection = collectionData as BuiltinPolicyCollection;
       this.policyCollections.set(source, collection);
       this.policies.push(...collection.policies);
-      
+
       console.log(`Loaded ${collection.policies.length} policies from ${source} (without validation)`);
     }
   }
@@ -216,15 +218,15 @@ export class BuiltinPolicyLoader implements PatternMatcher {
         const watcher = fs.watch(policyPath, { persistent: false }, async (eventType, filename) => {
           if (eventType === 'change' && filename) {
             const filePath = path.join(policyPath, filename.toString());
-            
+
             // Only reload JSON/YAML files
             if (filePath.endsWith('.json') || filePath.endsWith('.yaml') || filePath.endsWith('.yml')) {
               console.log(`Policy file changed: ${filePath}, reloading...`);
-              
+
               try {
                 // Remove old policies from this file
                 this.removePoliciesFromSource(filename.toString());
-                
+
                 // Reload the file
                 await this.loadPolicyFile(filePath);
               } catch (error) {
@@ -233,7 +235,7 @@ export class BuiltinPolicyLoader implements PatternMatcher {
             }
           }
         });
-        
+
         this.fileWatchers.push(watcher);
       } catch (error) {
         console.error(`Failed to set up file watcher for ${policyPath}:`, error);
@@ -247,7 +249,7 @@ export class BuiltinPolicyLoader implements PatternMatcher {
   private removePoliciesFromSource(source: string): void {
     // Find indices of policies from this source
     const indicesToRemove: number[] = [];
-    
+
     for (let i = 0; i < this.policies.length; i++) {
       // Check if this policy belongs to the source collection
       for (const [collectionSource, collection] of this.policyCollections.entries()) {
@@ -257,15 +259,15 @@ export class BuiltinPolicyLoader implements PatternMatcher {
         }
       }
     }
-    
+
     // Remove policies in reverse order to preserve indices
     for (let i = indicesToRemove.length - 1; i >= 0; i--) {
       this.policies.splice(indicesToRemove[i], 1);
     }
-    
+
     // Remove the collection
     this.policyCollections.delete(source);
-    
+
     // Clear cache
     this.cache.clear();
   }
@@ -274,13 +276,13 @@ export class BuiltinPolicyLoader implements PatternMatcher {
    * Evaluate built-in policies against a permission request
    */
   evaluate(
-    actor: any,
+    actor: unknown,
     action: string,
-    resource: any,
+    resource: unknown,
     context?: Record<string, unknown>
   ): BuiltinPolicyEvaluationResult {
     const cacheKey = this.config.cacheEnabled ? this.generateCacheKey(actor, action, resource, context) : null;
-    
+
     // Check cache first
     if (cacheKey && this.cache.has(cacheKey)) {
       const cachedResult = this.cache.get(cacheKey)!;
@@ -293,29 +295,29 @@ export class BuiltinPolicyLoader implements PatternMatcher {
     const evaluatedPolicies: BuiltinPolicy[] = [];
     let matchedPolicy: BuiltinPolicy | undefined;
     let resultAllowed = true; // Default to allow if no policies match
-    
+
     // Sort policies by priority (higher priority = evaluated earlier)
     const sortedPolicies = [...this.policies].sort((a, b) => b.priority - a.priority);
-    
+
     for (const policy of sortedPolicies) {
       // Check if policy matches
       const matchesActor = this.matchesActor(actor, policy.actorPattern);
       const matchesAction = this.matchesAction(action, policy.actionPattern);
       const matchesResource = this.matchesResource(resource, policy.resourcePattern);
-      
+
       if (matchesActor && matchesAction && matchesResource) {
         evaluatedPolicies.push(policy);
-        
+
         // Check additional conditions if present
         let conditionsMet = true;
         if (policy.conditions) {
           conditionsMet = this.evaluateConditions(policy.conditions, actor, action, resource, context);
         }
-        
+
         if (conditionsMet) {
           matchedPolicy = policy;
           resultAllowed = policy.effect === 'allow';
-          
+
           // Stop evaluation at first matching policy (due to priority sorting)
           break;
         }
@@ -344,29 +346,29 @@ export class BuiltinPolicyLoader implements PatternMatcher {
    * Generate a cache key for the evaluation
    */
   private generateCacheKey(
-    actor: any,
+    actor: unknown,
     action: string,
-    resource: any,
+    resource: unknown,
     context?: Record<string, unknown>
   ): string {
     const actorKey = JSON.stringify(actor);
     const resourceKey = JSON.stringify(resource);
     const contextKey = context ? JSON.stringify(context) : '';
-    
+
     return `${actorKey}:${action}:${resourceKey}:${contextKey}`;
   }
 
   /**
    * Check if an actor matches a pattern
    */
-  matchesActor(actor: any, pattern: string): boolean {
+  matchesActor(actor: unknown, pattern: string): boolean {
     // Parse pattern like "agentRole:sf-reviewer" or "userId:123"
     const [key, value] = pattern.split(':');
-    
+
     if (!key || !value) {
       return false;
     }
-    
+
     // Check different actor properties
     switch (key.toLowerCase()) {
       case 'agentrole':
@@ -394,11 +396,11 @@ export class BuiltinPolicyLoader implements PatternMatcher {
     // Parse pattern like "action:^tool\\.(execute|write)"
     const [prefix, ...rest] = pattern.split(':');
     const patternValue = rest.join(':'); // Handle patterns with colons in them
-    
+
     if (prefix.toLowerCase() !== 'action') {
       return false;
     }
-    
+
     // Convert pattern to regex
     try {
       const regex = new RegExp(patternValue);
@@ -412,14 +414,14 @@ export class BuiltinPolicyLoader implements PatternMatcher {
   /**
    * Check if a resource matches a pattern
    */
-  matchesResource(resource: any, pattern: string): boolean {
+  matchesResource(resource: unknown, pattern: string): boolean {
     // Parse pattern like "resourceType:*" or "resourceType:spec"
     const [key, value] = pattern.split(':');
-    
+
     if (!key || !value) {
       return false;
     }
-    
+
     // Check different resource properties
     switch (key.toLowerCase()) {
       case 'resourcetype':
@@ -440,16 +442,16 @@ export class BuiltinPolicyLoader implements PatternMatcher {
    * Evaluate additional conditions for a policy
    */
   private evaluateConditions(
-    conditions: Record<string, any>,
-    actor: any,
+    conditions: Record<string, unknown>,
+    actor: unknown,
     action: string,
-    resource: any,
+    resource: unknown,
     context?: Record<string, unknown>
   ): boolean {
     // Simple condition evaluation - can be extended for more complex logic
     for (const [key, expectedValue] of Object.entries(conditions)) {
-      let actualValue: any;
-      
+      let actualValue: unknown;
+
       // Determine where to get the value from
       if (key.startsWith('actor.')) {
         const actorKey = key.substring(6);
@@ -466,13 +468,13 @@ export class BuiltinPolicyLoader implements PatternMatcher {
         // Default to context
         actualValue = context?.[key];
       }
-      
+
       // Compare values
       if (expectedValue !== undefined && actualValue !== expectedValue) {
         return false;
       }
     }
-    
+
     return true;
   }
 
@@ -487,7 +489,7 @@ export class BuiltinPolicyLoader implements PatternMatcher {
    * Get policies by tag
    */
   getPoliciesByTag(tag: string): BuiltinPolicy[] {
-    return this.policies.filter(policy => 
+    return this.policies.filter(policy =>
       policy.metadata?.tags?.includes(tag)
     );
   }
@@ -496,8 +498,8 @@ export class BuiltinPolicyLoader implements PatternMatcher {
    * Get policies for a specific agent role
    */
   getPoliciesForAgentRole(agentRole: string): BuiltinPolicy[] {
-    return this.policies.filter(policy => 
-      policy.actorPattern === `agentRole:${agentRole}` || 
+    return this.policies.filter(policy =>
+      policy.actorPattern === `agentRole:${agentRole}` ||
       policy.actorPattern.includes(`agentRole:${agentRole}`)
     );
   }
@@ -517,11 +519,11 @@ export class BuiltinPolicyLoader implements PatternMatcher {
     this.policies = [];
     this.policyCollections.clear();
     this.cache.clear();
-    
+
     // Reload policies
     this.loadDefaultPolicies();
     await this.loadPoliciesFromPaths();
-    
+
     console.log('Policies reloaded successfully');
   }
 
@@ -534,7 +536,7 @@ export class BuiltinPolicyLoader implements PatternMatcher {
       watcher.close();
     }
     this.fileWatchers = [];
-    
+
     // Clear cache
     this.cache.clear();
   }
@@ -571,12 +573,12 @@ export class BuiltinPolicyLoader implements PatternMatcher {
       validationEnabled: false,
       cacheEnabled: false
     };
-    
+
     const loader = new BuiltinPolicyLoader(config);
-    
+
     // Load default policies without file operations
     loader.loadDefaultPolicies();
-    
+
     return loader;
   }
 }

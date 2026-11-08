@@ -1,26 +1,34 @@
 /**
  * Comprehensive integration tests for workflow event system
  * Tests the complete integration of WorkflowEngine, GateRunner, and EventPublisher with Event Bus
- * 
+ *
  * Feature: Workflow Event System Integration
  * Property 6: Event Ordering - For all workflow instances w, events must be ordered by time
  * Validates: Requirements 4.1, 4.2, 4.3
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { TestEventBus } from '../helpers/test-event-bus.js';
-import { WorkflowEngine } from '../../src/WorkflowEngine.js';
-import { EventPublisher } from '../../src/events/EventPublisher.js';
-import type {
-  WorkflowDefinition,
-  WorkflowInstance,
-  Event,
-  GateResult,
-} from '../../src/types.js';
+/**
+ * Comprehensive integration tests for workflow event system
+ * Tests the complete integration of WorkflowEngine, GateRunner, and EventPublisher with Event Bus
+ *
+ * Feature: Workflow Event System Integration
+ * Property 6: Event Ordering - For all workflow instances w, events must be ordered by time
+ * Validates: Requirements 4.1, 4.2, 4.3
+ */
 
 /**
  * Create a simple workflow definition for testing
  */
+
+import { promiseFromSync } from '@specforge/types';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+
+import { EventPublisher } from '../../src/events/EventPublisher.js';
+import type { WorkflowDefinition, Event } from '../../src/types.js';
+import { WorkflowEngine } from '../../src/WorkflowEngine.js';
+import { TestEventBus } from '../helpers/test-event-bus.js';
+import { requiredTestValue } from '../required-test-value';
+
 function createSimpleWorkflow(): WorkflowDefinition {
   return {
     id: 'test-workflow-1',
@@ -35,7 +43,7 @@ function createSimpleWorkflow(): WorkflowDefinition {
           gate: {
             id: 'req-gate-1',
             type: 'simple',
-            checkFn: async () => ({ schema_version: '1.0', passed: true, reason: 'Requirements passed' }),
+            checkFn:  () => promiseFromSync(() => (({ schema_version: '1.0', passed: true, reason: 'Requirements passed' }))),
           },
           next: 'design',
         },
@@ -44,7 +52,7 @@ function createSimpleWorkflow(): WorkflowDefinition {
           gate: {
             id: 'design-gate-1',
             type: 'simple',
-            checkFn: async () => ({ schema_version: '1.0', passed: true, reason: 'Design passed' }),
+            checkFn:  () => promiseFromSync(() => (({ schema_version: '1.0', passed: true, reason: 'Design passed' }))),
           },
           next: 'implementation',
         },
@@ -53,7 +61,7 @@ function createSimpleWorkflow(): WorkflowDefinition {
           gate: {
             id: 'impl-gate-1',
             type: 'simple',
-            checkFn: async () => ({ schema_version: '1.0', passed: true, reason: 'Implementation passed' }),
+            checkFn:  () => promiseFromSync(() => (({ schema_version: '1.0', passed: true, reason: 'Implementation passed' }))),
           },
           next: undefined,
         },
@@ -80,7 +88,7 @@ function createConditionalWorkflow(): WorkflowDefinition {
           gate: {
             id: 'check-gate',
             type: 'simple',
-            checkFn: async () => ({ schema_version: '1.0', passed: false, reason: 'Check failed' }),
+            checkFn:  () => promiseFromSync(() => (({ schema_version: '1.0', passed: false, reason: 'Check failed' }))),
           },
           next: {
             pass: 'success',
@@ -92,7 +100,7 @@ function createConditionalWorkflow(): WorkflowDefinition {
           gate: {
             id: 'retry-gate',
             type: 'simple',
-            checkFn: async () => ({ schema_version: '1.0', passed: true, reason: 'Retry passed' }),
+            checkFn:  () => promiseFromSync(() => (({ schema_version: '1.0', passed: true, reason: 'Retry passed' }))),
           },
           next: 'success',
         },
@@ -101,7 +109,7 @@ function createConditionalWorkflow(): WorkflowDefinition {
           gate: {
             id: 'success-gate',
             type: 'simple',
-            checkFn: async () => ({ schema_version: '1.0', passed: true, reason: 'Success' }),
+            checkFn:  () => promiseFromSync(() => (({ schema_version: '1.0', passed: true, reason: 'Success' }))),
           },
           next: undefined,
         },
@@ -226,9 +234,9 @@ describe('Workflow Event System Integration', () => {
     it('should have workflow.started before workflow.completed', async () => {
       const workflow = createSimpleWorkflow();
       engine.loadWorkflow(workflow);
-      
+
       publishedEvents = []; // Clear events before creating instance
-      
+
       const instance = engine.createInstance(workflow.id);
 
       await engine.execute(instance.id);
@@ -251,7 +259,7 @@ describe('Workflow Event System Integration', () => {
       await engine.execute(instance.id);
 
       const gateStartedEvents = publishedEvents.filter(e => e.action === 'workflow.gate.started');
-      const gateCompletedEvents = publishedEvents.filter(e => e.action === 'workflow.gate.completed');
+      void (publishedEvents.filter(e => e.action === 'workflow.gate.completed'));
 
       // For each gate, started should come before completed
       for (const startedEvent of gateStartedEvents) {
@@ -260,7 +268,7 @@ describe('Workflow Event System Integration', () => {
         const completedEvent = publishedEvents.find(
           e => e.action === 'workflow.gate.completed' && e.payload.gateId === gateId
         );
-        const completedIdx = publishedEvents.indexOf(completedEvent!);
+        const completedIdx = publishedEvents.indexOf(requiredTestValue(completedEvent));
 
         expect(startedIdx).toBeLessThan(completedIdx);
       }
@@ -296,7 +304,7 @@ describe('Workflow Event System Integration', () => {
     it('should include all required fields in workflow.started event', () => {
       const workflow = createSimpleWorkflow();
       engine.loadWorkflow(workflow);
-      const instance = engine.createInstance(workflow.id);
+      void (engine.createInstance(workflow.id));
 
       const startedEvent = publishedEvents.find(e => e.action === 'workflow.started');
       expect(startedEvent?.payload).toHaveProperty('instanceId');
@@ -497,7 +505,7 @@ describe('Workflow Event System Integration', () => {
       engine.loadWorkflow(workflow);
 
       const instance1 = engine.createInstance(workflow.id);
-      const instance2 = engine.createInstance(workflow.id);
+      void (engine.createInstance(workflow.id));
 
       publishedEvents = []; // Clear initial events
 

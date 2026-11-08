@@ -2,45 +2,42 @@
 // Build-unblock note: legacy permission-engine service has historical type drift; production build boundary is being restored
 /**
  * Policy Enforcement Point (PEP)
- * 
+ *
  * The PEP is the entry point for all permission checks. It:
  * 1. Extracts request context (actor, action, resource)
  * 2. Validates authentication (Bearer tokens, API keys)
  * 3. Routes requests to the Policy Decision Point (PDP)
  * 4. Returns appropriate HTTP responses
- * 
+ *
  * Implements Property 16 (Bearer Token Enforcement) and Property 26 (Remote Access Guard)
  * as part of the three-layer permission model.
- * 
+ *
  * @specforge/permission-engine
  */
 
-import { 
-  BearerTokenValidator, 
-  createBearerTokenValidator,
-  BearerTokenValidationResult 
-} from './bearer-token-validator';
+import { PermissionRequest, PermissionDecision } from '../types';
+import {
+  PermissionDeniedEventPayload
+} from '../types/events';
 
-import { 
-  RemoteAccessGuard, 
+import {
+  BearerTokenValidator,
+  createBearerTokenValidator,
+  BearerTokenValidationResult
+} from './bearer-token-validator';
+import { EventLogger } from './event-logger';
+import {
+  RemoteAccessGuard,
   createRemoteAccessGuard,
   RemoteAccessValidationResult,
   RemoteAccessRequestContext,
-  RemoteAccessConfig 
+  RemoteAccessConfig
 } from './remote-access-guard';
-
-import { 
+import {
   RuleMergingEngine,
-  MergedPermissionDecision 
+  MergedPermissionDecision
 } from './rule-merging-engine';
 
-import { PermissionRequest, PermissionDecision } from '../types';
-
-import { EventLogger } from './event-logger';
-
-import { 
-  PermissionDeniedEventPayload 
-} from '../types/events';
 
 /**
  * HTTP request context extracted from incoming requests
@@ -55,7 +52,7 @@ export interface HttpRequestContext {
   /** Request headers */
   headers: Record<string, string | string[] | undefined>;
   /** Request body (parsed if JSON) */
-  body?: any;
+  body?: unknown;
   /** Client IP address */
   clientIp?: string;
   /** User agent */
@@ -77,7 +74,7 @@ export interface ActorContext {
   /** Remote identity (for OpenClaw requests) */
   remoteIdentity?: string;
   /** Additional actor properties */
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
@@ -91,7 +88,7 @@ export interface ResourceContext {
   /** Resource path (for filesystem resources) */
   path?: string;
   /** Additional resource properties */
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
@@ -172,7 +169,7 @@ export interface HttpResponse {
 
 /**
  * Policy Enforcement Point (PEP)
- * 
+ *
  * Main entry point for permission checks. Coordinates authentication
  * and authorization for HTTP/SSE requests.
  */
@@ -240,7 +237,7 @@ export class PolicyEnforcementPoint {
 
   /**
    * Set the PDP (Policy Decision Point)
-   * 
+   *
    * @param pdp - Rule merging engine instance
    */
   setPdp(pdp: RuleMergingEngine): void {
@@ -263,13 +260,13 @@ export class PolicyEnforcementPoint {
 
   /**
    * Process an HTTP request through the PEP
-   * 
+   *
    * This is the main entry point that:
    * 1. Extracts request context
    * 2. Validates authentication (Bearer token, API key for remote)
    * 3. Routes to PDP for authorization decision
    * 4. Returns appropriate HTTP response
-   * 
+   *
    * @param request - HTTP request context
    * @returns PEP result with decision and response
    */
@@ -319,7 +316,7 @@ export class PolicyEnforcementPoint {
     // Step 3: Validate remote access if enabled
     if (this.remoteAccessGuard && this.config.remoteAccessEnabled) {
       const remoteResult = await this.validateRemoteAccess(request, context);
-      
+
       if (!remoteResult.authorized) {
         if (this.config.logDenials) {
           await this.logPermissionDenied({
@@ -405,13 +402,13 @@ export class PolicyEnforcementPoint {
 
   /**
    * Extract request context from HTTP request
-   * 
+   *
    * Extracts actor, action, and resource from the incoming request.
    * Supports multiple ways to specify these:
    * - From headers (X-Actor-Id, X-Action, X-Resource-Type)
    * - From query parameters (actor, action, resource)
    * - From request body (for POST/PUT requests)
-   * 
+   *
    * @param request - HTTP request context
    * @returns Extracted PEP request context
    */
@@ -445,9 +442,9 @@ export class PolicyEnforcementPoint {
    */
   private extractActor(request: HttpRequestContext): ActorContext {
     const headers = request.headers;
-    
+
     // Try to get actor info from headers
-    const id = this.getHeader(headers, 'x-actor-id') 
+    const id = this.getHeader(headers, 'x-actor-id')
       || this.getHeader(headers, 'x-user-id')
       || (request.body?.actorId ?? request.body?.userId ?? request.body?.actor?.id);
 
@@ -478,7 +475,7 @@ export class PolicyEnforcementPoint {
    */
   private extractAction(request: HttpRequestContext): string {
     const headers = request.headers;
-    
+
     // Check headers first
     const headerAction = this.getHeader(headers, 'x-action');
     if (headerAction) {
@@ -501,7 +498,7 @@ export class PolicyEnforcementPoint {
 
     // Common REST patterns
     if (path.includes('/specs/') || path.includes('/spec/')) {
-      const baseAction = method === 'GET' ? 'read' 
+      const baseAction = method === 'GET' ? 'read'
         : method === 'POST' ? 'create'
         : method === 'PUT' || method === 'PATCH' ? 'update'
         : method === 'DELETE' ? 'delete'
@@ -564,7 +561,7 @@ export class PolicyEnforcementPoint {
     if (!derivedType) {
       // Parse from path
       const segments = path.split('/').filter(s => s);
-      
+
       if (segments[0] === 'api') {
         // /api/specs, /api/tasks, etc.
         derivedType = segments[1]?.replace(/s$/, '') || 'unknown';
@@ -684,8 +681,8 @@ export class PolicyEnforcementPoint {
       'spec.delete',
       'task.delete'
     ];
-    
-    return sensitiveActions.some(sa => 
+
+    return sensitiveActions.some(sa =>
       action.includes(sa) || action === sa
     );
   }
@@ -693,7 +690,7 @@ export class PolicyEnforcementPoint {
   /**
    * Get the sensitive operation type for an action
    */
-  private getSensitiveOperationType(action: string): any {
+  private getSensitiveOperationType(action: string): unknown {
     if (action.includes('delete')) return 'workitem.delete';
     if (action.includes('permission')) return 'permission.change';
     if (action.includes('config.reset')) return 'config.reset';
@@ -739,7 +736,7 @@ export class PolicyEnforcementPoint {
 
   /**
    * Middleware-style handler for Express/Fastify compatibility
-   * 
+   *
    * Returns a handler function that can be used with Express, Fastify, etc.
    */
   createMiddleware() {
@@ -748,14 +745,14 @@ export class PolicyEnforcementPoint {
       url: string;
       headers: Record<string, string | string[] | undefined>;
       query?: Record<string, string>;
-      body?: any;
+      body?: unknown;
       ip?: string;
       get?: (name: string) => string | string[] | undefined;
     }): Promise<HttpResponse> => {
       const forwardedFor = req.get?.('x-forwarded-for') as string | undefined;
       const realIp = req.get?.('x-real-ip') as string | undefined;
       const userAgent = req.get?.('user-agent') as string | undefined;
-      
+
       const queryObj = req.query ? { ...req.query } : undefined;
       const request: HttpRequestContext = {
         method: req.method,
@@ -774,7 +771,7 @@ export class PolicyEnforcementPoint {
 
   /**
    * SSE event handler for streaming permission events
-   * 
+   *
    * Returns a handler for SSE connections that streams permission decisions
    */
   createSseHandler() {
@@ -783,18 +780,18 @@ export class PolicyEnforcementPoint {
       url: string;
       headers: Record<string, string | string[] | undefined>;
       query?: Record<string, string>;
-      body?: any;
+      body?: unknown;
       ip?: string;
       get?: (name: string) => string | string[] | undefined;
     }): Promise<{
       allowed: boolean;
       eventType: string;
-      data: any;
+      data: unknown;
     }> => {
       const forwardedFor = req.get?.('x-forwarded-for') as string | undefined;
       const realIp = req.get?.('x-real-ip') as string | undefined;
       const userAgent = req.get?.('user-agent') as string | undefined;
-      
+
       const queryObj = req.query ? { ...req.query } : undefined;
       const request: HttpRequestContext = {
         method: req.method,
@@ -807,7 +804,7 @@ export class PolicyEnforcementPoint {
       };
 
       const result = await this.processRequest(request);
-      
+
       return {
         allowed: result.allowed,
         eventType: result.allowed ? 'permission.allowed' : 'permission.denied',
@@ -847,7 +844,7 @@ export class PolicyEnforcementPoint {
   /**
    * Get current configuration (without sensitive data)
    */
-  getConfig(): Omit<Required<PepConfig>, 'bearerToken' | 'eventLogger' | 'pdp' | 'remoteAccess'> & { 
+  getConfig(): Omit<Required<PepConfig>, 'bearerToken' | 'eventLogger' | 'pdp' | 'remoteAccess'> & {
     eventLogger: boolean;
     remoteAccessConfigured: boolean;
   } {

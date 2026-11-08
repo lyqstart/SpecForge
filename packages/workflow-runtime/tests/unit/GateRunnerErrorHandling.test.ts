@@ -3,33 +3,37 @@
  * Validates: Requirements for Gate execution error handling
  */
 
+import { promiseFromSync } from '@specforge/types';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import {
-  SimpleGateRunner,
-  CompositeGateRunner,
-  GateRunner,
-  DefaultGateRunnerLogger,
-  IGateRunnerLogger,
-} from '../../src/GateRunner.js';
-import {
-  SimpleGateDefinition,
-  CompositeGateDefinition,
-} from '../../src/types.js';
+
 import {
   GateExecutionError,
   GateErrorType,
   isGateError,
   createErrorResult,
 } from '../../src/error-handler.js';
+import {
+  type IGateRunnerLogger,
+  SimpleGateRunner,
+  CompositeGateRunner,
+  GateRunner,
+  DefaultGateRunnerLogger
+} from '../../src/GateRunner.js';
+import type {
+  SimpleGateDefinition,
+  CompositeGateDefinition,
+} from '../../src/types.js';
+import { requireCompositeObservation } from '../composite-observation';
+import { requiredTestValue } from '../required-test-value';
 
 describe('GateRunner Error Handling', () => {
   // Mock logger for testing error logging
-  const mockLogger = {
+  void ({
     error: vi.fn(),
     warn: vi.fn(),
     info: vi.fn(),
     debug: vi.fn(),
-  };
+  });
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -68,9 +72,9 @@ describe('GateRunner Error Handling', () => {
         type: 'simple',
         id: 'async-error-gate',
         name: 'Async Error Gate',
-        checkFn: async () => {
+        checkFn:  () => { return promiseFromSync(() => {
           throw new Error(errorMessage);
-        },
+        }); },
       };
 
       const runner = new SimpleGateRunner(gate);
@@ -86,9 +90,9 @@ describe('GateRunner Error Handling', () => {
         type: 'simple',
         id: 'error-type-gate',
         name: 'Error Type Gate',
-        checkFn: async () => {
+        checkFn:  () => { return promiseFromSync(() => {
           throw new Error('Test error');
-        },
+        }); },
       };
 
       const runner = new SimpleGateRunner(gate);
@@ -103,9 +107,9 @@ describe('GateRunner Error Handling', () => {
         type: 'simple',
         id: 'original-error-gate',
         name: 'Original Error Gate',
-        checkFn: async () => {
+        checkFn:  () => { return promiseFromSync(() => {
           throw new Error(originalErrorMessage);
-        },
+        }); },
       };
 
       const runner = new SimpleGateRunner(gate);
@@ -121,10 +125,9 @@ describe('GateRunner Error Handling', () => {
         type: 'simple',
         id: 'type-error-gate',
         name: 'Type Error Gate',
-        checkFn: async () => {
-          const obj: any = null;
-          return obj.property;
-        },
+        checkFn:  () => { return promiseFromSync(() => {
+          throw new TypeError('Test type error');
+        }); },
       };
 
       const runner = new SimpleGateRunner(typeErrorGate);
@@ -146,9 +149,9 @@ describe('GateRunner Error Handling', () => {
         type: 'simple',
         id: 'custom-error-gate',
         name: 'Custom Error Gate',
-        checkFn: async () => {
+        checkFn:  () => { return promiseFromSync(() => {
           throw customError;
-        },
+        }); },
       };
 
       const runner = new SimpleGateRunner(gate);
@@ -163,9 +166,9 @@ describe('GateRunner Error Handling', () => {
         type: 'simple',
         id: 'standard-format-gate',
         name: 'Standard Format Gate',
-        checkFn: async () => {
+        checkFn:  () => { return promiseFromSync(() => {
           throw new Error('Standard format test');
-        },
+        }); },
       };
 
       const runner = new SimpleGateRunner(gate);
@@ -190,16 +193,16 @@ describe('GateRunner Error Handling', () => {
         type: 'simple',
         id: 'child-before-error',
         name: 'Child Before Error',
-        checkFn: async () => ({ passed: true, reason: 'First child passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'First child passed' }))),
       };
 
       const childGate2: SimpleGateDefinition = {
         type: 'simple',
         id: 'child-with-error',
         name: 'Child With Error',
-        checkFn: async () => {
+        checkFn:  () => { return promiseFromSync(() => {
           throw new Error('Error in second child');
-        },
+        }); },
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -223,16 +226,16 @@ describe('GateRunner Error Handling', () => {
         type: 'simple',
         id: 'child-parallel-1',
         name: 'Child Parallel 1',
-        checkFn: async () => {
+        checkFn:  () => { return promiseFromSync(() => {
           throw new Error('Error in parallel child 1');
-        },
+        }); },
       };
 
       const childGate2: SimpleGateDefinition = {
         type: 'simple',
         id: 'child-parallel-2',
         name: 'Child Parallel 2',
-        checkFn: async () => ({ passed: true, reason: 'Second child passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Second child passed' }))),
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -257,7 +260,7 @@ describe('GateRunner Error Handling', () => {
         type: 'simple',
         id: '',
         name: 'Invalid Gate',
-        checkFn: async () => ({ passed: true, reason: 'Should not reach here' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Should not reach here' }))),
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -281,9 +284,9 @@ describe('GateRunner Error Handling', () => {
         type: 'simple',
         id: 'error-context-child',
         name: 'Error Context Child',
-        checkFn: async () => {
+        checkFn:  () => { return promiseFromSync(() => {
           throw new Error('Context error');
-        },
+        }); },
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -299,8 +302,8 @@ describe('GateRunner Error Handling', () => {
       const result = await runner.check();
 
       // Verify error details are propagated
-      expect(result.details?.results?.[0]).toBeDefined();
-      expect(result.details?.results?.[0].passed).toBe(false);
+      expect(requiredTestValue(requireCompositeObservation(result.details).results[0])).toBeDefined();
+      expect(requiredTestValue(requireCompositeObservation(result.details).results[0]).passed).toBe(false);
     });
   });
 
@@ -310,9 +313,9 @@ describe('GateRunner Error Handling', () => {
         type: 'simple',
         id: 'gate-id-context-test',
         name: 'Gate ID Context Test',
-        checkFn: async () => {
+        checkFn:  () => { return promiseFromSync(() => {
           throw new Error('Test error');
-        },
+        }); },
       };
 
       const runner = new SimpleGateRunner(gate);
@@ -326,9 +329,9 @@ describe('GateRunner Error Handling', () => {
         type: 'simple',
         id: 'error-code-test',
         name: 'Error Code Test',
-        checkFn: async () => {
+        checkFn:  () => { return promiseFromSync(() => {
           throw new Error('Test error for code');
-        },
+        }); },
       };
 
       const runner = new SimpleGateRunner(gate);
@@ -343,9 +346,9 @@ describe('GateRunner Error Handling', () => {
         type: 'simple',
         id: 'suggestion-test',
         name: 'Suggestion Test',
-        checkFn: async () => {
+        checkFn:  () => { return promiseFromSync(() => {
           throw new Error('Test error for suggestion');
-        },
+        }); },
       };
 
       const runner = new SimpleGateRunner(gate);
@@ -360,9 +363,9 @@ describe('GateRunner Error Handling', () => {
         type: 'simple',
         id: 'timestamp-test',
         name: 'Timestamp Test',
-        checkFn: async () => {
+        checkFn:  () => { return promiseFromSync(() => {
           throw new Error('Test error for timestamp');
-        },
+        }); },
       };
 
       const runner = new SimpleGateRunner(gate);
@@ -465,7 +468,7 @@ describe('GateRunner Error Handling', () => {
       expect(json.gateType).toBe('simple');
       expect(json.errorType).toBe(GateErrorType.EXECUTION_ERROR);
       expect(json.originalError).toBeDefined();
-      expect((json.originalError as any).message).toBe('Original error');
+      expect(json.originalError).toMatchObject({ message: 'Original error' });
     });
 
     it('should default retryable based on error type', () => {
@@ -497,20 +500,20 @@ describe('GateRunner Error Handling', () => {
     });
 
     it('should handle errors with circular references', async () => {
-      const circularError: any = new Error('Circular error');
+      const circularError: Error & { self?: Error } = new Error('Circular error');
       circularError.self = circularError;
 
       const gate: SimpleGateDefinition = {
         type: 'simple',
         id: 'circular-error-gate',
         name: 'Circular Error Gate',
-        checkFn: async () => {
+        checkFn:  () => { return promiseFromSync(() => {
           throw circularError;
-        },
+        }); },
       };
 
       const runner = new SimpleGateRunner(gate);
-      
+
       // Should not throw when handling circular references
       const result = await runner.check();
       expect(result.passed).toBe(false);
@@ -521,14 +524,14 @@ describe('GateRunner Error Handling', () => {
         type: 'simple',
         id: 'non-serializable-gate',
         name: 'Non Serializable Gate',
-        checkFn: async () => {
-          const nonSerializable: any = {
+        checkFn:  () => { return promiseFromSync(() => {
+          const nonSerializable = {
             toJSON: () => {
               throw new Error('Cannot serialize');
             },
           };
-          throw new Error('Test').toJSON = nonSerializable.toJSON;
-        },
+          throw Object.assign(new Error('Test'), { toJSON: nonSerializable.toJSON });
+        }); },
       };
 
       const runner = new SimpleGateRunner(gate);
@@ -543,9 +546,9 @@ describe('GateRunner Error Handling', () => {
         type: 'simple',
         id: 'message-preservation-gate',
         name: 'Message Preservation Gate',
-        checkFn: async () => {
+        checkFn:  () => { return promiseFromSync(() => {
           throw new Error(specificMessage);
-        },
+        }); },
       };
 
       const runner = new SimpleGateRunner(gate);
@@ -560,12 +563,12 @@ describe('GateRunner Error Handling', () => {
 
   describe('GateRunner Logger Integration', () => {
     it('should allow setting custom logger', () => {
-      const customLogger: IGateRunnerLogger = {
-        error: vi.fn(),
+      const customLogger = {
+        error: vi.fn<Parameters<IGateRunnerLogger['error']>, ReturnType<IGateRunnerLogger['error']>>(),
         warn: vi.fn(),
         info: vi.fn(),
         debug: vi.fn(),
-      };
+      } satisfies IGateRunnerLogger;
 
       GateRunner.setLogger(customLogger);
       const logger = GateRunner.getLogger();
@@ -574,12 +577,12 @@ describe('GateRunner Error Handling', () => {
     });
 
     it('should use custom logger for error logging', async () => {
-      const customLogger: IGateRunnerLogger = {
-        error: vi.fn(),
+      const customLogger = {
+        error: vi.fn<Parameters<IGateRunnerLogger['error']>, ReturnType<IGateRunnerLogger['error']>>(),
         warn: vi.fn(),
         info: vi.fn(),
         debug: vi.fn(),
-      };
+      } satisfies IGateRunnerLogger;
 
       GateRunner.setLogger(customLogger);
 
@@ -587,9 +590,9 @@ describe('GateRunner Error Handling', () => {
         type: 'simple',
         id: 'custom-logger-test',
         name: 'Custom Logger Test',
-        checkFn: async () => {
+        checkFn:  () => { return promiseFromSync(() => {
           throw new Error('Test error for custom logger');
-        },
+        }); },
       };
 
       const runner = new SimpleGateRunner(gate);
@@ -606,13 +609,13 @@ describe('GateRunner Error Handling', () => {
       );
     });
 
-    it('should include operation and timeout in log context when provided', async () => {
-      const customLogger: IGateRunnerLogger = {
-        error: vi.fn(),
+    it('should include operation and timeout in log context when provided',  () => { return promiseFromSync(() => {
+      const customLogger = {
+        error: vi.fn<Parameters<IGateRunnerLogger['error']>, ReturnType<IGateRunnerLogger['error']>>(),
         warn: vi.fn(),
         info: vi.fn(),
         debug: vi.fn(),
-      };
+      } satisfies IGateRunnerLogger;
 
       GateRunner.setLogger(customLogger);
 
@@ -621,13 +624,13 @@ describe('GateRunner Error Handling', () => {
         type: 'simple',
         id: 'direct-handle-error-test',
         name: 'Direct Handle Error Test',
-        checkFn: async () => ({ passed: true, reason: 'test' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'test' }))),
       };
 
       const runner = new SimpleGateRunner(gate);
-      
+
       // Call handleError directly with operation and timeout
-      (runner as any).handleError(
+      (runner)['handleError'](
         new Error('Direct error test'),
         'test_operation',
         5000
@@ -637,15 +640,15 @@ describe('GateRunner Error Handling', () => {
       const logCall = customLogger.error.mock.calls[0];
       expect(logCall[1]).toHaveProperty('operation', 'test_operation');
       expect(logCall[1]).toHaveProperty('timeoutMs', 5000);
-    });
+    }); });
 
     it('should reset to default logger', () => {
-      const customLogger: IGateRunnerLogger = {
-        error: vi.fn(),
+      const customLogger = {
+        error: vi.fn<Parameters<IGateRunnerLogger['error']>, ReturnType<IGateRunnerLogger['error']>>(),
         warn: vi.fn(),
         info: vi.fn(),
         debug: vi.fn(),
-      };
+      } satisfies IGateRunnerLogger;
 
       GateRunner.setLogger(customLogger);
       GateRunner.setLogger(new DefaultGateRunnerLogger());

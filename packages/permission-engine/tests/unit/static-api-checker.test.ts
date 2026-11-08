@@ -1,10 +1,11 @@
 /**
  * Static API Checker Unit Tests
- * 
+ *
  * @specforge/permission-engine
  */
 
 import { describe, it, expect } from 'vitest';
+
 import {
   StaticApiChecker,
   createRestrictiveStaticApiChecker,
@@ -24,7 +25,7 @@ child_process.exec('ls -la', (err, stdout) => { });`,
         'test-plugin',
         'Test Plugin'
       );
-      
+
       expect(result.valid).toBe(false);
       expect(result.detectedApis.length).toBeGreaterThan(0);
       expect(result.detectedApis.some(api => api.type === ProhibitedApiType.CHILD_PROCESS_EXEC)).toBe(true);
@@ -38,7 +39,7 @@ child_process.spawn('npm', ['install']);`,
         'test-plugin',
         'Test Plugin'
       );
-      
+
       expect(result.valid).toBe(false);
       expect(result.detectedApis.some(api => api.type === ProhibitedApiType.CHILD_PROCESS_SPAWN)).toBe(true);
     });
@@ -50,7 +51,7 @@ child_process.spawn('npm', ['install']);`,
         'test-plugin',
         'Test Plugin'
       );
-      
+
       expect(result.valid).toBe(true);
     });
   });
@@ -64,7 +65,7 @@ fs.readFile('/etc/passwd', 'utf8', callback);`,
         'test-plugin',
         'Test Plugin'
       );
-      
+
       expect(result.valid).toBe(false);
       expect(result.detectedApis.some(api => api.category === ProhibitedApiCategory.FILESYSTEM)).toBe(true);
     });
@@ -76,7 +77,7 @@ fs.readFile('/etc/passwd', 'utf8', callback);`,
         'test-plugin',
         'Test Plugin'
       );
-      
+
       expect(result.valid).toBe(false);
     });
 
@@ -87,7 +88,7 @@ fs.readFile('/etc/passwd', 'utf8', callback);`,
         'test-plugin',
         'Test Plugin'
       );
-      
+
       // With filesystem allowed and path in whitelist, should be valid
       expect(result.valid).toBe(true);
     });
@@ -102,7 +103,7 @@ http.request('http://evil.com/api', callback);`,
         'test-plugin',
         'Test Plugin'
       );
-      
+
       expect(result.valid).toBe(false);
       expect(result.detectedApis.some(api => api.category === ProhibitedApiCategory.NETWORK)).toBe(true);
     });
@@ -115,7 +116,7 @@ https.get('https://api.malicious.com/data');`,
         'test-plugin',
         'Test Plugin'
       );
-      
+
       expect(result.valid).toBe(false);
     });
 
@@ -126,7 +127,7 @@ https.get('https://api.malicious.com/data');`,
         'test-plugin',
         'Test Plugin'
       );
-      
+
       expect(result.valid).toBe(true);
     });
   });
@@ -139,7 +140,7 @@ https.get('https://api.malicious.com/data');`,
         'test-plugin',
         'Test Plugin'
       );
-      
+
       expect(result.valid).toBe(false);
       expect(result.detectedApis.some(api => api.type === ProhibitedApiType.DANGEROUS_EVAL)).toBe(true);
     });
@@ -151,7 +152,7 @@ https.get('https://api.malicious.com/data');`,
         'test-plugin',
         'Test Plugin'
       );
-      
+
       expect(result.valid).toBe(false);
       expect(result.detectedApis.some(api => api.type === ProhibitedApiType.DANGEROUS_FUNCTION)).toBe(true);
     });
@@ -165,7 +166,7 @@ https.get('https://api.malicious.com/data');`,
         'test-plugin',
         'Test Plugin'
       );
-      
+
       expect(result.hasWarnings).toBe(true);
       expect(result.detectedApis.some(api => api.type === ProhibitedApiType.PROCESS_ENV)).toBe(true);
     });
@@ -175,7 +176,7 @@ https.get('https://api.malicious.com/data');`,
     it('should handle empty source code', () => {
       const checker = createRestrictiveStaticApiChecker();
       const result = checker.check('', 'test-plugin', 'Test Plugin');
-      
+
       expect(result.valid).toBe(true);
       expect(result.detectedApis.length).toBe(0);
     });
@@ -183,7 +184,7 @@ https.get('https://api.malicious.com/data');`,
     it('should handle whitespace-only source code', () => {
       const checker = createRestrictiveStaticApiChecker();
       const result = checker.check('   \n\n   ', 'test-plugin', 'Test Plugin');
-      
+
       expect(result.valid).toBe(true);
       expect(result.detectedApis.length).toBe(0);
     });
@@ -194,7 +195,7 @@ https.get('https://api.malicious.com/data');`,
         { filename: 'index.js', content: 'exec("ls")' },
         { filename: 'utils.js', content: 'eval("xss")' }
       ], 'test-plugin', 'Test Plugin');
-      
+
       expect(result.valid).toBe(false);
       expect(result.scannedFiles).toContain('index.js');
       expect(result.scannedFiles).toContain('utils.js');
@@ -205,7 +206,7 @@ https.get('https://api.malicious.com/data');`,
   describe('getProhibitedApiTypes', () => {
     it('should return all prohibited API types', () => {
       const types = StaticApiChecker.getProhibitedApiTypes();
-      
+
       expect(types.length).toBeGreaterThan(0);
       expect(types.some(t => t.category === ProhibitedApiCategory.CHILD_PROCESS)).toBe(true);
       expect(types.some(t => t.category === ProhibitedApiCategory.FILESYSTEM)).toBe(true);

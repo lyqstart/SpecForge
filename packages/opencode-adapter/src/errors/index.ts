@@ -79,35 +79,35 @@ export enum ErrorCategory {
 export function getErrorCategory(code: AdapterErrorCode): ErrorCategory {
   // Map of code string prefixes to categories
   const codeCategoryMap: Record<string, ErrorCategory> = {
-    'VERSION_MISMATCH': ErrorCategory.VERSION_INCOMPATIBILITY,
-    'VERSION_PARSE_ERROR': ErrorCategory.VERSION_INCOMPATIBILITY,
-    'VERSION_RANGE_INVALID': ErrorCategory.VERSION_INCOMPATIBILITY,
-    
-    'TRANSLATION_FAILED': ErrorCategory.TRANSLATION,
-    'UNSUPPORTED_FEATURE': ErrorCategory.TRANSLATION,
-    'CONTEXT_TRANSLATION_FAILED': ErrorCategory.TRANSLATION,
-    'EVENT_TRANSLATION_FAILED': ErrorCategory.TRANSLATION,
-    'TOOL_TRANSLATION_FAILED': ErrorCategory.TRANSLATION,
-    'CAPABILITY_TRANSLATION_FAILED': ErrorCategory.TRANSLATION,
-    
-    'SESSION_INIT_FAILED': ErrorCategory.COMMUNICATION,
-    'SESSION_NOT_FOUND': ErrorCategory.COMMUNICATION,
-    'SESSION_NOT_ACTIVE': ErrorCategory.COMMUNICATION,
-    'SESSION_TERMINATED': ErrorCategory.COMMUNICATION,
-    'PROMPT_DELIVERY_FAILED': ErrorCategory.COMMUNICATION,
-    'EVENT_STREAM_ERROR': ErrorCategory.COMMUNICATION,
-    'COMMUNICATION_TIMEOUT': ErrorCategory.COMMUNICATION,
-    'COMMUNICATION_ERROR': ErrorCategory.COMMUNICATION,
-    
-    'THIN_PLUGIN_ERROR': ErrorCategory.THIN_PLUGIN,
-    'THIN_PLUGIN_NETWORK_ERROR': ErrorCategory.THIN_PLUGIN,
-    'THIN_PLUGIN_TIMEOUT': ErrorCategory.THIN_PLUGIN,
-    'THIN_PLUGIN_SERVER_ERROR': ErrorCategory.THIN_PLUGIN,
-    'THIN_PLUGIN_RETRY_EXHAUSTED': ErrorCategory.THIN_PLUGIN,
-    'THIN_PLUGIN_HEALTH_CHECK_FAILED': ErrorCategory.THIN_PLUGIN,
-    'SESSION_BIND_FAILED': ErrorCategory.THIN_PLUGIN,
+    VERSION_MISMATCH: ErrorCategory.VERSION_INCOMPATIBILITY,
+    VERSION_PARSE_ERROR: ErrorCategory.VERSION_INCOMPATIBILITY,
+    VERSION_RANGE_INVALID: ErrorCategory.VERSION_INCOMPATIBILITY,
+
+    TRANSLATION_FAILED: ErrorCategory.TRANSLATION,
+    UNSUPPORTED_FEATURE: ErrorCategory.TRANSLATION,
+    CONTEXT_TRANSLATION_FAILED: ErrorCategory.TRANSLATION,
+    EVENT_TRANSLATION_FAILED: ErrorCategory.TRANSLATION,
+    TOOL_TRANSLATION_FAILED: ErrorCategory.TRANSLATION,
+    CAPABILITY_TRANSLATION_FAILED: ErrorCategory.TRANSLATION,
+
+    SESSION_INIT_FAILED: ErrorCategory.COMMUNICATION,
+    SESSION_NOT_FOUND: ErrorCategory.COMMUNICATION,
+    SESSION_NOT_ACTIVE: ErrorCategory.COMMUNICATION,
+    SESSION_TERMINATED: ErrorCategory.COMMUNICATION,
+    PROMPT_DELIVERY_FAILED: ErrorCategory.COMMUNICATION,
+    EVENT_STREAM_ERROR: ErrorCategory.COMMUNICATION,
+    COMMUNICATION_TIMEOUT: ErrorCategory.COMMUNICATION,
+    COMMUNICATION_ERROR: ErrorCategory.COMMUNICATION,
+
+    THIN_PLUGIN_ERROR: ErrorCategory.THIN_PLUGIN,
+    THIN_PLUGIN_NETWORK_ERROR: ErrorCategory.THIN_PLUGIN,
+    THIN_PLUGIN_TIMEOUT: ErrorCategory.THIN_PLUGIN,
+    THIN_PLUGIN_SERVER_ERROR: ErrorCategory.THIN_PLUGIN,
+    THIN_PLUGIN_RETRY_EXHAUSTED: ErrorCategory.THIN_PLUGIN,
+    THIN_PLUGIN_HEALTH_CHECK_FAILED: ErrorCategory.THIN_PLUGIN,
+    SESSION_BIND_FAILED: ErrorCategory.THIN_PLUGIN,
   };
-  
+
   return codeCategoryMap[code] ?? ErrorCategory.GENERAL;
 }
 
@@ -138,11 +138,7 @@ export abstract class AdapterError extends Error {
   public readonly timestamp: Date;
   public readonly suggestion?: string;
 
-  constructor(
-    message: string,
-    code: AdapterErrorCode,
-    details: ErrorDetails = {}
-  ) {
+  constructor(message: string, code: AdapterErrorCode, details: ErrorDetails = {}) {
     super(message);
     this.name = this.constructor.name;
     this.code = code;
@@ -150,7 +146,7 @@ export abstract class AdapterError extends Error {
     this.details = details;
     this.timestamp = new Date();
     this.suggestion = details.suggestion;
-    
+
     // Maintains proper stack trace for where error was thrown
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor);
@@ -162,11 +158,11 @@ export abstract class AdapterError extends Error {
    */
   getUserMessage(): string {
     let message = super.message;
-    
+
     if (this.suggestion) {
       message += `\n\nSuggestion: ${this.suggestion}`;
     }
-    
+
     if (this.details.context) {
       const relevantKeys = Object.keys(this.details.context).filter(
         k => !['originalError', 'context'].includes(k)
@@ -178,7 +174,7 @@ export abstract class AdapterError extends Error {
         message += `\n\nContext: ${contextStr}`;
       }
     }
-    
+
     return message;
   }
 
@@ -219,29 +215,21 @@ export class VersionIncompatibilityError extends AdapterError {
   public readonly detectedVersion: string;
   public readonly requiredRange: string;
 
-  constructor(
-    detectedVersion: string,
-    requiredRange: string,
-    details: ErrorDetails = {}
-  ) {
+  constructor(detectedVersion: string, requiredRange: string, details: ErrorDetails = {}) {
     const message = `OpenCode version ${detectedVersion} is incompatible with adapter (required: ${requiredRange})`;
     const suggestion = getVersionSuggestion(detectedVersion, requiredRange);
-    
-    super(
-      message,
-      AdapterErrorCode.VERSION_MISMATCH,
-      {
-        ...details,
-        context: {
-          ...details.context,
-          detectedVersion,
-          requiredRange,
-        },
-        suggestion,
-        retryable: false,
-      }
-    );
-    
+
+    super(message, AdapterErrorCode.VERSION_MISMATCH, {
+      ...details,
+      context: {
+        ...details.context,
+        detectedVersion,
+        requiredRange,
+      },
+      suggestion,
+      retryable: false,
+    });
+
     this.detectedVersion = detectedVersion;
     this.requiredRange = requiredRange;
   }
@@ -321,7 +309,9 @@ export class ContextTranslationError extends TranslationError {
       AdapterErrorCode.CONTEXT_TRANSLATION_FAILED,
       {
         ...details,
-        suggestion: details.suggestion ?? 'The OpenCode context contains fields that cannot be translated to Daemon-neutral format',
+        suggestion:
+          details.suggestion ??
+          'The OpenCode context contains fields that cannot be translated to Daemon-neutral format',
       }
     );
   }
@@ -342,7 +332,9 @@ export class EventTranslationError extends TranslationError {
           ...details.context,
           eventType,
         },
-        suggestion: details.suggestion ?? 'The OpenCode event type is not supported or cannot be translated to Daemon format',
+        suggestion:
+          details.suggestion ??
+          'The OpenCode event type is not supported or cannot be translated to Daemon format',
       }
     );
   }
@@ -384,7 +376,8 @@ export class CapabilityTranslationError extends TranslationError {
           ...details.context,
           model,
         },
-        suggestion: details.suggestion ?? 'Unable to translate model capabilities from OpenCode format',
+        suggestion:
+          details.suggestion ?? 'Unable to translate model capabilities from OpenCode format',
       }
     );
   }
@@ -398,19 +391,16 @@ export class UnsupportedFeatureError extends AdapterError {
   public readonly feature: string;
 
   constructor(feature: string, details: ErrorDetails = {}) {
-    super(
-      `Unsupported feature: ${feature}`,
-      AdapterErrorCode.UNSUPPORTED_FEATURE,
-      {
-        ...details,
-        context: {
-          ...details.context,
-          feature,
-        },
-        suggestion: details.suggestion ?? 'This feature is not supported by the current adapter version',
-        retryable: false,
-      }
-    );
+    super(`Unsupported feature: ${feature}`, AdapterErrorCode.UNSUPPORTED_FEATURE, {
+      ...details,
+      context: {
+        ...details.context,
+        feature,
+      },
+      suggestion:
+        details.suggestion ?? 'This feature is not supported by the current adapter version',
+      retryable: false,
+    });
     this.feature = feature;
   }
 }
@@ -447,17 +437,14 @@ export class CommunicationError extends AdapterError {
  */
 export class SessionInitializationError extends CommunicationError {
   constructor(message: string, sessionId: string | undefined, details: ErrorDetails = {}) {
-    super(
-      message,
-      AdapterErrorCode.SESSION_INIT_FAILED,
-      sessionId,
-      {
-        ...details,
-        suggestion: details.suggestion ?? 'Check if OpenCode is running and accessible. Try restarting OpenCode.',
-        retryable: true,
-        maxRetries: 3,
-      }
-    );
+    super(message, AdapterErrorCode.SESSION_INIT_FAILED, sessionId, {
+      ...details,
+      suggestion:
+        details.suggestion ??
+        'Check if OpenCode is running and accessible. Try restarting OpenCode.',
+      retryable: true,
+      maxRetries: 3,
+    });
   }
 }
 
@@ -466,16 +453,11 @@ export class SessionInitializationError extends CommunicationError {
  */
 export class SessionNotFoundError extends CommunicationError {
   constructor(sessionId: string, details: ErrorDetails = {}) {
-    super(
-      `Session not found: ${sessionId}`,
-      AdapterErrorCode.SESSION_NOT_FOUND,
-      sessionId,
-      {
-        ...details,
-        suggestion: details.suggestion ?? 'The session may have been terminated or never created',
-        retryable: false,
-      }
-    );
+    super(`Session not found: ${sessionId}`, AdapterErrorCode.SESSION_NOT_FOUND, sessionId, {
+      ...details,
+      suggestion: details.suggestion ?? 'The session may have been terminated or never created',
+      retryable: false,
+    });
   }
 }
 
@@ -496,7 +478,8 @@ export class SessionNotActiveError extends CommunicationError {
           ...details.context,
           currentStatus,
         },
-        suggestion: details.suggestion ?? 'Wait for the session to become active or create a new session',
+        suggestion:
+          details.suggestion ?? 'Wait for the session to become active or create a new session',
         retryable: false,
       }
     );
@@ -515,7 +498,9 @@ export class SessionTerminatedError extends CommunicationError {
       sessionId,
       {
         ...details,
-        suggestion: details.suggestion ?? 'The session was cancelled or completed. Please create a new session.',
+        suggestion:
+          details.suggestion ??
+          'The session was cancelled or completed. Please create a new session.',
         retryable: false,
       }
     );
@@ -527,17 +512,12 @@ export class SessionTerminatedError extends CommunicationError {
  */
 export class PromptDeliveryError extends CommunicationError {
   constructor(message: string, sessionId: string, details: ErrorDetails = {}) {
-    super(
-      message,
-      AdapterErrorCode.PROMPT_DELIVERY_FAILED,
-      sessionId,
-      {
-        ...details,
-        suggestion: details.suggestion ?? 'Failed to deliver the prompt to the OpenCode session',
-        retryable: true,
-        maxRetries: 2,
-      }
-    );
+    super(message, AdapterErrorCode.PROMPT_DELIVERY_FAILED, sessionId, {
+      ...details,
+      suggestion: details.suggestion ?? 'Failed to deliver the prompt to the OpenCode session',
+      retryable: true,
+      maxRetries: 2,
+    });
   }
 }
 
@@ -552,7 +532,8 @@ export class EventStreamError extends CommunicationError {
       sessionId,
       {
         ...details,
-        suggestion: details.suggestion ?? 'The event stream encountered an error. Try resubscribing.',
+        suggestion:
+          details.suggestion ?? 'The event stream encountered an error. Try resubscribing.',
         retryable: true,
       }
     );
@@ -583,7 +564,9 @@ export class CommunicationTimeoutError extends CommunicationError {
           operation,
           timeoutMs,
         },
-        suggestion: details.suggestion ?? `The operation '${operation}' timed out. Check network connectivity or increase timeout.`,
+        suggestion:
+          details.suggestion ??
+          `The operation '${operation}' timed out. Check network connectivity or increase timeout.`,
         retryable: true,
       }
     );
@@ -630,7 +613,8 @@ export class ThinPluginNetworkError extends ThinPluginError {
       endpoint,
       {
         ...details,
-        suggestion: details.suggestion ?? 'Check if the Thin Plugin is running and network connectivity',
+        suggestion:
+          details.suggestion ?? 'Check if the Thin Plugin is running and network connectivity',
         retryable: true,
         maxRetries: 3,
       }
@@ -655,7 +639,8 @@ export class ThinPluginTimeoutError extends ThinPluginError {
           ...details.context,
           timeoutMs,
         },
-        suggestion: details.suggestion ?? 'The Thin Plugin is taking too long to respond. Check its status.',
+        suggestion:
+          details.suggestion ?? 'The Thin Plugin is taking too long to respond. Check its status.',
         retryable: true,
         maxRetries: 2,
       }
@@ -681,7 +666,8 @@ export class ThinPluginServerError extends ThinPluginError {
           ...details.context,
           statusCode,
         },
-        suggestion: details.suggestion ?? 'The Thin Plugin encountered an internal error. Check its logs.',
+        suggestion:
+          details.suggestion ?? 'The Thin Plugin encountered an internal error. Check its logs.',
         retryable: statusCode >= 500 || statusCode === 429,
       }
     );
@@ -696,7 +682,12 @@ export class ThinPluginRetryExhaustedError extends ThinPluginError {
   public readonly attempts: number;
   public readonly lastError?: string;
 
-  constructor(endpoint: string, attempts: number, lastError: string | undefined, details: ErrorDetails = {}) {
+  constructor(
+    endpoint: string,
+    attempts: number,
+    lastError: string | undefined,
+    details: ErrorDetails = {}
+  ) {
     super(
       `Thin Plugin request failed after ${attempts} attempts`,
       AdapterErrorCode.THIN_PLUGIN_RETRY_EXHAUSTED,
@@ -708,7 +699,9 @@ export class ThinPluginRetryExhaustedError extends ThinPluginError {
           attempts,
           lastError,
         },
-        suggestion: details.suggestion ?? 'The Thin Plugin is unavailable after multiple attempts. Check its status.',
+        suggestion:
+          details.suggestion ??
+          'The Thin Plugin is unavailable after multiple attempts. Check its status.',
         retryable: false,
       }
     );
@@ -728,7 +721,8 @@ export class ThinPluginHealthCheckFailedError extends ThinPluginError {
       endpoint,
       {
         ...details,
-        suggestion: details.suggestion ?? 'The Thin Plugin is not healthy. Check its status and logs.',
+        suggestion:
+          details.suggestion ?? 'The Thin Plugin is not healthy. Check its status and logs.',
         retryable: true,
       }
     );
@@ -752,7 +746,9 @@ export class SessionBindError extends ThinPluginError {
           ...details.context,
           spawnIntentId,
         },
-        suggestion: details.suggestion ?? 'Session binding failed. The spawn intent may be invalid or expired.',
+        suggestion:
+          details.suggestion ??
+          'Session binding failed. The spawn intent may be invalid or expired.',
         retryable: false,
       }
     );
@@ -771,19 +767,15 @@ export class InvalidParamsError extends AdapterError {
   public readonly paramName: string;
 
   constructor(paramName: string, reason: string, details: ErrorDetails = {}) {
-    super(
-      `Invalid parameter '${paramName}': ${reason}`,
-      AdapterErrorCode.INVALID_PARAMS,
-      {
-        ...details,
-        context: {
-          ...details.context,
-          paramName,
-        },
-        suggestion: details.suggestion ?? `Please provide a valid value for '${paramName}'`,
-        retryable: false,
-      }
-    );
+    super(`Invalid parameter '${paramName}': ${reason}`, AdapterErrorCode.INVALID_PARAMS, {
+      ...details,
+      context: {
+        ...details.context,
+        paramName,
+      },
+      suggestion: details.suggestion ?? `Please provide a valid value for '${paramName}'`,
+      retryable: false,
+    });
     this.paramName = paramName;
   }
 }
@@ -793,15 +785,12 @@ export class InvalidParamsError extends AdapterError {
  */
 export class InternalAdapterError extends AdapterError {
   constructor(message: string, details: ErrorDetails = {}) {
-    super(
-      `Internal adapter error: ${message}`,
-      AdapterErrorCode.INTERNAL_ERROR,
-      {
-        ...details,
-        suggestion: details.suggestion ?? 'An unexpected error occurred. This may be a bug in the adapter.',
-        retryable: false,
-      }
-    );
+    super(`Internal adapter error: ${message}`, AdapterErrorCode.INTERNAL_ERROR, {
+      ...details,
+      suggestion:
+        details.suggestion ?? 'An unexpected error occurred. This may be a bug in the adapter.',
+      retryable: false,
+    });
   }
 }
 
@@ -817,20 +806,26 @@ function getVersionSuggestion(detectedVersion: string, requiredRange: string): s
   try {
     const detected = parseMajorMinorPatch(detectedVersion);
     const range = parseRangeBounds(requiredRange);
-    
+
     if (detected && range) {
-      if (detected.major < range.minMajor || (detected.major === range.minMajor && detected.minor < range.minMinor)) {
+      if (
+        detected.major < range.minMajor ||
+        (detected.major === range.minMajor && detected.minor < range.minMinor)
+      ) {
         return 'Please upgrade OpenCode to a version within the compatible range, or downgrade the adapter.';
       }
-      if (detected.major > range.maxMajor || (detected.major === range.maxMajor && detected.minor >= range.maxMinor)) {
+      if (
+        detected.major > range.maxMajor ||
+        (detected.major === range.maxMajor && detected.minor >= range.maxMinor)
+      ) {
         return 'Please downgrade OpenCode to a version within the compatible range, or upgrade the adapter.';
       }
     }
   } catch {
     // Fallback to generic message
   }
-  
-  return 'Please ensure OpenCode version is within the adapter\'s compatible range. Check adapter documentation for supported versions.';
+
+  return "Please ensure OpenCode version is within the adapter's compatible range. Check adapter documentation for supported versions.";
 }
 
 interface VersionBounds {
@@ -840,7 +835,9 @@ interface VersionBounds {
   maxMinor: number;
 }
 
-function parseMajorMinorPatch(version: string): { major: number; minor: number; patch: number } | null {
+function parseMajorMinorPatch(
+  version: string
+): { major: number; minor: number; patch: number } | null {
   const match = version.match(/^(\d+)\.(\d+)\.(\d+)/);
   if (!match) return null;
   return {
@@ -854,7 +851,7 @@ function parseRangeBounds(range: string): VersionBounds | null {
   // Simple parsing for common range formats
   const minMatch = range.match(/>=(\d+)\.(\d+)/);
   const maxMatch = range.match(/<(\d+)\.(\d+)/);
-  
+
   if (!minMatch || !maxMatch) {
     // Try caret format: ^1.14.0 -> min 1.14.0, max 2.0.0
     const caretMatch = range.match(/\^(\d+)\.(\d+)/);
@@ -868,7 +865,7 @@ function parseRangeBounds(range: string): VersionBounds | null {
     }
     return null;
   }
-  
+
   return {
     minMajor: parseInt(minMatch[1]!, 10),
     minMinor: parseInt(minMatch[2]!, 10),
@@ -905,32 +902,28 @@ export function createAdapterError(
   if (error instanceof AdapterError) {
     return error;
   }
-  
+
   if (error instanceof Error) {
     // Try to map common error types to adapter errors
     const message = error.message;
-    
+
     if (message.includes('timeout') || message.includes('Timeout')) {
       return new CommunicationTimeoutError('unknown', 30000, undefined, {
         originalError: error,
       });
     }
-    
+
     if (message.includes('network') || message.includes('fetch')) {
-      return new CommunicationError(
-        message,
-        AdapterErrorCode.COMMUNICATION_ERROR,
-        undefined,
-        { originalError: error }
-      );
+      return new CommunicationError(message, AdapterErrorCode.COMMUNICATION_ERROR, undefined, {
+        originalError: error,
+      });
     }
-    
+
     return new InternalAdapterError(message, { originalError: error });
   }
-  
+
   return new InternalAdapterError(defaultMessage, { originalError: error });
 }
-
 
 // ============================================================
 // Unified classifier (Task 7.1)
@@ -940,7 +933,4 @@ export function createAdapterError(
 // `ClassifiedError` record from the dedicated classifier module.
 // See `./ErrorClassifier.ts` for full documentation and design rationale.
 export { classifyError } from './ErrorClassifier';
-export type {
-  ClassifiedError,
-  UnsupportedTranslationResult,
-} from './ErrorClassifier';
+export type { ClassifiedError, UnsupportedTranslationResult } from './ErrorClassifier';

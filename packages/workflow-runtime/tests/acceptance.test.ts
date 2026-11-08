@@ -1,7 +1,7 @@
 /**
  * Acceptance Tests for Workflow Runtime
  * Task 5.1: 验收测试 - WorkflowEngine 能够加载和执行基础 workflow
- * 
+ *
  * Validates:
  * - WorkflowEngine 能够加载和执行基础 workflow
  * - GateRunner 能够执行单个 Gate
@@ -9,22 +9,26 @@
  * - 编排失败处理与内存暂停恢复（持久化恢复由Daemon验收）
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { WorkflowEngine, WorkflowEvent } from '../src/WorkflowEngine.js';
-import { SimpleGateRunner, CompositeGateRunner, createGateRunner } from '../src/GateRunner.js';
-import { EventPublisher, createEventPublisher } from '../src/EventPublisher.js';
-import {
-  WorkflowDefinition,
-  WorkflowInstance,
-  SimpleGateDefinition,
-  CompositeGateDefinition,
-  IEventBus,
-  Event,
-  Subscription,
-} from '../src/types.js';
+
 import { mkdtemp, rm } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';
+
+import { promiseFromSync } from '@specforge/types';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
+import { EventPublisher } from '../src/EventPublisher.js';
+import { SimpleGateRunner } from '../src/GateRunner.js';
+import type {
+  WorkflowDefinition,
+  WorkflowInstance,
+  SimpleGateDefinition,
+  IEventBus,
+  Event,
+  Subscription} from '../src/types.js';
+import { WorkflowEngine ,type  WorkflowEvent } from '../src/WorkflowEngine.js';
+
+import { requiredTestValue } from './required-test-value';
 
 // Mock uuid
 vi.mock('uuid', () => ({
@@ -74,7 +78,7 @@ class MockEventBus implements IEventBus {
       this.subscriptions.set(topic, new Map());
     }
     const id = 'sub-' + (++this.idCounter);
-    this.subscriptions.get(topic)!.set(id, handler);
+    requiredTestValue(this.subscriptions.get(topic)).set(id, handler);
     return { id, topic, handler };
   }
 
@@ -104,7 +108,7 @@ describe('Acceptance Tests - Task 5.1', () => {
   afterEach(async () => {
     try {
       await rm(storageDir, { recursive: true, force: true });
-    } catch (error) {
+    } catch  {
       // Ignore cleanup errors
     }
   });
@@ -116,7 +120,7 @@ describe('Acceptance Tests - Task 5.1', () => {
   describe('WorkflowEngine Basic Execution', () => {
     it('AC-1.1: 应该能够加载 JSON 格式的 workflow 定义文件', () => {
       const engine = new WorkflowEngine();
-      
+
       const definition: WorkflowDefinition = {
         id: 'test-workflow',
         displayName: 'Test Workflow',
@@ -153,7 +157,7 @@ describe('Acceptance Tests - Task 5.1', () => {
 
     it('AC-1.2: 应该维护 workflow 实例的状态机，支持状态转换', async () => {
       const engine = new WorkflowEngine();
-      
+
       const definition: WorkflowDefinition = {
         id: 'state-machine-test',
         displayName: 'State Machine Test',
@@ -163,13 +167,13 @@ describe('Acceptance Tests - Task 5.1', () => {
           states: {
             requirements: {
               agent: 'agent',
-              gate: { type: 'simple', id: 'gate1', name: 'Gate 1', checkFn: async () => ({ passed: true }) } as SimpleGateDefinition,
+              gate: { type: 'simple', id: 'gate1', name: 'Gate 1', checkFn:  () => promiseFromSync(() => (({ passed: true }))) } as SimpleGateDefinition,
               skills: [],
               next: { pass: 'design', fail: 'requirements' },
             },
             design: {
               agent: 'agent',
-              gate: { type: 'simple', id: 'gate2', name: 'Gate 2', checkFn: async () => ({ passed: true }) } as SimpleGateDefinition,
+              gate: { type: 'simple', id: 'gate2', name: 'Gate 2', checkFn:  () => promiseFromSync(() => (({ passed: true }))) } as SimpleGateDefinition,
               skills: [],
               next: { pass: 'tasks', fail: 'design' },
             },
@@ -192,7 +196,7 @@ describe('Acceptance Tests - Task 5.1', () => {
 
       // 验证能够执行 workflow 并完成状态转换
       const result = await engine.execute(instance.id);
-      
+
       // 验证最终状态
       expect(result.status).toBe('completed');
       expect(result.currentState).toBe('tasks');
@@ -200,7 +204,7 @@ describe('Acceptance Tests - Task 5.1', () => {
 
     it('AC-1.3: 应该为每个 workflow 实例生成唯一标识符', () => {
       const engine = new WorkflowEngine();
-      
+
       const definition: WorkflowDefinition = {
         id: 'unique-id-test',
         displayName: 'Unique ID Test',
@@ -246,7 +250,7 @@ describe('Acceptance Tests - Task 5.1', () => {
           states: {
             start: {
               agent: 'agent',
-              gate: { type: 'simple', id: 'gate', name: 'Gate', checkFn: async () => ({ passed: true }) } as SimpleGateDefinition,
+              gate: { type: 'simple', id: 'gate', name: 'Gate', checkFn:  () => promiseFromSync(() => (({ passed: true }))) } as SimpleGateDefinition,
               skills: [],
               next: { pass: 'end', fail: 'start' },
             },
@@ -266,7 +270,7 @@ describe('Acceptance Tests - Task 5.1', () => {
 
       // 验证事件被记录
       expect(emittedEvents.length).toBeGreaterThan(0);
-      
+
       const eventTypes = emittedEvents.map(e => e.type);
       expect(eventTypes).toContain('workflow.created');
       expect(eventTypes).toContain('workflow.started');
@@ -286,7 +290,7 @@ describe('Acceptance Tests - Task 5.1', () => {
         type: 'simple',
         id: 'test-gate',
         name: 'Test Gate',
-        checkFn: async () => ({ passed: true, reason: 'Test passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Test passed' }))),
       };
 
       const runner = new SimpleGateRunner(gate);
@@ -301,11 +305,11 @@ describe('Acceptance Tests - Task 5.1', () => {
         type: 'simple',
         id: 'result-test-gate',
         name: 'Result Test Gate',
-        checkFn: async () => ({ 
-          passed: true, 
+        checkFn:  () => promiseFromSync(() => (({
+          passed: true,
           reason: 'Validation passed',
           details: { score: 100 },
-        }),
+        }))),
       };
 
       const runner = new SimpleGateRunner(gate);
@@ -326,7 +330,7 @@ describe('Acceptance Tests - Task 5.1', () => {
       };
 
       const runner = new SimpleGateRunner(gate, { knowledgeGraph: { entities: [] } });
-      
+
       // 验证上下文被正确存储
       const context = runner.getContext();
       expect(context).toHaveProperty('knowledgeGraph');
@@ -353,11 +357,11 @@ describe('Acceptance Tests - Task 5.1', () => {
           states: {
             start: {
               agent: 'agent',
-              gate: { 
-                type: 'simple', 
-                id: 'test-gate', 
+              gate: {
+                type: 'simple',
+                id: 'test-gate',
                 name: 'Test Gate',
-                checkFn: async () => ({ passed: true }),
+                checkFn:  () => promiseFromSync(() => (({ passed: true }))),
               } as SimpleGateDefinition,
               skills: [],
             },
@@ -372,15 +376,15 @@ describe('Acceptance Tests - Task 5.1', () => {
 
       // 验证 Gate 事件被发布
       const publishedEvents = eventBus.getPublishedEvents();
-      const gateEvents = publishedEvents.filter(e => 
+      const gateEvents = publishedEvents.filter(e =>
         e.action.startsWith('workflow.gate')
       );
 
       expect(gateEvents.length).toBeGreaterThan(0);
-      
+
       const startedEvent = gateEvents.find(e => e.action === 'workflow.gate.started');
       const completedEvent = gateEvents.find(e => e.action === 'workflow.gate.completed');
-      
+
       expect(startedEvent).toBeDefined();
       expect(completedEvent).toBeDefined();
       expect(completedEvent?.payload.passed).toBe(true);
@@ -420,7 +424,7 @@ describe('Acceptance Tests - Task 5.1', () => {
 
       // 验证事件被发布到 Event Bus
       const publishedEvents = eventBus.getPublishedEvents();
-      
+
       expect(publishedEvents).toHaveLength(3);
       expect(publishedEvents[0].action).toBe('workflow.started');
       expect(publishedEvents[1].action).toBe('workflow.state_changed');
@@ -434,7 +438,7 @@ describe('Acceptance Tests - Task 5.1', () => {
       const events: WorkflowEvent[] = [];
 
       // 订阅事件
-      const handler = (event: WorkflowEvent) => events.push(event);
+      const handler = (event: WorkflowEvent): number => events.push(event);
       engine.onEvent(handler);
 
       const definition: WorkflowDefinition = {
@@ -484,7 +488,7 @@ describe('Acceptance Tests - Task 5.1', () => {
           states: {
             state1: {
               agent: 'agent',
-              gate: { type: 'simple', id: 'gate1', name: 'Gate 1', checkFn: async () => ({ passed: true }) } as SimpleGateDefinition,
+              gate: { type: 'simple', id: 'gate1', name: 'Gate 1', checkFn:  () => promiseFromSync(() => (({ passed: true }))) } as SimpleGateDefinition,
               skills: [],
               next: { pass: 'state2', fail: 'state1' },
             },
@@ -518,7 +522,7 @@ describe('Acceptance Tests - Task 5.1', () => {
   describe('Workflow Execution Failure and In-Memory Resume', () => {
     it('AC-5.1: 应该能够处理 Gate 执行失败的情况', async () => {
       const engine = new WorkflowEngine();
-      
+
       const definition: WorkflowDefinition = {
         id: 'failure-handling-test',
         displayName: 'Failure Handling Test',
@@ -528,11 +532,11 @@ describe('Acceptance Tests - Task 5.1', () => {
           states: {
             start: {
               agent: 'agent',
-              gate: { 
-                type: 'simple', 
-                id: 'fail-gate', 
+              gate: {
+                type: 'simple',
+                id: 'fail-gate',
                 name: 'Fail Gate',
-                checkFn: async () => ({ passed: false, reason: 'Validation failed' }),
+                checkFn:  () => promiseFromSync(() => (({ passed: false, reason: 'Validation failed' }))),
               } as SimpleGateDefinition,
               skills: [],
             },
@@ -552,7 +556,7 @@ describe('Acceptance Tests - Task 5.1', () => {
 
     it('AC-5.2: 应该支持 workflow 实例的暂停和恢复', async () => {
       const engine = new WorkflowEngine();
-      
+
       const definition: WorkflowDefinition = {
         id: 'pause-resume-test',
         displayName: 'Pause Resume Test',
@@ -562,11 +566,11 @@ describe('Acceptance Tests - Task 5.1', () => {
           states: {
             start: {
               agent: 'agent',
-              gate: { 
-                type: 'simple', 
-                id: 'gate1', 
+              gate: {
+                type: 'simple',
+                id: 'gate1',
                 name: 'Gate 1',
-                checkFn: async () => ({ passed: true }),
+                checkFn:  () => promiseFromSync(() => (({ passed: true }))),
               } as SimpleGateDefinition,
               skills: [],
               next: 'end',
@@ -583,7 +587,7 @@ describe('Acceptance Tests - Task 5.1', () => {
 
       engine.loadWorkflow(definition);
       const instance = engine.createInstance('pause-resume-test');
-      
+
       // 设置为 running 状态并暂停
       instance.status = 'running';
       engine.pause(instance.id, 'Test pause');
@@ -596,7 +600,7 @@ describe('Acceptance Tests - Task 5.1', () => {
       expect(resumedInstance.status).toBe('completed');
     });
 
-    it('AC-5.3: 应该提供错误重试机制（可配置）', async () => {
+    it('AC-5.3: 应该提供错误重试机制（可配置）',  () => { return promiseFromSync(() => {
       // Note: The current retry implementation only retries GateError with retryable: true
       // This test verifies the configuration is properly stored
       const gate: SimpleGateDefinition = {
@@ -606,10 +610,10 @@ describe('Acceptance Tests - Task 5.1', () => {
       };
 
       const runner = new SimpleGateRunner(gate);
-      
+
       // Verify default retry is disabled
       expect(runner.isRetryEnabled()).toBe(false);
-      
+
       // Configure retry
       runner.setRetryConfig({
         maxAttempts: 3,
@@ -617,11 +621,11 @@ describe('Acceptance Tests - Task 5.1', () => {
         maxDelayMs: 100,
         backoffMultiplier: 2,
       });
-      
+
       // Verify retry is now enabled
       expect(runner.isRetryEnabled()).toBe(true);
       expect(runner.getRetryConfig()?.maxAttempts).toBe(3);
-    });
+    }); });
     // Historical independent persistence AC-5.4 is archived; current owner/replay
     // acceptance lives in root feature-spec-e2e and daemon-core recovery tests.
 
@@ -653,44 +657,44 @@ describe('Acceptance Tests - Task 5.1', () => {
           states: {
             requirements: {
               agent: 'requirements-agent',
-              gate: { 
-                type: 'simple', 
-                id: 'requirements-gate', 
+              gate: {
+                type: 'simple',
+                id: 'requirements-gate',
                 name: 'Requirements Gate',
-                checkFn: async () => ({ passed: true, reason: 'Requirements met' }),
+                checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Requirements met' }))),
               } as SimpleGateDefinition,
               skills: ['requirements'],
               next: 'design',
             },
             design: {
               agent: 'design-agent',
-              gate: { 
-                type: 'simple', 
-                id: 'design-gate', 
+              gate: {
+                type: 'simple',
+                id: 'design-gate',
                 name: 'Design Gate',
-                checkFn: async () => ({ passed: true, reason: 'Design complete' }),
+                checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Design complete' }))),
               } as SimpleGateDefinition,
               skills: ['design'],
               next: 'tasks',
             },
             tasks: {
               agent: 'tasks-agent',
-              gate: { 
-                type: 'simple', 
-                id: 'tasks-gate', 
+              gate: {
+                type: 'simple',
+                id: 'tasks-gate',
                 name: 'Tasks Gate',
-                checkFn: async () => ({ passed: true, reason: 'Tasks done' }),
+                checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Tasks done' }))),
               } as SimpleGateDefinition,
               skills: ['tasks'],
               next: 'verification',
             },
             verification: {
               agent: 'verification-agent',
-              gate: { 
-                type: 'simple', 
-                id: 'verification-gate', 
+              gate: {
+                type: 'simple',
+                id: 'verification-gate',
                 name: 'Verification Gate',
-                checkFn: async () => ({ passed: true, reason: 'Verification passed' }),
+                checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Verification passed' }))),
               } as SimpleGateDefinition,
               skills: ['verification'],
             },

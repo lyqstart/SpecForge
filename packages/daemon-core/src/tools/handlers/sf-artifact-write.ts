@@ -1,3 +1,4 @@
+import { diagnosticScalarText, scalarText } from '@specforge/types';
 /**
  * sf-artifact-write.ts — v1.1 Controlled Artifact Writer
  *
@@ -155,7 +156,7 @@ function readModuleOwnership(baseDir: string): ModuleOwnership {
   const defaultModuleRaw = manifest?.default_module ?? manifest?.defaultModule;
   const defaultModule = defaultModuleRaw ? normalizeModuleId(defaultModuleRaw) : null;
   if (defaultModuleRaw && !defaultModule) {
-    errors.push(`Invalid default_module: ${String(defaultModuleRaw)}`);
+    errors.push(`Invalid default_module: ${diagnosticScalarText(defaultModuleRaw)}`);
   }
   return { declared: Array.from(new Set(declared)), defaultModule, errors };
 }
@@ -202,12 +203,12 @@ function resolveDeclaredCandidateModuleId(
   const argumentProvided =
     explicitModuleReference !== undefined &&
     explicitModuleReference !== null &&
-    String(explicitModuleReference).trim().length > 0;
+    scalarText(explicitModuleReference).trim().length > 0;
   const argumentExplicit = argumentProvided ? normalizeModuleId(explicitModuleReference) : '';
   if (argumentProvided && !argumentExplicit) {
     return {
       declared: ownership.declared,
-      error: `MODULE_REFERENCE_INVALID: module_id "${String(explicitModuleReference)}" is invalid.`,
+      error: `MODULE_REFERENCE_INVALID: module_id "${diagnosticScalarText(explicitModuleReference)}" is invalid.`,
     };
   }
   const contentModule = contentExplicit ? normalizeModuleId(contentExplicit) : '';
@@ -308,7 +309,7 @@ function projectModuleTargetPath(
         : (record.design ?? record.design_file);
     if (typeof configured === 'string' && configured.trim()) {
       const normalized = configured.trim().replace(/\\/g, '/').replace(/^\.\//, '');
-      if (normalized.startsWith((`${SPEC_DIR_NAME}/project/` as const))) return normalized;
+      if (normalized.startsWith(`${SPEC_DIR_NAME}/project/` as const)) return normalized;
       if (normalized.startsWith('project/')) return `${SPEC_DIR_NAME}/${normalized}`;
     }
   }
@@ -324,7 +325,7 @@ function stringifyArtifactContent(value: unknown, fallback?: unknown): string {
   if (typeof chosen === 'string') return chosen;
   if (Buffer.isBuffer(chosen)) return chosen.toString('utf-8');
   if (typeof chosen === 'object') return JSON.stringify(chosen, null, 2);
-  return String(chosen);
+  return scalarText(chosen);
 }
 function resolveTargetFilename(
   fileType: string,
@@ -458,11 +459,16 @@ function normalizeTriggerResultUnknowns(parsed: Record<string, unknown>): Record
 function inferWorkflowFacts(
   baseDir: string,
   workItemId: string,
-  contentJson?: Record<string, unknown>
+  contentJson?: unknown
 ): { workflowPath?: string; workflowType?: string } {
+  if (
+    contentJson !== undefined &&
+    (typeof contentJson !== 'object' || contentJson === null || Array.isArray(contentJson))
+  )
+    throw new Error('WORKFLOW_FACTS_OBJECT_REQUIRED');
   const wiDir = workItemRoot(baseDir, workItemId);
   const candidates: Array<Record<string, unknown> | null> = [
-    contentJson ?? null,
+    contentJson === undefined ? null : (contentJson as Record<string, unknown>),
     readJsonIfExists(path.join(wiDir, 'work_item.json')),
     readJsonIfExists(path.join(wiDir, 'trigger_result.json')),
     readJsonIfExists(path.join(wiDir, 'candidate_manifest.json')),
@@ -478,7 +484,7 @@ function inferWorkflowFacts(
   return {};
 }
 function normalizeCandidatePath(value: unknown): string {
-  const normalized = String(value ?? '').replace(/\\/g, '/');
+  const normalized = scalarText(value ?? '').replace(/\\/g, '/');
   return normalized.startsWith('./') ? normalized.slice(2) : normalized;
 }
 function canonicalCandidatePathByType(
@@ -638,10 +644,10 @@ function canonicalizeCandidateEntry(entry: any, baseDir: string, workItemId: str
   ).toLowerCase();
   if (candidateType) normalizedEntry.type = candidateType;
   if (candidateType === 'architecture') {
-    normalizedEntry.target_path = (`${SPEC_DIR_NAME}/project/architecture.md` as const);
+    normalizedEntry.target_path = `${SPEC_DIR_NAME}/project/architecture.md` as const;
   }
   if (candidateType === 'data_model') {
-    normalizedEntry.target_path = (`${SPEC_DIR_NAME}/project/data_model.md` as const);
+    normalizedEntry.target_path = `${SPEC_DIR_NAME}/project/data_model.md` as const;
   }
   if (candidateType === 'module_definition') {
     normalizedEntry.target_path = `${SPEC_DIR_NAME}/project/modules/${moduleId}/module.json`;
@@ -674,7 +680,9 @@ function canonicalizeCandidateEntry(entry: any, baseDir: string, workItemId: str
 function augmentGovernanceCandidateEntries(entries: any[], workItemDir: string): any[] {
   const augmented = [...entries];
   const seenCandidates = new Set(
-    augmented.map(entry => normalizeCandidatePath(entry?.candidate_path ?? entry?.path)).filter(Boolean)
+    augmented
+      .map(entry => normalizeCandidatePath(entry?.candidate_path ?? entry?.path))
+      .filter(Boolean)
   );
   const seenTargets = new Set(
     augmented.map(entry => normalizeCandidatePath(entry?.target_path)).filter(Boolean)
@@ -704,12 +712,12 @@ function augmentGovernanceCandidateEntries(entries: any[], workItemDir: string):
 
   appendIfPresent(
     'candidates/project/architecture.candidate.md',
-    (`${SPEC_DIR_NAME}/project/architecture.md` as const),
+    `${SPEC_DIR_NAME}/project/architecture.md` as const,
     'architecture'
   );
   appendIfPresent(
     'candidates/project/data_model.candidate.md',
-    (`${SPEC_DIR_NAME}/project/data_model.md` as const),
+    `${SPEC_DIR_NAME}/project/data_model.md` as const,
     'data_model'
   );
 
@@ -721,11 +729,31 @@ function augmentGovernanceCandidateEntries(entries: any[], workItemDir: string):
       if (!moduleId) continue;
       const root = `candidates/project/modules/${moduleId}`;
       const targetRoot = `${SPEC_DIR_NAME}/project/modules/${moduleId}`;
-      appendIfPresent(`${root}/module.candidate.json`, `${targetRoot}/module.json`, 'module_definition', moduleId);
-      appendIfPresent(`${root}/requirements.candidate.md`, `${targetRoot}/requirements.md`, 'requirements', moduleId);
+      appendIfPresent(
+        `${root}/module.candidate.json`,
+        `${targetRoot}/module.json`,
+        'module_definition',
+        moduleId
+      );
+      appendIfPresent(
+        `${root}/requirements.candidate.md`,
+        `${targetRoot}/requirements.md`,
+        'requirements',
+        moduleId
+      );
       appendIfPresent(`${root}/design.candidate.md`, `${targetRoot}/design.md`, 'design', moduleId);
-      appendIfPresent(`${root}/contracts.candidate.json`, `${targetRoot}/contracts.json`, 'module_contract', moduleId);
-      appendIfPresent(`${root}/trace.candidate.md`, `${targetRoot}/trace.md`, 'module_trace', moduleId);
+      appendIfPresent(
+        `${root}/contracts.candidate.json`,
+        `${targetRoot}/contracts.json`,
+        'module_contract',
+        moduleId
+      );
+      appendIfPresent(
+        `${root}/trace.candidate.md`,
+        `${targetRoot}/trace.md`,
+        'module_trace',
+        moduleId
+      );
     }
   } catch {
     // No module Candidates have been produced yet.
@@ -737,7 +765,7 @@ function augmentGovernanceCandidateEntries(entries: any[], workItemDir: string):
 function isEvidenceOnlyNoProjectSpecChange(value: Record<string, unknown>): boolean {
   return (
     value.no_project_spec_change === true ||
-    String(value.project_integration_effect ?? '')
+    scalarText(value.project_integration_effect ?? '')
       .trim()
       .toLowerCase() === 'evidence_only'
   );
@@ -822,8 +850,7 @@ function normalizeCoreJsonArtifact(
           CANDIDATE_MANIFEST_SCHEMA_VERSION,
         work_item_id: canonicalParsed.work_item_id ?? workItemId,
         workflow_path: normalizedWorkflowPath,
-        base_spec_version:
-          canonicalParsed.base_spec_version ?? existingManifest.base_spec_version,
+        base_spec_version: canonicalParsed.base_spec_version ?? existingManifest.base_spec_version,
         merge_applicable: false,
         merge_required: false,
         entries: [],
@@ -864,10 +891,8 @@ function normalizeCoreJsonArtifact(
         CANDIDATE_MANIFEST_SCHEMA_VERSION,
       work_item_id: canonicalParsed.work_item_id ?? workItemId,
       workflow_path: normalizedWorkflowPath,
-      base_spec_version:
-        canonicalParsed.base_spec_version ?? existingManifest.base_spec_version,
-      merge_required:
-        canonicalParsed.merge_required ?? existingManifest.merge_required ?? true,
+      base_spec_version: canonicalParsed.base_spec_version ?? existingManifest.base_spec_version,
+      merge_required: canonicalParsed.merge_required ?? existingManifest.merge_required ?? true,
       entries,
     };
 
@@ -875,7 +900,12 @@ function normalizeCoreJsonArtifact(
   }
   if (filename === 'evidence_manifest.json') {
     // Missing required evidence is not proof of an intentionally empty manifest.
-    if (!Array.isArray(parsed.entries) && !Array.isArray(parsed.evidence_items) && !Array.isArray(parsed.evidence)) return content;
+    if (
+      !Array.isArray(parsed.entries) &&
+      !Array.isArray(parsed.evidence_items) &&
+      !Array.isArray(parsed.evidence)
+    )
+      return content;
     const entries = Array.isArray(parsed.entries)
       ? parsed.entries
       : Array.isArray(parsed.evidence_items)
@@ -897,7 +927,7 @@ function normalizeCoreJsonArtifact(
 }
 
 function normalizeAgentName(value: unknown): string {
-  return String(value ?? '')
+  return scalarText(value ?? '')
     .trim()
     .toLowerCase()
     .replace(/_/g, '-');
@@ -940,11 +970,18 @@ const PROFESSIONAL_ARTIFACT_OWNERS = new Map<string, string>([
 const VERIFICATION_INPUT_ARTIFACT_TYPES = new Set(['verification_report', 'evidence_manifest']);
 const CONTROL_TOOL_OWNED_ARTIFACT_TYPES = new Set(['merge_report']);
 
-function rejectControlToolOwnedArtifact(fileType: string): any | null {
+function rejectControlToolOwnedArtifact(fileType: string): any {
   if (fileType === 'work_item' || fileType === 'work_item.json') {
-    return {success:false,error:'WORK_ITEM_METADATA_OWNED_BY_RUNTIME',hard_stop:false,
-      policy_violation:true,retry_allowed:false,file_type:fileType,
-      message:'Work Item metadata is owned by Runtime control tools. Use sf_work_item_create for creation, sf_state_transition for state, and sf_code_permission for code permissions. Generic artifact writes cannot update or repair work_item.json.'};
+    return {
+      success: false,
+      error: 'WORK_ITEM_METADATA_OWNED_BY_RUNTIME',
+      hard_stop: false,
+      policy_violation: true,
+      retry_allowed: false,
+      file_type: fileType,
+      message:
+        'Work Item metadata is owned by Runtime control tools. Use sf_work_item_create for creation, sf_state_transition for state, and sf_code_permission for code permissions. Generic artifact writes cannot update or repair work_item.json.',
+    };
   }
   if (!CONTROL_TOOL_OWNED_ARTIFACT_TYPES.has(String(fileType ?? ''))) return null;
   return {
@@ -958,7 +995,7 @@ function rejectControlToolOwnedArtifact(fileType: string): any | null {
   };
 }
 
-function rejectProfessionalArtifactOwnership(fileType: string, context: any): any | null {
+function rejectProfessionalArtifactOwnership(fileType: string, context: any): any {
   const requiredAgent = PROFESSIONAL_ARTIFACT_OWNERS.get(String(fileType ?? ''));
   if (!requiredAgent) return null;
 
@@ -1010,7 +1047,7 @@ const EXECUTOR_FORBIDDEN_ARTIFACT_TYPES = new Set([
   'project_prod_environment',
   'project_rules',
 ]);
-function rejectExecutorGovernanceArtifact(fileType: string, context: any): any | null {
+function rejectExecutorGovernanceArtifact(fileType: string, context: any): any {
   if (!isExecutorLike(context)) return null;
   if (!EXECUTOR_FORBIDDEN_ARTIFACT_TYPES.has(String(fileType ?? ''))) return null;
   return {
@@ -1065,21 +1102,34 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
   // required artifact; neither its run_id nor its prose can change its target.
   if (fileType === 'verification_evidence') {
     const state = await readAuthoritativeState({ deps, projectRoot: baseDir, workItemId });
-    if (!['implementation_ready', 'implementation_done', 'verification_running'].includes(
-      String(state.current_state ?? ''),
-    )) {
-      return { success: false, error: 'VERIFICATION_EVIDENCE_STATE_FROZEN',
-        current_state: state.current_state, retry_allowed: false };
+    if (
+      !['implementation_ready', 'implementation_done', 'verification_running'].includes(
+        String(state.current_state ?? '')
+      )
+    ) {
+      return {
+        success: false,
+        error: 'VERIFICATION_EVIDENCE_STATE_FROZEN',
+        current_state: state.current_state,
+        retry_allowed: false,
+      };
     }
-    const name = String(args['artifact_name'] ?? '');
+    const name = scalarText(args['artifact_name'] ?? '');
     if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,100}\.(?:jsonl|txt|png|webp|jpg|jpeg)$/.test(name)) {
       return { success: false, error: 'VERIFICATION_EVIDENCE_NAME_INVALID', retry_allowed: true };
     }
-    const encoding = String(args['content_encoding'] ?? 'utf8');
-    if (!['utf8', 'base64'].includes(encoding) ||
-        (encoding === 'base64' && (!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(content) ||
-          Buffer.from(content, 'base64').toString('base64') !== content))) {
-      return { success: false, error: 'VERIFICATION_EVIDENCE_ENCODING_INVALID', retry_allowed: true };
+    const encoding = scalarText(args['content_encoding'] ?? 'utf8');
+    if (
+      !['utf8', 'base64'].includes(encoding) ||
+      (encoding === 'base64' &&
+        (!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(content) ||
+          Buffer.from(content, 'base64').toString('base64') !== content))
+    ) {
+      return {
+        success: false,
+        error: 'VERIFICATION_EVIDENCE_ENCODING_INVALID',
+        retry_allowed: true,
+      };
     }
     const bytes = Buffer.from(content, encoding as BufferEncoding);
     if (bytes.byteLength === 0 || bytes.byteLength > 10 * 1024 * 1024) {
@@ -1092,17 +1142,30 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
       fs.writeFileSync(target, bytes, { flag: 'wx' });
     } catch (error: any) {
       if (error?.code === 'EEXIST') {
-        return { success: false, error: 'VERIFICATION_EVIDENCE_ALREADY_EXISTS', retry_allowed: true };
+        return {
+          success: false,
+          error: 'VERIFICATION_EVIDENCE_ALREADY_EXISTS',
+          retry_allowed: true,
+        };
       }
-      setHardStop(baseDir, workItemId, `VERIFICATION_EVIDENCE_WRITE_FAILED: ${error?.message ?? String(error)}`, 'sf_artifact_write');
+      setHardStop(
+        baseDir,
+        workItemId,
+        `VERIFICATION_EVIDENCE_WRITE_FAILED: ${error?.message ?? String(error)}`,
+        'sf_artifact_write'
+      );
       return { success: false, error: 'VERIFICATION_EVIDENCE_WRITE_FAILED', hard_stop: true };
     }
-    return { success: true, file_type: fileType,
+    return {
+      success: true,
+      file_type: fileType,
       path: path.relative(baseDir, target).replace(/\\/g, '/'),
       size: bytes.byteLength,
       sha256: createHash('sha256').update(bytes).digest('hex'),
       recorded_at: new Date().toISOString(),
-      controlled_artifact: true, immutable: true };
+      controlled_artifact: true,
+      immutable: true,
+    };
   }
   const projectConfigTarget = PROJECT_CONFIG_ARTIFACT_TYPES.get(fileType);
   if (projectConfigTarget) {
@@ -1152,7 +1215,12 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
       };
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      setHardStop(baseDir, workItemId, `PROJECT_CONFIG_WRITE_FAILED: ${message}`, 'sf_artifact_write');
+      setHardStop(
+        baseDir,
+        workItemId,
+        `PROJECT_CONFIG_WRITE_FAILED: ${message}`,
+        'sf_artifact_write'
+      );
       return { success: false, error: `PROJECT_CONFIG_WRITE_FAILED: ${message}`, hard_stop: true };
     }
   }
@@ -1205,11 +1273,33 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
           'Use the sf-verifier Required Output contract exactly, then retry.',
       };
     }
-    let manifest:unknown;
-    try { manifest=JSON.parse(fs.readFileSync(path.join(workItemRoot(baseDir,workItemId),'evidence','evidence_manifest.json'),'utf8')); } catch { /* Required manual references fail below; runtime references validate independently before paired Gate checks. */ }
-    const executionErrors=await inspectExecutionEvidence({projectRoot:baseDir,workItemId,report:validation.report,manifest,consumer:deps.verificationRuntime});
-    if(executionErrors.length) return {success:false,error:'VERIFICATION_EXECUTION_EVIDENCE_REJECTED',validation_errors:executionErrors,hard_stop:false,retry_allowed:true};
-    validation.report!['verification_execution_contract']='verification-execution/v1';
+    let manifest: unknown;
+    try {
+      manifest = JSON.parse(
+        fs.readFileSync(
+          path.join(workItemRoot(baseDir, workItemId), 'evidence', 'evidence_manifest.json'),
+          'utf8'
+        )
+      );
+    } catch {
+      /* Required manual references fail below; runtime references validate independently before paired Gate checks. */
+    }
+    const executionErrors = await inspectExecutionEvidence({
+      projectRoot: baseDir,
+      workItemId,
+      report: validation.report,
+      manifest,
+      consumer: deps.verificationRuntime,
+    });
+    if (executionErrors.length)
+      return {
+        success: false,
+        error: 'VERIFICATION_EXECUTION_EVIDENCE_REJECTED',
+        validation_errors: executionErrors,
+        hard_stop: false,
+        retry_allowed: true,
+      };
+    validation.report!['verification_execution_contract'] = 'verification-execution/v1';
     const rendered = renderVerificationReport(JSON.stringify(validation.report));
     if (rendered === null) {
       return {
@@ -1281,7 +1371,7 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
     return writeArtifact(
       {
         work_item_id: workItemId,
-        file_type: 'work_log' as any,
+        file_type: 'work_log',
         content,
         run_id: args['run_id'] as string | undefined,
         template: args['template'] as any,
@@ -1392,7 +1482,11 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
       };
     }
   }
-  if (['change_classification.md', 'impact_analysis.md', 'trigger_result.json'].includes(targetFilename)) {
+  if (
+    ['change_classification.md', 'impact_analysis.md', 'trigger_result.json'].includes(
+      targetFilename
+    )
+  ) {
     const state = await readAuthoritativeState({ deps, projectRoot: baseDir, workItemId });
     const mutableStates = new Set(['impact_analyzing', 'candidate_preparing', 'gates_failed']);
     if (!state.current_state || !mutableStates.has(state.current_state)) {
@@ -1412,7 +1506,7 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
   if (targetFilename === 'evidence_manifest.json') {
     const schemaPrecheck = await precheckEvidenceManifestSchema(
       workItemRoot(baseDir, workItemId),
-      workItemId,
+      workItemId
     );
     const schemaBlockCode = evidenceManifestSchemaBlockCode(schemaPrecheck);
     if (schemaBlockCode) {
@@ -1445,10 +1539,7 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
           retry_allowed: false,
         };
       }
-      const schemaPrecheck = await precheckCandidateManifestSchema(
-        metadataWorkItemDir,
-        workItemId,
-      );
+      const schemaPrecheck = await precheckCandidateManifestSchema(metadataWorkItemDir, workItemId);
       const schemaBlockCode = candidateManifestSchemaBlockCode(schemaPrecheck);
       if (schemaBlockCode) {
         return {
@@ -1480,9 +1571,21 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
     }
   }
   const wiDir = workItemRoot(baseDir, workItemId);
-  if(targetFilename==='evidence_manifest.json') {
-    const executionErrors=await inspectExecutionEvidence({projectRoot:baseDir,workItemId,manifest:JSON.parse(content),consumer:deps.verificationRuntime});
-    if(executionErrors.length)return {success:false,error:'VERIFICATION_EXECUTION_EVIDENCE_REJECTED',validation_errors:executionErrors,hard_stop:false,retry_allowed:true};
+  if (targetFilename === 'evidence_manifest.json') {
+    const executionErrors = await inspectExecutionEvidence({
+      projectRoot: baseDir,
+      workItemId,
+      manifest: JSON.parse(content),
+      consumer: deps.verificationRuntime,
+    });
+    if (executionErrors.length)
+      return {
+        success: false,
+        error: 'VERIFICATION_EXECUTION_EVIDENCE_REJECTED',
+        validation_errors: executionErrors,
+        hard_stop: false,
+        retry_allowed: true,
+      };
   }
   fs.mkdirSync(wiDir, { recursive: true });
   let targetPath: string;

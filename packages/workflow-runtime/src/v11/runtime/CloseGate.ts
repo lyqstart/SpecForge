@@ -1,4 +1,3 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * CloseGate.ts — SpecForge v1.1 Close Gate
  *
@@ -7,10 +6,11 @@ import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
  *
  * Requirements: 7.1-7.14
  */
-import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
-import { evaluateMergeReport } from '@specforge/types';
 
 // ---- Types ----
+
+import { evaluateMergeReport } from '@specforge/types';
+import { SPEC_DIR_NAME, isWorkItemSpecArtifactPlaceholder } from "@specforge/types/directory-layout";
 
 export interface CloseCheck {
   name: string;

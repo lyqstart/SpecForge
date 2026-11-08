@@ -3,9 +3,11 @@
  * Tests workflow definition loading, instance creation, and state transitions
  */
 
+import { promiseFromSync } from '@specforge/types';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { WorkflowEngine, WorkflowEvent } from '../../src/WorkflowEngine.js';
-import { WorkflowDefinition, SimpleGateDefinition } from '../../src/types.js';
+
+import type { WorkflowDefinition } from '../../src/types.js';
+import { type WorkflowEvent , WorkflowEngine } from '../../src/WorkflowEngine.js';
 
 describe('WorkflowEngine', () => {
   let engine: WorkflowEngine;
@@ -44,7 +46,7 @@ describe('WorkflowEngine', () => {
       };
 
       const workflowId = engine.loadWorkflow(definition);
-      
+
       expect(workflowId).toBe('test-workflow');
       expect(engine.getWorkflow('test-workflow')).toEqual(definition);
     });
@@ -239,12 +241,12 @@ describe('WorkflowEngine', () => {
           schema_version: '1.0',
           initial: 'state1',
           states: {
-            state1: { 
-              schema_version: '1.0', 
-              agent: 'a', 
-              gate: { schema_version: '1.0', type: 'simple', id: 'g', name: 'G' }, 
-              skills: [], 
-              next: { pass: 'state2', fail: 'state3' } 
+            state1: {
+              schema_version: '1.0',
+              agent: 'a',
+              gate: { schema_version: '1.0', type: 'simple', id: 'g', name: 'G' },
+              skills: [],
+              next: { pass: 'state2', fail: 'state3' }
             },
             state2: { schema_version: '1.0', agent: 'a', gate: { schema_version: '1.0', type: 'simple', id: 'g2', name: 'G2' }, skills: [] },
             state3: { schema_version: '1.0', agent: 'a', gate: { schema_version: '1.0', type: 'simple', id: 'g3', name: 'G3' }, skills: [] },
@@ -369,7 +371,7 @@ describe('WorkflowEngine', () => {
 
     it('should execute workflow with custom gate function', async () => {
       const gateFn = vi.fn().mockResolvedValue({ schema_version: '1.0', passed: true, reason: 'Custom check passed' });
-      
+
       const definition: WorkflowDefinition = {
         schema_version: '1.0',
         id: 'test-workflow',
@@ -382,7 +384,7 @@ describe('WorkflowEngine', () => {
             state1: {
               schema_version: '1.0',
               agent: 'test-agent',
-              gate: { schema_version: '1.0', type: 'simple', id: 'gate1', name: 'Gate 1', checkFn: gateFn } as SimpleGateDefinition,
+              gate: { schema_version: '1.0', type: 'simple', id: 'gate1', name: 'Gate 1', checkFn: gateFn },
               skills: [],
             },
           },
@@ -411,26 +413,26 @@ describe('WorkflowEngine', () => {
             state1: {
               schema_version: '1.0',
               agent: 'test-agent',
-              gate: { 
+              gate: {
                 schema_version: '1.0',
-                type: 'simple', 
-                id: 'gate1', 
+                type: 'simple',
+                id: 'gate1',
                 name: 'Gate 1',
-                checkFn: async () => ({ schema_version: '1.0', passed: true }),
-              } as SimpleGateDefinition,
+                checkFn:  () => promiseFromSync(() => (({ schema_version: '1.0', passed: true }))),
+              },
               skills: [],
               next: { pass: 'state2', fail: 'state3' },
             },
             state2: {
               schema_version: '1.0',
               agent: 'test-agent',
-              gate: { schema_version: '1.0', type: 'simple', id: 'gate2', name: 'Gate 2' } as SimpleGateDefinition,
+              gate: { schema_version: '1.0', type: 'simple', id: 'gate2', name: 'Gate 2' },
               skills: [],
             },
             state3: {
               schema_version: '1.0',
               agent: 'test-agent',
-              gate: { schema_version: '1.0', type: 'simple', id: 'gate3', name: 'Gate 3' } as SimpleGateDefinition,
+              gate: { schema_version: '1.0', type: 'simple', id: 'gate3', name: 'Gate 3' },
               skills: [],
             },
           },
@@ -461,7 +463,7 @@ describe('WorkflowEngine', () => {
           schema_version: '1.0',
           initial: 'state1',
           states: {
-            state1: { schema_version: '1.0', agent: 'a', gate: { schema_version: '1.0', type: 'simple', id: 'g', name: 'G' } as SimpleGateDefinition, skills: [] },
+            state1: { schema_version: '1.0', agent: 'a', gate: { schema_version: '1.0', type: 'simple', id: 'g', name: 'G' }, skills: [] },
           },
         },
         artifacts: [],
@@ -528,7 +530,7 @@ describe('WorkflowEngine', () => {
           schema_version: '1.0',
           initial: 'state1',
           states: {
-            state1: { schema_version: '1.0', agent: 'a', gate: { schema_version: '1.0', type: 'simple', id: 'g', name: 'G' } as SimpleGateDefinition, skills: [] },
+            state1: { schema_version: '1.0', agent: 'a', gate: { schema_version: '1.0', type: 'simple', id: 'g', name: 'G' }, skills: [] },
           },
         },
         artifacts: [],

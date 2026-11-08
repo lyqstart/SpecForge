@@ -1,16 +1,17 @@
 /**
  * User Binding Manager Unit Tests
- * 
+ *
  * Tests for the UserBindingManager service implementing user binding
  * for OpenClaw requests as required by Property 26: Remote Access Guard
- * 
+ *
  * @specforge/permission-engine
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { 
-  UserBindingManager, 
-  createUserBindingManager 
+
+import {
+  UserBindingManager,
+  createUserBindingManager
 } from '../../src/services/user-binding';
 
 describe('UserBindingManager', () => {
@@ -84,7 +85,7 @@ describe('UserBindingManager', () => {
 
     it('should update lastActiveAt on lookup', () => {
       const user = manager.registerUser({ username: 'activeuser' });
-      const before = user.lastActiveAt;
+      void (user.lastActiveAt);
 
       manager.lookupUser(user.id);
       const result = manager.lookupUser(user.id);
@@ -113,7 +114,7 @@ describe('UserBindingManager', () => {
       const user = manager.registerUser({ username: 'sessionuser' });
 
       const result = manager.bindUser(user.id, 'session-123', '192.168.1.1', 'TestAgent/1.0');
-      
+
       expect(result.success).toBe(true);
       expect(result.bindingId).toBeDefined();
     });
@@ -122,13 +123,13 @@ describe('UserBindingManager', () => {
       const user = manager.registerUser({ username: 'minimalbind' });
 
       const result = manager.bindUser(user.id, 'session-456');
-      
+
       expect(result.success).toBe(true);
     });
 
     it('should reject binding for non-existent user', () => {
       const result = manager.bindUser('non-existent', 'session-789');
-      
+
       expect(result.success).toBe(false);
       expect(result.errorCode).toBe('user_not_found');
     });
@@ -138,7 +139,7 @@ describe('UserBindingManager', () => {
       manager.disableUser(user.id);
 
       const result = manager.bindUser(user.id, 'session-000');
-      
+
       expect(result.success).toBe(false);
       expect(result.errorCode).toBe('user_disabled');
     });
@@ -160,10 +161,10 @@ describe('UserBindingManager', () => {
   describe('getBindingForSession', () => {
     it('should retrieve binding for session', () => {
       const user = manager.registerUser({ username: 'bindingtest' });
-      const bindResult = manager.bindUser(user.id, 'test-session');
+      void (manager.bindUser(user.id, 'test-session'));
 
       const binding = manager.getBindingForSession('test-session');
-      
+
       expect(binding).toBeDefined();
       expect(binding?.userId).toBe(user.id);
       expect(binding?.sessionId).toBe('test-session');
@@ -181,7 +182,7 @@ describe('UserBindingManager', () => {
       const bindResult = manager.bindUser(user.id, 'session-byid');
 
       const binding = manager.getBinding(bindResult.bindingId!);
-      
+
       expect(binding).toBeDefined();
       expect(binding?.userId).toBe(user.id);
     });
@@ -193,12 +194,12 @@ describe('UserBindingManager', () => {
       const bindResult = manager.bindUser(user.id, 'activity-session');
 
       const before = manager.getBinding(bindResult.bindingId!)?.lastActivityAt;
-      
+
       // Wait a bit
       await new Promise(resolve => setTimeout(resolve, 50));
-      
+
       manager.updateActivity(bindResult.bindingId!);
-      
+
       const after = manager.getBinding(bindResult.bindingId!)?.lastActivityAt;
       expect(new Date(after!).getTime()).toBeGreaterThan(new Date(before!).getTime());
     });
@@ -255,7 +256,7 @@ describe('UserBindingManager', () => {
       });
 
       const user = shortTimeoutManager.registerUser({ username: 'expiry' });
-      const bindResult = shortTimeoutManager.bindUser(user.id, 'expiring-session');
+      void (shortTimeoutManager.bindUser(user.id, 'expiring-session'));
 
       // Wait for expiry
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -268,27 +269,27 @@ describe('UserBindingManager', () => {
 
   describe('userHasPermission', () => {
     it('should return true for user with direct permission', () => {
-      const user = manager.registerUser({ 
-        username: 'hasperms', 
-        permissions: ['tool.execute'] 
+      const user = manager.registerUser({
+        username: 'hasperms',
+        permissions: ['tool.execute']
       });
 
       expect(manager.userHasPermission(user.id, 'tool.execute')).toBe(true);
     });
 
     it('should return true for user with role that has permission', () => {
-      const user = manager.registerUser({ 
-        username: 'roleperms', 
-        roles: ['editor'] 
+      const user = manager.registerUser({
+        username: 'roleperms',
+        roles: ['editor']
       });
 
       expect(manager.userHasPermission(user.id, 'tool.execute')).toBe(true);
     });
 
     it('should return false for user without permission', () => {
-      const user = manager.registerUser({ 
-        username: 'noperms', 
-        permissions: [] 
+      const user = manager.registerUser({
+        username: 'noperms',
+        permissions: []
       });
 
       expect(manager.userHasPermission(user.id, 'admin.action')).toBe(false);

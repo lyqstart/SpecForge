@@ -1,3 +1,4 @@
+import { scalarText } from '@specforge/types';
 import { registerHandler, getHandler } from '../ToolDispatcher';
 import { getCurrentBranch } from '../lib/git-governance-core';
 
@@ -8,9 +9,10 @@ function isReleaseLikeAction(action: string): boolean {
 }
 
 registerHandler('sf_code_permission', async (args, context, deps) => {
-  const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
-  const action = String(args['action'] || 'check');
-  const defaultBranch = String(args['default_branch'] || 'main');
+  const projectRoot =
+    (context?.directory as string) || (context?.worktree as string) || process.cwd();
+  const action = scalarText(args['action'] || 'check');
+  const defaultBranch = scalarText(args['default_branch'] || 'main');
 
   if (isReleaseLikeAction(action)) {
     const currentBranch = await getCurrentBranch(projectRoot);
@@ -19,7 +21,8 @@ registerHandler('sf_code_permission', async (args, context, deps) => {
         success: false,
         hard_stop: true,
         error: 'MAIN_WRITE_GUARD_BLOCKED',
-        message: 'code_permission cannot be enabled on the default branch. Create a semantic Work Item branch first.',
+        message:
+          'code_permission cannot be enabled on the default branch. Create a semantic Work Item branch first.',
         current_branch: currentBranch,
         default_branch: defaultBranch,
       };

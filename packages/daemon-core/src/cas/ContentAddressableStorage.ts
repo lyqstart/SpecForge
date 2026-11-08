@@ -1,6 +1,6 @@
 /**
  * Content-Addressable Storage (CAS) implementation
- * 
+ *
  * Stores and retrieves blobs by their SHA-256 hash.
  * Used for payloads exceeding 64 KiB to avoid inline data in events.
  */
@@ -112,7 +112,10 @@ export class ContentAddressableStorage {
    * - For payloads <= 64 KiB: return inline data
    * - For payloads > 64 KiB: store in CAS and return reference
    */
-  async processPayload(content: Buffer | string, maxSize: number): Promise<Buffer | string | CASBlobReference> {
+  async processPayload(
+    content: Buffer | string,
+    maxSize: number
+  ): Promise<Buffer | string | CASBlobReference> {
     const size = Buffer.isBuffer(content) ? content.length : Buffer.byteLength(content);
 
     if (size <= maxSize) {

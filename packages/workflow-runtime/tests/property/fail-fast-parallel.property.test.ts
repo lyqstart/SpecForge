@@ -1,14 +1,14 @@
 /**
  * Property Test: Fail Fast with Parallel Mode
- * 
+ *
  * Feature: workflow-runtime, Property 5: Fail Fast with Parallel Mode
  * Derived-From: v6-architecture-overview Property 5
- * 
+ *
  * Validates: Requirements 3.5 - WHEN `mode = parallel` 且 `failPolicy = fail_fast`,
  * THE compositeGate_Runner SHALL 在任一子 Gate 失败时取消尚未完成的子 Gate 并返回失败。
- * 
+ *
  * This is a SAFETY-CRITICAL property test - requires >= 1000 iterations
- * 
+ *
  * Key properties being tested:
  * 1. fail_fast: When any child gate fails in parallel mode, composite gate fails immediately
  * 2. Cancellation: Unfinished child gates should be cancelled when fail_fast triggers
@@ -16,10 +16,13 @@
  * 4. Determinism: fail_fast behavior should be consistent regardless of which child fails
  */
 
-import { describe, it, expect } from 'vitest';
+import { promiseFromSync } from '@specforge/types';
 import * as fc from 'fast-check';
+import { describe, it, expect } from 'vitest';
+
 import { CompositeGateRunner } from '../../src/GateRunner';
 import type { CompositeGateDefinition, SimpleGateDefinition, GateResult } from '../../src/types';
+import { requireCompositeObservation } from '../composite-observation';
 
 // Safety-critical property test: >= 1000 iterations
 const NUM_ITERATIONS = 1000;
@@ -36,12 +39,12 @@ function createSimpleGate(
     type: 'simple',
     id,
     name: `Gate ${id}`,
-    checkFn: async () => ({
+    checkFn:  () => promiseFromSync(() => (({
       schema_version: '1.0',
       passed: shouldPass,
       reason: shouldPass ? `Gate ${id} passed` : `Gate ${id} failed`,
       details: { gateId: id }
-    })
+    })))
   };
 }
 
@@ -58,7 +61,7 @@ function createCompositeWithFailingChild(
       i !== failPosition  // Only fail at failPosition
     )
   );
-  
+
   return {
     schema_version: '1.0',
     type: 'composite',
@@ -71,11 +74,11 @@ function createCompositeWithFailingChild(
 }
 
 describe('Property 5: Fail Fast with Parallel Mode', () => {
-  
+
   /**
    * Property: When any child gate fails in parallel mode with fail_fast,
    * the composite gate MUST fail immediately
-   * 
+   *
    * This is the core safety property being tested
    */
   it('should fail immediately when any child fails with fail_fast (PBT)', async () => {
@@ -86,11 +89,11 @@ describe('Property 5: Fail Fast with Parallel Mode', () => {
         async (numChildren, failPosition) => {
           // Ensure failPosition is valid for numChildren
           if (failPosition >= numChildren) return;
-          
+
           const gate = createCompositeWithFailingChild(numChildren, failPosition);
           const runner = new CompositeGateRunner(gate);
           const result = await runner.check();
-          
+
           // Property: With fail_fast, result MUST be failed when any child fails
           if (result.passed) {
             throw new Error(
@@ -98,9 +101,9 @@ describe('Property 5: Fail Fast with Parallel Mode', () => {
               `but got passed=true.`
             );
           }
-          
+
           // Property: Details should contain failPolicy
-          const details = result.details as any;
+          const details = requireCompositeObservation(result.details);
           if (!details || details.failPolicy !== 'fail_fast') {
             throw new Error(
               `Property violation: failPolicy should be 'fail_fast' in details, got: ${JSON.stringify(details)}`
@@ -126,16 +129,16 @@ describe('Property 5: Fail Fast with Parallel Mode', () => {
             const gate = createCompositeWithFailingChild(numChildren, failPos);
             const runner = new CompositeGateRunner(gate);
             const result = await runner.check();
-            
+
             // Property: Must fail for any failing child
             if (result.passed) {
               throw new Error(
                 `Property violation: fail_fast should fail when child at position ${failPos} fails`
               );
             }
-            
+
             // Property: failPolicy should be in details
-            const details = result.details as any;
+            const details = requireCompositeObservation(result.details);
             if (details?.failPolicy !== 'fail_fast') {
               throw new Error(
                 `Property violation: failPolicy should be 'fail_fast', got: ${details?.failPolicy}`
@@ -160,13 +163,13 @@ describe('Property 5: Fail Fast with Parallel Mode', () => {
           const gate = createCompositeWithFailingChild(numChildren, failPosition);
           const runner = new CompositeGateRunner(gate);
           const result = await runner.check();
-          
+
           // Property: Result should contain cancelledGates information
-          const details = result.details as any;
+          const details = requireCompositeObservation(result.details);
           if (!details) {
             throw new Error('Property violation: result.details should be defined');
           }
-          
+
           // cancelledGates should be tracked (may be empty if failed gate was last)
           if (!('cancelledGates' in details)) {
             throw new Error(
@@ -189,38 +192,38 @@ describe('Property 5: Fail Fast with Parallel Mode', () => {
         fc.integer({ min: 3, max: 5 }),
         async (numChildren) => {
           const failPosition = 1; // Second gate fails
-          
+
           // Create gate with fail_fast
           const failFastGate = createCompositeWithFailingChild(numChildren, failPosition);
-          
+
           // Create same gate with collect_all
           const collectAllGate: CompositeGateDefinition = {
             ...failFastGate,
             id: `collect-all-${failFastGate.id}`,
             failPolicy: 'collect_all'
           };
-          
+
           const failFastRunner = new CompositeGateRunner(failFastGate);
           const collectAllRunner = new CompositeGateRunner(collectAllGate);
-          
+
           const failFastResult = await failFastRunner.check();
           const collectAllResult = await collectAllRunner.check();
-          
+
           // Both should fail (one child fails)
           if (failFastResult.passed || collectAllResult.passed) {
             throw new Error(
               'Property violation: Both should fail when a child fails'
             );
           }
-          
+
           // fail_fast should have failPolicy in details
-          const ffDetails = failFastResult.details as any;
+          const ffDetails = requireCompositeObservation(failFastResult.details);
           if (ffDetails?.failPolicy !== 'fail_fast') {
             throw new Error('fail_fast gate should have fail_fast in details');
           }
-          
+
           // collect_all should aggregate results - check for results array
-          const caDetails = collectAllResult.details as any;
+          const caDetails = requireCompositeObservation(collectAllResult.details);
           if (!caDetails?.results || !Array.isArray(caDetails.results)) {
             throw new Error('collect_all gate should have results array in details');
           }
@@ -241,7 +244,7 @@ describe('Property 5: Fail Fast with Parallel Mode', () => {
           const children: SimpleGateDefinition[] = Array.from({ length: numChildren }, (_, i) =>
             createSimpleGate(`pass-child-${i}`, true)
           );
-          
+
           const gate: CompositeGateDefinition = {
             schema_version: '1.0',
             type: 'composite',
@@ -251,10 +254,10 @@ describe('Property 5: Fail Fast with Parallel Mode', () => {
             failPolicy: 'fail_fast',
             children
           };
-          
+
           const runner = new CompositeGateRunner(gate);
           const result = await runner.check();
-          
+
           // Property: All passing gates should result in success
           if (!result.passed) {
             throw new Error(
@@ -275,7 +278,7 @@ describe('Property 5: Fail Fast with Parallel Mode', () => {
     // Test both passing and failing single child
     const passingChild: SimpleGateDefinition = createSimpleGate('single-pass', true);
     const failingChild: SimpleGateDefinition = createSimpleGate('single-fail', false);
-    
+
     // Test passing case
     const passingGate: CompositeGateDefinition = {
       schema_version: '1.0',
@@ -286,11 +289,11 @@ describe('Property 5: Fail Fast with Parallel Mode', () => {
       failPolicy: 'fail_fast',
       children: [passingChild]
     };
-    
+
     const passingRunner = new CompositeGateRunner(passingGate);
     const passingResult = await passingRunner.check();
     expect(passingResult.passed).toBe(true);
-    
+
     // Test failing case
     const failingGate: CompositeGateDefinition = {
       schema_version: '1.0',
@@ -301,11 +304,11 @@ describe('Property 5: Fail Fast with Parallel Mode', () => {
       failPolicy: 'fail_fast',
       children: [failingChild]
     };
-    
+
     const failingRunner = new CompositeGateRunner(failingGate);
     const failingResult = await failingRunner.check();
     expect(failingResult.passed).toBe(false);
-    expect((failingResult.details as any)?.failPolicy).toBe('fail_fast');
+    expect((requireCompositeObservation(failingResult.details))?.failPolicy).toBe('fail_fast');
   });
 
   /**
@@ -317,7 +320,7 @@ describe('Property 5: Fail Fast with Parallel Mode', () => {
       createSimpleGate('gate-b-fail', false),
       createSimpleGate('gate-c', true)
     ];
-    
+
     const gate: CompositeGateDefinition = {
       schema_version: '1.0',
       type: 'composite',
@@ -327,16 +330,16 @@ describe('Property 5: Fail Fast with Parallel Mode', () => {
       failPolicy: 'fail_fast',
       children
     };
-    
+
     const runner = new CompositeGateRunner(gate);
     const result = await runner.check();
-    
+
     expect(result.passed).toBe(false);
     expect(result.reason).toBeDefined();
     expect(result.reason).toContain('fail_fast');
-    
+
     // Details should contain results array
-    const details = result.details as any;
+    const details = requireCompositeObservation(result.details);
     expect(details).toBeDefined();
     expect(details.results).toBeDefined();
     expect(Array.isArray(details.results)).toBe(true);
@@ -350,7 +353,7 @@ describe('Property 5: Fail Fast with Parallel Mode', () => {
       createSimpleGate('det-1', false),  // Always fails
       createSimpleGate('det-2', true)    // Always passes
     ];
-    
+
     const gate: CompositeGateDefinition = {
       schema_version: '1.0',
       type: 'composite',
@@ -360,7 +363,7 @@ describe('Property 5: Fail Fast with Parallel Mode', () => {
       failPolicy: 'fail_fast',
       children
     };
-    
+
     // Run multiple times
     const results: GateResult[] = [];
     for (let i = 0; i < 5; i++) {
@@ -368,11 +371,11 @@ describe('Property 5: Fail Fast with Parallel Mode', () => {
       const result = await runner.check();
       results.push(result);
     }
-    
+
     // All results should be consistent - all should fail with fail_fast
     for (const result of results) {
       expect(result.passed).toBe(false);
-      const details = result.details as any;
+      const details = requireCompositeObservation(result.details);
       expect(details?.failPolicy).toBe('fail_fast');
     }
   });
@@ -389,7 +392,7 @@ describe('Property 5: Parallel vs Sequential Comparison', () => {
       createSimpleGate('seq-par-child-2', false),
       createSimpleGate('seq-par-child-3', true)
     ];
-    
+
     // Parallel with fail_fast
     const parallelGate: CompositeGateDefinition = {
       schema_version: '1.0',
@@ -400,27 +403,27 @@ describe('Property 5: Parallel vs Sequential Comparison', () => {
       failPolicy: 'fail_fast',
       children
     };
-    
+
     // Sequential with fail_fast
     const sequentialGate: CompositeGateDefinition = {
       ...parallelGate,
       id: 'sequential-fail-fast',
       mode: 'sequential'
     };
-    
+
     const parallelRunner = new CompositeGateRunner(parallelGate);
     const sequentialRunner = new CompositeGateRunner(sequentialGate);
-    
+
     const parallelResult = await parallelRunner.check();
     const sequentialResult = await sequentialRunner.check();
-    
+
     // Both should fail
     expect(parallelResult.passed).toBe(false);
     expect(sequentialResult.passed).toBe(false);
-    
+
     // Both should have fail_fast policy in details
-    expect((parallelResult.details as any)?.failPolicy).toBe('fail_fast');
-    expect((sequentialResult.details as any)?.failPolicy).toBe('fail_fast');
+    expect((requireCompositeObservation(parallelResult.details))?.failPolicy).toBe('fail_fast');
+    expect((requireCompositeObservation(sequentialResult.details))?.failPolicy).toBe('fail_fast');
   });
 });
 
@@ -441,12 +444,12 @@ describe('Property 5: Edge Cases', () => {
         createSimpleGate('second', true)   // Would pass
       ]
     };
-    
+
     const runner = new CompositeGateRunner(gate);
     const result = await runner.check();
-    
+
     expect(result.passed).toBe(false);
-    expect((result.details as any)?.failPolicy).toBe('fail_fast');
+    expect((requireCompositeObservation(result.details))?.failPolicy).toBe('fail_fast');
   });
 
   /**
@@ -465,12 +468,12 @@ describe('Property 5: Edge Cases', () => {
         createSimpleGate('second', false)  // Fails
       ]
     };
-    
+
     const runner = new CompositeGateRunner(gate);
     const result = await runner.check();
-    
+
     expect(result.passed).toBe(false);
-    expect((result.details as any)?.failPolicy).toBe('fail_fast');
+    expect((requireCompositeObservation(result.details))?.failPolicy).toBe('fail_fast');
   });
 
   /**
@@ -479,13 +482,13 @@ describe('Property 5: Edge Cases', () => {
   it('should handle multiple gates with middle failure', async () => {
     const numChildren = 5;
     const failPosition = 2;
-    
+
     const gate = createCompositeWithFailingChild(numChildren, failPosition);
     const runner = new CompositeGateRunner(gate);
     const result = await runner.check();
-    
+
     expect(result.passed).toBe(false);
-    expect((result.details as any)?.failPolicy).toBe('fail_fast');
+    expect((requireCompositeObservation(result.details))?.failPolicy).toBe('fail_fast');
   });
 
   /**
@@ -496,7 +499,7 @@ describe('Property 5: Edge Cases', () => {
     const children: SimpleGateDefinition[] = Array.from({ length: numChildren }, (_, i) =>
       createSimpleGate(`all-fail-${i}`, false)  // All fail
     );
-    
+
     const gate: CompositeGateDefinition = {
       schema_version: '1.0',
       type: 'composite',
@@ -506,15 +509,15 @@ describe('Property 5: Edge Cases', () => {
       failPolicy: 'fail_fast',
       children
     };
-    
+
     const runner = new CompositeGateRunner(gate);
     const result = await runner.check();
-    
+
     expect(result.passed).toBe(false);
-    expect((result.details as any)?.failPolicy).toBe('fail_fast');
-    
+    expect((requireCompositeObservation(result.details))?.failPolicy).toBe('fail_fast');
+
     // Should have multiple failures in results
-    const details = result.details as any;
+    const details = requireCompositeObservation(result.details);
     expect(details.results).toBeDefined();
     expect(details.results.length).toBe(numChildren);
   });
@@ -525,16 +528,16 @@ describe('Property 5: Edge Cases', () => {
   it('should handle large number of child gates', async () => {
     const numChildren = 20;
     const failPosition = 10;
-    
+
     const gate = createCompositeWithFailingChild(numChildren, failPosition);
     const runner = new CompositeGateRunner(gate);
     const result = await runner.check();
-    
+
     expect(result.passed).toBe(false);
-    expect((result.details as any)?.failPolicy).toBe('fail_fast');
-    
+    expect((requireCompositeObservation(result.details))?.failPolicy).toBe('fail_fast');
+
     // Verify all children were processed
-    const details = result.details as any;
+    const details = requireCompositeObservation(result.details);
     expect(details.results).toBeDefined();
     // In parallel mode with fail_fast, not all gates may complete
     expect(details.results.length).toBeGreaterThan(0);

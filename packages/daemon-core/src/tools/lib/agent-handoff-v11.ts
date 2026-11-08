@@ -1,3 +1,4 @@
+import { diagnosticScalarText } from '@specforge/types';
 /**
  * agent-handoff-v11 — §14.3 Agent handoff 结构化输出校验
  *
@@ -50,8 +51,15 @@ export interface AgentHandoff {
 
 export interface EscalationSignal {
   /** 升级类型 */
-  type: 'missing_spec' | 'conflict' | 'out_of_scope' | 'permission_denied' |
-        'path_violation' | 'unknown_change' | 'unsafe_operation' | 'other';
+  type:
+    | 'missing_spec'
+    | 'conflict'
+    | 'out_of_scope'
+    | 'permission_denied'
+    | 'path_violation'
+    | 'unknown_change'
+    | 'unsafe_operation'
+    | 'other';
   /** 升级描述 */
   description: string;
   /** 受影响的引用 (REQ/AC/DD/TASK) */
@@ -77,8 +85,14 @@ const HANDOFF_REQUIRED_FIELDS: (keyof AgentHandoff)[] = [
   'boundary_statement',
 ];
 const ESCALATION_TYPES = new Set([
-  'missing_spec', 'conflict', 'out_of_scope', 'permission_denied',
-  'path_violation', 'unknown_change', 'unsafe_operation', 'other',
+  'missing_spec',
+  'conflict',
+  'out_of_scope',
+  'permission_denied',
+  'path_violation',
+  'unknown_change',
+  'unsafe_operation',
+  'other',
 ]);
 
 function isNonEmptyString(value: unknown): value is string {
@@ -86,7 +100,11 @@ function isNonEmptyString(value: unknown): value is string {
 }
 
 function safeFilenameSegment(value: string): string {
-  return value.trim().toLowerCase().replace(/[^a-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '');
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
 // ── Validation ──
@@ -124,24 +142,25 @@ const HANDOFF_VALIDATION_STATE_FILE = 'handoff_validation_state.json';
 
 function validationStateKey(filters: HandoffValidationFilters): string {
   return createHash('sha256')
-    .update(JSON.stringify({
-      expected_agent: filters.expectedAgent ?? null,
-      expected_stage: filters.expectedStage ?? null,
-      created_after: filters.createdAfter ?? null,
-    }))
+    .update(
+      JSON.stringify({
+        expected_agent: filters.expectedAgent ?? null,
+        expected_stage: filters.expectedStage ?? null,
+        created_after: filters.createdAfter ?? null,
+      })
+    )
     .digest('hex');
 }
 
 async function readHandoffValidationState(wiDir: string): Promise<HandoffValidationState> {
   try {
     const parsed = JSON.parse(
-      await readFile(join(wiDir, HANDOFF_VALIDATION_STATE_FILE), 'utf-8'),
+      await readFile(join(wiDir, HANDOFF_VALIDATION_STATE_FILE), 'utf-8')
     ) as Partial<HandoffValidationState>;
     return {
       schema_version: '1.0',
-      validations: parsed.validations && typeof parsed.validations === 'object'
-        ? parsed.validations
-        : {},
+      validations:
+        parsed.validations && typeof parsed.validations === 'object' ? parsed.validations : {},
     };
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
@@ -159,7 +178,7 @@ export async function recordHandoffValidationState(
     invalid: number;
     matching: number;
     error?: string;
-  },
+  }
 ): Promise<void> {
   const state = await readHandoffValidationState(wiDir);
   const key = validationStateKey(filters);
@@ -181,7 +200,7 @@ export async function recordHandoffValidationState(
 }
 
 export async function readUnresolvedHandoffValidationFailures(
-  wiDir: string,
+  wiDir: string
 ): Promise<HandoffValidationStateEntry[]> {
   const state = await readHandoffValidationState(wiDir);
   return Object.values(state.validations).filter(entry => entry.status === 'failed');
@@ -209,7 +228,11 @@ export function validateHandoff(handoff: unknown): HandoffValidationResult {
 
   // Type checks for array fields
   const arrayFields: (keyof AgentHandoff)[] = [
-    'inputs_read', 'outputs_written', 'findings', 'unknowns', 'escalation_signals',
+    'inputs_read',
+    'outputs_written',
+    'findings',
+    'unknowns',
+    'escalation_signals',
   ];
   for (const field of arrayFields) {
     if (field in obj && !Array.isArray(obj[field])) {
@@ -219,8 +242,13 @@ export function validateHandoff(handoff: unknown): HandoffValidationResult {
 
   // Type checks for string fields
   const stringFields: (keyof AgentHandoff)[] = [
-    'schema_version', 'agent', 'work_item_id', 'stage', 'timestamp',
-    'next_step_recommendation', 'boundary_statement',
+    'schema_version',
+    'agent',
+    'work_item_id',
+    'stage',
+    'timestamp',
+    'next_step_recommendation',
+    'boundary_statement',
   ];
   for (const field of stringFields) {
     if (field in obj && !isNonEmptyString(obj[field])) {
@@ -240,16 +268,19 @@ export function validateHandoff(handoff: unknown): HandoffValidationResult {
 
   // Validate schema_version
   if (obj.schema_version && obj.schema_version !== '1.0') {
-    warnings.push(`Unexpected schema_version: ${obj.schema_version}. Expected '1.0'.`);
+    warnings.push(
+      `Unexpected schema_version: ${diagnosticScalarText(obj.schema_version)}. Expected '1.0'.`
+    );
   }
 
   // Validate escalation_signals structure
   if (Array.isArray(obj.escalation_signals)) {
     for (let i = 0; i < obj.escalation_signals.length; i++) {
-      const sig = obj.escalation_signals[i];
-      if (!sig || typeof sig !== 'object') {
+      const signalValue: unknown = obj.escalation_signals[i];
+      if (!signalValue || typeof signalValue !== 'object' || Array.isArray(signalValue)) {
         errors.push(`escalation_signals[${i}] must be an object`);
       } else {
+        const sig = signalValue as Record<string, unknown>;
         if (!isNonEmptyString(sig.type) || !ESCALATION_TYPES.has(sig.type)) {
           errors.push(`escalation_signals[${i}].type is required`);
         }
@@ -263,7 +294,9 @@ export function validateHandoff(handoff: unknown): HandoffValidationResult {
   // §14.4: Agent must NOT self-downgrade escalation signals
   if (Array.isArray(obj.escalation_signals) && obj.escalation_signals.length > 0) {
     if (!obj.next_step_recommendation || typeof obj.next_step_recommendation !== 'string') {
-      warnings.push('Has escalation signals but no next_step_recommendation (§14.4: must not self-downgrade)');
+      warnings.push(
+        'Has escalation signals but no next_step_recommendation (§14.4: must not self-downgrade)'
+      );
     }
   }
 
@@ -275,10 +308,7 @@ export function validateHandoff(handoff: unknown): HandoffValidationResult {
 /**
  * 将 handoff 写入 WI 目录。
  */
-export async function writeHandoff(
-  wiDir: string,
-  handoff: AgentHandoff,
-): Promise<string> {
+export async function writeHandoff(wiDir: string, handoff: AgentHandoff): Promise<string> {
   await mkdir(wiDir, { recursive: true });
 
   const handoffDir = join(wiDir, 'handoffs');
@@ -307,7 +337,7 @@ export async function writeHandoff(
  */
 export async function validateAllHandoffs(
   wiDir: string,
-  filters: HandoffValidationFilters = {},
+  filters: HandoffValidationFilters = {}
 ): Promise<{
   total: number;
   valid: number;
@@ -378,12 +408,20 @@ export async function validateAllHandoffs(
     if (!record.valid) return false;
     if (
       filters.expectedAgent &&
-      String(record.agent ?? '').trim().toLowerCase().replace(/_/g, '-') !== filters.expectedAgent
-    ) return false;
+      String(record.agent ?? '')
+        .trim()
+        .toLowerCase()
+        .replace(/_/g, '-') !== filters.expectedAgent
+    )
+      return false;
     if (filters.expectedStage && record.stage !== filters.expectedStage) return false;
     if (filters.createdAfter) {
       const timestampMs = Date.parse(String(record.recorded_at ?? ''));
-      if (Number.isNaN(createdAfterMs) || Number.isNaN(timestampMs) || timestampMs < createdAfterMs) {
+      if (
+        Number.isNaN(createdAfterMs) ||
+        Number.isNaN(timestampMs) ||
+        timestampMs < createdAfterMs
+      ) {
         return false;
       }
     }

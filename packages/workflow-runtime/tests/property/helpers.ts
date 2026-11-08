@@ -1,17 +1,17 @@
+// Property progress is diagnostic output; keep stdout available to machine readers.
+function writePropertyDiagnostic(message: string): void { process.stderr.write(message + '\n'); }
 /**
  * Property Test Helpers for Workflow Runtime
  * Utility functions for property-based testing
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import type { 
-  WorkflowDefinition, 
-  WorkflowInstance, 
-  GateDefinition, 
-  GateResult,
-  CompositeGateDefinition,
-  SimpleGateDefinition
-} from '../../src/types';
+/**
+ * Property Test Helpers for Workflow Runtime
+ * Utility functions for property-based testing
+ */
+import { describe, it } from 'vitest';
+
+import type { WorkflowDefinition, GateDefinition, GateResult, CompositeGateDefinition, SimpleGateDefinition } from '../../src/types';
 
 /**
  * Test configuration options
@@ -53,7 +53,7 @@ export function runPropertyTest(
     for (let i = 0; i < config.numIterations; i++) {
       it(`should hold for iteration ${i + 1}`, () => {
         if (config.verbose) {
-          console.log(`Running iteration ${i + 1} of ${config.numIterations}`);
+          writePropertyDiagnostic(`Running iteration ${i + 1} of ${config.numIterations}`);
         }
         testFn();
       });
@@ -200,7 +200,7 @@ export function countGates(gate: GateDefinition): number {
   if (gate.type === 'simple') {
     return 1;
   }
-  
+
   let count = 1; // Count the composite gate itself
   for (const child of gate.children) {
     count += countGates(child);
@@ -213,13 +213,13 @@ export function countGates(gate: GateDefinition): number {
  */
 export function getAllGateIds(gate: GateDefinition): string[] {
   const ids: string[] = [gate.id];
-  
+
   if (gate.type === 'composite') {
     for (const child of gate.children) {
       ids.push(...getAllGateIds(child));
     }
   }
-  
+
   return ids;
 }
 
@@ -232,24 +232,24 @@ export function validateWorkflowDefinition(def: WorkflowDefinition): boolean {
     if (!def.id || !def.displayName || !def.stateMachine) {
       return false;
     }
-    
+
     // Check state machine
     if (!def.stateMachine.initial || !def.stateMachine.states) {
       return false;
     }
-    
+
     // Check all referenced states exist
     const stateIds = Object.keys(def.stateMachine.states);
     if (!stateIds.includes(def.stateMachine.initial)) {
       return false;
     }
-    
+
     // Validate each state
-    for (const [stateId, state] of Object.entries(def.stateMachine.states)) {
+    for (const state of Object.values(def.stateMachine.states)) {
       if (!state.gate || !state.agent) {
         return false;
       }
-      
+
       // Validate next reference if exists
       if (state.next) {
         const nextState = typeof state.next === 'string' ? state.next : Object.values(state.next)[0];
@@ -258,7 +258,7 @@ export function validateWorkflowDefinition(def: WorkflowDefinition): boolean {
         }
       }
     }
-    
+
     return true;
   } catch {
     return false;
@@ -274,33 +274,33 @@ export function validateCompositeGate(gate: CompositeGateDefinition): boolean {
     if (!gate.id || !gate.name || !gate.mode || !gate.failPolicy || !gate.children) {
       return false;
     }
-    
+
     // Validate mode
     if (!['sequential', 'parallel'].includes(gate.mode)) {
       return false;
     }
-    
+
     // Validate fail policy
     if (!['fail_fast', 'collect_all'].includes(gate.failPolicy)) {
       return false;
     }
-    
+
     // Validate children
     if (gate.children.length === 0) {
       return false;
     }
-    
+
     // Recursively validate children
     for (const child of gate.children) {
       if (!child.id || !child.type) {
         return false;
       }
-      
+
       if (child.type === 'composite' && !validateCompositeGate(child)) {
         return false;
       }
     }
-    
+
     return true;
   } catch {
     return false;
@@ -314,7 +314,7 @@ export function getLeafGates(gate: GateDefinition): SimpleGateDefinition[] {
   if (gate.type === 'simple') {
     return [gate];
   }
-  
+
   const leaves: SimpleGateDefinition[] = [];
   for (const child of gate.children) {
     leaves.push(...getLeafGates(child));
@@ -329,15 +329,15 @@ export function isValidGate(gate: GateDefinition): boolean {
   if (!gate.id || !gate.type) {
     return false;
   }
-  
+
   if (gate.type === 'simple') {
     return true;
   }
-  
+
   if (gate.type === 'composite') {
     return validateCompositeGate(gate);
   }
-  
+
   return false;
 }
 
@@ -370,19 +370,19 @@ export function createTestSummary(
  * Print test summary to console
  */
 export function printTestSummary(summary: PropertyTestSummary): void {
-  console.log('\n===========================================');
-  console.log(`Property Test: ${summary.name}`);
-  console.log(`Iterations: ${summary.iterations}`);
-  console.log(`Passed: ${summary.passed}`);
-  console.log(`Failed: ${summary.failed}`);
-  
+  writePropertyDiagnostic('\n===========================================');
+  writePropertyDiagnostic(`Property Test: ${summary.name}`);
+  writePropertyDiagnostic(`Iterations: ${summary.iterations}`);
+  writePropertyDiagnostic(`Passed: ${summary.passed}`);
+  writePropertyDiagnostic(`Failed: ${summary.failed}`);
+
   if (summary.errors.length > 0) {
-    console.log('\nFailures:');
+    writePropertyDiagnostic('\nFailures:');
     summary.errors.forEach((err, i) => {
-      console.log(`  ${i + 1}. ${err.message}`);
+      writePropertyDiagnostic(`  ${i + 1}. ${err.message}`);
     });
   }
-  console.log('===========================================\n');
+  writePropertyDiagnostic('===========================================\n');
 }
 
 /**

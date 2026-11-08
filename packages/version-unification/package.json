@@ -1,6 +1,6 @@
 {
   "name": "@specforge/version-unification",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "private": true,
   "type": "module",
   "main": "dist/index.js",
@@ -17,8 +17,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "build": "tsc",
-    "lint": "eslint src --ext .ts",
-    "clean": "bun ../../scripts/clean-workspace.ts --package version-unification"
+    "lint": "node ../../scripts/lint-package.mjs version-unification",
+    "clean": "bun ../../scripts/clean-workspace.ts --package version-unification",
+    "lint:fix": "node ../../scripts/lint-package.mjs version-unification --fix"
   },
   "devDependencies": {
     "vitest": "^4.1.5"

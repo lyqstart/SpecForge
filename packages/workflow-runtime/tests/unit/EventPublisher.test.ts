@@ -3,11 +3,13 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
 import {
   EventPublisher,
   createEventPublisher,
 } from '../../src/EventPublisher.js';
-import { WorkflowInstance, IEventBus, Event, Subscription } from '../../src/types.js';
+import type { WorkflowInstance, IEventBus, Event, Subscription } from '../../src/types.js';
+import { requiredTestValue } from '../required-test-value';
 
 // Mock uuid
 vi.mock('uuid', () => ({
@@ -58,7 +60,7 @@ class MockEventBus implements IEventBus {
     }
 
     const id = 'sub-' + (++this.idCounter);
-    this.subscriptions.get(topic)!.set(id, handler);
+    requiredTestValue(this.subscriptions.get(topic)).set(id, handler);
 
     return { id, topic, handler };
   }

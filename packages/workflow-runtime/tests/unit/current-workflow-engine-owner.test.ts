@@ -1,10 +1,11 @@
-import { afterEach, describe, expect, it } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
 
-import { WorkflowEngine as PublicWorkflowEngine } from '../../src/WorkflowEngine.js';
+import { afterEach, describe, expect, it } from 'vitest';
+
 import { WorkflowEngine as EngineModuleWorkflowEngine } from '../../src/engine/index.js';
+import { WorkflowEngine as PublicWorkflowEngine } from '../../src/WorkflowEngine.js';
 
 const roots: string[] = [];
 

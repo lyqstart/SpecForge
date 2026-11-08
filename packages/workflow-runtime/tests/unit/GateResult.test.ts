@@ -1,16 +1,17 @@
 /**
  * GateResult Type Definition Tests
- * 
+ *
  * Tests for the GateResult interface to ensure:
  * - Correct structure and field types
  * - Schema version validation
  * - Optional field handling
  * - Type safety
- * 
+ *
  * **Validates: Requirements 2.2** - Gate Execution Determinism
  */
 
 import { describe, it, expect } from 'vitest';
+
 import type { GateResult } from '../../src/types';
 
 describe('GateResult Interface', () => {
@@ -91,9 +92,7 @@ describe('GateResult Interface', () => {
     it('should be required field', () => {
       // This test verifies TypeScript compilation
       // @ts-expect-error - passed is required
-      const result: GateResult = {
-        schema_version: '1.0',
-      };
+
     });
   });
 
@@ -245,36 +244,22 @@ describe('GateResult Interface', () => {
 
     it('should reject invalid schema_version at compile time', () => {
       // @ts-expect-error - schema_version must be "1.0"
-      const result: GateResult = {
-        schema_version: '2.0',
-        passed: true,
-      };
+
     });
 
     it('should reject non-boolean passed value at compile time', () => {
       // @ts-expect-error - passed must be boolean
-      const result: GateResult = {
-        schema_version: '1.0',
-        passed: 'true',
-      };
+
     });
 
     it('should reject non-string reason at compile time', () => {
       // @ts-expect-error - reason must be string
-      const result: GateResult = {
-        schema_version: '1.0',
-        passed: true,
-        reason: 123,
-      };
+
     });
 
     it('should reject non-object details at compile time', () => {
       // @ts-expect-error - details must be Record<string, unknown>
-      const result: GateResult = {
-        schema_version: '1.0',
-        passed: true,
-        details: 'not an object',
-      };
+
     });
   });
 

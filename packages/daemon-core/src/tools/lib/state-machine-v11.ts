@@ -95,7 +95,7 @@ export function isValidV11Transition(from: string, to: string): boolean {
 export function isValidV11TransitionForWorkflow(
   from: string,
   to: string,
-  workflowType?: string,
+  workflowType?: string
 ): boolean {
   if (isValidV11Transition(from, to)) return true;
   return (
@@ -125,11 +125,23 @@ export function isValidV11TransitionForWorkflow(
  * compatibility in STATE_EVIDENCE_REQUIREMENTS. The comprehensive three-file
  * check is available via checkCloseGateEvidenceRequirements().
  */
-export const STATE_EVIDENCE_REQUIREMENTS: Record<string, { requiredFile: string; description: string }> = {
-  'approval_required': { requiredFile: 'gate_summary.md', description: 'Gate Summary must exist before approval' },
-  'merge_ready': { requiredFile: 'user_decision.json', description: 'User Decision must exist before merge' },
-  'merging': { requiredFile: 'gate_summary.md', description: 'merge_ready_gate must have passed' },
-  'closed': { requiredFile: 'verification_report.md', description: 'close_gate verification report must exist' },
+export const STATE_EVIDENCE_REQUIREMENTS: Record<
+  string,
+  { requiredFile: string; description: string }
+> = {
+  approval_required: {
+    requiredFile: 'gate_summary.md',
+    description: 'Gate Summary must exist before approval',
+  },
+  merge_ready: {
+    requiredFile: 'user_decision.json',
+    description: 'User Decision must exist before merge',
+  },
+  merging: { requiredFile: 'gate_summary.md', description: 'merge_ready_gate must have passed' },
+  closed: {
+    requiredFile: 'verification_report.md',
+    description: 'close_gate verification report must exist',
+  },
 };
 
 /**
@@ -151,7 +163,7 @@ export const CLOSE_GATE_REQUIRED_EVIDENCE: ReadonlyArray<{ file: string; descrip
  * Returns { met: false, missing: string[] } with the list of missing files.
  */
 export async function checkCloseGateEvidenceRequirements(
-  workItemDir: string,
+  workItemDir: string
 ): Promise<{ met: boolean; missing: string[]; descriptions: string[] }> {
   const missing: string[] = [];
   const descriptions: string[] = [];
@@ -186,7 +198,7 @@ export async function checkCloseGateEvidenceRequirements(
  */
 export async function checkStateEvidenceRequirement(
   targetStatus: string,
-  workItemDir: string,
+  workItemDir: string
 ): Promise<{ met: boolean; missing?: string; description?: string }> {
   const req = STATE_EVIDENCE_REQUIREMENTS[targetStatus];
   if (!req) {

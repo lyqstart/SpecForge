@@ -2,7 +2,10 @@
  * Test setup file
  */
 import { afterEach, vi } from 'vitest';
-import { IEventBus, Event, Subscription } from '../src/types.js';
+
+import type { IEventBus, Event, Subscription } from '../src/types.js';
+
+import { requiredTestValue } from './required-test-value';
 
 // Global cleanup: ensure real timers and restored mocks after each test.
 // Fake timers are opt-in — tests that need them must call vi.useFakeTimers()
@@ -61,7 +64,7 @@ export class MockEventBus implements IEventBus {
     }
 
     const id = 'sub-' + (++this.idCounter);
-    this.subscriptions.get(topic)!.set(id, handler);
+    requiredTestValue(this.subscriptions.get(topic)).set(id, handler);
 
     return { id, topic, handler };
   }

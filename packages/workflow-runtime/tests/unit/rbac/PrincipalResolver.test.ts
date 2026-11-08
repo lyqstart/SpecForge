@@ -2,6 +2,7 @@
  * PrincipalResolver.test.ts — Phase 1 Principal 解析器 tests
  */
 import { describe, it, expect } from 'vitest';
+
 import { PrincipalResolver, createPrincipalResolver } from '../../../src/rbac/PrincipalResolver.js';
 
 describe('PrincipalResolver', () => {

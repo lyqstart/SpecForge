@@ -1,17 +1,17 @@
 /**
  * Daemon Management Commands
- * 
+ *
  * Provides commands to manage the SpecForge daemon:
  * - start: Start the daemon (foreground mode by default)
  * - status: Check daemon health/status
  * - restart: Gracefully stop and restart the installed daemon
  * - stop: Stop the daemon
- * 
+ *
  * @packageDocumentation
  */
 
 import yargs, { Argv, Arguments } from 'yargs';
-import { hideBin } from 'yargs/helpers';
+
 import * as fs from 'fs';
 import * as path from 'path';
 import { spawn } from 'node:child_process';
@@ -22,9 +22,7 @@ import { resolveSpecForgeHandshakePath, resolveSpecForgeUserRoot } from '@specfo
 /**
  * Runtime directory path under the canonical SpecForge user root
  */
-function getRuntimeDir(): string {
-  return path.join(resolveSpecForgeUserRoot(), 'runtime');
-}
+
 
 
 /**
@@ -39,12 +37,12 @@ function getHandshakePath(): string {
  */
 function getDaemonClient(): DaemonClient {
   const handshakePath = getHandshakePath();
-  
+
   // Default values
   let port = 3847;
   let token = '';
   let host = '127.0.0.1';
-  
+
   if (fs.existsSync(handshakePath)) {
     try {
       const handshake = JSON.parse(fs.readFileSync(handshakePath, 'utf-8'));
@@ -288,7 +286,7 @@ export async function commandStatus(
   modeSwitch: ModeSwitch
 ): Promise<void> {
   const client = getDaemonClient();
-  
+
   try {
     // Current daemon lifecycle contract exposes the public healthz endpoint.
     const health = await client.get<{
@@ -309,7 +307,7 @@ export async function commandStatus(
       const statusEmoji = health.status === 'ok' ? '✓' : health.status === 'degraded' ? '⏳' : '✗';
       console.log(`${statusEmoji} Daemon Status: ${health.status}`);
       console.log(`PID: ${health.pid}`);
-      
+
       if (health.version) {
         console.log(`Version: ${health.version}`);
       }
@@ -338,7 +336,7 @@ export async function commandStop(
   modeSwitch: ModeSwitch
 ): Promise<void> {
   const client = getDaemonClient();
-  
+
   try {
     // Graceful shutdown is owned by the authenticated daemon admin endpoint.
     const result = await client.post<{

@@ -1,4 +1,5 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { scalarText } from '@specforge/types';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 /**
  * sf-v11-code-permission — v1.2.2 hotfix
  *
@@ -25,7 +26,7 @@ import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
 import { evaluateMergeReport } from '@specforge/types';
 import { recoverLegacyFilesystemVersionControlMode } from '../lib/project-governance-v2.js';
 
-async function readJsonIfExists(filePath: string): Promise<any | null> {
+async function readJsonIfExists(filePath: string): Promise<any> {
   try {
     return JSON.parse(await fs.readFile(filePath, 'utf-8'));
   } catch {
@@ -75,11 +76,15 @@ async function assertMergeSucceededBeforeCode(workItemDir: string): Promise<{
 
   const mergeReport = await readTextIfExists(path.join(workItemDir, 'merge_report.md'));
   if (!mergeReport) {
-    throw new Error('MERGE_REPORT_REQUIRED_BEFORE_CODE_PERMISSION: non-code-only workflow must merge specs before enabling code writes');
+    throw new Error(
+      'MERGE_REPORT_REQUIRED_BEFORE_CODE_PERMISSION: non-code-only workflow must merge specs before enabling code writes'
+    );
   }
   const verdict = evaluateMergeReport(mergeReport, path.basename(workItemDir));
   if (!verdict.valid || verdict.status !== 'success') {
-    throw new Error(`MERGE_SUCCESS_REQUIRED_BEFORE_CODE_PERMISSION: ${verdict.reason ?? `status is ${verdict.status}`}`);
+    throw new Error(
+      `MERGE_SUCCESS_REQUIRED_BEFORE_CODE_PERMISSION: ${verdict.reason ?? `status is ${verdict.status}`}`
+    );
   }
 
   return { workflowPath, workflowType, mergeReportStatus: 'success' };
@@ -116,9 +121,13 @@ async function advanceImplementationStateBeforeCode(input: {
     };
   }
 
-  if (current !== 'merged' && current !== 'post_merge_verified' && current !== 'implementation_ready') {
+  if (
+    current !== 'merged' &&
+    current !== 'post_merge_verified' &&
+    current !== 'implementation_ready'
+  ) {
     throw new Error(
-      `POST_MERGE_VERIFIED_REQUIRED_BEFORE_CODE_PERMISSION: authoritative state is ${current ?? 'null'}, expected merged, post_merge_verified, or implementation_ready`,
+      `POST_MERGE_VERIFIED_REQUIRED_BEFORE_CODE_PERMISSION: authoritative state is ${current ?? 'null'}, expected merged, post_merge_verified, or implementation_ready`
     );
   }
 
@@ -136,9 +145,13 @@ async function advanceImplementationStateBeforeCode(input: {
         toState: 'post_merge_verified',
         workflowType: input.workflowType,
         actorRole: 'code_permission_service',
-        evidence: 'code_permission_service recovered code_only_fast_path after merge not_applicable before implementation',
-        transitionContext: { source: 'sf_v11_code_permission', merge_not_applicable_recovery: true },
-      }),
+        evidence:
+          'code_permission_service recovered code_only_fast_path after merge not_applicable before implementation',
+        transitionContext: {
+          source: 'sf_v11_code_permission',
+          merge_not_applicable_recovery: true,
+        },
+      })
     );
   }
 
@@ -156,7 +169,7 @@ async function advanceImplementationStateBeforeCode(input: {
         actorRole: 'code_permission_service',
         evidence: 'code_permission_service prepares implementation after post_merge_gate passed',
         transitionContext: { source: 'sf_v11_code_permission' },
-      }),
+      })
     );
   }
 
@@ -177,9 +190,9 @@ function normalizeWriteOperation(value: unknown): NormalizedWriteOperation {
 }
 
 function normalizeAllowedForPolicy(
-  allowedWriteFiles: any[],
+  allowedWriteFiles: any[]
 ): Array<{ path: string; operation: NormalizedWriteOperation }> {
-  return allowedWriteFiles.map((file) => {
+  return allowedWriteFiles.map(file => {
     if (typeof file === 'string') return { path: file, operation: 'modify' };
     return { path: String(file?.path ?? ''), operation: normalizeWriteOperation(file?.operation) };
   });
@@ -187,8 +200,13 @@ function normalizeAllowedForPolicy(
 
 function findForbiddenGovernanceTargets(allowedWriteFiles: any[]): string[] {
   return normalizeAllowedForPolicy(allowedWriteFiles)
-    .map((file) => file.path.replace(/\\/g, '/'))
-    .filter((p) => p === SPEC_DIR_NAME || p.startsWith((`${SPEC_DIR_NAME}/` as const)) || p.includes('/.specforge/'));
+    .map(file => file.path.replace(/\\/g, '/'))
+    .filter(
+      p =>
+        p === SPEC_DIR_NAME ||
+        p.startsWith(`${SPEC_DIR_NAME}/` as const) ||
+        p.includes('/.specforge/')
+    );
 }
 
 function isReleaseLikeAction(action: string): boolean {
@@ -206,7 +224,8 @@ function isLegacyFilesystemRecoveryAction(action: string): boolean {
 }
 
 registerHandler('sf_v11_code_permission', async (args, context, deps) => {
-  const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
+  const projectRoot =
+    (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
   const action = String((args['action'] as string) || 'check');
 
@@ -287,7 +306,7 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
         projectRoot,
         workItemDir,
         workItemId,
-        reason: String(args['recovery_reason'] ?? ''),
+        reason: scalarText(args['recovery_reason'] ?? ''),
       });
       if (!recovery.success) {
         return {
@@ -310,7 +329,11 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
 
     if (isReleaseLikeAction(action)) {
       const allowedWriteFiles = args['allowed_write_files'] as any[];
-      if (!allowedWriteFiles || !Array.isArray(allowedWriteFiles) || allowedWriteFiles.length === 0) {
+      if (
+        !allowedWriteFiles ||
+        !Array.isArray(allowedWriteFiles) ||
+        allowedWriteFiles.length === 0
+      ) {
         setHardStop(projectRoot, workItemId, 'ALLOWED_WRITE_FILES_REQUIRED', 'sf_code_permission');
         return {
           success: false,
@@ -329,7 +352,7 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
         action === 'extend' ||
         action === 'append' ||
         (workItem.code_change_allowed === true && existingAllowedWriteFiles.length > 0);
-      const revisionReason = String(args['revision_reason'] ?? '').trim();
+      const revisionReason = scalarText(args['revision_reason'] ?? '').trim();
       if (extensionRequested && revisionReason.length < 8) {
         return {
           success: false,
@@ -385,8 +408,12 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
       }
       if (
         preparedPermission.releaseMode === 'release' &&
-        !['merged', 'post_merge_verified', 'implementation_ready', 'implementation_running']
-          .includes(String(preCommitState.current_state ?? ''))
+        ![
+          'merged',
+          'post_merge_verified',
+          'implementation_ready',
+          'implementation_running',
+        ].includes(String(preCommitState.current_state ?? ''))
       ) {
         return {
           success: false,
@@ -416,7 +443,8 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
           workItemId,
           workItemDir,
           workflowPath: workflowFacts.workflowPath,
-          workflowType: workflowFacts.workflowType || workflowTypeFromPath(workflowFacts.workflowPath),
+          workflowType:
+            workflowFacts.workflowType || workflowTypeFromPath(workflowFacts.workflowPath),
         });
         stateAutoAdvance = statePreparation;
         if (statePreparation.current_state === 'implementation_ready') {
@@ -466,7 +494,12 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
 
     if (action === 'revoke') {
       await revokeCodePermission(workItemDir);
-      return { success: true, action: 'revoke', work_item_id: workItemId, code_change_allowed: false };
+      return {
+        success: true,
+        action: 'revoke',
+        work_item_id: workItemId,
+        code_change_allowed: false,
+      };
     }
 
     const state = await checkCodePermission(workItemDir);

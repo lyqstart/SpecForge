@@ -38,15 +38,13 @@ export type UserDecisionV11 = UserDecision;
 
 export async function precheckUserDecisionSchema(
   workItemDir: string,
-  workItemId: string,
+  workItemId: string
 ): Promise<SchemaDescriptorPrecheckResult> {
-  return precheckSchemaDescriptors(workItemDir, [
-    createUserDecisionSchemaDescriptor(workItemId),
-  ]);
+  return precheckSchemaDescriptors(workItemDir, [createUserDecisionSchemaDescriptor(workItemId)]);
 }
 
 export function userDecisionSchemaBlockCode(
-  result: SchemaDescriptorPrecheckResult,
+  result: SchemaDescriptorPrecheckResult
 ): string | undefined {
   if (result.ok) return undefined;
   return result.checks[0]?.errorCode ?? 'SCHEMA_VERSION_MISMATCH';
@@ -54,7 +52,7 @@ export function userDecisionSchemaBlockCode(
 
 export async function readCurrentUserDecision(
   workItemDir: string,
-  workItemId: string,
+  workItemId: string
 ): Promise<UserDecisionV11> {
   const schemaPrecheck = await precheckUserDecisionSchema(workItemDir, workItemId);
   const schemaBlockCode = userDecisionSchemaBlockCode(schemaPrecheck);
@@ -115,8 +113,12 @@ export async function recordUserDecision(input: RecordDecisionInput): Promise<Us
   }
 
   // 计算 hash
-  const manifestHash = await computeFileHash(path.join(input.workItemDir, input.candidateManifestPath));
-  const gateSummaryHash = await computeFileHash(path.join(input.workItemDir, input.gateSummaryPath));
+  const manifestHash = await computeFileHash(
+    path.join(input.workItemDir, input.candidateManifestPath)
+  );
+  const gateSummaryHash = await computeFileHash(
+    path.join(input.workItemDir, input.gateSummaryPath)
+  );
 
   // 计算 candidate hash（所有 candidate 文件的聚合 hash）
   const candidateHash = await computeCandidateHash(input.workItemDir);
@@ -138,11 +140,13 @@ export async function recordUserDecision(input: RecordDecisionInput): Promise<Us
     decided_at: new Date().toISOString(),
     decision_scope: input.decisionScope,
     waivers: input.waivers ?? [],
-    ...(input.recordedBy ? {
-      recorded_by: input.recordedBy,
-      recorder_role: 'user_decision_recorder' as const,
-      recorded_at: new Date().toISOString(),
-    } : {}),
+    ...(input.recordedBy
+      ? {
+          recorded_by: input.recordedBy,
+          recorder_role: 'user_decision_recorder' as const,
+          recorded_at: new Date().toISOString(),
+        }
+      : {}),
     ...(input.userResponseQuote ? { user_response_quote: input.userResponseQuote } : {}),
     ...(input.autoApprovalPolicyId ? { auto_approval_policy_id: input.autoApprovalPolicyId } : {}),
   };
@@ -162,7 +166,7 @@ export async function recordUserDecision(input: RecordDecisionInput): Promise<Us
  */
 export async function invalidateUserDecision(
   workItemDir: string,
-  reason: string,
+  reason: string
 ): Promise<{ before: UserDecisionV11; after: UserDecisionV11 }> {
   const decisionPath = path.join(workItemDir, 'user_decision.json');
   const workItemId = path.basename(path.resolve(workItemDir));
@@ -174,7 +178,7 @@ export async function invalidateUserDecision(
   const decision = await readCurrentUserDecision(workItemDir, workItemId);
   if (decision.decision_status !== 'approved' && decision.decision_status !== 'waived') {
     throw new Error(
-      `USER_DECISION_INVALIDATION_REQUIRES_ACTIVE_APPROVAL: current=${decision.decision_status}`,
+      `USER_DECISION_INVALIDATION_REQUIRES_ACTIVE_APPROVAL: current=${decision.decision_status}`
     );
   }
   const before = structuredClone(decision);
@@ -229,7 +233,7 @@ async function walkDir(dir: string): Promise<string[]> {
     for (const entry of entries) {
       const fullPath = path.join(dir, entry.name);
       if (entry.isDirectory()) {
-        results.push(...await walkDir(fullPath));
+        results.push(...(await walkDir(fullPath)));
       } else {
         results.push(fullPath);
       }

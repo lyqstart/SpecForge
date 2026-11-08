@@ -1,4 +1,5 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { parseJsonObject } from '@specforge/types';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 /**
  * filesystem-diff.ts — Filesystem Baseline Snapshot & Diff
  *
@@ -76,23 +77,23 @@ export interface LegacyBaselineReconciliationResult {
 
 const DEFAULT_EXCLUDE_DIR_NAMES = new Set(['node_modules', '.git', 'dist']);
 const DEFAULT_IGNORED_PREFIXES = [
-  (`${SPEC_DIR_NAME}/logs/` as const),
-  (`${SPEC_DIR_NAME}/runtime/` as const),
-  (`${SPEC_DIR_NAME}/archive/` as const),
-  (`${SPEC_DIR_NAME}/cas/` as const),
-  (`${SPEC_DIR_NAME}/tmp/` as const),
-  (`${SPEC_DIR_NAME}/temp/` as const),
-  (`${SPEC_DIR_NAME}/work-items/` as const),
+  `${SPEC_DIR_NAME}/logs/` as const,
+  `${SPEC_DIR_NAME}/runtime/` as const,
+  `${SPEC_DIR_NAME}/archive/` as const,
+  `${SPEC_DIR_NAME}/cas/` as const,
+  `${SPEC_DIR_NAME}/tmp/` as const,
+  `${SPEC_DIR_NAME}/temp/` as const,
+  `${SPEC_DIR_NAME}/work-items/` as const,
 ];
 
 const DEFAULT_IGNORED_EXACT = new Set<string>([
-  (`${SPEC_DIR_NAME}/logs` as const),
-  (`${SPEC_DIR_NAME}/runtime` as const),
-  (`${SPEC_DIR_NAME}/archive` as const),
-  (`${SPEC_DIR_NAME}/cas` as const),
-  (`${SPEC_DIR_NAME}/tmp` as const),
-  (`${SPEC_DIR_NAME}/temp` as const),
-  (`${SPEC_DIR_NAME}/work-items` as const),
+  `${SPEC_DIR_NAME}/logs` as const,
+  `${SPEC_DIR_NAME}/runtime` as const,
+  `${SPEC_DIR_NAME}/archive` as const,
+  `${SPEC_DIR_NAME}/cas` as const,
+  `${SPEC_DIR_NAME}/tmp` as const,
+  `${SPEC_DIR_NAME}/temp` as const,
+  `${SPEC_DIR_NAME}/work-items` as const,
 ]);
 
 export function normalizeFsPath(filePath: string): string {
@@ -120,20 +121,25 @@ function guardAuditPathVariants(value: string): string[] {
 function isSameFileForGuardAudit(actualPath: string, allowedPath: string): boolean {
   const actualVariants = guardAuditPathVariants(actualPath);
   const allowedVariants = guardAuditPathVariants(allowedPath);
-  return actualVariants.some((actual) =>
-    allowedVariants.some((allowed) =>
-      actual === allowed || actual.endsWith(`/${allowed}`) || allowed.endsWith(`/${actual}`),
-    ),
+  return actualVariants.some(actual =>
+    allowedVariants.some(
+      allowed =>
+        actual === allowed || actual.endsWith(`/${allowed}`) || allowed.endsWith(`/${actual}`)
+    )
   );
 }
 
 export function isSpecForgeRuntimePath(filePath: string): boolean {
   const normalized = normalizeFsPath(filePath);
   if (DEFAULT_IGNORED_EXACT.has(normalized)) return true;
-  return DEFAULT_IGNORED_PREFIXES.some((prefix) => normalized.startsWith(prefix));
+  return DEFAULT_IGNORED_PREFIXES.some(prefix => normalized.startsWith(prefix));
 }
 
-function shouldSkipDirectory(relPath: string, entryName: string, extraExcludeDirs: Set<string>): boolean {
+function shouldSkipDirectory(
+  relPath: string,
+  entryName: string,
+  extraExcludeDirs: Set<string>
+): boolean {
   const normalized = normalizeFsPath(relPath);
   if (DEFAULT_EXCLUDE_DIR_NAMES.has(entryName)) return true;
   if (extraExcludeDirs.has(entryName) || extraExcludeDirs.has(normalized)) return true;
@@ -141,8 +147,11 @@ function shouldSkipDirectory(relPath: string, entryName: string, extraExcludeDir
   return false;
 }
 
-function filterSnapshot(snapshot: BaselineSnapshot): { snapshot: BaselineSnapshot; ignored: number } {
-  const files = snapshot.files.filter((f) => !isSpecForgeRuntimePath(f.path));
+function filterSnapshot(snapshot: BaselineSnapshot): {
+  snapshot: BaselineSnapshot;
+  ignored: number;
+} {
+  const files = snapshot.files.filter(f => !isSpecForgeRuntimePath(f.path));
   return {
     snapshot: { ...snapshot, files },
     ignored: snapshot.files.length - files.length,
@@ -224,10 +233,10 @@ export function takeSnapshot(rootDir: string, excludeDirs?: string[]): BaselineS
 /** Compare two snapshots and return the diff. */
 export function diffSnapshots(
   baseline: BaselineSnapshot,
-  current: BaselineSnapshot,
+  current: BaselineSnapshot
 ): { created: string[]; modified: string[]; deleted: string[] } {
-  const baselineMap = new Map(baseline.files.map((f) => [normalizeFsPath(f.path), f]));
-  const currentMap = new Map(current.files.map((f) => [normalizeFsPath(f.path), f]));
+  const baselineMap = new Map(baseline.files.map(f => [normalizeFsPath(f.path), f]));
+  const currentMap = new Map(current.files.map(f => [normalizeFsPath(f.path), f]));
 
   const created: string[] = [];
   const modified: string[] = [];
@@ -260,23 +269,26 @@ export function diffSnapshots(
 export function computeFilesystemDiff(
   baseline: BaselineSnapshot,
   currentRoot: string,
-  writeGuardAllowedPaths: string[],
+  writeGuardAllowedPaths: string[]
 ): FilesystemDiffResult {
   const baselineFiltered = filterSnapshot(baseline);
   const currentRaw = takeSnapshot(currentRoot);
   const currentFiltered = filterSnapshot(currentRaw);
-  const { created, modified, deleted } = diffSnapshots(baselineFiltered.snapshot, currentFiltered.snapshot);
+  const { created, modified, deleted } = diffSnapshots(
+    baselineFiltered.snapshot,
+    currentFiltered.snapshot
+  );
 
   const allChanges: FileDiffEntry[] = [
-    ...created.map((p) => ({ path: p, change: 'created' as const })),
-    ...modified.map((p) => ({ path: p, change: 'modified' as const })),
-    ...deleted.map((p) => ({ path: p, change: 'deleted' as const })),
+    ...created.map(p => ({ path: p, change: 'created' as const })),
+    ...modified.map(p => ({ path: p, change: 'modified' as const })),
+    ...deleted.map(p => ({ path: p, change: 'deleted' as const })),
   ];
 
-  const guardedPaths = writeGuardAllowedPaths.map((p) => normalizeFsPath(p));
+  const guardedPaths = writeGuardAllowedPaths.map(p => normalizeFsPath(p));
   const untracked = allChanges
-    .filter((c) => !guardedPaths.some((p) => isSameFileForGuardAudit(c.path, p)))
-    .map((c) => c.path);
+    .filter(c => !guardedPaths.some(p => isSameFileForGuardAudit(c.path, p)))
+    .map(c => c.path);
 
   return {
     baseline_timestamp: baseline.timestamp,
@@ -287,7 +299,9 @@ export function computeFilesystemDiff(
     all_changes: allChanges,
     untracked_changes: untracked,
     ignored_runtime_files: baselineFiltered.ignored + currentFiltered.ignored,
-    baseline_files_with_content_hash: baselineFiltered.snapshot.files.filter(file => Boolean(file.sha256)).length,
+    baseline_files_with_content_hash: baselineFiltered.snapshot.files.filter(file =>
+      Boolean(file.sha256)
+    ).length,
     legacy_reconciled_metadata_only_paths:
       baselineFiltered.snapshot.legacy_reconciliation?.reconciled_paths ?? [],
   };
@@ -308,26 +322,34 @@ export function loadBaseline(workItemDir: string): BaselineSnapshot | null {
     const parsed = JSON.parse(content) as BaselineSnapshot;
     const reconciliationPath = path.join(workItemDir, 'legacy_baseline_reconciliation.json');
     try {
-      const reconciliation = JSON.parse(fs.readFileSync(reconciliationPath, 'utf-8')) as any;
+      const reconciliation = parseJsonObject(fs.readFileSync(reconciliationPath, 'utf-8'));
       if (
         reconciliation?.status === 'applied' &&
         reconciliation?.baseline_sha256 === hashBuffer(content) &&
         Array.isArray(reconciliation?.reconciled_files)
       ) {
-        const byPath = new Map<string, any>(
-          reconciliation.reconciled_files.map((entry: any) => [
-            normalizeFsPath(String(entry?.path ?? '')),
-            entry,
-          ] as [string, any]),
+        const byPath = new Map<string, Record<string, unknown>>(
+          reconciliation.reconciled_files.map(
+            (value: unknown): [string, Record<string, unknown>] => {
+              if (typeof value !== 'object' || value === null || Array.isArray(value))
+                throw new Error('BASELINE_RECONCILIATION_ENTRY_INVALID');
+              const entry = value as Record<string, unknown>;
+              if (typeof entry.path !== 'string')
+                throw new Error('BASELINE_RECONCILIATION_PATH_INVALID');
+              return [normalizeFsPath(entry.path), entry];
+            }
+          )
         );
         for (const file of parsed.files ?? []) {
-          const entry = byPath.get(normalizeFsPath(file.path)) as any;
+          const entry = byPath.get(normalizeFsPath(file.path));
           if (
             entry &&
-            Number(entry.baseline_size) === file.size &&
-            /^[a-f0-9]{64}$/i.test(String(entry.sha256 ?? ''))
+            typeof entry.baseline_size === 'number' &&
+            entry.baseline_size === file.size &&
+            typeof entry.sha256 === 'string' &&
+            /^[a-f0-9]{64}$/i.test(entry.sha256)
           ) {
-            file.sha256 = String(entry.sha256).toLowerCase();
+            file.sha256 = entry.sha256.toLowerCase();
           }
         }
         parsed.legacy_reconciliation = {
@@ -349,12 +371,17 @@ function normalizePayloadPath(projectRoot: string, payloadFile: string): string 
   return path.resolve(projectRoot, normalized);
 }
 
+type PreflightIndex = Record<string, unknown> & {
+  timestamp: string;
+  payload_file: string;
+  trace_id?: string;
+};
 function readLatestPreflightBeforeBaseline(
   projectRoot: string,
-  baselineTimestamp: string,
+  baselineTimestamp: string
 ): {
-  index: any;
-  payload: any;
+  index: PreflightIndex;
+  payload: { current_branch: string; head_commit: string; status_entries: Array<{ path: string }> };
   payloadSha256: string;
 } | null {
   const indexPath = path.join(
@@ -369,53 +396,68 @@ function readLatestPreflightBeforeBaseline(
   const maxPreflightAgeMs = 5 * 60 * 1000;
   if (!Number.isFinite(baselineMs)) return null;
 
-  let entries: any[];
+  let entries: PreflightIndex[];
   try {
     entries = fs
       .readFileSync(indexPath, 'utf-8')
       .split(/\r?\n/)
       .filter(Boolean)
-      .map(line => JSON.parse(line))
+      .map(line => parseJsonObject(line))
       .filter(
-        entry =>
+        (entry): entry is PreflightIndex =>
           entry?.tool_name === 'sf_git_preflight' &&
           entry?.category === 'rpc' &&
           entry?.phase === 'response' &&
           entry?.status === 'success' &&
           typeof entry?.payload_file === 'string' &&
+          typeof entry.timestamp === 'string' &&
+          (entry.trace_id === undefined || typeof entry.trace_id === 'string') &&
           Date.parse(String(entry?.timestamp ?? '')) <= baselineMs &&
-          baselineMs - Date.parse(String(entry?.timestamp ?? '')) <= maxPreflightAgeMs,
+          baselineMs - Date.parse(String(entry?.timestamp ?? '')) <= maxPreflightAgeMs
       )
-      .sort(
-        (left, right) =>
-          Date.parse(String(right.timestamp ?? '')) - Date.parse(String(left.timestamp ?? '')),
-      );
+      .sort((left, right) => Date.parse(right.timestamp) - Date.parse(left.timestamp));
   } catch {
     return null;
   }
 
   for (const entry of entries) {
     try {
+      if (typeof entry.payload_file !== 'string') continue;
       const payloadPath = normalizePayloadPath(projectRoot, entry.payload_file);
       const payloadContent = fs.readFileSync(payloadPath, 'utf-8');
       const payloadFileName = String(entry.payload_file).split(/[\\/]/).pop() ?? '';
       const pathEncodedSha256 = payloadFileName.replace(/\.json$/i, '');
-      const expectedSha256 = String(entry.payload_sha256 ?? pathEncodedSha256).toLowerCase();
-      if (
-        !/^[a-f0-9]{64}$/.test(expectedSha256) ||
-        hashBuffer(payloadContent) !== expectedSha256
-      ) {
+      const payloadHash = entry.payload_sha256 ?? pathEncodedSha256;
+      if (typeof payloadHash !== 'string') continue;
+      const expectedSha256 = payloadHash.toLowerCase();
+      if (!/^[a-f0-9]{64}$/.test(expectedSha256) || hashBuffer(payloadContent) !== expectedSha256) {
         continue;
       }
-      const payload = JSON.parse(payloadContent);
+      const payload = parseJsonObject(payloadContent);
       if (
         payload?.success === true &&
         payload?.inside_work_tree === true &&
         typeof payload?.current_branch === 'string' &&
         typeof payload?.head_commit === 'string' &&
-        Array.isArray(payload?.status_entries)
+        Array.isArray(payload?.status_entries) &&
+        payload.status_entries.every(
+          (entry: unknown): entry is { path: string } =>
+            typeof entry === 'object' &&
+            entry !== null &&
+            !Array.isArray(entry) &&
+            'path' in entry &&
+            typeof entry.path === 'string'
+        )
       ) {
-        return { index: entry, payload, payloadSha256: expectedSha256 };
+        return {
+          index: entry,
+          payload: {
+            current_branch: payload.current_branch,
+            head_commit: payload.head_commit,
+            status_entries: payload.status_entries,
+          },
+          payloadSha256: expectedSha256,
+        };
       }
     } catch {
       // Try the next earlier preflight evidence record.
@@ -493,11 +535,9 @@ export function reconcileLegacyBaselineWithGitPreflight(input: {
   const current = takeSnapshot(input.projectRoot);
   const currentByPath = new Map(current.files.map(file => [normalizeFsPath(file.path), file]));
   const preflightDirty = new Set(
-    preflight.payload.status_entries.map((entry: any) =>
-      normalizeFsPath(String(entry?.path ?? '')),
-    ),
+    preflight.payload.status_entries.map(entry => normalizeFsPath(entry.path))
   );
-  const preflightMs = Date.parse(String(preflight.index.timestamp ?? ''));
+  const preflightMs = Date.parse(preflight.index.timestamp);
   const reconciledFiles: NonNullable<LegacyBaselineReconciliationResult['reconciled_files']> = [];
 
   for (const baselineFile of baseline.files ?? []) {
@@ -547,10 +587,7 @@ export function reconcileLegacyBaselineWithGitPreflight(input: {
     };
   }
 
-  const reconciliationPath = path.join(
-    input.workItemDir,
-    'legacy_baseline_reconciliation.json',
-  );
+  const reconciliationPath = path.join(input.workItemDir, 'legacy_baseline_reconciliation.json');
   const record = {
     schema_version: '1.0',
     status: 'applied',
@@ -580,8 +617,10 @@ export function reconcileLegacyBaselineWithGitPreflight(input: {
     success: true,
     reconciliation_path: reconciliationPath,
     baseline_sha256: record.baseline_sha256,
-    preflight_trace_id: preflight.index.trace_id,
-    preflight_timestamp: preflight.index.timestamp,
+    preflight_trace_id:
+      typeof preflight.index.trace_id === 'string' ? preflight.index.trace_id : undefined,
+    preflight_timestamp:
+      typeof preflight.index.timestamp === 'string' ? preflight.index.timestamp : undefined,
     branch_name: currentBranch,
     head_commit: currentHead,
     reconciled_files: reconciledFiles,

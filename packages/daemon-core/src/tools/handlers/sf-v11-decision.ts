@@ -1,4 +1,5 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { scalarText } from '@specforge/types';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 /**
  * sf-v11-decision — v1.1 User Decision Recorder handler
  *
@@ -71,7 +72,9 @@ async function fileSha256(filePath: string): Promise<string> {
   return `sha256:${crypto.createHash('sha256').update(content).digest('hex')}`;
 }
 
-async function collectGateEvidence(workItemDir: string): Promise<Array<{ path: string; sha256: string }>> {
+async function collectGateEvidence(
+  workItemDir: string
+): Promise<Array<{ path: string; sha256: string }>> {
   const result: Array<{ path: string; sha256: string }> = [];
   const gatesDir = path.join(workItemDir, 'gates');
   try {
@@ -117,7 +120,9 @@ async function readWorkflowFacts(workItemDir: string): Promise<{
   workflowType?: string;
   baseSpecVersion?: string;
 }> {
-  const candidateManifest = await readJsonIfExists(path.join(workItemDir, 'candidate_manifest.json'));
+  const candidateManifest = await readJsonIfExists(
+    path.join(workItemDir, 'candidate_manifest.json')
+  );
   if (candidateManifest?.workflow_path || candidateManifest?.workflow_type) {
     return {
       workflowPath: candidateManifest.workflow_path,
@@ -147,7 +152,10 @@ function normalizeWorkflowPath(value: string | undefined): WorkflowPath | undefi
   return value && value.trim() ? (value as WorkflowPath) : undefined;
 }
 
-function workflowTypeForDecision(workflowPath: string | undefined, workflowType: string | undefined): string {
+function workflowTypeForDecision(
+  workflowPath: string | undefined,
+  workflowType: string | undefined
+): string {
   const requestedWorkflowPath = workflowPath && workflowPath.trim() ? workflowPath : undefined;
   const requestedWorkflowType = workflowType && workflowType.trim() ? workflowType : undefined;
 
@@ -158,11 +166,11 @@ function workflowTypeForDecision(workflowPath: string | undefined, workflowType:
 
     const resolved = resolveWorkflowTypeForPath(
       normalizeWorkflowPath(requestedWorkflowPath),
-      requestedWorkflowType,
+      requestedWorkflowType
     );
     if (!resolved) {
       throw new Error(
-        `INCOMPATIBLE_WORKFLOW_TYPE_AND_PATH: workflow_type=${requestedWorkflowType}; workflow_path=${requestedWorkflowPath ?? '(none)'}`,
+        `INCOMPATIBLE_WORKFLOW_TYPE_AND_PATH: workflow_type=${requestedWorkflowType}; workflow_path=${requestedWorkflowPath ?? '(none)'}`
       );
     }
     return resolved;
@@ -186,7 +194,7 @@ function resolveDecisionStatus(args: Record<string, unknown>): UserDecisionStatu
 
 function resolveDecisionType(
   args: Record<string, unknown>,
-  decisionStatus: UserDecisionStatus | undefined,
+  decisionStatus: UserDecisionStatus | undefined
 ): DecisionType | undefined {
   const explicit = args['decision_type'] as DecisionType | undefined;
   if (explicit) return explicit;
@@ -196,22 +204,28 @@ function resolveDecisionType(
 }
 
 export function isExplicitUserApprovalQuote(value: unknown): boolean {
-  const quote = String(value ?? '').trim();
+  const quote = scalarText(value ?? '').trim();
   if (!quote) return false;
-  const negative = /(?:不批准|不同意|不确认|拒绝|不要批准|not\s+approved?|do\s+not\s+approve|don't\s+approve|reject)/i;
+  const negative =
+    /(?:不批准|不同意|不确认|拒绝|不要批准|not\s+approved?|do\s+not\s+approve|don't\s+approve|reject)/i;
   if (negative.test(quote)) return false;
-  return /^(?:我\s*)?(?:批准|同意|确认批准|确认同意)|^(?:i\s+)?(?:approve|approved|agree)(?:[\s,.;:!]|$)/i.test(quote);
+  return /^(?:我\s*)?(?:批准|同意|确认批准|确认同意)|^(?:i\s+)?(?:approve|approved|agree)(?:[\s,.;:!]|$)/i.test(
+    quote
+  );
 }
 
-export function validateUserApprovalBoundary(args: Record<string, unknown>, input: {
-  decisionStatus: UserDecisionStatus;
-  decisionType: DecisionType;
-}): { ok: true } | { ok: false; error: string; code: string; remediation: string } {
+export function validateUserApprovalBoundary(
+  args: Record<string, unknown>,
+  input: {
+    decisionStatus: UserDecisionStatus;
+    decisionType: DecisionType;
+  }
+): { ok: true } | { ok: false; error: string; code: string; remediation: string } {
   if (input.decisionStatus !== 'approved') return { ok: true };
 
-  const comments = String(args['comments'] ?? '');
-  const userResponseQuote = String(args['user_response_quote'] ?? '').trim();
-  const autoApprovalPolicyId = String(args['auto_approval_policy_id'] ?? '').trim();
+  const comments = scalarText(args['comments'] ?? '');
+  const userResponseQuote = scalarText(args['user_response_quote'] ?? '').trim();
+  const autoApprovalPolicyId = scalarText(args['auto_approval_policy_id'] ?? '').trim();
 
   if (input.decisionType === 'user_approved') {
     if (!userResponseQuote) {
@@ -236,7 +250,10 @@ export function validateUserApprovalBoundary(args: Record<string, unknown>, inpu
 
     const forbiddenDelegationPattern =
       /(on behalf|authorized representative|delegated|explicitly delegated|standing instruction|standing authorization|task request|代替用户|代表用户|授权代表|用户已委派|默认为批准|自动批准|现行授权|当前指令|任务提示|任务请求|泛化同意)/i;
-    if (forbiddenDelegationPattern.test(comments) || forbiddenDelegationPattern.test(userResponseQuote)) {
+    if (
+      forbiddenDelegationPattern.test(comments) ||
+      forbiddenDelegationPattern.test(userResponseQuote)
+    ) {
       return {
         ok: false,
         error: 'ORCHESTRATOR_CANNOT_CONVERT_DELEGATION_TO_USER_APPROVAL',
@@ -263,7 +280,8 @@ export function validateUserApprovalBoundary(args: Record<string, unknown>, inpu
 }
 
 registerHandler('sf_v11_decision', async (args, context, deps) => {
-  const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
+  const projectRoot =
+    (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
   const action = (args['action'] as string) || 'record';
 
@@ -300,7 +318,8 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
         return {
           success: false,
           error: 'USER_DECISION_INVALIDATE_FORBIDDEN_AFTER_MERGE_SUCCESS',
-          message: 'merge_report.md is already success; user_decision cannot be invalidated after successful merge. Start a new Work Item for further changes.',
+          message:
+            'merge_report.md is already success; user_decision cannot be invalidated after successful merge. Start a new Work Item for further changes.',
           merge_report: mergeGuard,
         };
       }
@@ -315,7 +334,7 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
         };
       }
 
-      const reason = String(args['reason'] ?? '').trim();
+      const reason = scalarText(args['reason'] ?? '').trim();
       if (!reason) {
         return {
           success: false,
@@ -337,7 +356,7 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
       const workflowFacts = await readWorkflowFacts(workItemDir);
       const workflowType = workflowTypeForDecision(
         workflowFacts.workflowPath,
-        workflowFacts.workflowType,
+        workflowFacts.workflowType
       );
       const gateEvidence = await collectGateEvidence(workItemDir);
       const invalidation = {
@@ -358,11 +377,13 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
 
       if (previousInvalidationText !== null) {
         const previousInvalidation = JSON.parse(previousInvalidationText);
-        const archiveName = String(previousInvalidation.decision_id ?? 'unknown-decision')
-          .replace(/[^A-Za-z0-9._-]/g, '_');
+        const archiveName = String(previousInvalidation.decision_id ?? 'unknown-decision').replace(
+          /[^A-Za-z0-9._-]/g,
+          '_'
+        );
         await writeJsonAtomic(
           path.join(workItemDir, 'approval_invalidations', `${archiveName}.json`),
-          previousInvalidation,
+          previousInvalidation
         );
       }
       await writeJsonAtomic(invalidationPath, invalidation);
@@ -421,7 +442,7 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
         };
       }
       const invalidation = await readJsonIfExists(
-        path.join(workItemDir, 'approval_invalidation.json'),
+        path.join(workItemDir, 'approval_invalidation.json')
       );
       const decision = await readJsonIfExists(path.join(workItemDir, 'user_decision.json'));
       if (
@@ -439,7 +460,7 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
       const workflowFacts = await readWorkflowFacts(workItemDir);
       const workflowType = workflowTypeForDecision(
         workflowFacts.workflowPath,
-        workflowFacts.workflowType,
+        workflowFacts.workflowType
       );
       const transition = await transitionWithEvidence({
         deps,
@@ -466,8 +487,8 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
       };
     }
 
-    const decisionStatus = resolveDecisionStatus(args as Record<string, unknown>);
-    const decisionType = resolveDecisionType(args as Record<string, unknown>, decisionStatus);
+    const decisionStatus = resolveDecisionStatus(args);
+    const decisionType = resolveDecisionType(args, decisionStatus);
 
     if (!decisionStatus || !decisionType) {
       return { success: false, error: 'decision_status and decision_type are required' };
@@ -482,7 +503,7 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
       };
     }
 
-    const boundary = validateUserApprovalBoundary(args as Record<string, unknown>, {
+    const boundary = validateUserApprovalBoundary(args, {
       decisionStatus,
       decisionType,
     });
@@ -496,11 +517,9 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
       };
     }
 
-    const recordedBy = ((context?.agent as string | undefined) || 'unknown') as string;
+    const recordedBy = (context?.agent as string | undefined) || 'unknown';
     const decidedBy =
-      decisionStatus === 'approved' && decisionType === 'user_approved'
-        ? 'user'
-        : recordedBy;
+      decisionStatus === 'approved' && decisionType === 'user_approved' ? 'user' : recordedBy;
 
     const requestedWorkflowPath = args['workflow_path'] as string | undefined;
     const authoritativeState = await readAuthoritativeState({ deps, projectRoot, workItemId });
@@ -530,11 +549,14 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
     }
 
     const workflowFacts = await readWorkflowFacts(workItemDir);
-    const workflowPath = String(validation.facts?.workflowPath ?? requestedWorkflowPath ?? workflowFacts.workflowPath ?? '');
+    const workflowPath = scalarText(
+      validation.facts?.workflowPath ?? requestedWorkflowPath ?? workflowFacts.workflowPath ?? ''
+    );
     const workflowType = workflowTypeForDecision(workflowPath, workflowFacts.workflowType);
 
-    const userResponseQuote = String(args['user_response_quote'] ?? '').trim() || undefined;
-    const autoApprovalPolicyId = String(args['auto_approval_policy_id'] ?? '').trim() || undefined;
+    const userResponseQuote = scalarText(args['user_response_quote'] ?? '').trim() || undefined;
+    const autoApprovalPolicyId =
+      scalarText(args['auto_approval_policy_id'] ?? '').trim() || undefined;
     const decision = await recordUserDecision({
       workItemDir,
       workItemId,

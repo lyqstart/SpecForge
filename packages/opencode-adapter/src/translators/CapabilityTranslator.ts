@@ -5,7 +5,12 @@
  * Handles capability discovery and reporting, supports capability versioning.
  */
 
-import { ModelCapabilities, OutputFormat, OpenCodeModelCapabilities, ICapabilityTranslator } from '../types';
+import {
+  ModelCapabilities,
+  OutputFormat,
+  OpenCodeModelCapabilities,
+  ICapabilityTranslator,
+} from '../types';
 
 /**
  * Default capabilities for OpenCode
@@ -62,7 +67,8 @@ export class CapabilityTranslator implements ICapabilityTranslator {
   /**
    * Cached capabilities per model
    */
-  private capabilityCache: Map<string, { capabilities: ModelCapabilities; timestamp: number }> = new Map();
+  private capabilityCache: Map<string, { capabilities: ModelCapabilities; timestamp: number }> =
+    new Map();
 
   /**
    * Cache TTL in milliseconds (5 minutes)
@@ -85,8 +91,7 @@ export class CapabilityTranslator implements ICapabilityTranslator {
       maxContextLength: ocCapabilities.context_window ?? DEFAULT_CAPABILITIES.maxContextLength,
       tools: ocCapabilities.tools === undefined ? null : ocCapabilities.tools.length > 0,
       vision: this.feature(ocCapabilities.features?.vision),
-      functionCalling:
-        this.feature(ocCapabilities.features?.function_calling),
+      functionCalling: this.feature(ocCapabilities.features?.function_calling),
       jsonOutput: this.feature(ocCapabilities.features?.json_output),
       outputFormats: this.getOutputFormats(ocCapabilities),
     };
@@ -137,7 +142,11 @@ export class CapabilityTranslator implements ICapabilityTranslator {
    */
   hasCapability(capability: keyof ModelCapabilities, capabilities: ModelCapabilities): boolean {
     const value = capabilities[capability];
-    return Array.isArray(value) ? value.length > 0 : typeof value === 'number' ? value > 0 : value === true;
+    return Array.isArray(value)
+      ? value.length > 0
+      : typeof value === 'number'
+        ? value > 0
+        : value === true;
   }
 
   /**
@@ -157,7 +166,10 @@ export class CapabilityTranslator implements ICapabilityTranslator {
    * @param ocCapabilities - OpenCode capabilities (optional, for testing)
    * @returns Capability discovery result
    */
-  discoverCapabilities(model: string, ocCapabilities?: OpenCodeModelCapabilities): CapabilityDiscoveryResult {
+  discoverCapabilities(
+    model: string,
+    ocCapabilities?: OpenCodeModelCapabilities
+  ): CapabilityDiscoveryResult {
     if (!model) {
       return {
         success: false,
@@ -254,12 +266,18 @@ export class CapabilityTranslator implements ICapabilityTranslator {
 
     const merged: ModelCapabilities = this.getDefaultCapabilities();
     const union = (values: Array<boolean | null | undefined>): boolean | null =>
-      values.some(value => value === true) ? true : values.every(value => value === false) ? false : null;
+      values.some(value => value === true)
+        ? true
+        : values.every(value => value === false)
+          ? false
+          : null;
     for (const key of ['streaming', 'tools', 'vision', 'functionCalling', 'jsonOutput'] as const) {
       merged[key] = union(capabilitiesList.map(caps => caps[key]));
     }
     const contexts = capabilitiesList.map(caps => caps.maxContextLength);
-    merged.maxContextLength = contexts.every((value): value is number => value !== null) ? Math.max(...contexts) : null;
+    merged.maxContextLength = contexts.every((value): value is number => value !== null)
+      ? Math.max(...contexts)
+      : null;
 
     for (const caps of capabilitiesList) {
       // Merge output formats (union)

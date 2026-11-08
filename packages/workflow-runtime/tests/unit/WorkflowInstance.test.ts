@@ -3,7 +3,9 @@
  * Validates the structure and properties of WorkflowInstance interface
  */
 
+import { parseJsonObject } from '@specforge/types';
 import { describe, it, expect } from 'vitest';
+
 import type { WorkflowInstance, WorkflowInstanceStatus, WorkflowEventData } from '../../src/types.js';
 
 describe('WorkflowInstance Type Definition', () => {
@@ -428,7 +430,7 @@ describe('WorkflowInstance Type Definition', () => {
       expect(typeof json).toBe('string');
 
       // Verify it can be parsed back
-      const parsed = JSON.parse(json);
+      const parsed = parseJsonObject(json);
       expect(parsed.id).toBe('instance-123');
       expect(parsed.workflowId).toBe('workflow-456');
       expect(parsed.schema_version).toBe('1.0');
@@ -447,7 +449,7 @@ describe('WorkflowInstance Type Definition', () => {
       };
 
       const json = JSON.stringify(instance);
-      const parsed = JSON.parse(json);
+      const parsed = parseJsonObject(json);
 
       expect(parsed.schema_version).toBe('1.0');
     });

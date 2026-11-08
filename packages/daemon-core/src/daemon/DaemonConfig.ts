@@ -20,9 +20,8 @@ export class DaemonConfig {
 
   constructor(args: string[] = process.argv) {
     this.mode = this.parseMode(args);
-    this.pathResolver = this.mode === 'personal'
-      ? new PersonalPathResolver()
-      : new EnterprisePathResolver();
+    this.pathResolver =
+      this.mode === 'personal' ? new PersonalPathResolver() : new EnterprisePathResolver();
     this.ingestEnabled = process.env.SPECFORGE_INGEST_ENABLED !== 'false';
     this.maxPayloadSize = 64 * 1024; // 64 KiB
     this.schemaVersion = '1.0';
@@ -38,12 +37,12 @@ export class DaemonConfig {
    */
   private parseMode(args: string[]): DaemonMode {
     // 1. CLI --mode
-    const cliIndex = args.findIndex((a) => a === '--mode');
+    const cliIndex = args.findIndex(a => a === '--mode');
     if (cliIndex !== -1 && args[cliIndex + 1]) {
       const v = args[cliIndex + 1];
       if (v === 'personal' || v === 'enterprise') return v;
       console.warn(
-        `[DaemonConfig] Invalid mode "${v}" from --mode, falling back to default "personal"`,
+        `[DaemonConfig] Invalid mode "${v}" from --mode, falling back to default "personal"`
       );
       return 'personal';
     }
@@ -53,7 +52,7 @@ export class DaemonConfig {
     if (env) {
       if (env === 'personal' || env === 'enterprise') return env;
       console.warn(
-        `[DaemonConfig] Invalid SPECFORGE_MODE="${env}", falling back to default "personal"`,
+        `[DaemonConfig] Invalid SPECFORGE_MODE="${env}", falling back to default "personal"`
       );
       return 'personal';
     }
@@ -69,13 +68,13 @@ export class DaemonConfig {
    */
   private parseForeground(args: string[]): boolean {
     // Check for --foreground flag (explicit foreground mode)
-    const foregroundIndex = args.findIndex((arg) => arg === '--foreground');
+    const foregroundIndex = args.findIndex(arg => arg === '--foreground');
     if (foregroundIndex !== -1) {
       return true;
     }
 
     // Check for --no-foreground flag (background mode - not yet supported)
-    const noForegroundIndex = args.findIndex((arg) => arg === '--no-foreground');
+    const noForegroundIndex = args.findIndex(arg => arg === '--no-foreground');
     if (noForegroundIndex !== -1) {
       return false;
     }
@@ -92,7 +91,7 @@ export class DaemonConfig {
    */
   private parseServiceMode(args: string[]): boolean {
     // Check for --service CLI flag
-    const serviceIndex = args.findIndex((arg) => arg === '--service');
+    const serviceIndex = args.findIndex(arg => arg === '--service');
     if (serviceIndex !== -1) {
       return true;
     }

@@ -3,13 +3,9 @@
  * Executes Gates that require Agent system integration
  */
 
+import { WorkflowAgentRunner ,type AgentExecutionResult,type AgentExecutionContext,type  AgentRole } from '../AgentRunner.js';
 import { GateRunner } from '../GateRunner.js';
-import { SimpleGateDefinition, GateResult, WorkflowContext } from '../types.js';
-import { 
-  WorkflowAgentRunner, 
-  AgentExecutionContext,
-  type AgentRole 
-} from '../AgentRunner.js';
+import type { SimpleGateDefinition, GateResult, WorkflowContext } from '../types.js';
 
 /**
  * AgentGateRunner - Executes gates that require Agent system integration
@@ -58,7 +54,7 @@ export class AgentGateRunner extends GateRunner {
       };
 
       // Determine agent role if not explicitly set
-      const role = this.agentRole === 'general' 
+      const role = this.agentRole === 'general'
         ? WorkflowAgentRunner.determineAgentRole(context.instance.currentState)
         : this.agentRole;
 
@@ -107,23 +103,23 @@ export class AgentGateRunner extends GateRunner {
    */
   private createAgentPrompt(context: WorkflowContext): string {
     const gate = this.gate as SimpleGateDefinition;
-    
+
     // Use custom prompt from context if available
-    if (this.context.prompt) {
-      return String(this.context.prompt);
+    if (typeof this.context.prompt === 'string' && this.context.prompt) {
+      return this.context.prompt;
     }
 
     // Use gate name as default prompt
     const stateName = context.instance.currentState;
     const workflowName = context.definition.displayName;
-    
+
     return `Execute ${gate.name} for workflow "${workflowName}" in state "${stateName}"`;
   }
 
   /**
    * Convert agent execution result to gate result
    */
-  private convertAgentResultToGateResult(agentResult: any): GateResult {
+  private convertAgentResultToGateResult(agentResult: AgentExecutionResult): GateResult {
     if (agentResult.success) {
       return {
         schema_version: '1.0',

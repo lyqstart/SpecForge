@@ -1,3 +1,4 @@
+import { codeContains } from '../../../tests/helpers/source-structure';
 import { authoritativeStateFixture } from './helpers/authoritative-state-fixture';
 import { existsSync, readFileSync } from 'node:fs';
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
@@ -213,7 +214,7 @@ describe('Orchestrator governance execution closure', () => {
     ] as const;
 
     for (const [workflowType, workflowPath, skillName] of currentPairs) {
-      expect(stateMachine).toContain(`${workflowType}: "${workflowPath}"`);
+      expect(codeContains(stateMachine, `${workflowType}: "${workflowPath}"`)).toBe(true);
       const routeRow = contract
         .split('\n')
         .find(

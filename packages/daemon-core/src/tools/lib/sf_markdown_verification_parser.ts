@@ -9,38 +9,38 @@
  * Requirements: REQ-3 AC-1, REQ-3 AC-2, REQ-3 AC-3, REQ-3 AC-4, REQ-3 AC-5
  */
 
-import type { TypedVerificationCommands, ParsedTaskVerification } from "./sf_verification_types"
-import { normalizeVerificationType } from "./sf_verification_types"
+import type { TypedVerificationCommands, ParsedTaskVerification } from './sf_verification_types';
+import { normalizeVerificationType } from './sf_verification_types';
 import {
   TASK_ARTIFACT_CONTRACT_VERSION,
   TaskArtifactDocumentSchema,
   isLegacyTaskArtifactId,
-} from "@specforge/types"
+} from '@specforge/types';
 
 export interface TaskSection {
-  title: string
-  taskId: string
-  content: string
+  title: string;
+  taskId: string;
+  content: string;
 }
 
 export interface TaskArtifactContractIssue {
-  severity: "error" | "warning"
-  code: string
-  task_id?: string
-  path?: string
-  message: string
+  severity: 'error' | 'warning';
+  code: string;
+  task_id?: string;
+  path?: string;
+  message: string;
 }
 
 export interface TaskArtifactContractValidation {
-  valid: boolean
-  contract_version: typeof TASK_ARTIFACT_CONTRACT_VERSION
+  valid: boolean;
+  contract_version: typeof TASK_ARTIFACT_CONTRACT_VERSION;
   tasks: Array<{
-    task_id: string
-    refs: string[]
-    allowed_write_files: string[]
-    verification_commands: TypedVerificationCommands
-  }>
-  issues: TaskArtifactContractIssue[]
+    task_id: string;
+    refs: string[];
+    allowed_write_files: string[];
+    verification_commands: TypedVerificationCommands;
+  }>;
+  issues: TaskArtifactContractIssue[];
 }
 
 // ============================================================
@@ -58,46 +58,49 @@ export interface TaskArtifactContractValidation {
  * - 若第一层不匹配 → 旧格式（平铺列表）
  */
 export function parseTaskVerification(taskContent: string): ParsedTaskVerification {
-  const result: ParsedTaskVerification = { format: "empty" }
+  const result: ParsedTaskVerification = { format: 'empty' };
 
   // 提取 refs 字段
-  const refs = parseRefsFields(taskContent)
-  if (refs.length > 0) result.refs = refs
+  const refs = parseRefsFields(taskContent);
+  if (refs.length > 0) result.refs = refs;
 
   // 提取 manual_verification_checks 字段
-  const manualSection = extractFieldSection(taskContent, "manual_verification_checks")
+  const manualSection = extractFieldSection(taskContent, 'manual_verification_checks');
   if (manualSection) {
-    result.manualChecks = parseStringList(manualSection)
+    result.manualChecks = parseStringList(manualSection);
   }
 
   // 提取 verification_commands 字段
-  const vcSection = extractFieldSection(taskContent, "verification_commands")
+  const vcSection = extractFieldSection(taskContent, 'verification_commands');
   if (!vcSection) {
-    return result
+    return result;
   }
 
   // 判断格式：获取第一个非空行
-  const lines = vcSection.split("\n").map((l) => l.trim()).filter(Boolean)
-  const firstItem = lines[0] ?? ""
+  const lines = vcSection
+    .split('\n')
+    .map(l => l.trim())
+    .filter(Boolean);
+  const firstItem = lines[0] ?? '';
 
   // 两层识别规则：先识别 key: 模式，再校验 key 合法性
   // 任何 key: 模式都视为 typed 格式尝试
   // 非法 key（如 smoke:）会被记录到 invalidTypedKeys，格式仍为 "typed"（不回退到 legacy）
-  const typedLikePattern = /^-?\s*([A-Za-z_][\w-]*)\s*:/
+  const typedLikePattern = /^-?\s*([A-Za-z_][\w-]*)\s*:/;
 
   if (typedLikePattern.test(firstItem)) {
-    result.format = "typed"
-    const { commands, invalidKeys } = parseTypedCommandBlock(vcSection)
-    result.typedCommands = commands
+    result.format = 'typed';
+    const { commands, invalidKeys } = parseTypedCommandBlock(vcSection);
+    result.typedCommands = commands;
     if (invalidKeys.length > 0) {
-      result.invalidTypedKeys = invalidKeys
+      result.invalidTypedKeys = invalidKeys;
     }
   } else {
-    result.format = "legacy"
-    result.legacyCommands = parseStringList(vcSection)
+    result.format = 'legacy';
+    result.legacyCommands = parseStringList(vcSection);
   }
 
-  return result
+  return result;
 }
 
 /**
@@ -105,19 +108,21 @@ export function parseTaskVerification(taskContent: string): ParsedTaskVerificati
  * Both `refs: [...]` and `**refs**: [...]` are accepted, including list prefixes.
  */
 export function parseRefsFields(content: string): string[] {
-  const refs = new Set<string>()
-  const refsPattern =
-    /^\s*(?:[-+*]\s+)?(?:\*\*\s*)?refs(?:\s*\*\*)?\s*:\s*\[([^\]]*)\]\s*$/gim
-  let match: RegExpExecArray | null
+  const refs = new Set<string>();
+  const refsPattern = /^\s*(?:[-+*]\s+)?(?:\*\*\s*)?refs(?:\s*\*\*)?\s*:\s*\[([^\]]*)\]\s*$/gim;
+  let match: RegExpExecArray | null;
 
   while ((match = refsPattern.exec(content)) !== null) {
     for (const rawRef of match[1].split(/[,，]/)) {
-      const ref = rawRef.trim().replace(/^['"`]|['"`]$/g, "").toUpperCase()
-      if (ref) refs.add(ref)
+      const ref = rawRef
+        .trim()
+        .replace(/^['"`]|['"`]$/g, '')
+        .toUpperCase();
+      if (ref) refs.add(ref);
     }
   }
 
-  return [...refs]
+  return [...refs];
 }
 
 /**
@@ -134,59 +139,55 @@ export function parseRefsFields(content: string): string[] {
  * repository-relative semantic paths.
  */
 export function parseTaskAllowedWriteFiles(taskContent: string): string[] {
-  const section = extractFieldSection(taskContent, "allowed_write_files")
-  if (!section) return []
+  const section = extractFieldSection(taskContent, 'allowed_write_files');
+  if (!section) return [];
 
-  const inline = /^\s*\[([^\]]*)\]\s*$/.exec(section.trim())
-  const rawValues = inline
-    ? inline[1].split(/[,，]/)
-    : parseStringList(section)
+  const inline = /^\s*\[([^\]]*)\]\s*$/.exec(section.trim());
+  const rawValues = inline ? inline[1].split(/[,，]/) : parseStringList(section);
 
   const normalized = rawValues
-    .map((value) =>
+    .map(value =>
       value
         .trim()
-        .replace(/^['"`]|['"`]$/g, "")
-        .replace(/\\/g, "/")
-        .replace(/^\.\//, "")
-        .replace(/\/+/g, "/")
+        .replace(/^['"`]|['"`]$/g, '')
+        .replace(/\\/g, '/')
+        .replace(/^\.\//, '')
+        .replace(/\/+/g, '/')
     )
-    .filter(Boolean)
+    .filter(Boolean);
 
-  return [...new Set(normalized)]
+  return [...new Set(normalized)];
 }
 
 export function parseTaskSections(content: string): TaskSection[] {
-  const sections: TaskSection[] = []
-  const lines = content.split(/\r?\n/)
-  let current: TaskSection | null = null
+  const sections: TaskSection[] = [];
+  const lines = content.split(/\r?\n/);
+  let current: TaskSection | null = null;
 
   for (const line of lines) {
-    const heading = /^#{2,6}\s+(.+)$/.exec(line)
+    const heading = /^#{2,6}\s+(.+)$/.exec(line);
     if (heading) {
-      const taskIdMatch = /\b(TASK-(?:WI-[0-9]{4}-[0-9]{3}|[0-9]+))\b/i.exec(heading[1])
-      const localizedMatch = /^(?:Task|任务)\s*([0-9]+)\b/i.exec(heading[1])
+      const taskIdMatch = /\b(TASK-(?:WI-[0-9]{4}-[0-9]{3}|[0-9]+))\b/i.exec(heading[1]);
+      const localizedMatch = /^(?:Task|任务)\s*([0-9]+)\b/i.exec(heading[1]);
       if (taskIdMatch || localizedMatch) {
-        if (current) sections.push(current)
-        const taskId = taskIdMatch
-          ? taskIdMatch[1].toUpperCase()
-          : `TASK-${localizedMatch![1]}`
+        if (current) sections.push(current);
+        const taskId = taskIdMatch ? taskIdMatch[1].toUpperCase() : `TASK-${localizedMatch![1]}`;
         current = {
           title: heading[1].trim(),
           taskId,
-          content: "",
-        }
-        continue
+          content: '',
+        };
+        continue;
       }
     }
 
     if (current) {
-      current.content += current.content.length === 0 ? line : `\n${line}`
+      current.content += current.content.length === 0 ? line : `\n${line}`;
     }
   }
 
-  if (current) sections.push(current)
-  return sections
+  if (current) sections.push(current);
+  return sections;
 }
 
 /**
@@ -195,85 +196,89 @@ export function parseTaskSections(content: string): TaskSection[] {
  */
 export function validateTaskArtifactContract(
   content: string,
-  options: { allowLegacyCommands?: boolean; allowLegacyIds?: boolean; requireAllowedWriteFiles?: boolean } = {}
+  options: {
+    allowLegacyCommands?: boolean;
+    allowLegacyIds?: boolean;
+    requireAllowedWriteFiles?: boolean;
+  } = {}
 ): TaskArtifactContractValidation {
-  const sections = parseTaskSections(content)
-  const issues: TaskArtifactContractIssue[] = []
-  const tasks: TaskArtifactContractValidation["tasks"] = []
+  const sections = parseTaskSections(content);
+  const issues: TaskArtifactContractIssue[] = [];
+  const tasks: TaskArtifactContractValidation['tasks'] = [];
 
   if (sections.length === 0) {
     issues.push({
-      severity: "error",
-      code: "TASK_SECTIONS_MISSING",
-      message: "tasks.md does not contain a recognized task section",
-    })
+      severity: 'error',
+      code: 'TASK_SECTIONS_MISSING',
+      message: 'tasks.md does not contain a recognized task section',
+    });
   }
 
   for (const section of sections) {
-    const verification = parseTaskVerification(section.content)
-    const allowedWriteFiles = parseTaskAllowedWriteFiles(section.content)
+    const verification = parseTaskVerification(section.content);
+    const allowedWriteFiles = parseTaskAllowedWriteFiles(section.content);
     if (options.requireAllowedWriteFiles && allowedWriteFiles.length === 0) {
       issues.push({
-        severity: "error",
-        code: "ALLOWED_WRITE_FILES_MISSING",
+        severity: 'error',
+        code: 'ALLOWED_WRITE_FILES_MISSING',
         task_id: section.taskId,
-        path: "allowed_write_files",
+        path: 'allowed_write_files',
         message: `${section.taskId} must declare at least one concrete allowed_write_files path`,
-      })
+      });
     }
 
     if (isLegacyTaskArtifactId(section.taskId)) {
       issues.push({
-        severity: options.allowLegacyIds ? "warning" : "error",
-        code: "LEGACY_TASK_ID",
+        severity: options.allowLegacyIds ? 'warning' : 'error',
+        code: 'LEGACY_TASK_ID',
         task_id: section.taskId,
-        path: "task_id",
+        path: 'task_id',
         message: `${section.taskId} is a compatibility alias; new artifacts must use TASK-WI-NNNN-NNN`,
-      })
+      });
     }
 
     for (const ref of verification.refs ?? []) {
       if (isLegacyTaskArtifactId(ref)) {
         issues.push({
-          severity: options.allowLegacyIds ? "warning" : "error",
-          code: "LEGACY_TASK_REF",
+          severity: options.allowLegacyIds ? 'warning' : 'error',
+          code: 'LEGACY_TASK_REF',
           task_id: section.taskId,
-          path: "refs",
+          path: 'refs',
           message: `${ref} is a compatibility alias; new artifacts must use canonical module-scoped IDs`,
-        })
+        });
       }
     }
 
-    if (verification.format === "empty") {
+    if (verification.format === 'empty') {
       issues.push({
-        severity: "error",
-        code: "VERIFICATION_COMMANDS_MISSING",
+        severity: 'error',
+        code: 'VERIFICATION_COMMANDS_MISSING',
         task_id: section.taskId,
-        path: "verification_commands",
+        path: 'verification_commands',
         message: `${section.taskId} is missing verification_commands`,
-      })
-      continue
+      });
+      continue;
     }
 
-    if (verification.format === "legacy") {
+    if (verification.format === 'legacy') {
       issues.push({
-        severity: options.allowLegacyCommands ? "warning" : "error",
-        code: "LEGACY_VERIFICATION_COMMANDS",
+        severity: options.allowLegacyCommands ? 'warning' : 'error',
+        code: 'LEGACY_VERIFICATION_COMMANDS',
         task_id: section.taskId,
-        path: "verification_commands",
+        path: 'verification_commands',
         message: `${section.taskId} must use typed verification_commands`,
-      })
-      continue
+      });
+      continue;
     }
 
     for (const invalidKey of verification.invalidTypedKeys ?? []) {
       issues.push({
-        severity: "error",
-        code: "INVALID_VERIFICATION_TYPE",
+        severity: 'error',
+        code: 'INVALID_VERIFICATION_TYPE',
         task_id: section.taskId,
         path: `verification_commands.${invalidKey}`,
         message: `${section.taskId} uses unsupported verification type "${invalidKey}"`,
-      })
+      });
     }
 
     tasks.push({
@@ -281,33 +286,33 @@ export function validateTaskArtifactContract(
       refs: verification.refs ?? [],
       allowed_write_files: allowedWriteFiles,
       verification_commands: verification.typedCommands ?? {},
-    })
+    });
   }
 
   const document = {
     contract_version: TASK_ARTIFACT_CONTRACT_VERSION,
     tasks,
-  }
-  const schemaResult = tasks.length > 0 ? TaskArtifactDocumentSchema.safeParse(document) : null
+  };
+  const schemaResult = tasks.length > 0 ? TaskArtifactDocumentSchema.safeParse(document) : null;
   if (schemaResult && !schemaResult.success) {
     for (const issue of schemaResult.error.issues) {
-      const taskIndex = typeof issue.path[1] === "number" ? issue.path[1] : undefined
+      const taskIndex = typeof issue.path[1] === 'number' ? issue.path[1] : undefined;
       issues.push({
-        severity: "error",
-        code: "TASK_CONTRACT_SCHEMA_INVALID",
+        severity: 'error',
+        code: 'TASK_CONTRACT_SCHEMA_INVALID',
         task_id: taskIndex === undefined ? undefined : tasks[taskIndex]?.task_id,
-        path: issue.path.join("."),
+        path: issue.path.join('.'),
         message: issue.message,
-      })
+      });
     }
   }
 
   return {
-    valid: issues.every(issue => issue.severity !== "error"),
+    valid: issues.every(issue => issue.severity !== 'error'),
     contract_version: TASK_ARTIFACT_CONTRACT_VERSION,
     tasks,
     issues,
-  }
+  };
 }
 
 // ============================================================
@@ -325,62 +330,62 @@ export function validateTaskArtifactContract(
  * - `unit:` 后跟缩进的多行命令列表
  */
 export function parseTypedCommandBlock(section: string): {
-  commands: TypedVerificationCommands
-  invalidKeys: string[]
+  commands: TypedVerificationCommands;
+  invalidKeys: string[];
 } {
-  const commands: TypedVerificationCommands = {}
-  const invalidKeys: string[] = []
-  const lines = section.split("\n")
-  let currentType: import("./sf_verification_types").VerificationType | null = null
-  let currentCommands: string[] = []
+  const commands: TypedVerificationCommands = {};
+  const invalidKeys: string[] = [];
+  const lines = section.split('\n');
+  let currentType: import('./sf_verification_types').VerificationType | null = null;
+  let currentCommands: string[] = [];
 
   // 匹配任意 key: 模式（不限于合法 VerificationType）
   // 支持 `- key: ...` 和 `key: ...` 两种格式
-  const anyKeyPattern = /^-?\s*([A-Za-z_][\w-]*)\s*:\s*(.*)/
+  const anyKeyPattern = /^-?\s*([A-Za-z_][\w-]*)\s*:\s*(.*)/;
 
   for (const line of lines) {
-    const trimmed = line.trim()
-    if (!trimmed) continue
+    const trimmed = line.trim();
+    if (!trimmed) continue;
 
-    const keyMatch = anyKeyPattern.exec(trimmed)
+    const keyMatch = anyKeyPattern.exec(trimmed);
     if (keyMatch) {
       // 保存前一个类型的命令
-      flushCurrentType(commands, currentType, currentCommands)
+      flushCurrentType(commands, currentType, currentCommands);
 
-      const rawKey = keyMatch[1]
-      const normalized = normalizeVerificationType(rawKey)
+      const rawKey = keyMatch[1];
+      const normalized = normalizeVerificationType(rawKey);
 
       if (normalized) {
-        currentType = normalized
+        currentType = normalized;
       } else {
         // 非法 key：记录但不存入 commands
-        invalidKeys.push(rawKey)
-        currentType = null
+        invalidKeys.push(rawKey);
+        currentType = null;
       }
-      currentCommands = []
+      currentCommands = [];
 
       // 同行命令（key: `command`）
-      const inlineValue = keyMatch[2].trim()
+      const inlineValue = keyMatch[2].trim();
       if (inlineValue && currentType !== null) {
-        const cmdMatch = inlineValue.match(/^`([^`]+)`$/)
+        const cmdMatch = inlineValue.match(/^`([^`]+)`$/);
         if (cmdMatch) {
-          currentCommands.push(cmdMatch[1])
+          currentCommands.push(cmdMatch[1]);
         }
       }
     } else if (currentType !== null) {
       // 多行命令列表（仅在当前 key 合法时收集）
       // 支持 `- \`command\`` 和 `  - \`command\`` 格式
-      const cmdMatch = trimmed.match(/^-?\s*`([^`]+)`\s*$/)
+      const cmdMatch = trimmed.match(/^-?\s*`([^`]+)`\s*$/);
       if (cmdMatch) {
-        currentCommands.push(cmdMatch[1])
+        currentCommands.push(cmdMatch[1]);
       }
     }
   }
 
   // 保存最后一个类型的命令
-  flushCurrentType(commands, currentType, currentCommands)
+  flushCurrentType(commands, currentType, currentCommands);
 
-  return { commands, invalidKeys }
+  return { commands, invalidKeys };
 }
 
 // ============================================================
@@ -398,43 +403,42 @@ export function parseTypedCommandBlock(section: string): {
  * @returns 字段内容区块（不含字段标题行本身的值部分），或 null 表示字段不存在
  */
 export function extractFieldSection(content: string, fieldName: string): string | null {
-  const escapedName = fieldName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+  const escapedName = fieldName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const fieldPattern = new RegExp(
     `^(\\s*)(?:[-+*]\\s+)?(?:\\*\\*\\s*)?${escapedName}(?:\\s*\\*\\*)?\\s*:\\s*(.*)$`,
-    "im"
-  )
-  const match = fieldPattern.exec(content)
+    'im'
+  );
+  const match = fieldPattern.exec(content);
 
   if (!match) {
-    return null
+    return null;
   }
 
-  const baseIndent = match[1].length
-  const inlineValue = match[2].trim()
+  const baseIndent = match[1].length;
+  const inlineValue = match[2].trim();
   const remainingLines = content
     .slice(match.index + match[0].length)
-    .replace(/^\r?\n/, "")
-    .split(/\r?\n/)
-  const sectionLines: string[] = []
-  const fieldBoundary =
-    /^\s*(?:[-+*]\s+)?(?:\*\*\s*)?[A-Za-z_][\w-]*(?:\s*\*\*)?\s*:/
+    .replace(/^\r?\n/, '')
+    .split(/\r?\n/);
+  const sectionLines: string[] = [];
+  const fieldBoundary = /^\s*(?:[-+*]\s+)?(?:\*\*\s*)?[A-Za-z_][\w-]*(?:\s*\*\*)?\s*:/;
 
   for (const line of remainingLines) {
-    const indentation = line.match(/^\s*/)?.[0].length ?? 0
-    if (line.trim() && indentation <= baseIndent && fieldBoundary.test(line)) break
-    sectionLines.push(line)
+    const indentation = line.match(/^\s*/)?.[0].length ?? 0;
+    if (line.trim() && indentation <= baseIndent && fieldBoundary.test(line)) break;
+    sectionLines.push(line);
   }
 
-  const sectionContent = sectionLines.join("\n").trim()
+  const sectionContent = sectionLines.join('\n').trim();
   if (!sectionContent && !inlineValue) {
-    return null
+    return null;
   }
 
   if (inlineValue && sectionContent) {
-    return inlineValue + "\n" + sectionContent
+    return inlineValue + '\n' + sectionContent;
   }
 
-  return sectionContent || inlineValue
+  return sectionContent || inlineValue;
 }
 
 // ============================================================
@@ -453,21 +457,21 @@ export function extractFieldSection(content: string, fieldName: string): string 
  * @returns 提取的字符串数组
  */
 export function parseStringList(section: string): string[] {
-  const results: string[] = []
-  const lines = section.split("\n")
+  const results: string[] = [];
+  const lines = section.split('\n');
 
   for (const line of lines) {
-    const trimmed = line.trim()
-    if (!trimmed) continue
+    const trimmed = line.trim();
+    if (!trimmed) continue;
 
     // 匹配 `- \`...\`` 或 `\`...\`` 格式
-    const match = trimmed.match(/^-?\s*`([^`]+)`\s*$/)
+    const match = trimmed.match(/^-?\s*`([^`]+)`\s*$/);
     if (match) {
-      results.push(match[1])
+      results.push(match[1]);
     }
   }
 
-  return results
+  return results;
 }
 
 // ============================================================
@@ -479,11 +483,11 @@ export function parseStringList(section: string): string[] {
  */
 function flushCurrentType(
   commands: TypedVerificationCommands,
-  currentType: import("./sf_verification_types").VerificationType | null,
+  currentType: import('./sf_verification_types').VerificationType | null,
   currentCommands: string[]
 ): void {
   if (currentType !== null && currentCommands.length > 0) {
     commands[currentType] =
-      currentCommands.length === 1 ? currentCommands[0] : [...currentCommands]
+      currentCommands.length === 1 ? currentCommands[0] : [...currentCommands];
   }
 }

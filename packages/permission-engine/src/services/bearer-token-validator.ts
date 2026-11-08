@@ -2,20 +2,20 @@
 // Build-unblock note: legacy permission-engine service has historical type drift; production build boundary is being restored
 /**
  * Bearer Token Validator Service
- * 
+ *
  * Implements Bearer Token validation for HTTP/SSE requests as required by
  * Property 16: Bearer Token Enforcement
- * 
+ *
  * Validates `Authorization: Bearer <token>` headers and returns appropriate
  * validation results. Also logs permission.denied events for auth failures.
- * 
+ *
  * @specforge/permission-engine
  */
 
-import { 
-  PermissionDeniedEventPayload,
-  PermissionDeniedEventPayloadSchema 
+import {
+  PermissionDeniedEventPayload
 } from '../types/events';
+
 import { EventLogger } from './event-logger';
 
 export interface BearerTokenValidatorConfig {
@@ -58,7 +58,7 @@ export interface BearerTokenValidationResult {
 
 /**
  * Bearer Token Validator
- * 
+ *
  * Validates Authorization headers with Bearer token scheme.
  * Logs permission.denied events for authentication failures.
  */
@@ -77,13 +77,13 @@ export class BearerTokenValidator {
         projectId: config.projectId
       })
     } as Required<BearerTokenValidatorConfig>;
-    
+
     this.eventLogger = this.config.eventLogger;
   }
 
   /**
    * Validate an Authorization header with Bearer token
-   * 
+   *
    * @param authHeader - The Authorization header value
    * @param requestContext - Optional context for event logging
    * @returns Validation result with authorization status and details
@@ -204,9 +204,9 @@ export class BearerTokenValidator {
 
   /**
    * Validate HTTP request headers
-   * 
+   *
    * Convenience method that accepts full headers object
-   * 
+   *
    * @param headers - HTTP headers object
    * @param requestContext - Optional context for event logging
    * @returns Validation result
@@ -225,7 +225,7 @@ export class BearerTokenValidator {
 
   /**
    * Log a permission.denied event for authentication failure
-   * 
+   *
    * Implements logging requirement from Property 16
    */
   private async logPermissionDenied(payload: PermissionDeniedEventPayload): Promise<void> {
@@ -242,7 +242,7 @@ export class BearerTokenValidator {
 
   /**
    * Update the valid token
-   * 
+   *
    * @param newToken - The new valid token
    */
   setToken(newToken: string): void {
@@ -251,7 +251,7 @@ export class BearerTokenValidator {
 
   /**
    * Get the current valid token (for testing/debugging)
-   * 
+   *
    * @returns The current valid token
    */
   getToken(): string {
@@ -260,7 +260,7 @@ export class BearerTokenValidator {
 
   /**
    * Check if a token matches without logging (for internal use)
-   * 
+   *
    * @param token - Token to check
    * @returns Whether the token matches
    */
@@ -270,7 +270,7 @@ export class BearerTokenValidator {
 
   /**
    * Get the event logger instance
-   * 
+   *
    * @returns The event logger
    */
   getEventLogger(): EventLogger {
@@ -279,7 +279,7 @@ export class BearerTokenValidator {
 
   /**
    * Create a middleware-compatible handler
-   * 
+   *
    * Returns a function that can be used as middleware to validate
    * Bearer tokens and return appropriate HTTP responses
    */
@@ -298,7 +298,7 @@ export class BearerTokenValidator {
       token?: string;
     }> => {
       const result = await this.validate(headers.authorization, requestContext);
-      
+
       if (result.authorized) {
         return {
           authorized: true,
@@ -323,7 +323,7 @@ export class BearerTokenValidator {
 
 /**
  * Create a BearerTokenValidator instance
- * 
+ *
  * @param config - Validator configuration
  * @returns Configured validator instance
  */
@@ -333,7 +333,7 @@ export function createBearerTokenValidator(config: BearerTokenValidatorConfig): 
 
 /**
  * Parse Authorization header
- * 
+ *
  * @param authHeader - The Authorization header value
  * @returns Object with scheme and token, or null if invalid
  */
@@ -355,7 +355,7 @@ export function parseAuthorizationHeader(authHeader: string | undefined): { sche
 
 /**
  * Check if Authorization header has valid Bearer format (without validating token)
- * 
+ *
  * @param authHeader - The Authorization header value
  * @returns Whether the header has valid Bearer format
  */

@@ -1,4 +1,4 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { createHash } from 'node:crypto';
@@ -14,7 +14,7 @@ export const ATOMIC_SPEC_MERGE_WRITE_PROVENANCE_SCHEMA =
 
 export type TrustedAtomicSpecMergeWrite = AtomicSpecMergeTrustedWrite;
 
-const SPEC_ROOT = (`${SPEC_DIR_NAME}/project/` as const);
+const SPEC_ROOT = `${SPEC_DIR_NAME}/project/` as const;
 
 function normalizeRelative(value: string): string {
   return String(value ?? '')
@@ -27,7 +27,7 @@ function provenancePath(projectRoot: string): string {
     projectRoot,
     SPEC_DIR_NAME,
     'runtime',
-    'atomic_spec_merge_controlled_writes.json',
+    'atomic_spec_merge_controlled_writes.json'
   );
 }
 
@@ -51,7 +51,7 @@ function readStructuredProvenance(projectRoot: string): AtomicSpecMergeWriteProv
     return parsed as AtomicSpecMergeWriteProvenance;
   } catch (error) {
     throw new Error(
-      `ATOMIC_SPEC_MERGE_PROVENANCE_INVALID: ${error instanceof Error ? error.message : String(error)}`,
+      `ATOMIC_SPEC_MERGE_PROVENANCE_INVALID: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 }
@@ -95,7 +95,7 @@ export function recordAtomicSpecMergeProjectWrites(input: {
   }
   if (!/^PSV-\d+$/i.test(input.projectSpecVersion)) {
     throw new Error(
-      `ATOMIC_SPEC_MERGE_PROVENANCE_INVALID_PROJECT_SPEC_VERSION: ${input.projectSpecVersion}`,
+      `ATOMIC_SPEC_MERGE_PROVENANCE_INVALID_PROJECT_SPEC_VERSION: ${input.projectSpecVersion}`
     );
   }
 
@@ -103,7 +103,7 @@ export function recordAtomicSpecMergeProjectWrites(input: {
   const byPath = new Map(
     previous.writes
       .filter(entry => entry?.producer === 'sf_v11_merge')
-      .map(entry => [normalizeRelative(entry.path), entry] as const),
+      .map(entry => [normalizeRelative(entry.path), entry] as const)
   );
 
   const now = new Date().toISOString();
@@ -128,9 +128,7 @@ export function recordAtomicSpecMergeProjectWrites(input: {
   const next: AtomicSpecMergeWriteProvenance = {
     schema_version: ATOMIC_SPEC_MERGE_WRITE_PROVENANCE_SCHEMA,
     updated_at: now,
-    writes: Array.from(byPath.values()).sort((left, right) =>
-      left.path.localeCompare(right.path),
-    ),
+    writes: Array.from(byPath.values()).sort((left, right) => left.path.localeCompare(right.path)),
   };
   const descriptor = createAtomicSpecMergeWriteProvenanceSchemaDescriptor();
   if (!descriptor.validateCurrent(next)) {
@@ -141,9 +139,9 @@ export function recordAtomicSpecMergeProjectWrites(input: {
 }
 
 export function readTrustedAtomicSpecMergeProjectWrites(
-  projectRoot: string,
+  projectRoot: string
 ): TrustedAtomicSpecMergeWrite[] {
-  return readStructuredProvenance(projectRoot).writes.filter(entry =>
-    currentHashMatches(projectRoot, entry),
-  ).sort((left, right) => left.path.localeCompare(right.path));
+  return readStructuredProvenance(projectRoot)
+    .writes.filter(entry => currentHashMatches(projectRoot, entry))
+    .sort((left, right) => left.path.localeCompare(right.path));
 }

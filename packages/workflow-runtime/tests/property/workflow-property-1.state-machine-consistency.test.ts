@@ -1,33 +1,32 @@
 /**
  * Property Test: Workflow State Machine Consistency
- * 
+ *
  * Feature: workflow
  * Property 1: State Machine Consistency
- * 
- * Validates: Requirements 1.2 - THE Workflow_Runtime SHALL maintain workflow instance 
+ *
+ * Validates: Requirements 1.2 - THE Workflow_Runtime SHALL maintain workflow instance
  * state machine and support state transitions.
- * 
- * For all workflow instances w, state transitions must follow the rules defined in 
+ *
+ * For all workflow instances w, state transitions must follow the rules defined in
  * the workflow's state machine.
- * 
+ *
  * Derived-From: v6-architecture-overview Property 1
  */
 
-import { describe, it, expect } from 'vitest';
 import * as fc from 'fast-check';
+import { describe, it, expect } from 'vitest';
+
+import type {
+  WorkflowDefinition} from '../../src/types';
 import { WorkflowEngine } from '../../src/WorkflowEngine';
-import { 
-  WorkflowDefinition, 
-  GateDefinition,
-  SimpleGateDefinition
-} from '../../src/types';
+
 import { workflowDefinitionArb } from './generators';
 
 // Configure iterations as per spec requirements
 const NUM_ITERATIONS = 100;
 
 describe('Property 1: Workflow State Machine Consistency', () => {
-  
+
   describe('State Transition Validity', () => {
     /**
      * Property: All valid transitions should succeed
@@ -39,9 +38,9 @@ describe('Property 1: Workflow State Machine Consistency', () => {
           (workflowDef) => {
             const engine = new WorkflowEngine();
             engine.loadWorkflow(workflowDef);
-            
+
             const validTransitions: Array<{from: string, to: string}> = [];
-            
+
             for (const [stateId, state] of Object.entries(workflowDef.stateMachine.states)) {
               if (state.next) {
                 if (typeof state.next === 'string') {
@@ -53,25 +52,25 @@ describe('Property 1: Workflow State Machine Consistency', () => {
                 }
               }
             }
-            
+
             if (validTransitions.length === 0) {
               return true;
             }
-            
+
             const instance = engine.createInstance(workflowDef.id);
             const initialState = workflowDef.stateMachine.states[instance.currentState];
-            
+
             if (!initialState || !initialState.next) {
               return true;
             }
-            
+
             const validNextStates: string[] = [];
             if (typeof initialState.next === 'string') {
               validNextStates.push(initialState.next);
             } else {
               validNextStates.push(...Object.values(initialState.next));
             }
-            
+
             for (const nextState of validNextStates) {
               const testInstance = engine.createInstance(workflowDef.id);
               const currentState = testInstance.currentState;
@@ -80,7 +79,7 @@ describe('Property 1: Workflow State Machine Consistency', () => {
               const updatedInstance = engine.getInstance(testInstance.id);
               expect(updatedInstance?.currentState).toBe(nextState);
             }
-            
+
             return true;
           }
         ),
@@ -98,12 +97,12 @@ describe('Property 1: Workflow State Machine Consistency', () => {
           (workflowDef) => {
             const engine = new WorkflowEngine();
             engine.loadWorkflow(workflowDef);
-            
+
             const instance = engine.createInstance(workflowDef.id);
             const currentState = instance.currentState;
             const currentStateDef = workflowDef.stateMachine.states[currentState];
             const allStates = Object.keys(workflowDef.stateMachine.states);
-            
+
             let validNextStates: string[] = [];
             if (currentStateDef?.next) {
               if (typeof currentStateDef.next === 'string') {
@@ -112,22 +111,22 @@ describe('Property 1: Workflow State Machine Consistency', () => {
                 validNextStates = Object.values(currentStateDef.next);
               }
             }
-            
+
             const invalidNextStates = allStates.filter(
               s => s !== currentState && !validNextStates.includes(s)
             );
-            
+
             if (invalidNextStates.length === 0) {
               return true;
             }
-            
+
             for (const invalidState of invalidNextStates) {
               const result = engine.transition(instance.id, currentState, invalidState);
               expect(result).toBe(false);
               const unchangedInstance = engine.getInstance(instance.id);
               expect(unchangedInstance?.currentState).toBe(currentState);
             }
-            
+
             return true;
           }
         ),
@@ -226,8 +225,8 @@ describe('Property 1: Workflow State Machine Consistency', () => {
             const stateIds = Object.keys(workflowDef.stateMachine.states);
             for (const [, state] of Object.entries(workflowDef.stateMachine.states)) {
               if (state.next) {
-                const nextStates = typeof state.next === 'string' 
-                  ? [state.next] 
+                const nextStates = typeof state.next === 'string'
+                  ? [state.next]
                   : Object.values(state.next);
                 for (const nextState of nextStates) {
                   expect(stateIds).toContain(nextState);
@@ -253,31 +252,31 @@ describe('Property 1: Workflow State Machine Consistency', () => {
           (workflowDef) => {
             const engine = new WorkflowEngine();
             engine.loadWorkflow(workflowDef);
-            
+
             const instance = engine.createInstance(workflowDef.id);
             const currentState = instance.currentState;
-            
+
             const allStates = Object.keys(workflowDef.stateMachine.states);
             const differentState = allStates.find(s => s !== currentState);
-            
+
             if (!differentState) return true;
-            
+
             const currentStateDef = workflowDef.stateMachine.states[currentState];
             let validNextState: string | undefined;
-            
+
             if (currentStateDef?.next) {
-              validNextState = typeof currentStateDef.next === 'string' 
-                ? currentStateDef.next 
+              validNextState = typeof currentStateDef.next === 'string'
+                ? currentStateDef.next
                 : Object.values(currentStateDef.next)[0];
             }
-            
+
             if (!validNextState) return true;
-            
+
             const result = engine.transition(instance.id, differentState, validNextState);
             expect(result).toBe(false);
             const unchangedInstance = engine.getInstance(instance.id);
             expect(unchangedInstance?.currentState).toBe(currentState);
-            
+
             return true;
           }
         ),
@@ -304,16 +303,16 @@ describe('Property 1: Workflow State Machine Consistency', () => {
           (workflowDef) => {
             const engine = new WorkflowEngine();
             engine.loadWorkflow(workflowDef);
-            
+
             const instance = engine.createInstance(workflowDef.id);
             const currentState = instance.currentState;
-            
+
             const result = engine.transition(instance.id, currentState, 'non-existent-state');
             expect(result).toBe(false);
-            
+
             const unchangedInstance = engine.getInstance(instance.id);
             expect(unchangedInstance?.currentState).toBe(currentState);
-            
+
             return true;
           }
         ),
@@ -347,14 +346,14 @@ describe('Property 1: Edge Cases', () => {
       },
       artifacts: []
     };
-    
+
     const engine = new WorkflowEngine();
     engine.loadWorkflow(singleStateWorkflow);
     const instance = engine.createInstance(singleStateWorkflow.id);
-    
+
     expect(instance.currentState).toBe('only-state');
     expect(instance.status).toBe('pending');
-    
+
     const result = engine.transition(instance.id, 'only-state', 'any-other-state');
     expect(result).toBe(false);
   });
@@ -396,11 +395,11 @@ describe('Property 1: Edge Cases', () => {
       },
       artifacts: []
     };
-    
+
     const engine = new WorkflowEngine();
     engine.loadWorkflow(linearWorkflow);
     const instance = engine.createInstance(linearWorkflow.id);
-    
+
     expect(instance.currentState).toBe('state1');
     expect(engine.transition(instance.id, 'state1', 'state2')).toBe(true);
     expect(engine.getInstance(instance.id)?.currentState).toBe('state2');
@@ -448,18 +447,18 @@ describe('Property 1: Edge Cases', () => {
       },
       artifacts: []
     };
-    
+
     const engine = new WorkflowEngine();
     engine.loadWorkflow(branchingWorkflow);
-    
+
     const passInstance = engine.createInstance(branchingWorkflow.id);
     expect(engine.transition(passInstance.id, 'decision', 'success')).toBe(true);
     expect(engine.getInstance(passInstance.id)?.currentState).toBe('success');
-    
+
     const failInstance = engine.createInstance(branchingWorkflow.id);
     expect(engine.transition(failInstance.id, 'decision', 'failure')).toBe(true);
     expect(engine.getInstance(failInstance.id)?.currentState).toBe('failure');
-    
+
     const invalidPass = engine.transition(passInstance.id, 'success', 'failure');
     expect(invalidPass).toBe(false);
   });

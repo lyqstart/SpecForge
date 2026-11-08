@@ -2,17 +2,28 @@ import { getCodeVersion } from '@specforge/version-unification';
 
 /**
  * Help System for SpecForge CLI
- * 
+ *
  * Provides user-friendly help with:
  * - Command-specific help
  * - Examples for each command
  * - Interactive mode hints and suggestions
  * - Dual-mode output (interactive and JSON)
- * 
+ *
  * @packageDocumentation
  */
 
-import { ModeSwitch, Mode } from '../mode-switch';
+/**
+ * Help System for SpecForge CLI
+ *
+ * Provides user-friendly help with:
+ * - Command-specific help
+ * - Examples for each command
+ * - Interactive mode hints and suggestions
+ * - Dual-mode output (interactive and JSON)
+ *
+ * @packageDocumentation
+ */
+import { ModeSwitch } from '../mode-switch';
 
 /**
  * Command definition for help system

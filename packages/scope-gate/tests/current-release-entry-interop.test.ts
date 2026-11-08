@@ -1,6 +1,8 @@
-import {describe,it,expect} from 'vitest';
 import {spawnSync} from 'node:child_process';
-import fs from 'node:fs';import path from 'node:path';import os from 'node:os';
+import fs from 'node:fs';import os from 'node:os';
+import path from 'node:path';
+
+import {describe,it,expect} from 'vitest';
 
 describe('public release entry module interoperability',()=>{
  it('initializes every declared foundation entry before real built CJS configuration consumers',()=>{

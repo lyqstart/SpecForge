@@ -1,9 +1,9 @@
 /**
  * Event Bus implementation
- * 
+ *
  * Internal publish/subscribe system for cross-layer communication.
  * All cross-layer communication must pass through the Event Bus (Property 2).
- * 
+ *
  * Features:
  * - Topic-based routing with pattern matching (e.g., session.* matches session.created)
  * - Category-based subscription (e.g., subscribe('workflow', handler) or subscribe('*', handler))

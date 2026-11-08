@@ -1,13 +1,14 @@
 /**
  * FileAuthorizationPolicy.test.ts — 受保护文件授权策略测试
  */
+
+import type { Principal } from '@specforge/types/principal';
 import { describe, it, expect } from 'vitest';
+
 import {
   FileAuthorizationPolicy,
   createFileAuthorizationPolicy,
 } from '../../../src/rbac/FileAuthorizationPolicy.js';
-import type { Principal } from '@specforge/types/principal';
-import type { Permission, PermissionContext, PermissionDecision } from '@specforge/types/permissions';
 
 // ---------------------------------------------------------------------------
 // Test helpers

@@ -1,12 +1,15 @@
+import { scalarText } from '@specforge/types';
 import { registerHandler } from '../ToolDispatcher';
 import { gitMergeRun } from '../lib/git-governance-stage2';
 import { readAuthoritativeState } from '../lib/state-coordinator-v11.js';
 
 registerHandler('sf_git_merge_run', async (args, context, deps) => {
-  const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
-  const workItemId = String(args['work_item_id'] || '').trim();
+  const projectRoot =
+    (context?.directory as string) || (context?.worktree as string) || process.cwd();
+  const workItemId = scalarText(args['work_item_id'] || '').trim();
   if (!workItemId) return { success: false, error: 'work_item_id required' };
-  if (args['confirmed'] !== true) return { success: false, error: 'MERGE_REQUIRES_USER_CONFIRMATION' };
+  if (args['confirmed'] !== true)
+    return { success: false, error: 'MERGE_REQUIRES_USER_CONFIRMATION' };
   try {
     const authoritativeState = await readAuthoritativeState({
       deps,
@@ -18,8 +21,8 @@ registerHandler('sf_git_merge_run', async (args, context, deps) => {
       workItemId,
       confirmed: true,
       authoritativeState: authoritativeState.current_state,
-      remoteName: args['remote_name'] ? String(args['remote_name']) : undefined,
-      message: args['message'] ? String(args['message']) : undefined,
+      remoteName: args['remote_name'] ? scalarText(args['remote_name']) : undefined,
+      message: args['message'] ? scalarText(args['message']) : undefined,
       pullFirst: args['pull_first'] !== false,
     });
   } catch (err) {

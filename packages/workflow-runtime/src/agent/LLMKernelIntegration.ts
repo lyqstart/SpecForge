@@ -1,13 +1,14 @@
 /**
  * LLMKernelIntegration Module
  * Integrates with OpenCode Adapter's LLMKernelAdapter for Agent execution
- * 
+ *
  * Implements async resource lifecycle best practices:
  * - Promise.race败者清理（Rule C1）
  * - 超时错误包含根因和行动建议（Rule C3）
  * - 资源清理接口（Rule C4）
  */
 
+import { promiseFromSync } from '@specforge/types';
 import { v4 as uuidv4 } from 'uuid';
 
 // Schema version (REQ-18)
@@ -169,7 +170,7 @@ export class LLMKernelIntegration {
     const startTime = Date.now();
 
     // Create timeout promise with cleanup
-    let timeoutHandle: ReturnType<typeof setTimeout>;
+    let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
     const timeoutPromise = new Promise<never>((_, reject) => {
       timeoutHandle = setTimeout(() => {
         reject(
@@ -185,7 +186,8 @@ export class LLMKernelIntegration {
     });
 
     // Track timer for cleanup
-    this.pendingTimers.add(timeoutHandle!);
+    if (timeoutHandle === undefined) throw new Error('Agent timeout timer was not created');
+    this.pendingTimers.add(timeoutHandle);
 
     try {
       // Execute agent (simulated for now, will be replaced with actual OpenCode call)
@@ -216,8 +218,8 @@ export class LLMKernelIntegration {
       );
     } finally {
       // Rule C1: 败者timer必须清理
-      clearTimeout(timeoutHandle!);
-      this.pendingTimers.delete(timeoutHandle!);
+      clearTimeout(timeoutHandle);
+      this.pendingTimers.delete(timeoutHandle);
     }
   }
 
@@ -270,7 +272,7 @@ export class LLMKernelIntegration {
 
         const currentResolver = resolver as (() => void) | null;
         if (currentResolver !== null) {
-          (currentResolver as () => void)();
+          (currentResolver)();
           resolver = null;
         }
 
@@ -342,13 +344,11 @@ export class LLMKernelIntegration {
    */
   private delay(ms: number): Promise<void> {
     return new Promise((resolve) => {
-      const handle = setTimeout(resolve, ms);
-      this.pendingTimers.add(handle);
-
-      // Cleanup after delay completes
-      Promise.resolve().then(() => {
+      const handle = setTimeout(() => {
         this.pendingTimers.delete(handle);
-      });
+        resolve();
+      }, ms);
+      this.pendingTimers.add(handle);
     });
   }
 
@@ -375,7 +375,7 @@ export class LLMKernelIntegration {
    * Clean up all resources
    * Implements Rule C4: 创建者负责销毁
    */
-  async dispose(): Promise<void> {
+   dispose(): Promise<void> { return promiseFromSync(() => {
     // Unsubscribe all active subscriptions
     for (const [, subscription] of this.activeSubscriptions) {
       subscription.unsubscribe();
@@ -390,7 +390,7 @@ export class LLMKernelIntegration {
 
     // Clear active sessions
     this.activeSessions.clear();
-  }
+  }); }
 }
 
 /**

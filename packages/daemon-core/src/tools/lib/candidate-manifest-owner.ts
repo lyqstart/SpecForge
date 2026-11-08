@@ -16,7 +16,7 @@ export { createCandidateManifestSchemaDescriptor } from '@specforge/types/schema
 
 export async function precheckCandidateManifestSchema(
   workItemDir: string,
-  workItemId: string,
+  workItemId: string
 ): Promise<SchemaDescriptorPrecheckResult> {
   return precheckSchemaDescriptors(workItemDir, [
     createCandidateManifestSchemaDescriptor(workItemId),
@@ -24,7 +24,7 @@ export async function precheckCandidateManifestSchema(
 }
 
 export function candidateManifestSchemaBlockCode(
-  result: SchemaDescriptorPrecheckResult,
+  result: SchemaDescriptorPrecheckResult
 ): string | undefined {
   if (result.ok) return undefined;
   return result.checks[0]?.errorCode ?? 'SCHEMA_VERSION_MISMATCH';
@@ -32,7 +32,7 @@ export function candidateManifestSchemaBlockCode(
 
 export function candidateManifestContentBlockCode(
   content: string,
-  workItemId: string,
+  workItemId: string
 ): string | undefined {
   let parsed: unknown;
   try {

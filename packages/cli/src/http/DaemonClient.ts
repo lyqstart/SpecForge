@@ -1,6 +1,6 @@
 /**
  * HTTP Client for Daemon communication.
- * 
+ *
  * Provides:
  * - HTTP/1.1 client for Daemon communication
  * - SSE support for event streaming
@@ -8,11 +8,24 @@
  * - Bearer Token authentication
  * - Timeout and retry logic
  * - Automatic blob handling for large content (Property 17)
- * 
+ *
  * @packageDocumentation
  */
 
-import axios, { AxiosInstance, AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+/**
+ * HTTP Client for Daemon communication.
+ *
+ * Provides:
+ * - HTTP/1.1 client for Daemon communication
+ * - SSE support for event streaming
+ * - Error handling for network issues
+ * - Bearer Token authentication
+ * - Timeout and retry logic
+ * - Automatic blob handling for large content (Property 17)
+ *
+ * @packageDocumentation
+ */
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { BlobHandler, createBlobHandler, BlobReference, BLOB_THRESHOLD_BYTES } from '../blob/BlobHandler';
 
 // ============================================================================
@@ -186,7 +199,7 @@ export class DaemonAuthError extends DaemonClientError {
 
 /**
  * HTTP client for communicating with the SpecForge Daemon.
- * 
+ *
  * @example
  * ```typescript
  * const client = new DaemonClient({
@@ -194,13 +207,13 @@ export class DaemonAuthError extends DaemonClientError {
  *   port: 3847,
  *   token: 'your-bearer-token',
  * });
- * 
+ *
  * // Simple GET request
  * const status = await client.get('/health');
- * 
+ *
  * // POST with body
  * const result = await client.post('/workflows/start', { spec: 'my-spec' });
- * 
+ *
  * // SSE streaming
  * const conn = await client.subscribeSSE('/events', {
  *   onEvent: (event) => console.log(event),
@@ -218,7 +231,7 @@ export class DaemonClient {
 
   /**
    * Create a new DaemonClient instance.
-   * 
+   *
    * @param config - Client configuration
    */
   constructor(config: DaemonClientConfig) {
@@ -284,7 +297,7 @@ export class DaemonClient {
 
   /**
    * Update the authentication token.
-   * 
+   *
    * @param token - New Bearer token
    */
   setToken(token: string): void {
@@ -318,7 +331,7 @@ export class DaemonClient {
 
   /**
    * Convert content to blob reference if it exceeds threshold.
-   * 
+   *
    * @param content - Content to convert
    * @returns Original content or blob reference
    */
@@ -328,7 +341,7 @@ export class DaemonClient {
 
   /**
    * Process content, converting large items to blob references.
-   * 
+   *
    * @param content - Content to process
    * @returns Processed content with blob references
    */
@@ -338,7 +351,7 @@ export class DaemonClient {
 
   /**
    * Resolve blob references in content.
-   * 
+   *
    * @param content - Content with blob references
    * @param interactive - Whether to resolve (true for interactive mode)
    * @returns Content with resolved blobs or original references
@@ -349,7 +362,7 @@ export class DaemonClient {
 
   /**
    * Check if a string is a valid blob reference.
-   * 
+   *
    * @param value - Value to check
    * @returns True if value is a blob reference
    */
@@ -370,13 +383,13 @@ export class DaemonClient {
 
   /**
    * Perform an HTTP request with retry logic and blob handling.
-   * 
+   *
    * @param options - Request options
    * @returns Response data
    */
   async request<T = unknown>(options: RequestOptions): Promise<T> {
     const { method, path, body, headers, timeout, retry = true } = options;
-    
+
     // Apply blob conversion to request body if enabled
     let processedBody = body;
     if (this.enableBlobHandling && body !== undefined) {
@@ -431,7 +444,7 @@ export class DaemonClient {
   private async executeRequest<T>(config: AxiosRequestConfig): Promise<T> {
     try {
       const response: AxiosResponse<T> = await this.client.request(config);
-      
+
       // Apply blob resolution to response if enabled
       if (this.enableBlobHandling && response.data !== undefined) {
         // For JSON responses, resolve blobs in interactive mode
@@ -439,7 +452,7 @@ export class DaemonClient {
         const resolvedData = this.blobHandler.resolveContent(response.data, this.resolveBlobsInInteractive);
         return resolvedData as T;
       }
-      
+
       return response.data;
     } catch (error) {
       throw this.transformError(error);
@@ -448,7 +461,7 @@ export class DaemonClient {
 
   /**
    * Perform a GET request.
-   * 
+   *
    * @param path - Request path
    * @param options - Additional request options
    * @returns Response data
@@ -463,7 +476,7 @@ export class DaemonClient {
 
   /**
    * Perform a POST request.
-   * 
+   *
    * @param path - Request path
    * @param body - Request body
    * @param options - Additional request options
@@ -484,7 +497,7 @@ export class DaemonClient {
 
   /**
    * Perform a PUT request.
-   * 
+   *
    * @param path - Request path
    * @param body - Request body
    * @param options - Additional request options
@@ -505,7 +518,7 @@ export class DaemonClient {
 
   /**
    * Perform a DELETE request.
-   * 
+   *
    * @param path - Request path
    * @param options - Additional request options
    * @returns Response data
@@ -524,7 +537,7 @@ export class DaemonClient {
 
   /**
    * Subscribe to Server-Sent Events (SSE) from the Daemon.
-   * 
+   *
    * @param path - SSE endpoint path
    * @param handlers - Event handlers
    * @returns SSEConnection handle
@@ -699,14 +712,14 @@ export class DaemonClient {
     // Check for common error codes even on plain Error objects
     if (error instanceof Error) {
       // Network errors (connection refused, not found, timeout)
-      if (error.message?.includes('ECONNREFUSED') || 
+      if (error.message?.includes('ECONNREFUSED') ||
           (error as { code?: string }).code === 'ECONNREFUSED' ||
           error.message?.includes('ENOTFOUND') ||
           (error as { code?: string }).code === 'ENOTFOUND') {
         return new DaemonUnreachableError(error);
       }
 
-      if (error.message?.includes('ECONNABORTED') || 
+      if (error.message?.includes('ECONNABORTED') ||
           error.message?.includes('ETIMEDOUT') ||
           (error as { code?: string }).code === 'ECONNABORTED' ||
           (error as { code?: string }).code === 'ETIMEDOUT') {
@@ -722,7 +735,7 @@ export class DaemonClient {
     // Check if it's an axios error
     if ((error as { isAxiosError?: boolean }).isAxiosError) {
       const axiosError = error as { code?: string; response?: { status: number; data: unknown }; config?: { url?: string; timeout?: number } };
-      
+
       // Network error (connection refused, timeout, etc.)
       if (axiosError.code === 'ECONNREFUSED' || axiosError.code === 'ENOTFOUND') {
         return new DaemonUnreachableError(error as Error);
@@ -804,7 +817,7 @@ export class DaemonClient {
 
 /**
  * Create a DaemonClient from a handshake file content.
- * 
+ *
  * @param handshake - Parsed handshake file content
  * @param config - Additional client config
  * @returns Configured DaemonClient

@@ -5,7 +5,7 @@
  */
 
 import * as os from 'node:os';
-import { existsSync } from 'node:fs';
+
 import type { OsInfo, LocaleInfo } from './types.js';
 import { safeSpawn, detectCI, whichCommand } from './probe-utils.js';
 

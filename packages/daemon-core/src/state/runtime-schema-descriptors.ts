@@ -1,50 +1,50 @@
-import type { PersistentFileSchemaDescriptor } from '@specforge/types/schema-contract'
-import type { ProjectState } from '../types'
+import type { PersistentFileSchemaDescriptor } from '@specforge/types/schema-contract';
+import type { ProjectState } from '../types';
 
-const RUNTIME_SCHEMA_VERSION = '1.0' as const
+const RUNTIME_SCHEMA_VERSION = '1.0' as const;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 export function isCurrentRuntimeEvent(value: unknown): boolean {
-  if (!isRecord(value)) return false
+  if (!isRecord(value)) return false;
   return (
-    value.schema_version === RUNTIME_SCHEMA_VERSION
-    && typeof value.eventId === 'string'
-    && value.eventId.length > 0
-    && typeof value.ts === 'number'
-    && Number.isFinite(value.ts)
-    && Number.isSafeInteger(value.monotonicSeq)
-    && (value.monotonicSeq as number) > 0
-    && typeof value.projectId === 'string'
-    && value.projectId.length > 0
-    && typeof value.actor === 'string'
-    && value.actor.length > 0
-    && typeof value.category === 'string'
-    && value.category.length > 0
-    && typeof value.action === 'string'
-    && value.action.length > 0
-    && isRecord(value.payload)
-  )
+    value.schema_version === RUNTIME_SCHEMA_VERSION &&
+    typeof value.eventId === 'string' &&
+    value.eventId.length > 0 &&
+    typeof value.ts === 'number' &&
+    Number.isFinite(value.ts) &&
+    Number.isSafeInteger(value.monotonicSeq) &&
+    (value.monotonicSeq as number) > 0 &&
+    typeof value.projectId === 'string' &&
+    value.projectId.length > 0 &&
+    typeof value.actor === 'string' &&
+    value.actor.length > 0 &&
+    typeof value.category === 'string' &&
+    value.category.length > 0 &&
+    typeof value.action === 'string' &&
+    value.action.length > 0 &&
+    isRecord(value.payload)
+  );
 }
 
 export function serializeRuntimeCheckpoint(
-  state: ProjectState,
+  state: ProjectState
 ): Omit<ProjectState, 'schemaVersion'> & { schema_version: '1.0' } {
-  const { schemaVersion: _schemaVersion, ...checkpoint } = state
-  return { ...checkpoint, schema_version: RUNTIME_SCHEMA_VERSION }
+  const { schemaVersion: _schemaVersion, ...checkpoint } = state;
+  return { ...checkpoint, schema_version: RUNTIME_SCHEMA_VERSION };
 }
 
 export function deserializeRuntimeCheckpoint(value: unknown): ProjectState {
   if (!isRecord(value) || value.schema_version !== RUNTIME_SCHEMA_VERSION) {
-    throw new Error('RUNTIME_CHECKPOINT_SCHEMA_INVALID')
+    throw new Error('RUNTIME_CHECKPOINT_SCHEMA_INVALID');
   }
-  const { schema_version: _schemaVersion, ...checkpoint } = value
+  const { schema_version: _schemaVersion, ...checkpoint } = value;
   return {
     ...(checkpoint as unknown as Omit<ProjectState, 'schemaVersion'>),
     schemaVersion: RUNTIME_SCHEMA_VERSION,
-  }
+  };
 }
 
 export const RUNTIME_SCHEMA_DESCRIPTORS: readonly PersistentFileSchemaDescriptor[] = [
@@ -56,18 +56,18 @@ export const RUNTIME_SCHEMA_DESCRIPTORS: readonly PersistentFileSchemaDescriptor
     required: false,
     currentSchemaId: RUNTIME_SCHEMA_VERSION,
     validateCurrent: (value: unknown): boolean => {
-      if (!isRecord(value)) return false
+      if (!isRecord(value)) return false;
       return (
-        value.schema_version === RUNTIME_SCHEMA_VERSION
-        && Number.isInteger(value.stateVersion)
-        && (value.stateVersion as number) >= 0
-        && typeof value.projectPath === 'string'
-        && value.projectPath.length > 0
-        && Array.isArray(value.activeSessions)
-        && Array.isArray(value.workItems)
-        && typeof value.lastEventId === 'string'
-        && typeof value.lastEventTs === 'number'
-      )
+        value.schema_version === RUNTIME_SCHEMA_VERSION &&
+        Number.isInteger(value.stateVersion) &&
+        (value.stateVersion as number) >= 0 &&
+        typeof value.projectPath === 'string' &&
+        value.projectPath.length > 0 &&
+        Array.isArray(value.activeSessions) &&
+        Array.isArray(value.workItems) &&
+        typeof value.lastEventId === 'string' &&
+        typeof value.lastEventTs === 'number'
+      );
     },
   },
   {
@@ -79,4 +79,4 @@ export const RUNTIME_SCHEMA_DESCRIPTORS: readonly PersistentFileSchemaDescriptor
     currentSchemaId: RUNTIME_SCHEMA_VERSION,
     validateCurrent: isCurrentRuntimeEvent,
   },
-]
+];

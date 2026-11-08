@@ -1,4 +1,5 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { scalarText } from '@specforge/types';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 /**
  * Pre-merge Project/Module Contract integrity validation.
  *
@@ -50,7 +51,7 @@ export type ContractIntegrityResult = {
   registryTargeted: boolean;
 };
 
-const REGISTRY_TARGET = (`${SPEC_DIR_NAME}/project/extension_registry.json` as const);
+const REGISTRY_TARGET = `${SPEC_DIR_NAME}/project/extension_registry.json` as const;
 const CONTRACT_FIELDS = [
   ['shared_enum', 'shared_enums'],
   ['invariant', 'invariants'],
@@ -59,7 +60,7 @@ const CONTRACT_FIELDS = [
 ] as const;
 
 function normalize(value: unknown): string {
-  return String(value ?? '')
+  return scalarText(value ?? '')
     .replace(/\\/g, '/')
     .replace(/^\.\//, '');
 }
@@ -89,7 +90,7 @@ function canonicalSemanticValue(value: unknown): unknown {
     return Object.fromEntries(
       Object.entries(value as Record<string, unknown>)
         .sort(([left], [right]) => left.localeCompare(right))
-        .map(([key, nested]) => [key, canonicalSemanticValue(nested)]),
+        .map(([key, nested]) => [key, canonicalSemanticValue(nested)])
     );
   }
   return value;
@@ -103,8 +104,10 @@ export function projectContractSemanticProjection(registry: Registry): unknown {
 }
 
 export function hasProjectContractSemanticChange(before: Registry, after: Registry): boolean {
-  return JSON.stringify(projectContractSemanticProjection(before)) !==
-    JSON.stringify(projectContractSemanticProjection(after));
+  return (
+    JSON.stringify(projectContractSemanticProjection(before)) !==
+    JSON.stringify(projectContractSemanticProjection(after))
+  );
 }
 
 function findClassificationBoolean(value: unknown, key: string): boolean | undefined {
@@ -117,7 +120,7 @@ function findClassificationBoolean(value: unknown, key: string): boolean | undef
     return undefined;
   }
   const record = value as Record<string, unknown>;
-  if (typeof record[key] === 'boolean') return record[key] as boolean;
+  if (typeof record[key] === 'boolean') return record[key];
   for (const nested of Object.values(record)) {
     const found = findClassificationBoolean(nested, key);
     if (found !== undefined) return found;
@@ -127,7 +130,10 @@ function findClassificationBoolean(value: unknown, key: string): boolean | undef
 
 function findClassificationMarkdownBoolean(content: string, key: string): boolean | undefined {
   const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const match = new RegExp(`(?:^|\\n)\\s*(?:[-*|]\\s*)?${escaped}\\s*(?::|=|\\|)\\s*(true|false)\\b`, 'i').exec(content);
+  const match = new RegExp(
+    `(?:^|\\n)\\s*(?:[-*|]\\s*)?${escaped}\\s*(?::|=|\\|)\\s*(true|false)\\b`,
+    'i'
+  ).exec(content);
   return match ? match[1].toLowerCase() === 'true' : undefined;
 }
 
@@ -136,7 +142,7 @@ async function readProjectContractChangeClassification(workItemDir: string): Pro
   files: string[];
 }> {
   const values = Object.fromEntries(
-    CONTRACT_CHANGE_CLASSIFICATION_KEYS.map(key => [key, null]),
+    CONTRACT_CHANGE_CLASSIFICATION_KEYS.map(key => [key, null])
   ) as Record<ContractChangeClassificationKey, boolean | null>;
   const files: string[] = [];
   const jsonPath = path.join(workItemDir, 'trigger_result.json');
@@ -182,7 +188,6 @@ function contractEntries(registry: Registry, field: string): Array<Record<string
   return Array.isArray(value) ? value : [];
 }
 
-
 function sharedEnumValueType(entry: Record<string, unknown>): 'string' | 'number' | null {
   const raw = entry.value_type;
   if (raw === undefined) return 'string';
@@ -211,11 +216,12 @@ function validateRegistry(registry: Registry): string[] {
   const seenIds = new Set<string>();
   for (const [kind, field] of CONTRACT_FIELDS) {
     for (const [index, entry] of contractEntries(registry, field).entries()) {
-      const id = String(entry.id ?? '').trim();
-      const owner = String(entry.owner_module ?? '').trim();
+      const id = scalarText(entry.id ?? '').trim();
+      const owner = scalarText(entry.owner_module ?? '').trim();
       if (!id) errors.push(`${field}[${index}].id is required`);
       if (!owner) errors.push(`${field}[${index}].owner_module is required`);
-      if (id && seenIds.has(id)) errors.push(`duplicate contract id across governance levels: ${id}`);
+      if (id && seenIds.has(id))
+        errors.push(`duplicate contract id across governance levels: ${id}`);
       if (id) seenIds.add(id);
       if (kind !== 'shared_enum') continue;
       const valueType = sharedEnumValueType(entry);
@@ -230,7 +236,7 @@ function validateRegistry(registry: Registry): string[] {
           new Set(values).size !== values.length)
       ) {
         errors.push(
-          `${field}[${index}].values must contain unique non-empty strings when value_type is "string"`,
+          `${field}[${index}].values must contain unique non-empty strings when value_type is "string"`
         );
       } else if (
         valueType === 'number' &&
@@ -238,7 +244,7 @@ function validateRegistry(registry: Registry): string[] {
           new Set(values).size !== values.length)
       ) {
         errors.push(
-          `${field}[${index}].values must contain unique finite numbers when value_type is "number"`,
+          `${field}[${index}].values must contain unique finite numbers when value_type is "number"`
         );
       }
     }
@@ -249,7 +255,7 @@ function validateRegistry(registry: Registry): string[] {
 function validateModuleContractCandidate(candidate: Registry, moduleCode: string): string[] {
   const errors: string[] = [];
   if (candidate.schema_version !== '1.0') errors.push('schema_version must be "1.0"');
-  const owner = String(candidate.owner_module ?? '').trim();
+  const owner = scalarText(candidate.owner_module ?? '').trim();
   if (owner !== moduleCode) errors.push(`owner_module must equal target module ${moduleCode}`);
 
   const registry = ContractRegistrySchema.safeParse(candidate.contracts);
@@ -257,7 +263,7 @@ function validateModuleContractCandidate(candidate: Registry, moduleCode: string
     errors.push(
       `contracts must match ContractRegistrySchema: ${registry.error.issues
         .map(issue => `${issue.path.join('.') || 'contracts'} ${issue.message}`)
-        .join('; ')}`,
+        .join('; ')}`
     );
     return errors;
   }
@@ -265,7 +271,7 @@ function validateModuleContractCandidate(candidate: Registry, moduleCode: string
 
   for (const [, field] of CONTRACT_FIELDS) {
     for (const [index, entry] of contractEntries(candidate, field).entries()) {
-      const entryOwner = String(entry.owner_module ?? '').trim();
+      const entryOwner = scalarText(entry.owner_module ?? '').trim();
       if (entryOwner !== moduleCode) {
         errors.push(`${field}[${index}].owner_module must equal ${moduleCode}`);
       }
@@ -281,12 +287,12 @@ function validateModuleContractCandidate(candidate: Registry, moduleCode: string
             errors.push(`${field}[${index}].source_refs contains non-DD reference ${sourceRef}`);
           } else if (sourceModule !== moduleCode) {
             errors.push(
-              `${field}[${index}].source_refs ${sourceRef} belongs to ${sourceModule}, expected ${moduleCode}`,
+              `${field}[${index}].source_refs ${sourceRef} belongs to ${sourceModule}, expected ${moduleCode}`
             );
           }
         }
       }
-      if (!String(entry.enforcement ?? '').trim()) {
+      if (!scalarText(entry.enforcement ?? '').trim()) {
         errors.push(`${field}[${index}].enforcement is required`);
       }
     }
@@ -312,11 +318,9 @@ function destructiveReasons(before: ContractEntry, after: ContractEntry | undefi
     }
   }
   if (before.kind === 'shared_enum' && after.kind === 'shared_enum') {
-    const next = new Set(
-      Array.isArray(after.raw.values) ? after.raw.values.map(enumValueKey) : [],
-    );
+    const next = new Set(Array.isArray(after.raw.values) ? after.raw.values.map(enumValueKey) : []);
     const removed = (Array.isArray(before.raw.values) ? before.raw.values : []).filter(
-      value => !next.has(enumValueKey(value)),
+      value => !next.has(enumValueKey(value))
     );
     if (removed.length > 0) reasons.push(`values removed: ${removed.map(String).join(', ')}`);
   }
@@ -340,23 +344,23 @@ function edgeKey(from: string, relation: string, to: string): string {
 
 function consumerIds(
   snapshot: ProjectGovernanceContractConsumerSnapshot,
-  contractId: string,
+  contractId: string
 ): string[] {
   return unique(
     snapshot.consumers
       .filter(consumer => consumer.contract_id === contractId)
-      .map(consumer => consumer.design_id),
+      .map(consumer => consumer.design_id)
   );
 }
 
 function consumerModules(
   snapshot: ProjectGovernanceContractConsumerSnapshot,
-  contractId: string,
+  contractId: string
 ): string[] {
   return unique(
     snapshot.consumers
       .filter(consumer => consumer.contract_id === contractId)
-      .map(consumer => consumer.module_code),
+      .map(consumer => consumer.module_code)
   );
 }
 
@@ -392,10 +396,11 @@ export async function checkContractIntegrity(input: {
     const entry = rawEntry as Record<string, unknown>;
     const target = normalize(entry.target_path);
     const moduleCode = moduleCodeFromProjectSpecPath(target);
-    if (!moduleCode || target !== `${SPEC_DIR_NAME}/project/modules/${moduleCode}/contracts.json`) continue;
+    if (!moduleCode || target !== `${SPEC_DIR_NAME}/project/modules/${moduleCode}/contracts.json`)
+      continue;
 
     const prefix = `module_contract_${moduleCode.toLowerCase()}`;
-    if (String(entry.operation ?? 'replace') === 'delete') {
+    if (scalarText(entry.operation ?? 'replace') === 'delete') {
       checks.push({
         check_id: `${prefix}_not_deleted`,
         description: `Module Contract file for ${moduleCode} remains present while the Module is governed`,
@@ -444,7 +449,7 @@ export async function checkContractIntegrity(input: {
   let beforeRegistry: Registry = {};
   try {
     beforeRegistry = await readJson(
-      path.join(input.projectRoot, SPEC_DIR_NAME, 'project', 'extension_registry.json'),
+      path.join(input.projectRoot, SPEC_DIR_NAME, 'project', 'extension_registry.json')
     );
   } catch {
     // Brownfield-safe empty base.
@@ -467,7 +472,8 @@ export async function checkContractIntegrity(input: {
       const errors = validateRegistry(afterRegistry);
       checks.push({
         check_id: 'contract_candidate_registry_schema',
-        description: 'Candidate Project Contract registry has unique IDs, required fields, and typed enum values',
+        description:
+          'Candidate Project Contract registry has unique IDs, required fields, and typed enum values',
         passed: errors.length === 0,
         severity: errors.length === 0 ? undefined : 'error',
         details: errors.join('; '),
@@ -488,7 +494,7 @@ export async function checkContractIntegrity(input: {
   const contractClassification = await readProjectContractChangeClassification(input.workItemDir);
   inputFiles.push(...contractClassification.files);
   const declaredProjectContractChange = CONTRACT_CHANGE_CLASSIFICATION_KEYS.some(
-    key => contractClassification.values[key] === true,
+    key => contractClassification.values[key] === true
   );
   if (declaredProjectContractChange) {
     const semanticChange =
@@ -526,33 +532,41 @@ export async function checkContractIntegrity(input: {
   const currentDefinitions = new Map(
     current.contracts.map(contract => [
       contract.id,
-      { id: contract.id, kind: normalizeContractKind(contract.kind), raw: contract.raw } as ContractEntry,
-    ]),
+      {
+        id: contract.id,
+        kind: normalizeContractKind(contract.kind),
+        raw: contract.raw,
+      },
+    ])
   );
   const prospectiveDefinitions = new Map(
     prospective.contracts.map(contract => [
       contract.id,
-      { id: contract.id, kind: normalizeContractKind(contract.kind), raw: contract.raw } as ContractEntry,
-    ]),
+      {
+        id: contract.id,
+        kind: normalizeContractKind(contract.kind),
+        raw: contract.raw,
+      },
+    ])
   );
   const designModules = candidateDesignModules(entries);
   const operationKeys = new Set(
     prospective.trace_delta_operations.map(operation =>
-      edgeKey(operation.edge.from, operation.edge.relation, operation.edge.to),
-    ),
+      edgeKey(operation.edge.from, operation.edge.relation, operation.edge.to)
+    )
   );
   const removeKeys = new Set(
     prospective.trace_delta_operations
       .filter(operation => operation.operation === 'REMOVE')
-      .map(operation => edgeKey(operation.edge.from, operation.edge.relation, operation.edge.to)),
+      .map(operation => edgeKey(operation.edge.from, operation.edge.relation, operation.edge.to))
   );
   const addKeys = new Set(
     prospective.trace_delta_operations
       .filter(operation => operation.operation === 'ADD')
-      .map(operation => edgeKey(operation.edge.from, operation.edge.relation, operation.edge.to)),
+      .map(operation => edgeKey(operation.edge.from, operation.edge.relation, operation.edge.to))
   );
   const currentTraceKeys = new Set(
-    current.current_trace.map(edge => edgeKey(edge.from, edge.relation, edge.to)),
+    current.current_trace.map(edge => edgeKey(edge.from, edge.relation, edge.to))
   );
 
   const stale: string[] = [];
@@ -560,9 +574,13 @@ export async function checkContractIntegrity(input: {
     const reasons = destructiveReasons(oldEntry, prospectiveDefinitions.get(id));
     if (reasons.length === 0) continue;
     const currentConsumers = current.consumers.filter(consumer => consumer.contract_id === id);
-    const prospectiveConsumers = prospective.consumers.filter(consumer => consumer.contract_id === id);
+    const prospectiveConsumers = prospective.consumers.filter(
+      consumer => consumer.contract_id === id
+    );
     if (!prospectiveDefinitions.has(id) && prospectiveConsumers.length > 0) {
-      stale.push(`${id}: removed Contract still has prospective consumers ${consumerIds(prospective, id).join(', ')}`);
+      stale.push(
+        `${id}: removed Contract still has prospective consumers ${consumerIds(prospective, id).join(', ')}`
+      );
     }
     for (const consumer of currentConsumers) {
       const remove = edgeKey(consumer.design_id, 'constrained_by', id);
@@ -571,14 +589,15 @@ export async function checkContractIntegrity(input: {
       }
       if (!designModules.has(consumer.module_code)) {
         stale.push(
-          `${id}: destructive change (${reasons.join(', ')}) does not update consumer Module ${consumer.module_code} design.md`,
+          `${id}: destructive change (${reasons.join(', ')}) does not update consumer Module ${consumer.module_code} design.md`
         );
       }
     }
   }
   checks.push({
     check_id: 'contract_reverse_dependencies_aligned',
-    description: 'Destructive Contract changes update every formal Trace consumer in the same Work Item',
+    description:
+      'Destructive Contract changes update every formal Trace consumer in the same Work Item',
     passed: stale.length === 0,
     severity: stale.length === 0 ? undefined : 'error',
     details: stale.join('; '),
@@ -587,20 +606,22 @@ export async function checkContractIntegrity(input: {
   const promotions = Array.isArray(manifest.contract_promotions)
     ? manifest.contract_promotions.filter(
         (entry): entry is Record<string, unknown> =>
-          Boolean(entry) && typeof entry === 'object' && !Array.isArray(entry),
+          Boolean(entry) && typeof entry === 'object' && !Array.isArray(entry)
       )
     : [];
   for (const [index, promotion] of promotions.entries()) {
-    const from = String(promotion.from_contract_id ?? '').trim();
-    const to = String(promotion.to_contract_id ?? '').trim();
-    const conclusion = String(promotion.migration_conclusion ?? '').trim();
-    const compatibility = String(promotion.compatibility ?? '').trim();
+    const from = scalarText(promotion.from_contract_id ?? '').trim();
+    const to = scalarText(promotion.to_contract_id ?? '').trim();
+    const conclusion = scalarText(promotion.migration_conclusion ?? '').trim();
+    const compatibility = scalarText(promotion.compatibility ?? '').trim();
     const oldDefinition = current.contracts.find(contract => contract.id === from);
     const newDefinition = prospective.contracts.find(contract => contract.id === to);
     const promotionErrors: string[] = [];
     if (!from || !to || from === to) promotionErrors.push('from/to Contract IDs must be distinct');
-    if (!oldDefinition?.module_internal) promotionErrors.push(`${from} is not a current Module Contract`);
-    if (!newDefinition || newDefinition.module_internal) promotionErrors.push(`${to} is not a prospective Project Contract`);
+    if (!oldDefinition?.module_internal)
+      promotionErrors.push(`${from} is not a current Module Contract`);
+    if (!newDefinition || newDefinition.module_internal)
+      promotionErrors.push(`${to} is not a prospective Project Contract`);
     if (prospective.contracts.some(contract => contract.id === from)) {
       promotionErrors.push(`${from} still exists after promotion`);
     }
@@ -637,12 +658,12 @@ export async function checkContractIntegrity(input: {
   const removedModuleContracts = current.contracts.filter(
     contract =>
       contract.module_internal &&
-      !prospective.contracts.some(candidate => candidate.id === contract.id),
+      !prospective.contracts.some(candidate => candidate.id === contract.id)
   );
   for (const contract of removedModuleContracts) {
     const hasConsumers = consumerModules(current, contract.id).length > 0;
     const declaredPromotion = promotions.some(
-      promotion => String(promotion.from_contract_id ?? '').trim() === contract.id,
+      promotion => scalarText(promotion.from_contract_id ?? '').trim() === contract.id
     );
     checks.push({
       check_id: `module_contract_removal_${contract.id.replace(/[^A-Za-z0-9_-]/g, '_')}`,
@@ -655,15 +676,22 @@ export async function checkContractIntegrity(input: {
 
   checks.push({
     check_id: 'contract_trace_delta_relevant',
-    description: 'Contract integrity is evaluated against the same prospective Trace operations used by merge',
+    description:
+      'Contract integrity is evaluated against the same prospective Trace operations used by merge',
     passed: operationKeys.size === prospective.trace_delta_operations.length,
-    severity: operationKeys.size === prospective.trace_delta_operations.length ? undefined : 'error',
+    severity:
+      operationKeys.size === prospective.trace_delta_operations.length ? undefined : 'error',
   });
 
-  if (!registryTargeted && checks.length === 1 && checks[0]?.check_id === 'contract_trace_projection_valid') {
+  if (
+    !registryTargeted &&
+    checks.length === 1 &&
+    checks[0]?.check_id === 'contract_trace_projection_valid'
+  ) {
     checks.unshift({
       check_id: 'contract_registry_not_targeted',
-      description: 'No Project Contract candidate; Project Contract registry delta check is not applicable',
+      description:
+        'No Project Contract candidate; Project Contract registry delta check is not applicable',
       passed: true,
     });
   }

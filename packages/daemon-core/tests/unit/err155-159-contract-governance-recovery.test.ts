@@ -1,3 +1,4 @@
+import { codeContains } from '../../../../tests/helpers/source-structure';
 import { afterEach, describe, expect, it } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
@@ -208,8 +209,8 @@ describe('ERR-157 and ERR-158 installed-source contracts', () => {
         'utf-8',
       ),
     ]);
-    expect(handler).toContain("['add','update','reset']");
-    expect(userTool).toContain("['add', 'update', 'reset']");
+    expect(codeContains(handler, "['add','update','reset']")).toBe(true);
+    expect(codeContains(userTool, "['add', 'update', 'reset']")).toBe(true);
     expect(handler).toContain('UNSUPPORTED_CURRENT_RELEASE_CONTRACT_ACTION');
   });
 });

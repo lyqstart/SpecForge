@@ -567,7 +567,7 @@ export function hasGlossary(content: string): boolean {
  */
 export function validateFormalRequirementBodies(content: string): string[] {
   const declaredIds = Array.from(
-    new Set(Array.from(content.matchAll(/\bREQ-[A-Z0-9][A-Z0-9_-]*\b/g), match => match[0])),
+    new Set(Array.from(content.matchAll(/\bREQ-[A-Z0-9][A-Z0-9_-]*\b/g), match => match[0]))
   ).sort();
   if (declaredIds.length === 0) return [];
 
@@ -578,7 +578,7 @@ export function validateFormalRequirementBodies(content: string): string[] {
       level: match[1].length,
       start: match.index ?? 0,
       bodyStart: (match.index ?? 0) + match[0].length,
-    }),
+    })
   );
   const definitions = new Map<string, typeof headings>();
   for (const heading of headings) {
@@ -605,7 +605,7 @@ export function validateFormalRequirementBodies(content: string): string[] {
     }
     const heading = matches[0];
     const nextHeading = headings.find(
-      candidate => candidate.start > heading.start && candidate.level <= heading.level,
+      candidate => candidate.start > heading.start && candidate.level <= heading.level
     );
     const body = content.slice(heading.bodyStart, nextHeading?.start ?? content.length).trim();
     const semanticBody = body

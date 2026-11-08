@@ -1,4 +1,3 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 /**
  * ProtectedFileMatcher.ts — 受保护文件路径匹配器
  *
@@ -10,8 +9,6 @@ import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
  * 不提升权限。
  */
 
-import type { ResourceType } from '@specforge/types/permissions';
-
 // ---------------------------------------------------------------------------
 // 匹配规则
 // ---------------------------------------------------------------------------
@@ -22,6 +19,10 @@ import type { ResourceType } from '@specforge/types/permissions';
  * 只匹配确切的文件名（basename），不匹配目录前缀。
  * 调用方负责确保 filePath 是文件路径而非目录路径。
  */
+
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import type { ResourceType } from '@specforge/types/permissions';
+
 const FILE_NAME_TO_RESOURCE_TYPE: ReadonlyMap<string, ResourceType> = new Map([
   // spec_file
   ['requirements.md', 'spec_file'],

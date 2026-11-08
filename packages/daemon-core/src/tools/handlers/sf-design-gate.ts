@@ -17,11 +17,7 @@ registerHandler('sf_design_gate', async (args, context, _deps) => {
   const workflowType = (args['workflow_type'] as string) || 'feature_spec';
 
   try {
-    const result = await checkDesignGate(
-      workItemId,
-      baseDir,
-      workflowType
-    );
+    const result = await checkDesignGate(workItemId, baseDir, workflowType);
     return { success: true, ...result };
   } catch (err) {
     return { success: false, error: (err as Error).message };

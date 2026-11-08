@@ -1,11 +1,14 @@
-import { describe, expect, it } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
+
+import { parseJsonObject } from '@specforge/types';
+import { describe, expect, it } from 'vitest';
+
 import * as runtime from '../../src/index.js';
 
 const root = resolve(import.meta.dirname, '../..');
-const manifest = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'));
+const manifest = parseJsonObject(readFileSync(resolve(root, 'package.json'), 'utf8'));
 const retired = [
   'WorkflowPersistence', 'createWorkflowPersistence',
   'createWorkflowInstanceStorage', 'StateRecoveryManager', 'createStateRecoveryManager',
@@ -19,12 +22,14 @@ describe('SPS §8: Daemon owns workflow-state persistence', () => {
   });
 
   it('closes package deep imports of retired owners rather than merely hiding root names', () => {
-    expect(manifest.exports?.['.']?.import).toBe('./dist/src/index.js');
+    expect(manifest).toMatchObject({ exports: { '.': { import: './dist/src/index.js' } } });
     const require = createRequire(resolve(root, 'package.json'));
     for (const subpath of ['WorkflowPersistence', 'dist/src/WorkflowPersistence.js', 'storage', 'dist/src/storage/index.js']) {
-      expect(() => require.resolve('@specforge/workflow-runtime/' + subpath)).toThrow(
-        expect.objectContaining({ code: 'ERR_PACKAGE_PATH_NOT_EXPORTED' }),
-      );
+      let failure: unknown;
+      try { require.resolve('@specforge/workflow-runtime/' + subpath); }
+      catch (error: unknown) { failure = error; }
+      expect(failure).toBeInstanceOf(Error);
+      expect(failure).toMatchObject({ code: 'ERR_PACKAGE_PATH_NOT_EXPORTED' });
     }
   });
 

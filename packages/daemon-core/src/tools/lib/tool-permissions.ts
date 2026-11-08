@@ -14,7 +14,22 @@
  * - 不做文件持久化 audit（v1.2.1 范围）
  */
 
-import { ACTOR_ROLES, type ActorRole } from '@specforge/types/actor-roles';
+/**
+ * tool-permissions.ts — v1.2 M3: Tool Permission 定义与检查
+ *
+ * 职责：
+ * - 定义受保护 tool 列表（PROTECTED_TOOLS）
+ * - 定义最小权限检查策略
+ * - 在 dispatcher 层建立统一 RBAC 入口 gate
+ *
+ * 设计原则：
+ * - 初始只保护 3 个 tool（sf_state_transition, sf_artifact_write, sf_safe_bash）
+ * - 其他 tool 保持 allow-by-default
+ * - enableRBAC=false / undefined 时不执行检查
+ * - 不重写 handler 内部逻辑（状态机、write guard、bash guard 各自负责）
+ * - 不做文件持久化 audit（v1.2.1 范围）
+ */
+import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -59,15 +74,15 @@ export interface ToolPermissionDecision {
  * 其他 tool 不在此表中 → allow-by-default。
  */
 export const PROTECTED_TOOLS: Readonly<Record<string, ToolPermissionConfig>> = {
-  'sf_state_transition': {
+  sf_state_transition: {
     protected: true,
     description: 'State machine advancement — controls WI lifecycle transitions',
   },
-  'sf_artifact_write': {
+  sf_artifact_write: {
     protected: true,
     description: 'File write to .specforge/ — controls spec/evidence file creation',
   },
-  'sf_safe_bash': {
+  sf_safe_bash: {
     protected: true,
     description: 'Shell command execution — may indirectly modify files',
   },

@@ -1,3 +1,4 @@
+import { scalarText } from '@specforge/types';
 /**
  * sf-v11-handoff — §14.3 Agent handoff validation handler
  */
@@ -14,11 +15,15 @@ import { readWorkItemMetadata } from '../lib/work-item-metadata';
 import { workItemRoot } from '@specforge/types/directory-layout';
 
 function normalizeAgentName(value: unknown): string {
-  return String(value ?? '').trim().toLowerCase().replace(/_/g, '-');
+  return scalarText(value ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/_/g, '-');
 }
 
 registerHandler('sf_v11_handoff', async (args, context, _deps) => {
-  const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
+  const projectRoot =
+    (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const action = (args['action'] as string) || 'validate';
 
   try {
@@ -62,7 +67,10 @@ registerHandler('sf_v11_handoff', async (args, context, _deps) => {
       // Validate before writing
       const validation = validateHandoff(handoff);
       if (!validation.valid) {
-        return { success: false, error: `Handoff validation failed: ${validation.errors.join('; ')}` };
+        return {
+          success: false,
+          error: `Handoff validation failed: ${validation.errors.join('; ')}`,
+        };
       }
       const filePath = await writeHandoff(wiDir, handoff);
       return { success: true, action: 'write', path: filePath };
@@ -91,7 +99,8 @@ registerHandler('sf_v11_handoff', async (args, context, _deps) => {
         createdAfter,
       });
       const hasExpectation = Boolean(expectedAgent || expectedStage || createdAfter);
-      const complete = result.invalid === 0 && result.total > 0 && (!hasExpectation || result.matching > 0);
+      const complete =
+        result.invalid === 0 && result.total > 0 && (!hasExpectation || result.matching > 0);
       const error = complete
         ? undefined
         : result.total === 0
@@ -102,7 +111,7 @@ registerHandler('sf_v11_handoff', async (args, context, _deps) => {
       await recordHandoffValidationState(
         wiDir,
         { expectedAgent, expectedStage, createdAfter },
-        { success: complete, ...result, error },
+        { success: complete, ...result, error }
       );
       return {
         success: complete,
@@ -112,7 +121,10 @@ registerHandler('sf_v11_handoff', async (args, context, _deps) => {
       };
     }
 
-    return { success: false, error: `Unknown action: ${action}. Use 'validate', 'write', or 'validate_all'.` };
+    return {
+      success: false,
+      error: `Unknown action: ${action}. Use 'validate', 'write', or 'validate_all'.`,
+    };
   } catch (err: any) {
     return { success: false, error: err.message };
   }

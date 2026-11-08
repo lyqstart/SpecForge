@@ -7,9 +7,7 @@
  */
 
 import { readFile } from 'node:fs/promises';
-import {
-  workItemTriggerResult,
-} from '@specforge/types/directory-layout';
+import { workItemTriggerResult } from '@specforge/types/directory-layout';
 
 export type DesignAnalysisScope = 'solution_design' | 'system_governance';
 

@@ -21,13 +21,27 @@ import {
 
 const execFileAsync = promisify(execFile);
 
-async function runGit(projectRoot: string, args: string[], allowFailure = false): Promise<{ stdout: string; stderr: string; code: number }> {
+async function runGit(
+  projectRoot: string,
+  args: string[],
+  allowFailure = false
+): Promise<{ stdout: string; stderr: string; code: number }> {
   try {
-    const { stdout, stderr } = await execFileAsync('git', args, { cwd: projectRoot, maxBuffer: 10 * 1024 * 1024 });
+    const { stdout, stderr } = await execFileAsync('git', args, {
+      cwd: projectRoot,
+      maxBuffer: 10 * 1024 * 1024,
+    });
     return { stdout: String(stdout ?? ''), stderr: String(stderr ?? ''), code: 0 };
   } catch (err: any) {
-    if (allowFailure) return { stdout: String(err?.stdout ?? ''), stderr: String(err?.stderr ?? err?.message ?? ''), code: Number(err?.code ?? 1) };
-    throw new Error(`git ${args.join(' ')} failed: ${String(err?.stderr ?? err?.message ?? 'git command failed')}`);
+    if (allowFailure)
+      return {
+        stdout: String(err?.stdout ?? ''),
+        stderr: String(err?.stderr ?? err?.message ?? ''),
+        code: Number(err?.code ?? 1),
+      };
+    throw new Error(
+      `git ${args.join(' ')} failed: ${String(err?.stderr ?? err?.message ?? 'git command failed')}`
+    );
   }
 }
 
@@ -47,11 +61,11 @@ function gitIgnorePattern(value: string): string {
 
 function renderGovernedGitIgnore(
   existing: string,
-  decisions: Array<{ path: string; decision: string }>,
+  decisions: Array<{ path: string; decision: string }>
 ): { content: string; ignored_paths: string[] } {
   const start = existing.indexOf(GITIGNORE_MANAGED_START);
   const end = existing.indexOf(GITIGNORE_MANAGED_END);
-  if ((start >= 0) !== (end >= 0) || (start >= 0 && end < start)) {
+  if (start >= 0 !== end >= 0 || (start >= 0 && end < start)) {
     throw new Error('GIT_IGNORE_MANAGED_BLOCK_INVALID');
   }
 
@@ -111,12 +125,18 @@ function inferProvider(url: string | undefined): string {
   if (text.includes('gitlab.com')) return 'gitlab';
   if (text.includes('gitee.com')) return 'gitee';
   if (text.includes('bitbucket.org')) return 'bitbucket';
-  if (text.startsWith('file://') || text.startsWith('/') || /^[a-z]:[\\/]/i.test(text)) return 'local_bare_or_filesystem';
+  if (text.startsWith('file://') || text.startsWith('/') || /^[a-z]:[\\/]/i.test(text))
+    return 'local_bare_or_filesystem';
   if (text.includes('http') || text.includes('@')) return 'generic_git';
   return 'unknown';
 }
 
-export async function gitProjectAdopt(input: { projectRoot: string; defaultBranch?: string; confirmed?: boolean; writeReport?: boolean }) {
+export async function gitProjectAdopt(input: {
+  projectRoot: string;
+  defaultBranch?: string;
+  confirmed?: boolean;
+  writeReport?: boolean;
+}) {
   if (input.confirmed !== true) throw new Error('PROJECT_ADOPTION_REQUIRES_USER_CONFIRMATION');
   assertGitGovernanceWriteProvenanceCurrent(input.projectRoot);
   const defaultBranch = input.defaultBranch || 'main';
@@ -136,15 +156,28 @@ export async function gitProjectAdopt(input: { projectRoot: string; defaultBranc
     default_branch: defaultBranch,
     main_write_protection: true,
     precise_commit_only: true,
-    forbidden_commands: ['git add .', 'git add -A', 'git clean -fd', 'git restore .', 'git push --mirror'],
+    forbidden_commands: [
+      'git add .',
+      'git add -A',
+      'git clean -fd',
+      'git restore .',
+      'git push --mirror',
+    ],
     branch_strategy: 'semantic_branch_per_change_when_needed',
     ...existingPolicy,
   };
   await writeJson(policyPath, policy);
 
   const decisionsPath = specProjectPath(input.projectRoot, 'git_ignore_decisions.json');
-  const existingDecisions = await readJsonIfExists<any>(decisionsPath, { schema_version: 'git_ignore_decisions.v1', decisions: [] });
-  await writeJson(decisionsPath, { schema_version: 'git_ignore_decisions.v1', updated_at: new Date().toISOString(), decisions: existingDecisions.decisions ?? [] });
+  const existingDecisions = await readJsonIfExists<any>(decisionsPath, {
+    schema_version: 'git_ignore_decisions.v1',
+    decisions: [],
+  });
+  await writeJson(decisionsPath, {
+    schema_version: 'git_ignore_decisions.v1',
+    updated_at: new Date().toISOString(),
+    decisions: existingDecisions.decisions ?? [],
+  });
 
   const report = {
     success: true,
@@ -162,13 +195,14 @@ export async function gitProjectAdopt(input: { projectRoot: string; defaultBranc
   let reportPath: string | undefined;
   if (input.writeReport !== false) {
     const outPath = specProjectPath(input.projectRoot, 'git_adoption_report.md');
-    const body = `# Git Project Adoption Report\n\n` +
+    const body =
+      `# Git Project Adoption Report\n\n` +
       `- success: ${report.success}\n` +
       `- default_branch: ${defaultBranch}\n` +
       `- current_branch: ${report.current_branch}\n` +
       `- head_commit: ${headCommit}\n` +
       `- worktree_clean: ${report.worktree_clean}\n\n` +
-      `## Status Entries\n\n${report.status_entries.length ? report.status_entries.map((s) => `- ${s}`).join('\n') : '- 无'}\n`;
+      `## Status Entries\n\n${report.status_entries.length ? report.status_entries.map(s => `- ${s}`).join('\n') : '- 无'}\n`;
     await fs.mkdir(path.dirname(outPath), { recursive: true });
     await fs.writeFile(outPath, body, 'utf-8');
     reportPath = normalizeRelativePath(path.relative(input.projectRoot, outPath));
@@ -182,7 +216,15 @@ export async function gitProjectAdopt(input: { projectRoot: string; defaultBranc
   return { ...report, report_path: reportPath };
 }
 
-export async function gitRemoteConfig(input: { projectRoot: string; remoteName?: string; fetchUrl?: string; pushUrl?: string; authProfile?: string; applyRemote?: boolean; confirmed?: boolean }) {
+export async function gitRemoteConfig(input: {
+  projectRoot: string;
+  remoteName?: string;
+  fetchUrl?: string;
+  pushUrl?: string;
+  authProfile?: string;
+  applyRemote?: boolean;
+  confirmed?: boolean;
+}) {
   const remoteName = input.remoteName || 'origin';
   const existing = parseRemotes((await runGit(input.projectRoot, ['remote', '-v'], true)).stdout);
   const current = existing[remoteName] ?? {};
@@ -206,15 +248,20 @@ export async function gitRemoteConfig(input: { projectRoot: string; remoteName?:
     if (input.confirmed !== true) throw new Error('REMOTE_APPLY_REQUIRES_USER_CONFIRMATION');
     if (!fetchUrl) throw new Error('REMOTE_FETCH_URL_REQUIRED');
     const exists = Boolean(existing[remoteName]);
-    const args = exists ? ['remote', 'set-url', remoteName, fetchUrl] : ['remote', 'add', remoteName, fetchUrl];
+    const args = exists
+      ? ['remote', 'set-url', remoteName, fetchUrl]
+      : ['remote', 'add', remoteName, fetchUrl];
     apply_result = await runGit(input.projectRoot, args, true);
-    if (pushUrl && pushUrl !== fetchUrl) await runGit(input.projectRoot, ['remote', 'set-url', '--push', remoteName, pushUrl], true);
+    if (pushUrl && pushUrl !== fetchUrl)
+      await runGit(input.projectRoot, ['remote', 'set-url', '--push', remoteName, pushUrl], true);
     applied = apply_result.code === 0;
   }
 
   return {
     success: true,
-    config_path: normalizeRelativePath(path.relative(input.projectRoot, specRuntimePath(input.projectRoot, 'git_remote.json'))),
+    config_path: normalizeRelativePath(
+      path.relative(input.projectRoot, specRuntimePath(input.projectRoot, 'git_remote.json'))
+    ),
     remote: config,
     existing_remotes: existing,
     applied,
@@ -222,12 +269,25 @@ export async function gitRemoteConfig(input: { projectRoot: string; remoteName?:
   };
 }
 
-export async function gitAuthProfileConfig(input: { profileName: string; provider?: string; method: 'ssh' | 'token_env' | 'none'; sshKeyPath?: string; sshHostAlias?: string; tokenEnvVar?: string; gitUserName?: string; gitUserEmail?: string; confirmed?: boolean }) {
+export async function gitAuthProfileConfig(input: {
+  profileName: string;
+  provider?: string;
+  method: 'ssh' | 'token_env' | 'none';
+  sshKeyPath?: string;
+  sshHostAlias?: string;
+  tokenEnvVar?: string;
+  gitUserName?: string;
+  gitUserEmail?: string;
+  confirmed?: boolean;
+}) {
   if (input.confirmed !== true) throw new Error('AUTH_PROFILE_WRITE_REQUIRES_USER_CONFIRMATION');
   const profileName = String(input.profileName || '').trim();
   if (!profileName) throw new Error('PROFILE_NAME_REQUIRED');
   const profilesPath = path.join(userGitDir(), 'auth_profiles.json');
-  const existing = await readJsonIfExists<any>(profilesPath, { schema_version: 'git_auth_profiles.v1', profiles: {} });
+  const existing = await readJsonIfExists<any>(profilesPath, {
+    schema_version: 'git_auth_profiles.v1',
+    profiles: {},
+  });
   const profile = {
     provider: input.provider || 'generic_git',
     method: input.method,
@@ -238,22 +298,56 @@ export async function gitAuthProfileConfig(input: { profileName: string; provide
     git_user_email: input.gitUserEmail ?? null,
     updated_at: new Date().toISOString(),
   };
-  const next = { schema_version: 'git_auth_profiles.v1', updated_at: new Date().toISOString(), profiles: { ...(existing.profiles ?? {}), [profileName]: profile } };
+  const next = {
+    schema_version: 'git_auth_profiles.v1',
+    updated_at: new Date().toISOString(),
+    profiles: { ...(existing.profiles ?? {}), [profileName]: profile },
+  };
   await writeJson(profilesPath, next);
-  return { success: true, profile_name: profileName, profiles_path: profilesPath, profile: { ...profile, token_value_stored: false } };
+  return {
+    success: true,
+    profile_name: profileName,
+    profiles_path: profilesPath,
+    profile: { ...profile, token_value_stored: false },
+  };
 }
 
-export async function gitIgnoreDecisionRecord(input: { projectRoot: string; decisions: Array<{ path: string; decision: 'track' | 'ignore' | 'ask' | 'hard_stop'; reason?: string }>; confirmed?: boolean }) {
-  if (input.confirmed !== true) throw new Error('IGNORE_DECISION_RECORD_REQUIRES_USER_CONFIRMATION');
+export async function gitIgnoreDecisionRecord(input: {
+  projectRoot: string;
+  decisions: Array<{
+    path: string;
+    decision: 'track' | 'ignore' | 'ask' | 'hard_stop';
+    reason?: string;
+  }>;
+  confirmed?: boolean;
+}) {
+  if (input.confirmed !== true)
+    throw new Error('IGNORE_DECISION_RECORD_REQUIRES_USER_CONFIRMATION');
   assertGitGovernanceWriteProvenanceCurrent(input.projectRoot);
   const decisionsPath = specProjectPath(input.projectRoot, 'git_ignore_decisions.json');
   const decisionsExisted = existsSync(decisionsPath);
-  const previousDecisionsText = decisionsExisted
-    ? await fs.readFile(decisionsPath, 'utf-8')
-    : '';
-  const existing = await readJsonIfExists<any>(decisionsPath, { schema_version: 'git_ignore_decisions.v1', decisions: [] });
-  const byPath = new Map<string, any>();
-  for (const item of existing.decisions ?? []) byPath.set(normalizeRelativePath(item.path), item);
+  const previousDecisionsText = decisionsExisted ? await fs.readFile(decisionsPath, 'utf-8') : '';
+  const existing = await readJsonIfExists<any>(decisionsPath, {
+    schema_version: 'git_ignore_decisions.v1',
+    decisions: [],
+  });
+  type StoredDecision = Record<string, unknown> & { path: string; decision: string };
+  const decodedDecisions: unknown = existing.decisions ?? [];
+  if (
+    !Array.isArray(decodedDecisions) ||
+    !decodedDecisions.every((item: unknown): item is StoredDecision => {
+      if (typeof item !== 'object' || item === null || Array.isArray(item)) return false;
+      const record = item as Record<string, unknown>;
+      return (
+        typeof record.path === 'string' &&
+        typeof record.decision === 'string' &&
+        ['track', 'ignore', 'ask', 'hard_stop'].includes(record.decision)
+      );
+    })
+  )
+    throw new Error('GIT_IGNORE_DECISIONS_INVALID');
+  const byPath = new Map<string, StoredDecision>();
+  for (const item of decodedDecisions) byPath.set(normalizeRelativePath(item.path), item);
   for (const item of input.decisions ?? []) {
     const validation = validateProjectRelativePath(item.path);
     if (!validation.valid || !validation.path) {
@@ -272,7 +366,13 @@ export async function gitIgnoreDecisionRecord(input: { projectRoot: string; deci
       updated_at: new Date().toISOString(),
     });
   }
-  const next = { schema_version: 'git_ignore_decisions.v1', updated_at: new Date().toISOString(), decisions: Array.from(byPath.values()).sort((a, b) => String(a.path).localeCompare(String(b.path))) };
+  const next = {
+    schema_version: 'git_ignore_decisions.v1',
+    updated_at: new Date().toISOString(),
+    decisions: Array.from(byPath.values()).sort((a, b) =>
+      String(a.path).localeCompare(String(b.path))
+    ),
+  };
   const gitIgnorePath = path.join(input.projectRoot, '.gitignore');
   const gitIgnoreExisted = existsSync(gitIgnorePath);
   const existingGitIgnore = await fs.readFile(gitIgnorePath, 'utf-8').catch(error => {
@@ -280,7 +380,9 @@ export async function gitIgnoreDecisionRecord(input: { projectRoot: string; deci
     throw error;
   });
   const renderedGitIgnore = renderGovernedGitIgnore(existingGitIgnore, next.decisions);
-  const decisionsRelativePath = normalizeRelativePath(path.relative(input.projectRoot, decisionsPath));
+  const decisionsRelativePath = normalizeRelativePath(
+    path.relative(input.projectRoot, decisionsPath)
+  );
   try {
     await writeJson(decisionsPath, next);
     await fs.writeFile(gitIgnorePath, renderedGitIgnore.content, 'utf-8');
@@ -309,7 +411,8 @@ export async function gitRemoteProbe(input: { projectRoot: string; remoteName?: 
   const remoteName = input.remoteName || 'origin';
   const remotes = parseRemotes((await runGit(input.projectRoot, ['remote', '-v'], true)).stdout);
   const remote = remotes[remoteName];
-  if (!remote) return { success: false, remote_name: remoteName, error: 'REMOTE_NOT_FOUND', remotes };
+  if (!remote)
+    return { success: false, remote_name: remoteName, error: 'REMOTE_NOT_FOUND', remotes };
   const probe = await runGit(input.projectRoot, ['ls-remote', '--heads', remoteName], true);
   return {
     success: probe.code === 0,

@@ -25,7 +25,7 @@ import { DefaultServiceUnitGenerator } from '../unit-generator/default-impl.js';
 import type { ServiceInstallSpec } from '../types/service-install-spec.js';
 import type { ServiceStatus } from '../types/service-status.js';
 import type { EnvironmentPrecheck } from '../types/environment-precheck.js';
-import type { PrecheckIssue } from '../types/environment-precheck.js';
+
 import type {
   ServiceManager,
   ServiceManagerOptions,

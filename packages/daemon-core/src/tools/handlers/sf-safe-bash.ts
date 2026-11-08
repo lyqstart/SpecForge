@@ -1,3 +1,4 @@
+import { scalarText } from '@specforge/types';
 import { appendShellAudit, parseReadOnlyCommand } from '../lib/sf_safe_bash_executor';
 import { registerHandler } from '../ToolDispatcher';
 import { readAuthoritativeWorkItems } from '../lib/authoritative-work-items';
@@ -12,12 +13,8 @@ import {
 import { findMatchingWriteGuardAuthorization } from '../lib/write-guard-authorization-log';
 import { appendWriteGuardLog } from '../lib/write-guard-log';
 import { isValidWorkItemId as isCanonicalWorkItemId } from '../lib/work-item-id-validator';
-import * as fs from 'node:fs';
 import * as path from 'node:path';
-import {
-  readWorkItemMetadata,
-  readWorkItemMetadataSync,
-} from '../lib/work-item-metadata.js';
+import { readWorkItemMetadata, readWorkItemMetadataSync } from '../lib/work-item-metadata.js';
 
 const VALID_ACTOR_ROLES: ReadonlySet<string> = new Set(Object.values(ACTOR_ROLES));
 
@@ -41,15 +38,6 @@ function extractCallerRole(agent: unknown): string | undefined {
   if (typeof agent !== 'string' || !agent) return undefined;
   if (VALID_ACTOR_ROLES.has(agent)) return agent;
   return undefined;
-}
-
-function readJsonIfExists(filePath: string): any | null {
-  try {
-    if (!fs.existsSync(filePath)) return null;
-    return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-  } catch {
-    return null;
-  }
 }
 
 function toProjectRelative(
@@ -95,7 +83,7 @@ function appendGovernanceBlockedWrite(
 ): void {
   appendWriteGuardLog(workItemRoot(projectRoot, workItemId), {
     timestamp: new Date().toISOString(),
-    path: (`${SPEC_DIR_NAME}/**` as const),
+    path: `${SPEC_DIR_NAME}/**` as const,
     operation: 'modify',
     actor: 'agent',
     allowed: false,
@@ -106,11 +94,32 @@ function appendGovernanceBlockedWrite(
   });
 }
 
-function appendRejectedShellHistory(projectRoot: string, command: string, cwd: string | undefined, callerRole: string | undefined, rule: string): void {
-  appendShellAudit(projectRoot, {schema_version:'1.0',ts:new Date().toISOString(),command,cwd:cwd??projectRoot,shell:null,exitCode:null,durationMs:0,rejected:true,rule,timeout:false,success:false,stdout_size:0,stderr_size:0,callerRole:callerRole??null});
+function appendRejectedShellHistory(
+  projectRoot: string,
+  command: string,
+  cwd: string | undefined,
+  callerRole: string | undefined,
+  rule: string
+): void {
+  appendShellAudit(projectRoot, {
+    schema_version: '1.0',
+    ts: new Date().toISOString(),
+    command,
+    cwd: cwd ?? projectRoot,
+    shell: null,
+    exitCode: null,
+    durationMs: 0,
+    rejected: true,
+    rule,
+    timeout: false,
+    success: false,
+    stdout_size: 0,
+    stderr_size: 0,
+    callerRole: callerRole ?? null,
+  });
 }
 
-function readWorkItem(projectRoot: string, workItemId: string): any | null {
+function readWorkItem(projectRoot: string, workItemId: string): any {
   try {
     return readWorkItemMetadataSync(workItemRoot(projectRoot, workItemId), workItemId);
   } catch {
@@ -132,7 +141,7 @@ function allowedWriteEntryMatches(
 
 function timestampValue(value: unknown): number {
   if (typeof value === 'number' && Number.isFinite(value)) return value;
-  const text = String(value ?? '');
+  const text = scalarText(value ?? '');
   const numeric = Number(text);
   if (Number.isFinite(numeric) && numeric > 0) return numeric;
   return Date.parse(text) || 0;
@@ -146,7 +155,8 @@ function sortByFreshest(a: any, b: any): number {
 
 function isParentDirectoryOfAnyTarget(directoryTarget: string, targets: string[]): boolean {
   const directory = normalizePathForCompare(directoryTarget).replace(/\/+$/, '');
-  if (!directory || directory === '.' || directory.startsWith((`${SPEC_DIR_NAME}/` as const))) return false;
+  if (!directory || directory === '.' || directory.startsWith(`${SPEC_DIR_NAME}/` as const))
+    return false;
 
   return targets.some(target => {
     const normalized = normalizePathForCompare(target).replace(/\/+$/, '');
@@ -206,20 +216,20 @@ export function findActiveWorkItemIdForWrite(
 function commandMentionsProtectedSpecForgePath(command: string): boolean {
   const text = normalizePathForCompare(command);
   return (
-    text.includes((`${SPEC_DIR_NAME}/project/` as const)) ||
-    text.includes((`${SPEC_DIR_NAME}/config/` as const)) ||
-    text.includes((`${SPEC_DIR_NAME}/runtime/` as const)) ||
-    text.includes((`${SPEC_DIR_NAME}/work-items/` as const)) ||
-    text.includes((`${SPEC_DIR_NAME}/logs/` as const)) ||
-    text.includes((`${SPEC_DIR_NAME}/specs/` as const)) ||
-    text.includes((`${SPEC_DIR_NAME}/cas/` as const))
+    text.includes(`${SPEC_DIR_NAME}/project/` as const) ||
+    text.includes(`${SPEC_DIR_NAME}/config/` as const) ||
+    text.includes(`${SPEC_DIR_NAME}/runtime/` as const) ||
+    text.includes(`${SPEC_DIR_NAME}/work-items/` as const) ||
+    text.includes(`${SPEC_DIR_NAME}/logs/` as const) ||
+    text.includes(`${SPEC_DIR_NAME}/specs/` as const) ||
+    text.includes(`${SPEC_DIR_NAME}/cas/` as const)
   );
 }
 
 function commandMentionsSensitiveSpecForgeRuntimeSecret(command: string): boolean {
   const text = normalizePathForCompare(command).replace(/\s+/g, '');
   const mentionsRuntime =
-    text.includes((`${SPEC_DIR_NAME}/runtime/` as const)) || text.includes('/sf-user/runtime/');
+    text.includes(`${SPEC_DIR_NAME}/runtime/` as const) || text.includes('/sf-user/runtime/');
   if (!mentionsRuntime) return false;
   return (
     text.includes('handshake.json') ||
@@ -229,7 +239,9 @@ function commandMentionsSensitiveSpecForgeRuntimeSecret(command: string): boolea
   );
 }
 
-function commandHasReadOnlyShellProbe(command: string): boolean { return parseReadOnlyCommand(command) !== null; }
+function commandHasReadOnlyShellProbe(command: string): boolean {
+  return parseReadOnlyCommand(command) !== null;
+}
 
 export function classifyProtectedSpecForgePathBashAccess(command: string): ShellAccessKind {
   if (commandMentionsSensitiveSpecForgeRuntimeSecret(command)) return 'unknown';
@@ -256,7 +268,10 @@ function commandWritesOnlyReportPaths(projectRoot: string, command: string, cwd?
     const rel = toProjectRelative(projectRoot, cwd, target.path);
     if (!rel) return false;
     const normalized = normalizePathForCompare(rel);
-    return normalized === (`${SPEC_DIR_NAME}/reports` as const) || normalized.startsWith((`${SPEC_DIR_NAME}/reports/` as const));
+    return (
+      normalized === (`${SPEC_DIR_NAME}/reports` as const) ||
+      normalized.startsWith(`${SPEC_DIR_NAME}/reports/` as const)
+    );
   });
 }
 
@@ -296,34 +311,36 @@ async function executeSafe(
 registerHandler('sf_safe_bash', async (args, context, _deps) => {
   args = { timeoutMs: _deps.acceptedConfiguration?.merged.timeoutMs, ...args };
   const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
-  const callerRole = extractCallerRole((context as Record<string, unknown> | undefined)?.agent);
+  const callerRole = extractCallerRole(context?.agent);
   const command = (args['command'] as string) ?? '';
   const cwd = args['cwd'] as string | undefined;
 
   let authoritativeItems: any[];
-  try { authoritativeItems = await readAuthoritativeWorkItems(_deps, baseDir); }
-  catch { return { success: false, error: 'AUTHORITATIVE_STATE_UNAVAILABLE', policy_violation: true }; }
+  try {
+    authoritativeItems = await readAuthoritativeWorkItems(_deps, baseDir);
+  } catch {
+    return { success: false, error: 'AUTHORITATIVE_STATE_UNAVAILABLE', policy_violation: true };
+  }
 
   if (commandMentionsProtectedSpecForgePath(command)) {
     const access = classifyProtectedSpecForgePathBashAccess(command);
-    if (access === 'read')
-      return executeSafe(args as Record<string, unknown>, baseDir, command, cwd, callerRole);
+    if (access === 'read') return executeSafe(args, baseDir, command, cwd, callerRole);
 
     const activeWiId = findSingleActiveWorkItemIdForGovernance(baseDir, args, authoritativeItems);
     const reason = 'SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN';
     const hardStopRecord = activeWiId
       ? setHardStop(baseDir, activeWiId, reason, 'sf_safe_bash', 'work_item', {
-          triggering_agent: callerRole ?? String(context?.agent ?? 'unknown'),
+          triggering_agent: callerRole ?? scalarText(context?.agent ?? 'unknown'),
           blocked_action: command.slice(0, 500),
-          blocked_target: (`${SPEC_DIR_NAME}/**` as const),
+          blocked_target: `${SPEC_DIR_NAME}/**` as const,
           policy_code: reason,
-          blocked_step: String(args['blocked_step'] ?? 'protected_path_shell_access'),
+          blocked_step: scalarText(args['blocked_step'] ?? 'protected_path_shell_access'),
           last_successful_step:
             typeof args['last_successful_step'] === 'string' &&
             args['last_successful_step'].trim().length > 0
               ? args['last_successful_step'].trim()
               : undefined,
-          resume_step: String(
+          resume_step: scalarText(
             args['resume_step'] ?? 'repeat evidence collection with a controlled read tool'
           ),
           retry_original_action: false,
@@ -355,15 +372,10 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
   }
 
   if (commandWritesOnlyReportPaths(baseDir, command, cwd)) {
-    return executeSafe(args as Record<string, unknown>, baseDir, command, cwd, callerRole);
+    return executeSafe(args, baseDir, command, cwd, callerRole);
   }
 
-  const activeWiId = findActiveWorkItemIdForWrite(
-    baseDir,
-    args as Record<string, unknown>,
-    command,
-    authoritativeItems
-  );
+  const activeWiId = findActiveWorkItemIdForWrite(baseDir, args, command, authoritativeItems);
   if (activeWiId) {
     try {
       await readWorkItemMetadata(workItemRoot(baseDir, activeWiId), activeWiId);
@@ -399,17 +411,12 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
     cwd,
     callerRole,
     tool: 'sf_safe_bash',
-    authoritativeState: authoritativeItems.find(item => item.work_item_id === activeWiId)?.current_state,
+    authoritativeState: authoritativeItems.find(item => item.work_item_id === activeWiId)
+      ?.current_state,
   });
 
   if (runtimeGuard.checked && !runtimeGuard.allowed) {
-    appendRejectedShellHistory(
-      baseDir,
-      command,
-      cwd,
-      callerRole,
-      'WRITE_GUARD_RUNTIME_BLOCKED',
-    );
+    appendRejectedShellHistory(baseDir, command, cwd, callerRole, 'WRITE_GUARD_RUNTIME_BLOCKED');
     return {
       success: false,
       error:
@@ -433,13 +440,7 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
     activeWiId && !isDangerousEvenWithAuthorization(command)
       ? findMatchingWriteGuardAuthorization(baseDir, command, activeWiId)
       : null;
-  const result = await executeSafe(
-    args as Record<string, unknown>,
-    baseDir,
-    command,
-    cwd,
-    callerRole
-  );
+  const result = await executeSafe(args, baseDir, command, cwd, callerRole);
 
   if (!matchingAuthorization) return result;
 

@@ -56,7 +56,13 @@ export type ImpactScopeReferenceField = (typeof IMPACT_SCOPE_REFERENCE_FIELDS)[n
 export function validateImpactScopeFieldKinds(scope: ImpactScope): string[] {
   const errors: string[] = [];
   const moduleCodes = new Set(
-    scope.affected_modules.map(value => String(value ?? '').trim().toUpperCase()).filter(Boolean)
+    scope.affected_modules
+      .map(value =>
+        String(value ?? '')
+          .trim()
+          .toUpperCase()
+      )
+      .filter(Boolean)
   );
   for (const field of IMPACT_SCOPE_REFERENCE_FIELDS) {
     for (const value of scope[field]) {
@@ -102,18 +108,21 @@ export function selectWorkflowPath(classification: ChangeClassification): Workfl
       classification.acceptance_criteria_changed ||
       classification.business_rule_changed ||
       classification.unknowns.some(u => /requirement|acceptance|business/i.test(u))
-    ) return 'requirement_change_path';
+    )
+      return 'requirement_change_path';
     if (
       classification.architecture_changed ||
       classification.module_boundary_changed ||
       classification.unknowns.some(u => /architecture|module boundary/i.test(u))
-    ) return 'architecture_change_path';
+    )
+      return 'architecture_change_path';
     if (
       classification.design_changed ||
       classification.data_model_changed === true ||
       classification.module_contract_changed === true ||
       classification.unknowns.some(u => /design|data model|contract/i.test(u))
-    ) return 'design_change_path';
+    )
+      return 'design_change_path';
     return 'requirement_change_path';
   }
 
@@ -123,7 +132,8 @@ export function selectWorkflowPath(classification: ChangeClassification): Workfl
     classification.requirement_changed ||
     classification.acceptance_criteria_changed ||
     classification.business_rule_changed
-  ) return 'requirement_change_path';
+  )
+    return 'requirement_change_path';
 
   if (classification.architecture_changed || classification.module_boundary_changed) {
     return 'architecture_change_path';
@@ -135,7 +145,8 @@ export function selectWorkflowPath(classification: ChangeClassification): Workfl
     classification.data_semantics_changed ||
     classification.data_model_changed === true ||
     classification.module_contract_changed === true
-  ) return 'design_change_path';
+  )
+    return 'design_change_path';
 
   if (classification.user_visible_behavior_changed) return 'task_change_path';
   if (canUseCodeOnlyFastPath(classification)) return 'code_only_fast_path';
@@ -160,7 +171,7 @@ export function generateTriggerResult(
   workItemId: string,
   classification: ChangeClassification,
   matchResults: TriggerResult['match_results'],
-  impactScope?: Partial<ImpactScope> | null,
+  impactScope?: Partial<ImpactScope> | null
 ): TriggerResult {
   const normalizedImpactScope = normalizeImpactScope(impactScope);
   assertImpactScopeFieldKinds(normalizedImpactScope);

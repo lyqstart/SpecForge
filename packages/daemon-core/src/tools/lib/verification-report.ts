@@ -59,22 +59,29 @@ export function validateVerificationReport(content: string): TraceValidationResu
   // Fallback for legacy Markdown-only reports without fenced JSON
   const lower = content.toLowerCase();
   const trimmed = content.trim();
-  const forbiddenSummaries = [
-    '已验证', 'verified', 'verified.', 'all pass', '全部通过', 'pass',
-  ];
+  const forbiddenSummaries = ['已验证', 'verified', 'verified.', 'all pass', '全部通过', 'pass'];
   if (forbiddenSummaries.some(s => trimmed.toLowerCase() === s)) {
-    errors.push('verification_report.md must not contain only "已验证/verified". Must reference Evidence (§13.3)');
+    errors.push(
+      'verification_report.md must not contain only "已验证/verified". Must reference Evidence (§13.3)'
+    );
   }
 
   if (!lower.includes('evidence') && !lower.includes('证据')) {
     warnings.push('verification_report.md should reference Evidence (§13.3)');
   }
 
-  if (!lower.includes('command') && !lower.includes('test') && !lower.includes('验证') && !lower.includes('检查')) {
+  if (
+    !lower.includes('command') &&
+    !lower.includes('test') &&
+    !lower.includes('验证') &&
+    !lower.includes('检查')
+  ) {
     warnings.push('verification_report.md should describe verification method (§13.3)');
   }
 
-  warnings.push('verification_report does not contain structured JSON; using legacy fallback validation');
+  warnings.push(
+    'verification_report does not contain structured JSON; using legacy fallback validation'
+  );
 
   return { valid: errors.length === 0, errors, warnings };
 }

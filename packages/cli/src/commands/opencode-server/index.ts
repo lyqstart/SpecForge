@@ -1,7 +1,7 @@
 import { loadAcceptedConfigSync } from '@specforge/configuration';
 /**
  * OpenCode Server Commands
- * 
+ *
  * Provides commands to manage the OpenCode Server service:
  * - install-service: Install opencode-server as OS service
  * - uninstall-service: Uninstall opencode-server from OS service manager
@@ -9,13 +9,28 @@ import { loadAcceptedConfigSync } from '@specforge/configuration';
  * - stop: Stop the opencode-server service
  * - restart: Restart the opencode-server service
  * - status: Check opencode-server status
- * 
+ *
  * All commands support --json flag for machine-friendly output.
- * 
+ *
  * @packageDocumentation
  */
 
-import yargs, { Argv, Arguments } from 'yargs';
+/**
+ * OpenCode Server Commands
+ *
+ * Provides commands to manage the OpenCode Server service:
+ * - install-service: Install opencode-server as OS service
+ * - uninstall-service: Uninstall opencode-server from OS service manager
+ * - start: Start the opencode-server service
+ * - stop: Stop the opencode-server service
+ * - restart: Restart the opencode-server service
+ * - status: Check opencode-server status
+ *
+ * All commands support --json flag for machine-friendly output.
+ *
+ * @packageDocumentation
+ */
+import { Argv } from 'yargs';
 import { handleInstallService } from './install-service';
 import { handleUninstallService } from './uninstall-service';
 import { handleStart } from './start';
@@ -124,7 +139,7 @@ export function addOpenCodeServerCommands(yargs: Argv): Argv {
           )
           .demandCommand(1, 'Specify a subcommand');
       },
-      (argv) => {
+      (_argv) => {
         // Default: show help if no subcommand specified
         console.log('Usage: specforge opencode-server <command>');
         console.log('Commands: install-service, uninstall-service, start, stop, restart, status');

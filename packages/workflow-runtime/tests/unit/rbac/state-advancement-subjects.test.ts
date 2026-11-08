@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { STATE_ADVANCEMENT_SUBJECTS } from '../../../src/types/state-machine.js';
 
 describe('STATE_ADVANCEMENT_SUBJECTS contract', () => {

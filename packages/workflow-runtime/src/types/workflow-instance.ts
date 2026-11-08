@@ -3,6 +3,8 @@
  * Defines the structure for workflow instances
  */
 
+import type { WorkflowDefinition } from './workflow-definition';
+
 /**
  * Basic workflow event structure (used in WorkflowInstance history)
  */
@@ -37,5 +39,5 @@ export interface WorkflowInstance {
  */
 export interface WorkflowContext {
   instance: WorkflowInstance;
-  definition: import('./workflow-definition').WorkflowDefinition;
+  definition: WorkflowDefinition;
 }

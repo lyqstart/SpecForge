@@ -145,7 +145,7 @@ export class DiagnosticsLogger {
   private performanceMetrics: PerformanceMetric[] = [];
   private translationLogs: TranslationLogEntry[] = [];
   private compatibilityWarnings: CompatibilityWarning[] = [];
-  
+
   // Active performance tracking
   private activeOperations: Map<string, number> = new Map();
 
@@ -199,7 +199,12 @@ export class DiagnosticsLogger {
   /**
    * Create and record a log entry
    */
-  private log(level: LogLevel, source: string, message: string, context?: Record<string, unknown>): void {
+  private log(
+    level: LogLevel,
+    source: string,
+    message: string,
+    context?: Record<string, unknown>
+  ): void {
     if (!this.shouldLog(level)) {
       return;
     }
@@ -214,7 +219,7 @@ export class DiagnosticsLogger {
 
     // Add to in-memory buffer
     this.logEntries.push(entry);
-    
+
     // Trim if exceeds max
     if (this.logEntries.length > this.config.maxLogEntries) {
       this.logEntries.shift();
@@ -233,7 +238,7 @@ export class DiagnosticsLogger {
    */
   private outputToConsole(entry: LogEntry): void {
     const prefix = `[${entry.timestamp.toISOString()}] [${entry.source.toUpperCase()}] [${entry.level.toUpperCase()}]`;
-    
+
     switch (entry.level) {
       case 'debug':
         console.debug(prefix, entry.message, entry.context ?? '');
@@ -315,12 +320,14 @@ export class DiagnosticsLogger {
 
     // Also log as regular log entry
     if (result.success) {
-      this.debug('translation', 
+      this.debug(
+        'translation',
         `Translated ${translationType}: ${inputType} → ${outputType} (${duration.toFixed(2)}ms)`,
         { translationType, inputType, outputType, duration }
       );
     } else {
-      this.warn('translation',
+      this.warn(
+        'translation',
         `Translation failed: ${translationType} ${inputType} → ${outputType}`,
         { translationType, inputType, outputType, reason: entry.reason, duration }
       );
@@ -358,7 +365,11 @@ export class DiagnosticsLogger {
   /**
    * End tracking an operation
    */
-  endOperation(operation: string, success: boolean = true, metadata?: Record<string, unknown>): void {
+  endOperation(
+    operation: string,
+    success: boolean = true,
+    metadata?: Record<string, unknown>
+  ): void {
     if (!this.config.performanceMetrics) {
       return;
     }
@@ -399,7 +410,12 @@ export class DiagnosticsLogger {
   /**
    * Track a performance metric directly
    */
-  trackMetric(operation: string, duration: number, success: boolean, metadata?: Record<string, unknown>): void {
+  trackMetric(
+    operation: string,
+    duration: number,
+    success: boolean,
+    metadata?: Record<string, unknown>
+  ): void {
     if (!this.config.performanceMetrics) {
       return;
     }
@@ -444,15 +460,19 @@ export class DiagnosticsLogger {
   /**
    * Get performance summary
    */
-  getPerformanceSummary(): Record<string, { count: number; avgDuration: number; successRate: number }> {
-    const summary: Record<string, { count: number; totalDuration: number; successCount: number }> = {};
+  getPerformanceSummary(): Record<
+    string,
+    { count: number; avgDuration: number; successRate: number }
+  > {
+    const summary: Record<string, { count: number; totalDuration: number; successCount: number }> =
+      {};
 
     for (const metric of this.performanceMetrics) {
       const op = metric.operation;
       if (!summary[op]) {
         summary[op] = { count: 0, totalDuration: 0, successCount: 0 };
       }
-      const entry = summary[op]!;
+      const entry = summary[op];
       entry.count++;
       entry.totalDuration += metric.duration;
       if (metric.success) {
@@ -560,7 +580,10 @@ export class DiagnosticsLogger {
       totalMetrics: number;
       totalTranslations: number;
       totalWarnings: number;
-      performanceSummary: Record<string, { count: number; avgDuration: number; successRate: number }>;
+      performanceSummary: Record<
+        string,
+        { count: number; avgDuration: number; successRate: number }
+      >;
     };
   } {
     return {

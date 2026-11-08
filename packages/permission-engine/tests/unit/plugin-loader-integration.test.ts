@@ -1,12 +1,13 @@
 /**
  * Plugin Loader Integration Unit Tests
- * 
+ *
  * Tests for Task 4.3: Integrate with Plugin Loader
- * 
+ *
  * @specforge/permission-engine
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
+
 import {
   PluginLoaderIntegration,
   createRestrictivePluginLoaderIntegration,
@@ -184,11 +185,11 @@ describe('PluginLoaderIntegration', () => {
 
       expect(result.allowed).toBe(false);
       expect(result.rejectionReasons.length).toBeGreaterThan(0);
-      
+
       // Should have rejection for permissions
       const permReason = result.rejectionReasons.find(r => r.code === 'requirements_not_granted');
       expect(permReason).toBeDefined();
-      
+
       // Should have rejection for static API
       const apiReason = result.rejectionReasons.find(r => r.code === 'prohibited_api');
       expect(apiReason).toBeDefined();
@@ -198,21 +199,21 @@ describe('PluginLoaderIntegration', () => {
   describe('Configuration', () => {
     it('should allow updating allowed permissions', () => {
       integration.setAllowedPermissions(['new.permission']);
-      
+
       const config = integration.getConfig();
       expect(config.allowedPermissions).toContain('new.permission');
     });
 
     it('should allow updating allowed paths', () => {
       integration.setAllowedPaths(['/safe/path']);
-      
+
       const config = integration.getConfig();
       expect(config.allowedPaths).toContain('/safe/path');
     });
 
     it('should allow updating allowed hosts', () => {
       integration.setAllowedHosts(['api.example.com']);
-      
+
       const config = integration.getConfig();
       expect(config.allowedHosts).toContain('api.example.com');
     });

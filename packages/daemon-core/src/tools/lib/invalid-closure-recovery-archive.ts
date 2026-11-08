@@ -31,8 +31,9 @@ export async function archiveInvalidClosureEvidence(workItemDir: string): Promis
     for (const relative of INPUTS) {
       const source = path.join(workItemDir, relative);
       let stat;
-      try { stat = await fs.lstat(source); }
-      catch (error: any) {
+      try {
+        stat = await fs.lstat(source);
+      } catch (error: any) {
         if (error?.code === 'ENOENT') continue;
         throw error;
       }
@@ -52,14 +53,24 @@ export async function archiveInvalidClosureEvidence(workItemDir: string): Promis
     if (!files.some(file => file.path === 'gates/close_gate.json')) {
       throw new Error('INVALID_CLOSURE_ARCHIVE_CLOSE_EVIDENCE_MISSING');
     }
-    const manifest = Buffer.from(JSON.stringify({
-      schema_version: '1.0', generation_id: generationId, files,
-    }, null, 2) + '\n');
+    const manifest = Buffer.from(
+      JSON.stringify(
+        {
+          schema_version: '1.0',
+          generation_id: generationId,
+          files,
+        },
+        null,
+        2
+      ) + '\n'
+    );
     await fs.writeFile(path.join(temporary, 'manifest.json'), manifest, { flag: 'wx' });
     await fs.rename(temporary, final);
     return {
       generation_id: generationId,
-      manifest_path: path.relative(workItemDir, path.join(final, 'manifest.json')).replace(/\\/g, '/'),
+      manifest_path: path
+        .relative(workItemDir, path.join(final, 'manifest.json'))
+        .replace(/\\/g, '/'),
       manifest_sha256: createHash('sha256').update(manifest).digest('hex'),
     };
   } catch (error) {

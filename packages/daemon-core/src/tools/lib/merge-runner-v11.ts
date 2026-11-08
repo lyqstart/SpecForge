@@ -1,4 +1,5 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { scalarText } from '@specforge/types';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 /**
  * merge-runner-v11.ts - v1.1 Spec Merge Runner
  *
@@ -152,7 +153,7 @@ function normalizeEntryForMerge(entry: ManifestEntry): ManifestEntry {
 }
 
 function normalizeProjectTargetPathV12(value: unknown): string {
-  return String(value ?? '')
+  return scalarText(value ?? '')
     .replace(/\\/g, '/')
     .replace(/^\.\//, '');
 }
@@ -165,7 +166,7 @@ async function registerMergedProjectModules(
   replaceLegacyModuleEntries = false
 ): Promise<void> {
   if (!specManifest || typeof specManifest !== 'object') return;
-  const targets = Array.isArray(specManifest.last_merged_targets)
+  const targets: unknown[] = Array.isArray(specManifest.last_merged_targets)
     ? specManifest.last_merged_targets
     : [];
   const moduleCodes = Array.from(
@@ -179,9 +180,9 @@ async function registerMergedProjectModules(
             ? moduleCode
             : null;
         })
-        .filter(Boolean)
+        .filter((code): code is string => typeof code === 'string')
     )
-  ) as string[];
+  );
 
   if (moduleCodes.length === 0) {
     specManifest.modules = Array.isArray(specManifest.modules) ? specManifest.modules : [];
@@ -199,40 +200,38 @@ async function registerMergedProjectModules(
         ? modules[existingIndex]
         : {};
 
-    const moduleRoot = path.join(
-      projectRoot,
-      SPEC_DIR_NAME,
-      'project',
-      'modules',
-      moduleCode
-    );
+    const moduleRoot = path.join(projectRoot, SPEC_DIR_NAME, 'project', 'modules', moduleCode);
     let moduleDefinition: any = null;
     try {
       moduleDefinition = await readJsonFile(path.join(moduleRoot, 'module.json'));
     } catch {
       moduleDefinition = null;
     }
-    const moduleCodePaths: string[] = Array.isArray(moduleDefinition?.code_paths)
+    const definitionCodePaths: unknown = moduleDefinition?.code_paths;
+    const previousCodePaths: unknown = existing.code_paths;
+    const moduleCodePaths: string[] = Array.isArray(definitionCodePaths)
       ? Array.from(
           new Set<string>(
-            moduleDefinition.code_paths
-              .map((value: unknown) => String(value ?? '').trim())
+            definitionCodePaths
+              .map((value: unknown) => scalarText(value ?? '').trim())
               .filter(Boolean)
           )
         )
       : [];
-    const existingCodePaths: string[] = Array.isArray((existing as any).code_paths)
+    const existingCodePaths: string[] = Array.isArray(previousCodePaths)
       ? Array.from(
           new Set<string>(
-            (existing as any).code_paths
-              .map((value: unknown) => String(value ?? '').trim())
+            previousCodePaths
+              .map((value: unknown) => scalarText(value ?? '').trim())
               .filter(Boolean)
           )
         )
       : [];
     const codePaths = moduleCodePaths.length > 0 ? moduleCodePaths : existingCodePaths;
     const contractsPath = path.join(moduleRoot, 'contracts.json');
-    const defaultModule = String(specManifest.default_module ?? '').trim().toUpperCase();
+    const defaultModule = String(specManifest.default_module ?? '')
+      .trim()
+      .toUpperCase();
     const governanceOnlyDefault =
       moduleCode === defaultModule &&
       Array.isArray(moduleDefinition?.code_paths) &&
@@ -251,9 +250,8 @@ async function registerMergedProjectModules(
       ? canonicalEntry
       : { ...existing, ...canonicalEntry };
     if (governanceReady) {
-      (mergedEntry as any).contracts =
-        `${SPEC_DIR_NAME}/project/modules/${moduleCode}/contracts.json`;
-      (mergedEntry as any).code_paths = codePaths;
+      mergedEntry.contracts = `${SPEC_DIR_NAME}/project/modules/${moduleCode}/contracts.json`;
+      mergedEntry.code_paths = codePaths;
     }
 
     if (existingIndex >= 0) modules[existingIndex] = mergedEntry;
@@ -262,7 +260,13 @@ async function registerMergedProjectModules(
   specManifest.modules = modules;
 }
 
-const NEW_MODULE_REQUIRED_FILES = ['module.json', 'requirements.md', 'design.md', 'contracts.json', 'trace.md'] as const;
+const NEW_MODULE_REQUIRED_FILES = [
+  'module.json',
+  'requirements.md',
+  'design.md',
+  'contracts.json',
+  'trace.md',
+] as const;
 
 const PROJECT_SPEC_REPAIR_REQUIRED_FILES = [
   'module.json',
@@ -313,10 +317,7 @@ async function validateGovernedNewModuleTargets(input: {
     input.workItemDir,
     input.workflowPath
   );
-  const projectSpecRepair = await isProjectSpecRepairMerge(
-    input.workItemDir,
-    input.workflowPath
-  );
+  const projectSpecRepair = await isProjectSpecRepairMerge(input.workItemDir, input.workflowPath);
 
   const specManifestPath = path.join(
     input.projectRoot,
@@ -407,7 +408,7 @@ async function validateGovernedNewModuleTargets(input: {
       definition = await readJsonFile(definitionPath);
       const validation = validateModuleDefinitionCandidateJson(
         JSON.stringify(definition),
-        moduleCode,
+        moduleCode
       );
       if (!validation.valid) {
         errors.push(
@@ -431,7 +432,7 @@ async function validateGovernedNewModuleTargets(input: {
 
     const codePaths = Array.isArray(definition?.code_paths)
       ? definition.code_paths
-          .map((value: unknown) => String(value ?? '').trim())
+          .map((value: unknown) => scalarText(value ?? '').trim())
           .filter(Boolean)
       : [];
     if (codePaths.length === 0) {
@@ -474,7 +475,6 @@ async function validateGovernedNewModuleTargets(input: {
   return { allowedTargets, errors };
 }
 
-
 type MergeFileSnapshot = {
   filePath: string;
   existed: boolean;
@@ -483,7 +483,9 @@ type MergeFileSnapshot = {
 
 async function snapshotFiles(filePaths: Iterable<string>): Promise<MergeFileSnapshot[]> {
   const snapshots: MergeFileSnapshot[] = [];
-  for (const filePath of Array.from(new Set(Array.from(filePaths).map(value => path.resolve(value))))) {
+  for (const filePath of Array.from(
+    new Set(Array.from(filePaths).map(value => path.resolve(value)))
+  )) {
     try {
       snapshots.push({ filePath, existed: true, content: await fs.readFile(filePath) });
     } catch {
@@ -511,7 +513,10 @@ async function restoreSnapshots(snapshots: MergeFileSnapshot[]): Promise<string[
 }
 
 function isProjectTraceTarget(targetPath: string): boolean {
-  return normalizeProjectSpecTargetPath(targetPath) === (`${SPEC_DIR_NAME}/project/trace_matrix.md` as const);
+  return (
+    normalizeProjectSpecTargetPath(targetPath) ===
+    (`${SPEC_DIR_NAME}/project/trace_matrix.md` as const)
+  );
 }
 
 function targetModuleTrace(targetPath: string): string | null {
@@ -533,14 +538,19 @@ function designOwnersFromTrace(edges: Iterable<GovernanceTraceEdge>): Map<string
   return owners;
 }
 
-async function governedModuleCodes(projectRoot: string, entries: ManifestEntry[]): Promise<string[]> {
+async function governedModuleCodes(
+  projectRoot: string,
+  entries: ManifestEntry[]
+): Promise<string[]> {
   const result = new Set<string>();
   try {
     const manifest = await readJsonFile(
-      path.join(projectRoot, SPEC_DIR_NAME, 'project', 'spec_manifest.json'),
+      path.join(projectRoot, SPEC_DIR_NAME, 'project', 'spec_manifest.json')
     );
     for (const raw of Array.isArray(manifest?.modules) ? manifest.modules : []) {
-      const moduleCode = String(raw?.module_code ?? raw?.module ?? '').trim().toUpperCase();
+      const moduleCode = String(raw?.module_code ?? raw?.module ?? '')
+        .trim()
+        .toUpperCase();
       if (moduleCode) result.add(moduleCode);
     }
   } catch {
@@ -548,7 +558,7 @@ async function governedModuleCodes(projectRoot: string, entries: ManifestEntry[]
   }
   for (const entry of entries) {
     const moduleCode = moduleCodeFromProjectSpecPath(
-      normalizeProjectSpecTargetPath(entry.target_path),
+      normalizeProjectSpecTargetPath(entry.target_path)
     );
     if (moduleCode) result.add(moduleCode);
   }
@@ -568,12 +578,7 @@ async function projectTraceProjection(input: {
   errors: string[];
 }> {
   const traceEntry = input.entries.find(entry => isProjectTraceTarget(entry.target_path));
-  const currentPath = path.join(
-    input.projectRoot,
-    SPEC_DIR_NAME,
-    'project',
-    'trace_matrix.md',
-  );
+  const currentPath = path.join(input.projectRoot, SPEC_DIR_NAME, 'project', 'trace_matrix.md');
   let currentContent = '';
   try {
     currentContent = await fs.readFile(currentPath, 'utf-8');
@@ -638,7 +643,7 @@ async function projectTraceProjection(input: {
 
   if (delta.operations.length === 0) {
     const errors = [...current.issues, ...delta.issues, ...candidateAsFormalTrace.issues].map(
-      issue => issue.message,
+      issue => issue.message
     );
     const legacyContent = delta.marked_section
       ? delta.content_without_governance_delta
@@ -662,7 +667,7 @@ async function projectTraceProjection(input: {
     operations: delta.operations,
   });
   const errors = [...current.issues, ...delta.issues, ...projection.issues].map(
-    issue => issue.message,
+    issue => issue.message
   );
   const baseContent =
     delta.marked_section && delta.has_legacy_trace_payload
@@ -703,18 +708,13 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
       errors: ['Cannot read candidate_manifest.json: ' + err.message],
     };
   }
-  const manifestValidation = validateCurrentCandidateManifestValue(
-    manifest,
-    input.workItemId,
-  );
+  const manifestValidation = validateCurrentCandidateManifestValue(manifest, input.workItemId);
   if (!manifestValidation.valid) {
     return {
       ...result,
       success: false,
       status: 'failed',
-      errors: manifestValidation.errors.map(
-        error => `CANDIDATE_MANIFEST_SCHEMA_BLOCKED: ${error}`,
-      ),
+      errors: manifestValidation.errors.map(error => `CANDIDATE_MANIFEST_SCHEMA_BLOCKED: ${error}`),
     };
   }
 
@@ -863,10 +863,13 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
   }
   const independentModuleTraceTargets = entries
     .map(entry => ({ entry, moduleCode: targetModuleTrace(entry.target_path) }))
-    .filter(item => item.moduleCode && traceProjection.governanceActive && !traceProjection.governanceChanged);
+    .filter(
+      item =>
+        item.moduleCode && traceProjection.governanceActive && !traceProjection.governanceChanged
+    );
   if (independentModuleTraceTargets.length > 0) {
     preflightErrors.push(
-      'Module trace.md is a generated projection and cannot be merged independently; update the canonical Project Trace through Trace Delta.',
+      'Module trace.md is a generated projection and cannot be merged independently; update the canonical Project Trace through Trace Delta.'
     );
   }
 
@@ -885,13 +888,13 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
     input.projectRoot,
     SPEC_DIR_NAME,
     'project',
-    'spec_manifest.json',
+    'spec_manifest.json'
   );
   const extensionRegistryPath = path.join(
     input.projectRoot,
     SPEC_DIR_NAME,
     'project',
-    'extension_registry.json',
+    'extension_registry.json'
   );
   const moduleCodes = await governedModuleCodes(input.projectRoot, entries);
   const transactionTargets = new Set<string>([
@@ -899,14 +902,7 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
     extensionRegistryPath,
     ...entries.map(entry => path.resolve(input.projectRoot, entry.target_path)),
     ...moduleCodes.map(moduleCode =>
-      path.join(
-        input.projectRoot,
-        SPEC_DIR_NAME,
-        'project',
-        'modules',
-        moduleCode,
-        'trace.md',
-      ),
+      path.join(input.projectRoot, SPEC_DIR_NAME, 'project', 'modules', moduleCode, 'trace.md')
     ),
   ]);
   const snapshots = await snapshotFiles(transactionTargets);
@@ -941,12 +937,14 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
       } else {
         await fs.copyFile(candidateFullPath, targetFullPath);
       }
-      const expectedHash = isProjectTraceTarget(entry.target_path) && traceProjection.targeted
-        ? 'sha256:' + crypto
-            .createHash('sha256')
-            .update(traceProjection.content as string)
-            .digest('hex')
-        : await computeFileHash(candidateFullPath);
+      const expectedHash =
+        isProjectTraceTarget(entry.target_path) && traceProjection.targeted
+          ? 'sha256:' +
+            crypto
+              .createHash('sha256')
+              .update(traceProjection.content as string)
+              .digest('hex')
+          : await computeFileHash(candidateFullPath);
       const targetHash = await computeFileHash(targetFullPath);
       if (expectedHash !== targetHash) {
         throw new Error(`Hash mismatch after writing ${entry.target_path}`);
@@ -986,17 +984,17 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
       await fs.mkdir(path.dirname(projectSpecManifestPath), { recursive: true });
       const replaceLegacyModuleEntries = await isProjectSpecRepairMerge(
         input.workItemDir,
-        manifest.workflow_path,
+        manifest.workflow_path
       );
       await registerMergedProjectModules(
         specManifest,
         input.projectRoot,
-        replaceLegacyModuleEntries,
+        replaceLegacyModuleEntries
       );
       await fs.writeFile(
         projectSpecManifestPath,
         JSON.stringify(specManifest, null, 2) + '\n',
-        'utf-8',
+        'utf-8'
       );
       result.spec_manifest_updated = true;
 
@@ -1009,7 +1007,7 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
         await fs.writeFile(
           extensionRegistryPath,
           JSON.stringify(registry, null, 2) + '\n',
-          'utf-8',
+          'utf-8'
         );
       }
     }
@@ -1018,12 +1016,12 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
       const unifiedContracts = readUnifiedContracts(input.projectRoot);
       if (unifiedContracts.errors.length > 0) {
         throw new Error(
-          `Cannot generate Module Trace projections: ${unifiedContracts.errors.join('; ')}`,
+          `Cannot generate Module Trace projections: ${unifiedContracts.errors.join('; ')}`
         );
       }
       const designOwners = designOwnersFromTrace(traceProjection.edges);
       const contractOwners = new Map(
-        unifiedContracts.contracts.map(contract => [contract.id, contract.owner_module]),
+        unifiedContracts.contracts.map(contract => [contract.id, contract.owner_module])
       );
       const finalModuleCodes = await governedModuleCodes(input.projectRoot, entries);
       for (const moduleCode of finalModuleCodes) {
@@ -1038,7 +1036,7 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
         await fs.mkdir(path.dirname(targetFullPath), { recursive: true });
         await fs.writeFile(targetFullPath, content, 'utf-8');
         const existing = result.merged_files.find(
-          entry => normalizeProjectSpecTargetPath(entry.target_path) === targetPath,
+          entry => normalizeProjectSpecTargetPath(entry.target_path) === targetPath
         );
         if (existing) {
           existing.status = 'success';
@@ -1062,7 +1060,7 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
       await fs.writeFile(
         projectSpecManifestPath,
         JSON.stringify(specManifest, null, 2) + '\n',
-        'utf-8',
+        'utf-8'
       );
     }
 
@@ -1072,8 +1070,8 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
         workItemId: input.workItemId,
         projectSpecVersion: result.project_spec_version,
         relativePaths: [
-          (`${SPEC_DIR_NAME}/project/spec_manifest.json` as const),
-          (`${SPEC_DIR_NAME}/project/extension_registry.json` as const),
+          `${SPEC_DIR_NAME}/project/spec_manifest.json` as const,
+          `${SPEC_DIR_NAME}/project/extension_registry.json` as const,
           ...result.merged_files
             .filter(entry => entry.status === 'success' && entry.operation !== 'delete')
             .map(entry => entry.target_path),

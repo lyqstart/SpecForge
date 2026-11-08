@@ -1,12 +1,14 @@
+import { scalarText } from '@specforge/types';
 import { registerHandler } from '../ToolDispatcher';
 import { gitProjectAdopt } from '../lib/git-governance-stage3';
 
 registerHandler('sf_git_project_adopt', async (args, context) => {
-  const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
+  const projectRoot =
+    (context?.directory as string) || (context?.worktree as string) || process.cwd();
   try {
     return await gitProjectAdopt({
       projectRoot,
-      defaultBranch: args['default_branch'] ? String(args['default_branch']) : undefined,
+      defaultBranch: args['default_branch'] ? scalarText(args['default_branch']) : undefined,
       confirmed: args['confirmed'] === true,
       writeReport: args['write_report'] !== false,
     });

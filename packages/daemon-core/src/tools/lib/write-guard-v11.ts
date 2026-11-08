@@ -1,4 +1,4 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 /**
  * write-guard-v11.ts — v1.1 标准 Write Guard（§12.5-§12.6）
  *
@@ -26,13 +26,13 @@ import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
  *              'sf-orchestrator', 'code_permission_service', 'close_gate', 'agent'
  */
 
-import { ACTOR_ROLES } from '@specforge/types/actor-roles'
+import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 import {
   decideWritePermission,
   type WriteDecisionContext,
   type WriteDecisionResult,
   type WriteTargetDetails,
-} from '@specforge/permission-engine'
+} from '@specforge/permission-engine';
 
 // ---------------------------------------------------------------------------
 // Core types — canonical definitions
@@ -68,7 +68,7 @@ export function checkWrite(
   ctx: WriteGuardContext,
   targetPath: string,
   operation: 'create' | 'modify' | 'delete',
-  targetDetails: WriteTargetDetails = {},
+  targetDetails: WriteTargetDetails = {}
 ): WriteCheckResult {
   return decideWritePermission(ctx, targetPath, operation, targetDetails);
 }
@@ -102,12 +102,12 @@ export interface AuditResult {
 export function performChangedFilesAudit(
   changedFiles: Array<{ path: string; operation: 'create' | 'modify' | 'delete' }>,
   allowedWriteFiles: Array<{ path: string; operation: string }>,
-  actor?: string,
+  actor?: string
 ): AuditResult {
   const entries: AuditEntry[] = [];
   const violations: string[] = [];
   const normalizedAllowed = new Map(
-    allowedWriteFiles.map(f => [f.path.replace(/\\/g, '/'), f.operation] as const),
+    allowedWriteFiles.map(f => [f.path.replace(/\\/g, '/'), f.operation] as const)
   );
 
   for (const file of changedFiles) {
@@ -117,7 +117,7 @@ export function performChangedFilesAudit(
       const opMatch = allowedOp === file.operation || allowedOp === 'any';
       return pathMatch && opMatch;
     });
-    let isSpecWrite = normalized.startsWith((`${SPEC_DIR_NAME}/project/` as const));
+    let isSpecWrite = normalized.startsWith(`${SPEC_DIR_NAME}/project/` as const);
     const isSideEffect = !inScope && !isSpecWrite;
 
     if (isSpecWrite) {
@@ -125,7 +125,9 @@ export function performChangedFilesAudit(
         // Legitimate merge_runner write — not a violation
         isSpecWrite = false;
       } else {
-        violations.push(`spec_write_by_non_merge_runner: ${normalized} (actor: ${actor ?? 'unknown'})`);
+        violations.push(
+          `spec_write_by_non_merge_runner: ${normalized} (actor: ${actor ?? 'unknown'})`
+        );
       }
     }
 
@@ -158,4 +160,4 @@ export function performChangedFilesAudit(
 // Re-exports
 // ---------------------------------------------------------------------------
 
-export * from './bash-guard.js'
+export * from './bash-guard.js';

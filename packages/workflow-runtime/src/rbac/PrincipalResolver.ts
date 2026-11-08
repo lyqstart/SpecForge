@@ -13,10 +13,8 @@
  * - unknown 不抛异常，不提升权限
  */
 
-import type { ActorRole } from '@specforge/types/actor-roles';
-import { ACTOR_ROLES } from '@specforge/types/actor-roles';
-import type { AgentRole } from '@specforge/types/principal';
-import type { Principal } from '@specforge/types/principal';
+import { type ActorRole , ACTOR_ROLES } from '@specforge/types/actor-roles';
+import type { AgentRole , Principal } from '@specforge/types/principal';
 
 // Re-export for consumer convenience
 export type { Principal } from '@specforge/types/principal';

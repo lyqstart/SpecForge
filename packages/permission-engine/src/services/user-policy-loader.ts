@@ -2,22 +2,25 @@
 // Build-unblock note: legacy permission-engine service has historical type drift; production build boundary is being restored
 /**
  * User Policy Loader Service
- * 
+ *
  * Loads user/project custom rules from config files.
  * Supports hot-reloading of user policies and detects hard rule conflicts.
- * 
+ *
  * Implements Layer 3 of the three-layer permission model.
- * 
+ *
  * @specforge/permission-engine
  */
 
 import fs from 'fs';
 import path from 'path';
-import yaml from 'yaml';
+
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
-import { 
-  UserPolicy, 
-  UserPolicyCollection, 
+import yaml from 'yaml';
+
+import { HardRuleEvaluator } from '../hard-rules';
+import {
+  UserPolicy,
+  UserPolicyCollection,
   UserPolicyLoaderConfig,
   UserPolicyEvaluationResult,
   HardRuleConflictReport,
@@ -25,15 +28,14 @@ import {
   UserPolicyCollectionSchema,
   DEFAULT_USER_POLICY_COLLECTION
 } from '../types/user-policies';
-import { HardRuleEvaluator } from '../hard-rules';
 
 /**
  * Pattern matcher interface for user policies
  */
 interface UserPolicyPatternMatcher {
-  matchesActor(actor: any, pattern: string): boolean;
+  matchesActor(actor: unknown, pattern: string): boolean;
   matchesAction(action: string, pattern: string): boolean;
-  matchesResource(resource: any, pattern: string): boolean;
+  matchesResource(resource: unknown, pattern: string): boolean;
 }
 
 export class UserPolicyLoader implements UserPolicyPatternMatcher {
@@ -101,7 +103,7 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
    */
   private loadDefaultPolicies(): void {
     const defaultCollection = DEFAULT_USER_POLICY_COLLECTION;
-    
+
     // Validate default collection if validation is enabled
     if (this.config.validationEnabled) {
       try {
@@ -113,7 +115,7 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
 
     // Add default collection to the map
     this.policyCollections.set('default', defaultCollection);
-    
+
     // Add policies to the list (empty by default)
     this.policies.push(...defaultCollection.policies);
 
@@ -165,10 +167,10 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
   private async loadPoliciesFromDirectory(dirPath: string): Promise<void> {
     try {
       const files = await fs.promises.readdir(dirPath);
-      
+
       for (const file of files) {
         const filePath = path.join(dirPath, file);
-        
+
         // Only load JSON and YAML files
         if (file.endsWith('.json') || file.endsWith('.yaml') || file.endsWith('.yml')) {
           try {
@@ -189,9 +191,9 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
   private async loadPolicyFile(filePath: string): Promise<void> {
     const fileContent = await fs.promises.readFile(filePath, 'utf-8');
     const fileName = path.basename(filePath);
-    
-    let parsedContent: any;
-    
+
+    let parsedContent: unknown;
+
     // Parse based on file extension
     if (filePath.endsWith('.json')) {
       parsedContent = JSON.parse(fileContent);
@@ -208,12 +210,12 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
   /**
    * Load a policy collection
    */
-  private async loadPolicyCollection(collectionData: any, source: string): Promise<void> {
+  private async loadPolicyCollection(collectionData: unknown, source: string): Promise<void> {
     if (this.config.validationEnabled) {
       try {
         // Validate the collection schema
         const validatedCollection = UserPolicyCollectionSchema.parse(collectionData);
-        
+
         // Validate each policy in the collection
         for (const policy of validatedCollection.policies) {
           // Ensure policy is enabled by default
@@ -225,7 +227,7 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
 
         // Add to collections map
         this.policyCollections.set(source, validatedCollection);
-        
+
         // Add policies to the main list (only enabled policies)
         const enabledPolicies = validatedCollection.policies.filter(p => p.enabled !== false);
         this.policies.push(...enabledPolicies);
@@ -241,7 +243,7 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
       const enabledPolicies = collection.policies.filter(p => p.enabled !== false);
       this.policyCollections.set(source, collection);
       this.policies.push(...enabledPolicies);
-      
+
       console.log(`Loaded ${enabledPolicies.length} user policies from ${source} (without validation)`);
     }
   }
@@ -279,7 +281,7 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
     const report: HardRuleConflictReport = {
       detected: conflicts.length > 0,
       conflicts,
-      message: conflicts.length > 0 
+      message: conflicts.length > 0
         ? `Found ${conflicts.length} hard rule conflict(s) in user policies`
         : undefined
     };
@@ -294,19 +296,19 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
   private doesPolicyConflictWithHardRule(policy: UserPolicy, hardRule: { id: string; description: string }): boolean {
     // This is a simplified check - checks if user policy tries to allow something hard rule denies
     // The actual conflict detection is done by HardRuleEvaluator
-    
+
     // Check if policy's action/resource patterns match any hard rule patterns
     const hardRulePatterns = this.getHardRulePatterns(hardRule.id);
-    
+
     for (const pattern of hardRulePatterns) {
       const actionMatches = this.matchesActionPattern(policy.actionPattern, pattern.action);
       const resourceMatches = this.matchesResourcePattern(policy.resourcePattern, pattern.resource);
-      
+
       if (actionMatches && resourceMatches) {
         return true;
       }
     }
-    
+
     return false;
   }
 
@@ -380,7 +382,7 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
     if (hardRuleResource === '*') {
       return true;
     }
-    
+
     try {
       const policyRegex = new RegExp(policyResource.replace(/^resourcePattern:/, ''));
       return policyRegex.test(hardRuleResource);
@@ -398,18 +400,18 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
         const watcher = fs.watch(policyPath, { persistent: false }, async (eventType, filename) => {
           if (eventType === 'change' && filename) {
             const filePath = path.join(policyPath, filename.toString());
-            
+
             // Only reload JSON/YAML files
             if (filePath.endsWith('.json') || filePath.endsWith('.yaml') || filePath.endsWith('.yml')) {
               console.log(`User policy file changed: ${filePath}, reloading...`);
-              
+
               try {
                 // Remove old policies from this file
                 this.removePoliciesFromSource(filename.toString());
-                
+
                 // Reload the file
                 await this.loadPolicyFile(filePath);
-                
+
                 // Re-detect conflicts
                 this.conflictCache = this.detectHardRuleConflicts();
               } catch (error) {
@@ -418,7 +420,7 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
             }
           }
         });
-        
+
         this.fileWatchers.push(watcher);
       } catch (error) {
         console.error(`Failed to set up file watcher for ${policyPath}:`, error);
@@ -432,7 +434,7 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
   private removePoliciesFromSource(source: string): void {
     // Find indices of policies from this source
     const indicesToRemove: number[] = [];
-    
+
     for (let i = 0; i < this.policies.length; i++) {
       // Check if this policy belongs to the source collection
       for (const [collectionSource, collection] of this.policyCollections.entries()) {
@@ -442,15 +444,15 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
         }
       }
     }
-    
+
     // Remove policies in reverse order to preserve indices
     for (let i = indicesToRemove.length - 1; i >= 0; i--) {
       this.policies.splice(indicesToRemove[i], 1);
     }
-    
+
     // Remove the collection
     this.policyCollections.delete(source);
-    
+
     // Clear cache
     this.cache.clear();
   }
@@ -459,13 +461,13 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
    * Evaluate user policies against a permission request
    */
   evaluate(
-    actor: any,
+    actor: unknown,
     action: string,
-    resource: any,
+    resource: unknown,
     context?: Record<string, unknown>
   ): UserPolicyEvaluationResult {
     const cacheKey = this.config.cacheEnabled ? this.generateCacheKey(actor, action, resource, context) : null;
-    
+
     // Check cache first
     if (cacheKey && this.cache.has(cacheKey)) {
       const cachedResult = this.cache.get(cacheKey)!;
@@ -478,34 +480,34 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
     const evaluatedPolicies: UserPolicy[] = [];
     let matchedPolicy: UserPolicy | undefined;
     let resultAllowed = true; // Default to allow if no policies match
-    
+
     // Sort policies by priority (higher priority = evaluated earlier)
     const sortedPolicies = [...this.policies].sort((a, b) => b.priority - a.priority);
-    
+
     for (const policy of sortedPolicies) {
       // Skip disabled policies
       if (policy.enabled === false) {
         continue;
       }
-      
+
       // Check if policy matches
       const matchesActor = this.matchesActor(actor, policy.actorPattern);
       const matchesAction = this.matchesAction(action, policy.actionPattern);
       const matchesResource = this.matchesResource(resource, policy.resourcePattern);
-      
+
       if (matchesActor && matchesAction && matchesResource) {
         evaluatedPolicies.push(policy);
-        
+
         // Check additional conditions if present
         let conditionsMet = true;
         if (policy.conditions) {
           conditionsMet = this.evaluateConditions(policy.conditions, actor, action, resource, context);
         }
-        
+
         if (conditionsMet) {
           matchedPolicy = policy;
           resultAllowed = policy.effect === 'allow';
-          
+
           // Stop evaluation at first matching policy (due to priority sorting)
           break;
         }
@@ -534,29 +536,29 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
    * Generate a cache key for the evaluation
    */
   private generateCacheKey(
-    actor: any,
+    actor: unknown,
     action: string,
-    resource: any,
+    resource: unknown,
     context?: Record<string, unknown>
   ): string {
     const actorKey = JSON.stringify(actor);
     const resourceKey = JSON.stringify(resource);
     const contextKey = context ? JSON.stringify(context) : '';
-    
+
     return `${actorKey}:${action}:${resourceKey}:${contextKey}`;
   }
 
   /**
    * Check if an actor matches a pattern
    */
-  matchesActor(actor: any, pattern: string): boolean {
+  matchesActor(actor: unknown, pattern: string): boolean {
     // Parse pattern like "agentRole:sf-reviewer" or "userId:123"
     const [key, value] = pattern.split(':');
-    
+
     if (!key || !value) {
       return false;
     }
-    
+
     // Check different actor properties
     switch (key.toLowerCase()) {
       case 'agentrole':
@@ -584,11 +586,11 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
     // Parse pattern like "action:^tool\\.(execute|write)"
     const [prefix, ...rest] = pattern.split(':');
     const patternValue = rest.join(':'); // Handle patterns with colons in them
-    
+
     if (prefix.toLowerCase() !== 'action') {
       return false;
     }
-    
+
     // Convert pattern to regex
     try {
       const regex = new RegExp(patternValue);
@@ -602,14 +604,14 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
   /**
    * Check if a resource matches a pattern
    */
-  matchesResource(resource: any, pattern: string): boolean {
+  matchesResource(resource: unknown, pattern: string): boolean {
     // Parse pattern like "resourceType:*" or "resourceType:spec"
     const [key, value] = pattern.split(':');
-    
+
     if (!key || !value) {
       return false;
     }
-    
+
     // Check different resource properties
     switch (key.toLowerCase()) {
       case 'resourcetype':
@@ -630,16 +632,16 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
    * Evaluate additional conditions for a policy
    */
   private evaluateConditions(
-    conditions: Record<string, any>,
-    actor: any,
+    conditions: Record<string, unknown>,
+    actor: unknown,
     action: string,
-    resource: any,
+    resource: unknown,
     context?: Record<string, unknown>
   ): boolean {
     // Simple condition evaluation - can be extended for more complex logic
     for (const [key, expectedValue] of Object.entries(conditions)) {
-      let actualValue: any;
-      
+      let actualValue: unknown;
+
       // Determine where to get the value from
       if (key.startsWith('actor.')) {
         const actorKey = key.substring(6);
@@ -656,13 +658,13 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
         // Default to context
         actualValue = context?.[key];
       }
-      
+
       // Compare values
       if (expectedValue !== undefined && actualValue !== expectedValue) {
         return false;
       }
     }
-    
+
     return true;
   }
 
@@ -677,7 +679,7 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
    * Get policies by tag
    */
   getPoliciesByTag(tag: string): UserPolicy[] {
-    return this.policies.filter(policy => 
+    return this.policies.filter(policy =>
       policy.metadata?.tags?.includes(tag)
     );
   }
@@ -686,8 +688,8 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
    * Get policies for a specific agent role
    */
   getPoliciesForAgentRole(agentRole: string): UserPolicy[] {
-    return this.policies.filter(policy => 
-      policy.actorPattern === `agentRole:${agentRole}` || 
+    return this.policies.filter(policy =>
+      policy.actorPattern === `agentRole:${agentRole}` ||
       policy.actorPattern.includes(`agentRole:${agentRole}`)
     );
   }
@@ -707,14 +709,14 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
     this.policies = [];
     this.policyCollections.clear();
     this.cache.clear();
-    
+
     // Reload policies
     this.loadDefaultPolicies();
     await this.loadPoliciesFromPaths();
-    
+
     // Re-detect conflicts
     this.conflictCache = this.detectHardRuleConflicts();
-    
+
     console.log('User policies reloaded successfully');
   }
 
@@ -734,7 +736,7 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
       watcher.close();
     }
     this.fileWatchers = [];
-    
+
     // Clear cache
     this.cache.clear();
   }
@@ -786,7 +788,7 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
   }
 
   static createMockLoader(
-    policies: UserPolicy[] = [], 
+    policies: UserPolicy[] = [],
     hardRuleEvaluator?: HardRuleEvaluator
   ): UserPolicyLoader {
     const config: UserPolicyLoaderConfig = {
@@ -795,13 +797,13 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
       validationEnabled: false,
       cacheEnabled: false
     };
-    
+
     const loader = new UserPolicyLoader(config, hardRuleEvaluator);
-    
+
     // Load provided policies without file operations
     loader.policies = [...policies];
     loader.isInitialized = true;
-    
+
     return loader;
   }
 }

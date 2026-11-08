@@ -14,9 +14,9 @@ export const GIT_GOVERNANCE_WRITE_PROVENANCE_SCHEMA =
 
 export const GIT_GOVERNANCE_PROJECT_METADATA_PATHS = new Set([
   '.gitignore',
-  (`${SPEC_DIR_NAME}/project/git_policy.json` as const),
-  (`${SPEC_DIR_NAME}/project/git_ignore_decisions.json` as const),
-  (`${SPEC_DIR_NAME}/project/git_adoption_report.md` as const),
+  `${SPEC_DIR_NAME}/project/git_policy.json` as const,
+  `${SPEC_DIR_NAME}/project/git_ignore_decisions.json` as const,
+  `${SPEC_DIR_NAME}/project/git_adoption_report.md` as const,
 ]);
 
 export type TrustedGitGovernanceWrite = GitGovernanceTrustedWrite;
@@ -29,12 +29,7 @@ function normalizeRelative(value: string): string {
 }
 
 function provenancePath(projectRoot: string): string {
-  return path.join(
-    projectRoot,
-    SPEC_DIR_NAME,
-    'runtime',
-    'git_governance_controlled_writes.json',
-  );
+  return path.join(projectRoot, SPEC_DIR_NAME, 'runtime', 'git_governance_controlled_writes.json');
 }
 
 function sha256File(filePath: string): string {
@@ -66,7 +61,7 @@ function readProvenance(projectRoot: string): GitGovernanceWriteProvenance {
     return parsed as GitGovernanceWriteProvenance;
   } catch (error) {
     throw new Error(
-      `GIT_GOVERNANCE_PROVENANCE_INVALID: ${error instanceof Error ? error.message : String(error)}`,
+      `GIT_GOVERNANCE_PROVENANCE_INVALID: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 }
@@ -89,11 +84,11 @@ export function assertGitGovernanceWriteProvenanceCurrent(projectRoot: string): 
 export function recordGitGovernanceProjectWrites(
   projectRoot: string,
   producer: 'sf_git_project_adopt' | 'sf_git_ignore_decision_record',
-  relativePaths: string[],
+  relativePaths: string[]
 ): TrustedGitGovernanceWrite[] {
   const previous = readProvenance(projectRoot);
   const byPath = new Map(
-    previous.writes.map(entry => [normalizeRelative(entry.path), entry] as const),
+    previous.writes.map(entry => [normalizeRelative(entry.path), entry] as const)
   );
 
   for (const candidate of relativePaths) {
@@ -115,9 +110,7 @@ export function recordGitGovernanceProjectWrites(
   const next: GitGovernanceWriteProvenance = {
     schema_version: GIT_GOVERNANCE_WRITE_PROVENANCE_SCHEMA,
     updated_at: new Date().toISOString(),
-    writes: Array.from(byPath.values()).sort((left, right) =>
-      left.path.localeCompare(right.path),
-    ),
+    writes: Array.from(byPath.values()).sort((left, right) => left.path.localeCompare(right.path)),
   };
   const output = provenancePath(projectRoot);
   const descriptor = createGitGovernanceWriteProvenanceSchemaDescriptor();
@@ -129,7 +122,7 @@ export function recordGitGovernanceProjectWrites(
 }
 
 export function readTrustedGitGovernanceProjectWrites(
-  projectRoot: string,
+  projectRoot: string
 ): TrustedGitGovernanceWrite[] {
   const provenance = readProvenance(projectRoot);
   return provenance.writes.filter(entry => {

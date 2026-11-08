@@ -1,4 +1,5 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { diagnosticScalarText } from '@specforge/types';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { createHash } from 'node:crypto';
 import type { Dirent } from 'node:fs';
 import * as fs from 'node:fs/promises';
@@ -27,14 +28,9 @@ function snapshotSha256(bytes: Uint8Array): string {
 }
 
 export async function readCurrentProjectSpecBinding(
-  projectRoot: string,
+  projectRoot: string
 ): Promise<CurrentProjectSpecBinding> {
-  const manifestPath = path.join(
-    projectRoot,
-    SPEC_DIR_NAME,
-    'project',
-    'spec_manifest.json',
-  );
+  const manifestPath = path.join(projectRoot, SPEC_DIR_NAME, 'project', 'spec_manifest.json');
   let bytes: Buffer;
   let parsed: unknown;
   try {
@@ -44,7 +40,7 @@ export async function readCurrentProjectSpecBinding(
     throw new Error(
       `PROJECT_SPEC_BINDING_UNAVAILABLE: ${manifestPath}: ${
         error instanceof Error ? error.message : String(error)
-      }`,
+      }`
     );
   }
 
@@ -54,7 +50,7 @@ export async function readCurrentProjectSpecBinding(
       : undefined;
   if (typeof version !== 'string' || !PROJECT_SPEC_VERSION_PATTERN.test(version)) {
     throw new Error(
-      `PROJECT_SPEC_BINDING_INVALID: ${manifestPath} must contain a valid project_spec_version`,
+      `PROJECT_SPEC_BINDING_INVALID: ${manifestPath} must contain a valid project_spec_version`
     );
   }
   return {
@@ -81,12 +77,12 @@ export async function validateCandidateProjectSpecBinding(input: {
   const precondition = input.manifest?.project_spec_precondition_sha256;
   if (baseSpecVersion !== binding.version) {
     errors.push(
-      `CANDIDATE_BASE_SPEC_VERSION_STALE: candidate=${String(baseSpecVersion ?? 'missing')}; current=${binding.version}`,
+      `CANDIDATE_BASE_SPEC_VERSION_STALE: candidate=${diagnosticScalarText(baseSpecVersion ?? 'missing')}; current=${binding.version}`
     );
   }
   if (precondition !== binding.sha256) {
     errors.push(
-      `PROJECT_SPEC_PRECONDITION_STALE: candidate=${String(precondition ?? 'missing')}; current=${binding.sha256}`,
+      `PROJECT_SPEC_PRECONDITION_STALE: candidate=${diagnosticScalarText(precondition ?? 'missing')}; current=${binding.sha256}`
     );
   }
   return { valid: errors.length === 0, errors, binding };
@@ -103,7 +99,7 @@ async function walkFiles(root: string): Promise<string[]> {
   const files: string[] = [];
   for (const entry of entries) {
     const fullPath = path.join(root, entry.name);
-    if (entry.isDirectory()) files.push(...await walkFiles(fullPath));
+    if (entry.isDirectory()) files.push(...(await walkFiles(fullPath)));
     else if (entry.isFile()) files.push(fullPath);
   }
   return files;
@@ -151,7 +147,7 @@ async function validateSnapshotEntry(input: {
     input.errors.push(
       `GATE_ATTEMPT_INPUT_READ_FAILED: ${input.entry.path}: ${
         error instanceof Error ? error.message : String(error)
-      }`,
+      }`
     );
     return;
   }
@@ -160,14 +156,10 @@ async function validateSnapshotEntry(input: {
     input.errors.push(`GATE_ATTEMPT_INPUT_APPEARED: ${input.entry.path}`);
     return;
   }
-  const actualKind = stat.isFile()
-    ? 'file'
-    : stat.isDirectory()
-      ? 'directory'
-      : 'other';
+  const actualKind = stat.isFile() ? 'file' : stat.isDirectory() ? 'directory' : 'other';
   if (actualKind !== input.entry.kind) {
     input.errors.push(
-      `GATE_ATTEMPT_INPUT_KIND_CHANGED: ${input.entry.path}; expected=${input.entry.kind}; actual=${actualKind}`,
+      `GATE_ATTEMPT_INPUT_KIND_CHANGED: ${input.entry.path}; expected=${input.entry.kind}; actual=${actualKind}`
     );
     return;
   }
@@ -180,7 +172,7 @@ async function validateSnapshotEntry(input: {
     const actual = snapshotSha256(await fs.readFile(resolved));
     if (actual.toLowerCase() !== expected.toLowerCase()) {
       input.errors.push(
-        `GATE_ATTEMPT_INPUT_HASH_CHANGED: ${input.entry.path}; expected=${expected}; actual=${actual}`,
+        `GATE_ATTEMPT_INPUT_HASH_CHANGED: ${input.entry.path}; expected=${expected}; actual=${actual}`
       );
     }
   }
@@ -203,7 +195,9 @@ export async function validatePassingCandidateGateAttempt(input: {
   } catch (error) {
     return {
       valid: false,
-      errors: [`GATE_ATTEMPT_EVIDENCE_UNAVAILABLE: ${error instanceof Error ? error.message : String(error)}`],
+      errors: [
+        `GATE_ATTEMPT_EVIDENCE_UNAVAILABLE: ${error instanceof Error ? error.message : String(error)}`,
+      ],
     };
   }
 
@@ -222,12 +216,14 @@ export async function validatePassingCandidateGateAttempt(input: {
   if (!matchedAttemptId) {
     return {
       valid: false,
-      errors: ['GATE_ATTEMPT_SUMMARY_BINDING_MISSING: no immutable Attempt matches gate_summary hash'],
+      errors: [
+        'GATE_ATTEMPT_SUMMARY_BINDING_MISSING: no immutable Attempt matches gate_summary hash',
+      ],
     };
   }
   if (input.requireLatestAttempt && matchedAttemptId !== attemptIds.at(-1)) {
     errors.push(
-      `GATE_ATTEMPT_NOT_LATEST: matched=${matchedAttemptId}; latest=${attemptIds.at(-1) ?? 'none'}`,
+      `GATE_ATTEMPT_NOT_LATEST: matched=${matchedAttemptId}; latest=${attemptIds.at(-1) ?? 'none'}`
     );
   }
 
@@ -242,7 +238,9 @@ export async function validatePassingCandidateGateAttempt(input: {
   } catch (error) {
     return {
       valid: false,
-      errors: [`GATE_ATTEMPT_BINDING_EVIDENCE_INVALID: ${error instanceof Error ? error.message : String(error)}`],
+      errors: [
+        `GATE_ATTEMPT_BINDING_EVIDENCE_INVALID: ${error instanceof Error ? error.message : String(error)}`,
+      ],
       attemptId: matchedAttemptId,
     };
   }
@@ -256,7 +254,7 @@ export async function validatePassingCandidateGateAttempt(input: {
   } else {
     if (result.attempt_id !== matchedAttemptId || result.summary_status !== 'passed') {
       errors.push(
-        `GATE_ATTEMPT_NOT_PASSED: attempt=${matchedAttemptId}; status=${String(result.summary_status)}`,
+        `GATE_ATTEMPT_NOT_PASSED: attempt=${matchedAttemptId}; status=${String(result.summary_status)}`
       );
     }
     if (!result.current_report_gate_ids.includes('candidate_manifest_gate')) {
@@ -272,7 +270,7 @@ export async function validatePassingCandidateGateAttempt(input: {
     snapshot.inputs.map(entry => [
       resolvedPathIdentity(resolveSnapshotPath(input.projectRoot, entry.path)),
       entry,
-    ]),
+    ])
   );
   for (const entry of snapshot.inputs) {
     await validateSnapshotEntry({ projectRoot: input.projectRoot, entry, errors });
@@ -281,7 +279,7 @@ export async function validatePassingCandidateGateAttempt(input: {
     const entry = snapshotByIdentity.get(resolvedPathIdentity(sealPath));
     if (!entry || entry.exists !== true || entry.kind !== 'file') {
       errors.push(
-        `GATE_ATTEMPT_CANDIDATE_SEAL_INPUT_MISSING: ${path.relative(input.projectRoot, sealPath).replace(/\\/g, '/')}`,
+        `GATE_ATTEMPT_CANDIDATE_SEAL_INPUT_MISSING: ${path.relative(input.projectRoot, sealPath).replace(/\\/g, '/')}`
       );
     }
   }

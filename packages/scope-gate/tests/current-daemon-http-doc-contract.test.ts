@@ -1,4 +1,7 @@
-import {describe,it,expect} from 'vitest';import {readFileSync} from 'node:fs';import path from 'node:path';
+import {readFileSync} from 'node:fs';import path from 'node:path';
+
+import {describe,it,expect} from 'vitest';
+
 import {collectDaemonHttpReference,renderDaemonHttpReferences} from '../../../scripts/lib/daemon-http-reference';
 const root=path.resolve(import.meta.dirname,'../../..');
 describe('current Daemon HTTP documentation consumer',()=>{

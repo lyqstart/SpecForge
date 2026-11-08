@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { produceOwnerSnapshotSurfaceReports } from '../src/owner-snapshot-surface-producers';
 import type { OwnerReleaseSnapshotReport } from '../src/release-owner-snapshot';
 

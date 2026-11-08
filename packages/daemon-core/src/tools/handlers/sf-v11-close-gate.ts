@@ -1,4 +1,5 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { scalarText } from '@specforge/types';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 /**
  * sf-v11-close-gate — v1.1 Close Gate lifecycle handler
  *
@@ -11,72 +12,68 @@ import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
  *   advance every intermediate state.
  */
 
-import { registerHandler } from "../ToolDispatcher.js";
+import { registerHandler } from '../ToolDispatcher.js';
 import { evaluateMergeReport } from '@specforge/types';
-import { runCloseGate, type CloseGateResult } from "../lib/close-gate.js";
-import {
-  runChangedFilesAudit,
-  type ChangedFilesAuditResult,
-} from "../lib/changed-files-audit.js";
-import { readTrustedChangedFilesAuditControlPlaneWrites } from "../lib/changed-files-audit-trusted-writes.js";
-import { readGovernedRegenerableArtifacts } from "../lib/regenerable-artifact-governance.js";
+import { runCloseGate, type CloseGateResult } from '../lib/close-gate.js';
+import { runChangedFilesAudit, type ChangedFilesAuditResult } from '../lib/changed-files-audit.js';
+import { readTrustedChangedFilesAuditControlPlaneWrites } from '../lib/changed-files-audit-trusted-writes.js';
+import { readGovernedRegenerableArtifacts } from '../lib/regenerable-artifact-governance.js';
 import {
   applyRevokedPermissionFacts,
   revokeCodePermission,
   checkCodePermission,
-} from "../lib/code-permission-service-v11.js";
-import {
-  getFactualChangedFiles,
-  summarizeWriteGuardLog,
-} from "../lib/write-guard-log.js";
+} from '../lib/code-permission-service-v11.js';
+import { getFactualChangedFiles, summarizeWriteGuardLog } from '../lib/write-guard-log.js';
 import {
   loadBaseline,
   computeFilesystemDiff,
   type FilesystemDiffResult,
-} from "../lib/filesystem-diff.js";
-import { guardHardStop } from "../lib/hard-stop-latch.js";
+} from '../lib/filesystem-diff.js';
+import { guardHardStop } from '../lib/hard-stop-latch.js';
 import {
   validateTriggerResultJson,
   validateCandidateManifestJson,
   validateEvidenceManifestJson,
-} from "../lib/artifact-schema-validation.js";
+} from '../lib/artifact-schema-validation.js';
 import {
   readAuthoritativeState,
   recoverInvalidClosureWithEvidence,
   recoverInvalidMergedSpecClosureWithEvidence,
   transitionWithEvidence,
-} from "../lib/state-coordinator-v11.js";
-import {
-  readWorkItemMetadata,
-  writeWorkItemMetadata,
-} from "../lib/work-item-metadata.js";
+} from '../lib/state-coordinator-v11.js';
+import { readWorkItemMetadata, writeWorkItemMetadata } from '../lib/work-item-metadata.js';
 import {
   evidenceManifestSchemaBlockCode,
   precheckEvidenceManifestSchema,
-} from "../lib/evidence-manifest.js";
+} from '../lib/evidence-manifest.js';
 import {
   precheckUserDecisionSchema,
   userDecisionSchemaBlockCode,
   invalidateUserDecision,
-} from "../lib/user-decision-recorder-v11.js";
+} from '../lib/user-decision-recorder-v11.js';
 import {
   archiveInvalidMergedSpecGeneration,
   proveInvalidMergedSpecClosure,
   restoreFileAtomically,
   writeInvalidMergedSpecRecoveryRecord,
-} from "../lib/invalid-merged-spec-closure-recovery.js";
+} from '../lib/invalid-merged-spec-closure-recovery.js';
 import {
   assertFormalVersionSnapshotForGitMerge,
   auditActualGovernanceScope,
   inspectFormalGitBinding,
-} from "../lib/project-governance-v2.js";
-import * as path from "node:path";
-import * as fs from "node:fs/promises";
-import { createHash } from "node:crypto";
-import { CHANGED_FILES_AUDIT_CONTRACT_ID } from "../lib/changed-files-audit-verdict.js";
+} from '../lib/project-governance-v2.js';
+import * as path from 'node:path';
+import * as fs from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { CHANGED_FILES_AUDIT_CONTRACT_ID } from '../lib/changed-files-audit-verdict.js';
 import { inspectVerificationEvidenceIntegrity } from '../lib/verification-evidence-integrity.js';
 import { archiveInvalidClosureEvidence } from '../lib/invalid-closure-recovery-archive.js';
-import { bindWriteGuardAudit, inspectClosedWriteGuardAudit, inspectWriteGuardAuditBinding, readWriteGuardAuditBinding } from '../lib/write-guard-audit-binding.js';
+import {
+  bindWriteGuardAudit,
+  inspectClosedWriteGuardAudit,
+  inspectWriteGuardAuditBinding,
+  readWriteGuardAuditBinding,
+} from '../lib/write-guard-audit-binding.js';
 
 interface FilesystemDiffSummary {
   baseline_timestamp?: string;
@@ -91,22 +88,20 @@ interface FilesystemDiffSummary {
 }
 
 const RECOVERABLE_FORMAL_VERSION_INVALIDITY_PREFIXES = [
-  "FORMAL_VERSION_SNAPSHOT_REQUIRED_BEFORE_GIT_MERGE",
-  "FORMAL_VERSION_IMPLEMENTATION_COMMIT_NOT_ANCESTOR",
-  "FORMAL_VERSION_BASE_COMMIT_REQUIRED",
-  "FORMAL_VERSION_IMPLEMENTATION_FILE_SET_MISMATCH",
-  "FORMAL_VERSION_IMPLEMENTATION_CHANGED_AFTER_GATE",
-  "FORMAL_VERSION_DIFF_CHANGED_AFTER_GATE",
-  "FORMAL_VERSION_FILESYSTEM_FILE_SET_MISMATCH",
-  "FORMAL_VERSION_FILESYSTEM_FINGERPRINT_REQUIRED",
-  "FORMAL_VERSION_FILESYSTEM_IMPLEMENTATION_CHANGED_AFTER_GATE",
-  "FORMAL_VERSION_SNAPSHOT_VERSION_CONTROL_MODE_REQUIRED",
+  'FORMAL_VERSION_SNAPSHOT_REQUIRED_BEFORE_GIT_MERGE',
+  'FORMAL_VERSION_IMPLEMENTATION_COMMIT_NOT_ANCESTOR',
+  'FORMAL_VERSION_BASE_COMMIT_REQUIRED',
+  'FORMAL_VERSION_IMPLEMENTATION_FILE_SET_MISMATCH',
+  'FORMAL_VERSION_IMPLEMENTATION_CHANGED_AFTER_GATE',
+  'FORMAL_VERSION_DIFF_CHANGED_AFTER_GATE',
+  'FORMAL_VERSION_FILESYSTEM_FILE_SET_MISMATCH',
+  'FORMAL_VERSION_FILESYSTEM_FINGERPRINT_REQUIRED',
+  'FORMAL_VERSION_FILESYSTEM_IMPLEMENTATION_CHANGED_AFTER_GATE',
+  'FORMAL_VERSION_SNAPSHOT_VERSION_CONTROL_MODE_REQUIRED',
 ] as const;
 
 function isRecoverableFormalVersionInvalidity(message: string): boolean {
-  return RECOVERABLE_FORMAL_VERSION_INVALIDITY_PREFIXES.some(prefix =>
-    message.startsWith(prefix),
-  );
+  return RECOVERABLE_FORMAL_VERSION_INVALIDITY_PREFIXES.some(prefix => message.startsWith(prefix));
 }
 
 interface CloseGateHandlerResult {
@@ -126,7 +121,9 @@ interface CloseGateHandlerResult {
 
 async function hashFileIfPresent(filePath: string): Promise<string | null> {
   try {
-    return createHash("sha256").update(await fs.readFile(filePath)).digest("hex");
+    return createHash('sha256')
+      .update(await fs.readFile(filePath))
+      .digest('hex');
   } catch {
     return null;
   }
@@ -141,18 +138,18 @@ async function recoverInvalidClosure(input: {
   workItemDir: string;
   workItem: Record<string, any>;
 }): Promise<any> {
-  if (input.args["confirm_invalid_closure_recovery"] !== true) {
+  if (input.args['confirm_invalid_closure_recovery'] !== true) {
     return {
       success: false,
       error:
-        "INVALID_CLOSURE_RECOVERY_CONFIRMATION_REQUIRED: set confirm_invalid_closure_recovery=true",
+        'INVALID_CLOSURE_RECOVERY_CONFIRMATION_REQUIRED: set confirm_invalid_closure_recovery=true',
     };
   }
-  const reason = String(input.args["recovery_reason"] ?? "").trim();
+  const reason = scalarText(input.args['recovery_reason'] ?? '').trim();
   if (reason.length < 10) {
     return {
       success: false,
-      error: "INVALID_CLOSURE_RECOVERY_REASON_REQUIRED: provide a specific recovery_reason",
+      error: 'INVALID_CLOSURE_RECOVERY_REASON_REQUIRED: provide a specific recovery_reason',
     };
   }
 
@@ -161,28 +158,33 @@ async function recoverInvalidClosure(input: {
     projectRoot: input.projectRoot,
     workItemId: input.workItemId,
   });
-  if (state.current_state !== "closed") {
+  if (state.current_state !== 'closed') {
     return {
       success: false,
-      error: `INVALID_CLOSURE_RECOVERY_STATE_MISMATCH: expected closed, got '${state.current_state ?? "N/A"}'`,
+      error: `INVALID_CLOSURE_RECOVERY_STATE_MISMATCH: expected closed, got '${state.current_state ?? 'N/A'}'`,
     };
   }
-  if (input.workItem.code_change_allowed === true ||
-      input.workItem.code_permission_revoked !== true) {
-    return { success: false,
-      error: 'INVALID_CLOSURE_RECOVERY_PERMISSION_STATE_INVALID: code permission must remain revoked' };
-  }
-
-  const closeGatePath = path.join(input.workItemDir, "gates", "close_gate.json");
-  const formalGatePath = path.join(input.workItemDir, "gates", "formal_version_gate.json");
-  const formalSnapshotPath = path.join(input.workItemDir, "formal_version_snapshot.json");
-  const closeGate = await readJsonFile(closeGatePath).catch(() => null);
-  const formalGate = await readJsonFile(formalGatePath).catch(() => null);
-  if (closeGate?.status !== "passed") {
+  if (
+    input.workItem.code_change_allowed === true ||
+    input.workItem.code_permission_revoked !== true
+  ) {
     return {
       success: false,
       error:
-        "INVALID_CLOSURE_RECOVERY_EVIDENCE_MISSING: prior close_gate.json with status=passed is required",
+        'INVALID_CLOSURE_RECOVERY_PERMISSION_STATE_INVALID: code permission must remain revoked',
+    };
+  }
+
+  const closeGatePath = path.join(input.workItemDir, 'gates', 'close_gate.json');
+  const formalGatePath = path.join(input.workItemDir, 'gates', 'formal_version_gate.json');
+  const formalSnapshotPath = path.join(input.workItemDir, 'formal_version_snapshot.json');
+  const closeGate = await readJsonFile(closeGatePath).catch(() => null);
+  const formalGate = await readJsonFile(formalGatePath).catch(() => null);
+  if (closeGate?.status !== 'passed') {
+    return {
+      success: false,
+      error:
+        'INVALID_CLOSURE_RECOVERY_EVIDENCE_MISSING: prior close_gate.json with status=passed is required',
     };
   }
 
@@ -193,29 +195,24 @@ async function recoverInvalidClosure(input: {
     workItemId: input.workItemId,
     closed: true,
   });
-  invalidityReasons.push(...evidenceIntegrity.invalidity_reasons.map(reason =>
-    `verification_evidence_invalid=${reason}`,
-  ));
-  const guardAuditOmission = inspectClosedWriteGuardAudit(input.workItemDir, evidenceIntegrity.close_event_at);
+  invalidityReasons.push(
+    ...evidenceIntegrity.invalidity_reasons.map(reason => `verification_evidence_invalid=${reason}`)
+  );
+  const guardAuditOmission = inspectClosedWriteGuardAudit(
+    input.workItemDir,
+    evidenceIntegrity.close_event_at
+  );
   if (guardAuditOmission) invalidityReasons.push(guardAuditOmission.reason);
   let formalSnapshotValidationError: string | null = null;
-  if (formalGate?.status !== "passed") {
-    invalidityReasons.push(
-      `formal_version_gate_status=${formalGate?.status ?? "missing"}`,
-    );
+  if (formalGate?.status !== 'passed') {
+    invalidityReasons.push(`formal_version_gate_status=${formalGate?.status ?? 'missing'}`);
   } else {
     try {
-      await assertFormalVersionSnapshotForGitMerge(
-        input.projectRoot,
-        input.workItemId,
-      );
+      await assertFormalVersionSnapshotForGitMerge(input.projectRoot, input.workItemId);
     } catch (error) {
-      formalSnapshotValidationError =
-        error instanceof Error ? error.message : String(error);
+      formalSnapshotValidationError = error instanceof Error ? error.message : String(error);
       if (isRecoverableFormalVersionInvalidity(formalSnapshotValidationError)) {
-        invalidityReasons.push(
-          `formal_version_snapshot_invalid=${formalSnapshotValidationError}`,
-        );
+        invalidityReasons.push(`formal_version_snapshot_invalid=${formalSnapshotValidationError}`);
       } else {
         return {
           success: false,
@@ -227,7 +224,7 @@ async function recoverInvalidClosure(input: {
 
   let gitBinding: Awaited<ReturnType<typeof inspectFormalGitBinding>> | null = null;
   try {
-    const gitContext = await readJsonFile(path.join(input.workItemDir, "git_context.json"));
+    const gitContext = await readJsonFile(path.join(input.workItemDir, 'git_context.json'));
     const actualScope = await auditActualGovernanceScope({
       projectRoot: input.projectRoot,
       workItemDir: input.workItemDir,
@@ -238,31 +235,27 @@ async function recoverInvalidClosure(input: {
       implementationFiles: actualScope.actual_files,
     });
     const gitBindingFailures = [
-      ...(gitBinding.branch_name !== gitBinding.expected_branch
-        ? ["branch_mismatch"]
-        : []),
-      ...(!gitBinding.base_is_ancestor ? ["base_not_ancestor"] : []),
+      ...(gitBinding.branch_name !== gitBinding.expected_branch ? ['branch_mismatch'] : []),
+      ...(!gitBinding.base_is_ancestor ? ['base_not_ancestor'] : []),
       ...(!gitBinding.implementation_file_set_matches
         ? [
-            `implementation_file_set_mismatch:unrecorded=${gitBinding.unrecorded_committed_implementation_files.join("|") || "none"};absent=${gitBinding.missing_from_commit.join("|") || "none"}`,
+            `implementation_file_set_mismatch:unrecorded=${gitBinding.unrecorded_committed_implementation_files.join('|') || 'none'};absent=${gitBinding.missing_from_commit.join('|') || 'none'}`,
           ]
         : []),
       ...(gitBinding.missing_from_commit.length > 0
-        ? [`missing_from_commit:${gitBinding.missing_from_commit.join("|")}`]
+        ? [`missing_from_commit:${gitBinding.missing_from_commit.join('|')}`]
         : []),
       ...(gitBinding.uncommitted_implementation_files.length > 0
         ? [
-            `uncommitted_implementation_files:${gitBinding.uncommitted_implementation_files.join("|")}`,
+            `uncommitted_implementation_files:${gitBinding.uncommitted_implementation_files.join('|')}`,
           ]
         : []),
     ];
     if (gitBinding.enabled && gitBindingFailures.length > 0) {
-      invalidityReasons.push(
-        `formal_git_binding_failed=${gitBindingFailures.join(",")}`,
-      );
+      invalidityReasons.push(`formal_git_binding_failed=${gitBindingFailures.join(',')}`);
     }
   } catch (error) {
-    if (formalGate?.status === "passed" && invalidityReasons.length === 0) {
+    if (formalGate?.status === 'passed' && invalidityReasons.length === 0) {
       return {
         success: false,
         error: `INVALID_CLOSURE_RECOVERY_GIT_EVIDENCE_UNAVAILABLE: ${
@@ -276,7 +269,7 @@ async function recoverInvalidClosure(input: {
     return {
       success: false,
       error:
-        "INVALID_CLOSURE_RECOVERY_NOT_PROVEN: formal version, Git binding and verification evidence do not prove the prior closure invalid",
+        'INVALID_CLOSURE_RECOVERY_NOT_PROVEN: formal version, Git binding and verification evidence do not prove the prior closure invalid',
     };
   }
 
@@ -285,29 +278,36 @@ async function recoverInvalidClosure(input: {
   const archivedFiles = Array.isArray(archiveManifest?.files) ? archiveManifest.files : [];
   const archivedHash = (relative: string): string | null =>
     String(archivedFiles.find((file: any) => file.path === relative)?.sha256 ?? '') || null;
-  if (archivedHash('gates/close_gate.json') !== await hashFileIfPresent(closeGatePath) ||
-      archivedHash('verification_report.md') !== evidenceIntegrity.report_sha256 ||
-      archivedHash('evidence/evidence_manifest.json') !== evidenceIntegrity.manifest_sha256 ||
-      (guardAuditOmission && (archivedHash('changed_files_audit.md') !== guardAuditOmission.audit_sha256 ||
+  if (
+    archivedHash('gates/close_gate.json') !== (await hashFileIfPresent(closeGatePath)) ||
+    archivedHash('verification_report.md') !== evidenceIntegrity.report_sha256 ||
+    archivedHash('evidence/evidence_manifest.json') !== evidenceIntegrity.manifest_sha256 ||
+    (guardAuditOmission &&
+      (archivedHash('changed_files_audit.md') !== guardAuditOmission.audit_sha256 ||
         archivedHash('write_guard_log.jsonl') !== guardAuditOmission.log_sha256 ||
-        guardAuditOmission.audit_sha256 !== await hashFileIfPresent(path.join(input.workItemDir, 'changed_files_audit.md')) ||
-        guardAuditOmission.log_sha256 !== await hashFileIfPresent(path.join(input.workItemDir, 'write_guard_log.jsonl'))))) {
-    return { success: false,
+        guardAuditOmission.audit_sha256 !==
+          (await hashFileIfPresent(path.join(input.workItemDir, 'changed_files_audit.md'))) ||
+        guardAuditOmission.log_sha256 !==
+          (await hashFileIfPresent(path.join(input.workItemDir, 'write_guard_log.jsonl')))))
+  ) {
+    return {
+      success: false,
       error: 'INVALID_CLOSURE_RECOVERY_EVIDENCE_DRIFT_DURING_ARCHIVE',
-      generation_archive: archive };
+      generation_archive: archive,
+    };
   }
 
   const recoveryRecord = {
-    schema_version: "1.0",
+    schema_version: '1.0',
     work_item_id: input.workItemId,
-    recovery_action: "closed_to_implementation_ready",
-    status: "authorized",
+    recovery_action: 'closed_to_implementation_ready',
+    status: 'authorized',
     reason,
     invalidity_reasons: invalidityReasons,
     prior_evidence: {
       close_gate_status: closeGate.status,
       close_gate_sha256: await hashFileIfPresent(closeGatePath),
-      formal_version_gate_status: formalGate?.status ?? "missing",
+      formal_version_gate_status: formalGate?.status ?? 'missing',
       formal_version_gate_sha256: await hashFileIfPresent(formalGatePath),
       formal_version_snapshot_sha256: await hashFileIfPresent(formalSnapshotPath),
       formal_version_snapshot_validation_error: formalSnapshotValidationError,
@@ -320,11 +320,11 @@ async function recoverInvalidClosure(input: {
       code_change_allowed: input.workItem.code_change_allowed === true,
       code_permission_revoked: input.workItem.code_permission_revoked === true,
     },
-    authorized_by: String(input.context?.agent ?? "close_gate"),
+    authorized_by: String(input.context?.agent ?? 'close_gate'),
     authorized_at: new Date().toISOString(),
   };
-  const recoveryPath = path.join(input.workItemDir, "closure_recovery.json");
-  await fs.writeFile(recoveryPath, JSON.stringify(recoveryRecord, null, 2) + "\n", "utf-8");
+  const recoveryPath = path.join(input.workItemDir, 'closure_recovery.json');
+  await fs.writeFile(recoveryPath, JSON.stringify(recoveryRecord, null, 2) + '\n', 'utf-8');
 
   const transition = await recoverInvalidClosureWithEvidence({
     deps: input.deps,
@@ -332,25 +332,25 @@ async function recoverInvalidClosure(input: {
     workItemId: input.workItemId,
     workItemDir: input.workItemDir,
     workflowType:
-      String(input.workItem.workflow_type ?? "") ||
+      String(input.workItem.workflow_type ?? '') ||
       workflowTypeFromPath(input.workItem.workflow_path),
-    evidence: `Prior closure invalidated: ${invalidityReasons.join("; ")}`,
+    evidence: `Prior closure invalidated: ${invalidityReasons.join('; ')}`,
     invalidityReasons,
   });
-  recoveryRecord.status = "applied";
+  recoveryRecord.status = 'applied';
   Object.assign(recoveryRecord, {
     applied_at: new Date().toISOString(),
     transition: {
-      from_state: "closed",
-      to_state: "implementation_ready",
-      actor: "close_gate",
+      from_state: 'closed',
+      to_state: 'implementation_ready',
+      actor: 'close_gate',
     },
   });
-  await fs.writeFile(recoveryPath, JSON.stringify(recoveryRecord, null, 2) + "\n", "utf-8");
+  await fs.writeFile(recoveryPath, JSON.stringify(recoveryRecord, null, 2) + '\n', 'utf-8');
 
   return {
     success: true,
-    action: "recover_invalid_closure",
+    action: 'recover_invalid_closure',
     work_item_id: input.workItemId,
     authoritative_state_used: true,
     state_advanced: true,
@@ -370,19 +370,18 @@ async function recoverInvalidMergedSpecClosure(input: {
   workItemDir: string;
   workItem: Record<string, any>;
 }): Promise<any> {
-  if (input.args["confirm_invalid_merged_spec_recovery"] !== true) {
+  if (input.args['confirm_invalid_merged_spec_recovery'] !== true) {
     return {
       success: false,
       error:
-        "INVALID_MERGED_SPEC_RECOVERY_CONFIRMATION_REQUIRED: set confirm_invalid_merged_spec_recovery=true",
+        'INVALID_MERGED_SPEC_RECOVERY_CONFIRMATION_REQUIRED: set confirm_invalid_merged_spec_recovery=true',
     };
   }
-  const reason = String(input.args["recovery_reason"] ?? "").trim();
+  const reason = scalarText(input.args['recovery_reason'] ?? '').trim();
   if (reason.length < 10) {
     return {
       success: false,
-      error:
-        "INVALID_MERGED_SPEC_RECOVERY_REASON_REQUIRED: provide a specific recovery_reason",
+      error: 'INVALID_MERGED_SPEC_RECOVERY_REASON_REQUIRED: provide a specific recovery_reason',
     };
   }
 
@@ -391,10 +390,10 @@ async function recoverInvalidMergedSpecClosure(input: {
     projectRoot: input.projectRoot,
     workItemId: input.workItemId,
   });
-  if (state.current_state !== "closed") {
+  if (state.current_state !== 'closed') {
     return {
       success: false,
-      error: `INVALID_MERGED_SPEC_RECOVERY_STATE_MISMATCH: expected closed, got '${state.current_state ?? "N/A"}'`,
+      error: `INVALID_MERGED_SPEC_RECOVERY_STATE_MISMATCH: expected closed, got '${state.current_state ?? 'N/A'}'`,
     };
   }
 
@@ -425,20 +424,20 @@ async function recoverInvalidMergedSpecClosure(input: {
     };
   }
 
-  const decisionPath = path.join(input.workItemDir, "user_decision.json");
+  const decisionPath = path.join(input.workItemDir, 'user_decision.json');
   const decisionBefore = await fs.readFile(decisionPath);
   let decisionInvalidation: Awaited<ReturnType<typeof invalidateUserDecision>>;
   try {
     decisionInvalidation = await invalidateUserDecision(
       input.workItemDir,
-      `Invalid merged Project Spec recovery ${archive.generation_id}: ${reason}`,
+      `Invalid merged Project Spec recovery ${archive.generation_id}: ${reason}`
     );
   } catch (error) {
     const failedRecord = {
-      schema_version: "1.0",
+      schema_version: '1.0',
       work_item_id: input.workItemId,
-      recovery_action: "closed_to_candidate_preparing",
-      status: "failed",
+      recovery_action: 'closed_to_candidate_preparing',
+      status: 'failed',
       reason,
       failed_at: new Date().toISOString(),
       failure: `decision_invalidation_failed: ${
@@ -452,8 +451,9 @@ async function recoverInvalidMergedSpecClosure(input: {
         file_count: archive.files.length,
       },
     };
-    await writeInvalidMergedSpecRecoveryRecord(input.workItemDir, failedRecord)
-      .catch(() => undefined);
+    await writeInvalidMergedSpecRecoveryRecord(input.workItemDir, failedRecord).catch(
+      () => undefined
+    );
     return {
       success: false,
       error: `INVALID_MERGED_SPEC_RECOVERY_DECISION_INVALIDATION_FAILED: ${
@@ -465,10 +465,10 @@ async function recoverInvalidMergedSpecClosure(input: {
   }
 
   const recoveryRecord: Record<string, any> = {
-    schema_version: "1.0",
+    schema_version: '1.0',
     work_item_id: input.workItemId,
-    recovery_action: "closed_to_candidate_preparing",
-    status: "authorized",
+    recovery_action: 'closed_to_candidate_preparing',
+    status: 'authorized',
     reason,
     proof,
     archive: {
@@ -481,23 +481,20 @@ async function recoverInvalidMergedSpecClosure(input: {
       previous_decision_status: decisionInvalidation.before.decision_status,
       decision_status: decisionInvalidation.after.decision_status,
       invalidated_at: decisionInvalidation.after.invalidated_at,
-      decision_before_sha256: createHash("sha256").update(decisionBefore).digest("hex"),
+      decision_before_sha256: createHash('sha256').update(decisionBefore).digest('hex'),
       decision_after_sha256: await hashFileIfPresent(decisionPath),
     },
     permission_state: {
       code_change_allowed: input.workItem.code_change_allowed === true,
       code_permission_revoked: input.workItem.code_permission_revoked === true,
     },
-    authorized_by: String(input.context?.agent ?? "close_gate"),
+    authorized_by: String(input.context?.agent ?? 'close_gate'),
     authorized_at: new Date().toISOString(),
   };
 
   let recoveryPath: string;
   try {
-    recoveryPath = await writeInvalidMergedSpecRecoveryRecord(
-      input.workItemDir,
-      recoveryRecord,
-    );
+    recoveryPath = await writeInvalidMergedSpecRecoveryRecord(input.workItemDir, recoveryRecord);
   } catch (error) {
     await restoreFileAtomically(decisionPath, decisionBefore);
     return {
@@ -518,20 +515,21 @@ async function recoverInvalidMergedSpecClosure(input: {
       workItemId: input.workItemId,
       workItemDir: input.workItemDir,
       workflowType:
-        String(input.workItem.workflow_type ?? "") ||
+        String(input.workItem.workflow_type ?? '') ||
         workflowTypeFromPath(input.workItem.workflow_path),
-      evidence: `Merged Project Spec invalidated: ${proof.invalidity_reasons.join("; ")}`,
+      evidence: `Merged Project Spec invalidated: ${proof.invalidity_reasons.join('; ')}`,
       invalidityReasons: proof.invalidity_reasons,
       generationId: archive.generation_id,
     });
   } catch (error) {
     await restoreFileAtomically(decisionPath, decisionBefore);
-    recoveryRecord.status = "failed";
+    recoveryRecord.status = 'failed';
     recoveryRecord.failed_at = new Date().toISOString();
     recoveryRecord.failure = error instanceof Error ? error.message : String(error);
     recoveryRecord.decision_rolled_back = true;
-    await writeInvalidMergedSpecRecoveryRecord(input.workItemDir, recoveryRecord)
-      .catch(() => undefined);
+    await writeInvalidMergedSpecRecoveryRecord(input.workItemDir, recoveryRecord).catch(
+      () => undefined
+    );
     return {
       success: false,
       error: `INVALID_MERGED_SPEC_RECOVERY_TRANSITION_FAILED: ${recoveryRecord.failure}`,
@@ -541,14 +539,14 @@ async function recoverInvalidMergedSpecClosure(input: {
     };
   }
 
-  recoveryRecord.status = "applied";
+  recoveryRecord.status = 'applied';
   recoveryRecord.applied_at = new Date().toISOString();
   recoveryRecord.transition = {
-    from_state: "closed",
-    to_state: "candidate_preparing",
-    actor: "close_gate",
+    from_state: 'closed',
+    to_state: 'candidate_preparing',
+    actor: 'close_gate',
   };
-  let recoveryRecordStatus = "applied";
+  let recoveryRecordStatus = 'applied';
   let recoveryRecordFinalizeWarning: string | undefined;
   try {
     await writeInvalidMergedSpecRecoveryRecord(input.workItemDir, recoveryRecord);
@@ -557,16 +555,15 @@ async function recoverInvalidMergedSpecClosure(input: {
     // recovery record plus archive hash. Do not misreport the committed state
     // transition as failed merely because this post-event status enrichment
     // could not replace the existing authorized record.
-    recoveryRecordStatus = "authorized";
-    recoveryRecordFinalizeWarning =
-      `INVALID_MERGED_SPEC_RECOVERY_RECORD_FINALIZE_FAILED: ${
-        error instanceof Error ? error.message : String(error)
-      }`;
+    recoveryRecordStatus = 'authorized';
+    recoveryRecordFinalizeWarning = `INVALID_MERGED_SPEC_RECOVERY_RECORD_FINALIZE_FAILED: ${
+      error instanceof Error ? error.message : String(error)
+    }`;
   }
 
   return {
     success: true,
-    action: "recover_invalid_merged_spec_closure",
+    action: 'recover_invalid_merged_spec_closure',
     work_item_id: input.workItemId,
     authoritative_state_used: true,
     state_advanced: true,
@@ -584,40 +581,40 @@ async function recoverInvalidMergedSpecClosure(input: {
       ? { recovery_record_finalize_warning: recoveryRecordFinalizeWarning }
       : {}),
     next_legal_action:
-      "Regenerate the Candidate from the current Project Spec version, rerun Gates, obtain a new explicit user decision, then rerun Atomic Spec Merge, Verification, Formal Version, and Close.",
+      'Regenerate the Candidate from the current Project Spec version, rerun Gates, obtain a new explicit user decision, then rerun Atomic Spec Merge, Verification, Formal Version, and Close.',
   };
 }
 
 const CLOSE_RECOVERABLE_STATES = new Set([
-  "approved",
-  "merge_ready",
-  "merging",
-  "merged",
-  "post_merge_verified",
-  "implementation_ready",
-  "implementation_running",
-  "implementation_done",
-  "verification_running",
-  "verification_done",
+  'approved',
+  'merge_ready',
+  'merging',
+  'merged',
+  'post_merge_verified',
+  'implementation_ready',
+  'implementation_running',
+  'implementation_done',
+  'verification_running',
+  'verification_done',
 ]);
 
 async function readJsonFile(filePath: string): Promise<any> {
-  return JSON.parse(await fs.readFile(filePath, "utf-8"));
+  return JSON.parse(await fs.readFile(filePath, 'utf-8'));
 }
 
 async function saveFilesystemDiffEvidence(
   workItemDir: string,
-  diff: FilesystemDiffResult,
+  diff: FilesystemDiffResult
 ): Promise<string> {
-  const evidencePath = path.join(workItemDir, "filesystem_diff_evidence.json");
-  await fs.writeFile(evidencePath, JSON.stringify(diff, null, 2) + "\n", "utf-8");
+  const evidencePath = path.join(workItemDir, 'filesystem_diff_evidence.json');
+  await fs.writeFile(evidencePath, JSON.stringify(diff, null, 2) + '\n', 'utf-8');
   return evidencePath;
 }
 
 function summarizeFilesystemDiff(
   projectRoot: string,
   evidencePath: string | undefined,
-  diff: FilesystemDiffResult,
+  diff: FilesystemDiffResult
 ): FilesystemDiffSummary {
   return {
     baseline_timestamp: diff.baseline_timestamp,
@@ -634,39 +631,39 @@ function summarizeFilesystemDiff(
 
 function expandAllowedWriteFilesForAudit(
   projectRoot: string,
-  allowedWriteFiles: Array<{ path: string; operation: string }>,
+  allowedWriteFiles: Array<{ path: string; operation: string }>
 ): Array<{ path: string; operation: string }> {
   const out = new Map<string, { path: string; operation: string }>();
 
   for (const item of allowedWriteFiles ?? []) {
-    const rawPath = String(item?.path ?? "");
-    const operation = String(item?.operation ?? "any");
+    const rawPath = String(item?.path ?? '');
+    const operation = String(item?.operation ?? 'any');
     if (!rawPath) continue;
 
     const candidates = new Set<string>();
     candidates.add(rawPath);
-    candidates.add(rawPath.replace(/\\/g, "/"));
+    candidates.add(rawPath.replace(/\\/g, '/'));
 
     try {
       const absolute = path.resolve(projectRoot, rawPath);
       candidates.add(absolute);
-      candidates.add(absolute.replace(/\\/g, "/"));
+      candidates.add(absolute.replace(/\\/g, '/'));
     } catch {
       // ignore
     }
 
     try {
       const relative = path.relative(projectRoot, rawPath);
-      if (relative && !relative.startsWith("..") && !path.isAbsolute(relative)) {
+      if (relative && !relative.startsWith('..') && !path.isAbsolute(relative)) {
         candidates.add(relative);
-        candidates.add(relative.replace(/\\/g, "/"));
+        candidates.add(relative.replace(/\\/g, '/'));
       }
     } catch {
       // ignore
     }
 
     for (const candidate of candidates) {
-      const normalizedCandidate = candidate.replace(/\\/g, "/").replace(/\/+$/g, "");
+      const normalizedCandidate = candidate.replace(/\\/g, '/').replace(/\/+$/g, '');
       const key = `${normalizedCandidate.toLowerCase()}::${operation.toLowerCase()}`;
       if (!out.has(key)) out.set(key, { path: normalizedCandidate, operation });
     }
@@ -681,7 +678,7 @@ async function refreshChangedFilesAuditFromCurrentFacts(
   workItemId: string,
   fallbackAllowedWriteFilesSnapshot: Array<{ path: string; operation: string }>,
   filesystemDiff?: FilesystemDiffResult | null,
-  preserveExistingPassedReport = false,
+  preserveExistingPassedReport = false
 ): Promise<ChangedFilesAuditResult | null> {
   const auditInputBinding = readWriteGuardAuditBinding(projectRoot, workItemDir);
   const factualFiles = getFactualChangedFiles(workItemDir);
@@ -691,11 +688,11 @@ async function refreshChangedFilesAuditFromCurrentFacts(
       : (filesystemDiff?.all_changes ?? []).map(entry => ({
           path: entry.path,
           operation:
-            entry.change === "created"
-              ? ("create" as const)
-              : entry.change === "deleted"
-                ? ("delete" as const)
-                : ("modify" as const),
+            entry.change === 'created'
+              ? ('create' as const)
+              : entry.change === 'deleted'
+                ? ('delete' as const)
+                : ('modify' as const),
         }));
   if (actualFiles.length === 0) return null;
 
@@ -705,34 +702,33 @@ async function refreshChangedFilesAuditFromCurrentFacts(
     Array.isArray(updatedWi.allowed_write_files_snapshot) &&
     updatedWi.allowed_write_files_snapshot.length > 0
       ? (updatedWi.allowed_write_files_snapshot as Array<{ path: string; operation: string }>)
-      : fallbackAllowedWriteFilesSnapshot.map((f) => ({ path: f.path, operation: f.operation }));
+      : fallbackAllowedWriteFilesSnapshot.map(f => ({ path: f.path, operation: f.operation }));
 
   const trustedAllowedWrites = [
-    ...snapshot.map((f) => ({ path: f.path, operation: f.operation })),
-    ...fallbackAllowedWriteFilesSnapshot.map((f) => ({ path: f.path, operation: f.operation })),
-    ...factualFiles.map((f) => ({ path: f.path, operation: f.operation })),
+    ...snapshot.map(f => ({ path: f.path, operation: f.operation })),
+    ...fallbackAllowedWriteFilesSnapshot.map(f => ({ path: f.path, operation: f.operation })),
+    ...factualFiles.map(f => ({ path: f.path, operation: f.operation })),
   ];
 
   const allowedWriteFilesForAudit = expandAllowedWriteFilesForAudit(
     projectRoot,
-    trustedAllowedWrites,
+    trustedAllowedWrites
   );
   const writeGuardSummary = summarizeWriteGuardLog(workItemDir);
-  const trustedControlPlaneWrites =
-    readTrustedChangedFilesAuditControlPlaneWrites(projectRoot);
+  const trustedControlPlaneWrites = readTrustedChangedFilesAuditControlPlaneWrites(projectRoot);
   const governedRegenerableArtifacts = await readGovernedRegenerableArtifacts(
     projectRoot,
-    actualFiles,
+    actualFiles
   );
   const auditResult = runChangedFilesAudit(
     actualFiles,
     allowedWriteFilesForAudit,
-    "agent",
+    'agent',
     trustedControlPlaneWrites,
-    governedRegenerableArtifacts,
+    governedRegenerableArtifacts
   );
 
-  const changedFilesPath = path.join(workItemDir, "changed_files_audit.md");
+  const changedFilesPath = path.join(workItemDir, 'changed_files_audit.md');
   const auditDataSource =
     factualFiles.length > 0
       ? `write_guard_log.jsonl (${writeGuardSummary.totalEntries} entries, ${factualFiles.length} allowed writes, allowed_write_files_snapshot + factual allowed writes)`
@@ -752,9 +748,11 @@ async function refreshChangedFilesAuditFromCurrentFacts(
         auditResult,
         auditDataSource,
         writeGuardSummary.blockedWrites.length,
-        projectRoot, workItemDir, auditInputBinding.sha256,
+        projectRoot,
+        workItemDir,
+        auditInputBinding.sha256
       ),
-      "utf-8",
+      'utf-8'
     );
   }
 
@@ -764,7 +762,7 @@ async function refreshChangedFilesAuditFromCurrentFacts(
 async function syncPermissionFacts(
   workItemDir: string,
   workItemId: string,
-  allowedWriteFilesSnapshot: Array<{ path: string; operation: string }>,
+  allowedWriteFilesSnapshot: Array<{ path: string; operation: string }>
 ): Promise<Record<string, any>> {
   const workItem = await readWorkItemMetadata(workItemDir, workItemId);
   applyRevokedPermissionFacts(workItem, allowedWriteFilesSnapshot, {
@@ -773,22 +771,22 @@ async function syncPermissionFacts(
   await writeWorkItemMetadata(workItemDir, workItemId, workItem);
   return workItem;
 }
-function workflowTypeFromPath(workflowPath: string | undefined): string {
+function workflowTypeFromPath(workflowPath: unknown): string {
   switch (workflowPath) {
-    case "requirement_change_path":
-      return "feature_spec";
-    case "design_change_path":
-    case "architecture_change_path":
-    case "task_change_path":
-    case "code_only_fast_path":
-    case "contract_change_path":
-      return "feature_spec";
-    case "spec_migration_path":
-      return "spec_migration";
-    case "rollback_path":
-      return "rollback";
+    case 'requirement_change_path':
+      return 'feature_spec';
+    case 'design_change_path':
+    case 'architecture_change_path':
+    case 'task_change_path':
+    case 'code_only_fast_path':
+    case 'contract_change_path':
+      return 'feature_spec';
+    case 'spec_migration_path':
+      return 'spec_migration';
+    case 'rollback_path':
+      return 'rollback';
     default:
-      return "feature_spec";
+      return 'feature_spec';
   }
 }
 
@@ -808,11 +806,11 @@ async function advanceToClosedWithAuthoritativeEvents(input: {
   });
 
   const current = state.current_state;
-  if (current === "closed") {
+  if (current === 'closed') {
     return {
       attempted: true,
       advanced: false,
-      reason: "already_closed",
+      reason: 'already_closed',
       current_state: current,
     };
   }
@@ -820,32 +818,31 @@ async function advanceToClosedWithAuthoritativeEvents(input: {
   if (!current || !CLOSE_RECOVERABLE_STATES.has(current)) {
     return {
       attempted: false,
-      reason: "current_state_not_close_recoverable",
+      reason: 'current_state_not_close_recoverable',
       current_state: current,
     };
   }
 
-  const workflowType =
-    input.workflowType || workflowTypeFromPath(input.workflowPath);
+  const workflowType = input.workflowType || workflowTypeFromPath(input.workflowPath);
   const sequence = [
-    "approved",
-    "merge_ready",
-    "merging",
-    "merged",
-    "post_merge_verified",
-    "implementation_ready",
-    "implementation_running",
-    "implementation_done",
-    "verification_running",
-    "verification_done",
-    "closed",
+    'approved',
+    'merge_ready',
+    'merging',
+    'merged',
+    'post_merge_verified',
+    'implementation_ready',
+    'implementation_running',
+    'implementation_done',
+    'verification_running',
+    'verification_done',
+    'closed',
   ];
 
   const startIndex = sequence.indexOf(current);
   if (startIndex < 0) {
     return {
       attempted: false,
-      reason: "state_not_in_close_sequence",
+      reason: 'state_not_in_close_sequence',
       current_state: current,
     };
   }
@@ -855,14 +852,14 @@ async function advanceToClosedWithAuthoritativeEvents(input: {
     const fromState = sequence[i];
     const toState = sequence[i + 1];
 
-    let actorRole = "sf-orchestrator";
-    if (fromState === "merge_ready" || fromState === "merging") actorRole = "merge_runner";
-    if (toState === "post_merge_verified") actorRole = "gate_runner";
-    if (toState === "implementation_ready" || toState === "implementation_running") {
-      actorRole = "code_permission_service";
+    let actorRole = 'sf-orchestrator';
+    if (fromState === 'merge_ready' || fromState === 'merging') actorRole = 'merge_runner';
+    if (toState === 'post_merge_verified') actorRole = 'gate_runner';
+    if (toState === 'implementation_ready' || toState === 'implementation_running') {
+      actorRole = 'code_permission_service';
     }
-    if (toState === "verification_done") actorRole = "gate_runner";
-    if (toState === "closed") actorRole = "close_gate";
+    if (toState === 'verification_done') actorRole = 'gate_runner';
+    if (toState === 'closed') actorRole = 'close_gate';
 
     steps.push(
       await transitionWithEvidence({
@@ -877,10 +874,10 @@ async function advanceToClosedWithAuthoritativeEvents(input: {
         actorRole,
         evidence: `close_gate authoritative recovery step ${fromState}->${toState}`,
         transitionContext: {
-          source: "sf_v11_close_gate",
+          source: 'sf_v11_close_gate',
           recovery: true,
         },
-      }),
+      })
     );
   }
 
@@ -888,20 +885,20 @@ async function advanceToClosedWithAuthoritativeEvents(input: {
     attempted: true,
     advanced: true,
     from_state: current,
-    to_state: "closed",
+    to_state: 'closed',
     workflow_type: workflowType,
     transition_steps: steps,
   };
 }
 
-registerHandler("sf_close_gate", async (args, context, deps) => {
+registerHandler('sf_close_gate', async (args, context, deps) => {
   const projectRoot =
     (context?.directory as string) || (context?.worktree as string) || process.cwd();
-  const workItemId = args["work_item_id"] as string;
+  const workItemId = args['work_item_id'] as string;
 
-  if (!workItemId) return { success: false, error: "work_item_id is required" };
+  if (!workItemId) return { success: false, error: 'work_item_id is required' };
 
-  const workItemDir = path.join(projectRoot, SPEC_DIR_NAME, "work-items", workItemId);
+  const workItemDir = path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId);
   const result: CloseGateHandlerResult = {
     success: false,
     work_item_id: workItemId,
@@ -912,14 +909,14 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
     state_advanced: false,
   };
 
-  const hardStopGuard = guardHardStop(projectRoot, workItemId, "sf_close_gate");
+  const hardStopGuard = guardHardStop(projectRoot, workItemId, 'sf_close_gate');
   if (!hardStopGuard.allowed) {
     return {
       ...result,
       error: hardStopGuard.error,
       hard_stop: true,
       hard_stop_record: hardStopGuard.hard_stop_record,
-    } as any;
+    };
   }
 
   try {
@@ -942,7 +939,7 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
       };
     }
 
-    if (String(args["action"] ?? "close") === "recover_invalid_closure") {
+    if (scalarText(args['action'] ?? 'close') === 'recover_invalid_closure') {
       return recoverInvalidClosure({
         args,
         context,
@@ -953,7 +950,7 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
         workItem,
       });
     }
-    if (String(args["action"] ?? "close") === "recover_invalid_merged_spec_closure") {
+    if (scalarText(args['action'] ?? 'close') === 'recover_invalid_merged_spec_closure') {
       return recoverInvalidMergedSpecClosure({
         args,
         context,
@@ -965,10 +962,7 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
       });
     }
 
-    const evidenceSchemaPrecheck = await precheckEvidenceManifestSchema(
-      workItemDir,
-      workItemId,
-    );
+    const evidenceSchemaPrecheck = await precheckEvidenceManifestSchema(workItemDir, workItemId);
     const evidenceSchemaBlockCode = evidenceManifestSchemaBlockCode(evidenceSchemaPrecheck);
     if (evidenceSchemaBlockCode) {
       return {
@@ -982,125 +976,148 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
       projectRoot,
       workItemId,
     });
-    const effectiveState = authoritativeState.current_state ?? "";
-    result.authoritative_state_used = true; result.closed_from_state = effectiveState; if (effectiveState === "closed") { return { ...result, success: true, state_advanced: false, state_auto_advance: { attempted: true, advanced: false, reason: "already_closed", current_state: "closed" }, }; } if (effectiveState !== "verification_done") { return { ...result, error: `AUTHORITATIVE_STATE_MISMATCH: close_gate requires authoritative current_state=verification_done, current='${effectiveState || "N/A"}'`, state_auto_advance: { attempted: false, reason: "current_state_not_verification_done", current_state: effectiveState || "N/A", expected_state: "verification_done" }, }; }
+    const effectiveState = authoritativeState.current_state ?? '';
+    result.authoritative_state_used = true;
+    result.closed_from_state = effectiveState;
+    if (effectiveState === 'closed') {
+      return {
+        ...result,
+        success: true,
+        state_advanced: false,
+        state_auto_advance: {
+          attempted: true,
+          advanced: false,
+          reason: 'already_closed',
+          current_state: 'closed',
+        },
+      };
+    }
+    if (effectiveState !== 'verification_done') {
+      return {
+        ...result,
+        error: `AUTHORITATIVE_STATE_MISMATCH: close_gate requires authoritative current_state=verification_done, current='${effectiveState || 'N/A'}'`,
+        state_auto_advance: {
+          attempted: false,
+          reason: 'current_state_not_verification_done',
+          current_state: effectiveState || 'N/A',
+          expected_state: 'verification_done',
+        },
+      };
+    }
 
-    const triggerResultPath = path.join(workItemDir, "trigger_result.json");
+    const triggerResultPath = path.join(workItemDir, 'trigger_result.json');
     let triggerResult: Record<string, any>;
     try {
-      const trContent = await fs.readFile(triggerResultPath, "utf-8");
+      const trContent = await fs.readFile(triggerResultPath, 'utf-8');
       const trValidation = validateTriggerResultJson(trContent, workItemId);
       if (!trValidation.valid) {
         return {
           ...result,
-          error: `trigger_result.json schema validation failed: ${trValidation.errors.join("; ")}`,
+          error: `trigger_result.json schema validation failed: ${trValidation.errors.join('; ')}`,
         };
       }
       triggerResult = JSON.parse(trContent);
     } catch {
-      return { ...result, error: "trigger_result.json not found — required for close_gate" };
+      return { ...result, error: 'trigger_result.json not found — required for close_gate' };
     }
     const effectiveWorkflowPath =
-      String(workItem.workflow_path ?? "").trim() ||
-      String(triggerResult.workflow_path ?? "").trim();
+      String(workItem.workflow_path ?? '').trim() ||
+      String(triggerResult.workflow_path ?? '').trim();
     const effectiveWorkflowType =
-      String(workItem.workflow_type ?? "").trim() ||
-      String(triggerResult.workflow_type ?? "").trim();
+      String(workItem.workflow_type ?? '').trim() ||
+      String(triggerResult.workflow_type ?? '').trim();
 
-    const candidateManifestPath = path.join(workItemDir, "candidate_manifest.json");
+    const candidateManifestPath = path.join(workItemDir, 'candidate_manifest.json');
     let candidateManifest: any;
     try {
-      const cmContent = await fs.readFile(candidateManifestPath, "utf-8");
+      const cmContent = await fs.readFile(candidateManifestPath, 'utf-8');
       const cmValidation = validateCandidateManifestJson(
         cmContent,
         workItemId,
-        effectiveWorkflowPath,
+        effectiveWorkflowPath
       );
       if (!cmValidation.valid) {
         return {
           ...result,
-          error: `candidate_manifest.json schema validation failed: ${cmValidation.errors.join("; ")}`,
+          error: `candidate_manifest.json schema validation failed: ${cmValidation.errors.join('; ')}`,
         };
       }
       candidateManifest = JSON.parse(cmContent);
     } catch (err: any) {
-      if (String(err?.message ?? "").includes("schema validation")) throw err;
+      if (String(err?.message ?? '').includes('schema validation')) throw err;
       return {
         ...result,
-        error: "candidate_manifest.json not found — required for close_gate",
+        error: 'candidate_manifest.json not found — required for close_gate',
       };
     }
 
-    if (workItem.workflow_path === "code_only_fast_path") {
-      if (
-        !Array.isArray(candidateManifest.entries) ||
-        candidateManifest.entries.length !== 0
-      ) {
+    if (workItem.workflow_path === 'code_only_fast_path') {
+      if (!Array.isArray(candidateManifest.entries) || candidateManifest.entries.length !== 0) {
         return {
           ...result,
-          error: "code_only_fast_path requires candidate_manifest.entries = []",
+          error: 'code_only_fast_path requires candidate_manifest.entries = []',
         };
       }
     }
 
-    const mergePath = path.join(workItemDir, "merge_report.md");
+    const mergePath = path.join(workItemDir, 'merge_report.md');
     try {
-      const mergeReport = await fs.readFile(mergePath, "utf-8");
+      const mergeReport = await fs.readFile(mergePath, 'utf-8');
       const mergeVerdict = evaluateMergeReport(mergeReport, workItemId);
       const mergeStatus = mergeVerdict.status;
-      const validMergeStatus = mergeVerdict.valid &&
-        (mergeStatus === "success" || mergeStatus === "not_applicable");
+      const validMergeStatus =
+        mergeVerdict.valid && (mergeStatus === 'success' || mergeStatus === 'not_applicable');
       if (!validMergeStatus) {
         return {
           ...result,
-          error: mergeVerdict.reason ??
+          error:
+            mergeVerdict.reason ??
             `merge_report.md must have status success or not_applicable; got: "${mergeStatus}"`,
         };
       }
-      if (workItem.workflow_path === "code_only_fast_path" && mergeStatus !== "not_applicable") {
+      if (workItem.workflow_path === 'code_only_fast_path' && mergeStatus !== 'not_applicable') {
         return {
           ...result,
-          error: "code_only_fast_path requires merge_report Status = not_applicable",
+          error: 'code_only_fast_path requires merge_report Status = not_applicable',
         };
       }
     } catch {
-      return { ...result, error: "merge_report.md not found — required for close_gate" };
+      return { ...result, error: 'merge_report.md not found — required for close_gate' };
     }
 
     try {
-      await fs.access(path.join(workItemDir, "verification_report.md"));
+      await fs.access(path.join(workItemDir, 'verification_report.md'));
     } catch {
       return {
         ...result,
-        error: "verification_report.md not found — required for close_gate",
+        error: 'verification_report.md not found — required for close_gate',
       };
     }
 
     try {
       const emContent = await fs.readFile(
-        path.join(workItemDir, "evidence", "evidence_manifest.json"),
-        "utf-8",
+        path.join(workItemDir, 'evidence', 'evidence_manifest.json'),
+        'utf-8'
       );
       const emValidation = validateEvidenceManifestJson(emContent, workItemId);
       if (!emValidation.valid) {
         return {
           ...result,
-          error: `evidence_manifest.json schema validation failed: ${emValidation.errors.join("; ")}`,
+          error: `evidence_manifest.json schema validation failed: ${emValidation.errors.join('; ')}`,
         };
       }
     } catch {
       return {
         ...result,
-        error: "evidence/evidence_manifest.json not found — required for close_gate",
+        error: 'evidence/evidence_manifest.json not found — required for close_gate',
       };
     }
 
     const contractWorkflow =
-      effectiveWorkflowType === "contract_change" ||
-      effectiveWorkflowPath === "contract_change_path";
+      effectiveWorkflowType === 'contract_change' ||
+      effectiveWorkflowPath === 'contract_change_path';
     const specMigrationWorkflow =
-      effectiveWorkflowType === "spec_migration" ||
-      effectiveWorkflowPath === "spec_migration_path";
+      effectiveWorkflowType === 'spec_migration' || effectiveWorkflowPath === 'spec_migration_path';
     const permState = await checkCodePermission(workItemDir);
     const allowedWriteFilesSnapshot = permState.allowed_write_files;
     if (contractWorkflow || specMigrationWorkflow) {
@@ -1108,8 +1125,8 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
         return {
           ...result,
           error: specMigrationWorkflow
-            ? "SPEC_MIGRATION_CODE_PERMISSION_MUST_NEVER_BE_ENABLED"
-            : "CONTRACT_CHANGE_CODE_PERMISSION_MUST_NEVER_BE_ENABLED",
+            ? 'SPEC_MIGRATION_CODE_PERMISSION_MUST_NEVER_BE_ENABLED'
+            : 'CONTRACT_CHANGE_CODE_PERMISSION_MUST_NEVER_BE_ENABLED',
         };
       }
       result.code_permission_revoked = false;
@@ -1121,7 +1138,7 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
       result.code_permission_revoked = true;
     }
 
-    const changedFilesPath = path.join(workItemDir, "changed_files_audit.md");
+    const changedFilesPath = path.join(workItemDir, 'changed_files_audit.md');
     let auditAlreadyExists = false;
     try {
       await fs.access(changedFilesPath);
@@ -1135,7 +1152,7 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
       const updatedWi = await readWorkItemMetadata(workItemDir, workItemId);
       const factualFiles = getFactualChangedFiles(workItemDir);
       const writeGuardSummary = summarizeWriteGuardLog(workItemDir);
-      let changedFiles: Array<{ path: string; operation: "create" | "modify" | "delete" }>;
+      let changedFiles: Array<{ path: string; operation: 'create' | 'modify' | 'delete' }>;
       let auditDataSource: string;
 
       if (factualFiles.length > 0) {
@@ -1143,25 +1160,24 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
         auditDataSource = `write_guard_log.jsonl (${writeGuardSummary.totalEntries} entries, ${factualFiles.length} allowed writes)`;
       } else {
         changedFiles = (updatedWi.actual_changed_files as typeof changedFiles) ?? [];
-        auditDataSource = changedFiles.length > 0 ? "work_item.actual_changed_files" : "none";
+        auditDataSource = changedFiles.length > 0 ? 'work_item.actual_changed_files' : 'none';
       }
 
       const allowedWriteFilesForAudit: Array<{ path: string; operation: string }> =
         (updatedWi.allowed_write_files_snapshot as Array<{ path: string; operation: string }>) ??
-        allowedWriteFilesSnapshot.map((f) => ({ path: f.path, operation: f.operation }));
+        allowedWriteFilesSnapshot.map(f => ({ path: f.path, operation: f.operation }));
 
-      const trustedControlPlaneWrites =
-        readTrustedChangedFilesAuditControlPlaneWrites(projectRoot);
+      const trustedControlPlaneWrites = readTrustedChangedFilesAuditControlPlaneWrites(projectRoot);
       const governedRegenerableArtifacts = await readGovernedRegenerableArtifacts(
         projectRoot,
-        changedFiles,
+        changedFiles
       );
       const auditResult = runChangedFilesAudit(
         changedFiles,
         allowedWriteFilesForAudit,
-        "agent",
+        'agent',
         trustedControlPlaneWrites,
-        governedRegenerableArtifacts,
+        governedRegenerableArtifacts
       );
       result.changed_files_audit = auditResult;
       await fs.writeFile(
@@ -1171,9 +1187,11 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
           auditResult,
           auditDataSource,
           writeGuardSummary.blockedWrites.length,
-          projectRoot, workItemDir, auditInputBinding.sha256,
+          projectRoot,
+          workItemDir,
+          auditInputBinding.sha256
         ),
-        "utf-8",
+        'utf-8'
       );
     } else {
       result.changed_files_audit = { passed: true } as ChangedFilesAuditResult;
@@ -1182,7 +1200,7 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
     const baseline = loadBaseline(workItemDir);
     let filesystemDiff: FilesystemDiffResult | null = null;
     if (baseline) {
-      const writeGuardAllowed = getFactualChangedFiles(workItemDir).map((f) => f.path);
+      const writeGuardAllowed = getFactualChangedFiles(workItemDir).map(f => f.path);
       const fullDiff = computeFilesystemDiff(baseline, projectRoot, writeGuardAllowed);
       filesystemDiff = fullDiff;
       const diffEvidencePath = await saveFilesystemDiffEvidence(workItemDir, fullDiff);
@@ -1194,14 +1212,10 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
         workItemId,
         allowedWriteFilesSnapshot,
         fullDiff,
-        auditAlreadyExists,
+        auditAlreadyExists
       );
       if (refreshedAudit) result.changed_files_audit = refreshedAudit;
-      result.filesystem_diff = summarizeFilesystemDiff(
-        projectRoot,
-        diffEvidencePath,
-        fullDiff,
-      );
+      result.filesystem_diff = summarizeFilesystemDiff(projectRoot, diffEvidencePath, fullDiff);
     }
 
     const finalAuditRefresh = await refreshChangedFilesAuditFromCurrentFacts(
@@ -1210,12 +1224,12 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
       workItemId,
       allowedWriteFilesSnapshot,
       filesystemDiff,
-      auditAlreadyExists,
+      auditAlreadyExists
     );
     if (finalAuditRefresh) result.changed_files_audit = finalAuditRefresh;
 
     const closeGateResult = await runCloseGate({
-      executionEvidenceConsumer:deps.verificationRuntime,
+      executionEvidenceConsumer: deps.verificationRuntime,
       workItemId,
       workItemDir,
       projectRoot,
@@ -1224,36 +1238,39 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
     });
     result.close_gate = closeGateResult;
 
-    const gatesDir = path.join(workItemDir, "gates");
+    const gatesDir = path.join(workItemDir, 'gates');
     await fs.mkdir(gatesDir, { recursive: true });
     await fs.writeFile(
-      path.join(gatesDir, "close_gate.json"),
-      JSON.stringify(closeGateResult.report, null, 2) + "\n",
-      "utf-8",
+      path.join(gatesDir, 'close_gate.json'),
+      JSON.stringify(closeGateResult.report, null, 2) + '\n',
+      'utf-8'
     );
 
     if (!closeGateResult.allChecksPassed) {
       const failedChecks = closeGateResult.report.checks
-        .filter((c) => !c.passed)
-        .map((c) => `${c.check_id}: ${c.description}`)
-        .join("; ");
+        .filter(c => !c.passed)
+        .map(c => `${c.check_id}: ${c.description}`)
+        .join('; ');
       return {
         ...result,
         error: `Close gate failed: ${failedChecks}`,
-        evidence_path: path.join(gatesDir, "close_gate.json"),
+        evidence_path: path.join(gatesDir, 'close_gate.json'),
       };
     }
 
-    const finalAuditBinding = inspectWriteGuardAuditBinding(projectRoot, workItemDir,
-      await fs.readFile(changedFilesPath, 'utf-8'));
+    const finalAuditBinding = inspectWriteGuardAuditBinding(
+      projectRoot,
+      workItemDir,
+      await fs.readFile(changedFilesPath, 'utf-8')
+    );
     if (!finalAuditBinding.passed) return { ...result, error: finalAuditBinding.reason };
 
     await fs.writeFile(
-      path.join(workItemDir, "close_gate.md"),
+      path.join(workItemDir, 'close_gate.md'),
       generateCloseGateEvidenceMd(workItemId, closeGateResult, result.filesystem_diff),
-      "utf-8",
+      'utf-8'
     );
-    result.evidence_path = path.join(workItemDir, "close_gate.md");
+    result.evidence_path = path.join(workItemDir, 'close_gate.md');
 
     const stateAutoAdvance = await advanceToClosedWithAuthoritativeEvents({
       deps,
@@ -1266,7 +1283,7 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
     });
 
     result.state_auto_advance = stateAutoAdvance;
-    result.state_advanced = Boolean((stateAutoAdvance as any)?.advanced);
+    result.state_advanced = Boolean(stateAutoAdvance?.advanced);
     result.success = true;
     return result;
   } catch (err: any) {
@@ -1281,23 +1298,23 @@ function generateChangedFilesAuditMd(
   blockedWriteAttempts = 0,
   projectRoot: string,
   workItemDir: string,
-  expectedBinding: string,
+  expectedBinding: string
 ): string {
   const violations = Array.isArray(audit.violations) ? audit.violations : [];
   const entries = Array.isArray(audit.entries) ? audit.entries : [];
   const lines: string[] = [
-    "# Changed Files Audit",
-    "",
+    '# Changed Files Audit',
+    '',
     `Contract: ${CHANGED_FILES_AUDIT_CONTRACT_ID}`,
     `Work Item: ${workItemId}`,
     `- Timestamp: ${new Date().toISOString()}`,
-    `## Result: ${audit.passed ? "PASS" : "FAIL"}`,
-    `- Data Source: ${dataSource ?? "pre-existing audit file"}`,
+    `## Result: ${audit.passed ? 'PASS' : 'FAIL'}`,
+    `- Data Source: ${dataSource ?? 'pre-existing audit file'}`,
     `- Ignored Runtime Files: ${audit.ignored_runtime_files ?? 0}`,
     `- Governed Regenerable Artifacts: ${audit.governed_regenerable_artifacts ?? 0}`,
-    "",
-    "## Summary",
-    "",
+    '',
+    '## Summary',
+    '',
     `- Total files: ${audit.total_files ?? entries.length}`,
     `- In scope: ${audit.in_scope ?? 0}`,
     `- Out of scope: ${audit.out_of_scope ?? 0}`,
@@ -1305,42 +1322,42 @@ function generateChangedFilesAuditMd(
     `- Spec writes: ${audit.spec_writes ?? 0}`,
     `- Side effects: ${audit.side_effects ?? 0}`,
     `- Blocked write attempts: ${blockedWriteAttempts}`,
-    "",
+    '',
   ];
 
   if (entries.length > 0) {
-    lines.push("## Entries", "");
+    lines.push('## Entries', '');
     for (const entry of entries) {
       const scope = entry.ignored_runtime_path
-        ? "ignored_runtime"
+        ? 'ignored_runtime'
         : entry.governed_regenerable_artifact
-          ? `governed_regenerable:${entry.regenerable_artifact_class ?? "unknown"}`
-        : entry.in_allowed_write_files
-          ? "in_scope"
-          : entry.is_spec_write
-            ? "spec_write"
-            : "OUT_OF_SCOPE";
+          ? `governed_regenerable:${entry.regenerable_artifact_class ?? 'unknown'}`
+          : entry.in_allowed_write_files
+            ? 'in_scope'
+            : entry.is_spec_write
+              ? 'spec_write'
+              : 'OUT_OF_SCOPE';
       lines.push(`- [${entry.operation}] ${entry.path} -> ${scope}`);
     }
-    lines.push("");
+    lines.push('');
   }
 
   if (violations.length > 0) {
-    lines.push("## Violations", "", ...violations.map((v) => `- ${v}`), "");
+    lines.push('## Violations', '', ...violations.map(v => `- ${v}`), '');
   }
 
-  return bindWriteGuardAudit(lines.join("\n"), projectRoot, workItemDir, expectedBinding);
+  return bindWriteGuardAudit(lines.join('\n'), projectRoot, workItemDir, expectedBinding);
 }
 
 function generateCloseGateEvidenceMd(
   workItemId: string,
   closeGateResult: CloseGateResult,
-  diffSummary: FilesystemDiffSummary | null,
+  diffSummary: FilesystemDiffSummary | null
 ): string {
   const report = closeGateResult.report;
   const lines: string[] = [
-    "# Close Gate Evidence",
-    "",
+    '# Close Gate Evidence',
+    '',
     `- Work Item: ${workItemId}`,
     `- Status: ${report.status}`,
     `- Runner: ${report.runner}`,
@@ -1349,44 +1366,37 @@ function generateCloseGateEvidenceMd(
 
   if (diffSummary) {
     lines.push(
-      "",
-      "## Filesystem Diff Summary",
-      "",
+      '',
+      '## Filesystem Diff Summary',
+      '',
       `- Created: ${diffSummary.created_count}`,
       `- Modified: ${diffSummary.modified_count}`,
       `- Deleted: ${diffSummary.deleted_count}`,
       `- Untracked: ${diffSummary.untracked_changes_count}`,
       `- Ignored Runtime Files: ${diffSummary.ignored_runtime_files}`,
-      `- Evidence File: ${diffSummary.evidence_file ?? "N/A"}`,
+      `- Evidence File: ${diffSummary.evidence_file ?? 'N/A'}`
     );
   }
 
   lines.push(
-    "",
-    "## Checks",
-    "",
-    "| Check ID | Description | Passed |",
-    "|----------|-------------|--------|",
+    '',
+    '## Checks',
+    '',
+    '| Check ID | Description | Passed |',
+    '|----------|-------------|--------|'
   );
 
   for (const check of report.checks) {
-    lines.push(
-      `| ${check.check_id} | ${check.description} | ${check.passed ? "✓" : "✗"} |`,
-    );
+    lines.push(`| ${check.check_id} | ${check.description} | ${check.passed ? '✓' : '✗'} |`);
   }
 
   if (report.blocking_issues.length > 0) {
-    lines.push(
-      "",
-      "## Blocking Issues",
-      "",
-      ...report.blocking_issues.map((issue) => `- ${issue}`),
-    );
+    lines.push('', '## Blocking Issues', '', ...report.blocking_issues.map(issue => `- ${issue}`));
   }
 
   if (report.warnings.length > 0) {
-    lines.push("", "## Warnings", "", ...report.warnings.map((w) => `- ${w}`));
+    lines.push('', '## Warnings', '', ...report.warnings.map(w => `- ${w}`));
   }
 
-  return lines.join("\n");
+  return lines.join('\n');
 }

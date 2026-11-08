@@ -7,7 +7,7 @@
 import * as path from 'path';
 import * as fs from 'node:fs';
 import { createHash } from 'node:crypto';
-import { SPEC_DIR_NAME, resolveProjectPath } from '@specforge/types/directory-layout';
+import { resolveProjectPath } from '@specforge/types/directory-layout';
 import {
   resolveOpenCodeConfigRoot,
   resolveSpecForgeHandshakePath,
@@ -21,17 +21,7 @@ export { resolveOpenCodeConfigRoot } from '@specforge/types/user-level-paths';
  * Use a function (not a module-level Set) so tests can mutate if needed.
  */
 function getCriticalSystemPaths(): Set<string> {
-  return new Set([
-    '/',
-    'C:\\',
-    '/root',
-    '/home',
-    '/Users',
-    '/var',
-    '/etc',
-    '/tmp',
-    '/opt',
-  ]);
+  return new Set(['/', 'C:\\', '/root', '/home', '/Users', '/var', '/etc', '/tmp', '/opt']);
 }
 
 // ---------------------------------------------------------------------------
@@ -174,7 +164,9 @@ export class PersonalPathResolver implements IPathResolver {
    * Use project-scoped resolveStatePath() instead.
    */
   resolveDaemonStatePath(): string {
-    console.warn('[DEPRECATED] resolveDaemonStatePath() is deprecated. Use resolveStatePath(projectPath) instead.');
+    console.warn(
+      '[DEPRECATED] resolveDaemonStatePath() is deprecated. Use resolveStatePath(projectPath) instead.'
+    );
     return path.join(this.resolveDaemonRuntimeDir(), 'state.json');
   }
 
@@ -183,7 +175,9 @@ export class PersonalPathResolver implements IPathResolver {
    * Use project-scoped resolveEventsPath() instead.
    */
   resolveDaemonEventsPath(): string {
-    console.warn('[DEPRECATED] resolveDaemonEventsPath() is deprecated. Use resolveEventsPath(projectPath) instead.');
+    console.warn(
+      '[DEPRECATED] resolveDaemonEventsPath() is deprecated. Use resolveEventsPath(projectPath) instead.'
+    );
     return path.join(this.resolveDaemonRuntimeDir(), 'events.jsonl');
   }
 }
@@ -197,7 +191,9 @@ export class PersonalPathResolver implements IPathResolver {
  * User-home ~/.specforge is legacy read-only and is never a current write target.
  */
 export class EnterprisePathResolver implements IPathResolver {
-  constructor(private readonly hasLegacyRuntime: (location: string) => boolean = legacyRuntimeExists) {}
+  constructor(
+    private readonly hasLegacyRuntime: (location: string) => boolean = legacyRuntimeExists
+  ) {}
 
   resolveProjectRuntimeDir(projectPath: string): string {
     validateProjectPath(projectPath);
@@ -207,7 +203,7 @@ export class EnterprisePathResolver implements IPathResolver {
     if (this.hasLegacyRuntime(legacyDir)) {
       throw new InvalidProjectPath(
         projectPath,
-        `legacy enterprise runtime exists at ${legacyDir}; ownership cannot be verified for automatic migration`,
+        `legacy enterprise runtime exists at ${legacyDir}; ownership cannot be verified for automatic migration`
       );
     }
     return resolveSpecForgeUserPath('projects', stableProjectKey(projectPath));
@@ -242,7 +238,9 @@ export class EnterprisePathResolver implements IPathResolver {
    * Use project-scoped resolveStatePath() instead.
    */
   resolveDaemonStatePath(): string {
-    console.warn('[DEPRECATED] resolveDaemonStatePath() is deprecated. Use resolveStatePath(projectPath) instead.');
+    console.warn(
+      '[DEPRECATED] resolveDaemonStatePath() is deprecated. Use resolveStatePath(projectPath) instead.'
+    );
     return path.join(this.resolveDaemonRuntimeDir(), 'state.json');
   }
 
@@ -251,7 +249,9 @@ export class EnterprisePathResolver implements IPathResolver {
    * Use project-scoped resolveEventsPath() instead.
    */
   resolveDaemonEventsPath(): string {
-    console.warn('[DEPRECATED] resolveDaemonEventsPath() is deprecated. Use resolveEventsPath(projectPath) instead.');
+    console.warn(
+      '[DEPRECATED] resolveDaemonEventsPath() is deprecated. Use resolveEventsPath(projectPath) instead.'
+    );
     return path.join(this.resolveDaemonRuntimeDir(), 'events.jsonl');
   }
 }

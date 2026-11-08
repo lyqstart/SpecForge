@@ -1,28 +1,25 @@
 /**
  * Plugin Management Commands
- * 
+ *
  * Provides commands to manage plugins:
  * - list: List all installed plugins
  * - info: Get plugin information
  * - install: Install a plugin
  * - uninstall: Uninstall a plugin
- * 
+ *
  * @packageDocumentation
  */
 
 import yargs, { Argv, Arguments } from 'yargs';
 import { DaemonClient } from '../http/DaemonClient';
 import { ModeSwitch, formatError } from '../mode-switch';
-import { toCliError, DaemonUnreachableError, InvalidInputError } from '../errors';
+import { toCliError } from '../errors';
 import * as fs from 'fs';
-import * as path from 'path';
-import { resolveSpecForgeHandshakePath, resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
+import { resolveSpecForgeHandshakePath } from '@specforge/types/user-level-paths';
 /**
  * Runtime directory path under the canonical SpecForge user root
  */
-function getRuntimeDir(): string {
-  return path.join(resolveSpecForgeUserRoot(), 'runtime');
-}
+
 
 
 /**
@@ -37,12 +34,12 @@ function getHandshakePath(): string {
  */
 function getDaemonClient(): DaemonClient {
   const handshakePath = getHandshakePath();
-  
+
   // Default values
   let port = 3847;
   let token = '';
   let host = '127.0.0.1';
-  
+
   if (fs.existsSync(handshakePath)) {
     try {
       const handshake = JSON.parse(fs.readFileSync(handshakePath, 'utf-8'));
@@ -131,7 +128,7 @@ export async function commandList(
   modeSwitch: ModeSwitch
 ): Promise<void> {
   const client = getDaemonClient();
-  
+
   try {
     // Call daemon-core /api/plugins endpoint
     const response = await client.get<PluginListResponse>('/api/plugins');
@@ -146,38 +143,38 @@ export async function commandList(
       }
 
       console.log(`Installed ${response.total} plugin(s):\n`);
-      
+
       for (const plugin of response.plugins) {
         const statusIcon = plugin.enabled ? '✓' : '✗';
         console.log(`${statusIcon} Plugin: ${plugin.id}`);
         console.log(`  Name: ${plugin.name}`);
         console.log(`  Version: ${plugin.version}`);
-        
+
         if (plugin.description) {
           console.log(`  Description: ${plugin.description}`);
         }
-        
+
         if (plugin.author) {
           console.log(`  Author: ${plugin.author}`);
         }
-        
+
         const installed = new Date(plugin.installedAt).toLocaleString();
         console.log(`  Installed: ${installed}`);
-        
+
         if (plugin.updatedAt !== plugin.installedAt) {
           const updated = new Date(plugin.updatedAt).toLocaleString();
           console.log(`  Updated: ${updated}`);
         }
-        
+
         console.log(`  Status: ${plugin.enabled ? 'Enabled' : 'Disabled'}`);
-        
+
         if (plugin.dependencies && plugin.dependencies.length > 0) {
           console.log(`  Dependencies: ${plugin.dependencies.join(', ')}`);
         }
-        
+
         console.log('');
       }
-      
+
       console.log('Use "specforge plugin info <id>" to get detailed information.');
     }
   } catch (err) {
@@ -198,7 +195,7 @@ export async function commandInfo(
 ): Promise<void> {
   const client = getDaemonClient();
   const pluginId = argv.id;
-  
+
   try {
     // Call daemon-core /api/plugins/:id endpoint
     const plugin = await client.get<Plugin>(`/api/plugins/${encodeURIComponent(pluginId)}`);
@@ -210,32 +207,32 @@ export async function commandInfo(
       console.log(`${statusIcon} Plugin: ${plugin.id}`);
       console.log(`  Name: ${plugin.name}`);
       console.log(`  Version: ${plugin.version}`);
-      
+
       if (plugin.description) {
         console.log(`  Description: ${plugin.description}`);
       }
-      
+
       if (plugin.author) {
         console.log(`  Author: ${plugin.author}`);
       }
-      
+
       const installed = new Date(plugin.installedAt).toLocaleString();
       console.log(`  Installed: ${installed}`);
-      
+
       if (plugin.updatedAt !== plugin.installedAt) {
         const updated = new Date(plugin.updatedAt).toLocaleString();
         console.log(`  Updated: ${updated}`);
       }
-      
+
       console.log(`  Status: ${plugin.enabled ? 'Enabled' : 'Disabled'}`);
-      
+
       if (plugin.dependencies && plugin.dependencies.length > 0) {
         console.log(`  Dependencies:`);
         for (const dep of plugin.dependencies) {
           console.log(`    - ${dep}`);
         }
       }
-      
+
       if (plugin.configSchema) {
         console.log(`  Config Schema: Available`);
       }
@@ -260,21 +257,21 @@ export async function commandInstall(
   modeSwitch: ModeSwitch
 ): Promise<void> {
   const client = getDaemonClient();
-  
+
   try {
     // Prepare install request
     const installRequest: PluginInstallRequest = {
       name: argv.name,
     };
-    
+
     if (argv.version) {
       installRequest.version = argv.version;
     }
-    
+
     if (argv.source) {
       installRequest.source = argv.source;
     }
-    
+
     if (argv.url) {
       installRequest.url = argv.url;
     }
@@ -292,11 +289,11 @@ export async function commandInstall(
         console.log(`  Name: ${response.plugin.name}`);
         console.log(`  Version: ${response.plugin.version}`);
         console.log(`  Status: ${response.plugin.enabled ? 'Enabled' : 'Disabled'}`);
-        
+
         if (response.plugin.description) {
           console.log(`  Description: ${response.plugin.description}`);
         }
-        
+
         console.log(`\nUse "specforge plugin info ${response.plugin.id}" for more information.`);
       } else {
         console.log(modeSwitch.formatError({
@@ -324,7 +321,7 @@ export async function commandUninstall(
 ): Promise<void> {
   const client = getDaemonClient();
   const pluginId = argv.id;
-  
+
   try {
     // Call daemon-core /api/plugins/:id/uninstall endpoint
     const response = await client.post<PluginUninstallResponse>(

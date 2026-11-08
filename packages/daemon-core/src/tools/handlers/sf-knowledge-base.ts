@@ -1,3 +1,4 @@
+import { diagnosticScalarText } from '@specforge/types';
 import { registerHandler } from '../ToolDispatcher';
 import {
   addEntry,
@@ -12,7 +13,25 @@ import {
   recordFeedback,
   checkDuplicate,
 } from '../lib/sf_knowledge_base_core';
-import type { AddEntryParams, UpdateEntryParams, SearchParams, RecordFeedbackParams, EntryStatus } from '../lib/sf_knowledge_base_core';
+import type {
+  AddEntryParams,
+  UpdateEntryParams,
+  SearchParams,
+  RecordFeedbackParams,
+  EntryStatus,
+} from '../lib/sf_knowledge_base_core';
+
+function parseStringList(value: unknown): string[] {
+  if (value === undefined || value === null || value === '') return [];
+  if (typeof value !== 'string') throw new Error('KNOWLEDGE_STRING_LIST_INVALID');
+  const parsed: unknown = JSON.parse(value);
+  if (
+    !Array.isArray(parsed) ||
+    !parsed.every((item: unknown): item is string => typeof item === 'string')
+  )
+    throw new Error('KNOWLEDGE_STRING_LIST_INVALID');
+  return parsed;
+}
 
 registerHandler('sf_knowledge_base', async (args, _context, _deps) => {
   const operation = args['operation'] as string;
@@ -28,11 +47,15 @@ registerHandler('sf_knowledge_base', async (args, _context, _deps) => {
           content: (args['content'] as string) || '',
           category: (args['category'] as string) || '',
           tags: args['tags'] ? JSON.parse(args['tags'] as string) : [],
-          applicable_file_patterns: args['applicable_file_patterns'] ? JSON.parse(args['applicable_file_patterns'] as string) : [],
+          applicable_file_patterns: args['applicable_file_patterns']
+            ? JSON.parse(args['applicable_file_patterns'] as string)
+            : [],
           confidence: (args['confidence'] as any) || 'medium',
           source_project: (args['source_project'] as string) || '',
           source_work_item: (args['source_work_item'] as string) || '',
-          anti_conditions: args['anti_conditions'] ? JSON.parse(args['anti_conditions'] as string) : [],
+          anti_conditions: args['anti_conditions']
+            ? JSON.parse(args['anti_conditions'] as string)
+            : [],
           applicability: (args['applicability'] as string) || '',
           normalized_key: (args['normalized_key'] as string) || '',
         };
@@ -58,7 +81,11 @@ registerHandler('sf_knowledge_base', async (args, _context, _deps) => {
       case 'get': {
         if (!args['entry_id']) return { success: false, error: 'entry_id required for get' };
         const entry = await getEntry(args['entry_id'] as string);
-        if (!entry) return { success: false, error: `Entry not found: ${args['entry_id']}` };
+        if (!entry)
+          return {
+            success: false,
+            error: `Entry not found: ${diagnosticScalarText(args['entry_id'])}`,
+          };
         return { success: true, entry };
       }
       case 'list': {
@@ -72,7 +99,8 @@ registerHandler('sf_knowledge_base', async (args, _context, _deps) => {
       case 'search': {
         const params: SearchParams = {};
         if (args['keywords']) params.keywords = JSON.parse(args['keywords'] as string);
-        if (args['file_patterns']) params.file_patterns = JSON.parse(args['file_patterns'] as string);
+        if (args['file_patterns'])
+          params.file_patterns = JSON.parse(args['file_patterns'] as string);
         if (args['category']) params.category = args['category'] as string;
         if (args['tags']) params.tags = JSON.parse(args['tags'] as string);
         if (args['status']) params.status = args['status'] as EntryStatus;
@@ -82,7 +110,10 @@ registerHandler('sf_knowledge_base', async (args, _context, _deps) => {
       }
       case 'add_category': {
         if (!args['category_id'] || !args['category_name']) {
-          return { success: false, error: 'category_id and category_name required for add_category' };
+          return {
+            success: false,
+            error: 'category_id and category_name required for add_category',
+          };
         }
         return await addCategory(
           args['category_id'] as string,
@@ -111,8 +142,8 @@ registerHandler('sf_knowledge_base', async (args, _context, _deps) => {
       }
       case 'check_duplicate': {
         const normalizedKey = (args['normalized_key'] as string) || '';
-        const filePatterns = args['file_patterns'] ? JSON.parse(args['file_patterns'] as string) : [];
-        const tags = args['tags'] ? JSON.parse(args['tags'] as string) : [];
+        const filePatterns = parseStringList(args['file_patterns']);
+        const tags = parseStringList(args['tags']);
         return await checkDuplicate(normalizedKey, filePatterns, tags);
       }
       default:

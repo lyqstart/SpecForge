@@ -1,3 +1,4 @@
+import { diagnosticScalarText, scalarText } from '@specforge/types';
 /**
  * close-gate.ts — §15.2 Close Gate implementation
  *
@@ -170,7 +171,7 @@ async function readGateReports(workItemDir: string): Promise<Array<Record<string
 function details(value: unknown): string | undefined {
   if (value === undefined || value === null) return undefined;
   if (Array.isArray(value)) return value.map(item => String(item)).join('; ');
-  return String(value);
+  return diagnosticScalarText(value);
 }
 
 function sanitizeCheckId(value: string): string {
@@ -181,7 +182,7 @@ function sanitizeCheckId(value: string): string {
 }
 
 function normalizeWorkflowValue(value: unknown): string {
-  return String(value ?? '')
+  return scalarText(value ?? '')
     .trim()
     .toLowerCase()
     .replace(/[-\s]+/g, '_');
@@ -195,7 +196,7 @@ export interface CloseSpecArtifactRequirements {
 export function closeSpecArtifactRequirements(
   workflowPath: string,
   workflowType: string,
-  options?: { specMigrationTraceDeltaRequired?: boolean },
+  options?: { specMigrationTraceDeltaRequired?: boolean }
 ): CloseSpecArtifactRequirements {
   const investigationWorkflow = workflowType === 'investigation';
   const contractWorkflow =
@@ -252,8 +253,8 @@ function normalizeAllowedFiles(input: unknown): Array<{ path: string; operation?
       if (typeof entry === 'string') return { path: entry, operation: 'modify' };
       if (entry && typeof entry === 'object') {
         return {
-          path: String((entry as any).path ?? ''),
-          operation: String((entry as any).operation ?? 'modify'),
+          path: String(entry.path ?? ''),
+          operation: String(entry.operation ?? 'modify'),
         };
       }
       return { path: '', operation: 'modify' };
@@ -291,7 +292,7 @@ function isNoCodeAuditAccepted(
 ): boolean {
   if (!auditText || !isNoCodeAuditText(auditText) || !isNoCodeWorkflow(wi)) return false;
   const verdict = evaluateChangedFilesAuditVerdict(auditText, {
-    expectedWorkItemId: String(wi?.work_item_id ?? ''),
+    expectedWorkItemId: scalarText(wi?.work_item_id ?? ''),
   });
   return verdict.passed;
 }
@@ -350,28 +351,22 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
   const investigationWorkflow = workflowType === 'investigation';
   const rollbackWorkflow = workflowType === 'rollback' || workflowPath === 'rollback_path';
   const contractWorkflow =
-    workflowType === 'contract_change' ||
-    workflowPath === 'contract_change_path';
+    workflowType === 'contract_change' || workflowPath === 'contract_change_path';
   const specMigrationWorkflow =
-    workflowType === 'spec_migration' ||
-    workflowPath === 'spec_migration_path';
+    workflowType === 'spec_migration' || workflowPath === 'spec_migration_path';
   const candidateManifest = await readJson<Record<string, unknown>>(
-    path.join(ctx.workItemDir, 'candidate_manifest.json'),
+    path.join(ctx.workItemDir, 'candidate_manifest.json')
   );
-  const specArtifactRequirements = closeSpecArtifactRequirements(
-    workflowPath,
-    workflowType,
-    {
-      // Fail closed when the manifest is unavailable. A valid frozen manifest is
-      // independently required by the governance chain, and Close must not infer
-      // "no Trace change" from missing evidence.
-      specMigrationTraceDeltaRequired: specMigrationWorkflow
-        ? candidateManifest
-          ? specMigrationCandidateRequiresTraceDelta(candidateManifest)
-          : true
-        : undefined,
-    },
-  );
+  const specArtifactRequirements = closeSpecArtifactRequirements(workflowPath, workflowType, {
+    // Fail closed when the manifest is unavailable. A valid frozen manifest is
+    // independently required by the governance chain, and Close must not infer
+    // "no Trace change" from missing evidence.
+    specMigrationTraceDeltaRequired: specMigrationWorkflow
+      ? candidateManifest
+        ? specMigrationCandidateRequiresTraceDelta(candidateManifest)
+        : true
+      : undefined,
+  });
   const taskArtifacts = specArtifactRequirements.tasks
     ? await resolveWorkItemSpecArtifacts({
         projectRoot: ctx.projectRoot,
@@ -432,8 +427,7 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     for (const artifact of authoritativeArtifacts) {
       const resolved = artifact.artifacts[0];
       const valid = Boolean(
-        resolved &&
-          !isWorkItemSpecArtifactPlaceholder(artifact.kind, resolved.content),
+        resolved && !isWorkItemSpecArtifactPlaceholder(artifact.kind, resolved.content)
       );
       checks.push({
         check_id: `close_artifact_${artifact.kind}_authoritative`,
@@ -443,7 +437,7 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
         passed: valid,
         severity: valid ? undefined : 'error',
         details: valid
-          ? `path=${path.relative(ctx.projectRoot, resolved!.path).replace(/\\/g, '/')}`
+          ? `path=${path.relative(ctx.projectRoot, resolved.path).replace(/\\/g, '/')}`
           : `expected=${artifact.file}; reason=${
               resolved
                 ? 'resolved artifact is empty or a lifecycle placeholder'
@@ -455,7 +449,7 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
 
   const [formalVersionReport, governanceScope, gitContext, triggerResult] = await Promise.all([
     readJson<Record<string, unknown>>(
-      path.join(ctx.workItemDir, 'gates', 'formal_version_gate.json'),
+      path.join(ctx.workItemDir, 'gates', 'formal_version_gate.json')
     ),
     readJson<Record<string, unknown>>(path.join(ctx.workItemDir, 'governance_scope.json')),
     readJson<Record<string, unknown>>(path.join(ctx.workItemDir, 'git_context.json')),
@@ -480,16 +474,15 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     severity:
       !formalVersionRequired || formalVersionReport?.status === 'passed' ? undefined : 'error',
     details: formalVersionRequired
-      ? `status=${String(formalVersionReport?.status ?? 'missing')}`
+      ? `status=${diagnosticScalarText(formalVersionReport?.status ?? 'missing')}`
       : 'not_applicable',
   });
 
-  const projectSpecCoreVersion = await inspectProjectSpecCoreVersionCoherence(
-    ctx.projectRoot,
-  );
+  const projectSpecCoreVersion = await inspectProjectSpecCoreVersionCoherence(ctx.projectRoot);
   checks.push({
     check_id: 'close_project_spec_core_version_coherent',
-    description: 'Project Spec Core files agree on the authoritative project_spec_version when declared',
+    description:
+      'Project Spec Core files agree on the authoritative project_spec_version when declared',
     passed: projectSpecCoreVersion.passed,
     severity: projectSpecCoreVersion.passed ? undefined : 'error',
     details: projectSpecCoreVersion.reason,
@@ -509,7 +502,8 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
   }
   checks.push({
     check_id: 'close_filesystem_formal_version_current',
-    description: 'Filesystem implementation file set and content fingerprint still match Formal Version',
+    description:
+      'Filesystem implementation file set and content fingerprint still match Formal Version',
     passed: filesystemFormalVersionCurrent,
     severity: filesystemFormalVersionCurrent ? undefined : 'error',
     details: filesystemFormalVersionDetails,
@@ -518,9 +512,20 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
   const changedFilesAuditText = await readText(
     path.join(ctx.workItemDir, 'changed_files_audit.md')
   );
-  const guardAuditBinding = inspectWriteGuardAuditBinding(ctx.projectRoot, ctx.workItemDir, changedFilesAuditText);
-  checks.push({ check_id: 'close_write_guard_audit_current', description: 'Changed Files Audit covers the current Write Guard and resolution evidence', passed: guardAuditBinding.passed, severity: guardAuditBinding.passed ? undefined : 'error', details: guardAuditBinding.reason });
-  const noCodeAuditAccepted = guardAuditBinding.passed && isNoCodeAuditAccepted(changedFilesAuditText, wi);
+  const guardAuditBinding = inspectWriteGuardAuditBinding(
+    ctx.projectRoot,
+    ctx.workItemDir,
+    changedFilesAuditText
+  );
+  checks.push({
+    check_id: 'close_write_guard_audit_current',
+    description: 'Changed Files Audit covers the current Write Guard and resolution evidence',
+    passed: guardAuditBinding.passed,
+    severity: guardAuditBinding.passed ? undefined : 'error',
+    details: guardAuditBinding.reason,
+  });
+  const noCodeAuditAccepted =
+    guardAuditBinding.passed && isNoCodeAuditAccepted(changedFilesAuditText, wi);
 
   try {
     const vr = await fs.readFile(path.join(ctx.workItemDir, 'verification_report.md'), 'utf-8');
@@ -745,7 +750,7 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
   }
 
   const evidenceIntegrity = await inspectVerificationEvidenceIntegrity({
-    executionEvidenceConsumer:ctx.executionEvidenceConsumer,
+    executionEvidenceConsumer: ctx.executionEvidenceConsumer,
     projectRoot: ctx.projectRoot,
     workItemDir: ctx.workItemDir,
     workItemId: ctx.workItemId,
@@ -762,7 +767,9 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     const semanticManifest = await readJson<SemanticClosureManifest>(
       path.join(ctx.workItemDir, '.semantic_closure.json')
     );
-    checks.push(...semanticClosureChecks(semanticManifest, investigationWorkflow, specMigrationWorkflow));
+    checks.push(
+      ...semanticClosureChecks(semanticManifest, investigationWorkflow, specMigrationWorkflow)
+    );
     const provenanceValidation = await validateSemanticClosureProvenance(
       ctx.workItemDir,
       semanticManifest
@@ -779,11 +786,12 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
   try {
     const mr = await fs.readFile(path.join(ctx.workItemDir, 'merge_report.md'), 'utf-8');
     const verdict = evaluateMergeReport(mr, ctx.workItemId);
-    const validMergeStatus = verdict.valid &&
-      (verdict.status === 'success' || verdict.status === 'not_applicable');
+    const validMergeStatus =
+      verdict.valid && (verdict.status === 'success' || verdict.status === 'not_applicable');
     checks.push({
       check_id: 'close_merge_report_valid',
-      description: 'merge_report satisfies its current contract and belongs to this Work Item (§11)',
+      description:
+        'merge_report satisfies its current contract and belongs to this Work Item (§11)',
       passed: validMergeStatus,
       severity: validMergeStatus ? undefined : 'error',
       details: verdict.reason ?? `status=${verdict.status}`,
@@ -822,20 +830,20 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     description: 'post_merge_gate passed or not_applicable (§15.2)',
     passed: pmgPassed,
     severity: pmgPassed ? undefined : 'error',
-    details: `status=${String(pmgStatus ?? 'not_present')}`,
+    details: `status=${diagnosticScalarText(pmgStatus ?? 'not_present')}`,
   });
 
   // Aggregate blocking issues from structured gates/*.json reports
   const gateReports = await readGateReports(ctx.workItemDir);
   const blockingIssues = gateReports
     .filter(report => {
-      const gateId = String(report.gate_id ?? '');
+      const gateId = scalarText(report.gate_id ?? '');
       return gateId !== 'close_gate' && gateId !== 'gate_summary_gate';
     })
     .filter(report => Array.isArray(report.blocking_issues))
     .flatMap(report =>
       (report.blocking_issues as unknown[])
-        .map(issue => String(issue ?? '').trim())
+        .map(issue => scalarText(issue ?? '').trim())
         .filter(Boolean)
     );
   const hasBlocking = blockingIssues.length > 0;
@@ -844,7 +852,9 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     description: 'No unresolved blocking issues from gates/*.json (§15.2)',
     passed: !hasBlocking,
     severity: hasBlocking ? 'error' : undefined,
-    details: hasBlocking ? `${blockingIssues.length} issue(s): ${blockingIssues.slice(0, 5).join('; ')}` : undefined,
+    details: hasBlocking
+      ? `${blockingIssues.length} issue(s): ${blockingIssues.slice(0, 5).join('; ')}`
+      : undefined,
   });
 
   const waiverAssessment = assessWaiverFollowUp(ud, gateReports);
@@ -891,7 +901,7 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
   }
 
   const artifactInputFiles = [...taskArtifacts, ...traceDeltaArtifacts].map(artifact =>
-    path.relative(ctx.workItemDir, artifact.path).replace(/\\/g, '/'),
+    path.relative(ctx.workItemDir, artifact.path).replace(/\\/g, '/')
   );
   const inputFiles = [
     ...requiredFiles,
@@ -900,7 +910,7 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
       ? ['gates/formal_version_gate.json', 'formal_version_snapshot.json']
       : []),
     ...projectSpecCoreVersion.input_files.map(filePath =>
-      path.relative(ctx.projectRoot, filePath).replace(/\\/g, '/'),
+      path.relative(ctx.projectRoot, filePath).replace(/\\/g, '/')
     ),
   ];
   const report = makeReport(ctx.workItemId, 'close_gate', 'hard_gate', true, checks, inputFiles);

@@ -407,3 +407,11 @@ export type {
 } from './llm-kernel-contract.js';
 
 export type { TrustedToolInvocationRequest, TrustedToolInvocationProof, ToolInvocationVerifier } from './trusted-tool-invocation.js';
+
+export { promiseFromSync } from './promise-contract.js';
+
+export { scalarText, diagnosticScalarText } from './scalar-text.js';
+
+export { parseJsonObject } from './json-boundary.js';
+
+export { hasAsciiControl } from './character-boundaries.js';

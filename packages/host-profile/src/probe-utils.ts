@@ -14,7 +14,7 @@ import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 
-const execAsync = promisify(exec);
+void (promisify(exec));
 
 /** 默认探测超时（5 秒） */
 export const PROBE_TIMEOUT_MS = 5000;

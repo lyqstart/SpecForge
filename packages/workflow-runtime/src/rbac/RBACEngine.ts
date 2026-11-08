@@ -12,7 +12,6 @@
  * 设计决策（P4 §11 Q6）：enableRBAC 默认 false，不影响现有测试。
  */
 
-import type { Principal } from '@specforge/types/principal';
 import type {
   Permission,
   PermissionContext,
@@ -20,6 +19,8 @@ import type {
   ResourceType,
   Operation,
 } from '@specforge/types/permissions';
+import type { Principal } from '@specforge/types/principal';
+
 import type { AuthorizationAuditLogger } from './AuthorizationAuditLogger.js';
 import { FileAuthorizationPolicy } from './FileAuthorizationPolicy.js';
 import { matchProtectedFile } from './ProtectedFileMatcher.js';

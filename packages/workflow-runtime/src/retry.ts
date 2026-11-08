@@ -3,8 +3,12 @@
  * Provides retry logic with configurable strategies for gate execution
  */
 
-import { RetryConfig, RetryState } from './types.js';
-import { isGateError, GateError } from './error-handler.js';
+/**
+ * Retry Mechanism Module
+ * Provides retry logic with configurable strategies for gate execution
+ */
+import { isGateError } from './error-handler.js';
+import type { RetryConfig, RetryState } from './types.js';
 
 /**
  * Default retry configuration
@@ -79,7 +83,7 @@ export function shouldRetryError(error: unknown, config: FullRetryConfig): boole
     return false;
   }
 
-  const gateError = error as GateError;
+  const gateError = error;
 
   // Check if the error itself is marked as non-retryable
   if (!gateError.retryable) {
@@ -147,7 +151,7 @@ export async function withRetry<T>(
     try {
       // Execute the operation
       const result = await operation();
-      
+
       // Success - return result
       state.endTime = Date.now();
       return result;
@@ -157,14 +161,14 @@ export async function withRetry<T>(
       state.attempts++;
 
       // Check if we should retry
-      const canRetry = 
-        state.attempts < fullConfig.maxAttempts && 
+      const canRetry =
+        state.attempts < fullConfig.maxAttempts &&
         shouldRetryError(error, fullConfig);
 
       if (!canRetry) {
         // No more retries
         state.endTime = Date.now();
-        
+
         // Call onExhausted callback if provided
         if (fullConfig.onExhausted) {
           try {
@@ -173,7 +177,7 @@ export async function withRetry<T>(
             // Ignore callback errors
           }
         }
-        
+
         throw error;
       }
 
@@ -201,10 +205,10 @@ export async function withRetry<T>(
 
       // Log retry attempt
       const errorMessage = error instanceof Error ? error.message : String(error);
-      const gateErrorInfo = isGateError(error) 
-        ? ` (code: ${(error as GateError).code}, retryable: ${(error as GateError).retryable})`
+      const gateErrorInfo = isGateError(error)
+        ? ` (code: ${(error).code}, retryable: ${(error).retryable})`
         : '';
-      
+
       console.warn(
         `[Retry] ${operationName || 'operation'} failed${gateErrorInfo}, ` +
         `attempt ${state.attempts}/${fullConfig.maxAttempts}, ` +
@@ -227,18 +231,13 @@ export async function withRetry<T>(
  * @returns Decorator function
  */
 export function createRetryDecorator(config: RetryConfig) {
-  return function retryDecorator<T extends (...args: any[]) => any>(
-    operation: T,
+  return function retryDecorator<Args extends unknown[], Result>(
+    operation: (...args: Args) => Result | Promise<Result>,
     operationName?: string
-  ): T {
-    const decorated = async (...args: Parameters<T>): Promise<ReturnType<T>> => {
-      return withRetry(
-        () => operation(...args),
-        config,
-        operationName || operation.name
-      );
-    };
-    return decorated as T;
+  ): (...args: Args) => Promise<Result> {
+    return async (...args: Args): Promise<Result> => withRetry(
+      () => operation(...args), config, operationName || operation.name
+    );
   };
 }
 

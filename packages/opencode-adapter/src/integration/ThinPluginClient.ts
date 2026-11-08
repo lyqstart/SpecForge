@@ -105,7 +105,7 @@ export class ThinPluginClient {
    */
   async reportEvent(request: ThinPluginEventReportRequest): Promise<EventReportResult> {
     const endpoint = `${this.baseUrl}/v1/ingest/event`;
-    
+
     let lastError: ThinPluginClientError | undefined;
     let attempt = 0;
 
@@ -135,7 +135,7 @@ export class ThinPluginClient {
         // Check response status
         if (!response.ok) {
           const errorBody = await this.safeReadBody(response);
-          
+
           // Non-retryable errors (4xx except 429)
           if (response.status >= 400 && response.status < 500 && response.status !== 429) {
             throw new ThinPluginClientError(
@@ -157,10 +157,11 @@ export class ThinPluginClient {
 
         // Parse successful response
         const result = await this.safeJsonParse<ThinPluginEventReportResponse>(response);
-        
+
         return {
           success: true,
-          eventId: result.event_id ?? `evt-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+          eventId:
+            result.event_id ?? `evt-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
           timestamp: result.timestamp ?? Date.now(),
         };
       } catch (error) {
@@ -201,7 +202,7 @@ export class ThinPluginClient {
    */
   async bindSession(request: ThinPluginSessionBindRequest): Promise<SessionBindResult> {
     const endpoint = `${this.baseUrl}/v1/session/bind`;
-    
+
     let lastError: ThinPluginClientError | undefined;
     let attempt = 0;
 
@@ -228,7 +229,7 @@ export class ThinPluginClient {
 
         if (!response.ok) {
           const errorBody = await this.safeReadBody(response);
-          
+
           if (response.status >= 400 && response.status < 500 && response.status !== 429) {
             throw new ThinPluginClientError(
               `Session bind failed: ${response.status} ${response.statusText}`,
@@ -247,7 +248,7 @@ export class ThinPluginClient {
         }
 
         const result = await this.safeJsonParse<ThinPluginSessionBindResponse>(response);
-        
+
         return {
           success: true,
           spawnIntentId: request.spawnIntentId,
@@ -285,7 +286,7 @@ export class ThinPluginClient {
    */
   async sendCommand(request: ThinPluginCommandRequest): Promise<CommandResult> {
     const endpoint = `${this.baseUrl}/v1/command`;
-    
+
     let lastError: ThinPluginClientError | undefined;
     let attempt = 0;
 
@@ -312,7 +313,7 @@ export class ThinPluginClient {
 
         if (!response.ok) {
           const errorBody = await this.safeReadBody(response);
-          
+
           if (response.status >= 400 && response.status < 500 && response.status !== 429) {
             throw new ThinPluginClientError(
               `Command failed: ${response.status} ${response.statusText}`,
@@ -331,7 +332,7 @@ export class ThinPluginClient {
         }
 
         const result = await this.safeJsonParse<ThinPluginCommandResponse>(response);
-        
+
         return {
           success: true,
           command: request.command,
@@ -393,7 +394,7 @@ export class ThinPluginClient {
       }
 
       const result = await this.safeJsonParse<ThinPluginHealthCheckResponse>(response);
-      
+
       return {
         healthy: result.status === 'ok' || result.healthy === true,
         latency,
@@ -402,7 +403,7 @@ export class ThinPluginClient {
     } catch (error) {
       const latency = Date.now() - startTime;
       const normalizedError = this.normalizeError(error);
-      
+
       return {
         healthy: false,
         latency,
@@ -418,18 +419,17 @@ export class ThinPluginClient {
   /**
    * Execute a promise with timeout
    */
-  private async executeWithTimeout<T>(
-    promise: Promise<T>,
-    timeoutMs: number
-  ): Promise<T> {
+  private async executeWithTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
     let timeoutId: ReturnType<typeof setTimeout>;
 
     const timeoutPromise = new Promise<never>((_, reject) => {
       timeoutId = setTimeout(() => {
-        reject(new ThinPluginClientError(
-          `Request timeout after ${timeoutMs}ms`,
-          ThinPluginClientErrorCode.TIMEOUT
-        ));
+        reject(
+          new ThinPluginClientError(
+            `Request timeout after ${timeoutMs}ms`,
+            ThinPluginClientErrorCode.TIMEOUT
+          )
+        );
       }, timeoutMs);
     });
 
@@ -446,13 +446,13 @@ export class ThinPluginClient {
   private calculateRetryDelay(attempt: number): number {
     // Exponential backoff: baseDelay * (multiplier ^ (attempt - 1))
     const exponentialDelay = this.baseRetryDelay * Math.pow(this.retryMultiplier, attempt - 1);
-    
+
     // Cap at max delay
     const cappedDelay = Math.min(exponentialDelay, this.maxRetryDelay);
-    
+
     // Add jitter (0-25% of delay)
     const jitter = cappedDelay * (Math.random() * 0.25);
-    
+
     return Math.floor(cappedDelay + jitter);
   }
 
@@ -522,10 +522,7 @@ export class ThinPluginClient {
     }
 
     // Unknown error
-    return new ThinPluginClientError(
-      String(error),
-      ThinPluginClientErrorCode.NETWORK_ERROR
-    );
+    return new ThinPluginClientError(String(error), ThinPluginClientErrorCode.NETWORK_ERROR);
   }
 
   /**
@@ -533,7 +530,7 @@ export class ThinPluginClient {
    */
   private async safeJsonParse<T>(response: Response): Promise<T> {
     try {
-      return await response.json() as T;
+      return (await response.json()) as T;
     } catch {
       throw new ThinPluginClientError(
         'Invalid JSON response',

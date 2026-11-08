@@ -3,17 +3,14 @@
  * Tests the retry logic with various strategies and configurations
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import {
-  withRetry,
-  calculateDelay,
-  shouldRetryError,
-  getRetryStats,
-  validateRetryConfig,
-  DEFAULT_RETRY_CONFIG,
-  createRetryDecorator,
-} from '../../src/retry.js';
-import { RetryConfig, RetryStrategy } from '../../src/types.js';
+/**
+ * Unit tests for retry mechanism
+ * Tests the retry logic with various strategies and configurations
+ */
+
+import { promiseFromSync } from '@specforge/types';
+import { describe, it, expect, vi } from 'vitest';
+
 import {
   GateError,
   GateExecutionError,
@@ -25,7 +22,16 @@ import {
   SimpleGateRunner,
   CompositeGateRunner,
 } from '../../src/GateRunner.js';
-import { SimpleGateDefinition, CompositeGateDefinition } from '../../src/types.js';
+import {
+  withRetry,
+  calculateDelay,
+  shouldRetryError,
+  getRetryStats,
+  validateRetryConfig,
+  DEFAULT_RETRY_CONFIG,
+  createRetryDecorator,
+} from '../../src/retry.js';
+import type { RetryConfig, RetryStrategy , SimpleGateDefinition, CompositeGateDefinition } from '../../src/types.js';
 
 describe('Retry Module', () => {
   describe('calculateDelay', () => {
@@ -256,7 +262,7 @@ describe('Retry Module', () => {
 
   describe('withRetry', () => {
     it('should return result on first success', async () => {
-      const operation = vi.fn().mockResolvedValue('success');
+      const operation = vi.fn<[], Promise<string>>().mockResolvedValue('success');
 
       const result = await withRetry(operation, { maxAttempts: 3 });
 
@@ -286,7 +292,7 @@ describe('Retry Module', () => {
         operation: 'test-op',
         timeoutMs: 5000,
       });
-      const operation = vi.fn()
+      const operation = vi.fn<[], Promise<string>>()
         .mockRejectedValueOnce(error)
         .mockResolvedValue('success');
 
@@ -303,7 +309,7 @@ describe('Retry Module', () => {
         operation: 'test-op',
         timeoutMs: 5000,
       });
-      const operation = vi.fn()
+      const operation = vi.fn<[], Promise<string>>()
         .mockRejectedValueOnce(error)
         .mockResolvedValue('success');
 
@@ -344,7 +350,7 @@ describe('Retry Module', () => {
         operation: 'test-op',
         timeoutMs: 5000,
       });
-      const operation = vi.fn()
+      const operation = vi.fn<[], Promise<string>>()
         .mockRejectedValueOnce(error)
         .mockResolvedValue('success');
 
@@ -366,9 +372,9 @@ describe('Retry Module', () => {
         gateType: 'simple',
         retryable: true, // Mark as retryable but code won't be in whitelist
       });
-      
+
       // The whitelist only contains GATE_TIMEOUT, so GATE_EXECUTION_ERROR should not retry
-      const operation = vi.fn()
+      const operation = vi.fn<[], Promise<string>>()
         .mockRejectedValueOnce(customError) // Not in whitelist, should not retry
         .mockResolvedValue('success'); // This should NOT be called
 
@@ -500,7 +506,7 @@ describe('Retry Module', () => {
         operation: 'test-op',
         timeoutMs: 5000,
       });
-      const operation = vi.fn()
+      const operation = vi.fn<[], Promise<string>>()
         .mockRejectedValueOnce(error)
         .mockResolvedValue('success');
 
@@ -536,7 +542,7 @@ describe('GateRunner Retry Integration', () => {
         type: 'simple',
         id: 'retry-gate',
         name: 'Retry Gate',
-        checkFn: async () => {
+        checkFn:  () => { return promiseFromSync(() => {
           callCount++;
           // Throw a retryable error (timeout)
           throw new GateTimeoutError({
@@ -544,7 +550,7 @@ describe('GateRunner Retry Integration', () => {
             operation: 'check',
             timeoutMs: 5000,
           });
-        },
+        }); },
       };
 
       const runner = new SimpleGateRunner(gate);
@@ -567,9 +573,9 @@ describe('GateRunner Retry Integration', () => {
         type: 'simple',
         id: 'no-retry-gate',
         name: 'No Retry Gate',
-        checkFn: async () => {
+        checkFn:  () => { return promiseFromSync(() => {
           throw new Error('Always fails');
-        },
+        }); },
       };
 
       const runner = new SimpleGateRunner(gate);
@@ -638,13 +644,13 @@ describe('GateRunner Retry Integration', () => {
 
   describe('CompositeGateRunner with Retry', () => {
     it('should retry composite gate on retryable error', async () => {
-      let callCount = 0;
+
       const childGate: SimpleGateDefinition = {
         type: 'simple',
         id: 'child-gate',
         name: 'Child Gate',
-        checkFn: async () => {
-          callCount++;
+        checkFn:  () => { return promiseFromSync(() => {
+
           // The composite gate runner catches this error and wraps it in handleError
           // which converts it to a GateExecutionError (non-retryable)
           // So for retry to work, we need to throw a retryable error at the right level
@@ -653,7 +659,7 @@ describe('GateRunner Retry Integration', () => {
             operation: 'check',
             timeoutMs: 5000,
           });
-        },
+        }); },
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -687,9 +693,9 @@ describe('GateRunner Retry Integration', () => {
         type: 'simple',
         id: 'child-gate',
         name: 'Child Gate',
-        checkFn: async () => {
+        checkFn:  () => { return promiseFromSync(() => {
           throw new Error('Always fails');
-        },
+        }); },
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -717,7 +723,7 @@ describe('Retry Strategy Behavior', () => {
       operation: 'test-op',
       timeoutMs: 5000,
     });
-    const operation = vi.fn()
+    const operation = vi.fn<[], Promise<string>>()
       .mockRejectedValueOnce(error)
       .mockRejectedValueOnce(error)
       .mockResolvedValue('success');
@@ -747,7 +753,7 @@ describe('Retry Strategy Behavior', () => {
       operation: 'test-op',
       timeoutMs: 5000,
     });
-    const operation = vi.fn()
+    const operation = vi.fn<[], Promise<string>>()
       .mockRejectedValueOnce(error)
       .mockRejectedValueOnce(error)
       .mockResolvedValue('success');
@@ -774,7 +780,7 @@ describe('Retry Strategy Behavior', () => {
       operation: 'test-op',
       timeoutMs: 5000,
     });
-    const operation = vi.fn()
+    const operation = vi.fn<[], Promise<string>>()
       .mockRejectedValueOnce(error)
       .mockRejectedValueOnce(error)
       .mockResolvedValue('success');

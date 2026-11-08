@@ -1,14 +1,13 @@
 /**
  * seal-transitions.test.ts — Seal transition 定义和查询函数 tests
  */
+/**
+ * seal-transitions.test.ts — Seal transition 定义和查询函数 tests
+ */
+import { SEAL_TRANSITIONS, isSealTransition, getSealTransition, REQUESTABLE_TRANSITIONS } from '@specforge/types/seal-transitions';
 import { describe, it, expect } from 'vitest';
-import {
-  SEAL_TRANSITIONS,
-  isSealTransition,
-  getSealTransition,
-  REQUESTABLE_TRANSITIONS,
-  type SealTransitionEntry,
-} from '@specforge/types/seal-transitions';
+
+import { requiredTestValue } from '../../required-test-value';
 
 describe('SEAL_TRANSITIONS', () => {
   it('should have exactly 7 seal transitions', () => {
@@ -20,8 +19,8 @@ describe('SEAL_TRANSITIONS', () => {
       (e) => e.from === 'gates_running' && e.to === 'approval_required',
     );
     expect(entry).toBeDefined();
-    expect(entry!.authorizedSubject).toBe('gate_runner');
-    expect(entry!.evidenceRequired).toBe('gate_summary.md');
+    expect(requiredTestValue(entry).authorizedSubject).toBe('gate_runner');
+    expect(requiredTestValue(entry).evidenceRequired).toBe('gate_summary.md');
   });
 
   it('should contain gates_running → gates_failed', () => {
@@ -29,8 +28,8 @@ describe('SEAL_TRANSITIONS', () => {
       (e) => e.from === 'gates_running' && e.to === 'gates_failed',
     );
     expect(entry).toBeDefined();
-    expect(entry!.authorizedSubject).toBe('gate_runner');
-    expect(entry!.evidenceRequired).toBe('gate_summary.md');
+    expect(requiredTestValue(entry).authorizedSubject).toBe('gate_runner');
+    expect(requiredTestValue(entry).evidenceRequired).toBe('gate_summary.md');
   });
 
   it('should contain approval_required → approved', () => {
@@ -38,8 +37,8 @@ describe('SEAL_TRANSITIONS', () => {
       (e) => e.from === 'approval_required' && e.to === 'approved',
     );
     expect(entry).toBeDefined();
-    expect(entry!.authorizedSubject).toBe('user_decision_recorder');
-    expect(entry!.evidenceRequired).toBe('user_decision.json');
+    expect(requiredTestValue(entry).authorizedSubject).toBe('user_decision_recorder');
+    expect(requiredTestValue(entry).evidenceRequired).toBe('user_decision.json');
   });
 
   it('should contain approval_required → rejected', () => {
@@ -47,8 +46,8 @@ describe('SEAL_TRANSITIONS', () => {
       (e) => e.from === 'approval_required' && e.to === 'rejected',
     );
     expect(entry).toBeDefined();
-    expect(entry!.authorizedSubject).toBe('user_decision_recorder');
-    expect(entry!.evidenceRequired).toBe('user_decision.json');
+    expect(requiredTestValue(entry).authorizedSubject).toBe('user_decision_recorder');
+    expect(requiredTestValue(entry).evidenceRequired).toBe('user_decision.json');
   });
 
   it('should contain merge_ready → merging', () => {
@@ -56,8 +55,8 @@ describe('SEAL_TRANSITIONS', () => {
       (e) => e.from === 'merge_ready' && e.to === 'merging',
     );
     expect(entry).toBeDefined();
-    expect(entry!.authorizedSubject).toBe('merge_runner');
-    expect(entry!.evidenceRequired).toBe('gate_summary.md');
+    expect(requiredTestValue(entry).authorizedSubject).toBe('merge_runner');
+    expect(requiredTestValue(entry).evidenceRequired).toBe('gate_summary.md');
   });
 
   it('should contain merging → merged', () => {
@@ -65,8 +64,8 @@ describe('SEAL_TRANSITIONS', () => {
       (e) => e.from === 'merging' && e.to === 'merged',
     );
     expect(entry).toBeDefined();
-    expect(entry!.authorizedSubject).toBe('merge_runner');
-    expect(entry!.evidenceRequired).toBe('merge_report.md');
+    expect(requiredTestValue(entry).authorizedSubject).toBe('merge_runner');
+    expect(requiredTestValue(entry).evidenceRequired).toBe('merge_report.md');
   });
 
   it('should contain verification_done → closed', () => {
@@ -74,8 +73,8 @@ describe('SEAL_TRANSITIONS', () => {
       (e) => e.from === 'verification_done' && e.to === 'closed',
     );
     expect(entry).toBeDefined();
-    expect(entry!.authorizedSubject).toBe('close_gate');
-    expect(entry!.evidenceRequired).toBe('verification_report.md');
+    expect(requiredTestValue(entry).authorizedSubject).toBe('close_gate');
+    expect(requiredTestValue(entry).evidenceRequired).toBe('verification_report.md');
   });
 
   it('should not have sf-orchestrator as any authorizedSubject', () => {
@@ -117,10 +116,10 @@ describe('getSealTransition', () => {
   it('should return correct entry for seal transitions', () => {
     const entry = getSealTransition('verification_done', 'closed');
     expect(entry).toBeDefined();
-    expect(entry!.from).toBe('verification_done');
-    expect(entry!.to).toBe('closed');
-    expect(entry!.authorizedSubject).toBe('close_gate');
-    expect(entry!.evidenceRequired).toBe('verification_report.md');
+    expect(requiredTestValue(entry).from).toBe('verification_done');
+    expect(requiredTestValue(entry).to).toBe('closed');
+    expect(requiredTestValue(entry).authorizedSubject).toBe('close_gate');
+    expect(requiredTestValue(entry).evidenceRequired).toBe('verification_report.md');
   });
 
   it('should return undefined for non-seal transitions', () => {

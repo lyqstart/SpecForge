@@ -12,6 +12,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
+
 import { PathPolicy } from '@/v11/runtime/PathPolicy';
 
 describe('PathPolicy — Permission Model', () => {

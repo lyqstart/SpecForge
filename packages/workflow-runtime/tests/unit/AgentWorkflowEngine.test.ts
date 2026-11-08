@@ -3,15 +3,15 @@
  * Tests for AgentWorkflowEngine integration with Agent system
  */
 
+import { promiseFromSync } from '@specforge/types';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
+import { type WorkflowAgentRunner, createWorkflowAgentRunner } from '../../src/AgentRunner.js';
 import { AgentWorkflowEngine, createAgentWorkflowEngine } from '../../src/engine/AgentWorkflowEngine.js';
-import { WorkflowAgentRunner, createWorkflowAgentRunner } from '../../src/AgentRunner.js';
-import { 
-  WorkflowDefinition, 
-  WorkflowInstance, 
-  SimpleGateDefinition,
-  CompositeGateDefinition 
-} from '../../src/types.js';
+import type {
+  WorkflowDefinition,
+  SimpleGateDefinition} from '../../src/types.js';
+
 
 describe('AgentWorkflowEngine', () => {
   let agentEngine: AgentWorkflowEngine;
@@ -21,7 +21,7 @@ describe('AgentWorkflowEngine', () => {
   beforeEach(() => {
     // Create agent runner
     agentRunner = createWorkflowAgentRunner();
-    
+
     // Create agent workflow engine
     agentEngine = createAgentWorkflowEngine({
       agentRunner,
@@ -121,7 +121,7 @@ describe('AgentWorkflowEngine', () => {
   describe('Basic functionality', () => {
     it('should create AgentWorkflowEngine with default configuration', () => {
       const engine = createAgentWorkflowEngine();
-      
+
       expect(engine).toBeInstanceOf(AgentWorkflowEngine);
       expect(engine.getAgentRunner()).toBeDefined();
       expect(engine.getDefaultAgentRole()).toBe('general');
@@ -133,7 +133,7 @@ describe('AgentWorkflowEngine', () => {
         agentRunner: customRunner,
         defaultAgentRole: 'dev',
       });
-      
+
       expect(engine.getAgentRunner()).toBe(customRunner);
       expect(engine.getDefaultAgentRole()).toBe('dev');
     });
@@ -141,29 +141,29 @@ describe('AgentWorkflowEngine', () => {
     it('should set and get agent runner', () => {
       const newRunner = createWorkflowAgentRunner();
       agentEngine.setAgentRunner(newRunner);
-      
+
       expect(agentEngine.getAgentRunner()).toBe(newRunner);
     });
 
     it('should set and get default agent role', () => {
       agentEngine.setDefaultAgentRole('reviewer');
-      
+
       expect(agentEngine.getDefaultAgentRole()).toBe('reviewer');
     });
   });
 
   describe('Workflow execution with agent integration', () => {
-    it('should load and execute workflow with agent-based states', async () => {
+    it('should load and execute workflow with agent-based states',  () => { return promiseFromSync(() => {
       // Load workflow
       agentEngine.loadWorkflow(testWorkflow);
-      
+
       // Create instance
       const instance = agentEngine.createInstance(testWorkflow.id);
-      
+
       expect(instance).toBeDefined();
       expect(instance.currentState).toBe('requirements');
       expect(instance.status).toBe('pending');
-    });
+    }); });
 
     it('should create agent gate runner', () => {
       const gate: SimpleGateDefinition = {
@@ -172,42 +172,36 @@ describe('AgentWorkflowEngine', () => {
         id: 'test-gate',
         name: 'Test Gate',
       };
-      
+
       const agentGateRunner = agentEngine.createAgentGateRunner(gate, 'dev', { custom: 'context' });
-      
+
       expect(agentGateRunner).toBeDefined();
       expect(agentGateRunner.getAgentRunner()).toBe(agentRunner);
       expect(agentGateRunner.getAgentRole()).toBe('dev');
     });
 
-    it('should determine agent role for state', () => {
+    it('should determine agent role for state', async () => {
       // Load workflow first
       agentEngine.loadWorkflow(testWorkflow);
-      
+
       // Get the requirements state
-      const state = testWorkflow.stateMachine.states.requirements;
-      
+      void (testWorkflow.stateMachine.states.requirements);
+
       // This is a private method, but we can test through public API
       // by creating an instance and executing
       const instance = agentEngine.createInstance(testWorkflow.id);
-      
-      // Mock agent execution to verify role determination
-      const mockExecuteAgentGate = vi.spyOn(agentEngine as any, 'executeAgentGate')
-        .mockResolvedValue({
-          schema_version: '1.0',
-          passed: true,
-          reason: 'Mock execution',
-        });
 
-      // This will trigger agent role determination
-      agentEngine.execute(instance.id).catch(() => {
-        // Ignore errors since we're mocking
+      // Mock agent execution to verify role determination
+      const mockRunAgent = vi.spyOn(agentRunner, 'runAgentForState').mockResolvedValue({
+        schema_version: '1.0', success: true, output: 'Mock execution',
       });
-      
-      // Verify that agent gate execution was attempted
-      expect(mockExecuteAgentGate).toHaveBeenCalled();
-      
-      mockExecuteAgentGate.mockRestore();
+      try {
+        await agentEngine.execute(instance.id);
+        expect(mockRunAgent).toHaveBeenCalledWith(
+          'requirements', 'req-gate', expect.any(String),
+          expect.objectContaining({ currentState: 'requirements' })
+        );
+      } finally { mockRunAgent.mockRestore(); }
     });
   });
 
@@ -215,10 +209,10 @@ describe('AgentWorkflowEngine', () => {
     it('should execute agent gate for agent-based state', async () => {
       // Load workflow
       agentEngine.loadWorkflow(testWorkflow);
-      
+
       // Create instance
       const instance = agentEngine.createInstance(testWorkflow.id);
-      
+
       // Mock agent execution
       const mockRunAgentForState = vi.spyOn(agentRunner, 'runAgentForState')
         .mockResolvedValue({
@@ -231,7 +225,7 @@ describe('AgentWorkflowEngine', () => {
 
       // Execute the workflow
       const result = await agentEngine.execute(instance.id);
-      
+
       // Verify agent was called for requirements state
       expect(mockRunAgentForState).toHaveBeenCalledWith(
         'requirements',
@@ -239,19 +233,19 @@ describe('AgentWorkflowEngine', () => {
         expect.stringContaining('Requirements Gate'),
         expect.any(Object)
       );
-      
+
       expect(result.status).toBe('completed');
-      
+
       mockRunAgentForState.mockRestore();
     });
 
     it('should handle agent execution failure', async () => {
       // Load workflow
       agentEngine.loadWorkflow(testWorkflow);
-      
+
       // Create instance
       const instance = agentEngine.createInstance(testWorkflow.id);
-      
+
       // Mock agent execution to fail
       const mockRunAgentForState = vi.spyOn(agentRunner, 'runAgentForState')
         .mockResolvedValue({
@@ -265,7 +259,7 @@ describe('AgentWorkflowEngine', () => {
       // v1.1 strict: gate failed + string next → throws (unconsumed gate result)
       // This is correct behavior — gate failure must not silently proceed
       await expect(agentEngine.execute(instance.id)).rejects.toThrow('unconsumed');
-      
+
       mockRunAgentForState.mockRestore();
     });
 
@@ -301,18 +295,18 @@ describe('AgentWorkflowEngine', () => {
         },
         artifacts: [],
       };
-      
+
       agentEngine.loadWorkflow(noAgentWorkflow);
       const instance = agentEngine.createInstance(noAgentWorkflow.id);
-      
+
       // Mock to verify no agent execution
       const mockRunAgentForState = vi.spyOn(agentRunner, 'runAgentForState');
-      
+
       await agentEngine.execute(instance.id);
-      
+
       // Should not call agent for state with agent: 'none'
       expect(mockRunAgentForState).not.toHaveBeenCalled();
-      
+
       mockRunAgentForState.mockRestore();
     });
   });
@@ -321,15 +315,15 @@ describe('AgentWorkflowEngine', () => {
     it('should inherit WorkflowEngine functionality', () => {
       // Load workflow
       agentEngine.loadWorkflow(testWorkflow);
-      
+
       // Verify inherited methods work
       const workflow = agentEngine.getWorkflow(testWorkflow.id);
       expect(workflow).toBeDefined();
       expect(workflow?.id).toBe(testWorkflow.id);
-      
+
       const instance = agentEngine.createInstance(testWorkflow.id);
       expect(instance).toBeDefined();
-      
+
       const retrievedInstance = agentEngine.getInstance(instance.id);
       expect(retrievedInstance).toBeDefined();
       expect(retrievedInstance?.id).toBe(instance.id);
@@ -367,13 +361,13 @@ describe('AgentWorkflowEngine', () => {
         },
         artifacts: [],
       };
-      
+
       agentEngine.loadWorkflow(simpleWorkflow);
       const instance = agentEngine.createInstance(simpleWorkflow.id);
-      
+
       // Execute should work without agent integration
       const result = await agentEngine.execute(instance.id);
-      
+
       expect(result.status).toBe('completed');
       expect(result.currentState).toBe('check');
     });

@@ -7,11 +7,12 @@
  * - audit logger 能记录 RBACEngine check 结果
  * - checkFile 路径匹配
  */
-import { describe, it, expect } from 'vitest';
-import { RBACEngine, createRBACEngine } from '../../../src/rbac/RBACEngine.js';
-import { AuthorizationAuditLogger, InMemoryAuditSink } from '../../../src/rbac/AuthorizationAuditLogger.js';
+
 import type { Principal } from '@specforge/types/principal';
-import type { Permission, PermissionContext } from '@specforge/types/permissions';
+import { describe, it, expect } from 'vitest';
+
+import { AuthorizationAuditLogger } from '../../../src/rbac/AuthorizationAuditLogger.js';
+import { RBACEngine, createRBACEngine } from '../../../src/rbac/RBACEngine.js';
 
 // ---------------------------------------------------------------------------
 // Helpers

@@ -17,17 +17,21 @@
  * 10. gate failed + string next → throw unconsumed
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import * as fs from 'node:fs/promises';
-import * as path from 'node:path';
 import * as os from 'node:os';
-import { AgentWorkflowEngine, createAgentWorkflowEngine } from '../../src/engine/AgentWorkflowEngine.js';
-import { WorkflowAgentRunner, createWorkflowAgentRunner } from '../../src/AgentRunner.js';
-import { WorkflowDefinition } from '../../src/types.js';
-import { currentUserDecision } from '../helpers/current-user-decision.js';
+import * as path from 'node:path';
 
-const passGate = async () => ({ schema_version: '1.0' as const, passed: true, reason: 'auto-pass' });
-const failGate = async () => ({ schema_version: '1.0' as const, passed: false, status: 'failed' as const, reason: 'auto-fail' });
+import { promiseFromSync } from '@specforge/types';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
+import { createWorkflowAgentRunner } from '../../src/AgentRunner.js';
+import { type AgentWorkflowEngine, createAgentWorkflowEngine } from '../../src/engine/AgentWorkflowEngine.js';
+import type { WorkflowDefinition } from '../../src/types.js';
+import { currentUserDecision } from '../helpers/current-user-decision.js';
+import { requiredTestValue } from '../required-test-value';
+
+const passGate =  (): Promise<{ schema_version: "1.0"; passed: boolean; reason: string; }> => promiseFromSync(() => (({ schema_version: '1.0' as const, passed: true, reason: 'auto-pass' })));
+
 
 /**
  * Minimal workflow that exercises CRITICAL_STATES via agent engine.
@@ -189,21 +193,21 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
     const inst = engine.createInstance('agent-v11-test-workflow');
     forceState(inst.id, 'gates_running');
     await expect(engine.execute(inst.id)).rejects.toThrow(/workItemDir is required/i);
-    expect(engine.getInstance(inst.id)!.currentState).toBe('gates_running');
+    expect(requiredTestValue(engine.getInstance(inst.id)).currentState).toBe('gates_running');
   });
 
   it('should reject merge_ready without workItemDir and not mutate state', async () => {
     const inst = engine.createInstance('agent-v11-test-workflow');
     forceState(inst.id, 'approval_required');
     await expect(engine.execute(inst.id)).rejects.toThrow(/workItemDir is required/i);
-    expect(engine.getInstance(inst.id)!.currentState).toBe('approval_required');
+    expect(requiredTestValue(engine.getInstance(inst.id)).currentState).toBe('approval_required');
   });
 
   it('should reject closed without workItemDir and not mutate state', async () => {
     const inst = engine.createInstance('agent-v11-test-workflow');
     forceState(inst.id, 'verification_done');
     await expect(engine.execute(inst.id)).rejects.toThrow(/workItemDir is required/i);
-    expect(engine.getInstance(inst.id)!.currentState).toBe('verification_done');
+    expect(requiredTestValue(engine.getInstance(inst.id)).currentState).toBe('verification_done');
   });
 
   // ──────────────────────────────────────────────────────
@@ -215,7 +219,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
     forceState(inst.id, 'approval_required');
     const wiDir = await makeWorkItemDir(inst.id);
     await expect(engine.execute(inst.id, { workItemDir: wiDir })).rejects.toThrow(/user_decision/);
-    expect(engine.getInstance(inst.id)!.currentState).toBe('approval_required');
+    expect(requiredTestValue(engine.getInstance(inst.id)).currentState).toBe('approval_required');
   });
 
   // ──────────────────────────────────────────────────────
@@ -227,7 +231,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
     forceState(inst.id, 'post_merge_verified');
     const wiDir = await makeWorkItemDir(inst.id);
     await expect(engine.execute(inst.id, { workItemDir: wiDir })).rejects.toThrow(/code_permission_release_gate|tasks\.md|work_item/);
-    expect(engine.getInstance(inst.id)!.currentState).toBe('post_merge_verified');
+    expect(requiredTestValue(engine.getInstance(inst.id)).currentState).toBe('post_merge_verified');
   });
 
   // ──────────────────────────────────────────────────────
@@ -239,7 +243,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
     forceState(inst.id, 'verification_done');
     const wiDir = await makeWorkItemDir(inst.id);
     await expect(engine.execute(inst.id, { workItemDir: wiDir })).rejects.toThrow(/changed_files_audit/);
-    expect(engine.getInstance(inst.id)!.currentState).toBe('verification_done');
+    expect(requiredTestValue(engine.getInstance(inst.id)).currentState).toBe('verification_done');
   });
 
   // ──────────────────────────────────────────────────────
@@ -253,7 +257,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
     // Provide changed_files_audit.md but not close_gate.json
     await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), '# audit\n');
     await expect(engine.execute(inst.id, { workItemDir: wiDir })).rejects.toThrow(/close_gate/);
-    expect(engine.getInstance(inst.id)!.currentState).toBe('verification_done');
+    expect(requiredTestValue(engine.getInstance(inst.id)).currentState).toBe('verification_done');
   });
 
   // ──────────────────────────────────────────────────────
@@ -295,7 +299,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
     await fs.writeFile(path.join(wiDir, 'gates', 'close_gate.json'), JSON.stringify({ status: 'passed' }));
 
     await engine.execute(inst.id, { workItemDir: wiDir });
-    const finalState = engine.getInstance(inst.id)!.currentState;
+    const finalState = requiredTestValue(engine.getInstance(inst.id)).currentState;
     // With all evidence present, the engine should advance past gates_running
     expect(finalState).not.toBe('gates_running');
     // Verify it reached a state that requires evidence — proving the guard let it through
@@ -317,7 +321,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
     // approval_required gate passes, but merge_ready evidence missing
     await expect(engine.execute(inst.id, { workItemDir: wiDir })).rejects.toThrow(/user_decision/);
     // State must still be approval_required (not moved to merge_ready or beyond)
-    expect(engine.getInstance(inst.id)!.currentState).toBe('approval_required');
+    expect(requiredTestValue(engine.getInstance(inst.id)).currentState).toBe('approval_required');
   });
 
   // ──────────────────────────────────────────────────────
@@ -347,12 +351,12 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
   // ──────────────────────────────────────────────────────
 
   it('should not treat not_enabled gate as passed (must enter fail branch)', async () => {
-    const notEnabledGate = async () => ({
+    const notEnabledGate =  (): Promise<{ schema_version: "1.0"; passed: boolean; status: "not_enabled"; reason: string; }> => promiseFromSync(() => (({
       schema_version: '1.0' as const,
       passed: false,
       status: 'not_enabled' as const,
       reason: 'Gate not enabled',
-    });
+    })));
 
     const wf: WorkflowDefinition = {
       schema_version: '1.0',
@@ -393,7 +397,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
     const inst = e.createInstance('not-enabled-test');
     await e.execute(inst.id);
     // not_enabled → passed=false → must go to fail branch (blocked_state), NOT passed_state
-    expect(e.getInstance(inst.id)!.currentState).toBe('blocked_state');
+    expect(requiredTestValue(e.getInstance(inst.id)).currentState).toBe('blocked_state');
   });
 
   // ──────────────────────────────────────────────────────
@@ -401,12 +405,12 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
   // ──────────────────────────────────────────────────────
 
   it('should throw on unconsumed failed gate with string next', async () => {
-    const failGateFn = async () => ({
+    const failGateFn =  (): Promise<{ schema_version: "1.0"; passed: boolean; status: "failed"; reason: string; }> => promiseFromSync(() => (({
       schema_version: '1.0' as const,
       passed: false,
       status: 'failed' as const,
       reason: 'Gate failed',
-    });
+    })));
 
     const wf: WorkflowDefinition = {
       schema_version: '1.0',
@@ -435,7 +439,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
     e.loadWorkflow(wf);
     const inst = e.createInstance('unconsumed-test');
     await expect(e.execute(inst.id)).rejects.toThrow(/unconsumed/);
-    expect(e.getInstance(inst.id)!.currentState).toBe('start');
+    expect(requiredTestValue(e.getInstance(inst.id)).currentState).toBe('start');
   });
 
   // ──────────────────────────────────────────────────────
@@ -467,7 +471,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
       await fs.writeFile(path.join(wi999Dir, 'gates', 'gate_summary_gate.json'), JSON.stringify({ status: 'passed' }));
 
       // Force WI-001 to gates_running so next step is approval_required (CRITICAL)
-      const inst = fullEngine.getInstance('WI-001')!;
+      const inst = requiredTestValue(fullEngine.getInstance('WI-001'));
       (inst as Record<string, unknown>).currentState = 'gates_running';
 
       // Try to advance WI-001 using WI-999's evidence directory
@@ -482,7 +486,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
       ).rejects.toThrow(/workItemDir.*does not match.*instanceId|mismatched.*workItemDir/i);
 
       // State must not have changed
-      expect(fullEngine.getInstance('WI-001')!.currentState).toBe('gates_running');
+      expect(requiredTestValue(fullEngine.getInstance('WI-001')).currentState).toBe('gates_running');
     });
 
     it('should allow matching workItemDir (basename matches instanceId)', async () => {
@@ -506,7 +510,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
       await fs.writeFile(path.join(wi001Dir, 'gates', 'gate_summary_gate.json'), JSON.stringify({ status: 'passed' }));
 
       // Force to gates_running
-      const inst = fullEngine.getInstance('WI-001')!;
+      const inst = requiredTestValue(fullEngine.getInstance('WI-001'));
       (inst as Record<string, unknown>).currentState = 'gates_running';
 
       // This should succeed — matching directory
@@ -541,7 +545,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
       const mismatchDir = path.resolve(tmpDir, 'other-WI');
       await fs.mkdir(mismatchDir, { recursive: true });
 
-      const inst = fullEngine.getInstance('WI-001')!;
+      const inst = requiredTestValue(fullEngine.getInstance('WI-001'));
       (inst as Record<string, unknown>).currentState = 'gates_running';
 
       await expect(
@@ -553,7 +557,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
           workItemDir: mismatchDir,
         })
       ).rejects.toThrow(/workItemDir.*does not match.*instanceId|cross-WI evidence pollution/i);
-      expect(fullEngine.getInstance('WI-001')!.currentState).toBe('gates_running');
+      expect(requiredTestValue(fullEngine.getInstance('WI-001')).currentState).toBe('gates_running');
     });
 
     it('should reject mismatched relative workItemDir (basename != instanceId)', async () => {
@@ -572,7 +576,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
       const relDir = path.join(tmpDir, 'wrong-dir');
       await fs.mkdir(relDir, { recursive: true });
 
-      const inst = fullEngine.getInstance('WI-001')!;
+      const inst = requiredTestValue(fullEngine.getInstance('WI-001'));
       (inst as Record<string, unknown>).currentState = 'gates_running';
 
       await expect(
@@ -584,7 +588,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
           workItemDir: relDir,
         })
       ).rejects.toThrow(/workItemDir.*does not match.*instanceId|cross-WI evidence pollution/i);
-      expect(fullEngine.getInstance('WI-001')!.currentState).toBe('gates_running');
+      expect(requiredTestValue(fullEngine.getInstance('WI-001')).currentState).toBe('gates_running');
     });
 
     it('should reject workItemDir with .. traversal (resolved basename != instanceId)', async () => {
@@ -609,7 +613,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
       // path.resolve gives /tmp/sf-xxx/attacker, basename = 'attacker' != 'WI-001'
       const traversalPath = path.join(wi001Dir, '..', 'attacker');
 
-      const inst = fullEngine.getInstance('WI-001')!;
+      const inst = requiredTestValue(fullEngine.getInstance('WI-001'));
       (inst as Record<string, unknown>).currentState = 'gates_running';
 
       await expect(
@@ -621,7 +625,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
           workItemDir: traversalPath,
         })
       ).rejects.toThrow(/workItemDir.*does not match.*instanceId|cross-WI evidence pollution/i);
-      expect(fullEngine.getInstance('WI-001')!.currentState).toBe('gates_running');
+      expect(requiredTestValue(fullEngine.getInstance('WI-001')).currentState).toBe('gates_running');
     });
 
     it('should allow Windows-style backslash path when basename matches instanceId', async () => {
@@ -642,7 +646,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
       await fs.writeFile(path.join(wi001Dir, 'gate_summary.md'), '# summary\n');
       await fs.writeFile(path.join(wi001Dir, 'gates', 'gate_summary_gate.json'), JSON.stringify({ status: 'passed' }));
 
-      const inst = fullEngine.getInstance('WI-001')!;
+      const inst = requiredTestValue(fullEngine.getInstance('WI-001'));
       (inst as Record<string, unknown>).currentState = 'gates_running';
 
       const result = await fullEngine.transitionFull({

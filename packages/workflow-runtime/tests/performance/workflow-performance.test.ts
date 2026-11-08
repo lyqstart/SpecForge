@@ -1,22 +1,26 @@
 /**
  * Performance Tests for Workflow Runtime
  * Tests workflow execution performance, compositeGate concurrency, and event system performance
- * 
+ *
  * Task 5.2: 性能测试
  * - 测试 workflow 执行性能
  * - 测试 compositeGate 并发性能
  * - 测试事件系统性能
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { WorkflowEngine, WorkflowEvent } from '../../src/WorkflowEngine.js';
-import { EventPublisher } from '../../src/events/EventPublisher.js';
-import { WorkflowDefinition, SimpleGateDefinition, CompositeGateDefinition } from '../../src/types.js';
-import { MockEventBus } from '../setup.js';
-
 /**
  * Performance metrics collector
  */
+
+import { promiseFromSync } from '@specforge/types';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+
+import { EventPublisher } from '../../src/events/EventPublisher.js';
+import type { WorkflowDefinition, CompositeGateDefinition } from '../../src/types.js';
+import { type WorkflowEvent , WorkflowEngine } from '../../src/WorkflowEngine.js';
+import { requiredTestValue } from '../required-test-value';
+import { MockEventBus } from '../setup.js';
+
 class PerformanceMetrics {
   private startTime: number = 0;
   private measurements: Map<string, number[]> = new Map();
@@ -30,11 +34,11 @@ class PerformanceMetrics {
     if (!this.measurements.has(label)) {
       this.measurements.set(label, []);
     }
-    this.measurements.get(label)!.push(duration);
+    requiredTestValue(this.measurements.get(label)).push(duration);
     return duration;
   }
 
-  getStats(label: string) {
+  getStats(label: string): { count: number; avg: number; min: number; max: number; p50: number; p95: number; p99: number; } | null {
     const values = this.measurements.get(label) || [];
     if (values.length === 0) return null;
 
@@ -55,12 +59,12 @@ class PerformanceMetrics {
   }
 }
 
-const passingGateCheck = async () => ({
+const passingGateCheck =  (): Promise<{ schema_version: "1.0"; passed: boolean; status: "passed"; reason: string; }> => promiseFromSync(() => (({
   schema_version: '1.0' as const,
   passed: true,
   status: 'passed' as const,
   reason: 'Deterministic passing gate for performance measurement',
-});
+})));
 
 describe('Workflow Runtime Performance Tests', () => {
   let engine: WorkflowEngine;
@@ -105,7 +109,7 @@ describe('Workflow Runtime Performance Tests', () => {
                 id: 'gate1',
                 name: 'Gate 1',
                 checkFn: passingGateCheck,
-              } as SimpleGateDefinition,
+              },
               skills: [],
               next: 'state2',
             },
@@ -117,7 +121,7 @@ describe('Workflow Runtime Performance Tests', () => {
                 type: 'simple',
                 id: 'gate2',
                 name: 'Gate 2',
-              } as SimpleGateDefinition,
+              },
               skills: [],
             },
           },
@@ -156,7 +160,7 @@ describe('Workflow Runtime Performance Tests', () => {
                 type: 'simple',
                 id: 'gate1',
                 name: 'Gate 1',
-              } as SimpleGateDefinition,
+              },
               skills: [],
             },
           },
@@ -176,16 +180,16 @@ describe('Workflow Runtime Performance Tests', () => {
 
       const stats = metrics.getStats('multi-execution');
       expect(stats).not.toBeNull();
-      expect(stats!.count).toBe(iterations);
+      expect(requiredTestValue(stats).count).toBe(iterations);
       // Average execution should be < 50ms
-      expect(stats!.avg).toBeLessThan(50);
+      expect(requiredTestValue(stats).avg).toBeLessThan(50);
       // P95 should be < 100ms
-      expect(stats!.p95).toBeLessThan(100);
+      expect(requiredTestValue(stats).p95).toBeLessThan(100);
     });
 
     it('should handle deep workflow state chains efficiently', async () => {
       // Create a workflow with 10 states
-      const states: Record<string, any> = {};
+      const states: WorkflowDefinition['stateMachine']['states'] = {};
       for (let i = 1; i <= 10; i++) {
         states[`state${i}`] = {
           schema_version: '1.0',
@@ -196,7 +200,7 @@ describe('Workflow Runtime Performance Tests', () => {
             id: `gate${i}`,
             name: `Gate ${i}`,
             checkFn: passingGateCheck,
-          } as SimpleGateDefinition,
+          },
           skills: [],
           next: i < 10 ? `state${i + 1}` : undefined,
         };
@@ -238,7 +242,7 @@ describe('Workflow Runtime Performance Tests', () => {
           type: 'simple',
           id: `child-gate-${i}`,
           name: `Child Gate ${i}`,
-        } as SimpleGateDefinition);
+        });
       }
 
       const definition: WorkflowDefinition = {
@@ -261,7 +265,7 @@ describe('Workflow Runtime Performance Tests', () => {
                 mode: 'parallel',
                 failPolicy: 'collect_all',
                 children: childGates,
-              } as CompositeGateDefinition,
+              },
               skills: [],
             },
           },
@@ -290,7 +294,7 @@ describe('Workflow Runtime Performance Tests', () => {
           type: 'simple',
           id: `seq-child-gate-${i}`,
           name: `Sequential Child Gate ${i}`,
-        } as SimpleGateDefinition);
+        });
       }
 
       const definition: WorkflowDefinition = {
@@ -313,7 +317,7 @@ describe('Workflow Runtime Performance Tests', () => {
                 mode: 'sequential',
                 failPolicy: 'collect_all',
                 children: childGates,
-              } as CompositeGateDefinition,
+              },
               skills: [],
             },
           },
@@ -341,7 +345,7 @@ describe('Workflow Runtime Performance Tests', () => {
           type: 'simple',
           id: `fail-fast-gate-${i}`,
           name: `Fail Fast Gate ${i}`,
-        } as SimpleGateDefinition);
+        });
       }
 
       const definition: WorkflowDefinition = {
@@ -364,7 +368,7 @@ describe('Workflow Runtime Performance Tests', () => {
                 mode: 'parallel',
                 failPolicy: 'fail_fast',
                 children: childGates,
-              } as CompositeGateDefinition,
+              },
               skills: [],
             },
           },
@@ -376,7 +380,7 @@ describe('Workflow Runtime Performance Tests', () => {
 
       metrics.start();
       const instance = engine.createInstance('fail-fast-workflow');
-      const result = await engine.execute(instance.id);
+      void (await engine.execute(instance.id));
       const duration = metrics.end('fail-fast-execution');
 
       // fail_fast should stop early and be faster than collect_all
@@ -392,7 +396,7 @@ describe('Workflow Runtime Performance Tests', () => {
           type: 'simple',
           id: `inner-gate-${i}`,
           name: `Inner Gate ${i}`,
-        } as SimpleGateDefinition);
+        });
       }
 
       const outerChildGates: CompositeGateDefinition['children'] = [];
@@ -405,7 +409,7 @@ describe('Workflow Runtime Performance Tests', () => {
           mode: 'parallel',
           failPolicy: 'collect_all',
           children: innerChildGates,
-        } as CompositeGateDefinition);
+        });
       }
 
       const definition: WorkflowDefinition = {
@@ -428,7 +432,7 @@ describe('Workflow Runtime Performance Tests', () => {
                 mode: 'parallel',
                 failPolicy: 'collect_all',
                 children: outerChildGates,
-              } as CompositeGateDefinition,
+              },
               skills: [],
             },
           },
@@ -468,7 +472,7 @@ describe('Workflow Runtime Performance Tests', () => {
                 type: 'simple',
                 id: 'gate1',
                 name: 'Gate 1',
-              } as SimpleGateDefinition,
+              },
               skills: [],
               next: 'state2',
             },
@@ -480,7 +484,7 @@ describe('Workflow Runtime Performance Tests', () => {
                 type: 'simple',
                 id: 'gate2',
                 name: 'Gate 2',
-              } as SimpleGateDefinition,
+              },
               skills: [],
             },
           },
@@ -501,11 +505,11 @@ describe('Workflow Runtime Performance Tests', () => {
 
       const stats = metrics.getStats('event-publish');
       expect(stats).not.toBeNull();
-      expect(stats!.count).toBe(iterations);
+      expect(requiredTestValue(stats).count).toBe(iterations);
       // Event publishing should be very fast (< 1ms average)
-      expect(stats!.avg).toBeLessThan(1);
+      expect(requiredTestValue(stats).avg).toBeLessThan(1);
       // P95 should be < 5ms
-      expect(stats!.p95).toBeLessThan(5);
+      expect(requiredTestValue(stats).p95).toBeLessThan(5);
     });
 
     it('should handle high-volume event subscriptions', async () => {
@@ -526,7 +530,7 @@ describe('Workflow Runtime Performance Tests', () => {
                 type: 'simple',
                 id: 'gate1',
                 name: 'Gate 1',
-              } as SimpleGateDefinition,
+              },
               skills: [],
             },
           },
@@ -538,12 +542,13 @@ describe('Workflow Runtime Performance Tests', () => {
 
       // Subscribe to many events
       const eventCounts: Record<string, number> = {};
-      const subscriptions = [];
+      const subscriptions: ((event: WorkflowEvent) => void)[] = [];
       for (let i = 0; i < 100; i++) {
-        const unsub = engine.onEvent((event: WorkflowEvent) => {
+        const handler = (event: WorkflowEvent): void => {
           eventCounts[event.type] = (eventCounts[event.type] || 0) + 1;
-        });
-        subscriptions.push(unsub);
+        };
+        engine.onEvent(handler);
+        subscriptions.push(handler);
       }
 
       metrics.start();
@@ -555,7 +560,7 @@ describe('Workflow Runtime Performance Tests', () => {
       expect(duration).toBeLessThan(500);
 
       // Cleanup subscriptions
-      subscriptions.forEach(unsub => unsub?.());
+      subscriptions.forEach(handler => engine.offEvent(handler));
     });
 
     it('should maintain event ordering under load', async () => {
@@ -577,7 +582,7 @@ describe('Workflow Runtime Performance Tests', () => {
                 id: 'gate1',
                 name: 'Gate 1',
                 checkFn: passingGateCheck,
-              } as SimpleGateDefinition,
+              },
               skills: [],
               next: 'state2',
             },
@@ -590,7 +595,7 @@ describe('Workflow Runtime Performance Tests', () => {
                 id: 'gate2',
                 name: 'Gate 2',
                 checkFn: passingGateCheck,
-              } as SimpleGateDefinition,
+              },
               skills: [],
               next: 'state3',
             },
@@ -602,7 +607,7 @@ describe('Workflow Runtime Performance Tests', () => {
                 type: 'simple',
                 id: 'gate3',
                 name: 'Gate 3',
-              } as SimpleGateDefinition,
+              },
               skills: [],
             },
           },
@@ -648,7 +653,7 @@ describe('Workflow Runtime Performance Tests', () => {
                 type: 'simple',
                 id: 'gate1',
                 name: 'Gate 1',
-              } as SimpleGateDefinition,
+              },
               skills: [],
             },
           },
@@ -708,7 +713,7 @@ describe('Workflow Runtime Performance Tests', () => {
                 type: 'simple',
                 id: 'gate1',
                 name: 'Gate 1',
-              } as SimpleGateDefinition,
+              },
               skills: [],
             },
           },
@@ -751,7 +756,7 @@ describe('Workflow Runtime Performance Tests', () => {
                 type: 'simple',
                 id: 'gate1',
                 name: 'Gate 1',
-              } as SimpleGateDefinition,
+              },
               skills: [],
             },
           },
@@ -763,15 +768,14 @@ describe('Workflow Runtime Performance Tests', () => {
 
       // Create and destroy many subscriptions
       const iterations = 1000;
+      let notifications = 0;
       for (let i = 0; i < iterations; i++) {
-        const unsub = engine.onEvent(() => {
-          // No-op
-        });
-        unsub?.();
+        const handler = (): void => { notifications++; };
+        engine.onEvent(handler);
+        engine.offEvent(handler);
       }
-
-      // Should complete without issues
-      expect(true).toBe(true);
+      engine.createInstance(definition.id);
+      expect(notifications).toBe(0);
     });
   });
 });

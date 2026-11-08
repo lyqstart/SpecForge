@@ -44,7 +44,7 @@ function getDaemonServiceSpec(): {
   dependsOn: string[];
 } {
   const binDir = getBinDir();
-  const logsDir = getLogsDir();
+  void (getLogsDir());
   const specforgeBin = path.join(binDir, process.platform === 'win32' ? 'specforged.exe' : 'specforged');
   return {
     name: 'specforge-daemon',

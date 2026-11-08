@@ -1,3 +1,4 @@
+import { stripVTControlCharacters } from 'node:util';
 /**
  * JSON Payload Formatters for Service Management Commands
  *
@@ -145,9 +146,7 @@ function getStatusMessage(status: ServiceStatus): string {
  * Used to ensure JSON mode output contains no ANSI codes.
  */
 export function stripAnsi(str: string): string {
-  // ANSI escape code pattern
-  const ansiPattern = /\x1B(?:\[|\()[0-?]*[ -\/]*[@-~]/g;
-  return str.replace(ansiPattern, '');
+  return stripVTControlCharacters(str);
 }
 
 /**

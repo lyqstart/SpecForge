@@ -1,11 +1,12 @@
+import { promiseFromSync } from '@specforge/types';
 import { afterEach, describe, expect, test, vi } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
 
 vi.mock('@specforge/host-profile', () => ({
-  scanHostProfile: vi.fn(async () => ({})),
-  loadHostProfile: vi.fn(async () => null),
+  scanHostProfile: vi.fn(() => promiseFromSync(() => ({}))),
+  loadHostProfile: vi.fn(() => promiseFromSync(() => null)),
   getHostProfilePath: () => path.join(os.tmpdir(), 'sf-bootstrap-host-profile-does-not-exist.json'),
   PROFILE_TTL_MS: 3_600_000,
   SCANNER_VERSION: 'test',
@@ -26,14 +27,21 @@ const WI = 'WI-0001';
 
 function runtimeDeps() {
   const stateManager = {
-    rebuildFromEventsFile: vi.fn(async () => ({ replayed: false })),
-    getState: vi.fn(async () => 'candidate_preparing'),
+    rebuildFromEventsFile: vi.fn(() => promiseFromSync(() => ({ replayed: false }))),
+    getState: vi.fn(() => promiseFromSync(() => 'candidate_preparing')),
   };
   return {
+    stateManager: undefined,
+    workflowEngine: undefined,
+    eventLogger: undefined,
+    eventBus: undefined,
+    permissionEngine: undefined,
+    cas: undefined,
+    sessionRegistry: undefined,
     projectManager: {
-      getProjectStateManager: vi.fn(async () => stateManager),
+      getProjectStateManager: vi.fn(() => promiseFromSync(() => stateManager)),
     },
-  } as any;
+  };
 }
 
 async function writeJson(filePath: string, value: unknown): Promise<void> {
@@ -176,8 +184,19 @@ describe('new project governance bootstrap', () => {
     const candidateManifest = JSON.parse(
       await fs.readFile(path.join(workItemDir, 'candidate_manifest.json'), 'utf-8')
     );
+    const entries: unknown = candidateManifest.entries;
+    if (!Array.isArray(entries)) throw new Error('TEST_CANDIDATE_ENTRIES_REQUIRED');
     const targets = new Set(
-      candidateManifest.entries.map((entry: any) => String(entry.target_path ?? ''))
+      entries.map((entry: unknown) => {
+        if (
+          typeof entry !== 'object' ||
+          entry === null ||
+          !('target_path' in entry) ||
+          typeof entry.target_path !== 'string'
+        )
+          throw new Error('TEST_CANDIDATE_TARGET_REQUIRED');
+        return entry.target_path;
+      })
     );
     expect(targets).toContain('.specforge/project/architecture.md');
     expect(targets).toContain('.specforge/project/data_model.md');

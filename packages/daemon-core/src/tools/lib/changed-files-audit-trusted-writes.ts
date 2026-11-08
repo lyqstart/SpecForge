@@ -19,7 +19,7 @@ export type TrustedChangedFilesAuditControlPlaneWrite =
  * lifecycle tool invoked the audit.
  */
 export function readTrustedChangedFilesAuditControlPlaneWrites(
-  projectRoot: string,
+  projectRoot: string
 ): TrustedChangedFilesAuditControlPlaneWrite[] {
   return [
     ...readTrustedGitGovernanceProjectWrites(projectRoot),

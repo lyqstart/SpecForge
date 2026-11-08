@@ -1,13 +1,10 @@
 /**
  * TransitionAuthorizer.test.ts — Phase 2 Transition Authorization tests
  */
-import { describe, it, expect } from 'vitest';
-import {
-  TransitionAuthorizer,
-  createTransitionAuthorizer,
-  type TransitionAuthorizationInput,
-} from '../../../src/rbac/TransitionAuthorizer.js';
 import type { Principal } from '@specforge/types/principal';
+import { describe, it, expect } from 'vitest';
+
+import { TransitionAuthorizer, createTransitionAuthorizer } from '../../../src/rbac/TransitionAuthorizer.js';
 
 // Test principals
 const ORCHESTRATOR: Principal = { actorRole: 'sf-orchestrator', agentRole: 'orchestrator', source: 'tool_call' };

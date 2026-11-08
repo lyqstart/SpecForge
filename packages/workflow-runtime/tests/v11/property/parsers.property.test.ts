@@ -6,9 +6,12 @@
  * Validates: Requirements 6.1, 6.2, 6.3, 6.10
  */
 
-import { describe, it, expect } from 'vitest';
 import fc from 'fast-check';
+import { describe, it } from 'vitest';
+
 import { JsonParser } from '@/v11/runtime/JsonParser';
+
+import { requiredTestValue } from '../../required-test-value';
 
 describe('Property 16: JSON Parser/Serializer Round-Trip', () => {
   /**
@@ -27,7 +30,7 @@ describe('Property 16: JSON Parser/Serializer Round-Trip', () => {
           const serialized = JsonParser.serialize(JSON.parse(jsonStr));
           if (!serialized.success) return false;
 
-          const parsed = JsonParser.parse(serialized.data!);
+          const parsed = JsonParser.parse(requiredTestValue(serialized.data));
           if (!parsed.success) return false;
 
           // Compare via re-serialization for consistency

@@ -1,11 +1,13 @@
+import { diagnosticScalarText } from '@specforge/types';
 /**
  * Basic Gate Types Module
  * Implements RequirementsGate, DesignGate, TasksGate, and VerificationGate
  */
 
-import { GateResult, SimpleGateDefinition } from '../types.js';
+import type { GateResult, SimpleGateDefinition } from '../types.js';
 
 const CURRENT_SCHEMA_VERSION = '1.0';
+type GateContentConfig = { content?: string; requireContent?: boolean };
 
 /**
  * Create a GateResult with schema_version
@@ -77,7 +79,7 @@ export class RequirementsGate extends BaseGate {
    */
   constructor(
     id: string = 'requirements-gate',
-    config: {
+    config: GateContentConfig & {
       requiredSections?: string[];
       minLength?: number;
     } = {}
@@ -97,7 +99,7 @@ export class RequirementsGate extends BaseGate {
    */
   check(): GateResult {
     const requirementsContent = this.config.content as string | undefined;
-    
+
     if (!requirementsContent) {
       // No content provided - check if content is expected to be loaded from elsewhere
       if (this.config.requireContent === false) {
@@ -108,7 +110,7 @@ export class RequirementsGate extends BaseGate {
           details: { gateId: this.id },
         });
       }
-      
+
       return createGateResult({
         passed: false,
         reason: 'No requirements content provided',
@@ -185,7 +187,7 @@ export class DesignGate extends BaseGate {
    */
   constructor(
     id: string = 'design-gate',
-    config: {
+    config: GateContentConfig & {
       requiredComponents?: string[];
     } = {}
   ) {
@@ -275,7 +277,8 @@ export class TasksGate extends BaseGate {
    */
   constructor(
     id: string = 'tasks-gate',
-    config: {
+    config: GateContentConfig & {
+      tasks?: { id: string; title: string; subtasks?: { id: string }[] }[];
       minTasks?: number;
       requirePhases?: boolean;
     } = {}
@@ -414,7 +417,10 @@ export class VerificationGate extends BaseGate {
    */
   constructor(
     id: string = 'verification-gate',
-    config: {
+    config: GateContentConfig & {
+      testCount?: number;
+      hasUnitTests?: boolean;
+      hasPropertyTests?: boolean;
       requireTests?: boolean;
       minTests?: number;
     } = {}
@@ -533,6 +539,6 @@ export function createBasicGate(
     case 'verification':
       return new VerificationGate(config?.id as string, config);
     default:
-      throw new Error(`Unknown gate type: ${type}`);
+      throw new Error(`Unknown gate type: ${diagnosticScalarText(type)}`);
   }
 }

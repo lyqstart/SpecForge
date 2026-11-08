@@ -64,15 +64,15 @@ import './handlers/sf-git-code-permission-guard';
 // from the callable registry. The current release has no legacy-name contract.
 import { registerHandler, getHandler, unregisterHandler } from './ToolDispatcher';
 const V11_TOOL_ALIASES: Record<string, string> = {
-  'sf_work_item_create': 'sf_v11_work_item_create',
-  'sf_gate_run': 'sf_v11_gate_run',
-  'sf_code_permission': 'sf_v11_code_permission',
-  'sf_user_decision_record': 'sf_v11_decision',
-  'sf_merge_run': 'sf_v11_merge',
-  'sf_rollback': 'sf_v11_rollback',
-  'sf_handoff': 'sf_v11_handoff',
-  'sf_verification': 'sf_v11_verification',
-  'sf_semantic_closure_run': 'sf_v11_semantic_closure_run',
+  sf_work_item_create: 'sf_v11_work_item_create',
+  sf_gate_run: 'sf_v11_gate_run',
+  sf_code_permission: 'sf_v11_code_permission',
+  sf_user_decision_record: 'sf_v11_decision',
+  sf_merge_run: 'sf_v11_merge',
+  sf_rollback: 'sf_v11_rollback',
+  sf_handoff: 'sf_v11_handoff',
+  sf_verification: 'sf_v11_verification',
+  sf_semantic_closure_run: 'sf_v11_semantic_closure_run',
 };
 for (const [publicName, internalName] of Object.entries(V11_TOOL_ALIASES)) {
   const handler = getHandler(internalName);

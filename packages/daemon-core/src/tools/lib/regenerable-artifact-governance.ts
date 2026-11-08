@@ -1,3 +1,4 @@
+import { scalarText } from '@specforge/types';
 import { execFile } from 'node:child_process';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
@@ -36,9 +37,7 @@ function projectRelativePath(projectRoot: string, value: string): string | null 
   const raw = String(value ?? '').trim();
   const relative = path.isAbsolute(raw) ? path.relative(projectRoot, raw) : raw;
   const validation = validateProjectRelativePath(relative);
-  return validation.valid && validation.path
-    ? normalizeRelativePath(validation.path)
-    : null;
+  return validation.valid && validation.path ? normalizeRelativePath(validation.path) : null;
 }
 
 /**
@@ -49,13 +48,13 @@ function projectRelativePath(projectRoot: string, value: string): string | null 
  */
 export async function readGovernedRegenerableArtifacts(
   projectRoot: string,
-  changedFiles: Array<{ path: string; operation: 'create' | 'modify' | 'delete' }>,
+  changedFiles: Array<{ path: string; operation: 'create' | 'modify' | 'delete' }>
 ): Promise<GovernedRegenerableArtifact[]> {
   const trustedPaths = new Set(
-    readTrustedGitGovernanceProjectWrites(projectRoot).map(entry => entry.path),
+    readTrustedGitGovernanceProjectWrites(projectRoot).map(entry => entry.path)
   );
   if (
-    !trustedPaths.has((`${SPEC_DIR_NAME}/project/git_ignore_decisions.json` as const)) ||
+    !trustedPaths.has(`${SPEC_DIR_NAME}/project/git_ignore_decisions.json` as const) ||
     !trustedPaths.has('.gitignore')
   ) {
     return [];
@@ -65,7 +64,7 @@ export async function readGovernedRegenerableArtifacts(
     projectRoot,
     SPEC_DIR_NAME,
     'project',
-    'git_ignore_decisions.json',
+    'git_ignore_decisions.json'
   );
   const parsed = JSON.parse(await fs.readFile(decisionPath, 'utf-8')) as {
     schema_version?: unknown;
@@ -83,7 +82,7 @@ export async function readGovernedRegenerableArtifacts(
     const validation = validateProjectRelativePath(decision.path);
     if (!validation.valid || !validation.path) continue;
     ignoredDecisionByPath.set(normalizeRelativePath(validation.path), {
-      reason: String(decision.reason ?? 'confirmed ignore decision'),
+      reason: scalarText(decision.reason ?? 'confirmed ignore decision'),
     });
   }
 
@@ -105,7 +104,7 @@ export async function readGovernedRegenerableArtifacts(
       artifact_class: artifactClass,
       decision: 'ignore',
       reason: decision.reason,
-      policy_source: (`${SPEC_DIR_NAME}/project/git_ignore_decisions.json` as const),
+      policy_source: `${SPEC_DIR_NAME}/project/git_ignore_decisions.json` as const,
       enforcement_source: '.gitignore',
     });
   }

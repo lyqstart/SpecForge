@@ -1,8 +1,12 @@
-import {describe,it,expect} from 'vitest';import {readFileSync} from 'node:fs';import path from 'node:path';import ts from 'typescript';
+import {readFileSync} from 'node:fs';import path from 'node:path';
+
+import ts from 'typescript';
+import {describe,it,expect} from 'vitest';
+
+import {SHARED_COMPONENT_REGISTRY} from '../../../scripts/lib/registry';
 import * as configuration from '../../configuration/src/index';
 import * as observability from '../../observability/src/index';
-import {SHARED_COMPONENT_REGISTRY} from '../../../scripts/lib/registry';
-const root=path.resolve(import.meta.dirname,'../../..'),read=(p:string)=>readFileSync(path.join(root,p),'utf8');
+const root=path.resolve(import.meta.dirname,'../../..'),read=(p:string): string =>readFileSync(path.join(root,p),'utf8');
 describe('current operating documentation contracts',()=>{
   it('keeps every installed project-rule template within the current execution-owner boundary',()=>{
     const members=SHARED_COMPONENT_REGISTRY.filter(e=>e.type==='template'&&e.sourcePath?.includes('/project-rules/'));

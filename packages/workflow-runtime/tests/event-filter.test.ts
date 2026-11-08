@@ -9,8 +9,9 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { EventFilter, FilterCriteria } from '../src/event-filter.js';
-import { Event } from '../src/types.js';
+
+import { EventFilter } from '../src/event-filter.js';
+import type { Event } from '../src/types.js';
 
 describe('EventFilter', () => {
   let testEvents: Event[];
@@ -82,13 +83,15 @@ describe('EventFilter', () => {
 
     it('should throw error for invalid events input', () => {
       expect(() => {
-        EventFilter.filter(null as any, {});
+        // @ts-expect-error Deliberate malformed runtime input (TS2345); retain the rejection assertion.
+        EventFilter.filter(null, {});
       }).toThrow('Events must be an array');
     });
 
     it('should throw error for invalid criteria input', () => {
       expect(() => {
-        EventFilter.filter(testEvents, null as any);
+        // @ts-expect-error Deliberate malformed runtime input (TS2345); retain the rejection assertion.
+        EventFilter.filter(testEvents, null);
       }).toThrow('Criteria must be an object');
     });
   });
@@ -150,7 +153,8 @@ describe('EventFilter', () => {
     });
 
     it('should return empty array for non-matching source', () => {
-      const result = EventFilter.filter(testEvents, { source: 'unknown' as any });
+      // @ts-expect-error Deliberate malformed runtime input (TS2322); retain the rejection assertion.
+      const result = EventFilter.filter(testEvents, { source: 'unknown' });
       expect(result).toHaveLength(0);
     });
   });
@@ -358,7 +362,8 @@ describe('EventFilter', () => {
         projectId: 'proj-1',
         action: 'test.event',
         payload: {},
-        metadata: undefined as any,
+        // @ts-expect-error Deliberate malformed runtime input (TS2322); retain the rejection assertion.
+        metadata: undefined,
       };
 
       const result = EventFilter.filter([eventWithoutMetadata], { source: 'daemon' });

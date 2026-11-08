@@ -10,7 +10,6 @@ import { createHash } from 'node:crypto';
 import {
   validateCurrentGateAttemptResultValue,
   validateCurrentGateAttemptStartValue,
-  validateCurrentGateReportValue,
   type GateAttemptInputSnapshotEntry,
 } from '@specforge/types';
 import {
@@ -48,18 +47,32 @@ interface GateMeta {
   checkFn: GateCheckFn;
 }
 const gateRegistry = new Map<GateIdV11, GateMeta>();
-__injectRegistry(id => gateRegistry.get(id as GateIdV11));
-export function registerGate(gateId: GateIdV11, gateType: GateStrictness, required: boolean, checkFn: GateCheckFn): void {
+__injectRegistry(id => gateRegistry.get(id));
+export function registerGate(
+  gateId: GateIdV11,
+  gateType: GateStrictness,
+  required: boolean,
+  checkFn: GateCheckFn
+): void {
   gateRegistry.set(gateId, { gateId, gateType, required, checkFn });
 }
-export function getRegisteredGateIds(): GateIdV11[] { return Array.from(gateRegistry.keys()); }
-export function isRegisteredGate(gateId: string): gateId is GateIdV11 { return gateRegistry.has(gateId as GateIdV11); }
+export function getRegisteredGateIds(): GateIdV11[] {
+  return Array.from(gateRegistry.keys());
+}
+export function isRegisteredGate(gateId: string): gateId is GateIdV11 {
+  return gateRegistry.has(gateId as GateIdV11);
+}
 export function computeGateSummaryStatus(reports: GateReportV11[]): GateSummaryStatus {
   if (reports.some(report => report.status === 'failed' && report.required)) return 'failed';
-  if (reports.some(report => (report as GateReportV11 & { waiver_required?: boolean }).waiver_required === true)) {
+  if (
+    reports.some(
+      report => (report as GateReportV11 & { waiver_required?: boolean }).waiver_required === true
+    )
+  ) {
     return 'passed_with_waiver_required';
   }
-  if (reports.every(report => report.status === 'passed' || report.status === 'skipped')) return 'passed';
+  if (reports.every(report => report.status === 'passed' || report.status === 'skipped'))
+    return 'passed';
   return 'blocked';
 }
 type GateAttemptContext = {
@@ -78,10 +91,7 @@ function gateAttemptId(sequence: number): string {
   return `attempt-${String(sequence).padStart(4, '0')}`;
 }
 
-async function writeExclusive(
-  filePath: string,
-  value: string | Uint8Array,
-): Promise<void> {
+async function writeExclusive(filePath: string, value: string | Uint8Array): Promise<void> {
   await fs.writeFile(filePath, value, { flag: 'wx' });
 }
 
@@ -101,14 +111,14 @@ async function existingAttemptNumbers(ctx: GateContext): Promise<number[]> {
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
     throw new Error(
-      `GATE_ATTEMPTS_READ_FAILED: ${error instanceof Error ? error.message : String(error)}`,
+      `GATE_ATTEMPTS_READ_FAILED: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 }
 
 function assertGateAttemptSchemaCurrent(
   attemptId: string,
-  result: SchemaDescriptorPrecheckResult,
+  result: SchemaDescriptorPrecheckResult
 ): void {
   if (result.ok) return;
   const failures = result.checks
@@ -127,7 +137,7 @@ async function precheckExistingGateAttempts(ctx: GateContext): Promise<number[]>
   for (let index = 0; index < attemptNumbers.length; index += 1) {
     if (attemptNumbers[index] !== index + 1) {
       throw new Error(
-        `GATE_ATTEMPT_SCHEMA_BLOCKED: non-contiguous attempt sequence at ${gateAttemptId(index + 1)}`,
+        `GATE_ATTEMPT_SCHEMA_BLOCKED: non-contiguous attempt sequence at ${gateAttemptId(index + 1)}`
       );
     }
 
@@ -140,10 +150,10 @@ async function precheckExistingGateAttempts(ctx: GateContext): Promise<number[]>
     assertGateAttemptSchemaCurrent(attemptId, basePrecheck);
 
     const startValidation = validateCurrentGateAttemptStartValue(
-      await readValidatedGateAttemptJson(path.join(attemptPath, 'attempt-start.json')),
+      await readValidatedGateAttemptJson(path.join(attemptPath, 'attempt-start.json'))
     );
     const resultValidation = validateCurrentGateAttemptResultValue(
-      await readValidatedGateAttemptJson(path.join(attemptPath, 'attempt-result.json')),
+      await readValidatedGateAttemptJson(path.join(attemptPath, 'attempt-result.json'))
     );
     if (!startValidation.value || !resultValidation.value) {
       throw new Error(`GATE_ATTEMPT_SCHEMA_BLOCKED: attempt=${attemptId}; validation unavailable`);
@@ -151,10 +161,12 @@ async function precheckExistingGateAttempts(ctx: GateContext): Promise<number[]>
     const start = startValidation.value;
     const result = resultValidation.value;
     if (
-      start.started_at !== result.started_at
-      || JSON.stringify(start.requested_gate_ids) !== JSON.stringify(result.requested_gate_ids)
+      start.started_at !== result.started_at ||
+      JSON.stringify(start.requested_gate_ids) !== JSON.stringify(result.requested_gate_ids)
     ) {
-      throw new Error(`GATE_ATTEMPT_SCHEMA_BLOCKED: attempt=${attemptId}; transaction identity mismatch`);
+      throw new Error(
+        `GATE_ATTEMPT_SCHEMA_BLOCKED: attempt=${attemptId}; transaction identity mismatch`
+      );
     }
 
     const reportIds = result.current_report_gate_ids;
@@ -164,8 +176,8 @@ async function precheckExistingGateAttempts(ctx: GateContext): Promise<number[]>
     const reportPrecheck = await precheckSchemaDescriptors(
       attemptPath,
       reportIds.map(gateId =>
-        createGateAttemptReportSchemaDescriptor(ctx.workItemId, attemptId, gateId),
-      ),
+        createGateAttemptReportSchemaDescriptor(ctx.workItemId, attemptId, gateId)
+      )
     );
     assertGateAttemptSchemaCurrent(attemptId, reportPrecheck);
 
@@ -181,7 +193,7 @@ async function precheckExistingGateAttempts(ctx: GateContext): Promise<number[]>
         throw new Error(
           `GATE_ATTEMPT_SCHEMA_BLOCKED: attempt=${attemptId}; gate_summary.md:${
             error instanceof Error ? error.message : String(error)
-          }`,
+          }`
         );
       }
     }
@@ -191,7 +203,7 @@ async function precheckExistingGateAttempts(ctx: GateContext): Promise<number[]>
 
 async function createGateAttempt(
   ctx: GateContext,
-  requestedGateIds: GateIdV11[],
+  requestedGateIds: GateIdV11[]
 ): Promise<GateAttemptContext> {
   const existingNumbers = await precheckExistingGateAttempts(ctx);
   const root = gateAttemptsRoot(ctx);
@@ -231,7 +243,7 @@ async function createGateAttempt(
 async function writeGateReport(
   ctx: GateContext,
   report: GateReportV11,
-  attempt: GateAttemptContext,
+  attempt: GateAttemptContext
 ): Promise<void> {
   const gatesDir = path.join(ctx.workItemDir, 'gates');
   await fs.mkdir(gatesDir, { recursive: true });
@@ -241,7 +253,7 @@ async function writeGateReport(
 }
 async function writeGateSummary(
   ctx: GateContext,
-  reports: GateReportV11[],
+  reports: GateReportV11[]
 ): Promise<{
   summaryStatus: GateSummaryStatus;
   summaryPath: string;
@@ -249,15 +261,11 @@ async function writeGateSummary(
   summaryReports: GateReportV11[];
 }> {
   const summaryReports = [...reports].sort((left, right) =>
-    left.gate_id.localeCompare(right.gate_id),
+    left.gate_id.localeCompare(right.gate_id)
   );
   const summaryStatus = computeGateSummaryStatus(summaryReports);
   const summaryPath = path.join(ctx.workItemDir, 'gate_summary.md');
-  const summaryContent = generateGateSummaryMd(
-    ctx.workItemId,
-    summaryReports,
-    summaryStatus,
-  );
+  const summaryContent = generateGateSummaryMd(ctx.workItemId, summaryReports, summaryStatus);
   await fs.writeFile(summaryPath, summaryContent, 'utf-8');
   return { summaryStatus, summaryPath, summaryContent, summaryReports };
 }
@@ -271,7 +279,7 @@ function resolveGateAttemptInputPath(projectRoot: string, inputPath: string): st
 export function gateAttemptInputIdentity(
   projectRoot: string,
   inputPath: string,
-  platform: NodeJS.Platform = process.platform,
+  platform: NodeJS.Platform = process.platform
 ): string {
   const resolved = resolveGateAttemptInputPath(projectRoot, inputPath);
   return platform === 'win32' ? resolved.toLowerCase() : resolved;
@@ -281,13 +289,13 @@ export async function buildGateAttemptInputSnapshot(
   projectRoot: string,
   reports: GateReportV11[],
   platform: NodeJS.Platform = process.platform,
-  additionalInputPaths: string[] = [],
+  additionalInputPaths: string[] = []
 ): Promise<GateAttemptInputSnapshotEntry[]> {
   const inputPathByIdentity = new Map<string, string>();
   const declaredInputPaths = reports.flatMap(report =>
     Array.isArray(report.input_files)
       ? report.input_files.map(value => String(value ?? '').trim()).filter(Boolean)
-      : [],
+      : []
   );
   for (const inputPath of [...declaredInputPaths, ...additionalInputPaths]) {
     const identity = gateAttemptInputIdentity(projectRoot, inputPath, platform);
@@ -335,7 +343,7 @@ export async function buildGateAttemptInputSnapshot(
         continue;
       }
       throw new Error(
-        `GATE_ATTEMPT_INPUT_SNAPSHOT_FAILED: ${inputPath}: ${error?.message ?? String(error)}`,
+        `GATE_ATTEMPT_INPUT_SNAPSHOT_FAILED: ${inputPath}: ${error?.message ?? String(error)}`
       );
     }
   }
@@ -356,7 +364,7 @@ async function finalizeGateAttempt(input: {
     input.ctx.projectRoot,
     input.summaryReports,
     process.platform,
-    sealInputPaths,
+    sealInputPaths
   );
   await writeExclusiveJson(path.join(input.attempt.attemptPath, 'input-snapshot.json'), {
     schema_version: '1.0',
@@ -367,48 +375,42 @@ async function finalizeGateAttempt(input: {
   });
   await writeExclusive(
     path.join(input.attempt.attemptPath, 'gate_summary.md'),
-    input.summaryContent,
+    input.summaryContent
   );
-  await writeExclusiveJson(
-    path.join(input.attempt.attemptPath, 'attempt-result.json'),
-    {
-      schema_version: '1.0',
-      attempt_id: input.attempt.attemptId,
-      work_item_id: input.ctx.workItemId,
-      source: 'gate_run',
-      started_at: input.attempt.startedAt,
-      completed_at: new Date().toISOString(),
-      requested_gate_ids: input.attempt.requestedGateIds,
-      current_report_gate_ids: input.reports.map(report => report.gate_id),
-      summary_report_gate_ids: input.summaryReports.map(report => report.gate_id),
-      summary_status: input.summaryStatus,
-      input_snapshot: 'input-snapshot.json',
-    },
-  );
+  await writeExclusiveJson(path.join(input.attempt.attemptPath, 'attempt-result.json'), {
+    schema_version: '1.0',
+    attempt_id: input.attempt.attemptId,
+    work_item_id: input.ctx.workItemId,
+    source: 'gate_run',
+    started_at: input.attempt.startedAt,
+    completed_at: new Date().toISOString(),
+    requested_gate_ids: input.attempt.requestedGateIds,
+    current_report_gate_ids: input.reports.map(report => report.gate_id),
+    summary_report_gate_ids: input.summaryReports.map(report => report.gate_id),
+    summary_status: input.summaryStatus,
+    input_snapshot: 'input-snapshot.json',
+  });
 }
 
 async function failGateAttempt(
   ctx: GateContext,
   attempt: GateAttemptContext,
   reports: GateReportV11[],
-  error: unknown,
+  error: unknown
 ): Promise<void> {
   try {
-    await writeExclusiveJson(
-      path.join(attempt.attemptPath, 'attempt-result.json'),
-      {
-        schema_version: '1.0',
-        attempt_id: attempt.attemptId,
-        work_item_id: ctx.workItemId,
-        source: 'gate_run',
-        started_at: attempt.startedAt,
-        completed_at: new Date().toISOString(),
-        requested_gate_ids: attempt.requestedGateIds,
-        current_report_gate_ids: reports.map(report => report.gate_id),
-        execution_status: 'error',
-        error: error instanceof Error ? error.message : String(error),
-      },
-    );
+    await writeExclusiveJson(path.join(attempt.attemptPath, 'attempt-result.json'), {
+      schema_version: '1.0',
+      attempt_id: attempt.attemptId,
+      work_item_id: ctx.workItemId,
+      source: 'gate_run',
+      started_at: attempt.startedAt,
+      completed_at: new Date().toISOString(),
+      requested_gate_ids: attempt.requestedGateIds,
+      current_report_gate_ids: reports.map(report => report.gate_id),
+      execution_status: 'error',
+      error: error instanceof Error ? error.message : String(error),
+    });
   } catch (writeError) {
     if ((writeError as NodeJS.ErrnoException).code !== 'EEXIST') throw writeError;
   }
@@ -418,7 +420,7 @@ function combineWithGovernance(
   gateId: GateIdV11,
   base: GateReportV11,
   governance: GovernanceCheckResult,
-  options: { replaceBase?: boolean } = {},
+  options: { replaceBase?: boolean } = {}
 ): GateReportV11 {
   if (!governance.active && !options.replaceBase) return base;
   const baseChecks: GateReportCheck[] = options.replaceBase ? [] : base.checks;
@@ -429,11 +431,19 @@ function combineWithGovernance(
     base.gate_type,
     true,
     checks,
-    Array.from(new Set([...base.input_files, ...governance.inputFiles])),
+    Array.from(new Set([...base.input_files, ...governance.inputFiles]))
   );
 }
-async function applyGovernanceOverlay(gateId: GateIdV11, base: GateReportV11, ctx: GateContext): Promise<GateReportV11> {
-  const input = { projectRoot: ctx.projectRoot, workItemDir: ctx.workItemDir, workItemId: ctx.workItemId };
+async function applyGovernanceOverlay(
+  gateId: GateIdV11,
+  base: GateReportV11,
+  ctx: GateContext
+): Promise<GateReportV11> {
+  const input = {
+    projectRoot: ctx.projectRoot,
+    workItemDir: ctx.workItemDir,
+    workItemId: ctx.workItemId,
+  };
   if (gateId === 'spec_consistency_gate') {
     return combineWithGovernance(ctx, gateId, base, await checkProjectGovernanceConsistency(input));
   }
@@ -443,10 +453,17 @@ async function applyGovernanceOverlay(gateId: GateIdV11, base: GateReportV11, ct
   if (gateId === 'trace_gate') {
     // Governance trace is semantic. Absence of a trace_delta is valid when no
     // formal relation changed, so the old existence/non-empty trace check is replaced.
-    return combineWithGovernance(ctx, gateId, base, await checkProjectGovernanceTrace(input), { replaceBase: true });
+    return combineWithGovernance(ctx, gateId, base, await checkProjectGovernanceTrace(input), {
+      replaceBase: true,
+    });
   }
   if (gateId === 'verification_gate') {
-    return combineWithGovernance(ctx, gateId, base, await verifyProjectGovernanceAfterImplementation(input));
+    return combineWithGovernance(
+      ctx,
+      gateId,
+      base,
+      await verifyProjectGovernanceAfterImplementation(input)
+    );
   }
   if (gateId === 'close_gate') {
     // close-gate.ts owns workflow-specific Close applicability because the
@@ -458,7 +475,7 @@ async function applyGovernanceOverlay(gateId: GateIdV11, base: GateReportV11, ct
 async function runAndWrite(
   gateId: GateIdV11,
   ctx: GateContext,
-  attempt: GateAttemptContext,
+  attempt: GateAttemptContext
 ): Promise<GateReportV11> {
   const base = await runGate(gateId, ctx);
   const report = await applyGovernanceOverlay(gateId, base, ctx);
@@ -467,7 +484,7 @@ async function runAndWrite(
 }
 export async function runRequiredGates(
   gateIds: GateIdV11[],
-  ctx: GateContext,
+  ctx: GateContext
 ): Promise<{
   reports: GateReportV11[];
   summaryStatus: GateSummaryStatus;
@@ -480,7 +497,7 @@ export async function runRequiredGates(
     throw new Error(
       `UNKNOWN_GATE_ID: ${unknownGateIds.join(', ')}. Registered Gate IDs: ${getRegisteredGateIds()
         .sort()
-        .join(', ')}`,
+        .join(', ')}`
     );
   }
 
@@ -488,7 +505,7 @@ export async function runRequiredGates(
   const wantsSummaryGate = gateIds.includes('gate_summary_gate');
   const wantsFormalVersionGate = gateIds.includes('formal_version_gate');
   const primaryGateIds = gateIds.filter(
-    gateId => gateId !== 'gate_summary_gate' && gateId !== 'formal_version_gate',
+    gateId => gateId !== 'gate_summary_gate' && gateId !== 'formal_version_gate'
   );
   const reports: GateReportV11[] = [];
 

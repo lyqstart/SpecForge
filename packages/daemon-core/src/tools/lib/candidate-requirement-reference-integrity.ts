@@ -14,7 +14,7 @@ export type RequirementReferenceIntegrityResult = {
 const REQUIREMENT_TOKEN = /\bREQ-[A-Z][A-Z0-9]{1,11}-[0-9]+\b/g;
 
 function requirementTokens(content: string): string[] {
-  return Array.from(new Set((content.toUpperCase().match(REQUIREMENT_TOKEN) ?? []))).sort();
+  return Array.from(new Set(content.toUpperCase().match(REQUIREMENT_TOKEN) ?? [])).sort();
 }
 
 function requirementDefinitions(content: string): string[] {
@@ -37,7 +37,7 @@ async function walkConsumerFiles(root: string): Promise<string[]> {
   const result: string[] = [];
   for (const entry of entries) {
     const absolute = path.join(root, entry.name);
-    if (entry.isDirectory()) result.push(...await walkConsumerFiles(absolute));
+    if (entry.isDirectory()) result.push(...(await walkConsumerFiles(absolute)));
     else if (
       entry.isFile() &&
       /\.(?:md|json)$/i.test(entry.name) &&
@@ -62,7 +62,7 @@ export async function validateCandidateRequirementReferences(input: {
       definitionOwners.set(id, owners);
       if (!isValidRequirementId(id)) {
         errors.push(
-          `REQUIREMENT_ID_NONCANONICAL: ${artifact.path}: ${id}; expected REQ-<MODULE_CODE>-<NNN>`,
+          `REQUIREMENT_ID_NONCANONICAL: ${artifact.path}: ${id}; expected REQ-<MODULE_CODE>-<NNN>`
         );
       }
     }
@@ -77,7 +77,12 @@ export async function validateCandidateRequirementReferences(input: {
 
   const candidatesRoot = path.join(input.workItemDir, 'candidates');
   const consumerFiles = await walkConsumerFiles(candidatesRoot);
-  for (const filename of ['tasks.md', 'trace_delta.md', 'design_delta.md', 'requirements_delta.md']) {
+  for (const filename of [
+    'tasks.md',
+    'trace_delta.md',
+    'design_delta.md',
+    'requirements_delta.md',
+  ]) {
     const absolute = path.join(input.workItemDir, filename);
     try {
       const stat = await fs.stat(absolute);
@@ -92,11 +97,11 @@ export async function validateCandidateRequirementReferences(input: {
     for (const reference of requirementTokens(content)) {
       if (!isValidRequirementId(reference)) {
         errors.push(
-          `REQUIREMENT_REFERENCE_NONCANONICAL: ${filePath}: ${reference}; expected REQ-<MODULE_CODE>-<NNN>`,
+          `REQUIREMENT_REFERENCE_NONCANONICAL: ${filePath}: ${reference}; expected REQ-<MODULE_CODE>-<NNN>`
         );
       } else if (!declared.has(reference)) {
         errors.push(
-          `REQUIREMENT_REFERENCE_UNRESOLVED: ${filePath}: ${reference} is not defined by the current authoritative Requirements set`,
+          `REQUIREMENT_REFERENCE_UNRESOLVED: ${filePath}: ${reference} is not defined by the current authoritative Requirements set`
         );
       }
     }
@@ -106,9 +111,8 @@ export async function validateCandidateRequirementReferences(input: {
     valid: errors.length === 0,
     errors: Array.from(new Set(errors)),
     declared_requirement_ids: declaredIds,
-    input_files: Array.from(new Set([
-      ...input.requirementArtifacts.map(artifact => artifact.path),
-      ...consumerFiles,
-    ])).sort(),
+    input_files: Array.from(
+      new Set([...input.requirementArtifacts.map(artifact => artifact.path), ...consumerFiles])
+    ).sort(),
   };
 }

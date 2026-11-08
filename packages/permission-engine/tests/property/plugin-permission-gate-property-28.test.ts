@@ -1,42 +1,30 @@
 
 /**
  * Property-Based Test: Plugin Permission Gate (Property 28)
- * 
+ *
  * Validates: Property 28, Requirements 17.2, 17.3
- * 
+ *
  * Property: For all plugins p and current grant set grants,
  * if p.manifest.requires \ grants ≠ ∅ (i.e., there are undeclared requirements),
  * THEN Plugin Loader rejects loading p; if p's source code contains prohibited
  * sensitive API calls, Loader must also reject loading.
- * 
+ *
  * Iterations: ≥ 100
- * 
+ *
  * @specforge/permission-engine
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fc from 'fast-check';
-import {
-  PluginPermissionValidator,
-  createPluginPermissionValidator,
-  createDefaultPluginPermissionValidator,
-  PluginManifest,
-  PluginValidationResult,
-  GrantSet
-} from '../../src/services/plugin-permission-validator';
-import {
-  StaticApiChecker,
-  createRestrictiveStaticApiChecker,
-  createPermissiveStaticApiChecker,
-  ProhibitedApiType,
-  StaticApiCheckResult
-} from '../../src/services/static-api-checker';
+import { describe, it, expect } from 'vitest';
+
+import { createPluginPermissionValidator, PluginManifest, GrantSet } from '../../src/services/plugin-permission-validator';
+import { createRestrictiveStaticApiChecker, createPermissiveStaticApiChecker, ProhibitedApiType } from '../../src/services/static-api-checker';
 
 /**
  * Feature: Plugin Permission Gate, Property 28
- * 
+ *
  * Derived-From: v6-architecture-overview Property 28
- * 
+ *
  * Tests:
  * - Plugin requirement validation (requires field vs grants)
  * - Static API checks (prohibited sensitive APIs)
@@ -114,7 +102,7 @@ describe('Property 28: Plugin Permission Gate', () => {
             const grants: GrantSet = {
               permissions: ['filesystem.read', 'tool.execute']
             };
-            
+
             const validator = createPluginPermissionValidator({
               projectId: testProjectId,
               eventLoggingEnabled: false,
@@ -160,7 +148,7 @@ describe('Property 28: Plugin Permission Gate', () => {
                 'workflow.create'
               ]
             };
-            
+
             const validator = createPluginPermissionValidator({
               projectId: testProjectId,
               eventLoggingEnabled: false,
@@ -197,7 +185,7 @@ describe('Property 28: Plugin Permission Gate', () => {
             const grants: GrantSet = {
               permissions: [] // Empty grants
             };
-            
+
             const validator = createPluginPermissionValidator({
               projectId: testProjectId,
               eventLoggingEnabled: false,
@@ -233,7 +221,7 @@ describe('Property 28: Plugin Permission Gate', () => {
             const grants: GrantSet = {
               permissions: ['filesystem.read', 'tool.execute'] // Only 2 of 3
             };
-            
+
             const validator = createPluginPermissionValidator({
               projectId: testProjectId,
               eventLoggingEnabled: false,
@@ -437,7 +425,7 @@ http.get('http://evil.com/data', (res) => { });`;
               name: `Plugin ${seed}`,
               requires: ['network.http'] // Not in grants
             };
-            
+
             const sourceCode = generateSafeSourceCode(seed);
             const checker = createRestrictiveStaticApiChecker({
               projectId: testProjectId,
@@ -452,7 +440,7 @@ http.get('http://evil.com/data', (res) => { });`;
             expect(permResult.valid).toBe(false);
             // Static check passes (code is safe)
             expect(staticResult.valid).toBe(true);
-            
+
             // Combined: should reject due to requirements
             const combinedValid = permResult.valid && staticResult.valid;
             expect(combinedValid).toBe(false);
@@ -486,7 +474,7 @@ http.get('http://evil.com/data', (res) => { });`;
               name: `Plugin ${seed}`,
               requires: ['filesystem.read'] // In grants
             };
-            
+
             // But code has prohibited API
             const sourceCode = generateSourceCodeWithProhibitedApi(ProhibitedApiType.CHILD_PROCESS_EXEC);
             const checker = createRestrictiveStaticApiChecker({
@@ -502,7 +490,7 @@ http.get('http://evil.com/data', (res) => { });`;
             expect(permResult.valid).toBe(true);
             // Static check fails (prohibited API)
             expect(staticResult.valid).toBe(false);
-            
+
             // Combined: should reject due to static check
             const combinedValid = permResult.valid && staticResult.valid;
             expect(combinedValid).toBe(false);
@@ -536,7 +524,7 @@ http.get('http://evil.com/data', (res) => { });`;
               name: `Plugin ${seed}`,
               requires: ['filesystem.read', 'tool.execute'] // Both in grants
             };
-            
+
             // Safe code
             const sourceCode = generateSafeSourceCode(seed);
             const checker = createRestrictiveStaticApiChecker({
@@ -551,7 +539,7 @@ http.get('http://evil.com/data', (res) => { });`;
             // Assert: Both pass
             expect(permResult.valid).toBe(true);
             expect(staticResult.valid).toBe(true);
-            
+
             // Combined: should allow
             const combinedValid = permResult.valid && staticResult.valid;
             expect(combinedValid).toBe(true);
@@ -570,7 +558,7 @@ http.get('http://evil.com/data', (res) => { });`;
       const grants: GrantSet = {
         permissions: []
       };
-      
+
       const validator = createPluginPermissionValidator({
         projectId: testProjectId,
         eventLoggingEnabled: false,
@@ -598,7 +586,7 @@ http.get('http://evil.com/data', (res) => { });`;
             const grants: GrantSet = {
               permissions: ['filesystem.read', 'tool.execute']
             };
-            
+
             const validator = createPluginPermissionValidator({
               projectId: testProjectId,
               eventLoggingEnabled: false,
@@ -639,7 +627,7 @@ http.get('http://evil.com/data', (res) => { });`;
       const customGrants: GrantSet = {
         permissions: ['filesystem.read', 'network.http', 'tool.execute']
       };
-      
+
       const validator = createPluginPermissionValidator({
         projectId: testProjectId,
         eventLoggingEnabled: false,
@@ -674,7 +662,7 @@ http.get('http://evil.com/data', (res) => { });`;
       // Code accessing allowed path
       const sourceCode = `const fs = require('fs');
 const data = fs.readFileSync('/home/user/project/data.json', 'utf8');`;
-      
+
       const result = checker.check(sourceCode, 'test-plugin', 'Test Plugin');
 
       // Should pass because path is within allowedPaths
@@ -694,7 +682,7 @@ const data = fs.readFileSync('/home/user/project/data.json', 'utf8');`;
       // Code accessing allowed host
       const sourceCode = `const https = require('https');
 https.get('https://api.example.com/data', (res) => { });`;
-      
+
       const result = checker.check(sourceCode, 'test-plugin', 'Test Plugin');
 
       // Should pass because host is in allowedHosts
@@ -717,7 +705,7 @@ const fs = require('fs');
 const http = require('http');
 eval('console.log("test")');
 `;
-      
+
       const result = checker.check(sourceCode, 'test-plugin', 'Test Plugin');
 
       // Should pass because checker is permissive
@@ -742,7 +730,7 @@ eval('console.log("test")');
               'workflow.read', 'spec.create', 'spec.read'
             ];
             const grants: GrantSet = {
-              permissions: Array.from({ length: numGrants }, (_, i) => 
+              permissions: Array.from({ length: numGrants }, (_, i) =>
                 allPermissions[(seed + i) % allPermissions.length]
               )
             };
@@ -768,7 +756,7 @@ eval('console.log("test")');
             const result = validator.validate(manifest);
 
             // Calculate expected missing requirements
-            const missingExpected = manifestRequirements.filter(req => 
+            const missingExpected = manifestRequirements.filter(req =>
               !grants.permissions.includes(req)
             );
 
@@ -808,7 +796,7 @@ eval('console.log("test")');
               generateSourceCodeWithProhibitedApi(ProhibitedApiType.NET_HTTP),
               generateSourceCodeWithProhibitedApi(ProhibitedApiType.DANGEROUS_EVAL),
             ];
-            
+
             const sourceCode = codePatterns[seed % codePatterns.length];
             const result = checker.check(sourceCode, generatePluginId(seed), `Plugin ${seed}`);
 
@@ -840,7 +828,7 @@ eval('console.log("test")');
             const grants: GrantSet = {
               permissions: ['filesystem.read', 'filesystem.write', 'tool.execute', 'workflow.read']
             };
-            
+
             const validator = createPluginPermissionValidator({
               projectId: testProjectId,
               eventLoggingEnabled: false,
@@ -866,7 +854,7 @@ eval('console.log("test")');
 
             // Requirement 17.2 AC-1: subset -> allow
             expect(validResult.valid).toBe(true);
-            
+
             // Requirement 17.2 AC-2: not subset -> reject
             expect(invalidResult.valid).toBe(false);
             expect(invalidResult.reason).toBe('requirements_not_granted');
@@ -894,11 +882,11 @@ eval('console.log("test")');
               // Direct child_process.exec
               `const child_process = require('child_process');
 child_process.exec('rm -rf /', (error) => { });`,
-              
+
               // Undeclared network access
               `const http = require('http');
 http.request({ hostname: 'malicious.com', port: 80 }, (res) => { });`,
-              
+
               // Code injection
               `eval('process.exit(1)');`,
             ];
@@ -909,10 +897,10 @@ http.request({ hostname: 'malicious.com', port: 80 }, (res) => { });`,
             // Requirement 17.3: Prohibited APIs must be detected
             expect(result.valid).toBe(false);
             expect(result.detectedApis.length).toBeGreaterThan(0);
-            
+
             // Verify categories - should include at least child_process, network, or code_injection
             const categories = result.detectedApis.map(api => api.category);
-            const hasRequiredCategory = categories.some(c => 
+            const hasRequiredCategory = categories.some(c =>
               ['child_process', 'network', 'code_injection'].includes(c)
             );
             expect(hasRequiredCategory).toBe(true);
@@ -941,12 +929,12 @@ http.request({ hostname: 'malicious.com', port: 80 }, (res) => { });`,
 
       for (const tc of testCases) {
         const result = checker.check(tc.code, 'test', 'Test');
-        
+
         // Find the detected API for this category
         const detectedForCategory = result.detectedApis.find(
           api => api.category === tc.category
         );
-        
+
         expect(detectedForCategory).toBeDefined();
       }
     });

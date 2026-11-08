@@ -1,4 +1,5 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { scalarText, parseJsonObject } from '@specforge/types';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 /**
  * gate-runner-v11.ts — v1.1 标准 Gate Runner（§9）
  *
@@ -177,11 +178,11 @@ registerGate('entry_gate', 'hard_gate', true, async ctx => {
   if (exists) {
     try {
       const content = await fs.readFile(workItemJsonPath, 'utf-8');
-      const json = JSON.parse(content);
+      const json = parseJsonObject(content);
       checks.push({
         check_id: 'wi_id_valid',
         description: `Work Item ID format valid: ${json.work_item_id}`,
-        passed: /^WI-[0-9]{4}$/.test(json.work_item_id ?? ''),
+        passed: typeof json.work_item_id === 'string' && /^WI-[0-9]{4}$/.test(json.work_item_id),
         severity: undefined,
       });
     } catch {
@@ -222,7 +223,7 @@ registerGate('workflow_selection_gate', 'hard_gate', true, async ctx => {
   if (triggerExists) {
     try {
       const content = await fs.readFile(triggerPath, 'utf-8');
-      const json = JSON.parse(content);
+      const json = parseJsonObject(content);
       const validPaths = [
         'requirement_change_path',
         'design_change_path',
@@ -236,7 +237,7 @@ registerGate('workflow_selection_gate', 'hard_gate', true, async ctx => {
       checks.push({
         check_id: 'workflow_path_valid',
         description: `workflow_path is valid: ${json.workflow_path}`,
-        passed: validPaths.includes(json.workflow_path),
+        passed: typeof json.workflow_path === 'string' && validPaths.includes(json.workflow_path),
         severity: undefined,
       });
     } catch {
@@ -254,12 +255,9 @@ registerGate('workflow_selection_gate', 'hard_gate', true, async ctx => {
   ]);
 });
 
-
 type CandidateClassificationForGate = Record<string, unknown>;
 
-function isCandidateClassificationForGate(
-  value: unknown
-): value is CandidateClassificationForGate {
+function isCandidateClassificationForGate(value: unknown): value is CandidateClassificationForGate {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
@@ -463,9 +461,10 @@ registerGate('required_files_gate', 'hard_gate', true, async ctx => {
     const candidateManifestPath = workItemCandidateManifest(ctx.projectRoot, ctx.workItemId);
     let candidateManifest: Record<string, unknown> | null = null;
     try {
-      candidateManifest = JSON.parse(
-        await fs.readFile(candidateManifestPath, 'utf8'),
-      ) as Record<string, unknown>;
+      candidateManifest = JSON.parse(await fs.readFile(candidateManifestPath, 'utf8')) as Record<
+        string,
+        unknown
+      >;
       inputFiles.push(candidateManifestPath);
     } catch {
       candidateManifest = null;
@@ -596,7 +595,7 @@ async function isGovernedNewModuleAdmission(
 function isEvidenceOnlyCandidateManifest(manifest: Record<string, unknown>): boolean {
   return (
     manifest.no_project_spec_change === true ||
-    String(manifest.project_integration_effect ?? '')
+    scalarText(manifest.project_integration_effect ?? '')
       .trim()
       .toLowerCase() === 'evidence_only'
   );
@@ -704,7 +703,13 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
         ctx,
         manifest.workflow_path
       );
-      const requiredNewModuleFiles = ['module.json', 'requirements.md', 'design.md', 'contracts.json', 'trace.md'];
+      const requiredNewModuleFiles = [
+        'module.json',
+        'requirements.md',
+        'design.md',
+        'contracts.json',
+        'trace.md',
+      ];
       const governedModuleFiles = new Map<string, Map<string, string>>();
       checks.push({
         check_id: 'module_registry_valid',
@@ -726,7 +731,8 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
         });
 
         const targetValid =
-          targetPath.startsWith((`${SPEC_DIR_NAME}/project/` as const)) || targetPath.startsWith('project/');
+          targetPath.startsWith(`${SPEC_DIR_NAME}/project/` as const) ||
+          targetPath.startsWith('project/');
         checks.push({
           check_id: `entry_${i}_target_path`,
           description: `Entry ${i}: target_path in .specforge/project/`,
@@ -817,7 +823,7 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
             );
             const validation = validateModuleDefinitionCandidateJson(
               JSON.stringify(definition),
-              moduleCode,
+              moduleCode
             );
             definitionValid = validation.valid;
             definitionDetails = validation.errors.join('; ');
@@ -849,7 +855,7 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
             );
             const codePaths = Array.isArray(definition?.code_paths)
               ? definition.code_paths
-                  .map((value: unknown) => String(value ?? '').trim())
+                  .map((value: unknown) => scalarText(value ?? '').trim())
                   .filter(Boolean)
               : [];
             codePathsValid = codePaths.length > 0;
@@ -972,10 +978,9 @@ export async function validateFrozenModuleDefinitionCandidateSchemasForGate(
     const entries = Array.isArray(manifest?.entries) ? manifest.entries : [];
     for (const [index, entry] of entries.entries()) {
       const candidatePath = normalizeSlash(String(entry?.candidate_path ?? entry?.path ?? ''));
-      const match =
-        /(?:^|\/)candidates\/project\/modules\/([^/]+)\/module\.candidate\.json$/i.exec(
-          candidatePath
-        );
+      const match = /(?:^|\/)candidates\/project\/modules\/([^/]+)\/module\.candidate\.json$/i.exec(
+        candidatePath
+      );
       if (!match?.[1] || candidatePath.includes('..')) continue;
       const candidateFile = path.resolve(ctx.workItemDir, candidatePath);
       inputFiles.push(candidateFile);
@@ -984,8 +989,7 @@ export async function validateFrozenModuleDefinitionCandidateSchemasForGate(
         const validation = validateModuleDefinitionCandidateJson(content, match[1]);
         checks.push({
           check_id: `schema_module_definition_${index}_${match[1].toUpperCase()}`,
-          description:
-            `Module Definition Candidate ${match[1].toUpperCase()} satisfies canonical module_code + flat code_paths string[] schema`,
+          description: `Module Definition Candidate ${match[1].toUpperCase()} satisfies canonical module_code + flat code_paths string[] schema`,
           passed: validation.valid,
           severity: validation.valid ? undefined : 'error',
           details: validation.errors.join('; '),
@@ -993,8 +997,7 @@ export async function validateFrozenModuleDefinitionCandidateSchemasForGate(
       } catch (error) {
         checks.push({
           check_id: `schema_module_definition_${index}_${match[1].toUpperCase()}`,
-          description:
-            `Module Definition Candidate ${match[1].toUpperCase()} satisfies canonical module_code + flat code_paths string[] schema`,
+          description: `Module Definition Candidate ${match[1].toUpperCase()} satisfies canonical module_code + flat code_paths string[] schema`,
           passed: false,
           severity: 'error',
           details: (error as Error).message,
@@ -1049,8 +1052,7 @@ registerGate('schema_gate', 'hard_gate', true, async ctx => {
     }
   }
 
-  const moduleDefinitionSchemas =
-    await validateFrozenModuleDefinitionCandidateSchemasForGate(ctx);
+  const moduleDefinitionSchemas = await validateFrozenModuleDefinitionCandidateSchemasForGate(ctx);
   checks.push(...moduleDefinitionSchemas.checks);
   inputFiles.push(...moduleDefinitionSchemas.inputFiles);
   return makeReport(
@@ -1073,8 +1075,10 @@ registerGate('merge_ready_gate', 'hard_gate', true, async ctx => {
   const decisionPath = path.join(ctx.workItemDir, 'user_decision.json');
   try {
     const content = await fs.readFile(decisionPath, 'utf-8');
-    const decision = JSON.parse(content);
-    const validStatus = ['approved', 'waived'].includes(decision.decision_status);
+    const decision = parseJsonObject(content);
+    const validStatus =
+      typeof decision.decision_status === 'string' &&
+      ['approved', 'waived'].includes(decision.decision_status);
     checks.push({
       check_id: 'user_decision_status',
       description: `user_decision.json status is approved/waived: ${decision.decision_status}`,
@@ -1084,7 +1088,9 @@ registerGate('merge_ready_gate', 'hard_gate', true, async ctx => {
 
     // 检查未过期
     if (decision.expires_at) {
-      const expired = new Date(decision.expires_at) < new Date();
+      if (typeof decision.expires_at !== 'string') throw new Error('USER_DECISION_EXPIRY_INVALID');
+      const expiry = Date.parse(decision.expires_at);
+      const expired = !Number.isFinite(expiry) || expiry < Date.now();
       checks.push({
         check_id: 'user_decision_not_expired',
         description: 'User Decision not expired',
@@ -1169,7 +1175,7 @@ registerGate('verification_gate', 'hard_gate', true, async ctx => {
   }
 
   const verificationContract = await evaluateVerificationGovernanceContract({
-    executionEvidenceConsumer:ctx.executionEvidenceConsumer,
+    executionEvidenceConsumer: ctx.executionEvidenceConsumer,
     workItemDir: ctx.workItemDir,
     workItemId: ctx.workItemId,
     workflowType: ctx.workflowType,
@@ -1272,21 +1278,25 @@ registerGate('verification_gate', 'hard_gate', true, async ctx => {
   const contractReviews = Array.isArray(structuredReport?.contract_reviews)
     ? structuredReport.contract_reviews.filter(
         (review): review is Record<string, unknown> =>
-          Boolean(review) && typeof review === 'object' && !Array.isArray(review),
+          Boolean(review) && typeof review === 'object' && !Array.isArray(review)
       )
     : [];
   const normalizeReviewPath = (value: unknown): string =>
-    String(value ?? '').replace(/\\/g, '/').replace(/^\.\//, '');
+    scalarText(value ?? '')
+      .replace(/\\/g, '/')
+      .replace(/^\.\//, '');
   const passingReviews = contractReviews.filter(
-    review => review.review_method === 'manual' && review.conclusion === 'pass',
+    review => review.review_method === 'manual' && review.conclusion === 'pass'
   );
   const reviewCovers = (file: string, contractId: string, moduleCode: string): boolean =>
     passingReviews.some(review => {
-      const files = Array.isArray(review.files)
-        ? review.files.map(normalizeReviewPath)
-        : [];
+      const files = Array.isArray(review.files) ? review.files.map(normalizeReviewPath) : [];
       const modules = Array.isArray(review.modules)
-        ? review.modules.map(value => String(value ?? '').trim().toUpperCase())
+        ? review.modules.map(value =>
+            String(value ?? '')
+              .trim()
+              .toUpperCase()
+          )
         : [];
       return (
         files.includes(normalizeReviewPath(file)) &&
@@ -1362,12 +1372,10 @@ registerGate('verification_gate', 'hard_gate', true, async ctx => {
 
   const formalConsumerPairs = new Set(
     governanceConsumers.consumers.map(
-      consumer => `${consumer.contract_id}\u0000${consumer.module_code}`,
-    ),
+      consumer => `${consumer.contract_id}\u0000${consumer.module_code}`
+    )
   );
-  const definitions = new Map(
-    unifiedContracts.contracts.map(contract => [contract.id, contract]),
-  );
+  const definitions = new Map(unifiedContracts.contracts.map(contract => [contract.id, contract]));
   for (const [index, consumer] of codeContracts.actual_consumers.entries()) {
     const moduleResolved = consumer.module_code.length > 0;
     checks.push({
@@ -1396,7 +1404,7 @@ registerGate('verification_gate', 'hard_gate', true, async ctx => {
 
     if (governanceConsumers.active) {
       const declared = formalConsumerPairs.has(
-        `${consumer.contract_id}\u0000${consumer.module_code}`,
+        `${consumer.contract_id}\u0000${consumer.module_code}`
       );
       checks.push({
         check_id: `code_contract_trace_reconciliation_${index}`,
@@ -1421,7 +1429,7 @@ registerGate('verification_gate', 'hard_gate', true, async ctx => {
         ...verificationContract.inputFiles,
         ...codeContracts.checked_files.map(file => path.join(ctx.projectRoot, file)),
         ...codeContracts.files_requiring_manual_review.map(file =>
-          path.join(ctx.projectRoot, file),
+          path.join(ctx.projectRoot, file)
         ),
         ...unifiedContracts.input_files,
         ...governanceConsumers.inputFiles,
@@ -1435,7 +1443,7 @@ registerGate('verification_gate', 'hard_gate', true, async ctx => {
  */
 registerGate('formal_version_gate', 'hard_gate', true, async ctx => {
   const result = await checkFormalVersionEligibility({
-    executionEvidenceConsumer:ctx.executionEvidenceConsumer,
+    executionEvidenceConsumer: ctx.executionEvidenceConsumer,
     projectRoot: ctx.projectRoot,
     workItemDir: ctx.workItemDir,
     workItemId: ctx.workItemId,
@@ -1487,10 +1495,13 @@ registerGate('post_merge_gate', 'hard_gate', true, async ctx => {
 
   // 2. Project Spec Core exists and its duplicated version fields are coherent.
   const projectDir = path.join(ctx.projectRoot, SPEC_DIR_NAME, 'project');
-  const projectDirExists = await fs.stat(projectDir).then(stat => stat.isDirectory()).catch(() => false);
+  const projectDirExists = await fs
+    .stat(projectDir)
+    .then(stat => stat.isDirectory())
+    .catch(() => false);
   checks.push({
     check_id: 'post_merge_project_dir',
-    description: (`${SPEC_DIR_NAME}/project/ directory exists` as const),
+    description: `${SPEC_DIR_NAME}/project/ directory exists` as const,
     passed: projectDirExists,
   });
 
@@ -1519,7 +1530,7 @@ registerGate('post_merge_gate', 'hard_gate', true, async ctx => {
  * 设计未声明任何 `[contract:...]` 引用时也 pass。
  */
 const CONTRACT_REF_PATTERN =
-  /\[contract:(shared_enum|invariant|public_interface|extension_point):([A-Za-z0-9_.\-]+)(?:\s+owner=([A-Za-z0-9_]+))?\]/g;
+  /\[contract:(shared_enum|invariant|public_interface|extension_point):([A-Za-z0-9_.-]+)(?:\s+owner=([A-Za-z0-9_]+))?\]/g;
 
 const CONTRACT_KIND_TO_FIELD: Record<string, keyof ContractRegistry> = {
   shared_enum: 'shared_enums',
@@ -1636,12 +1647,19 @@ registerGate('contract_integrity_gate', 'hard_gate', true, async ctx => {
 registerGate('trace_gate', 'hard_gate', true, async ctx => {
   if (await isProjectSpecRepairWorkItem(ctx)) {
     const manifestPath = workItemCandidateManifest(ctx.projectRoot, ctx.workItemId);
-    const manifest = JSON.parse(await fs.readFile(manifestPath, 'utf8')) as Record<string, unknown>;
+    const manifest = parseJsonObject(await fs.readFile(manifestPath, 'utf8'));
     const entries = Array.isArray(manifest.entries) ? manifest.entries : [];
     const traceEntries = entries.filter(
-      (entry: any) =>
-        entry?.type === 'module_trace' &&
-        normalizeProjectSpecTargetPath(entry?.target_path).endsWith('/trace.md')
+      (
+        entry: unknown
+      ): entry is { type: 'module_trace'; target_path: string; candidate_path: string } => {
+        if (typeof entry !== 'object' || entry === null || Array.isArray(entry)) return false;
+        const record = entry as Record<string, unknown>;
+        if (record.type !== 'module_trace') return false;
+        if (typeof record.target_path !== 'string' || typeof record.candidate_path !== 'string')
+          throw new Error('MODULE_TRACE_CANDIDATE_PATH_INVALID');
+        return normalizeProjectSpecTargetPath(record.target_path).endsWith('/trace.md');
+      }
     );
     const checks: GateReportCheck[] = [
       {
@@ -1652,7 +1670,7 @@ registerGate('trace_gate', 'hard_gate', true, async ctx => {
       },
     ];
     for (let index = 0; index < traceEntries.length; index++) {
-      const entry = traceEntries[index] as any;
+      const entry = traceEntries[index];
       let nonempty = false;
       try {
         const content = await fs.readFile(path.join(ctx.workItemDir, entry.candidate_path), 'utf8');
@@ -1673,7 +1691,7 @@ registerGate('trace_gate', 'hard_gate', true, async ctx => {
       'hard_gate',
       true,
       checks,
-      traceEntries.map((entry: any) => path.join(ctx.workItemDir, entry.candidate_path))
+      traceEntries.map(entry => path.join(ctx.workItemDir, entry.candidate_path))
     );
   }
 
@@ -1826,7 +1844,10 @@ async function checkProjectSpecRepairGate(ctx: GateContext): Promise<GateResult>
       blockingIssues.push('project_spec_repair_plan requires architecture evidence paths');
     }
     for (const evidencePath of evidencePaths) {
-      if (typeof evidencePath !== 'string' || !evidencePath.startsWith((`${SPEC_DIR_NAME}/project/` as const))) {
+      if (
+        typeof evidencePath !== 'string' ||
+        !evidencePath.startsWith(`${SPEC_DIR_NAME}/project/` as const)
+      ) {
         blockingIssues.push(`invalid Project Spec repair evidence path: ${String(evidencePath)}`);
         continue;
       }
@@ -1939,7 +1960,7 @@ async function runWorkflowSpecificGate(ctx: GateContext): Promise<GateResult> {
   }
   const requirementResolution = await resolveTaskRequirementArtifacts(
     ctx.projectRoot,
-    ctx.workItemId,
+    ctx.workItemId
   );
   const referenceIntegrity = await validateCandidateRequirementReferences({
     workItemDir: ctx.workItemDir,

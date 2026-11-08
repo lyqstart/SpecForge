@@ -31,9 +31,7 @@ export const REQUIRED_CHANGE_CLASSIFICATION_BOOLEAN_FIELDS = [
   'module_contract_changed',
 ] as const;
 
-export const OPTIONAL_CHANGE_CLASSIFICATION_BOOLEAN_FIELDS = [
-  'contract_registry_only',
-] as const;
+export const OPTIONAL_CHANGE_CLASSIFICATION_BOOLEAN_FIELDS = ['contract_registry_only'] as const;
 
 export function validateChangeClassification(value: unknown): string[] {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
@@ -52,8 +50,10 @@ export function validateChangeClassification(value: unknown): string[] {
       errors.push(`${field} must be boolean when provided`);
     }
   }
-  if (!Array.isArray(classification.unknowns) ||
-      classification.unknowns.some(item => typeof item !== 'string')) {
+  if (
+    !Array.isArray(classification.unknowns) ||
+    classification.unknowns.some(item => typeof item !== 'string')
+  ) {
     errors.push('unknowns must be an array of strings');
   }
   return errors;

@@ -1,9 +1,9 @@
 /**
  * Built-in Policy Types and Schemas
- * 
+ *
  * Defines the schema for built-in policies (Layer 2 of the three-layer permission model).
  * Built-in policies are default agent role permissions shipped with SpecForge.
- * 
+ *
  * @specforge/permission-engine
  */
 
@@ -11,7 +11,7 @@ import { z } from 'zod';
 
 /**
  * Built-in Policy Schema
- * 
+ *
  * Based on design document: Built-in policies are configuration files shipped with SpecForge,
  * default agent role permissions (e.g., reviewer read-only).
  */
@@ -37,7 +37,7 @@ export type BuiltinPolicy = z.infer<typeof BuiltinPolicySchema>;
 
 /**
  * Built-in Policy Collection Schema
- * 
+ *
  * A collection of built-in policies with versioning and metadata.
  */
 export const BuiltinPolicyCollectionSchema = z.object({
@@ -81,9 +81,9 @@ export interface BuiltinPolicyEvaluationResult {
  * Pattern matching utilities for built-in policies
  */
 export interface PatternMatcher {
-  matchesActor(actor: any, pattern: string): boolean;
+  matchesActor(actor: unknown, pattern: string): boolean;
   matchesAction(action: string, pattern: string): boolean;
-  matchesResource(resource: any, pattern: string): boolean;
+  matchesResource(resource: unknown, pattern: string): boolean;
 }
 
 /**

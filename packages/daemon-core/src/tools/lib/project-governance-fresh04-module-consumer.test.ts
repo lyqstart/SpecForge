@@ -17,7 +17,10 @@ async function writeJson(filePath: string, value: unknown): Promise<void> {
   await writeText(filePath, JSON.stringify(value, null, 2) + '\n');
 }
 
-async function createFresh04Shape(options?: { malformedCandidate?: boolean; wrongModuleId?: boolean }) {
+async function createFresh04Shape(options?: {
+  malformedCandidate?: boolean;
+  wrongModuleId?: boolean;
+}) {
   const projectRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-fresh04-consumer-'));
   roots.push(projectRoot);
   const projectDir = path.join(projectRoot, '.specforge', 'project');
@@ -29,7 +32,7 @@ async function createFresh04Shape(options?: { malformedCandidate?: boolean; wron
     'project',
     'modules',
     'CORE',
-    'module.candidate.json',
+    'module.candidate.json'
   );
 
   await writeJson(path.join(projectDir, 'spec_manifest.json'), {
@@ -42,17 +45,22 @@ async function createFresh04Shape(options?: { malformedCandidate?: boolean; wron
       extension_registry: '.specforge/project/extension_registry.json',
       trace_matrix: '.specforge/project/trace_matrix.md',
     },
-    modules: [{
-      module_code: 'CORE',
-      path: '.specforge/project/modules/CORE',
-      module_file: '.specforge/project/modules/CORE/module.json',
-      requirements: '.specforge/project/modules/CORE/requirements.md',
-      design: '.specforge/project/modules/CORE/design.md',
-      contracts: '.specforge/project/modules/CORE/contracts.json',
-      trace: '.specforge/project/modules/CORE/trace.md',
-    }],
+    modules: [
+      {
+        module_code: 'CORE',
+        path: '.specforge/project/modules/CORE',
+        module_file: '.specforge/project/modules/CORE/module.json',
+        requirements: '.specforge/project/modules/CORE/requirements.md',
+        design: '.specforge/project/modules/CORE/design.md',
+        contracts: '.specforge/project/modules/CORE/contracts.json',
+        trace: '.specforge/project/modules/CORE/trace.md',
+      },
+    ],
   });
-  await writeText(path.join(projectDir, 'architecture.md'), '# Architecture\n\nARCH-CORE-001 root.\n');
+  await writeText(
+    path.join(projectDir, 'architecture.md'),
+    '# Architecture\n\nARCH-CORE-001 root.\n'
+  );
   await writeText(path.join(projectDir, 'data_model.md'), '# Data\n\nDATA-CORE-001 model.\n');
   await writeText(path.join(projectDir, 'trace_matrix.md'), '');
   await writeJson(path.join(projectDir, 'extension_registry.json'), {});
@@ -64,7 +72,10 @@ async function createFresh04Shape(options?: { malformedCandidate?: boolean; wron
     schema_version: '1.0',
     owner_module: 'CORE',
     contracts: {
-      shared_enums: [], invariants: [], public_interfaces: [], extension_points: [],
+      shared_enums: [],
+      invariants: [],
+      public_interfaces: [],
+      extension_points: [],
     },
   });
 
@@ -95,15 +106,17 @@ async function createFresh04Shape(options?: { malformedCandidate?: boolean; wron
     work_item_id: 'WI-0001',
     workflow_type: 'feature_spec',
     workflow_path: 'requirement_change_path',
-    entries: [{
-      candidate_path: 'candidates/project/modules/CORE/module.candidate.json',
-      target_path: '.specforge/project/modules/CORE/module.json',
-      operation: 'replace',
-      type: 'module_definition',
-      module_id: options?.wrongModuleId ? 'OTHER' : 'CORE',
-      inferred: true,
-      normalized: true,
-    }],
+    entries: [
+      {
+        candidate_path: 'candidates/project/modules/CORE/module.candidate.json',
+        target_path: '.specforge/project/modules/CORE/module.json',
+        operation: 'replace',
+        type: 'module_definition',
+        module_id: options?.wrongModuleId ? 'OTHER' : 'CORE',
+        inferred: true,
+        normalized: true,
+      },
+    ],
   });
   await writeJson(path.join(workItemDir, 'trigger_result.json'), {
     schema_version: '1.0',
@@ -124,7 +137,11 @@ async function createFresh04Shape(options?: { malformedCandidate?: boolean; wron
       design_refs: [],
       project_contract_refs: [],
       module_contract_refs: [],
-      planned_code_paths: ['src/domain/types.ts', 'src/service/InventoryService.ts', 'package.json'],
+      planned_code_paths: [
+        'src/domain/types.ts',
+        'src/service/InventoryService.ts',
+        'package.json',
+      ],
     },
   });
   await writeText(
@@ -135,7 +152,7 @@ async function createFresh04Shape(options?: { malformedCandidate?: boolean; wron
       '## TASK-WI-0001-001',
       '- allowed_write_files: `src/domain/types.ts`, `src/service/InventoryService.ts`, `package.json`',
       '',
-    ].join('\n'),
+    ].join('\n')
   );
   return { projectRoot, workItemDir, candidatePath };
 }
@@ -154,9 +171,11 @@ describe('Fresh-04 prospective module_definition consumer', () => {
     });
 
     expect(snapshot.module_code_paths.CORE).toEqual(
-      expect.arrayContaining(['src/domain/**', 'src/service/**', 'package.json']),
+      expect.arrayContaining(['src/domain/**', 'src/service/**', 'package.json'])
     );
-    expect(snapshot.inputFiles.map(value => path.resolve(value))).toContain(path.resolve(candidatePath));
+    expect(snapshot.inputFiles.map(value => path.resolve(value))).toContain(
+      path.resolve(candidatePath)
+    );
 
     const consistency = await checkProjectGovernanceConsistency({
       projectRoot,
@@ -164,34 +183,44 @@ describe('Fresh-04 prospective module_definition consumer', () => {
       workItemId: 'WI-0001',
     });
     expect(
-      consistency.checks.find(check => check.check_id === 'module_CORE_code_paths')?.passed,
+      consistency.checks.find(check => check.check_id === 'module_CORE_code_paths')?.passed
     ).toBe(true);
-    for (const check of consistency.checks.filter(check => check.check_id.startsWith('planned_code_owner_'))) {
+    for (const check of consistency.checks.filter(check =>
+      check.check_id.startsWith('planned_code_owner_')
+    )) {
       expect(check.passed, JSON.stringify(check)).toBe(true);
       expect(check.details).toContain('owners=CORE');
     }
   });
 
   test('does not bind a candidate carrying the wrong frozen module_id', async () => {
-    const { projectRoot, workItemDir, candidatePath } = await createFresh04Shape({ wrongModuleId: true });
+    const { projectRoot, workItemDir, candidatePath } = await createFresh04Shape({
+      wrongModuleId: true,
+    });
     const snapshot = await inspectProjectGovernanceContractConsumers({
       projectRoot,
       workItemDir,
       prospective: true,
     });
     expect(snapshot.module_code_paths.CORE).toEqual([]);
-    expect(snapshot.inputFiles.map(value => path.resolve(value))).not.toContain(path.resolve(candidatePath));
+    expect(snapshot.inputFiles.map(value => path.resolve(value))).not.toContain(
+      path.resolve(candidatePath)
+    );
   });
 
   test('fails closed on malformed candidate JSON instead of silently using formal code_paths', async () => {
-    const { projectRoot, workItemDir, candidatePath } = await createFresh04Shape({ malformedCandidate: true });
+    const { projectRoot, workItemDir, candidatePath } = await createFresh04Shape({
+      malformedCandidate: true,
+    });
     const snapshot = await inspectProjectGovernanceContractConsumers({
       projectRoot,
       workItemDir,
       prospective: true,
     });
     expect(snapshot.module_code_paths.CORE).toEqual([]);
-    expect(snapshot.inputFiles.map(value => path.resolve(value))).toContain(path.resolve(candidatePath));
+    expect(snapshot.inputFiles.map(value => path.resolve(value))).toContain(
+      path.resolve(candidatePath)
+    );
 
     const consistency = await checkProjectGovernanceConsistency({
       projectRoot,
@@ -199,7 +228,7 @@ describe('Fresh-04 prospective module_definition consumer', () => {
       workItemId: 'WI-0001',
     });
     expect(
-      consistency.checks.find(check => check.check_id === 'module_CORE_code_paths')?.passed,
+      consistency.checks.find(check => check.check_id === 'module_CORE_code_paths')?.passed
     ).toBe(false);
   });
 });

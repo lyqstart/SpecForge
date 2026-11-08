@@ -15,8 +15,23 @@ import { loadAcceptedConfigSync } from '@specforge/configuration';
  * @packageDocumentation
  */
 
-import yargs, { Argv, Arguments } from 'yargs';
-import { hideBin } from 'yargs/helpers';
+/**
+ * Service Management Commands
+ *
+ * Provides commands to manage OS services:
+ * - install: Install services to OS service manager
+ * - uninstall: Uninstall services from OS service manager
+ * - start: Start installed services
+ * - stop: Stop running services
+ * - restart: Restart services (stop + start)
+ * - status: Check service status
+ *
+ * All commands support --json flag for machine-friendly output.
+ *
+ * @packageDocumentation
+ */
+import { Argv } from 'yargs';
+
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -50,9 +65,7 @@ function getBinDir(): string {
 /**
  * Get the runtime directory path under the canonical SpecForge user root
  */
-function getRuntimeDir(): string {
-  return path.join(resolveSpecForgeUserRoot(), 'runtime');
-}
+
 
 /**
  * Get the logs directory path under the canonical SpecForge user root
@@ -122,7 +135,7 @@ function getServiceSpecs(): Array<{
   dependsOn: string[];
 }> {
   const binDir = getBinDir();
-  const logsDir = getLogsDir();
+  void (getLogsDir());
   const specforgeBin = path.join(binDir, process.platform === 'win32' ? 'specforged.exe' : 'specforged');
   const opencodeBin = path.join(binDir, process.platform === 'win32' ? 'opencode.exe' : 'opencode');
 
@@ -370,7 +383,7 @@ export function addServicesCommands(yargs: Argv): Argv {
           )
           .demandCommand(1, 'Specify a subcommand');
       },
-      (argv) => {
+      (_argv) => {
         // Default: show help if no subcommand specified
         console.log('Usage: specforge services <command>');
         console.log('Commands: install, uninstall, start, stop, restart, status');
@@ -690,7 +703,7 @@ async function handleStatus(modeSwitch: ModeSwitch, isJson: boolean): Promise<vo
     // Get additional daemon info from handshake
     const daemonPort = getDaemonPort();
     let daemonUptimeSec: number | null = null;
-    let daemonActiveClients: number | null = null;
+    const daemonActiveClients: number | null = null;
 
     // Try to get uptime from handshake
     const handshakePath = getHandshakePath();

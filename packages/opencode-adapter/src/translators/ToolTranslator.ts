@@ -4,7 +4,14 @@
  * Converts tool call parameters between OpenCode and Daemon formats.
  */
 
-import { OpenCodeToolCall, OpenCodeToolResult, TranslationResult, DaemonToolCall, DaemonToolResult, IToolTranslator } from '../types';
+import {
+  OpenCodeToolCall,
+  OpenCodeToolResult,
+  TranslationResult,
+  DaemonToolCall,
+  DaemonToolResult,
+  IToolTranslator,
+} from '../types';
 
 /**
  * Tool Translator

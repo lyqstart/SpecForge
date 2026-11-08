@@ -1,11 +1,11 @@
 /**
  * BlobOptimizer - Optimized streaming Blob handling for large file uploads.
- * 
+ *
  * Implements streaming-based Blob processing to reduce memory footprint:
  * - streamBlob: Reads files in chunks, yielding buffers as AsyncIterable
  * - uploadBlobStream: Uploads streamed content with memory monitoring
  * - Memory usage monitoring and reporting
- * 
+ *
  * Follows async-resource-coding-standards.md:
  * - A1: Proper resource cleanup in finally blocks
  * - A2: Termination conditions for loops with timeout
@@ -73,7 +73,7 @@ export class BlobOptimizer extends EventEmitter {
 
   /**
    * Stream a file as chunks (AsyncIterable<Buffer>)
-   * 
+   *
    * Implements A2 (termination condition) and A4 (resource cleanup):
    * - Proper stream cleanup in finally block
    * - Timeout protection for stream reading
@@ -85,7 +85,7 @@ export class BlobOptimizer extends EventEmitter {
     options: StreamOptions = {}
   ): AsyncIterable<Buffer> {
     const { onProgress } = options;
-    
+
     // Get file size for progress tracking
     let totalBytes = 0;
     try {
@@ -100,10 +100,10 @@ export class BlobOptimizer extends EventEmitter {
 
     try {
       stream = createReadStream(filePath, { highWaterMark: chunkSize });
-      
+
       // A2: Timeout protection for stream reading
       const streamTimeout = 30000; // 30 seconds
-      let lastChunkTime = Date.now();
+      void (Date.now());
 
       for await (const chunk of stream) {
         // Reset timeout on each chunk
@@ -119,7 +119,7 @@ export class BlobOptimizer extends EventEmitter {
         }, streamTimeout);
 
         bytesRead += chunk.length;
-        lastChunkTime = Date.now();
+        void (Date.now());
 
         // Report progress
         if (onProgress) {
@@ -156,7 +156,7 @@ export class BlobOptimizer extends EventEmitter {
 
   /**
    * Upload a blob stream with memory monitoring
-   * 
+   *
    * Implements A1 (cleanup in finally) and memory monitoring:
    * - Tracks peak memory usage
    * - Warns if memory exceeds threshold
@@ -169,7 +169,7 @@ export class BlobOptimizer extends EventEmitter {
   ): Promise<UploadResult> {
     const { onMemoryWarning } = options;
     const startTime = Date.now();
-    
+
     let chunksProcessed = 0;
     let totalSize = 0;
     let localPeakMemory = 0;

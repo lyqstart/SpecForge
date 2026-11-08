@@ -121,7 +121,10 @@ describe('greenfield pre-merge Project Governance', () => {
         },
       }
     );
-    await writeText(path.join(candidates, 'project', 'modules', 'DOMAIN', 'trace.candidate.md'), '');
+    await writeText(
+      path.join(candidates, 'project', 'modules', 'DOMAIN', 'trace.candidate.md'),
+      ''
+    );
 
     await writeText(
       path.join(candidates, 'trace_delta.md'),
@@ -131,12 +134,8 @@ describe('greenfield pre-merge Project Governance', () => {
         '```json',
         JSON.stringify(
           {
-            data_designs: [
-              { id: 'DATA-WD-001', constrained_by: ['ARCH-WD-001'] },
-            ],
-            module_designs: [
-              { id: 'DD-DOMAIN-001', constrained_by: ['DATA-WD-001'] },
-            ],
+            data_designs: [{ id: 'DATA-WD-001', constrained_by: ['ARCH-WD-001'] }],
+            module_designs: [{ id: 'DD-DOMAIN-001', constrained_by: ['DATA-WD-001'] }],
           },
           null,
           2
@@ -149,16 +148,44 @@ describe('greenfield pre-merge Project Governance', () => {
     const entries = [
       ['candidates/project/architecture.candidate.md', '.specforge/project/architecture.md'],
       ['candidates/project/data_model.candidate.md', '.specforge/project/data_model.md'],
-      ['candidates/project/modules/CORE/module.candidate.json', '.specforge/project/modules/CORE/module.json'],
-      ['candidates/project/modules/CORE/design.candidate.md', '.specforge/project/modules/CORE/design.md'],
-      ['candidates/project/modules/CORE/contracts.candidate.json', '.specforge/project/modules/CORE/contracts.json'],
-      ['candidates/project/modules/CORE/trace.candidate.md', '.specforge/project/modules/CORE/trace.md'],
-      ['candidates/project/modules/DOMAIN/module.candidate.json', '.specforge/project/modules/DOMAIN/module.json'],
-      ['candidates/project/modules/DOMAIN/design.candidate.md', '.specforge/project/modules/DOMAIN/design.md'],
-      ['candidates/project/modules/DOMAIN/contracts.candidate.json', '.specforge/project/modules/DOMAIN/contracts.json'],
-      ['candidates/project/modules/DOMAIN/trace.candidate.md', '.specforge/project/modules/DOMAIN/trace.md'],
+      [
+        'candidates/project/modules/CORE/module.candidate.json',
+        '.specforge/project/modules/CORE/module.json',
+      ],
+      [
+        'candidates/project/modules/CORE/design.candidate.md',
+        '.specforge/project/modules/CORE/design.md',
+      ],
+      [
+        'candidates/project/modules/CORE/contracts.candidate.json',
+        '.specforge/project/modules/CORE/contracts.json',
+      ],
+      [
+        'candidates/project/modules/CORE/trace.candidate.md',
+        '.specforge/project/modules/CORE/trace.md',
+      ],
+      [
+        'candidates/project/modules/DOMAIN/module.candidate.json',
+        '.specforge/project/modules/DOMAIN/module.json',
+      ],
+      [
+        'candidates/project/modules/DOMAIN/design.candidate.md',
+        '.specforge/project/modules/DOMAIN/design.md',
+      ],
+      [
+        'candidates/project/modules/DOMAIN/contracts.candidate.json',
+        '.specforge/project/modules/DOMAIN/contracts.json',
+      ],
+      [
+        'candidates/project/modules/DOMAIN/trace.candidate.md',
+        '.specforge/project/modules/DOMAIN/trace.md',
+      ],
       ['candidates/trace_delta.md', '.specforge/project/trace_matrix.md'],
-    ].map(([candidate_path, target_path]) => ({ candidate_path, target_path, operation: 'replace' }));
+    ].map(([candidate_path, target_path]) => ({
+      candidate_path,
+      target_path,
+      operation: 'replace',
+    }));
 
     await writeJson(path.join(workItemDir, 'candidate_manifest.json'), {
       schema_version: '1.1',
@@ -193,15 +220,15 @@ describe('greenfield pre-merge Project Governance', () => {
 
     await writeText(
       path.join(candidates, 'project', 'architecture.candidate.md'),
-      '# Architecture\n\nARCH-WD-001 is valid, but ARCH-0001 is not.\n',
+      '# Architecture\n\nARCH-WD-001 is valid, but ARCH-0001 is not.\n'
     );
     await writeText(
       path.join(candidates, 'project', 'data_model.candidate.md'),
-      '# Data Model\n\nDATA-WD-001 is valid, but DATA-0001 is not.\n',
+      '# Data Model\n\nDATA-WD-001 is valid, but DATA-0001 is not.\n'
     );
     await writeText(
       path.join(candidates, 'project', 'modules', 'DOMAIN', 'design.candidate.md'),
-      '# DOMAIN Design\n\nDD-DOMAIN-001 is valid, but DD-0001 is not.\n',
+      '# DOMAIN Design\n\nDD-DOMAIN-001 is valid, but DD-0001 is not.\n'
     );
 
     const mixedConsistency = await checkProjectGovernanceConsistency(input);
@@ -209,24 +236,24 @@ describe('greenfield pre-merge Project Governance', () => {
     expect(mixedConsistency.active).toBe(true);
     expect(mixedConsistency.passed).toBe(false);
     expect(
-      mixedConsistency.checks.find(check => check.check_id === 'architecture_id_format'),
+      mixedConsistency.checks.find(check => check.check_id === 'architecture_id_format')
     ).toMatchObject({ passed: false, severity: 'error' });
     expect(
-      mixedConsistency.checks.find(check => check.check_id === 'data_model_id_format'),
+      mixedConsistency.checks.find(check => check.check_id === 'data_model_id_format')
     ).toMatchObject({ passed: false, severity: 'error' });
     expect(
-      mixedConsistency.checks.find(check => check.check_id === 'module_design_id_format'),
+      mixedConsistency.checks.find(check => check.check_id === 'module_design_id_format')
     ).toMatchObject({ passed: false, severity: 'error' });
     expect(mixedTrace.active).toBe(true);
     expect(mixedTrace.passed).toBe(false);
 
     await writeText(
       path.join(candidates, 'project', 'architecture.candidate.md'),
-      '# Architecture\n\n### ARCH-0001 Invalid missing-domain ID\n',
+      '# Architecture\n\n### ARCH-0001 Invalid missing-domain ID\n'
     );
     await writeText(
       path.join(candidates, 'project', 'data_model.candidate.md'),
-      '# Data Model\n\n### DATA-0001 Invalid missing-domain ID\n',
+      '# Data Model\n\n### DATA-0001 Invalid missing-domain ID\n'
     );
 
     const invalidConsistency = await checkProjectGovernanceConsistency(input);
@@ -234,14 +261,14 @@ describe('greenfield pre-merge Project Governance', () => {
     expect(invalidConsistency.active).toBe(false);
     expect(invalidConsistency.passed).toBe(false);
     expect(
-      invalidConsistency.checks.find(check => check.check_id === 'architecture_id_format'),
+      invalidConsistency.checks.find(check => check.check_id === 'architecture_id_format')
     ).toMatchObject({ passed: false, severity: 'error' });
     expect(
-      invalidConsistency.checks.find(check => check.check_id === 'data_model_id_format'),
+      invalidConsistency.checks.find(check => check.check_id === 'data_model_id_format')
     ).toMatchObject({ passed: false, severity: 'error' });
     expect(invalidTrace.passed).toBe(false);
     expect(
-      invalidTrace.checks.some(check => check.check_id === 'governance_trace_compatibility_mode'),
+      invalidTrace.checks.some(check => check.check_id === 'governance_trace_compatibility_mode')
     ).toBe(false);
   });
 });

@@ -8,15 +8,28 @@ import { getCurrentBranch, getHeadCommit, normalizeRelativePath } from './git-go
 
 const execFileAsync = promisify(execFile);
 
-async function runGit(projectRoot: string, args: string[], allowFailure = false): Promise<{ stdout: string; stderr: string; code: number }> {
+async function runGit(
+  projectRoot: string,
+  args: string[],
+  allowFailure = false
+): Promise<{ stdout: string; stderr: string; code: number }> {
   try {
-    const { stdout, stderr } = await execFileAsync('git', args, { cwd: projectRoot, maxBuffer: 10 * 1024 * 1024 });
+    const { stdout, stderr } = await execFileAsync('git', args, {
+      cwd: projectRoot,
+      maxBuffer: 10 * 1024 * 1024,
+    });
     return { stdout: String(stdout ?? ''), stderr: String(stderr ?? ''), code: 0 };
   } catch (err: any) {
     if (allowFailure) {
-      return { stdout: String(err?.stdout ?? ''), stderr: String(err?.stderr ?? err?.message ?? ''), code: Number(err?.code ?? 1) };
+      return {
+        stdout: String(err?.stdout ?? ''),
+        stderr: String(err?.stderr ?? err?.message ?? ''),
+        code: Number(err?.code ?? 1),
+      };
     }
-    throw new Error(`git ${args.join(' ')} failed: ${String(err?.stderr ?? err?.message ?? 'git command failed')}`);
+    throw new Error(
+      `git ${args.join(' ')} failed: ${String(err?.stderr ?? err?.message ?? 'git command failed')}`
+    );
   }
 }
 
@@ -48,7 +61,7 @@ function safeBranchName(value: string): string {
     .replace(/\\/g, '/')
     .replace(/^\/+|\/+$/g, '')
     .replace(/\s+/g, '-')
-    .replace(/[^A-Za-z0-9._\/-]/g, '-')
+    .replace(/[^A-Za-z0-9._/-]/g, '-')
     .replace(/\/+/g, '/');
 }
 
@@ -113,7 +126,10 @@ export async function gitPrPlan(input: {
   if (input.writePlan !== false) {
     const planPath = runtimePath(input.projectRoot, 'git_pr_plan.json');
     await writeJson(planPath, plan);
-    return { ...plan, plan_path: normalizeRelativePath(path.relative(input.projectRoot, planPath)) };
+    return {
+      ...plan,
+      plan_path: normalizeRelativePath(path.relative(input.projectRoot, planPath)),
+    };
   }
   return plan;
 }
@@ -129,7 +145,11 @@ export async function gitWorktreePlan(input: {
   const branchName = safeBranchName(input.branchName);
   if (!branchName) throw new Error('BRANCH_NAME_REQUIRED');
   const baseRef = input.baseRef || 'main';
-  const defaultPath = path.resolve(input.projectRoot, '..', `${path.basename(input.projectRoot)}--${branchName.replace(/[\/]/g, '-')}`);
+  const defaultPath = path.resolve(
+    input.projectRoot,
+    '..',
+    `${path.basename(input.projectRoot)}--${branchName.replace(/[/]/g, '-')}`
+  );
   const worktreePathAbs = path.resolve(input.worktreePath || defaultPath);
   const headCommit = await getHeadCommit(input.projectRoot).catch(() => '');
   const plan = {
@@ -146,7 +166,10 @@ export async function gitWorktreePlan(input: {
   if (input.writePlan !== false) {
     const planPath = runtimePath(input.projectRoot, 'git_worktree_plan.json');
     await writeJson(planPath, plan);
-    return { ...plan, plan_path: normalizeRelativePath(path.relative(input.projectRoot, planPath)) };
+    return {
+      ...plan,
+      plan_path: normalizeRelativePath(path.relative(input.projectRoot, planPath)),
+    };
   }
   return plan;
 }
@@ -166,12 +189,28 @@ export async function gitWorktreeCreate(input: {
     : ['worktree', 'add', plan.worktree_path, plan.branch_name];
   const result = await runGit(input.projectRoot, args, true);
   const registryPath = runtimePath(input.projectRoot, 'git_worktrees.json');
-  const existing = await readJsonIfExists<any>(registryPath, { schema_version: 'git_worktrees.v1', worktrees: [] });
+  const existing = await readJsonIfExists<any>(registryPath, {
+    schema_version: 'git_worktrees.v1',
+    worktrees: [],
+  });
   const nextWorktrees = [
-    ...(existing.worktrees ?? []).filter((item: any) => item.branch_name !== plan.branch_name && item.worktree_path !== plan.worktree_path),
-    { branch_name: plan.branch_name, base_ref: plan.base_ref, worktree_path: plan.worktree_path, created_at: new Date().toISOString(), result_code: result.code },
+    ...(existing.worktrees ?? []).filter(
+      (item: any) =>
+        item.branch_name !== plan.branch_name && item.worktree_path !== plan.worktree_path
+    ),
+    {
+      branch_name: plan.branch_name,
+      base_ref: plan.base_ref,
+      worktree_path: plan.worktree_path,
+      created_at: new Date().toISOString(),
+      result_code: result.code,
+    },
   ];
-  await writeJson(registryPath, { schema_version: 'git_worktrees.v1', updated_at: new Date().toISOString(), worktrees: nextWorktrees });
+  await writeJson(registryPath, {
+    schema_version: 'git_worktrees.v1',
+    updated_at: new Date().toISOString(),
+    worktrees: nextWorktrees,
+  });
   return {
     ...plan,
     success: result.code === 0,
@@ -205,13 +244,17 @@ export async function gitStackedBranchPlan(input: {
     current_head: headCommit,
     mode: 'plan_only',
     merge_order: [childBranch, parentBranch],
-    warning: 'Merge stacked branches from child to parent, then parent to target branch after gates pass.',
+    warning:
+      'Merge stacked branches from child to parent, then parent to target branch after gates pass.',
     updated_at: new Date().toISOString(),
   };
   if (input.writePlan !== false) {
     const planPath = runtimePath(input.projectRoot, 'git_stacked_branch_plan.json');
     await writeJson(planPath, plan);
-    return { ...plan, plan_path: normalizeRelativePath(path.relative(input.projectRoot, planPath)) };
+    return {
+      ...plan,
+      plan_path: normalizeRelativePath(path.relative(input.projectRoot, planPath)),
+    };
   }
   return plan;
 }
@@ -228,7 +271,9 @@ export async function gitReleaseTagPlan(input: {
   if (!tagName) throw new Error('TAG_NAME_REQUIRED');
   const targetRef = input.targetRef || 'HEAD';
   const remoteName = input.remoteName || 'origin';
-  const resolvedTarget = (await runGit(input.projectRoot, ['rev-parse', targetRef], true)).stdout.trim();
+  const resolvedTarget = (
+    await runGit(input.projectRoot, ['rev-parse', targetRef], true)
+  ).stdout.trim();
   const existing = await runGit(input.projectRoot, ['tag', '--list', tagName], true);
   const plan = {
     schema_version: 'git_release_tag_plan.v1',
@@ -244,9 +289,15 @@ export async function gitReleaseTagPlan(input: {
     updated_at: new Date().toISOString(),
   };
   if (input.writePlan !== false) {
-    const planPath = reportsPath(input.projectRoot, `git_release_tag_plan_${tagName.replace(/[^A-Za-z0-9._-]/g, '-')}.json`);
+    const planPath = reportsPath(
+      input.projectRoot,
+      `git_release_tag_plan_${tagName.replace(/[^A-Za-z0-9._-]/g, '-')}.json`
+    );
     await writeJson(planPath, plan);
-    return { ...plan, plan_path: normalizeRelativePath(path.relative(input.projectRoot, planPath)) };
+    return {
+      ...plan,
+      plan_path: normalizeRelativePath(path.relative(input.projectRoot, planPath)),
+    };
   }
   return plan;
 }
@@ -261,8 +312,19 @@ export async function gitReleaseTagCreate(input: {
   if (input.confirmed !== true) throw new Error('RELEASE_TAG_CREATE_REQUIRES_USER_CONFIRMATION');
   const plan = await gitReleaseTagPlan({ ...input, writePlan: false });
   if (plan.tag_exists) throw new Error('TAG_ALREADY_EXISTS');
-  const result = await runGit(input.projectRoot, ['tag', '-a', plan.tag_name, plan.target_ref, '-m', plan.message], true);
-  return { ...plan, mode: 'executed', success: result.code === 0, code: result.code, stdout: result.stdout, stderr: result.stderr };
+  const result = await runGit(
+    input.projectRoot,
+    ['tag', '-a', plan.tag_name, plan.target_ref, '-m', plan.message],
+    true
+  );
+  return {
+    ...plan,
+    mode: 'executed',
+    success: result.code === 0,
+    code: result.code,
+    stdout: result.stdout,
+    stderr: result.stderr,
+  };
 }
 
 type AgentLock = {
@@ -294,10 +356,21 @@ export async function gitAgentLockAcquire(input: {
   const ttlMs = Math.max(1, Number(input.ttlMinutes || 120)) * 60 * 1000;
   const now = Date.now();
   const locksPath = runtimePath(input.projectRoot, 'git_agent_locks.json');
-  const existing = await readJsonIfExists<any>(locksPath, { schema_version: 'git_agent_locks.v1', locks: [] });
+  const existing = await readJsonIfExists<any>(locksPath, {
+    schema_version: 'git_agent_locks.v1',
+    locks: [],
+  });
   const active = (existing.locks ?? []).filter((lock: AgentLock) => !isExpired(lock, now));
-  const conflict = active.find((lock: AgentLock) => lock.lock_name === lockName && lock.owner !== owner);
-  if (conflict) return { success: false, error: 'AGENT_LOCK_CONFLICT', conflict, locks_path: normalizeRelativePath(path.relative(input.projectRoot, locksPath)) };
+  const conflict = active.find(
+    (lock: AgentLock) => lock.lock_name === lockName && lock.owner !== owner
+  );
+  if (conflict)
+    return {
+      success: false,
+      error: 'AGENT_LOCK_CONFLICT',
+      conflict,
+      locks_path: normalizeRelativePath(path.relative(input.projectRoot, locksPath)),
+    };
   const nextLock: AgentLock = {
     lock_name: lockName,
     owner,
@@ -306,9 +379,20 @@ export async function gitAgentLockAcquire(input: {
     acquired_at: new Date(now).toISOString(),
     expires_at: new Date(now + ttlMs).toISOString(),
   };
-  const locks = [...active.filter((lock: AgentLock) => lock.lock_name !== lockName || lock.owner !== owner), nextLock];
-  await writeJson(locksPath, { schema_version: 'git_agent_locks.v1', updated_at: new Date().toISOString(), locks });
-  return { success: true, lock: nextLock, locks_path: normalizeRelativePath(path.relative(input.projectRoot, locksPath)) };
+  const locks = [
+    ...active.filter((lock: AgentLock) => lock.lock_name !== lockName || lock.owner !== owner),
+    nextLock,
+  ];
+  await writeJson(locksPath, {
+    schema_version: 'git_agent_locks.v1',
+    updated_at: new Date().toISOString(),
+    locks,
+  });
+  return {
+    success: true,
+    lock: nextLock,
+    locks_path: normalizeRelativePath(path.relative(input.projectRoot, locksPath)),
+  };
 }
 
 export async function gitAgentLockRelease(input: {
@@ -322,13 +406,24 @@ export async function gitAgentLockRelease(input: {
   const lockName = String(input.lockName || '').trim();
   if (!lockName) throw new Error('LOCK_NAME_REQUIRED');
   const locksPath = runtimePath(input.projectRoot, 'git_agent_locks.json');
-  const existing = await readJsonIfExists<any>(locksPath, { schema_version: 'git_agent_locks.v1', locks: [] });
+  const existing = await readJsonIfExists<any>(locksPath, {
+    schema_version: 'git_agent_locks.v1',
+    locks: [],
+  });
   const before = existing.locks ?? [];
   const after = before.filter((lock: AgentLock) => {
     if (lock.lock_name !== lockName) return true;
     if (input.force === true) return false;
     return input.owner ? lock.owner !== input.owner : true;
   });
-  await writeJson(locksPath, { schema_version: 'git_agent_locks.v1', updated_at: new Date().toISOString(), locks: after });
-  return { success: true, released_count: before.length - after.length, locks_path: normalizeRelativePath(path.relative(input.projectRoot, locksPath)) };
+  await writeJson(locksPath, {
+    schema_version: 'git_agent_locks.v1',
+    updated_at: new Date().toISOString(),
+    locks: after,
+  });
+  return {
+    success: true,
+    released_count: before.length - after.length,
+    locks_path: normalizeRelativePath(path.relative(input.projectRoot, locksPath)),
+  };
 }

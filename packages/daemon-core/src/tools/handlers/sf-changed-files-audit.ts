@@ -1,3 +1,4 @@
+import { scalarText } from '@specforge/types';
 /**
  * sf_changed_files_audit — Changed Files Audit Tool Handler.
  *
@@ -70,7 +71,7 @@ function normalizeChangedFileArgs(input: unknown): ChangedFile[] {
 }
 
 function readString(value: unknown): string {
-  return String(value ?? '').trim();
+  return scalarText(value ?? '').trim();
 }
 
 function isNoCodeAuditMode(value: unknown): boolean {
@@ -231,7 +232,7 @@ function isGovernanceArtifactPath(filePath: string, workItemId: string): boolean
   );
 }
 
-async function readJsonIfExists(filePath: string): Promise<any | null> {
+async function readJsonIfExists(filePath: string): Promise<any> {
   try {
     return JSON.parse(await fs.readFile(filePath, 'utf-8'));
   } catch {
@@ -359,11 +360,7 @@ export function changedFilesFromFacts(input: {
       changedFiles: diff.all_changes.map(entry => ({
         path: entry.path,
         operation:
-          entry.change === 'created'
-            ? 'create'
-            : entry.change === 'deleted'
-              ? 'delete'
-              : 'modify',
+          entry.change === 'created' ? 'create' : entry.change === 'deleted' ? 'delete' : 'modify',
       })),
       dataSource:
         `filesystem_baseline.json (${diff.all_changes.length} observed project changes; ` +
@@ -548,8 +545,18 @@ async function writeNoCodeAudit(input: {
     '',
   ].join('\n');
 
-  await fs.writeFile(join(input.workItemDir, 'changed_files_audit.md'), bindWriteGuardAudit(auditMd, input.projectRoot, input.workItemDir, auditInputBinding.sha256), 'utf-8');
-  if (unresolvedBlockedWriteViolations.length) setHardStop(input.projectRoot, input.workItemId, unresolvedBlockedWriteViolations.join('; '), 'sf_changed_files_audit');
+  await fs.writeFile(
+    join(input.workItemDir, 'changed_files_audit.md'),
+    bindWriteGuardAudit(auditMd, input.projectRoot, input.workItemDir, auditInputBinding.sha256),
+    'utf-8'
+  );
+  if (unresolvedBlockedWriteViolations.length)
+    setHardStop(
+      input.projectRoot,
+      input.workItemId,
+      unresolvedBlockedWriteViolations.join('; '),
+      'sf_changed_files_audit'
+    );
 
   let clearedCodePermissionHardStop = false;
   if (passed && input.activeCodePermissionHardStop) {
@@ -731,18 +738,17 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
   const remoteOpsFiles = changedFiles.filter(file => isRemoteOpsAuditPath(file.path));
   const projectChangedFiles = changedFiles.filter(file => !isRemoteOpsAuditPath(file.path));
 
-  const trustedControlPlaneWrites =
-    readTrustedChangedFilesAuditControlPlaneWrites(projectRoot);
+  const trustedControlPlaneWrites = readTrustedChangedFilesAuditControlPlaneWrites(projectRoot);
   const governedRegenerableArtifacts = await readGovernedRegenerableArtifacts(
     projectRoot,
-    projectChangedFiles,
+    projectChangedFiles
   );
   const auditResult = runChangedFilesAudit(
     projectChangedFiles,
     allowedWriteFiles,
     'agent',
     trustedControlPlaneWrites,
-    governedRegenerableArtifacts,
+    governedRegenerableArtifacts
   );
   const evidenceAvailable = dataSource !== 'none';
   const blockedWriteClassifications = classifyBlockedWriteAttempts(
@@ -767,7 +773,9 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
 
   const evidenceViolations = evidenceAvailable
     ? []
-    : ['changed_file_evidence_unavailable: filesystem_baseline.json or trusted Write Guard facts required'];
+    : [
+        'changed_file_evidence_unavailable: filesystem_baseline.json or trusted Write Guard facts required',
+      ];
   const finalPassed =
     evidenceAvailable && auditResult.passed && unresolvedBlockedWriteViolations.length === 0;
   const finalViolations = [
@@ -776,9 +784,7 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
     ...evidenceViolations,
   ];
   const finalOutOfScope =
-    auditResult.out_of_scope +
-    unresolvedBlockedWriteViolations.length +
-    evidenceViolations.length;
+    auditResult.out_of_scope + unresolvedBlockedWriteViolations.length + evidenceViolations.length;
 
   const historicalBlockedLines = resolvedBlockedWriteClassifications.map(c => {
     return `- [${c.operation}] ${c.path} → ${c.status} (${c.reason})`;
@@ -824,9 +830,7 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
     '',
     '## Governed Regenerable Artifacts',
     '',
-    ...(governedRegenerableArtifactLines.length > 0
-      ? governedRegenerableArtifactLines
-      : ['None.']),
+    ...(governedRegenerableArtifactLines.length > 0 ? governedRegenerableArtifactLines : ['None.']),
     '',
     '## Blocked Write Attempts',
     '',
@@ -860,8 +864,18 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
   ].join('\n');
 
   try {
-    await fs.writeFile(join(workItemDir, 'changed_files_audit.md'), bindWriteGuardAudit(auditMd, projectRoot, workItemDir, auditInputBinding.sha256), 'utf-8');
-    if (unresolvedBlockedWriteViolations.length) setHardStop(projectRoot, workItemId, unresolvedBlockedWriteViolations.join('; '), 'sf_changed_files_audit');
+    await fs.writeFile(
+      join(workItemDir, 'changed_files_audit.md'),
+      bindWriteGuardAudit(auditMd, projectRoot, workItemDir, auditInputBinding.sha256),
+      'utf-8'
+    );
+    if (unresolvedBlockedWriteViolations.length)
+      setHardStop(
+        projectRoot,
+        workItemId,
+        unresolvedBlockedWriteViolations.join('; '),
+        'sf_changed_files_audit'
+      );
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     setHardStop(

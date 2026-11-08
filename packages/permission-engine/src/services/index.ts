@@ -2,20 +2,20 @@
  * Permission Engine Services
  */
 
-import { 
-  Permission, 
-  Role, 
-  UserPermission, 
-  PermissionCheckRequest, 
-  PermissionCheckResult,
-  PermissionEngineConfig 
-} from '../types';
-import { 
-  PermissionSchema, 
-  RoleSchema, 
-  UserPermissionSchema, 
+import {
+  PermissionSchema,
+  RoleSchema,
+  UserPermissionSchema,
   PermissionCheckRequestSchema
 } from '../models';
+import {
+  Permission,
+  Role,
+  UserPermission,
+  PermissionCheckRequest,
+  PermissionCheckResult,
+  PermissionEngineConfig
+} from '../types';
 
 export class PermissionService {
   private permissions: Map<string, Permission> = new Map();
@@ -80,9 +80,9 @@ export class PermissionService {
     for (const permissionId of userPermission.directPermissions) {
       const permission = this.permissions.get(permissionId);
       if (permission && this.matchesPermission(permission, request)) {
-        return { 
-          allowed: true, 
-          matchedPermission: permission.id 
+        return {
+          allowed: true,
+          matchedPermission: permission.id
         };
       }
     }
@@ -105,16 +105,16 @@ export class PermissionService {
    * Check permissions for a role (including inherited roles)
    */
   private async checkRolePermissions(
-    role: Role, 
+    role: Role,
     request: PermissionCheckRequest
   ): Promise<PermissionCheckResult> {
     // Check current role permissions
     for (const permissionId of role.permissions) {
       const permission = this.permissions.get(permissionId);
       if (permission && this.matchesPermission(permission, request)) {
-        return { 
-          allowed: true, 
-          matchedPermission: permission.id 
+        return {
+          allowed: true,
+          matchedPermission: permission.id
         };
       }
     }
@@ -139,11 +139,11 @@ export class PermissionService {
    * Check if a permission matches the request
    */
   private matchesPermission(
-    permission: Permission, 
+    permission: Permission,
     request: PermissionCheckRequest
   ): boolean {
     // Simple matching logic - can be extended with condition evaluation
-    return permission.action === request.action && 
+    return permission.action === request.action &&
            permission.resource === request.resource;
   }
 
@@ -181,15 +181,15 @@ export { BuiltinPolicyLoader } from './builtin-policy-loader';
 export { UserPolicyLoader } from './user-policy-loader';
 
 // Export rule merging engine
-export { 
+export {
   RuleMergingEngine,
   type MergedPermissionDecision,
-  type RuleMergingEngineConfig 
+  type RuleMergingEngineConfig
 } from './rule-merging-engine';
 
 // Export Bearer Token validator
-export { 
-  BearerTokenValidator, 
+export {
+  BearerTokenValidator,
   createBearerTokenValidator,
   parseAuthorizationHeader,
   isValidBearerFormat,

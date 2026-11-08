@@ -6,7 +6,12 @@ export function verificationRequestAbort(context: unknown): AbortSignal | undefi
   return value instanceof AbortSignal ? value : undefined;
 }
 /** Only resource cancellation/reclamation and permission revocation remain reachable under a latch. */
-export function isVerificationRecoveryRequest(tool: string, args: Record<string,unknown>): boolean {
-  return tool === 'sf_verification_plan' && args.action === 'revoke' ||
-    tool === 'sf_verification_run' && (args.action === 'cancel' || args.action === 'recover');
+export function isVerificationRecoveryRequest(
+  tool: string,
+  args: Record<string, unknown>
+): boolean {
+  return (
+    (tool === 'sf_verification_plan' && args.action === 'revoke') ||
+    (tool === 'sf_verification_run' && (args.action === 'cancel' || args.action === 'recover'))
+  );
 }

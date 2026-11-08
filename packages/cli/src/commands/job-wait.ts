@@ -31,11 +31,11 @@ export async function handleJobCommand(
     formatter: OutputFormatter;
   },
 ): Promise<void> {
-  const { json = false, tracker, modeSwitch, formatter } = options;
+  const { json = false, tracker, formatter } = options;
 
   try {
     const status = await tracker.getJobStatus(jobId);
-    
+
     if (json) {
       // JSON mode: output structured job status
       console.log(JSON.stringify({
@@ -205,15 +205,15 @@ export function formatJobStatusOutput(
   let output = `Job: ${status.jobId}\n`;
   output += `Status: ${status.status}\n`;
   output += `Command: ${status.command}\n`;
-  
+
   if (status.result) {
     output += `Result: ${JSON.stringify(status.result, null, 2)}\n`;
   }
-  
+
   if (status.error) {
     output += `Error: ${status.error}\n`;
   }
-  
+
   output += `Created: ${new Date(status.createdAt).toISOString()}\n`;
   output += `Updated: ${new Date(status.updatedAt).toISOString()}\n`;
 

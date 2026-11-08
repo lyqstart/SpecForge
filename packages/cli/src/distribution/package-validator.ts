@@ -1,6 +1,6 @@
 /**
  * PackageValidator - 发布流水线包验证器
- * 
+ *
  * 职责：验证 package.json 的格式和内容，确保符合发布要求
  * Requirements: 1.1, 1.2, 1.3, 1.6, 2.3, 6.1
  */
@@ -45,7 +45,7 @@ const REQUIRED_ENGINES = {
 
 /**
  * 验证一个候选包的 package.json
- * 
+ *
  * @param pkg - 解析后的 package.json 对象
  * @param ctx - 验证上下文（模式、版本映射等）
  * @returns 验证结果，包含错误列表和警告
@@ -151,10 +151,10 @@ export function validate(
 
 /**
  * 验证 @specforge/* 依赖的版本格式
- * 
+ *
  * publish 模式下必须是精确的 MAJOR.MINOR.PATCH 格式
  * 禁止：^, ~, *, x, range, dist-tag, git, file
- * 
+ *
  * @param depName - 依赖包名
  * @param depVersion - 依赖版本字符串
  * @param depType - 依赖类型（dependencies 或 devDependencies）
@@ -165,7 +165,7 @@ function validateSpecforgeDependency(
   depName: string,
   depVersion: string,
   depType: 'dependencies' | 'devDependencies',
-  ctx: ValidationContext
+  _ctx: ValidationContext
 ): ValidationError | null {
   const field = `${depType}.${depName}`;
 
@@ -201,7 +201,7 @@ function validateSpecforgeDependency(
   // 检查是否是精确的 MAJOR.MINOR.PATCH 格式
   // 允许 prerelease 和 build metadata (SemVer 2.0.0)
   const exactVersionPattern = /^\d+\.\d+\.\d+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$/;
-  
+
   if (!exactVersionPattern.test(depVersion)) {
     return {
       code: 'DEP_VERSION_NOT_PINNED',

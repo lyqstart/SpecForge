@@ -32,7 +32,7 @@ export interface ToolInvocation {
 export async function wrapToolCall<T>(
   toolName: string,
   args: Record<string, unknown>,
-  fn: () => Promise<T>,
+  fn: () => Promise<T>
 ): Promise<{ invocation: ToolInvocation; result: T }> {
   const startedAt = Date.now();
   let finishedAt: number | null = null;

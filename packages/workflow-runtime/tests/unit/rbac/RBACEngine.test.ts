@@ -1,10 +1,11 @@
 /**
  * RBACEngine.test.ts — Phase 1 RBAC Engine skeleton tests
  */
-import { describe, it, expect } from 'vitest';
-import { RBACEngine, createRBACEngine } from '../../../src/rbac/RBACEngine.js';
-import type { Principal } from '@specforge/types/principal';
 import type { Permission, PermissionContext } from '@specforge/types/permissions';
+import type { Principal } from '@specforge/types/principal';
+import { describe, it, expect } from 'vitest';
+
+import { RBACEngine, createRBACEngine } from '../../../src/rbac/RBACEngine.js';
 
 const MOCK_PRINCIPAL: Principal = {
   actorRole: 'agent',

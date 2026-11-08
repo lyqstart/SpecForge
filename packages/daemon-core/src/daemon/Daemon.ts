@@ -1,6 +1,7 @@
+import { promiseFromSync } from '@specforge/types';
 /**
  * Daemon Core main class
- * 
+ *
  * Manages the lifecycle of the Daemon process, including startup,
  * shutdown, and signal handling.
  */
@@ -43,10 +44,7 @@ export class Daemon {
   private llmKernelAdapter: LLMKernelAdapter;
   private verificationRuntime: VerificationRuntime;
 
-  constructor(
-    config: DaemonConfig = new DaemonConfig(),
-    llmKernelAdapter?: LLMKernelAdapter,
-  ) {
+  constructor(config: DaemonConfig = new DaemonConfig(), llmKernelAdapter?: LLMKernelAdapter) {
     this.config = config;
     this.eventBus = new EventBus();
     // Shared path resolver for all subsystems (TASK-8)
@@ -58,20 +56,27 @@ export class Daemon {
     // from SessionRegistry at event-ingest time.
     const sessionRegistry = new SessionRegistry(this.eventBus, 30 * 60 * 1000, undefined);
     this.recoverySubsystem = new RecoverySubsystem(
-      pathResolver, undefined, undefined, undefined, sessionRegistry
+      pathResolver,
+      undefined,
+      undefined,
+      undefined,
+      sessionRegistry
     );
     this.handshakeManager = new HandshakeManager(this.config);
     this.sessionRegistry = sessionRegistry;
-    this.projectManager = new ProjectManager(this.eventBus, pathResolver, undefined as any);
-    
-    this.extensionLoader = new ExtensionLoader({
-      enabledExtensions: {
-        skill: true,
-        tool: true,
-        workflow: true,
-        gate: true,
+    this.projectManager = new ProjectManager(this.eventBus, pathResolver, undefined);
+
+    this.extensionLoader = new ExtensionLoader(
+      {
+        enabledExtensions: {
+          skill: true,
+          tool: true,
+          workflow: true,
+          gate: true,
+        },
       },
-    }, this.eventBus);
+      this.eventBus
+    );
     this.workflowEngine = new WorkflowEngine({
       // onTransition no longer set — persistence handled by sf_state_transition handler
     });
@@ -81,16 +86,18 @@ export class Daemon {
     const openCodeRuntime = new OpenCodeHttpRuntimeClient({
       baseUrl: process.env.OPENCODE_SERVER_URL?.trim() || 'http://127.0.0.1:4096',
     });
-    this.llmKernelAdapter = llmKernelAdapter ?? new OpenCodeAdapter({ runtimeClient:openCodeRuntime });
-    const verificationRuntime = new VerificationRuntime({ projectManager:this.projectManager,stateManager:undefined },openCodeRuntime);
-    this.verificationRuntime=verificationRuntime;
+    this.llmKernelAdapter =
+      llmKernelAdapter ?? new OpenCodeAdapter({ runtimeClient: openCodeRuntime });
+    const verificationRuntime = new VerificationRuntime(
+      { projectManager: this.projectManager, stateManager: undefined },
+      openCodeRuntime
+    );
+    this.verificationRuntime = verificationRuntime;
     // NOTE: workflowEngine is already created above — do NOT create a second instance
 
     this.httpServer = new HTTPServer({
       config: this.config,
       eventBus: this.eventBus,
-      stateManager: undefined as any,
-      wal: undefined as any,
       workflowEngine: this.workflowEngine,
       eventLogger: undefined,
       sessionRegistry: this.sessionRegistry,
@@ -135,7 +142,7 @@ export class Daemon {
     // 3. Generate token and write handshake file
     const token = this.handshakeManager.generateToken();
     await this.handshakeManager.writeHandshake(process.pid, port, token);
-    
+
     // 4. Set token in HTTP server for auth
     this.httpServer.setToken(token);
 
@@ -150,7 +157,9 @@ export class Daemon {
     console.log('[EXTENSIONS] Loading extensions...');
     const extensionResult = await this.extensionLoader!.loadAll();
     if (extensionResult.success) {
-      console.log(`[EXTENSIONS] All extensions loaded successfully in ${extensionResult.totalLoadTimeMs}ms`);
+      console.log(
+        `[EXTENSIONS] All extensions loaded successfully in ${extensionResult.totalLoadTimeMs}ms`
+      );
     } else {
       const failed = extensionResult.extensions.filter(e => !e.loaded);
       console.log(`[EXTENSIONS] ${failed.length} extension(s) failed to load:`);
@@ -181,10 +190,12 @@ export class Daemon {
     // Task 1: Stop accepting new HTTP connections (priority: stop-accepting)
     this.gracefulShutdownHandler.register(
       'http-stop-accepting',
-      async () => {
-        console.log('[SHUTDOWN] Step 1: Stopping HTTP accept...');
-        // HTTP server doesn't have a stop-accepting method, but we mark this phase
-        // The actual stop will happen in the close phase
+      () => {
+        return promiseFromSync(() => {
+          console.log('[SHUTDOWN] Step 1: Stopping HTTP accept...');
+          // HTTP server doesn't have a stop-accepting method, but we mark this phase
+          // The actual stop will happen in the close phase
+        });
       },
       ShutdownPriority.STOP_ACCEPTING
     );
@@ -192,10 +203,12 @@ export class Daemon {
     // Task 2: Drain Event Bus (priority: drain)
     this.gracefulShutdownHandler.register(
       'eventbus-drain',
-      async () => {
-        console.log('[SHUTDOWN] Step 2: Draining Event Bus...');
-        // EventBus doesn't have a drain method, but we can ensure no new events
-        // The stop() method will clear subscriptions
+      () => {
+        return promiseFromSync(() => {
+          console.log('[SHUTDOWN] Step 2: Draining Event Bus...');
+          // EventBus doesn't have a drain method, but we can ensure no new events
+          // The stop() method will clear subscriptions
+        });
       },
       ShutdownPriority.DRAIN
     );
@@ -204,8 +217,10 @@ export class Daemon {
     // NOTE: eventLogger has been removed; this is now a no-op placeholder
     this.gracefulShutdownHandler.register(
       'events-flush',
-      async () => {
-        console.log('[SHUTDOWN] Step 3: Flush events (no-op, eventLogger removed)...');
+      () => {
+        return promiseFromSync(() => {
+          console.log('[SHUTDOWN] Step 3: Flush events (no-op, eventLogger removed)...');
+        });
       },
       ShutdownPriority.FLUSH
     );
@@ -213,9 +228,11 @@ export class Daemon {
     // Task 4: Close SSE connections (priority: close)
     this.gracefulShutdownHandler.register(
       'sse-close',
-      async () => {
-        console.log('[SHUTDOWN] Step 4: Closing SSE connections...');
-        // SSE cleanup is handled in HTTPServer.stop()
+      () => {
+        return promiseFromSync(() => {
+          console.log('[SHUTDOWN] Step 4: Closing SSE connections...');
+          // SSE cleanup is handled in HTTPServer.stop()
+        });
       },
       ShutdownPriority.CLOSE
     );
@@ -223,9 +240,11 @@ export class Daemon {
     // Task 5: Dispose resources (priority: release)
     this.gracefulShutdownHandler.register(
       'dispose-extensions',
-      async () => {
-        console.log('[SHUTDOWN] Step 5: Disposing extensions...');
-        this.extensionLoader = null;
+      () => {
+        return promiseFromSync(() => {
+          console.log('[SHUTDOWN] Step 5: Disposing extensions...');
+          this.extensionLoader = null;
+        });
       },
       ShutdownPriority.RELEASE
     );
@@ -260,8 +279,10 @@ export class Daemon {
     console.log('Daemon Core stopped');
   }
 
-  async broadcastEvent(event: Event): Promise<void> {
-    this.eventBus.publish(event);
+  broadcastEvent(event: Event): Promise<void> {
+    return promiseFromSync(() => {
+      return this.eventBus.publish(event);
+    });
   }
 
   isDaemonRunning(): boolean {
@@ -275,7 +296,7 @@ export class Daemon {
   /**
    * 获取扩展加载器实例
    * 供外部组件访问插件加载器等功能
-   * 
+   *
    * @returns ExtensionLoader 实例
    */
   getExtensionLoader(): ExtensionLoader | null {

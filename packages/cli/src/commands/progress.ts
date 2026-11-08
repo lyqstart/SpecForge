@@ -1,6 +1,6 @@
 /**
  * Progress indicator demonstration command.
- * 
+ *
  * Demonstrates:
  * - Spinner for async operations (interactive mode only)
  * - Progress bars for long operations
@@ -103,11 +103,11 @@ async function runProgressBarDemo(
     showElapsed: true,
     showRemaining: true,
   });
-  
+
   progressBar.start();
 
   const stepDuration = duration / steps;
-  
+
   for (let i = 0; i < steps; i++) {
     await sleep(stepDuration);
     progressBar.update(i + 1, `Processing step ${i + 1}/${steps}...`);
@@ -136,7 +136,7 @@ async function runJobProgressDemo(mode: 'interactive' | 'json', duration: number
 
   for (let i = 0; i < statuses.length; i++) {
     await sleep(stepDuration);
-    
+
     const status = statuses[i];
     progress.update({
       jobId,
@@ -194,7 +194,7 @@ export function registerProgressCommand(yargsInstance: yargs.Argv): yargs.Argv {
           default: 3000,
         });
     },
-    async (argv) => {
+    async (_argv) => {
       await handleProgressDemo(process.argv);
     }
   );

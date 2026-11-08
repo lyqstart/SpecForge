@@ -1,24 +1,25 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+
 import { PermissionEngine } from '../../src/index';
 import { EventLogger } from '../../src/services/event-logger';
 
 describe('Permission Engine Event Logging', () => {
   let engine: PermissionEngine;
-  let mockLogger: any;
+  let mockLogger: ReturnType<typeof EventLogger.createInMemoryLogger>;
 
   beforeEach(() => {
     // Create in-memory event logger for testing
     const { logger, getEvents, clearEvents } = EventLogger.createInMemoryLogger('test-project');
     mockLogger = { logger, getEvents, clearEvents };
-    
+
     // Create permission engine with mock logger
     engine = new PermissionEngine({
       eventLoggingEnabled: true,
       projectId: 'test-project'
     });
-    
+
     // Replace the event logger with our mock
-    (engine as any).eventLogger = mockLogger.logger;
+    (engine)['eventLogger'] = mockLogger.logger;
     mockLogger.clearEvents();
   });
 
@@ -35,10 +36,10 @@ describe('Permission Engine Event Logging', () => {
       );
 
       expect(result).toBe(false);
-      
+
       const events = mockLogger.getEvents();
       expect(events).toHaveLength(1);
-      
+
       const event = events[0];
       expect(event.action).toBe('permission.evaluated');
       expect(event.projectId).toBe('test-project');
@@ -46,7 +47,7 @@ describe('Permission Engine Event Logging', () => {
       expect(event.payload.matched_rule).toBe('hard-004');
       expect(event.payload.rule_layer).toBe('hard');
       expect(event.payload.reason).toBeDefined();
-      
+
       // Check all six required fields are present
       expect(event.payload.actor).toBeDefined();
       expect(event.payload.action).toBe('gate.bypass');
@@ -64,10 +65,10 @@ describe('Permission Engine Event Logging', () => {
       );
 
       expect(result).toBe(true);
-      
+
       const events = mockLogger.getEvents();
       expect(events).toHaveLength(1);
-      
+
       const event = events[0];
       expect(event.action).toBe('permission.evaluated');
       expect(event.payload.decision).toBe('allow');
@@ -85,7 +86,7 @@ describe('Permission Engine Event Logging', () => {
 
       const events = mockLogger.getEvents();
       const event = events[0];
-      
+
       expect(event.payload.actor.id).toBe('user-123');
       expect(event.payload.actor).toHaveProperty('id');
       // Other actor fields are optional
@@ -100,14 +101,14 @@ describe('Permission Engine Event Logging', () => {
 
       const events = mockLogger.getEvents();
       const event = events[0];
-      
+
       expect(event.payload.resource.type).toBe('file');
       expect(event.payload.resource.path).toBe('/etc/hosts');
       expect(event.payload.resource.id).toBe('hosts-file');
     });
 
     it('should include context in event payload when provided', async () => {
-      const context = { 
+      const context = {
         sessionId: 'session-123',
         ipAddress: '127.0.0.1',
         userAgent: 'test-client'
@@ -122,7 +123,7 @@ describe('Permission Engine Event Logging', () => {
 
       const events = mockLogger.getEvents();
       const event = events[0];
-      
+
       expect(event.payload.context).toEqual(context);
     });
   });
@@ -138,10 +139,10 @@ describe('Permission Engine Event Logging', () => {
       const result = await engine.validatePermissionConfig(config);
 
       expect(result).toBe(false);
-      
+
       const events = mockLogger.getEvents();
       expect(events).toHaveLength(1);
-      
+
       const event = events[0];
       expect(event.action).toBe('config.hard_rule_conflict');
       expect(event.payload.rule.id).toBe('hard-004');
@@ -160,7 +161,7 @@ describe('Permission Engine Event Logging', () => {
       const result = await engine.validatePermissionConfig(config);
 
       expect(result).toBe(true);
-      
+
       const events = mockLogger.getEvents();
       expect(events).toHaveLength(0);
     });
@@ -176,12 +177,12 @@ describe('Permission Engine Event Logging', () => {
       const result = await engine.validatePermissionConfig(config);
 
       expect(result).toBe(false);
-      
+
       const events = mockLogger.getEvents();
       expect(events.length).toBeGreaterThanOrEqual(2);
-      
+
       // Check that we have conflict events
-      const conflictEvents = events.filter((e: any) => e.action === 'config.hard_rule_conflict');
+      const conflictEvents = events.filter((e) => e.action === 'config.hard_rule_conflict');
       expect(conflictEvents.length).toBeGreaterThanOrEqual(2);
     });
   });
@@ -195,7 +196,7 @@ describe('Permission Engine Event Logging', () => {
 
       // Get the actual event logger from the engine
       const eventLogger = disabledEngine.getEventLogger();
-      
+
       // Check that event logging is disabled
       expect(eventLogger.isEnabled()).toBe(false);
 
@@ -220,7 +221,7 @@ describe('Permission Engine Event Logging', () => {
 
       // Replace with mock logger
       const { logger, getEvents, clearEvents } = EventLogger.createInMemoryLogger('custom-project-123');
-      (customProjectEngine as any).eventLogger = logger;
+      (customProjectEngine)['eventLogger'] = logger;
       clearEvents();
 
       await customProjectEngine.checkPermission(
@@ -259,7 +260,7 @@ describe('Permission Engine Event Logging', () => {
 
       const events = mockLogger.getEvents();
       expect(events).toHaveLength(1);
-      
+
       const event = events[0];
       expect(event.action).toBe('permission.denied');
       expect(event.payload.reason).toBe('Missing Bearer Token');
@@ -278,11 +279,11 @@ describe('Permission Engine Event Logging', () => {
 
       const events = mockLogger.getEvents();
       const event = events[0];
-      
+
       // Event ID should be a string
       expect(typeof event.eventId).toBe('string');
       expect(event.eventId.length).toBeGreaterThan(0);
-      
+
       // Timestamp should be a number
       expect(typeof event.ts).toBe('number');
       expect(event.ts).toBeGreaterThan(0);
@@ -290,18 +291,18 @@ describe('Permission Engine Event Logging', () => {
 
     it('should maintain monotonic timestamps', async () => {
       const timestamps: number[] = [];
-      
+
       for (let i = 0; i < 5; i++) {
         await engine.checkPermission(
           `user-${i}`,
           'file.read',
           { type: 'file', path: `/tmp/test${i}.txt` }
         );
-        
+
         const events = mockLogger.getEvents();
         timestamps.push(events[events.length - 1].ts);
       }
-      
+
       // Check that timestamps are non-decreasing (monotonic)
       for (let i = 1; i < timestamps.length; i++) {
         expect(timestamps[i]).toBeGreaterThanOrEqual(timestamps[i - 1]);

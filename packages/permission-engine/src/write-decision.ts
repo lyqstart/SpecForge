@@ -1,5 +1,5 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 import { ACTOR_ROLES, type ActorRole } from '@specforge/types/actor-roles';
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 
 export type WriteOperation = 'create' | 'modify' | 'delete';
 

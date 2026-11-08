@@ -16,22 +16,22 @@ describe('EventBus', () => {
   it('should start and stop', () => {
     expect(() => eventBus.start()).not.toThrow();
     expect(eventBus.isRunning()).toBe(true);
-    
+
     expect(() => eventBus.stop()).not.toThrow();
     expect(eventBus.isRunning()).toBe(false);
   });
 
-  it('should publish and subscribe to events', () => {
+  it('should publish and subscribe to events', async () => {
     let handlerCalled = false;
     let receivedEvent: Event | null = null;
-    
+
     eventBus.start();
-    
-    eventBus.subscribe('test.event', (event) => {
+
+    eventBus.subscribe('test.event', event => {
       handlerCalled = true;
       receivedEvent = event;
     });
-    
+
     const event: Event = {
       eventId: '1',
       ts: Date.now(),
@@ -43,19 +43,19 @@ describe('EventBus', () => {
         source: 'daemon',
       },
     };
-    
-    eventBus.publish(event);
+
+    await eventBus.publish(event);
     expect(handlerCalled).toBe(true);
     expect(receivedEvent).toEqual(event);
   });
 
-  it('should not publish when stopped', () => {
+  it('should not publish when stopped', async () => {
     let handlerCalled = false;
-    
+
     eventBus.subscribe('test.event', () => {
       handlerCalled = true;
     });
-    
+
     const event: Event = {
       eventId: '1',
       ts: Date.now(),
@@ -67,19 +67,19 @@ describe('EventBus', () => {
         source: 'daemon',
       },
     };
-    
-    eventBus.publish(event);
+
+    await eventBus.publish(event);
     expect(handlerCalled).toBe(false);
   });
 
-  it('should support topic pattern matching with wildcard', () => {
+  it('should support topic pattern matching with wildcard', async () => {
     let handlerCalled = false;
-    
+
     eventBus.start();
     eventBus.subscribe('session.*', () => {
       handlerCalled = true;
     });
-    
+
     // Should match
     const event1: Event = {
       eventId: '1',
@@ -92,19 +92,19 @@ describe('EventBus', () => {
         source: 'daemon',
       },
     };
-    
-    eventBus.publish(event1);
+
+    await eventBus.publish(event1);
     expect(handlerCalled).toBe(true);
   });
 
-  it('should support multiple wildcard levels', () => {
+  it('should support multiple wildcard levels', async () => {
     const events: Event[] = [];
-    
+
     eventBus.start();
-    eventBus.subscribe('project.*.*', (event) => {
+    eventBus.subscribe('project.*.*', event => {
       events.push(event);
     });
-    
+
     // Should match
     const event1: Event = {
       eventId: '1',
@@ -117,7 +117,7 @@ describe('EventBus', () => {
         source: 'daemon',
       },
     };
-    
+
     const event2: Event = {
       eventId: '2',
       ts: Date.now(),
@@ -129,21 +129,21 @@ describe('EventBus', () => {
         source: 'daemon',
       },
     };
-    
-    eventBus.publish(event1);
-    eventBus.publish(event2);
-    
+
+    await eventBus.publish(event1);
+    await eventBus.publish(event2);
+
     expect(events.length).toBe(2);
   });
 
-  it('should support global wildcard *', () => {
+  it('should support global wildcard *', async () => {
     const events: Event[] = [];
-    
+
     eventBus.start();
-    eventBus.subscribe('*', (event) => {
+    eventBus.subscribe('*', event => {
       events.push(event);
     });
-    
+
     const event1: Event = {
       eventId: '1',
       ts: Date.now(),
@@ -155,7 +155,7 @@ describe('EventBus', () => {
         source: 'daemon',
       },
     };
-    
+
     const event2: Event = {
       eventId: '2',
       ts: Date.now(),
@@ -167,22 +167,22 @@ describe('EventBus', () => {
         source: 'daemon',
       },
     };
-    
-    eventBus.publish(event1);
-    eventBus.publish(event2);
-    
+
+    await eventBus.publish(event1);
+    await eventBus.publish(event2);
+
     expect(events.length).toBe(2);
   });
 
-  it('should support unsubscribe', () => {
+  it('should support unsubscribe', async () => {
     let handlerCalled = false;
-    
+
     eventBus.start();
     const subscription = eventBus.subscribe('test.event', () => {
       handlerCalled = true;
     });
-    
-    eventBus.publish({
+
+    await eventBus.publish({
       eventId: '1',
       ts: Date.now(),
       projectId: 'test',
@@ -193,14 +193,14 @@ describe('EventBus', () => {
         source: 'daemon',
       },
     });
-    
+
     expect(handlerCalled).toBe(true);
-    
+
     // Reset and unsubscribe
     handlerCalled = false;
     eventBus.unsubscribe(subscription);
-    
-    eventBus.publish({
+
+    await eventBus.publish({
       eventId: '2',
       ts: Date.now(),
       projectId: 'test',
@@ -211,25 +211,25 @@ describe('EventBus', () => {
         source: 'daemon',
       },
     });
-    
+
     expect(handlerCalled).toBe(false);
   });
 
-  it('should support multiple handlers for same topic', () => {
+  it('should support multiple handlers for same topic', async () => {
     let handler1Called = false;
     let handler2Called = false;
-    
+
     eventBus.start();
-    
+
     eventBus.subscribe('test.event', () => {
       handler1Called = true;
     });
-    
+
     eventBus.subscribe('test.event', () => {
       handler2Called = true;
     });
-    
-    eventBus.publish({
+
+    await eventBus.publish({
       eventId: '1',
       ts: Date.now(),
       projectId: 'test',
@@ -240,27 +240,27 @@ describe('EventBus', () => {
         source: 'daemon',
       },
     });
-    
+
     expect(handler1Called).toBe(true);
     expect(handler2Called).toBe(true);
   });
 
-  it('should handle errors in handlers gracefully', () => {
+  it('should handle errors in handlers gracefully', async () => {
     let handler1Called = false;
     let handler2Called = false;
-    
+
     eventBus.start();
-    
+
     eventBus.subscribe('test.event', () => {
       handler1Called = true;
       throw new Error('Test error');
     });
-    
+
     eventBus.subscribe('test.event', () => {
       handler2Called = true;
     });
-    
-    expect(() => {
+
+    await expect(
       eventBus.publish({
         eventId: '1',
         ts: Date.now(),
@@ -271,33 +271,33 @@ describe('EventBus', () => {
           schemaVersion: '1.0',
           source: 'daemon',
         },
-      });
-    }).not.toThrow();
-    
+      })
+    ).resolves.toBeUndefined();
+
     expect(handler1Called).toBe(true);
     expect(handler2Called).toBe(true);
   });
 
-  it('should support observability hooks', () => {
+  it('should support observability hooks', async () => {
     const logs: string[] = [];
-    
+
     eventBus.addObservabilityHook({
-      onPublish: (event) => {
+      onPublish: event => {
         logs.push(`publish:${event.action}`);
       },
-      onSubscribe: (topic) => {
+      onSubscribe: topic => {
         logs.push(`subscribe:${topic}`);
       },
-      onUnsubscribe: (topic) => {
+      onUnsubscribe: topic => {
         logs.push(`unsubscribe:${topic}`);
       },
     });
-    
+
     eventBus.start();
-    
+
     const subscription = eventBus.subscribe('test.event', () => {});
-    
-    eventBus.publish({
+
+    await eventBus.publish({
       eventId: '1',
       ts: Date.now(),
       projectId: 'test',
@@ -308,9 +308,9 @@ describe('EventBus', () => {
         source: 'daemon',
       },
     });
-    
+
     eventBus.unsubscribe(subscription);
-    
+
     expect(logs).toContain('publish:test.event');
     expect(logs).toContain('subscribe:test.event');
     expect(logs).toContain('unsubscribe:test.event');

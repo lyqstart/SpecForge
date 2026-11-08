@@ -1,7 +1,10 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { describe, expect, it } from 'vitest';
+
 import ts from 'typescript';
+import { describe, expect, it } from 'vitest';
+
+import { codeContains } from '../../../tests/helpers/source-structure';
 
 const ROOT = resolve(import.meta.dirname, '../../..');
 
@@ -50,12 +53,10 @@ describe('current Permission and Write Guard ownership boundary', () => {
 
     expect(daemonWriteGuard).toContain("from '@specforge/permission-engine'");
     expect(daemonWriteGuard).toContain('type WriteTargetDetails,');
-    expect(daemonWriteGuard).toContain('targetDetails: WriteTargetDetails = {},');
-    expect(daemonWriteGuard).toContain(
-      'return decideWritePermission(ctx, targetPath, operation, targetDetails);',
-    );
+    expect(codeContains(daemonWriteGuard, 'targetDetails: WriteTargetDetails = {}')).toBe(true);
+    expect(codeContains(daemonWriteGuard, 'return decideWritePermission(ctx, targetPath, operation, targetDetails);')).toBe(true);
     const nativeBoundary = readFileSync(resolve(ROOT, 'packages/daemon-core/src/tools/lib/native-write-boundary.ts'), 'utf8');
-    expect(daemonHttp).toContain('checkNativeTool(this.deps,');
+    expect(codeContains(daemonHttp, 'checkNativeTool(this.deps,')).toBe(true);
     expect(nativeBoundary).toContain("from './write-guard-v11'");
     const syntax = ts.createSourceFile('native-write-boundary.ts', nativeBoundary, ts.ScriptTarget.Latest, true);
     let permissionCalls = 0;

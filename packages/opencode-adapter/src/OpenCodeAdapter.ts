@@ -92,7 +92,12 @@ export class SessionInitializationError extends Error {
 export class PromptDeliveryError extends Error {
   constructor(
     message: string,
-    public readonly code: 'SESSION_NOT_FOUND' | 'SESSION_NOT_ACTIVE' | 'TRANSLATION_FAILED' | 'DELIVERY_FAILED' | 'INVALID_MESSAGE',
+    public readonly code:
+      | 'SESSION_NOT_FOUND'
+      | 'SESSION_NOT_ACTIVE'
+      | 'TRANSLATION_FAILED'
+      | 'DELIVERY_FAILED'
+      | 'INVALID_MESSAGE',
     public readonly sessionId?: string,
     public readonly details?: unknown
   ) {
@@ -117,24 +122,24 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
   private sessions: Map<string, SessionRecord> = new Map();
   private eventTranslator: EventTranslator;
   private capabilityTranslator: CapabilityTranslator;
-  
+
   // Session binding registry (first-contact binding strategy)
   private sessionRegistry: SessionRegistry;
-  
+
   // Event logger for logging adapter events (Task 7.2: Event logging)
   private eventLogger: EventLogger;
-  
+
   // Event streaming infrastructure
   private eventControllers: Map<string, AbortController> = new Map();
   private eventQueues: Map<string, KernelEvent[]> = new Map();
   private eventListeners: Map<string, Set<(event: KernelEvent) => void>> = new Map();
   // 事件通知器：生产者调用 notify() 唤醒等待中的消费者（替代轮询）
   private eventNotifiers: Map<string, () => void> = new Map();
-  
+
   // Diagnostics logger for translation logs, performance metrics, and compatibility warnings
   private diagnosticsLogger: DiagnosticsLogger;
   private readonly runtimeClient?: OpenCodeRuntimeClient;
-  
+
   // Reconnection state - used in production for event stream reconnection
   private reconnectAttempts: Map<string, number> = new Map();
   private _maxReconnectAttempts = 3;
@@ -173,7 +178,7 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
     this.eventTranslator = new EventTranslator();
     this.capabilityTranslator = new CapabilityTranslator();
     this.sessionRegistry = new SessionRegistry();
-    
+
     // Initialize diagnostics logger
     const diagnosticsConfig: DiagnosticsConfig = {
       logLevel: this.config.verboseLogging ? 'debug' : 'info',
@@ -188,7 +193,7 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
       ...diagnosticsConfig,
       ...diagnostics,
     });
-    
+
     // Initialize event logger for Task 7.2: Event logging
     this.eventLogger = new EventLogger({
       projectId: 'opencode-adapter',
@@ -215,12 +220,16 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
 
     // Step 1: Validate required parameters
     this.validateSpawnParams(params);
-    this.diagnosticsLogger.debug('spawnAgent', 'Validating spawn parameters', { spawnIntentId: params.spawnIntentId });
+    this.diagnosticsLogger.debug('spawnAgent', 'Validating spawn parameters', {
+      spawnIntentId: params.spawnIntentId,
+    });
 
     // Step 2: Validate OpenCode version compatibility
     // We detect OpenCode version - in production this would come from the actual OpenCode runtime
     const openCodeVersion = await this.detectOpenCodeVersion();
-    this.diagnosticsLogger.debug('spawnAgent', 'Detected OpenCode version', { version: openCodeVersion });
+    this.diagnosticsLogger.debug('spawnAgent', 'Detected OpenCode version', {
+      version: openCodeVersion,
+    });
 
     const versionCheck = this.versionChecker.check(openCodeVersion);
 
@@ -237,14 +246,16 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
       this.eventLogger.logVersionMismatch({
         detectedVersion: openCodeVersion,
         requiredRange: this.compatibleKernelRange,
-        reason: versionCheck.error ?? `Version ${openCodeVersion} not in range ${this.compatibleKernelRange}`,
+        reason:
+          versionCheck.error ??
+          `Version ${openCodeVersion} not in range ${this.compatibleKernelRange}`,
         suggestedAction: this.getVersionSuggestionAction(openCodeVersion),
       });
 
       this.diagnosticsLogger.endOperation(operation, false, { detectedVersion: openCodeVersion });
       throw new SessionInitializationError(
         `OpenCode version incompatibility: ${versionCheck.error}. ` +
-        `Required range: ${this.compatibleKernelRange}, Detected: ${openCodeVersion}`,
+          `Required range: ${this.compatibleKernelRange}, Detected: ${openCodeVersion}`,
         'VERSION_MISMATCH',
         {
           detectedVersion: openCodeVersion,
@@ -298,11 +309,15 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
       this.sessions.delete(sessionId);
 
       // Log the error
-      this.diagnosticsLogger.error('spawnAgent',
+      this.diagnosticsLogger.error(
+        'spawnAgent',
         `Failed to initialize OpenCode session: ${error instanceof Error ? error.message : 'Unknown error'}`,
         { spawnIntentId: params.spawnIntentId, error }
       );
-      this.diagnosticsLogger.endOperation(operation, false, { spawnIntentId: params.spawnIntentId, error });
+      this.diagnosticsLogger.endOperation(operation, false, {
+        spawnIntentId: params.spawnIntentId,
+        error,
+      });
 
       // Task 7.2: Log integration.error event
       this.eventLogger.logIntegrationError({
@@ -325,8 +340,14 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
     }
 
     // Step 5: Return successful result
-    this.diagnosticsLogger.info('spawnAgent', `Session created successfully`, { sessionId, spawnIntentId: params.spawnIntentId });
-    this.diagnosticsLogger.endOperation(operation, true, { sessionId, spawnIntentId: params.spawnIntentId });
+    this.diagnosticsLogger.info('spawnAgent', `Session created successfully`, {
+      sessionId,
+      spawnIntentId: params.spawnIntentId,
+    });
+    this.diagnosticsLogger.endOperation(operation, true, {
+      sessionId,
+      spawnIntentId: params.spawnIntentId,
+    });
 
     // Task 7.2: Log session.lifecycle "created" event
     this.eventLogger.logSessionLifecycle({
@@ -400,12 +421,16 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
       sessionRecord.createdAt = created.createdAt ?? sessionRecord.createdAt;
       sessionRecord.lastActivityAt = created.updatedAt ?? created.createdAt ?? new Date();
       if (sessionRecord.systemPrompt) {
-        await this.runtimeClient.sendPrompt(created.id, {
-          content: sessionRecord.systemPrompt,
-          agent: sessionRecord.agentRole,
-          model: sessionRecord.model,
-          noReply: true,
-        }, sessionRecord.cwd);
+        await this.runtimeClient.sendPrompt(
+          created.id,
+          {
+            content: sessionRecord.systemPrompt,
+            agent: sessionRecord.agentRole,
+            model: sessionRecord.model,
+            noReply: true,
+          },
+          sessionRecord.cwd
+        );
       }
       sessionRecord.status = 'active';
       return;
@@ -424,14 +449,14 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
 
     try {
       await Promise.race([
-        new Promise<void>((resolve) => {
+        new Promise<void>(resolve => {
           startupTimer = setTimeout(() => {
             const session = this.sessions.get(sessionRecord.sessionId);
             if (session) {
               session.status = 'active';
               session.lastActivityAt = new Date();
               this.sessions.set(sessionRecord.sessionId, session);
-              
+
               // Task 7.2: Log session.lifecycle "activated" event
               this.eventLogger.logSessionLifecycle({
                 sessionId: sessionRecord.sessionId,
@@ -444,13 +469,15 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
         }),
         new Promise<void>((_, reject) => {
           timeoutTimer = setTimeout(() => {
-            reject(new SessionInitializationError(
-              `Session initialization timed out after ${initTimeout}ms. ` +
-              `Operation: startOpenCodeSession. ` +
-              `Suggestion: Check if OpenCode is running and accessible via Thin Plugin.`,
-              'TIMEOUT',
-              { timeoutMs: initTimeout }
-            ));
+            reject(
+              new SessionInitializationError(
+                `Session initialization timed out after ${initTimeout}ms. ` +
+                  `Operation: startOpenCodeSession. ` +
+                  `Suggestion: Check if OpenCode is running and accessible via Thin Plugin.`,
+                'TIMEOUT',
+                { timeoutMs: initTimeout }
+              )
+            );
           }, initTimeout);
         }),
       ]);
@@ -475,10 +502,18 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
       const minMatch = range.match(/>=(\d+\.\d+\.\d+)/);
       const maxMatch = range.match(/<(\d+\.\d+\.\d+)/);
 
-      if (minMatch && minMatch[1] && parsed.major < this.versionChecker.parseVersion(minMatch[1]).major) {
+      if (
+        minMatch &&
+        minMatch[1] &&
+        parsed.major < this.versionChecker.parseVersion(minMatch[1]).major
+      ) {
         return `Please upgrade OpenCode to version ${minMatch[1]} or later, or downgrade the adapter.`;
       }
-      if (maxMatch && maxMatch[1] && parsed.major >= this.versionChecker.parseVersion(maxMatch[1]).major) {
+      if (
+        maxMatch &&
+        maxMatch[1] &&
+        parsed.major >= this.versionChecker.parseVersion(maxMatch[1]).major
+      ) {
         return `Please downgrade OpenCode to version less than ${maxMatch[1]}, or upgrade the adapter.`;
       }
     }
@@ -491,7 +526,9 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
    * @param detectedVersion - The detected OpenCode version
    * @returns Suggested action for remediation
    */
-  private getVersionSuggestionAction(detectedVersion: string): 'upgrade_adapter' | 'downgrade_kernel' | 'check_versions' {
+  private getVersionSuggestionAction(
+    detectedVersion: string
+  ): 'upgrade_adapter' | 'downgrade_kernel' | 'check_versions' {
     const parsed = this.versionChecker.parseVersion(detectedVersion);
     const range = this.versionChecker.getRangeString();
 
@@ -499,10 +536,18 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
       const minMatch = range.match(/>=(\d+\.\d+\.\d+)/);
       const maxMatch = range.match(/<(\d+\.\d+\.\d+)/);
 
-      if (minMatch && minMatch[1] && parsed.major < this.versionChecker.parseVersion(minMatch[1]).major) {
+      if (
+        minMatch &&
+        minMatch[1] &&
+        parsed.major < this.versionChecker.parseVersion(minMatch[1]).major
+      ) {
         return 'upgrade_adapter';
       }
-      if (maxMatch && maxMatch[1] && parsed.major >= this.versionChecker.parseVersion(maxMatch[1]).major) {
+      if (
+        maxMatch &&
+        maxMatch[1] &&
+        parsed.major >= this.versionChecker.parseVersion(maxMatch[1]).major
+      ) {
         return 'downgrade_kernel';
       }
     }
@@ -549,7 +594,7 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
     session.status = 'cancelled';
     session.lastActivityAt = new Date();
     this.sessions.set(sessionId, session);
-    
+
     // Task 7.2: Log session.lifecycle "cancelled" event
     this.eventLogger.logSessionLifecycle({
       sessionId,
@@ -577,7 +622,10 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
 
     // Step 1: Validate message
     this.validateMessage(message);
-    this.diagnosticsLogger.debug('sendPrompt', 'Validating message', { sessionId, role: message.role });
+    this.diagnosticsLogger.debug('sendPrompt', 'Validating message', {
+      sessionId,
+      role: message.role,
+    });
 
     // Step 2: Get and validate session
     const session = this.sessions.get(sessionId);
@@ -593,7 +641,10 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
     }
 
     if (session.status !== 'active') {
-      this.diagnosticsLogger.error('sendPrompt', `Session is not active`, { sessionId, currentStatus: session.status });
+      this.diagnosticsLogger.error('sendPrompt', `Session is not active`, {
+        sessionId,
+        currentStatus: session.status,
+      });
       this.diagnosticsLogger.endOperation(operation, false, { sessionId });
       throw new PromptDeliveryError(
         `Session is not active. Current status: ${session.status}`,
@@ -618,7 +669,8 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
     try {
       await this.deliverPromptToSession(session, openCodeMessage);
     } catch (error) {
-      this.diagnosticsLogger.error('sendPrompt',
+      this.diagnosticsLogger.error(
+        'sendPrompt',
         `Failed to deliver prompt: ${error instanceof Error ? error.message : 'Unknown error'}`,
         { sessionId, error }
       );
@@ -651,10 +703,7 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
    */
   private validateMessage(message: UserMessage): void {
     if (!message) {
-      throw new PromptDeliveryError(
-        'Message is required',
-        'INVALID_MESSAGE'
-      );
+      throw new PromptDeliveryError('Message is required', 'INVALID_MESSAGE');
     }
 
     if (!message.content || message.content.trim().length === 0) {
@@ -683,7 +732,10 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
    * @param session - Target session record
    * @returns OpenCode-formatted message (internal only)
    */
-  private translateToOpenCodeFormat(message: UserMessage, session: SessionRecord): OpenCodePromptMessage {
+  private translateToOpenCodeFormat(
+    message: UserMessage,
+    session: SessionRecord
+  ): OpenCodePromptMessage {
     // Create the OpenCode-specific format (internal only, not exposed to Daemon)
     return {
       // OpenCode expects 'role' field
@@ -724,12 +776,16 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
     message: OpenCodePromptMessage
   ): Promise<void> {
     if (this.runtimeClient) {
-      await this.runtimeClient.sendPrompt(session.sessionId, {
-        content: message.content,
-        messageId: message._meta.messageId,
-        agent: session.agentRole,
-        model: session.model,
-      }, session.cwd);
+      await this.runtimeClient.sendPrompt(
+        session.sessionId,
+        {
+          content: message.content,
+          messageId: message._meta.messageId,
+          agent: session.agentRole,
+          model: session.model,
+        },
+        session.cwd
+      );
       return;
     }
     // In production, this would:
@@ -743,7 +799,7 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
 
     try {
       await Promise.race([
-        new Promise<void>((resolve) => {
+        new Promise<void>(resolve => {
           deliveryTimer = setTimeout(() => {
             if (this.config.verboseLogging) {
               console.log(`[OpenCodeAdapter] Delivered prompt to session ${session.sessionId}`, {
@@ -757,14 +813,16 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
         }),
         new Promise<void>((_, reject) => {
           timeoutTimer = setTimeout(() => {
-            reject(new PromptDeliveryError(
-              `Prompt delivery timed out after ${this.config.communicationTimeout}ms. ` +
-              `Operation: deliverPromptToSession(${session.sessionId}). ` +
-              `Suggestion: Check Thin Plugin connectivity or increase communicationTimeout.`,
-              'DELIVERY_FAILED',
-              session.sessionId,
-              { timeoutMs: this.config.communicationTimeout }
-            ));
+            reject(
+              new PromptDeliveryError(
+                `Prompt delivery timed out after ${this.config.communicationTimeout}ms. ` +
+                  `Operation: deliverPromptToSession(${session.sessionId}). ` +
+                  `Suggestion: Check Thin Plugin connectivity or increase communicationTimeout.`,
+                'DELIVERY_FAILED',
+                session.sessionId,
+                { timeoutMs: this.config.communicationTimeout }
+              )
+            );
           }, this.config.communicationTimeout);
         }),
       ]);
@@ -814,28 +872,41 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
     if (this.runtimeClient?.subscribeEvents) {
       void (async () => {
         try {
-          for await (const value of this.runtimeClient!.subscribeEvents!(session.cwd, controller.signal)) {
+          for await (const value of this.runtimeClient!.subscribeEvents!(
+            session.cwd,
+            controller.signal
+          )) {
             if (controller.signal.aborted) break;
             if (typeof value !== 'object' || value === null) continue;
             const envelope = value as Record<string, unknown>;
-            const event = envelope['payload'] && typeof envelope['payload'] === 'object'
-              ? envelope['payload'] as Record<string, unknown>
-              : envelope;
+            const event =
+              envelope['payload'] && typeof envelope['payload'] === 'object'
+                ? (envelope['payload'] as Record<string, unknown>)
+                : envelope;
             const eventType = event['type'];
             const properties = event['properties'];
-            const propertyRecord = typeof properties === 'object' && properties !== null
-              ? properties as Record<string, unknown>
-              : undefined;
-            const info = typeof propertyRecord?.['info'] === 'object' && propertyRecord['info'] !== null
-              ? propertyRecord['info'] as Record<string, unknown>
-              : undefined;
-            const part = typeof propertyRecord?.['part'] === 'object' && propertyRecord['part'] !== null
-              ? propertyRecord['part'] as Record<string, unknown>
-              : undefined;
-            const sid = propertyRecord?.['sessionID'] ?? propertyRecord?.['sessionId'] ??
-              info?.['sessionID'] ?? info?.['sessionId'] ??
-              (typeof eventType === 'string' && eventType.startsWith('session.') ? info?.['id'] : undefined) ??
-              part?.['sessionID'] ?? part?.['sessionId'];
+            const propertyRecord =
+              typeof properties === 'object' && properties !== null
+                ? (properties as Record<string, unknown>)
+                : undefined;
+            const info =
+              typeof propertyRecord?.['info'] === 'object' && propertyRecord['info'] !== null
+                ? (propertyRecord['info'] as Record<string, unknown>)
+                : undefined;
+            const part =
+              typeof propertyRecord?.['part'] === 'object' && propertyRecord['part'] !== null
+                ? (propertyRecord['part'] as Record<string, unknown>)
+                : undefined;
+            const sid =
+              propertyRecord?.['sessionID'] ??
+              propertyRecord?.['sessionId'] ??
+              info?.['sessionID'] ??
+              info?.['sessionId'] ??
+              (typeof eventType === 'string' && eventType.startsWith('session.')
+                ? info?.['id']
+                : undefined) ??
+              part?.['sessionID'] ??
+              part?.['sessionId'];
             if (typeof eventType !== 'string' || sid !== runtimeSessionId) continue;
             await this.pushEvent(sessionId, {
               event_type: eventType,
@@ -847,8 +918,11 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
         } catch (error) {
           if (!controller.signal.aborted) {
             this.enqueueEvent(sessionId, {
-              type: 'adapter.error', payload: { error: error instanceof Error ? error.message : String(error) },
-              sessionId, timestamp: new Date(), metadata: { error: true },
+              type: 'adapter.error',
+              payload: { error: error instanceof Error ? error.message : String(error) },
+              sessionId,
+              timestamp: new Date(),
+              metadata: { error: true },
             });
           }
         }
@@ -904,10 +978,13 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
               let timeoutId: ReturnType<typeof setTimeout> | undefined;
               try {
                 await Promise.race([
-                  new Promise<void>(resolve => { wakeupResolver = resolve; }),
+                  new Promise<void>(resolve => {
+                    wakeupResolver = resolve;
+                  }),
                   new Promise<void>((_, reject) => {
                     timeoutId = setTimeout(
-                      () => reject(new Error('Event stream idle timeout (30s): no events received')),
+                      () =>
+                        reject(new Error('Event stream idle timeout (30s): no events received')),
                       30_000
                     );
                   }),
@@ -932,7 +1009,10 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
   /**
    * Create an error event stream for invalid sessions
    */
-  private createErrorEventStream(sessionId: string, errorMessage: string): AsyncIterable<KernelEvent> {
+  private createErrorEventStream(
+    sessionId: string,
+    errorMessage: string
+  ): AsyncIterable<KernelEvent> {
     const errorEvent: KernelEvent = {
       type: 'adapter.error',
       payload: { error: errorMessage },
@@ -968,8 +1048,8 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
   async pushEvent(sessionId: string, rawEvent: OpenCodeEvent): Promise<void> {
     // First-contact binding: check if this event carries spawnIntentId
     // and bind it to the actual sessionId if not already bound
-    const spawnIntentId = (rawEvent as any).spawn_intent_id;
-    if (spawnIntentId) {
+    const spawnIntentId = 'spawn_intent_id' in rawEvent ? rawEvent.spawn_intent_id : undefined;
+    if (typeof spawnIntentId === 'string' && spawnIntentId) {
       const existingBinding = this.sessionRegistry.findBySpawnIntentId(spawnIntentId);
       if (!existingBinding || existingBinding.state !== 'bound') {
         // First contact - bind spawn intent to session
@@ -989,7 +1069,7 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
         reason: translation.reason,
         unsupported: true,
       });
-      
+
       // Event couldn't be translated - emit unsupported event
       const unsupportedEvent: KernelEvent = {
         type: 'adapter.error',
@@ -1184,6 +1264,5 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
   releaseSessionBinding(sessionId: string): boolean {
     return this.sessionRegistry.release(sessionId);
   }
-
 }
 /* eslint-enable @typescript-eslint/require-await */

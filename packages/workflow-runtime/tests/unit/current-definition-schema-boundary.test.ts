@@ -1,8 +1,11 @@
+import {mkdtemp,writeFile,readFile,rm} from 'node:fs/promises';import {tmpdir} from 'node:os';
+import {join,resolve,sep} from 'node:path';
+
 import {afterEach,beforeEach,describe,it,expect} from 'vitest';
-import {mkdtemp,writeFile,readFile,rm} from 'node:fs/promises';import {join,resolve,sep} from 'node:path';import {tmpdir} from 'node:os';
-import {WorkflowLoader} from '../../src/engine/WorkflowLoader';import {WorkflowDefinitionLoader} from '../../src/loaders/WorkflowDefinitionLoader';
-import {CompositeGateSerializer,type SerializedSimpleGate} from '../../src/gates/CompositeGateSerializer';
-const definition=(version='1.0')=>({schema_version:version,id:'synthetic-definition',displayName:'Synthetic definition',intent:'Read-only schema fixture',stateMachine:{schema_version:version,initial:'start',states:{start:{schema_version:version,agent:'sf-design',gate:{schema_version:version,type:'simple',id:'check',name:'Check'},skills:[]}}},artifacts:[]});
+
+import {WorkflowLoader} from '../../src/engine/WorkflowLoader';import {CompositeGateSerializer,type SerializedSimpleGate} from '../../src/gates/CompositeGateSerializer';
+import {WorkflowDefinitionLoader} from '../../src/loaders/WorkflowDefinitionLoader';
+const definition=(version='1.0'): { schema_version: string; id: string; displayName: string; intent: string; stateMachine: { schema_version: string; initial: string; states: { start: { schema_version: string; agent: string; gate: { schema_version: string; type: string; id: string; name: string; }; skills: never[]; }; }; }; artifacts: never[]; }=>({schema_version:version,id:'synthetic-definition',displayName:'Synthetic definition',intent:'Read-only schema fixture',stateMachine:{schema_version:version,initial:'start',states:{start:{schema_version:version,agent:'sf-design',gate:{schema_version:version,type:'simple',id:'check',name:'Check'},skills:[]}}},artifacts:[]});
 describe('current definition persistent schema boundary',()=>{
  let root:string;beforeEach(async()=>{root=await mkdtemp(join(tmpdir(),'sf-definition-schema-'));});afterEach(async()=>{const absolute=resolve(root);if(!absolute.startsWith(resolve(tmpdir())+sep)||!absolute.split(sep).at(-1)?.startsWith('sf-definition-schema-'))throw Error('OWNED_FIXTURE_REQUIRED');await rm(root,{recursive:true,force:true});});
  it.each(['1.0','2.0'])('accepts explicitly supported definition schema %s without conversion',version=>{const input=definition(version),before=JSON.stringify(input),result=new WorkflowDefinitionLoader().loadFromObject(input);expect(result.schema_version).toBe(version);expect(JSON.stringify(input)).toBe(before);});

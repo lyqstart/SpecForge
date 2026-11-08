@@ -3,18 +3,17 @@
  * Tests for Agent integration in workflow runtime
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import {
-  AgentScheduler,
-  WorkflowAgentRunner,
-  createAgentScheduler,
-  createWorkflowAgentRunner,
-  type AgentRole,
-  type SpawnAgentParams,
-  type AgentExecutionContext,
-} from '../../src/AgentRunner.js';
+/**
+ * Agent Integration Tests
+ * Tests for Agent integration in workflow runtime
+ */
+
+import { promiseFromSync } from '@specforge/types';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+
+import { type AgentExecutionResult , type AgentScheduler, WorkflowAgentRunner, createAgentScheduler, createWorkflowAgentRunner, type SpawnAgentParams, type AgentExecutionContext } from '../../src/AgentRunner.js';
+import type { WorkflowDefinition, WorkflowInstance } from '../../src/types.js';
 import { WorkflowEngine } from '../../src/WorkflowEngine.js';
-import { WorkflowDefinition, WorkflowInstance } from '../../src/types.js';
 
 describe('AgentScheduler', () => {
   let scheduler: AgentScheduler;
@@ -97,10 +96,10 @@ describe('AgentScheduler', () => {
       const mockContext = createMockContext();
 
       // First agent should run
-      const result1 = limitedScheduler.scheduleAgent(
+      void (limitedScheduler.scheduleAgent(
         { agentRole: 'dev', spawnIntentId: '1', prompt: 'task 1' },
         mockContext
-      );
+      ));
 
       // Second agent should be queued
       expect(limitedScheduler.canAcceptTasks()).toBe(false);
@@ -112,7 +111,7 @@ describe('AgentScheduler', () => {
       const limitedScheduler = createAgentScheduler({ maxConcurrentAgents: 1 });
       const mockContext = createMockContext();
 
-      const results: any[] = [];
+      const results: AgentExecutionResult[] = [];
 
       // Submit multiple tasks
       const promise1 = limitedScheduler.scheduleAgent(
@@ -152,23 +151,18 @@ describe('AgentScheduler', () => {
   });
 
   describe('Cancellation', () => {
-    it('should cancel running agent', async () => {
-      const mockContext = createMockContext();
+    it('should cancel running agent',  () => { return promiseFromSync(() => {
+      void (createMockContext());
 
       // Start a long-running agent (using timeout to simulate)
-      const params: SpawnAgentParams = {
-        agentRole: 'dev',
-        spawnIntentId: 'cancel-test',
-        prompt: 'long running task',
-        timeout: 10000,
-      };
+
 
       // Note: Since our simulation is fast, we'll test the cancel API directly
-      const activeAgents = scheduler.getActiveAgents();
+      void (scheduler.getActiveAgents());
       // No agents running at this point since simulation is fast
 
       expect(scheduler.getActiveCount()).toBe(0);
-    });
+    }); });
 
     it('should cancel all agents', async () => {
       await scheduler.cancelAll();

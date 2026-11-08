@@ -6,6 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
+
 import { PathService } from '@/v11/runtime/PathService';
 
 describe('PathService', () => {

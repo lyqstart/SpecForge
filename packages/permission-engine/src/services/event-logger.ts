@@ -2,18 +2,20 @@
 // Build-unblock note: legacy permission-engine service has historical type drift; production build boundary is being restored
 /**
  * Event Logger Service
- * 
+ *
  * Implements event logging for permission decisions as required by
  * Property 10: Permission Decision Traceability
- * 
+ *
  * This service writes events to events.jsonl following WAL semantics
  * and emits permission.evaluated events to the EventBus.
- * 
+ *
  * @specforge/permission-engine
  */
 
 import fs from 'fs';
 import path from 'path';
+
+import { PermissionDecision } from '../types';
 import {
   PermissionEvent,
   PermissionDecisionEvent,
@@ -30,7 +32,6 @@ import {
   HardRuleConflictEventPayload,
   PluginPermissionDeniedEventPayload
 } from '../types/events';
-import { PermissionDecision } from '../types';
 
 export interface EventBusLike {
   publish(event: { eventId: string; ts: number; projectId?: string; action: string; payload: Record<string, unknown> }): void;
@@ -85,7 +86,7 @@ export class EventLogger {
       await fs.promises.mkdir(dir, { recursive: true });
 
       this.fileHandle = await fs.promises.open(this.config.eventsFilePath, 'a');
-      
+
       await this.logSystemEvent('event_logger.initialized', {
         timestamp: new Date().toISOString(),
         config: {
@@ -181,7 +182,7 @@ export class EventLogger {
 
     try {
       const validatedPayload = PermissionDeniedEventPayloadSchema.parse(payload);
-      
+
       const event: PermissionDeniedEvent = {
         eventId: this.generateEventId(),
         ts: Date.now(),
@@ -206,7 +207,7 @@ export class EventLogger {
 
     try {
       const validatedPayload = HardRuleConflictEventPayloadSchema.parse(payload);
-      
+
       const event: HardRuleConflictEvent = {
         eventId: this.generateEventId(),
         ts: Date.now(),
@@ -231,7 +232,7 @@ export class EventLogger {
 
     try {
       const validatedPayload = PluginPermissionDeniedEventPayloadSchema.parse(payload);
-      
+
       const event: PluginPermissionDeniedEvent = {
         eventId: this.generateEventId(),
         ts: Date.now(),
@@ -249,7 +250,7 @@ export class EventLogger {
   /**
    * Log a system event (for internal logging)
    */
-  private async logSystemEvent(action: string, payload: Record<string, any>): Promise<void> {
+  private async logSystemEvent(action: string, payload: Record<string, unknown>): Promise<void> {
     if (!this.config.enabled || !this.fileHandle) {
       return;
     }
@@ -268,7 +269,7 @@ export class EventLogger {
   /**
    * Write an event to the events.jsonl file
    */
-  private async writeEvent(event: PermissionEvent | any): Promise<void> {
+  private async writeEvent(event: PermissionEvent | unknown): Promise<void> {
     if (!this.config.enabled || !this.fileHandle) {
       return;
     }
@@ -277,9 +278,9 @@ export class EventLogger {
       BaseEventSchema.parse(event);
 
       const eventLine = JSON.stringify(event) + '\n';
-      
+
       await this.fileHandle.write(eventLine);
-      
+
       if (this.config.fsyncEnabled) {
         await this.fileHandle.sync();
       }
@@ -318,14 +319,14 @@ export class EventLogger {
 
     try {
       await this.fileHandle.close();
-      
+
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const backupPath = `${this.config.eventsFilePath}.${timestamp}.bak`;
-      
+
       await fs.promises.rename(this.config.eventsFilePath, backupPath);
-      
+
       this.fileHandle = await fs.promises.open(this.config.eventsFilePath, 'a');
-      
+
       await this.logSystemEvent('event_logger.file_rotated', {
         timestamp: new Date().toISOString(),
         backupPath,
@@ -349,7 +350,7 @@ export class EventLogger {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
       return crypto.randomUUID();
     }
-    
+
     const timestamp = Date.now();
     const random = Math.random().toString(36).substring(2, 15);
     return `${timestamp.toString(16)}-${random}`;
@@ -401,7 +402,7 @@ export class EventLogger {
    * Get mock event logger for testing or when file logging is not available
    */
   static createMockLogger(projectId: string): EventLogger {
-    const config: any = {
+    const config: unknown = {
       enabled: false,
       projectId
     };
@@ -417,7 +418,7 @@ export class EventLogger {
     clearEvents: () => void;
   } {
     const events: PermissionEvent[] = [];
-    
+
     const mockFileHandle = {
       write: async (data: string) => {
         const event = JSON.parse(data.trim());
@@ -427,7 +428,7 @@ export class EventLogger {
       sync: async () => {},
       stat: async () => ({ size: 0 }),
       close: async () => {}
-    } as any;
+    } as unknown;
 
     const logger = new EventLogger({
       enabled: true,
@@ -435,7 +436,7 @@ export class EventLogger {
       eventsFilePath: ':memory:'
     });
 
-    (logger as any).fileHandle = mockFileHandle;
+    (logger as unknown).fileHandle = mockFileHandle;
 
     return {
       logger,

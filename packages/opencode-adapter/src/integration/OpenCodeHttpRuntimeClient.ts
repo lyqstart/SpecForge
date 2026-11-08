@@ -6,24 +6,36 @@
 import type { OpenCodeModelCapabilities } from '../types';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
-import type { TrustedToolInvocationRequest, TrustedToolInvocationProof } from '@specforge/types/trusted-tool-invocation';
+import type {
+  TrustedToolInvocationRequest,
+  TrustedToolInvocationProof,
+} from '@specforge/types/trusted-tool-invocation';
 
 export type OpenCodeToolInvocationRequest = TrustedToolInvocationRequest;
 export type OpenCodeToolInvocationProof = TrustedToolInvocationProof;
 
 function canonicalJson(value: unknown): string {
-  if (value === null || typeof value === 'string' || typeof value === 'boolean') return JSON.stringify(value);
+  if (value === null || typeof value === 'string' || typeof value === 'boolean')
+    return JSON.stringify(value);
   if (typeof value === 'number' && Number.isFinite(value)) return JSON.stringify(value);
   if (Array.isArray(value)) return '[' + value.map(canonicalJson).join(',') + ']';
   if (typeof value === 'object' && value !== null) {
     const record = value as Record<string, unknown>;
-    return '{' + Object.keys(record).sort().map(key => JSON.stringify(key) + ':' + canonicalJson(record[key])).join(',') + '}';
+    return (
+      '{' +
+      Object.keys(record)
+        .sort()
+        .map(key => JSON.stringify(key) + ':' + canonicalJson(record[key]))
+        .join(',') +
+      '}'
+    );
   }
   throw new OpenCodeRuntimeError('TOOL_INVOCATION_NON_JSON_INPUT');
 }
 
 const sameDirectory = (left: string, right: string): boolean => {
-  const a = path.resolve(left), b = path.resolve(right);
+  const a = path.resolve(left),
+    b = path.resolve(right);
   return process.platform === 'win32' ? a.toLowerCase() === b.toLowerCase() : a === b;
 };
 
@@ -62,7 +74,7 @@ export class OpenCodeRuntimeError extends Error {
   constructor(
     message: string,
     readonly statusCode?: number,
-    readonly responseBody?: string,
+    readonly responseBody?: string
   ) {
     super(message);
     this.name = 'OpenCodeRuntimeError';
@@ -83,89 +95,172 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
   async getVersion(): Promise<string> {
     const body = await this.requestJson('GET', '/global/health');
     const value = this.unwrap(body);
-    if (!this.isRecord(value) || value['healthy'] !== true || typeof value['version'] !== 'string') {
+    if (
+      !this.isRecord(value) ||
+      value['healthy'] !== true ||
+      typeof value['version'] !== 'string'
+    ) {
       throw new OpenCodeRuntimeError('OpenCode health response is missing healthy/version fields');
     }
     return value['version'];
   }
 
   /** Verify the actual running tool part from the configured Runtime. Caller agent is never an input. */
-  async verifyToolInvocation(input: OpenCodeToolInvocationRequest): Promise<OpenCodeToolInvocationProof> {
-    const expectedAgent = input.tool === 'sf_verification_plan' ? 'sf-orchestrator' :
-      input.tool === 'sf_verification_run' ? 'sf-verifier' : null;
-    if (!expectedAgent || !/^ses_[A-Za-z0-9]+$/.test(input.sessionId) || !/^msg_[A-Za-z0-9]+$/.test(input.messageId) ||
-        !path.isAbsolute(input.directory) || !this.isRecord(input.args)) {
+  async verifyToolInvocation(
+    input: OpenCodeToolInvocationRequest
+  ): Promise<OpenCodeToolInvocationProof> {
+    const expectedAgent =
+      input.tool === 'sf_verification_plan'
+        ? 'sf-orchestrator'
+        : input.tool === 'sf_verification_run'
+          ? 'sf-verifier'
+          : null;
+    if (
+      !expectedAgent ||
+      !/^ses_[A-Za-z0-9]+$/.test(input.sessionId) ||
+      !/^msg_[A-Za-z0-9]+$/.test(input.messageId) ||
+      !path.isAbsolute(input.directory) ||
+      !this.isRecord(input.args)
+    ) {
       throw new OpenCodeRuntimeError('TOOL_INVOCATION_IDENTITY_REQUIRED');
     }
     const sessionPath = `/session/${encodeURIComponent(input.sessionId)}`;
-    const session = this.unwrap(await this.requestJson('GET', this.withDirectory(sessionPath, input.directory)));
-    if (!this.isRecord(session) || session['id'] !== input.sessionId || typeof session['directory'] !== 'string' ||
-        !sameDirectory(session['directory'], input.directory)) throw new OpenCodeRuntimeError('TOOL_INVOCATION_PROJECT_MISMATCH');
-    const body = this.unwrap(await this.requestJson('GET', this.withDirectory(
-      `${sessionPath}/message/${encodeURIComponent(input.messageId)}`, input.directory)));
+    const session = this.unwrap(
+      await this.requestJson('GET', this.withDirectory(sessionPath, input.directory))
+    );
+    if (
+      !this.isRecord(session) ||
+      session['id'] !== input.sessionId ||
+      typeof session['directory'] !== 'string' ||
+      !sameDirectory(session['directory'], input.directory)
+    )
+      throw new OpenCodeRuntimeError('TOOL_INVOCATION_PROJECT_MISMATCH');
+    const body = this.unwrap(
+      await this.requestJson(
+        'GET',
+        this.withDirectory(
+          `${sessionPath}/message/${encodeURIComponent(input.messageId)}`,
+          input.directory
+        )
+      )
+    );
     if (!this.isRecord(body) || !this.isRecord(body['info']) || !Array.isArray(body['parts'])) {
       throw new OpenCodeRuntimeError('TOOL_INVOCATION_RUNTIME_RECORD_INVALID');
     }
     const info = body['info'];
-    if (info['id'] !== input.messageId || info['sessionID'] !== input.sessionId || info['role'] !== 'assistant' ||
-        info['agent'] !== expectedAgent || info['error'] !== undefined || !this.isRecord(info['path']) ||
-        typeof info['path']['cwd'] !== 'string' || !sameDirectory(info['path']['cwd'], input.directory)) {
+    if (
+      info['id'] !== input.messageId ||
+      info['sessionID'] !== input.sessionId ||
+      info['role'] !== 'assistant' ||
+      info['agent'] !== expectedAgent ||
+      info['error'] !== undefined ||
+      !this.isRecord(info['path']) ||
+      typeof info['path']['cwd'] !== 'string' ||
+      !sameDirectory(info['path']['cwd'], input.directory)
+    ) {
       throw new OpenCodeRuntimeError('TOOL_INVOCATION_OWNER_NOT_PROVED');
     }
     const serializedInput = canonicalJson(input.args);
-    const matches = body['parts'].filter(part => this.isRecord(part) && part['type'] === 'tool' &&
-      part['sessionID'] === input.sessionId && part['messageID'] === input.messageId && part['tool'] === input.tool &&
-      this.isRecord(part['state']) && part['state']['status'] === 'running' &&
-      this.isRecord(part['state']['input']) && canonicalJson(part['state']['input']) === serializedInput);
-    if (matches.length !== 1 || !this.isRecord(matches[0])) throw new OpenCodeRuntimeError('TOOL_INVOCATION_RUNNING_CALL_REQUIRED');
-    const part = matches[0], state = part['state'] as Record<string, unknown>;
+    const matches = body['parts'].filter(
+      part =>
+        this.isRecord(part) &&
+        part['type'] === 'tool' &&
+        part['sessionID'] === input.sessionId &&
+        part['messageID'] === input.messageId &&
+        part['tool'] === input.tool &&
+        this.isRecord(part['state']) &&
+        part['state']['status'] === 'running' &&
+        this.isRecord(part['state']['input']) &&
+        canonicalJson(part['state']['input']) === serializedInput
+    );
+    if (matches.length !== 1 || !this.isRecord(matches[0]))
+      throw new OpenCodeRuntimeError('TOOL_INVOCATION_RUNNING_CALL_REQUIRED');
+    const part = matches[0],
+      state = part['state'] as Record<string, unknown>;
     const time = state['time'];
-    if (typeof part['callID'] !== 'string' || !part['callID'] || !this.isRecord(time) ||
-        typeof time['start'] !== 'number' || !Number.isSafeInteger(time['start']) ||
-        time['start'] > Date.now() || Date.now() - time['start'] > 300_000) {
+    if (
+      typeof part['callID'] !== 'string' ||
+      !part['callID'] ||
+      !this.isRecord(time) ||
+      typeof time['start'] !== 'number' ||
+      !Number.isSafeInteger(time['start']) ||
+      time['start'] > Date.now() ||
+      Date.now() - time['start'] > 300_000
+    ) {
       throw new OpenCodeRuntimeError('TOOL_INVOCATION_FRESHNESS_REQUIRED');
     }
     const hash = (value: string): string => createHash('sha256').update(value).digest('hex');
-    const projection: Omit<OpenCodeToolInvocationProof, 'source' | 'observedAt' | 'runtimeProjectionSha256'> = {
-      sessionId: input.sessionId, messageId: input.messageId, callId: part['callID'],
-      agent: expectedAgent, directory: path.resolve(input.directory), tool: input.tool,
-      inputSha256: hash(serializedInput), startedAt: time['start'] };
-    return { source: 'runtime-tool-invocation/v1', ...projection, observedAt: new Date().toISOString(),
-      runtimeProjectionSha256: hash(canonicalJson(projection)) };
+    const projection: Omit<
+      OpenCodeToolInvocationProof,
+      'source' | 'observedAt' | 'runtimeProjectionSha256'
+    > = {
+      sessionId: input.sessionId,
+      messageId: input.messageId,
+      callId: part['callID'],
+      agent: expectedAgent,
+      directory: path.resolve(input.directory),
+      tool: input.tool,
+      inputSha256: hash(serializedInput),
+      startedAt: time['start'],
+    };
+    return {
+      source: 'runtime-tool-invocation/v1',
+      ...projection,
+      observedAt: new Date().toISOString(),
+      runtimeProjectionSha256: hash(canonicalJson(projection)),
+    };
   }
 
   async getModelCapabilities(model: string): Promise<OpenCodeModelCapabilities> {
     const identity = this.parseModel(model);
-    if (!identity) throw new OpenCodeRuntimeError('CAPABILITY_MODEL_ID_REQUIRED: use provider/model');
+    if (!identity)
+      throw new OpenCodeRuntimeError('CAPABILITY_MODEL_ID_REQUIRED: use provider/model');
     const body = this.unwrap(await this.requestJson('GET', '/provider'));
     if (!this.isRecord(body) || !Array.isArray(body['all']) || !Array.isArray(body['connected'])) {
       throw new OpenCodeRuntimeError('CAPABILITY_RESPONSE_INVALID');
     }
-    if (!body['connected'].includes(identity.providerID)) throw new OpenCodeRuntimeError('CAPABILITY_PROVIDER_NOT_CONNECTED');
-    const provider = body['all'].find(value => this.isRecord(value) && value['id'] === identity.providerID);
-    const models = this.isRecord(provider) && this.isRecord(provider['models']) ? provider['models'] : undefined;
+    if (!body['connected'].includes(identity.providerID))
+      throw new OpenCodeRuntimeError('CAPABILITY_PROVIDER_NOT_CONNECTED');
+    const provider = body['all'].find(
+      value => this.isRecord(value) && value['id'] === identity.providerID
+    );
+    const models =
+      this.isRecord(provider) && this.isRecord(provider['models']) ? provider['models'] : undefined;
     const entry = models?.[identity.modelID];
     if (!this.isRecord(entry)) throw new OpenCodeRuntimeError('CAPABILITY_MODEL_NOT_FOUND');
     const capabilities = entry['capabilities'];
     const limit = entry['limit'];
-    if (!this.isRecord(capabilities) || !this.isRecord(capabilities['input']) ||
-        typeof capabilities['toolcall'] !== 'boolean' || typeof capabilities['input']['image'] !== 'boolean' ||
-        !this.isRecord(limit) || typeof limit['context'] !== 'number' || !Number.isSafeInteger(limit['context']) || limit['context'] <= 0) {
+    if (
+      !this.isRecord(capabilities) ||
+      !this.isRecord(capabilities['input']) ||
+      typeof capabilities['toolcall'] !== 'boolean' ||
+      typeof capabilities['input']['image'] !== 'boolean' ||
+      !this.isRecord(limit) ||
+      typeof limit['context'] !== 'number' ||
+      !Number.isSafeInteger(limit['context']) ||
+      limit['context'] <= 0
+    ) {
       throw new OpenCodeRuntimeError('CAPABILITY_RESPONSE_INVALID');
     }
     return {
-      provider: identity.providerID, model: identity.modelID,
+      provider: identity.providerID,
+      model: identity.modelID,
       context_window: limit['context'],
       // /provider does not expose streaming or constrained JSON support.
       // Omit them; the neutral translator preserves that absence as unknown.
-      features: { vision: capabilities['input']['image'],
-        function_calling: capabilities['toolcall'] },
+      features: {
+        vision: capabilities['input']['image'],
+        function_calling: capabilities['toolcall'],
+      },
       // The API reports tool calling, not a fabricated list of filesystem tools.
       tools: capabilities['toolcall'] ? ['function_calling'] : [],
     };
   }
 
-  async createSession(input: { title: string; directory?: string }): Promise<OpenCodeRuntimeSession> {
+  async createSession(input: {
+    title: string;
+    directory?: string;
+  }): Promise<OpenCodeRuntimeSession> {
     const body = await this.requestJson('POST', this.withDirectory('/session', input.directory), {
       title: input.title,
     });
@@ -176,7 +271,7 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
     try {
       const body = await this.requestJson(
         'GET',
-        this.withDirectory(`/session/${encodeURIComponent(sessionId)}`, directory),
+        this.withDirectory(`/session/${encodeURIComponent(sessionId)}`, directory)
       );
       return this.parseSession(this.unwrap(body), 'get session');
     } catch (error) {
@@ -188,14 +283,14 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
   async abortSession(sessionId: string, directory?: string): Promise<void> {
     await this.requestJson(
       'POST',
-      this.withDirectory(`/session/${encodeURIComponent(sessionId)}/abort`, directory),
+      this.withDirectory(`/session/${encodeURIComponent(sessionId)}/abort`, directory)
     );
   }
 
   async sendPrompt(
     sessionId: string,
     prompt: OpenCodeRuntimePrompt,
-    directory?: string,
+    directory?: string
   ): Promise<void> {
     const body: Record<string, unknown> = {
       parts: [{ type: 'text', text: prompt.content }],
@@ -210,7 +305,7 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
     await this.requestJson(
       'POST',
       this.withDirectory(`/session/${encodeURIComponent(sessionId)}/message`, directory),
-      body,
+      body
     );
   }
 
@@ -222,7 +317,10 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
       signal,
     });
     if (!response.ok || !response.body) {
-      throw new OpenCodeRuntimeError(`OpenCode GET ${pathname} event stream failed with HTTP ${response.status}`, response.status);
+      throw new OpenCodeRuntimeError(
+        `OpenCode GET ${pathname} event stream failed with HTTP ${response.status}`,
+        response.status
+      );
     }
     if (!response.headers.get('content-type')?.toLowerCase().includes('text/event-stream')) {
       throw new OpenCodeRuntimeError('OpenCode GET /event returned a non-SSE response');
@@ -238,11 +336,17 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
         while ((boundary = buffer.indexOf('\n\n')) >= 0) {
           const frame = buffer.slice(0, boundary);
           buffer = buffer.slice(boundary + 2);
-          const data = frame.split('\n').filter(line => line.startsWith('data:'))
-            .map(line => line.slice(5).trimStart()).join('\n');
+          const data = frame
+            .split('\n')
+            .filter(line => line.startsWith('data:'))
+            .map(line => line.slice(5).trimStart())
+            .join('\n');
           if (data) {
-            try { yield JSON.parse(data) as unknown; }
-            catch { throw new OpenCodeRuntimeError('OpenCode GET /event emitted invalid JSON data'); }
+            try {
+              yield JSON.parse(data) as unknown;
+            } catch {
+              throw new OpenCodeRuntimeError('OpenCode GET /event emitted invalid JSON data');
+            }
           }
         }
         if (done) break;
@@ -267,7 +371,7 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
         throw new OpenCodeRuntimeError(
           `OpenCode ${method} ${pathname} failed with HTTP ${response.status}`,
           response.status,
-          text,
+          text
         );
       }
       if (!text.trim()) return undefined;
@@ -280,11 +384,11 @@ export class OpenCodeHttpRuntimeClient implements OpenCodeRuntimeClient {
       if (error instanceof OpenCodeRuntimeError) throw error;
       if (error instanceof Error && error.name === 'AbortError') {
         throw new OpenCodeRuntimeError(
-          `OpenCode ${method} ${pathname} timed out after ${this.timeoutMs}ms`,
+          `OpenCode ${method} ${pathname} timed out after ${this.timeoutMs}ms`
         );
       }
       throw new OpenCodeRuntimeError(
-        `OpenCode ${method} ${pathname} failed: ${error instanceof Error ? error.message : String(error)}`,
+        `OpenCode ${method} ${pathname} failed: ${error instanceof Error ? error.message : String(error)}`
       );
     } finally {
       clearTimeout(timer);

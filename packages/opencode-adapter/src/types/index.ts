@@ -299,8 +299,14 @@ export interface IEventTranslator {
  * Converts tool call parameters between OpenCode and Daemon formats
  */
 export interface IToolTranslator {
-  translateToolCall(ocToolCall: OpenCodeToolCall, sessionId?: string): TranslationResult<DaemonToolCall>;
-  translateToolResult(ocToolResult: OpenCodeToolResult, sessionId?: string): TranslationResult<DaemonToolResult>;
+  translateToolCall(
+    ocToolCall: OpenCodeToolCall,
+    sessionId?: string
+  ): TranslationResult<DaemonToolCall>;
+  translateToolResult(
+    ocToolResult: OpenCodeToolResult,
+    sessionId?: string
+  ): TranslationResult<DaemonToolResult>;
   isToolSupported(toolName: string): boolean;
 }
 

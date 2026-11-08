@@ -4,12 +4,13 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { TestEventBus } from '../helpers/test-event-bus.js';
+
 import {
   EventPublisher,
   createEventPublisher,
 } from '../../src/events/EventPublisher.js';
 import type { WorkflowInstance, Event } from '../../src/types.js';
+import { TestEventBus } from '../helpers/test-event-bus.js';
 
 /**
  * Mock WorkflowInstance for testing

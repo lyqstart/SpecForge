@@ -1,3 +1,4 @@
+import { hasCallArgument } from '../../../../tests/helpers/source-structure';
 import { afterEach, describe, expect, it } from 'vitest';
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -95,7 +96,7 @@ describe('Gate Attempt project-root input snapshot semantics', () => {
     expect(chain).toContain(
       'const sealInputPaths = await candidateSealInputPaths(input.ctx.workItemDir)',
     );
-    expect(chain).toContain('sealInputPaths,');
+    expect(hasCallArgument(chain, 'buildGateAttemptInputSnapshot', 'sealInputPaths')).toBe(true);
     expect(chain).toContain(
       'const resolvedInputPath = resolveGateAttemptInputPath(projectRoot, inputPath);',
     );

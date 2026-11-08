@@ -8,7 +8,7 @@
  * - Timestamp range
  */
 
-import { Event } from './types.js';
+import type { Event } from './types.js';
 
 /**
  * Filter criteria for events

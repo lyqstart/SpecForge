@@ -18,7 +18,6 @@
  * - read → 默认允许
  */
 
-import type { Principal } from '@specforge/types/principal';
 import type {
   Permission,
   PermissionContext,
@@ -26,6 +25,8 @@ import type {
   ResourceType,
   Operation,
 } from '@specforge/types/permissions';
+import type { Principal } from '@specforge/types/principal';
+
 import { matchProtectedFile } from './ProtectedFileMatcher.js';
 
 // Re-export for convenience

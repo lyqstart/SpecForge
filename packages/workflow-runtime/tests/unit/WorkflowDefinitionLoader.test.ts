@@ -2,12 +2,14 @@
  * Unit tests for WorkflowDefinitionLoader
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'fs/promises';
-import * as path from 'path';
 import * as os from 'os';
+import * as path from 'path';
+
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+
 import { WorkflowDefinitionLoader } from '../../src/loaders/WorkflowDefinitionLoader.js';
-import { WorkflowDefinition } from '../../src/types.js';
+import type { WorkflowDefinition } from '../../src/types.js';
 
 describe('WorkflowDefinitionLoader', () => {
   let loader: WorkflowDefinitionLoader;
@@ -22,7 +24,7 @@ describe('WorkflowDefinitionLoader', () => {
     // Clean up temp directory
     try {
       await fs.rm(tempDir, { recursive: true, force: true });
-    } catch (e) {
+    } catch  {
       // Ignore cleanup errors
     }
   });
@@ -321,7 +323,8 @@ artifacts: []
     });
 
     it('should detect missing stateMachine', () => {
-      const def = { ...validDefinition, stateMachine: undefined as unknown as any };
+      const def = { ...validDefinition, stateMachine: undefined };
+      // @ts-expect-error Deliberate malformed runtime input (TS2345); retain the rejection assertion.
       const result = loader.validate(def);
       expect(result.valid).toBe(false);
       expect(result.errors.some(e => e.field === 'stateMachine')).toBe(true);

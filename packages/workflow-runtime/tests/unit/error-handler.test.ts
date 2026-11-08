@@ -3,7 +3,12 @@
  * Tests for Gate error classes and unified error handling
  */
 
-import { describe, it, expect, vi } from 'vitest';
+/**
+ * Error Handler Unit Tests
+ * Tests for Gate error classes and unified error handling
+ */
+import { describe, it, expect } from 'vitest';
+
 import {
   GateError,
   GateTimeoutError,
@@ -520,7 +525,7 @@ describe('createErrorResult', () => {
     });
 
     const result = createErrorResult(error, 'test-gate', 'simple');
-    
+
     expect(result.passed).toBe(false);
     expect(result.reason).toContain('timed out');
     expect(result.details.code).toBe('GATE_TIMEOUT');
@@ -536,7 +541,7 @@ describe('createErrorResult', () => {
   it('should handle non-GateError', () => {
     const error = new Error('Test error');
     const result = createErrorResult(error, 'test-gate', 'simple');
-    
+
     expect(result.passed).toBe(false);
     expect(result.details.code).toBe('GATE_EXECUTION_ERROR');
     expect(result.details.gateId).toBe('test-gate');

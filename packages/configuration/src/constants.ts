@@ -2,9 +2,9 @@
  * Configuration constants
  */
 
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout'
-import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths'
-import { ConfigLayerType } from './types'
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
+import { ConfigLayerType } from './types';
 
 /**
  * Default configuration values
@@ -38,7 +38,7 @@ export const DEFAULT_CONFIG: Record<string, unknown> = {
     'bearerTokens',
     'providerCredentials',
   ],
-}
+};
 
 /**
  * Sensitive fields that cannot be overridden at project level
@@ -53,7 +53,7 @@ export const SENSITIVE_FIELDS = [
   'auth',
   'bearerTokens',
   'providerCredentials',
-] as const
+] as const;
 
 /**
  * Configuration file names
@@ -62,7 +62,7 @@ export const CONFIG_FILE_NAMES = {
   builtin: 'builtin.json',
   user: 'config.json',
   project: 'project.json',
-} as const
+} as const;
 
 /**
  * Configuration directory paths
@@ -70,14 +70,14 @@ export const CONFIG_FILE_NAMES = {
 export const CONFIG_DIRS = {
   user: resolveSpecForgeUserPath('config'),
   project: `${SPEC_DIR_NAME}/config`,
-} as const
+} as const;
 
 /**
  * Configuration layer order (from lowest to highest priority)
  */
-export const CONFIG_LAYER_ORDER: ConfigLayerType[] = ['builtin', 'user', 'project', 'runtime']
+export const CONFIG_LAYER_ORDER: ConfigLayerType[] = ['builtin', 'user', 'project', 'runtime'];
 
 /**
  * Configuration schema version
  */
-export const CONFIG_SCHEMA_VERSION = '1.0'
+export const CONFIG_SCHEMA_VERSION = '1.0';

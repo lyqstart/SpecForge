@@ -113,7 +113,7 @@ export async function validateSemanticClosureProvenance(
     );
   }
 
-  const expectedPayloadHash = semanticClosurePayloadSha256(manifest as SemanticClosureManifest);
+  const expectedPayloadHash = semanticClosurePayloadSha256(manifest);
   if (provenance.semantic_payload_sha256 !== expectedPayloadHash) {
     errors.push(
       'SEMANTIC_CLOSURE_PAYLOAD_STALE: semantic closure payload changed after generation.'

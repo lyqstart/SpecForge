@@ -1,32 +1,33 @@
 /**
  * Property-Based Test: Remote Access Guard (Property 26)
- * 
+ *
  * Validates: Property 26, Requirements 16.3-16.6
- * 
- * Property: For all requests r arriving in remote access mode 
- * (bind=0.0.0.0 && requireAuth=true), if r lacks valid long-term API key 
- * or r's source IP is not in whitelist, THEN Daemon rejects the request; 
- * for sensitive operations (delete WorkItem / permission change / config reset), 
+ *
+ * Property: For all requests r arriving in remote access mode
+ * (bind=0.0.0.0 && requireAuth=true), if r lacks valid long-term API key
+ * or r's source IP is not in whitelist, THEN Daemon rejects the request;
+ * for sensitive operations (delete WorkItem / permission change / config reset),
  * even if r passes authentication, it must undergo two-step confirmation before proceeding.
- * 
+ *
  * Iterations: ≥ 100
- * 
+ *
  * @specforge/permission-engine
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fc from 'fast-check';
-import { 
-  RemoteAccessGuard, 
+import { describe, it, expect, beforeEach } from 'vitest';
+
+import {
+  RemoteAccessGuard,
   createRemoteAccessGuard,
-  SensitiveOperation 
+  SensitiveOperation
 } from '../../src/services/remote-access-guard';
 
 /**
  * Feature: Remote Access Guard, Property 26
- * 
+ *
  * Derived-From: v6-architecture-overview Property 26
- * 
+ *
  * Tests:
  * - API key validation for remote mode requests
  * - IP whitelist enforcement
@@ -52,7 +53,7 @@ function generateRandomApiKey(): string {
 // All sensitive operations requiring two-step confirmation
 const sensitiveOperations: SensitiveOperation[] = [
   'workitem.delete',
-  'permission.change', 
+  'permission.change',
   'config.reset',
   'config.modify_security',
   'user.revoke_access',
@@ -75,7 +76,7 @@ describe('Property 26: Remote Access Guard', () => {
 
   /**
    * Property 26.1: API Key Requirement
-   * 
+   *
    * For remote mode with requireAuth=true, requests without valid API key must be rejected.
    */
   describe('26.1: API Key Enforcement', () => {
@@ -250,7 +251,7 @@ describe('Property 26: Remote Access Guard', () => {
 
   /**
    * Property 26.2: IP Whitelist Enforcement
-   * 
+   *
    * Requests from IPs not in the whitelist should be rejected.
    */
   describe('26.2: IP Whitelist Enforcement', () => {
@@ -412,7 +413,7 @@ describe('Property 26: Remote Access Guard', () => {
 
   /**
    * Property 26.3: Two-Step Confirmation for Sensitive Operations
-   * 
+   *
    * Sensitive operations should require two-step confirmation.
    */
   describe('26.3: Two-Step Confirmation for Sensitive Operations', () => {
@@ -634,7 +635,7 @@ describe('Property 26: Remote Access Guard', () => {
 
   /**
    * Property 26.4: User Binding for OpenClaw Requests
-   * 
+   *
    * Requests with user binding should include user identity.
    */
   describe('26.4: User Binding for OpenClaw Requests', () => {
@@ -667,7 +668,7 @@ describe('Property 26: Remote Access Guard', () => {
             });
 
             const sessionId = `session-${seed}-${generateRandomApiKey()}`;
-            
+
             const result = await testGuard.validateRequest({
               apiKey: key,
               clientIp: generateIp(),
@@ -780,7 +781,7 @@ describe('Property 26: Remote Access Guard', () => {
 
   /**
    * Property 26.5: Remote Access Mode Control
-   * 
+   *
    * When remote access is disabled, all remote requests should be rejected.
    */
   describe('26.5: Remote Access Mode Control', () => {
@@ -850,7 +851,7 @@ describe('Property 26: Remote Access Guard', () => {
 
   /**
    * Property 26.6: Combined Property Tests
-   * 
+   *
    * Comprehensive tests covering multiple aspects of Property 26.
    */
   describe('26.6: Combined Property Tests', () => {
@@ -930,7 +931,7 @@ describe('Property 26: Remote Access Guard', () => {
       ];
 
       const definedOps = guard.getSensitiveOperations();
-      
+
       for (const required of requiredOps) {
         expect(definedOps).toContain(required);
       }

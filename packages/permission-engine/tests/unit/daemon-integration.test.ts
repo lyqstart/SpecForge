@@ -1,15 +1,17 @@
 /**
  * Unit tests for Daemon Integration
- * 
+ *
  * @specforge/permission-engine
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { 
-  DaemonIntegration, 
+
+import { PermissionEngine } from '../../src/index';
+import {
+  DaemonIntegration,
   createDaemonIntegration,
   type DaemonIntegrationConfig,
-  type HttpRequestContext 
+  type HttpRequestContext
 } from '../../src/services/daemon-integration';
 
 // Mock the Event Logger to avoid file system operations
@@ -43,7 +45,7 @@ describe('DaemonIntegration', () => {
   describe('constructor', () => {
     it('should create a DaemonIntegration instance with config', () => {
       integration = createDaemonIntegration(config);
-      
+
       expect(integration).toBeDefined();
       expect(integration.getConfig().projectId).toBe('test-project');
     });
@@ -69,7 +71,7 @@ describe('DaemonIntegration', () => {
   describe('isInitialized', () => {
     it('should return false before initialization', () => {
       integration = createDaemonIntegration(config);
-      
+
       expect(integration.isInitialized()).toBe(false);
     });
   });
@@ -77,10 +79,10 @@ describe('DaemonIntegration', () => {
   describe('getConfig', () => {
     it('should return a copy of the config', () => {
       integration = createDaemonIntegration(config);
-      
+
       const cfg = integration.getConfig();
       cfg.projectId = 'modified';
-      
+
       // Original config should not be modified
       expect(integration.getConfig().projectId).toBe('test-project');
     });
@@ -100,7 +102,7 @@ describe('DaemonIntegration', () => {
       };
 
       const result = await integration.validateRequest(request);
-      
+
       expect(result.allowed).toBe(false);
       expect(result.reason).toBe('Missing Authorization header');
     });
@@ -116,7 +118,7 @@ describe('DaemonIntegration', () => {
       };
 
       const result = await integration.validateRequest(request);
-      
+
       expect(result.allowed).toBe(false);
       expect(result.reason).toBe('Invalid Authorization header format');
     });
@@ -132,7 +134,7 @@ describe('DaemonIntegration', () => {
       };
 
       const result = await integration.validateRequest(request);
-      
+
       expect(result.allowed).toBe(false);
       expect(result.reason).toBe('Invalid Authorization header format');
     });
@@ -148,7 +150,7 @@ describe('DaemonIntegration', () => {
       };
 
       const result = await integration.validateRequest(request);
-      
+
       expect(result.allowed).toBe(false);
       expect(result.reason).toBe('Invalid Authorization header format');
     });
@@ -157,20 +159,12 @@ describe('DaemonIntegration', () => {
   describe('setPermissionEngine', () => {
     it('should store the permission engine reference', () => {
       integration = createDaemonIntegration(config);
-      
+
       // Create a mock PermissionEngine
-      const mockEngine = {
-        checkPermission: vi.fn().mockResolvedValue(true),
-        checkPermissionWithDetails: vi.fn().mockResolvedValue({
-          allowed: true,
-          matchedRule: 'test-rule',
-          ruleLayer: 'builtin' as const,
-          reason: 'Test allowed'
-        })
-      } as any;
+      const mockEngine = new PermissionEngine({ eventLoggingEnabled: false });
 
       integration.setPermissionEngine(mockEngine);
-      
+
       expect(integration.getPermissionEngine()).toBe(mockEngine);
     });
   });
@@ -178,7 +172,7 @@ describe('DaemonIntegration', () => {
   describe('cleanup', () => {
     it('should clean up resources', async () => {
       integration = createDaemonIntegration(config);
-      
+
       // Should not throw
       await integration.cleanup();
       expect(integration.isInitialized()).toBe(false);
@@ -188,21 +182,21 @@ describe('DaemonIntegration', () => {
 
 describe('Integration flow', () => {
   let integration: DaemonIntegration;
-  let mockEventBus: any;
-  let mockSessionRegistry: any;
+
+
 
   beforeEach(() => {
     // Create mock EventBus
-    mockEventBus = {
+    void ({
       subscribe: vi.fn().mockReturnValue({ id: 'test-sub', topic: 'session.*', handler: vi.fn() }),
       unsubscribe: vi.fn(),
       publish: vi.fn()
-    };
+    });
 
     // Create mock SessionRegistry
-    mockSessionRegistry = {
+    void ({
       lookupBySessionId: vi.fn().mockReturnValue(null)
-    };
+    });
   });
 
   it('should initialize with daemon-core components', async () => {

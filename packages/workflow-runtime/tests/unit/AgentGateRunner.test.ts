@@ -4,14 +4,15 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
+import { type WorkflowAgentRunner, createWorkflowAgentRunner } from '../../src/AgentRunner.js';
 import { AgentGateRunner, createAgentGateRunner } from '../../src/gates/AgentGateRunner.js';
-import { WorkflowAgentRunner, createWorkflowAgentRunner } from '../../src/AgentRunner.js';
-import { SimpleGateDefinition, WorkflowInstance, WorkflowDefinition } from '../../src/types.js';
+import { type WorkflowContext ,type  SimpleGateDefinition } from '../../src/types.js';
 
 describe('AgentGateRunner', () => {
   let agentRunner: WorkflowAgentRunner;
   let mockGate: SimpleGateDefinition;
-  let mockContext: any;
+  let mockContext: WorkflowContext;
 
   beforeEach(() => {
     // Create mock agent runner
@@ -36,7 +37,7 @@ describe('AgentGateRunner', () => {
         history: [],
         createdAt: new Date(),
         updatedAt: new Date(),
-      } as WorkflowInstance,
+      },
       definition: {
         schema_version: '1.0',
         id: 'test-workflow',
@@ -56,7 +57,7 @@ describe('AgentGateRunner', () => {
           },
         },
         artifacts: [],
-      } as WorkflowDefinition,
+      },
     };
   });
 
@@ -69,7 +70,7 @@ describe('AgentGateRunner', () => {
   describe('Basic functionality', () => {
     it('should create AgentGateRunner with default configuration', () => {
       const runner = createAgentGateRunner(mockGate, agentRunner);
-      
+
       expect(runner).toBeInstanceOf(AgentGateRunner);
       expect(runner.getAgentRunner()).toBe(agentRunner);
       expect(runner.getAgentRole()).toBe('general');
@@ -77,20 +78,20 @@ describe('AgentGateRunner', () => {
 
     it('should create AgentGateRunner with custom agent role', () => {
       const runner = createAgentGateRunner(mockGate, agentRunner, 'dev');
-      
+
       expect(runner.getAgentRole()).toBe('dev');
     });
 
     it('should create AgentGateRunner with custom context', () => {
       const customContext = { customField: 'value' };
       const runner = createAgentGateRunner(mockGate, agentRunner, 'general', customContext);
-      
+
       expect(runner.getContext()).toEqual(customContext);
     });
 
     it('should set and get agent role', () => {
       const runner = createAgentGateRunner(mockGate, agentRunner);
-      
+
       runner.setAgentRole('design');
       expect(runner.getAgentRole()).toBe('design');
     });
@@ -99,9 +100,9 @@ describe('AgentGateRunner', () => {
   describe('Gate execution', () => {
     it('should execute agent gate successfully', async () => {
       const runner = createAgentGateRunner(mockGate, agentRunner, 'requirements');
-      
+
       const result = await runner.check(mockContext);
-      
+
       expect(result.passed).toBe(true);
       expect(result.schema_version).toBe('1.0');
       expect(result.reason).toContain('Agent execution successful');
@@ -111,7 +112,7 @@ describe('AgentGateRunner', () => {
 
     it('should handle agent execution failure', async () => {
       const runner = createAgentGateRunner(mockGate, agentRunner, 'dev');
-      
+
       // Create a context that will trigger failure
       const failureContext = {
         ...mockContext,
@@ -120,7 +121,7 @@ describe('AgentGateRunner', () => {
           currentState: 'implementation',
         },
       };
-      
+
       // Mock the agent runner to simulate failure
       const mockRunAgentForState = vi.spyOn(agentRunner, 'runAgentForState')
         .mockResolvedValue({
@@ -132,11 +133,11 @@ describe('AgentGateRunner', () => {
         });
 
       const result = await runner.check(failureContext);
-      
+
       expect(result.passed).toBe(false);
       expect(result.reason).toContain('Agent execution failed');
       expect(result.details?.error).toBe('Simulated agent failure');
-      
+
       mockRunAgentForState.mockRestore();
     });
 
@@ -145,9 +146,9 @@ describe('AgentGateRunner', () => {
         ...mockContext,
         prompt: 'Custom prompt for agent execution',
       };
-      
+
       const runner = createAgentGateRunner(mockGate, agentRunner, 'general', customContext);
-      
+
       const mockRunAgentForState = vi.spyOn(agentRunner, 'runAgentForState')
         .mockResolvedValue({
           schema_version: '1.0',
@@ -158,7 +159,7 @@ describe('AgentGateRunner', () => {
         });
 
       await runner.check(mockContext);
-      
+
       // Check that custom prompt was used
       // Note: agent role will be determined from state name 'requirements', not 'general'
       expect(mockRunAgentForState).toHaveBeenCalledWith(
@@ -167,13 +168,13 @@ describe('AgentGateRunner', () => {
         'Custom prompt for agent execution',
         expect.any(Object)
       );
-      
+
       mockRunAgentForState.mockRestore();
     });
 
     it('should determine agent role from state name', async () => {
       const runner = createAgentGateRunner(mockGate, agentRunner, 'general');
-      
+
       const mockRunAgentForState = vi.spyOn(agentRunner, 'runAgentForState')
         .mockResolvedValue({
           schema_version: '1.0',
@@ -184,7 +185,7 @@ describe('AgentGateRunner', () => {
         });
 
       await runner.check(mockContext);
-      
+
       // Check that agent role was determined from state name 'requirements'
       expect(mockRunAgentForState).toHaveBeenCalledWith(
         'requirements', // Determined from state name
@@ -192,16 +193,16 @@ describe('AgentGateRunner', () => {
         expect.any(String),
         expect.any(Object)
       );
-      
+
       mockRunAgentForState.mockRestore();
     });
 
     it('should handle missing workflow context', async () => {
       const runner = createAgentGateRunner(mockGate, agentRunner);
-      
+
       // @ts-expect-error: Testing error case
       const result = await runner.check();
-      
+
       expect(result.passed).toBe(false);
       expect(result.reason).toContain('Workflow context is required');
     });
@@ -210,16 +211,16 @@ describe('AgentGateRunner', () => {
   describe('Error handling', () => {
     it('should handle agent runner errors', async () => {
       const runner = createAgentGateRunner(mockGate, agentRunner);
-      
+
       // Mock agent runner to throw error
       const mockRunAgentForState = vi.spyOn(agentRunner, 'runAgentForState')
         .mockRejectedValue(new Error('Agent runner error'));
 
       const result = await runner.check(mockContext);
-      
+
       expect(result.passed).toBe(false);
       expect(result.reason).toContain('Agent runner error');
-      
+
       mockRunAgentForState.mockRestore();
     });
 
@@ -230,11 +231,11 @@ describe('AgentGateRunner', () => {
         id: '', // Empty ID should trigger validation error
         name: 'Invalid Gate',
       } as SimpleGateDefinition;
-      
+
       const runner = createAgentGateRunner(invalidGate, agentRunner);
-      
+
       const result = await runner.check(mockContext);
-      
+
       expect(result.passed).toBe(false);
       expect(result.reason).toContain('Gate definition must have an id');
     });

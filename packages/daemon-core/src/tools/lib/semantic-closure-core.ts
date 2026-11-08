@@ -1,3 +1,4 @@
+import { scalarText } from '@specforge/types';
 /**
  * semantic-closure-core.ts — minimal semantic closure validator.
  *
@@ -545,7 +546,8 @@ function validateSpecMigrationSemanticClosure(
     asArray(manifest.tasks).length === 0;
   checks.push({
     check_id: 'spec_migration_no_fabricated_implementation_chain',
-    description: 'Spec Migration semantic closure does not fabricate OUT/REQ/DD/TASK implementation entities',
+    description:
+      'Spec Migration semantic closure does not fabricate OUT/REQ/DD/TASK implementation entities',
     passed: noFabricatedImplementationChain,
     severity: noFabricatedImplementationChain ? undefined : 'error',
   });
@@ -563,7 +565,9 @@ function validateSpecMigrationSemanticClosure(
     severity: duplicateEvidenceIds.length === 0 ? undefined : 'error',
     details: duplicateEvidenceIds,
   });
-  const strongPassedEvidence = evidence.filter(item => isPassedEvidence(item) && !isWeakEvidence(item));
+  const strongPassedEvidence = evidence.filter(
+    item => isPassedEvidence(item) && !isWeakEvidence(item)
+  );
   checks.push({
     check_id: 'spec_migration_has_strong_passed_evidence',
     description: 'Spec Migration has passed non-weak behavioral evidence',
@@ -604,10 +608,22 @@ function validateSpecMigrationSemanticClosure(
     severity: mergePassed ? undefined : 'error',
   });
   for (const [checkId, description, raw] of [
-    ['spec_migration_post_merge_gate_passed', 'Post-Spec-Merge Gate passed', migration?.post_merge_gate_status],
-    ['spec_migration_changed_files_audit_passed', 'No-code Changed Files Audit passed', migration?.changed_files_audit_status],
+    [
+      'spec_migration_post_merge_gate_passed',
+      'Post-Spec-Merge Gate passed',
+      migration?.post_merge_gate_status,
+    ],
+    [
+      'spec_migration_changed_files_audit_passed',
+      'No-code Changed Files Audit passed',
+      migration?.changed_files_audit_status,
+    ],
     ['spec_migration_verification_passed', 'Verification passed', migration?.verification_status],
-    ['spec_migration_trace_contract_passed', 'Trace and Contract reconciliation passed', migration?.trace_contract_status],
+    [
+      'spec_migration_trace_contract_passed',
+      'Trace and Contract reconciliation passed',
+      migration?.trace_contract_status,
+    ],
   ] as Array<[string, string, string | undefined]>) {
     const status = normalize(raw);
     const passed = PASS_STATUSES.has(status);
@@ -640,8 +656,14 @@ export function validateSemanticClosure(manifest: unknown): SemanticClosureValid
     return buildResult(checks);
   }
 
-  if(manifest.schema_version!==SEMANTIC_CLOSURE_SCHEMA_VERSION){
-    addCheck({check_id:'semantic_manifest_schema_version',description:'Semantic Closure requires its explicit supported schema_version=1.0',passed:false,severity:'error',details:['received='+String(manifest.schema_version??'<missing>')]});
+  if (manifest.schema_version !== SEMANTIC_CLOSURE_SCHEMA_VERSION) {
+    addCheck({
+      check_id: 'semantic_manifest_schema_version',
+      description: 'Semantic Closure requires its explicit supported schema_version=1.0',
+      passed: false,
+      severity: 'error',
+      details: ['received=' + scalarText(manifest.schema_version ?? '<missing>')],
+    });
     return buildResult(checks);
   }
   const typedManifest = manifest as SemanticClosureManifest;

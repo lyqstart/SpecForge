@@ -20,7 +20,7 @@
 import type { ServiceManager } from '../service-manager/service-manager.js';
 import type { ServiceInstallSpec } from '../types/service-install-spec.js';
 import type { ServiceStatus } from '../types/service-status.js';
-import type { ServiceState } from '../types/service-state.js';
+
 import type { OrchestrationResult } from '../types/orchestration-result.js';
 import { createServiceError, ErrorCode } from '../errors/service-error.js';
 

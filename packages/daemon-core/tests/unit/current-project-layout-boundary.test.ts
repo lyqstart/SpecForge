@@ -1,3 +1,4 @@
+import { codeContains } from '../../../../tests/helpers/source-structure';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { access, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -216,9 +217,7 @@ describe('current project layout boundary', () => {
 
     expect(initSource).not.toContain('ensureRootManifest');
     expect(initSource).not.toContain("'manifest.json': (name, now)");
-    expect(transitionSource).toMatch(
-      /SPEC_DIR_NAME,\s*"project",\s*"spec_manifest\.json"/,
-    );
+    expect(codeContains(transitionSource, 'SPEC_DIR_NAME, "project", "spec_manifest.json"')).toBe(true);
     expect(transitionSource).toContain('UNSUPPORTED_PROJECT_LAYOUT');
     for (const doctorSource of doctorSources) {
       expect(doctorSource).not.toContain('assertCompatibility');

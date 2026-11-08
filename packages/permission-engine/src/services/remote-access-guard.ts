@@ -2,42 +2,40 @@
 // Build-unblock note: legacy permission-engine service has historical type drift; production build boundary is being restored
 /**
  * Remote Access Guard Service
- * 
+ *
  * Implements complete remote access security as required by
  * Property 26: Remote Access Guard
- * 
+ *
  * Coordinates API key management, IP whitelist enforcement,
  * two-step confirmation, and user binding for OpenClaw requests.
- * 
+ *
  * @specforge/permission-engine
  */
 
-import { 
-  ApiKeyManager, 
-  ApiKey, 
+import {
+  PermissionDeniedEventPayload,
+  PermissionDeniedEventPayloadSchema
+} from '../types/events';
+
+import {
+  ApiKeyManager,
+  ApiKey,
   CreateApiKeyOptions,
   createApiKeyManager
 } from './api-key-manager';
-
-import { 
+import { EventLogger } from './event-logger';
+import {
   TwoStepConfirmationManager,
   SensitiveOperation,
   ConfirmationResult,
   createTwoStepConfirmationManager
 } from './two-step-confirmation';
-
-import { 
+import {
   UserBindingManager,
   UserIdentity,
   ActiveUserBinding,
   createUserBindingManager
 } from './user-binding';
-
-import { EventLogger } from './event-logger';
-import { 
-  PermissionDeniedEventPayload,
-  PermissionDeniedEventPayloadSchema 
-} from '../types/events';
 
 export interface RemoteAccessConfig {
   /** Whether remote access mode is enabled */
@@ -70,7 +68,7 @@ export interface RemoteAccessValidationResult {
   /** Reason for denial if unauthorized */
   reason: string;
   /** Error code */
-  errorCode: 
+  errorCode:
     | 'remote_access_disabled'
     | 'missing_api_key'
     | 'invalid_api_key'
@@ -125,7 +123,7 @@ export interface RemoteAccessRequestContext {
 
 /**
  * Remote Access Guard
- * 
+ *
  * Coordinates all remote access security features:
  * - API key validation
  * - IP whitelist enforcement
@@ -197,7 +195,7 @@ export class RemoteAccessGuard {
 
   /**
    * Validate a remote access request
-   * 
+   *
    * @param context - Request context including API key, client IP, etc.
    * @returns Validation result
    */
@@ -234,7 +232,7 @@ export class RemoteAccessGuard {
     // Validate API key
     if (context.apiKey) {
       const keyValidation = this.apiKeyManager.validateKey(context.apiKey, context.clientIp);
-      
+
       if (!keyValidation.valid) {
         await this.logPermissionDenied({
           actor: { remoteIdentity: context.clientIp },
@@ -242,9 +240,9 @@ export class RemoteAccessGuard {
           resource: context.resource ?? { type: 'remote' },
           reason: keyValidation.reason,
           layer: 'remote',
-          details: { 
+          details: {
             clientIp: context.clientIp,
-            errorCode: keyValidation.errorCode 
+            errorCode: keyValidation.errorCode
           }
         });
 
@@ -265,14 +263,14 @@ export class RemoteAccessGuard {
       if (context.isSensitiveOperation && context.sensitiveOperationType) {
         // Get userId - either from session binding or directly from context
         let userId: string | undefined = context.userId;
-        
+
         if (!userId && context.sessionId) {
           const existingBinding = this.userBindingManager.getBindingForSession(context.sessionId);
           if (existingBinding) {
             userId = existingBinding.userId;
           }
         }
-        
+
         if (userId) {
           // Check if there's a valid confirmation for this operation
           const pendingConfirmations = this.confirmationManager.getPendingForUser(userId);
@@ -394,7 +392,7 @@ export class RemoteAccessGuard {
 
   /**
    * Create a new API key for a user
-   * 
+   *
    * @param options - Key creation options
    * @returns The full API key (only returned once) and metadata
    */
@@ -404,7 +402,7 @@ export class RemoteAccessGuard {
 
   /**
    * Get all API keys
-   * 
+   *
    * @returns Array of API key metadata (without actual key values)
    */
   getAllApiKeys(): Omit<ApiKey, 'key'>[] {
@@ -413,7 +411,7 @@ export class RemoteAccessGuard {
 
   /**
    * Revoke an API key
-   * 
+   *
    * @param keyId - The key ID to revoke
    * @returns Whether the key was revoked
    */
@@ -423,7 +421,7 @@ export class RemoteAccessGuard {
 
   /**
    * Update IP whitelist for an API key
-   * 
+   *
    * @param keyId - The key ID
    * @param ipWhitelist - New IP whitelist
    * @returns Whether the update was successful
@@ -434,7 +432,7 @@ export class RemoteAccessGuard {
 
   /**
    * Request two-step confirmation for a sensitive operation
-   * 
+   *
    * @param request - Confirmation request details
    * @returns Confirmation result
    */
@@ -453,17 +451,17 @@ export class RemoteAccessGuard {
       reason: request.reason ?? 'No reason provided'
     };
     if (request.resourceId) {
-      (confirmationRequest as any).resourceId = request.resourceId;
+      (confirmationRequest as unknown).resourceId = request.resourceId;
     }
     if (request.resourceType) {
-      (confirmationRequest as any).resourceType = request.resourceType;
+      (confirmationRequest as unknown).resourceType = request.resourceType;
     }
     return this.confirmationManager.requestConfirmation(confirmationRequest);
   }
 
   /**
    * Confirm a two-step confirmation
-   * 
+   *
    * @param confirmationId - The confirmation ID
    * @param userId - The user confirming
    * @returns Confirmation result
@@ -474,7 +472,7 @@ export class RemoteAccessGuard {
 
   /**
    * Deny a two-step confirmation
-   * 
+   *
    * @param confirmationId - The confirmation ID
    * @param userId - The user denying
    * @returns Confirmation result
@@ -485,7 +483,7 @@ export class RemoteAccessGuard {
 
   /**
    * Register a new user
-   * 
+   *
    * @param user - User identity (without id and createdAt)
    * @returns Registered user with ID and timestamp
    */
@@ -495,7 +493,7 @@ export class RemoteAccessGuard {
 
   /**
    * Lookup a user by ID
-   * 
+   *
    * @param userId - The user ID
    * @returns User identity if found
    */
@@ -505,7 +503,7 @@ export class RemoteAccessGuard {
 
   /**
    * Get active binding for a session
-   * 
+   *
    * @param sessionId - The session ID
    * @returns Active binding or undefined
    */
@@ -515,7 +513,7 @@ export class RemoteAccessGuard {
 
   /**
    * Get all active sessions for a user
-   * 
+   *
    * @param userId - The user ID
    * @returns Array of active bindings
    */
@@ -525,7 +523,7 @@ export class RemoteAccessGuard {
 
   /**
    * Terminate a user session
-   * 
+   *
    * @param bindingId - The binding ID to terminate
    * @returns Whether the session was terminated
    */
@@ -535,7 +533,7 @@ export class RemoteAccessGuard {
 
   /**
    * Terminate all sessions for a user
-   * 
+   *
    * @param userId - The user ID
    * @returns Number of sessions terminated
    */
@@ -545,7 +543,7 @@ export class RemoteAccessGuard {
 
   /**
    * Check if an operation requires two-step confirmation
-   * 
+   *
    * @param operation - The operation to check
    * @returns Whether confirmation is required
    */
@@ -555,7 +553,7 @@ export class RemoteAccessGuard {
 
   /**
    * Get all sensitive operations
-   * 
+   *
    * @returns Array of sensitive operations
    */
   getSensitiveOperations(): SensitiveOperation[] {
@@ -564,7 +562,7 @@ export class RemoteAccessGuard {
 
   /**
    * Add a sensitive operation type
-   * 
+   *
    * @param operation - The operation to add
    */
   addSensitiveOperation(operation: SensitiveOperation): void {
@@ -573,7 +571,7 @@ export class RemoteAccessGuard {
 
   /**
    * Check if user has a specific permission
-   * 
+   *
    * @param userId - The user ID
    * @param permission - The permission to check
    * @returns Whether the user has the permission
@@ -584,7 +582,7 @@ export class RemoteAccessGuard {
 
   /**
    * Clean up expired confirmations and sessions
-   * 
+   *
    * @returns Object with cleanup counts
    */
   cleanup(): { confirmations: number; sessions: number } {
@@ -640,7 +638,7 @@ export class RemoteAccessGuard {
 
 /**
  * Create a RemoteAccessGuard instance
- * 
+ *
  * @param config - Guard configuration
  * @returns Configured guard instance
  */
@@ -650,10 +648,10 @@ export function createRemoteAccessGuard(config: RemoteAccessConfig): RemoteAcces
 
 // Re-export types for convenience
 export type { ApiKey, CreateApiKeyOptions, ValidateApiKeyResult } from './api-key-manager';
-export type { 
-  SensitiveOperation, 
-  ConfirmationRequest, 
+export type {
+  SensitiveOperation,
+  ConfirmationRequest,
   ConfirmationResult,
-  PendingConfirmation 
+  PendingConfirmation
 } from './two-step-confirmation';
 export type { UserIdentity, ActiveUserBinding, BindUserResult } from './user-binding';

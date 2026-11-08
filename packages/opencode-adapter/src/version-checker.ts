@@ -98,17 +98,11 @@ export function parseVersion(input: string): ParsedVersion | null {
 
   const [, majorStr, minorStr, patchStr, prereleaseStr, buildStr] = match;
   // Guard against leading zeros like "01.2.3" which SemVer disallows.
-  if (
-    /^0\d/.test(majorStr!) ||
-    /^0\d/.test(minorStr!) ||
-    /^0\d/.test(patchStr!)
-  ) {
+  if (/^0\d/.test(majorStr!) || /^0\d/.test(minorStr!) || /^0\d/.test(patchStr!)) {
     return null;
   }
 
-  const prerelease = prereleaseStr
-    ? prereleaseStr.split('.').map(coercePrereleaseIdent)
-    : [];
+  const prerelease = prereleaseStr ? prereleaseStr.split('.').map(coercePrereleaseIdent) : [];
   const build = buildStr ? buildStr.split('.') : [];
 
   return {
@@ -153,7 +147,7 @@ export function compareVersions(a: ParsedVersion, b: ParsedVersion): number {
     const aNum = typeof ai === 'number';
     const bNum = typeof bi === 'number';
     if (aNum && bNum) {
-      if (ai !== bi) return (ai as number) - (bi as number);
+      if (ai !== bi) return ai - bi;
     } else if (aNum && !bNum) {
       return -1; // numeric < alphanumeric
     } else if (!aNum && bNum) {
@@ -351,7 +345,10 @@ export function parseRange(rangeString: string): ParsedRange | null {
     return { sets: [], raw: rangeString, isEmpty: true };
   }
 
-  const orParts = trimmed.split('||').map(s => s.trim()).filter(s => s.length > 0);
+  const orParts = trimmed
+    .split('||')
+    .map(s => s.trim())
+    .filter(s => s.length > 0);
   const sets: ComparatorSet[] = [];
 
   for (const part of orParts) {

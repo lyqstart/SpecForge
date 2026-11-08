@@ -1,33 +1,36 @@
 /**
  * Property Test: Composite Gate Parallel Execution
- * 
+ *
  * Feature: workflow-runtime, Property 29: Composite Gate Parallel Execution
  * Derived-From: v6-architecture-overview Property 29
- * 
+ *
  * Validates: Requirements 24.4, 24.5 - Composite Gate Semantics
- * 
+ *
  * For all compositeGate g with mode = parallel:
  * - Multiple gates execute simultaneously with correct results
  * - Result aggregation is correct
  * - Error handling works properly
- * 
+ *
  * Property 29 Definition:
  * - mode = parallel: child gates execute concurrently
  * - failPolicy = fail_fast + mode = parallel: cancel unfinished children on failure
  * - failPolicy = collect_all: aggregate all failures after completion
  */
 
-import { describe, it, expect } from 'vitest';
+import { promiseFromSync } from '@specforge/types';
 import * as fc from 'fast-check';
-import { 
-  CompositeGateRunner 
+import { describe, it, expect } from 'vitest';
+
+import {
+  CompositeGateRunner
 } from '../../src/GateRunner';
-import { 
+import type {
   CompositeGateDefinition,
   SimpleGateDefinition,
-  GateResult,
   FailPolicy
 } from '../../src/types';
+import { requireCompositeObservation } from '../composite-observation';
+
 
 // Configure iterations as per spec requirements (>= 100)
 const NUM_ITERATIONS = 100;
@@ -36,8 +39,8 @@ const NUM_ITERATIONS = 100;
  * Helper to create a simple gate definition with configurable check function
  */
 function createSimpleGate(
-  id: string, 
-  pass: boolean, 
+  id: string,
+  pass: boolean,
   delayMs: number = 0
 ): SimpleGateDefinition {
   return {
@@ -79,7 +82,7 @@ function createParallelCompositeGate(
 }
 
 describe('Property 29: Composite Gate Parallel Execution', () => {
-  
+
   describe('P1: Multiple Gates Execute Simultaneously - Correctness', () => {
     /**
      * Property: All child gates must execute when mode is parallel
@@ -88,13 +91,13 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
     it('should execute all child gates in parallel mode', async () => {
       // Use sample-based testing for async property
       const samples = fc.sample(
-        fc.integer({ min: 2, max: 5 }), 
+        fc.integer({ min: 2, max: 5 }),
         { numRuns: NUM_ITERATIONS }
       );
-      
+
       for (const numChildren of samples) {
         const executedGates: string[] = [];
-        
+
         const compositeGate: CompositeGateDefinition = {
           schema_version: '1.0',
           type: 'composite',
@@ -107,7 +110,7 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
             type: 'simple' as const,
             id: `child-${i}`,
             name: `Child ${i}`,
-            checkFn: async () => {
+            checkFn:  () => { return promiseFromSync(() => {
               executedGates.push(`child-${i}`);
               return {
                 schema_version: '1.0',
@@ -115,21 +118,21 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
                 reason: 'OK',
                 details: {}
               };
-            }
+            }); }
           }))
         };
-        
+
         const runner = new CompositeGateRunner(compositeGate);
         const result = await runner.check();
-        
+
         // All children should have been executed
         expect(executedGates.length).toBe(numChildren);
-        
+
         // All child IDs should be present
         for (let i = 0; i < numChildren; i++) {
           expect(executedGates).toContain(`child-${i}`);
         }
-        
+
         // Result should reflect all gates executed
         expect(result.passed).toBe(true);
       }
@@ -141,7 +144,7 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
      */
     it('should produce consistent results across multiple runs with same input', async () => {
       const results: boolean[] = [];
-      
+
       for (let run = 0; run < 10; run++) {
         const compositeGate: CompositeGateDefinition = {
           schema_version: '1.0',
@@ -156,12 +159,12 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
             createSimpleGate('gate-c', true)
           ]
         };
-        
+
         const runner = new CompositeGateRunner(compositeGate);
         const result = await runner.check();
         results.push(result.passed);
       }
-      
+
       // All runs should produce the same result (all pass)
       expect(results.every(r => r === true)).toBe(true);
     });
@@ -171,7 +174,7 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
      */
     it('should provide correct execution context to each child gate', async () => {
       const childResults: Array<{ id: string; passed: boolean }> = [];
-      
+
       const compositeGate: CompositeGateDefinition = {
         schema_version: '1.0',
         type: 'composite',
@@ -185,7 +188,7 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
             type: 'simple',
             id: 'ctx-gate-1',
             name: 'Context Gate 1',
-            checkFn: async () => {
+            checkFn:  () => { return promiseFromSync(() => {
               childResults.push({ id: 'ctx-gate-1', passed: true });
               return {
                 schema_version: '1.0',
@@ -193,14 +196,14 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
                 reason: 'OK',
                 details: { source: 'gate-1' }
               };
-            }
+            }); }
           },
           {
             schema_version: '1.0',
             type: 'simple',
             id: 'ctx-gate-2',
             name: 'Context Gate 2',
-            checkFn: async () => {
+            checkFn:  () => { return promiseFromSync(() => {
               childResults.push({ id: 'ctx-gate-2', passed: true });
               return {
                 schema_version: '1.0',
@@ -208,14 +211,14 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
                 reason: 'OK',
                 details: { source: 'gate-2' }
               };
-            }
+            }); }
           }
         ]
       };
-      
+
       const runner = new CompositeGateRunner(compositeGate);
       const result = await runner.check();
-      
+
       // Both should have executed
       expect(childResults.length).toBe(2);
       expect(childResults.map(r => r.id)).toContain('ctx-gate-1');
@@ -231,10 +234,10 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
      */
     it('should aggregate all child results correctly with collect_all policy', async () => {
       const samples = fc.sample(
-        fc.integer({ min: 2, max: 5 }), 
+        fc.integer({ min: 2, max: 5 }),
         { numRuns: NUM_ITERATIONS }
       );
-      
+
       for (const numChildren of samples) {
         // Create gates with alternating pass/fail
         const compositeGate: CompositeGateDefinition = {
@@ -257,19 +260,19 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
             })
           }))
         };
-        
+
         const runner = new CompositeGateRunner(compositeGate);
         const result = await runner.check();
-        
+
         // Result should be false (some gates failed)
         expect(result.passed).toBe(false);
-        
+
         // Details should contain results for all children
         expect(result.details).toBeDefined();
-        const childResults = (result.details as any)?.results;
+        const childResults = (requireCompositeObservation(result.details))?.results;
         expect(childResults).toBeDefined();
         expect(childResults.length).toBe(numChildren);
-        
+
         // Verify pass/fail pattern
         for (let i = 0; i < numChildren; i++) {
           expect(childResults[i].passed).toBe(i % 2 === 0);
@@ -284,7 +287,7 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
       const numChildren = 5;
       const numPassing = 3;
       const numFailing = 2;
-      
+
       const compositeGate: CompositeGateDefinition = {
         schema_version: '1.0',
         type: 'composite',
@@ -300,15 +303,15 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
           createSimpleGate('fail-2', false)
         ]
       };
-      
+
       const runner = new CompositeGateRunner(compositeGate);
       const result = await runner.check();
-      
+
       // Should fail overall
       expect(result.passed).toBe(false);
-      
+
       // Check aggregated counts - these exist when some gates fail
-      const details = result.details as any;
+      const details = requireCompositeObservation(result.details);
       expect(details.total).toBe(numChildren);
       expect(details.passed).toBe(numPassing);
       expect(details.failed).toBe(numFailing);
@@ -319,7 +322,7 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
      */
     it('should pass overall when all children pass', async () => {
       const numChildren = 4;
-      
+
       const compositeGate: CompositeGateDefinition = {
         schema_version: '1.0',
         type: 'composite',
@@ -327,18 +330,18 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
         name: 'All Pass Test',
         mode: 'parallel',
         failPolicy: 'collect_all',
-        children: Array.from({ length: numChildren }, (_, i) => 
+        children: Array.from({ length: numChildren }, (_, i) =>
           createSimpleGate(`all-pass-${i}`, true)
         )
       };
-      
+
       const runner = new CompositeGateRunner(compositeGate);
       const result = await runner.check();
-      
+
       expect(result.passed).toBe(true);
-      
+
       // When all pass, details contains results array
-      const details = result.details as any;
+      const details = requireCompositeObservation(result.details);
       expect(details.results).toBeDefined();
       expect(details.results.length).toBe(numChildren);
     });
@@ -360,15 +363,15 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
           createSimpleGate('slow-fail', false, 50)
         ]
       };
-      
+
       const runner = new CompositeGateRunner(compositeGate);
       const result = await runner.check();
-      
+
       // Should fail overall (one gate failed)
       expect(result.passed).toBe(false);
-      
+
       // Should still have all results
-      const childResults = (result.details as any)?.results;
+      const childResults = (requireCompositeObservation(result.details))?.results;
       expect(childResults.length).toBe(3);
     });
   });
@@ -379,7 +382,7 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
      */
     it('should handle errors in one child without preventing others', async () => {
       const executedGates: string[] = [];
-      
+
       const compositeGate: CompositeGateDefinition = {
         schema_version: '1.0',
         type: 'composite',
@@ -393,7 +396,7 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
             type: 'simple',
             id: 'ok-gate-1',
             name: 'OK Gate 1',
-            checkFn: async () => {
+            checkFn:  () => { return promiseFromSync(() => {
               executedGates.push('ok-gate-1');
               return {
                 schema_version: '1.0',
@@ -401,24 +404,24 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
                 reason: 'OK',
                 details: {}
               };
-            }
+            }); }
           },
           {
             schema_version: '1.0',
             type: 'simple',
             id: 'error-gate',
             name: 'Error Gate',
-            checkFn: async () => {
+            checkFn:  () => { return promiseFromSync(() => {
               executedGates.push('error-gate');
               throw new Error('Intentional error in gate');
-            }
+            }); }
           },
           {
             schema_version: '1.0',
             type: 'simple',
             id: 'ok-gate-2',
             name: 'OK Gate 2',
-            checkFn: async () => {
+            checkFn:  () => { return promiseFromSync(() => {
               executedGates.push('ok-gate-2');
               return {
                 schema_version: '1.0',
@@ -426,19 +429,19 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
                 reason: 'OK',
                 details: {}
               };
-            }
+            }); }
           }
         ]
       };
-      
+
       const runner = new CompositeGateRunner(compositeGate);
-      
+
       // Should handle error gracefully
       try {
-        const result = await runner.check();
+        void (await runner.check());
         // With collect_all, should aggregate even with errors
         expect(executedGates.length).toBe(3);
-      } catch (error) {
+      } catch  {
         // Even if error propagates, all gates should have been attempted
         expect(executedGates.length).toBe(3);
       }
@@ -449,7 +452,7 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
      */
     it('should cancel remaining children on failure with fail_fast policy', async () => {
       const executedGates: string[] = [];
-      
+
       const compositeGate: CompositeGateDefinition = {
         schema_version: '1.0',
         type: 'composite',
@@ -508,13 +511,13 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
           }
         ]
       };
-      
+
       const runner = new CompositeGateRunner(compositeGate);
       const result = await runner.check();
-      
+
       // Should fail overall
       expect(result.passed).toBe(false);
-      
+
       // First two gates should have been attempted
       // Third may or may not execute depending on timing
       expect(executedGates.length).toBeGreaterThanOrEqual(2);
@@ -533,10 +536,10 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
         failPolicy: 'collect_all',
         children: []
       };
-      
+
       const runner = new CompositeGateRunner(compositeGate);
       const result = await runner.check();
-      
+
       // Should pass with no children
       expect(result.passed).toBe(true);
     });
@@ -556,12 +559,12 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
           createSimpleGate('only-child', true)
         ]
       };
-      
+
       const runner = new CompositeGateRunner(compositeGate);
       const result = await runner.check();
-      
+
       expect(result.passed).toBe(true);
-      expect((result.details as any)?.results?.length).toBe(1);
+      expect((requireCompositeObservation(result.details))?.results?.length).toBe(1);
     });
   });
 
@@ -577,7 +580,7 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
         }),
         { numRuns: NUM_ITERATIONS }
       );
-      
+
       for (const { numChildren, failPolicy } of samples) {
         const compositeGate: CompositeGateDefinition = {
           schema_version: '1.0',
@@ -599,7 +602,7 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
             })
           }))
         };
-        
+
         // Verify structure is valid
         expect(compositeGate.mode).toBe('parallel');
         expect(compositeGate.children.length).toBe(numChildren);
@@ -618,29 +621,29 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
         }),
         { numRuns: NUM_ITERATIONS }
       );
-      
+
       for (const { numChildren, numPassing } of samples) {
         if (numPassing > numChildren) continue;
-        
-        const children = Array.from({ length: numChildren }, (_, i) => 
+
+        const children = Array.from({ length: numChildren }, (_, i) =>
           createSimpleGate(`rand-child-${i}`, i < numPassing)
         );
-        
+
         const compositeGate = createParallelCompositeGate(
           `rand-agg-${numChildren}-${numPassing}`,
           children,
           'collect_all'
         );
-        
+
         const runner = new CompositeGateRunner(compositeGate);
         const result = await runner.check();
-        
+
         // Check the result structure
         const expectedPass = numPassing === numChildren;
         expect(result.passed).toBe(expectedPass);
-        
-        const details = result.details as any;
-        
+
+        const details = requireCompositeObservation(result.details);
+
         // When all pass, details has results array; when some fail, details has total/passed/failed
         if (numPassing === numChildren) {
           expect(details.results).toBeDefined();
@@ -662,7 +665,7 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
     it('should execute child gates concurrently with timing verification', async () => {
       const delayMs = 20;
       const numChildren = 4;
-      
+
       const compositeGate: CompositeGateDefinition = {
         schema_version: '1.0',
         type: 'composite',
@@ -686,15 +689,15 @@ describe('Property 29: Composite Gate Parallel Execution', () => {
           }
         }))
       };
-      
+
       const runner = new CompositeGateRunner(compositeGate);
       const overallStart = Date.now();
       const result = await runner.check();
       const overallDuration = Date.now() - overallStart;
-      
+
       // All gates should have passed
       expect(result.passed).toBe(true);
-      
+
       // Overall duration should be approximately delayMs (not numChildren * delayMs)
       // This proves concurrent execution
       const expectedSequentialTime = numChildren * delayMs;

@@ -1,9 +1,10 @@
+import { promiseFromSync } from '@specforge/types';
 /**
  * Session Registry implementation
- * 
+ *
  * Manages session lifecycle (pending → active → history) and
  * maintains AgentIdentity mappings.
- * 
+ *
  * Key Design Decisions:
  * - sessionId is the sole identity key (REQ-6.5, Property 5)
  * - Supports session tree via parentSessionId (REQ-6.4)
@@ -18,7 +19,6 @@ import {
   createPendingIdentity,
   activateIdentity,
   terminateIdentity,
-  updateLastActive,
 } from './AgentIdentity';
 
 /**
@@ -36,7 +36,7 @@ export interface ReplaySummary {
  */
 export class WALWriteError extends Error {
   override readonly cause: Error;
-  
+
   constructor(message: string, cause: Error) {
     super(message);
     this.name = 'WALWriteError';
@@ -60,7 +60,7 @@ export interface SessionSnapshot {
 
 /**
  * Session Registry
- * 
+ *
  * Central registry for managing agent sessions throughout their lifecycle.
  * Provides:
  * - Session registration (pending state)
@@ -68,7 +68,7 @@ export interface SessionSnapshot {
  * - Session termination (active → history)
  * - Session lookup by sessionId
  * - Session tree support via parentSessionId
- * 
+ *
  * Property 5 Compliance: Uses sessionId as sole identity key,
  * never relying on OpenCode-provided agent field.
  */
@@ -92,7 +92,12 @@ export class SessionRegistry {
   private touchThrottleMap: Map<string, number> = new Map();
   private readonly TOUCH_THROTTLE_INTERVAL_MS: number;
 
-  constructor(eventBus: EventBus, sessionTimeoutMs: number = 30 * 60 * 1000, wal?: WAL, touchThrottleMs?: number) {
+  constructor(
+    eventBus: EventBus,
+    sessionTimeoutMs: number = 30 * 60 * 1000,
+    wal?: WAL,
+    touchThrottleMs?: number
+  ) {
     this.eventBus = eventBus;
     this.sessionTimeoutMs = sessionTimeoutMs;
     this.wal = wal;
@@ -107,7 +112,7 @@ export class SessionRegistry {
    * Subscribes to session events from EventBus
    */
   start(): void {
-    this.subscription = this.eventBus.subscribe('session.*', (event) => {
+    this.subscription = this.eventBus.subscribe('session.*', event => {
       void this.handleSessionEvent(event);
     });
   }
@@ -126,7 +131,7 @@ export class SessionRegistry {
 
   /**
    * Start the periodic cleanup timer for expired sessions
-   * 
+   *
    * Runs cleanupExpiredSessions() every 60 seconds.
    * Automatically called on first registerPending if not already started.
    */
@@ -151,7 +156,7 @@ export class SessionRegistry {
 
   /**
    * Run cleanup now: move expired pending/active sessions to history
-   * 
+   *
    * A session is considered expired if it has been inactive for longer
    * than sessionTimeoutMs (configurable in constructor, default 30 min).
    * Only pending and active sessions are affected; history sessions are kept.
@@ -214,7 +219,7 @@ export class SessionRegistry {
       '',
       '',
       null,
-      projectId,
+      projectId
     );
 
     // WAL-first: write to WAL before in-memory mutation
@@ -251,10 +256,10 @@ export class SessionRegistry {
 
   /**
    * Register a new pending session
-   * 
+   *
    * Creates a new AgentIdentity with pending status and stores it
    * in the pending sessions map.
-   * 
+   *
    * @param agentRole Agent role (e.g., "sf-orchestrator")
    * @param workflowRole Workflow role (e.g., "requirements-phase-executor")
    * @param workItemId Work item ID this session is working on
@@ -300,10 +305,10 @@ export class SessionRegistry {
 
   /**
    * Activate a pending session
-   * 
+   *
    * Moves a session from pending to active state.
    * Validates that the spawnIntentId matches the registered session.
-   * 
+   *
    * @param sessionId Session ID to activate
    * @param spawnIntentId Spawn intent ID for validation
    * @returns The activated AgentIdentity, or null if validation fails
@@ -318,12 +323,15 @@ export class SessionRegistry {
     // WAL-first: write to WAL before in-memory mutation
     if (this.wal) {
       try {
-        const event = this.wal.createEvent('session', 'session', 'session.activated', { sessionId, spawnIntentId });
+        const event = this.wal.createEvent('session', 'session', 'session.activated', {
+          sessionId,
+          spawnIntentId,
+        });
         await this.wal.appendEvent(event);
       } catch (err) {
         throw new WALWriteError(
           `WAL write failed for session.activated: ${sessionId}`,
-          err instanceof Error ? err : new Error(String(err)),
+          err instanceof Error ? err : new Error(String(err))
         );
       }
     }
@@ -338,9 +346,9 @@ export class SessionRegistry {
 
   /**
    * Terminate an active session
-   * 
+   *
    * Moves a session from active to history state.
-   * 
+   *
    * @param sessionId Session ID to terminate
    * @returns The terminated AgentIdentity, or null if not found
    */
@@ -354,12 +362,14 @@ export class SessionRegistry {
     // WAL-first: write to WAL before in-memory mutation
     if (this.wal) {
       try {
-        const event = this.wal.createEvent('session', 'session', 'session.terminated', { sessionId });
+        const event = this.wal.createEvent('session', 'session', 'session.terminated', {
+          sessionId,
+        });
         await this.wal.appendEvent(event);
       } catch (err) {
         throw new WALWriteError(
           `WAL write failed for session.terminated: ${sessionId}`,
-          err instanceof Error ? err : new Error(String(err)),
+          err instanceof Error ? err : new Error(String(err))
         );
       }
     }
@@ -374,12 +384,12 @@ export class SessionRegistry {
 
   /**
    * Lookup session by sessionId
-   * 
+   *
    * Searches across all states (pending, active, history).
-   * 
+   *
    * Property 5 Compliance: Uses sessionId as the sole identity key,
    * ensuring identity stability throughout session lifecycle.
-   * 
+   *
    * @param sessionId Session ID to lookup
    * @returns The AgentIdentity if found, null otherwise
    */
@@ -398,32 +408,33 @@ export class SessionRegistry {
 
   /**
    * Get session tree for a work item
-   * 
+   *
    * Returns all sessions associated with a work item, ordered
    * from root to leaf based on parentSessionId relationships.
-   * 
+   *
    * @param workItemId Work item ID
    * @returns Array of AgentIdentity objects in tree order
    */
   getSessionTree(workItemId: string): AgentIdentity[] {
     // First, find all sessions with matching workItemId
-    const matchingSessions = Array.from(this.activeSessions.values())
-      .filter(s => s.workItemId === workItemId);
-    
+    const matchingSessions = Array.from(this.activeSessions.values()).filter(
+      s => s.workItemId === workItemId
+    );
+
     if (matchingSessions.length === 0) {
       return [];
     }
-    
+
     // Find root sessions (no parent or parent not in active sessions)
     const roots: AgentIdentity[] = [];
     const visited = new Set<string>();
-    
+
     for (const session of matchingSessions) {
       if (!session.parentSessionId || !this.activeSessions.has(session.parentSessionId)) {
         roots.push(session);
       }
     }
-    
+
     // If no roots found, use the first session as root
     if (roots.length === 0 && matchingSessions.length > 0) {
       const firstSession = matchingSessions[0];
@@ -431,19 +442,20 @@ export class SessionRegistry {
         roots.push(firstSession);
       }
     }
-    
+
     // Build tree from roots
     const tree: AgentIdentity[] = [];
-    
+
     for (const root of roots) {
       let current: AgentIdentity | null = root;
       while (current && !visited.has(current.sessionId)) {
         visited.add(current.sessionId);
         tree.push(current);
         // Find child with this session as parent
-        current = Array.from(this.activeSessions.values()).find(
-          s => s.parentSessionId === current!.sessionId && s.workItemId === workItemId
-        ) ?? null;
+        current =
+          Array.from(this.activeSessions.values()).find(
+            s => s.parentSessionId === current!.sessionId && s.workItemId === workItemId
+          ) ?? null;
       }
     }
 
@@ -452,7 +464,7 @@ export class SessionRegistry {
 
   /**
    * Get all active sessions
-   * 
+   *
    * @returns Array of all active AgentIdentity objects
    */
   getActiveSessions(): AgentIdentity[] {
@@ -461,7 +473,7 @@ export class SessionRegistry {
 
   /**
    * Get all pending sessions
-   * 
+   *
    * @returns Array of all pending AgentIdentity objects
    */
   getPendingSessions(): AgentIdentity[] {
@@ -470,7 +482,7 @@ export class SessionRegistry {
 
   /**
    * Get all history sessions
-   * 
+   *
    * @returns Array of all history AgentIdentity objects
    */
   getHistorySessions(): AgentIdentity[] {
@@ -479,11 +491,11 @@ export class SessionRegistry {
 
   /**
    * Update session last active timestamp with WAL write throttle
-   * 
+   *
    * In-memory lastActiveAt is updated EVERY call (no throttle).
    * WAL write is throttled: only writes if enough time has passed since
    * the last WAL write for this session, or if this is the first touch.
-   * 
+   *
    * @param sessionId Session ID
    * @returns Updated AgentIdentity, or null if not found
    */
@@ -501,18 +513,16 @@ export class SessionRegistry {
       const lastWalTouch = this.touchThrottleMap.get(sessionId);
       if (lastWalTouch === undefined || now - lastWalTouch >= this.TOUCH_THROTTLE_INTERVAL_MS) {
         try {
-          const event = this.wal.createEvent(
-            'session',
-            'session',
-            'session.touched',
-            { sessionId, lastActiveAt: now },
-          );
+          const event = this.wal.createEvent('session', 'session', 'session.touched', {
+            sessionId,
+            lastActiveAt: now,
+          });
           await this.wal.appendEvent(event);
           this.touchThrottleMap.set(sessionId, now);
         } catch (err) {
           throw new WALWriteError(
             `WAL write failed for session.touched: ${sessionId}`,
-            err instanceof Error ? err : new Error(String(err)),
+            err instanceof Error ? err : new Error(String(err))
           );
         }
       }
@@ -523,7 +533,7 @@ export class SessionRegistry {
 
   /**
    * Check if a session exists
-   * 
+   *
    * @param sessionId Session ID
    * @returns true if session exists in any state
    */
@@ -537,7 +547,7 @@ export class SessionRegistry {
 
   /**
    * Get session count by state
-   * 
+   *
    * @returns Object with counts for each state
    */
   getCounts(): { pending: number; active: number; history: number } {
@@ -550,7 +560,7 @@ export class SessionRegistry {
 
   /**
    * List all sessions across all states (pending, active, history)
-   * 
+   *
    * @returns Array of all AgentIdentity objects
    */
   listSessions(): AgentIdentity[] {
@@ -563,9 +573,9 @@ export class SessionRegistry {
 
   /**
    * Get a session by sessionId across all states
-   * 
+   *
    * Convenience alias for lookupBySessionId.
-   * 
+   *
    * @param sessionId Session ID to look up
    * @returns The AgentIdentity if found, null otherwise
    */
@@ -575,11 +585,11 @@ export class SessionRegistry {
 
   /**
    * Bind a project to a session
-   * 
+   *
    * Associates a project path with a session and updates the session's
    * projectId metadata. The projectId is derived from the last segment
    * of the project path.
-   * 
+   *
    * @param sessionId Session ID to bind
    * @param projectPath Project filesystem path
    * @returns true if the session was found and bound, false otherwise
@@ -603,7 +613,10 @@ export class SessionRegistry {
     // (2) WAL-first: persist event before in-memory mutation
     if (this.wal) {
       try {
-        const event = this.wal.createEvent(sessionId, 'session', 'session.bound', { sessionId, projectPath });
+        const event = this.wal.createEvent(sessionId, 'session', 'session.bound', {
+          sessionId,
+          projectPath,
+        });
         await this.wal.appendEvent(event);
       } catch (err) {
         throw new WALWriteError(
@@ -637,7 +650,7 @@ export class SessionRegistry {
 
   /**
    * Get the project path bound to a session
-   * 
+   *
    * @param sessionId Session ID
    * @returns The project path if bound, null otherwise
    */
@@ -647,15 +660,15 @@ export class SessionRegistry {
 
   /**
    * Handle OpenCode event from the ingest pipeline
-   * 
+   *
    * Routes OpenCode native events to SessionRegistry operations based on subType:
    * - session.created → register a new session if not already registered
    * - session.idle → touch the session to update active timestamp
    * - session.error → terminate the session
    * - other → log WARNING (no error thrown)
-   * 
+   *
    * All operations are safe and idempotent.
-   * 
+   *
    * @param subType OpenCode event subtype (e.g., "session.created")
    * @param data Event payload containing sessionID and optional projectPath
    */
@@ -698,10 +711,14 @@ export class SessionRegistry {
       if (subType === 'session.created' && projectPath) {
         // B2: No longer auto-create sessions. Project must be registered via ingest/register first.
         // If we get here, ingest/register was not called or failed (possibly PROJECT_NOT_INITIALIZED)
-        console.warn(`[SessionRegistry] No session binding for project: ${projectPath}. Project may not be initialized. Skipping auto-registration.`);
+        console.warn(
+          `[SessionRegistry] No session binding for project: ${projectPath}. Project may not be initialized. Skipping auto-registration.`
+        );
         return;
       } else {
-        console.warn(`[SessionRegistry] No session binding found for OpenCode event subtype: ${subType}, projectPath: ${projectPath}`);
+        console.warn(
+          `[SessionRegistry] No session binding found for OpenCode event subtype: ${subType}, projectPath: ${projectPath}`
+        );
         return;
       }
     }
@@ -711,7 +728,12 @@ export class SessionRegistry {
       // alias_bound WAL event: only on FIRST alias establishment
       if (this.wal) {
         try {
-          const aliasEvent = this.wal.createEvent(internalSessionId, 'session', 'session.alias_bound', { sessionId: internalSessionId, opencodeSessionId });
+          const aliasEvent = this.wal.createEvent(
+            internalSessionId,
+            'session',
+            'session.alias_bound',
+            { sessionId: internalSessionId, opencodeSessionId }
+          );
           await this.wal.appendEvent(aliasEvent);
         } catch (err) {
           throw new WALWriteError(
@@ -741,10 +763,10 @@ export class SessionRegistry {
 
   /**
    * Get a snapshot of all sessions for daemon restart reconnect support
-   * 
+   *
    * Returns the full serializable state of the registry.
    * Can be restored via restoreFromSnapshot().
-   * 
+   *
    * @returns SessionSnapshot object
    */
   getSnapshot(): SessionSnapshot {
@@ -759,10 +781,10 @@ export class SessionRegistry {
 
   /**
    * Restore session state from a snapshot
-   * 
+   *
    * Used for daemon restart reconnect support.
    * Replaces all current state with the snapshot data.
-   * 
+   *
    * @param snapshot SessionSnapshot to restore from
    */
   restoreFromSnapshot(snapshot: SessionSnapshot): void {
@@ -781,132 +803,133 @@ export class SessionRegistry {
    * @param events Array of WAL events to replay (already filtered by caller)
    * @returns ReplaySummary with counts of replayed events, restored bindings and aliases
    */
-  async startupReplay(events: Event[]): Promise<ReplaySummary> {
-    // 1. Sort events by monotonicSeq (fallback to timestamp)
-    const sorted = [...events].sort((a, b) =>
-      (a.monotonicSeq ?? 0) - (b.monotonicSeq ?? 0) ||
-      a.ts - b.ts
-    );
+  startupReplay(events: Event[]): Promise<ReplaySummary> {
+    return promiseFromSync(() => {
+      // 1. Sort events by monotonicSeq (fallback to timestamp)
+      const sorted = [...events].sort(
+        (a, b) => (a.monotonicSeq ?? 0) - (b.monotonicSeq ?? 0) || a.ts - b.ts
+      );
 
-    let replayedCount = 0;
-    let restoredBindings = 0;
-    let restoredAliases = 0;
+      let replayedCount = 0;
+      let restoredBindings = 0;
+      let restoredAliases = 0;
 
-    for (const event of sorted) {
-      const action = event.action;
-      const payload = event.payload;
+      for (const event of sorted) {
+        const action = event.action;
+        const payload = event.payload;
 
-      switch (action) {
-        case 'session.registered': {
-          const sessionId = payload.sessionId as string;
-          if (!sessionId) break;
-          // Idempotent: only set if session doesn't exist in any map
-          if (
-            !this.pendingSessions.has(sessionId) &&
-            !this.activeSessions.has(sessionId) &&
-            !this.historySessions.has(sessionId)
-          ) {
-            const identity: AgentIdentity = {
-              sessionId,
-              agentRole: (payload.agentRole as string) ?? '',
-              workflowRole: (payload.workflowRole as string) ?? '',
-              parentSessionId: (payload.parentSessionId as string | null) ?? null,
-              workItemId: (payload.workItemId as string) ?? '',
-              projectId: null,
-              spawnIntentId: (payload.spawnIntentId as string) ?? '',
-              createdAt: event.ts,
-              lastActiveAt: event.ts,
-              status: 'pending',
-            };
-            this.pendingSessions.set(sessionId, identity);
-            if (payload.projectPath) {
-              this.projectBindings.set(sessionId, payload.projectPath as string);
+        switch (action) {
+          case 'session.registered': {
+            const sessionId = payload.sessionId as string;
+            if (!sessionId) break;
+            // Idempotent: only set if session doesn't exist in any map
+            if (
+              !this.pendingSessions.has(sessionId) &&
+              !this.activeSessions.has(sessionId) &&
+              !this.historySessions.has(sessionId)
+            ) {
+              const identity: AgentIdentity = {
+                sessionId,
+                agentRole: (payload.agentRole as string) ?? '',
+                workflowRole: (payload.workflowRole as string) ?? '',
+                parentSessionId: (payload.parentSessionId as string | null) ?? null,
+                workItemId: (payload.workItemId as string) ?? '',
+                projectId: null,
+                spawnIntentId: (payload.spawnIntentId as string) ?? '',
+                createdAt: event.ts,
+                lastActiveAt: event.ts,
+                status: 'pending',
+              };
+              this.pendingSessions.set(sessionId, identity);
+              if (payload.projectPath) {
+                this.projectBindings.set(sessionId, payload.projectPath as string);
+                restoredBindings++;
+              }
+            }
+            replayedCount++;
+            break;
+          }
+
+          case 'session.activated': {
+            const sessionId = payload.sessionId as string;
+            if (!sessionId) break;
+            if (this.pendingSessions.has(sessionId)) {
+              const identity = this.pendingSessions.get(sessionId)!;
+              this.pendingSessions.delete(sessionId);
+              this.activeSessions.set(sessionId, {
+                ...identity,
+                status: 'active',
+                lastActiveAt: event.ts,
+              });
               restoredBindings++;
             }
+            replayedCount++;
+            break;
           }
-          replayedCount++;
-          break;
-        }
 
-        case 'session.activated': {
-          const sessionId = payload.sessionId as string;
-          if (!sessionId) break;
-          if (this.pendingSessions.has(sessionId)) {
-            const identity = this.pendingSessions.get(sessionId)!;
-            this.pendingSessions.delete(sessionId);
-            this.activeSessions.set(sessionId, {
-              ...identity,
-              status: 'active',
-              lastActiveAt: event.ts,
-            });
-            restoredBindings++;
+          case 'session.bound': {
+            const sessionId = payload.sessionId as string;
+            const projectPath = payload.projectPath as string;
+            if (sessionId && projectPath) {
+              this.projectBindings.set(sessionId, projectPath);
+              restoredBindings++;
+            }
+            replayedCount++;
+            break;
           }
-          replayedCount++;
-          break;
-        }
 
-        case 'session.bound': {
-          const sessionId = payload.sessionId as string;
-          const projectPath = payload.projectPath as string;
-          if (sessionId && projectPath) {
-            this.projectBindings.set(sessionId, projectPath);
-            restoredBindings++;
+          case 'session.terminated': {
+            const sessionId = payload.sessionId as string;
+            if (!sessionId) break;
+            if (this.activeSessions.has(sessionId)) {
+              const identity = this.activeSessions.get(sessionId)!;
+              this.activeSessions.delete(sessionId);
+              this.historySessions.set(sessionId, {
+                ...identity,
+                status: 'history',
+                lastActiveAt: event.ts,
+              });
+            }
+            replayedCount++;
+            break;
           }
-          replayedCount++;
-          break;
-        }
 
-        case 'session.terminated': {
-          const sessionId = payload.sessionId as string;
-          if (!sessionId) break;
-          if (this.activeSessions.has(sessionId)) {
-            const identity = this.activeSessions.get(sessionId)!;
-            this.activeSessions.delete(sessionId);
-            this.historySessions.set(sessionId, {
-              ...identity,
-              status: 'history',
-              lastActiveAt: event.ts,
-            });
+          case 'session.alias_bound': {
+            const opencodeSessionId = payload.opencodeSessionId as string;
+            const daemonSessionId = payload.sessionId as string;
+            if (opencodeSessionId && daemonSessionId) {
+              this.sessionAliases.set(opencodeSessionId, daemonSessionId);
+              restoredAliases++;
+            }
+            replayedCount++;
+            break;
           }
-          replayedCount++;
-          break;
-        }
 
-        case 'session.alias_bound': {
-          const opencodeSessionId = payload.opencodeSessionId as string;
-          const daemonSessionId = payload.sessionId as string;
-          if (opencodeSessionId && daemonSessionId) {
-            this.sessionAliases.set(opencodeSessionId, daemonSessionId);
-            restoredAliases++;
+          case 'session.touched': {
+            const sessionId = payload.sessionId as string;
+            if (!sessionId) break;
+            // Update lastActiveAt only (no WAL write — avoid circular writes)
+            if (this.activeSessions.has(sessionId)) {
+              const identity = this.activeSessions.get(sessionId)!;
+              identity.lastActiveAt = (payload.lastActiveAt as number) ?? event.ts;
+            }
+            replayedCount++;
+            break;
           }
-          replayedCount++;
-          break;
-        }
 
-        case 'session.touched': {
-          const sessionId = payload.sessionId as string;
-          if (!sessionId) break;
-          // Update lastActiveAt only (no WAL write — avoid circular writes)
-          if (this.activeSessions.has(sessionId)) {
-            const identity = this.activeSessions.get(sessionId)!;
-            identity.lastActiveAt = (payload.lastActiveAt as number) ?? event.ts;
-          }
-          replayedCount++;
-          break;
+          default:
+            // Skip unknown actions
+            break;
         }
-
-        default:
-          // Skip unknown actions
-          break;
       }
-    }
 
-    return { replayedCount, restoredBindings, restoredAliases };
+      return { replayedCount, restoredBindings, restoredAliases };
+    });
   }
 
   /**
    * Handle session events from EventBus
-   * 
+   *
    * @param event Event to handle
    */
   private async handleSessionEvent(event: Event): Promise<void> {

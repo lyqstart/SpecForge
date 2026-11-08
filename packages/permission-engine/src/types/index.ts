@@ -8,7 +8,7 @@ export interface Permission {
   description?: string;
   action: string;
   resource: string;
-  conditions?: Record<string, any>;
+  conditions?: Record<string, unknown>;
 }
 
 export interface Role {
@@ -29,7 +29,7 @@ export interface PermissionCheckRequest {
   userId: string;
   action: string;
   resource: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 }
 
 export interface PermissionCheckResult {
@@ -47,7 +47,7 @@ export interface PermissionEngineConfig {
   projectId?: string;             // Project identifier for event logging
 }
 
-export type PermissionAction = 
+export type PermissionAction =
   | 'read'
   | 'write'
   | 'create'
@@ -56,7 +56,7 @@ export type PermissionAction =
   | 'execute'
   | string;
 
-export type ResourceType = 
+export type ResourceType =
   | 'spec'
   | 'task'
   | 'requirement'
@@ -73,7 +73,7 @@ export type ResourceType =
 export interface HardRule {
   id: string;
   description: string;
-  condition: (actor: any, action: string, resource: any, context?: Record<string, unknown>) => boolean;
+  condition: (actor: unknown, action: string, resource: unknown, context?: Record<string, unknown>) => boolean;
   effect: 'deny' | 'allow';
   priority: number;
   layer: 'hard';

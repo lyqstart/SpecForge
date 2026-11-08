@@ -1,3 +1,4 @@
+import { scalarText } from '@specforge/types';
 /**
  * governance-invariants-v11.ts — SpecForge v1.1 P0 hard governance invariants
  *
@@ -25,10 +26,7 @@ import {
   validateCandidateProjectSpecBinding,
   validatePassingCandidateGateAttempt,
 } from './candidate-generation-integrity.js';
-import {
-  isSameOrDescendantResolvedPath,
-  resolvedPathIdentity,
-} from './path-identity.js';
+import { isSameOrDescendantResolvedPath, resolvedPathIdentity } from './path-identity.js';
 
 export type GovernanceValidationResult = {
   valid: boolean;
@@ -66,16 +64,16 @@ export const USER_APPROVAL_REQUIRED_PATHS = new Set([
   'contract_change_path',
 ]);
 
-export function normalizeSlash(value: string): string {
-  return String(value ?? '')
-    .replace(/\\/g, '/')
-    .replace(/^\.\//, '');
+export function normalizeSlash(value: unknown): string {
+  if (value !== null && value !== undefined && typeof value !== 'string')
+    throw new TypeError('GOVERNANCE_PATH_STRING_REQUIRED');
+  return (value ?? '').replace(/\\/g, '/').replace(/^\.\//, '');
 }
 
-export function isKnownAgentActor(actor: string | undefined | null): boolean {
-  const value = String(actor ?? '')
-    .trim()
-    .toLowerCase();
+export function isKnownAgentActor(actor: unknown): boolean {
+  if (actor !== null && actor !== undefined && typeof actor !== 'string')
+    throw new TypeError('DECISION_ACTOR_STRING_REQUIRED');
+  const value = (actor ?? '').trim().toLowerCase();
   if (!value) return true;
   if (value === 'unknown') return true;
   if (value.startsWith('sf-')) return true;
@@ -126,7 +124,13 @@ export async function resolveFrozenManifestArtifacts(input: {
     ...(Array.isArray(manifest?.candidates) ? manifest.candidates : []),
   ];
   const acceptedTypes = new Set(
-    input.artifactTypes.map(value => String(value ?? '').trim().toLowerCase()).filter(Boolean)
+    input.artifactTypes
+      .map(value =>
+        String(value ?? '')
+          .trim()
+          .toLowerCase()
+      )
+      .filter(Boolean)
   );
   const resolved: ResolvedWorkItemSpecArtifact[] = [];
   const seen = new Set<string>();
@@ -178,7 +182,7 @@ function manifestCandidatePathToAbsolute(
   workItemId: string,
   candidatePath: unknown
 ): string | null {
-  const normalized = normalizeSlash(String(candidatePath ?? '')).trim();
+  const normalized = normalizeSlash(scalarText(candidatePath ?? '')).trim();
   if (!normalized || normalized.includes('..')) return null;
 
   const wiRoot = workItemRoot(projectRoot, workItemId);
@@ -341,48 +345,50 @@ export async function computeCandidateHash(workItemDir: string): Promise<string>
   return 'sha256:' + hash.digest('hex');
 }
 
-export function targetPathForCandidate(type: string, candidatePath: string): string | null {
-  const t = String(type ?? '').toLowerCase();
+export function targetPathForCandidate(type: unknown, candidatePath: string): string | null {
+  if (type !== undefined && type !== null && typeof type !== 'string')
+    throw new TypeError('CANDIDATE_TYPE_STRING_REQUIRED');
+  const t = (type ?? '').toLowerCase();
   const p = normalizeSlash(candidatePath).toLowerCase();
   const moduleRequirementsCandidate = p.match(
-    /(?:^|\/)candidates\/project\/modules\/([^\/]+)\/requirements\.candidate\.md$/
+    /(?:^|\/)candidates\/project\/modules\/([^/]+)\/requirements\.candidate\.md$/
   );
   if (moduleRequirementsCandidate)
     return `${SPEC_DIR_NAME}/project/modules/${moduleRequirementsCandidate[1]}/requirements.md`;
   const moduleDesignCandidate = p.match(
-    /(?:^|\/)candidates\/project\/modules\/([^\/]+)\/design\.candidate\.md$/
+    /(?:^|\/)candidates\/project\/modules\/([^/]+)\/design\.candidate\.md$/
   );
   if (moduleDesignCandidate)
     return `${SPEC_DIR_NAME}/project/modules/${moduleDesignCandidate[1]}/design.md`;
   const moduleContractsCandidate = p.match(
-    /(?:^|\/)candidates\/project\/modules\/([^\/]+)\/contracts\.candidate\.json$/
+    /(?:^|\/)candidates\/project\/modules\/([^/]+)\/contracts\.candidate\.json$/
   );
   if (moduleContractsCandidate)
     return `${SPEC_DIR_NAME}/project/modules/${moduleContractsCandidate[1]}/contracts.json`;
   if (t === 'data_model' || p.endsWith('/data_model.md') || p === 'data_model.md')
-    return (`${SPEC_DIR_NAME}/project/data_model.md` as const);
+    return `${SPEC_DIR_NAME}/project/data_model.md` as const;
   if (t === 'requirements' || p.endsWith('/requirements.md') || p === 'requirements.md')
-    return (`${SPEC_DIR_NAME}/project/requirements_index.md` as const);
+    return `${SPEC_DIR_NAME}/project/requirements_index.md` as const;
   if (t === 'design' || p.endsWith('/design.md') || p === 'design.md')
-    return (`${SPEC_DIR_NAME}/project/design_index.md` as const);
+    return `${SPEC_DIR_NAME}/project/design_index.md` as const;
   if (
     t === 'trace' ||
     t === 'trace_delta' ||
     p.endsWith('/trace_delta.md') ||
     p === 'trace_delta.md'
   )
-    return (`${SPEC_DIR_NAME}/project/trace_matrix.md` as const);
+    return `${SPEC_DIR_NAME}/project/trace_matrix.md` as const;
   if (t === 'architecture' || p.endsWith('/architecture.md') || p === 'architecture.md')
-    return (`${SPEC_DIR_NAME}/project/architecture.md` as const);
+    return `${SPEC_DIR_NAME}/project/architecture.md` as const;
   if (t === 'glossary' || p.endsWith('/glossary.md') || p === 'glossary.md')
-    return (`${SPEC_DIR_NAME}/project/glossary.md` as const);
+    return `${SPEC_DIR_NAME}/project/glossary.md` as const;
   if (t === 'decisions' || p.endsWith('/decisions.md') || p === 'decisions.md')
-    return (`${SPEC_DIR_NAME}/project/decisions.md` as const);
+    return `${SPEC_DIR_NAME}/project/decisions.md` as const;
   return null;
 }
 
 function normalizeManifestPathForInferenceV12(value: unknown): string {
-  return String(value ?? '')
+  return scalarText(value ?? '')
     .trim()
     .replace(/\\/g, '/')
     .replace(/^\.\//, '');
@@ -407,7 +413,7 @@ function isUsableExplicitManifestEntryForInferenceV12(entry: any): boolean {
   return Boolean(
     normalized.candidate_path &&
     normalized.target_path &&
-    normalized.target_path.startsWith((`${SPEC_DIR_NAME}/project/` as const))
+    normalized.target_path.startsWith(`${SPEC_DIR_NAME}/project/` as const)
   );
 }
 
@@ -492,17 +498,17 @@ function listCanonicalCandidateFiles(workItemDir: string): Array<{
 
   append(
     'candidates/project/architecture.candidate.md',
-    (`${SPEC_DIR_NAME}/project/architecture.md` as const),
+    `${SPEC_DIR_NAME}/project/architecture.md` as const,
     'architecture'
   );
   append(
     'candidates/project/data_model.candidate.md',
-    (`${SPEC_DIR_NAME}/project/data_model.md` as const),
+    `${SPEC_DIR_NAME}/project/data_model.md` as const,
     'data_model'
   );
   append(
     'candidates/project/extension_registry.json',
-    (`${SPEC_DIR_NAME}/project/extension_registry.json` as const),
+    `${SPEC_DIR_NAME}/project/extension_registry.json` as const,
     'extension_registry'
   );
 
@@ -528,12 +534,7 @@ function listCanonicalCandidateFiles(workItemDir: string): Array<{
         'requirements',
         moduleId
       );
-      append(
-        `${candidateRoot}/design.candidate.md`,
-        `${targetRoot}/design.md`,
-        'design',
-        moduleId
-      );
+      append(`${candidateRoot}/design.candidate.md`, `${targetRoot}/design.md`, 'design', moduleId);
       append(
         `${candidateRoot}/contracts.candidate.json`,
         `${targetRoot}/contracts.json`,
@@ -553,7 +554,7 @@ function listCanonicalCandidateFiles(workItemDir: string): Array<{
 
   append(
     'candidates/trace_delta.md',
-    (`${SPEC_DIR_NAME}/project/trace_matrix.md` as const),
+    `${SPEC_DIR_NAME}/project/trace_matrix.md` as const,
     'trace_delta'
   );
   return discovered;
@@ -610,7 +611,7 @@ export function materializeCandidateManifestEntries(
   manifest: any,
   workItemDir: string,
   classificationValue: unknown,
-  platform: NodeJS.Platform = process.platform,
+  platform: NodeJS.Platform = process.platform
 ): CandidateManifestMaterializationResult {
   if (!isClassificationObject(classificationValue)) {
     throw new Error(
@@ -667,9 +668,7 @@ export function materializeCandidateManifestEntries(
   const moduleBoundaryChanged = classification.module_boundary_changed === true;
   const governedModuleDefinitionCandidates = new Set(
     discovered
-      .filter(entry =>
-        moduleDefinitionCandidateHasGovernedCodePathDelta(workItemDir, entry)
-      )
+      .filter(entry => moduleDefinitionCandidateHasGovernedCodePathDelta(workItemDir, entry))
       .map(entry => candidateIdentity(entry.candidate_path))
   );
   const moduleDefinitionRequired =
@@ -723,9 +722,7 @@ export function materializeCandidateManifestEntries(
     discovered.map(entry => [candidateIdentity(entry.candidate_path), entry])
   );
   for (const entry of explicit) {
-    const discoveredEntry = discoveredByCandidate.get(
-      candidateIdentity(entry.candidate_path)
-    );
+    const discoveredEntry = discoveredByCandidate.get(candidateIdentity(entry.candidate_path));
     const effectiveEntry: ManifestEntry = {
       ...entry,
       type: entry.type ?? discoveredEntry?.type,
@@ -746,9 +743,7 @@ export function materializeCandidateManifestEntries(
     includeType(entry.type) &&
     (entry.type !== 'module_definition' ||
       moduleBoundaryChanged ||
-      governedModuleDefinitionCandidates.has(
-        candidateIdentity(entry.candidate_path)
-      ));
+      governedModuleDefinitionCandidates.has(candidateIdentity(entry.candidate_path)));
 
   for (const entry of discovered) {
     if (!includeDiscovered(entry)) continue;
@@ -775,7 +770,11 @@ export function materializeCandidateManifestEntries(
   requireType(requirementsRequired, 'requirements', 'Requirement Classification changed');
   requireType(designRequired, 'design', 'design_changed=true');
   requireType(moduleContractRequired, 'module_contract', 'module_contract_changed=true');
-  requireType(moduleDefinitionRequired, 'module_definition', 'module boundary changed or governed code_paths changed');
+  requireType(
+    moduleDefinitionRequired,
+    'module_definition',
+    'module boundary changed or governed code_paths changed'
+  );
   requireType(moduleTraceRequired, 'module_trace', 'module_boundary_changed=true');
   requireType(
     projectContractChanged,
@@ -914,7 +913,7 @@ export function inferManifestEntries(manifest: any, workItemDir: string): Manife
   ) {
     normalized.push({
       candidate_path: 'candidates/trace_delta.md',
-      target_path: (`${SPEC_DIR_NAME}/project/trace_matrix.md` as const),
+      target_path: `${SPEC_DIR_NAME}/project/trace_matrix.md` as const,
       operation: 'replace',
       type: 'trace_delta',
       inferred: false,
@@ -930,9 +929,30 @@ export function inferManifestEntries(manifest: any, workItemDir: string): Manife
     return true;
   });
 }
-export function entriesSemanticallyEqual(a: ManifestEntry[], b: ManifestEntry[]): boolean {
-  const canon = (items: ManifestEntry[]) =>
-    items
+export function entriesSemanticallyEqual(a: unknown, b: unknown): boolean {
+  type ComparableEntry = Pick<ManifestEntry, 'candidate_path' | 'target_path' | 'type'> & {
+    operation?: string;
+  };
+  function checkedEntries(value: unknown): ComparableEntry[] {
+    if (
+      !Array.isArray(value) ||
+      !value.every((entry: unknown): entry is ComparableEntry => {
+        if (typeof entry !== 'object' || entry === null || Array.isArray(entry)) return false;
+        const record = entry as Record<string, unknown>;
+        return (
+          typeof record.candidate_path === 'string' &&
+          typeof record.target_path === 'string' &&
+          (record.operation === undefined || typeof record.operation === 'string') &&
+          (record.type === undefined || typeof record.type === 'string')
+        );
+      })
+    )
+      throw new Error('MANIFEST_ENTRIES_INVALID');
+    return value;
+  }
+  const canon = (value: unknown) => {
+    const items = checkedEntries(value);
+    return items
       .map(e => ({
         candidate_path: normalizeSlash(e.candidate_path),
         target_path: normalizeSlash(e.target_path),
@@ -942,6 +962,7 @@ export function entriesSemanticallyEqual(a: ManifestEntry[], b: ManifestEntry[])
       .sort((x, y) =>
         `${x.candidate_path}|${x.target_path}`.localeCompare(`${y.candidate_path}|${y.target_path}`)
       );
+  };
   return JSON.stringify(canon(a)) === JSON.stringify(canon(b));
 }
 
@@ -1026,7 +1047,7 @@ async function validateCandidateManifest(
       errors.push(`candidate_manifest.entries[${i}].target_path contains ..`);
     if (
       targetPath &&
-      !targetPath.startsWith((`${SPEC_DIR_NAME}/project/` as const)) &&
+      !targetPath.startsWith(`${SPEC_DIR_NAME}/project/` as const) &&
       !targetPath.startsWith('project/')
     ) {
       errors.push(
@@ -1211,7 +1232,7 @@ export async function validateApprovedUserDecisionForMerge(input: {
     );
   if (decision?.base_spec_version !== facts.manifest?.base_spec_version) {
     errors.push(
-      `user_decision.base_spec_version must equal candidate_manifest.base_spec_version: ${String(decision?.base_spec_version ?? 'missing')} != ${String(facts.manifest?.base_spec_version ?? 'missing')}`,
+      `user_decision.base_spec_version must equal candidate_manifest.base_spec_version: ${String(decision?.base_spec_version ?? 'missing')} != ${String(facts.manifest?.base_spec_version ?? 'missing')}`
     );
   }
   if (typeof decision?.gate_summary_hash === 'string' && decision.gate_summary_hash) {

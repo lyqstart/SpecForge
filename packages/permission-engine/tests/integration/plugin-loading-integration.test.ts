@@ -1,13 +1,14 @@
 /**
  * Plugin Loading Integration Tests
- * 
+ *
  * Tests plugin permission validation at integration level.
  * Validates: Property 28, Requirements 17.2, 17.3
- * 
+ *
  * @specforge/permission-engine
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
 import {
   createRestrictivePluginLoaderIntegration
 } from '../../src/services/plugin-loader-integration';

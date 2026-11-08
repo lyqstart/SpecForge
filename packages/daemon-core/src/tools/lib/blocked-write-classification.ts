@@ -1,3 +1,4 @@
+import { scalarText } from '@specforge/types';
 /**
  * blocked-write-classification.ts
  *
@@ -69,7 +70,7 @@ export interface BlockedWriteClassification {
 }
 
 function normalizeBlockedOperation(value: unknown): string {
-  const op = String(value ?? 'modify').toLowerCase();
+  const op = scalarText(value ?? 'modify').toLowerCase();
   if (op === 'create' || op === 'modify' || op === 'delete') return op;
   return 'modify';
 }
@@ -81,9 +82,13 @@ function resolutionMatchesBlockedPath(
 ): boolean {
   if (!isAuditResolvingResolutionType(resolution.resolution_type)) return false;
   // A resolution explains past attempts; it is not authorization for a later retry.
-  if (blocked.timestamp && (!Number.isFinite(Date.parse(blocked.timestamp)) ||
+  if (
+    blocked.timestamp &&
+    (!Number.isFinite(Date.parse(blocked.timestamp)) ||
       !Number.isFinite(Date.parse(resolution.resolved_at)) ||
-      Date.parse(blocked.timestamp) > Date.parse(resolution.resolved_at))) return false;
+      Date.parse(blocked.timestamp) > Date.parse(resolution.resolved_at))
+  )
+    return false;
 
   const blockedHardStopId = String(blocked.hard_stop_id ?? '').trim();
   const resolutionHardStopId = String(

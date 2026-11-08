@@ -1,23 +1,20 @@
 /**
  * Unit tests for CompositeGateSerializer
  * Tests serialization and deserialization of CompositeGate definitions
- * 
+ *
  * Validates: Requirements 3.1 - compositeGate 序列化/反序列化
  */
 
+import { parseJsonObject } from '@specforge/types';
 import { describe, it, expect } from 'vitest';
+
 import {
-  CompositeGateSerializer,
-  validateCompositeGate,
-  SerializedCompositeGate,
-  SerializedSimpleGate,
-  ValidationResult,
-} from '../../src/gates/CompositeGateSerializer.js';
-import {
+  type SerializedCompositeGate,
+  type SerializedSimpleGate, CompositeGateSerializer, validateCompositeGate } from '../../src/gates/CompositeGateSerializer.js';
+import type {
   SimpleGateDefinition,
-  CompositeGateDefinition,
-  GateDefinition,
-} from '../../src/types.js';
+  CompositeGateDefinition} from '../../src/types.js';
+
 
 describe('CompositeGateSerializer', () => {
   describe('serialize', () => {
@@ -111,7 +108,8 @@ describe('CompositeGateSerializer', () => {
         name: 'Simple Gate',
       };
 
-      expect(() => CompositeGateSerializer.serialize(simpleGate as any)).toThrow(
+      // @ts-expect-error Deliberate malformed runtime input (TS2345); retain the rejection assertion.
+      expect(() => CompositeGateSerializer.serialize(simpleGate)).toThrow(
         'Cannot serialize non-composite gate as CompositeGate'
       );
     });
@@ -178,7 +176,7 @@ describe('CompositeGateSerializer', () => {
             type: 'simple',
             id: 'simple-child',
             name: 'Simple Child',
-          } as SerializedSimpleGate,
+          },
         ],
       };
 
@@ -201,7 +199,7 @@ describe('CompositeGateSerializer', () => {
     });
 
     it('should restore checkFn from context', () => {
-      const checkFn = () => ({ passed: true, reason: 'Restored checkFn' });
+      const checkFn = (): { passed: boolean; reason: string; } => ({ passed: true, reason: 'Restored checkFn' });
 
       const serialized: SerializedCompositeGate = {
         schema_version: '1.0',
@@ -217,7 +215,7 @@ describe('CompositeGateSerializer', () => {
             id: 'child-with-checkfn',
             name: 'Child with CheckFn',
             checkFn: 'myCheckFn',
-          } as SerializedSimpleGate,
+          },
         ],
       };
 
@@ -244,7 +242,8 @@ describe('CompositeGateSerializer', () => {
         children: [],
       };
 
-      expect(() => CompositeGateSerializer.deserialize(invalidSerialized as any)).toThrow(
+      // @ts-expect-error Deliberate malformed runtime input (TS2345); retain the rejection assertion.
+      expect(() => CompositeGateSerializer.deserialize(invalidSerialized)).toThrow(
         'Invalid CompositeGate data'
       );
     });
@@ -288,7 +287,7 @@ describe('CompositeGateSerializer', () => {
       const json = CompositeGateSerializer.toJSON(gate);
 
       expect(typeof json).toBe('string');
-      const parsed = JSON.parse(json);
+      const parsed = parseJsonObject(json);
       expect(parsed.id).toBe('test-composite');
       expect(parsed.mode).toBe('parallel');
     });
@@ -369,7 +368,7 @@ describe('CompositeGateSerializer', () => {
     });
 
     it('should report error for missing schema_version', () => {
-      const invalid: SerializedCompositeGate = {
+      const invalid: Record<string, unknown> = {
         schema_version: '1.0',
         type: 'composite',
         id: 'valid-id',
@@ -378,7 +377,7 @@ describe('CompositeGateSerializer', () => {
         failPolicy: 'collect_all',
         children: [],
       };
-      delete (invalid as any).schema_version;
+      delete (invalid)['schema_version'];
 
       const result = CompositeGateSerializer.validateSerialized(invalid);
 
@@ -387,7 +386,7 @@ describe('CompositeGateSerializer', () => {
     });
 
     it('should report error for invalid type', () => {
-      const invalid: any = {
+      const invalid: Record<string, unknown> = {
         schema_version: '1.0',
         type: 'invalid',
         id: 'valid-id',
@@ -404,12 +403,12 @@ describe('CompositeGateSerializer', () => {
     });
 
     it('should report error for invalid mode', () => {
-      const invalid: SerializedCompositeGate = {
+      const invalid: Record<string, unknown> = {
         schema_version: '1.0',
         type: 'composite',
         id: 'valid-id',
         name: 'Valid Name',
-        mode: 'invalid-mode' as any,
+        mode: 'invalid-mode',
         failPolicy: 'collect_all',
         children: [],
       };
@@ -421,13 +420,13 @@ describe('CompositeGateSerializer', () => {
     });
 
     it('should report error for invalid failPolicy', () => {
-      const invalid: SerializedCompositeGate = {
+      const invalid: Record<string, unknown> = {
         schema_version: '1.0',
         type: 'composite',
         id: 'valid-id',
         name: 'Valid Name',
         mode: 'sequential',
-        failPolicy: 'invalid-policy' as any,
+        failPolicy: 'invalid-policy',
         children: [],
       };
 
@@ -438,7 +437,7 @@ describe('CompositeGateSerializer', () => {
     });
 
     it('should report error for non-array children', () => {
-      const invalid: any = {
+      const invalid: Record<string, unknown> = {
         schema_version: '1.0',
         type: 'composite',
         id: 'valid-id',
@@ -470,7 +469,7 @@ describe('CompositeGateSerializer', () => {
     });
 
     it('should report error for invalid gate type', () => {
-      const invalidGate: any = {
+      const invalidGate: Record<string, unknown> = {
         schema_version: '1.0',
         type: 'unknown',
         id: 'gate-id',
@@ -511,7 +510,7 @@ describe('validateCompositeGate', () => {
   });
 
   it('should report error for missing schema_version', () => {
-    const gate: any = {
+    const gate: Record<string, unknown> = {
       schema_version: '1.0',
       type: 'composite',
       id: 'valid-id',
@@ -522,6 +521,7 @@ describe('validateCompositeGate', () => {
     };
     delete gate.schema_version;
 
+    // @ts-expect-error Deliberate malformed runtime input (TS2345); retain the rejection assertion.
     const result = validateCompositeGate(gate);
 
     expect(result.valid).toBe(false);
@@ -551,7 +551,8 @@ describe('validateCompositeGate', () => {
       type: 'composite',
       id: 'valid-id',
       name: 'Valid Name',
-      mode: 'invalid-mode' as any,
+      // @ts-expect-error Deliberate malformed runtime input (TS2322); retain the rejection assertion.
+      mode: 'invalid-mode',
       failPolicy: 'collect_all',
       children: [
         {
@@ -576,7 +577,8 @@ describe('validateCompositeGate', () => {
       id: 'valid-id',
       name: 'Valid Name',
       mode: 'sequential',
-      failPolicy: 'invalid-policy' as any,
+      // @ts-expect-error Deliberate malformed runtime input (TS2322); retain the rejection assertion.
+      failPolicy: 'invalid-policy',
       children: [
         {
           schema_version: '1.0',
@@ -602,12 +604,13 @@ describe('validateCompositeGate', () => {
       mode: 'sequential',
       failPolicy: 'collect_all',
       children: [
+        // @ts-expect-error Deliberate malformed runtime input (TS2322); retain the rejection assertion.
         {
           schema_version: '1.0',
           type: 'simple',
           // Missing id
           name: 'Child',
-        } as any,
+        },
       ],
     };
 

@@ -1,29 +1,28 @@
 /**
  * Property Test: Composite Gate Sequential Execution
- * 
+ *
  * Feature: workflow, Property 3: Composite Gate Sequential Execution
- * 
- * Validates: Requirements 3.3 - WHEN mode = sequential, THE compositeGate_Runner 
+ *
+ * Validates: Requirements 3.3 - WHEN mode = sequential, THE compositeGate_Runner
  * SHALL execute child gates in definition order.
- * 
+ *
  * For all composite gates with mode = sequential, the execution order of child gates
  * must match the order defined in the children array.
- * 
+ *
  * Derived-From: v6-architecture-overview Property 29 (compositeGate semantics)
  */
 
-import { describe, it, expect } from 'vitest';
 import * as fc from 'fast-check';
+import { describe, it, expect } from 'vitest';
+
 import { CompositeGateRunner } from '../../src/GateRunner';
-import type { CompositeGateDefinition, SimpleGateDefinition, GateResult } from '../../src/types';
+import type { CompositeGateDefinition, SimpleGateDefinition } from '../../src/types';
 
 // Configure iterations as per spec requirements (>= 100)
 const NUM_ITERATIONS = 100;
 
 // Custom arbitraries
-const validStringArb = (minLen: number, maxLen: number) => 
-  fc.string({ minLength: minLen, maxLength: maxLen })
-    .filter(s => s.length > 0 && /^[a-zA-Z0-9_-]+$/.test(s));
+
 
 /**
  * Generate a simple gate definition with execution tracking
@@ -60,39 +59,39 @@ function generateSequentialCompositeGate(
     name: 'Sequential Composite Gate',
     mode: 'sequential',
     failPolicy: fc.sample(fc.constantFrom('fail_fast', 'collect_all'))[0] || 'collect_all',
-    children: Array.from({ length: numChildren }, (_, i) => 
+    children: Array.from({ length: numChildren }, (_, i) =>
       createTrackableGate(`child-gate-${i}`, `Child Gate ${i}`, executionLog)
     )
   };
 }
 
 describe('Property 3: Composite Gate Sequential Execution', () => {
-  
+
   describe('Sequential Execution Order', () => {
     /**
      * Property: Child gates in sequential mode MUST execute in definition order
-     * 
-     * This is the core property being tested - for any composite gate with 
+     *
+     * This is the core property being tested - for any composite gate with
      * mode = sequential, the execution order should match the children array order.
      */
     it('should execute child gates in sequential order (sample-based)', async () => {
       // Sample test with various numbers of children
       const childCounts = fc.sample(fc.integer({ min: 2, max: 8 }), { numRuns: NUM_ITERATIONS });
-      
+
       for (const numChildren of childCounts) {
         const executionLog: string[] = [];
         const compositeGate = generateSequentialCompositeGate(numChildren, executionLog);
-        
+
         const runner = new CompositeGateRunner(compositeGate);
         const result = await runner.check();
-        
+
         // Execution log should contain all child gates
         expect(executionLog.length).toBe(numChildren);
-        
+
         // Execution order should match definition order: child-gate-0, child-gate-1, ...
         const expectedOrder = Array.from({ length: numChildren }, (_, i) => `child-gate-${i}`);
         expect(executionLog).toEqual(expectedOrder);
-        
+
         // All gates should have passed
         expect(result.passed).toBe(true);
       }
@@ -104,10 +103,10 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
      */
     it('should stop on first failure with fail_fast policy', async () => {
       const childCounts = fc.sample(fc.integer({ min: 3, max: 6 }), { numRuns: Math.min(50, NUM_ITERATIONS) });
-      
+
       for (const numChildren of childCounts) {
         const executionLog: string[] = [];
-        
+
         // Create a composite gate with the third child failing
         const children: SimpleGateDefinition[] = [];
         for (let i = 0; i < numChildren; i++) {
@@ -130,7 +129,7 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
             children.push(createTrackableGate(`child-gate-${i}`, `Child Gate ${i}`, executionLog));
           }
         }
-        
+
         const compositeGate: CompositeGateDefinition = {
           schema_version: '1.0',
           type: 'composite',
@@ -140,15 +139,15 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
           failPolicy: 'fail_fast',
           children
         };
-        
+
         const runner = new CompositeGateRunner(compositeGate);
         const result = await runner.check();
-        
+
         // With fail_fast, should have executed only up to the failing gate (3 gates: 0, 1, 2)
         expect(result.passed).toBe(false);
         expect(executionLog.length).toBe(3); // Should have stopped at index 2
         expect(executionLog).toContain('child-gate-2');
-        
+
         // Verify the failed gate was the third one
         expect(result.details?.['failedGateId']).toBe('child-gate-2');
       }
@@ -160,10 +159,10 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
      */
     it('should execute all children with collect_all policy', async () => {
       const childCounts = fc.sample(fc.integer({ min: 3, max: 6 }), { numRuns: Math.min(50, NUM_ITERATIONS) });
-      
+
       for (const numChildren of childCounts) {
         const executionLog: string[] = [];
-        
+
         // Create a composite gate with a failing child in the middle
         // All gates should use checkFn to track execution (not manual push)
         const children: SimpleGateDefinition[] = Array.from({ length: numChildren }, (_, i) => ({
@@ -181,7 +180,7 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
             };
           }
         }));
-        
+
         const compositeGate: CompositeGateDefinition = {
           schema_version: '1.0',
           type: 'composite',
@@ -191,14 +190,14 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
           failPolicy: 'collect_all',
           children
         };
-        
+
         const runner = new CompositeGateRunner(compositeGate);
         const result = await runner.check();
-        
+
         // With collect_all, all children should be executed regardless of failures
         expect(result.passed).toBe(false); // Overall should fail due to child failure
         expect(executionLog.length).toBe(numChildren); // All gates should execute
-        
+
         // Verify all gates were executed in order
         const expectedOrder = Array.from({ length: numChildren }, (_, i) => `child-gate-${i}`);
         expect(executionLog).toEqual(expectedOrder);
@@ -210,8 +209,8 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
      */
     it('should handle single child composite gate correctly', async () => {
       const samples = fc.sample(fc.integer({ min: 1, max: 3 }), { numRuns: NUM_ITERATIONS });
-      
-      for (const _ of samples) {
+
+      for (let iteration = 0; iteration < samples.length; iteration++) {
         const executionLog: string[] = [];
         const compositeGate: CompositeGateDefinition = {
           schema_version: '1.0',
@@ -224,10 +223,10 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
             createTrackableGate('only-child', 'Only Child', executionLog)
           ]
         };
-        
+
         const runner = new CompositeGateRunner(compositeGate);
         const result = await runner.check();
-        
+
         expect(result.passed).toBe(true);
         expect(executionLog).toEqual(['only-child']);
       }
@@ -238,10 +237,10 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
      */
     it('should work with both fail policies in sequential mode', async () => {
       const failPolicies = ['fail_fast', 'collect_all'] as const;
-      
+
       for (const failPolicy of failPolicies) {
         const executionLog: string[] = [];
-        
+
         const compositeGate: CompositeGateDefinition = {
           schema_version: '1.0',
           type: 'composite',
@@ -255,13 +254,13 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
             createTrackableGate('gate-c', 'Gate C', executionLog),
           ]
         };
-        
+
         const runner = new CompositeGateRunner(compositeGate);
         const result = await runner.check();
-        
+
         // All should pass
         expect(result.passed).toBe(true);
-        
+
         // Order should be A, B, C regardless of fail policy
         expect(executionLog).toEqual(['gate-a', 'gate-b', 'gate-c']);
       }
@@ -273,11 +272,11 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
      */
     it('should produce consistent execution order across multiple runs', async () => {
       const samples = fc.sample(fc.integer({ min: 2, max: 5 }), { numRuns: Math.min(30, NUM_ITERATIONS) });
-      
+
       for (const numChildren of samples) {
         // Create a fixed composite gate definition
         const children: SimpleGateDefinition[] = Array.from(
-          { length: numChildren }, 
+          { length: numChildren },
           (_, i) => ({
             schema_version: '1.0' as const,
             type: 'simple' as const,
@@ -291,7 +290,7 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
             })
           })
         );
-        
+
         const compositeGate: CompositeGateDefinition = {
           schema_version: '1.0',
           type: 'composite',
@@ -301,33 +300,33 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
           failPolicy: 'collect_all',
           children
         };
-        
+
         // Run multiple times
-        const runner1 = new CompositeGateRunner(compositeGate);
-        const runner2 = new CompositeGateRunner(compositeGate);
-        const runner3 = new CompositeGateRunner(compositeGate);
-        
+        void (new CompositeGateRunner(compositeGate));
+        void (new CompositeGateRunner(compositeGate));
+        void (new CompositeGateRunner(compositeGate));
+
         // Create execution trackers
         const log1: string[] = [];
-        const log2: string[] = [];
-        const log3: string[] = [];
-        
+
+
+
         // Update checkFns to track execution
-        const updatedChildren = children.map((child, i) => ({
+        const updatedChildren = children.map((child, _i) => ({
           ...child,
           checkFn: () => {
             log1.push(child.id);
             return { schema_version: '1.0', passed: true, reason: 'OK', details: {} };
           }
         }));
-        
+
         const runner = new CompositeGateRunner({
           ...compositeGate,
           children: updatedChildren
         });
-        
+
         await runner.check();
-        
+
         // All runs should have same order
         const expectedOrder = Array.from({ length: numChildren }, (_, i) => `consistent-child-${i}`);
         expect(log1).toEqual(expectedOrder);
@@ -349,10 +348,10 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
         failPolicy: 'collect_all',
         children: []
       };
-      
+
       const runner = new CompositeGateRunner(compositeGate);
       const result = await runner.check();
-      
+
       // Empty composite gate with no children should pass (no failures)
       expect(result.passed).toBe(true);
     });
@@ -363,7 +362,7 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
     it('should handle large number of child gates', async () => {
       const executionLog: string[] = [];
       const numChildren = 20;
-      
+
       const compositeGate: CompositeGateDefinition = {
         schema_version: '1.0',
         type: 'composite',
@@ -375,13 +374,13 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
           createTrackableGate(`large-child-${i}`, `Large Child ${i}`, executionLog)
         )
       };
-      
+
       const runner = new CompositeGateRunner(compositeGate);
       const result = await runner.check();
-      
+
       expect(result.passed).toBe(true);
       expect(executionLog.length).toBe(numChildren);
-      
+
       // Verify sequential order
       const expectedOrder = Array.from({ length: numChildren }, (_, i) => `large-child-${i}`);
       expect(executionLog).toEqual(expectedOrder);
@@ -392,10 +391,10 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
      */
     it('should handle mixed passing and failing gates in order', async () => {
       const childCounts = fc.sample(fc.integer({ min: 4, max: 8 }), { numRuns: Math.min(30, NUM_ITERATIONS) });
-      
+
       for (const numChildren of childCounts) {
         const executionLog: string[] = [];
-        
+
         // Create alternating pass/fail gates
         const children: SimpleGateDefinition[] = Array.from({ length: numChildren }, (_, i) => ({
           schema_version: '1.0' as const,
@@ -412,7 +411,7 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
             };
           }
         }));
-        
+
         const compositeGate: CompositeGateDefinition = {
           schema_version: '1.0',
           type: 'composite',
@@ -422,17 +421,17 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
           failPolicy: 'collect_all',
           children
         };
-        
+
         const runner = new CompositeGateRunner(compositeGate);
         const result = await runner.check();
-        
+
         // Should have executed all gates
         expect(executionLog.length).toBe(numChildren);
-        
+
         // Order should still be sequential
         const expectedOrder = Array.from({ length: numChildren }, (_, i) => `mixed-child-${i}`);
         expect(executionLog).toEqual(expectedOrder);
-        
+
         // Should fail overall due to some failures
         expect(result.passed).toBe(false);
       }
@@ -445,7 +444,7 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
      */
     it('should execute sequentially with custom context', async () => {
       const executionLog: string[] = [];
-      
+
       const compositeGate: CompositeGateDefinition = {
         schema_version: '1.0',
         type: 'composite',
@@ -458,14 +457,14 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
           createTrackableGate('ctx-gate-2', 'Context Gate 2', executionLog),
         ]
       };
-      
+
       const runner = new CompositeGateRunner(compositeGate, {
         customData: 'test-value',
         instanceId: 'test-instance'
       });
-      
+
       const result = await runner.check();
-      
+
       expect(result.passed).toBe(true);
       expect(executionLog).toEqual(['ctx-gate-1', 'ctx-gate-2']);
     });
@@ -480,10 +479,10 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
         { customData: { nested: { value: 123 } } },
         { sessionId: 'session-abc', traceId: 'trace-xyz' }
       ];
-      
+
       for (const ctx of contexts) {
         const executionLog: string[] = [];
-        
+
         const compositeGate: CompositeGateDefinition = {
           schema_version: '1.0',
           type: 'composite',
@@ -497,10 +496,10 @@ describe('Property 3: Composite Gate Sequential Execution', () => {
             createTrackableGate('indep-gate-3', 'Independence Gate 3', executionLog),
           ]
         };
-        
+
         const runner = new CompositeGateRunner(compositeGate, ctx);
         await runner.check();
-        
+
         // Order should always be 1, 2, 3 regardless of context
         expect(executionLog).toEqual(['indep-gate-1', 'indep-gate-2', 'indep-gate-3']);
       }
@@ -522,7 +521,7 @@ describe('Property 3: Fast-check Integration', () => {
         fc.integer({ min: 2, max: 10 }),
         async (numChildren) => {
           const executionLog: string[] = [];
-          
+
           const compositeGate: CompositeGateDefinition = {
             schema_version: '1.0',
             type: 'composite',
@@ -546,15 +545,15 @@ describe('Property 3: Fast-check Integration', () => {
               }
             }))
           };
-          
+
           const runner = new CompositeGateRunner(compositeGate);
           await runner.check();
-          
+
           // Verify all gates executed
           if (executionLog.length !== numChildren) {
             throw new Error(`Expected ${numChildren} executions, got ${executionLog.length}`);
           }
-          
+
           // Verify order matches definition (sequential execution)
           const expectedOrder = Array.from({ length: numChildren }, (_, i) => `fc-child-${i}`);
           for (let i = 0; i < numChildren; i++) {
@@ -580,7 +579,7 @@ describe('Property 3: Fast-check Integration', () => {
         fc.integer({ min: 2, max: 10 }),
         async (numChildren) => {
           const executionLog: string[] = [];
-          
+
           // First child always fails with fail_fast policy
           const compositeGate: CompositeGateDefinition = {
             schema_version: '1.0',
@@ -605,19 +604,19 @@ describe('Property 3: Fast-check Integration', () => {
               }
             }))
           };
-          
+
           const runner = new CompositeGateRunner(compositeGate);
           const result = await runner.check();
-          
+
           // With fail_fast, should stop after first failure (index 0)
           // Execution log should have exactly 1 entry (child-gate-0)
           if (executionLog.length !== 1) {
             throw new Error(`Expected 1 execution with fail_fast, got ${executionLog.length}`);
           }
-          
+
           // Should have stopped at first child
           expect(executionLog[0]).toBe('ff-child-0');
-          
+
           // Result should be failed
           expect(result.passed).toBe(false);
         }

@@ -1,4 +1,5 @@
-import {CURRENT_RELEASE_WORKFLOW_TYPE} from '@specforge/types';
+import { scalarText } from '@specforge/types';
+import { CURRENT_RELEASE_WORKFLOW_TYPE } from '@specforge/types';
 /**
  * sf-v11-gate-run — v1.1 Gate Runner handler
  *
@@ -33,7 +34,10 @@ import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
 import { validateImplementationTruthBeforeSeal } from '../lib/implementation-baseline.js';
 import { validateCandidateProjectSpecBinding } from '../lib/candidate-generation-integrity.js';
 import { readUnresolvedHandoffValidationFailures } from '../lib/agent-handoff-v11.js';
-import { precheckCandidateManifestSchema, candidateManifestSchemaBlockCode } from '../lib/candidate-manifest-owner.js';
+import {
+  precheckCandidateManifestSchema,
+  candidateManifestSchemaBlockCode,
+} from '../lib/candidate-manifest-owner.js';
 import {
   precheckUserDecisionSchema,
   userDecisionSchemaBlockCode,
@@ -88,7 +92,7 @@ const VALID_CANDIDATE_PHASES = new Set<CandidateGatePhaseV11>([
 ]);
 
 function normalizeCandidatePhase(value: unknown): CandidateGatePhaseV11 | null {
-  const normalized = String(value ?? '')
+  const normalized = scalarText(value ?? '')
     .trim()
     .toLowerCase();
   return VALID_CANDIDATE_PHASES.has(normalized as CandidateGatePhaseV11)
@@ -169,8 +173,6 @@ function dedupe<T>(items: T[]): T[] {
   return Array.from(new Set(items));
 }
 
-
-
 function gateStatusCountsAsPassed(report: Pick<GateReportV11, 'status'> | undefined): boolean {
   if (!report) return false;
   return ['passed', 'skipped', 'not_applicable'].includes(String(report.status));
@@ -189,7 +191,7 @@ export function evaluateVerificationGateAutoAdvanceEligibility(input: {
   const requiredGateIds: GateIdV11[] = ['verification_gate', 'formal_version_gate'];
   const missingGateIds = requiredGateIds.filter(gateId => !reportById.has(gateId));
   const failedGateIds = requiredGateIds.filter(
-    gateId => reportById.has(gateId) && !gateStatusCountsAsPassed(reportById.get(gateId)),
+    gateId => reportById.has(gateId) && !gateStatusCountsAsPassed(reportById.get(gateId))
   );
 
   if (missingGateIds.length > 0) {
@@ -224,7 +226,10 @@ export function evaluateVerificationGateAutoAdvanceEligibility(input: {
   };
 }
 
-export function defaultGateAliasForState(currentState: string | null, workflowType?: string): string {
+export function defaultGateAliasForState(
+  currentState: string | null,
+  workflowType?: string
+): string {
   if (currentState === 'merged') return 'post_merge';
   if (
     currentState === 'implementation_done' ||
@@ -246,7 +251,7 @@ export function normalizeGateIds(
   workflowType?: string
 ): { gateIds: GateIdV11[]; aliasesUsed: string[]; directStageGate: boolean } {
   const aliasesUsed: string[] = [];
-  const explicitGateType = String(gateType ?? '')
+  const explicitGateType = scalarText(gateType ?? '')
     .trim()
     .toLowerCase();
   const rawIds =
@@ -426,14 +431,24 @@ export function candidateGateRecoverySequence(
 
 // All unified Candidate Gate aliases, explicit subsets and historical
 // reconciliation share this preflight. It runs before an Attempt is written.
-async function assertCandidateSealed(projectRoot: string, workItemId: string, currentState: string | null): Promise<void> {
+async function assertCandidateSealed(
+  projectRoot: string,
+  workItemId: string,
+  currentState: string | null
+): Promise<void> {
   if (!currentState || !['candidate_prepared', 'gates_running'].includes(currentState)) {
-    throw new Error(`CANDIDATE_SEAL_REQUIRED: current=${currentState ?? 'missing'}; use the formal sf_state_transition candidate_preparing -> candidate_prepared owner before Candidate gates. Recover gates_failed to candidate_preparing and seal again; do not hand-write manifest or hashes.`);
+    throw new Error(
+      `CANDIDATE_SEAL_REQUIRED: current=${currentState ?? 'missing'}; use the formal sf_state_transition candidate_preparing -> candidate_prepared owner before Candidate gates. Recover gates_failed to candidate_preparing and seal again; do not hand-write manifest or hashes.`
+    );
   }
   const dir = workItemRoot(projectRoot, workItemId);
-  const schema = candidateManifestSchemaBlockCode(await precheckCandidateManifestSchema(dir, workItemId));
+  const schema = candidateManifestSchemaBlockCode(
+    await precheckCandidateManifestSchema(dir, workItemId)
+  );
   if (schema) throw new Error(`CANDIDATE_SEAL_INVALID: ${schema}`);
-  const manifest = JSON.parse(await fs.readFile(workItemCandidateManifest(projectRoot, workItemId), 'utf8'));
+  const manifest = JSON.parse(
+    await fs.readFile(workItemCandidateManifest(projectRoot, workItemId), 'utf8')
+  );
   const binding = await validateCandidateProjectSpecBinding({ projectRoot, manifest });
   const truth = await validateImplementationTruthBeforeSeal({ projectRoot, workItemId });
   const handoffs = await readUnresolvedHandoffValidationFailures(dir);
@@ -472,10 +487,7 @@ async function autoAdvanceCandidateState(input: {
   }
 
   const currentState = input.currentState;
-  const recoverableGateStates = [
-    'candidate_prepared',
-    'gates_running',
-  ];
+  const recoverableGateStates = ['candidate_prepared', 'gates_running'];
 
   if (!currentState || !recoverableGateStates.includes(currentState)) {
     return {
@@ -583,7 +595,7 @@ async function autoAdvancePostMergeState(input: {
 
 export function isVerificationRecoverableState(
   currentState: string | null,
-  workflowType?: string,
+  workflowType?: string
 ): boolean {
   return (
     currentState === 'implementation_done' ||
@@ -689,17 +701,11 @@ async function autoAdvanceStateAfterGateRun(input: {
   return autoAdvanceCandidateState(input);
 }
 
-
 export function reconciliationModeForState(
   currentState: string | null,
-  workflowType?: string,
+  workflowType?: string
 ): 'candidate' | 'verification' | null {
-  if (
-    currentState &&
-    ['candidate_prepared', 'gates_running'].includes(
-      currentState,
-    )
-  ) {
+  if (currentState && ['candidate_prepared', 'gates_running'].includes(currentState)) {
     return 'candidate';
   }
   if (isVerificationRecoverableState(currentState, workflowType)) {
@@ -711,7 +717,7 @@ export function reconciliationModeForState(
 async function autoAdvanceReconciledState(
   input: Parameters<typeof autoAdvanceCandidateState>[0] & {
     reconciliationPhase: 'candidate' | 'verification';
-  },
+  }
 ): Promise<any> {
   if (input.reconciliationPhase === 'verification') {
     return autoAdvanceVerificationState(input);
@@ -720,8 +726,8 @@ async function autoAdvanceReconciledState(
 }
 
 function normalizeReconcileAttemptId(value: unknown): string | null {
-  if (value === undefined || value === null || String(value).trim() === '') return null;
-  const normalized = String(value).trim();
+  if (value === undefined || value === null || scalarText(value).trim() === '') return null;
+  const normalized = scalarText(value).trim();
   if (!/^attempt-\d{4}$/.test(normalized)) {
     throw new Error(
       `RECONCILE_ATTEMPT_ID_INVALID: expected attempt-NNNN, got ${JSON.stringify(normalized)}`
@@ -790,8 +796,8 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
   const attemptStartValidation = validateCurrentGateAttemptStartValue(
     await readJsonFile<unknown>(
       path.join(attemptPath, 'attempt-start.json'),
-      'RECONCILE_ATTEMPT_START_INVALID',
-    ),
+      'RECONCILE_ATTEMPT_START_INVALID'
+    )
   );
   if (
     !attemptStartValidation.value ||
@@ -799,17 +805,17 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
     attemptStartValidation.value.work_item_id !== input.workItemId
   ) {
     throw new Error(
-      `RECONCILE_ATTEMPT_START_INVALID: attempt=${input.attemptId}; ${attemptStartValidation.errors.join('; ')}`,
+      `RECONCILE_ATTEMPT_START_INVALID: attempt=${input.attemptId}; ${attemptStartValidation.errors.join('; ')}`
     );
   }
   const attemptResultRaw = await readJsonFile<unknown>(
     path.join(attemptPath, 'attempt-result.json'),
-    'RECONCILE_ATTEMPT_RESULT_INVALID',
+    'RECONCILE_ATTEMPT_RESULT_INVALID'
   );
   const attemptResultValidation = validateCurrentGateAttemptResultValue(attemptResultRaw);
   if (!attemptResultValidation.value || !('summary_status' in attemptResultValidation.value)) {
     throw new Error(
-      `RECONCILE_ATTEMPT_RESULT_INVALID: attempt=${input.attemptId}; ${attemptResultValidation.errors.join('; ')}`,
+      `RECONCILE_ATTEMPT_RESULT_INVALID: attempt=${input.attemptId}; ${attemptResultValidation.errors.join('; ')}`
     );
   }
   const attemptResult = attemptResultValidation.value;
@@ -818,9 +824,7 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
     JSON.stringify(attemptResult.requested_gate_ids) !==
       JSON.stringify(attemptStartValidation.value.requested_gate_ids)
   ) {
-    throw new Error(
-      `RECONCILE_ATTEMPT_IDENTITY_MISMATCH: attempt=${input.attemptId}`,
-    );
+    throw new Error(`RECONCILE_ATTEMPT_IDENTITY_MISMATCH: attempt=${input.attemptId}`);
   }
   if (
     attemptResult.attempt_id !== input.attemptId ||
@@ -830,7 +834,7 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
   ) {
     throw new Error(
       `RECONCILE_ATTEMPT_NOT_PASSED_GATE_RUN: attempt=${input.attemptId}; source=${String(
-        attemptResult.source,
+        attemptResult.source
       )}; summary_status=${String(attemptResult.summary_status)}`
     );
   }
@@ -841,25 +845,23 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
   }
 
   const gatesPath = path.join(attemptPath, 'gates');
-  const gateNames = (await fs.readdir(gatesPath))
-    .filter(name => name.endsWith('.json'))
-    .sort();
+  const gateNames = (await fs.readdir(gatesPath)).filter(name => name.endsWith('.json')).sort();
   const reports: GateReportV11[] = [];
   for (const name of gateNames) {
     const reportRaw = await readJsonFile<unknown>(
       path.join(gatesPath, name),
-      'RECONCILE_GATE_REPORT_INVALID',
+      'RECONCILE_GATE_REPORT_INVALID'
     );
     const reportValidation = validateCurrentGateReportValue(reportRaw);
     if (!reportValidation.value) {
       throw new Error(
-        `RECONCILE_GATE_REPORT_INVALID: file=${name}; ${reportValidation.errors.join('; ')}`,
+        `RECONCILE_GATE_REPORT_INVALID: file=${name}; ${reportValidation.errors.join('; ')}`
       );
     }
     const report = reportValidation.value;
     if (`${report.gate_id}.json` !== name) {
       throw new Error(
-        `RECONCILE_GATE_REPORT_IDENTITY_MISMATCH: file=${name}; gate_id=${report.gate_id}`,
+        `RECONCILE_GATE_REPORT_IDENTITY_MISMATCH: file=${name}; gate_id=${report.gate_id}`
       );
     }
     if (report.work_item_id !== input.workItemId) {
@@ -896,7 +898,7 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
     if (!coverage.ok) {
       throw new Error(
         `RECONCILE_CANDIDATE_GATE_COVERAGE_INVALID: ${coverage.reason}: ${JSON.stringify(
-          coverage.details,
+          coverage.details
         )}`
       );
     }
@@ -920,13 +922,9 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
     const attemptBytes = await fs.readFile(path.join(gatesPath, `${gateId}.json`));
     let latestBytes: Buffer;
     try {
-      latestBytes = await fs.readFile(
-        path.join(input.workItemDir, 'gates', `${gateId}.json`),
-      );
+      latestBytes = await fs.readFile(path.join(input.workItemDir, 'gates', `${gateId}.json`));
     } catch (error: any) {
-      throw new Error(
-        `RECONCILE_LATEST_GATE_VIEW_MISSING: gate=${gateId}: ${error.message}`
-      );
+      throw new Error(`RECONCILE_LATEST_GATE_VIEW_MISSING: gate=${gateId}: ${error.message}`);
     }
     if (!attemptBytes.equals(latestBytes)) {
       throw new Error(`RECONCILE_LATEST_GATE_VIEW_MISMATCH: gate=${gateId}`);
@@ -949,7 +947,7 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
   try {
     inputSnapshotRaw = await readJsonFile<unknown>(
       inputSnapshotPath,
-      'RECONCILE_INPUT_SNAPSHOT_INVALID',
+      'RECONCILE_INPUT_SNAPSHOT_INVALID'
     );
   } catch (error: any) {
     if (String(error?.message ?? '').includes('ENOENT')) {
@@ -960,9 +958,7 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
     throw error;
   }
 
-  const inputSnapshotValidation = validateCurrentGateAttemptInputSnapshotValue(
-    inputSnapshotRaw,
-  );
+  const inputSnapshotValidation = validateCurrentGateAttemptInputSnapshotValue(inputSnapshotRaw);
   const inputSnapshot = inputSnapshotValidation.value;
   if (
     !inputSnapshot ||
@@ -1021,11 +1017,7 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
       );
     }
 
-    const actualKind = stats.isFile()
-      ? 'file'
-      : stats.isDirectory()
-        ? 'directory'
-        : 'other';
+    const actualKind = stats.isFile() ? 'file' : stats.isDirectory() ? 'directory' : 'other';
     if (actualKind !== expectedKind) {
       throw new Error(
         `RECONCILE_INPUT_KIND_CHANGED: path=${inputPath}; expected=${expectedKind}; actual=${actualKind}`
@@ -1035,9 +1027,7 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
     if (actualKind === 'file') {
       const expectedSha256 = String(entry.sha256 ?? '').trim();
       if (!/^[0-9a-f]{64}$/i.test(expectedSha256)) {
-        throw new Error(
-          `RECONCILE_INPUT_SNAPSHOT_HASH_INVALID: path=${inputPath}`
-        );
+        throw new Error(`RECONCILE_INPUT_SNAPSHOT_HASH_INVALID: path=${inputPath}`);
       }
       const bytes = await fs.readFile(resolvedInputPath);
       const actualSha256 = createHash('sha256').update(bytes).digest('hex');
@@ -1067,7 +1057,11 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
 }
 
 registerHandler('sf_v11_gate_run', async (args, context, deps) => {
-  if(args['workflow_type']!==undefined&&args['workflow_type']!==CURRENT_RELEASE_WORKFLOW_TYPE)return {success:false,error:'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW'};
+  if (
+    args['workflow_type'] !== undefined &&
+    args['workflow_type'] !== CURRENT_RELEASE_WORKFLOW_TYPE
+  )
+    return { success: false, error: 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW' };
   const projectRoot =
     (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
@@ -1085,8 +1079,9 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
   }
 
   try {
-    const metadata=await readWorkItemMetadata(workItemDir, workItemId);
-    if(metadata.workflow_type!==CURRENT_RELEASE_WORKFLOW_TYPE)return {success:false,error:'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW'};
+    const metadata = await readWorkItemMetadata(workItemDir, workItemId);
+    if (metadata.workflow_type !== CURRENT_RELEASE_WORKFLOW_TYPE)
+      return { success: false, error: 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW' };
   } catch (error) {
     return {
       success: false,
@@ -1097,7 +1092,12 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
 
   try {
     const workflowFacts = await readWorkflowFacts(projectRoot, workItemId);
-    if(workflowFacts.workflowType!==undefined&&workflowFacts.workflowType!==null&&workflowFacts.workflowType!==CURRENT_RELEASE_WORKFLOW_TYPE)return {success:false,error:'CURRENT_WORKFLOW_IDENTITY_CONFLICT'};
+    if (
+      workflowFacts.workflowType !== undefined &&
+      workflowFacts.workflowType !== null &&
+      workflowFacts.workflowType !== CURRENT_RELEASE_WORKFLOW_TYPE
+    )
+      return { success: false, error: 'CURRENT_WORKFLOW_IDENTITY_CONFLICT' };
     if (!workflowFacts.workflowPath) {
       return {
         success: false,
@@ -1191,12 +1191,12 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
         non_materialized_input_paths: reconciliation.non_materialized_input_paths.map(file =>
           path.isAbsolute(file)
             ? path.relative(projectRoot, file).replace(/\\/g, '/')
-            : file.replace(/\\/g, '/'),
+            : file.replace(/\\/g, '/')
         ),
         checked_input_files: reconciliation.checked_input_files.map(file =>
           path.isAbsolute(file)
             ? path.relative(projectRoot, file).replace(/\\/g, '/')
-            : file.replace(/\\/g, '/'),
+            : file.replace(/\\/g, '/')
         ),
         gate_run_action: 'NOT_PERFORMED',
         new_gate_attempt_created: false,
@@ -1212,11 +1212,23 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
       candidatePhase,
       workflowType
     );
-    const unsealedState = !currentState || ['created', 'intake_ready', 'impact_analyzing', 'impact_analyzed', 'workflow_selected', 'candidate_preparing', 'gates_failed'].includes(currentState);
+    const unsealedState =
+      !currentState ||
+      [
+        'created',
+        'intake_ready',
+        'impact_analyzing',
+        'impact_analyzed',
+        'workflow_selected',
+        'candidate_preparing',
+        'gates_failed',
+      ].includes(currentState);
     if (unsealedState || normalized.gateIds.some(gateId => !POST_CANDIDATE_GATES.has(gateId))) {
       await assertCandidateSealed(projectRoot, workItemId, currentState);
     }
-    if (normalized.gateIds.some(gateId => gateId === 'merge_ready_gate' || gateId === 'close_gate')) {
+    if (
+      normalized.gateIds.some(gateId => gateId === 'merge_ready_gate' || gateId === 'close_gate')
+    ) {
       const decisionSchemaPrecheck = await precheckUserDecisionSchema(workItemDir, workItemId);
       const decisionSchemaBlockCode = userDecisionSchemaBlockCode(decisionSchemaPrecheck);
       if (decisionSchemaBlockCode) {
@@ -1229,7 +1241,7 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
       }
     }
     const ctx = {
-      executionEvidenceConsumer:deps.verificationRuntime,
+      executionEvidenceConsumer: deps.verificationRuntime,
       workItemId,
       workItemDir,
       projectRoot,
@@ -1238,7 +1250,10 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
       candidatePhase,
     };
 
-    const { reports, summaryStatus, summaryPath, attemptId, attemptPath } = await runRequiredGates(normalized.gateIds, ctx);
+    const { reports, summaryStatus, summaryPath, attemptId, attemptPath } = await runRequiredGates(
+      normalized.gateIds,
+      ctx
+    );
 
     const stateAutoAdvance = await autoAdvanceStateAfterGateRun({
       deps,

@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
+import { describe, expect, it } from 'vitest';
+
 import {
   decideWritePermission,
   decideWorkItemArtifactWriteBoundary,

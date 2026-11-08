@@ -1,6 +1,7 @@
 import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
-import type { ObservabilityMode } from './types/index.js';
 import type { PersistentFileSchemaDescriptor } from '@specforge/types/schema-contract';
+
+import type { ObservabilityMode } from './types/index.js';
 
 export const OBSERVABILITY_CONFIG_SCHEMA_VERSION = '1.0' as const;
 

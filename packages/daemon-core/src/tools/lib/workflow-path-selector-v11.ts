@@ -17,6 +17,6 @@
  * - trigger-result.ts         — MatchResultType
  */
 
-export * from './change-classification.js'
-export * from './impact-analysis.js'
-export * from './trigger-result.js'
+export * from './change-classification.js';
+export * from './impact-analysis.js';
+export * from './trigger-result.js';

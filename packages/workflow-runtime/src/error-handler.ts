@@ -481,7 +481,7 @@ export function handleGateError(
   if (error instanceof Error) {
     // Check for specific error patterns with priority
     const errorMessage = error.message.toLowerCase();
-    
+
     // Configuration errors have highest priority (more specific)
     if (errorMessage.includes('configuration error') || errorMessage.includes('config error')) {
       return new GateConfigurationError({
@@ -490,7 +490,7 @@ export function handleGateError(
         configValue: error.message,
       });
     }
-    
+
     // Then validation errors
     if (errorMessage.includes('validation failed') || errorMessage.includes('validation error')) {
       return new GateValidationError({
@@ -498,7 +498,7 @@ export function handleGateError(
         validationErrors: [error.message],
       });
     }
-    
+
     // Then dependency errors
     if (errorMessage.includes('missing dependency') || errorMessage.includes('dependency missing')) {
       return new GateDependencyError({
@@ -506,7 +506,7 @@ export function handleGateError(
         missingDependencies: [error.message],
       });
     }
-    
+
     // Then resource errors
     if (errorMessage.includes('resource limit') || errorMessage.includes('resource error')) {
       return new GateResourceError({
@@ -516,7 +516,7 @@ export function handleGateError(
         currentUsage: 0,
       });
     }
-    
+
     // Generic patterns (lower priority)
     if (errorMessage.includes('invalid') && !errorMessage.includes('configuration')) {
       return new GateValidationError({
@@ -524,7 +524,7 @@ export function handleGateError(
         validationErrors: [error.message],
       });
     }
-    
+
     if (errorMessage.includes('config') && !errorMessage.includes('configuration error')) {
       return new GateConfigurationError({
         gateId,
@@ -585,7 +585,7 @@ export function getErrorType(error: unknown): GateErrorType | 'UNKNOWN' {
   if (error instanceof GateError) {
     return error.errorType;
   }
-  return 'UNKNOWN' as any;
+  return 'UNKNOWN';
 }
 
 /**
@@ -601,7 +601,7 @@ export function createErrorResult(
   details: Record<string, unknown>;
 } {
   const gateError = handleGateError(error, gateId, gateType);
-  
+
   return {
     passed: false,
     reason: gateError.message,

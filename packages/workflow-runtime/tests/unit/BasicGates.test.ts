@@ -3,6 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
+
 import {
   RequirementsGate,
   DesignGate,
@@ -16,7 +17,7 @@ describe('RequirementsGate', () => {
     const gate = new RequirementsGate('req-gate-1', {
       requiredSections: ['Introduction', 'Requirements', 'Acceptance Criteria'],
       minLength: 50,
-    } as any);
+    });
 
     const result = gate.check();
     expect(result.passed).toBe(false); // No content provided
@@ -38,7 +39,7 @@ This is the introduction section.
       `.trim(),
       requiredSections: ['Introduction', 'Requirements', 'Acceptance Criteria'],
       minLength: 50,
-    } as any);
+    });
 
     const result = gate.check();
     expect(result.passed).toBe(true);
@@ -48,7 +49,7 @@ This is the introduction section.
     const gate = new RequirementsGate('req-gate-1', {
       content: '# Introduction\nToo short',
       minLength: 100,
-    } as any);
+    });
 
     const result = gate.check();
     expect(result.passed).toBe(false);
@@ -60,7 +61,7 @@ This is the introduction section.
     const gate = new RequirementsGate('req-gate-1', {
       content: '# Introduction\nOnly introduction',
       requiredSections: ['Introduction', 'Requirements', 'Acceptance Criteria'],
-    } as any);
+    });
 
     const result = gate.check();
     expect(result.passed).toBe(false);
@@ -70,16 +71,16 @@ This is the introduction section.
   it('should pass when no content required', () => {
     const gate = new RequirementsGate('req-gate-1', {
       requireContent: false,
-    } as any);
+    });
 
     const result = gate.check();
     expect(result.passed).toBe(true);
   });
 
   it('should convert to GateDefinition', () => {
-    const gate = new RequirementsGate('my-req-gate', {} as any);
+    const gate = new RequirementsGate('my-req-gate', {});
     const def = gate.toGateDefinition();
-    
+
     expect(def.type).toBe('simple');
     expect(def.id).toBe('my-req-gate');
     expect(def.name).toBe('Requirements Gate');
@@ -100,7 +101,7 @@ Here are the implementation details...
 The data models are...
       `.trim(),
       requiredComponents: ['Architecture', 'Implementation Details', 'Data Models'],
-    } as any);
+    });
 
     const result = gate.check();
     expect(result.passed).toBe(true);
@@ -110,7 +111,7 @@ The data models are...
     const gate = new DesignGate('design-gate-1', {
       content: '# Architecture\nOnly architecture',
       requiredComponents: ['Architecture', 'Implementation Details', 'Data Models'],
-    } as any);
+    });
 
     const result = gate.check();
     expect(result.passed).toBe(false);
@@ -120,16 +121,16 @@ The data models are...
   it('should pass when no content required', () => {
     const gate = new DesignGate('design-gate-1', {
       requireContent: false,
-    } as any);
+    });
 
     const result = gate.check();
     expect(result.passed).toBe(true);
   });
 
   it('should convert to GateDefinition', () => {
-    const gate = new DesignGate('my-design-gate', {} as any);
+    const gate = new DesignGate('my-design-gate', {});
     const def = gate.toGateDefinition();
-    
+
     expect(def.type).toBe('simple');
     expect(def.id).toBe('my-design-gate');
   });
@@ -144,7 +145,7 @@ describe('TasksGate', () => {
         { id: '1.3', title: 'Task 3' },
       ],
       minTasks: 2,
-    } as any);
+    });
 
     const result = gate.check();
     expect(result.passed).toBe(true);
@@ -156,7 +157,7 @@ describe('TasksGate', () => {
         { id: '1.1', title: 'Task 1' },
       ],
       minTasks: 3,
-    } as any);
+    });
 
     const result = gate.check();
     expect(result.passed).toBe(false);
@@ -169,7 +170,7 @@ describe('TasksGate', () => {
         { id: '1.1', title: '' },
         { id: '1.2', title: 'Task 2' },
       ],
-    } as any);
+    });
 
     const result = gate.check();
     expect(result.passed).toBe(false);
@@ -184,7 +185,7 @@ describe('TasksGate', () => {
 - [x] Task 3
       `.trim(),
       minTasks: 1, // Lower the threshold
-    } as any);
+    });
 
     const result = gate.check();
     expect(result.passed).toBe(true);
@@ -193,16 +194,16 @@ describe('TasksGate', () => {
   it('should pass when no content required', () => {
     const gate = new TasksGate('tasks-gate-1', {
       requireContent: false,
-    } as any);
+    });
 
     const result = gate.check();
     expect(result.passed).toBe(true);
   });
 
   it('should convert to GateDefinition', () => {
-    const gate = new TasksGate('my-tasks-gate', {} as any);
+    const gate = new TasksGate('my-tasks-gate', {});
     const def = gate.toGateDefinition();
-    
+
     expect(def.type).toBe('simple');
     expect(def.id).toBe('my-tasks-gate');
   });
@@ -214,7 +215,7 @@ describe('VerificationGate', () => {
       testCount: 10,
       minTests: 5,
       requireTests: true,
-    } as any);
+    });
 
     const result = gate.check();
     expect(result.passed).toBe(true);
@@ -225,7 +226,7 @@ describe('VerificationGate', () => {
       testCount: 3,
       minTests: 5,
       requireTests: true,
-    } as any);
+    });
 
     const result = gate.check();
     expect(result.passed).toBe(false);
@@ -240,17 +241,17 @@ We need to test the following:
 - Integration tests for API
 - Verify the results
       `.trim(),
-    } as any);
+    });
 
     const result = gate.check();
     expect(result.passed).toBe(true);
-    expect((result.details as any)?.keywordsFound).toBeDefined();
+    expect(result.details?.keywordsFound).toBeDefined();
   });
 
   it('should pass when no verification criteria found but not required', () => {
     const gate = new VerificationGate('verif-gate-1', {
       content: 'This is just some random content without tests.',
-    } as any);
+    });
 
     const result = gate.check();
     // The gate actually finds no keywords so it might pass or fail
@@ -261,16 +262,16 @@ We need to test the following:
   it('should pass when no content required', () => {
     const gate = new VerificationGate('verif-gate-1', {
       requireContent: false,
-    } as any);
+    });
 
     const result = gate.check();
     expect(result.passed).toBe(true);
   });
 
   it('should convert to GateDefinition', () => {
-    const gate = new VerificationGate('my-verif-gate', {} as any);
+    const gate = new VerificationGate('my-verif-gate', {});
     const def = gate.toGateDefinition();
-    
+
     expect(def.type).toBe('simple');
     expect(def.id).toBe('my-verif-gate');
   });
@@ -298,12 +299,13 @@ describe('createBasicGate', () => {
   });
 
   it('should throw for unknown gate type', () => {
-    expect(() => createBasicGate('unknown' as any)).toThrow('Unknown gate type');
+    // @ts-expect-error Deliberate malformed runtime input (TS2345); retain the rejection assertion.
+    expect(() => createBasicGate('unknown')).toThrow('Unknown gate type');
   });
 
-  it('should pass config to gate', () => {
-    const gate = createBasicGate('requirements', { minLength: 200 } as any);
-    const result = gate.check() as any;
+  it('should pass config to gate', async () => {
+    const gate = createBasicGate('requirements', { minLength: 200 });
+    const result = await gate.check();
     expect(result.details?.gateId).toBeDefined();
   });
 });

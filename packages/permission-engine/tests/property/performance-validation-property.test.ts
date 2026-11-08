@@ -1,34 +1,35 @@
 /**
  * Performance Validation Tests (Task 6.3)
- * 
+ *
  * Validates: Requirement 3.1 (performance threshold)
- * 
+ *
  * This test file validates performance characteristics of the Permission Engine:
  * 1. Permission decision latency measurements
  * 2. Event logging overhead measurements
  * 3. Rule loading and caching performance
- * 
+ *
  * Note: Performance thresholds are context-dependent. These tests measure
  * relative performance and identify regressions, rather than enforcing
  * arbitrary absolute limits.
- * 
+ *
  * Iterations: ≥ 100 for each performance test category
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fc from 'fast-check';
-import { 
-  PolicyEnforcementPoint, 
-  createPolicyEnforcementPoint, 
-  HttpRequestContext 
-} from '../../src/services/policy-enforcement-point';
-import { EventLogger } from '../../src/services/event-logger';
-import { RuleMergingEngine } from '../../src/services/rule-merging-engine';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+
 import { HardRuleEvaluator } from '../../src/hard-rules';
+import { EventLogger } from '../../src/services/event-logger';
+import {
+  PolicyEnforcementPoint,
+  createPolicyEnforcementPoint,
+  HttpRequestContext
+} from '../../src/services/policy-enforcement-point';
+import { RuleMergingEngine } from '../../src/services/rule-merging-engine';
 
 /**
  * Feature: Performance Validation (Task 6.3)
- * 
+ *
  * Derived-From: permission-engine Task 6.3
  */
 
@@ -68,7 +69,7 @@ describe('Performance Validation: Permission Engine', () => {
      */
     it('permission decision latency is consistent across different request types', async () => {
       const latencies: number[] = [];
-      
+
       // Generate various request types
       const requestTypes = [
         { action: 'spec.read', resourceType: 'spec' },
@@ -81,7 +82,7 @@ describe('Performance Validation: Permission Engine', () => {
 
       for (let i = 0; i < 100; i++) {
         const reqType = requestTypes[i % requestTypes.length];
-        
+
         const request: HttpRequestContext = {
           method: 'GET',
           path: `/api/${reqType.resourceType}s`,
@@ -96,7 +97,7 @@ describe('Performance Validation: Permission Engine', () => {
         const start = performance.now();
         await pep.processRequest(request);
         const end = performance.now();
-        
+
         latencies.push(end - start);
       }
 
@@ -115,7 +116,7 @@ describe('Performance Validation: Permission Engine', () => {
       // Most decisions should be fast (< threshold)
       const slowDecisions = latencies.filter(l => l > LATENCY_THRESHOLD_MS).length;
       const slowPercentage = (slowDecisions / latencies.length) * 100;
-      
+
       // Allow up to 5% to be above threshold (for warm-up, outliers, etc.)
       expect(slowPercentage).toBeLessThan(5);
     });
@@ -209,7 +210,7 @@ describe('Performance Validation: Permission Engine', () => {
      */
     it('logging overhead scales appropriately with payload size', async () => {
       const logger = eventLogger.logger;
-      
+
       // Small payload
       const smallPayload = {
         actor: 'actor-1',
@@ -240,7 +241,7 @@ describe('Performance Validation: Permission Engine', () => {
 
       // Clear and measure large payload
       eventLogger.clearEvents();
-      
+
       const largeStart = performance.now();
       await logger.logPermissionDecision(largePayload);
       const largeEnd = performance.now();

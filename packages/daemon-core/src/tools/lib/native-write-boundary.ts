@@ -1,4 +1,4 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { getHandler } from '../ToolDispatcher';
@@ -10,15 +10,43 @@ import { checkHardStop } from './hard-stop-latch';
 import { appendWriteGuardLog } from './write-guard-log';
 import { isControlledHttpTool } from './controlled-http-tools';
 
-const NON_WRITING_TOOLS = new Set(['read', 'glob', 'grep', 'list', 'webfetch', 'websearch', 'codesearch', 'todowrite', 'todoread', 'question', 'task', 'skill', 'lsp']);
+const NON_WRITING_TOOLS = new Set([
+  'read',
+  'glob',
+  'grep',
+  'list',
+  'webfetch',
+  'websearch',
+  'codesearch',
+  'todowrite',
+  'todoread',
+  'question',
+  'task',
+  'skill',
+  'lsp',
+]);
 
 /** Native transport boundary. All file permission decisions stay with Permission Engine. */
-export async function checkNativeTool(deps: any, projectRoot: string, tool: string, args: Record<string, unknown>) {
-  if (NON_WRITING_TOOLS.has(tool) || isControlledHttpTool(tool) || (tool.startsWith('sf_') && getHandler(tool))) return { allowed: true };
+export async function checkNativeTool(
+  deps: any,
+  projectRoot: string,
+  tool: string,
+  args: Record<string, unknown>
+) {
+  if (
+    NON_WRITING_TOOLS.has(tool) ||
+    isControlledHttpTool(tool) ||
+    (tool.startsWith('sf_') && getHandler(tool))
+  )
+    return { allowed: true };
   // An arbitrary program can write anywhere; a declared file list is not proof.
   // Route shells/patches/unknown tools through controlled execution, never guess.
   if (!['edit', 'write'].includes(tool)) {
-    return { allowed: false, reason: 'NATIVE_TOOL_REQUIRES_CONTROLLED_EXECUTION: sf_safe_bash supports internal reads only; verification requires the approved sf_verification_plan / sf_verification_run path and platform/profile. Scripts, builds and tests were not executed; do not retry through a shell or helper.' };
+    return {
+      allowed: false,
+      reason:
+        'NATIVE_TOOL_REQUIRES_CONTROLLED_EXECUTION: sf_safe_bash supports internal reads only; verification requires the approved sf_verification_plan / sf_verification_run path and platform/profile. Scripts, builds and tests were not executed; do not retry through a shell or helper.',
+    };
   }
   if (!path.isAbsolute(projectRoot) || typeof args.filePath !== 'string' || !args.filePath) {
     return { allowed: false, reason: 'WRITE_TARGET_REQUIRED' };
@@ -34,15 +62,22 @@ export async function checkNativeTool(deps: any, projectRoot: string, tool: stri
   let cursor = root;
   for (const part of relative.split('/')) {
     cursor = path.join(cursor, part);
-    try { if ((await fs.lstat(cursor)).isSymbolicLink()) return { allowed: false, reason: 'WRITE_SYMLINK_FORBIDDEN' }; }
-    catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error; }
+    try {
+      if ((await fs.lstat(cursor)).isSymbolicLink())
+        return { allowed: false, reason: 'WRITE_SYMLINK_FORBIDDEN' };
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    }
   }
-  const active = (await readAuthoritativeWorkItems(deps, projectRoot))
-    .filter(item => !['closed', 'rejected', 'superseded'].includes(item.current_state));
-  if (active.length !== 1) return { allowed: false, reason: 'UNAMBIGUOUS_ACTIVE_WORK_ITEM_REQUIRED' };
+  const active = (await readAuthoritativeWorkItems(deps, projectRoot)).filter(
+    item => !['closed', 'rejected', 'superseded'].includes(item.current_state)
+  );
+  if (active.length !== 1)
+    return { allowed: false, reason: 'UNAMBIGUOUS_ACTIVE_WORK_ITEM_REQUIRED' };
   const state = active[0];
   const wiDir = path.join(projectRoot, SPEC_DIR_NAME, 'work-items', state.work_item_id);
-  if (checkHardStop(projectRoot, state.work_item_id).blocked) return { allowed: false, reason: 'HARD_STOP_ACTIVE' };
+  if (checkHardStop(projectRoot, state.work_item_id).blocked)
+    return { allowed: false, reason: 'HARD_STOP_ACTIVE' };
   const wi = await readWorkItemMetadata(wiDir, state.work_item_id);
   const targetStat = await fs.lstat(absolute).catch(error => {
     if (error.code === 'ENOENT') return null;
@@ -51,16 +86,36 @@ export async function checkNativeTool(deps: any, projectRoot: string, tool: stri
   const operation = targetStat ? 'modify' : 'create';
   // A permitted pathname does not authorize other names for the same inode.
   // Do not inspect or edit those aliases: reject before the host can write.
-  const result = targetStat?.isFile() && targetStat.nlink !== 1
-    ? { allowed: false, violations: ['WRITE_HARDLINK_FORBIDDEN'] }
-    : checkWrite({
-    hasActiveWI: true, callerRole: 'agent', isFrozen: isCandidateFrozenState(state.current_state),
-    workItem: { work_item_id: state.work_item_id, status: state.current_state,
-      code_change_allowed: wi.code_change_allowed === true, code_permission_revoked: wi.code_permission_revoked === true,
-      allowed_write_files: Array.isArray(wi.allowed_write_files) ? wi.allowed_write_files as any : [],
-      workflow_path: typeof wi.workflow_path === 'string' ? wi.workflow_path : null },
-  }, relative, operation);
-  appendWriteGuardLog(wiDir, { timestamp: new Date().toISOString(), path: relative, operation,
-    actor: 'agent', allowed: result.allowed, violations: result.violations, tool });
+  const result =
+    targetStat?.isFile() && targetStat.nlink !== 1
+      ? { allowed: false, violations: ['WRITE_HARDLINK_FORBIDDEN'] }
+      : checkWrite(
+          {
+            hasActiveWI: true,
+            callerRole: 'agent',
+            isFrozen: isCandidateFrozenState(state.current_state),
+            workItem: {
+              work_item_id: state.work_item_id,
+              status: state.current_state,
+              code_change_allowed: wi.code_change_allowed === true,
+              code_permission_revoked: wi.code_permission_revoked === true,
+              allowed_write_files: Array.isArray(wi.allowed_write_files)
+                ? (wi.allowed_write_files as any)
+                : [],
+              workflow_path: typeof wi.workflow_path === 'string' ? wi.workflow_path : null,
+            },
+          },
+          relative,
+          operation
+        );
+  appendWriteGuardLog(wiDir, {
+    timestamp: new Date().toISOString(),
+    path: relative,
+    operation,
+    actor: 'agent',
+    allowed: result.allowed,
+    violations: result.violations,
+    tool,
+  });
   return { ...result, reason: result.violations.join('; ') };
 }

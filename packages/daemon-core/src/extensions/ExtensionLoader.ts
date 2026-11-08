@@ -1,3 +1,4 @@
+import { promiseFromSync } from '@specforge/types';
 /**
  * Extension Loader - Daemon 扩展加载器层
  *
@@ -23,11 +24,7 @@ const CURRENT_WORKFLOW_ID = 'feature_spec';
 /**
  * 扩展类型
  */
-export type ExtensionType = 
-  | 'skill' 
-  | 'tool' 
-  | 'workflow' 
-  | 'gate';
+export type ExtensionType = 'skill' | 'tool' | 'workflow' | 'gate';
 
 /**
  * 扩展加载状态
@@ -57,25 +54,27 @@ export interface ExtensionLoaderConfig {
   extensionsDir?: string;
   enabledExtensions?: {
     skill?: boolean;
-     tool?: boolean;
-     workflow?: boolean;
-     gate?: boolean;
-   };
+    tool?: boolean;
+    workflow?: boolean;
+    gate?: boolean;
+  };
   workflowEngine?: any;
 }
 
 /**
  * 创建默认扩展加载器配置
  */
-export function createDefaultExtensionLoaderConfig(): Required<Omit<ExtensionLoaderConfig, 'workflowEngine'>> {
+export function createDefaultExtensionLoaderConfig(): Required<
+  Omit<ExtensionLoaderConfig, 'workflowEngine'>
+> {
   return {
     extensionsDir: './extensions',
     enabledExtensions: {
       skill: true,
-       tool: true,
-       workflow: true,
-       gate: true,
-     },
+      tool: true,
+      workflow: true,
+      gate: true,
+    },
   };
 }
 
@@ -83,22 +82,24 @@ export const DEFAULT_EXTENSION_LOADER_CONFIG = createDefaultExtensionLoaderConfi
 
 /**
  * 扩展加载器
- * 
+ *
  * 负责在 Daemon 启动时加载所有扩展组件。
  * 支持按需加载和批量加载。
- * 
+ *
  * 使用示例：
  * ```typescript
  * const eventBus = new EventBus();
  * const loader = new ExtensionLoader({ eventBus });
- * 
+ *
  * // 加载所有扩展
  * const result = await loader.loadAll();
- * 
+ *
  * ```
  */
 export class ExtensionLoader {
-  private config: Required<Omit<ExtensionLoaderConfig, 'workflowEngine'>> & { workflowEngine?: any };
+  private config: Required<Omit<ExtensionLoaderConfig, 'workflowEngine'>> & {
+    workflowEngine?: any;
+  };
   private eventBus: EventBus;
   private extensionStates: Map<string, ExtensionLoadState> = new Map();
   private isLoaded: boolean = false;
@@ -112,7 +113,7 @@ export class ExtensionLoader {
         ...config.enabledExtensions,
       },
     };
-    
+
     this.eventBus = eventBus ?? new EventBus();
     this.workflowEngine = config.workflowEngine;
   }
@@ -124,7 +125,7 @@ export class ExtensionLoader {
   /**
    * 发布扩展加载事件
    */
-  private publishEvent(state: ExtensionLoadState): void {
+  private publishEvent(state: ExtensionLoadState): Promise<void> {
     const event: Event = {
       eventId: `ext-${state.type}-${Date.now()}`,
       ts: Date.now(),
@@ -149,13 +150,13 @@ export class ExtensionLoader {
         source: 'daemon',
       },
     };
-    
-    this.eventBus.publish(event);
+
+    return this.eventBus.publish(event);
   }
 
   /**
    * 加载所有启用的扩展
-   * 
+   *
    * @returns 扩展加载结果
    */
   async loadAll(): Promise<ExtensionLoadResult> {
@@ -170,7 +171,7 @@ export class ExtensionLoader {
         try {
           const state = await this.loadByType(type);
           extensions.push(state);
-          
+
           if (!state.loaded) {
             allSuccess = false;
           }
@@ -182,7 +183,7 @@ export class ExtensionLoader {
             error: error instanceof Error ? error : new Error(String(error)),
           };
           extensions.push(state);
-          this.publishEvent(state);
+          await this.publishEvent(state);
           allSuccess = false;
         }
       }
@@ -200,7 +201,7 @@ export class ExtensionLoader {
 
   /**
    * 加载指定类型的扩展
-   * 
+   *
    * @param type 扩展类型
    * @returns 扩展加载状态
    */
@@ -230,7 +231,7 @@ export class ExtensionLoader {
 
       state.loadTimeMs = Date.now() - startTime;
       this.extensionStates.set(key, state);
-      this.publishEvent(state);
+      await this.publishEvent(state);
 
       return state;
     } catch (error) {
@@ -241,9 +242,9 @@ export class ExtensionLoader {
         error: error instanceof Error ? error : new Error(String(error)),
         loadTimeMs: Date.now() - startTime,
       };
-      
+
       this.extensionStates.set(key, state);
-      this.publishEvent(state);
+      await this.publishEvent(state);
 
       return state;
     }
@@ -251,36 +252,40 @@ export class ExtensionLoader {
 
   /**
    * 加载 Skill 扩展
-   * 
+   *
    * 占位实现：Skill Loader 尚未在本任务中实现
    */
-  private async loadSkills(): Promise<ExtensionLoadState> {
-    // TODO: 实现 Skill Loader 集成
-    // 当前返回占位状态
-    return {
-      type: 'skill',
-      name: 'skill-loader',
-      loaded: true, // 占位：认为已加载
-    };
+  private loadSkills(): Promise<ExtensionLoadState> {
+    return promiseFromSync(() => {
+      // TODO: 实现 Skill Loader 集成
+      // 当前返回占位状态
+      return {
+        type: 'skill',
+        name: 'skill-loader',
+        loaded: true, // 占位：认为已加载
+      };
+    });
   }
 
   /**
    * 加载 Tool 扩展
-   * 
+   *
    * 占位实现：Tool Registry 尚未在本任务中实现
    */
-  private async loadTools(): Promise<ExtensionLoadState> {
-    // TODO: 实现 Tool Registry 集成
-    return {
-      type: 'tool',
-      name: 'tool-registry',
-      loaded: true,
-    };
+  private loadTools(): Promise<ExtensionLoadState> {
+    return promiseFromSync(() => {
+      // TODO: 实现 Tool Registry 集成
+      return {
+        type: 'tool',
+        name: 'tool-registry',
+        loaded: true,
+      };
+    });
   }
 
   /**
    * 加载 Workflow 扩展
-   * 
+   *
    * 占位实现：Workflow Loader 尚未在本任务中实现
    */
   private async loadWorkflows(): Promise<ExtensionLoadState> {
@@ -297,12 +302,12 @@ export class ExtensionLoader {
         path.resolve(process.cwd(), 'configs/workflows/builtin'),
         path.resolve(__dirname, '../../../../configs/workflows/builtin'),
       ];
-      const builtinDir = candidateDirs.find((directory) =>
-        existsSync(path.join(directory, CURRENT_WORKFLOW_FILE)),
+      const builtinDir = candidateDirs.find(directory =>
+        existsSync(path.join(directory, CURRENT_WORKFLOW_FILE))
       );
       if (!builtinDir) {
         throw new Error(
-          `Current workflow ${CURRENT_WORKFLOW_FILE} not found in: ${candidateDirs.join(', ')}`,
+          `Current workflow ${CURRENT_WORKFLOW_FILE} not found in: ${candidateDirs.join(', ')}`
         );
       }
 
@@ -310,12 +315,12 @@ export class ExtensionLoader {
       const definition = await loader.loadFromFile(workflowPath);
       if (definition.id !== CURRENT_WORKFLOW_ID) {
         throw new Error(
-          `Current workflow id mismatch: expected ${CURRENT_WORKFLOW_ID}, received ${definition.id}`,
+          `Current workflow id mismatch: expected ${CURRENT_WORKFLOW_ID}, received ${definition.id}`
         );
       }
       if (String(definition.schema_version) !== CURRENT_WORKFLOW_SCHEMA_VERSION) {
         throw new Error(
-          `Current workflow schema mismatch: expected ${CURRENT_WORKFLOW_SCHEMA_VERSION}, received ${definition.schema_version}`,
+          `Current workflow schema mismatch: expected ${CURRENT_WORKFLOW_SCHEMA_VERSION}, received ${definition.schema_version}`
         );
       }
       if (this.workflowEngine) {
@@ -342,21 +347,23 @@ export class ExtensionLoader {
 
   /**
    * 加载 Gate 扩展
-   * 
+   *
    * 占位实现：Gate Registry 尚未在本任务中实现
    */
-  private async loadGates(): Promise<ExtensionLoadState> {
-    // TODO: 实现 Gate Registry 集成
-    return {
-      type: 'gate',
-      name: 'gate-registry',
-      loaded: true,
-    };
+  private loadGates(): Promise<ExtensionLoadState> {
+    return promiseFromSync(() => {
+      // TODO: 实现 Gate Registry 集成
+      return {
+        type: 'gate',
+        name: 'gate-registry',
+        loaded: true,
+      };
+    });
   }
 
   /**
    * 获取所有扩展状态
-   * 
+   *
    * @returns 扩展状态数组
    */
   getState(): ExtensionLoadState[] {
@@ -365,7 +372,7 @@ export class ExtensionLoader {
 
   /**
    * 获取指定扩展状态
-   * 
+   *
    * @param type 扩展类型
    * @param name 扩展名称
    * @returns 扩展状态（如果存在）
@@ -376,18 +383,17 @@ export class ExtensionLoader {
 
   /**
    * 检查扩展是否已加载
-   * 
+   *
    * @returns 是否所有扩展都已加载
    */
   isExtensionLoaded(): boolean {
     return this.isLoaded;
   }
-
 }
 
 /**
  * 创建扩展加载器实例
- * 
+ *
  * @param config 扩展加载器配置
  * @param eventBus EventBus 实例
  * @returns 扩展加载器实例

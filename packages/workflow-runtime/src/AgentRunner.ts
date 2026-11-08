@@ -3,8 +3,10 @@
  * Handles integration with the Agent system for workflow execution
  */
 
+import { promiseFromSync } from '@specforge/types';
 import { v4 as uuidv4 } from 'uuid';
-import { WorkflowInstance, WorkflowDefinition, GateResult } from './types.js';
+
+import type { WorkflowInstance, WorkflowDefinition, GateResult } from './types.js';
 
 // Schema version (REQ-18)
 const SCHEMA_VERSION = '1.0';
@@ -214,7 +216,7 @@ export class AgentScheduler {
     const executionPromise = this.simulateAgentExecution(params, context);
 
     // Add timeout handling (Rule C1: Promise.race with cleanup)
-    let timeoutHandle: ReturnType<typeof setTimeout>;
+    let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
     const timeoutPromise = new Promise<AgentExecutionResult>((_, reject) => {
       timeoutHandle = setTimeout(() => {
         reject(new Error(`Agent execution timeout after ${timeout}ms`));
@@ -237,7 +239,7 @@ export class AgentScheduler {
       }
       throw error;
     } finally {
-      clearTimeout(timeoutHandle!);
+      clearTimeout(timeoutHandle);
     }
   }
 
@@ -320,7 +322,7 @@ export class AgentScheduler {
   /**
    * Cancel a running agent
    */
-  async cancelAgent(sessionId: string): Promise<boolean> {
+   cancelAgent(sessionId: string): Promise<boolean> { return promiseFromSync(() => {
     const agentState = this.activeAgents.get(sessionId);
     if (!agentState) {
       return false;
@@ -334,7 +336,7 @@ export class AgentScheduler {
     this.processQueue();
 
     return true;
-  }
+  }); }
 
   /**
    * Cancel all running agents

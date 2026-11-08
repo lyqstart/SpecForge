@@ -1,3 +1,4 @@
+import { scalarText } from '@specforge/types';
 /**
  * Canonical Architecture/Data/Design/Contract trace semantics.
  *
@@ -66,7 +67,7 @@ function edgeKey(edge: Pick<GovernanceTraceEdge, 'from' | 'relation' | 'to'>): s
 }
 
 function normalizeId(value: unknown): string {
-  return String(value ?? '').trim();
+  return scalarText(value ?? '').trim();
 }
 
 function normalizeRelation(value: unknown): GovernanceTraceRelation | null {
@@ -188,7 +189,7 @@ function isDeltaHeader(cells: string[]): boolean {
 function parseStructuredObject(
   parsed: unknown,
   source: string,
-  operation: 'ADD' | 'REMOVE' | null,
+  operation: 'ADD' | 'REMOVE' | null
 ): { edges: GovernanceTraceEdge[]; operations: GovernanceTraceDeltaOperation[] } {
   const edges: GovernanceTraceEdge[] = [];
   const operations: GovernanceTraceDeltaOperation[] = [];
@@ -258,7 +259,7 @@ function parseStructuredObject(
 function parseStructuredBlocks(
   text: string,
   source: string,
-  operation: 'ADD' | 'REMOVE' | null,
+  operation: 'ADD' | 'REMOVE' | null
 ): { edges: GovernanceTraceEdge[]; operations: GovernanceTraceDeltaOperation[] } {
   const edges: GovernanceTraceEdge[] = [];
   const operations: GovernanceTraceDeltaOperation[] = [];
@@ -302,7 +303,8 @@ function parseRelationTable(input: {
     if (inTable && isSeparatorRow(cells)) continue;
 
     const directRelation = normalizeRelation(cells[1]);
-    const shouldParse = inTable || (!input.requireHeader && cells.length >= 3 && directRelation !== null);
+    const shouldParse =
+      inTable || (!input.requireHeader && cells.length >= 3 && directRelation !== null);
     if (!shouldParse) continue;
 
     if (cells.length < 3) {
@@ -356,7 +358,10 @@ function stripUnmarkedRelationTables(text: string): string {
     }
     kept.push(line);
   }
-  return kept.join('\n').replace(/\n{3,}/g, '\n\n').trimEnd();
+  return kept
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trimEnd();
 }
 
 export function hasLegacyTracePayload(text: string): boolean {
@@ -376,7 +381,7 @@ export function hasLegacyTracePayload(text: string): boolean {
 }
 
 export function normalizeGovernanceTraceEdges(
-  edges: Iterable<GovernanceTraceEdge>,
+  edges: Iterable<GovernanceTraceEdge>
 ): GovernanceTraceEdge[] {
   const byKey = new Map<string, GovernanceTraceEdge>();
   for (const raw of edges) {
@@ -388,13 +393,13 @@ export function normalizeGovernanceTraceEdges(
     if (!byKey.has(edgeKey(edge))) byKey.set(edgeKey(edge), edge);
   }
   return Array.from(byKey.values()).sort((left, right) =>
-    edgeKey(left).localeCompare(edgeKey(right)),
+    edgeKey(left).localeCompare(edgeKey(right))
   );
 }
 
 export function parseGovernanceTrace(
   text: string,
-  source: string,
+  source: string
 ): {
   edges: GovernanceTraceEdge[];
   issues: GovernanceTraceIssue[];
@@ -438,7 +443,7 @@ export function parseGovernanceTrace(
 
 export function parseGovernanceTraceDelta(
   text: string,
-  source: string,
+  source: string
 ): {
   operations: GovernanceTraceDeltaOperation[];
   issues: GovernanceTraceIssue[];
@@ -608,7 +613,7 @@ export function applyGovernanceTraceDelta(input: {
 }
 
 function designOwnerMap(
-  value: ReadonlyMap<string, string> | Record<string, string>,
+  value: ReadonlyMap<string, string> | Record<string, string>
 ): ReadonlyMap<string, string> {
   return value instanceof Map ? value : new Map(Object.entries(value));
 }
@@ -698,8 +703,8 @@ export function getGovernanceContractConsumers(input: {
   }
   return result.sort((left, right) =>
     `${left.contract_id}\u0000${left.design_id}`.localeCompare(
-      `${right.contract_id}\u0000${right.design_id}`,
-    ),
+      `${right.contract_id}\u0000${right.design_id}`
+    )
   );
 }
 
@@ -718,7 +723,7 @@ function renderGovernanceRelationsSection(edges: Iterable<GovernanceTraceEdge>):
 
 export function renderGovernanceTraceDocument(
   baseText: string,
-  edges: Iterable<GovernanceTraceEdge>,
+  edges: Iterable<GovernanceTraceEdge>
 ): string {
   const source = 'trace_document';
   const section = extractMarkedSection({
@@ -730,9 +735,11 @@ export function renderGovernanceTraceDocument(
   });
   const withoutMarked = section.found ? section.stripped : normalizeNewlines(baseText);
   const preserved = stripUnmarkedRelationTables(withoutMarked).trimEnd();
-  return [preserved, renderGovernanceRelationsSection(edges)]
-    .filter(part => part.trim().length > 0)
-    .join('\n\n') + '\n';
+  return (
+    [preserved, renderGovernanceRelationsSection(edges)]
+      .filter(part => part.trim().length > 0)
+      .join('\n\n') + '\n'
+  );
 }
 
 export function renderGovernanceTraceMatrix(edges: Iterable<GovernanceTraceEdge>): string {
@@ -770,13 +777,13 @@ export function renderGovernanceModuleTrace(input: {
       '<!-- GENERATED_FROM_PROJECT_TRACE: module projection; do not edit independently -->',
       '',
     ].join('\n'),
-    projected,
+    projected
   );
 }
 
 export function compareGovernanceTraceEdges(
   expected: Iterable<GovernanceTraceEdge>,
-  actual: Iterable<GovernanceTraceEdge>,
+  actual: Iterable<GovernanceTraceEdge>
 ): { matches: boolean; missing: string[]; unexpected: string[] } {
   const expectedKeys = new Set(normalizeGovernanceTraceEdges(expected).map(edgeKey));
   const actualKeys = new Set(normalizeGovernanceTraceEdges(actual).map(edgeKey));

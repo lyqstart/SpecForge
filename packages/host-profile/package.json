@@ -1,6 +1,6 @@
 {
   "name": "@specforge/host-profile",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "private": true,
   "type": "module",
   "main": "dist/index.js",
@@ -14,7 +14,9 @@
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
-    "clean": "bun ../../scripts/clean-workspace.ts --package host-profile"
+    "clean": "bun ../../scripts/clean-workspace.ts --package host-profile",
+    "lint": "node ../../scripts/lint-package.mjs host-profile",
+    "lint:fix": "node ../../scripts/lint-package.mjs host-profile --fix"
   },
   "dependencies": {
     "@specforge/types": "workspace:*",

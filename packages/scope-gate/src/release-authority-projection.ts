@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+
 import {
   normalizeReleaseAuthority,
   type ReleaseAuthorityDocument,

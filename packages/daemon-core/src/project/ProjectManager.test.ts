@@ -1,3 +1,4 @@
+import { mergeConfigLayers } from '@specforge/configuration';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as fs from 'fs/promises';
 import { ProjectManager, type ProjectSchemaPrecheck } from './ProjectManager';
@@ -62,14 +63,16 @@ function mockCurrentManifestExistsForPaths(projectPaths: string[]) {
   mockReadFile.mockImplementation((p: string) => {
     const np = normalizePath(p);
     if (np.endsWith('.specforge/project/spec_manifest.json')) {
-      return Promise.resolve(JSON.stringify({
-        schema_version: '1.0',
-        project_spec_version: 'PSV-0001',
-        project_name: 'Test project',
-        default_module: 'main',
-        modules: [],
-        project: {},
-      }));
+      return Promise.resolve(
+        JSON.stringify({
+          schema_version: '1.0',
+          project_spec_version: 'PSV-0001',
+          project_name: 'Test project',
+          default_module: 'main',
+          modules: [],
+          project: {},
+        })
+      );
     }
     return Promise.reject(new Error('ENOENT'));
   });
@@ -109,10 +112,10 @@ describe('ProjectManager', () => {
       new EventBus(),
       createMockPathResolver(),
       createMockStateManager(),
-      projectSchemaPrecheck,
+      projectSchemaPrecheck
     );
     // Registration unit isolation; acceptance has independent real-filesystem tests.
-    vi.spyOn(manager, 'getProjectConfiguration').mockResolvedValue({} as any);
+    vi.spyOn(manager, 'getProjectConfiguration').mockResolvedValue(mergeConfigLayers([]));
   });
 
   // -----------------------------------------------------------------------
@@ -201,7 +204,7 @@ describe('ProjectManager', () => {
       mockNoCurrentManifest();
 
       await expect(manager.registerProject('/uninitialized/project')).rejects.toThrow(
-        'PROJECT_NOT_INITIALIZED',
+        'PROJECT_NOT_INITIALIZED'
       );
     });
 
@@ -210,7 +213,7 @@ describe('ProjectManager', () => {
 
       const projectPath = '/old/project';
       await expect(manager.registerProject(projectPath)).rejects.toThrow(
-        'UNSUPPORTED_PROJECT_LAYOUT',
+        'UNSUPPORTED_PROJECT_LAYOUT'
       );
       expect(mockWriteFile).not.toHaveBeenCalled();
     });
@@ -228,26 +231,30 @@ describe('ProjectManager', () => {
 
     it('should fail before runtime directory creation when the manifest schema is unregistered', async () => {
       mockCurrentManifestExistsForPaths(['/future/project']);
-      mockReadFile.mockResolvedValue(JSON.stringify({
-        schema_version: '2.0',
-        project_spec_version: 'PSV-0001',
-      }));
+      mockReadFile.mockResolvedValue(
+        JSON.stringify({
+          schema_version: '2.0',
+          project_spec_version: 'PSV-0001',
+        })
+      );
       projectSchemaPrecheck.mockResolvedValue({
         ok: false,
-        checks: [{
-          descriptorId: 'project-spec-manifest',
-          owner: '@specforge/daemon-core/project-spec',
-          relativePath: '.specforge/project/spec_manifest.json',
-          status: 'blocked',
-          observedSchemaId: '2.0',
-          currentSchemaId: '1.0',
-          errorCode: 'SCHEMA_VERSION_MISMATCH',
-          error: 'unsupported schema_version "2.0"; expected "1.0"',
-        }],
+        checks: [
+          {
+            descriptorId: 'project-spec-manifest',
+            owner: '@specforge/daemon-core/project-spec',
+            relativePath: '.specforge/project/spec_manifest.json',
+            status: 'blocked',
+            observedSchemaId: '2.0',
+            currentSchemaId: '1.0',
+            errorCode: 'SCHEMA_VERSION_MISMATCH',
+            error: 'unsupported schema_version "2.0"; expected "1.0"',
+          },
+        ],
       });
 
       await expect(manager.registerProject('/future/project')).rejects.toThrow(
-        'PROJECT_SCHEMA_PRECHECK_BLOCKED',
+        'PROJECT_SCHEMA_PRECHECK_BLOCKED'
       );
       expect(mockMkdir).not.toHaveBeenCalled();
       expect(projectSchemaPrecheck).toHaveBeenCalledWith('/future/project');

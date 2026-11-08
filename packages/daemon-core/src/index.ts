@@ -1,6 +1,7 @@
+import { Daemon } from './daemon/Daemon';
 /**
  * Daemon Core entry point
- * 
+ *
  * This module initializes and starts the Daemon Core process.
  * Can be used as both a library (import Daemon class) and a CLI entry point.
  */
@@ -30,28 +31,22 @@ export {
 } from './tools/lib/state-machine-v11';
 export type { WIStatusV11 } from './tools/lib/state-machine-v11';
 
-export {
-  runGate,
-  runRequiredGates,
-  registerGate,
+export { runGate, runRequiredGates, registerGate } from './tools/lib/gate-runner-v11';
+export type {
+  GateReportV11,
+  GateIdV11,
+  GateStrictness,
+  GateSummaryStatus,
+  GateContext,
 } from './tools/lib/gate-runner-v11';
-export type { GateReportV11, GateIdV11, GateStrictness, GateSummaryStatus, GateContext } from './tools/lib/gate-runner-v11';
 
-export {
-  executeMerge,
-} from './tools/lib/merge-runner-v11';
+export { executeMerge } from './tools/lib/merge-runner-v11';
 export type { MergeInput, MergeResult, MergeEntryResult } from './tools/lib/merge-runner-v11';
 
-export {
-  checkWrite,
-  performChangedFilesAudit,
-} from './tools/lib/write-guard-v11';
+export { checkWrite, performChangedFilesAudit } from './tools/lib/write-guard-v11';
 export type { WriteGuardContext, WriteCheckResult, AuditResult } from './tools/lib/write-guard-v11';
 
-export {
-  recordUserDecision,
-  invalidateUserDecision,
-} from './tools/lib/user-decision-recorder-v11';
+export { recordUserDecision, invalidateUserDecision } from './tools/lib/user-decision-recorder-v11';
 export type { UserDecisionV11, UserDecisionStatus } from './tools/lib/user-decision-recorder-v11';
 
 export {
@@ -61,16 +56,14 @@ export {
 } from './tools/lib/code-permission-service-v11';
 export type { PermissionState } from './tools/lib/code-permission-service-v11';
 
-export {
-  selectWorkflowPath,
-  generateTriggerResult,
+export { selectWorkflowPath, generateTriggerResult } from './tools/lib/workflow-path-selector-v11';
+export type {
+  WorkflowPath,
+  ChangeClassification,
+  TriggerResult,
 } from './tools/lib/workflow-path-selector-v11';
-export type { WorkflowPath, ChangeClassification, TriggerResult } from './tools/lib/workflow-path-selector-v11';
 
-export {
-  createWorkItem,
-  initializeClosureFiles,
-} from './tools/lib/work-item-lifecycle-v11';
+export { createWorkItem, initializeClosureFiles } from './tools/lib/work-item-lifecycle-v11';
 
 // Type exports
 export type {
@@ -90,12 +83,9 @@ export type {
 
 // CLI entry point (when run directly)
 if (typeof require !== 'undefined' && require.main === module) {
-  const { Daemon } = require('./daemon/Daemon');
-
   async function main(): Promise<void> {
-    const daemon = new Daemon();
-
     try {
+      const daemon = new Daemon();
       await daemon.start();
       console.log('Daemon Core started successfully');
     } catch (error) {
@@ -104,5 +94,7 @@ if (typeof require !== 'undefined' && require.main === module) {
     }
   }
 
-  main();
+  main().catch(() => {
+    process.exitCode = 1;
+  });
 }

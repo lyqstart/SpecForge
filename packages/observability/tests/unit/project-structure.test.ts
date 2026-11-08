@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest';
 import fs from 'fs';
 import path from 'path';
+
+import { describe, it, expect } from 'vitest';
 
 describe('Project Structure', () => {
   it('should have all required configuration files', () => {
@@ -46,7 +47,7 @@ describe('Project Structure', () => {
     expect(packageJson.type).toBe('module');
     expect(packageJson.main).toBe('dist/src/index.js');
     expect(packageJson.types).toBe('dist/src/index.d.ts');
-    
+
     // Check required scripts
     const requiredScripts = ['build', 'test', 'lint', 'format', 'clean'];
     for (const script of requiredScripts) {

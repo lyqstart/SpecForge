@@ -1,19 +1,19 @@
 /**
  * Job Tracker for async command handling.
- * 
+ *
  * Provides:
  * - Unique jobId generation for async commands
  * - Job status tracking (pending, running, completed, failed, blocked, cancelled)
  * - Job waiting with timeout support
  * - Integration with DaemonClient for job queries
  * - Exponential backoff and smart polling optimization (Task 9.2)
- * 
+ *
  * @packageDocumentation
  */
 
 import { randomUUID, createHash } from 'crypto';
 import { createSimpleJobProgress } from '../progress/SimpleProgress';
-import { ExponentialBackoff, SmartPollingStrategy, createSmartPollingStrategy, JobType } from './ExponentialBackoff';
+import { ExponentialBackoff, createSmartPollingStrategy } from './ExponentialBackoff';
 
 /**
  * Job status types
@@ -164,17 +164,17 @@ export class JobWaitTimeoutError extends JobTrackerError {
 
 /**
  * Job Tracker for managing asynchronous commands.
- * 
+ *
  * @example
  * ```typescript
  * const tracker = new JobTracker({
  *   client: daemonClient,
  * });
- * 
+ *
  * // Start an async job
  * const job = await tracker.createJob('spec start', { template: 'default' });
  * console.log(`Job created: ${job.jobId}`);
- * 
+ *
  * // Wait for completion
  * const status = await tracker.waitForJob(job.jobId);
  * console.log(`Job ${status.status}: ${status.result ?? status.error}`);
@@ -188,7 +188,7 @@ export class JobTracker {
 
   /**
    * Create a new JobTracker instance.
-   * 
+   *
    * @param config - Configuration options
    */
   constructor(config: JobTrackerConfig) {
@@ -214,7 +214,7 @@ export class JobTracker {
 
   /**
    * Create a new async job.
-   * 
+   *
    * @param command - The command to execute
    * @param args - Command arguments
    * @returns JobInfo with jobId and initial status
@@ -255,7 +255,7 @@ export class JobTracker {
 
   /**
    * Get the current status of a job.
-   * 
+   *
    * @param jobId - Job identifier
    * @returns Current job status
    * @throws {JobNotFoundError} If job doesn't exist
@@ -268,9 +268,9 @@ export class JobTracker {
       if (error instanceof JobTrackerError && error.code === 'JOB_NOT_FOUND') {
         throw new JobNotFoundError(jobId);
       }
-      
+
       // If daemon is unreachable, throw appropriate error
-      if (error instanceof Error && 
+      if (error instanceof Error &&
           (error.message.includes('ECONNREFUSED') || error.message.includes('ENOTFOUND'))) {
         throw new JobTrackerError({
           message: `无法连接到 Daemon 查询任务 ${jobId}`,
@@ -280,19 +280,19 @@ export class JobTracker {
           cause: error,
         });
       }
-      
+
       throw error;
     }
   }
 
   /**
    * Wait for a job to reach a terminal state.
-   * 
+   *
    * Implements Task 9.2: Async job polling optimization
    * - Exponential backoff for job status polling
    * - Smart polling based on job type and expected duration
    * - Batch status queries where possible
-   * 
+   *
    * @param jobId - Job identifier
    * @param options - Wait options (timeout, interval, onUpdate, mode, command)
    * @returns Final job status
@@ -306,13 +306,13 @@ export class JobTracker {
 
     const startTime = Date.now();
     let lastStatus: JobStatus | null = null;
-    
+
     // Create progress tracker for interactive mode
     const progress = mode === 'human' ? createSimpleJobProgress(true, jobId) : createSimpleJobProgress(false, jobId);
-    
+
     // Create smart polling strategy based on job type
     const pollingStrategy = createSmartPollingStrategy(command);
-    
+
     // Create exponential backoff for this job
     const backoff = new ExponentialBackoff({
       initialInterval: pollingStrategy.getInitialInterval(),
@@ -322,7 +322,7 @@ export class JobTracker {
     });
 
     let attempt = 0;
-    
+
     // Poll until terminal state or timeout
     while (true) {
       // Check for timeout
@@ -339,10 +339,10 @@ export class JobTracker {
       // Get current status
       try {
         lastStatus = await this.getJobStatus(jobId);
-        
+
         // Update progress tracker
         progress.update(lastStatus);
-        
+
         onUpdate?.(lastStatus);
 
         // Check if terminal state reached
@@ -353,7 +353,7 @@ export class JobTracker {
       } catch (error) {
         // Stop progress tracker on error
         progress.stop();
-        
+
         // If job not found during polling, it's an error
         if (error instanceof JobNotFoundError) {
           throw error;
@@ -365,7 +365,7 @@ export class JobTracker {
       // Calculate next interval using exponential backoff
       const nextInterval = backoff.nextInterval(attempt);
       attempt++;
-      
+
       // Wait before next poll
       await this.sleep(nextInterval);
     }
@@ -373,7 +373,7 @@ export class JobTracker {
 
   /**
    * Cancel a running job.
-   * 
+   *
    * @param jobId - Job identifier
    */
   async cancelJob(jobId: string): Promise<void> {
@@ -383,9 +383,9 @@ export class JobTracker {
       if (error instanceof JobTrackerError) {
         throw error;
       }
-      
+
       // If daemon is unreachable
-      if (error instanceof Error && 
+      if (error instanceof Error &&
           (error.message.includes('ECONNREFUSED') || error.message.includes('ENOTFOUND'))) {
         throw new JobTrackerError({
           message: `无法连接到 Daemon 取消任务 ${jobId}`,
@@ -395,14 +395,14 @@ export class JobTracker {
           cause: error,
         });
       }
-      
+
       throw error;
     }
   }
 
   /**
    * List all jobs.
-   * 
+   *
    * @param options - Filter options
    * @returns List of jobs
    */
@@ -421,8 +421,8 @@ export class JobTracker {
     }
 
     const queryString = params.toString();
-    const path = queryString 
-      ? `${this.basePath}?${queryString}` 
+    const path = queryString
+      ? `${this.basePath}?${queryString}`
       : this.basePath;
 
     const response = await this.client.get<JobStatus[]>(path);
@@ -439,7 +439,7 @@ export class JobTracker {
 
 /**
  * Create a JobTracker from a DaemonClient.
- * 
+ *
  * @param daemonClient - DaemonClient instance
  * @param config - Additional config options
  * @returns JobTracker instance

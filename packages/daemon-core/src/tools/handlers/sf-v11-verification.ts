@@ -1,4 +1,4 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 /**
  * sf-v11-verification — §13 Trace/Verification/Evidence handler
  */
@@ -26,7 +26,8 @@ import {
 } from '../lib/evidence-manifest';
 
 registerHandler('sf_v11_verification', async (args, context, deps) => {
-  const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
+  const projectRoot =
+    (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const action = (args['action'] as string) || 'validate';
 
   try {
@@ -59,27 +60,37 @@ registerHandler('sf_v11_verification', async (args, context, deps) => {
 
     if (action === 'validate_verification_report') {
       const content = (args['content'] as string) || '';
-      const reportContent = content || await (async () => {
-        try {
-          return await readFile(path.join(wiDir, 'verification_report.md'), 'utf-8');
-        } catch {
-          return '';
-        }
-      })();
+      const reportContent =
+        content ||
+        (await (async () => {
+          try {
+            return await readFile(path.join(wiDir, 'verification_report.md'), 'utf-8');
+          } catch {
+            return '';
+          }
+        })());
       if (!reportContent) {
-        return { success: false, error: 'verification_report.md not found and no content provided' };
+        return {
+          success: false,
+          error: 'verification_report.md not found and no content provided',
+        };
       }
       // Prefer canonical structured contract validation
       const structured = extractStructuredVerificationReport(reportContent);
       if (structured) {
         const contractResult = validateVerificationReportContract(structured);
-        const executionErrors=await inspectExecutionEvidence({projectRoot,workItemId,report:structured,consumer:deps.verificationRuntime});
+        const executionErrors = await inspectExecutionEvidence({
+          projectRoot,
+          workItemId,
+          report: structured,
+          consumer: deps.verificationRuntime,
+        });
         return {
           success: true,
           action,
           validator: 'verification-report-contract/v1',
-          valid: contractResult.valid&&executionErrors.length===0,
-          errors: [...contractResult.errors,...executionErrors],
+          valid: contractResult.valid && executionErrors.length === 0,
+          errors: [...contractResult.errors, ...executionErrors],
           ...(contractResult.report ? { conclusion: contractResult.report.conclusion } : {}),
         };
       }
@@ -90,9 +101,9 @@ registerHandler('sf_v11_verification', async (args, context, deps) => {
         action,
         validator: 'legacy-markdown-fallback',
         ...result,
-        valid:false,
-        errors:[...result.errors,'STRUCTURED_VERIFICATION_REPORT_REQUIRED'],
-        execution_verified:false,
+        valid: false,
+        errors: [...result.errors, 'STRUCTURED_VERIFICATION_REPORT_REQUIRED'],
+        execution_verified: false,
       };
     }
 
@@ -108,18 +119,46 @@ registerHandler('sf_v11_verification', async (args, context, deps) => {
           };
         }
         try {
-          const raw = await readFile(path.join(wiDir, 'evidence', 'evidence_manifest.json'), 'utf-8');
+          const raw = await readFile(
+            path.join(wiDir, 'evidence', 'evidence_manifest.json'),
+            'utf-8'
+          );
           const parsed = JSON.parse(raw);
           const result = validateEvidenceManifest(parsed, workItemId);
-          const executionErrors=await inspectExecutionEvidence({projectRoot,workItemId,manifest:parsed,consumer:deps.verificationRuntime});
-          return { success: true, action, ...result,valid:result.valid&&executionErrors.length===0,errors:[...result.errors,...executionErrors] };
+          const executionErrors = await inspectExecutionEvidence({
+            projectRoot,
+            workItemId,
+            manifest: parsed,
+            consumer: deps.verificationRuntime,
+          });
+          return {
+            success: true,
+            action,
+            ...result,
+            valid: result.valid && executionErrors.length === 0,
+            errors: [...result.errors, ...executionErrors],
+          };
         } catch {
-          return { success: false, error: 'evidence_manifest.json not found and no manifest provided' };
+          return {
+            success: false,
+            error: 'evidence_manifest.json not found and no manifest provided',
+          };
         }
       }
       const result = validateEvidenceManifest(manifest, workItemId);
-      const executionErrors=await inspectExecutionEvidence({projectRoot,workItemId,manifest,consumer:deps.verificationRuntime});
-      return { success: true, action, ...result,valid:result.valid&&executionErrors.length===0,errors:[...result.errors,...executionErrors] };
+      const executionErrors = await inspectExecutionEvidence({
+        projectRoot,
+        workItemId,
+        manifest,
+        consumer: deps.verificationRuntime,
+      });
+      return {
+        success: true,
+        action,
+        ...result,
+        valid: result.valid && executionErrors.length === 0,
+        errors: [...result.errors, ...executionErrors],
+      };
     }
 
     if (action === 'check_trace_chain') {
@@ -134,7 +173,9 @@ registerHandler('sf_v11_verification', async (args, context, deps) => {
     if (action === 'create_trace_delta') {
       const impact = (args['impact'] as string) || 'none';
       const reason = (args['reason'] as string) || 'No trace impact (§13.2)';
-      const filePath = await writeTraceDeltaTemplate(wiDir, workItemId, impact as any, reason);
+      if (impact !== 'none' && impact !== 'new' && impact !== 'modified' && impact !== 'deleted')
+        return { success: false, error: 'TRACE_IMPACT_INVALID' };
+      const filePath = await writeTraceDeltaTemplate(wiDir, workItemId, impact, reason);
       return { success: true, action, path: filePath };
     }
 

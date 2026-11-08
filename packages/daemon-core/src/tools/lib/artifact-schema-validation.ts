@@ -1,4 +1,5 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { scalarText } from '@specforge/types';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 /**
  * artifact-schema-validation.ts — v1.1 JSON Artifact Schema Validation
  *
@@ -62,13 +63,13 @@ export function resolveCanonicalCandidateWorkflowPath(
   manifestWorkflowPath: unknown,
   canonicalWorkflowPath: unknown
 ): ValidWorkflowPath {
-  const canonical = String(canonicalWorkflowPath ?? '').trim();
+  const canonical = scalarText(canonicalWorkflowPath ?? '').trim();
   if (!VALID_WORKFLOW_PATHS.includes(canonical as ValidWorkflowPath)) {
     throw new Error(
       `CANDIDATE_MANIFEST_CANONICAL_WORKFLOW_PATH_INVALID: "${canonical || 'missing'}"`
     );
   }
-  const manifestValue = String(manifestWorkflowPath ?? '').trim();
+  const manifestValue = scalarText(manifestWorkflowPath ?? '').trim();
   if (!manifestValue || manifestValue === 'unknown') {
     return canonical as ValidWorkflowPath;
   }
@@ -144,7 +145,7 @@ export function validateTriggerResultJson(
   let parsed: any;
   try {
     parsed = JSON.parse(content);
-  } catch (e) {
+  } catch {
     return { valid: false, errors: ['INVALID_JSON: content is not valid JSON'] };
   }
   if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
@@ -221,9 +222,7 @@ export function validateTriggerResultJson(
         }
       }
       if (arraysValid) {
-        const normalized = normalizeImpactScope(
-          parsed.impact_scope as Partial<ImpactScope>
-        );
+        const normalized = normalizeImpactScope(parsed.impact_scope as Partial<ImpactScope>);
         errors.push(...validateImpactScopeFieldKinds(normalized));
       }
     }
@@ -232,10 +231,12 @@ export function validateTriggerResultJson(
   return { valid: errors.length === 0, errors };
 }
 
-function isEvidenceOnlyCandidateManifest(parsed: Record<string, unknown>): boolean {
+function isEvidenceOnlyCandidateManifest(value: unknown): boolean {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
+  const parsed = value as Record<string, unknown>;
   return (
     parsed.no_project_spec_change === true ||
-    String(parsed.project_integration_effect ?? '')
+    scalarText(parsed.project_integration_effect ?? '')
       .trim()
       .toLowerCase() === 'evidence_only'
   );
@@ -251,16 +252,13 @@ export function validateCandidateManifestJson(
   expectedWorkItemId: string,
   workflowPath?: string
 ): SchemaValidationResult {
-  const sharedValidation = validateCurrentCandidateManifestJson(
-    content,
-    expectedWorkItemId,
-  );
+  const sharedValidation = validateCurrentCandidateManifestJson(content, expectedWorkItemId);
   const errors: string[] = [...sharedValidation.errors];
 
   let parsed: any;
   try {
     parsed = JSON.parse(content);
-  } catch (e) {
+  } catch {
     return { valid: false, errors };
   }
 
@@ -301,75 +299,75 @@ export function validateCandidateManifestJson(
       errors.push('MISSING_FIELD: entries must be an array');
     } else {
       const effectiveWorkflowPath = parsed.workflow_path;
-if (Object.prototype.hasOwnProperty.call(parsed, 'contract_promotions')) {
-  if (!Array.isArray(parsed.contract_promotions)) {
-    errors.push('CONTRACT_PROMOTIONS_MUST_BE_ARRAY: contract_promotions must be an array');
-  } else {
-    const seenFrom = new Set<string>();
-    const seenTo = new Set<string>();
-    for (const [index, promotion] of parsed.contract_promotions.entries()) {
-      if (!isPlainObject(promotion)) {
-        errors.push(
-          `CONTRACT_PROMOTION_INVALID_ENTRY: contract_promotions[${index}] must be an object`
-        );
-        continue;
-      }
-      const from = String(promotion.from_contract_id ?? '').trim();
-      const to = String(promotion.to_contract_id ?? '').trim();
-      const migration = String(promotion.migration_conclusion ?? '').trim();
-      const compatibility = String(promotion.compatibility ?? '').trim();
-      if (!from) {
-        errors.push(
-          `CONTRACT_PROMOTION_FROM_REQUIRED: contract_promotions[${index}].from_contract_id is required`
-        );
-      }
-      if (!to) {
-        errors.push(
-          `CONTRACT_PROMOTION_TO_REQUIRED: contract_promotions[${index}].to_contract_id is required`
-        );
-      }
-      if (from && to && from === to) {
-        errors.push(
-          `CONTRACT_PROMOTION_IDS_MUST_DIFFER: contract_promotions[${index}] from/to IDs must differ`
-        );
-      }
-      if (!migration) {
-        errors.push(
-          `CONTRACT_PROMOTION_MIGRATION_REQUIRED: contract_promotions[${index}].migration_conclusion is required`
-        );
-      }
-      if (!compatibility) {
-        errors.push(
-          `CONTRACT_PROMOTION_COMPATIBILITY_REQUIRED: contract_promotions[${index}].compatibility is required`
-        );
-      }
-      if (from) {
-        if (seenFrom.has(from)) {
-          errors.push(
-            `CONTRACT_PROMOTION_DUPLICATE_FROM: from_contract_id "${from}" appears more than once`
-          );
+      if (Object.prototype.hasOwnProperty.call(parsed, 'contract_promotions')) {
+        if (!Array.isArray(parsed.contract_promotions)) {
+          errors.push('CONTRACT_PROMOTIONS_MUST_BE_ARRAY: contract_promotions must be an array');
+        } else {
+          const seenFrom = new Set<string>();
+          const seenTo = new Set<string>();
+          for (const [index, promotion] of parsed.contract_promotions.entries()) {
+            if (!isPlainObject(promotion)) {
+              errors.push(
+                `CONTRACT_PROMOTION_INVALID_ENTRY: contract_promotions[${index}] must be an object`
+              );
+              continue;
+            }
+            const from = scalarText(promotion.from_contract_id ?? '').trim();
+            const to = scalarText(promotion.to_contract_id ?? '').trim();
+            const migration = scalarText(promotion.migration_conclusion ?? '').trim();
+            const compatibility = scalarText(promotion.compatibility ?? '').trim();
+            if (!from) {
+              errors.push(
+                `CONTRACT_PROMOTION_FROM_REQUIRED: contract_promotions[${index}].from_contract_id is required`
+              );
+            }
+            if (!to) {
+              errors.push(
+                `CONTRACT_PROMOTION_TO_REQUIRED: contract_promotions[${index}].to_contract_id is required`
+              );
+            }
+            if (from && to && from === to) {
+              errors.push(
+                `CONTRACT_PROMOTION_IDS_MUST_DIFFER: contract_promotions[${index}] from/to IDs must differ`
+              );
+            }
+            if (!migration) {
+              errors.push(
+                `CONTRACT_PROMOTION_MIGRATION_REQUIRED: contract_promotions[${index}].migration_conclusion is required`
+              );
+            }
+            if (!compatibility) {
+              errors.push(
+                `CONTRACT_PROMOTION_COMPATIBILITY_REQUIRED: contract_promotions[${index}].compatibility is required`
+              );
+            }
+            if (from) {
+              if (seenFrom.has(from)) {
+                errors.push(
+                  `CONTRACT_PROMOTION_DUPLICATE_FROM: from_contract_id "${from}" appears more than once`
+                );
+              }
+              seenFrom.add(from);
+            }
+            if (to) {
+              if (seenTo.has(to)) {
+                errors.push(
+                  `CONTRACT_PROMOTION_DUPLICATE_TO: to_contract_id "${to}" appears more than once`
+                );
+              }
+              seenTo.add(to);
+            }
+          }
+          if (
+            parsed.contract_promotions.length > 0 &&
+            effectiveWorkflowPath !== 'architecture_change_path'
+          ) {
+            errors.push(
+              'CONTRACT_PROMOTION_WORKFLOW_PATH_INVALID: contract_promotions require architecture_change_path'
+            );
+          }
         }
-        seenFrom.add(from);
       }
-      if (to) {
-        if (seenTo.has(to)) {
-          errors.push(
-            `CONTRACT_PROMOTION_DUPLICATE_TO: to_contract_id "${to}" appears more than once`
-          );
-        }
-        seenTo.add(to);
-      }
-    }
-    if (
-      parsed.contract_promotions.length > 0 &&
-      effectiveWorkflowPath !== 'architecture_change_path'
-    ) {
-      errors.push(
-        'CONTRACT_PROMOTION_WORKFLOW_PATH_INVALID: contract_promotions require architecture_change_path'
-      );
-    }
-  }
-}
       const evidenceOnly = isEvidenceOnlyCandidateManifest(parsed);
 
       if (effectiveWorkflowPath === 'code_only_fast_path' && parsed.entries.length > 0) {
@@ -452,10 +450,15 @@ export function validateModuleDefinitionCandidateJson(
     return { valid: false, errors: ['INVALID_JSON: content is not valid JSON'] };
   }
   if (!isPlainObject(parsed)) {
-    return { valid: false, errors: ['MODULE_DEFINITION_SCHEMA_INVALID: <root>: must be an object'] };
+    return {
+      valid: false,
+      errors: ['MODULE_DEFINITION_SCHEMA_INVALID: <root>: must be an object'],
+    };
   }
   const errors: string[] = [];
-  const expected = String(expectedModuleCode ?? '').trim().toUpperCase();
+  const expected = String(expectedModuleCode ?? '')
+    .trim()
+    .toUpperCase();
   const identity = resolveSpecModuleIdentity(parsed);
   const declaredModuleCode = typeof parsed.module_code === 'string' ? parsed.module_code : '';
   if (parsed.schema_version !== '1.0') {
@@ -538,8 +541,13 @@ export function validateModuleContractCandidateJson(
   if (!contracts || typeof contracts !== 'object' || Array.isArray(contracts)) {
     return { valid: false, errors: ['MODULE_CONTRACT_SCHEMA_INVALID: contracts: required object'] };
   }
-  const registryKeys = Object.keys(contracts as Record<string, unknown>).sort();
-  const expectedRegistryKeys = ['extension_points', 'invariants', 'public_interfaces', 'shared_enums'];
+  const registryKeys = Object.keys(contracts).sort();
+  const expectedRegistryKeys = [
+    'extension_points',
+    'invariants',
+    'public_interfaces',
+    'shared_enums',
+  ];
   if (JSON.stringify(registryKeys) !== JSON.stringify(expectedRegistryKeys)) {
     return {
       valid: false,
@@ -593,11 +601,17 @@ export function validateArtifactJson(
   workflowPath?: string
 ): SchemaValidationResult | null {
   const normalizedFilename = filename.replace(/\\/g, '/');
-  const moduleDefinitionCandidate = /(?:^|\/)candidates\/project\/modules\/([^/]+)\/module\.candidate\.json$/i.exec(normalizedFilename);
+  const moduleDefinitionCandidate =
+    /(?:^|\/)candidates\/project\/modules\/([^/]+)\/module\.candidate\.json$/i.exec(
+      normalizedFilename
+    );
   if (moduleDefinitionCandidate?.[1]) {
     return validateModuleDefinitionCandidateJson(content, moduleDefinitionCandidate[1]);
   }
-  const moduleContractCandidate = /(?:^|\/)candidates\/project\/modules\/([^/]+)\/contracts\.candidate\.json$/i.exec(normalizedFilename);
+  const moduleContractCandidate =
+    /(?:^|\/)candidates\/project\/modules\/([^/]+)\/contracts\.candidate\.json$/i.exec(
+      normalizedFilename
+    );
   if (moduleContractCandidate?.[1]) {
     return validateModuleContractCandidateJson(content, moduleContractCandidate[1]);
   }

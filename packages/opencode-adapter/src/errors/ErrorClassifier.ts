@@ -37,14 +37,8 @@
  */
 
 import { ErrorCategory, AdapterError, AdapterErrorCode } from './index';
-import {
-  SessionInitializationError,
-  PromptDeliveryError,
-} from '../OpenCodeAdapter';
-import {
-  ThinPluginClientError,
-  ThinPluginClientErrorCode,
-} from '../integration/ThinPluginClient';
+import { SessionInitializationError, PromptDeliveryError } from '../OpenCodeAdapter';
+import { ThinPluginClientError, ThinPluginClientErrorCode } from '../integration/ThinPluginClient';
 
 // Re-export ErrorCategory so callers can do
 // `import { ErrorCategory, classifyError } from '.../ErrorClassifier'`
@@ -101,16 +95,10 @@ export interface ClassifiedError {
 // Internal helpers
 // --------------------------------------------------------------------------
 
-function isUnsupportedTranslationResult(
-  value: unknown,
-): value is UnsupportedTranslationResult {
+function isUnsupportedTranslationResult(value: unknown): value is UnsupportedTranslationResult {
   if (typeof value !== 'object' || value === null) return false;
   const v = value as Record<string, unknown>;
-  return (
-    v['success'] === false &&
-    v['unsupported'] === true &&
-    typeof v['reason'] === 'string'
-  );
+  return v['success'] === false && v['unsupported'] === true && typeof v['reason'] === 'string';
 }
 
 function readNumberFromDetails(details: unknown, key: string): number | undefined {
@@ -396,7 +384,8 @@ function classifyThinPluginClientError(err: ThinPluginClientError): ClassifiedEr
       break;
     case ThinPluginClientErrorCode.ABORTED:
       retryable = false;
-      suggestion = 'The request was aborted (typically expected on shutdown); no further action required.';
+      suggestion =
+        'The request was aborted (typically expected on shutdown); no further action required.';
       break;
   }
 
@@ -432,9 +421,7 @@ function classifyAdapterError(err: AdapterError): ClassifiedError {
   // INVALID_PARAMS is a caller-side bug; do not pollute the event log.
   const recordEvent = err.code !== AdapterErrorCode.INVALID_PARAMS;
   const eventType =
-    err.code === AdapterErrorCode.VERSION_MISMATCH
-      ? 'adapter.version_mismatch'
-      : 'adapter.error';
+    err.code === AdapterErrorCode.VERSION_MISMATCH ? 'adapter.version_mismatch' : 'adapter.error';
 
   return {
     category: err.category,
@@ -457,7 +444,17 @@ function classifyAdapterError(err: AdapterError): ClassifiedError {
 }
 
 function classifyUnknown(err: unknown): ClassifiedError {
-  const message = err instanceof Error ? err.message : String(err ?? 'unknown error');
+  const message =
+    err instanceof Error
+      ? err.message
+      : typeof err === 'string'
+        ? err
+        : typeof err === 'number' ||
+            typeof err === 'boolean' ||
+            typeof err === 'bigint' ||
+            typeof err === 'symbol'
+          ? String(err)
+          : 'unknown error';
   const lower = message.toLowerCase();
 
   // Heuristic: the word "timeout" is a reasonably reliable signal for

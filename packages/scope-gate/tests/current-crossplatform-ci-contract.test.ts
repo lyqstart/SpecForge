@@ -1,5 +1,7 @@
-import {describe,it,expect} from 'vitest';import {readFileSync,existsSync} from 'node:fs';import path from 'node:path';
-const root=path.resolve(import.meta.dirname,'../../..'),read=(p:string)=>readFileSync(path.join(root,p),'utf8').replace(/\r\n/g,'\n');
+import {readFileSync,existsSync} from 'node:fs';import path from 'node:path';
+
+import {describe,it,expect} from 'vitest';
+const root=path.resolve(import.meta.dirname,'../../..'),read=(p:string): string =>readFileSync(path.join(root,p),'utf8').replace(/\r\n/g,'\n');
 describe('current cross-platform CI deployment contract',()=>{
   it('uses the official current release and isolated userlevel installer instead of retired tarball deployment',()=>{
     const workflow=read('.github/workflows/distribution-smoke.yml');
@@ -12,9 +14,16 @@ describe('current cross-platform CI deployment contract',()=>{
   it('builds current workspace packages before their tests and never restores disabled packages through a wildcard',()=>{
     const quality=read('.github/workflows/code-quality.yml');
     expect(quality).not.toContain('for pkg in packages/*/');
-    expect(quality).toContain('scripts/prepare-current-release.ts');
-    expect(quality).toContain('scripts/test-workspace.ts');
-    expect(quality.indexOf('scripts/prepare-current-release.ts')).toBeLessThan(quality.indexOf('scripts/test-workspace.ts'));
+    const carrier=read('scripts/run-ci-regression.mjs');
+    expect(carrier).toContain("build: ['scripts/prepare-current-release.ts']");
+    expect(carrier).toContain("workspace: ['scripts/test-workspace.ts']");
+    expect(carrier).toContain("root: ['run', 'test:root']");
+    expect(carrier).toContain("lint: ['run', 'lint']");
+    const phases=[...quality.matchAll(/run: node scripts\/run-ci-regression\.mjs (build|lint|workspace|root)/g)].map(match=>match[1]);
+    expect(phases).toEqual(['build','lint','workspace','root']);
+    for(const os of ['windows-latest','macos-latest','ubuntu-latest'])expect(quality).toContain(os);
+    expect(carrier).toContain('CI_SOURCE_DIRTY_BEFORE_PHASE');
+    expect(quality).toContain('actions/upload-artifact@v4');
   });
   it('configures Windows long paths before checkout and keeps historical evidence outside source EOL checks',()=>{
     for(const file of ['.github/workflows/distribution-smoke.yml','.github/workflows/code-quality.yml']){

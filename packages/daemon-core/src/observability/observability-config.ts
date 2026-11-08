@@ -1,11 +1,8 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 /** Current V6 daemon observability configuration adapter. */
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import {
-  parseObservabilityConfigDocument,
-  type ObservabilityMode,
-} from '@specforge/observability';
+import { parseObservabilityConfigDocument, type ObservabilityMode } from '@specforge/observability';
 
 export type PayloadStorageMode = 'none' | 'file';
 
@@ -51,13 +48,13 @@ const MINIMAL_DECISION_PHASES = [
 export function shouldRecordObservationByConfig(
   config: SfObservabilityConfig,
   category: string,
-  phase: string,
+  phase: string
 ): boolean {
   if (!config.enabled) return false;
   if (config.mode !== 'minimal') return true;
   if (category === 'gate' || category === 'close-gate' || category === 'hardstop') return true;
   const normalized = phase.trim().toLowerCase();
-  return MINIMAL_DECISION_PHASES.some((decision) => normalized.includes(decision));
+  return MINIMAL_DECISION_PHASES.some(decision => normalized.includes(decision));
 }
 
 export function resolveProjectRootFromContext(context?: Record<string, unknown>): string {
@@ -77,7 +74,7 @@ export function loadSfObservabilityConfig(projectRoot: string): SfObservabilityC
 
   try {
     const document = parseObservabilityConfigDocument(
-      JSON.parse(fs.readFileSync(configPath, 'utf-8')),
+      JSON.parse(fs.readFileSync(configPath, 'utf-8'))
     );
     return configForMode(document.mode);
   } catch {

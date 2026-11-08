@@ -1,24 +1,25 @@
 /**
  * Remote Access Integration Tests
- * 
+ *
  * Tests remote access security features at the integration level.
  * Validates: Property 26, Requirements 16.3-16.6
- * 
+ *
  * @specforge/permission-engine
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { 
-  RemoteAccessGuard, 
-  createRemoteAccessGuard,
-  type RemoteAccessConfig,
-  type RemoteAccessRequestContext
-} from '../../src/services/remote-access-guard';
+
 import {
   ApiKeyManager,
   createApiKeyManager,
   type ApiKeyManagerConfig
 } from '../../src/services/api-key-manager';
+import {
+  RemoteAccessGuard,
+  createRemoteAccessGuard,
+  type RemoteAccessConfig,
+  type RemoteAccessRequestContext
+} from '../../src/services/remote-access-guard';
 import {
   TwoStepConfirmationManager,
   createTwoStepConfirmationManager,
@@ -41,7 +42,7 @@ describe('Remote Access Integration', () => {
   let remoteAccessGuard: RemoteAccessGuard;
   let twoStepConfirmation: TwoStepConfirmationManager;
 
-  let validApiKey: string;
+
   const validIp = '192.168.1.100';
 
   beforeEach(() => {
@@ -58,7 +59,7 @@ describe('Remote Access Integration', () => {
       userId: 'test-user',
       ipWhitelist: [validIp, '10.0.0.0/8']
     });
-    validApiKey = key;
+    void (key);
 
     // Initialize Remote Access Guard with the API key manager
     const remoteConfig: RemoteAccessConfig = {
@@ -162,7 +163,7 @@ describe('Remote Access Integration', () => {
   describe('Remote Access Guard', () => {
     it('should enable and disable remote mode', () => {
       expect(remoteAccessGuard.isEnabled()).toBe(true);
-      
+
       remoteAccessGuard.setEnabled(false);
       expect(remoteAccessGuard.isEnabled()).toBe(false);
     });
@@ -222,7 +223,7 @@ describe('Remote Access Integration', () => {
 
     it('should require confirmation for sensitive operations', () => {
       const sensitiveOps = ['workitem.delete', 'permission.change', 'config.reset'];
-      
+
       for (const op of sensitiveOps) {
         const needsConfirmation = twoStepConfirmation.requiresConfirmation(op as SensitiveOperation);
         expect(needsConfirmation).toBe(true);

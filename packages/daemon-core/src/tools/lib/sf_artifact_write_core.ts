@@ -235,7 +235,7 @@ function buildSidecarResult(
   // seq 已知形态：纯数字、fixN、cont-N。分步从右侧剥离 seq，剩下的就是 agent_name
   let agentName = 'unknown';
   if (runId.startsWith(workItemId + '-')) {
-    let tail = runId.slice(workItemId.length + 1);
+    const tail = runId.slice(workItemId.length + 1);
     // 优先剥离 cont-N（两段后缀）
     const contMatch = tail.match(/^(.+)-cont-\d+$/);
     if (contMatch) {
@@ -472,14 +472,16 @@ export async function extractTraceStats(
     const filesChanged: Set<string> = new Set();
 
     for (const entry of toolCallEntries) {
-      const toolName = (entry as any).payload.tool as string;
+      const toolName = entry.payload.tool as string;
       const category = categorizeToolCall(toolName);
       byCategory[category] = (byCategory[category] || 0) + 1;
 
       // 提取修改的文件
-      const args = (entry as any).payload.args as any;
-      if (args?.path || args?.file) {
-        filesChanged.add(args.path || args.file);
+      const args = entry.payload.args;
+      const changedPath: unknown = args?.path || args?.file;
+      if (changedPath) {
+        if (typeof changedPath !== 'string') throw new Error('TOOL_CALL_PATH_STRING_REQUIRED');
+        filesChanged.add(changedPath);
       }
     }
 

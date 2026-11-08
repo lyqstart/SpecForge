@@ -1,18 +1,18 @@
 /**
  * Help Command for SpecForge CLI
- * 
+ *
  * Provides help functionality with:
  * - Command-specific help
  * - Interactive suggestions
  * - Dual-mode output
- * 
+ *
  * @packageDocumentation
  */
 
 import yargs, { Argv, Arguments } from 'yargs';
 import { ModeSwitch } from '../mode-switch';
-import { HelpSystem, createDefaultHelpSystem } from '../help/HelpSystem';
-import { createModeSwitchFromYargs, getArgvArrayFromYargs } from '../mode-utils';
+import { createDefaultHelpSystem } from '../help/HelpSystem';
+
 
 /**
  * Help command handler
@@ -26,7 +26,7 @@ export async function commandHelp(
 ): Promise<void> {
   const modeSwitch = new ModeSwitch(argv);
   const helpSystem = createDefaultHelpSystem();
-  
+
   if (argv.command) {
     // Show help for specific command
     const helpText = helpSystem.generateCommandHelp(
@@ -82,7 +82,7 @@ export function addHelpCommands(yargsInstance: Argv): Argv {
       // Handle --help and --version flags
       const modeSwitch = new ModeSwitch(argv);
       const helpSystem = createDefaultHelpSystem();
-      
+
       if (argv.help) {
         if (argv._.length > 0) {
           // Show help for specific command
@@ -98,13 +98,13 @@ export function addHelpCommands(yargsInstance: Argv): Argv {
           process.exit(0);
         }
       }
-      
+
       return undefined;
     }, true)
     .fail((msg, err, yargs) => {
       const modeSwitch = new ModeSwitch(process.argv.slice(2));
       const helpSystem = createDefaultHelpSystem();
-      
+
       if (msg) {
         // Parse the error message to see if it's an unknown command
         const unknownCommandMatch = msg.match(/Not enough arguments|Unknown argument|Command .* not found/i);
@@ -120,7 +120,7 @@ export function addHelpCommands(yargsInstance: Argv): Argv {
       } else {
         console.error('An unknown error occurred');
       }
-      
+
       process.exit(1);
     });
 }

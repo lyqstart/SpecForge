@@ -1,41 +1,42 @@
 /**
  * Property-Based Test: Permission Decision Traceability (Property 10)
- * 
+ *
  * Validates: Property 10, Requirements 30.10, 7.3
- * 
- * Property: For all Permission Engine decisions d (allow or deny), events.jsonl 
- * contains a unique event e where e.action == "permission.evaluated" and 
- * e.payload contains all six fields: { actor, action, resource, matched_rule, 
- * rule_layer, reason }; given any deny result d, one can trace back to 
+ *
+ * Property: For all Permission Engine decisions d (allow or deny), events.jsonl
+ * contains a unique event e where e.action == "permission.evaluated" and
+ * e.payload contains all six fields: { actor, action, resource, matched_rule,
+ * rule_layer, reason }; given any deny result d, one can trace back to
  * matched_rule and rule_layer through events.jsonl.
- * 
+ *
  * Iterations: ≥ 100
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fc from 'fast-check';
-import { PolicyEnforcementPoint, createPolicyEnforcementPoint, HttpRequestContext } from '../../src/services/policy-enforcement-point';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+
 import { EventLogger } from '../../src/services/event-logger';
+import { PolicyEnforcementPoint, createPolicyEnforcementPoint, HttpRequestContext } from '../../src/services/policy-enforcement-point';
 import { RuleMergingEngine } from '../../src/services/rule-merging-engine';
-import { PermissionDecisionEvent, PermissionEvent } from '../../src/types/events';
+import { PermissionDecisionEvent } from '../../src/types/events';
 
 /**
  * Feature: Permission Decision Traceability, Property 10
- * 
+ *
  * Derived-From: v6-architecture-overview Property 10
  */
 
 describe('Property 10: Permission Decision Traceability', () => {
   let pep: PolicyEnforcementPoint;
   let eventLogger: ReturnType<typeof EventLogger.createInMemoryLogger>;
-  let capturedEvents: PermissionEvent[];
+
 
   const testProjectId = 'test-project-property-10';
 
   beforeEach(() => {
     // Create in-memory event logger for testing
     eventLogger = EventLogger.createInMemoryLogger(testProjectId);
-    capturedEvents = [];
+
 
     // Override to capture events synchronously from mock
     const originalLogDecision = eventLogger.logger.logPermissionDecision.bind(eventLogger.logger);
@@ -59,7 +60,7 @@ describe('Property 10: Permission Decision Traceability', () => {
 
   afterEach(() => {
     eventLogger.clearEvents();
-    capturedEvents = [];
+
   });
 
   /**
@@ -148,7 +149,7 @@ describe('Property 10: Permission Decision Traceability', () => {
           async (actor, action, resource) => {
             // Clear previous events
             eventLogger.clearEvents();
-            capturedEvents = [];
+
 
             // Create HTTP request context
             const request: HttpRequestContext = {
@@ -336,7 +337,7 @@ describe('Property 10: Permission Decision Traceability', () => {
         if (result.allowed === false) {
           // For deny decisions, verify traceability
           expect(permissionEvents.length).toBeGreaterThan(0);
-          
+
           const event = permissionEvents[0];
           expect(event.payload.decision).toBe('deny');
 

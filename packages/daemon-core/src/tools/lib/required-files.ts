@@ -26,7 +26,7 @@ export function getRequiredFiles(workflowPath: string): string[] {
  */
 export async function validateRequiredFiles(
   workItemDir: string,
-  workflowPath: string,
+  workflowPath: string
 ): Promise<{ missing: string[]; found: string[] }> {
   const required = getRequiredFiles(workflowPath);
   const missing: string[] = [];

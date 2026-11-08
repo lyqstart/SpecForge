@@ -1,4 +1,4 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
@@ -105,17 +105,21 @@ export async function proveInvalidMergedSpecClosure(input: {
   workItemId: string;
   workItem: Record<string, unknown>;
 }): Promise<InvalidMergedSpecProof> {
-  if (input.workItem.code_change_allowed === true || input.workItem.code_permission_revoked !== true) {
+  if (
+    input.workItem.code_change_allowed === true ||
+    input.workItem.code_permission_revoked !== true
+  ) {
     throw new Error(
-      'INVALID_MERGED_SPEC_RECOVERY_PERMISSION_STATE_INVALID: code permission must remain revoked',
+      'INVALID_MERGED_SPEC_RECOVERY_PERMISSION_STATE_INVALID: code permission must remain revoked'
     );
   }
 
-  const closeGate = await readJson(path.join(input.workItemDir, 'gates', 'close_gate.json'))
-    .catch(() => null);
+  const closeGate = await readJson(path.join(input.workItemDir, 'gates', 'close_gate.json')).catch(
+    () => null
+  );
   if (closeGate?.status !== 'passed') {
     throw new Error(
-      'INVALID_MERGED_SPEC_RECOVERY_EVIDENCE_MISSING: prior close_gate.json with status=passed is required',
+      'INVALID_MERGED_SPEC_RECOVERY_EVIDENCE_MISSING: prior close_gate.json with status=passed is required'
     );
   }
 
@@ -126,7 +130,7 @@ export async function proveInvalidMergedSpecClosure(input: {
   });
   if (!mergeHistory) {
     throw new Error(
-      'INVALID_MERGED_SPEC_RECOVERY_MERGE_PROOF_MISSING: active approved decision and successful Atomic Spec Merge evidence are required',
+      'INVALID_MERGED_SPEC_RECOVERY_MERGE_PROOF_MISSING: active approved decision and successful Atomic Spec Merge evidence are required'
     );
   }
 
@@ -134,9 +138,12 @@ export async function proveInvalidMergedSpecClosure(input: {
   const manifest = await readJson(manifestPath).catch(() => null);
   const currentVersion = String(manifest?.project_spec_version ?? '');
   const lastMergedWorkItem = String(manifest?.last_merged_work_item ?? '');
-  if (lastMergedWorkItem !== input.workItemId || currentVersion !== mergeHistory.project_spec_version) {
+  if (
+    lastMergedWorkItem !== input.workItemId ||
+    currentVersion !== mergeHistory.project_spec_version
+  ) {
     throw new Error(
-      'INVALID_MERGED_SPEC_RECOVERY_PROJECT_SPEC_OWNERSHIP_MISMATCH: current Project Spec must still be the exact result of this Work Item merge',
+      'INVALID_MERGED_SPEC_RECOVERY_PROJECT_SPEC_OWNERSHIP_MISMATCH: current Project Spec must still be the exact result of this Work Item merge'
     );
   }
 
@@ -155,7 +162,7 @@ export async function proveInvalidMergedSpecClosure(input: {
     throw new Error(
       `INVALID_MERGED_SPEC_RECOVERY_VALIDATION_UNAVAILABLE: ${
         error instanceof Error ? error.message : String(error)
-      }`,
+      }`
     );
   }
 
@@ -167,34 +174,38 @@ export async function proveInvalidMergedSpecClosure(input: {
   ];
   if (invalidityReasons.length === 0) {
     throw new Error(
-      'INVALID_MERGED_SPEC_RECOVERY_NOT_PROVEN: shared formal Project Spec validators all pass',
+      'INVALID_MERGED_SPEC_RECOVERY_NOT_PROVEN: shared formal Project Spec validators all pass'
     );
   }
 
   const inputFiles: InvalidMergedSpecProof['input_files'] = [];
-  const uniquePaths = Array.from(new Set([
-    ...core.input_files,
-    ...consistency.inputFiles,
-    ...contracts.inputFiles,
-    ...trace.inputFiles,
-  ].map(filePath => path.resolve(filePath)))).sort();
+  const uniquePaths = Array.from(
+    new Set(
+      [
+        ...core.input_files,
+        ...consistency.inputFiles,
+        ...contracts.inputFiles,
+        ...trace.inputFiles,
+      ].map(filePath => path.resolve(filePath))
+    )
+  ).sort();
   for (const filePath of uniquePaths) {
     const relativePath = relativeInside(
       input.projectRoot,
       filePath,
-      'INVALID_MERGED_SPEC_RECOVERY_VALIDATION_INPUT_OUTSIDE_PROJECT',
+      'INVALID_MERGED_SPEC_RECOVERY_VALIDATION_INPUT_OUTSIDE_PROJECT'
     );
     let content: Buffer;
     try {
       content = await readRegularFile(
         filePath,
-        'INVALID_MERGED_SPEC_RECOVERY_VALIDATION_INPUT_INVALID',
+        'INVALID_MERGED_SPEC_RECOVERY_VALIDATION_INPUT_INVALID'
       );
     } catch (error) {
       throw new Error(
         `INVALID_MERGED_SPEC_RECOVERY_VALIDATION_INPUT_UNAVAILABLE: ${
           error instanceof Error ? error.message : String(error)
-        }`,
+        }`
       );
     }
     inputFiles.push({
@@ -230,12 +241,10 @@ async function collectWorkItemFiles(input: {
     const fullPath = path.join(directory, entry.name);
     const stat = await fs.lstat(fullPath);
     if (stat.isSymbolicLink()) {
-      throw new Error(
-        `INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_SYMLINK_FORBIDDEN: ${fullPath}`,
-      );
+      throw new Error(`INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_SYMLINK_FORBIDDEN: ${fullPath}`);
     }
     if (stat.isDirectory()) {
-      files.push(...await collectWorkItemFiles({ ...input, directory: fullPath }));
+      files.push(...(await collectWorkItemFiles({ ...input, directory: fullPath })));
     } else if (stat.isFile()) {
       files.push(fullPath);
     }
@@ -252,7 +261,7 @@ async function copyEvidenceFile(input: {
 }): Promise<RecoveryEvidenceFile> {
   const content = await readRegularFile(
     input.source,
-    'INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_SOURCE_INVALID',
+    'INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_SOURCE_INVALID'
   );
   await fs.mkdir(path.dirname(input.target), { recursive: true });
   await fs.writeFile(input.target, content, { flag: 'wx' });
@@ -260,7 +269,10 @@ async function copyEvidenceFile(input: {
   return {
     source_kind: input.sourceKind,
     source_relative_path: input.sourceRelativePath,
-    archive_relative_path: path.relative(input.generationRoot, input.target).split(path.sep).join('/'),
+    archive_relative_path: path
+      .relative(input.generationRoot, input.target)
+      .split(path.sep)
+      .join('/'),
     size: content.byteLength,
     sha256: sha256(content),
   };
@@ -285,15 +297,17 @@ export async function archiveInvalidMergedSpecGeneration(input: {
       const relative = relativeInside(
         input.workItemDir,
         source,
-        'INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_PATH_INVALID',
+        'INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_PATH_INVALID'
       );
-      files.push(await copyEvidenceFile({
-        source,
-        target: path.join(temporaryRoot, 'snapshot', 'work-item', ...relative.split('/')),
-        sourceKind: 'work_item',
-        sourceRelativePath: relative,
-        generationRoot: temporaryRoot,
-      }));
+      files.push(
+        await copyEvidenceFile({
+          source,
+          target: path.join(temporaryRoot, 'snapshot', 'work-item', ...relative.split('/')),
+          sourceKind: 'work_item',
+          sourceRelativePath: relative,
+          generationRoot: temporaryRoot,
+        })
+      );
     }
 
     for (const evidence of input.proof.input_files) {
@@ -304,7 +318,7 @@ export async function archiveInvalidMergedSpecGeneration(input: {
           temporaryRoot,
           'snapshot',
           'formal-project-spec',
-          ...evidence.relative_path.split('/'),
+          ...evidence.relative_path.split('/')
         ),
         sourceKind: 'formal_project_spec',
         sourceRelativePath: evidence.relative_path,
@@ -312,13 +326,15 @@ export async function archiveInvalidMergedSpecGeneration(input: {
       });
       if (archived.size !== evidence.size || archived.sha256 !== evidence.sha256) {
         throw new Error(
-          `INVALID_MERGED_SPEC_RECOVERY_VALIDATION_INPUT_CHANGED_DURING_ARCHIVE: ${evidence.relative_path}`,
+          `INVALID_MERGED_SPEC_RECOVERY_VALIDATION_INPUT_CHANGED_DURING_ARCHIVE: ${evidence.relative_path}`
         );
       }
       files.push(archived);
     }
 
-    files.sort((left, right) => left.archive_relative_path.localeCompare(right.archive_relative_path));
+    files.sort((left, right) =>
+      left.archive_relative_path.localeCompare(right.archive_relative_path)
+    );
     const manifestPath = path.join(temporaryRoot, 'manifest.json');
     const manifest = {
       schema_version: '1.0',
@@ -339,7 +355,11 @@ export async function archiveInvalidMergedSpecGeneration(input: {
       generation_id: generationId,
       generation_root: generationRoot,
       manifest_path: finalManifestPath,
-      manifest_relative_path: relativeInside(input.workItemDir, finalManifestPath, 'INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_PATH_INVALID'),
+      manifest_relative_path: relativeInside(
+        input.workItemDir,
+        finalManifestPath,
+        'INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_PATH_INVALID'
+      ),
       manifest_sha256: sha256(manifestBytes),
       files,
     };
@@ -360,11 +380,11 @@ export async function verifyRecoveryArchive(input: {
   relativeInside(
     path.join(input.workItemDir, RECOVERY_ROOT),
     manifestPath,
-    'INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_PATH_INVALID',
+    'INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_PATH_INVALID'
   );
   const bytes = await readRegularFile(
     manifestPath,
-    'INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_MANIFEST_INVALID',
+    'INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_MANIFEST_INVALID'
   );
   if (sha256(bytes) !== input.manifestSha256) {
     throw new Error('INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_MANIFEST_HASH_MISMATCH');
@@ -405,33 +425,33 @@ export async function verifyRecoveryArchive(input: {
     relativeInside(
       generationRoot,
       archived,
-      'INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_ENTRY_PATH_INVALID',
+      'INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_ENTRY_PATH_INVALID'
     );
     const content = await readRegularFile(
       archived,
-      'INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_ENTRY_INVALID',
+      'INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_ENTRY_INVALID'
     );
     if (content.byteLength !== entry.size || sha256(content) !== entry.sha256) {
       throw new Error(
-        `INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_ENTRY_MISMATCH: ${entry.archive_relative_path}`,
+        `INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_ENTRY_MISMATCH: ${entry.archive_relative_path}`
       );
     }
   }
   for (const requiredPath of REQUIRED_WORK_ITEM_ARCHIVE_PATHS) {
     if (!archivePaths.has(requiredPath)) {
       throw new Error(
-        `INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_REQUIRED_EVIDENCE_MISSING: ${requiredPath}`,
+        `INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_REQUIRED_EVIDENCE_MISSING: ${requiredPath}`
       );
     }
   }
   if (![...archivePaths].some(value => value.startsWith('snapshot/work-item/candidates/'))) {
     throw new Error(
-      'INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_REQUIRED_EVIDENCE_MISSING: snapshot/work-item/candidates/',
+      'INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_REQUIRED_EVIDENCE_MISSING: snapshot/work-item/candidates/'
     );
   }
   if (![...archivePaths].some(value => value.startsWith('snapshot/formal-project-spec/'))) {
     throw new Error(
-      'INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_REQUIRED_EVIDENCE_MISSING: snapshot/formal-project-spec/',
+      'INVALID_MERGED_SPEC_RECOVERY_ARCHIVE_REQUIRED_EVIDENCE_MISSING: snapshot/formal-project-spec/'
     );
   }
 }
@@ -451,7 +471,7 @@ export async function verifyInvalidMergedSpecRecoveryAuthorization(input: {
     recovery.proof.invalidity_reasons.length === 0
   ) {
     throw new Error(
-      `STATE_COORDINATOR_INVALID_MERGED_SPEC_RECOVERY_FAILED: authorized ${RECOVERY_FILE} is required`,
+      `STATE_COORDINATOR_INVALID_MERGED_SPEC_RECOVERY_FAILED: authorized ${RECOVERY_FILE} is required`
     );
   }
 
@@ -466,7 +486,7 @@ export async function verifyInvalidMergedSpecRecoveryAuthorization(input: {
   const workItem = await readJson(path.join(input.workItemDir, 'work_item.json'));
   if (workItem.code_change_allowed === true || workItem.code_permission_revoked !== true) {
     throw new Error(
-      'STATE_COORDINATOR_INVALID_MERGED_SPEC_RECOVERY_FAILED: code permission must remain revoked',
+      'STATE_COORDINATOR_INVALID_MERGED_SPEC_RECOVERY_FAILED: code permission must remain revoked'
     );
   }
   const decision = await readJson(path.join(input.workItemDir, 'user_decision.json'));
@@ -475,12 +495,12 @@ export async function verifyInvalidMergedSpecRecoveryAuthorization(input: {
     !['approved', 'waived'].includes(String(decision.previous_decision_status ?? ''))
   ) {
     throw new Error(
-      'STATE_COORDINATOR_INVALID_MERGED_SPEC_RECOVERY_FAILED: prior active decision must be invalidated',
+      'STATE_COORDINATOR_INVALID_MERGED_SPEC_RECOVERY_FAILED: prior active decision must be invalidated'
     );
   }
 
   const manifest = await readJson(
-    path.join(input.projectRoot, SPEC_DIR_NAME, 'project', 'spec_manifest.json'),
+    path.join(input.projectRoot, SPEC_DIR_NAME, 'project', 'spec_manifest.json')
   );
   if (
     String(manifest.last_merged_work_item ?? '') !== input.workItemId ||
@@ -488,7 +508,7 @@ export async function verifyInvalidMergedSpecRecoveryAuthorization(input: {
       String(recovery.proof.current_project_spec?.project_spec_version ?? '')
   ) {
     throw new Error(
-      'STATE_COORDINATOR_INVALID_MERGED_SPEC_RECOVERY_FAILED: current Project Spec ownership changed',
+      'STATE_COORDINATOR_INVALID_MERGED_SPEC_RECOVERY_FAILED: current Project Spec ownership changed'
     );
   }
 
@@ -497,15 +517,15 @@ export async function verifyInvalidMergedSpecRecoveryAuthorization(input: {
     relativeInside(
       input.projectRoot,
       source,
-      'STATE_COORDINATOR_INVALID_MERGED_SPEC_RECOVERY_FAILED',
+      'STATE_COORDINATOR_INVALID_MERGED_SPEC_RECOVERY_FAILED'
     );
     const content = await readRegularFile(
       source,
-      'STATE_COORDINATOR_INVALID_MERGED_SPEC_RECOVERY_FAILED',
+      'STATE_COORDINATOR_INVALID_MERGED_SPEC_RECOVERY_FAILED'
     );
     if (content.byteLength !== evidence.size || sha256(content) !== evidence.sha256) {
       throw new Error(
-        `STATE_COORDINATOR_INVALID_MERGED_SPEC_RECOVERY_FAILED: validation input changed: ${evidence.relative_path}`,
+        `STATE_COORDINATOR_INVALID_MERGED_SPEC_RECOVERY_FAILED: validation input changed: ${evidence.relative_path}`
       );
     }
   }
@@ -514,7 +534,7 @@ export async function verifyInvalidMergedSpecRecoveryAuthorization(input: {
 
 export async function writeInvalidMergedSpecRecoveryRecord(
   workItemDir: string,
-  record: Record<string, unknown>,
+  record: Record<string, unknown>
 ): Promise<string> {
   const recoveryPath = path.join(workItemDir, RECOVERY_FILE);
   await writeJsonAtomic(recoveryPath, record);

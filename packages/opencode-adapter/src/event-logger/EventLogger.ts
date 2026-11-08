@@ -224,10 +224,7 @@ export class EventLogger {
   /**
    * Build an event object conforming to Daemon Event Bus specification
    */
-  private buildEvent(
-    action: AdapterEventAction,
-    payload: Record<string, unknown>
-  ): DaemonEvent {
+  private buildEvent(action: AdapterEventAction, payload: Record<string, unknown>): DaemonEvent {
     const eventId = this.generateEventId();
     const ts = Date.now();
 

@@ -1,3 +1,4 @@
+import { scalarText } from '@specforge/types';
 /**
  * Tool Dispatcher
  * Routes tool invoke requests to handler functions.
@@ -15,7 +16,10 @@ import { readAuthoritativeWorkItems } from './lib/authoritative-work-items';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
-import { isVerificationRecoveryRequest, VERIFICATION_REQUEST_ABORT } from '../verification/request-context';
+import {
+  isVerificationRecoveryRequest,
+  VERIFICATION_REQUEST_ABORT,
+} from '../verification/request-context';
 
 export interface ToolInvokeRequest {
   tool: string;
@@ -84,7 +88,7 @@ function extractWorkItemId(args: Record<string, unknown>): string | undefined {
 }
 
 function normalizeAgentName(value: unknown): string {
-  return String(value ?? '')
+  return scalarText(value ?? '')
     .trim()
     .toLowerCase()
     .replace(/_/g, '-');
@@ -107,8 +111,8 @@ function validateStateTransitionPrerequisites(
   args: Record<string, unknown>,
   context: ToolInvokeRequest['context']
 ): Record<string, unknown> | null {
-  const fromState = String(args.from_state ?? '');
-  const toState = String(args.to_state ?? '');
+  const fromState = scalarText(args.from_state ?? '');
+  const toState = scalarText(args.to_state ?? '');
   if (fromState !== 'created' || toState !== 'intake_ready') return null;
 
   const workItemId = extractWorkItemId(args);
@@ -191,7 +195,9 @@ export class ToolDispatcher {
     // Every dispatcher consumer (including legacy HTTP and kernel calls) must
     // exclude recovery before any project-scoped observation or handler work.
     if (this.deps.projectManager?.withProjectOperation) {
-      return this.deps.projectManager.withProjectOperation(projectRoot, () => this.dispatchAvailableProject(req));
+      return this.deps.projectManager.withProjectOperation(projectRoot, () =>
+        this.dispatchAvailableProject(req)
+      );
     }
     return this.dispatchAvailableProject(req);
   }
@@ -303,15 +309,27 @@ export class ToolDispatcher {
     let acceptedConfiguration = this.deps.acceptedConfiguration;
     // Configuration repair must remain reachable when the current document is corrupt.
     // Its owner validates prospective data and enforces the same activation boundary.
-    if (req.tool !== 'sf_project_config' && !verificationRecovery && this.deps.projectManager?.getProjectConfiguration) {
-      try { acceptedConfiguration = await this.deps.projectManager.getProjectConfiguration(projectRoot); }
-      catch (error) { return { success: false, error: error instanceof Error ? error.message : 'CONFIGURATION_ACCEPTANCE_FAILED' }; }
+    if (
+      req.tool !== 'sf_project_config' &&
+      !verificationRecovery &&
+      this.deps.projectManager?.getProjectConfiguration
+    ) {
+      try {
+        acceptedConfiguration = await this.deps.projectManager.getProjectConfiguration(projectRoot);
+      } catch (error) {
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : 'CONFIGURATION_ACCEPTANCE_FAILED',
+        };
+      }
     }
     const hardStopContext = await resolveHardStopContext(projectRoot, work_item_id, this.deps);
 
     // Project-scoped HardStop is independent of WI resolution and must be
     // enforced even when no active WI exists or several WIs are active.
-    const projectHardStopGuard = verificationRecovery ? { allowed:true } : guardHardStop(projectRoot, '', req.tool);
+    const projectHardStopGuard = verificationRecovery
+      ? { allowed: true }
+      : guardHardStop(projectRoot, '', req.tool);
     if (!projectHardStopGuard.allowed && !verificationRecovery) {
       const result = {
         success: false,
@@ -374,7 +392,9 @@ export class ToolDispatcher {
     }
 
     const relevantWorkItemId = hardStopContext.resolvedWorkItemId;
-    const hardStopGuard = verificationRecovery ? { allowed:true } : guardHardStop(projectRoot, relevantWorkItemId ?? '', req.tool);
+    const hardStopGuard = verificationRecovery
+      ? { allowed: true }
+      : guardHardStop(projectRoot, relevantWorkItemId ?? '', req.tool);
     if (!hardStopGuard.allowed && !verificationRecovery) {
       const result = {
         success: false,
@@ -399,7 +419,11 @@ export class ToolDispatcher {
     }
 
     try {
-      const result = await handler(req.args, { ...(ctx ?? {}), trace_id }, { ...this.deps, acceptedConfiguration });
+      const result = await handler(
+        req.args,
+        { ...(ctx ?? {}), trace_id },
+        { ...this.deps, acceptedConfiguration }
+      );
       recordDaemonObservation({
         context: ctx,
         category: 'dispatcher',

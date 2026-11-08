@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { 
-  BearerTokenValidator, 
+import { describe, it, expect, beforeEach } from 'vitest';
+
+import {
+  BearerTokenValidator,
   createBearerTokenValidator,
   parseAuthorizationHeader,
   isValidBearerFormat
@@ -239,7 +240,7 @@ describe('BearerTokenValidator', () => {
   });
 
   describe('Logging', () => {
-    let mockLogger: any;
+    let mockLogger: ReturnType<typeof EventLogger.createInMemoryLogger>;
 
     beforeEach(() => {
       // Create in-memory logger for testing
@@ -256,7 +257,7 @@ describe('BearerTokenValidator', () => {
       });
 
       await validator.validate(undefined);
-      
+
       const events = mockLogger.getEvents();
       expect(events).toHaveLength(1);
       expect(events[0].action).toBe('permission.denied');
@@ -273,7 +274,7 @@ describe('BearerTokenValidator', () => {
       });
 
       await validator.validate('Bearer wrong-token');
-      
+
       const events = mockLogger.getEvents();
       expect(events).toHaveLength(1);
       expect(events[0].action).toBe('permission.denied');
@@ -289,7 +290,7 @@ describe('BearerTokenValidator', () => {
       });
 
       await validator.validate('Basic credentials');
-      
+
       const events = mockLogger.getEvents();
       expect(events).toHaveLength(1);
       expect(events[0].action).toBe('permission.denied');
@@ -305,7 +306,7 @@ describe('BearerTokenValidator', () => {
       });
 
       await validator.validate(undefined);
-      
+
       const events = mockLogger.getEvents();
       expect(events).toHaveLength(0);
     });
@@ -361,7 +362,7 @@ describe('Helper Functions', () => {
   describe('parseAuthorizationHeader', () => {
     it('should parse valid Bearer header', () => {
       const result = parseAuthorizationHeader('Bearer token123');
-      
+
       expect(result).not.toBeNull();
       expect(result?.scheme).toBe('Bearer');
       expect(result?.token).toBe('token123');
@@ -389,7 +390,7 @@ describe('Helper Functions', () => {
 
     it('should parse Basic auth header', () => {
       const result = parseAuthorizationHeader('Basic dXNlcjpwYXNz');
-      
+
       expect(result).not.toBeNull();
       expect(result?.scheme).toBe('Basic');
       expect(result?.token).toBe('dXNlcjpwYXNz');

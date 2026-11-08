@@ -4,7 +4,12 @@
  * Converts OpenCode context objects to Daemon-neutral session contexts.
  */
 
-import { OpenCodeContext, TranslationResult, DaemonSessionContext, IContextTranslator } from '../types';
+import {
+  OpenCodeContext,
+  TranslationResult,
+  DaemonSessionContext,
+  IContextTranslator,
+} from '../types';
 
 /**
  * Context Translator

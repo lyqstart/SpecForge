@@ -1,3 +1,4 @@
+import { scalarText } from '@specforge/types';
 /**
  * Deterministic TypeScript/JavaScript Contract reconciliation.
  *
@@ -8,10 +9,7 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import ts from 'typescript';
-import {
-  readUnifiedContracts,
-  resolveCodePathModules,
-} from './contracts-registry.js';
+import { readUnifiedContracts, resolveCodePathModules } from './contracts-registry.js';
 import { getFactualChangedFiles } from './write-guard-log.js';
 
 type ChangedFile = { path: string; operation: 'create' | 'modify' | 'delete' };
@@ -85,7 +83,7 @@ async function readChangedFiles(workItemDir: string): Promise<ChangedFile[]> {
   if (factual.length > 0) return factual;
   try {
     const workItem = JSON.parse(
-      await fs.readFile(path.join(workItemDir, 'work_item.json'), 'utf-8'),
+      await fs.readFile(path.join(workItemDir, 'work_item.json'), 'utf-8')
     ) as Record<string, unknown>;
     if (!Array.isArray(workItem.actual_changed_files)) return [];
     return workItem.actual_changed_files
@@ -93,8 +91,8 @@ async function readChangedFiles(workItemDir: string): Promise<ChangedFile[]> {
       .map(entry => {
         const raw = entry as Record<string, unknown>;
         return {
-          path: String(raw.path ?? ''),
-          operation: String(raw.operation ?? 'modify') as ChangedFile['operation'],
+          path: scalarText(raw.path ?? ''),
+          operation: scalarText(raw.operation ?? 'modify') as ChangedFile['operation'],
         };
       })
       .filter(entry => entry.path.length > 0);
@@ -150,7 +148,7 @@ export async function verifyChangedCodeContracts(input: {
     enumDefinitions.map(entry => [
       entry.id,
       new Set(Array.isArray(entry.raw.values) ? entry.raw.values : []),
-    ]),
+    ])
   );
   const result: CodeContractVerification = {
     checked_files: [],
@@ -174,7 +172,7 @@ export async function verifyChangedCodeContracts(input: {
   const registerConsumer = (
     contractId: string,
     file: string,
-    verification: CodeContractConsumer['verification'],
+    verification: CodeContractConsumer['verification']
   ): void => {
     if (!allContracts.has(contractId)) return;
     detected.add(contractId);
@@ -217,7 +215,7 @@ export async function verifyChangedCodeContracts(input: {
     }
 
     const textualIds = Array.from(allContracts.keys()).filter(contractId =>
-      exactToken(content, contractId),
+      exactToken(content, contractId)
     );
     for (const contractId of textualIds) {
       registerConsumer(contractId, relative, 'textual_unverified');
@@ -235,16 +233,12 @@ export async function verifyChangedCodeContracts(input: {
       content,
       ts.ScriptTarget.Latest,
       true,
-      scriptKind(absolute),
+      scriptKind(absolute)
     );
     const typedIdentifiers = new Map<string, string>();
     const machineCheckedInFile = new Set<string>();
 
-    function report(
-      node: ts.Node,
-      contractId: string | null,
-      value: string | number | null,
-    ): void {
+    function report(node: ts.Node, contractId: string | null, value: string | number | null): void {
       if (!contractId || !enums.has(contractId)) return;
       registerConsumer(contractId, relative, 'machine');
       machineChecked.add(contractId);
@@ -262,7 +256,7 @@ export async function verifyChangedCodeContracts(input: {
     }
 
     function declarationType(
-      node: ts.VariableDeclaration | ts.ParameterDeclaration,
+      node: ts.VariableDeclaration | ts.ParameterDeclaration
     ): string | null {
       return typeName(node.type ?? ts.getJSDocType(node), source);
     }
@@ -287,11 +281,7 @@ export async function verifyChangedCodeContracts(input: {
         node.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
         ts.isIdentifier(node.left)
       ) {
-        report(
-          node.right,
-          typedIdentifiers.get(node.left.text) ?? null,
-          literalValue(node.right),
-        );
+        report(node.right, typedIdentifiers.get(node.left.text) ?? null, literalValue(node.right));
       }
       ts.forEachChild(node, visit);
     }
@@ -310,7 +300,7 @@ export async function verifyChangedCodeContracts(input: {
     }
     if (
       !Array.from(consumers.values()).some(
-        consumer => consumer.file === relative && consumer.verification === 'textual_unverified',
+        consumer => consumer.file === relative && consumer.verification === 'textual_unverified'
       )
     ) {
       manualFiles.delete(relative);
@@ -323,7 +313,7 @@ export async function verifyChangedCodeContracts(input: {
   result.detected_contract_ids = unique(Array.from(detected));
   result.machine_checked_contract_ids = unique(Array.from(machineChecked));
   result.actual_consumers = Array.from(consumers.values()).sort((left, right) =>
-    consumerKey(left).localeCompare(consumerKey(right)),
+    consumerKey(left).localeCompare(consumerKey(right))
   );
   result.files_requiring_manual_review = unique(Array.from(manualFiles));
   return result;

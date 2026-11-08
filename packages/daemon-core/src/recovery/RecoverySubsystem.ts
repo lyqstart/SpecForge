@@ -1,15 +1,15 @@
 /**
  * Recovery Subsystem implementation
- * 
+ *
  * Detects and repairs state inconsistencies, implements predefined
  * repair rules, and handles session reconnection.
- * 
+ *
  * Property 20: Recovery Consistency Repair
  * For all inconsistent (events.jsonl, state.json) combinations detected at startup,
  * the Recovery subsystem must roll back to a consistent snapshot s' according to
  * predefined repair rules, and write a recovery.repaired event recording the repair
  * path; after repair, rebuild(events) == s' must hold.
- * 
+ *
  * Property 21: Session WAL Replay Scope
  * For all Daemon runtime event streams, WAL-replay-based session state reconstruction
  * may only occur within the Daemon startup process; after startup completes, the
@@ -18,12 +18,22 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { Event, ProjectState, ConsistencyCheckResult, ConsistencyIssue, RepairResult } from '../types';
+import {
+  Event,
+  ProjectState,
+  ConsistencyCheckResult,
+  ConsistencyIssue,
+  RepairResult,
+} from '../types';
 import { WAL } from '../wal';
 import { StateManager } from '../state/StateManager';
 import { IPathResolver } from '../daemon/path-resolver';
 import { SessionRegistry } from '../session/SessionRegistry';
-import { restoreProjectArchive, projectPathIdentity, type ProjectArchiveRestoreInput } from './ProjectArchiveRestore';
+import {
+  restoreProjectArchive,
+  projectPathIdentity,
+  type ProjectArchiveRestoreInput,
+} from './ProjectArchiveRestore';
 import {
   deserializeRuntimeCheckpoint,
   serializeRuntimeCheckpoint,
@@ -39,10 +49,13 @@ export interface SessionReconnectResult {
 export class RecoverySubsystem {
   /** Operator-only project import; does not create or transition Work Items. */
   async restoreProjectArchive(input: ProjectArchiveRestoreInput) {
-    if (this.sessionRegistry?.listSessions().some(session => {
-      const bound = this.sessionRegistry!.getProjectPath(session.sessionId);
-      return bound && projectPathIdentity(bound) === projectPathIdentity(input.project_path);
-    })) throw new Error('ARCHIVE_RECOVERY_ACTIVE_SESSION');
+    if (
+      this.sessionRegistry?.listSessions().some(session => {
+        const bound = this.sessionRegistry!.getProjectPath(session.sessionId);
+        return bound && projectPathIdentity(bound) === projectPathIdentity(input.project_path);
+      })
+    )
+      throw new Error('ARCHIVE_RECOVERY_ACTIVE_SESSION');
     return restoreProjectArchive(this.pathResolver, input);
   }
   private pathResolver: IPathResolver;
@@ -50,7 +63,7 @@ export class RecoverySubsystem {
   private eventsPath: string;
   private statePath: string;
   private schemaVersion: string = '1.0';
-  
+
   private _isReady: boolean = false;
 
   // Property 21: Track startup phase to limit WAL replay session reconstruction
@@ -61,7 +74,13 @@ export class RecoverySubsystem {
   private stateManager: StateManager | null = null;
   private sessionRegistry?: SessionRegistry;
 
-  constructor(pathResolver: IPathResolver, projectPath?: string, wal?: WAL, stateManager?: StateManager, sessionRegistry?: SessionRegistry) {
+  constructor(
+    pathResolver: IPathResolver,
+    projectPath?: string,
+    wal?: WAL,
+    stateManager?: StateManager,
+    sessionRegistry?: SessionRegistry
+  ) {
     this.pathResolver = pathResolver;
     this.projectPath = projectPath ?? '';
     this.wal = wal ?? null;
@@ -108,7 +127,7 @@ export class RecoverySubsystem {
   /**
    * Check consistency and repair if needed
    * Property 20: Validates that repair produces consistent state
-   * 
+   *
    * Uses WAL to read events, StateManager.rebuildState() to rebuild,
    * then verifies consistency between events and the rebuilt state.
    */
@@ -127,20 +146,21 @@ export class RecoverySubsystem {
 
     // Session replay from WAL events
     if (this.sessionRegistry) {
-      const sessionEvents = events.filter(e =>
-        e.category === 'session' ||
-        (!e.category && e.action?.startsWith('session.'))
+      const sessionEvents = events.filter(
+        e => e.category === 'session' || (!e.category && e.action?.startsWith('session.'))
       );
       if (sessionEvents.length > 0) {
         const summary = await this.sessionRegistry.startupReplay(sessionEvents);
-        console.log(`[RecoverySubsystem] Session replay: ${summary.replayedCount} events replayed, ${summary.restoredBindings} bindings restored, ${summary.restoredAliases} aliases restored`);
+        console.log(
+          `[RecoverySubsystem] Session replay: ${summary.replayedCount} events replayed, ${summary.restoredBindings} bindings restored, ${summary.restoredAliases} aliases restored`
+        );
       }
     }
 
     const issues: ConsistencyIssue[] = [];
 
     if (events.length > 0) {
-      const lastEvent = events[events.length - 1]!;
+      const lastEvent = events[events.length - 1];
       if (rebuiltState.lastEventId !== lastEvent.eventId) {
         issues.push({
           type: 'state_mismatch',
@@ -151,8 +171,8 @@ export class RecoverySubsystem {
       }
 
       for (let i = 1; i < events.length; i++) {
-        const prevEvent = events[i - 1]!;
-        const currEvent = events[i]!;
+        const prevEvent = events[i - 1];
+        const currEvent = events[i];
         if (currEvent.ts < prevEvent.ts) {
           issues.push({
             type: 'out_of_order',
@@ -188,7 +208,7 @@ export class RecoverySubsystem {
 
   /**
    * Check consistency between events.jsonl and state.json
-   * 
+   *
    * Consistency rules:
    * 1. state.json lastEventId must match the last event in events.jsonl
    * 2. Every event in events.jsonl must have a corresponding state entry
@@ -196,17 +216,17 @@ export class RecoverySubsystem {
    */
   async checkConsistency(): Promise<ConsistencyCheckResult> {
     const issues: ConsistencyIssue[] = [];
-    
+
     try {
       // Load events
       const events = await this.loadEvents();
-      
+
       // Load state
       const state = await this.loadState();
-      
+
       // Check 1: State mismatch - state.json lastEventId should match last event
       if (events.length > 0) {
-        const lastEvent = events[events.length - 1]!;
+        const lastEvent = events[events.length - 1];
         if (state.lastEventId !== lastEvent.eventId) {
           issues.push({
             type: 'state_mismatch',
@@ -215,11 +235,11 @@ export class RecoverySubsystem {
             affectedProjectPath: this.projectPath,
           });
         }
-        
+
         // Check 3: Event ordering - ts must be monotonic
         for (let i = 1; i < events.length; i++) {
-          const prevEvent = events[i - 1]!;
-          const currEvent = events[i]!;
+          const prevEvent = events[i - 1];
+          const currEvent = events[i];
           if (currEvent.ts < prevEvent.ts) {
             issues.push({
               type: 'out_of_order',
@@ -230,7 +250,7 @@ export class RecoverySubsystem {
           }
         }
       }
-      
+
       // Check 2: Events without state - check for orphaned events
       const eventIds = new Set(events.map(e => e.eventId));
       if (state.lastEventId && !eventIds.has(state.lastEventId)) {
@@ -241,7 +261,6 @@ export class RecoverySubsystem {
           affectedProjectPath: this.projectPath,
         });
       }
-      
     } catch (error) {
       // A missing checkpoint can be rebuilt. Missing/corrupt history must never
       // be reported as a successful consistency check.
@@ -256,19 +275,19 @@ export class RecoverySubsystem {
 
   /**
    * Repair inconsistency according to predefined repair rules
-   * 
+   *
    * Repair rules:
    * 1. state_mismatch: Rebuild state from events.jsonl
    * 2. missing_event: Remove stale state reference
    * 3. out_of_order: Reorder events and rebuild state
-   * 
+   *
    * Repair events are appended and fsynced through the Runtime WAL owner before
    * the checkpoint is rebuilt. Therefore the repaired checkpoint includes the
    * audit event and preserves rebuild(events) == s'.
    */
   async repairInconsistency(result: ConsistencyCheckResult): Promise<RepairResult> {
     const repairEvents: Event[] = [];
-    
+
     const runtimeWal = this.wal ?? new WAL(this.getEventsPath());
     if (!this.wal) await runtimeWal.initialize();
     const { events: originalEvents } = await runtimeWal.readAllEvents();
@@ -307,16 +326,24 @@ export class RecoverySubsystem {
     switch (issue.type) {
       case 'state_mismatch':
         // Rebuild state from events - this is the authoritative repair
-        return this.createRepairEvent(wal, 'state_mismatch', `Rebuilt state from ${events.length} events`);
-        
+        return this.createRepairEvent(
+          wal,
+          'state_mismatch',
+          `Rebuilt state from ${events.length} events`
+        );
+
       case 'missing_event':
         // Remove stale state reference by rebuilding from valid events
-        return this.createRepairEvent(wal, 'missing_event', `Removed stale reference to ${issue.affectedEventId}`);
-        
+        return this.createRepairEvent(
+          wal,
+          'missing_event',
+          `Removed stale reference to ${issue.affectedEventId}`
+        );
+
       case 'out_of_order':
         // Events will be reordered during rebuild
         return this.createRepairEvent(wal, 'out_of_order', 'Fixed event ordering issue');
-        
+
       default:
         return null;
     }
@@ -334,7 +361,7 @@ export class RecoverySubsystem {
         issueType,
         description,
       },
-      'recovery-subsystem',
+      'recovery-subsystem'
     );
   }
 
@@ -370,10 +397,10 @@ export class RecoverySubsystem {
 
   /**
    * Attempt session WAL replay reconstruction (only during startup - Property 21)
-   * 
+   *
    * Property 21: WAL replay session reconstruction may only occur within Daemon startup process.
    * After startup completes, the Daemon must not automatically initiate session state reconstruction via WAL replay.
-   * 
+   *
    * @param sessionId Session ID to reconnect
    * @returns true if reconnection was attempted and succeeded
    */
@@ -383,8 +410,8 @@ export class RecoverySubsystem {
       // Post-startup session detection doesn't trigger reconnection
       return false;
     }
-    
-    // Attempt to reconnect - in real implementation, this would check if 
+
+    // Attempt to reconnect - in real implementation, this would check if
     // the OpenCode process is still alive via some mechanism
     const result = await this.performSessionReconnect(sessionId);
     return result.reconnected;
@@ -397,13 +424,13 @@ export class RecoverySubsystem {
   private async performSessionReconnect(sessionId: string): Promise<SessionReconnectResult> {
     // Load events to find session information
     const events = await this.loadEvents();
-    
+
     // Find the session activation event
     const activationEvent = events.find(
-      e => e.action === 'session.activated' && e.payload && 
-           (e.payload as any).sessionId === sessionId
+      e =>
+        e.action === 'session.activated' && e.payload && (e.payload as any).sessionId === sessionId
     );
-    
+
     if (!activationEvent) {
       return {
         success: false,
@@ -412,7 +439,7 @@ export class RecoverySubsystem {
         reason: 'No activation event found for session',
       };
     }
-    
+
     // In real implementation, we'd check if the OpenCode process is still alive
     // For now, simulate successful reconnection during startup
     return {
@@ -511,11 +538,8 @@ export class RecoverySubsystem {
     }
     const statePath = this.getStatePath();
     await fs.mkdir(path.dirname(statePath), { recursive: true });
-    await fs.writeFile(
-      statePath,
-      JSON.stringify(serializeRuntimeCheckpoint(state), null, 2),
-    );
-    
+    await fs.writeFile(statePath, JSON.stringify(serializeRuntimeCheckpoint(state), null, 2));
+
     // fsync to ensure durability
     const handle = await fs.open(statePath, 'a');
     try {
@@ -538,20 +562,20 @@ export class RecoverySubsystem {
   async saveCheckpoint(
     sessionId: string,
     snapshotData: unknown,
-    projectPath?: string,
+    projectPath?: string
   ): Promise<void> {
     try {
       const checkpointProjectPath = projectPath ?? this.projectPath;
       if (!checkpointProjectPath) {
         console.error(
-          `[RecoverySubsystem] Refusing checkpoint for session ${sessionId}: no project binding`,
+          `[RecoverySubsystem] Refusing checkpoint for session ${sessionId}: no project binding`
         );
         return;
       }
 
       const checkpointDir = path.join(
         this.pathResolver.resolveProjectRuntimeDir(checkpointProjectPath),
-        'checkpoints',
+        'checkpoints'
       );
       const checkpointPath = path.join(checkpointDir, `${sessionId}.json`);
 
@@ -566,7 +590,10 @@ export class RecoverySubsystem {
         await handle.close();
       }
     } catch (error) {
-      console.error(`[RecoverySubsystem] Failed to save checkpoint for session ${sessionId}:`, error);
+      console.error(
+        `[RecoverySubsystem] Failed to save checkpoint for session ${sessionId}:`,
+        error
+      );
     }
   }
 

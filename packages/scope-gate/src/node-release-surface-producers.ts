@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import type { Dirent } from 'node:fs';
 import { readFile, readdir, stat } from 'node:fs/promises';
 import { isAbsolute, relative, resolve, sep } from 'node:path';
+
 import type { ArtifactSurfaceReport } from './release-artifact-inventory-builder';
 import type { ArtifactItem, ArtifactSurface } from './release-set-validator';
 

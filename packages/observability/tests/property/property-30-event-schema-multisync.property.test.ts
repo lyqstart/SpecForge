@@ -1,15 +1,15 @@
 /**
  * Property 30: Event Schema Multi-sync Readiness Property-Based Test
- * 
+ *
  * **Validates: Property 30, Requirements 19.2**
  * **Feature: observability, Property 30**: Event Schema Multi-sync Readiness
  * **Derived-From: v6-architecture-overview Property 30**
- * 
+ *
  * This test verifies:
  * 1. eventId uniqueness - UUIDv7 format is globally unique
  * 2. timestamp monotonicity - ts is monotonically non-decreasing within single machine
  * 3. projectId non-empty and aggregatable - projectId is non-empty and can be used for aggregation
- * 
+ *
  * Requirements:
  * - Use fast-check library
  * - Generate random events
@@ -19,18 +19,11 @@
  * - ≥ 100 iterations
  */
 
-import { describe, it, expect } from 'vitest';
-import {
-  createEvent,
-  validateEventSchema,
-  MonotonicTimestamp,
-  calculateProjectId,
-  EVENT_SCHEMA,
-  isValidUuid,
-  generateEventId
-} from '../../src/types/event-utils';
-import type { Event, EventCategory, AgentIdentity } from '../../src/types';
 import * as fc from 'fast-check';
+import { describe, it, expect } from 'vitest';
+
+import type { Event, EventCategory, AgentIdentity } from '../../src/types';
+import { createEvent, validateEventSchema, MonotonicTimestamp, calculateProjectId, EVENT_SCHEMA, isValidUuid } from '../../src/types/event-utils';
 
 /**
  * Generate a valid hex string of specified length
@@ -151,14 +144,14 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
           eventDataArbitrary,
           (data) => {
             const timestampGenerator = new MonotonicTimestamp();
-            
+
             // Generate multiple events
             const eventIds = new Set<string>();
             for (let i = 0; i < 100; i++) {
               const event = createEvent(data, timestampGenerator);
               eventIds.add(event.eventId);
             }
-            
+
             // All eventIds should be unique
             expect(eventIds.size).toBe(100);
           }
@@ -177,14 +170,14 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
           eventDataArbitrary,
           (data) => {
             const event = createEvent(data);
-            
+
             // Validate UUIDv7 format
             expect(isValidUuid(event.eventId)).toBe(true);
-            
+
             // Check version is 7 (UUIDv7)
             const parts = event.eventId.split('-');
             expect(parts[2].startsWith('7')).toBe(true);
-            
+
             // Check variant is RFC 4122 (8, 9, a, or b)
             expect(['8', '9', 'a', 'b'].includes(parts[3][0])).toBe(true);
           }
@@ -207,16 +200,16 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
         payload: undefined,
         payloadBlobRef: undefined
       };
-      
+
       // Create event with first timestamp generator
       const gen1 = new MonotonicTimestamp();
       const event1 = createEvent(data, gen1);
-      
+
       // Wait a tiny bit and create event with second generator
       await new Promise(resolve => setTimeout(resolve, 1));
       const gen2 = new MonotonicTimestamp();
       const event2 = createEvent(data, gen2);
-      
+
       // Event IDs should be different
       expect(event1.eventId).not.toBe(event2.eventId);
     });
@@ -237,25 +230,25 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
           (data) => {
             const timestampGenerator = new MonotonicTimestamp();
             const events: Event[] = [];
-            
+
             // Create sequential events
             for (let i = 0; i < 50; i++) {
               events.push(createEvent(data, timestampGenerator));
             }
-            
+
             // Verify monotonic property
             for (let i = 1; i < events.length; i++) {
               const prev = events[i - 1];
               const curr = events[i];
-              
+
               // Timestamp should be non-decreasing
               expect(curr.ts).toBeGreaterThanOrEqual(prev.ts);
-              
+
               // If timestamps are equal, sequence should increase
               if (curr.ts === prev.ts) {
                 expect(curr.monotonicSeq).toBe(prev.monotonicSeq + 1);
               }
-              
+
               // If timestamp increased, sequence should reset to 0
               if (curr.ts > prev.ts) {
                 expect(curr.monotonicSeq).toBe(0);
@@ -277,7 +270,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
           (count) => {
             const timestampGenerator = new MonotonicTimestamp();
             const timestamps: number[] = [];
-            
+
             for (let i = 0; i < count; i++) {
               const event = createEvent({
                 projectId: '1234567890abcdef',
@@ -290,7 +283,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
               }, timestampGenerator);
               timestamps.push(event.ts);
             }
-            
+
             // Verify timestamps are non-decreasing
             for (let i = 1; i < timestamps.length; i++) {
               expect(timestamps[i]).toBeGreaterThanOrEqual(timestamps[i - 1]);
@@ -316,7 +309,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
           eventDataArbitrary,
           (data) => {
             const event = createEvent(data);
-            
+
             // projectId should not be empty
             expect(event.projectId).toBeDefined();
             expect(event.projectId.length).toBeGreaterThan(0);
@@ -336,7 +329,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
           eventDataArbitrary,
           (data) => {
             const event = createEvent(data);
-            
+
             // Project ID should be exactly 16 hex characters
             expect(event.projectId).toMatch(/^[0-9a-f]{16}$/i);
           }
@@ -360,14 +353,14 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
           ),
           (projectRootPath) => {
             const projectId = calculateProjectId(projectRootPath);
-            
+
             // Should be 16 hex characters
             expect(projectId).toMatch(/^[0-9a-f]{16}$/i);
-            
+
             // Same path should produce same projectId
             const projectId2 = calculateProjectId(projectRootPath);
             expect(projectId).toBe(projectId2);
-            
+
             // Different paths should produce different projectIds
             const projectId3 = calculateProjectId(projectRootPath + '-different');
             if (projectRootPath.length < 100) {
@@ -390,13 +383,13 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
           (dataArray) => {
             // Generate events with different projectIds
             const events = dataArray.map((data, i) => {
-              const modifiedData = { 
-                ...data, 
-                projectId: i.toString(16).padStart(16, '0') 
+              const modifiedData = {
+                ...data,
+                projectId: i.toString(16).padStart(16, '0')
               };
               return createEvent(modifiedData);
             });
-            
+
             // Group by projectId (aggregation)
             const eventsByProject = new Map<string, Event[]>();
             for (const event of events) {
@@ -405,10 +398,10 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
               }
               eventsByProject.get(event.projectId)!.push(event);
             }
-            
+
             // Should be able to aggregate all events by projectId
             expect(eventsByProject.size).toBe(events.length);
-            
+
             // Each group should contain events with the same projectId
             for (const [projectId, projectEvents] of eventsByProject) {
               for (const event of projectEvents) {
@@ -435,7 +428,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
           eventDataArbitrary,
           (data) => {
             const event = createEvent(data);
-            
+
             // All required fields must exist
             const requiredFields = [
               'schema_version',
@@ -446,24 +439,24 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
               'category',
               'action'
             ];
-            
+
             for (const field of requiredFields) {
               expect(field in event).toBe(true);
             }
-            
+
             // schema_version allows future migrations
             expect(event.schema_version).toBe(EVENT_SCHEMA.VERSION);
-            
+
             // eventId is globally unique
             expect(isValidUuid(event.eventId)).toBe(true);
-            
+
             // ts is high-resolution (nanoseconds)
             expect(event.ts).toBeGreaterThan(0);
-            
+
             // projectId allows partitioning
             expect(event.projectId).toBeDefined();
             expect(event.projectId.length).toBe(16);
-            
+
             // category and action are present
             expect(event.category).toBeDefined();
             expect(event.action).toBeDefined();
@@ -483,7 +476,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
           (data) => {
             const event = createEvent(data);
             const validation = validateEventSchema(event);
-            
+
             expect(validation.isValid).toBe(true);
             expect(validation.errors).toHaveLength(0);
           }
@@ -507,28 +500,28 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
           (dataArray) => {
             const timestampGenerator = new MonotonicTimestamp();
             const eventIds = new Set<string>();
-            
+
             for (const data of dataArray) {
               const event = createEvent(data, timestampGenerator);
-              
+
               // Property 30.1: eventId unique and valid UUIDv7
               expect(isValidUuid(event.eventId)).toBe(true);
               expect(eventIds.has(event.eventId)).toBe(false);
               eventIds.add(event.eventId);
-              
+
               // Property 30.2: ts monotonic
               expect(event.ts).toBeGreaterThan(0);
-              
+
               // Property 30.3: projectId non-empty and aggregatable
               expect(event.projectId).toBeDefined();
               expect(event.projectId.length).toBe(16);
               expect(event.projectId).toMatch(/^[0-9a-f]{16}$/i);
-              
+
               // Property 30.4: forward compatibility
               expect(event.schema_version).toBe(EVENT_SCHEMA.VERSION);
               expect(event.category).toBeDefined();
               expect(event.action).toBeDefined();
-              
+
               // Schema validation
               const validation = validateEventSchema(event);
               expect(validation.isValid).toBe(true);
@@ -549,7 +542,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
           (numEvents) => {
             const timestampGenerator = new MonotonicTimestamp();
             const events: Event[] = [];
-            
+
             for (let i = 0; i < numEvents; i++) {
               const data = {
                 projectId: '1234567890abcdef',
@@ -562,27 +555,27 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
               };
               events.push(createEvent(data, timestampGenerator));
             }
-            
+
             // Verify all properties hold
             const eventIds = new Set<string>();
-            
+
             for (let i = 0; i < events.length; i++) {
               const event = events[i];
-              
+
               // Unique eventId
               expect(eventIds.has(event.eventId)).toBe(false);
               eventIds.add(event.eventId);
-              
+
               // Valid UUIDv7
               expect(isValidUuid(event.eventId)).toBe(true);
-              
+
               // Valid projectId
               expect(event.projectId).toMatch(/^[0-9a-f]{16}$/i);
-              
+
               // Schema validation
               const validation = validateEventSchema(event);
               expect(validation.isValid).toBe(true);
-              
+
               // Monotonicity (compare with previous)
               if (i > 0) {
                 expect(event.ts).toBeGreaterThanOrEqual(events[i - 1].ts);

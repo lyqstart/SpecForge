@@ -1,36 +1,38 @@
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+
+import { optionalPermissionText, permissionRecord } from './utils/unknown-boundary';
 /**
  * Agent Constitution Hard Rules
- * 
+ *
  * These are the 9 bottom-line rules that cannot be overridden by any configuration.
  * Hardcoded in TypeScript constants to prevent accidental modification.
- * 
+ *
  * @specforge/permission-engine
  */
 
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 export interface HardRule {
   id: string;
   description: string;
-  condition: (actor: any, action: string, resource: any, context?: Record<string, unknown>) => boolean;
+  condition: (actor: unknown, action: string, resource: unknown, context?: Record<string, unknown>) => boolean;
   effect: 'deny' | 'allow';
   priority: number;
   layer: 'hard';
 }
 
-function extractActorId(actor: any): string {
+function extractActorId(actor: unknown): string {
   if (typeof actor === 'string') return actor;
-  return actor?.agentRole || actor?.id || '';
+  return optionalPermissionText(actor, 'agentRole') || optionalPermissionText(actor, 'id');
 }
 
-function extractResourceType(resource: any): string {
+function extractResourceType(resource: unknown): string {
   if (typeof resource === 'string') return resource;
-  return resource?.type || '';
+  return optionalPermissionText(resource, 'type');
 }
 
-function extractResourcePath(resource: any): string {
+function extractResourcePath(resource: unknown): string {
   if (typeof resource === 'string') return resource;
-  return resource?.path || '';
+  return optionalPermissionText(resource, 'path');
 }
 
 export const AGENT_CONSTITUTION_RULES: readonly HardRule[] = [
@@ -159,19 +161,19 @@ export const AGENT_CONSTITUTION_RULES: readonly HardRule[] = [
 
 export class HardRuleEvaluator {
   private rules: readonly HardRule[];
-  
+
   constructor(rules: readonly HardRule[] = AGENT_CONSTITUTION_RULES) {
     this.rules = rules;
   }
-  
+
   evaluate(
-    actor: any,
+    actor: unknown,
     action: string,
-    resource: any,
+    resource: unknown,
     context?: Record<string, unknown>
   ): { allowed: boolean; matchedRule?: HardRule; reason?: string } {
     const sortedRules = [...this.rules].sort((a, b) => b.priority - a.priority);
-    
+
     for (const rule of sortedRules) {
       if (rule.condition(actor, action, resource, context)) {
         return {
@@ -181,15 +183,17 @@ export class HardRuleEvaluator {
         };
       }
     }
-    
+
     return { allowed: true };
   }
-  
-  detectConflicts(config: any): Array<{ rule: HardRule; conflict: string }> {
+
+  detectConflicts(config: unknown): Array<{ rule: HardRule; conflict: string }> {
     const conflicts: Array<{ rule: HardRule; conflict: string }> = [];
-    
-    if (config?.rules) {
-      for (const configRule of config.rules) {
+
+    const configured = config === null || config === undefined ? undefined : permissionRecord(config, 'PERMISSION_CONFIG_OBJECT_REQUIRED').rules;
+    if (configured !== null && configured !== undefined) {
+      if (!Array.isArray(configured)) throw new TypeError('PERMISSION_RULES_ARRAY_REQUIRED');
+      for (const configRule of configured) {
         for (const hardRule of this.rules) {
           if (this.doesConfigOverrideHardRule(configRule, hardRule)) {
             conflicts.push({
@@ -200,43 +204,43 @@ export class HardRuleEvaluator {
         }
       }
     }
-    
+
     return conflicts;
   }
-  
-  private doesConfigOverrideHardRule(configRule: any, hardRule: HardRule): boolean {
-    const configEffect = configRule.effect?.toLowerCase();
+
+  private doesConfigOverrideHardRule(configRule: unknown, hardRule: HardRule): boolean {
+    const configEffect = optionalPermissionText(configRule, 'effect').toLowerCase();
     const hardRuleEffect = hardRule.effect;
-    
+
     if (configEffect !== 'allow' || hardRuleEffect !== 'deny') {
       return false;
     }
-    
-    const configAction = configRule.action?.toLowerCase() || '';
-    const configResource = configRule.resource?.toLowerCase() || '';
-    
+
+    const configAction = optionalPermissionText(configRule, 'action').toLowerCase();
+    const configResource = optionalPermissionText(configRule, 'resource').toLowerCase();
+
     return this.doesConfigMatchHardRulePattern(configAction, configResource, hardRule);
   }
-  
+
   private doesConfigMatchHardRulePattern(
     configAction: string,
     configResource: string,
     hardRule: HardRule
   ): boolean {
     const hardRulePatterns = this.getHardRulePatterns(hardRule);
-    
+
     for (const pattern of hardRulePatterns) {
       const actionMatches = this.matchesPattern(pattern.actionPattern, configAction);
       const resourceMatches = this.matchesPattern(pattern.resourcePattern, configResource);
-      
+
       if (actionMatches && resourceMatches) {
         return true;
       }
     }
-    
+
     return false;
   }
-  
+
   private getHardRulePatterns(hardRule: HardRule): Array<{
     actionPattern: string;
     resourcePattern: string;
@@ -295,7 +299,7 @@ export class HardRuleEvaluator {
         return [];
     }
   }
-  
+
   private matchesPattern(pattern: string, value: string): boolean {
     if (pattern === '*') return true;
     const regexPattern = pattern
@@ -308,11 +312,11 @@ export class HardRuleEvaluator {
       return false;
     }
   }
-  
+
   getAllRules(): readonly HardRule[] {
     return this.rules;
   }
-  
+
   getRuleById(id: string): HardRule | undefined {
     return this.rules.find(rule => rule.id === id);
   }

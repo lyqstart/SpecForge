@@ -1,15 +1,15 @@
 /**
  * Event Bus Integration Module
  * Provides utilities for integrating workflow runtime with an injected Event Bus port.
- * 
+ *
  * Feature: Workflow Event System Integration
  * Property 6: Event Ordering - For all workflow instances w, events must be ordered by time
  * Validates: Requirements 4.1, 4.2, 4.3
  */
 
-import { EventPublisher, createEventPublisher } from './events/EventPublisher.js';
+import { type EventPublisher, createEventPublisher } from './events/EventPublisher.js';
+import type { IEventBus, Event, Subscription } from './types.js';
 import { WorkflowEngine } from './WorkflowEngine.js';
-import type { IEventBus } from './types.js';
 
 /**
  * Configuration for Event Bus integration
@@ -23,7 +23,7 @@ export interface EventBusIntegrationConfig {
 /**
  * Initialize Event Bus integration for workflow runtime
  * Creates an EventPublisher around the Event Bus supplied by the composition layer.
- * 
+ *
  * @param config Configuration for Event Bus integration
  * @returns Object containing EventBus, EventPublisher, and WorkflowEngine
  */
@@ -37,8 +37,8 @@ export function initializeEventBusIntegration(
   const eventBus = config.eventBus;
 
   // Start the injected implementation when it exposes the lifecycle port.
-  if (eventBus && typeof (eventBus as any).start === 'function') {
-    (eventBus as any).start();
+  if (eventBus && typeof eventBus.start === 'function') {
+    eventBus.start();
   }
 
   // Create EventPublisher
@@ -63,18 +63,18 @@ export function initializeEventBusIntegration(
 /**
  * Shutdown Event Bus integration
  * Stops the EventBus and cleans up resources
- * 
+ *
  * @param eventBus The EventBus instance to shutdown
  */
 export function shutdownEventBusIntegration(eventBus: IEventBus): void {
-  if (eventBus && typeof (eventBus as any).stop === 'function') {
-    (eventBus as any).stop();
+  if (eventBus && typeof eventBus.stop === 'function') {
+    eventBus.stop();
   }
 }
 
 /**
  * Subscribe to workflow events from the Event Bus
- * 
+ *
  * @param eventBus The EventBus instance
  * @param topic The event topic pattern (e.g., 'workflow.*', 'workflow.gate.*')
  * @param handler The event handler function
@@ -83,7 +83,7 @@ export function shutdownEventBusIntegration(eventBus: IEventBus): void {
 export function subscribeToWorkflowEvents(
   eventBus: IEventBus,
   topic: string,
-  handler: (event: any) => void
+  handler: (event: Event) => void
 ): string {
   const subscription = eventBus.subscribe(topic, handler);
   return subscription.id;
@@ -91,13 +91,13 @@ export function subscribeToWorkflowEvents(
 
 /**
  * Unsubscribe from workflow events
- * 
+ *
  * @param eventBus The EventBus instance
  * @param subscription The subscription object to unsubscribe
  */
 export function unsubscribeFromWorkflowEvents(
   eventBus: IEventBus,
-  subscription: any
+  subscription: Subscription
 ): void {
   eventBus.unsubscribe(subscription);
 }

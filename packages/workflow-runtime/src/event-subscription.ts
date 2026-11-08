@@ -8,12 +8,15 @@
  * 见 docs/engineering-lessons/async-resource-lifecycle.md
  */
 
-import { v4 as uuidv4 } from 'uuid';
-import { IEventBus, Event, Subscription } from './types.js';
-
 /**
  * Event handler function type
  */
+
+import { promiseFromSync } from '@specforge/types';
+import { v4 as uuidv4 } from 'uuid';
+
+import type { IEventBus, Event, Subscription } from './types.js';
+
 export type EventHandler = (event: Event) => void | Promise<void>;
 
 /**
@@ -65,15 +68,12 @@ export class EventSubscriptionManager {
     const subscriptionId = uuidv4();
 
     // 创建包装的 handler，处理异步调用
-    const wrappedHandler = async (event: Event) => {
-      try {
-        await Promise.resolve(handler(event));
-      } catch (error) {
+    const wrappedHandler = (event: Event): void => {
+      promiseFromSync(() => handler(event)).catch((error: unknown) => {
         console.error(
-          `[EventSubscriptionManager] Error in handler for ${eventType}:`,
-          error
+          '[EventSubscriptionManager] Error in handler for ' + eventType + ':', error
         );
-      }
+      });
     };
 
     // 向 Event Bus 订阅
@@ -150,7 +150,7 @@ export class EventSubscriptionManager {
    * 规则 A4（创建者负责销毁）：
    * 当 EventSubscriptionManager 被销毁时，必须清理所有订阅
    */
-  async dispose(): Promise<void> {
+   dispose(): Promise<void> { return promiseFromSync(() => {
     // 规则 T1（清理必须与创建对称）：
     // 创建时注册到两个 Map，清理时必须从两个 Map 都移除
     const subscriptionIds = Array.from(this.subscriptions.keys());
@@ -178,7 +178,7 @@ export class EventSubscriptionManager {
         `[EventSubscriptionManager] Cleanup failed: ${this.busSubscriptions.size} bus subscriptions remain`
       );
     }
-  }
+  }); }
 }
 
 /**

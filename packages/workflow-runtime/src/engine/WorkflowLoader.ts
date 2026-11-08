@@ -6,8 +6,9 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { WorkflowDefinitionLoader, ValidationResult } from '../loaders/WorkflowDefinitionLoader.js';
-import { WorkflowDefinition } from '../types.js';
+
+import { type ValidationResult , WorkflowDefinitionLoader } from '../loaders/WorkflowDefinitionLoader.js';
+import type { WorkflowDefinition } from '../types.js';
 
 /**
  * Workflow Loader

@@ -4,9 +4,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { 
-  sampleFrom, 
-  simpleGateDefinitionArb, 
+
+import {
+  sampleFrom,
+  simpleGateDefinitionArb,
   compositeGateDefinitionArb,
   workflowDefinitionArb,
   gateResultArb,
@@ -24,10 +25,10 @@ import {
 } from './index';
 
 describe('Property Test Framework - Generators', () => {
-  
+
   it('should generate valid simple gate definitions', () => {
     const gates = sampleFrom(simpleGateDefinitionArb(), 10);
-    
+
     expect(gates).toHaveLength(10);
     gates.forEach(gate => {
       expect(gate.type).toBe('simple');
@@ -39,7 +40,7 @@ describe('Property Test Framework - Generators', () => {
 
   it('should generate valid composite gate definitions', () => {
     const gates = sampleFrom(compositeGateDefinitionArb(2, 3), 10);
-    
+
     expect(gates).toHaveLength(10);
     gates.forEach(gate => {
       expect(gate.type).toBe('composite');
@@ -55,7 +56,7 @@ describe('Property Test Framework - Generators', () => {
 
   it('should generate valid workflow definitions', () => {
     const workflows = sampleFrom(workflowDefinitionArb(2, 4), 5);
-    
+
     expect(workflows).toHaveLength(5);
     workflows.forEach(workflow => {
       expect(workflow.schema_version).toBe('1.0');
@@ -69,7 +70,7 @@ describe('Property Test Framework - Generators', () => {
 
   it('should generate valid gate results', () => {
     const results = sampleFrom(gateResultArb(), 20);
-    
+
     expect(results).toHaveLength(20);
     results.forEach(result => {
       expect(result.schema_version).toBe('1.0');
@@ -82,7 +83,7 @@ describe('Property Test Framework - Generators', () => {
 });
 
 describe('Property Test Framework - Helper Functions', () => {
-  
+
   it('should create mock gate results correctly', () => {
     const passedResult = createMockGateResult(true);
     expect(passedResult.passed).toBe(true);
@@ -95,7 +96,7 @@ describe('Property Test Framework - Helper Functions', () => {
 
   it('should create simple gate definitions correctly', () => {
     const gate = createSimpleGate('test-gate', 'Test Gate');
-    
+
     expect(gate.type).toBe('simple');
     expect(gate.id).toBe('test-gate');
     expect(gate.name).toBe('Test Gate');
@@ -108,7 +109,7 @@ describe('Property Test Framework - Helper Functions', () => {
       createSimpleGate('child-2', 'Child 2')
     ];
     const gate = createCompositeGate('parent', 'Parent Gate', 'sequential', 'fail_fast', children);
-    
+
     expect(gate.type).toBe('composite');
     expect(gate.id).toBe('parent');
     expect(gate.mode).toBe('sequential');
@@ -133,7 +134,7 @@ describe('Property Test Framework - Helper Functions', () => {
       createSimpleGate('child1', 'Child 1'),
       createSimpleGate('child2', 'Child 2')
     ]);
-    
+
     const ids = getAllGateIds(compositeGate);
     expect(ids).toContain('parent');
     expect(ids).toContain('child1');
@@ -168,7 +169,7 @@ describe('Property Test Framework - Helper Functions', () => {
       },
       artifacts: []
     };
-    
+
     expect(validateWorkflowDefinition(validWorkflow)).toBe(true);
   });
 
@@ -177,7 +178,7 @@ describe('Property Test Framework - Helper Functions', () => {
       createSimpleGate('child1', 'Child 1'),
       createSimpleGate('child2', 'Child 2')
     ]);
-    
+
     expect(validateCompositeGate(validComposite)).toBe(true);
 
     // Invalid: empty children
@@ -190,7 +191,7 @@ describe('Property Test Framework - Helper Functions', () => {
       createSimpleGate('child1', 'Child 1'),
       createSimpleGate('child2', 'Child 2')
     ]);
-    
+
     const leaves = getLeafGates(composite);
     expect(leaves).toHaveLength(2);
     expect(leaves[0].id).toBe('child1');
@@ -207,12 +208,12 @@ describe('Property Test Framework - Helper Functions', () => {
     expect(isValidGate(validComposite)).toBe(true);
 
     // Invalid gate (missing id)
-    expect(isValidGate({ type: 'simple', id: '', name: 'Test' } as any)).toBe(false);
+    expect(isValidGate({ schema_version: '1.0', type: 'simple', id: '', name: 'Test' })).toBe(false);
   });
 });
 
 describe('Property Test Framework - Configuration', () => {
-  
+
   it('should have correct default configuration', () => {
     expect(DEFAULT_PROPERTY_CONFIG.numIterations).toBe(100);
     expect(DEFAULT_PROPERTY_CONFIG.verbose).toBe(false);

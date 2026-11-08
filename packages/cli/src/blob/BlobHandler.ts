@@ -1,13 +1,21 @@
 /**
  * BlobHandler - Handles large content thresholding and blob reference management.
- * 
+ *
  * Implements Property 17: Payload Size Thresholding
  * - Content > 64 KiB is converted to blob://<sha256> references
  * - Interactive mode resolves blob references for display
  * - JSON mode keeps blob references unchanged
  */
 
-import { createHash, Hash } from 'crypto';
+/**
+ * BlobHandler - Handles large content thresholding and blob reference management.
+ *
+ * Implements Property 17: Payload Size Thresholding
+ * - Content > 64 KiB is converted to blob://<sha256> references
+ * - Interactive mode resolves blob references for display
+ * - JSON mode keeps blob references unchanged
+ */
+import { createHash } from 'crypto';
 
 /**
  * Threshold for blob conversion (64 KiB in bytes)

@@ -12,8 +12,8 @@
  * - seal transitions 必须由独立守卫主体执行
  */
 
-import type { Principal } from '@specforge/types/principal';
 import type { PermissionContext, PermissionDecision } from '@specforge/types/permissions';
+import type { Principal } from '@specforge/types/principal';
 import { isSealTransition, getSealTransition } from '@specforge/types/seal-transitions';
 
 // Re-export for consumer convenience

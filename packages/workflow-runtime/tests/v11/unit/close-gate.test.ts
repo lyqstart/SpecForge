@@ -6,7 +6,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
+
 import { CloseGate } from '@/v11/runtime/CloseGate';
+
+import { requiredTestValue } from '../../required-test-value';
 
 describe('CloseGate', () => {
   const closeGate = new CloseGate();
@@ -160,7 +163,7 @@ describe('CloseGate', () => {
 
       expect(result.canClose).toBe(true);
       const evidenceCheck = result.checks.find((c) => c.name === 'evidence_check');
-      expect(evidenceCheck!.notApplicable).toBe(true);
+      expect(requiredTestValue(evidenceCheck).notApplicable).toBe(true);
     });
 
     it('should skip verification check when not_applicable', () => {

@@ -1,28 +1,25 @@
 /**
  * Webhook Management Commands
- * 
+ *
  * Provides commands to manage webhooks:
  * - register: Register a new webhook endpoint
  * - list: List all registered webhooks
  * - delete: Delete a webhook by ID
- * 
+ *
  * @packageDocumentation
  */
 
 import yargs, { Argv, Arguments } from 'yargs';
-import { hideBin } from 'yargs/helpers';
+
 import * as fs from 'fs';
-import * as path from 'path';
 import { DaemonClient } from '../http/DaemonClient';
 import { ModeSwitch, formatError } from '../mode-switch';
-import { toCliError, DaemonUnreachableError, InvalidInputError } from '../errors';
-import { resolveSpecForgeHandshakePath, resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
+import { toCliError, InvalidInputError } from '../errors';
+import { resolveSpecForgeHandshakePath } from '@specforge/types/user-level-paths';
 /**
  * Runtime directory path under the canonical SpecForge user root
  */
-function getRuntimeDir(): string {
-  return path.join(resolveSpecForgeUserRoot(), 'runtime');
-}
+
 
 
 /**
@@ -37,12 +34,12 @@ function getHandshakePath(): string {
  */
 function getDaemonClient(): DaemonClient {
   const handshakePath = getHandshakePath();
-  
+
   // Default values
   let port = 3847;
   let token = '';
   let host = '127.0.0.1';
-  
+
   if (fs.existsSync(handshakePath)) {
     try {
       const handshake = JSON.parse(fs.readFileSync(handshakePath, 'utf-8'));
@@ -115,10 +112,10 @@ export async function commandRegister(
   modeSwitch: ModeSwitch
 ): Promise<void> {
   const client = getDaemonClient();
-  
+
   // Parse events from comma-separated string to array
   const events = argv.events.split(',').map(e => e.trim()).filter(e => e.length > 0);
-  
+
   if (events.length === 0) {
     const cliError = new InvalidInputError(
       'At least one event pattern is required',
@@ -161,7 +158,7 @@ export async function commandList(
   modeSwitch: ModeSwitch
 ): Promise<void> {
   const client = getDaemonClient();
-  
+
   try {
     // Call daemon-core /api/webhooks endpoint
     const response = await client.get<ListResponse>('/api/webhooks');
@@ -176,24 +173,24 @@ export async function commandList(
       }
 
       console.log(`Found ${response.total} webhook(s):\n`);
-      
+
       for (const webhook of response.webhooks) {
         const statusIcon = webhook.active ? '✓' : '✗';
         console.log(`${statusIcon} Webhook: ${webhook.id}`);
         console.log(`  URL:    ${webhook.url}`);
         console.log(`  Events: ${webhook.events.join(', ')}`);
-        
+
         const created = new Date(webhook.createdAt).toLocaleString();
         console.log(`  Created: ${created}`);
-        
+
         if (webhook.lastTriggeredAt) {
           const triggered = new Date(webhook.lastTriggeredAt).toLocaleString();
           console.log(`  Last Triggered: ${triggered}`);
         }
-        
+
         console.log('');
       }
-      
+
       console.log('Use "specforge webhook delete <id>" to remove a webhook.');
     }
   } catch (err) {

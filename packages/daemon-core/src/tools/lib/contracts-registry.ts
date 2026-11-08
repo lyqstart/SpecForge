@@ -1,3 +1,4 @@
+import { scalarText } from '@specforge/types';
 /**
  * Read-side access to the existing Project/Module Contract model.
  *
@@ -54,7 +55,7 @@ export function readContractsRegistry(projectRoot: string): ContractRegistry {
       projectRoot,
       SPEC_DIR_NAME,
       'project',
-      'extension_registry.json',
+      'extension_registry.json'
     );
     const raw = fs.readFileSync(registryPath, 'utf-8');
     const data = JSON.parse(raw) as { contracts?: unknown };
@@ -84,35 +85,28 @@ export function hasAnyContracts(registry: ContractRegistry): boolean {
 /** Find a registered shared enum by its canonical id. */
 export function findSharedEnum(
   registry: ContractRegistry,
-  enumId: string,
+  enumId: string
 ): SharedEnumContract | undefined {
-  return registry.shared_enums.find((e) => e.id === enumId);
+  return registry.shared_enums.find(e => e.id === enumId);
 }
 
 /** True when `value` is an authoritative member of the registered enum `enumId`. */
 export function isRegisteredEnumValue(
   registry: ContractRegistry,
   enumId: string,
-  value: string | number,
+  value: string | number
 ): boolean {
   const entry = findSharedEnum(registry, enumId);
   return !!entry && entry.values.includes(value);
 }
 
 /** The owning MODULE_CODE for a registered enum, if any. */
-export function getEnumOwner(
-  registry: ContractRegistry,
-  enumId: string,
-): string | undefined {
+export function getEnumOwner(registry: ContractRegistry, enumId: string): string | undefined {
   return findSharedEnum(registry, enumId)?.owner_module;
 }
 
 export type ContractGovernanceLevel = 'project' | 'module';
-export type ContractKind =
-  | 'shared_enum'
-  | 'invariant'
-  | 'public_interface'
-  | 'extension_point';
+export type ContractKind = 'shared_enum' | 'invariant' | 'public_interface' | 'extension_point';
 
 export type RuntimeContractDefinition = {
   id: string;
@@ -134,7 +128,10 @@ export type UnifiedContractsReadModel = {
 };
 
 function normalizePath(value: string): string {
-  return String(value ?? '').replace(/\\/g, '/').replace(/^\.\//, '').replace(/\/+/g, '/');
+  return String(value ?? '')
+    .replace(/\\/g, '/')
+    .replace(/^\.\//, '')
+    .replace(/\/+/g, '/');
 }
 
 function unique(values: string[]): string[] {
@@ -144,7 +141,7 @@ function unique(values: string[]): string[] {
 function flattenRegistry(
   registry: ContractRegistry,
   governanceLevel: ContractGovernanceLevel,
-  definitionPath: string,
+  definitionPath: string
 ): RuntimeContractDefinition[] {
   const result: RuntimeContractDefinition[] = [];
   const fields: Array<[ContractKind, keyof ContractRegistry]> = [
@@ -155,19 +152,21 @@ function flattenRegistry(
   ];
   for (const [kind, field] of fields) {
     for (const entry of registry[field] as unknown as Array<Record<string, unknown>>) {
-      const id = String(entry.id ?? '').trim();
+      const id = scalarText(entry.id ?? '').trim();
       if (!id) continue;
       result.push({
         id,
         kind,
         governance_level: governanceLevel,
-        owner_module: String(entry.owner_module ?? '').trim().toUpperCase(),
+        owner_module: scalarText(entry.owner_module ?? '')
+          .trim()
+          .toUpperCase(),
         source_refs: unique(
           Array.isArray(entry.source_refs)
             ? entry.source_refs.map(value => String(value ?? '').trim())
-            : [],
+            : []
         ),
-        enforcement: String(entry.enforcement ?? '').trim(),
+        enforcement: scalarText(entry.enforcement ?? '').trim(),
         definition_path: normalizePath(definitionPath),
         raw: entry,
       });
@@ -200,7 +199,7 @@ export function readUnifiedContracts(projectRoot: string): UnifiedContractsReadM
     projectRoot,
     SPEC_DIR_NAME,
     'project',
-    'extension_registry.json',
+    'extension_registry.json'
   );
   inputFiles.push(projectRegistryPath);
   if (fs.existsSync(projectRegistryPath)) {
@@ -225,7 +224,9 @@ export function readUnifiedContracts(projectRoot: string): UnifiedContractsReadM
   }
 
   for (const raw of Array.isArray(manifest?.modules) ? manifest.modules : []) {
-    const moduleCode = String(raw?.module_code ?? raw?.module ?? '').trim().toUpperCase();
+    const moduleCode = String(raw?.module_code ?? raw?.module ?? '')
+      .trim()
+      .toUpperCase();
     if (!moduleCode) continue;
     const explicitlyDeclared =
       (typeof raw?.contracts === 'string' && raw.contracts.trim().length > 0) ||
@@ -234,8 +235,8 @@ export function readUnifiedContracts(projectRoot: string): UnifiedContractsReadM
       String(
         raw?.contracts ??
           raw?.contract_file ??
-          `${SPEC_DIR_NAME}/project/modules/${moduleCode}/contracts.json`,
-      ),
+          `${SPEC_DIR_NAME}/project/modules/${moduleCode}/contracts.json`
+      )
     );
     const contractPath = path.isAbsolute(relative)
       ? relative
@@ -246,8 +247,10 @@ export function readUnifiedContracts(projectRoot: string): UnifiedContractsReadM
       continue;
     }
     try {
-      const data = JSON.parse(fs.readFileSync(contractPath, 'utf-8')) as any;
-      const owner = String(data?.owner_module ?? '').trim().toUpperCase();
+      const data = JSON.parse(fs.readFileSync(contractPath, 'utf-8'));
+      const owner = String(data?.owner_module ?? '')
+        .trim()
+        .toUpperCase();
       if (owner && owner !== moduleCode) {
         errors.push(`${relative}: owner_module=${owner}, expected ${moduleCode}`);
       }
@@ -270,7 +273,7 @@ export function readUnifiedContracts(projectRoot: string): UnifiedContractsReadM
       errors.push(
         `Contract ${contractId} has multiple formal definitions: ${definitions
           .map(definition => definition.definition_path)
-          .join(', ')}`,
+          .join(', ')}`
       );
     }
   }
@@ -308,18 +311,22 @@ function globToRegex(pattern: string): RegExp {
 /** Resolve a production file to exactly the Modules whose code_paths own it. */
 export function resolveCodePathModules(projectRoot: string, filePath: string): string[] {
   const normalized = normalizePath(
-    path.isAbsolute(filePath) ? path.relative(projectRoot, filePath) : filePath,
+    path.isAbsolute(filePath) ? path.relative(projectRoot, filePath) : filePath
   );
   const manifestPath = path.join(projectRoot, SPEC_DIR_NAME, 'project', 'spec_manifest.json');
   try {
-    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8')) as any;
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
     const owners: string[] = [];
     for (const raw of Array.isArray(manifest?.modules) ? manifest.modules : []) {
-      const moduleCode = String(raw?.module_code ?? raw?.module ?? '').trim().toUpperCase();
+      const moduleCode = String(raw?.module_code ?? raw?.module ?? '')
+        .trim()
+        .toUpperCase();
       const codePaths = Array.isArray(raw?.code_paths) ? raw.code_paths : [];
       if (
         moduleCode &&
-        codePaths.some((pattern: unknown) => globToRegex(String(pattern ?? '')).test(normalized))
+        codePaths.some((pattern: unknown) =>
+          globToRegex(scalarText(pattern ?? '')).test(normalized)
+        )
       ) {
         owners.push(moduleCode);
       }

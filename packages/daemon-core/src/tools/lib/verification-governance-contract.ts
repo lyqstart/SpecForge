@@ -1,3 +1,4 @@
+import { scalarText } from '@specforge/types';
 /**
  * verification-governance-contract.ts
  *
@@ -44,7 +45,7 @@ function isRecord(value: unknown): value is Record<string, any> {
 }
 
 function normalize(value: unknown): string {
-  return String(value ?? '')
+  return scalarText(value ?? '')
     .trim()
     .toLowerCase();
 }
@@ -213,7 +214,7 @@ export async function evaluateVerificationGovernanceContract(input: {
   const evidenceWorkItemId = input.workItemId ?? path.basename(input.workItemDir);
   const evidenceSchemaPrecheck = await precheckEvidenceManifestSchema(
     input.workItemDir,
-    evidenceWorkItemId,
+    evidenceWorkItemId
   );
   const evidenceSchemaBlockCode = evidenceManifestSchemaBlockCode(evidenceSchemaPrecheck);
   const evidenceManifest = evidenceSchemaBlockCode
@@ -227,14 +228,15 @@ export async function evaluateVerificationGovernanceContract(input: {
 
   const checks: GateReportCheck[] = [];
   const integrity = await inspectVerificationEvidenceIntegrity({
-    executionEvidenceConsumer:input.executionEvidenceConsumer,
+    executionEvidenceConsumer: input.executionEvidenceConsumer,
     projectRoot: path.resolve(input.workItemDir, '..', '..', '..'),
     workItemDir: input.workItemDir,
     workItemId: evidenceWorkItemId,
   });
   checks.push({
     check_id: 'verification_evidence_source_and_time_integrity',
-    description: 'manual acceptance has independent content-bound evidence and declared times do not exceed runtime time',
+    description:
+      'manual acceptance has independent content-bound evidence and declared times do not exceed runtime time',
     passed: integrity.invalidity_reasons.length === 0,
     severity: integrity.invalidity_reasons.length === 0 ? undefined : 'error',
     details: integrity.invalidity_reasons.join('; ') || undefined,
@@ -334,8 +336,18 @@ export async function evaluateVerificationGovernanceContract(input: {
     severity: sideEffectsDeclared ? undefined : 'error',
   });
 
-  const guardAuditBinding = inspectWriteGuardAuditBinding(path.resolve(input.workItemDir, '..', '..', '..'), input.workItemDir, auditText);
-  checks.push({ check_id: 'verification_write_guard_audit_current', description: 'Changed Files Audit covers current Write Guard and resolution evidence', passed: guardAuditBinding.passed, severity: guardAuditBinding.passed ? undefined : 'error', details: guardAuditBinding.reason });
+  const guardAuditBinding = inspectWriteGuardAuditBinding(
+    path.resolve(input.workItemDir, '..', '..', '..'),
+    input.workItemDir,
+    auditText
+  );
+  checks.push({
+    check_id: 'verification_write_guard_audit_current',
+    description: 'Changed Files Audit covers current Write Guard and resolution evidence',
+    passed: guardAuditBinding.passed,
+    severity: guardAuditBinding.passed ? undefined : 'error',
+    details: guardAuditBinding.reason,
+  });
   const auditVerdict = evaluateChangedFilesAuditVerdict(auditText ?? '', {
     expectedWorkItemId: evidenceWorkItemId,
   });

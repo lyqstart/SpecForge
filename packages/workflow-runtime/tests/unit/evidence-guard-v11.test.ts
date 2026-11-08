@@ -10,19 +10,22 @@
  * 6. Missing changed_files_audit.md or gates/close_gate.json blocks closed
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'node:fs/promises';
-import * as path from 'node:path';
 import * as os from 'node:os';
+import * as path from 'node:path';
+
+import { promiseFromSync } from '@specforge/types';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+
+import type { WorkflowDefinition } from '../../src/types.js';
 import { WorkflowEngine, requiresTransitionEvidence } from '../../src/WorkflowEngine.js';
-import { WorkflowDefinition } from '../../src/types.js';
 import { currentUserDecision } from '../helpers/current-user-decision.js';
 
 /**
  * Gate check function that always passes — used for execute() tests
  * where the engine runs gates automatically.
  */
-const passGate = async () => ({ schema_version: '1.0' as const, passed: true, reason: 'auto-pass' });
+const passGate =  (): Promise<{ schema_version: "1.0"; passed: boolean; reason: string; }> => promiseFromSync(() => (({ schema_version: '1.0' as const, passed: true, reason: 'auto-pass' })));
 
 function currentWorkItemMetadata(workItemDir: string, files = ['src/a.ts']): Record<string, unknown> {
   return {

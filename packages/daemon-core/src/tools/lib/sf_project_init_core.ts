@@ -1,3 +1,4 @@
+import { promiseFromSync } from '@specforge/types';
 /**
  * sf_project_init_core.ts — current project bootstrap
  *
@@ -73,23 +74,23 @@ const SYSTEM_FILE_CONTENT: Record<string, SystemTemplate> = {
         project_spec_version: 'PSV-0001',
         project_name: name,
         project: {
-          extension_registry: (`${SPEC_DIR_NAME}/project/extension_registry.json` as const),
-          requirements_index: (`${SPEC_DIR_NAME}/project/requirements_index.md` as const),
-          design_index: (`${SPEC_DIR_NAME}/project/design_index.md` as const),
-          architecture: (`${SPEC_DIR_NAME}/project/architecture.md` as const),
-          glossary: (`${SPEC_DIR_NAME}/project/glossary.md` as const),
-          decisions: (`${SPEC_DIR_NAME}/project/decisions.md` as const),
-          trace_matrix: (`${SPEC_DIR_NAME}/project/trace_matrix.md` as const),
+          extension_registry: `${SPEC_DIR_NAME}/project/extension_registry.json` as const,
+          requirements_index: `${SPEC_DIR_NAME}/project/requirements_index.md` as const,
+          design_index: `${SPEC_DIR_NAME}/project/design_index.md` as const,
+          architecture: `${SPEC_DIR_NAME}/project/architecture.md` as const,
+          glossary: `${SPEC_DIR_NAME}/project/glossary.md` as const,
+          decisions: `${SPEC_DIR_NAME}/project/decisions.md` as const,
+          trace_matrix: `${SPEC_DIR_NAME}/project/trace_matrix.md` as const,
         },
         default_module: 'CORE',
         modules: [
           {
             module_code: 'CORE',
-            path: (`${SPEC_DIR_NAME}/project/modules/CORE` as const),
-            module_file: (`${SPEC_DIR_NAME}/project/modules/CORE/module.json` as const),
-            requirements: (`${SPEC_DIR_NAME}/project/modules/CORE/requirements.md` as const),
-            design: (`${SPEC_DIR_NAME}/project/modules/CORE/design.md` as const),
-            trace: (`${SPEC_DIR_NAME}/project/modules/CORE/trace.md` as const),
+            path: `${SPEC_DIR_NAME}/project/modules/CORE` as const,
+            module_file: `${SPEC_DIR_NAME}/project/modules/CORE/module.json` as const,
+            requirements: `${SPEC_DIR_NAME}/project/modules/CORE/requirements.md` as const,
+            design: `${SPEC_DIR_NAME}/project/modules/CORE/design.md` as const,
+            trace: `${SPEC_DIR_NAME}/project/modules/CORE/trace.md` as const,
           },
         ],
       },
@@ -123,7 +124,8 @@ const SYSTEM_FILE_CONTENT: Record<string, SystemTemplate> = {
     ) + '\n',
 
   'project/modules/CORE/module.json': () =>
-    JSON.stringify({ schema_version: '1.0', module_code: 'CORE', status: 'active' }, null, 2) + '\n',
+    JSON.stringify({ schema_version: '1.0', module_code: 'CORE', status: 'active' }, null, 2) +
+    '\n',
 
   '.gitignore': () => 'runtime/\nlogs/\nsessions/\narchive/\ncas/\n',
 };
@@ -187,11 +189,7 @@ function buildManifest(): InitEntry[] {
   }
 
   for (const [key, value] of Object.entries(LAYOUT as Record<string, unknown>)) {
-    if (
-      key === 'configFiles' ||
-      key === 'projectFiles' ||
-      key === 'workItemFiles'
-    ) continue;
+    if (key === 'configFiles' || key === 'projectFiles' || key === 'workItemFiles') continue;
 
     if (typeof value === 'string') {
       const normalized = normalizeLayoutPath(value);
@@ -212,7 +210,7 @@ function buildManifest(): InitEntry[] {
     }
   }
 
-  const projectFiles = (LAYOUT as any).projectFiles ?? {};
+  const projectFiles = LAYOUT.projectFiles ?? {};
   for (const [key, subValue] of Object.entries(projectFiles)) {
     if (typeof subValue === 'string') {
       const normalized = normalizeLayoutPath(subValue);
@@ -239,7 +237,9 @@ function buildManifest(): InitEntry[] {
 
 /** Read-only ownership inventory for initialization incident recovery. */
 export function projectInitOwnedFiles(): string[] {
-  return buildManifest().filter(entry => entry.type !== 'dir').map(entry => normalizeLayoutPath(entry.path));
+  return buildManifest()
+    .filter(entry => entry.type !== 'dir')
+    .map(entry => normalizeLayoutPath(entry.path));
 }
 
 function makeFileEntry(relativePath: string): InitEntry | null {
@@ -264,7 +264,7 @@ function makeFileEntry(relativePath: string): InitEntry | null {
 export async function ensureProjectInit(
   projectRoot: string,
   projectName?: string,
-  options: ProjectInitOptions = {},
+  options: ProjectInitOptions = {}
 ): Promise<InitResult> {
   const result: InitResult = {
     success: true,
@@ -426,11 +426,17 @@ async function normalizeModuleRegistry(projectRoot: string, result: InitResult):
   try {
     manifest = JSON.parse(raw);
   } catch {
-    result.moduleRegistry = { status: 'requires_spec_migration', reason: 'spec_manifest_unreadable' };
+    result.moduleRegistry = {
+      status: 'requires_spec_migration',
+      reason: 'spec_manifest_unreadable',
+    };
     return;
   }
   if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) {
-    result.moduleRegistry = { status: 'requires_spec_migration', reason: 'spec_manifest_not_object' };
+    result.moduleRegistry = {
+      status: 'requires_spec_migration',
+      reason: 'spec_manifest_not_object',
+    };
     return;
   }
 
@@ -480,7 +486,9 @@ async function normalizeModuleRegistry(projectRoot: string, result: InitResult):
   let coreDefinitionValid = false;
   if (existsSync(coreModuleJson)) {
     try {
-      const identity = resolveSpecModuleIdentity(JSON.parse(await readFile(coreModuleJson, 'utf-8')));
+      const identity = resolveSpecModuleIdentity(
+        JSON.parse(await readFile(coreModuleJson, 'utf-8'))
+      );
       coreDefinitionValid = identity.valid && identity.moduleCode === 'CORE';
     } catch {
       coreDefinitionValid = false;
@@ -539,25 +547,23 @@ async function normalizeModuleRegistry(projectRoot: string, result: InitResult):
   result.moduleRegistry = { status: 'normalized', moduleCodes: ['CORE'] };
 }
 
-async function getSystemFileContent(
-  entry: InitEntry,
-  projectName: string,
-  now: string
-): Promise<string> {
-  const relativePath = normalizeLayoutPath(
-    entry.path.startsWith(SPEC_DIR_NAME + '/')
-      ? entry.path.slice(SPEC_DIR_NAME.length + 1)
-      : entry.path.startsWith(SPEC_DIR_NAME + '\\')
+function getSystemFileContent(entry: InitEntry, projectName: string, now: string): Promise<string> {
+  return promiseFromSync(() => {
+    const relativePath = normalizeLayoutPath(
+      entry.path.startsWith(SPEC_DIR_NAME + '/')
         ? entry.path.slice(SPEC_DIR_NAME.length + 1)
-        : entry.path
-  );
+        : entry.path.startsWith(SPEC_DIR_NAME + '\\')
+          ? entry.path.slice(SPEC_DIR_NAME.length + 1)
+          : entry.path
+    );
 
-  const template = SYSTEM_FILE_CONTENT[relativePath];
-  if (template) {
-    return template(projectName, now);
-  }
+    const template = SYSTEM_FILE_CONTENT[relativePath];
+    if (template) {
+      return template(projectName, now);
+    }
 
-  return '';
+    return '';
+  });
 }
 
 async function ensureHostProfile(): Promise<void> {

@@ -100,7 +100,7 @@ export class SessionRegistryError extends Error {
 export class SessionRegistry {
   // Primary index: spawnIntentId -> SessionBinding
   private bySpawnIntentId: Map<string, SessionBinding> = new Map();
-  
+
   // Secondary index: sessionId -> SessionBinding
   private bySessionId: Map<string, SessionBinding> = new Map();
 
@@ -138,7 +138,7 @@ export class SessionRegistry {
     // Check if already registered
     if (this.bySpawnIntentId.has(request.spawnIntentId)) {
       const existing = this.bySpawnIntentId.get(request.spawnIntentId)!;
-      
+
       // If already bound, return the bound session
       if (existing.state === 'bound') {
         return {
@@ -147,7 +147,7 @@ export class SessionRegistry {
           spawnIntentId: request.spawnIntentId,
         };
       }
-      
+
       // If pending, return existing
       return {
         success: true,
@@ -189,7 +189,7 @@ export class SessionRegistry {
   bind(spawnIntentId: string, sessionId: string): SessionBindingResult {
     // Check if spawn intent exists
     const binding = this.bySpawnIntentId.get(spawnIntentId);
-    
+
     if (!binding) {
       // Auto-register if not found (for backward compatibility)
       const now = new Date();
@@ -201,10 +201,10 @@ export class SessionRegistry {
         updatedAt: now,
         agentRole: 'unknown',
       };
-      
+
       this.bySpawnIntentId.set(spawnIntentId, newBinding);
       this.bySessionId.set(sessionId, newBinding);
-      
+
       return {
         success: true,
         spawnIntentId,
@@ -244,7 +244,7 @@ export class SessionRegistry {
    */
   release(sessionId: string): boolean {
     const binding = this.bySessionId.get(sessionId);
-    
+
     if (!binding) {
       return false;
     }
@@ -304,27 +304,27 @@ export class SessionRegistry {
    */
   findAll(query: SessionQuery): SessionBinding[] {
     const results: SessionBinding[] = [];
-    
+
     for (const binding of this.bySpawnIntentId.values()) {
       let matches = true;
-      
+
       if (query.state && binding.state !== query.state) {
         matches = false;
       }
-      
+
       if (query.spawnIntentId && binding.spawnIntentId !== query.spawnIntentId) {
         matches = false;
       }
-      
+
       if (query.sessionId && binding.sessionId !== query.sessionId) {
         matches = false;
       }
-      
+
       if (matches) {
         results.push(binding);
       }
     }
-    
+
     return results;
   }
 
@@ -378,7 +378,7 @@ export class SessionRegistry {
   cleanupExpired(): number {
     const now = Date.now();
     let cleaned = 0;
-    
+
     for (const [spawnIntentId, binding] of this.bySpawnIntentId.entries()) {
       if (binding.state === 'pending') {
         const age = now - binding.createdAt.getTime();
@@ -391,7 +391,7 @@ export class SessionRegistry {
         }
       }
     }
-    
+
     return cleaned;
   }
 
@@ -415,7 +415,7 @@ export class SessionRegistry {
     let pending = 0;
     let bound = 0;
     let released = 0;
-    
+
     for (const binding of this.bySpawnIntentId.values()) {
       switch (binding.state) {
         case 'pending':
@@ -429,7 +429,7 @@ export class SessionRegistry {
           break;
       }
     }
-    
+
     return {
       total: this.bySpawnIntentId.size,
       pending,

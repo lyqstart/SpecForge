@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.eslint.json",
+  "include": [
+    "src/**/*.d.ts",
+    "tests/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "test-data"
+  ]
+}

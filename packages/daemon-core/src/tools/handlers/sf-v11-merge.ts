@@ -1,4 +1,4 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 /**
  * sf-v11-merge — v1.1 Merge Runner handler
  *
@@ -39,7 +39,7 @@ function workflowTypeFromPath(workflowPath: string | undefined): string {
   }
 }
 
-async function readJsonIfExists(filePath: string): Promise<any | null> {
+async function readJsonIfExists(filePath: string): Promise<any> {
   try {
     return JSON.parse(await fs.readFile(filePath, 'utf-8'));
   } catch {

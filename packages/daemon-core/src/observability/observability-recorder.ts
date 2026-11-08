@@ -1,4 +1,4 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 /**
  * SpecForge OBS-FULL Layer 1 — daemon observability recorder.
  *
@@ -7,29 +7,29 @@ import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
  * - daemon observations obey category/phase filters in observability.json.
  * - blocked OpenCode event phases such as opencode.message.part.updated are not recorded.
  */
-import * as fs from "node:fs";
-import * as path from "node:path";
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import {
   loadSfObservabilityConfig,
   resolveProjectRootFromContext,
   shouldRecordObservationByConfig,
-} from "./observability-config";
-import { redactSecrets, sha256, stableJson } from "./redaction";
-import { createSfTraceId } from "./trace";
+} from './observability-config';
+import { redactSecrets, sha256, stableJson } from './redaction';
+import { createSfTraceId } from './trace';
 
 export interface DaemonObservationInput {
   projectRoot?: string;
   context?: Record<string, unknown>;
   category:
-    | "daemon-ingress"
-    | "dispatcher"
-    | "handler"
-    | "state"
-    | "artifact"
-    | "gate"
-    | "close-gate"
-    | "hardstop"
-    | "error";
+    | 'daemon-ingress'
+    | 'dispatcher'
+    | 'handler'
+    | 'state'
+    | 'artifact'
+    | 'gate'
+    | 'close-gate'
+    | 'hardstop'
+    | 'error';
   phase: string;
   trace_id?: string;
   tool_name?: string;
@@ -49,97 +49,77 @@ function ensureDir(dir: string): void {
 
 function appendJsonl(file: string, record: unknown): void {
   ensureDir(path.dirname(file));
-  fs.appendFileSync(file, stableJson(record) + "\n", "utf-8");
+  fs.appendFileSync(file, stableJson(record) + '\n', 'utf-8');
 }
 
 function byteLength(value: unknown): number {
-  return Buffer.byteLength(
-    typeof value === "string" ? value : stableJson(value),
-    "utf-8",
-  );
+  return Buffer.byteLength(typeof value === 'string' ? value : stableJson(value), 'utf-8');
 }
 
-function categoryFileName(
-  category: DaemonObservationInput["category"],
-): string {
+function categoryFileName(category: DaemonObservationInput['category']): string {
   switch (category) {
-    case "daemon-ingress":
-      return "daemon-ingress.jsonl";
-    case "dispatcher":
-      return "dispatcher.jsonl";
-    case "handler":
-      return "handlers.jsonl";
-    case "state":
-      return "state.jsonl";
-    case "artifact":
-      return "artifacts.jsonl";
-    case "gate":
-      return "gates.jsonl";
-    case "close-gate":
-      return "close-gate.jsonl";
-    case "hardstop":
-      return "hardstop.jsonl";
-    case "error":
-      return "errors.jsonl";
+    case 'daemon-ingress':
+      return 'daemon-ingress.jsonl';
+    case 'dispatcher':
+      return 'dispatcher.jsonl';
+    case 'handler':
+      return 'handlers.jsonl';
+    case 'state':
+      return 'state.jsonl';
+    case 'artifact':
+      return 'artifacts.jsonl';
+    case 'gate':
+      return 'gates.jsonl';
+    case 'close-gate':
+      return 'close-gate.jsonl';
+    case 'hardstop':
+      return 'hardstop.jsonl';
+    case 'error':
+      return 'errors.jsonl';
     default:
-      return "index.jsonl";
+      return 'index.jsonl';
   }
 }
 
 function shouldRecord(
   config: ReturnType<typeof loadSfObservabilityConfig>,
-  category: DaemonObservationInput["category"],
+  category: DaemonObservationInput['category'],
   phase: string,
-  force?: boolean,
+  force?: boolean
 ): boolean {
   if (force) return true;
   return shouldRecordObservationByConfig(config, category, phase);
 }
 
-function writeBySha256(
-  root: string,
-  subdir: "payloads" | "errors",
-  value: unknown,
-): string {
+function writeBySha256(root: string, subdir: 'payloads' | 'errors', value: unknown): string {
   const hash = sha256(value);
-  const dir = path.join(root, subdir, "by-sha256", hash.slice(0, 2));
+  const dir = path.join(root, subdir, 'by-sha256', hash.slice(0, 2));
   const file = path.join(dir, `${hash}.json`);
   ensureDir(dir);
   if (!fs.existsSync(file)) {
-    fs.writeFileSync(file, stableJson(value), "utf-8");
+    fs.writeFileSync(file, stableJson(value), 'utf-8');
   }
   return file;
 }
 
-export function recordDaemonObservation(
-  input: DaemonObservationInput,
-): string | undefined {
-  if (input.tool_name === 'sf_project_config') input = {
-    ...input, payload: { configuration_payload_omitted: true },
-    error: input.error === undefined ? undefined : { configuration_error_omitted: true }, metadata: undefined,
-  };
+export function recordDaemonObservation(input: DaemonObservationInput): string | undefined {
+  if (input.tool_name === 'sf_project_config')
+    input = {
+      ...input,
+      payload: { configuration_payload_omitted: true },
+      error: input.error === undefined ? undefined : { configuration_error_omitted: true },
+      metadata: undefined,
+    };
   try {
-    const projectRoot =
-      input.projectRoot ?? resolveProjectRootFromContext(input.context);
+    const projectRoot = input.projectRoot ?? resolveProjectRootFromContext(input.context);
     const config = loadSfObservabilityConfig(projectRoot);
-    if (!shouldRecord(config, input.category, input.phase, input.force))
-      return input.trace_id;
+    if (!shouldRecord(config, input.category, input.phase, input.force)) return input.trace_id;
 
     const trace_id = input.trace_id ?? createSfTraceId();
-    const root = path.join(
-      projectRoot,
-      SPEC_DIR_NAME,
-      "logs",
-      "observability",
-      "daemon",
-    );
+    const root = path.join(projectRoot, SPEC_DIR_NAME, 'logs', 'observability', 'daemon');
 
-    const payload = config.redact_secrets
-      ? redactSecrets(input.payload)
-      : input.payload;
-    const error = config.redact_secrets
-      ? redactSecrets(input.error)
-      : input.error;
+    const payload = config.redact_secrets ? redactSecrets(input.payload) : input.payload;
+    const error = config.redact_secrets ? redactSecrets(input.error) : input.error;
 
     const payloadBytes = input.payload === undefined ? 0 : byteLength(payload);
     const errorBytes = input.error === undefined ? 0 : byteLength(error);
@@ -147,20 +127,12 @@ export function recordDaemonObservation(
     let payloadFile: string | undefined;
     let errorFile: string | undefined;
 
-    if (
-      config.capture_payload &&
-      config.payload_storage === "file" &&
-      payload !== undefined
-    ) {
-      payloadFile = writeBySha256(root, "payloads", payload);
+    if (config.capture_payload && config.payload_storage === 'file' && payload !== undefined) {
+      payloadFile = writeBySha256(root, 'payloads', payload);
     }
 
-    if (
-      config.capture_payload &&
-      config.payload_storage === "file" &&
-      error !== undefined
-    ) {
-      errorFile = writeBySha256(root, "errors", error);
+    if (config.capture_payload && config.payload_storage === 'file' && error !== undefined) {
+      errorFile = writeBySha256(root, 'errors', error);
     }
 
     const inlinePayload =
@@ -168,13 +140,11 @@ export function recordDaemonObservation(
         ? payload
         : undefined;
     const inlineError =
-      error !== undefined && errorBytes <= config.max_inline_payload_bytes
-        ? error
-        : undefined;
+      error !== undefined && errorBytes <= config.max_inline_payload_bytes ? error : undefined;
 
     const record = {
-      schema_version: "1.4",
-      source: "daemon",
+      schema_version: '1.4',
+      source: 'daemon',
       timestamp: new Date().toISOString(),
       trace_id,
       category: input.category,
@@ -186,9 +156,7 @@ export function recordDaemonObservation(
       duration_ms: input.duration_ms,
       payload_bytes: payloadBytes,
       payload_sha256: payload === undefined ? undefined : sha256(payload),
-      payload_file: payloadFile
-        ? path.relative(projectRoot, payloadFile)
-        : undefined,
+      payload_file: payloadFile ? path.relative(projectRoot, payloadFile) : undefined,
       error_bytes: errorBytes,
       error_sha256: error === undefined ? undefined : sha256(error),
       error_file: errorFile ? path.relative(projectRoot, errorFile) : undefined,
@@ -198,8 +166,8 @@ export function recordDaemonObservation(
     };
 
     appendJsonl(path.join(root, categoryFileName(input.category)), record);
-    appendJsonl(path.join(root, "index.jsonl"), {
-      source: "daemon",
+    appendJsonl(path.join(root, 'index.jsonl'), {
+      source: 'daemon',
       timestamp: record.timestamp,
       trace_id,
       category: input.category,

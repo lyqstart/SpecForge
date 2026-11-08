@@ -3,21 +3,21 @@
  * Extends WorkflowEngine with Agent system integration
  */
 
-import { WorkflowEngine, type WorkflowEngineConfig, requiresTransitionEvidence } from '../WorkflowEngine.js';
-import { 
-  WorkflowDefinition, 
-  WorkflowInstance, 
-  GateDefinition, 
+import {
+  WorkflowAgentRunner,
+  createWorkflowAgentRunner,
+  type AgentRole
+} from '../AgentRunner.js';
+import { type AgentGateRunner, createAgentGateRunner } from '../gates/AgentGateRunner.js';
+import type {
+  WorkflowDefinition,
+  WorkflowInstance,
+  GateDefinition,
   GateResult,
   SimpleGateDefinition,
-  WorkflowState 
+  WorkflowState
 } from '../types.js';
-import { 
-  WorkflowAgentRunner, 
-  createWorkflowAgentRunner,
-  type AgentRole 
-} from '../AgentRunner.js';
-import { AgentGateRunner, createAgentGateRunner } from '../gates/AgentGateRunner.js';
+import { WorkflowEngine, type WorkflowEngineConfig, requiresTransitionEvidence } from '../WorkflowEngine.js';
 
 /**
  * AgentWorkflowEngine configuration
@@ -243,7 +243,7 @@ export class AgentWorkflowEngine extends WorkflowEngine {
     while (instance.status === 'running') {
       const currentStateName = instance.currentState;
       const currentStateDef = definition.stateMachine.states[currentStateName];
-      
+
       if (!currentStateDef) {
         throw new Error(`State not found: ${currentStateName}`);
       }

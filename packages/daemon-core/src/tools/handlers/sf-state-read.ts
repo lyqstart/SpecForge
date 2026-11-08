@@ -11,8 +11,7 @@ import { registerHandler } from '../ToolDispatcher';
 registerHandler('sf_state_read', async (args, context, deps) => {
   const workItemId = args['work_item_id'] as string;
 
-  const projectPath =
-    (context?.directory as string) || (context?.worktree as string) || '';
+  const projectPath = (context?.directory as string) || (context?.worktree as string) || '';
 
   if (!projectPath) {
     return {
@@ -31,9 +30,8 @@ registerHandler('sf_state_read', async (args, context, deps) => {
   let rebuilt_from_events = false;
   if (typeof sm.rebuildState === 'function') {
     await sm.rebuildState();
-    const eventCount = typeof sm.getLastReplayedEventCount === 'function'
-      ? sm.getLastReplayedEventCount()
-      : 0;
+    const eventCount =
+      typeof sm.getLastReplayedEventCount === 'function' ? sm.getLastReplayedEventCount() : 0;
     rebuilt_from_events = Number.isFinite(eventCount) && eventCount > 0;
   }
   if (workItemId === 'all') {

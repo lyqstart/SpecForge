@@ -82,12 +82,8 @@ export function buildTolerantHeaderRegex(
   // JavaScript treats CR/LF as whitespace; using it around the suffix separator can consume the
   // first `- evidence` line below the heading.
   const horizontalWhitespace = '[\\t ]';
-  const hashSpacing = requireHashSpace
-    ? `${horizontalWhitespace}+`
-    : `${horizontalWhitespace}*`;
-  const numberPrefix = allowNumberPrefix
-    ? `(?:\\d+[.、)]${horizontalWhitespace}*)?`
-    : '';
+  const hashSpacing = requireHashSpace ? `${horizontalWhitespace}+` : `${horizontalWhitespace}*`;
+  const numberPrefix = allowNumberPrefix ? `(?:\\d+[.、)]${horizontalWhitespace}*)?` : '';
   // Tolerate only a direct parenthetical or explanatory text introduced by one controlled
   // separator. The separator and explanation must remain on the same physical line, and the
   // explanation must contain at least one non-whitespace character.

@@ -1,4 +1,4 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 /**
  * work-item-lifecycle-v11.ts — v1.1 标准 Work Item 生命周期管理
  *
@@ -111,24 +111,15 @@ const PROJECT_SPEC_VERSION_PATTERN = /^PSV-[0-9]{4,}$/;
  * creation must never guess or silently fall back to PSV-0001 for an existing
  * project. The sole authority is project/spec_manifest.json.
  */
-export async function readAuthoritativeProjectSpecVersion(
-  projectRoot: string,
-): Promise<string> {
-  const manifestPath = path.join(
-    projectRoot,
-    SPEC_DIR_NAME,
-    'project',
-    'spec_manifest.json',
-  );
+export async function readAuthoritativeProjectSpecVersion(projectRoot: string): Promise<string> {
+  const manifestPath = path.join(projectRoot, SPEC_DIR_NAME, 'project', 'spec_manifest.json');
 
   let parsed: unknown;
   try {
     parsed = JSON.parse(await fs.readFile(manifestPath, 'utf-8'));
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error);
-    throw new Error(
-      `PROJECT_SPEC_VERSION_UNAVAILABLE: cannot read ${manifestPath}: ${detail}`,
-    );
+    throw new Error(`PROJECT_SPEC_VERSION_UNAVAILABLE: cannot read ${manifestPath}: ${detail}`);
   }
 
   const version =
@@ -136,12 +127,9 @@ export async function readAuthoritativeProjectSpecVersion(
       ? (parsed as Record<string, unknown>).project_spec_version
       : undefined;
 
-  if (
-    typeof version !== 'string' ||
-    !PROJECT_SPEC_VERSION_PATTERN.test(version)
-  ) {
+  if (typeof version !== 'string' || !PROJECT_SPEC_VERSION_PATTERN.test(version)) {
     throw new Error(
-      `PROJECT_SPEC_VERSION_UNAVAILABLE: ${manifestPath} must contain a valid project_spec_version`,
+      `PROJECT_SPEC_VERSION_UNAVAILABLE: ${manifestPath} must contain a valid project_spec_version`
     );
   }
 
@@ -160,16 +148,14 @@ export async function initializeClosureFiles(
   workItemDir: string,
   workItemId: string,
   workflowPath: string | null,
-  baseSpecVersion: string,
+  baseSpecVersion: string
 ): Promise<void> {
   if (!PROJECT_SPEC_VERSION_PATTERN.test(baseSpecVersion)) {
-    throw new Error(
-      `PROJECT_SPEC_VERSION_INVALID: ${baseSpecVersion}`,
-    );
+    throw new Error(`PROJECT_SPEC_VERSION_INVALID: ${baseSpecVersion}`);
   }
   const now = new Date().toISOString();
   const isCodeOnly = workflowPath === 'code_only_fast_path';
-  const isTaskChange = workflowPath === 'task_change_path';
+  void (workflowPath === 'task_change_path');
   await Promise.all([
     fs.mkdir(path.join(workItemDir, 'candidates'), { recursive: true }),
     fs.mkdir(path.join(workItemDir, 'gates'), { recursive: true }),
@@ -177,48 +163,80 @@ export async function initializeClosureFiles(
   ]);
 
   // change_classification.md
-  await ensureFile(path.join(workItemDir, 'change_classification.md'), [
-    '# Change Classification', '',
-    `Work Item: ${workItemId}`, '',
-    '> TODO: 由 Agent 填充', '',
-  ].join('\n'));
+  await ensureFile(
+    path.join(workItemDir, 'change_classification.md'),
+    [
+      '# Change Classification',
+      '',
+      `Work Item: ${workItemId}`,
+      '',
+      '> TODO: 由 Agent 填充',
+      '',
+    ].join('\n')
+  );
 
   // impact_analysis.md
-  await ensureFile(path.join(workItemDir, 'impact_analysis.md'), [
-    '# Impact Analysis', '',
-    `Work Item: ${workItemId}`, '',
-    '## Existing Spec Match', '',
-    '> TODO: 由 Agent 填充', '',
-  ].join('\n'));
+  await ensureFile(
+    path.join(workItemDir, 'impact_analysis.md'),
+    [
+      '# Impact Analysis',
+      '',
+      `Work Item: ${workItemId}`,
+      '',
+      '## Existing Spec Match',
+      '',
+      '> TODO: 由 Agent 填充',
+      '',
+    ].join('\n')
+  );
 
   // trigger_result.json
-  await ensureFile(path.join(workItemDir, 'trigger_result.json'), JSON.stringify({
-    schema_version: '1.0',
-    work_item_id: workItemId,
-    workflow_path: workflowPath,
-    classification: {},
-    match_results: [],
-    selected_at: now,
-  }, null, 2) + '\n');
+  await ensureFile(
+    path.join(workItemDir, 'trigger_result.json'),
+    JSON.stringify(
+      {
+        schema_version: '1.0',
+        work_item_id: workItemId,
+        workflow_path: workflowPath,
+        classification: {},
+        match_results: [],
+        selected_at: now,
+      },
+      null,
+      2
+    ) + '\n'
+  );
 
   // candidate_manifest.json
-  await ensureFile(path.join(workItemDir, 'candidate_manifest.json'), JSON.stringify({
-    schema_version: '1.0',
-    work_item_id: workItemId,
-    workflow_path: workflowPath ?? 'unknown',
-    base_spec_version: baseSpecVersion,
-    merge_required: !isCodeOnly,
-    entries: [],
-  }, null, 2) + '\n');
+  await ensureFile(
+    path.join(workItemDir, 'candidate_manifest.json'),
+    JSON.stringify(
+      {
+        schema_version: '1.0',
+        work_item_id: workItemId,
+        workflow_path: workflowPath ?? 'unknown',
+        base_spec_version: baseSpecVersion,
+        merge_required: !isCodeOnly,
+        entries: [],
+      },
+      null,
+      2
+    ) + '\n'
+  );
 
   // gate_summary.md
-  await ensureFile(path.join(workItemDir, 'gate_summary.md'), [
-    '# Gate Summary', '',
-    `Work Item: ${workItemId}`,
-    'Overall Status: pending', '',
-    '> TODO: 由 Gate Runner 生成', '',
-  ].join('\n'));
-
+  await ensureFile(
+    path.join(workItemDir, 'gate_summary.md'),
+    [
+      '# Gate Summary',
+      '',
+      `Work Item: ${workItemId}`,
+      'Overall Status: pending',
+      '',
+      '> TODO: 由 Gate Runner 生成',
+      '',
+    ].join('\n')
+  );
 }
 
 // ---------------------------------------------------------------------------

@@ -19,7 +19,7 @@ export { createWorkItemMetadataSchemaDescriptor } from '@specforge/types/schema-
 
 export async function precheckWorkItemMetadataSchema(
   workItemDir: string,
-  workItemId: string,
+  workItemId: string
 ): Promise<SchemaDescriptorPrecheckResult> {
   return precheckSchemaDescriptors(workItemDir, [
     createWorkItemMetadataSchemaDescriptor(workItemId),
@@ -32,7 +32,7 @@ function validationError(workItemId: string, errors: readonly string[]): Error {
 
 export async function readWorkItemMetadata(
   workItemDir: string,
-  workItemId: string,
+  workItemId: string
 ): Promise<WorkItemMetadata> {
   const schemaPrecheck = await precheckWorkItemMetadataSchema(workItemDir, workItemId);
   const schemaCheck = schemaPrecheck.checks[0];
@@ -41,7 +41,7 @@ export async function readWorkItemMetadata(
       throw new Error(`WORK_ITEM_NOT_FOUND: ${workItemId}`);
     }
     throw new Error(
-      `WORK_ITEM_METADATA_INVALID: ${workItemId}: WORK_ITEM_METADATA_SCHEMA_BLOCKED: ${schemaCheck?.errorCode ?? 'SCHEMA_VERSION_MISMATCH'}`,
+      `WORK_ITEM_METADATA_INVALID: ${workItemId}: WORK_ITEM_METADATA_SCHEMA_BLOCKED: ${schemaCheck?.errorCode ?? 'SCHEMA_VERSION_MISMATCH'}`
     );
   }
   const metadataPath = path.join(workItemDir, 'work_item.json');
@@ -53,7 +53,7 @@ export async function readWorkItemMetadata(
       throw new Error(`WORK_ITEM_NOT_FOUND: ${workItemId}`);
     }
     throw new Error(
-      `WORK_ITEM_METADATA_READ_FAILED: ${workItemId}: ${error instanceof Error ? error.message : String(error)}`,
+      `WORK_ITEM_METADATA_READ_FAILED: ${workItemId}: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 
@@ -64,7 +64,7 @@ export async function readWorkItemMetadata(
 
 export function readWorkItemMetadataSync(
   workItemDir: string,
-  workItemId: string,
+  workItemId: string
 ): WorkItemMetadata {
   const metadataPath = path.join(workItemDir, 'work_item.json');
   let content: string;
@@ -75,7 +75,7 @@ export function readWorkItemMetadataSync(
       throw new Error(`WORK_ITEM_NOT_FOUND: ${workItemId}`);
     }
     throw new Error(
-      `WORK_ITEM_METADATA_READ_FAILED: ${workItemId}: ${error instanceof Error ? error.message : String(error)}`,
+      `WORK_ITEM_METADATA_READ_FAILED: ${workItemId}: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 
@@ -87,7 +87,7 @@ export function readWorkItemMetadataSync(
 export async function writeWorkItemMetadata(
   workItemDir: string,
   workItemId: string,
-  metadata: WorkItemMetadata,
+  metadata: WorkItemMetadata
 ): Promise<void> {
   const content = JSON.stringify(metadata, null, 2) + '\n';
   const validation = validateWorkItemJson(content, workItemId);

@@ -17,7 +17,10 @@ const DEFAULT_CONFIG: KnowledgeTriggerConfig = {
 };
 
 export interface KnowledgeExtractionEvent {
-  type: 'knowledge.extraction.triggered' | 'knowledge.extraction.completed' | 'knowledge.extraction.failed';
+  type:
+    | 'knowledge.extraction.triggered'
+    | 'knowledge.extraction.completed'
+    | 'knowledge.extraction.failed';
   workItemId: string;
   timestamp: number;
   error?: string;
@@ -51,7 +54,7 @@ export class KnowledgeTrigger {
       agentRole: string;
       workItemId: string;
       sessionContext?: Record<string, unknown>;
-    }) => Promise<{ success: boolean; error?: string }>,
+    }) => Promise<{ success: boolean; error?: string }>
   ): void {
     this.agentSpawner = spawner;
   }
@@ -122,10 +125,10 @@ export class KnowledgeTrigger {
   subscribeToEventBus(eventBus: {
     subscribe: (
       category: string,
-      handler: (event: { action: string; workItemId?: string }) => void,
+      handler: (event: { action: string; workItemId?: string }) => void
     ) => void;
   }): void {
-    eventBus.subscribe('workflow', (event) => {
+    eventBus.subscribe('workflow', event => {
       if (event.action === 'workflow.completed' && event.workItemId) {
         // Fire and forget - knowledge extraction failure is non-blocking
         this.onWorkflowCompleted(event.workItemId).catch(() => {

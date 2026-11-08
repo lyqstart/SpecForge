@@ -24,7 +24,7 @@ export interface AllowedWriteFile {
  * operation field is one of the allowed values.
  */
 export function validateAllowedWriteFiles(
-  raw: Array<{ path: string; operation: string }>,
+  raw: Array<{ path: string; operation: string }>
 ): AllowedWriteFile[] {
   const seen = new Set<string>();
   const result: AllowedWriteFile[] = [];

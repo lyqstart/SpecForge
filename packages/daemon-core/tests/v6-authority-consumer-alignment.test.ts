@@ -1,3 +1,5 @@
+import ts from 'typescript';
+import { codeContains } from '../../../tests/helpers/source-structure';
 import { readFileSync } from 'node:fs';
 import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -36,11 +38,20 @@ describe('authority recovery consumer alignment', () => {
     expect(projectStatus).toContain('AR-DEC-04:APPROVED_WITH_SINGLE_PROJECT_STATUS');
   });
 
-  it('projects the current Observability principle into both active Doc Lint implementations', () => {
+  it('keeps current Doc Lint under SPS authority while preserving historical principle evidence', () => {
     const principle = '可观测性是一级能力，不是第二套状态系统';
-
-    expect(daemonLint).toContain(`"${principle}"`);
-    expect(userlevelLint).toContain(`"${principle}"`);
+    expect(productSpecification).toContain('Observability 不得拥有第二套 workflow state WAL。');
+    expect(codeContains(userlevelLint, JSON.stringify(principle))).toBe(true);
+    for (const source of [daemonLint, userlevelLint]) {
+      const tree = ts.createSourceFile('doc-lint.ts', source, ts.ScriptTarget.Latest, true);
+      const legacyCalls: string[] = [];
+      function visit(node: ts.Node): void {
+        if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text.startsWith('checkV6Arch')) legacyCalls.push(node.expression.text);
+        ts.forEachChild(node, visit);
+      }
+      visit(tree);
+      expect(legacyCalls).toEqual([]);
+    }
     expect(rootLintFixtures).toContain(principle);
     expect(rootLintFixtures).not.toContain('可观测性是一级组件，不是附加能力');
   });

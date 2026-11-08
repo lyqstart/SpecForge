@@ -2,23 +2,24 @@
 // Build-unblock note: legacy permission-engine service has historical type drift; production build boundary is being restored
 /**
  * Plugin Permission Validator
- * 
+ *
  * Validates plugin permission requirements against granted permissions.
  * Implements Property 28: Plugin Permission Gate
- * 
+ *
  * Requirements 3.2: Plugin Sandbox Permission Implementation
  * - Parse plugin manifest `requires` field
  * - Compare with granted permission set
  * - Reject plugins with unauthorized requirements
- * 
+ *
  * @specforge/permission-engine
  */
 
-import { z } from 'zod';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
-import { 
-  PluginPermissionDeniedEventPayload, 
-  createPluginPermissionDeniedEvent 
+import { z } from 'zod';
+
+import {
+  PluginPermissionDeniedEventPayload,
+  createPluginPermissionDeniedEvent
 } from '../types/events';
 
 /**
@@ -73,7 +74,7 @@ export interface PluginPermissionValidatorConfig {
   /** Path to events file (for logging) */
   eventsFilePath?: string;
   /** Custom event logger function */
-  logEvent?: (event: any) => Promise<void>;
+  logEvent?: (event: unknown) => Promise<void>;
   /** Default grant set to use if none provided */
   defaultGrants?: GrantSet;
   /** Allowed permissions (whitelist) - if provided, requires must be subset of this */
@@ -82,15 +83,15 @@ export interface PluginPermissionValidatorConfig {
 
 /**
  * Plugin Permission Validator
- * 
+ *
  * Validates plugin manifest requirements against granted permissions.
- * Implements Requirement 3.2 AC-2: "Read plugin's `requires` field during loading, 
+ * Implements Requirement 3.2 AC-2: "Read plugin's `requires` field during loading,
  * compare with user grants; IF permissions not granted, THEN reject loading."
  */
 export class PluginPermissionValidator {
   private config: Required<PluginPermissionValidatorConfig>;
   private allowedPermissions: Set<string>;
-  
+
   constructor(config: PluginPermissionValidatorConfig = {}) {
     this.config = {
       projectId: config.projectId || 'default-project',
@@ -98,29 +99,29 @@ export class PluginPermissionValidator {
       eventsFilePath: config.eventsFilePath || './' + SPEC_DIR_NAME + '/logs/telemetry.jsonl',
       logEvent: config.logEvent || this.defaultLogEvent.bind(this),
       defaultGrants: config.defaultGrants || { permissions: [] },
-      allowedPermissions: config.allowedPermissions 
+      allowedPermissions: config.allowedPermissions
         ? new Set(config.allowedPermissions)
         : new Set(config.defaultGrants?.permissions || [])
     };
-    
+
     // Initialize allowed permissions from config
     this.allowedPermissions = new Set(config.allowedPermissions || config.defaultGrants?.permissions || []);
   }
 
   /**
    * Validate plugin requirements against granted permissions
-   * 
+   *
    * @param manifest Plugin manifest to validate
    * @param grants Permission grants (uses default if not provided)
    * @returns Validation result with missing requirements if any
    */
-  validate(manifest: PluginManifest, grants?: GrantSet): PluginValidationResult {
+  validate(manifest: Partial<PluginManifest>, grants?: GrantSet): PluginValidationResult {
     // Determine which grants to use:
     // - If grants parameter is explicitly provided, use it (custom grants override everything)
     // - Otherwise, use the defaultGrants from config
     const isCustomGrants = grants !== undefined;
     const effectiveGrants = grants || this.config.defaultGrants;
-    
+
     // Parse and validate the manifest
     const parsedManifest = this.parseManifest(manifest);
     if (!parsedManifest) {
@@ -134,7 +135,7 @@ export class PluginPermissionValidator {
     }
 
     const requiredPermissions = parsedManifest.requires || [];
-    
+
     // Use the appropriate permission source:
     // - If custom grants are explicitly provided, use grants.permissions directly
     // - If allowedPermissions is explicitly configured (whitelist mode), use it
@@ -180,7 +181,7 @@ export class PluginPermissionValidator {
   /**
    * Parse and validate plugin manifest
    */
-  private parseManifest(manifest: PluginManifest): PluginManifest | null {
+  private parseManifest(manifest: Partial<PluginManifest>): PluginManifest | null {
     try {
       return PluginManifestSchema.parse(manifest);
     } catch (error) {
@@ -228,7 +229,7 @@ export class PluginPermissionValidator {
   /**
    * Default event logging function
    */
-  private async defaultLogEvent(_event: any): Promise<void> {
+  private async defaultLogEvent(_event: unknown): Promise<void> {
     // Default implementation does nothing
     // Override with actual file logging in production
   }
@@ -281,12 +282,12 @@ export class PluginPermissionValidator {
     if (grants !== undefined) {
       return grants.permissions.includes(permission);
     }
-    
+
     // Use allowedPermissions if configured (whitelist mode)
     if (this.config.allowedPermissions.size > 0) {
       return this.config.allowedPermissions.has(permission);
     }
-    
+
     // Fall back to default grants
     return this.config.defaultGrants.permissions.includes(permission);
   }
@@ -296,7 +297,7 @@ export class PluginPermissionValidator {
    * Returns results for all plugins
    */
   validateBatch(
-    manifests: PluginManifest[], 
+    manifests: PluginManifest[],
     grants?: GrantSet
   ): PluginValidationResult[] {
     return manifests.map(manifest => this.validate(manifest, grants));
@@ -307,7 +308,7 @@ export class PluginPermissionValidator {
    */
   getAllRequirements(manifests: PluginManifest[]): string[] {
     const requirements = new Set<string>();
-    
+
     for (const manifest of manifests) {
       const parsed = this.parseManifest(manifest);
       if (parsed?.requires) {
@@ -316,7 +317,7 @@ export class PluginPermissionValidator {
         }
       }
     }
-    
+
     return Array.from(requirements);
   }
 }

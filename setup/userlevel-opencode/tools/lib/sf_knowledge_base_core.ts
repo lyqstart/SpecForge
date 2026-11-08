@@ -13,9 +13,9 @@ import { homedir } from "node:os"
 import { logErrorToFile } from "./utils"
 
 /** v1.1 Workflow path types (replaces legacy WorkflowType from state_machine) */
-type WorkflowType = 
+type WorkflowType =
   | 'requirement_change_path'
-  | 'design_change_path' 
+  | 'design_change_path'
   | 'architecture_change_path'
   | 'task_change_path'
   | 'code_only_fast_path'
@@ -241,21 +241,61 @@ function createEmptyStore(): GlobalKnowledgeStore {
  */
 /** Current knowledge-store contract uses its existing independent version=1.0. */
 export function validateKnowledgeStore(value: unknown): asserts value is GlobalKnowledgeStore {
-  const object=(v: unknown): v is Record<string, any> => !!v && typeof v === 'object' && !Array.isArray(v);
-  if (!object(value) || value.version !== '1.0') throw new Error('KNOWLEDGE_STORE_SCHEMA_UNSUPPORTED: explicit version=1.0 required; existing data preserved, no automatic conversion');
-  const strings=(v: unknown) => Array.isArray(v) && v.every(x=>typeof x==='string');
-  const counter=(v: unknown) => Number.isSafeInteger(v) && Number(v)>=0;
-  const date=(v: unknown) => typeof v==='string' && Number.isFinite(Date.parse(v));
-  if (!Array.isArray(value.categories) || !value.categories.every(c=>object(c)&&['id','name','description'].every(k=>typeof c[k]==='string')) ||
-      !Array.isArray(value.entries) || !object(value.metadata) || !counter(value.metadata.total_entries) || !date(value.metadata.last_updated)) throw new Error('KNOWLEDGE_STORE_SCHEMA_INVALID: categories, entries and metadata must satisfy the current contract');
+  const object = (v: unknown): v is Record<string, unknown> =>
+    !!v && typeof v === 'object' && !Array.isArray(v);
+  if (!object(value) || value.version !== '1.0')
+    throw new Error(
+      'KNOWLEDGE_STORE_SCHEMA_UNSUPPORTED: explicit version=1.0 required; existing data preserved, no automatic conversion'
+    );
+  const strings = (v: unknown): v is string[] =>
+    Array.isArray(v) && v.every((x: unknown) => typeof x === 'string');
+  const counter = (v: unknown): v is number =>
+    typeof v === 'number' && Number.isSafeInteger(v) && v >= 0;
+  const date = (v: unknown) => typeof v === 'string' && Number.isFinite(Date.parse(v));
+  if (
+    !Array.isArray(value.categories) ||
+    !value.categories.every(
+      c => object(c) && ['id', 'name', 'description'].every(k => typeof c[k] === 'string')
+    ) ||
+    !Array.isArray(value.entries) ||
+    !object(value.metadata) ||
+    !counter(value.metadata.total_entries) ||
+    !date(value.metadata.last_updated)
+  )
+    throw new Error(
+      'KNOWLEDGE_STORE_SCHEMA_INVALID: categories, entries and metadata must satisfy the current contract'
+    );
   for (const entry of value.entries) {
-    if (!object(entry) || !['id','title','content','category','source_project','source_work_item','applicability','normalized_key'].every(k=>typeof entry[k]==='string') ||
-        !['tags','applicable_file_patterns','anti_conditions'].every(k=>strings(entry[k])) ||
-        !['high','medium','low'].includes(entry.confidence) || !['active','candidate','archived'].includes(entry.status) ||
-        !['verified','unverified','disproved'].includes(entry.verification_status) ||
-        !['usage_count','helpful_count','rejected_count'].every(k=>counter(entry[k])) || !counter(entry.version) || entry.version<1 ||
-        !date(entry.created_at) || !date(entry.updated_at) || !(entry.last_used_at===null || date(entry.last_used_at)) ||
-        !(entry.workflow_type===undefined || typeof entry.workflow_type==='string')) throw new Error('KNOWLEDGE_STORE_SCHEMA_INVALID: entry does not satisfy the current contract');
+    if (
+      !object(entry) ||
+      ![
+        'id',
+        'title',
+        'content',
+        'category',
+        'source_project',
+        'source_work_item',
+        'applicability',
+        'normalized_key',
+      ].every(k => typeof entry[k] === 'string') ||
+      !['tags', 'applicable_file_patterns', 'anti_conditions'].every(k => strings(entry[k])) ||
+      typeof entry.confidence !== 'string' ||
+      !['high', 'medium', 'low'].includes(entry.confidence) ||
+      typeof entry.status !== 'string' ||
+      !['active', 'candidate', 'archived'].includes(entry.status) ||
+      typeof entry.verification_status !== 'string' ||
+      !['verified', 'unverified', 'disproved'].includes(entry.verification_status) ||
+      !['usage_count', 'helpful_count', 'rejected_count'].every(k => counter(entry[k])) ||
+      !counter(entry.version) ||
+      entry.version < 1 ||
+      !date(entry.created_at) ||
+      !date(entry.updated_at) ||
+      !(entry.last_used_at === null || date(entry.last_used_at)) ||
+      !(entry.workflow_type === undefined || typeof entry.workflow_type === 'string')
+    )
+      throw new Error(
+        'KNOWLEDGE_STORE_SCHEMA_INVALID: entry does not satisfy the current contract'
+      );
   }
 }
 

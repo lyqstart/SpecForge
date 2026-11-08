@@ -1,3 +1,4 @@
+import { promiseFromSync } from '@specforge/types';
 /**
  * sf_project_init_core.test.ts
  *
@@ -14,12 +15,11 @@ import * as path from 'node:path';
 import { PersonalPathResolver } from '../../daemon/path-resolver';
 import { ProjectManager } from '../../project/ProjectManager';
 import { EventBus } from '../../event-bus/EventBus';
-import type { StateManager } from '../../state/StateManager';
 
 // Stub host-profile so init stays hermetic and fast (no host scan, no ~/.specforge write).
 vi.mock('@specforge/host-profile', () => ({
-  scanHostProfile: vi.fn(async () => ({})),
-  loadHostProfile: vi.fn(async () => null),
+  scanHostProfile: vi.fn(() => promiseFromSync(() => ({}))),
+  loadHostProfile: vi.fn(() => promiseFromSync(() => null)),
   getHostProfilePath: () => path.join(os.tmpdir(), 'sf-test-host-profile-DOES-NOT-EXIST.json'),
   PROFILE_TTL_MS: 3_600_000,
   SCANNER_VERSION: 'test',
@@ -38,8 +38,7 @@ describe('ensureProjectInit — extension_registry.json preservation', () => {
     await fs.rm(tmp, { recursive: true, force: true });
   });
 
-  const registryPath = () =>
-    path.join(tmp, '.specforge', 'project', 'extension_registry.json');
+  const registryPath = () => path.join(tmp, '.specforge', 'project', 'extension_registry.json');
 
   it('creates extension_registry.json with an empty contracts block when missing', async () => {
     await ensureProjectInit(tmp, 'regression-project');
@@ -126,11 +125,7 @@ describe('ensureProjectInit — .gitignore ownership', () => {
     await ensureProjectInit(tmp, 'regression-project');
 
     const eventBus = new EventBus();
-    const projectManager = new ProjectManager(
-      eventBus,
-      new PersonalPathResolver(),
-      undefined as unknown as StateManager
-    );
+    const projectManager = new ProjectManager(eventBus, new PersonalPathResolver(), undefined);
     try {
       await projectManager.registerProject(tmp);
 

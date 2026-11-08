@@ -3,23 +3,26 @@
  * Implements four-layer merge with deterministic behavior and sensitive field protection
  */
 
-import { ConfigLayer, ConfigLayerType, MergedConfig, ValidationError } from './types'
-import { SENSITIVE_FIELDS, CONFIG_SCHEMA_VERSION } from './constants'
-import { logger } from './logger'
+import { ConfigLayer, ConfigLayerType, MergedConfig, ValidationError } from './types';
+import { SENSITIVE_FIELDS, CONFIG_SCHEMA_VERSION } from './constants';
+import { logger } from './logger';
 
 /**
  * Deep merge two objects recursively
  * Later values override earlier values
  */
-function deepMerge(target: Record<string, unknown>, source: Record<string, unknown>): Record<string, unknown> {
-  const result = { ...target }
+function deepMerge(
+  target: Record<string, unknown>,
+  source: Record<string, unknown>
+): Record<string, unknown> {
+  const result = { ...target };
 
   for (const [key, sourceValue] of Object.entries(source)) {
-    const targetValue = result[key]
+    const targetValue = result[key];
 
     // Handle arrays: replace (not concatenate)
     if (Array.isArray(sourceValue) && Array.isArray(targetValue)) {
-      result[key] = sourceValue
+      result[key] = sourceValue;
     }
     // Handle objects: deep merge
     else if (
@@ -30,31 +33,41 @@ function deepMerge(target: Record<string, unknown>, source: Record<string, unkno
       typeof targetValue === 'object' &&
       !Array.isArray(targetValue)
     ) {
-      result[key] = deepMerge(targetValue as Record<string, unknown>, sourceValue as Record<string, unknown>)
+      result[key] = deepMerge(
+        targetValue as Record<string, unknown>,
+        sourceValue as Record<string, unknown>
+      );
     }
     // Handle primitives and mixed types: replace
     else {
-      result[key] = sourceValue
+      result[key] = sourceValue;
     }
   }
 
-  return result
+  return result;
 }
 
 /**
  * Check if a field is sensitive
  */
 function isSensitiveField(key: string, sensitiveFields: string[]): boolean {
-  const keyParts = key.split('.')
-  const firstPart = keyParts[0]
+  const keyParts = key.split('.');
+  const firstPart = keyParts[0];
 
   // Credential aliases are protected at every nesting level, including arrays.
-  if (keyParts.some(part => /^(api[_-]?keys?|tokens?|secrets?|credentials?|passwords?|auth|authorization|bearer[_-]?tokens?|provider[_-]?credentials?|access[_-]?tokens?|refresh[_-]?tokens?|private[_-]?keys?)$/i.test(part))) return true
+  if (
+    keyParts.some(part =>
+      /^(api[_-]?keys?|tokens?|secrets?|credentials?|passwords?|auth|authorization|bearer[_-]?tokens?|provider[_-]?credentials?|access[_-]?tokens?|refresh[_-]?tokens?|private[_-]?keys?)$/i.test(
+        part
+      )
+    )
+  )
+    return true;
 
-  return sensitiveFields.some((sensitive) => {
-    const sensitiveParts = sensitive.split('.')
-    return firstPart === sensitiveParts[0]
-  })
+  return sensitiveFields.some(sensitive => {
+    const sensitiveParts = sensitive.split('.');
+    return firstPart === sensitiveParts[0];
+  });
 }
 
 /**
@@ -62,47 +75,50 @@ function isSensitiveField(key: string, sensitiveFields: string[]): boolean {
  */
 function validateSensitiveFieldProtection(
   layers: ConfigLayer[],
-  sensitiveFields: string[],
+  sensitiveFields: string[]
 ): ValidationError[] {
-  const validationErrors: ValidationError[] = []
-  const projectLayer = layers.find((l) => l.type === 'project')
+  const validationErrors: ValidationError[] = [];
+  const projectLayer = layers.find(l => l.type === 'project');
 
   if (!projectLayer || Object.keys(projectLayer.data).length === 0) {
-    return validationErrors
+    return validationErrors;
   }
 
   // Check if project layer tries to define any sensitive fields
   const visit = (data: Record<string, unknown>, prefix = ''): void => {
-  for (const [name, value] of Object.entries(data)) {
-    const key = prefix ? `${prefix}.${name}` : name
-    if (isSensitiveField(key, sensitiveFields)) {
-      const error: ValidationError = {
-        field: key,
-        message: `Project-level configuration cannot define sensitive field "${key}"`,
-        layer: 'project',
-        path: projectLayer.path,
+    for (const [name, value] of Object.entries(data)) {
+      const key = prefix ? `${prefix}.${name}` : name;
+      if (isSensitiveField(key, sensitiveFields)) {
+        const error: ValidationError = {
+          field: key,
+          message: `Project-level configuration cannot define sensitive field "${key}"`,
+          layer: 'project',
+          path: projectLayer.path,
+        };
+        validationErrors.push(error);
+        logger.warn('Sensitive field protection violation', {
+          field: key,
+          path: projectLayer.path,
+        });
+      } else if (value && typeof value === 'object') {
+        visit(value as Record<string, unknown>, key);
       }
-      validationErrors.push(error)
-      logger.warn('Sensitive field protection violation', { field: key, path: projectLayer.path })
-    } else if (value && typeof value === 'object') {
-      visit(value as Record<string, unknown>, key)
     }
-  }
-  }
-  visit(projectLayer.data)
+  };
+  visit(projectLayer.data);
 
-  return validationErrors
+  return validationErrors;
 }
 
 /**
  * Merge configuration layers with deterministic behavior
- * 
+ *
  * Layer priority (lowest to highest):
  * 1. Builtin defaults (code constants)
  * 2. User-level overrides (<OpenCode config>/sf-user/config/)
  * 3. Project-level overrides (<project>/.specforge/config/)
  * 4. Runtime overrides (CLI/env)
- * 
+ *
  * Merge rules:
  * - Simple values: later layer overrides earlier
  * - Objects: deep merge
@@ -111,31 +127,31 @@ function validateSensitiveFieldProtection(
  */
 export function mergeConfigLayers(
   layers: ConfigLayer[],
-  sensitiveFields: string[] = [...SENSITIVE_FIELDS],
+  sensitiveFields: string[] = [...SENSITIVE_FIELDS]
 ): MergedConfig {
-  logger.debug('Starting configuration merge', { layerCount: layers.length })
+  logger.debug('Starting configuration merge', { layerCount: layers.length });
 
   // Validate sensitive field protection
-  const validationErrors = validateSensitiveFieldProtection(layers, sensitiveFields)
+  const validationErrors = validateSensitiveFieldProtection(layers, sensitiveFields);
 
   // Sort layers by priority (ensure correct order)
-  const layerOrder: ConfigLayerType[] = ['builtin', 'user', 'project', 'runtime']
+  const layerOrder: ConfigLayerType[] = ['builtin', 'user', 'project', 'runtime'];
   const sortedLayers = [...layers].sort(
-    (a, b) => layerOrder.indexOf(a.type) - layerOrder.indexOf(b.type),
-  )
+    (a, b) => layerOrder.indexOf(a.type) - layerOrder.indexOf(b.type)
+  );
 
   // Perform merge
-  const merged: Record<string, unknown> = {}
-  const sources: Record<string, ConfigLayerType> = {}
+  const merged: Record<string, unknown> = {};
+  const sources: Record<string, ConfigLayerType> = {};
 
   for (const layer of sortedLayers) {
-    logger.debug('Merging layer', { layer: layer.type, path: layer.path })
+    logger.debug('Merging layer', { layer: layer.type, path: layer.path });
 
     for (const [key, value] of Object.entries(layer.data)) {
       // Skip sensitive field overrides from project layer
       if (layer.type === 'project' && isSensitiveField(key, sensitiveFields)) {
-        logger.debug('Skipping sensitive field from project layer', { key })
-        continue
+        logger.debug('Skipping sensitive field from project layer', { key });
+        continue;
       }
 
       // For objects, deep merge; otherwise, replace
@@ -148,22 +164,25 @@ export function mergeConfigLayers(
         merged[key] !== null &&
         !Array.isArray(merged[key])
       ) {
-        merged[key] = deepMerge(merged[key] as Record<string, unknown>, value as Record<string, unknown>)
+        merged[key] = deepMerge(
+          merged[key] as Record<string, unknown>,
+          value as Record<string, unknown>
+        );
       } else {
-        merged[key] = value
+        merged[key] = value;
       }
-      sources[key] = layer.type
+      sources[key] = layer.type;
     }
   }
 
   // Sort keys for deterministic output (Object.keys order is not guaranteed)
-  const sortedKeys = Object.keys(merged).sort()
-  const sortedMerged: Record<string, unknown> = {}
-  const sortedSources: Record<string, ConfigLayerType> = {}
+  const sortedKeys = Object.keys(merged).sort();
+  const sortedMerged: Record<string, unknown> = {};
+  const sortedSources: Record<string, ConfigLayerType> = {};
 
   for (const key of sortedKeys) {
-    sortedMerged[key] = merged[key]
-    sortedSources[key] = sources[key]
+    sortedMerged[key] = merged[key];
+    sortedSources[key] = sources[key];
   }
 
   const result: MergedConfig = {
@@ -176,13 +195,13 @@ export function mergeConfigLayers(
       sensitiveFields,
       validationErrors,
     },
-  }
+  };
 
   logger.info('Configuration merge completed', {
     keyCount: Object.keys(sortedMerged).length,
     layerCount: sortedLayers.length,
     validationErrors: validationErrors.length,
-  })
+  });
 
-  return result
+  return result;
 }

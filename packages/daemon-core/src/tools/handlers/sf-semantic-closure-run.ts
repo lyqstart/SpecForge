@@ -1,5 +1,5 @@
-import {SEMANTIC_CLOSURE_SCHEMA_VERSION} from '../lib/semantic-closure-core.js';
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { SEMANTIC_CLOSURE_SCHEMA_VERSION } from '../lib/semantic-closure-core.js';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 /**
  * sf-semantic-closure-run — generate and validate .semantic_closure.json.
  *
@@ -160,25 +160,51 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
     };
   }
 
-  if(workItem.workflow_type!=='feature_spec')return {success:false,error:'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW',semantic_closure_valid:false};
-  const currentSubject=(value:unknown)=>{
-    const parsed=parseSemanticClosureManifest(value);
-    return !parsed||((parsed.workflow_type===undefined||parsed.workflow_type==='feature_spec')&&(parsed.closure_profile===undefined||parsed.closure_profile==='feature_spec'));
+  if (workItem.workflow_type !== 'feature_spec')
+    return {
+      success: false,
+      error: 'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW',
+      semantic_closure_valid: false,
+    };
+  const currentSubject = (value: unknown) => {
+    const parsed = parseSemanticClosureManifest(value);
+    return (
+      !parsed ||
+      ((parsed.workflow_type === undefined || parsed.workflow_type === 'feature_spec') &&
+        (parsed.closure_profile === undefined || parsed.closure_profile === 'feature_spec'))
+    );
   };
-  if(suppliedSemanticClosure!==undefined&&!currentSubject(suppliedSemanticClosure))return {success:false,error:'SEMANTIC_CLOSURE_CURRENT_WORKFLOW_MISMATCH',semantic_closure_valid:false};
+  if (suppliedSemanticClosure !== undefined && !currentSubject(suppliedSemanticClosure))
+    return {
+      success: false,
+      error: 'SEMANTIC_CLOSURE_CURRENT_WORKFLOW_MISMATCH',
+      semantic_closure_valid: false,
+    };
 
   // force regenerates supported content; it never converts an unknown or corrupt schema.
   let existingSemanticClosure: Record<string, any> | null = null;
   try {
     const value: unknown = JSON.parse(await fs.readFile(semanticClosurePath, 'utf8'));
-    if (!value || typeof value !== 'object' || Array.isArray(value) ||
-        (value as Record<string, unknown>).schema_version !== SEMANTIC_CLOSURE_SCHEMA_VERSION) {
-      return {success:false,error:'SEMANTIC_CLOSURE_SCHEMA_UNSUPPORTED',semantic_closure_valid:false};
+    if (
+      !value ||
+      typeof value !== 'object' ||
+      Array.isArray(value) ||
+      (value as Record<string, unknown>).schema_version !== SEMANTIC_CLOSURE_SCHEMA_VERSION
+    ) {
+      return {
+        success: false,
+        error: 'SEMANTIC_CLOSURE_SCHEMA_UNSUPPORTED',
+        semantic_closure_valid: false,
+      };
     }
     existingSemanticClosure = value as Record<string, any>;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
-      return {success:false,error:'SEMANTIC_CLOSURE_SCHEMA_BLOCKED',semantic_closure_valid:false};
+      return {
+        success: false,
+        error: 'SEMANTIC_CLOSURE_SCHEMA_BLOCKED',
+        semantic_closure_valid: false,
+      };
     }
   }
 
@@ -213,8 +239,7 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
       current_state: authoritativeState.current_state,
       semantic_closure_valid: false,
       retry_allowed: false,
-      recovery:
-        `Recover the Work Item from verification_done to ${frozenRecoveryTarget}, update governed verification artifacts, regenerate semantic closure with force=true, then rerun verification_gate.`,
+      recovery: `Recover the Work Item from verification_done to ${frozenRecoveryTarget}, update governed verification artifacts, regenerate semantic closure with force=true, then rerun verification_gate.`,
     };
   }
 
@@ -242,8 +267,18 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
   if (!force) {
     const existing = existingSemanticClosure;
     if (existing) {
-      if(existing.schema_version!==SEMANTIC_CLOSURE_SCHEMA_VERSION)return {success:false,error:'SEMANTIC_CLOSURE_SCHEMA_UNSUPPORTED',semantic_closure_valid:false};
-      if(!currentSubject(existing))return {success:false,error:'SEMANTIC_CLOSURE_CURRENT_WORKFLOW_MISMATCH',semantic_closure_valid:false};
+      if (existing.schema_version !== SEMANTIC_CLOSURE_SCHEMA_VERSION)
+        return {
+          success: false,
+          error: 'SEMANTIC_CLOSURE_SCHEMA_UNSUPPORTED',
+          semantic_closure_valid: false,
+        };
+      if (!currentSubject(existing))
+        return {
+          success: false,
+          error: 'SEMANTIC_CLOSURE_CURRENT_WORKFLOW_MISMATCH',
+          semantic_closure_valid: false,
+        };
       const validation = validateSemanticClosure(existing);
       const provenanceValidation = await validateSemanticClosureProvenance(workItemDir, existing);
       const closureValid = validation.passed && provenanceValidation.passed;
@@ -292,8 +327,7 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
       current_state: authoritativeState.current_state,
       semantic_closure_valid: false,
       retry_allowed: false,
-      recovery:
-        `No existing semantic closure is available to validate. Recover the Work Item to ${frozenRecoveryTarget}, regenerate semantic closure, then rerun verification_gate.`,
+      recovery: `No existing semantic closure is available to validate. Recover the Work Item to ${frozenRecoveryTarget}, regenerate semantic closure, then rerun verification_gate.`,
     };
   }
 
@@ -350,8 +384,18 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
     mergeReportMd: await readTextIfExists(path.join(workItemDir, 'merge_report.md')),
   });
 
-  if(build.manifest.schema_version!==SEMANTIC_CLOSURE_SCHEMA_VERSION)return {success:false,error:'SEMANTIC_CLOSURE_SCHEMA_UNSUPPORTED',semantic_closure_valid:false};
-  if(!currentSubject(build.manifest))return {success:false,error:'SEMANTIC_CLOSURE_CURRENT_WORKFLOW_MISMATCH',semantic_closure_valid:false};
+  if (build.manifest.schema_version !== SEMANTIC_CLOSURE_SCHEMA_VERSION)
+    return {
+      success: false,
+      error: 'SEMANTIC_CLOSURE_SCHEMA_UNSUPPORTED',
+      semantic_closure_valid: false,
+    };
+  if (!currentSubject(build.manifest))
+    return {
+      success: false,
+      error: 'SEMANTIC_CLOSURE_CURRENT_WORKFLOW_MISMATCH',
+      semantic_closure_valid: false,
+    };
 
   const manifest = {
     ...build.manifest,

@@ -1,6 +1,6 @@
 /**
  * @specforge/permission-engine
- * 
+ *
  * Permission Engine module for SpecForge architecture.
  * Provides fine-grained access control and authorization capabilities.
  */
@@ -27,18 +27,20 @@ export {
 export { HardRuleEvaluator, defaultHardRuleEvaluator, AGENT_CONSTITUTION_RULES } from './hard-rules';
 
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+
 import { HardRuleEvaluator } from './hard-rules';
-import { EventLogger } from './services/event-logger';
-import { RuleMergingEngine } from './services/rule-merging-engine';
 import { BuiltinPolicyLoader } from './services/builtin-policy-loader';
+import { EventLogger, type EventLoggerConfig } from './services/event-logger';
+import { RuleMergingEngine } from './services/rule-merging-engine';
 import { UserPolicyLoader } from './services/user-policy-loader';
-import { 
+import {
   PermissionEngineConfig,
   PermissionDeniedEventPayload,
   HardRuleConflictEventPayload,
   PermissionRequest,
   PermissionDecision
 } from './types';
+import { optionalPermissionText, permissionRecord } from './utils/unknown-boundary';
 
 // Main permission engine class
 export class PermissionEngine {
@@ -48,7 +50,7 @@ export class PermissionEngine {
   private builtinPolicyLoader?: BuiltinPolicyLoader;
   private userPolicyLoader?: UserPolicyLoader;
   private config: PermissionEngineConfig;
-  
+
   constructor(config: PermissionEngineConfig = {}) {
     this.config = {
       strictMode: false,
@@ -62,26 +64,26 @@ export class PermissionEngine {
 
     // Initialize permission engine with hard rule evaluator
     this.hardRuleEvaluator = new HardRuleEvaluator();
-    
+
     // Initialize rule merging engine
     this.ruleMergingEngine = new RuleMergingEngine({
       hardRuleEvaluator: this.hardRuleEvaluator,
       cacheEnabled: this.config.cacheEnabled ?? true,
       defaultDecision: 'allow'
     });
-    
+
     // Initialize event logger
-    const eventLoggerConfig: any = {
+    const eventLoggerConfig: EventLoggerConfig = {
       enabled: this.config.eventLoggingEnabled === true,
       projectId: this.config.projectId || 'default-project',
       fsyncEnabled: true
     };
-    
+
     // Only add eventsFilePath if event logging is enabled
     if (this.config.eventLoggingEnabled) {
       eventLoggerConfig.eventsFilePath = `./${SPEC_DIR_NAME}/logs/telemetry.jsonl`;
     }
-    
+
     this.eventLogger = new EventLogger(eventLoggerConfig);
 
     // Initialize event logger asynchronously
@@ -123,14 +125,14 @@ export class PermissionEngine {
   async checkPermission(
     userId: string,
     action: string,
-    resource: string | any,
-    _context?: Record<string, any>
+    resource: unknown,
+    _context?: Record<string, unknown>
   ): Promise<boolean> {
     const resourceContext = typeof resource === 'string'
       ? { type: resource }
-      : { ...(resource || {}), type: resource?.type || 'unknown' };
+      : { ...permissionRecord(resource ?? {}, 'PERMISSION_RESOURCE_OBJECT_REQUIRED'), type: optionalPermissionText(resource, 'type') || 'unknown' };
     const resourceStr = resourceContext.type;
-    
+
     const request: PermissionRequest = {
       actor: userId,
       action,
@@ -139,13 +141,13 @@ export class PermissionEngine {
       resourceContext,
       context: _context
     };
-    
+
     const decision = this.ruleMergingEngine.evaluate(request);
-    
+
     if (this.config.eventLoggingEnabled) {
       await this.logPermissionDecision(decision);
     }
-    
+
     return decision.decision === 'allow';
   }
 
@@ -156,8 +158,8 @@ export class PermissionEngine {
   async checkPermissionWithDetails(
     userId: string,
     action: string,
-    resource: string | any,
-    _context?: Record<string, any>
+    resource: unknown,
+    _context?: Record<string, unknown>
   ): Promise<{
     allowed: boolean;
     matchedRule: string;
@@ -166,9 +168,9 @@ export class PermissionEngine {
   }> {
     const resourceContext = typeof resource === 'string'
       ? { type: resource }
-      : { ...(resource || {}), type: resource?.type || 'unknown' };
+      : { ...permissionRecord(resource ?? {}, 'PERMISSION_RESOURCE_OBJECT_REQUIRED'), type: optionalPermissionText(resource, 'type') || 'unknown' };
     const resourceStr = resourceContext.type;
-    
+
     const request: PermissionRequest = {
       actor: userId,
       action,
@@ -177,7 +179,7 @@ export class PermissionEngine {
       resourceContext,
       context: _context
     };
-    
+
     const decision = this.ruleMergingEngine.evaluate(request);
     return {
       allowed: decision.decision === 'allow',
@@ -214,10 +216,11 @@ export class PermissionEngine {
   /**
    * Validate permission configuration and log hard rule conflicts
    */
-  async validatePermissionConfig(config: any): Promise<boolean> {
-    // Check for hard rule conflicts
-    const conflicts = this.hardRuleEvaluator.detectConflicts(config);
-    
+  async validatePermissionConfig(config: unknown): Promise<boolean> {
+    // The configuration owner validates the document before evaluating its declared rules.
+    const configObject = permissionRecord(config, 'PERMISSION_CONFIG_OBJECT_REQUIRED');
+    const conflicts = this.hardRuleEvaluator.detectConflicts(configObject);
+
     if (conflicts.length > 0) {
       // Log each conflict
       for (const conflict of conflicts) {
@@ -227,16 +230,16 @@ export class PermissionEngine {
             description: conflict.rule.description
           },
           conflict: conflict.conflict,
-          config: config,
+          config: configObject,
           detectedAt: new Date().toISOString()
         });
       }
-      
+
       // Also log to console for visibility
       console.warn('Hard rule conflicts detected:', conflicts);
       return false;
     }
-    
+
     return true;
   }
 
@@ -258,7 +261,7 @@ export class PermissionEngine {
     // TODO: Implement user permissions retrieval
     return [];
   }
-  
+
   /**
    * Get hard rule evaluator (for testing and inspection)
    */
@@ -306,22 +309,22 @@ export class PermissionEngine {
    */
   updateConfig(newConfig: Partial<PermissionEngineConfig>): void {
     this.config = { ...this.config, ...newConfig };
-    
+
     // Update event logger configuration if relevant settings changed
     if (newConfig.eventLoggingEnabled !== undefined || newConfig.projectId !== undefined) {
-      const eventLoggerConfig: any = {
+      const eventLoggerConfig: EventLoggerConfig = {
         enabled: this.config.eventLoggingEnabled === true,
         projectId: this.config.projectId || 'default-project',
         fsyncEnabled: true
       };
-      
+
       // Only add eventsFilePath if event logging is enabled
       if (this.config.eventLoggingEnabled) {
         eventLoggerConfig.eventsFilePath = `./${SPEC_DIR_NAME}/logs/telemetry.jsonl`;
       }
-      
+
       this.eventLogger = new EventLogger(eventLoggerConfig);
-      
+
       // Reinitialize event logger
       this.initializeEventLogger();
     }

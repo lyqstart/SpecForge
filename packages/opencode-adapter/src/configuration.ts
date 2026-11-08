@@ -9,6 +9,8 @@
  * Requirements: 2.1
  */
 
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 import type { AdapterConfig } from './types';
 
 /**
@@ -178,10 +180,6 @@ function loadConfigFromEnv(): Partial<AdapterConfig> | null {
  */
 function loadConfigFromFile(filePath: string): Partial<AdapterConfig> | null {
   try {
-    // Dynamic import for ESM compatibility
-    const path = require('path');
-    const fs = require('fs');
-
     const resolvedPath = path.resolve(filePath);
 
     if (!fs.existsSync(resolvedPath)) {
@@ -189,29 +187,34 @@ function loadConfigFromFile(filePath: string): Partial<AdapterConfig> | null {
     }
 
     const content = fs.readFileSync(resolvedPath, 'utf-8');
-    const parsed = JSON.parse(content);
+    const parsed: unknown = JSON.parse(content);
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return null;
+    const values: Record<string, unknown> = { ...parsed };
 
     // Validate and extract known fields
     const fileConfig: Partial<AdapterConfig> = {};
 
-    if (parsed.compatibleKernelRange && typeof parsed.compatibleKernelRange === 'string') {
-      fileConfig.compatibleKernelRange = parsed.compatibleKernelRange;
+    if (values['compatibleKernelRange'] && typeof values['compatibleKernelRange'] === 'string') {
+      fileConfig.compatibleKernelRange = values['compatibleKernelRange'];
     }
 
-    if (parsed.translationStrictness === 'strict' || parsed.translationStrictness === 'lenient') {
-      fileConfig.translationStrictness = parsed.translationStrictness;
+    if (
+      values['translationStrictness'] === 'strict' ||
+      values['translationStrictness'] === 'lenient'
+    ) {
+      fileConfig.translationStrictness = values['translationStrictness'];
     }
 
-    if (typeof parsed.communicationTimeout === 'number' && parsed.communicationTimeout > 0) {
-      fileConfig.communicationTimeout = parsed.communicationTimeout;
+    if (typeof values['communicationTimeout'] === 'number' && values['communicationTimeout'] > 0) {
+      fileConfig.communicationTimeout = values['communicationTimeout'];
     }
 
-    if (typeof parsed.verboseLogging === 'boolean') {
-      fileConfig.verboseLogging = parsed.verboseLogging;
+    if (typeof values['verboseLogging'] === 'boolean') {
+      fileConfig.verboseLogging = values['verboseLogging'];
     }
 
-    if (parsed.thinPluginEndpoint && typeof parsed.thinPluginEndpoint === 'string') {
-      fileConfig.thinPluginEndpoint = parsed.thinPluginEndpoint;
+    if (values['thinPluginEndpoint'] && typeof values['thinPluginEndpoint'] === 'string') {
+      fileConfig.thinPluginEndpoint = values['thinPluginEndpoint'];
     }
 
     return fileConfig;
@@ -223,7 +226,10 @@ function loadConfigFromFile(filePath: string): Partial<AdapterConfig> | null {
 /**
  * Validate configuration
  */
-export function validateConfig(config: Partial<AdapterConfig>): { valid: boolean; errors: string[] } {
+export function validateConfig(config: Partial<AdapterConfig>): {
+  valid: boolean;
+  errors: string[];
+} {
   const errors: string[] = [];
 
   // Validate compatibleKernelRange

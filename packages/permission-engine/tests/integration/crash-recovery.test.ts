@@ -1,22 +1,23 @@
 /**
  * Crash Recovery Integration Tests
- * 
- * Tests permission engine state recovery after crashes, 
+ *
+ * Tests permission engine state recovery after crashes,
  * including state persistence, event log recovery, and configuration integrity.
  * Validates: Requirements: All (fault tolerance and recovery)
- * 
+ *
  * @specforge/permission-engine
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { 
+
+import {
   PermissionEngine,
   HardRuleEvaluator,
   EventLogger
 } from '../../src/index';
-import { RuleMergingEngine } from '../../src/services/rule-merging-engine';
-import { BuiltinPolicyLoader } from '../../src/services/builtin-policy-loader';
-import { UserPolicyLoader } from '../../src/services/user-policy-loader';
+
+
+
 
 // Mock file system operations for testing
 vi.mock('../../src/services/event-logger', () => ({
@@ -81,7 +82,7 @@ describe('Crash Recovery Integration', () => {
 
       // Rules should be identical
       expect(newRules).toHaveLength(9);
-      
+
       const initialIds = initialRules.map(r => r.id).sort();
       const newIds = newRules.map(r => r.id).sort();
       expect(newIds).toEqual(initialIds);
@@ -89,7 +90,7 @@ describe('Crash Recovery Integration', () => {
 
     it('should maintain configuration after restart', () => {
       const originalConfig = permissionEngine.getConfig();
-      
+
       // Create new engine with same config
       const newEngine = new PermissionEngine({
         eventLoggingEnabled: false,
@@ -120,7 +121,7 @@ describe('Crash Recovery Integration', () => {
       });
 
       const recoveryResult = await eventLogger.recoverFromCrash();
-      
+
       expect(recoveryResult.recovered).toBe(5);
       expect(recoveryResult.lastIndex).toBe(10);
     });
@@ -198,7 +199,7 @@ describe('Crash Recovery Integration', () => {
       );
 
       // Simulate crash and recovery...
-      
+
       // After recovery: decisions should still work
       const decision = await permissionEngine.checkPermission(
         'user-1',
@@ -243,7 +244,7 @@ describe('Crash Recovery Integration', () => {
   describe('Resource Cleanup After Recovery', () => {
     it('should properly cleanup resources on engine disposal', async () => {
       await permissionEngine.cleanup();
-      
+
       // After cleanup, engine should be in consistent state
       const config = permissionEngine.getConfig();
       expect(config).toBeDefined();
@@ -252,14 +253,14 @@ describe('Crash Recovery Integration', () => {
     it('should handle multiple cleanup calls gracefully', async () => {
       // First cleanup
       await permissionEngine.cleanup();
-      
+
       // Second cleanup should not throw
       await expect(permissionEngine.cleanup()).resolves.not.toThrow();
     });
 
     it('should release event logger resources', async () => {
       await eventLogger.cleanup();
-      
+
       // After cleanup, should be able to reinitialize
       await expect(eventLogger.initialize()).resolves.not.toThrow();
     });
@@ -289,7 +290,7 @@ describe('Crash Recovery Integration', () => {
 
       // All should return valid boolean results
       expect(results.every(r => typeof r === 'boolean')).toBe(true);
-      
+
       // gate.bypass should always be false (hard rule)
       expect(results[3]).toBe(false);
     });
@@ -320,7 +321,7 @@ describe('Crash Recovery Integration', () => {
   describe('State Validation', () => {
     it('should validate hard rule integrity', () => {
       const rules = hardRuleEvaluator.getAllRules();
-      
+
       // All rules should have unique IDs
       const ids = rules.map(r => r.id);
       expect(new Set(ids).size).toBe(ids.length);
@@ -340,7 +341,7 @@ describe('Crash Recovery Integration', () => {
     it('should validate rule ordering by priority', () => {
       const rules = hardRuleEvaluator.getAllRules();
       const priorities = rules.map(r => r.priority);
-      
+
       // Priorities should be in descending order (or at least non-increasing)
       for (let i = 1; i < priorities.length; i++) {
         expect(priorities[i]).toBeLessThanOrEqual(priorities[i - 1]);
@@ -349,7 +350,7 @@ describe('Crash Recovery Integration', () => {
 
     it('should maintain layer isolation', () => {
       const rules = hardRuleEvaluator.getAllRules();
-      
+
       // All hard rules should have layer = 'hard'
       for (const rule of rules) {
         expect(rule.layer).toBe('hard');
@@ -390,7 +391,7 @@ describe('Crash Recovery Integration', () => {
       });
 
       const reloadedConfig = newEngine.getConfig();
-      
+
       // Core config should match
       expect(reloadedConfig.projectId).toBe(initialConfig.projectId);
 
@@ -406,7 +407,7 @@ describe('Crash Recovery Integration', () => {
       });
 
       const config = customEngine.getConfig();
-      
+
       // Recreate engine
       const recoveredEngine = new PermissionEngine({
         eventLoggingEnabled: false,

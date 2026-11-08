@@ -4,11 +4,12 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+
 import {
+  type CreateInstanceOptions,
   WorkflowInstanceFactory,
   WorkflowInstanceTracker,
-  WorkflowInstanceStateManager,
-  CreateInstanceOptions,
+  WorkflowInstanceStateManager
 } from '../../src/engine/WorkflowInstance.js';
 import type { WorkflowInstance, WorkflowEventData } from '../../src/types.js';
 

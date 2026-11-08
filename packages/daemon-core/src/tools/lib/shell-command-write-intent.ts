@@ -51,8 +51,11 @@ function skipSshOptions(text: string, index: number): number {
     // conservative; unknown -x style options without a separate value are still
     // skipped correctly.
     const opt = token.token.replace(/^--?/, '');
-    const optionTakesValue = /^(b|c|D|E|e|F|I|i|J|L|l|m|O|o|p|Q|R|S|W|w)$/i.test(opt)
-      || /^(bind_address|cipher_spec|config|identity_file|jump_host|login_name|mac_spec|option|port)$/i.test(opt);
+    const optionTakesValue =
+      /^(b|c|D|E|e|F|I|i|J|L|l|m|O|o|p|Q|R|S|W|w)$/i.test(opt) ||
+      /^(bind_address|cipher_spec|config|identity_file|jump_host|login_name|mac_spec|option|port)$/i.test(
+        opt
+      );
     if (optionTakesValue) {
       const value = readToken(text, i);
       if (value.token) i = value.end;
@@ -137,7 +140,9 @@ function detectTransferSegments(command: string): RemoteCommandSegment[] {
  * empty quoted body. The caller may safely run its existing local write target
  * extractor on command_for_local_write_scan.
  */
-export function stripRemoteExecutionSegmentsForLocalWriteGuard(command: string): ShellCommandWriteIntentAnalysis {
+export function stripRemoteExecutionSegmentsForLocalWriteGuard(
+  command: string
+): ShellCommandWriteIntentAnalysis {
   const original = String(command ?? '');
   const sshSegments = findSshSegments(original);
   const transferSegments = detectTransferSegments(original);

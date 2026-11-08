@@ -1,11 +1,11 @@
 /**
  * CompositeGate Serializer Module
  * Handles serialization and deserialization of CompositeGate definitions
- * 
+ *
  * Validates: Requirements 3.1 - compositeGate 序列化/反序列化
  */
 
-import {
+import type {
   GateDefinition,
   SimpleGateDefinition,
   CompositeGateDefinition,
@@ -37,7 +37,7 @@ export interface SerializedCompositeGate {
 /**
  * Union type for serialized gate definitions
  */
-export type SerializedGateDefinition = 
+export type SerializedGateDefinition =
   | SerializedSimpleGate
   | SerializedCompositeGate;
 
@@ -120,7 +120,7 @@ export class CompositeGateSerializer {
    */
   static deserialize(
     data: SerializedCompositeGate,
-    context?: { checkFnMap?: Record<string, () => Promise<any> | any> }
+    context?: { checkFnMap?: Record<string, NonNullable<SimpleGateDefinition['checkFn']>> }
   ): CompositeGateDefinition {
     // Validate the serialized data
     const validationResult = this.validateSerialized(data);
@@ -138,7 +138,7 @@ export class CompositeGateSerializer {
       name: data.name,
       mode: data.mode,
       failPolicy: data.failPolicy,
-      children: data.children.map(child => 
+      children: data.children.map(child =>
         this.deserializeGateDefinition(child, context)
       ),
     };
@@ -151,12 +151,12 @@ export class CompositeGateSerializer {
    */
   static deserializeGateDefinition(
     data: SerializedGateDefinition,
-    context?: { checkFnMap?: Record<string, () => Promise<any> | any> }
+    context?: { checkFnMap?: Record<string, NonNullable<SimpleGateDefinition['checkFn']>> }
   ): GateDefinition {
     if (data.type === 'simple') {
       return this.deserializeSimpleGate(data, context);
     } else {
-      return this.deserialize(data as SerializedCompositeGate, context);
+      return this.deserialize(data, context);
     }
   }
 
@@ -165,7 +165,7 @@ export class CompositeGateSerializer {
    */
   static deserializeSimpleGate(
     data: SerializedSimpleGate,
-    context?: { checkFnMap?: Record<string, () => Promise<any> | any> }
+    context?: { checkFnMap?: Record<string, NonNullable<SimpleGateDefinition['checkFn']>> }
   ): SimpleGateDefinition {
     const validation = this.validateSerializedGate(data);
     if (!validation.valid || data.type !== 'simple') throw new Error('SERIALIZED_GATE_SCHEMA_INVALID');
@@ -201,7 +201,7 @@ export class CompositeGateSerializer {
     if (!obj.schema_version) {
       errors.push({ field: 'schema_version', message: 'Missing schema_version' });
     } else if (obj.schema_version !== '1.0') {
-      errors.push({ field: 'schema_version', message: `Unsupported schema version: ${obj.schema_version}` });
+      errors.push({ field: 'schema_version', message: `Unsupported schema version: ${typeof obj.schema_version === 'string' ? obj.schema_version : 'invalid type'}` });
     }
 
     // Check type
@@ -222,18 +222,18 @@ export class CompositeGateSerializer {
     // Check mode
     const validModes: CompositeGateMode[] = ['sequential', 'parallel'];
     if (!obj.mode || !validModes.includes(obj.mode as CompositeGateMode)) {
-      errors.push({ 
-        field: 'mode', 
-        message: `mode must be one of: ${validModes.join(', ')}` 
+      errors.push({
+        field: 'mode',
+        message: `mode must be one of: ${validModes.join(', ')}`
       });
     }
 
     // Check failPolicy
     const validFailPolicies: FailPolicy[] = ['fail_fast', 'collect_all'];
     if (!obj.failPolicy || !validFailPolicies.includes(obj.failPolicy as FailPolicy)) {
-      errors.push({ 
-        field: 'failPolicy', 
-        message: `failPolicy must be one of: ${validFailPolicies.join(', ')}` 
+      errors.push({
+        field: 'failPolicy',
+        message: `failPolicy must be one of: ${validFailPolicies.join(', ')}`
       });
     }
 
@@ -244,9 +244,9 @@ export class CompositeGateSerializer {
       obj.children.forEach((child, index) => {
         const childErrors = this.validateSerializedGate(child);
         childErrors.errors.forEach(err => {
-          errors.push({ 
-            field: `children[${index}].${err.field}`, 
-            message: err.message 
+          errors.push({
+            field: `children[${index}].${err.field}`,
+            message: err.message
           });
         });
       });
@@ -312,7 +312,7 @@ export class CompositeGateSerializer {
    */
   static fromJSON(
     json: string,
-    context?: { checkFnMap?: Record<string, () => Promise<any> | any> }
+    context?: { checkFnMap?: Record<string, NonNullable<SimpleGateDefinition['checkFn']>> }
   ): CompositeGateDefinition {
     try {
       const data = JSON.parse(json) as SerializedCompositeGate;
@@ -350,18 +350,18 @@ export function validateCompositeGate(gate: CompositeGateDefinition): Validation
   // Check mode
   const validModes: CompositeGateMode[] = ['sequential', 'parallel'];
   if (!gate.mode || !validModes.includes(gate.mode)) {
-    errors.push({ 
-      field: 'mode', 
-      message: `mode must be one of: ${validModes.join(', ')}` 
+    errors.push({
+      field: 'mode',
+      message: `mode must be one of: ${validModes.join(', ')}`
     });
   }
 
   // Check failPolicy
   const validFailPolicies: FailPolicy[] = ['fail_fast', 'collect_all'];
   if (!gate.failPolicy || !validFailPolicies.includes(gate.failPolicy)) {
-    errors.push({ 
-      field: 'failPolicy', 
-      message: `failPolicy must be one of: ${validFailPolicies.join(', ')}` 
+    errors.push({
+      field: 'failPolicy',
+      message: `failPolicy must be one of: ${validFailPolicies.join(', ')}`
     });
   }
 

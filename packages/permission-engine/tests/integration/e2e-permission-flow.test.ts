@@ -1,21 +1,22 @@
 /**
  * End-to-End Permission Flow Tests
- * 
+ *
  * Tests the complete permission flow from HTTP request to permission decision.
  * Validates Requirements: All (permission engine integration)
- * 
+ *
  * @specforge/permission-engine
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { 
-  DaemonIntegration, 
+
+import { PermissionEngine } from '../../src/index';
+import {
+  DaemonIntegration,
   createDaemonIntegration,
   type DaemonIntegrationConfig,
   type HttpRequestContext,
   type IntegrationResult
 } from '../../src/services/daemon-integration';
-import { PermissionEngine } from '../../src/index';
 
 // Mock the Event Logger to avoid file system operations
 vi.mock('../../src/services/event-logger', () => ({
@@ -55,7 +56,7 @@ describe('End-to-End Permission Flow', () => {
   let daemonIntegration: DaemonIntegration;
   let permissionEngine: PermissionEngine;
   const handshakeToken = 'test-handshake-token';
-  
+
   const createMockEventBus = () => ({
     subscribe: vi.fn().mockReturnValue({ id: 'test-sub', topic: 'session.*', handler: vi.fn() }),
     unsubscribe: vi.fn(),
@@ -73,7 +74,7 @@ describe('End-to-End Permission Flow', () => {
       eventLoggingEnabled: true,
       sessionTimeout: 60000
     };
-    
+
     daemonIntegration = createDaemonIntegration(config);
     permissionEngine = new PermissionEngine({
       eventLoggingEnabled: false
@@ -91,10 +92,10 @@ describe('End-to-End Permission Flow', () => {
       // Initialize with mock components
       const mockEventBus = createMockEventBus();
       const mockSessionRegistry = createMockSessionRegistry();
-      
+
       await daemonIntegration.initialize(
-        mockEventBus as any,
-        mockSessionRegistry as any,
+        mockEventBus,
+        mockSessionRegistry,
         handshakeToken
       );
 
@@ -123,10 +124,10 @@ describe('End-to-End Permission Flow', () => {
     it('should deny unauthorized request in full flow', async () => {
       const mockEventBus = createMockEventBus();
       const mockSessionRegistry = createMockSessionRegistry();
-      
+
       await daemonIntegration.initialize(
-        mockEventBus as any,
-        mockSessionRegistry as any,
+        mockEventBus,
+        mockSessionRegistry,
         handshakeToken
       );
 
@@ -151,10 +152,10 @@ describe('End-to-End Permission Flow', () => {
     it('should deny request with invalid token in full flow', async () => {
       const mockEventBus = createMockEventBus();
       const mockSessionRegistry = createMockSessionRegistry();
-      
+
       await daemonIntegration.initialize(
-        mockEventBus as any,
-        mockSessionRegistry as any,
+        mockEventBus,
+        mockSessionRegistry,
         handshakeToken
       );
 
@@ -180,10 +181,10 @@ describe('End-to-End Permission Flow', () => {
     it('should enforce hard rules in the complete flow', async () => {
       const mockEventBus = createMockEventBus();
       const mockSessionRegistry = createMockSessionRegistry();
-      
+
       await daemonIntegration.initialize(
-        mockEventBus as any,
-        mockSessionRegistry as any,
+        mockEventBus,
+        mockSessionRegistry,
         handshakeToken
       );
 
@@ -212,10 +213,10 @@ describe('End-to-End Permission Flow', () => {
     it('should allow non-hard-rule actions in the complete flow', async () => {
       const mockEventBus = createMockEventBus();
       const mockSessionRegistry = createMockSessionRegistry();
-      
+
       await daemonIntegration.initialize(
-        mockEventBus as any,
-        mockSessionRegistry as any,
+        mockEventBus,
+        mockSessionRegistry,
         handshakeToken
       );
 
@@ -243,10 +244,10 @@ describe('End-to-End Permission Flow', () => {
     it('should propagate client IP to permission context', async () => {
       const mockEventBus = createMockEventBus();
       const mockSessionRegistry = createMockSessionRegistry();
-      
+
       await daemonIntegration.initialize(
-        mockEventBus as any,
-        mockSessionRegistry as any,
+        mockEventBus,
+        mockSessionRegistry,
         handshakeToken
       );
 
@@ -272,10 +273,10 @@ describe('End-to-End Permission Flow', () => {
     it('should propagate request method and path to event logging', async () => {
       const mockEventBus = createMockEventBus();
       const mockSessionRegistry = createMockSessionRegistry();
-      
+
       await daemonIntegration.initialize(
-        mockEventBus as any,
-        mockSessionRegistry as any,
+        mockEventBus,
+        mockSessionRegistry,
         handshakeToken
       );
 
@@ -290,7 +291,7 @@ describe('End-to-End Permission Flow', () => {
 
       // This should trigger event logging with method and path
       await daemonIntegration.validateRequest(request);
-      
+
       // The validateRequest should have logged the permission denied
       // (since there's no token validation in our mock)
     });
@@ -300,10 +301,10 @@ describe('End-to-End Permission Flow', () => {
     it('should return complete IntegrationResult structure', async () => {
       const mockEventBus = createMockEventBus();
       const mockSessionRegistry = createMockSessionRegistry();
-      
+
       await daemonIntegration.initialize(
-        mockEventBus as any,
-        mockSessionRegistry as any,
+        mockEventBus,
+        mockSessionRegistry,
         handshakeToken
       );
 
@@ -336,10 +337,10 @@ describe('End-to-End Permission Flow', () => {
 
       const mockEventBus = createMockEventBus();
       const mockSessionRegistry = createMockSessionRegistry();
-      
+
       await newIntegration.initialize(
-        mockEventBus as any,
-        mockSessionRegistry as any,
+        mockEventBus,
+        mockSessionRegistry,
         handshakeToken
       );
 
@@ -377,7 +378,7 @@ describe('End-to-End Permission Flow', () => {
 
       // Using non-initialized integration
       const result = await daemonIntegration.validateRequest(request);
-      
+
       // Should work even before initialization (for bootstrap scenarios)
       expect(result).toBeDefined();
     });
@@ -406,7 +407,7 @@ describe('Multi-Request Permission Flow', () => {
       eventLoggingEnabled: true,
       sessionTimeout: 60000
     };
-    
+
     daemonIntegration = createDaemonIntegration(config);
     permissionEngine = new PermissionEngine({
       eventLoggingEnabled: false
@@ -423,16 +424,16 @@ describe('Multi-Request Permission Flow', () => {
     it('should handle multiple sequential requests with consistent results', async () => {
       const mockEventBus = createMockEventBus();
       const mockSessionRegistry = createMockSessionRegistry();
-      
+
       await daemonIntegration.initialize(
-        mockEventBus as any,
-        mockSessionRegistry as any,
+        mockEventBus,
+        mockSessionRegistry,
         handshakeToken
       );
 
       // Make multiple requests
       const results: IntegrationResult[] = [];
-      
+
       for (let i = 0; i < 5; i++) {
         const request: HttpRequestContext = {
           method: 'GET',
@@ -454,10 +455,10 @@ describe('Multi-Request Permission Flow', () => {
     it('should maintain state across multiple requests', async () => {
       const mockEventBus = createMockEventBus();
       const mockSessionRegistry = createMockSessionRegistry();
-      
+
       await daemonIntegration.initialize(
-        mockEventBus as any,
-        mockSessionRegistry as any,
+        mockEventBus,
+        mockSessionRegistry,
         handshakeToken
       );
 
@@ -494,10 +495,10 @@ describe('Multi-Request Permission Flow', () => {
     it('should handle concurrent requests without race conditions', async () => {
       const mockEventBus = createMockEventBus();
       const mockSessionRegistry = createMockSessionRegistry();
-      
+
       await daemonIntegration.initialize(
-        mockEventBus as any,
-        mockSessionRegistry as any,
+        mockEventBus,
+        mockSessionRegistry,
         handshakeToken
       );
 

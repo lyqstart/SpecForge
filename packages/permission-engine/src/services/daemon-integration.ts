@@ -3,25 +3,26 @@
 // It must not import daemon-core/src implementation files during package build.
 /**
  * Daemon Core Integration
- * 
+ *
  * Integrates the Permission Engine with Daemon Core components:
  * - HTTP/SSE Server for request authentication
  * - Session Registry for actor identity
  * - Event Bus for event logging
- * 
+ *
  * This module provides the glue layer between permission-engine and daemon-core.
- * 
+ *
  * @specforge/permission-engine
  */
 
-import { EventLogger } from './event-logger';
-import { BearerTokenValidator, createBearerTokenValidator, parseAuthorizationHeader } from './bearer-token-validator';
 import { PermissionEngine } from '../index';
+import { PermissionDecision } from '../types';
 import {
   PermissionDeniedEventPayload,
   HardRuleConflictEventPayload
 } from '../types/events';
-import { PermissionDecision } from '../types';
+
+import { BearerTokenValidator, createBearerTokenValidator, parseAuthorizationHeader } from './bearer-token-validator';
+import { EventLogger } from './event-logger';
 
 // Import types from daemon-core as type-only imports to avoid implementation coupling
 
@@ -145,7 +146,7 @@ export interface IntegrationResult {
 
 /**
  * Daemon Core Integration Manager
- * 
+ *
  * Provides integration between Permission Engine and Daemon Core:
  * - Validates Bearer Tokens against handshake file
  * - Looks up session information from Session Registry
@@ -241,20 +242,20 @@ export class DaemonIntegration {
    */
   private handleSessionEvent(event: Event): void {
     console.log('[DaemonIntegration] Received session event:', event.action);
-    
+
     // Could add additional handling here if needed
     // For now, the SessionRegistry handles session lifecycle
   }
 
   /**
    * Validate HTTP request authentication
-   * 
+   *
    * Validates Bearer Token and returns actor context from Session Registry
    */
   async validateRequest(request: HttpRequestContext): Promise<IntegrationResult> {
     // Extract authorization header
     const authHeader = request.authorization || request.headers.authorization as string;
-    
+
     if (!authHeader) {
       await this.logPermissionDenied({
         method: request.method,
@@ -263,7 +264,7 @@ export class DaemonIntegration {
         clientIp: request.clientIp,
         layer: 'auth'
       });
-      
+
       return {
         allowed: false,
         reason: 'Missing Authorization header'
@@ -280,7 +281,7 @@ export class DaemonIntegration {
         clientIp: request.clientIp,
         layer: 'auth'
       });
-      
+
       return {
         allowed: false,
         reason: 'Invalid Authorization header format'
@@ -304,7 +305,7 @@ export class DaemonIntegration {
         clientIp: request.clientIp,
         layer: 'auth'
       });
-      
+
       return {
         allowed: false,
         reason: validationResult.reason || 'Invalid token'
@@ -323,7 +324,7 @@ export class DaemonIntegration {
 
   /**
    * Check permission for a request with full context
-   * 
+   *
    * @param request HTTP request context
    * @param action The action being performed (e.g., 'tool.execute', 'workflow.create')
    * @param resource The resource being accessed

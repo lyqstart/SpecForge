@@ -18,7 +18,7 @@ describe('Types', () => {
       lastActiveAt: Date.now(),
       status: 'active',
     };
-    
+
     expect(identity.sessionId).toBe('session-123');
     expect(identity.status).toBe('active');
   });
@@ -35,7 +35,7 @@ describe('Types', () => {
         source: 'client',
       },
     };
-    
+
     expect(event.eventId).toBe('event-123');
     expect(event.action).toBe('session.activated');
   });
@@ -50,7 +50,7 @@ describe('Types', () => {
       lastEventId: 'event-123',
       lastEventTs: Date.now(),
     };
-    
+
     expect(state.projectPath).toBe('/path/to/project');
     expect(state.activeSessions).toHaveLength(2);
   });
@@ -69,7 +69,7 @@ describe('Types', () => {
         task_document: 'task-document/v1',
       },
     };
-    
+
     expect(handshake.pid).toBe(12345);
     expect(handshake.bound_to).toBe('127.0.0.1');
     expect(handshake.schema_version).toBe('1.0');
@@ -82,7 +82,7 @@ describe('Types', () => {
       acquiredAt: Date.now(),
       expiresAt: Date.now() + 30_000,
     };
-    
+
     expect(lock.id).toBe('lock-123');
     expect(lock.projectPath).toBe('/path/to/project');
   });
@@ -93,7 +93,7 @@ describe('Types', () => {
       topic: 'test.event',
       handler: () => {},
     };
-    
+
     expect(subscription.id).toBe('sub-123');
     expect(subscription.topic).toBe('test.event');
   });

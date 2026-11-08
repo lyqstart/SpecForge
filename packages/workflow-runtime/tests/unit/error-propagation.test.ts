@@ -4,13 +4,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  ErrorPropagationManager,
-  ErrorPropagationContext,
-  ErrorPropagationResult,
-  ErrorPropagationUtils,
-  createErrorPropagationManager,
-} from '../../src/error-propagation.js';
+
 import {
   GateError,
   GateTimeoutError,
@@ -18,7 +12,15 @@ import {
   GateResourceError,
   GateErrorType,
 } from '../../src/error-handler.js';
+import {
+  type ErrorPropagationContext,
+  type ErrorPropagationResult,
+  ErrorPropagationManager,
+  ErrorPropagationUtils,
+  createErrorPropagationManager,
+} from '../../src/error-propagation.js';
 import type { WorkflowInstance, WorkflowDefinition } from '../../src/types.js';
+import { requiredTestValue } from '../required-test-value';
 
 describe('ErrorPropagationManager', () => {
   let manager: ErrorPropagationManager;
@@ -26,7 +28,7 @@ describe('ErrorPropagationManager', () => {
 
   beforeEach(() => {
     manager = createErrorPropagationManager();
-    
+
     const workflowDefinition: WorkflowDefinition = {
       schema_version: '1.0',
       id: 'test-workflow',
@@ -69,7 +71,7 @@ describe('ErrorPropagationManager', () => {
       });
 
       const result = manager.propagateError(error, testContext, 'default');
-      
+
       expect(result.shouldContinue).toBe(true);
       expect(result.action).toBe('retry');
       expect(result.delayMs).toBeGreaterThan(0);
@@ -83,7 +85,7 @@ describe('ErrorPropagationManager', () => {
       });
 
       const result = manager.propagateError(error, testContext, 'default');
-      
+
       expect(result.shouldContinue).toBe(false);
       expect(result.action).toBe('fail');
       expect(result.reason).toContain('Non-retryable error in leaf gate');
@@ -97,7 +99,7 @@ describe('ErrorPropagationManager', () => {
       });
 
       const result = manager.propagateError(error, testContext, 'fail-fast');
-      
+
       expect(result.shouldContinue).toBe(false);
       expect(result.action).toBe('fail');
       expect(result.reason).toContain('Fail-fast triggered');
@@ -112,7 +114,7 @@ describe('ErrorPropagationManager', () => {
       });
 
       const result = manager.propagateError(error, testContext, 'escalate');
-      
+
       expect(result.shouldContinue).toBe(false);
       expect(result.action).toBe('escalate');
       expect(result.reason).toContain('Error escalated');
@@ -121,7 +123,7 @@ describe('ErrorPropagationManager', () => {
     it('should handle non-GateError', () => {
       const error = new Error('Generic error');
       const result = manager.propagateError(error, testContext, 'default');
-      
+
       expect(result.shouldContinue).toBe(false);
       expect(result.action).toBe('fail');
     });
@@ -143,7 +145,7 @@ describe('ErrorPropagationManager', () => {
       });
 
       const result = manager.propagateError(error, compositeContext, 'default');
-      
+
       // The error should be transformed to composite gate timeout
       expect(result.reason).toContain('Retryable error');
     });
@@ -157,7 +159,7 @@ describe('ErrorPropagationManager', () => {
       });
 
       const result = manager.propagateError(error, testContext, 'default');
-      
+
       // Critical workflow transforms resource errors to non-retryable
       expect(result.reason).toContain('CRITICAL');
       expect(result.action).toBe('fail'); // Critical errors should fail, not retry
@@ -181,7 +183,7 @@ describe('ErrorPropagationManager', () => {
       });
 
       const result = manager.propagateError(error, compositeContext, 'default');
-      
+
       // Error should be transformed to composite gate error
       expect(result.reason).toContain('Retryable error');
     });
@@ -193,7 +195,7 @@ describe('ErrorPropagationManager', () => {
       });
 
       const result = manager.propagateError(error, testContext, 'default');
-      
+
       // Validation error should include workflow context
       expect(result.reason).toContain('Non-retryable error');
     });
@@ -202,10 +204,10 @@ describe('ErrorPropagationManager', () => {
   describe('custom rules and strategies', () => {
     it('should allow custom transformation rules', () => {
       let transformationApplied = false;
-      
+
       manager.registerTransformationRule({
-        match: (error, context) => error.gateId === 'custom-gate',
-        transform: (error, context) => {
+        match: (error, _context) => error.gateId === 'custom-gate',
+        transform: (error, __context) => {
           transformationApplied = true;
           const CustomError = class extends GateError {
             constructor() {
@@ -234,7 +236,7 @@ describe('ErrorPropagationManager', () => {
     });
 
     it('should allow custom propagation strategies', () => {
-      manager.registerPropagationStrategy('custom-strategy', (error, context) => ({
+      manager.registerPropagationStrategy('custom-strategy', (_error, ___context) => ({
         shouldContinue: true,
         action: 'skip',
         reason: 'Custom strategy: skip this error',
@@ -246,7 +248,7 @@ describe('ErrorPropagationManager', () => {
       });
 
       const result = manager.propagateError(error, testContext, 'custom-strategy');
-      
+
       expect(result.action).toBe('skip');
       expect(result.reason).toContain('Custom strategy');
     });
@@ -386,7 +388,7 @@ describe('ErrorPropagationUtils', () => {
       };
 
       const logData = ErrorPropagationUtils.formatErrorForLogging(error, testContext, propagationResult);
-      
+
       expect(logData.error).toBeDefined();
       expect(logData.context).toBeDefined();
       expect(logData.propagation).toBeDefined();
@@ -489,9 +491,9 @@ describe('ErrorPropagationUtils', () => {
       expect(conversion.hasError).toBe(true);
       expect(conversion.error).toBeDefined();
       expect(conversion.context).toBeDefined();
-      expect(conversion.error!.code).toBe('GATE_TIMEOUT');
-      expect(conversion.error!.errorType).toBe(GateErrorType.TIMEOUT_ERROR);
-      expect(conversion.error!.retryable).toBe(true);
+      expect(requiredTestValue(conversion.error).code).toBe('GATE_TIMEOUT');
+      expect(requiredTestValue(conversion.error).errorType).toBe(GateErrorType.TIMEOUT_ERROR);
+      expect(requiredTestValue(conversion.error).retryable).toBe(true);
     });
   });
 });
@@ -499,7 +501,7 @@ describe('ErrorPropagationUtils', () => {
 describe('Error propagation integration', () => {
   it('should handle error propagation in workflow hierarchy', () => {
     const manager = createErrorPropagationManager();
-    
+
     const workflowDefinition: WorkflowDefinition = {
       schema_version: '1.0',
       id: 'critical-workflow',
@@ -541,15 +543,15 @@ describe('Error propagation integration', () => {
     );
 
     const result = manager.propagateError(error, context, 'default');
-    
+
     // Critical workflow errors should be transformed to non-retryable
     expect(result.reason).toContain('CRITICAL');
     expect(result.action).toBe('pause'); // In composite gate, non-retryable errors pause
-    
+
     // Should propagate to parent
     const shouldPropagate = ErrorPropagationUtils.shouldPropagateToParent(error, context);
     expect(shouldPropagate).toBe(true);
-    
+
     // Should create propagation path
     const path = ErrorPropagationUtils.createPropagationPath(error, context);
     expect(path).toEqual(['composite-processor', 'data-processor']);

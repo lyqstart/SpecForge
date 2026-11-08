@@ -1,9 +1,10 @@
+import { promiseFromSync } from '@specforge/types';
 /**
  * State Manager implementation
- * 
+ *
  * Implements WAL semantics and manages events.jsonl and state.json.
  * Ensures WAL ordering: events.jsonl fsync before state.json update.
- * 
+ *
  * The StateManager is the Single Source of Truth for all Work Item states.
  * It maintains an in-memory state derived from the WAL, and persists
  * state.json as a checkpoint for fast restarts.
@@ -27,12 +28,10 @@ import {
 /**
  * Valid workflow states — sourced from the single authority in state_machine.ts.
  * All state transitions must move between these states.
- * 
+ *
  * v1.1: Also includes v1.1 WI statuses for forward compatibility.
  */
-const VALID_STATES: readonly string[] = [
-  ...new Set([...ALL_STATES, ...WI_STATUSES_V11]),
-];
+const VALID_STATES: readonly string[] = [...new Set([...ALL_STATES, ...WI_STATUSES_V11])];
 
 /**
  * Default workflow type for new Work Items when not explicitly provided.
@@ -110,21 +109,18 @@ export class StateManager {
     // Both files are optional for a new project, but existing empty, corrupt, or
     // unknown-schema files must fail closed rather than being repaired implicitly.
     const runtimeRoot = path.dirname(this.statePath);
-    const schemaPrecheck = await precheckSchemaDescriptors(
-      runtimeRoot,
-      RUNTIME_SCHEMA_DESCRIPTORS,
-    );
+    const schemaPrecheck = await precheckSchemaDescriptors(runtimeRoot, RUNTIME_SCHEMA_DESCRIPTORS);
     if (!schemaPrecheck.ok) {
       const details = schemaPrecheck.checks
-        .filter((check) => check.status === 'blocked')
-        .map((check) => `${check.descriptorId}:${check.errorCode ?? check.status}`)
+        .filter(check => check.status === 'blocked')
+        .map(check => `${check.descriptorId}:${check.errorCode ?? check.status}`)
         .join(',');
       throw new Error(`RUNTIME_SCHEMA_PRECHECK_BLOCKED:${details}`);
     }
 
     // Step 2: Initialize WAL without persisting an empty file
     await this.wal.initialize();
-    
+
     // Step 3: Ensure state directory exists
     await fs.mkdir(path.dirname(this.statePath), { recursive: true });
 
@@ -181,7 +177,7 @@ export class StateManager {
     toState: string,
     actor: string = 'system',
     workflowType: string = DEFAULT_WORKFLOW_TYPE,
-    extraPayload: Record<string, unknown> = {},
+    extraPayload: Record<string, unknown> = {}
   ): Promise<void> {
     // Revalidate persisted history even when this owner is already initialized.
     await this.rebuildState();
@@ -189,22 +185,22 @@ export class StateManager {
     if (process.env.NODE_ENV !== 'production' && CRITICAL_STATES.has(toState)) {
       console.warn(
         `[StateManager] WARNING: direct StateManager.transition() to critical ` +
-        `state '${toState}' for '${workItemId}'. Production code must use ` +
-        `WorkflowEngine.transitionFull() / evidence guard before calling this. ` +
-        `Caller: ${new Error().stack?.split('\n')[2]?.trim() ?? 'unknown'}`,
+          `state '${toState}' for '${workItemId}'. Production code must use ` +
+          `WorkflowEngine.transitionFull() / evidence guard before calling this. ` +
+          `Caller: ${new Error().stack?.split('\n')[2]?.trim() ?? 'unknown'}`
       );
     }
 
     // ── Step 1: Validate state names ──
     if (!this.isValidStateName(toState)) {
       throw new Error(
-        `Invalid target state "${toState}". Valid states: ${VALID_STATES.join(', ')}`,
+        `Invalid target state "${toState}". Valid states: ${VALID_STATES.join(', ')}`
       );
     }
 
     if (fromState !== '' && !this.isValidStateName(fromState)) {
       throw new Error(
-        `Invalid from_state "${fromState}". Valid states: ${VALID_STATES.join(', ')}`,
+        `Invalid from_state "${fromState}". Valid states: ${VALID_STATES.join(', ')}`
       );
     }
 
@@ -215,7 +211,7 @@ export class StateManager {
     if (fromState !== currentState) {
       throw new Error(
         `Optimistic lock failed: expected from_state="${fromState}" ` +
-        `but current state for "${workItemId}" is "${currentState}"`,
+          `but current state for "${workItemId}" is "${currentState}"`
       );
     }
 
@@ -232,7 +228,7 @@ export class StateManager {
         transitioned_at: Date.now(),
         ...extraPayload,
       },
-      actor,
+      actor
     );
 
     // ── Step 4: Append event to WAL (with fsync guarantee) ──
@@ -263,12 +259,14 @@ export class StateManager {
     return this.workItemStates.get(workItemId) ?? null;
   }
 
-  async getAllStates(): Promise<Record<string, WorkItemState>> {
-    const result: Record<string, WorkItemState> = {};
-    for (const [key, value] of this.workItemStates) {
-      result[key] = value;
-    }
-    return result;
+  getAllStates(): Promise<Record<string, WorkItemState>> {
+    return promiseFromSync(() => {
+      const result: Record<string, WorkItemState> = {};
+      for (const [key, value] of this.workItemStates) {
+        result[key] = value;
+      }
+      return result;
+    });
   }
 
   /**
@@ -299,11 +297,11 @@ export class StateManager {
 
   /**
    * Rebuild the in-memory state by replaying all WAL events.
-   * 
+   *
    * This is the authoritative reconstruction: the WAL is the single
    * source of truth. The ProjectState is derived from events, never
    * edited directly.
-   * 
+   *
    * rebuildState() updates in-memory state only; persistence is explicit.
    */
   async rebuildState(): Promise<ProjectState> {
@@ -321,8 +319,14 @@ export class StateManager {
       const id = event.payload.work_item_id ?? event.projectId;
       const from = event.payload.from_state;
       const to = event.payload.to_state;
-      if (typeof id !== 'string' || !id || typeof to !== 'string' || !this.isValidStateName(to) ||
-          typeof from !== 'string' || from !== (replayed.get(id) ?? '')) {
+      if (
+        typeof id !== 'string' ||
+        !id ||
+        typeof to !== 'string' ||
+        !this.isValidStateName(to) ||
+        typeof from !== 'string' ||
+        from !== (replayed.get(id) ?? '')
+      ) {
         throw new Error('WAL_STATE_TRANSITION_INVALID');
       }
       replayed.set(id, to);
@@ -374,7 +378,8 @@ export class StateManager {
     let checkpoint: ProjectState | null = null;
     try {
       const value: unknown = JSON.parse(await fs.readFile(this.statePath, 'utf-8'));
-      if (!RUNTIME_SCHEMA_DESCRIPTORS[0]!.validateCurrent!(value)) throw new Error('WAL_CHECKPOINT_INVALID');
+      if (!RUNTIME_SCHEMA_DESCRIPTORS[0].validateCurrent(value))
+        throw new Error('WAL_CHECKPOINT_INVALID');
       checkpoint = value as ProjectState;
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
@@ -414,16 +419,16 @@ export class StateManager {
 
   /**
    * Append an event and persist state.json checkpoint.
-   * 
+   *
    * WAL ordering: events.jsonl is fsynced BEFORE state.json is written.
    * This guarantees that on crash recovery, the WAL is always ahead of state.json.
-   * 
+   *
    * @deprecated Use transition() for state changes.
    */
   async appendEvent(event: Event): Promise<void> {
     // Step 1: Append event to WAL (events.jsonl) with fsync
     await this.wal.appendEvent(event);
-    
+
     // Step 2: Track last event info for all events
     this._lastEventId = event.eventId;
     this._lastEventTs = event.ts ?? Date.now();
@@ -440,47 +445,51 @@ export class StateManager {
   /**
    * Get the current ProjectState (from in-memory state).
    */
-  async getCurrentState(): Promise<ProjectState> {
-    return this.buildProjectState();
+  getCurrentState(): Promise<ProjectState> {
+    return promiseFromSync(() => {
+      return this.buildProjectState();
+    });
   }
 
   /**
    * @deprecated Use rebuildState() instead.
    */
-  async rebuildFromEvents(events: Event[]): Promise<ProjectState> {
-    this.assertTransitionHistory(events);
-    if (!events || events.length === 0) {
-      return this.buildProjectState();
-    }
-
-    // Rebuild from the provided events
-    this.workItemStates.clear();
-    let lastEventId = '';
-    let lastEventTs = 0;
-
-    for (const event of events) {
-      if (!event || !event.eventId) continue;
-      lastEventId = event.eventId;
-      lastEventTs = event.ts ?? 0;
-
-      if (event.action === 'state.transition') {
-        this.applyStateTransition(event);
+  rebuildFromEvents(events: Event[]): Promise<ProjectState> {
+    return promiseFromSync(() => {
+      this.assertTransitionHistory(events);
+      if (!events || events.length === 0) {
+        return this.buildProjectState();
       }
-    }
 
-    // Persist last event tracking
-    this._lastEventId = lastEventId;
-    this._lastEventTs = lastEventTs;
+      // Rebuild from the provided events
+      this.workItemStates.clear();
+      let lastEventId = '';
+      let lastEventTs = 0;
 
-    return {
-      stateVersion: this._stateVersion,
-      projectPath: this.projectPath,
-      schemaVersion: '1.0',
-      activeSessions: [],
-      workItems: Array.from(this.workItemStates.values()),
-      lastEventId,
-      lastEventTs,
-    };
+      for (const event of events) {
+        if (!event || !event.eventId) continue;
+        lastEventId = event.eventId;
+        lastEventTs = event.ts ?? 0;
+
+        if (event.action === 'state.transition') {
+          this.applyStateTransition(event);
+        }
+      }
+
+      // Persist last event tracking
+      this._lastEventId = lastEventId;
+      this._lastEventTs = lastEventTs;
+
+      return {
+        stateVersion: this._stateVersion,
+        projectPath: this.projectPath,
+        schemaVersion: '1.0',
+        activeSessions: [],
+        workItems: Array.from(this.workItemStates.values()),
+        lastEventId,
+        lastEventTs,
+      };
+    });
   }
 
   // ═══════════════════════════════════════════════════
@@ -565,13 +574,13 @@ export class StateManager {
 
   /**
    * Write state.json with optimistic concurrency control.
-   * 
+   *
    * Protocol:
    * 1. Read disk stateVersion from state.json (or 0 if missing / no file)
    * 2. Compare with this._stateVersion (in-memory expected version)
    * 3. If match → increment _stateVersion, write, fsync
    * 4. If mismatch → rebuild from WAL and retry (max 3 attempts)
-   * 
+   *
    * @throws Error with "VersionConflict" prefix when retries exhausted
    */
   private async writeStateFile(state: ProjectState, attempt: number = 0): Promise<void> {
@@ -597,7 +606,7 @@ export class StateManager {
       return this.writeStateFile(freshState, attempt + 1);
     } else {
       throw new Error(
-        `VersionConflict: disk version=${diskVersion}, expected=${this._stateVersion}, retries exhausted`,
+        `VersionConflict: disk version=${diskVersion}, expected=${this._stateVersion}, retries exhausted`
       );
     }
   }
@@ -605,11 +614,11 @@ export class StateManager {
   /**
    * Persist an externally-built state snapshot through StateManager's
    * optimistic concurrency control.
-   * 
+   *
    * Used by RecoverySubsystem after repair to persist the repaired state.
    * Synchronizes the in-memory workItemStates map and tracking fields,
    * then writes through the version-locked writeStateFile.
-   * 
+   *
    * @param state - External state snapshot to persist
    */
   async persistStateFromExternal(state: ProjectState): Promise<void> {
@@ -637,7 +646,7 @@ export class StateManager {
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === 'ENOENT') return 0;
       throw new Error(
-        `RUNTIME_CHECKPOINT_READ_FAILED:${error instanceof Error ? error.message : String(error)}`,
+        `RUNTIME_CHECKPOINT_READ_FAILED:${error instanceof Error ? error.message : String(error)}`
       );
     }
   }
@@ -649,7 +658,7 @@ export class StateManager {
     try {
       const content = await fs.readFile(this.statePath, 'utf-8');
       return JSON.parse(content) as ProjectState;
-    } catch (error) {
+    } catch {
       return {
         stateVersion: 0,
         projectPath: this.projectPath,

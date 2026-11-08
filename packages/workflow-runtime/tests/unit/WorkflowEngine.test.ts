@@ -2,9 +2,11 @@
  * Unit tests for WorkflowEngine
  */
 
+import { promiseFromSync } from '@specforge/types';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { WorkflowEngine, WorkflowEvent } from '../../src/WorkflowEngine.js';
-import { WorkflowDefinition, SimpleGateDefinition, CompositeGateDefinition } from '../../src/types.js';
+
+import type { WorkflowDefinition, SimpleGateDefinition, CompositeGateDefinition } from '../../src/types.js';
+import { type WorkflowEvent , WorkflowEngine } from '../../src/WorkflowEngine.js';
 
 describe('WorkflowEngine', () => {
   let engine: WorkflowEngine;
@@ -165,7 +167,7 @@ describe('WorkflowEngine', () => {
 
     it('should execute workflow with custom gate function', async () => {
       const gateFn = vi.fn().mockResolvedValue({ schema_version: '1.0' as const, passed: true, reason: 'Custom check passed' });
-      
+
       const definition: WorkflowDefinition = {
         id: 'test-workflow',
         displayName: 'Test',
@@ -201,11 +203,11 @@ describe('WorkflowEngine', () => {
           states: {
             state1: {
               agent: 'test-agent',
-              gate: { 
-                type: 'simple', 
-                id: 'gate1', 
+              gate: {
+                type: 'simple',
+                id: 'gate1',
                 name: 'Gate 1',
-                checkFn: async () => ({ passed: true }),
+                checkFn:  () => promiseFromSync(() => (({ passed: true }))),
               } as SimpleGateDefinition,
               skills: [],
               next: { pass: 'state2', fail: 'state3' },
@@ -299,8 +301,8 @@ describe('WorkflowEngine', () => {
 
     it('should unsubscribe from events', () => {
       const events: WorkflowEvent[] = [];
-      const handler = (event: WorkflowEvent) => { events.push(event); };
-      
+      const handler = (event: WorkflowEvent): void => { events.push(event); };
+
       engine.onEvent(handler);
       engine.offEvent(handler);
 
@@ -324,9 +326,9 @@ describe('WorkflowEngine', () => {
     });
 
     it('should handle event handler errors gracefully', () => {
-      const errorHandler = () => { throw new Error('Handler error'); };
+      const errorHandler = (): never => { throw new Error('Handler error'); };
       const successHandler = vi.fn();
-      
+
       engine.onEvent(errorHandler);
       engine.onEvent(successHandler);
 
@@ -350,11 +352,11 @@ describe('WorkflowEngine', () => {
 
     it('should handle async event handlers', async () => {
       const events: WorkflowEvent[] = [];
-      const asyncHandler = async (event: WorkflowEvent) => {
+      const asyncHandler = async (event: WorkflowEvent): Promise<void> => {
         await new Promise(r => setTimeout(r, 10));
         events.push(event);
       };
-      
+
       engine.onEvent(asyncHandler);
 
       const definition: WorkflowDefinition = {
@@ -517,7 +519,7 @@ describe('WorkflowEngine', () => {
   });
 
   describe('pause/resume', () => {
-    it('should pause a running workflow', async () => {
+    it('should pause a running workflow',  () => { return promiseFromSync(() => {
       // Create a workflow with multiple states for testing
       const definition: WorkflowDefinition = {
         id: 'test-workflow',
@@ -526,15 +528,15 @@ describe('WorkflowEngine', () => {
         stateMachine: {
           initial: 'state1',
           states: {
-            state1: { 
-              agent: 'a', 
-              gate: { type: 'simple', id: 'g1', name: 'G1' } as SimpleGateDefinition, 
+            state1: {
+              agent: 'a',
+              gate: { type: 'simple', id: 'g1', name: 'G1' } as SimpleGateDefinition,
               skills: [],
               next: 'state2',
             },
-            state2: { 
-              agent: 'a', 
-              gate: { type: 'simple', id: 'g2', name: 'G2' } as SimpleGateDefinition, 
+            state2: {
+              agent: 'a',
+              gate: { type: 'simple', id: 'g2', name: 'G2' } as SimpleGateDefinition,
               skills: [],
             },
           },
@@ -544,19 +546,19 @@ describe('WorkflowEngine', () => {
 
       engine.loadWorkflow(definition);
       const instance = engine.createInstance('test-workflow');
-      
+
       // Simulate running by directly setting status to running
       // (In real usage, this happens during execute())
       instance.status = 'running';
-      
+
       // Pause the workflow
       const pausedInstance = engine.pause(instance.id, 'Testing pause');
-      
+
       expect(pausedInstance.status).toBe('paused');
       expect(pausedInstance.currentState).toBe('state1');
-    });
+    }); });
 
-    it('should pause a running workflow at any state', async () => {
+    it('should pause a running workflow at any state',  () => { return promiseFromSync(() => {
       const definition: WorkflowDefinition = {
         id: 'test-workflow',
         displayName: 'Test',
@@ -564,21 +566,21 @@ describe('WorkflowEngine', () => {
         stateMachine: {
           initial: 'state1',
           states: {
-            state1: { 
-              agent: 'a', 
-              gate: { type: 'simple', id: 'g1', name: 'G1' } as SimpleGateDefinition, 
+            state1: {
+              agent: 'a',
+              gate: { type: 'simple', id: 'g1', name: 'G1' } as SimpleGateDefinition,
               skills: [],
               next: 'state2',
             },
-            state2: { 
-              agent: 'a', 
-              gate: { type: 'simple', id: 'g2', name: 'G2' } as SimpleGateDefinition, 
+            state2: {
+              agent: 'a',
+              gate: { type: 'simple', id: 'g2', name: 'G2' } as SimpleGateDefinition,
               skills: [],
               next: 'state3',
             },
-            state3: { 
-              agent: 'a', 
-              gate: { type: 'simple', id: 'g3', name: 'G3' } as SimpleGateDefinition, 
+            state3: {
+              agent: 'a',
+              gate: { type: 'simple', id: 'g3', name: 'G3' } as SimpleGateDefinition,
               skills: [],
             },
           },
@@ -588,17 +590,17 @@ describe('WorkflowEngine', () => {
 
       engine.loadWorkflow(definition);
       const instance = engine.createInstance('test-workflow');
-      
+
       // Set to running and advance to state2
       instance.status = 'running';
       instance.currentState = 'state2';
-      
+
       // Pause at state2
       const pausedInstance = engine.pause(instance.id, 'Paused at state2');
-      
+
       expect(pausedInstance.status).toBe('paused');
       expect(pausedInstance.currentState).toBe('state2');
-    });
+    }); });
 
     it('should throw error when pausing non-running workflow', () => {
       const definition: WorkflowDefinition = {
@@ -670,20 +672,20 @@ describe('WorkflowEngine', () => {
         stateMachine: {
           initial: 'state1',
           states: {
-            state1: { 
-              agent: 'a', 
-              gate: { 
-                type: 'simple', 
-                id: 'g1', 
+            state1: {
+              agent: 'a',
+              gate: {
+                type: 'simple',
+                id: 'g1',
                 name: 'G1',
-                checkFn: async () => ({ schema_version: '1.0', passed: true }),
-              } as SimpleGateDefinition, 
+                checkFn:  () => promiseFromSync(() => (({ schema_version: '1.0', passed: true }))),
+              } as SimpleGateDefinition,
               skills: [],
               next: 'state2',
             },
-            state2: { 
-              agent: 'a', 
-              gate: { type: 'simple', id: 'g2', name: 'G2' } as SimpleGateDefinition, 
+            state2: {
+              agent: 'a',
+              gate: { type: 'simple', id: 'g2', name: 'G2' } as SimpleGateDefinition,
               skills: [],
             },
           },
@@ -693,22 +695,22 @@ describe('WorkflowEngine', () => {
 
       engine.loadWorkflow(definition);
       const instance = engine.createInstance('test-workflow');
-      
+
       // Set to running and advance to state2
       instance.status = 'running';
       instance.currentState = 'state2';
-      
+
       // Pause the workflow at state2
       engine.pause(instance.id, 'Need to pause');
-      
+
       // Verify it's paused
       const pausedInstance = engine.getInstance(instance.id);
       expect(pausedInstance?.status).toBe('paused');
-      
+
       // Resume the workflow - it should continue from state2
       // Note: Since the gate passes, it will complete the workflow
       await engine.resume(instance.id);
-      
+
       const resumedInstance = engine.getInstance(instance.id);
       expect(resumedInstance?.status).toBe('completed');
       expect(resumedInstance?.currentState).toBe('state2');
@@ -781,7 +783,7 @@ describe('WorkflowEngine', () => {
       expect(() => engine.resume('non-existent-id')).toThrow('Workflow instance not found: non-existent-id');
     });
 
-    it('should store pause reason', async () => {
+    it('should store pause reason',  () => { return promiseFromSync(() => {
       const definition: WorkflowDefinition = {
         id: 'test-workflow',
         displayName: 'Test',
@@ -798,17 +800,17 @@ describe('WorkflowEngine', () => {
       engine.loadWorkflow(definition);
       const instance = engine.createInstance('test-workflow');
       instance.status = 'running';
-      
+
       const pauseReason = 'User requested pause for maintenance';
       const pausedInstance = engine.pause(instance.id, pauseReason);
-      
+
       // The reason should be stored in the instance's updatedAt
       expect(pausedInstance.status).toBe('paused');
-      
+
       // Verify the instance was updated
       const updatedInstance = engine.getInstance(instance.id);
       expect(updatedInstance?.status).toBe('paused');
-    });
+    }); });
   });
 
   describe('getAllInstances', () => {
@@ -844,7 +846,8 @@ describe('WorkflowEngine', () => {
 
   describe('executeGate', () => {
     it('should throw error for unknown gate type', async () => {
-      const unknownGate = { type: 'unknown' } as unknown as GateDefinition;
+      const unknownGate = { schema_version: '1.0' as const, id: 'unknown', name: 'Unknown', type: 'unknown' as const };
+      // @ts-expect-error Deliberate unsupported Gate kind; runtime must reject it.
       await expect(engine.executeGate(unknownGate)).rejects.toThrow('Unknown gate type');
     });
 
@@ -965,7 +968,7 @@ describe('WorkflowEngine', () => {
                 type: 'simple',
                 id: 'gate1',
                 name: 'Gate 1',
-                checkFn: async () => ({ passed: false, reason: 'Failed' }),
+                checkFn:  () => promiseFromSync(() => (({ passed: false, reason: 'Failed' }))),
               } as SimpleGateDefinition,
               skills: [],
               next: { pass: 'state2', fail: 'state3' },
@@ -1007,7 +1010,7 @@ describe('WorkflowEngine', () => {
                 type: 'simple',
                 id: 'gate1',
                 name: 'Gate 1',
-                checkFn: async () => ({ passed: true }),
+                checkFn:  () => promiseFromSync(() => (({ passed: true }))),
               } as SimpleGateDefinition,
               skills: [],
               next: { pass: 'state2', fail: 'state3' },
@@ -1038,19 +1041,19 @@ describe('WorkflowEngine', () => {
   describe('composite gates', () => {
     it('should execute composite gate in sequential mode', async () => {
       const executionOrder: string[] = [];
-      
+
       const childGate1: SimpleGateDefinition = {
         type: 'simple',
         id: 'child1',
         name: 'Child Gate 1',
-        checkFn: async () => { executionOrder.push('child1'); return { passed: true }; },
+        checkFn:  () => { return promiseFromSync(() => { executionOrder.push('child1'); return { passed: true }; }); },
       };
-      
+
       const childGate2: SimpleGateDefinition = {
         type: 'simple',
         id: 'child2',
         name: 'Child Gate 2',
-        checkFn: async () => { executionOrder.push('child2'); return { passed: true }; },
+        checkFn:  () => { return promiseFromSync(() => { executionOrder.push('child2'); return { passed: true }; }); },
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -1095,8 +1098,8 @@ describe('WorkflowEngine', () => {
         mode: 'parallel',
         failPolicy: 'collect_all',
         children: [
-          { type: 'simple', id: 'child1', name: 'Child 1', checkFn: async () => ({ passed: true }) },
-          { type: 'simple', id: 'child2', name: 'Child 2', checkFn: async () => ({ passed: true }) },
+          { type: 'simple', id: 'child1', name: 'Child 1', checkFn:  () => promiseFromSync(() => (({ passed: true }))) },
+          { type: 'simple', id: 'child2', name: 'Child 2', checkFn:  () => promiseFromSync(() => (({ passed: true }))) },
         ],
       };
 
@@ -1132,8 +1135,8 @@ describe('WorkflowEngine', () => {
         mode: 'sequential',
         failPolicy: 'fail_fast',
         children: [
-          { type: 'simple', id: 'child1', name: 'Child 1', checkFn: async () => ({ passed: false, reason: 'Failed' }) },
-          { type: 'simple', id: 'child2', name: 'Child 2', checkFn: async () => { throw new Error('Should not be reached'); } },
+          { type: 'simple', id: 'child1', name: 'Child 1', checkFn:  () => promiseFromSync(() => (({ passed: false, reason: 'Failed' }))) },
+          { type: 'simple', id: 'child2', name: 'Child 2', checkFn:  () => { return promiseFromSync(() => { throw new Error('Should not be reached'); }); } },
         ],
       };
 

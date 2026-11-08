@@ -1,7 +1,7 @@
 import { loadAcceptedConfigSync } from '@specforge/configuration';
 /**
  * Daemon Commands
- * 
+ *
  * Provides commands to manage the SpecForge daemon service:
  * - install-service: Install daemon as OS service
  * - uninstall-service: Uninstall daemon from OS service manager
@@ -9,13 +9,28 @@ import { loadAcceptedConfigSync } from '@specforge/configuration';
  * - stop: Stop the daemon service
  * - restart: Restart the daemon service
  * - status: Check daemon status
- * 
+ *
  * All commands support --json flag for machine-friendly output.
- * 
+ *
  * @packageDocumentation
  */
 
-import yargs, { Argv, Arguments } from 'yargs';
+/**
+ * Daemon Commands
+ *
+ * Provides commands to manage the SpecForge daemon service:
+ * - install-service: Install daemon as OS service
+ * - uninstall-service: Uninstall daemon from OS service manager
+ * - start: Start the daemon service
+ * - stop: Stop the daemon service
+ * - restart: Restart the daemon service
+ * - status: Check daemon status
+ *
+ * All commands support --json flag for machine-friendly output.
+ *
+ * @packageDocumentation
+ */
+import { Argv } from 'yargs';
 import { handleInstallService } from './install-service';
 import { handleUninstallService } from './uninstall-service';
 import { handleStart } from './start';
@@ -124,7 +139,7 @@ export function addDaemonCommands(yargs: Argv): Argv {
           )
           .demandCommand(1, 'Specify a subcommand');
       },
-      (argv) => {
+      (_argv) => {
         // Default: show help if no subcommand specified
         console.log('Usage: specforge daemon <command>');
         console.log('Commands: install-service, uninstall-service, start, stop, restart, status');

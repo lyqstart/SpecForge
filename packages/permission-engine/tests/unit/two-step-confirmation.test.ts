@@ -1,19 +1,23 @@
 /**
  * Two-Step Confirmation Manager Unit Tests
- * 
+ *
  * Tests for the TwoStepConfirmationManager service implementing two-step
  * confirmation for sensitive operations as required by Property 26: Remote Access Guard
- * 
+ *
  * @specforge/permission-engine
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { 
-  TwoStepConfirmationManager, 
-  createTwoStepConfirmationManager,
-  DEFAULT_SENSITIVE_OPERATIONS,
-  SENSITIVE_OPERATIONS
-} from '../../src/services/two-step-confirmation';
+/**
+ * Two-Step Confirmation Manager Unit Tests
+ *
+ * Tests for the TwoStepConfirmationManager service implementing two-step
+ * confirmation for sensitive operations as required by Property 26: Remote Access Guard
+ *
+ * @specforge/permission-engine
+ */
+import { describe, it, expect, beforeEach } from 'vitest';
+
+import { TwoStepConfirmationManager, createTwoStepConfirmationManager } from '../../src/services/two-step-confirmation';
 
 describe('TwoStepConfirmationManager', () => {
   let manager: TwoStepConfirmationManager;
@@ -181,7 +185,7 @@ describe('TwoStepConfirmationManager', () => {
       });
 
       manager.confirm(requestResult.confirmationId!, 'user-123');
-      
+
       expect(manager.canProceed(requestResult.confirmationId!)).toBe(true);
     });
 
@@ -194,7 +198,7 @@ describe('TwoStepConfirmationManager', () => {
       });
 
       manager.deny(requestResult.confirmationId!, 'user-123');
-      
+
       expect(manager.canProceed(requestResult.confirmationId!)).toBe(false);
     });
 
@@ -285,20 +289,20 @@ describe('TwoStepConfirmationManager', () => {
 
   describe('addSensitiveOperation', () => {
     it('should add new sensitive operation', () => {
-      expect(manager.requiresConfirmation('custom.operation' as any)).toBe(false);
-      
-      manager.addSensitiveOperation('custom.operation' as any);
-      
-      expect(manager.requiresConfirmation('custom.operation' as any)).toBe(true);
+      expect(manager.requiresConfirmation('plugin.unload')).toBe(false);
+
+      manager.addSensitiveOperation('plugin.unload');
+
+      expect(manager.requiresConfirmation('plugin.unload')).toBe(true);
     });
   });
 
   describe('removeSensitiveOperation', () => {
     it('should remove sensitive operation', () => {
       expect(manager.requiresConfirmation('workitem.delete')).toBe(true);
-      
+
       manager.removeSensitiveOperation('workitem.delete');
-      
+
       expect(manager.requiresConfirmation('workitem.delete')).toBe(false);
     });
   });

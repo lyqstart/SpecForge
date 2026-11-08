@@ -1,26 +1,27 @@
+import { promiseFromSync } from '@specforge/types';
 /**
  * SpecForge 共享工具函数
  * 提供日志写入、敏感信息脱敏、JSONL 追加写入等基础能力
  */
 
-import { mkdir, appendFile } from "node:fs/promises"
-import { dirname, join } from "node:path"
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout"
+import { mkdir, appendFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 // ============================================================
 // Types
 // ============================================================
 
-export type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR"
+export type LogLevel = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
 
 export interface LogEntry {
-  timestamp: string
-  level: LogLevel
-  work_item_id: string
-  component: string
-  event: string
-  message: string
-  payload: Record<string, unknown>
+  timestamp: string;
+  level: LogLevel;
+  work_item_id: string;
+  component: string;
+  event: string;
+  message: string;
+  payload: Record<string, unknown>;
 }
 
 // ============================================================
@@ -32,14 +33,14 @@ export interface LogEntry {
  * 匹配 key 名中包含以下关键词的字段
  */
 const SENSITIVE_KEY_PATTERNS: RegExp[] = [
-  /api[_\-]?key/i,
+  /api[_-]?key/i,
   /token/i,
   /password/i,
   /secret/i,
   /credential/i,
   /auth/i,
-  /private[_\-]?key/i,
-]
+  /private[_-]?key/i,
+];
 
 /**
  * 递归脱敏对象中的敏感信息
@@ -47,37 +48,37 @@ const SENSITIVE_KEY_PATTERNS: RegExp[] = [
  */
 export function redactSensitive(obj: unknown): unknown {
   if (obj === null || obj === undefined) {
-    return obj
+    return obj;
   }
 
-  if (typeof obj === "string") {
-    return obj
+  if (typeof obj === 'string') {
+    return obj;
   }
 
   if (Array.isArray(obj)) {
-    return obj.map((item) => redactSensitive(item))
+    return obj.map(item => redactSensitive(item));
   }
 
-  if (typeof obj === "object") {
-    const result: Record<string, unknown> = {}
+  if (typeof obj === 'object') {
+    const result: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
       if (isSensitiveKey(key)) {
-        result[key] = "[REDACTED]"
+        result[key] = '[REDACTED]';
       } else {
-        result[key] = redactSensitive(value)
+        result[key] = redactSensitive(value);
       }
     }
-    return result
+    return result;
   }
 
-  return obj
+  return obj;
 }
 
 /**
  * 判断 key 是否匹配敏感模式
  */
 function isSensitiveKey(key: string): boolean {
-  return SENSITIVE_KEY_PATTERNS.some((pattern) => pattern.test(key))
+  return SENSITIVE_KEY_PATTERNS.some(pattern => pattern.test(key));
 }
 
 // ============================================================
@@ -88,14 +89,11 @@ function isSensitiveKey(key: string): boolean {
  * 追加一条 JSON 记录到指定文件（JSONL 格式）
  * 如果目录不存在则自动创建
  */
-export async function appendJsonl(
-  filePath: string,
-  entry: object
-): Promise<void> {
-  const dir = dirname(filePath)
-  await mkdir(dir, { recursive: true })
-  const line = JSON.stringify(entry) + "\n"
-  await appendFile(filePath, line, "utf-8")
+export async function appendJsonl(filePath: string, entry: object): Promise<void> {
+  const dir = dirname(filePath);
+  await mkdir(dir, { recursive: true });
+  const line = JSON.stringify(entry) + '\n';
+  await appendFile(filePath, line, 'utf-8');
 }
 
 // ============================================================
@@ -106,16 +104,13 @@ export async function appendJsonl(
  * 写入结构化日志条目到指定日志文件
  * 日志以 JSONL 格式追加写入
  */
-export async function writeLog(
-  logFile: string,
-  entry: LogEntry
-): Promise<void> {
+export async function writeLog(logFile: string, entry: LogEntry): Promise<void> {
   // 对 payload 进行脱敏处理
   const sanitizedEntry: LogEntry = {
     ...entry,
     payload: redactSensitive(entry.payload) as Record<string, unknown>,
-  }
-  await appendJsonl(logFile, sanitizedEntry)
+  };
+  await appendJsonl(logFile, sanitizedEntry);
 }
 
 /**
@@ -137,7 +132,7 @@ export function createLogEntry(
     event,
     message,
     payload,
-  }
+  };
 }
 
 // ============================================================
@@ -147,7 +142,7 @@ export function createLogEntry(
 /**
  * 错误日志写入路径常量（相对于 baseDir）
  */
-export const ERROR_LOG_RELATIVE_PATH = `${SPEC_DIR_NAME}/runtime/logs/error.log`
+export const ERROR_LOG_RELATIVE_PATH = `${SPEC_DIR_NAME}/runtime/logs/error.log`;
 
 /**
  * 将错误信息写入 Error_Log（specforge/logs/error.log）
@@ -160,18 +155,18 @@ export async function logErrorToFile(
   error: unknown
 ): Promise<void> {
   try {
-    const errorLogPath = join(baseDir, ERROR_LOG_RELATIVE_PATH)
+    const errorLogPath = join(baseDir, ERROR_LOG_RELATIVE_PATH);
     // Ensure directory exists
-    const dir = join(baseDir, SPEC_DIR_NAME, 'runtime', 'logs')
-    await mkdir(dir, { recursive: true })
+    const dir = join(baseDir, SPEC_DIR_NAME, 'runtime', 'logs');
+    await mkdir(dir, { recursive: true });
     // Write error entry
     await appendJsonl(errorLogPath, {
       timestamp: new Date().toISOString(),
-      level: "ERROR",
+      level: 'ERROR',
       component,
       event,
       message: error instanceof Error ? error.message : String(error),
-    })
+    });
   } catch {
     // Silently swallow — log write failure must not affect caller
   }
@@ -182,13 +177,13 @@ export async function logErrorToFile(
 // ============================================================
 
 export interface GateResultEntry {
-  type: "gate_result"
-  timestamp: string
-  work_item_id: string
-  gate: string
-  status: "pass" | "fail" | "blocked"
-  blocking_issues: string[]
-  warnings: string[]
+  type: 'gate_result';
+  timestamp: string;
+  work_item_id: string;
+  gate: string;
+  status: 'pass' | 'fail' | 'blocked';
+  blocking_issues: string[];
+  warnings: string[];
 }
 
 /**
@@ -201,34 +196,34 @@ export async function recordGateResult(
   result: { status: string; blocking_issues: string[]; warnings: string[] },
   baseDir: string
 ): Promise<void> {
-  const eventsPath = join(baseDir, SPEC_DIR_NAME, 'runtime', 'events.jsonl')
-  const errorLogPath = join(baseDir, SPEC_DIR_NAME, 'runtime', 'logs', 'error.log')
+  const eventsPath = join(baseDir, SPEC_DIR_NAME, 'runtime', 'events.jsonl');
+  const errorLogPath = join(baseDir, SPEC_DIR_NAME, 'runtime', 'logs', 'error.log');
 
   const entry: GateResultEntry = {
-    type: "gate_result",
+    type: 'gate_result',
     timestamp: new Date().toISOString(),
     work_item_id: workItemId,
     gate: gateName,
-    status: result.status as "pass" | "fail" | "blocked",
+    status: result.status as 'pass' | 'fail' | 'blocked',
     blocking_issues: result.blocking_issues,
     warnings: result.warnings,
-  }
+  };
 
   try {
-    await appendJsonl(eventsPath, entry)
+    await appendJsonl(eventsPath, entry);
   } catch (err) {
     // 写入 events.jsonl 失败时，记录到 error.log
     try {
       const errorEntry = {
         timestamp: new Date().toISOString(),
-        level: "ERROR",
+        level: 'ERROR',
         component: gateName,
-        event: "gate_result_write_failed",
+        event: 'gate_result_write_failed',
         message: `Failed to write gate result: ${(err as Error).message}`,
         payload: { work_item_id: workItemId, gate_status: result.status },
-      }
-      await mkdir(dirname(errorLogPath), { recursive: true })
-      await appendFile(errorLogPath, JSON.stringify(errorEntry) + "\n", "utf-8")
+      };
+      await mkdir(dirname(errorLogPath), { recursive: true });
+      await appendFile(errorLogPath, JSON.stringify(errorEntry) + '\n', 'utf-8');
     } catch {
       // 完全静默
     }
@@ -244,9 +239,8 @@ export async function recordGateResult(
  * Callers retain this hook while the tool surface converges, but it must not
  * discover or execute retired compatibility adapters.
  */
-export async function tryCheckCompatibility(
-  _baseDir: string,
-  _component: string
-): Promise<void> {
-  return
+export function tryCheckCompatibility(_baseDir: string, _component: string): Promise<void> {
+  return promiseFromSync(() => {
+    return;
+  });
 }

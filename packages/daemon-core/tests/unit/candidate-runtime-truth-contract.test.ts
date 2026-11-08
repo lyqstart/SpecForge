@@ -1,3 +1,4 @@
+import { codeContains } from '../../../../tests/helpers/source-structure';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -20,7 +21,7 @@ describe('Candidate runtime truth and exact REQ identity contract', () => {
   it('makes Runtime the baseline owner and seals the baseline with the Candidate', () => {
     const transition = read('packages/daemon-core/src/tools/handlers/sf-state-transition.ts');
     const seal = read('packages/daemon-core/src/tools/lib/candidate-generation-integrity.ts');
-    expect(transition).toContain('materializeImplementationBaseline(projectPath, workItemId)');
+    expect(codeContains(transition, 'materializeImplementationBaseline(projectPath, workItemId)')).toBe(true);
     expect(transition).toContain('validateImplementationTruthBeforeSeal');
     expect(transition).toContain('CANDIDATE_IMPLEMENTATION_TRUTH_INVALID');
     expect(seal).toContain("'implementation_baseline.json'");

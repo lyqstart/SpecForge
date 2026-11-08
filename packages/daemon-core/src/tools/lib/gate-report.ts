@@ -9,10 +9,7 @@
 
 import type { GateIdV11, GateStrictness } from './gate-runner-v11.js';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
-import type {
-  GateReport as SharedGateReport,
-  GateReportCheck,
-} from '@specforge/types';
+import type { GateReport as SharedGateReport, GateReportCheck } from '@specforge/types';
 
 // ---------------------------------------------------------------------------
 // §9.4 Gate Report

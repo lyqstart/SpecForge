@@ -21,13 +21,13 @@
  *   - close-gate.ts: CloseGateResult, runCloseGate
  */
 
-export * from './verification-report.js'
-export * from './evidence-manifest.js'
-export * from './evidence.js'
-export type { CloseGateResult } from './close-gate.js'
-export { runCloseGate } from './close-gate.js'
+export * from './verification-report.js';
+export * from './evidence-manifest.js';
+export * from './evidence.js';
+export type { CloseGateResult } from './close-gate.js';
+export { runCloseGate } from './close-gate.js';
 
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { writeFile, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { TraceEntry, TraceDelta, TraceValidationResult } from './evidence.js';
 import {
@@ -82,7 +82,29 @@ export interface TraceChainResult {
 /**
  * 检查 Trace 链路完整性（§13.1: REQ→AC→DD→TASK→FILE→TEST→EVIDENCE）。
  */
-export function checkTraceChain(entries: TraceEntry[]): TraceChainResult {
+export function checkTraceChain(input: unknown): TraceChainResult {
+  if (
+    !Array.isArray(input) ||
+    !input.every((value: unknown): value is TraceEntry => {
+      if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
+      const entry = value as Record<string, unknown>;
+      return (
+        typeof entry.req_id === 'string' &&
+        [
+          entry.ac_ids,
+          entry.dd_ids,
+          entry.task_ids,
+          entry.file_paths,
+          entry.test_ids,
+          entry.evidence_ids,
+        ].every(
+          items => Array.isArray(items) && items.every((item: unknown) => typeof item === 'string')
+        )
+      );
+    })
+  )
+    throw new Error('TRACE_CHAIN_ENTRIES_INVALID');
+  const entries = input;
   const gaps: string[] = [];
   const coverage: Record<string, 'covered' | 'partial' | 'missing'> = {
     req_to_ac: 'covered',
@@ -134,7 +156,7 @@ export async function writeTraceDeltaTemplate(
   wiDir: string,
   workItemId: string,
   impact: TraceDelta['impact'],
-  reason: string,
+  reason: string
 ): Promise<string> {
   const lines: string[] = [
     '# Trace Delta',
@@ -172,7 +194,7 @@ export async function writeTraceDeltaTemplate(
  */
 export async function writeEvidenceManifestTemplate(
   wiDir: string,
-  workItemId: string,
+  workItemId: string
 ): Promise<string> {
   const schemaPrecheck = await precheckEvidenceManifestSchema(wiDir, workItemId);
   const schemaBlockCode = evidenceManifestSchemaBlockCode(schemaPrecheck);

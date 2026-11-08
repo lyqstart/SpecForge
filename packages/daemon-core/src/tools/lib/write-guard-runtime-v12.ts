@@ -1,5 +1,5 @@
 import { parseReadOnlyCommand } from './sf_safe_bash_executor';
-import * as fs from 'node:fs';
+
 import * as path from 'node:path';
 import { ACTOR_ROLES, type ActorRole } from '@specforge/types/actor-roles';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
@@ -28,11 +28,15 @@ export interface RuntimeWriteGuardResult {
 }
 
 function normalizeSlashes(value: string): string {
-  return String(value ?? '').replace(/\\/g, '/').replace(/\/+/g, '/');
+  return String(value ?? '')
+    .replace(/\\/g, '/')
+    .replace(/\/+/g, '/');
 }
 
 function stripQuotes(value: string): string {
-  return String(value ?? '').trim().replace(/^["']|["']$/g, '');
+  return String(value ?? '')
+    .trim()
+    .replace(/^["']|["']$/g, '');
 }
 
 function uniqueTargets(targets: RuntimeWriteTarget[]): RuntimeWriteTarget[] {
@@ -62,7 +66,9 @@ function normalizeEscapedShellQuotes(command: string): string {
    * Normalize only shell quote escapes so path extraction can treat them like
    * normal quoted arguments. This does not modify Windows path separators.
    */
-  return String(command ?? '').replace(/\\"/g, '"').replace(/\\'/g, "'");
+  return String(command ?? '')
+    .replace(/\\"/g, '"')
+    .replace(/\\'/g, "'");
 }
 
 function extractPowerShellArgument(command: string, verb: string, namedArgs: string[]): string[] {
@@ -71,17 +77,17 @@ function extractPowerShellArgument(command: string, verb: string, namedArgs: str
   const namePattern = namedArgs.map(escapeRegExp).join('|');
   const escapedVerb = escapeRegExp(verb);
   const quoted = new RegExp(
-    "\\b" + escapedVerb + "\\b[\\s\\S]{0,600}?-(?:" + namePattern + ")\\s+[\"']([^\"']+)[\"']",
-    'ig',
+    '\\b' + escapedVerb + '\\b[\\s\\S]{0,600}?-(?:' + namePattern + ')\\s+["\']([^"\']+)["\']',
+    'ig'
   );
   const unquoted = new RegExp(
     '\\b' + escapedVerb + '\\b[\\s\\S]{0,600}?-(?:' + namePattern + ')\\s+([^\\s;|]+)',
-    'ig',
+    'ig'
   );
   let match: RegExpExecArray | null;
   while ((match = quoted.exec(text)) !== null) results.push(stripQuotes(match[1] ?? ''));
   while ((match = unquoted.exec(text)) !== null) results.push(stripQuotes(match[1] ?? ''));
-  return results.filter((value) => value.length > 0);
+  return results.filter(value => value.length > 0);
 }
 
 function isShellRedirectionSink(rawTarget: string): boolean {
@@ -97,7 +103,7 @@ function pushShellTarget(
   targets: RuntimeWriteTarget[],
   rawPath: string,
   operation: RuntimeWriteOperation,
-  kind?: 'directory',
+  kind?: 'directory'
 ): void {
   const cleaned = stripQuotes(rawPath);
   if (!cleaned || isShellRedirectionSink(cleaned)) return;
@@ -110,10 +116,15 @@ function extractPowerShellNewItemTargets(command: string): RuntimeWriteTarget[] 
   for (const segment of segments) {
     const tokens = segment.replace(/["']/g, ' ').trim().split(/\s+/);
     const itemTypeIndex = tokens.findIndex(token => token.toLowerCase() === '-itemtype');
-    const kind = itemTypeIndex >= 0 && tokens[itemTypeIndex + 1]?.toLowerCase() === 'directory'
-      ? 'directory'
-      : undefined;
-    for (const targetPath of extractPowerShellArgument(segment, 'New-Item', ['Path', 'LiteralPath', 'Name'])) {
+    const kind =
+      itemTypeIndex >= 0 && tokens[itemTypeIndex + 1]?.toLowerCase() === 'directory'
+        ? 'directory'
+        : undefined;
+    for (const targetPath of extractPowerShellArgument(segment, 'New-Item', [
+      'Path',
+      'LiteralPath',
+      'Name',
+    ])) {
       pushShellTarget(results, targetPath, 'create', kind);
     }
   }
@@ -125,17 +136,24 @@ export function extractShellWriteTargets(command: string): RuntimeWriteTarget[] 
   const text = normalizeEscapedShellQuotes(remoteAware.command_for_local_write_scan);
   const targets: RuntimeWriteTarget[] = [];
 
-  for (const p of extractPowerShellArgument(text, 'Set-Content', ['Path', 'LiteralPath'])) pushShellTarget(targets, p, 'create');
-  for (const p of extractPowerShellArgument(text, 'Add-Content', ['Path', 'LiteralPath'])) pushShellTarget(targets, p, 'modify');
-  for (const p of extractPowerShellArgument(text, 'Out-File', ['FilePath', 'LiteralPath'])) pushShellTarget(targets, p, 'create');
+  for (const p of extractPowerShellArgument(text, 'Set-Content', ['Path', 'LiteralPath']))
+    pushShellTarget(targets, p, 'create');
+  for (const p of extractPowerShellArgument(text, 'Add-Content', ['Path', 'LiteralPath']))
+    pushShellTarget(targets, p, 'modify');
+  for (const p of extractPowerShellArgument(text, 'Out-File', ['FilePath', 'LiteralPath']))
+    pushShellTarget(targets, p, 'create');
   targets.push(...extractPowerShellNewItemTargets(text));
-  for (const p of extractPowerShellArgument(text, 'Remove-Item', ['Path', 'LiteralPath'])) pushShellTarget(targets, p, 'delete');
-  for (const p of extractPowerShellArgument(text, 'Copy-Item', ['Destination'])) pushShellTarget(targets, p, 'create');
-  for (const p of extractPowerShellArgument(text, 'Move-Item', ['Destination'])) pushShellTarget(targets, p, 'create');
+  for (const p of extractPowerShellArgument(text, 'Remove-Item', ['Path', 'LiteralPath']))
+    pushShellTarget(targets, p, 'delete');
+  for (const p of extractPowerShellArgument(text, 'Copy-Item', ['Destination']))
+    pushShellTarget(targets, p, 'create');
+  for (const p of extractPowerShellArgument(text, 'Move-Item', ['Destination']))
+    pushShellTarget(targets, p, 'create');
 
   const redirection = /(?:^|[\s;|])(?:\d*>>?|\d*>&)\s*["']?([^"'\s;|]+)["']?/g;
   let match: RegExpExecArray | null;
-  while ((match = redirection.exec(text)) !== null) pushShellTarget(targets, match[1] ?? '', 'modify');
+  while ((match = redirection.exec(text)) !== null)
+    pushShellTarget(targets, match[1] ?? '', 'modify');
 
   const tee = /\btee(?:-object)?\s+(?:-FilePath\s+)?["']?([^"'\s;|]+)["']?/gi;
   while ((match = tee.exec(text)) !== null) pushShellTarget(targets, match[1] ?? '', 'modify');
@@ -148,20 +166,26 @@ export function extractShellWriteTargets(command: string): RuntimeWriteTarget[] 
   ];
 
   for (const [pattern, operation] of shellCommands) {
-    while ((match = pattern.exec(text)) !== null) pushShellTarget(targets, match[1] ?? '', operation);
+    while ((match = pattern.exec(text)) !== null)
+      pushShellTarget(targets, match[1] ?? '', operation);
   }
 
-  return uniqueTargets(targets.filter((target) => target.path.length > 0));
+  return uniqueTargets(targets.filter(target => target.path.length > 0));
 }
 
-function toProjectRelative(projectRoot: string, cwd: string | undefined, targetPath: string): { relative?: string; violation?: string } {
+function toProjectRelative(
+  projectRoot: string,
+  cwd: string | undefined,
+  targetPath: string
+): { relative?: string; violation?: string } {
   const cleaned = stripQuotes(targetPath);
   if (!cleaned) return { violation: 'empty target path' };
   const base = cwd && path.isAbsolute(cwd) ? cwd : projectRoot;
   const absolute = path.isAbsolute(cleaned) ? path.resolve(cleaned) : path.resolve(base, cleaned);
   const projectAbs = path.resolve(projectRoot);
   const rel = path.relative(projectAbs, absolute);
-  if (rel.startsWith('..') || path.isAbsolute(rel)) return { violation: 'write target is outside project root: ' + cleaned };
+  if (rel.startsWith('..') || path.isAbsolute(rel))
+    return { violation: 'write target is outside project root: ' + cleaned };
   return { relative: normalizeSlashes(rel) };
 }
 
@@ -185,16 +209,32 @@ export function enforceRuntimeWriteGuardForShell(input: {
   const targets = extractShellWriteTargets(input.command);
   if (targets.length === 0) {
     const readOnly = parseReadOnlyCommand(input.command) !== null;
-    return { checked: true, allowed: readOnly, targets: [], violations: readOnly ? [] : ['SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor'] };
+    return {
+      checked: true,
+      allowed: readOnly,
+      targets: [],
+      violations: readOnly
+        ? []
+        : ['SHELL_EXECUTION_UNAVAILABLE: unrecognized effects; no isolated executor'],
+    };
   }
 
   if (!input.workItemId) {
-    return { checked: true, allowed: false, targets, violations: ['no active work_item_id for shell write command'], hard_stop: false };
+    return {
+      checked: true,
+      allowed: false,
+      targets,
+      violations: ['no active work_item_id for shell write command'],
+      hard_stop: false,
+    };
   }
 
   let wi: any;
   try {
-    wi = readWorkItemMetadataSync(workItemDir(input.projectRoot, input.workItemId), input.workItemId);
+    wi = readWorkItemMetadataSync(
+      workItemDir(input.projectRoot, input.workItemId),
+      input.workItemId
+    );
   } catch (error) {
     return {
       checked: true,
@@ -208,7 +248,13 @@ export function enforceRuntimeWriteGuardForShell(input: {
   const actor = isKnownActorRole(input.callerRole) ? input.callerRole : ACTOR_ROLES.agent;
   const currentState = input.authoritativeState;
   if (!currentState) {
-    return { checked: true, allowed: false, targets, violations: ['AUTHORITATIVE_STATE_UNAVAILABLE'], hard_stop: false };
+    return {
+      checked: true,
+      allowed: false,
+      targets,
+      violations: ['AUTHORITATIVE_STATE_UNAVAILABLE'],
+      hard_stop: false,
+    };
   }
   const allViolations: string[] = [];
   const normalizedTargets: RuntimeWriteTarget[] = [];
@@ -235,7 +281,9 @@ export function enforceRuntimeWriteGuardForShell(input: {
             status: currentState ?? '',
             code_change_allowed: wi.code_change_allowed === true,
             code_permission_revoked: wi.code_permission_revoked === true,
-            allowed_write_files: Array.isArray(wi.allowed_write_files) ? wi.allowed_write_files : [],
+            allowed_write_files: Array.isArray(wi.allowed_write_files)
+              ? wi.allowed_write_files
+              : [],
             workflow_path: wi.workflow_path ?? null,
           },
           callerRole: actor,
@@ -243,7 +291,7 @@ export function enforceRuntimeWriteGuardForShell(input: {
         },
         relative,
         target.operation,
-        { kind: target.kind ?? 'file' },
+        { kind: target.kind ?? 'file' }
       );
       if (!check.allowed) targetViolations.push(...check.violations);
     }
@@ -268,9 +316,15 @@ export function enforceRuntimeWriteGuardForShell(input: {
       input.projectRoot,
       input.workItemId,
       'WRITE_GUARD_RUNTIME_BLOCKED: ' + uniqueViolations.join('; '),
-      input.tool ?? 'sf_safe_bash',
+      input.tool ?? 'sf_safe_bash'
     );
-    return { checked: true, allowed: false, targets: normalizedTargets, violations: uniqueViolations, hard_stop: true };
+    return {
+      checked: true,
+      allowed: false,
+      targets: normalizedTargets,
+      violations: uniqueViolations,
+      hard_stop: true,
+    };
   }
 
   return { checked: true, allowed: true, targets: normalizedTargets, violations: [] };
@@ -278,7 +332,7 @@ export function enforceRuntimeWriteGuardForShell(input: {
 
 export function parseChangedFilesAuditPass(
   auditText: string,
-  expectedWorkItemId?: string,
+  expectedWorkItemId?: string
 ): { passed: boolean; reason?: string } {
   return parseChangedFilesAuditVerdictPass(auditText, { expectedWorkItemId });
 }

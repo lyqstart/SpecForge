@@ -4,19 +4,19 @@
  * Integrates with unified error handling system
  */
 
-import { 
-  GateError, 
-  GateErrorType, 
-  isGateError, 
+import {
+  GateError,
+  GateErrorType,
+  isGateError,
 } from './error-handler.js';
-import type { WorkflowInstance } from './types.js';
-import { 
-  ErrorPropagationManager, 
-  ErrorPropagationContext,
-  ErrorPropagationResult,
+import {
+  type ErrorPropagationManager,
+  type ErrorPropagationContext,
+  type ErrorPropagationResult,
   ErrorPropagationUtils,
-  createErrorPropagationManager 
+  createErrorPropagationManager
 } from './error-propagation.js';
+import type { WorkflowInstance } from './types.js';
 
 /**
  * Retry configuration
@@ -57,7 +57,7 @@ export class WorkflowErrorHandler {
    */
   constructor(defaultConfig?: Partial<RetryConfig>) {
     this.errorPropagationManager = createErrorPropagationManager();
-    
+
     if (defaultConfig) {
       this.setDefaultRetryConfig(defaultConfig);
     } else {
@@ -74,7 +74,7 @@ export class WorkflowErrorHandler {
       return;
     }
     this.disposed = true;
-    
+
     // Clear retry configs and state
     this.retryConfigs.clear();
     this.retryState.clear();
@@ -113,7 +113,7 @@ export class WorkflowErrorHandler {
    */
   isRetryable(error: GateError, workflowId: string): boolean {
     const config = this.getRetryConfig(workflowId);
-    
+
     if (!error.retryable) {
       return false;
     }
@@ -132,7 +132,7 @@ export class WorkflowErrorHandler {
   getRetryDelay(workflowId: string): number {
     const state = this.retryState.get(workflowId);
     const config = this.getRetryConfig(workflowId);
-    
+
     if (!state) {
       return config.initialDelayMs;
     }
@@ -161,7 +161,7 @@ export class WorkflowErrorHandler {
   canRetry(workflowId: string): boolean {
     const state = this.retryState.get(workflowId);
     const config = this.getRetryConfig(workflowId);
-    
+
     if (!state) {
       return config.maxAttempts > 0;
     }
@@ -193,7 +193,7 @@ export class WorkflowErrorHandler {
   ): ErrorPropagationResult {
     const config = this.getRetryConfig(workflowId);
     const strategyName = config.propagationStrategy || 'default';
-    
+
     return this.errorPropagationManager.propagateError(error, context, strategyName);
   }
 
@@ -219,21 +219,21 @@ export class WorkflowErrorHandler {
   ): Promise<T> {
     // Get config to validate retry is possible
     this.getRetryConfig(workflowId);
-    
+
     const maxTotalTimeoutMs = options?.maxTotalTimeoutMs ?? 30000; // 30秒默认总超时
     const abortSignal = options?.abortSignal;
     const startTime = Date.now();
-    
+
     // 外部可达的终止条件：超时或abort信号
     const shouldContinue = (): boolean => {
       if (abortSignal?.aborted) {
         return false;
       }
-      
+
       const elapsed = Date.now() - startTime;
       return elapsed < maxTotalTimeoutMs;
     };
-    
+
     while (shouldContinue()) {
       try {
         const result = await operation();
@@ -267,11 +267,11 @@ export class WorkflowErrorHandler {
         }
 
         // Wait before retrying - Rule C1: 必须清理timer
-        let timer: ReturnType<typeof setTimeout>;
+        let timer: ReturnType<typeof setTimeout> | undefined;
         try {
           await new Promise<void>((resolve, reject) => {
             timer = setTimeout(resolve, delay);
-            
+
             // 检查abort信号
             if (abortSignal) {
               if (abortSignal.aborted) {
@@ -279,13 +279,13 @@ export class WorkflowErrorHandler {
                 reject(new Error(`Operation aborted for workflow ${workflowId}`));
                 return;
               }
-              
-              const onAbort = () => {
+
+              const onAbort = (): void => {
                 clearTimeout(timer);
                 reject(new Error(`Operation aborted for workflow ${workflowId}`));
               };
               abortSignal.addEventListener('abort', onAbort, { once: true });
-              
+
               // 清理abort监听器（当timer完成时）
               const originalResolve = resolve;
               resolve = () => {
@@ -299,11 +299,11 @@ export class WorkflowErrorHandler {
           this.resetRetryState(workflowId);
           throw waitError;
         } finally {
-          clearTimeout(timer!);
+          clearTimeout(timer);
         }
       }
     }
-    
+
     // 超时退出
     this.resetRetryState(workflowId);
     throw new Error(`Retry operation timed out after ${maxTotalTimeoutMs}ms for workflow ${workflowId}`);
@@ -322,13 +322,13 @@ export class WorkflowErrorHandler {
       return { result };
     } catch (error) {
       const propagationResult = this.handleErrorWithPropagation(error, context, workflowId);
-      
+
       // Log the propagation result
       if (isGateError(error)) {
         const logData = ErrorPropagationUtils.formatErrorForLogging(error, context, propagationResult);
         console.error('Error propagation:', logData);
       }
-      
+
       // Re-throw the error with propagation info
       if (propagationResult.shouldContinue) {
         // For retryable errors, throw with retry info
@@ -381,7 +381,7 @@ export class WorkflowStateManager {
       return;
     }
     this.disposed = true;
-    
+
     // Clear paused instances
     this.pausedInstances.clear();
   }
@@ -404,8 +404,8 @@ export class WorkflowStateManager {
     instance.status = 'paused';
     instance.updatedAt = new Date();
 
-    this.pausedInstances.set(instance.id, { 
-      instance, 
+    this.pausedInstances.set(instance.id, {
+      instance,
       pauseReason: reason
     });
 

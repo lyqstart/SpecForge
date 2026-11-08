@@ -15,7 +15,7 @@
  */
 
 import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+
 import { parseHandshakeFile, type HandshakeFile } from "../types/handshake.js";
 import { resolveSpecForgeHandshakePath } from "@specforge/types/user-level-paths";
 

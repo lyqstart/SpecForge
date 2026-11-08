@@ -2,6 +2,7 @@
  * ProtectedFileMatcher.test.ts — 受保护文件路径匹配器测试
  */
 import { describe, it, expect } from 'vitest';
+
 import { ProtectedFileMatcher, matchProtectedFile } from '../../../src/rbac/ProtectedFileMatcher.js';
 
 describe('ProtectedFileMatcher', () => {

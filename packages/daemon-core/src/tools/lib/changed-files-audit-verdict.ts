@@ -50,7 +50,7 @@ function readResult(text: string): ChangedFilesAuditResultLabel {
 
 export function evaluateChangedFilesAuditVerdict(
   auditText: string,
-  options: ChangedFilesAuditVerdictOptions = {},
+  options: ChangedFilesAuditVerdictOptions = {}
 ): ChangedFilesAuditVerdict {
   const text = String(auditText ?? '');
 
@@ -127,16 +127,13 @@ export function evaluateChangedFilesAuditVerdict(
   } else if (unresolved !== null && unresolved > 0) {
     passed = false;
     reason = 'Unresolved blocked write attempts is ' + unresolved;
-  } else if (
-    outOfScope === null ||
-    violations === null ||
-    blocked === null
-  ) {
+  } else if (outOfScope === null || violations === null || blocked === null) {
     passed = false;
     reason = 'changed_files_audit required summary counts are missing';
   } else if (incompleteBlockedWriteClassification) {
     passed = false;
-    reason = 'Changed Files Audit has blocked write attempts without resolved/unresolved classification';
+    reason =
+      'Changed Files Audit has blocked write attempts without resolved/unresolved classification';
   }
 
   return {
@@ -156,7 +153,7 @@ export function evaluateChangedFilesAuditVerdict(
 
 export function parseChangedFilesAuditVerdictPass(
   auditText: string,
-  options: ChangedFilesAuditVerdictOptions = {},
+  options: ChangedFilesAuditVerdictOptions = {}
 ): { passed: boolean; reason?: string } {
   const verdict = evaluateChangedFilesAuditVerdict(auditText, options);
   return { passed: verdict.passed, reason: verdict.reason };

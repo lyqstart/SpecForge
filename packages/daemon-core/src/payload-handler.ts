@@ -1,6 +1,6 @@
 /**
  * Payload Handler
- * 
+ *
  * Handles payload size detection and CAS blob reference generation.
  * Payloads <= 64 KiB are returned as inline references.
  * Payloads > 64 KiB are stored in CAS and returned as blob references.
@@ -45,7 +45,7 @@ export class PayloadHandlerError extends Error {
 
 /**
  * Handle payload and return appropriate reference
- * 
+ *
  * @param data The payload data as Buffer
  * @param maxSize Maximum size for inline payloads (default: 64 KiB)
  * @returns PayloadRef with inline or CAS reference
@@ -57,20 +57,14 @@ export async function handlePayload(
 ): Promise<PayloadRef> {
   // Validate input
   if (!Buffer.isBuffer(data)) {
-    throw new PayloadHandlerError(
-      'Payload must be a Buffer',
-      'INVALID_PAYLOAD_TYPE',
-      { receivedType: typeof data }
-    );
+    throw new PayloadHandlerError('Payload must be a Buffer', 'INVALID_PAYLOAD_TYPE', {
+      receivedType: typeof data,
+    });
   }
 
   // Check for empty payload
   if (data.length === 0) {
-    throw new PayloadHandlerError(
-      'Payload cannot be empty',
-      'EMPTY_PAYLOAD',
-      { size: 0 }
-    );
+    throw new PayloadHandlerError('Payload cannot be empty', 'EMPTY_PAYLOAD', { size: 0 });
   }
 
   // Check payload size
@@ -100,7 +94,7 @@ export async function handlePayload(
 
 /**
  * Generate CAS blob reference for payload
- * 
+ *
  * @param data The payload data
  * @returns BlobRef with CAS reference
  */
@@ -110,7 +104,7 @@ async function generateCASReference(data: Buffer): Promise<BlobRef> {
 
   // Store in CAS
   const cas = new ContentAddressableStorage();
-  const casBlob = await cas.store(data);
+  void (await cas.store(data));
 
   return {
     reference: `blob://${hash}`,
@@ -121,7 +115,7 @@ async function generateCASReference(data: Buffer): Promise<BlobRef> {
 
 /**
  * Calculate SHA-256 hash of data
- * 
+ *
  * @param data The data to hash
  * @returns Hex-encoded SHA-256 hash
  */
@@ -133,7 +127,7 @@ function calculateSHA256(data: Buffer): string {
 
 /**
  * Validate payload reference
- * 
+ *
  * @param ref The payload reference to validate
  * @returns true if reference is valid
  */
@@ -164,7 +158,7 @@ export function validatePayloadRef(ref: PayloadRef): boolean {
 
 /**
  * Extract payload from reference
- * 
+ *
  * @param ref The payload reference
  * @returns The original payload data or null if CAS reference
  */

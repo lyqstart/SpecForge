@@ -1,3 +1,4 @@
+import { scalarText } from '@specforge/types';
 /**
  * write-guard-authorization-log.ts
  *
@@ -33,17 +34,20 @@ export function readWriteGuardAuthorizations(projectRoot: string): WriteGuardAut
     const entries = fs
       .readFileSync(logPath, 'utf-8')
       .split(/\r?\n/g)
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0)
-      .map((line) => JSON.parse(line) as unknown);
+      .map(line => line.trim())
+      .filter(line => line.length > 0)
+      .map(line => JSON.parse(line) as unknown);
     if (entries.length === 0) throw new Error('FILE_PARSE_FAILED: JSONL file is empty');
     const descriptor = createWriteGuardAuthorizationLogSchemaDescriptor();
     for (const entry of entries) {
-      const observed = typeof entry === 'object' && entry !== null && !Array.isArray(entry)
-        ? (entry as Record<string, unknown>).schema_version
-        : undefined;
+      const observed =
+        typeof entry === 'object' && entry !== null && !Array.isArray(entry)
+          ? (entry as Record<string, unknown>).schema_version
+          : undefined;
       if (observed !== WRITE_GUARD_AUTHORIZATION_SCHEMA_VERSION) {
-        throw new Error('SCHEMA_VERSION_MISMATCH: unsupported write_guard_authorization schema_version');
+        throw new Error(
+          'SCHEMA_VERSION_MISMATCH: unsupported write_guard_authorization schema_version'
+        );
       }
       if (!descriptor.validateCurrent(entry)) {
         throw new Error('VALIDATION_FAILED: invalid write_guard_authorization record');
@@ -54,14 +58,14 @@ export function readWriteGuardAuthorizations(projectRoot: string): WriteGuardAut
     throw new Error(
       `WRITE_GUARD_AUTHORIZATION_LOG_INVALID: ${
         error instanceof Error ? error.message : String(error)
-      }`,
+      }`
     );
   }
 }
 
 export function appendWriteGuardAuthorization(
   projectRoot: string,
-  entry: Record<string, unknown>,
+  entry: Record<string, unknown>
 ): WriteGuardAuthorizationEntry {
   readWriteGuardAuthorizations(projectRoot);
   const now = new Date().toISOString();
@@ -81,12 +85,19 @@ export function appendWriteGuardAuthorization(
   }
 
   fs.mkdirSync(policyDir(projectRoot), { recursive: true });
-  fs.appendFileSync(writeGuardAuthorizationLogPath(projectRoot), JSON.stringify(completed) + '\n', 'utf-8');
+  fs.appendFileSync(
+    writeGuardAuthorizationLogPath(projectRoot),
+    JSON.stringify(completed) + '\n',
+    'utf-8'
+  );
   return completed as WriteGuardAuthorizationEntry;
 }
 
 function normalize(value: unknown): string {
-  return String(value ?? '').replace(/\\/g, '/').replace(/\/+/g, '/').toLowerCase();
+  return scalarText(value ?? '')
+    .replace(/\\/g, '/')
+    .replace(/\/+/g, '/')
+    .toLowerCase();
 }
 
 function unquote(value: string): string {
@@ -121,10 +132,15 @@ function hostPathMatches(command: string, hostPathPrefix?: string): boolean {
 function containerTargetsMatch(command: string, targets?: string[]): boolean {
   if (!Array.isArray(targets) || targets.length === 0) return true;
   const cmd = normalize(command);
-  return targets.some((target) => {
+  return targets.some(target => {
     const t = normalize(target).replace(/\/+$/, '');
     if (!t) return false;
-    return cmd.includes(`:${t}`) || cmd.includes(`target=${t}`) || cmd.includes(`dst=${t}`) || cmd.includes(`destination=${t}`);
+    return (
+      cmd.includes(`:${t}`) ||
+      cmd.includes(`target=${t}`) ||
+      cmd.includes(`dst=${t}`) ||
+      cmd.includes(`destination=${t}`)
+    );
   });
 }
 
@@ -152,7 +168,7 @@ function isClosedOrExpired(entry: WriteGuardAuthorizationEntry): boolean {
 export function commandMatchesWriteGuardAuthorization(
   command: string,
   entry: WriteGuardAuthorizationEntry,
-  workItemId?: string | null,
+  workItemId?: string | null
 ): boolean {
   if (!scopeMatches(entry, workItemId)) return false;
   if (isClosedOrExpired(entry)) return false;
@@ -170,7 +186,7 @@ export function commandMatchesWriteGuardAuthorization(
 export function findMatchingWriteGuardAuthorization(
   projectRoot: string,
   command: string,
-  workItemId?: string | null,
+  workItemId?: string | null
 ): WriteGuardAuthorizationEntry | null {
   const authorizations = readWriteGuardAuthorizations(projectRoot);
   for (let index = authorizations.length - 1; index >= 0; index -= 1) {
@@ -196,6 +212,6 @@ export function authorizationText(entry: WriteGuardAuthorizationEntry): string {
     entry.user_response_quote,
     entry.reason,
   ]
-    .filter((value) => typeof value === 'string' && value.length > 0)
+    .filter(value => typeof value === 'string' && value.length > 0)
     .join('\n');
 }

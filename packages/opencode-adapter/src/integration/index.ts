@@ -7,7 +7,11 @@
  * Requirements: 4.1, 4.2
  */
 
-export { ThinPluginClient, ThinPluginClientError, ThinPluginClientErrorCode } from './ThinPluginClient';
+export {
+  ThinPluginClient,
+  ThinPluginClientError,
+  ThinPluginClientErrorCode,
+} from './ThinPluginClient';
 export { SessionRegistry, SessionRegistryError } from './SessionRegistry';
 
 export type {

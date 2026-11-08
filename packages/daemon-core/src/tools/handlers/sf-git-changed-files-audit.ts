@@ -1,9 +1,11 @@
+import { scalarText } from '@specforge/types';
 import { registerHandler } from '../ToolDispatcher';
 import { gitChangedFilesAudit } from '../lib/git-governance-stage2';
 
 registerHandler('sf_git_changed_files_audit', async (args, context) => {
-  const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
-  const workItemId = String(args['work_item_id'] || '').trim();
+  const projectRoot =
+    (context?.directory as string) || (context?.worktree as string) || process.cwd();
+  const workItemId = scalarText(args['work_item_id'] || '').trim();
   if (!workItemId) return { success: false, error: 'work_item_id required' };
   try {
     return await gitChangedFilesAudit({

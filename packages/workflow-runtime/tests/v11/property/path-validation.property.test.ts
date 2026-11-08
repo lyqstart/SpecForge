@@ -6,8 +6,9 @@
  * Validates: Requirements 1.4-1.10, 1.11, 1.12
  */
 
-import { describe, it, expect } from 'vitest';
 import fc from 'fast-check';
+import { describe, it, expect } from 'vitest';
+
 import { PathPolicy } from '@/v11/runtime/PathPolicy';
 
 describe('Property 1: Path Validation Consistency', () => {

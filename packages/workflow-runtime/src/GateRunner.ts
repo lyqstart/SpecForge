@@ -1,9 +1,18 @@
+import { promiseFromSync } from '@specforge/types';
 /**
  * GateRunner Module
  * Base classes for executing Gates in workflow runtime
  */
 
 import {
+  type GateError,
+  GateExecutionError,
+  handleGateError,
+  createErrorResult,
+  isGateError,
+} from './error-handler.js';
+import { withRetry, DEFAULT_RETRY_CONFIG } from './retry.js';
+import type {
   GateDefinition,
   GateResult,
   SimpleGateDefinition,
@@ -11,13 +20,6 @@ import {
   WorkflowContext,
   RetryConfig,
 } from './types.js';
-import {
-  GateError,
-  handleGateError,
-  createErrorResult,
-  isGateError,
-} from './error-handler.js';
-import { withRetry, DEFAULT_RETRY_CONFIG } from './retry.js';
 
 /**
  * Logger interface for GateRunner error logging
@@ -42,11 +44,11 @@ export class DefaultGateRunnerLogger implements IGateRunnerLogger {
   }
 
   info(message: string, context?: Record<string, unknown>): void {
-    console.info(`[GateRunner INFO] ${message}`, context ? JSON.stringify(context) : '');
+    process.stderr.write(`[GateRunner INFO] ${message}${context ? ' ' + JSON.stringify(context) : ''}\n`);
   }
 
   debug(message: string, context?: Record<string, unknown>): void {
-    console.debug(`[GateRunner DEBUG] ${message}`, context ? JSON.stringify(context) : '');
+    process.stderr.write(`[GateRunner DEBUG] ${message}${context ? ' ' + JSON.stringify(context) : ''}\n`);
   }
 }
 
@@ -57,7 +59,7 @@ export class DefaultGateRunnerLogger implements IGateRunnerLogger {
 export abstract class GateRunner {
   protected gate: GateDefinition;
   protected context: Record<string, unknown>;
-  
+
   // Static logger for error logging (can be configured via setLogger)
   protected static logger: IGateRunnerLogger = new DefaultGateRunnerLogger();
 
@@ -198,8 +200,8 @@ export abstract class GateRunner {
    * @param additionalOptions Additional error handling options
    */
   protected handleError(
-    error: unknown, 
-    operation?: string, 
+    error: unknown,
+    operation?: string,
     timeoutMs?: number,
     additionalOptions?: {
       configPath?: string;
@@ -213,11 +215,11 @@ export abstract class GateRunner {
     }
   ): GateResult {
     // Wrap error using the unified handler
-    const options: any = { operation, timeoutMs, ...additionalOptions };
-    
+    const options = { ...(operation !== undefined ? { operation } : {}), ...(timeoutMs !== undefined ? { timeoutMs } : {}), ...additionalOptions };
+
     // Determine gate type
     const gateType = this.gate.type;
-    
+
     const gateError = handleGateError(error, this.gate.id, gateType, options);
 
     // Log the error with context
@@ -225,7 +227,7 @@ export abstract class GateRunner {
 
     // Convert to GateResult using standardized error result
     const errorResult = createErrorResult(error, this.gate.id, gateType);
-    
+
     return {
       schema_version: '1.0',
       passed: false,
@@ -259,8 +261,8 @@ export abstract class GateRunner {
     }
 
     // Include original error details if available
-    if (gateError instanceof GateError && 'originalError' in gateError) {
-      const execError = gateError as any;
+    if (gateError instanceof GateExecutionError) {
+      const execError = gateError;
       if (execError.originalError) {
         logContext.originalError = {
           name: execError.originalError.name,
@@ -270,7 +272,7 @@ export abstract class GateRunner {
     }
 
     // Use static logger for error logging
-    (GateRunner.logger as IGateRunnerLogger).error(
+    (GateRunner.logger).error(
       `Gate execution failed: ${gateError.message}`,
       logContext
     );
@@ -331,7 +333,7 @@ export class SimpleGateRunner extends GateRunner {
     // If retry is configured, wrap the check in retry logic
     if (this.isRetryEnabled() && this.retryConfig) {
       this.retryAttempts = 0;
-      
+
       try {
         const result = await withRetry(
           () => this.executeCheck(simpleGate),
@@ -437,14 +439,14 @@ export class CompositeGateRunner extends GateRunner {
    */
   async cancel(reason: string = 'Composite gate cancelled'): Promise<void> {
     this.isCancelled = true;
-    
+
     // Mark all active promises as cancelled
     // Note: Actual cancellation of running gates requires the check functions
     // to respect the abort signal. For now, we track cancelled gates.
-    
+
     // Clear active promises
     // (kept reference via abort controller)
-    
+
     // Publish cancellation event
     await this.publishCancellationEvent(reason);
   }
@@ -452,13 +454,13 @@ export class CompositeGateRunner extends GateRunner {
   /**
    * Publish cancellation event
    */
-  private async publishCancellationEvent(reason: string): Promise<void> {
+  private  publishCancellationEvent(reason: string): Promise<void> { return promiseFromSync(() => {
     const compositeGate = this.getCompositeGate();
-    
+
     // Try to get event publisher from context if available
-    const eventPublisher = this.context.eventPublisher as any;
-    
-    if (eventPublisher?.publish) {
+    const eventPublisher = this.context.eventPublisher;
+
+    if (typeof eventPublisher === 'object' && eventPublisher !== null && 'publish' in eventPublisher && typeof eventPublisher.publish === 'function') {
       const payload = {
         instanceId: this.context.instanceId as string || 'unknown',
         workflowId: this.context.workflowId as string || 'unknown',
@@ -469,13 +471,15 @@ export class CompositeGateRunner extends GateRunner {
         reason,
         childGateIds: Array.from(this.cancelledGates),
       };
-      
-      eventPublisher.publish({
+
+      const publication: unknown = Reflect.apply(eventPublisher.publish, eventPublisher, [{
         type: 'workflow.gate.cancelled',
         payload,
-      });
+      }]);
+      return publication;
     }
-  }
+    return undefined;
+  }).then(() => undefined); }
 
   /**
    * Execute the composite gate with optional retry logic
@@ -487,7 +491,7 @@ export class CompositeGateRunner extends GateRunner {
     // If retry is configured, wrap the check in retry logic
     if (this.isRetryEnabled() && this.retryConfig) {
       this.retryAttempts = 0;
-      
+
       try {
         const result = await withRetry(
           () => this.executeCheckInternal(context),
@@ -514,7 +518,7 @@ export class CompositeGateRunner extends GateRunner {
     this.isCancelled = false;
     this.cancelledGates = new Set();
     this.abortController = new AbortController();
-    
+
     try {
       this.validateGate();
 
@@ -523,7 +527,7 @@ export class CompositeGateRunner extends GateRunner {
 
       // Store context for child runners
       if (context) {
-        this.setContext({ 
+        this.setContext({
           workflow: context,
           abortSignal: this.abortController.signal,
         });
@@ -547,13 +551,13 @@ export class CompositeGateRunner extends GateRunner {
    * Clean up resources after execution
    * Implements Rule A4: 资源的创建者负责资源的销毁
    */
-  private async cleanup(): Promise<void> {
+  private  cleanup(): Promise<void> { return promiseFromSync(() => {
     // Clear abort controller
     if (this.abortController) {
       this.abortController.abort();
       this.abortController = null;
     }
-    
+
     // Dispose child runners
     for (const runner of this.childRunners) {
       try {
@@ -563,11 +567,11 @@ export class CompositeGateRunner extends GateRunner {
       }
     }
     this.childRunners = [];
-    
+
     // Reset cancellation state
     this.cancelledGates.clear();
     this.isCancelled = false;
-  }
+  }); }
 
   /**
    * Dispose of resources held by the composite gate runner
@@ -579,7 +583,7 @@ export class CompositeGateRunner extends GateRunner {
       this.abortController.abort();
     }
     this.abortController = null;
-    
+
     // Dispose child runners
     for (const runner of this.childRunners) {
       try {
@@ -589,11 +593,11 @@ export class CompositeGateRunner extends GateRunner {
       }
     }
     this.childRunners = [];
-    
+
     // Clear state
     this.cancelledGates.clear();
     this.isCancelled = false;
-    
+
     // Call parent dispose
     super.dispose();
   }
@@ -612,19 +616,19 @@ export class CompositeGateRunner extends GateRunner {
       }
 
       const runner = this.createRunnerForGate(childGate);
-      
+
       // Pass abort signal to child runner
       if (this.abortController) {
         runner.setContext({ abortSignal: this.abortController.signal });
       }
-      
+
       const result = await runner.check();
       results.push(result);
 
       if (compositeGate.failPolicy === 'fail_fast' && !result.passed) {
         // Cancel remaining child gates
         await this.cancel(`Child gate ${childGate.id} failed with fail_fast policy`);
-        
+
         return {
           schema_version: '1.0',
           passed: false,
@@ -658,21 +662,21 @@ export class CompositeGateRunner extends GateRunner {
       }
 
       const runner = this.createRunnerForGate(childGate);
-      
+
       // Pass abort signal to child runner
       if (this.abortController) {
         runner.setContext({ abortSignal: this.abortController.signal });
       }
-      
+
       try {
         const result = await runner.check();
-        
+
         // Check if cancelled after execution
         if (this.isCancelled) {
           this.cancelledGates.add(childGate.id);
           return this.createCancelledResultForGate(childGate.id);
         }
-        
+
         return result;
       } catch (error) {
         // If cancelled mid-execution
@@ -692,7 +696,7 @@ export class CompositeGateRunner extends GateRunner {
       if (failed) {
         // Cancel any remaining pending gates
         await this.cancel(`Child gate failed with fail_fast policy`);
-        
+
         return {
           schema_version: '1.0',
           passed: false,
@@ -748,9 +752,9 @@ export class CompositeGateRunner extends GateRunner {
    */
   private createRunnerForGate(gate: GateDefinition): GateRunner {
     if (gate.type === 'simple') {
-      return new SimpleGateRunner(gate as SimpleGateDefinition, this.context);
+      return new SimpleGateRunner(gate, this.context);
     } else {
-      return new CompositeGateRunner(gate as CompositeGateDefinition, this.context);
+      return new CompositeGateRunner(gate, this.context);
     }
   }
 
@@ -797,9 +801,9 @@ export function createGateRunner(
   context: Record<string, unknown> = {}
 ): GateRunner {
   if (gate.type === 'simple') {
-    return new SimpleGateRunner(gate as SimpleGateDefinition, context);
+    return new SimpleGateRunner(gate, context);
   } else if (gate.type === 'composite') {
-    return new CompositeGateRunner(gate as CompositeGateDefinition, context);
+    return new CompositeGateRunner(gate, context);
   }
   throw new Error(`Unknown gate type: ${(gate as GateDefinition).type}`);
 }

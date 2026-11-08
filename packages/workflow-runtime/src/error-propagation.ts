@@ -81,7 +81,8 @@ export class ErrorPropagationManager {
     const transformedError = this.applyTransformations(gateError, context);
 
     // Apply propagation strategy
-    const strategy = this.propagationStrategies.get(strategyName) ?? this.propagationStrategies.get('default')!;
+    const strategy = this.propagationStrategies.get(strategyName) ?? this.propagationStrategies.get('default');
+    if (!strategy) throw new Error('Default error propagation strategy is not registered');
     return strategy(transformedError, context);
   }
 
@@ -130,15 +131,17 @@ export class ErrorPropagationManager {
   private registerDefaultRules(): void {
     // Rule 1: Transform timeout errors in composite gates
     this.registerTransformationRule({
-      match: (error, context) => 
-        error.errorType === GateErrorType.TIMEOUT_ERROR && 
+      match: (error, context) =>
+        error.errorType === GateErrorType.TIMEOUT_ERROR &&
         context.parentGateId !== undefined,
       transform: (error, context) => {
+        if (context.parentGateId === undefined) return error;
+        const parentGateId: string = context.parentGateId;
         const CompositeTimeoutError = class extends GateError {
           constructor() {
             super({
               code: 'COMPOSITE_GATE_TIMEOUT',
-              gateId: context.parentGateId!,
+              gateId: parentGateId,
               message: `Composite gate timeout due to child gate "${context.currentGateId}": ${error.message}`,
               suggestion: `Check child gate "${context.currentGateId}" performance or increase timeout`,
               errorType: GateErrorType.TIMEOUT_ERROR,
@@ -172,7 +175,7 @@ export class ErrorPropagationManager {
 
     // Rule 3: Escalate resource errors in critical workflows
     this.registerTransformationRule({
-      match: (error, context) => 
+      match: (error, context) =>
         error.errorType === GateErrorType.RESOURCE_ERROR &&
         context.workflowDefinition.intent.includes('critical'),
       transform: (error, context) => {
@@ -319,7 +322,7 @@ export class ErrorPropagationUtils {
     context: ErrorPropagationContext
   ): string[] {
     const path: string[] = [context.currentGateId];
-    
+
     if (context.parentGateId) {
       path.unshift(context.parentGateId);
     }
@@ -374,7 +377,7 @@ export class ErrorPropagationUtils {
       return { hasError: false };
     }
 
-    const errorDetailsRecord = errorDetails as Record<string, unknown>;
+    const errorDetailsRecord = errorDetails;
 
     // Create a synthetic error from result
     const SyntheticGateError = class extends GateError {

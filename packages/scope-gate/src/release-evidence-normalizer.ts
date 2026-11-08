@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import type {
   ApprovedReleaseItem,
   ArtifactInventory,
@@ -5,7 +7,6 @@ import type {
   ArtifactSurface,
   ReleaseClassification,
 } from './release-set-validator';
-import { z } from 'zod';
 
 export type ReleaseAuthorityRole = 'product_specification';
 

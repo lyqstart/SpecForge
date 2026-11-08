@@ -5,11 +5,12 @@
 
 import * as fc from 'fast-check';
 import type { Arbitrary } from 'fast-check';
-import { 
-  type WorkflowDefinition, 
-  type WorkflowInstance, 
-  type GateDefinition, 
-  type SimpleGateDefinition, 
+
+import {
+  type WorkflowDefinition,
+  type WorkflowInstance,
+  type GateDefinition,
+  type SimpleGateDefinition,
   type CompositeGateDefinition,
   type CompositeGateMode,
   type FailPolicy,
@@ -69,7 +70,7 @@ export function workflowStateArb(gateIds: string[]): Arbitrary<WorkflowState> {
   if (gateIds.length === 0) {
     gateIds = ['default-gate'];
   }
-  
+
   return fc.record({
     schema_version: fc.constant("1.0"),
     agent: fc.string({ minLength: 1, maxLength: 30 }),
@@ -93,17 +94,17 @@ export function workflowStateArb(gateIds: string[]): Arbitrary<WorkflowState> {
  */
 export function stateMachineArb(minStates: number = 2, maxStates: number = 5): Arbitrary<StateMachine> {
   // Generate safe state IDs that won't collide with Object.prototype properties
-  const safeStringArb = fc.string({ 
-    minLength: 3, 
-    maxLength: 15 
+  const safeStringArb = fc.string({
+    minLength: 3,
+    maxLength: 15
   }).filter(s => /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(s) && !['__proto__', 'constructor', 'prototype', 'hasOwnProperty', 'toString', 'valueOf'].includes(s));
-  
+
   return fc.integer({ min: minStates, max: maxStates }).chain((stateCount) => {
     const stateIdsArb = fc.uniqueArray(
       safeStringArb,
       { minLength: stateCount, maxLength: stateCount }
     );
-    
+
     return stateIdsArb.chain((stateIds) => {
       if (stateIds.length === 0) {
         return fc.constant({
@@ -112,12 +113,12 @@ export function stateMachineArb(minStates: number = 2, maxStates: number = 5): A
           states: {}
         });
       }
-      
+
       // Use first safe state as initial to avoid __proto__
       const initialState = stateIds[0];
-      
+
       // Build valid next states filter - must be from stateIds only
-      const validNextStateArb = fc.oneof(
+      void (fc.oneof(
         fc.constantFrom(...stateIds),
         fc.constant(undefined)
       ).filter((next): next is string | undefined => {
@@ -126,8 +127,8 @@ export function stateMachineArb(minStates: number = 2, maxStates: number = 5): A
           return false;
         }
         return true;
-      });
-      
+      }));
+
       // Generate all states at once with proper structure
       return fc.record({
         schema_version: fc.constant("1.0" as const),

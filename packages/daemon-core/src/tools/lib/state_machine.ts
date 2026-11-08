@@ -15,83 +15,86 @@
  * 保留若干历史 type 仅用于调用方类型兼容；运行治理路径由 workflow_path 决定。
  */
 export type WorkflowType =
-  | "feature_spec"
-  | "bugfix_spec"
-  | "quick_change"
-  | "change_request"
-  | "feature_spec_design_first"
-  | "refactor"
-  | "ops_task"
-  | "investigation"
-  | "spec_migration"
-  | "architecture_change"
-  | "contract_change"
+  | 'feature_spec'
+  | 'bugfix_spec'
+  | 'quick_change'
+  | 'change_request'
+  | 'feature_spec_design_first'
+  | 'refactor'
+  | 'ops_task'
+  | 'investigation'
+  | 'spec_migration'
+  | 'architecture_change'
+  | 'contract_change';
 
 /** workflow_path 是治理路径，不得反向创造第二套 current workflow identity。 */
 export type WorkflowPath =
-  | "requirement_change_path"
-  | "design_change_path"
-  | "architecture_change_path"
-  | "task_change_path"
-  | "code_only_fast_path"
-  | "spec_migration_path"
-  | "contract_change_path"
-  | "rollback_path"
+  | 'requirement_change_path'
+  | 'design_change_path'
+  | 'architecture_change_path'
+  | 'task_change_path'
+  | 'code_only_fast_path'
+  | 'spec_migration_path'
+  | 'contract_change_path'
+  | 'rollback_path';
 
 /** workflow_type 到 workflow_path 的兼容矩阵。 */
 export const WORKFLOW_TYPE_TO_PATH: Readonly<Record<WorkflowType, WorkflowPath>> = {
-  feature_spec: "requirement_change_path",
-  bugfix_spec: "requirement_change_path",
-  change_request: "requirement_change_path",
-  investigation: "requirement_change_path",
-  feature_spec_design_first: "design_change_path",
-  refactor: "task_change_path",
-  ops_task: "task_change_path",
-  quick_change: "code_only_fast_path",
-  spec_migration: "spec_migration_path",
-  architecture_change: "architecture_change_path",
-  contract_change: "contract_change_path",
-}
+  feature_spec: 'requirement_change_path',
+  bugfix_spec: 'requirement_change_path',
+  change_request: 'requirement_change_path',
+  investigation: 'requirement_change_path',
+  feature_spec_design_first: 'design_change_path',
+  refactor: 'task_change_path',
+  ops_task: 'task_change_path',
+  quick_change: 'code_only_fast_path',
+  spec_migration: 'spec_migration_path',
+  architecture_change: 'architecture_change_path',
+  contract_change: 'contract_change_path',
+};
 
 /** 当前 feature_spec 可以依据事实分类进入的治理路径。 */
 export const CURRENT_FEATURE_SPEC_PATHS: ReadonlySet<WorkflowPath> = new Set([
-  "requirement_change_path",
-  "design_change_path",
-  "architecture_change_path",
-  "task_change_path",
-  "code_only_fast_path",
-  "contract_change_path",
-])
+  'requirement_change_path',
+  'design_change_path',
+  'architecture_change_path',
+  'task_change_path',
+  'code_only_fast_path',
+  'contract_change_path',
+]);
 
 /**
  * 仅当调用方未提供 workflow_type 时才允许使用默认 workflow_type。
  * 禁止把 bugfix_spec + requirement_change_path 静默改成 feature_spec。
  */
 export const WORKFLOW_PATH_DEFAULT_TYPE: Readonly<Partial<Record<WorkflowPath, WorkflowType>>> = {
-  requirement_change_path: "feature_spec",
-  design_change_path: "feature_spec",
-  task_change_path: "feature_spec",
-  code_only_fast_path: "feature_spec",
-  spec_migration_path: "spec_migration",
-  architecture_change_path: "feature_spec",
-  contract_change_path: "feature_spec",
-}
+  requirement_change_path: 'feature_spec',
+  design_change_path: 'feature_spec',
+  task_change_path: 'feature_spec',
+  code_only_fast_path: 'feature_spec',
+  spec_migration_path: 'spec_migration',
+  architecture_change_path: 'feature_spec',
+  contract_change_path: 'feature_spec',
+};
 
 /**
  * 兼容旧导出名，但语义已经收紧：只能作为“缺省值”，不能作为覆盖规则。
  */
-export const WORKFLOW_PATH_TO_TYPE = WORKFLOW_PATH_DEFAULT_TYPE
+export const WORKFLOW_PATH_TO_TYPE = WORKFLOW_PATH_DEFAULT_TYPE;
 
 export function isWorkflowTypeCompatibleWithPath(
   workflowType: string | undefined,
-  workflowPath: string | undefined,
+  workflowPath: string | undefined
 ): workflowType is WorkflowType {
-  if (!workflowType || !workflowPath) return false
-  if (!(workflowType in WORKFLOW_TYPE_TO_PATH)) return false
-  if (workflowType === "feature_spec" && CURRENT_FEATURE_SPEC_PATHS.has(workflowPath as WorkflowPath)) {
-    return true
+  if (!workflowType || !workflowPath) return false;
+  if (!(workflowType in WORKFLOW_TYPE_TO_PATH)) return false;
+  if (
+    workflowType === 'feature_spec' &&
+    CURRENT_FEATURE_SPEC_PATHS.has(workflowPath as WorkflowPath)
+  ) {
+    return true;
   }
-  return WORKFLOW_TYPE_TO_PATH[workflowType as WorkflowType] === workflowPath
+  return WORKFLOW_TYPE_TO_PATH[workflowType as WorkflowType] === workflowPath;
 }
 
 /**
@@ -105,16 +108,16 @@ export function isWorkflowTypeCompatibleWithPath(
 export function resolveWorkflowTypeForPath(
   workflowPath: WorkflowPath | undefined,
   requestedWorkflowType?: string,
-  existingWorkflowType?: string,
+  existingWorkflowType?: string
 ): WorkflowType | undefined {
-  const candidate = requestedWorkflowType ?? existingWorkflowType
+  const candidate = requestedWorkflowType ?? existingWorkflowType;
   if (candidate) {
-    if (!workflowPath && candidate in WORKFLOW_TYPE_TO_PATH) return candidate as WorkflowType
-    if (isWorkflowTypeCompatibleWithPath(candidate, workflowPath)) return candidate
-    return undefined
+    if (!workflowPath && candidate in WORKFLOW_TYPE_TO_PATH) return candidate as WorkflowType;
+    if (isWorkflowTypeCompatibleWithPath(candidate, workflowPath)) return candidate;
+    return undefined;
   }
-  if (!workflowPath) return undefined
-  return WORKFLOW_PATH_DEFAULT_TYPE[workflowPath]
+  if (!workflowPath) return undefined;
+  return WORKFLOW_PATH_DEFAULT_TYPE[workflowPath];
 }
 
 // ============================================================
@@ -122,103 +125,128 @@ export function resolveWorkflowTypeForPath(
 // ============================================================
 
 export const FINAL_STATES = [
-  "created",
-  "intake_ready",
-  "impact_analyzing",
-  "impact_analyzed",
-  "workflow_selected",
-  "candidate_preparing",
-  "candidate_prepared",
-  "gates_running",
-  "gates_failed",
-  "approval_required",
-  "approved",
-  "merge_ready",
-  "merging",
-  "merged",
-  "post_merge_verified",
-  "implementation_ready",
-  "implementation_running",
-  "implementation_done",
-  "verification_running",
-  "verification_done",
-  "closed",
-  "blocked",
-  "rejected",
-  "superseded",
-] as const
+  'created',
+  'intake_ready',
+  'impact_analyzing',
+  'impact_analyzed',
+  'workflow_selected',
+  'candidate_preparing',
+  'candidate_prepared',
+  'gates_running',
+  'gates_failed',
+  'approval_required',
+  'approved',
+  'merge_ready',
+  'merging',
+  'merged',
+  'post_merge_verified',
+  'implementation_ready',
+  'implementation_running',
+  'implementation_done',
+  'verification_running',
+  'verification_done',
+  'closed',
+  'blocked',
+  'rejected',
+  'superseded',
+] as const;
 
 /** 所有运行状态的单一权威来源。 */
-export const ALL_STATES = FINAL_STATES
-export type WorkflowState = (typeof FINAL_STATES)[number]
+export const ALL_STATES = FINAL_STATES;
+export type WorkflowState = (typeof FINAL_STATES)[number];
 
 export const FINAL_TRANSITIONS: ReadonlyMap<WorkflowState, readonly WorkflowState[]> = new Map([
-  ["created", ["intake_ready", "blocked", "rejected", "superseded"]],
-  ["intake_ready", ["impact_analyzing", "candidate_preparing", "blocked", "rejected", "superseded"]],
-  ["impact_analyzing", ["impact_analyzed", "blocked", "rejected", "superseded"]],
-  ["impact_analyzed", ["workflow_selected", "blocked", "rejected", "superseded"]],
-  ["workflow_selected", ["candidate_preparing", "implementation_ready", "blocked", "rejected", "superseded"]],
-  ["candidate_preparing", ["candidate_prepared", "blocked", "rejected", "superseded"]],
-  ["candidate_prepared", ["gates_running", "blocked", "rejected", "superseded"]],
-  ["gates_running", ["approval_required", "gates_failed", "blocked", "rejected", "superseded"]],
-  ["gates_failed", ["candidate_preparing", "blocked", "rejected", "superseded"]],
-  ["approval_required", ["approved", "rejected", "blocked", "superseded"]],
-  ["approved", ["merge_ready", "implementation_ready", "blocked", "rejected", "superseded"]],
-  ["merge_ready", ["merging", "blocked", "rejected", "superseded"]],
-  ["merging", ["merged", "gates_failed", "blocked", "rejected", "superseded"]],
-  ["merged", ["post_merge_verified", "blocked", "rejected", "superseded"]],
-  ["post_merge_verified", ["implementation_ready", "verification_running", "blocked", "rejected", "superseded"]],
-  ["implementation_ready", ["implementation_running", "blocked", "rejected", "superseded"]],
-  ["implementation_running", ["implementation_done", "blocked", "rejected", "superseded"]],
-  ["implementation_done", ["verification_running", "blocked", "rejected", "superseded"]],
-  ["verification_running", ["verification_done", "implementation_running", "blocked", "rejected", "superseded"]],
-  ["verification_done", ["closed", "implementation_ready", "blocked", "rejected", "superseded"]],
-  ["closed", []],
-  ["blocked", ["intake_ready", "workflow_selected", "candidate_preparing", "gates_running", "implementation_ready", "rejected", "superseded"]],
-  ["rejected", []],
-  ["superseded", []],
-])
+  ['created', ['intake_ready', 'blocked', 'rejected', 'superseded']],
+  [
+    'intake_ready',
+    ['impact_analyzing', 'candidate_preparing', 'blocked', 'rejected', 'superseded'],
+  ],
+  ['impact_analyzing', ['impact_analyzed', 'blocked', 'rejected', 'superseded']],
+  ['impact_analyzed', ['workflow_selected', 'blocked', 'rejected', 'superseded']],
+  [
+    'workflow_selected',
+    ['candidate_preparing', 'implementation_ready', 'blocked', 'rejected', 'superseded'],
+  ],
+  ['candidate_preparing', ['candidate_prepared', 'blocked', 'rejected', 'superseded']],
+  ['candidate_prepared', ['gates_running', 'blocked', 'rejected', 'superseded']],
+  ['gates_running', ['approval_required', 'gates_failed', 'blocked', 'rejected', 'superseded']],
+  ['gates_failed', ['candidate_preparing', 'blocked', 'rejected', 'superseded']],
+  ['approval_required', ['approved', 'rejected', 'blocked', 'superseded']],
+  ['approved', ['merge_ready', 'implementation_ready', 'blocked', 'rejected', 'superseded']],
+  ['merge_ready', ['merging', 'blocked', 'rejected', 'superseded']],
+  ['merging', ['merged', 'gates_failed', 'blocked', 'rejected', 'superseded']],
+  ['merged', ['post_merge_verified', 'blocked', 'rejected', 'superseded']],
+  [
+    'post_merge_verified',
+    ['implementation_ready', 'verification_running', 'blocked', 'rejected', 'superseded'],
+  ],
+  ['implementation_ready', ['implementation_running', 'blocked', 'rejected', 'superseded']],
+  ['implementation_running', ['implementation_done', 'blocked', 'rejected', 'superseded']],
+  ['implementation_done', ['verification_running', 'blocked', 'rejected', 'superseded']],
+  [
+    'verification_running',
+    ['verification_done', 'implementation_running', 'blocked', 'rejected', 'superseded'],
+  ],
+  ['verification_done', ['closed', 'implementation_ready', 'blocked', 'rejected', 'superseded']],
+  ['closed', []],
+  [
+    'blocked',
+    [
+      'intake_ready',
+      'workflow_selected',
+      'candidate_preparing',
+      'gates_running',
+      'implementation_ready',
+      'rejected',
+      'superseded',
+    ],
+  ],
+  ['rejected', []],
+  ['superseded', []],
+]);
 
 // 兼容旧导出名。所有 workflow_type 共享最终治理状态机。
-export const VALID_TRANSITIONS = FINAL_TRANSITIONS
-export const BUGFIX_SPEC_TRANSITIONS = FINAL_TRANSITIONS
-export const DESIGN_FIRST_TRANSITIONS = FINAL_TRANSITIONS
-export const QUICK_CHANGE_TRANSITIONS = FINAL_TRANSITIONS
-export const CHANGE_REQUEST_TRANSITIONS = FINAL_TRANSITIONS
-export const REFACTOR_TRANSITIONS = FINAL_TRANSITIONS
-export const OPS_TASK_TRANSITIONS = FINAL_TRANSITIONS
-export const INVESTIGATION_TRANSITIONS = FINAL_TRANSITIONS
+export const VALID_TRANSITIONS = FINAL_TRANSITIONS;
+export const BUGFIX_SPEC_TRANSITIONS = FINAL_TRANSITIONS;
+export const DESIGN_FIRST_TRANSITIONS = FINAL_TRANSITIONS;
+export const QUICK_CHANGE_TRANSITIONS = FINAL_TRANSITIONS;
+export const CHANGE_REQUEST_TRANSITIONS = FINAL_TRANSITIONS;
+export const REFACTOR_TRANSITIONS = FINAL_TRANSITIONS;
+export const OPS_TASK_TRANSITIONS = FINAL_TRANSITIONS;
+export const INVESTIGATION_TRANSITIONS = FINAL_TRANSITIONS;
 
-export function getTransitionTable(_workflowType: WorkflowType): ReadonlyMap<WorkflowState, readonly WorkflowState[]> {
-  return FINAL_TRANSITIONS
+export function getTransitionTable(
+  _workflowType: WorkflowType
+): ReadonlyMap<WorkflowState, readonly WorkflowState[]> {
+  return FINAL_TRANSITIONS;
 }
 
 export function isFinalWorkflowState(state: string): state is WorkflowState {
-  return (FINAL_STATES as readonly string[]).includes(state)
+  return (FINAL_STATES as readonly string[]).includes(state);
 }
 
 export function assertFinalWorkflowState(state: string): asserts state is WorkflowState {
   if (!isFinalWorkflowState(state)) {
-    throw new Error(`LEGACY_OR_UNKNOWN_STATE_NOT_ALLOWED: ${state}`)
+    throw new Error(`LEGACY_OR_UNKNOWN_STATE_NOT_ALLOWED: ${state}`);
   }
 }
 
 export function isValidTransition(
   from: string,
   to: string,
-  workflowType: WorkflowType = "feature_spec",
+  workflowType: WorkflowType = 'feature_spec'
 ): boolean {
-  if (!isFinalWorkflowState(from) || !isFinalWorkflowState(to)) return false
-  const table = getTransitionTable(workflowType)
-  const validTargets = table.get(from)
-  return !!validTargets && validTargets.includes(to)
+  if (!isFinalWorkflowState(from) || !isFinalWorkflowState(to)) return false;
+  const table = getTransitionTable(workflowType);
+  const validTargets = table.get(from);
+  return !!validTargets && validTargets.includes(to);
 }
 
 export function getAllReferencedStates(): Set<string> {
-  const states = new Set<string>()
+  const states = new Set<string>();
   for (const [from, targets] of FINAL_TRANSITIONS) {
-    states.add(from)
-    for (const target of targets) states.add(target)
+    states.add(from);
+    for (const target of targets) states.add(target);
   }
-  return states
+  return states;
 }

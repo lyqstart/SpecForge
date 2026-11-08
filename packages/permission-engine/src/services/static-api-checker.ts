@@ -2,19 +2,19 @@
 // Build-unblock note: legacy permission-engine service has historical type drift; production build boundary is being restored
 /**
  * Static API Checker
- * 
+ *
  * Performs static code analysis to detect prohibited API usage in plugin source code.
- * Implements Requirement 3.3 AC-3: "Perform static checks on plugin source code, 
- * prohibiting sensitive APIs: direct child_process.exec, fs out-of-bounds paths, 
+ * Implements Requirement 3.3 AC-3: "Perform static checks on plugin source code,
+ * prohibiting sensitive APIs: direct child_process.exec, fs out-of-bounds paths,
  * undeclared network access."
- * 
+ *
  * Implements Property 28: Plugin Permission Gate - Static API Checks
- * 
+ *
  * @specforge/permission-engine
  */
 
-import { z } from 'zod';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { z } from 'zod';
 
 /**
  * Types of prohibited APIs that static checker can detect
@@ -27,7 +27,7 @@ export enum ProhibitedApiType {
   CHILD_PROCESS_FORK = 'child_process.fork',
   CHILD_PROCESS_EXEC_FILE = 'child_process.execFile',
   CHILD_PROCESS_EXEC_FILE_SYNC = 'child_process.execFileSync',
-  
+
   FS_READ_FILE = 'fs.readFile',
   FS_WRITE_FILE = 'fs.writeFile',
   FS_RENAME = 'fs.rename',
@@ -39,7 +39,7 @@ export enum ProhibitedApiType {
   FS_CREATE_WRITE_STREAM = 'fs.createWriteStream',
   FS_ACCESS = 'fs.access',
   FS_CONSTANTS = 'fs.constants',
-  
+
   NET_HTTP = 'http.request',
   NET_HTTPS = 'https.request',
   NET_NODE_HTTP = 'http.get',
@@ -48,12 +48,12 @@ export enum ProhibitedApiType {
   NET_CONNECT = 'net.connect',
   NET_CREATE_CONNECTION = 'net.createConnection',
   NET_DGRAM = 'dgram.createSocket',
-  
+
   DANGEROUS_EVAL = 'eval',
   DANGEROUS_FUNCTION = 'Function',
   DANGEROUS_SETTIMEOUT_STRING = 'setTimeout-string',
   DANGEROUS_SETINTERVAL_STRING = 'setInterval-string',
-  
+
   PROCESS_ENV = 'process.env',
   PROCESS_STDIN = 'process.stdin',
   PROCESS_STDOUT = 'process.stdout',
@@ -190,7 +190,7 @@ const PROHIBITED_PATTERNS: Array<{
     pattern: /(?:^|[.\s])(child_process\s*\.\s*execFileSync\s*\()/,
     severity: 'error'
   },
-  
+
   // Filesystem - Direct access patterns
   {
     type: ProhibitedApiType.FS_READ_FILE,
@@ -262,7 +262,7 @@ const PROHIBITED_PATTERNS: Array<{
     severity: 'warning',
     requiresPathAnalysis: true
   },
-  
+
   // Network access patterns
   {
     type: ProhibitedApiType.NET_HTTP,
@@ -320,7 +320,7 @@ const PROHIBITED_PATTERNS: Array<{
     severity: 'error',
     isOutOfBounds: true
   },
-  
+
   // Code injection
   {
     type: ProhibitedApiType.DANGEROUS_EVAL,
@@ -346,7 +346,7 @@ const PROHIBITED_PATTERNS: Array<{
     pattern: /setInterval\s*\(\s*(?:function|['"`]|await|async)/,
     severity: 'warning'
   },
-  
+
   // Process access
   {
     type: ProhibitedApiType.PROCESS_ENV,
@@ -376,13 +376,13 @@ const PROHIBITED_PATTERNS: Array<{
 
 /**
  * Static API Checker
- * 
+ *
  * Scans plugin source code for prohibited API usage.
  * Implements Requirement 3.3 AC-3
  */
 export class StaticApiChecker {
   private config: Required<StaticApiCheckerConfig>;
-  
+
   constructor(config: StaticApiCheckerConfig = {}) {
     this.config = {
       allowedPaths: config.allowedPaths || [],
@@ -395,14 +395,14 @@ export class StaticApiChecker {
       projectId: config.projectId || 'default-project',
       eventLoggingEnabled: config.eventLoggingEnabled ?? true,
       eventsFilePath: config.eventsFilePath || './' + SPEC_DIR_NAME + '/logs/telemetry.jsonl',
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
       logEvent: config.logEvent || (async (_event: unknown) => { /* no-op */ })
     };
   }
-  
+
   /**
    * Check source code for prohibited API usage
-   * 
+   *
    * @param sourceCode Source code to scan
    * @param pluginId Plugin identifier
    * @param pluginName Plugin name
@@ -410,7 +410,7 @@ export class StaticApiChecker {
    */
   check(sourceCode: string, pluginId: string, pluginName: string): StaticApiCheckResult {
     const detectedApis: DetectedProhibitedApi[] = [];
-    
+
     // Skip empty source code
     if (!sourceCode || sourceCode.trim().length === 0) {
       return {
@@ -423,33 +423,33 @@ export class StaticApiChecker {
         reason: 'valid'
       };
     }
-    
+
     const lines = sourceCode.split('\n');
-    
+
     // Scan each line
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
       const line = lines[lineIndex];
       const lineNumber = lineIndex + 1; // 1-indexed
-      
+
       // Check each pattern
       for (const patternDef of PROHIBITED_PATTERNS) {
         // Skip if category is allowed
         if (this.isCategoryAllowed(patternDef.category)) {
           continue;
         }
-        
+
         // Create a global version of the regex for matchAll
         const globalPattern = new RegExp(patternDef.pattern.source, patternDef.pattern.flags + 'g');
         const matches = line.matchAll(globalPattern);
         for (const match of matches) {
           // Determine column number
           const column = match.index ?? 0;
-          
+
           // Extract context (surrounding code)
           const startCol = Math.max(0, column - 20);
           const endCol = Math.min(line.length, column + match[0].length + 20);
           const context = line.substring(startCol, endCol);
-          
+
           // Check if this is an out-of-bounds filesystem access
           let severity = patternDef.severity;
           if (patternDef.requiresPathAnalysis) {
@@ -468,7 +468,7 @@ export class StaticApiChecker {
             // If path is within bounds, it's allowed - skip this detection
             continue;
           }
-          
+
           // Check if this is an out-of-bounds network access
           if (patternDef.isOutOfBounds) {
             if (this.isNetworkOutOfBounds(line)) {
@@ -484,7 +484,7 @@ export class StaticApiChecker {
             }
             continue;
           }
-          
+
           detectedApis.push({
             type: patternDef.type,
             category: patternDef.category,
@@ -497,10 +497,10 @@ export class StaticApiChecker {
         }
       }
     }
-    
+
     const hasErrors = detectedApis.some(api => api.severity === 'error');
     const hasWarnings = detectedApis.some(api => api.severity === 'warning');
-    
+
     return {
       valid: !hasErrors,
       pluginId,
@@ -511,10 +511,10 @@ export class StaticApiChecker {
       reason: hasErrors ? 'prohibited_api_detected' : 'valid'
     };
   }
-  
+
   /**
    * Check multiple source files
-   * 
+   *
    * @param files Array of { filename, content } objects
    * @param pluginId Plugin identifier
    * @param pluginName Plugin name
@@ -529,18 +529,18 @@ export class StaticApiChecker {
     const allDetectedApis: DetectedProhibitedApi[] = [];
     const scannedFiles: string[] = [];
     let totalLines = 0;
-    
+
     for (const file of files) {
       scannedFiles.push(file.filename);
       totalLines += file.content.split('\n').length;
-      
+
       const result = this.check(file.content, pluginId, pluginName);
       allDetectedApis.push(...result.detectedApis);
     }
-    
+
     const hasErrors = allDetectedApis.some(api => api.severity === 'error');
     const hasWarnings = allDetectedApis.some(api => api.severity === 'warning');
-    
+
     return {
       valid: !hasErrors,
       pluginId,
@@ -554,7 +554,7 @@ export class StaticApiChecker {
       scanDuration: Date.now() - startTime
     };
   }
-  
+
   /**
    * Check if a category of API is allowed
    */
@@ -564,7 +564,7 @@ export class StaticApiChecker {
     const allowNetwork = this.config.allowNetwork ?? false;
     const allowCodeInjection = this.config.allowCodeInjection ?? false;
     const allowProcessAccess = this.config.allowProcessAccess ?? false;
-    
+
     switch (category) {
       case ProhibitedApiCategory.CHILD_PROCESS:
         return allowChildProcess;
@@ -580,38 +580,38 @@ export class StaticApiChecker {
         return false;
     }
   }
-  
+
   /**
    * Check if a filesystem path is out of bounds
    * Returns true if the path access is prohibited
    */
   private isPathOutOfBounds(line: string): boolean {
     const allowedPaths = this.config.allowedPaths ?? [];
-    
+
     // If no allowed paths configured, all filesystem access is considered out-of-bounds
     if (allowedPaths.length === 0) {
       return true;
     }
-    
+
     // Try to extract path from the line
     const pathMatch = line.match(/['"]([^'"]+)['"]/);
     if (!pathMatch) {
       // Cannot determine path, treat as out-of-bounds
       return true;
     }
-    
+
     const accessedPath = pathMatch[1];
-    
+
     // Check if the accessed path is within any allowed path
     for (const allowedPath of allowedPaths) {
       if (this.isPathWithin(accessedPath, allowedPath)) {
         return false; // Within bounds
       }
     }
-    
+
     return true; // Out of bounds
   }
-  
+
   /**
    * Check if a path is within a directory
    */
@@ -619,44 +619,44 @@ export class StaticApiChecker {
     // Normalize paths
     const normalizedPath = path.replace(/\\/g, '/').replace(/\/+$/, '');
     const normalizedBase = basePath.replace(/\\/g, '/').replace(/\/+$/, '');
-    
+
     // Check if path starts with base path
-    return normalizedPath.startsWith(normalizedBase) || 
+    return normalizedPath.startsWith(normalizedBase) ||
            normalizedPath.includes(`/${normalizedBase}/`) ||
            normalizedPath.includes(`\\${normalizedBase}\\`);
   }
-  
+
   /**
    * Check if network access is out of bounds (unallowed host)
    * Returns true if the network access is prohibited
    */
   private isNetworkOutOfBounds(line: string): boolean {
     const allowedHosts = this.config.allowedHosts ?? [];
-    
+
     // If no allowed hosts configured, all network access is considered undeclared
     if (allowedHosts.length === 0) {
       return true;
     }
-    
+
     // Try to extract host from the line
     const hostMatch = line.match(/(?:https?:\/\/)([^/:\s]+)/);
     if (!hostMatch) {
       // Cannot determine host, treat as undeclared network access
       return true;
     }
-    
+
     const accessedHost = hostMatch[1];
-    
+
     // Check if the accessed host is in the allowed list
     for (const allowedHost of allowedHosts) {
       if (this.isHostAllowed(accessedHost, allowedHost)) {
         return false; // Allowed host
       }
     }
-    
+
     return true; // Undeclared network access
   }
-  
+
   /**
    * Check if a host matches an allowed pattern
    */
@@ -666,11 +666,11 @@ export class StaticApiChecker {
       const suffix = allowedPattern.slice(2);
       return host.endsWith(suffix) || host === suffix.slice(1);
     }
-    
+
     // Exact match
     return host === allowedPattern;
   }
-  
+
   /**
    * Update configuration
    */
@@ -682,7 +682,7 @@ export class StaticApiChecker {
       allowedHosts: config.allowedHosts !== undefined ? config.allowedHosts : this.config.allowedHosts
     };
   }
-  
+
   /**
    * Get current configuration
    */
@@ -700,7 +700,7 @@ export class StaticApiChecker {
       eventsFilePath: this.config.eventsFilePath
     };
   }
-  
+
   /**
    * Get all detected API types (for reporting)
    */

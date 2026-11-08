@@ -72,9 +72,9 @@ describe('contract integrity - Module Contract candidates', () => {
 
     expect(result.registryTargeted).toBe(false);
     expect(result.checks.every(check => check.passed)).toBe(true);
-    expect(result.checks.some(check => check.check_id === 'module_contract_core_candidate_integrity')).toBe(
-      true
-    );
+    expect(
+      result.checks.some(check => check.check_id === 'module_contract_core_candidate_integrity')
+    ).toBe(true);
   });
 
   test('rejects missing source_refs and enforcement before merge', async () => {

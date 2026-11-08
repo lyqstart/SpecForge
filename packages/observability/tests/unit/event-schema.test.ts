@@ -1,6 +1,6 @@
 /**
  * Event schema tests for Property 30: Multi-sync Readiness
- * 
+ *
  * Tests:
  * - UUIDv7 generation for eventId
  * - Project ID calculation
@@ -9,6 +9,8 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
+
+import type { Event } from '../../src/types';
 import {
   generateEventId,
   calculateProjectId,
@@ -18,16 +20,15 @@ import {
   EVENT_SCHEMA,
   isValidUuid
 } from '../../src/types/event-utils';
-import type { Event } from '../../src/types';
 
 describe('Event Schema Utilities', () => {
   describe('UUIDv7 Generation', () => {
     it('should generate valid UUIDv7 strings', () => {
       const uuid = generateEventId();
-      
+
       // Check format
       expect(isValidUuid(uuid)).toBe(true);
-      
+
       // Check version (7) and variant (RFC 4122)
       const parts = uuid.split('-');
       expect(parts[2].startsWith('7')).toBe(true); // Version 7
@@ -47,17 +48,17 @@ describe('Event Schema Utilities', () => {
     it('should calculate project ID from path', () => {
       const path1 = '/home/user/projects/project-a';
       const path2 = '/home/user/projects/project-b';
-      
+
       const id1 = calculateProjectId(path1);
       const id2 = calculateProjectId(path2);
-      
+
       // Check format (16 hex chars)
       expect(id1).toMatch(/^[0-9a-f]{16}$/i);
       expect(id2).toMatch(/^[0-9a-f]{16}$/i);
-      
+
       // Different paths should produce different IDs
       expect(id1).not.toBe(id2);
-      
+
       // Same path should produce same ID
       const id1Again = calculateProjectId(path1);
       expect(id1Again).toBe(id1);
@@ -80,10 +81,10 @@ describe('Event Schema Utilities', () => {
     it('should generate increasing timestamps', () => {
       const ts1 = timestampGenerator.getTimestamp();
       const ts2 = timestampGenerator.getTimestamp();
-      
+
       // Timestamp should be non-decreasing
       expect(ts2.timestamp).toBeGreaterThanOrEqual(ts1.timestamp);
-      
+
       // If timestamps are equal, sequence should increase
       if (ts2.timestamp === ts1.timestamp) {
         expect(ts2.sequence).toBe(ts1.sequence + 1);
@@ -96,7 +97,7 @@ describe('Event Schema Utilities', () => {
       const { timestamp } = timestampGenerator.getTimestamp();
       const nowMs = Date.now();
       const nowNs = nowMs * 1_000_000;
-      
+
       // Timestamp should be close to current time in nanoseconds
       expect(timestamp).toBeGreaterThan(nowNs - 1_000_000_000); // Within 1 second
       expect(timestamp).toBeLessThan(nowNs + 1_000_000_000); // Within 1 second
@@ -106,7 +107,7 @@ describe('Event Schema Utilities', () => {
       const ts1 = timestampGenerator.getTimestamp();
       timestampGenerator.reset();
       const ts2 = timestampGenerator.getTimestamp();
-      
+
       // After reset, should start fresh
       expect(ts2.timestamp).toBeGreaterThanOrEqual(ts1.timestamp);
       expect(ts2.sequence).toBe(0);
@@ -134,7 +135,7 @@ describe('Event Schema Utilities', () => {
     });
 
     it('should reject invalid schema_version', () => {
-      const event = { ...validEvent, schema_version: '2.0' as any };
+      const event = { ...validEvent, schema_version: '2.0' };
       const result = validateEventSchema(event);
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('Invalid schema_version: 2.0');
@@ -176,7 +177,7 @@ describe('Event Schema Utilities', () => {
     });
 
     it('should reject invalid category', () => {
-      const event = { ...validEvent, category: 'invalid' as any };
+      const event = { ...validEvent, category: 'invalid' };
       const result = validateEventSchema(event);
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('Invalid category: invalid');
@@ -197,9 +198,9 @@ describe('Event Schema Utilities', () => {
     });
 
     it('should accept valid payloadBlobRef', () => {
-      const event = { 
-        ...validEvent, 
-        payloadBlobRef: 'blob://a1b2c3d4e5f678901234567890abcdef0123456789abcdef0123456789abcdef' 
+      const event = {
+        ...validEvent,
+        payloadBlobRef: 'blob://a1b2c3d4e5f678901234567890abcdef0123456789abcdef0123456789abcdef'
       };
       const result = validateEventSchema(event);
       expect(result.isValid).toBe(true);
@@ -219,7 +220,7 @@ describe('Event Schema Utilities', () => {
       };
 
       const event = createEvent(eventData);
-      
+
       // Check required fields are present
       expect(event.schema_version).toBe('1.0');
       expect(event.eventId).toBeDefined();
@@ -231,7 +232,7 @@ describe('Event Schema Utilities', () => {
       expect(event.category).toBe('workflow');
       expect(event.action).toBe('workflow.started');
       expect(event.payload).toEqual({ workflowId: 'test-workflow' });
-      
+
       // Validate the event
       const validation = validateEventSchema(event);
       expect(validation.isValid).toBe(true);
@@ -250,7 +251,7 @@ describe('Event Schema Utilities', () => {
 
       const event1 = createEvent(eventData, timestampGenerator);
       const event2 = createEvent(eventData, timestampGenerator);
-      
+
       // Timestamps should be monotonic
       expect(event2.ts).toBeGreaterThanOrEqual(event1.ts);
       if (event2.ts === event1.ts) {

@@ -1,18 +1,18 @@
 /**
  * Unit tests for GateDefinition interface
- * 
+ *
  * Validates: Requirements 2.1 (Gate execution engine)
  */
 
+import { promiseFromSync } from '@specforge/types';
 import { describe, it, expect } from 'vitest';
-import {
+
+import type {
   GateDefinition,
   SimpleGateDefinition,
   CompositeGateDefinition,
-  GateResult,
-  CompositeGateMode,
-  FailPolicy,
-} from '../../src/types.js';
+  GateResult} from '../../src/types.js';
+
 
 describe('GateDefinition Interface', () => {
   describe('SimpleGateDefinition', () => {
@@ -49,11 +49,11 @@ describe('GateDefinition Interface', () => {
         type: 'simple',
         id: 'gate-with-check',
         name: 'Gate with Check Function',
-        checkFn: async () => ({
+        checkFn:  () => promiseFromSync(() => (({
           schema_version: '1.0',
           passed: true,
           reason: 'Test passed',
-        }),
+        }))),
       };
 
       expect(gateWithCheckFn.checkFn).toBeDefined();
@@ -307,12 +307,12 @@ describe('GateDefinition Interface', () => {
         type: 'simple',
         id: 'result-gate',
         name: 'Result Gate',
-        checkFn: async () => ({
+        checkFn:  () => promiseFromSync(() => (({
           schema_version: '1.0',
           passed: true,
           reason: 'Integration test passed',
           details: { test: 'value' },
-        }),
+        }))),
       };
 
       if (gate.checkFn) {

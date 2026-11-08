@@ -1,6 +1,6 @@
 /**
  * Handshake file management
- * 
+ *
  * Manages the runtime/handshake.json file that contains connection
  * information for clients to discover and authenticate with the Daemon.
  * Implements single instance enforcement using file locking.
@@ -14,16 +14,42 @@ import { DaemonConfig } from './DaemonConfig';
 import { HandshakeFile } from '../types';
 import { TASK_ARTIFACT_CONTRACT_VERSION } from '@specforge/types';
 
+type OptionalLockFileSystem = typeof fsSync & {
+  flockSync?: (fd: number, flags: number) => void;
+  constants: typeof fsSync.constants & { LOCK_EX?: number; LOCK_NB?: number; LOCK_UN?: number };
+};
+const optionalLockFileSystem: OptionalLockFileSystem = fsSync;
+class FileLockCapabilityError extends Error {
+  constructor() {
+    super('FILE_LOCK_CAPABILITY_INCOMPLETE');
+  }
+}
+function lockFlag(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isInteger(value) || value <= 0)
+    throw new FileLockCapabilityError();
+  return value;
+}
+function nativeFileLock(): { lock: (fd: number) => void; unlock: (fd: number) => void } | null {
+  const flock = optionalLockFileSystem.flockSync;
+  if (typeof flock !== 'function') return null;
+  const exclusive = lockFlag(optionalLockFileSystem.constants.LOCK_EX);
+  const nonblocking = lockFlag(optionalLockFileSystem.constants.LOCK_NB);
+  const unlock = lockFlag(optionalLockFileSystem.constants.LOCK_UN);
+  return {
+    lock: (fd: number): void => flock.call(fsSync, fd, exclusive | nonblocking),
+    unlock: (fd: number): void => flock.call(fsSync, fd, unlock),
+  };
+}
+
 export class HandshakeManager {
   private readonly config: DaemonConfig;
   private lockFd: number | null = null;
-  private ownedHandshake:
-    | {
-        pid: number;
-        token: string;
-        startedAt: number;
-      }
-    | null = null;
+  private unlockNativeFile: ((fd: number) => void) | null = null;
+  private ownedHandshake: {
+    pid: number;
+    token: string;
+    startedAt: number;
+  } | null = null;
 
   constructor(config: DaemonConfig) {
     this.config = config;
@@ -31,7 +57,7 @@ export class HandshakeManager {
 
   /**
    * Enforce single instance using file locking
-   * 
+   *
    * Uses fcntl file locking on Unix-like systems and lockfile on Windows.
    * Creates a lock file at the daemon runtime directory (see resolveUserPath('runtime')/daemon.lock)
    */
@@ -44,16 +70,20 @@ export class HandshakeManager {
       await fs.mkdir(runtimeDir, { recursive: true, mode: 0o700 });
 
       // Open lock file
-      this.lockFd = fsSync.openSync(lockFile, fsSync.constants.O_RDWR | fsSync.constants.O_CREAT, 0o600);
+      this.lockFd = fsSync.openSync(
+        lockFile,
+        fsSync.constants.O_RDWR | fsSync.constants.O_CREAT,
+        0o600
+      );
 
       // Try to acquire exclusive lock (non-blocking)
       // Note: flock is not available on Windows, use try-catch as fallback
       try {
         // Try flock first (Unix-like systems)
-        // @ts-ignore - flockSync may not be available on all platforms
-        if (typeof fsSync.flockSync === 'function') {
-          // @ts-ignore - LOCK_EX may not be available on all platforms
-          fsSync.flockSync(this.lockFd, fsSync.constants.LOCK_EX | fsSync.constants.LOCK_NB);
+        const nativeLock = nativeFileLock();
+        if (nativeLock) {
+          nativeLock.lock(this.lockFd);
+          this.unlockNativeFile = nativeLock.unlock;
         } else {
           // Fallback for Windows: PID existence verification
           const existingPid = this.readExistingPid(lockFile);
@@ -64,11 +94,12 @@ export class HandshakeManager {
           }
         }
       } catch (error) {
-        // Lock acquisition failed - another instance is running
+        // Release ownership before reporting the actual capability or lock failure.
         if (this.lockFd !== null) {
           fsSync.closeSync(this.lockFd);
         }
         this.lockFd = null;
+        if (error instanceof FileLockCapabilityError) throw error;
         throw new Error('Another Daemon instance is already running');
       }
 
@@ -78,13 +109,12 @@ export class HandshakeManager {
       fsSync.ftruncateSync(this.lockFd, 0);
       fsSync.writeFileSync(this.lockFd, String(process.pid));
       fsSync.fsyncSync(this.lockFd);
-
     } catch (error) {
       // Clean up on failure
       if (this.lockFd !== null) {
         try {
           fsSync.closeSync(this.lockFd);
-        } catch (closeError) {
+        } catch {
           // Ignore close errors during cleanup
         }
         this.lockFd = null;
@@ -151,11 +181,7 @@ export class HandshakeManager {
     };
 
     const handshakeFile = this.config.getHandshakeFile();
-    await fs.writeFile(
-      handshakeFile,
-      JSON.stringify(handshake, null, 2),
-      { mode: 0o600 },
-    );
+    await fs.writeFile(handshakeFile, JSON.stringify(handshake, null, 2), { mode: 0o600 });
     this.ownedHandshake = {
       pid: handshake.pid,
       token: handshake.token,
@@ -215,23 +241,22 @@ export class HandshakeManager {
   async cleanup(): Promise<void> {
     console.log('Cleaning up handshake file and releasing lock...');
 
-    // Cleanup handshake file
-    await this.removeHandshake();
-
-    // Release file lock
-    if (this.lockFd !== null) {
-      try {
-        // @ts-ignore - flockSync may not be available on all platforms
-        if (typeof fsSync.flockSync === 'function') {
-          // @ts-ignore - LOCK_UN may not be available on all platforms
-          fsSync.flockSync(this.lockFd, fsSync.constants.LOCK_UN);
+    try {
+      await this.removeHandshake();
+    } finally {
+      if (this.lockFd !== null) {
+        try {
+          try {
+            this.unlockNativeFile?.(this.lockFd);
+          } finally {
+            fsSync.closeSync(this.lockFd);
+          }
+        } catch (error) {
+          console.warn('Error releasing file lock:', error);
         }
-        fsSync.closeSync(this.lockFd);
-      } catch (error) {
-        // Ignore lock release errors during cleanup
-        console.warn('Error releasing file lock:', error);
+        this.lockFd = null;
       }
-      this.lockFd = null;
+      this.unlockNativeFile = null;
     }
 
     console.log('Cleanup completed');
@@ -239,7 +264,7 @@ export class HandshakeManager {
 
   /**
    * Generate a cryptographically secure random token
-   * 
+   *
    * @returns 64-character hex string (32 random bytes)
    */
   generateToken(): string {
@@ -248,7 +273,7 @@ export class HandshakeManager {
 
   /**
    * Read the handshake file and return its contents
-   * 
+   *
    * @returns The full HandshakeFile object
    * @throws Error if handshake file doesn't exist or is invalid
    */
@@ -260,7 +285,7 @@ export class HandshakeManager {
 
   /**
    * Get the token from the handshake file
-   * 
+   *
    * @returns The bearer token for authentication
    * @throws Error if handshake file doesn't exist or is invalid
    */

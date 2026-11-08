@@ -1,3 +1,4 @@
+import { scalarText } from '@specforge/types';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import {
@@ -6,17 +7,7 @@ import {
 } from '@specforge/types';
 import { createHardStopResolutionLogSchemaDescriptor } from '@specforge/types/schema-contract';
 
-export type HardStopAuditResolutionType =
-  | 'operator_error'
-  | 'false_positive'
-  | 'policy_corrected'
-  | 'scope_expanded'
-  | 'user_authorized_retry'
-  | 'repaired'
-  | 'prohibited_action_replaced'
-  | 'risk_accepted'
-  | 'superseded'
-  | string;
+export type HardStopAuditResolutionType = HardStopResolutionRecord['resolution_type'];
 
 export type HardStopResolutionLogEntry = HardStopResolutionRecord;
 
@@ -36,9 +27,10 @@ export function readHardStopResolutionLog(workItemDir: string): HardStopResoluti
     const workItemId = path.basename(workItemDir);
     const descriptor = createHardStopResolutionLogSchemaDescriptor(workItemId);
     for (const entry of entries) {
-      const observed = typeof entry === 'object' && entry !== null && !Array.isArray(entry)
-        ? (entry as Record<string, unknown>).schema_version
-        : undefined;
+      const observed =
+        typeof entry === 'object' && entry !== null && !Array.isArray(entry)
+          ? (entry as Record<string, unknown>).schema_version
+          : undefined;
       if (observed !== HARD_STOP_RESOLUTION_SCHEMA_VERSION) {
         throw new Error('SCHEMA_VERSION_MISMATCH: unsupported hard_stop_resolution schema_version');
       }
@@ -49,9 +41,7 @@ export function readHardStopResolutionLog(workItemDir: string): HardStopResoluti
     return entries as HardStopResolutionLogEntry[];
   } catch (error) {
     throw new Error(
-      `HARD_STOP_RESOLUTION_LOG_INVALID: ${
-        error instanceof Error ? error.message : String(error)
-      }`,
+      `HARD_STOP_RESOLUTION_LOG_INVALID: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 }
@@ -84,7 +74,7 @@ export function resolutionText(entry: HardStopResolutionLogEntry): string {
 }
 
 export function isAuditResolvingResolutionType(value: unknown): boolean {
-  const type = String(value ?? '').toLowerCase();
+  const type = scalarText(value ?? '').toLowerCase();
   return (
     type === 'operator_error' ||
     type === 'false_positive' ||

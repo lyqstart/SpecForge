@@ -1,4 +1,4 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 /**
  * sf-v11-work-item-create — v1.1 Work Item 创建 handler
  *
@@ -34,7 +34,7 @@ async function isPlaceholder(filePath: string): Promise<boolean> {
 }
 
 export async function requiredGreenfieldClassificationFields(
-  projectRoot: string,
+  projectRoot: string
 ): Promise<string[]> {
   const projectDir = join(projectRoot, SPEC_DIR_NAME, 'project');
   let manifest: Record<string, any>;
@@ -49,10 +49,7 @@ export async function requiredGreenfieldClassificationFields(
   const architecturePlaceholder = await isPlaceholder(join(projectDir, 'architecture.md'));
   const designPlaceholder = await isPlaceholder(join(moduleDir, 'design.md'));
   if (!architecturePlaceholder || !designPlaceholder) return [];
-  return [
-    'architecture_changed',
-    'design_changed',
-  ];
+  return ['architecture_changed', 'design_changed'];
 }
 
 function resolveCurrentWorkflowType(classification: any): WorkflowType {
@@ -64,7 +61,8 @@ function resolveCurrentWorkflowType(classification: any): WorkflowType {
 }
 
 registerHandler('sf_v11_work_item_create', async (args, context, deps) => {
-  const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
+  const projectRoot =
+    (context?.directory as string) || (context?.worktree as string) || process.cwd();
   let workItemId = args['work_item_id'] as string | undefined;
   const userRequest = args['user_request'] as string;
 
@@ -72,7 +70,7 @@ registerHandler('sf_v11_work_item_create', async (args, context, deps) => {
     return { success: false, error: 'user_request is required' };
   }
 
-  workItemId = workItemId || await allocateNextWorkItemId(projectRoot);
+  workItemId = workItemId || (await allocateNextWorkItemId(projectRoot));
 
   if (!/^WI-[0-9]{4}$/.test(workItemId)) {
     return { success: false, error: `Invalid work_item_id format: ${workItemId}. Must be WI-NNNN` };
@@ -100,7 +98,7 @@ registerHandler('sf_v11_work_item_create', async (args, context, deps) => {
       }
       const greenfieldRequired = await requiredGreenfieldClassificationFields(projectRoot);
       const missingGreenfieldFacts = greenfieldRequired.filter(
-        field => (classification as unknown as Record<string, unknown>)[field] !== true,
+        field => (classification as unknown as Record<string, unknown>)[field] !== true
       );
       if (classification.requirement_changed === true && missingGreenfieldFacts.length > 0) {
         return {
@@ -132,8 +130,12 @@ registerHandler('sf_v11_work_item_create', async (args, context, deps) => {
       const triggerResult = generateTriggerResult(workItemId, classification, []);
       await fs.writeFile(
         join(wiDir, 'trigger_result.json'),
-        JSON.stringify({ ...triggerResult, workflow_type: workflowType, workflow_path: workflowPath }, null, 2) + '\n',
-        'utf-8',
+        JSON.stringify(
+          { ...triggerResult, workflow_type: workflowType, workflow_path: workflowPath },
+          null,
+          2
+        ) + '\n',
+        'utf-8'
       );
     }
 
@@ -150,7 +152,7 @@ registerHandler('sf_v11_work_item_create', async (args, context, deps) => {
         'intake_ready',
         context?.agent ?? 'sf-orchestrator',
         workflowType,
-        { workflow_path: workflowPath },
+        { workflow_path: workflowPath }
       );
     }
 

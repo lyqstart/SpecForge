@@ -1,4 +1,4 @@
-export function currentUserDecision(workItemId: string, decisionStatus = 'approved') {
+export function currentUserDecision(workItemId: string, decisionStatus = 'approved'): { schema_version: string; decision_id: string; work_item_id: string; workflow_path: string; base_spec_version: string; candidate_manifest_path: string; manifest_hash: string; candidate_hash: string; gate_summary_path: string; gate_summary_hash: string; decision_status: string; decision_type: string; decided_by: string; decided_at: string; decision_scope: string; waivers: never[]; } {
   return {
     schema_version: '1.0',
     decision_id: `UD-${workItemId}-fixture`,

@@ -5,7 +5,10 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { WorkflowDefinition, StateMachine, SUPPORTED_WORKFLOW_DEFINITION_SCHEMAS } from '../types.js';
+
+import { diagnosticScalarText } from '@specforge/types';
+
+import { type WorkflowDefinition, type StateMachine, SUPPORTED_WORKFLOW_DEFINITION_SCHEMAS } from '../types.js';
 
 const supportsDefinitionSchema = (value: unknown): boolean =>
   typeof value === 'string' && SUPPORTED_WORKFLOW_DEFINITION_SCHEMAS.some(version => version === value);
@@ -72,7 +75,7 @@ export class WorkflowDefinitionLoader {
    */
   loadFromJSON(jsonString: string): WorkflowDefinition {
     try {
-      const definition = JSON.parse(jsonString);
+      const definition: unknown = JSON.parse(jsonString);
       return this.validateAndNormalize(definition);
     } catch (error) {
       if (error instanceof Error) {
@@ -128,7 +131,7 @@ export class WorkflowDefinitionLoader {
     } else if (!supportsDefinitionSchema(def.schema_version)) {
       errors.push({
         field: 'schema_version',
-        message: `Unsupported schema version: ${def.schema_version}. Expected: 1.0 or 2.0`,
+        message: `Unsupported schema version: ${diagnosticScalarText(def.schema_version)}. Expected: 1.0 or 2.0`,
         value: def.schema_version,
       });
     }
@@ -139,7 +142,7 @@ export class WorkflowDefinitionLoader {
         field: 'id',
         message: 'id is required',
       });
-    } else if (typeof def.id !== 'string' || (def.id as string).trim() === '') {
+    } else if (typeof def.id !== 'string' || (def.id).trim() === '') {
       errors.push({
         field: 'id',
         message: 'id must be a non-empty string',
@@ -309,7 +312,7 @@ export class WorkflowDefinitionLoader {
     } else if (!supportsDefinitionSchema(stateObj.schema_version)) {
       errors.push({
         field: `${prefix}.schema_version`,
-        message: `Unsupported schema version: ${stateObj.schema_version}. Expected: 1.0 or 2.0`,
+        message: `Unsupported schema version: ${diagnosticScalarText(stateObj.schema_version)}. Expected: 1.0 or 2.0`,
         value: stateObj.schema_version,
       });
     }
@@ -444,7 +447,7 @@ export class WorkflowDefinitionLoader {
     } else if (!supportsDefinitionSchema(gateObj.schema_version)) {
       errors.push({
         field: `${prefix}.schema_version`,
-        message: `Unsupported schema version: ${gateObj.schema_version}. Expected: 1.0 or 2.0`,
+        message: `Unsupported schema version: ${diagnosticScalarText(gateObj.schema_version)}. Expected: 1.0 or 2.0`,
         value: gateObj.schema_version,
       });
     }
@@ -458,7 +461,7 @@ export class WorkflowDefinitionLoader {
     } else if (gateObj.type !== 'simple' && gateObj.type !== 'composite') {
       errors.push({
         field: `${prefix}.type`,
-        message: `type must be 'simple' or 'composite', got: ${gateObj.type}`,
+        message: `type must be 'simple' or 'composite', got: ${diagnosticScalarText(gateObj.type)}`,
         value: gateObj.type,
       });
     }
@@ -501,7 +504,7 @@ export class WorkflowDefinitionLoader {
       } else if (gateObj.mode !== 'sequential' && gateObj.mode !== 'parallel') {
         errors.push({
           field: `${prefix}.mode`,
-          message: `mode must be 'sequential' or 'parallel', got: ${gateObj.mode}`,
+          message: `mode must be 'sequential' or 'parallel', got: ${diagnosticScalarText(gateObj.mode)}`,
           value: gateObj.mode,
         });
       }
@@ -514,7 +517,7 @@ export class WorkflowDefinitionLoader {
       } else if (gateObj.failPolicy !== 'fail_fast' && gateObj.failPolicy !== 'collect_all') {
         errors.push({
           field: `${prefix}.failPolicy`,
-          message: `failPolicy must be 'fail_fast' or 'collect_all', got: ${gateObj.failPolicy}`,
+          message: `failPolicy must be 'fail_fast' or 'collect_all', got: ${diagnosticScalarText(gateObj.failPolicy)}`,
           value: gateObj.failPolicy,
         });
       }
@@ -579,7 +582,7 @@ export class WorkflowDefinitionLoader {
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      
+
       // Skip empty lines and comments
       if (!line.trim() || line.trim().startsWith('#')) {
         continue;

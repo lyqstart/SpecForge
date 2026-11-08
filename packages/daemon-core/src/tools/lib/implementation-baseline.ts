@@ -1,3 +1,4 @@
+import { diagnosticScalarText, scalarText } from '@specforge/types';
 import { createHash } from 'node:crypto';
 import type { Dirent } from 'node:fs';
 import * as fs from 'node:fs/promises';
@@ -48,7 +49,7 @@ function digest(bytes: Uint8Array | string): string {
 }
 
 function normalizeRelativeScope(value: unknown): string {
-  const normalized = String(value ?? '')
+  const normalized = scalarText(value ?? '')
     .trim()
     .replace(/\\/g, '/')
     .replace(/^\.\//, '')
@@ -62,7 +63,7 @@ function normalizeRelativeScope(value: unknown): string {
     normalized === '.git' ||
     normalized.startsWith('.git/')
   ) {
-    throw new Error(`IMPLEMENTATION_BASELINE_SCOPE_INVALID: ${String(value ?? '')}`);
+    throw new Error(`IMPLEMENTATION_BASELINE_SCOPE_INVALID: ${diagnosticScalarText(value ?? '')}`);
   }
   return normalized;
 }
@@ -106,14 +107,14 @@ function stablePayload(input: {
 
 async function readTriggerPlannedCodePaths(
   projectRoot: string,
-  workItemId: string,
+  workItemId: string
 ): Promise<string[]> {
   const triggerPath = path.join(
     projectRoot,
     SPEC_DIR_NAME,
     'work-items',
     workItemId,
-    'trigger_result.json',
+    'trigger_result.json'
   );
   let parsed: any;
   try {
@@ -122,12 +123,15 @@ async function readTriggerPlannedCodePaths(
     throw new Error(
       `IMPLEMENTATION_BASELINE_TRIGGER_UNAVAILABLE: ${triggerPath}: ${
         error instanceof Error ? error.message : String(error)
-      }`,
+      }`
     );
   }
-  const raw = parsed?.impact_scope?.planned_code_paths ?? parsed?.impact_summary?.planned_code_paths;
+  const raw =
+    parsed?.impact_scope?.planned_code_paths ?? parsed?.impact_summary?.planned_code_paths;
   if (!Array.isArray(raw)) {
-    throw new Error('IMPLEMENTATION_BASELINE_SCOPE_MISSING: trigger_result.impact_scope.planned_code_paths');
+    throw new Error(
+      'IMPLEMENTATION_BASELINE_SCOPE_MISSING: trigger_result.impact_scope.planned_code_paths'
+    );
   }
   return Array.from(new Set(raw.map(normalizeRelativeScope))).sort();
 }
@@ -143,20 +147,20 @@ async function walkFiles(root: string, projectRoot: string): Promise<string[]> {
   const files: string[] = [];
   for (const entry of entries) {
     if (entry.isSymbolicLink()) continue;
-    if (
-      entry.isDirectory() &&
-      ['.git', SPEC_DIR_NAME, 'node_modules'].includes(entry.name)
-    ) {
+    if (entry.isDirectory() && ['.git', SPEC_DIR_NAME, 'node_modules'].includes(entry.name)) {
       continue;
     }
     const absolute = path.join(root, entry.name);
-    if (entry.isDirectory()) files.push(...await walkFiles(absolute, projectRoot));
+    if (entry.isDirectory()) files.push(...(await walkFiles(absolute, projectRoot)));
     else if (entry.isFile()) files.push(path.relative(projectRoot, absolute).replace(/\\/g, '/'));
   }
   return files;
 }
 
-async function matchingFiles(projectRoot: string, scopePath: string): Promise<{
+async function matchingFiles(
+  projectRoot: string,
+  scopePath: string
+): Promise<{
   scopeKind: ImplementationBaselineEntry['scope_kind'];
   paths: string[];
 }> {
@@ -206,7 +210,7 @@ async function matchingFiles(projectRoot: string, scopePath: string): Promise<{
 
 export async function captureImplementationBaseline(
   projectRoot: string,
-  workItemId: string,
+  workItemId: string
 ): Promise<ImplementationBaseline> {
   const plannedCodePaths = await readTriggerPlannedCodePaths(projectRoot, workItemId);
   const entries: ImplementationBaselineEntry[] = [];
@@ -228,7 +232,9 @@ export async function captureImplementationBaseline(
     });
   }
   const payload = { work_item_id: workItemId, planned_code_paths: plannedCodePaths, entries };
-  const currentFileCount = new Set(entries.flatMap(entry => entry.matched_files.map(file => file.path))).size;
+  const currentFileCount = new Set(
+    entries.flatMap(entry => entry.matched_files.map(file => file.path))
+  ).size;
   return {
     schema_version: '1.0',
     work_item_id: workItemId,
@@ -243,7 +249,7 @@ export async function captureImplementationBaseline(
 
 export async function materializeImplementationBaseline(
   projectRoot: string,
-  workItemId: string,
+  workItemId: string
 ): Promise<ImplementationBaselineWrite> {
   const baseline = await captureImplementationBaseline(projectRoot, workItemId);
   const baselinePath = path.join(
@@ -251,7 +257,7 @@ export async function materializeImplementationBaseline(
     SPEC_DIR_NAME,
     'work-items',
     workItemId,
-    IMPLEMENTATION_BASELINE_FILENAME,
+    IMPLEMENTATION_BASELINE_FILENAME
   );
   let previousText: string | null = null;
   try {
@@ -270,7 +276,9 @@ export async function materializeImplementationBaseline(
   return { path: baselinePath, baseline, previous_text: previousText };
 }
 
-export async function restoreImplementationBaseline(write: ImplementationBaselineWrite): Promise<void> {
+export async function restoreImplementationBaseline(
+  write: ImplementationBaselineWrite
+): Promise<void> {
   if (write.previous_text === null) {
     await fs.rm(write.path, { force: true });
     return;
@@ -296,7 +304,7 @@ async function walkCandidateMarkdown(root: string): Promise<string[]> {
   const files: string[] = [];
   for (const entry of entries) {
     const absolute = path.join(root, entry.name);
-    if (entry.isDirectory()) files.push(...await walkCandidateMarkdown(absolute));
+    if (entry.isDirectory()) files.push(...(await walkCandidateMarkdown(absolute)));
     else if (
       entry.isFile() &&
       ['architecture.candidate.md', 'design.candidate.md', 'tasks.md'].includes(entry.name)
@@ -311,7 +319,9 @@ function contradictionLines(content: string, existingScopePaths: string[]): stri
   // Inspect individual assertions, not an entire paragraph. Negation applies
   // only to its own claim: a truthful sentence must not mask a later lie.
   const negated = (prefix: string) =>
-    /(?:并非|并不是|不是|不属于|非|禁止|不得|不能|无需|没有|\bnot|\bnever|\bno)\s*(?:(?:一个|一次|a|an)\s*)?(?:[「“"']\s*)?$/i.test(prefix);
+    /(?:并非|并不是|不是|不属于|非|禁止|不得|不能|无需|没有|\bnot|\bnever|\bno)\s*(?:(?:一个|一次|a|an)\s*)?(?:[「“"']\s*)?$/i.test(
+      prefix
+    );
   const caseInsensitivePaths = process.platform === 'win32';
   const normalizedScopes = existingScopePaths.map(value => {
     const normalized = value.replace(/\\/g, '/');
@@ -321,30 +331,35 @@ function contradictionLines(content: string, existingScopePaths: string[]): stri
     const plain = line.replace(/\*\*|`/g, '');
     return plain.split(/[，,；;。]/).some(clause => {
       if (/all_files_new\s*["']?\s*[:=]\s*true\b/i.test(clause)) return true;
-      const greenfieldProject = /(?:本项目|当前项目|该项目)\s*(?:(不是|并非|不属于)\s*)?(?:是|为|属于)\s*(?:一个\s*)?(?:greenfield(?:\s+project)?|绿地(?:项目|新建))|(?:this project|the current project|the project|this)\s+(?:is|remains)\s+(?:(not\s+(?:a\s+)?)\s*)?(?:a\s+)?greenfield(?:\s+project)?/gi;
+      const greenfieldProject =
+        /(?:本项目|当前项目|该项目)\s*(?:(不是|并非|不属于)\s*)?(?:是|为|属于)\s*(?:一个\s*)?(?:greenfield(?:\s+project)?|绿地(?:项目|新建))|(?:this project|the current project|the project|this)\s+(?:is|remains)\s+(?:(not\s+(?:a\s+)?)\s*)?(?:a\s+)?greenfield(?:\s+project)?/gi;
       for (const match of clause.matchAll(greenfieldProject)) {
         const matched = match[0].toLowerCase();
         if (!/(?:不是|并非|不属于)/.test(matched) && !/\bnot\b/.test(matched)) return true;
       }
       // Keep the subject and predicate together; do not span unrelated prose
       // such as “以已知当前实现为差量基础，不存在「当前实现未知」”.
-      const chinese = /(?:当前|现有|业务)\s*(?:业务)?\s*(?:源代码|代码|实现)\s*(?:目前|仍然|仍|尚|是|为|：|:|\s)*(不存在|缺失|为空|无(?:\s|$)|none\b)/gi;
+      const chinese =
+        /(?:当前|现有|业务)\s*(?:业务)?\s*(?:源代码|代码|实现)\s*(?:目前|仍然|仍|尚|是|为|：|:|\s)*(不存在|缺失|为空|无(?:\s|$)|none\b)/gi;
       for (const match of clause.matchAll(chinese)) {
         if (!negated(clause.slice(0, match.index))) return true;
       }
-      const english = /Current Implementation\s*(?::|：|\|)?\s*(?:is\s+)?(none\b|missing\b|absent\b|does not exist|不存在|无(?:\s|$))/gi;
+      const english =
+        /Current Implementation\s*(?::|：|\|)?\s*(?:is\s+)?(none\b|missing\b|absent\b|does not exist|不存在|无(?:\s|$))/gi;
       for (const match of clause.matchAll(english)) {
         if (!negated(clause.slice(0, match.index))) return true;
       }
       const clausePathText = clause.replace(/\\/g, '/');
-      const normalizedClausePaths = caseInsensitivePaths ? clausePathText.toLowerCase() : clausePathText;
+      const normalizedClausePaths = caseInsensitivePaths
+        ? clausePathText.toLowerCase()
+        : clausePathText;
       if (!normalizedScopes.some(scope => normalizedClausePaths.includes(scope))) return false;
       if (/\|\s*(?:新建|create|new file)\s*\|/i.test(clause)) return true;
       // A file action must be a declaration, not a method name or a warning.
       return normalizedScopes.some(scope => {
         const action = new RegExp(
           `${escapeRegex(scope)}\\s*[:：]\\s*(?:new file|create|新建|目标文件不存在)(?:\\b|$)`,
-          caseInsensitivePaths ? 'i' : '',
+          caseInsensitivePaths ? 'i' : ''
         );
         return action.test(normalizedClausePaths);
       });
@@ -356,12 +371,7 @@ export async function validateImplementationTruthBeforeSeal(input: {
   projectRoot: string;
   workItemId: string;
 }): Promise<ImplementationTruthValidation> {
-  const workItemDir = path.join(
-    input.projectRoot,
-    SPEC_DIR_NAME,
-    'work-items',
-    input.workItemId,
-  );
+  const workItemDir = path.join(input.projectRoot, SPEC_DIR_NAME, 'work-items', input.workItemId);
   const baselinePath = path.join(workItemDir, IMPLEMENTATION_BASELINE_FILENAME);
   const errors: string[] = [];
   let baseline: ImplementationBaseline;
@@ -370,14 +380,16 @@ export async function validateImplementationTruthBeforeSeal(input: {
   } catch (error) {
     return {
       valid: false,
-      errors: [`IMPLEMENTATION_BASELINE_MISSING_OR_INVALID: ${baselinePath}: ${error instanceof Error ? error.message : String(error)}`],
+      errors: [
+        `IMPLEMENTATION_BASELINE_MISSING_OR_INVALID: ${baselinePath}: ${error instanceof Error ? error.message : String(error)}`,
+      ],
       input_files: [baselinePath],
     };
   }
   const current = await captureImplementationBaseline(input.projectRoot, input.workItemId);
   if (baseline.snapshot_id !== current.snapshot_id) {
     errors.push(
-      `IMPLEMENTATION_BASELINE_STALE: recorded=${String(baseline.snapshot_id ?? 'missing')}; current=${current.snapshot_id}`,
+      `IMPLEMENTATION_BASELINE_STALE: recorded=${String(baseline.snapshot_id ?? 'missing')}; current=${current.snapshot_id}`
     );
   }
 
@@ -385,14 +397,19 @@ export async function validateImplementationTruthBeforeSeal(input: {
   const inputFiles = [baselinePath, ...bindingFiles];
   if (baseline.planned_code_paths.length > 0) {
     if (bindingFiles.length === 0) {
-      errors.push('IMPLEMENTATION_BASELINE_BINDING_MISSING: no architecture/design/tasks Candidate document was found');
+      errors.push(
+        'IMPLEMENTATION_BASELINE_BINDING_MISSING: no architecture/design/tasks Candidate document was found'
+      );
     }
     for (const filePath of bindingFiles) {
       const content = await fs.readFile(filePath, 'utf-8');
-      const binding = /(?:^|\n)\s*implementation_baseline_id\s*:\s*(sha256:[0-9a-f]{64})\s*(?:\r?\n|$)/i.exec(content)?.[1];
+      const binding =
+        /(?:^|\n)\s*implementation_baseline_id\s*:\s*(sha256:[0-9a-f]{64})\s*(?:\r?\n|$)/i.exec(
+          content
+        )?.[1];
       if (binding !== baseline.snapshot_id) {
         errors.push(
-          `IMPLEMENTATION_BASELINE_BINDING_INVALID: ${filePath}; candidate=${binding ?? 'missing'}; current=${baseline.snapshot_id}`,
+          `IMPLEMENTATION_BASELINE_BINDING_INVALID: ${filePath}; candidate=${binding ?? 'missing'}; current=${baseline.snapshot_id}`
         );
       }
     }
@@ -411,12 +428,13 @@ export async function validateImplementationTruthBeforeSeal(input: {
     .map(entry => entry.scope_path);
   if (existingScopePaths.length > 0) {
     const truthFiles = [impactPath, ...bindingFiles];
-    const truthContents = [impactContent, ...await Promise.all(bindingFiles.map(file => fs.readFile(file, 'utf-8')))];
+    const truthContents = [
+      impactContent,
+      ...(await Promise.all(bindingFiles.map(file => fs.readFile(file, 'utf-8')))),
+    ];
     for (let index = 0; index < truthFiles.length; index += 1) {
       for (const line of contradictionLines(truthContents[index], existingScopePaths)) {
-        errors.push(
-          `IMPLEMENTATION_BASELINE_CONTRADICTION: ${truthFiles[index]}: ${line.trim()}`,
-        );
+        errors.push(`IMPLEMENTATION_BASELINE_CONTRADICTION: ${truthFiles[index]}: ${line.trim()}`);
       }
     }
   }

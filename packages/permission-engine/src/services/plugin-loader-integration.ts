@@ -2,31 +2,61 @@
 // Build-unblock note: legacy permission-engine service has historical type drift; production build boundary is being restored
 /**
  * Plugin Loader Integration API
- * 
+ *
  * Provides unified permission validation API for the Plugin Loader.
  * Implements Task 4.3: Integrate with Plugin Loader
- * 
+ *
  * Requirements 3.2: Plugin Sandbox Permission Implementation
  * - Parse plugin manifest `requires` field
  * - Compare with granted permission set
  * - Reject plugins with unauthorized requirements
- * 
+ *
  * Requirements 3.3: Static API Checks
  * - Source code scanning for prohibited APIs
  * - Detect direct `child_process.exec` calls
  * - Detect filesystem out-of-bounds access
  * - Detect undeclared network access
- * 
+ *
  * This module provides:
  * 1. Permission validation API - unified interface for Plugin Loader
  * 2. Detailed rejection reasons - comprehensive error information
  * 3. Event logging - plugin load denial events logged to events.jsonl
- * 
+ *
  * @specforge/permission-engine
  */
 
-import { z } from 'zod';
+// @ts-nocheck
+// Build-unblock note: legacy permission-engine service has historical type drift; production build boundary is being restored
+/**
+ * Plugin Loader Integration API
+ *
+ * Provides unified permission validation API for the Plugin Loader.
+ * Implements Task 4.3: Integrate with Plugin Loader
+ *
+ * Requirements 3.2: Plugin Sandbox Permission Implementation
+ * - Parse plugin manifest `requires` field
+ * - Compare with granted permission set
+ * - Reject plugins with unauthorized requirements
+ *
+ * Requirements 3.3: Static API Checks
+ * - Source code scanning for prohibited APIs
+ * - Detect direct `child_process.exec` calls
+ * - Detect filesystem out-of-bounds access
+ * - Detect undeclared network access
+ *
+ * This module provides:
+ * 1. Permission validation API - unified interface for Plugin Loader
+ * 2. Detailed rejection reasons - comprehensive error information
+ * 3. Event logging - plugin load denial events logged to events.jsonl
+ *
+ * @specforge/permission-engine
+ */
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { z } from 'zod';
+
+import { PluginPermissionDeniedEventPayload } from '../types/events';
+
+import { EventLogger } from "./event-logger";
 import {
   PluginPermissionValidator,
   PluginManifest,
@@ -34,18 +64,9 @@ import {
   GrantSet,
   PluginValidationResult
 } from './plugin-permission-validator';
-import {
-  StaticApiChecker,
-  StaticApiCheckResult,
-  DetectedProhibitedApi,
-  ProhibitedApiType,
-  ProhibitedApiCategory
-} from './static-api-checker';
-import {
-  PluginPermissionDeniedEventPayload,
-  createPluginPermissionDeniedEvent
-} from '../types/events';
-import type { EventLogger } from '@specforge/observability';
+import { StaticApiChecker, StaticApiCheckResult } from './static-api-checker';
+
+
 
 /**
  * Plugin source file for static analysis
@@ -133,19 +154,19 @@ export type PluginLoaderIntegrationConfig = z.infer<typeof PluginLoaderIntegrati
 
 /**
  * Plugin Loader Integration API
- * 
+ *
  * Provides unified permission validation for the Plugin Loader.
  * Combines permission requirement validation with static API checks.
- * 
+ *
  * Usage:
  * ```typescript
  * const integration = new PluginLoaderIntegration({ projectId: 'my-project' });
- * 
+ *
  * const result = await integration.validatePlugin({
  *   manifest: pluginManifest,
  *   sourceFiles: [{ filename: 'index.ts', content: pluginSourceCode }]
  * });
- * 
+ *
  * if (!result.allowed) {
  *   console.log('Plugin rejected:', result.rejectionReasons);
  * }
@@ -156,11 +177,11 @@ export class PluginLoaderIntegration {
   private permissionValidator: PluginPermissionValidator;
   private staticApiChecker: StaticApiChecker;
   private eventLogger?: EventLogger;
-  
+
   constructor(config: PluginLoaderIntegrationConfig) {
     // Parse and validate config
     const parsedConfig = PluginLoaderIntegrationConfigSchema.parse(config);
-    
+
     this.config = {
       projectId: parsedConfig.projectId,
       eventLoggingEnabled: parsedConfig.eventLoggingEnabled ?? true,
@@ -177,7 +198,7 @@ export class PluginLoaderIntegration {
       skipStaticChecks: parsedConfig.skipStaticChecks ?? false,
       skipPermissionChecks: parsedConfig.skipPermissionChecks ?? false
     };
-    
+
     // Initialize permission validator
     this.permissionValidator = new PluginPermissionValidator({
       projectId: this.config.projectId,
@@ -185,7 +206,7 @@ export class PluginLoaderIntegration {
       allowedPermissions: this.config.allowedPermissions,
       defaultGrants: this.config.defaultGrants
     });
-    
+
     // Initialize static API checker
     this.staticApiChecker = new StaticApiChecker({
       projectId: this.config.projectId,
@@ -198,13 +219,13 @@ export class PluginLoaderIntegration {
       allowCodeInjection: this.config.allowCodeInjection,
       allowProcessAccess: this.config.allowProcessAccess
     });
-    
+
     // Initialize event logger if enabled
     if (this.config.eventLoggingEnabled) {
       this.initEventLogger();
     }
   }
-  
+
   /**
    * Initialize event logger
    */
@@ -216,7 +237,7 @@ export class PluginLoaderIntegration {
         eventsFilePath: this.config.eventsFilePath,
         fsyncEnabled: true
       });
-      
+
       // Initialize asynchronously
       this.eventLogger.initialize().catch(err => {
         console.warn('Failed to initialize event logger:', err);
@@ -225,13 +246,13 @@ export class PluginLoaderIntegration {
       console.warn('Failed to create event logger:', error);
     }
   }
-  
+
   /**
    * Validate a plugin for loading
-   * 
+   *
    * Performs both permission validation and static API checks.
    * Logs denial events to events.jsonl when plugin is rejected.
-   * 
+   *
    * @param manifest Plugin manifest from plugin metadata
    * @param sourceFiles Optional source files for static API checking
    * @param grants Optional custom grants (overrides default)
@@ -249,17 +270,17 @@ export class PluginLoaderIntegration {
       await this.logDenialEvent(result);
       return result;
     }
-    
+
     const rejectionReasons: RejectionReason[] = [];
     let permissionValidation: PluginValidationResult | undefined;
     let staticApiCheck: StaticApiCheckResult | undefined;
     let permissionValid = true;
     let staticApiValid = true;
-    
+
     // Step 1: Permission validation (if not skipped)
     if (!this.config.skipPermissionChecks) {
       permissionValidation = this.permissionValidator.validate(parsedManifest, grants);
-      
+
       if (!permissionValidation.valid) {
         permissionValid = false;
         rejectionReasons.push({
@@ -271,7 +292,7 @@ export class PluginLoaderIntegration {
         });
       }
     }
-    
+
     // Step 2: Static API checks (if not skipped and source provided)
     if (!this.config.skipStaticChecks && sourceFiles && sourceFiles.length > 0) {
       staticApiCheck = this.staticApiChecker.checkMultipleFiles(
@@ -279,14 +300,14 @@ export class PluginLoaderIntegration {
         parsedManifest.id,
         parsedManifest.name
       );
-      
+
       if (!staticApiCheck.valid) {
         staticApiValid = false;
         const prohibitedApis = staticApiCheck.detectedApis.map(api => api.type);
         const errorDetails = staticApiCheck.detectedApis
           .filter(api => api.severity === 'error')
           .map(api => `Line ${api.line}: ${api.type} - ${api.context}`);
-        
+
         rejectionReasons.push({
           code: 'prohibited_api',
           message: `Plugin contains prohibited API usage: ${prohibitedApis.join(', ')}`,
@@ -300,11 +321,11 @@ export class PluginLoaderIntegration {
       // No source files provided but static checks not skipped - warn but don't fail
       // This allows plugins without source (e.g., pure configuration plugins)
     }
-    
+
     // Determine overall validity
     const isValid = permissionValid && staticApiValid;
     const allowed = isValid;
-    
+
     const result: PluginLoadValidationResult = {
       allowed,
       pluginId: parsedManifest.id,
@@ -316,18 +337,18 @@ export class PluginLoaderIntegration {
       permissionValid,
       staticApiValid
     };
-    
+
     // Log denial event if plugin is rejected
     if (!allowed) {
       await this.logDenialEvent(result);
     }
-    
+
     return result;
   }
-  
+
   /**
    * Validate only the permission requirements (without static API checks)
-   * 
+   *
    * @param manifest Plugin manifest
    * @param grants Optional custom grants
    * @returns Permission validation result
@@ -346,13 +367,13 @@ export class PluginLoaderIntegration {
         reason: 'requirements_not_granted'
       };
     }
-    
+
     return this.permissionValidator.validate(parsedManifest, grants);
   }
-  
+
   /**
    * Perform static API checks on source code
-   * 
+   *
    * @param sourceCode Source code to scan
    * @param pluginId Plugin identifier
    * @param pluginName Plugin name
@@ -365,7 +386,7 @@ export class PluginLoaderIntegration {
   ): StaticApiCheckResult {
     return this.staticApiChecker.check(sourceCode, pluginId, pluginName);
   }
-  
+
   /**
    * Parse and validate plugin manifest
    */
@@ -377,13 +398,13 @@ export class PluginLoaderIntegration {
       return null;
     }
   }
-  
+
   /**
    * Create result for invalid manifest
    */
   private createInvalidManifestResult(manifest: PluginManifest): PluginLoadValidationResult {
     const validationErrors: string[] = [];
-    
+
     // Collect validation errors
     try {
       PluginManifestSchema.parse(manifest);
@@ -394,7 +415,7 @@ export class PluginLoaderIntegration {
         }
       }
     }
-    
+
     return {
       allowed: false,
       pluginId: manifest.id || 'unknown',
@@ -409,7 +430,7 @@ export class PluginLoaderIntegration {
       staticApiValid: false
     };
   }
-  
+
   /**
    * Log plugin load denial event
    */
@@ -417,14 +438,14 @@ export class PluginLoaderIntegration {
     if (!this.eventLogger || !this.config.eventLoggingEnabled) {
       return;
     }
-    
+
     try {
       // Determine primary rejection reason
       const primaryReason = result.rejectionReasons[0]?.code || 'requirements_not_granted';
-      
+
       // Collect all details
       const details: PluginPermissionDeniedEventPayload['details'] = {};
-      
+
       for (const reason of result.rejectionReasons) {
         if (reason.details.missingRequirements) {
           details.missingRequirements = reason.details.missingRequirements;
@@ -436,20 +457,20 @@ export class PluginLoaderIntegration {
           details.staticCheckErrors = reason.details.staticCheckErrors;
         }
       }
-      
+
       const eventPayload: PluginPermissionDeniedEventPayload = {
         pluginId: result.pluginId,
         pluginName: result.pluginName,
         reason: primaryReason,
         details
       };
-      
+
       await this.eventLogger.logPluginPermissionDenied(eventPayload);
     } catch (error) {
       console.error('Failed to log plugin load denial event:', error);
     }
   }
-  
+
   /**
    * Update allowed permissions (whitelist mode)
    */
@@ -457,7 +478,7 @@ export class PluginLoaderIntegration {
     this.permissionValidator.setAllowedPermissions(permissions);
     this.config.allowedPermissions = permissions;
   }
-  
+
   /**
    * Update allowed filesystem paths
    */
@@ -465,7 +486,7 @@ export class PluginLoaderIntegration {
     this.staticApiChecker.updateConfig({ allowedPaths: paths });
     this.config.allowedPaths = paths;
   }
-  
+
   /**
    * Update allowed network hosts
    */
@@ -473,7 +494,7 @@ export class PluginLoaderIntegration {
     this.staticApiChecker.updateConfig({ allowedHosts: hosts });
     this.config.allowedHosts = hosts;
   }
-  
+
   /**
    * Get current configuration
    */
@@ -495,7 +516,7 @@ export class PluginLoaderIntegration {
       skipPermissionChecks: this.config.skipPermissionChecks
     };
   }
-  
+
   /**
    * Clean up resources
    */

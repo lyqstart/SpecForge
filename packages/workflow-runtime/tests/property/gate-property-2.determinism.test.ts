@@ -1,26 +1,28 @@
 /**
  * Property Test: Gate Execution Determinism
- * 
+ *
  * Feature: workflow, Property 2: Gate Execution Determinism
- * 
- * Validates: Requirements 2.2 - THE Gate_Runner SHALL implement check() method 
+ *
+ * Validates: Requirements 2.2 - THE Gate_Runner SHALL implement check() method
  * and return GateResult.
- * 
- * For a given Gate definition and context, the check() method should always 
+ *
+ * For a given Gate definition and context, the check() method should always
  * return the same GateResult (deterministic execution).
- * 
+ *
  * Derived-From: v6-architecture-overview Property 2
  */
 
-import { describe, it, expect } from 'vitest';
+import { promiseFromSync } from '@specforge/types';
 import * as fc from 'fast-check';
-import { 
-  SimpleGateRunner, 
+import { describe, it, expect } from 'vitest';
+
+import {
+  SimpleGateRunner,
   CompositeGateRunner,
-  createGateRunner 
+  createGateRunner
 } from '../../src/GateRunner';
-import { 
-  SimpleGateDefinition, 
+import type {
+  SimpleGateDefinition,
   CompositeGateDefinition,
   GateResult
 } from '../../src/types';
@@ -29,7 +31,7 @@ import {
 const NUM_ITERATIONS = 100;
 
 // Custom arbitraries - filter out strings with special characters that might cause issues
-const validStringArb = (minLen: number, maxLen: number) => 
+const validStringArb = (minLen: number, maxLen: number): fc.Arbitrary<string> =>
   fc.string({ minLength: minLen, maxLength: maxLen })
     .filter(s => s.length > 0 && /^[a-zA-Z0-9_-]+$/.test(s));
 
@@ -41,7 +43,7 @@ const simpleGateArb = fc.record({
 });
 
 describe('Property 2: Gate Execution Determinism', () => {
-  
+
   describe('Simple Gate Determinism', () => {
     /**
      * Property: Same simple gate with same check function should return same result
@@ -49,7 +51,7 @@ describe('Property 2: Gate Execution Determinism', () => {
      */
     it('should produce consistent results for simple gates with deterministic check functions', async () => {
       let passCount = 0;
-      
+
       const gateDef: SimpleGateDefinition = {
         schema_version: '1.0',
         type: 'simple',
@@ -65,23 +67,23 @@ describe('Property 2: Gate Execution Determinism', () => {
           };
         }
       };
-      
+
       const runner = new SimpleGateRunner(gateDef);
-      
+
       // Execute multiple times
       const results: GateResult[] = [];
       for (let i = 0; i < 5; i++) {
         const result = await runner.check();
         results.push(result);
       }
-      
+
       // All results should be identical
       const firstResult = results[0];
       for (let i = 1; i < results.length; i++) {
         expect(results[i].passed).toBe(firstResult.passed);
         expect(results[i].reason).toBe(firstResult.reason);
       }
-      
+
       // checkFn was called 5 times
       expect(passCount).toBe(5);
     });
@@ -92,17 +94,17 @@ describe('Property 2: Gate Execution Determinism', () => {
     it('should consistently return pass for simple gates without check functions', async () => {
       // Use sample-based testing to avoid async property issues
       const samples = fc.sample(simpleGateArb, { numRuns: NUM_ITERATIONS });
-      
+
       for (const gateDef of samples) {
         const runner = new SimpleGateRunner(gateDef);
-        
+
         // Execute multiple times
         const results: GateResult[] = [];
         for (let i = 0; i < 5; i++) {
           const result = await runner.check();
           results.push(result);
         }
-        
+
         // All results should be pass (default behavior)
         for (const result of results) {
           expect(result.passed).toBe(true);
@@ -111,22 +113,22 @@ describe('Property 2: Gate Execution Determinism', () => {
     });
 
     /**
-     * Property: Same gate definition should produce identical results regardless of 
+     * Property: Same gate definition should produce identical results regardless of
      * execution order when executed in isolation
      */
     it('should produce identical results regardless of execution order', async () => {
       // Use sample-based testing
       const samples = fc.sample(simpleGateArb, { numRuns: NUM_ITERATIONS });
-      
+
       for (const gateDef of samples) {
         const runner1 = new SimpleGateRunner(gateDef, { executionId: 1 });
         const runner2 = new SimpleGateRunner(gateDef, { executionId: 2 });
         const runner3 = new SimpleGateRunner(gateDef, { executionId: 3 });
-        
+
         const result1 = await runner1.check();
         const result2 = await runner2.check();
         const result3 = await runner3.check();
-        
+
         // All should have same pass/fail status
         expect(result1.passed).toBe(result2.passed);
         expect(result2.passed).toBe(result3.passed);
@@ -141,7 +143,7 @@ describe('Property 2: Gate Execution Determinism', () => {
     it('should produce consistent results for composite gates', async () => {
       // Use sample-based testing
       const samples = fc.sample(fc.integer({ min: 2, max: 5 }), { numRuns: NUM_ITERATIONS });
-      
+
       for (const numChildren of samples) {
         const compositeGateDef: CompositeGateDefinition = {
           schema_version: '1.0',
@@ -163,16 +165,16 @@ describe('Property 2: Gate Execution Determinism', () => {
             })
           }))
         };
-        
+
         const runner = new CompositeGateRunner(compositeGateDef);
-        
+
         // Execute multiple times
         const results: GateResult[] = [];
         for (let i = 0; i < 3; i++) {
           const result = await runner.check();
           results.push(result);
         }
-        
+
         // All results should have same pass/fail status
         const firstResult = results[0];
         for (let i = 1; i < results.length; i++) {
@@ -187,10 +189,10 @@ describe('Property 2: Gate Execution Determinism', () => {
     it('should execute sequential composite gates in deterministic order', async () => {
       // Use sample-based testing
       const samples = fc.sample(fc.integer({ min: 2, max: 5 }), { numRuns: NUM_ITERATIONS });
-      
+
       for (const numChildren of samples) {
         const executionOrder: string[] = [];
-        
+
         const compositeGateDef: CompositeGateDefinition = {
           schema_version: '1.0',
           type: 'composite',
@@ -214,12 +216,12 @@ describe('Property 2: Gate Execution Determinism', () => {
             }
           }))
         };
-        
+
         const runner = new CompositeGateRunner(compositeGateDef);
-        
+
         // Execute and verify order
         await runner.check();
-        
+
         // Order should be sequential: 0, 1, 2, ...
         const expectedOrder = Array.from({ length: numChildren }, (_, i) => `child-gate-${i}`);
         expect(executionOrder).toEqual(expectedOrder);
@@ -227,16 +229,16 @@ describe('Property 2: Gate Execution Determinism', () => {
     });
 
     /**
-     * Property: Parallel composite gates should complete all children regardless of 
+     * Property: Parallel composite gates should complete all children regardless of
      * completion order
      */
     it('should complete all children in parallel mode', async () => {
       // Use sample-based testing
       const samples = fc.sample(fc.integer({ min: 2, max: 5 }), { numRuns: NUM_ITERATIONS });
-      
+
       for (const numChildren of samples) {
         const completedChildren: string[] = [];
-        
+
         const compositeGateDef: CompositeGateDefinition = {
           schema_version: '1.0',
           type: 'composite',
@@ -260,10 +262,10 @@ describe('Property 2: Gate Execution Determinism', () => {
             }
           }))
         };
-        
+
         const runner = new CompositeGateRunner(compositeGateDef);
         const result = await runner.check();
-        
+
         // All children should have been executed
         expect(completedChildren.length).toBe(numChildren);
         expect(result.passed).toBe(true);
@@ -275,22 +277,22 @@ describe('Property 2: Gate Execution Determinism', () => {
     /**
      * Property: createGateRunner should create appropriate runner type consistently
      */
-    it('should create consistent runner types for the same gate definition', async () => {
+    it('should create consistent runner types for the same gate definition',  () => { return promiseFromSync(() => {
       // Use sample-based testing
       const samples = fc.sample(simpleGateArb, { numRuns: NUM_ITERATIONS });
-      
+
       for (const gateDef of samples) {
         // Create multiple runners from same definition
         const runner1 = createGateRunner(gateDef);
         const runner2 = createGateRunner(gateDef);
-        
+
         // Both should be of same type
         expect(runner1.constructor.name).toBe(runner2.constructor.name);
-        
+
         // Both should handle same gate ID
         expect(runner1.getGate().id).toBe(runner2.getGate().id);
       }
-    });
+    }); });
   });
 
   describe('Context Independence', () => {
@@ -300,7 +302,7 @@ describe('Property 2: Gate Execution Determinism', () => {
     it('should produce same results regardless of unrelated context variations', async () => {
       // Use sample-based testing
       const samples = fc.sample(simpleGateArb, { numRuns: NUM_ITERATIONS });
-      
+
       for (const gateDef of samples) {
         const gateWithCheck: SimpleGateDefinition = {
           ...gateDef,
@@ -311,16 +313,16 @@ describe('Property 2: Gate Execution Determinism', () => {
             details: {}
           })
         };
-        
+
         // Execute with various context values
         const runner1 = new SimpleGateRunner(gateWithCheck, { extra: 'value1' });
         const runner2 = new SimpleGateRunner(gateWithCheck, { extra: 'value2' });
         const runner3 = new SimpleGateRunner(gateWithCheck, { unrelated: 123 });
-        
+
         const result1 = await runner1.check();
         const result2 = await runner2.check();
         const result3 = await runner3.check();
-        
+
         // All should produce same result
         expect(result1.passed).toBe(true);
         expect(result2.passed).toBe(true);
@@ -336,31 +338,31 @@ describe('Property 2: Gate Execution Determinism', () => {
     it('should produce consistent error results for the same error condition', async () => {
       // Use sample-based testing
       const samples = fc.sample(simpleGateArb, { numRuns: NUM_ITERATIONS });
-      
+
       for (const gateDef of samples) {
         const errorMessage = 'Deterministic error';
-        
+
         const gateWithErrorCheck: SimpleGateDefinition = {
           ...gateDef,
           checkFn: () => {
             throw new Error(errorMessage);
           }
         };
-        
+
         const runner = new SimpleGateRunner(gateWithErrorCheck);
-        
+
         // Execute multiple times - all should fail with same reason
         const results: GateResult[] = [];
         for (let i = 0; i < 3; i++) {
           const result = await runner.check();
           results.push(result);
         }
-        
+
         // All should be failed
         for (const result of results) {
           expect(result.passed).toBe(false);
         }
-        
+
         // All should have error in reason
         for (const result of results) {
           expect(result.reason).toContain(errorMessage);
@@ -397,11 +399,11 @@ describe('Property 2: Edge Cases', () => {
         }
       ]
     };
-    
+
     const runner = new CompositeGateRunner(singleChildGate);
     const result1 = await runner.check();
     const result2 = await runner.check();
-    
+
     expect(result1.passed).toBe(result2.passed);
     expect(result1.passed).toBe(true);
   });
@@ -416,13 +418,13 @@ describe('Property 2: Edge Cases', () => {
       id: 'context-test-gate',
       name: 'Context Test Gate'
     };
-    
+
     const runner = new SimpleGateRunner(gateDef);
-    
+
     // Execute with undefined context
     const result1 = await runner.check(undefined);
     const result2 = await runner.check(undefined);
-    
+
     // Both should produce same result (default pass)
     expect(result1.passed).toBe(true);
     expect(result2.passed).toBe(true);
@@ -452,11 +454,11 @@ describe('Property 2: Edge Cases', () => {
         })
       }))
     };
-    
+
     const runner = new CompositeGateRunner(largeCompositeGate);
     const result1 = await runner.check();
     const result2 = await runner.check();
-    
+
     expect(result1.passed).toBe(result2.passed);
     expect(result1.passed).toBe(true);
   });

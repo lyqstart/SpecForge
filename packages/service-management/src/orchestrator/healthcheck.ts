@@ -19,7 +19,7 @@
 
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import { createServiceError, ErrorCode } from '../errors/service-error.js';
+import { createServiceError } from '../errors/service-error.js';
 import { parseHandshakeFile, type HandshakeFile } from '../types/handshake.js';
 import type { HealthCheckResponse } from '../types/healthcheck.js';
 import {
@@ -155,7 +155,7 @@ export class ServiceHealthChecker implements Disposable {
           await this.sleep(this.pollIntervalMs);
           continue;
         }
-      } catch (error) {
+      } catch  {
         // Network error or non-OK status - not ready yet
         // Continue polling
       }

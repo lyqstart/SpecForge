@@ -243,8 +243,8 @@ export class JobPoller {
 
     const startTime = Date.now();
     let attempt = 0;
-    let timeoutHandle: ReturnType<typeof setTimeout> | null = null;
-    let abortHandler: (() => void) | null = null;
+    const timeoutHandle: ReturnType<typeof setTimeout> | null = null;
+    const abortHandler: (() => void) | null = null;
 
     try {
       // Poll loop

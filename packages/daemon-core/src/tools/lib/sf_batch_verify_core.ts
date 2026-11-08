@@ -7,9 +7,9 @@
  * Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 2.10, 2.11, 7.5
  */
 
-import { readFile } from "node:fs/promises"
-import { join } from "node:path"
-import { logErrorToFile } from "./utils"
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { logErrorToFile } from './utils';
 
 // ============================================================
 // Types
@@ -17,29 +17,29 @@ import { logErrorToFile } from "./utils"
 
 /** 单个检查模式 */
 export interface CheckPattern {
-  name: string          // 人类可读的检查描述
-  pattern: string       // 正则模式字符串
-  should_exist: boolean // 模式是否应被找到
-  count?: number        // 可选：预期最小匹配次数
+  name: string; // 人类可读的检查描述
+  pattern: string; // 正则模式字符串
+  should_exist: boolean; // 模式是否应被找到
+  count?: number; // 可选：预期最小匹配次数
 }
 
 /** 单个检查结果 */
 export interface CheckResult {
-  name: string
-  status: "pass" | "fail"
-  found: boolean
-  match_count: number
-  error?: string        // 无效正则时的错误信息
+  name: string;
+  status: 'pass' | 'fail';
+  found: boolean;
+  match_count: number;
+  error?: string; // 无效正则时的错误信息
 }
 
 /** 批量验证结果 */
 export interface BatchVerifyResult {
-  success: boolean
-  total: number
-  passed: number
-  failed: number
-  results: CheckResult[]
-  error?: string        // 文件级错误
+  success: boolean;
+  total: number;
+  passed: number;
+  failed: number;
+  results: CheckResult[];
+  error?: string; // 文件级错误
 }
 
 // ============================================================
@@ -65,65 +65,65 @@ export async function batchVerify(
   try {
     // 1. 空检查数组
     if (checks.length === 0) {
-      return { success: true, total: 0, passed: 0, failed: 0, results: [] }
+      return { success: true, total: 0, passed: 0, failed: 0, results: [] };
     }
 
     // 2. 读取目标文件
-    const absolutePath = join(baseDir, targetFile)
-    let fileContent: string
+    const absolutePath = join(baseDir, targetFile);
+    let fileContent: string;
     try {
-      fileContent = await readFile(absolutePath, "utf-8")
+      fileContent = await readFile(absolutePath, 'utf-8');
     } catch {
       return {
         success: false,
-        error: "target file not found",
+        error: 'target file not found',
         total: 0,
         passed: 0,
         failed: 0,
         results: [],
-      }
+      };
     }
 
     // 3. 逐个执行检查
-    const results: CheckResult[] = []
+    const results: CheckResult[] = [];
 
     for (const check of checks) {
-      let regex: RegExp
+      let regex: RegExp;
       try {
-        regex = new RegExp(check.pattern, "g")
+        regex = new RegExp(check.pattern, 'g');
       } catch (err) {
         // 无效正则：标记为 fail，继续处理
         results.push({
           name: check.name,
-          status: "fail",
+          status: 'fail',
           found: false,
           match_count: 0,
           error: `Invalid regex: ${(err as Error).message}`,
-        })
-        continue
+        });
+        continue;
       }
 
-      const matches = fileContent.match(regex)
-      const matchCount = matches ? matches.length : 0
-      const found = matchCount > 0
+      const matches = fileContent.match(regex);
+      const matchCount = matches ? matches.length : 0;
+      const found = matchCount > 0;
 
       // 判断 pass/fail
-      let status: "pass" | "fail"
+      let status: 'pass' | 'fail';
 
       if (check.count !== undefined) {
         // count 模式：实际匹配次数 >= 指定次数
-        status = matchCount >= check.count ? "pass" : "fail"
+        status = matchCount >= check.count ? 'pass' : 'fail';
       } else if (check.should_exist) {
-        status = found ? "pass" : "fail"
+        status = found ? 'pass' : 'fail';
       } else {
-        status = found ? "fail" : "pass"
+        status = found ? 'fail' : 'pass';
       }
 
-      results.push({ name: check.name, status, found, match_count: matchCount })
+      results.push({ name: check.name, status, found, match_count: matchCount });
     }
 
-    const passed = results.filter((r) => r.status === "pass").length
-    const failed = results.filter((r) => r.status === "fail").length
+    const passed = results.filter(r => r.status === 'pass').length;
+    const failed = results.filter(r => r.status === 'fail').length;
 
     return {
       success: true,
@@ -131,9 +131,9 @@ export async function batchVerify(
       passed,
       failed,
       results,
-    }
+    };
   } catch (err) {
-    await logErrorToFile(baseDir, "sf_batch_verify_core", "batchVerify", err)
-    throw err
+    await logErrorToFile(baseDir, 'sf_batch_verify_core', 'batchVerify', err);
+    throw err;
   }
 }

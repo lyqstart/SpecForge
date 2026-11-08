@@ -6,10 +6,7 @@
  * source for this decision.
  */
 
-export const CANDIDATE_MUTABLE_STATES = new Set([
-  'candidate_preparing',
-  'gates_failed',
-]);
+export const CANDIDATE_MUTABLE_STATES = new Set(['candidate_preparing', 'gates_failed']);
 
 export function isCandidateFrozenState(state: string | null | undefined): boolean {
   return typeof state === 'string' && state.length > 0 && !CANDIDATE_MUTABLE_STATES.has(state);

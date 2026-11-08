@@ -1,4 +1,4 @@
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 /** Path policy enforcement for SpecForge. */
 import * as fs from 'node:fs/promises';
 import { isAbsolute } from 'node:path';
@@ -6,28 +6,46 @@ import { resolveSpecModuleIdentity } from '@specforge/types';
 import { projectSpecManifest } from '@specforge/types/directory-layout';
 import { MVP_FORBIDDEN_DIRS } from './project-layout.js';
 
-export interface PathPolicyResult { valid: boolean; violations: string[]; }
+export interface PathPolicyResult {
+  valid: boolean;
+  violations: string[];
+}
 const MODULE_SPEC_TARGET_KEYS = new Set([
-  'module_file', 'requirements', 'requirements_file', 'design', 'design_file',
-  'contracts', 'contracts_file', 'trace', 'trace_file', 'tasks', 'tasks_file',
+  'module_file',
+  'requirements',
+  'requirements_file',
+  'design',
+  'design_file',
+  'contracts',
+  'contracts_file',
+  'trace',
+  'trace_file',
+  'tasks',
+  'tasks_file',
 ]);
 export function normalizeProjectSpecTargetPath(value: unknown): string {
   if (typeof value !== 'string') return '';
   const normalized = value.trim().replace(/\\/g, '/').replace(/^\.\//, '');
-  if (normalized.startsWith((`${SPEC_DIR_NAME}/project/` as const))) return normalized;
+  if (normalized.startsWith(`${SPEC_DIR_NAME}/project/` as const)) return normalized;
   if (normalized.startsWith('project/')) return `${SPEC_DIR_NAME}/${normalized}`;
   return normalized;
 }
 function isCanonicalGovernanceTarget(target: string): boolean {
   if (target === (`${SPEC_DIR_NAME}/project/data_model.md` as const)) return true;
-  return /^\.specforge\/project\/modules\/[A-Z][A-Z0-9]{1,11}\/(?:module\.json|requirements\.md|design\.md|contracts\.json|trace\.md)$/.test(target);
+  return /^\.specforge\/project\/modules\/[A-Z][A-Z0-9]{1,11}\/(?:module\.json|requirements\.md|design\.md|contracts\.json|trace\.md)$/.test(
+    target
+  );
 }
-export async function readDeclaredProjectSpecTargetPaths(projectRoot: string): Promise<Set<string>> {
+export async function readDeclaredProjectSpecTargetPaths(
+  projectRoot: string
+): Promise<Set<string>> {
   try {
-    const parsed: unknown = JSON.parse(await fs.readFile(projectSpecManifest(projectRoot), 'utf-8'));
+    const parsed: unknown = JSON.parse(
+      await fs.readFile(projectSpecManifest(projectRoot), 'utf-8')
+    );
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return new Set();
     const manifest = parsed as Record<string, unknown>;
-    const declared = new Set<string>([(`${SPEC_DIR_NAME}/project/data_model.md` as const)]);
+    const declared = new Set<string>([`${SPEC_DIR_NAME}/project/data_model.md` as const]);
     const projectValue = manifest['project'];
     if (projectValue && typeof projectValue === 'object' && !Array.isArray(projectValue)) {
       for (const target of Object.values(projectValue as Record<string, unknown>)) {
@@ -35,7 +53,9 @@ export async function readDeclaredProjectSpecTargetPaths(projectRoot: string): P
         if (normalized) declared.add(normalized);
       }
     }
-    const modules: unknown[] = Array.isArray(manifest['modules']) ? manifest['modules'] as unknown[] : [];
+    const modules: unknown[] = Array.isArray(manifest['modules'])
+      ? (manifest['modules'] as unknown[])
+      : [];
     for (const moduleEntry of modules) {
       if (!moduleEntry || typeof moduleEntry !== 'object' || Array.isArray(moduleEntry)) continue;
       const identity = resolveSpecModuleIdentity(moduleEntry);
@@ -50,10 +70,13 @@ export async function readDeclaredProjectSpecTargetPaths(projectRoot: string): P
     }
     return declared;
   } catch {
-    return new Set([(`${SPEC_DIR_NAME}/project/data_model.md` as const)]);
+    return new Set([`${SPEC_DIR_NAME}/project/data_model.md` as const]);
   }
 }
-export async function isDeclaredProjectSpecTargetPath(projectRoot: string, targetPath: unknown): Promise<boolean> {
+export async function isDeclaredProjectSpecTargetPath(
+  projectRoot: string,
+  targetPath: unknown
+): Promise<boolean> {
   const normalized = normalizeProjectSpecTargetPath(targetPath);
   if (!normalized) return false;
   if (isCanonicalGovernanceTarget(normalized)) return true;
@@ -66,7 +89,8 @@ export function enforcePathPolicy(filePath: string): PathPolicyResult {
   if (isAbsolute(filePath)) violations.push('absolute paths not allowed');
   if (filePath.includes('..')) violations.push('parent traversal not allowed');
   if (filePath.includes('~')) violations.push('home expansion not allowed');
-  if (!filePath.includes((`${SPEC_DIR_NAME}/` as const))) violations.push('must have .specforge/ prefix');
+  if (!filePath.includes(`${SPEC_DIR_NAME}/` as const))
+    violations.push('must have .specforge/ prefix');
   for (const dir of MVP_FORBIDDEN_DIRS) {
     if (filePath.includes(dir)) violations.push(`forbidden dir: ${dir}`);
   }

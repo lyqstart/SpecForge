@@ -3,11 +3,37 @@
  * Core exports for workflow execution engine
  */
 
-export * from './types.js';
+import './types.js';
+export {
+  type ArtifactDefinition,
+  type CompositeGateDefinition,
+  type CompositeGateMode,
+  type FailPolicy,
+  type GateDefinition,
+  type GateResult,
+  type GateType,
+  type SimpleGateDefinition,
+  type StateMachine,
+  SUPPORTED_WORKFLOW_DEFINITION_SCHEMAS,
+  type WorkflowContext,
+  type WorkflowDefinition,
+  type WorkflowDefinitionSchemaVersion,
+  type WorkflowEventData,
+  type WorkflowInstance,
+  type WorkflowInstanceStatus,
+  type WorkflowState,
+} from './types.js';
 export { WorkflowEngine, type WorkflowEvent, type WorkflowEngineConfig } from './WorkflowEngine.js';
 
 // Engine module exports
-export * from './engine/index.js';
+import './engine/index.js';
+export {
+  type CreateInstanceOptions,
+  WorkflowInstanceFactory,
+  WorkflowInstanceStateManager,
+  WorkflowInstanceTracker,
+  WorkflowLoader,
+} from './engine/index.js';
 export {
   GateRunner,
   SimpleGateRunner,
@@ -95,7 +121,22 @@ export {
 } from './error-handler.js';
 
 // Basic Gates exports
-export * from './gates/index.js';
+import './gates/index.js';
+export {
+  AgentGateRunner,
+  BaseGate,
+  CompositeGateSerializer,
+  createAgentGateRunner,
+  createBasicGate,
+  DesignGate,
+  RequirementsGate,
+  type SerializedCompositeGate,
+  type SerializedGateDefinition,
+  type SerializedSimpleGate,
+  TasksGate,
+  validateCompositeGate,
+  VerificationGate,
+} from './gates/index.js';
 
 // Agent integration exports
 export {
@@ -135,4 +176,34 @@ export {
 } from './engine/AgentWorkflowEngine.js';
 
 // RBAC module exports (Phase 1)
-export * from './rbac/index.js';
+import './rbac/index.js';
+export {
+  type AuditSink,
+  AuthorizationAuditLogger,
+  type AuthorizationAuditRecord,
+  createAuthorizationAuditLogger,
+  createFileAuthorizationPolicy,
+  createPrincipalResolver,
+  createRBACEngine,
+  createTransitionAuthorizer,
+  type FileAuthorizationInput,
+  FileAuthorizationPolicy,
+  InMemoryAuditSink,
+  matchProtectedFile,
+  type Operation,
+  type Permission,
+  type PermissionContext,
+  type PermissionDecision,
+  type Principal,
+  PrincipalResolver,
+  type PrincipalRole,
+  type PrincipalSource,
+  ProtectedFileMatcher,
+  type RBACConfig,
+  RBACEngine,
+  type ResourceType,
+  type SealTransitionEntry,
+  type TransitionAuthorizationInput,
+  TransitionAuthorizer,
+  type TransitionAuthorizerConfig,
+} from './rbac/index.js';

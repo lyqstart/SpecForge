@@ -2,12 +2,14 @@
  * Unit tests for WorkflowLoader
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'fs/promises';
-import * as path from 'path';
 import * as os from 'os';
+import * as path from 'path';
+
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+
 import { WorkflowLoader } from '../../src/engine/WorkflowLoader.js';
-import { WorkflowDefinition } from '../../src/types.js';
+import type { WorkflowDefinition } from '../../src/types.js';
 
 describe('WorkflowLoader', () => {
   let loader: WorkflowLoader;
@@ -22,7 +24,7 @@ describe('WorkflowLoader', () => {
     // Clean up temp directory
     try {
       await fs.rm(tempDir, { recursive: true, force: true });
-    } catch (e) {
+    } catch  {
       // Ignore cleanup errors
     }
     loader.clearLoadedDefinitions();

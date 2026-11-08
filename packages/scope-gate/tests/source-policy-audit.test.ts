@@ -1,4 +1,5 @@
 import {describe,it,expect} from 'vitest';
+
 import {reviewRaceTimers,reviewPathLiterals} from '../../../scripts/lint/source-policy';
 describe('syntax-aware source audit boundaries',()=>{
  it('rejects a genuine losing timer, including one created before the race',()=>{

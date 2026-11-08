@@ -1,3 +1,4 @@
+import { scalarText } from '@specforge/types';
 /**
  * semantic-closure-builder.ts — builds .semantic_closure.json from explicit WI artifacts.
  *
@@ -72,7 +73,7 @@ function isSemanticManifestCandidate(value: unknown): value is SemanticClosureMa
 }
 
 function normalizeEvidenceStatus(value: unknown): string {
-  const raw = String(value ?? '').trim();
+  const raw = scalarText(value ?? '').trim();
   if (!raw) return 'unknown';
   return raw;
 }
@@ -112,8 +113,13 @@ function evidenceById(
 function evidenceFromEntry(
   id: string,
   entry: Record<string, any> | undefined,
-  supports: string[]
+  supports: unknown
 ): SemanticEvidence {
+  if (
+    !Array.isArray(supports) ||
+    !supports.every((ref: unknown): ref is string => typeof ref === 'string')
+  )
+    throw new Error('SEMANTIC_EVIDENCE_SUPPORTS_INVALID');
   return {
     id,
     status: normalizeEvidenceStatus(entry?.status ?? entry?.result ?? entry?.passed_status),
@@ -140,9 +146,8 @@ export function parseSemanticClosureManifest(value: unknown): SemanticClosureMan
     }
   }
   if (!isRecord(value)) return null;
-  if (isSemanticManifestCandidate(value.semantic_closure))
-    return value.semantic_closure as SemanticClosureManifest;
-  if (isSemanticManifestCandidate(value)) return value as SemanticClosureManifest;
+  if (isSemanticManifestCandidate(value.semantic_closure)) return value.semantic_closure;
+  if (isSemanticManifestCandidate(value)) return value;
   return null;
 }
 

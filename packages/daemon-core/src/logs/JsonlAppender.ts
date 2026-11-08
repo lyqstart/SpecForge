@@ -19,9 +19,9 @@ const DEFAULT_MAX_FILE_SIZE = 10 * 1024 * 1024;
 const DEFAULT_MAX_ARCHIVE_FILES = 3;
 
 export interface JsonlAppenderOptions {
-  maxFileSize?: number;      // default 10MB
-  maxArchiveFiles?: number;  // default 3
-  fsync?: boolean;           // default false
+  maxFileSize?: number; // default 10MB
+  maxArchiveFiles?: number; // default 3
+  fsync?: boolean; // default false
 }
 
 export class JsonlAppender {
@@ -108,15 +108,13 @@ export class JsonlAppender {
       const content = await fs.readFile(this.filePath, 'utf-8');
       if (!content) return records;
 
-      const lines = content.split('\n').filter((line) => line.trim().length > 0);
+      const lines = content.split('\n').filter(line => line.trim().length > 0);
       for (let i = 0; i < lines.length; i++) {
-        const line = lines[i]!;
+        const line = lines[i];
         try {
           records.push(JSON.parse(line) as Record<string, unknown>);
         } catch {
-          console.warn(
-            `[JsonlAppender] Skipping malformed line ${i + 1} in ${this.filePath}`
-          );
+          console.warn(`[JsonlAppender] Skipping malformed line ${i + 1} in ${this.filePath}`);
         }
       }
     } catch {
@@ -141,8 +139,8 @@ export class JsonlAppender {
 
     try {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const ext = path.extname(this.filePath);           // ".jsonl"
-      const base = path.basename(this.filePath, ext);    // e.g. "tool_calls"
+      const ext = path.extname(this.filePath); // ".jsonl"
+      const base = path.basename(this.filePath, ext); // e.g. "tool_calls"
       const archiveName = `${base}-${timestamp}${ext}.bak`;
       const archivePath = path.join(path.dirname(this.filePath), archiveName);
 
@@ -170,9 +168,7 @@ export class JsonlAppender {
     const prefix = `${base}-`;
 
     const files = await fs.readdir(dir);
-    const archives = files
-      .filter((f) => f.startsWith(prefix) && f.endsWith(`${ext}.bak`))
-      .sort();
+    const archives = files.filter(f => f.startsWith(prefix) && f.endsWith(`${ext}.bak`)).sort();
 
     while (archives.length > this.maxArchiveFiles) {
       const oldest = archives.shift()!;

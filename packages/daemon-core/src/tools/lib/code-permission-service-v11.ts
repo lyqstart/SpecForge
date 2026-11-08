@@ -31,9 +31,18 @@ export interface ApplyRevokedPermissionFactsOptions {
   now?: string;
   recordRevocationEvent?: boolean;
 }
-export const DEFAULT_PERMISSION: PermissionState = { code_change_allowed: false, allowed_write_files: [] };
-function projectRootFromWorkItemDir(workItemDir: string): string { return path.resolve(workItemDir, '..', '..', '..'); }
-function normalizeSlash(value: string): string { return String(value ?? '').replace(/\\/g, '/').replace(/\/+/g, '/'); }
+export const DEFAULT_PERMISSION: PermissionState = {
+  code_change_allowed: false,
+  allowed_write_files: [],
+};
+function projectRootFromWorkItemDir(workItemDir: string): string {
+  return path.resolve(workItemDir, '..', '..', '..');
+}
+function normalizeSlash(value: string): string {
+  return String(value ?? '')
+    .replace(/\\/g, '/')
+    .replace(/\/+/g, '/');
+}
 function canonicalPath(projectRoot: string, value: string): { relative: string; absolute: string } {
   const raw = String(value ?? '').trim();
   const abs = path.isAbsolute(raw) ? path.resolve(raw) : path.resolve(projectRoot, raw);
@@ -44,7 +53,9 @@ function canonicalPath(projectRoot: string, value: string): { relative: string; 
 function normalizeOperation(value: unknown): WriteOperation {
   return value === 'create' || value === 'modify' || value === 'delete' ? value : 'modify';
 }
-function normalizePermissionEntries(entries: unknown): Array<{ path: string; operation: WriteOperation }> {
+function normalizePermissionEntries(
+  entries: unknown
+): Array<{ path: string; operation: WriteOperation }> {
   if (!Array.isArray(entries)) return [];
   const result: Array<{ path: string; operation: WriteOperation }> = [];
   for (const entry of entries) {
@@ -53,12 +64,18 @@ function normalizePermissionEntries(entries: unknown): Array<{ path: string; ope
       if (p) result.push({ path: normalizeSlash(p), operation: 'modify' });
       continue;
     }
-    const p = String((entry as any)?.path ?? '').trim();
-    if (p) result.push({ path: normalizeSlash(p), operation: normalizeOperation((entry as any)?.operation) });
+    const p = String(entry?.path ?? '').trim();
+    if (p)
+      result.push({
+        path: normalizeSlash(p),
+        operation: normalizeOperation(entry?.operation),
+      });
   }
   return result;
 }
-function dedupePermissionEntries(entries: Array<{ path: string; operation: WriteOperation }>): Array<{ path: string; operation: WriteOperation }> {
+function dedupePermissionEntries(
+  entries: Array<{ path: string; operation: WriteOperation }>
+): Array<{ path: string; operation: WriteOperation }> {
   const seen = new Set<string>();
   const result: Array<{ path: string; operation: WriteOperation }> = [];
   for (const entry of entries) {
@@ -66,11 +83,17 @@ function dedupePermissionEntries(entries: Array<{ path: string; operation: Write
     if (!p) continue;
     const operation = normalizeOperation(entry.operation);
     const key = `${p.toLowerCase()}\0${operation}`;
-    if (!seen.has(key)) { seen.add(key); result.push({ path: p, operation }); }
+    if (!seen.has(key)) {
+      seen.add(key);
+      result.push({ path: p, operation });
+    }
   }
   return result;
 }
-export function expandAllowedWriteFiles(workItemDir: string, entries: Array<{ path: string; operation: WriteOperation }>): Array<{ path: string; operation: WriteOperation }> {
+export function expandAllowedWriteFiles(
+  workItemDir: string,
+  entries: Array<{ path: string; operation: WriteOperation }>
+): Array<{ path: string; operation: WriteOperation }> {
   const projectRoot = projectRootFromWorkItemDir(workItemDir);
   const seen = new Set<string>();
   const result: Array<{ path: string; operation: WriteOperation }> = [];
@@ -82,7 +105,10 @@ export function expandAllowedWriteFiles(workItemDir: string, entries: Array<{ pa
     for (const p of [relative, absolute]) {
       for (const operation of operations) {
         const key = `${p}\0${operation}`;
-        if (!seen.has(key)) { seen.add(key); result.push({ path: p, operation }); }
+        if (!seen.has(key)) {
+          seen.add(key);
+          result.push({ path: p, operation });
+        }
       }
     }
   }
@@ -91,7 +117,7 @@ export function expandAllowedWriteFiles(workItemDir: string, entries: Array<{ pa
 export function applyRevokedPermissionFacts(
   workItem: Record<string, any>,
   fallbackAllowedWriteFilesSnapshot: Array<{ path: string; operation: string }> = [],
-  options: ApplyRevokedPermissionFactsOptions = {},
+  options: ApplyRevokedPermissionFactsOptions = {}
 ): Record<string, any> {
   const now = options.now ?? new Date().toISOString();
   const existingSnapshot = Array.isArray(workItem.allowed_write_files_snapshot)
@@ -101,12 +127,13 @@ export function applyRevokedPermissionFacts(
     ? workItem.allowed_write_files
     : [];
   if (existingSnapshot.length === 0) {
-    workItem.allowed_write_files_snapshot = currentAllowed.length > 0
-      ? currentAllowed
-      : fallbackAllowedWriteFilesSnapshot.map(entry => ({
-          path: entry.path,
-          operation: normalizeOperation(entry.operation),
-        }));
+    workItem.allowed_write_files_snapshot =
+      currentAllowed.length > 0
+        ? currentAllowed
+        : fallbackAllowedWriteFilesSnapshot.map(entry => ({
+            path: entry.path,
+            operation: normalizeOperation(entry.operation),
+          }));
   }
   workItem.code_change_allowed = false;
   workItem.allowed_write_files = [];
@@ -118,14 +145,16 @@ export function applyRevokedPermissionFacts(
   return workItem;
 }
 export async function prepareCodePermissionRelease(
-  input: ReleasePermissionInput,
+  input: ReleasePermissionInput
 ): Promise<PreparedPermissionRelease> {
   const projectRoot = projectRootFromWorkItemDir(input.workItemDir);
   const requestedAllowed = normalizePermissionEntries(input.allowedWriteFiles);
   const incomingAllowed = expandAllowedWriteFiles(input.workItemDir, input.allowedWriteFiles);
   const initial = await readWorkItemMetadata(input.workItemDir, input.workItemId);
-  const existingAllowed = initial.code_change_allowed === true && initial.code_permission_revoked !== true
-    ? normalizePermissionEntries(initial.allowed_write_files) : [];
+  const existingAllowed =
+    initial.code_change_allowed === true && initial.code_permission_revoked !== true
+      ? normalizePermissionEntries(initial.allowed_write_files)
+      : [];
   const releaseMode = existingAllowed.length > 0 ? 'extend' : 'release';
   const revisionReason = String(input.revisionReason ?? '').trim();
   if (releaseMode === 'extend' && revisionReason.length < 8) {
@@ -139,7 +168,12 @@ export async function prepareCodePermissionRelease(
     allowedWriteFiles: mergedAllowed,
   });
   if (!frozen.passed) {
-    throw new Error(`${frozen.error ?? 'SCOPE_EXPANSION_REQUIRED'}: ${frozen.checks.filter(check => !check.passed).map(check => check.description).join('; ')}`);
+    throw new Error(
+      `${frozen.error ?? 'SCOPE_EXPANSION_REQUIRED'}: ${frozen.checks
+        .filter(check => !check.passed)
+        .map(check => check.description)
+        .join('; ')}`
+    );
   }
   return {
     input,
@@ -154,7 +188,7 @@ export async function prepareCodePermissionRelease(
 }
 
 export async function commitPreparedCodePermissionRelease(
-  prepared: PreparedPermissionRelease,
+  prepared: PreparedPermissionRelease
 ): Promise<PermissionState> {
   const {
     input,
@@ -178,13 +212,16 @@ export async function commitPreparedCodePermissionRelease(
     wi.code_permission_release_count = Number(wi.code_permission_release_count ?? 0) + 1;
     const history: Array<Record<string, unknown>> = Array.isArray(wi.allowed_write_files_history)
       ? wi.allowed_write_files_history.filter(
-        (entry): entry is Record<string, unknown> =>
-          typeof entry === 'object' && entry !== null && !Array.isArray(entry),
-      )
+          (entry): entry is Record<string, unknown> =>
+            typeof entry === 'object' && entry !== null && !Array.isArray(entry)
+        )
       : [];
     history.push({
-      timestamp: now, mode: releaseMode, incoming_count: incomingAllowed.length,
-      previous_count: existingAllowed.length, total_count: mergedAllowed.length,
+      timestamp: now,
+      mode: releaseMode,
+      incoming_count: incomingAllowed.length,
+      previous_count: existingAllowed.length,
+      total_count: mergedAllowed.length,
       incoming_allowed_write_files: incomingAllowed,
       requested_allowed_write_files: requestedAllowed,
       effective_allowed_write_files: mergedAllowed,
@@ -196,7 +233,7 @@ export async function commitPreparedCodePermissionRelease(
       const revisions: Array<Record<string, unknown>> = Array.isArray(wi.scope_revision_history)
         ? wi.scope_revision_history.filter(
             (entry): entry is Record<string, unknown> =>
-              typeof entry === 'object' && entry !== null && !Array.isArray(entry),
+              typeof entry === 'object' && entry !== null && !Array.isArray(entry)
           )
         : [];
       scopeRevision = {
@@ -225,7 +262,9 @@ export async function commitPreparedCodePermissionRelease(
   }
 }
 
-export async function releaseCodePermission(input: ReleasePermissionInput): Promise<PermissionState> {
+export async function releaseCodePermission(
+  input: ReleasePermissionInput
+): Promise<PermissionState> {
   try {
     return await commitPreparedCodePermissionRelease(await prepareCodePermissionRelease(input));
   } catch (err: any) {

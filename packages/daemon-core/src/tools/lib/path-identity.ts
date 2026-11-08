@@ -10,7 +10,7 @@ import * as path from 'node:path';
  */
 export function resolvedPathIdentity(
   value: string,
-  platform: NodeJS.Platform = process.platform,
+  platform: NodeJS.Platform = process.platform
 ): string {
   const resolved = path.resolve(value);
   return platform === 'win32' ? resolved.toLowerCase() : resolved;
@@ -19,7 +19,7 @@ export function resolvedPathIdentity(
 /** Preserve the first resolved spelling while removing target-platform aliases. */
 export function deduplicateResolvedPaths(
   values: Iterable<string>,
-  platform: NodeJS.Platform = process.platform,
+  platform: NodeJS.Platform = process.platform
 ): string[] {
   const seen = new Set<string>();
   const unique: string[] = [];
@@ -36,7 +36,7 @@ export function deduplicateResolvedPaths(
 export function sameResolvedPath(
   left: string,
   right: string,
-  platform: NodeJS.Platform = process.platform,
+  platform: NodeJS.Platform = process.platform
 ): boolean {
   return resolvedPathIdentity(left, platform) === resolvedPathIdentity(right, platform);
 }
@@ -44,12 +44,14 @@ export function sameResolvedPath(
 export function isSameOrDescendantResolvedPath(
   child: string,
   parent: string,
-  platform: NodeJS.Platform = process.platform,
+  platform: NodeJS.Platform = process.platform
 ): boolean {
   const childIdentity = resolvedPathIdentity(child, platform);
   const parentIdentity = resolvedPathIdentity(parent, platform);
   return (
     childIdentity === parentIdentity ||
-    childIdentity.startsWith(parentIdentity.endsWith(path.sep) ? parentIdentity : parentIdentity + path.sep)
+    childIdentity.startsWith(
+      parentIdentity.endsWith(path.sep) ? parentIdentity : parentIdentity + path.sep
+    )
   );
 }

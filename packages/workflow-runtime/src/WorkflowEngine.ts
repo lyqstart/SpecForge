@@ -3,10 +3,26 @@
  * Core engine for loading and executing workflows
  */
 
-import { v4 as uuidv4 } from 'uuid';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+
+import { parseJsonObject, diagnosticScalarText ,
+  validateCurrentUserDecisionJson,
+  validateCurrentWorkItemMetadataJson,
+} from '@specforge/types';
+import { CRITICAL_STATES } from '@specforge/types/constants';
+import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
 import {
+  createUserDecisionSchemaDescriptor,
+  createWorkItemMetadataSchemaDescriptor,
+  precheckSchemaDescriptors,
+} from '@specforge/types/schema-contract';
+import { isSealTransition, getSealTransition } from '@specforge/types/seal-transitions';
+import { v4 as uuidv4 } from 'uuid';
+
+import type { EventPublisher } from './events/EventPublisher.js';
+import { isForbiddenTransitionV11, type WIStatusV11 } from './types/state-machine.js';
+import type {
   WorkflowDefinition,
   WorkflowInstance,
   GateDefinition,
@@ -14,25 +30,11 @@ import {
   SimpleGateDefinition,
   CompositeGateDefinition,
 } from './types.js';
-import { isForbiddenTransitionV11 } from './types/state-machine.js';
-import { isSealTransition, getSealTransition } from '@specforge/types/seal-transitions';
-import { EventPublisher } from './events/EventPublisher.js';
 import {
-  WorkflowErrorHandler,
+
+  type WorkflowErrorHandler,
   WorkflowStateManager,
-  type RetryConfig,
-} from './WorkflowErrorHandling.js';
-import { CRITICAL_STATES } from '@specforge/types/constants';
-import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
-import {
-  validateCurrentUserDecisionJson,
-  validateCurrentWorkItemMetadataJson,
-} from '@specforge/types';
-import {
-  createUserDecisionSchemaDescriptor,
-  createWorkItemMetadataSchemaDescriptor,
-  precheckSchemaDescriptors,
-} from '@specforge/types/schema-contract';
+  type RetryConfig} from './WorkflowErrorHandling.js';
 
 export type EventHandler = (event: WorkflowEvent) => void | Promise<void>;
 
@@ -345,7 +347,7 @@ export class WorkflowEngine {
     }
 
     // v1.1 forbidden transition check — enforced before workflow definition validation
-    if (isForbiddenTransitionV11(fromState as import('./types/state-machine.js').WIStatusV11, toState)) {
+    if (isForbiddenTransitionV11(fromState as WIStatusV11, toState)) {
       throw new Error(`Forbidden transition (v1.1): ${fromState} → ${toState}`);
     }
 
@@ -554,9 +556,9 @@ export class WorkflowEngine {
     const fullPath = path.join(workItemDir, gateFile);
     try {
       const content = await fs.readFile(fullPath, 'utf-8');
-      const report = JSON.parse(content);
+      const report = parseJsonObject(content);
       if (report.status !== expectedStatus) {
-        throw new Error(`Gate ${gateFile} status='${report.status ?? 'undefined'}', expected '${expectedStatus}'`);
+        throw new Error(`Gate ${gateFile} status='${diagnosticScalarText(report.status ?? 'undefined')}', expected '${expectedStatus}'`);
       }
     } catch (err) {
       if (err instanceof Error && err.message.includes('status=')) throw err;
@@ -581,9 +583,9 @@ export class WorkflowEngine {
       if (!validation.valid) {
         throw new Error(`USER_DECISION_INVALID: ${validation.errors.join('; ')}`);
       }
-      const ud = JSON.parse(content);
+      const ud = parseJsonObject(content);
       if (ud.decision_status !== 'approved' && ud.decision_status !== 'waived') {
-        throw new Error(`user_decision status='${ud.decision_status ?? 'undefined'}', expected 'approved' or 'waived'`);
+        throw new Error(`user_decision status='${diagnosticScalarText(ud.decision_status ?? 'undefined')}', expected 'approved' or 'waived'`);
       }
       // Check hash not invalidated (if hash field exists)
       if (ud.content_hash && ud.hash_invalidated === true) {
@@ -621,7 +623,7 @@ export class WorkflowEngine {
       if (!validation.valid) {
         throw new Error(`WORK_ITEM_METADATA_INVALID: ${workItemId}: ${validation.errors.join('; ')}`);
       }
-      const wi = JSON.parse(content);
+      const wi = parseJsonObject(content);
       if (!Array.isArray(wi.allowed_write_files) || wi.allowed_write_files.length === 0) {
         throw new Error('work_item.json allowed_write_files is empty or missing');
       }
@@ -670,7 +672,7 @@ export class WorkflowEngine {
     // Execute until terminal state or error
     while (instance.status === 'running') {
       const currentStateDef = definition.stateMachine.states[instance.currentState];
-      
+
       if (!currentStateDef) {
         throw new Error(`State not found: ${instance.currentState}`);
       }
@@ -685,20 +687,20 @@ export class WorkflowEngine {
           this.eventPublisher.publishGateStarted(
             instance,
             instance.currentState,
-            currentStateDef.gate!.id,
-            currentStateDef.gate!.type
+            currentStateDef.gate.id,
+            currentStateDef.gate.type
           );
         }
 
-        gateResult = await this.executeGate(currentStateDef.gate!);
+        gateResult = await this.executeGate(currentStateDef.gate);
 
         // Publish gate completed event
         if (this.eventPublisher) {
           this.eventPublisher.publishGateCompleted(
             instance,
             instance.currentState,
-            currentStateDef.gate!.id,
-            currentStateDef.gate!.type,
+            currentStateDef.gate.id,
+            currentStateDef.gate.type,
             gateResult
           );
         }

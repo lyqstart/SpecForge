@@ -8,10 +8,7 @@
  */
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import {
-  workItemRoot,
-  workItemCandidateManifest,
-} from '@specforge/types/directory-layout';
+import { workItemRoot, workItemCandidateManifest } from '@specforge/types/directory-layout';
 import { validateCurrentCandidateManifestValue } from '@specforge/types';
 import type { GateResult, GateModeSpec } from './sf_gate_types';
 import {
@@ -23,7 +20,6 @@ import { buildTolerantHeaderRegex } from './sf_section_matcher';
 import { tryCheckCompatibility, logErrorToFile } from './utils';
 import { isValidVerificationType } from './sf_verification_types';
 import {
-  evaluateSystemGovernanceRequirement,
   hasSystemGovernanceScope,
   resolveSystemGovernanceRequirement,
 } from './sf_design_governance_policy';
@@ -543,20 +539,29 @@ export async function checkDesignGate(
     // identity. Read and validate the persisted subject before selecting it.
     let designOnlyPhase = false;
     try {
-      const manifest = JSON.parse(await readFile(workItemCandidateManifest(baseDir, workItemId), 'utf8'));
+      const manifest = JSON.parse(
+        await readFile(workItemCandidateManifest(baseDir, workItemId), 'utf8')
+      );
       if (manifest.candidate_phase === 'design') {
         const validation = validateCurrentCandidateManifestValue(manifest, workItemId);
-        if (!validation.valid) return {
-          status: 'blocked', blocking_issues: ['CANDIDATE_MANIFEST_SCHEMA_INVALID'],
-          warnings: [], next_action: 'ask_user',
-        };
-        designOnlyPhase = workflowType === 'feature_spec' && manifest.workflow_type === 'feature_spec';
+        if (!validation.valid)
+          return {
+            status: 'blocked',
+            blocking_issues: ['CANDIDATE_MANIFEST_SCHEMA_INVALID'],
+            warnings: [],
+            next_action: 'ask_user',
+          };
+        designOnlyPhase =
+          workflowType === 'feature_spec' && manifest.workflow_type === 'feature_spec';
       }
     } catch (error) {
-      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') return {
-        status: 'blocked', blocking_issues: ['CANDIDATE_MANIFEST_UNREADABLE'],
-        warnings: [], next_action: 'ask_user',
-      };
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT')
+        return {
+          status: 'blocked',
+          blocking_issues: ['CANDIDATE_MANIFEST_UNREADABLE'],
+          warnings: [],
+          next_action: 'ask_user',
+        };
     }
 
     let designArtifacts: Array<{ content: string; path: string }>;
@@ -639,17 +644,12 @@ export async function checkDesignGate(
       }
 
       const systemGovernanceArtifact = hasSystemGovernanceScope(content);
-      const governanceResult = checkSystemGovernanceContent(
-        content,
-        systemGovernanceArtifact
-      );
+      const governanceResult = checkSystemGovernanceContent(content, systemGovernanceArtifact);
       if (governanceResult.status !== 'pass') {
         blockingIssues.push(
           ...governanceResult.blocking_issues.map(issue => `${artifactLabel}: ${issue}`)
         );
-        warnings.push(
-          ...governanceResult.warnings.map(warning => `${artifactLabel}: ${warning}`)
-        );
+        warnings.push(...governanceResult.warnings.map(warning => `${artifactLabel}: ${warning}`));
         continue;
       }
       if (systemGovernanceArtifact) {

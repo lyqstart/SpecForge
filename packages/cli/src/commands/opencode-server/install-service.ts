@@ -1,9 +1,9 @@
 /**
  * OpenCode Server Install Service Command
- * 
+ *
  * Implements `specforge opencode-server install-service`
  * Reuses services install logic for opencode-server service.
- * 
+ *
  * @packageDocumentation
  */
 
@@ -46,7 +46,7 @@ function getOpenCodeServerServiceSpec(): {
   dependsOn: string[];
 } {
   const binDir = getBinDir();
-  const logsDir = getLogsDir();
+  void (getLogsDir());
   const opencodeBin = path.join(binDir, process.platform === 'win32' ? 'opencode.exe' : 'opencode');
 
   return {

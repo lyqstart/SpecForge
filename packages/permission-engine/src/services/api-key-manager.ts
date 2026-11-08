@@ -2,19 +2,20 @@
 // Build-unblock note: legacy permission-engine service has historical type drift; production build boundary is being restored
 /**
  * API Key Manager Service
- * 
+ *
  * Implements long-term API key management for remote access as required by
  * Property 26: Remote Access Guard
- * 
+ *
  * Manages API keys used for remote access (distinct from local Bearer Tokens).
  * Supports creation, validation, revocation, and expiration.
- * 
+ *
  * @specforge/permission-engine
  */
 
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
+
 import { z } from 'zod';
 
 // Schema for API key metadata
@@ -79,7 +80,7 @@ export interface ValidateApiKeyResult {
 
 /**
  * API Key Manager
- * 
+ *
  * Manages long-term API keys for remote access.
  * Keys are stored as hashes for security.
  */
@@ -104,7 +105,7 @@ export class ApiKeyManager {
 
   /**
    * Generate a new API key
-   * 
+   *
    * @param options - Options for creating the key
    * @returns The full API key (only returned once) and metadata
    */
@@ -112,7 +113,7 @@ export class ApiKeyManager {
     // Generate a secure random key (256-bit)
     const key = crypto.randomBytes(32).toString('hex');
     const keyHash = this.hashKey(key);
-    
+
     const now = new Date().toISOString();
     const apiKey: ApiKey = {
       id: crypto.randomUUID(),
@@ -121,7 +122,7 @@ export class ApiKeyManager {
       name: options.name,
       userId: options.userId,
       createdAt: now,
-      expiresAt: options.expiresAt?.toISOString() ?? 
+      expiresAt: options.expiresAt?.toISOString() ??
         new Date(Date.now() + this.config.defaultExpiration).toISOString(),
       ipWhitelist: options.ipWhitelist,
       enabled: true,
@@ -143,7 +144,7 @@ export class ApiKeyManager {
 
   /**
    * Validate an API key
-   * 
+   *
    * @param key - The API key to validate
    * @param clientIp - Optional client IP for IP whitelist checking
    * @returns Validation result
@@ -245,7 +246,7 @@ export class ApiKeyManager {
     try {
       const [network, maskStr] = cidr.split('/');
       const mask = parseInt(maskStr, 10);
-      
+
       if (isNaN(mask) || mask < 0 || mask > 32) {
         return false;
       }
@@ -261,7 +262,7 @@ export class ApiKeyManager {
       const networkNum = (networkParts[0] << 24) | (networkParts[1] << 16) | (networkParts[2] << 8) | networkParts[3];
 
       const maskNum = ~((1 << (32 - mask)) - 1) >>> 0;
-      
+
       return (ipNum & maskNum) === (networkNum & maskNum);
     } catch {
       return false;
@@ -270,7 +271,7 @@ export class ApiKeyManager {
 
   /**
    * Revoke an API key
-   * 
+   *
    * @param keyId - The ID of the key to revoke
    * @returns Whether the key was revoked
    */
@@ -292,7 +293,7 @@ export class ApiKeyManager {
 
   /**
    * Delete an API key permanently
-   * 
+   *
    * @param keyId - The ID of the key to delete
    * @returns Whether the key was deleted
    */
@@ -314,16 +315,16 @@ export class ApiKeyManager {
 
   /**
    * Get all API keys (without the actual key value)
-   * 
+   *
    * @returns Array of API key metadata
    */
   getAllKeys(): Omit<ApiKey, 'key'>[] {
-    return Array.from(this.keys.values()).map(({ key, ...rest }) => rest);
+    return Array.from(this.keys.values()).map(apiKey => this.keyMetadata(apiKey));
   }
 
   /**
    * Get a specific API key by ID (without the actual key value)
-   * 
+   *
    * @param keyId - The ID of the key
    * @returns API key metadata or undefined
    */
@@ -332,25 +333,30 @@ export class ApiKeyManager {
     if (!apiKey) {
       return undefined;
     }
-    const { key, ...rest } = apiKey;
-    return rest;
+    return this.keyMetadata(apiKey);
   }
 
   /**
    * Get keys for a specific user
-   * 
+   *
    * @param userId - The user ID
    * @returns Array of API key metadata
    */
   getKeysForUser(userId: string): Omit<ApiKey, 'key'>[] {
     return Array.from(this.keys.values())
       .filter(k => k.userId === userId)
-      .map(({ key, ...rest }) => rest);
+      .map(apiKey => this.keyMetadata(apiKey));
   }
 
   /**
    * Hash an API key using SHA-256
    */
+  private keyMetadata(apiKey: ApiKey): Omit<ApiKey, 'key'> {
+    const metadata: Omit<ApiKey, 'key'> & { key?: ApiKey['key'] } = { ...apiKey };
+    delete metadata.key;
+    return metadata;
+  }
+
   private hashKey(key: string): string {
     return crypto.createHash('sha256').update(key).digest('hex');
   }
@@ -370,7 +376,7 @@ export class ApiKeyManager {
       for (const apiKey of storage.keys) {
         // Note: When loading from storage, we don't have the original key
         // Only store the hash and a placeholder
-        const { key, ...metadata } = apiKey;
+        const metadata = this.keyMetadata(apiKey);
         this.keys.set(metadata.id, { ...metadata, key: '' });  // Empty key since we only store hash
         this.keyHashes.set(metadata.keyHash, metadata.id);
       }
@@ -396,8 +402,8 @@ export class ApiKeyManager {
 
       const storage: ApiKeysStorage = {
         schema_version: '1.0',
-        keys: Array.from(this.keys.values()).map(({ key, ...rest }) => ({
-          ...rest,
+        keys: Array.from(this.keys.values()).map(apiKey => ({
+          ...this.keyMetadata(apiKey),
           key: ''  // Don't persist the actual key
         }))
       };
@@ -410,7 +416,7 @@ export class ApiKeyManager {
 
   /**
    * Update IP whitelist for a key
-   * 
+   *
    * @param keyId - The ID of the key
    * @param ipWhitelist - New IP whitelist
    * @returns Whether the update was successful
@@ -448,7 +454,7 @@ export class ApiKeyManager {
 
 /**
  * Create an ApiKeyManager instance
- * 
+ *
  * @param config - Manager configuration
  * @returns Configured instance
  */

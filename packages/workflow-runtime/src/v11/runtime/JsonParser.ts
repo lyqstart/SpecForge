@@ -25,7 +25,7 @@ export class JsonParser {
    * Requirement: 6.1 — parse valid JSON strings into data objects
    * Requirement: 6.10 — return descriptive error messages for invalid input
    */
-  static parse<T = unknown>(jsonString: string): ParseResult<T> {
+  static parse<T = unknown>(jsonString: unknown): ParseResult<T> {
     if (typeof jsonString !== 'string') {
       return {
         success: false,

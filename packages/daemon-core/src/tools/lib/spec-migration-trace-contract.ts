@@ -1,3 +1,4 @@
+import { scalarText } from '@specforge/types';
 /**
  * Canonical spec_migration trace-scope contract.
  *
@@ -6,7 +7,7 @@
  * treating every spec_migration Work Item as trace-changing.
  */
 export function normalizeSpecMigrationCandidateTargetPath(value: unknown): string {
-  return String(value ?? '')
+  return scalarText(value ?? '')
     .trim()
     .replace(/\\/g, '/')
     .replace(/^\.\//, '');
@@ -15,7 +16,7 @@ export function normalizeSpecMigrationCandidateTargetPath(value: unknown): strin
 export function isSpecMigrationTraceEntry(value: unknown): boolean {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const entry = value as Record<string, unknown>;
-  const type = String(entry.type ?? '')
+  const type = scalarText(entry.type ?? '')
     .trim()
     .toLowerCase()
     .replace(/[-\s]+/g, '_');
@@ -29,7 +30,7 @@ export function isSpecMigrationTraceEntry(value: unknown): boolean {
 }
 
 export function specMigrationCandidateRequiresTraceDelta(
-  manifest: Record<string, unknown> | null | undefined,
+  manifest: Record<string, unknown> | null | undefined
 ): boolean {
   const entries = Array.isArray(manifest?.entries) ? manifest.entries : [];
   return entries.some(isSpecMigrationTraceEntry);

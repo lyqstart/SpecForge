@@ -8,8 +8,9 @@
  * daemon-core 的当前状态机保持一致。
  */
 
-import type { GateDefinition } from './gate-definition';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
+
+import type { GateDefinition } from './gate-definition';
 
 // ---------------------------------------------------------------------------
 // §5.1 主状态枚举

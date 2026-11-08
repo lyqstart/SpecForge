@@ -1,11 +1,13 @@
-import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { describe, expect, it } from 'vitest';
+
 import { produceRepositoryOwnerSnapshotReports } from '../../../scripts/lib/release-owner-snapshot-producers';
-import { buildReleaseOwnerSnapshot } from '../src/release-owner-snapshot';
 import { produceOwnerSnapshotSurfaceReports } from '../src/owner-snapshot-surface-producers';
 import { projectReleaseAuthority } from '../src/release-authority-projection';
+import { buildReleaseOwnerSnapshot } from '../src/release-owner-snapshot';
 import { ReleaseSetValidator } from '../src/release-set-validator';
 
 const candidateRoot = fileURLToPath(new URL('../../../', import.meta.url));

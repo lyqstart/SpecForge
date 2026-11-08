@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { PermissionEngine } from '../../src/index';
+
 import { AGENT_CONSTITUTION_RULES, HardRuleEvaluator } from '../../src/hard-rules';
+import { PermissionEngine } from '../../src/index';
 
 describe('PermissionEngine', () => {
   let engine: PermissionEngine;
@@ -92,7 +93,7 @@ describe('PermissionEngine', () => {
     it('should use default configuration when none provided', () => {
       const defaultEngine = new PermissionEngine();
       const config = defaultEngine.getConfig();
-      
+
       expect(config.eventLoggingEnabled).toBe(true);
       expect(config.projectId).toBe('default-project');
       expect(config.strictMode).toBe(false);
@@ -108,9 +109,9 @@ describe('PermissionEngine', () => {
         cacheEnabled: false,
         validationEnabled: false
       });
-      
+
       const config = customEngine.getConfig();
-      
+
       expect(config.eventLoggingEnabled).toBe(false);
       expect(config.projectId).toBe('custom-project');
       expect(config.strictMode).toBe(true);
@@ -121,9 +122,9 @@ describe('PermissionEngine', () => {
     it('should update configuration', () => {
       const originalConfig = engine.getConfig();
       expect(originalConfig.eventLoggingEnabled).toBe(false);
-      
+
       engine.updateConfig({ eventLoggingEnabled: true });
-      
+
       const updatedConfig = engine.getConfig();
       expect(updatedConfig.eventLoggingEnabled).toBe(true);
       // Other config values should remain unchanged

@@ -12,14 +12,13 @@
  * 每个测试结束后断言 getActiveSubscriptionCount() === 0
  */
 
+import { promiseFromSync } from '@specforge/types';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { TestEventBus } from './helpers/test-event-bus.js';
-import {
-  EventSubscriptionManager,
-  createEventSubscriptionManager,
-  type EventSubscription,
-} from '../src/event-subscription.js';
+
+import { type EventSubscriptionManager, createEventSubscriptionManager, type EventSubscription } from '../src/event-subscription.js';
 import type { Event } from '../src/types.js';
+
+import { TestEventBus } from './helpers/test-event-bus.js';
 
 describe('EventSubscriptionManager', () => {
   let eventBus: TestEventBus;
@@ -53,7 +52,7 @@ describe('EventSubscriptionManager', () => {
   describe('subscribe', () => {
     it('should subscribe to event type and receive matching events', async () => {
       const events: Event[] = [];
-      const handler = (event: Event) => {
+      const handler = (event: Event): void => {
         events.push(event);
       };
 
@@ -81,7 +80,7 @@ describe('EventSubscriptionManager', () => {
 
     it('should support wildcard patterns', async () => {
       const events: Event[] = [];
-      const handler = (event: Event) => {
+      const handler = (event: Event): void => {
         events.push(event);
       };
 
@@ -147,24 +146,27 @@ describe('EventSubscriptionManager', () => {
     });
 
     it('should throw error for invalid event type', () => {
-      const handler = (event: Event) => {};
+      const handler = (_event: Event): void => {};
 
       expect(() => {
         manager.subscribe('', handler);
       }).toThrow('Invalid event type');
 
       expect(() => {
-        manager.subscribe(null as any, handler);
+        // @ts-expect-error Deliberate malformed runtime input (TS2345); retain the rejection assertion.
+        manager.subscribe(null, handler);
       }).toThrow('Invalid event type');
     });
 
     it('should throw error for invalid handler', () => {
       expect(() => {
-        manager.subscribe('workflow.started', null as any);
+        // @ts-expect-error Deliberate malformed runtime input (TS2345); retain the rejection assertion.
+        manager.subscribe('workflow.started', null);
       }).toThrow('Invalid handler');
 
       expect(() => {
-        manager.subscribe('workflow.started', undefined as any);
+        // @ts-expect-error Deliberate malformed runtime input (TS2345); retain the rejection assertion.
+        manager.subscribe('workflow.started', undefined);
       }).toThrow('Invalid handler');
     });
 
@@ -202,7 +204,7 @@ describe('EventSubscriptionManager', () => {
   describe('unsubscribe', () => {
     it('should unsubscribe and stop receiving events', async () => {
       const events: Event[] = [];
-      const handler = (event: Event) => {
+      const handler = (event: Event): void => {
         events.push(event);
       };
 
@@ -254,7 +256,7 @@ describe('EventSubscriptionManager', () => {
       warnSpy.mockRestore();
     });
 
-    it('should support unsubscribe via returned subscription object', async () => {
+    it('should support unsubscribe via returned subscription object',  () => { return promiseFromSync(() => {
       const events: Event[] = [];
 
       const subscription = manager.subscribe('workflow.started', (event: Event) => {
@@ -269,7 +271,7 @@ describe('EventSubscriptionManager', () => {
       trackedSubscriptions.pop();
 
       expect(manager.getActiveSubscriptionCount()).toBe(0);
-    });
+    }); });
   });
 
   describe('getActiveSubscriptions', () => {
@@ -315,9 +317,9 @@ describe('EventSubscriptionManager', () => {
 
   describe('dispose', () => {
     it('should clean up all subscriptions', async () => {
-      const subscription1 = manager.subscribe('workflow.started', () => {});
-      const subscription2 = manager.subscribe('workflow.completed', () => {});
-      const subscription3 = manager.subscribe('workflow.*', () => {});
+      void (manager.subscribe('workflow.started', () => {}));
+      void (manager.subscribe('workflow.completed', () => {}));
+      void (manager.subscribe('workflow.*', () => {}));
 
       expect(manager.getActiveSubscriptionCount()).toBe(3);
 
@@ -359,7 +361,7 @@ describe('EventSubscriptionManager', () => {
 
   describe('subscription lifecycle', () => {
     it('should track subscription metadata correctly', () => {
-      const handler = (event: Event) => {};
+      const handler = (__event: Event): void => {};
       const subscription = manager.subscribe('workflow.started', handler);
       trackedSubscriptions.push(subscription);
 
@@ -381,7 +383,7 @@ describe('EventSubscriptionManager', () => {
   });
 
   describe('integration with Event Bus', () => {
-    it('should properly integrate with Event Bus lifecycle', async () => {
+    it('should properly integrate with Event Bus lifecycle',  () => { return promiseFromSync(() => {
       const subscription = manager.subscribe('workflow.*', () => {});
       trackedSubscriptions.push(subscription);
 
@@ -391,7 +393,7 @@ describe('EventSubscriptionManager', () => {
       trackedSubscriptions.pop();
 
       expect(eventBus.getTotalSubscriptionCount()).toBe(0);
-    });
+    }); });
 
     it('should handle Event Bus stop gracefully', async () => {
       const events: Event[] = [];
@@ -441,13 +443,13 @@ describe('EventSubscriptionManager', () => {
       expect(manager.getActiveSubscriptionCount()).toBe(0);
     });
 
-    it('should verify no resource leaks after test', async () => {
+    it('should verify no resource leaks after test',  () => { return promiseFromSync(() => {
       // 这个测试验证 afterEach 的清理逻辑
       const subscription = manager.subscribe('workflow.started', () => {});
       trackedSubscriptions.push(subscription);
 
       // 测试结束时 afterEach 会验证清理完整性
       expect(manager.getActiveSubscriptionCount()).toBe(1);
-    });
+    }); });
   });
 });

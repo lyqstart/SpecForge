@@ -21,12 +21,12 @@ export interface EvidenceManifest {
     description?: string;
     hash?: string;
     created_at?: string;
-    status?: 'passed'|'failed'|'skipped';
+    status?: 'passed' | 'failed' | 'skipped';
     evidence_type?: string;
     level?: string;
     execution_receipt_id?: string;
     task_id?: string;
-    verification_type?: 'unit'|'property'|'integration'|'e2e'|'regression';
+    verification_type?: 'unit' | 'property' | 'integration' | 'e2e' | 'regression';
     command_index?: number;
     command?: string;
     hash_domain?: 'canonical-json:verification-execution/v1';
@@ -35,7 +35,7 @@ export interface EvidenceManifest {
 
 function validateEvidenceManifestValue(
   manifest: unknown,
-  expectedWorkItemId?: string,
+  expectedWorkItemId?: string
 ): TraceValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -81,14 +81,14 @@ function validateEvidenceManifestValue(
  */
 export function validateEvidenceManifest(
   manifest: unknown,
-  expectedWorkItemId?: string,
+  expectedWorkItemId?: string
 ): TraceValidationResult {
   return validateEvidenceManifestValue(manifest, expectedWorkItemId);
 }
 
 export function validateCurrentEvidenceManifestJson(
   content: string,
-  expectedWorkItemId: string,
+  expectedWorkItemId: string
 ): TraceValidationResult {
   try {
     return validateEvidenceManifestValue(JSON.parse(content), expectedWorkItemId);
@@ -98,7 +98,7 @@ export function validateCurrentEvidenceManifestJson(
 }
 
 export function createEvidenceManifestSchemaDescriptor(
-  workItemId: string,
+  workItemId: string
 ): PersistentFileSchemaDescriptor {
   return {
     id: `evidence-manifest-${workItemId}`,
@@ -114,7 +114,7 @@ export function createEvidenceManifestSchemaDescriptor(
 
 export async function precheckEvidenceManifestSchema(
   workItemDir: string,
-  workItemId: string,
+  workItemId: string
 ): Promise<SchemaDescriptorPrecheckResult> {
   return precheckSchemaDescriptors(workItemDir, [
     createEvidenceManifestSchemaDescriptor(workItemId),
@@ -122,7 +122,7 @@ export async function precheckEvidenceManifestSchema(
 }
 
 export function evidenceManifestSchemaBlockCode(
-  result: SchemaDescriptorPrecheckResult,
+  result: SchemaDescriptorPrecheckResult
 ): string | undefined {
   if (result.ok) return undefined;
   return result.checks[0]?.errorCode ?? 'SCHEMA_VERSION_MISMATCH';

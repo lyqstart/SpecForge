@@ -1,7 +1,8 @@
 import { HardRuleEvaluator } from '../hard-rules';
+import { PermissionRequest, PermissionDecision, PermissionDecisionEventPayload, RuleLayer } from '../types';
+
 import { BuiltinPolicyLoader } from './builtin-policy-loader';
 import { UserPolicyLoader } from './user-policy-loader';
-import { PermissionRequest, PermissionDecision, PermissionDecisionEventPayload, RuleLayer } from '../types';
 
 export type { PermissionRequest } from '../types';
 export { PermissionDecision } from '../types';
@@ -14,11 +15,11 @@ export interface MergedPermissionDecision {
   specificity: number;
   evaluationDetails: {
     hardRuleMatched?: boolean;
-    hardRuleResult?: any;
+    hardRuleResult?: unknown;
     builtinPolicyMatched?: boolean;
-    builtinPolicyResult?: any;
+    builtinPolicyResult?: unknown;
     userPolicyMatched?: boolean;
-    userPolicyResult?: any;
+    userPolicyResult?: unknown;
   };
 }
 

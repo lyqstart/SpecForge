@@ -2,13 +2,15 @@
  * Unit tests for GateRunner
  */
 
+import { promiseFromSync } from '@specforge/types';
 import { describe, it, expect } from 'vitest';
+
 import {
   SimpleGateRunner,
   CompositeGateRunner,
   createGateRunner,
 } from '../../src/GateRunner.js';
-import {
+import type {
   SimpleGateDefinition,
   CompositeGateDefinition,
   WorkflowContext,
@@ -21,7 +23,7 @@ describe('GateRunner', () => {
         type: 'simple',
         id: 'test-gate',
         name: 'Test Gate',
-        checkFn: async () => ({ passed: true, reason: 'Test passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Test passed' }))),
       };
 
       const runner = new SimpleGateRunner(gate);
@@ -65,7 +67,7 @@ describe('GateRunner', () => {
         type: 'simple',
         id: 'test-gate-fail',
         name: 'Test Gate Fail',
-        checkFn: async () => ({ passed: false, reason: 'Validation failed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: false, reason: 'Validation failed' }))),
       };
 
       const runner = new SimpleGateRunner(gate);
@@ -80,9 +82,9 @@ describe('GateRunner', () => {
         type: 'simple',
         id: 'test-gate-error',
         name: 'Test Gate Error',
-        checkFn: async () => {
+        checkFn:  () => { return promiseFromSync(() => {
           throw new Error('Check function threw an error');
-        },
+        }); },
       };
 
       const runner = new SimpleGateRunner(gate);
@@ -130,7 +132,7 @@ describe('GateRunner', () => {
       expect(runner.getGate()).toEqual(gate);
     });
 
-    it('should validate gate definition', () => {
+    it('should validate gate definition', async () => {
       const gate: SimpleGateDefinition = {
         type: 'simple',
         id: '',
@@ -139,7 +141,7 @@ describe('GateRunner', () => {
 
       const runner = new SimpleGateRunner(gate);
       // The validation happens at the start of check() which is async
-      expect(runner.check()).rejects.toThrow('Gate definition must have an id');
+      await expect(runner.check()).rejects.toThrow('Gate definition must have an id');
     });
   });
 
@@ -149,14 +151,14 @@ describe('GateRunner', () => {
         type: 'simple',
         id: 'child-1',
         name: 'Child Gate 1',
-        checkFn: async () => ({ passed: true, reason: 'Child 1 passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Child 1 passed' }))),
       };
 
       const childGate2: SimpleGateDefinition = {
         type: 'simple',
         id: 'child-2',
         name: 'Child Gate 2',
-        checkFn: async () => ({ passed: true, reason: 'Child 2 passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Child 2 passed' }))),
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -180,21 +182,21 @@ describe('GateRunner', () => {
         type: 'simple',
         id: 'child-1',
         name: 'Child Gate 1',
-        checkFn: async () => ({ passed: true, reason: 'Child 1 passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Child 1 passed' }))),
       };
 
       const childGate2: SimpleGateDefinition = {
         type: 'simple',
         id: 'child-2',
         name: 'Child Gate 2',
-        checkFn: async () => ({ passed: false, reason: 'Child 2 failed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: false, reason: 'Child 2 failed' }))),
       };
 
       const childGate3: SimpleGateDefinition = {
         type: 'simple',
         id: 'child-3',
         name: 'Child Gate 3',
-        checkFn: async () => ({ passed: true, reason: 'Child 3 passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Child 3 passed' }))),
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -220,14 +222,14 @@ describe('GateRunner', () => {
         type: 'simple',
         id: 'child-1',
         name: 'Child Gate 1',
-        checkFn: async () => ({ passed: true, reason: 'Child 1 passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Child 1 passed' }))),
       };
 
       const childGate2: SimpleGateDefinition = {
         type: 'simple',
         id: 'child-2',
         name: 'Child Gate 2',
-        checkFn: async () => ({ passed: true, reason: 'Child 2 passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Child 2 passed' }))),
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -251,14 +253,14 @@ describe('GateRunner', () => {
         type: 'simple',
         id: 'child-1',
         name: 'Child Gate 1',
-        checkFn: async () => ({ passed: true, reason: 'Child 1 passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Child 1 passed' }))),
       };
 
       const childGate2: SimpleGateDefinition = {
         type: 'simple',
         id: 'child-2',
         name: 'Child Gate 2',
-        checkFn: async () => ({ passed: false, reason: 'Child 2 failed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: false, reason: 'Child 2 failed' }))),
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -282,14 +284,14 @@ describe('GateRunner', () => {
         type: 'simple',
         id: 'child-1',
         name: 'Child Gate 1',
-        checkFn: async () => ({ passed: false, reason: 'Child 1 failed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: false, reason: 'Child 1 failed' }))),
       };
 
       const childGate2: SimpleGateDefinition = {
         type: 'simple',
         id: 'child-2',
         name: 'Child Gate 2',
-        checkFn: async () => ({ passed: false, reason: 'Child 2 failed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: false, reason: 'Child 2 failed' }))),
       };
 
       const compositeGate: CompositeGateDefinition = {
@@ -314,7 +316,7 @@ describe('GateRunner', () => {
         type: 'simple',
         id: 'simple-gate',
         name: 'Simple Gate',
-        checkFn: async () => ({ passed: true, reason: 'Simple passed' }),
+        checkFn:  () => promiseFromSync(() => (({ passed: true, reason: 'Simple passed' }))),
       };
 
       const innerComposite: CompositeGateDefinition = {
@@ -377,7 +379,8 @@ describe('GateRunner', () => {
       };
 
       // This will fail at runtime since the type assertion is wrong
-      expect(() => createGateRunner(gate as any)).toThrow('Unknown gate type');
+      // @ts-expect-error Deliberate malformed runtime input (TS2345); retain the rejection assertion.
+      expect(() => createGateRunner(gate)).toThrow('Unknown gate type');
     });
 
     it('should pass context to created runner', () => {
@@ -450,7 +453,8 @@ describe('GateRunner', () => {
       };
 
       const runner = new SimpleGateRunner(gate);
-      expect(runner.validate(null as any)).toBe(false);
+      // @ts-expect-error Deliberate malformed runtime input (TS2345); retain the rejection assertion.
+      expect(runner.validate(null)).toBe(false);
     });
 
     it('should return false for undefined context', () => {
@@ -461,7 +465,8 @@ describe('GateRunner', () => {
       };
 
       const runner = new SimpleGateRunner(gate);
-      expect(runner.validate(undefined as any)).toBe(false);
+      // @ts-expect-error Deliberate malformed runtime input (TS2345); retain the rejection assertion.
+      expect(runner.validate(undefined)).toBe(false);
     });
 
     it('should return false for context missing instance', () => {
@@ -472,7 +477,8 @@ describe('GateRunner', () => {
       };
 
       const runner = new SimpleGateRunner(gate);
-      expect(runner.validate({ instance: null as any, definition: null as any })).toBe(false);
+      // @ts-expect-error Deliberate malformed runtime input (TS2322); retain the rejection assertion.
+      expect(runner.validate({ instance: null, definition: null })).toBe(false);
     });
 
     it('should return false for context missing definition', () => {
@@ -496,7 +502,8 @@ describe('GateRunner', () => {
         },
         definition: null,
       };
-      expect(runner.validate(contextWithMissingDefinition as any)).toBe(false);
+      // @ts-expect-error Deliberate malformed runtime input (TS2345); retain the rejection assertion.
+      expect(runner.validate(contextWithMissingDefinition)).toBe(false);
     });
 
     it('should return false for context with missing instance.id', () => {
@@ -531,13 +538,14 @@ describe('GateRunner', () => {
           artifacts: [],
         },
       };
-      expect(runner.validate(contextWithMissingInstanceId as any)).toBe(false);
+      // @ts-expect-error Deliberate malformed runtime input (TS2345); retain the rejection assertion.
+      expect(runner.validate(contextWithMissingInstanceId)).toBe(false);
     });
   });
 
   describe('check(context)', () => {
     it('should pass context to check function', async () => {
-      let capturedContext: any;
+      let capturedContext: string | undefined;
 
       const gate: SimpleGateDefinition = {
         type: 'simple',

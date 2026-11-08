@@ -2,22 +2,28 @@
  * WorkflowErrorHandling Unit Tests
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+/**
+ * WorkflowErrorHandling Unit Tests
+ */
+
+import { promiseFromSync } from '@specforge/types';
+import { describe, it, expect, beforeEach } from 'vitest';
+
 import {
-  GateError,
+  type GateError,
   GateErrorType,
   GateTimeoutError,
   GateValidationError,
   GateResourceError,
 } from '../../src/error-handler.js';
+import { ErrorPropagationManager } from '../../src/error-propagation.js';
+import type { WorkflowInstance, WorkflowDefinition } from '../../src/types.js';
 import {
-  WorkflowErrorHandler,
+  type WorkflowErrorHandler,
   WorkflowStateManager,
   createErrorHandler,
   DEFAULT_RETRY_CONFIG,
 } from '../../src/WorkflowErrorHandling.js';
-import type { WorkflowInstance, WorkflowDefinition } from '../../src/types.js';
-import { ErrorPropagationManager } from '../../src/error-propagation.js';
 
 describe('GateError integration', () => {
   it('should create a timeout error', () => {
@@ -144,7 +150,7 @@ describe('WorkflowErrorHandler', () => {
       const delayAfterFirst = handler.getRetryDelay('workflow-1');
       expect(delayAfterFirst).toBe(DEFAULT_RETRY_CONFIG.initialDelayMs);
 
-      // Record second attempt - this increments attempt to 2  
+      // Record second attempt - this increments attempt to 2
       handler.recordRetryAttempt('workflow-1', error);
       const delayAfterSecond = handler.getRetryDelay('workflow-1');
       expect(delayAfterSecond).toBe(DEFAULT_RETRY_CONFIG.initialDelayMs * DEFAULT_RETRY_CONFIG.backoffMultiplier);
@@ -206,10 +212,10 @@ describe('WorkflowErrorHandler', () => {
   describe('executeWithRetry', () => {
     it('should succeed without retry on first attempt', async () => {
       let callCount = 0;
-      const result = await handler.executeWithRetry('workflow-1', async () => {
+      const result = await handler.executeWithRetry('workflow-1',  () => { return promiseFromSync(() => {
         callCount++;
         return 'success';
-      });
+      }); });
 
       expect(result).toBe('success');
       expect(callCount).toBe(1);
@@ -217,8 +223,8 @@ describe('WorkflowErrorHandler', () => {
 
     it('should retry on failure and succeed', async () => {
       let callCount = 0;
-      
-      const result = await handler.executeWithRetry('workflow-1', async () => {
+
+      const result = await handler.executeWithRetry('workflow-1',  () => { return promiseFromSync(() => {
         callCount++;
         if (callCount < 3) {
           throw new GateTimeoutError({
@@ -228,7 +234,7 @@ describe('WorkflowErrorHandler', () => {
           });
         }
         return 'success';
-      });
+      }); });
 
       expect(result).toBe('success');
       expect(callCount).toBe(3);
@@ -243,16 +249,16 @@ describe('WorkflowErrorHandler', () => {
       });
 
       let callCount = 0;
-      
+
       await expect(
-        handler.executeWithRetry('workflow-1', async () => {
+        handler.executeWithRetry('workflow-1',  () => { return promiseFromSync(() => {
           callCount++;
           throw new GateTimeoutError({
             gateId: 'test-gate',
             operation: 'check',
             timeoutMs: 5000,
           });
-        })
+        }); })
       ).rejects.toThrow('timed out');
 
       expect(callCount).toBe(3); // Initial + 2 retries (maxAttempts=2)
@@ -260,24 +266,24 @@ describe('WorkflowErrorHandler', () => {
 
     it('should not retry non-retryable errors', async () => {
       let callCount = 0;
-      
+
       await expect(
-        handler.executeWithRetry('workflow-1', async () => {
+        handler.executeWithRetry('workflow-1',  () => { return promiseFromSync(() => {
           callCount++;
           throw new GateValidationError({
             gateId: 'test-gate',
             validationErrors: ['Invalid input'],
           });
-        })
+        }); })
       ).rejects.toThrow('validation failed');
 
       expect(callCount).toBe(1); // No retries
     });
 
     it('should call onRetry callback', async () => {
-      let callCount = 0;
+
       const retryCallbacks: Array<{ attempt: number; delay: number; error: GateError }> = [];
-      
+
       handler.setRetryConfig('workflow-1', {
         maxAttempts: 3,
         initialDelayMs: 10,
@@ -286,16 +292,16 @@ describe('WorkflowErrorHandler', () => {
       });
 
       await expect(
-        handler.executeWithRetry('workflow-1', async () => {
-          callCount++;
+        handler.executeWithRetry('workflow-1',  () => { return promiseFromSync(() => {
+
           throw new GateTimeoutError({
             gateId: 'test-gate',
             operation: 'check',
             timeoutMs: 5000,
           });
-        }, async (attempt: number, delay: number, error: GateError) => {
+        }); },  (attempt: number, delay: number, error: GateError) => { return promiseFromSync(() => {
           retryCallbacks.push({ attempt, delay, error });
-        })
+        }); })
       ).rejects.toThrow();
 
       expect(retryCallbacks).toHaveLength(3);
@@ -341,16 +347,16 @@ describe('WorkflowErrorHandler', () => {
       });
 
       let callCount = 0;
-      
+
       await expect(
-        handler.executeWithRetry('workflow-1', async () => {
+        handler.executeWithRetry('workflow-1',  () => { return promiseFromSync(() => {
           callCount++;
           throw new GateTimeoutError({
             gateId: 'test-gate',
             operation: 'check',
             timeoutMs: 5000,
           });
-        }, undefined, { maxTotalTimeoutMs: 100 }) // 100ms超时
+        }); }, undefined, { maxTotalTimeoutMs: 100 }) // 100ms超时
       ).rejects.toThrow('Retry operation timed out after 100ms for workflow workflow-1');
 
       expect(callCount).toBeGreaterThan(0); // 至少调用了一次
@@ -358,7 +364,7 @@ describe('WorkflowErrorHandler', () => {
 
     it('should respect abort signal', async () => {
       const abortController = new AbortController();
-      
+
       handler.setRetryConfig('workflow-1', {
         maxAttempts: 10,
         initialDelayMs: 1000,
@@ -367,28 +373,28 @@ describe('WorkflowErrorHandler', () => {
       });
 
       let callCount = 0;
-      
+
       // 启动操作
-      const promise = handler.executeWithRetry('workflow-1', async () => {
+      const promise = handler.executeWithRetry('workflow-1',  () => { return promiseFromSync(() => {
         callCount++;
         throw new GateTimeoutError({
           gateId: 'test-gate',
           operation: 'check',
           timeoutMs: 5000,
         });
-      }, undefined, { abortSignal: abortController.signal });
+      }); }, undefined, { abortSignal: abortController.signal });
 
       // 立即abort
       abortController.abort();
-      
+
       await expect(promise).rejects.toThrow('Operation aborted for workflow workflow-1');
       expect(callCount).toBe(1); // 只调用了一次
     });
 
     it('should succeed before timeout', async () => {
       let callCount = 0;
-      
-      const result = await handler.executeWithRetry('workflow-1', async () => {
+
+      const result = await handler.executeWithRetry('workflow-1',  () => { return promiseFromSync(() => {
         callCount++;
         if (callCount < 2) {
           throw new GateTimeoutError({
@@ -398,7 +404,7 @@ describe('WorkflowErrorHandler', () => {
           });
         }
         return 'success';
-      }, undefined, { maxTotalTimeoutMs: 5000 }); // 5秒超时足够
+      }); }, undefined, { maxTotalTimeoutMs: 5000 }); // 5秒超时足够
 
       expect(result).toBe('success');
       expect(callCount).toBe(2);
@@ -428,23 +434,23 @@ describe('WorkflowStateManager', () => {
   describe('pause', () => {
     it('should pause a running workflow', () => {
       const instance = createTestInstance('running');
-      
+
       const result = stateManager.pause(instance, 'Testing pause');
-      
+
       expect(result.status).toBe('paused');
       expect(stateManager.isPaused(instance.id)).toBe(true);
     });
 
     it('should fail to pause non-running workflow', () => {
       const instance = createTestInstance('completed');
-      
+
       expect(() => stateManager.pause(instance)).toThrow('Cannot pause workflow instance in status: completed');
     });
 
     it('should store pause reason', () => {
       const instance = createTestInstance('running');
       stateManager.pause(instance, 'User requested pause');
-      
+
       const pauseInfo = stateManager.getPauseInfo(instance.id);
       expect(pauseInfo?.pauseReason).toBe('User requested pause');
     });
@@ -480,34 +486,34 @@ describe('WorkflowStateManager', () => {
   describe('resume', () => {
     it('should resume a paused workflow', () => {
       const instance = createTestInstance('running');
-      
+
       // First pause the instance
       stateManager.pause(instance);
-      
+
       const result = stateManager.resume(instance);
-      
+
       expect(result.status).toBe('running');
       expect(stateManager.isPaused(instance.id)).toBe(false);
     });
 
     it('should fail to resume non-paused workflow', () => {
       const instance = createTestInstance('running');
-      
+
       expect(() => stateManager.resume(instance)).toThrow('Cannot resume workflow instance in status: running');
     });
 
     it('should clear pause state after resume', () => {
       const instance = createTestInstance('running');
-      
+
       // First pause
       stateManager.pause(instance);
-      
+
       // First verify it's paused
       expect(stateManager.isPaused(instance.id)).toBe(true);
-      
+
       // Resume
       stateManager.resume(instance);
-      
+
       // Should no longer be paused
       expect(stateManager.isPaused(instance.id)).toBe(false);
       expect(stateManager.getPauseInfo(instance.id)).toBeUndefined();
@@ -518,9 +524,9 @@ describe('WorkflowStateManager', () => {
     it('should clear pause state', () => {
       const instance = createTestInstance('running');
       stateManager.pause(instance);
-      
+
       stateManager.clearPauseState(instance.id);
-      
+
       expect(stateManager.isPaused(instance.id)).toBe(false);
     });
   });
@@ -529,10 +535,10 @@ describe('WorkflowStateManager', () => {
     it('should return all paused instance IDs', () => {
       const instance1 = createTestInstance('running');
       const instance2 = createTestInstance('running');
-      
+
       stateManager.pause(instance1);
       stateManager.pause(instance2);
-      
+
       const pausedIds = stateManager.getPausedInstanceIds();
       expect(pausedIds).toHaveLength(2);
       expect(pausedIds).toContain(instance1.id);
@@ -553,13 +559,13 @@ describe('Error propagation integration', () => {
   it('should handle error with propagation', () => {
     const handler = createErrorHandler();
     const propagationManager = handler.getErrorPropagationManager();
-    
+
     expect(propagationManager).toBeInstanceOf(ErrorPropagationManager);
   });
 
   it('should execute with propagation', async () => {
     const handler = createErrorHandler();
-    
+
     const workflowDefinition: WorkflowDefinition = {
       schema_version: '1.0',
       id: 'test-workflow',
@@ -594,23 +600,23 @@ describe('Error propagation integration', () => {
 
     // Test successful execution
     const successResult = await handler.executeWithPropagation(
-      async () => 'success',
+       () => promiseFromSync(() => ('success')),
       context,
       'workflow-1'
     );
-    
+
     expect(successResult.result).toBe('success');
 
     // Test error execution
     await expect(
       handler.executeWithPropagation(
-        async () => {
+         () => { return promiseFromSync(() => {
           throw new GateTimeoutError({
             gateId: 'test-gate',
             operation: 'check',
             timeoutMs: 5000,
           });
-        },
+        }); },
         context,
         'workflow-1'
       )

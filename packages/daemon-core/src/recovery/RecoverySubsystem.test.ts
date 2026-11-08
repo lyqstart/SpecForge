@@ -18,7 +18,7 @@ import * as os from 'os';
 class MockPathResolver implements IPathResolver {
   constructor(private tmpDir: string) {}
 
-  resolveProjectRuntimeDir(projectPath: string): string {
+  resolveProjectRuntimeDir(_projectPath: string): string {
     return path.join(this.tmpDir, 'projects', 'mock-project', '.specforge', 'runtime');
   }
 
@@ -64,7 +64,10 @@ describe('RecoverySubsystem', () => {
   beforeEach(() => {
     testProjectPath = 'test-project-path-recovery';
     // Use os.tmpdir() for cross-platform safety
-    tmpDir = path.join(os.tmpdir(), `specforge-test-recovery-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    tmpDir = path.join(
+      os.tmpdir(),
+      `specforge-test-recovery-${Date.now()}-${Math.random().toString(36).slice(2)}`
+    );
     mockResolver = new MockPathResolver(tmpDir);
     subsystem = new RecoverySubsystem(mockResolver, testProjectPath);
   });
@@ -86,7 +89,7 @@ describe('RecoverySubsystem', () => {
 
   it('should check consistency', async () => {
     const result = await subsystem.checkConsistency();
-    
+
     expect(result).toBeDefined();
     expect(result.isValid).toBeDefined();
     expect(result.issues).toBeDefined();
@@ -95,14 +98,14 @@ describe('RecoverySubsystem', () => {
   it('should repair inconsistencies', async () => {
     const result = await subsystem.checkConsistency();
     const repairResult = await subsystem.repairInconsistency(result);
-    
+
     expect(repairResult.success).toBe(true);
     expect(repairResult.repairEvents).toBeDefined();
   });
 
   it('should attempt session reconnection', async () => {
     const result = await subsystem.attemptSessionReconnect('test-session-id');
-    
+
     // Currently returns false (placeholder implementation)
     expect(result).toBe(false);
   });
@@ -128,7 +131,7 @@ describe('RecoverySubsystem', () => {
     ];
 
     const state = await subsystem.rebuildFromEvents(events);
-    
+
     expect(state.projectPath).toBe(testProjectPath);
     expect(state.lastEventId).toBe('event-2');
     expect(state.lastEventTs).toBe(2000);
@@ -145,11 +148,7 @@ describe('RecoverySubsystem', () => {
 
     // Verify the checkpoint file was created with correct content
     const statePath = subsystem.getStatePath();
-    const checkpointPath = path.join(
-      path.dirname(statePath),
-      'checkpoints',
-      `${sessionId}.json`
-    );
+    const checkpointPath = path.join(path.dirname(statePath), 'checkpoints', `${sessionId}.json`);
 
     const raw = await fs.readFile(checkpointPath, 'utf-8');
     const parsed = JSON.parse(raw);
@@ -170,7 +169,7 @@ describe('RecoverySubsystem', () => {
     const checkpointPath = path.join(
       mockResolver.resolveProjectRuntimeDir(projectPath),
       'checkpoints',
-      `${sessionId}.json`,
+      `${sessionId}.json`
     );
     expect(JSON.parse(await fs.readFile(checkpointPath, 'utf-8'))).toEqual(snapshotData);
   });
@@ -180,7 +179,7 @@ describe('RecoverySubsystem', () => {
     const resolveProjectRuntimeDir = vi.spyOn(mockResolver, 'resolveProjectRuntimeDir');
 
     await expect(
-      coordinator.saveCheckpoint('unbound-session', { checkpoint: 'must-not-write' }),
+      coordinator.saveCheckpoint('unbound-session', { checkpoint: 'must-not-write' })
     ).resolves.toBeUndefined();
 
     expect(resolveProjectRuntimeDir).not.toHaveBeenCalled();
@@ -233,23 +232,15 @@ describe('RecoverySubsystem', () => {
     );
 
     const expectedDaemonRt = mockResolver.resolveDaemonRuntimeDir();
-    expect(daemonSubsystem.getEventsPath()).toBe(
-      path.join(expectedDaemonRt, 'events.jsonl')
-    );
-    expect(daemonSubsystem.getStatePath()).toBe(
-      path.join(expectedDaemonRt, 'state.json')
-    );
+    expect(daemonSubsystem.getEventsPath()).toBe(path.join(expectedDaemonRt, 'events.jsonl'));
+    expect(daemonSubsystem.getStatePath()).toBe(path.join(expectedDaemonRt, 'state.json'));
   });
 
   it('should use project-level paths when wal/stateManager are not injected (legacy)', () => {
     // subsystem from beforeEach has no injected wal/stateManager
     const expectedProjectRt = mockResolver.resolveProjectRuntimeDir(testProjectPath);
-    expect(subsystem.getEventsPath()).toBe(
-      path.join(expectedProjectRt, 'events.jsonl')
-    );
-    expect(subsystem.getStatePath()).toBe(
-      path.join(expectedProjectRt, 'state.json')
-    );
+    expect(subsystem.getEventsPath()).toBe(path.join(expectedProjectRt, 'events.jsonl'));
+    expect(subsystem.getStatePath()).toBe(path.join(expectedProjectRt, 'state.json'));
   });
 
   // ── writeState delegation ────────────────────────────────────────
@@ -292,10 +283,10 @@ describe('RecoverySubsystem', () => {
       mockResolver,
       testProjectPath,
       fakeWal,
-      mockStateManager,
+      mockStateManager
     );
 
-    const state = {
+    void {
       stateVersion: 0,
       projectPath: testProjectPath,
       schemaVersion: '1.0',
@@ -309,7 +300,14 @@ describe('RecoverySubsystem', () => {
     // We need a result with issues to trigger repair
     await daemonSubsystem.repairInconsistency({
       isValid: false,
-      issues: [{ type: 'state_mismatch', description: 'test', affectedEventId: 'ev-1', affectedProjectPath: testProjectPath }],
+      issues: [
+        {
+          type: 'state_mismatch',
+          description: 'test',
+          affectedEventId: 'ev-1',
+          affectedProjectPath: testProjectPath,
+        },
+      ],
     });
 
     expect(mockAppendEvent).toHaveBeenCalledOnce();
@@ -325,7 +323,14 @@ describe('RecoverySubsystem', () => {
     // which internally calls writeState -> the legacy fs.writeFile path
     await subsystem.repairInconsistency({
       isValid: false,
-      issues: [{ type: 'state_mismatch', description: 'test', affectedEventId: 'ev-1', affectedProjectPath: testProjectPath }],
+      issues: [
+        {
+          type: 'state_mismatch',
+          description: 'test',
+          affectedEventId: 'ev-1',
+          affectedProjectPath: testProjectPath,
+        },
+      ],
     });
 
     // Verify the state.json file was actually written (legacy path)
