@@ -32977,3 +32977,15 @@ Candidate 字节完整性不能替代内容事实完整性。进入候选编制�
 ### ERR-2046：最后一轮恢复提示仍残留旧工作流与手工清理暗示
 
 - 从全量语法消息清单回到真实owner逐项核对，changed_files_audit仍以未发布investigation/review/spec_migration说明无代码模式，systemd回滚仍暗示manual cleanup，状态入口初始化提示未点名受控owner。已分别改为当前feature_spec审批前规格阶段、保留失败日志并检查owner恢复、sf-orchestrator调用sf_project_init；Semantic Closure帮助补显式1.0及force不能转换。源/部署副本知识库帮助明确remove归档和版本拒绝。不得把语法清单的待审标签整体改成动态分支PASS；实际覆盖由对应owner回归与真实平台报告证明。
+
+### ERR-2047：未等待索引校验进程结束即启动提交
+
+- 0250索引写入后仍在逐文件校验时，0251过早启动提交。未在校验结束前推送；0250随后完整退出0，0253独立比较全部已审核索引blob与提交树、直接父提交和工作区源内容，全部一致。操作顺序错误保留为证据，不能以最终无漂移否认错误。后续依赖操作必须先取得上一进程的数字退出码，再执行提交/发布。
+
+### ERR-2048：真实CI冷发布入口仍遗漏独立ESM子路径
+
+- a8900cb真实三平台Distribution全部通过（含macOS原始artifact SHA核验与23项帮助/安装/生命周期），但Code Quality run42452013189在完成12包构建后报configuration/dist/constants.js require共享user-level-paths为async module。原初始化只await types根index；源码直接证实该根导出不包含独立user-level-paths子路径。修复构建组合owner：按实际package.exports枚举并逐项await全部已声明foundation ESM入口，再加载CJS生产消费者；不改变包格式或业务Runtime，不跳过预检，不以缓存开关充当修复。0265新Bun进程真实配置CJS消费回归2项通过，0266完整Windows构建和正式precheck通过；真正冷CI最终结果仍须下一源提交验收。Bun内部分类实现不冒充已证明。
+
+### ERR-2049：定向Vitest1命令再次遗漏worker下限
+
+- 0264仅maxWorkers导致min/max冲突、零测试，与0132为同类已知载体错误，不能归因产品或计入测试覆盖。0265显式同时设置max/min=1后2项实际测试通过。保留失败并约束后续所有定向测试使用成对上限下限，避免仅凭命令退出或用法输出声称完成。
